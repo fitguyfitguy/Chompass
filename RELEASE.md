@@ -52,6 +52,12 @@ git push origin v1.0.0
    - Paste changelog notes
    - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-<version>.apk`
 
+   Or with [tea](https://codeberg.org/tea/tea) logged in:
+
+```bash
+./scripts/publish_release.sh 1.0.0
+```
+
 ## F-Droid follow-up
 
 Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
