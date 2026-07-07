@@ -1,0 +1,29 @@
+# Xcode
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+
+# Android Studio / Gradle
+.gradle/
+local.properties
+android/keystore.properties
+android/app/build/
+android/build/
+*.iml
+.idea/
+*.jks
+.cxx/
+
+# Local configuration
+ios/Local.xcconfig
+.DS_Store
+
+# Claude Code runtime
+.claude/
+ios/build-sim/
+.vercel
+
+# Xcode per-user state (scheme order, workspace UI) — meaningless off this machine
+ios/**/xcuserdata/

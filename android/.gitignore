@@ -1,0 +1,22 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+gradle/gradle-daemon-jvm.properties
+
+# Release signing — keystore + the password file that points at it.
+# Never commit either; both are needed to build the production APK/AAB.
+keystore.properties
+*.jks
+*.keystore

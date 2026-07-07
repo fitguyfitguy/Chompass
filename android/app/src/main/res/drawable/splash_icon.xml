@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ SplashScreen renders this inside a 192dp circle within a 288dp
+  canvas, so the source must include ~25% padding on each side or the corners
+  get clipped. ic_logo is a full-bleed 2048x2048 mark — inset it to fit.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_logo"
+    android:inset="25%" />

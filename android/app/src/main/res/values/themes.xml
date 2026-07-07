@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.NoFUD" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.NoFUD.Splash.Base" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/app_splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.NoFUD</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash" parent="Theme.NoFUD.Splash.Pink" />
+
+    <style name="Theme.NoFUD.Splash.Pink" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Red" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_red</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Orange" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_orange</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Green" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_green</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Mint" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_mint</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Teal" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_teal</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Blue" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_blue</item>
+    </style>
+
+    <style name="Theme.NoFUD.Splash.Purple" parent="Theme.NoFUD.Splash.Base">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_purple</item>
+    </style>
+</resources>
