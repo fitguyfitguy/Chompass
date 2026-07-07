@@ -17,6 +17,8 @@ Home: https://codeberg.org/fitguy/NoFUD
 
 All other core features are preserved: AI food logging, Coach, workouts library, Health Connect, widgets, diary export, meal sharing, and 15 languages.
 
+See [CHANGELOG.md](CHANGELOG.md) for full version history.
+
 ## Fork attribution
 
 NoFUD is a fork of Fud AI (https://github.com/apoorvdarshan/fud-ai).
@@ -49,7 +51,7 @@ First launch walks through onboarding. A free Gemini key is available at https:/
 
 ## App icon
 
-The current launcher icon is a temporary NoFUD placeholder (distinct from upstream Fud AI artwork). See [ASSET_CREDITS.md](ASSET_CREDITS.md).
+NoFUD uses original launcher and splash artwork (distinct from upstream Fud AI). Regenerate themed variants with `uv run --with pillow python scripts/generate_icons.py` after editing `scripts/nofud_icon_master.png`. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
 ## Exercise data
 
