@@ -449,7 +449,7 @@ fun HomeScreen(container: AppContainer) {
     }
 
     if (showText) {
-        TextInputDialog(
+        TextInputSheet(
             onDismiss = { showText = false },
             onSubmit = { showText = false; vm.analyzeText(it) }
         )
@@ -1675,50 +1675,6 @@ private fun AnalysisResultDialog(
             dismissText = stringResource(R.string.action_discard),
             onDismiss = onDismiss
         )
-    }
-}
-
-@Composable
-private fun TextInputDialog(onDismiss: () -> Unit, onSubmit: (String) -> Unit) {
-    // Keep the input composable stable so rotating placeholder examples do not drop IME focus.
-    val placeholders = listOf(
-        stringResource(R.string.text_input_placeholder_1),
-        stringResource(R.string.text_input_placeholder_2),
-        stringResource(R.string.text_input_placeholder_3),
-        stringResource(R.string.text_input_placeholder_4)
-    )
-    var input by remember { mutableStateOf("") }
-    var placeholderIdx by remember { mutableIntStateOf(0) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            kotlinx.coroutines.delay(2000)
-            if (input.isEmpty()) placeholderIdx = (placeholderIdx + 1) % placeholders.size
-        }
-    }
-    FudGlassDialog(onDismissRequest = onDismiss) {
-        Text(
-            stringResource(R.string.text_input_title),
-            fontSize = 17.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.fillMaxWidth()
-        )
-        FudGlassTextField(
-            value = input,
-            onValueChange = { input = it },
-            placeholder = placeholders[placeholderIdx],
-            singleLine = false,
-            minLines = 3,
-            maxLines = 5,
-            modifier = Modifier.fillMaxWidth()
-        )
-        FudGlassPrimaryButton(
-            text = stringResource(R.string.action_analyze),
-            onClick = { if (input.isNotBlank()) onSubmit(input.trim()) },
-            enabled = input.isNotBlank()
-        )
-        TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
-        }
     }
 }
 

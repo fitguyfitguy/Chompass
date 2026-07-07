@@ -26,12 +26,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
@@ -39,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.ui.components.FudGlassPrimaryButton
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
@@ -58,6 +63,15 @@ fun ContextNoteSheet(
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
     val bitmap = remember(imageBytes) {
         android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
@@ -139,6 +153,7 @@ fun ContextNoteSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 110.dp)
+                        .focusRequester(focusRequester)
                 )
             }
 

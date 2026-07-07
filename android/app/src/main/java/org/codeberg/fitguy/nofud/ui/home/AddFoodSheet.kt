@@ -111,8 +111,8 @@ fun AddFoodSheet(
                     isDark = isDark,
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        onDismiss()
                         onNote()
+                        onDismiss()
                     }
                 )
                 AddFoodHeroTile(
