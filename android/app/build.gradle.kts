@@ -18,7 +18,7 @@ val keystoreProps = Properties().apply {
 }
 
 android {
-    namespace = "com.fitguy.nofud"
+    namespace = "org.codeberg.fitguy.nofud"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -26,7 +26,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.fitguy.nofud"
+        applicationId = "org.codeberg.fitguy.nofud"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

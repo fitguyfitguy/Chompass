@@ -18,22 +18,22 @@
 }
 
 # All app-package serializable classes + their generated $$serializer.
--keep,includedescriptorclasses class com.fitguy.nofud.**$$serializer { *; }
--keepclassmembers class com.fitguy.nofud.** {
+-keep,includedescriptorclasses class org.codeberg.fitguy.nofud.**$$serializer { *; }
+-keepclassmembers class org.codeberg.fitguy.nofud.** {
     *** Companion;
 }
--keepclasseswithmembers class com.fitguy.nofud.** {
+-keepclasseswithmembers class org.codeberg.fitguy.nofud.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 # Enum @Serializable lookups need their members preserved for KSerializer.
--keepclassmembers enum com.fitguy.nofud.** { *; }
+-keepclassmembers enum org.codeberg.fitguy.nofud.** { *; }
 
 # ─── Glance widgets ───────────────────────────────────────────────────────────
 # CalorieAppWidget / ProteinAppWidget + their *Receiver classes are loaded by
 # the OS via reflection from AndroidManifest. Default Android rules cover the
 # Receiver subclasses, but Glance also reflects on the GlanceAppWidget subclass
 # itself.
--keep class com.fitguy.nofud.widget.** { *; }
+-keep class org.codeberg.fitguy.nofud.widget.** { *; }
 -keep class * extends androidx.glance.appwidget.GlanceAppWidget { *; }
 -keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver { *; }
 
@@ -84,7 +84,7 @@
 # release builds parse every record to nulls — the live-3.0 empty-Workouts bug.
 # Signature is required so TypeToken<List<ExerciseRecord>> survives shrinking.
 -keepattributes Signature
--keepclassmembers class com.fitguy.nofud.data.ExerciseRecord {
+-keepclassmembers class org.codeberg.fitguy.nofud.data.ExerciseRecord {
   <init>();
   <fields>;
 }

@@ -12,7 +12,7 @@ Home: https://codeberg.org/fitguy/NoFUD
 |---|--------|-------|
 | Banner ads | Yes (AdMob) | **Removed** |
 | Analytics / tracking SDKs | None | None |
-| Package ID | `com.apoorvdarshan.calorietracker` | `com.fitguy.nofud` |
+| Package ID | `com.apoorvdarshan.calorietracker` | `org.codeberg.fitguy.nofud` |
 | Source home | GitHub | Codeberg |
 
 All other core features are preserved: AI food logging, Coach, workouts library, Health Connect, widgets, diary export, meal sharing, and 15 languages.
@@ -39,7 +39,7 @@ cd android
 ./gradlew :app:assembleDebug
 ```
 
-Install the debug APK (side-by-side package `com.fitguy.nofud.debug`):
+Install the debug APK (side-by-side package `org.codeberg.fitguy.nofud.debug`):
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
