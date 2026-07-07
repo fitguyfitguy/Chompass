@@ -54,6 +54,8 @@ build-debug
 build-release
 ```
 
+Debug APK package: `org.codeberg.fitguy.nofud.debug` (`assemblePlayDebug`).
+
 Or from outside the shell:
 
 ```bash
@@ -65,7 +67,7 @@ devenv shell -- build-debug
 In Cursor/agent shells where direnv does not load, run builds explicitly:
 
 ```bash
-devenv shell -c 'cd android && ./gradlew :app:assembleDebug'
+devenv shell -c 'cd android && ./gradlew :app:assemblePlayDebug'
 ```
 
 If `platforms;android-36.1` is missing from nixpkgs, add the android-nixpkgs input:
@@ -85,7 +87,7 @@ cd android
 Install the debug APK (side-by-side package `org.codeberg.fitguy.nofud.debug`):
 
 ```bash
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r android/app/build/outputs/apk/play/debug/app-play-debug.apk
 ```
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey — configure any supported provider under **Settings → AI Access**.
