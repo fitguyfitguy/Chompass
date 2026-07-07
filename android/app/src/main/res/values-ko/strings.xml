@@ -307,6 +307,7 @@
     <string name="add_food_photo_camera">사진 촬영</string>
     <string name="add_food_photo_gallery">갤러리에서 선택</string>
     <string name="add_food_add_label_photo">라벨 사진 추가</string>
+    <string name="add_food_add_photo">사진 추가</string>
     <string name="text_input_title">먹은 것을 설명하세요</string>
     <string name="home_kcal_of_format">/ %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s 남음</string>
@@ -371,7 +372,7 @@
     <string name="sheet_micro_potassium">칼륨</string>
 
     <!-- Context note sheet -->
-    <string name="context_note_title">메모 추가</string>
+        <string name="context_note_title">사진 확인</string>
     <string name="context_note_section">메모 추가 (선택)</string>
     <string name="context_note_placeholder">예: 기름 없이, 치즈 추가, 큰 분량</string>
 

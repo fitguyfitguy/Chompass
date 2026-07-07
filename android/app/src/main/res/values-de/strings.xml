@@ -307,6 +307,7 @@
     <string name="add_food_photo_camera">Foto aufnehmen</string>
     <string name="add_food_photo_gallery">Aus Galerie wählen</string>
     <string name="add_food_add_label_photo">Etikett-Foto hinzufügen</string>
+    <string name="add_food_add_photo">Foto hinzufügen</string>
     <string name="text_input_title">Beschreibe dein Essen</string>
     <string name="home_kcal_of_format">von %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s übrig</string>
@@ -371,7 +372,7 @@
     <string name="sheet_micro_potassium">Kalium</string>
 
     <!-- Context note sheet -->
-    <string name="context_note_title">Notiz hinzufügen</string>
+        <string name="context_note_title">Foto prüfen</string>
     <string name="context_note_section">Notiz hinzufügen (optional)</string>
     <string name="context_note_placeholder">z. B. ohne Öl, extra Käse, große Portion</string>
 

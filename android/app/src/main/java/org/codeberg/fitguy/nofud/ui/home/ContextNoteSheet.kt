@@ -3,19 +3,27 @@ package org.codeberg.fitguy.nofud.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,8 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.ui.components.FudGlassPrimaryButton
+import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
 /**
  * Intermediate sheet after a photo is captured or picked. Shows the image and an
@@ -40,7 +53,7 @@ import org.codeberg.fitguy.nofud.R
 fun ContextNoteSheet(
     imageBytes: ByteArray,
     onAnalyze: (note: String) -> Unit,
-    onAddLabelPhoto: () -> Unit,
+    onAddPhoto: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -55,56 +68,120 @@ fun ContextNoteSheet(
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         containerColor = MaterialTheme.colorScheme.surface
     ) {
-        SheetReviewToolbar(
-            title = stringResource(R.string.context_note_title),
-            primaryLabel = stringResource(R.string.action_analyze),
-            secondaryLabel = stringResource(R.string.add_food_add_label_photo),
-            onCancel = onDismiss,
-            onPrimary = { onAnalyze(note) },
-            onSecondary = onAddLabelPhoto
-        )
-
         Column(
             Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
                 .imePadding()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            Box(
-                Modifier.fillMaxWidth().padding(top = 8.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (bitmap != null) {
-                    androidx.compose.foundation.Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                        modifier = Modifier
-                            .size(240.dp)
-                            .clip(RoundedCornerShape(20.dp))
+                TextButton(onClick = onDismiss) {
+                    Text(
+                        stringResource(R.string.action_cancel),
+                        color = AppColors.Calorie,
+                        fontSize = 16.sp,
+                        maxLines = 1
                     )
                 }
+                Text(
+                    stringResource(R.string.context_note_title),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+                Spacer(Modifier.width(72.dp))
             }
 
-            SheetSectionHeader(stringResource(R.string.context_note_section))
-
-            OutlinedTextField(
-                value = note,
-                onValueChange = { note = it },
-                placeholder = {
-                    Text(
-                        stringResource(R.string.context_note_placeholder),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                    )
-                },
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier
+            Column(
+                Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 110.dp)
-            )
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+                Box(
+                    Modifier.fillMaxWidth().padding(top = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (bitmap != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                            modifier = Modifier
+                                .size(240.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                        )
+                    }
+                }
+
+                SheetSectionHeader(stringResource(R.string.context_note_section))
+
+                OutlinedTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    placeholder = {
+                        Text(
+                            stringResource(R.string.context_note_placeholder),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 110.dp)
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 28.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(
+                    onClick = onAddPhoto,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    androidx.compose.material3.Icon(
+                        Icons.Filled.AddAPhoto,
+                        contentDescription = null,
+                        tint = AppColors.Calorie,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        stringResource(R.string.add_food_add_photo),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 14.sp
+                    )
+                }
+                FudGlassPrimaryButton(
+                    text = stringResource(R.string.action_analyze),
+                    onClick = { onAnalyze(note) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    height = 48.dp
+                )
+            }
         }
     }
 }

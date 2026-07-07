@@ -307,6 +307,7 @@
     <string name="add_food_photo_camera">写真を撮る</string>
     <string name="add_food_photo_gallery">ギャラリーから選択</string>
     <string name="add_food_add_label_photo">ラベル写真を追加</string>
+    <string name="add_food_add_photo">写真を追加</string>
     <string name="text_input_title">食べたものを説明</string>
     <string name="home_kcal_of_format">/ %1$s kcal</string>
     <string name="home_kcal_left_format">残り %1$s</string>
@@ -371,7 +372,7 @@
     <string name="sheet_micro_potassium">カリウム</string>
 
     <!-- Context note sheet -->
-    <string name="context_note_title">メモを追加</string>
+        <string name="context_note_title">写真を確認</string>
     <string name="context_note_section">メモを追加（任意）</string>
     <string name="context_note_placeholder">例：油なし、チーズ多め、大盛り</string>
 

@@ -19,17 +19,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -60,8 +57,7 @@ import org.codeberg.fitguy.nofud.ui.theme.AppColors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFoodSheet(
-    onPhotoCamera: () -> Unit,
-    onPhotoGallery: () -> Unit,
+    onPhoto: () -> Unit,
     onNote: () -> Unit,
     onSaved: () -> Unit,
     onVoice: () -> Unit,
@@ -72,7 +68,6 @@ fun AddFoodSheet(
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showPhotoSource by remember { mutableStateOf(false) }
     var moreExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
@@ -88,184 +83,123 @@ fun AddFoodSheet(
                 .padding(horizontal = 20.dp)
                 .padding(top = 4.dp, bottom = 24.dp)
         ) {
-            if (showPhotoSource) {
-                PhotoSourceContent(
+            Text(
+                stringResource(R.string.add_food_sheet_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(16.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                AddFoodHeroTile(
+                    label = stringResource(R.string.add_food_hero_photo),
+                    subtitle = stringResource(R.string.add_food_hero_photo_sub),
+                    icon = Icons.Filled.PhotoCamera,
                     isDark = isDark,
-                    onBack = { showPhotoSource = false },
-                    onCamera = {
+                    modifier = Modifier.weight(1f),
+                    onClick = {
                         onDismiss()
-                        onPhotoCamera()
-                    },
-                    onGallery = {
-                        onDismiss()
-                        onPhotoGallery()
+                        onPhoto()
                     }
                 )
-            } else {
+                AddFoodHeroTile(
+                    label = stringResource(R.string.add_food_hero_note),
+                    subtitle = stringResource(R.string.add_food_hero_note_sub),
+                    icon = Icons.Filled.Edit,
+                    isDark = isDark,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        onDismiss()
+                        onNote()
+                    }
+                )
+                AddFoodHeroTile(
+                    label = stringResource(R.string.add_food_hero_saved),
+                    subtitle = stringResource(R.string.add_food_hero_saved_sub),
+                    icon = Icons.Filled.Bookmark,
+                    isDark = isDark,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        onDismiss()
+                        onSaved()
+                    }
+                )
+            }
+            Spacer(Modifier.height(18.dp))
+            SheetHairline()
+            Spacer(Modifier.height(12.dp))
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .clickable { moreExpanded = !moreExpanded }
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    stringResource(R.string.add_food_sheet_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    stringResource(R.string.add_food_more_section),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.height(16.dp))
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    AddFoodHeroTile(
-                        label = stringResource(R.string.add_food_hero_photo),
-                        subtitle = stringResource(R.string.add_food_hero_photo_sub),
-                        icon = Icons.Filled.PhotoCamera,
+                Icon(
+                    Icons.Filled.ExpandMore,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    modifier = Modifier
+                        .size(22.dp)
+                        .rotate(if (moreExpanded) 180f else 0f)
+                )
+            }
+            AnimatedVisibility(
+                visible = moreExpanded,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    AddFoodMoreRow(
+                        label = stringResource(R.string.home_menu_voice),
+                        icon = Icons.Filled.Mic,
                         isDark = isDark,
-                        modifier = Modifier.weight(1f),
-                        onClick = { showPhotoSource = true }
-                    )
-                    AddFoodHeroTile(
-                        label = stringResource(R.string.add_food_hero_note),
-                        subtitle = stringResource(R.string.add_food_hero_note_sub),
-                        icon = Icons.Filled.Edit,
-                        isDark = isDark,
-                        modifier = Modifier.weight(1f),
                         onClick = {
                             onDismiss()
-                            onNote()
+                            onVoice()
                         }
                     )
-                    AddFoodHeroTile(
-                        label = stringResource(R.string.add_food_hero_saved),
-                        subtitle = stringResource(R.string.add_food_hero_saved_sub),
-                        icon = Icons.Filled.Bookmark,
+                    AddFoodMoreRow(
+                        label = stringResource(R.string.home_menu_barcode),
+                        icon = Icons.Filled.QrCodeScanner,
                         isDark = isDark,
-                        modifier = Modifier.weight(1f),
                         onClick = {
                             onDismiss()
-                            onSaved()
+                            onBarcode()
                         }
                     )
-                }
-                Spacer(Modifier.height(18.dp))
-                SheetHairline()
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .clickable { moreExpanded = !moreExpanded }
-                        .padding(vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        stringResource(R.string.add_food_more_section),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
-                        modifier = Modifier.weight(1f)
+                    AddFoodMoreRow(
+                        label = stringResource(R.string.home_menu_manual_entry),
+                        icon = Icons.Filled.DriveFileRenameOutline,
+                        isDark = isDark,
+                        onClick = {
+                            onDismiss()
+                            onManual()
+                        }
                     )
-                    Icon(
-                        Icons.Filled.ExpandMore,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                        modifier = Modifier
-                            .size(22.dp)
-                            .rotate(if (moreExpanded) 180f else 0f)
+                    AddFoodMoreRow(
+                        label = stringResource(R.string.home_menu_copy_from_day),
+                        icon = Icons.Filled.CalendarMonth,
+                        isDark = isDark,
+                        onClick = {
+                            onDismiss()
+                            onCopyFromDay()
+                        }
                     )
-                }
-                AnimatedVisibility(
-                    visible = moreExpanded,
-                    enter = expandVertically(),
-                    exit = shrinkVertically()
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        AddFoodMoreRow(
-                            label = stringResource(R.string.home_menu_voice),
-                            icon = Icons.Filled.Mic,
-                            isDark = isDark,
-                            onClick = {
-                                onDismiss()
-                                onVoice()
-                            }
-                        )
-                        AddFoodMoreRow(
-                            label = stringResource(R.string.home_menu_barcode),
-                            icon = Icons.Filled.QrCodeScanner,
-                            isDark = isDark,
-                            onClick = {
-                                onDismiss()
-                                onBarcode()
-                            }
-                        )
-                        AddFoodMoreRow(
-                            label = stringResource(R.string.home_menu_manual_entry),
-                            icon = Icons.Filled.DriveFileRenameOutline,
-                            isDark = isDark,
-                            onClick = {
-                                onDismiss()
-                                onManual()
-                            }
-                        )
-                        AddFoodMoreRow(
-                            label = stringResource(R.string.home_menu_copy_from_day),
-                            icon = Icons.Filled.CalendarMonth,
-                            isDark = isDark,
-                            onClick = {
-                                onDismiss()
-                                onCopyFromDay()
-                            }
-                        )
-                    }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun PhotoSourceContent(
-    isDark: Boolean,
-    onBack: () -> Unit,
-    onCamera: () -> Unit,
-    onGallery: () -> Unit
-) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(bottom = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = onBack)
-                .padding(horizontal = 4.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                stringResource(R.string.add_food_photo_source_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-    Spacer(Modifier.height(12.dp))
-    AddFoodMoreRow(
-        label = stringResource(R.string.add_food_photo_camera),
-        icon = Icons.Filled.CameraAlt,
-        isDark = isDark,
-        onClick = onCamera
-    )
-    AddFoodMoreRow(
-        label = stringResource(R.string.add_food_photo_gallery),
-        icon = Icons.Filled.PhotoLibrary,
-        isDark = isDark,
-        onClick = onGallery
-    )
 }
 
 @Composable

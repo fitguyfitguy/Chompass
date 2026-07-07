@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlashAuto
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,7 +51,8 @@ import java.io.File
 @Composable
 fun InAppCameraCaptureDialog(
     onCapture: (ByteArray) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onOpenGallery: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -165,6 +167,28 @@ fun InAppCameraCaptureDialog(
                         .background(Color.Black.copy(alpha = 0.55f), CircleShape)
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+            }
+
+            if (onOpenGallery != null) {
+                IconButton(
+                    onClick = {
+                        if (!isCapturing) onOpenGallery()
+                    },
+                    enabled = !isCapturing,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 28.dp, bottom = 48.dp)
+                        .size(52.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.45f))
+                ) {
+                    Icon(
+                        Icons.Filled.PhotoLibrary,
+                        contentDescription = stringResource(R.string.cd_open_gallery),
+                        tint = Color.White,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
             }
 
             IconButton(

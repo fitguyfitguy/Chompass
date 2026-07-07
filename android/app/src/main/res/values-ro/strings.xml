@@ -307,6 +307,7 @@
     <string name="add_food_photo_camera">Fă o fotografie</string>
     <string name="add_food_photo_gallery">Alege din galerie</string>
     <string name="add_food_add_label_photo">Adaugă foto etichetă</string>
+    <string name="add_food_add_photo">Adaugă foto</string>
     <string name="text_input_title">Descrie mâncarea</string>
     <string name="home_kcal_of_format">din %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s rămase</string>
@@ -371,7 +372,7 @@
     <string name="sheet_micro_potassium">Potasiu</string>
 
     <!-- Context note sheet -->
-    <string name="context_note_title">Adaugă notă</string>
+        <string name="context_note_title">Verifică fotografia</string>
     <string name="context_note_section">Adaugă o notă (opțional)</string>
     <string name="context_note_placeholder">ex. fără ulei, brânză în plus, porție mare</string>
 

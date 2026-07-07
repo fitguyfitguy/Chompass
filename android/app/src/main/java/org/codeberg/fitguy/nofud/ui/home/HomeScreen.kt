@@ -192,7 +192,14 @@ fun HomeScreen(container: AppContainer) {
         if (uri != null) {
             val bytes = ctx.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             if (bytes != null) {
-                pendingNoteImageBytes = bytes
+                val firstPair = pendingCameraPairFirstImageBytes
+                if (firstPair != null) {
+                    pendingCameraPairFirstImageBytes = null
+                    cameraCaptureWantsSecondPhoto = false
+                    vm.analyzePhotos(firstPair, bytes)
+                } else {
+                    pendingNoteImageBytes = bytes
+                }
             }
         }
     }
@@ -430,10 +437,7 @@ fun HomeScreen(container: AppContainer) {
 
     if (showAddFoodSheet) {
         AddFoodSheet(
-            onPhotoCamera = { openCamera() },
-            onPhotoGallery = {
-                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
+            onPhoto = { openCamera() },
             onNote = { showText = true },
             onSaved = { showSaved = true },
             onVoice = { showVoice = true },
@@ -518,6 +522,10 @@ fun HomeScreen(container: AppContainer) {
                     pendingNoteImageBytes = bytes
                 }
             },
+            onOpenGallery = {
+                showCameraCapture = false
+                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            },
             onDismiss = {
                 showCameraCapture = false
                 cameraCaptureWantsSecondPhoto = false
@@ -564,7 +572,7 @@ fun HomeScreen(container: AppContainer) {
                 pendingNoteImageBytes = null
                 vm.analyzePhotoWithNote(bytes, note)
             },
-            onAddLabelPhoto = {
+            onAddPhoto = {
                 pendingCameraPairFirstImageBytes = bytes
                 pendingNoteImageBytes = null
                 openCamera(withSecondPhoto = true)
