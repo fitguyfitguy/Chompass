@@ -1,15 +1,21 @@
 package org.codeberg.fitguy.nofud.ui.components
 
+import android.util.Rational
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -59,7 +65,7 @@ fun InAppCameraCaptureDialog(
     val mainExecutor = ContextCompat.getMainExecutor(context)
     val previewView = remember {
         PreviewView(context).apply {
-            scaleType = PreviewView.ScaleType.FILL_CENTER
+            scaleType = PreviewView.ScaleType.FIT_CENTER
         }
     }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
@@ -72,11 +78,21 @@ fun InAppCameraCaptureDialog(
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         val listener = Runnable {
             val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build().also {
-                it.surfaceProvider = previewView.surfaceProvider
-            }
+            val preview = Preview.Builder()
+                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                .build()
+                .also { it.surfaceProvider = previewView.surfaceProvider }
             val capture = ImageCapture.Builder()
+                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .build()
+            val viewport = ViewPort.Builder(Rational(3, 4), previewView.display.rotation)
+                .setScaleType(ViewPort.FILL_CENTER)
+                .build()
+            val useCaseGroup = UseCaseGroup.Builder()
+                .addUseCase(preview)
+                .addUseCase(capture)
+                .setViewPort(viewport)
                 .build()
 
             runCatching {
@@ -84,8 +100,7 @@ fun InAppCameraCaptureDialog(
                 val camera = cameraProvider.bindToLifecycle(
                     lifecycleOwner,
                     CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    capture
+                    useCaseGroup
                 )
                 capture.flashMode = flashMode
                 imageCapture = capture
@@ -115,7 +130,11 @@ fun InAppCameraCaptureDialog(
         ) {
             AndroidView(
                 factory = { previewView },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .aspectRatio(3f / 4f)
+                    .border(1.dp, Color.White.copy(alpha = 0.35f))
             )
 
             IconButton(
