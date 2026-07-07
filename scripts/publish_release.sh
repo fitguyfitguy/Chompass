@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 # Publish a tagged release to Codeberg with APK assets.
-# Requires: tea CLI logged in (tea login add --name codeberg --url https://codeberg.org)
+#
+# One-time setup — create a token at:
+#   https://codeberg.org/user/settings/applications
+# (scopes: read:user + write:repository), then either:
+#
+#   export CODEBERG_TOKEN='your-token'
+#   ./scripts/publish_release.sh 1.0.0
+#
+# or persist a login:
+#   nix shell nixpkgs#tea -c tea logins add -n codeberg -u https://codeberg.org -t "$CODEBERG_TOKEN"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,24 +17,50 @@ VERSION="${1:-1.0.0}"
 TAG="v${VERSION}"
 APK="$ROOT/NoFUD-${VERSION}.apk"
 CHECKSUMS="$ROOT/SHA256SUMS"
+TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
+
+run_tea() {
+  if command -v tea >/dev/null 2>&1; then
+    tea "$@"
+  else
+    nix shell nixpkgs#tea -c tea "$@"
+  fi
+}
 
 if [[ ! -f "$APK" ]]; then
   echo "Missing $APK — run: devenv tasks run build:release" >&2
   exit 1
 fi
 
-if ! command -v tea >/dev/null 2>&1; then
-  echo "Install tea (e.g. nix shell nixpkgs#tea) and run: tea login add --name codeberg --url https://codeberg.org" >&2
+if [[ -n "$TOKEN" ]] && ! run_tea logins list 2>/dev/null | rg -q 'codeberg'; then
+  run_tea logins add -n codeberg -u https://codeberg.org -t "$TOKEN"
+fi
+
+if ! run_tea logins list 2>/dev/null | rg -q 'codeberg'; then
+  cat >&2 <<'EOF'
+No Codeberg login configured.
+
+1. Create a token: https://codeberg.org/user/settings/applications
+   Scopes: read:user (required by tea) + write:repository (releases/assets)
+
+2. Export it and re-run:
+   export CODEBERG_TOKEN='paste-token-here'
+   ./scripts/publish_release.sh 1.0.0
+
+Or persist the login once:
+   nix shell nixpkgs#tea -c tea logins add -n codeberg -u https://codeberg.org -t "$CODEBERG_TOKEN"
+EOF
   exit 1
 fi
 
 NOTES="$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$ROOT/CHANGELOG.md")"
 
-tea releases create \
+run_tea releases create \
+  --login codeberg \
   --repo fitguy/nofud \
   --tag "$TAG" \
   --title "NoFUD ${VERSION}" \
-  --notes "$NOTES" \
+  --note "$NOTES" \
   --asset "$APK" \
   --asset "$CHECKSUMS"
 

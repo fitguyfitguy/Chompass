@@ -52,11 +52,16 @@ git push origin v1.0.0
    - Paste changelog notes
    - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-<version>.apk`
 
-   Or with [tea](https://codeberg.org/tea/tea) logged in:
+   Or with [tea](https://codeberg.org/tea/tea):
 
 ```bash
+# One-time: create a token at https://codeberg.org/user/settings/applications
+# Scopes: read:user + write:repository (repo access: this repo or all)
+export CODEBERG_TOKEN='paste-token-here'
 ./scripts/publish_release.sh 1.0.0
 ```
+
+The script auto-runs `nix shell nixpkgs#tea` when `tea` is not on PATH (e.g. inside devenv).
 
 ## F-Droid follow-up
 

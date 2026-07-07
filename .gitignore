@@ -36,3 +36,4 @@ ios/**/xcuserdata/
 # Release artifacts (published on Codeberg Releases)
 NoFUD-*.apk
 SHA256SUMS
+.env.local
