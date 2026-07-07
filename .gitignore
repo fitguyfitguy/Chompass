@@ -27,3 +27,8 @@ ios/build-sim/
 
 # Xcode per-user state (scheme order, workspace UI) — meaningless off this machine
 ios/**/xcuserdata/
+
+# devenv
+.devenv/
+.devenv.flake.nix
+.android/

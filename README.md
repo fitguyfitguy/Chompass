@@ -36,6 +36,47 @@ See [PRIVACY.md](PRIVACY.md).
 
 Requirements: JDK 17+, Android SDK 36.
 
+### WSL / Nix (devenv)
+
+If you use home-manager with devenv and direnv (as on WSL2 Arch + Nix), the repo provides a project environment with JDK 17 and Android SDK 36:
+
+```bash
+cd NoFUD
+direnv allow          # first time only
+devenv update         # first time only; downloads SDK (~1–2 GB without emulator)
+devenv shell          # or rely on direnv auto-load after allow
+```
+
+Build (inside the devenv shell):
+
+```bash
+build-debug
+build-release
+```
+
+Or from outside the shell:
+
+```bash
+devenv tasks run build:debug
+devenv tasks run build:release
+devenv shell -- build-debug
+```
+
+In Cursor/agent shells where direnv does not load, run builds explicitly:
+
+```bash
+devenv shell -c 'cd android && ./gradlew :app:assembleDebug'
+```
+
+If `platforms;android-36.1` is missing from nixpkgs, add the android-nixpkgs input:
+
+```bash
+devenv inputs add android-nixpkgs github:tadfisher/android-nixpkgs --follows nixpkgs
+devenv update
+```
+
+### Generic
+
 ```bash
 cd android
 ./gradlew :app:assembleDebug
