@@ -79,10 +79,18 @@ def extract_masks(master: Image.Image) -> tuple[Image.Image, Image.Image]:
             r, g, b, a = pixels[x, y]
             if a < 16:
                 continue
-            rounded_px[x, y] = 255
-            # White / near-white mark (NF monogram + check cutout uses background show-through)
+            # The master PNG is a square export with opaque white in the outer
+            # corners. Only the colored squircle is the icon background.
             if r > 210 and g > 210 and b > 210:
                 logo_px[x, y] = 255
+                continue
+            rounded_px[x, y] = 255
+
+    # Keep the white NF mark, but drop any white corner padding outside the squircle.
+    for y in range(h):
+        for x in range(w):
+            if logo_px[x, y] and not rounded_px[x, y]:
+                logo_px[x, y] = 0
 
     return rounded, logo
 

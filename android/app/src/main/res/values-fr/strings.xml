@@ -302,11 +302,11 @@
     <string name="add_food_hero_note_sub">Décrivez ce que vous avez mangé</string>
     <string name="add_food_hero_saved">Enregistré</string>
     <string name="add_food_hero_saved_sub">Récents et favoris</string>
-    <string name="add_food_more_section">Autres façons d'enregistrer</string>
+    <string name="add_food_more_section">Autres façons d\'enregistrer</string>
     <string name="add_food_photo_source_title">Ajouter une photo</string>
     <string name="add_food_photo_camera">Prendre une photo</string>
     <string name="add_food_photo_gallery">Choisir dans la galerie</string>
-    <string name="add_food_add_label_photo">Ajouter une photo d'étiquette</string>
+    <string name="add_food_add_label_photo">Ajouter une photo d\'étiquette</string>
     <string name="text_input_title">Décrivez votre repas</string>
     <string name="home_kcal_of_format">sur %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s restantes</string>
