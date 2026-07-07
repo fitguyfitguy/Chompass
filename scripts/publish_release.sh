@@ -57,11 +57,17 @@ NOTES="$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$RO
 
 run_tea releases create \
   --login codeberg \
-  --repo fitguy/nofud \
+  --repo fitguy/NoFUD \
   --tag "$TAG" \
   --title "NoFUD ${VERSION}" \
   --note "$NOTES" \
   --asset "$APK" \
-  --asset "$CHECKSUMS"
+  --asset "$CHECKSUMS" \
+  || {
+    echo >&2
+    echo "If you see 'target couldn't be found', enable Releases in the repo:" >&2
+    echo "  https://codeberg.org/fitguy/NoFUD/settings  → Features → Releases" >&2
+    exit 1
+  }
 
-echo "Published: https://codeberg.org/fitguy/nofud/releases/tag/${TAG}"
+echo "Published: https://codeberg.org/fitguy/NoFUD/releases/tag/${TAG}"

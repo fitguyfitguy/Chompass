@@ -20,6 +20,7 @@ android/build/
 ios/Local.xcconfig
 .DS_Store
 
+
 # Claude Code runtime
 .claude/
 ios/build-sim/

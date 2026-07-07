@@ -1,18 +1,16 @@
 package org.codeberg.fitguy.nofud.ui.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -33,16 +31,16 @@ import androidx.compose.ui.unit.dp
 import org.codeberg.fitguy.nofud.R
 
 /**
- * "Camera + Note" intermediate sheet. Shows the just-captured photo and a
- * multiline text field for the user to add context (e.g. "no oil", "extra
- * cheese") before sending the image off to the AI. Mirrors iOS
- * ContextDescriptionSheet which gates `cameraMode == .snapFoodWithContext`.
+ * Intermediate sheet after a photo is captured or picked. Shows the image and an
+ * optional note field before sending to the AI. Also offers a second photo for
+ * food + nutrition-label composites.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContextNoteSheet(
     imageBytes: ByteArray,
     onAnalyze: (note: String) -> Unit,
+    onAddLabelPhoto: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -60,14 +58,13 @@ fun ContextNoteSheet(
         SheetReviewToolbar(
             title = stringResource(R.string.context_note_title),
             primaryLabel = stringResource(R.string.action_analyze),
+            secondaryLabel = stringResource(R.string.add_food_add_label_photo),
             onCancel = onDismiss,
-            onPrimary = { onAnalyze(note) }
+            onPrimary = { onAnalyze(note) },
+            onSecondary = onAddLabelPhoto
         )
 
         Column(
-            // Scroll + imePadding so the note field is always reachable above the
-            // keyboard. Without this, the field sits below the 240dp photo and gets
-            // hidden behind the keyboard on taller/OEM keyboards (e.g. Galaxy S25).
             Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -92,14 +89,14 @@ fun ContextNoteSheet(
                 }
             }
 
-            SheetSectionHeader("Add a note (optional)")
+            SheetSectionHeader(stringResource(R.string.context_note_section))
 
             OutlinedTextField(
                 value = note,
                 onValueChange = { note = it },
                 placeholder = {
                     Text(
-                        "e.g. no oil, extra cheese, large portion",
+                        stringResource(R.string.context_note_placeholder),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                     )
                 },

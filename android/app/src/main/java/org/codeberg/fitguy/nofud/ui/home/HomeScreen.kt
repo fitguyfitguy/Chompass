@@ -175,63 +175,50 @@ fun HomeScreen(container: AppContainer) {
     var showSaved by remember { mutableStateOf(false) }
     var showBarcodeScanner by remember { mutableStateOf(false) }
     var showCopyFromDay by remember { mutableStateOf(false) }
-    var showAddMenu by remember { mutableStateOf(false) }
+    var showAddFoodSheet by remember { mutableStateOf(false) }
     var showSortMenu by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var showNutritionDetail by remember { mutableStateOf(false) }
 
     var showCameraCapture by remember { mutableStateOf(false) }
-    var cameraCaptureWantsNote by remember { mutableStateOf(false) }
     var cameraCaptureWantsSecondPhoto by remember { mutableStateOf(false) }
     var pendingCameraPairFirstImageBytes by remember { mutableStateOf<ByteArray?>(null) }
     var showCameraPairTransition by remember { mutableStateOf(false) }
-    // Holds the just-captured bytes while the Camera + Note sheet is shown.
     var pendingNoteImageBytes by remember { mutableStateOf<ByteArray?>(null) }
-    var pendingPickedPhotoWantsNote by remember { mutableStateOf(false) }
 
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        val wantsNote = pendingPickedPhotoWantsNote
-        pendingPickedPhotoWantsNote = false
         if (uri != null) {
             val bytes = ctx.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             if (bytes != null) {
-                if (wantsNote) {
-                    pendingNoteImageBytes = bytes
-                } else {
-                    vm.analyzePhoto(bytes)
-                }
+                pendingNoteImageBytes = bytes
             }
         }
     }
 
-    // Tracks whether the next permission grant should also show the note sheet.
-    var permissionWantsNote by remember { mutableStateOf(false) }
     var permissionWantsSecondPhoto by remember { mutableStateOf(false) }
     val cameraPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            cameraCaptureWantsNote = permissionWantsNote
             cameraCaptureWantsSecondPhoto = permissionWantsSecondPhoto
             showCameraCapture = true
         }
-        permissionWantsNote = false
         permissionWantsSecondPhoto = false
     }
 
-    fun openCamera(withNote: Boolean = false, withSecondPhoto: Boolean = false) {
+    fun openCamera(withSecondPhoto: Boolean = false) {
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED
         ) {
-            cameraCaptureWantsNote = withNote
             cameraCaptureWantsSecondPhoto = withSecondPhoto
-            pendingCameraPairFirstImageBytes = null
-            showCameraPairTransition = false
+            if (!withSecondPhoto) {
+                pendingCameraPairFirstImageBytes = null
+                showCameraPairTransition = false
+            }
             showCameraCapture = true
         } else {
-            permissionWantsNote = withNote
             permissionWantsSecondPhoto = withSecondPhoto
             cameraPermission.launch(Manifest.permission.CAMERA)
         }
@@ -427,7 +414,7 @@ fun HomeScreen(container: AppContainer) {
                     .size(60.dp)
                     .clip(CircleShape)
                     .background(AppColors.Calorie)
-                    .clickable { showAddMenu = true },
+                    .clickable { showAddFoodSheet = true },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -437,38 +424,24 @@ fun HomeScreen(container: AppContainer) {
                     modifier = Modifier.size(30.dp)
                 )
             }
-            // Glass-styled popup (matches the app's other sheet menus). Items are
-            // REVERSED vs the source order because the FAB sits at the bottom and the
-            // menu opens upward — iOS puts the first action (Camera) nearest the button,
-            // so Camera renders at the BOTTOM of the list and Copy from Day at the top.
-            SheetGlassDropdownMenu(
-                expanded = showAddMenu,
-                onDismissRequest = { showAddMenu = false },
-                menuWidth = 224.dp
-            ) {
-                SheetGlassDropdownMenuItem(label = stringResource(R.string.home_menu_copy_from_day), leadingIcon = Icons.Filled.CalendarMonth) { showAddMenu = false; showCopyFromDay = true }
-                SheetGlassDropdownMenuItem(label = stringResource(R.string.home_menu_saved_meals), leadingIcon = Icons.Filled.Bookmark) { showAddMenu = false; showSaved = true }
-                SheetGlassDropdownMenuItem(label = stringResource(R.string.home_menu_manual_entry), leadingIcon = Icons.Filled.DriveFileRenameOutline) { showAddMenu = false; showManual = true }
-                SheetGlassDropdownMenuItem(label = stringResource(R.string.home_menu_voice), leadingIcon = Icons.Filled.Mic) { showAddMenu = false; showVoice = true }
-                SheetGlassDropdownMenuItem(label = stringResource(R.string.home_menu_text_input), leadingIcon = Icons.Filled.Edit) { showAddMenu = false; showText = true }
-                SheetGlassDropdownMenuItem(label = stringResource(R.string.home_menu_from_photos_note), leadingIcon = Icons.AutoMirrored.Filled.Note) {
-                    showAddMenu = false
-                    pendingPickedPhotoWantsNote = true
-                    photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }
-                SheetGlassDropdownMenuItem(label = "From Photos", leadingIcon = Icons.Filled.PhotoLibrary) {
-                    showAddMenu = false
-                    pendingPickedPhotoWantsNote = false
-                    photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }
-                SheetGlassDropdownMenuItem(label = "Barcode", leadingIcon = Icons.Filled.QrCodeScanner) { showAddMenu = false; openBarcodeScanner() }
-                SheetGlassDropdownMenuItem(label = "Nutrition Label", leadingIcon = Icons.Filled.DocumentScanner) { showAddMenu = false; openCamera() }
-                SheetGlassDropdownMenuItem(label = "Camera + Camera", leadingIcon = Icons.Filled.AddAPhoto) { showAddMenu = false; openCamera(withSecondPhoto = true) }
-                SheetGlassDropdownMenuItem(label = "Camera + Note", leadingIcon = Icons.AutoMirrored.Filled.Note) { showAddMenu = false; openCamera(withNote = true) }
-                SheetGlassDropdownMenuItem(label = "Camera", leadingIcon = Icons.Filled.CameraAlt) { showAddMenu = false; openCamera() }
-            }
         }
         }
+    }
+
+    if (showAddFoodSheet) {
+        AddFoodSheet(
+            onPhotoCamera = { openCamera() },
+            onPhotoGallery = {
+                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            },
+            onNote = { showText = true },
+            onSaved = { showSaved = true },
+            onVoice = { showVoice = true },
+            onBarcode = { openBarcodeScanner() },
+            onManual = { showManual = true },
+            onCopyFromDay = { showCopyFromDay = true },
+            onDismiss = { showAddFoodSheet = false }
+        )
     }
 
     if (showText) {
@@ -531,11 +504,9 @@ fun HomeScreen(container: AppContainer) {
     if (showCameraCapture) {
         InAppCameraCaptureDialog(
             onCapture = { bytes ->
-                val wantsNote = cameraCaptureWantsNote
                 val wantsSecondPhoto = cameraCaptureWantsSecondPhoto
                 val firstPairImage = pendingCameraPairFirstImageBytes
                 showCameraCapture = false
-                cameraCaptureWantsNote = false
                 cameraCaptureWantsSecondPhoto = false
                 if (wantsSecondPhoto && firstPairImage == null) {
                     pendingCameraPairFirstImageBytes = bytes
@@ -543,16 +514,16 @@ fun HomeScreen(container: AppContainer) {
                 } else if (wantsSecondPhoto && firstPairImage != null) {
                     pendingCameraPairFirstImageBytes = null
                     vm.analyzePhotos(firstPairImage, bytes)
-                } else if (wantsNote) {
-                    pendingNoteImageBytes = bytes
                 } else {
-                    vm.analyzePhoto(bytes)
+                    pendingNoteImageBytes = bytes
                 }
             },
             onDismiss = {
                 showCameraCapture = false
-                cameraCaptureWantsNote = false
                 cameraCaptureWantsSecondPhoto = false
+                if (pendingCameraPairFirstImageBytes != null && !showCameraPairTransition) {
+                    pendingNoteImageBytes = pendingCameraPairFirstImageBytes
+                }
                 pendingCameraPairFirstImageBytes = null
                 showCameraPairTransition = false
             }
@@ -585,13 +556,18 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    // Camera + Note: photo captured → user adds context → analyze.
+    // Photo captured or picked → optional note → analyze.
     pendingNoteImageBytes?.let { bytes ->
         ContextNoteSheet(
             imageBytes = bytes,
             onAnalyze = { note ->
                 pendingNoteImageBytes = null
                 vm.analyzePhotoWithNote(bytes, note)
+            },
+            onAddLabelPhoto = {
+                pendingCameraPairFirstImageBytes = bytes
+                pendingNoteImageBytes = null
+                openCamera(withSecondPhoto = true)
             },
             onDismiss = { pendingNoteImageBytes = null }
         )
@@ -1712,6 +1688,12 @@ private fun TextInputDialog(onDismiss: () -> Unit, onSubmit: (String) -> Unit) {
         }
     }
     FudGlassDialog(onDismissRequest = onDismiss) {
+        Text(
+            stringResource(R.string.text_input_title),
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.fillMaxWidth()
+        )
         FudGlassTextField(
             value = input,
             onValueChange = { input = it },
