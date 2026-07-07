@@ -18,16 +18,21 @@
     printf 'sdk.dir=%s\n' "$ANDROID_HOME" > android/local.properties
   '';
 
-  scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
-  scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
+  scripts.build-debug.exec = "cd android && ./gradlew :app:assemblePlayDebug";
+  scripts.build-release.exec = "cd android && ./gradlew :app:assemblePlayRelease";
 
   tasks."build:debug" = {
-    exec = "cd android && ./gradlew :app:assembleDebug";
+    exec = "cd android && ./gradlew :app:assemblePlayDebug";
     description = "Assemble the debug APK";
   };
 
   tasks."build:release" = {
-    exec = "cd android && ./gradlew :app:assembleRelease";
-    description = "Assemble the release APK";
+    exec = "cd android && ./gradlew :app:assemblePlayRelease";
+    description = "Assemble the signed play-flavor release APK";
+  };
+
+  tasks."build:fdroid-release" = {
+    exec = "cd android && ./gradlew :app:assembleFdroidRelease";
+    description = "Assemble the F-Droid release APK (no Play Core)";
   };
 }

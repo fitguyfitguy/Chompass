@@ -578,17 +578,9 @@
     <string name="about_rate">Valuta l\'app</string>
     <string name="about_share">Condividi l\'app</string>
     <string name="about_open_source">Open source (MIT)</string>
-    <string name="about_star_github">Metti una stella su GitHub</string>
-    <string name="about_vote_ph">Vota su Product Hunt</string>
-    <string name="about_support">Sostieni il progetto</string>
     <string name="about_report_issue">Segnala un problema</string>
     <string name="about_request_feature">Richiedi una funzione</string>
-    <string name="about_contact">Contattaci</string>
-    <string name="about_follow_x">Seguici su X</string>
-    <string name="about_follow_instagram">Segui su Instagram</string>
-    <string name="about_follow_linkedin">Segui su LinkedIn</string>
     <string name="about_privacy">Informativa sulla privacy</string>
-    <string name="about_terms">Termini di servizio</string>
     <string name="about_made_by">Realizzato da Apoorv Darshan</string>
     <string name="about_with_care">con cura, per tutti</string>
     <string name="about_share_message">Sto monitorando i miei pasti con NoFUD — scatta una foto, parla o digita, e l\'IA registra le calorie. È gratis, open source e i tuoi dati restano sul tuo dispositivo.\n\nScarica: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Storico grasso corporeo: consulta ed elimina le singole voci, proprio come per il peso.</string>
     <string name="whats_new_v30_units">Le unità di altezza e peso ora si impostano separatamente.</string>
     <string name="whats_new_v30_adaptive">Obiettivi adattivi ed Energia bruciata escono dalla fase sperimentale e sono attivi di default sulle nuove installazioni.</string>
-    <string name="whats_new_v30_widgets">Widget ridisegnati: lo stile tachimetro della Home, disegnato alla dimensione reale di ogni widget.</string>
     <string name="whats_new_v30_restore">Hai reinstallato o cambiato telefono? Diario alimentare, peso e grasso corporeo ora si ripristinano automaticamente da Health Connect.</string>
 </resources>

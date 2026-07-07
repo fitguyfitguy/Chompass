@@ -578,17 +578,9 @@
     <string name="about_rate">Évaluer l\'app</string>
     <string name="about_share">Partager l\'app</string>
     <string name="about_open_source">Open source (MIT)</string>
-    <string name="about_star_github">Étoile sur GitHub</string>
-    <string name="about_vote_ph">Voter sur Product Hunt</string>
-    <string name="about_support">Soutenir le projet</string>
     <string name="about_report_issue">Signaler un problème</string>
     <string name="about_request_feature">Demander une fonctionnalité</string>
-    <string name="about_contact">Nous contacter</string>
-    <string name="about_follow_x">Suivre sur X</string>
-    <string name="about_follow_instagram">Suivre sur Instagram</string>
-    <string name="about_follow_linkedin">Suivre sur LinkedIn</string>
     <string name="about_privacy">Politique de confidentialité</string>
-    <string name="about_terms">Conditions d\'utilisation</string>
     <string name="about_made_by">Créé par Apoorv Darshan</string>
     <string name="about_with_care">avec soin, pour tous</string>
     <string name="about_share_message">Je suis mes repas avec NoFUD — prends une photo, parle ou tape, l\'IA enregistre les calories. C\'est gratuit, open source, et tes données restent sur ton appareil.\n\nTélécharger : https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Historique de masse grasse : consultez et supprimez chaque entrée, comme pour le poids.</string>
     <string name="whats_new_v30_units">Les unités de taille et de poids se règlent désormais indépendamment.</string>
     <string name="whats_new_v30_adaptive">Objectifs adaptatifs et Énergie brûlée sortent de l\'expérimental et sont activés par défaut pour les nouvelles installations.</string>
-    <string name="whats_new_v30_widgets">Refonte des widgets : le style tachymètre de l\'accueil, dessiné à la taille réelle de chaque widget.</string>
     <string name="whats_new_v30_restore">Réinstallation ou nouveau téléphone ? Ton journal alimentaire, ton poids et ta masse grasse se restaurent désormais automatiquement depuis Health Connect.</string>
 </resources>

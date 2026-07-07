@@ -1,0 +1,33 @@
+# F-Droid metadata draft for fdroiddata merge request.
+# Copy to metadata/org.codeberg.fitguy.nofud.yml in https://gitlab.com/fdroid/fdroiddata
+
+Categories:
+  - Health & Fitness
+License: MIT
+AuthorName: fitguy
+WebSite: https://codeberg.org/fitguy/nofud
+SourceCode: https://codeberg.org/fitguy/nofud
+IssueTracker: https://codeberg.org/fitguy/nofud/issues
+Changelog: https://codeberg.org/fitguy/nofud/releases
+Donate: https://codeberg.org/fitguy/nofud
+
+AutoName: NoFUD
+
+RepoType: git
+Repo: https://codeberg.org/fitguy/nofud.git
+
+Binaries: https://codeberg.org/fitguy/nofud/releases/download/v%v/NoFUD-%v.apk
+AllowedAPKSigningKeys: 2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: '1.0.0'
+CurrentVersionCode: 1
+
+Builds:
+  - versionName: '1.0.0'
+    versionCode: 1
+    commit: v1.0.0
+    subdir: android
+    gradle:
+      - fdroidRelease

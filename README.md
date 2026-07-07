@@ -90,6 +90,19 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey — configure any supported provider under **Settings → AI Access**.
 
+## Install (release APK)
+
+Download the latest signed APK from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases). On your phone, allow **Install unknown apps** for the browser or file manager you use to open the APK.
+
+- Release package: `org.codeberg.fitguy.nofud`
+- Debug builds (from source) install side-by-side as `org.codeberg.fitguy.nofud.debug`
+
+```bash
+adb install -r NoFUD-1.0.0.apk
+```
+
+See [RELEASE.md](RELEASE.md) for maintainer build and release steps.
+
 ## App icon
 
 NoFUD uses original launcher and splash artwork (distinct from upstream Fud AI). Regenerate themed variants with `uv run --with pillow python scripts/generate_icons.py` after editing `scripts/nofud_icon_master.png`. See [ASSET_CREDITS.md](ASSET_CREDITS.md).

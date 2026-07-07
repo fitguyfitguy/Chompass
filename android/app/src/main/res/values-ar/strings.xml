@@ -578,17 +578,9 @@
     <string name="about_rate">قيّم التطبيق</string>
     <string name="about_share">شارك التطبيق</string>
     <string name="about_open_source">مفتوح المصدر (MIT)</string>
-    <string name="about_star_github">ضع نجمة على GitHub</string>
-    <string name="about_vote_ph">صوّت على Product Hunt</string>
-    <string name="about_support">ادعم المشروع</string>
     <string name="about_report_issue">الإبلاغ عن مشكلة</string>
     <string name="about_request_feature">طلب ميزة</string>
-    <string name="about_contact">اتصل بنا</string>
-    <string name="about_follow_x">تابعنا على X</string>
-    <string name="about_follow_instagram">تابعنا على Instagram</string>
-    <string name="about_follow_linkedin">تابعنا على LinkedIn</string>
     <string name="about_privacy">سياسة الخصوصية</string>
-    <string name="about_terms">شروط الخدمة</string>
     <string name="about_made_by">صنع بواسطة Apoorv Darshan</string>
     <string name="about_with_care">بعناية، للجميع</string>
     <string name="about_share_message">أتتبّع وجباتي مع NoFUD — التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">سجل دهون الجسم: راجع واحذف الإدخالات الفردية تمامًا كما في الوزن.</string>
     <string name="whats_new_v30_units">يمكن الآن ضبط وحدتي الطول والوزن بشكل مستقل.</string>
     <string name="whats_new_v30_adaptive">تخرّجت ميزتا الأهداف التكيفية وحرق الطاقة من المرحلة التجريبية وأصبحتا مفعّلتين افتراضيًا للتثبيتات الجديدة.</string>
-    <string name="whats_new_v30_widgets">تصميم جديد للودجات: نمط عدّاد السرعة من الرئيسية، مرسوم بالحجم الحقيقي لكل ودجة.</string>
     <string name="whats_new_v30_restore">أعدت التثبيت أو غيّرت هاتفك؟ يُستعاد الآن سجل طعامك ووزنك ودهون جسمك تلقائيًا من Health Connect.</string>
 </resources>

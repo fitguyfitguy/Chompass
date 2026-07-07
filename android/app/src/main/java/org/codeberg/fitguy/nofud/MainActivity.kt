@@ -18,15 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.services.MealShare
-import org.codeberg.fitguy.nofud.services.ReviewPrompter
+import org.codeberg.fitguy.nofud.services.InAppReview
 import org.codeberg.fitguy.nofud.ui.home.ImportSharedMealSheet
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDNavHost
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.theme.NoFUDTheme
-import com.google.android.play.core.ktx.launchReview
-import com.google.android.play.core.ktx.requestReview
-import com.google.android.play.core.review.ReviewManagerFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -69,21 +65,7 @@ open class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Launch the Play in-app review card once, right after the first
-        // successful food log (see ReviewPrompter). Silently no-ops on devices
-        // without Play services or when Play declines to show the card.
-        lifecycleScope.launch {
-            ReviewPrompter.requestReview.collect { wanted ->
-                if (!wanted) return@collect
-                ReviewPrompter.consumed()
-                delay(1_500)
-                runCatching {
-                    val manager = ReviewManagerFactory.create(this@MainActivity)
-                    val info = manager.requestReview()
-                    manager.launchReview(this@MainActivity, info)
-                }
-            }
-        }
+        InAppReview.bind(this)
 
         // Support --reset-onboarding launch flag (parallel to iOS CLAUDE.md convention).
         if (intent?.getBooleanExtra("reset_onboarding", false) == true) {

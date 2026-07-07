@@ -1,0 +1,7 @@
+NoFUD is an ad-free, privacy-focused fork of Fud AI — a calorie tracker powered by the AI provider you choose.
+
+Snap a photo, scan a barcode, speak, or type a meal to log calories, macros, and nutrients. Coach chat, a workouts library, Health Connect sync, home-screen widgets, and diary export are all included. Your data stays on your device; bring your own API key.
+
+No ads. No analytics. No accounts. MIT licensed.
+
+Source: https://codeberg.org/fitguy/nofud

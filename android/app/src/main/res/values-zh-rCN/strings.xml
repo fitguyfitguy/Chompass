@@ -578,17 +578,9 @@
     <string name="about_rate">评价应用</string>
     <string name="about_share">分享应用</string>
     <string name="about_open_source">开源 (MIT)</string>
-    <string name="about_star_github">在 GitHub 上加星</string>
-    <string name="about_vote_ph">在 Product Hunt 上投票</string>
-    <string name="about_support">支持项目</string>
     <string name="about_report_issue">报告问题</string>
     <string name="about_request_feature">请求功能</string>
-    <string name="about_contact">联系我们</string>
-    <string name="about_follow_x">在 X 上关注</string>
-    <string name="about_follow_instagram">在 Instagram 上关注</string>
-    <string name="about_follow_linkedin">在 LinkedIn 上关注</string>
     <string name="about_privacy">隐私政策</string>
-    <string name="about_terms">服务条款</string>
     <string name="about_made_by">由 Apoorv Darshan 制作</string>
     <string name="about_with_care">用心为每个人</string>
     <string name="about_share_message">我用 NoFUD 记录每一餐——拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">体脂历史：像体重一样查看并删除单条记录。</string>
     <string name="whats_new_v30_units">身高和体重单位现在可以分别设置。</string>
     <string name="whats_new_v30_adaptive">自适应目标和能量消耗已结束实验阶段，新安装默认开启。</string>
-    <string name="whats_new_v30_widgets">小组件焕新：主页的仪表盘风格，按每个小组件的实际尺寸绘制。</string>
     <string name="whats_new_v30_restore">重新安装或更换手机后，你的饮食记录、体重和体脂现在会从 Health Connect 自动恢复。</string>
 </resources>

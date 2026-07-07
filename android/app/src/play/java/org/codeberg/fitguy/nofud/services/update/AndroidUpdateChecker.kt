@@ -11,14 +11,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-sealed class AndroidUpdateState {
-    object Idle : AndroidUpdateState()
-    object Checking : AndroidUpdateState()
-    data class UpToDate(val current: String, val latest: String?) : AndroidUpdateState()
-    data class Available(val current: String, val latest: String) : AndroidUpdateState()
-    data class Failed(val current: String) : AndroidUpdateState()
-}
-
 object AndroidUpdateChecker {
     const val RELEASE_PACKAGE_NAME = "org.codeberg.fitguy.nofud"
     const val PLAY_STORE_WEB_URL =
@@ -81,5 +73,5 @@ object AndroidUpdateChecker {
                     continuation.cancel(CancellationException("Play update check was cancelled"))
                 }
             }
-    }
+        }
 }

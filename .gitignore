@@ -32,3 +32,7 @@ ios/**/xcuserdata/
 .devenv/
 .devenv.flake.nix
 .android/
+
+# Release artifacts (published on Codeberg Releases)
+NoFUD-*.apk
+SHA256SUMS

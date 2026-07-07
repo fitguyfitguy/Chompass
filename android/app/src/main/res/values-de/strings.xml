@@ -578,17 +578,9 @@
     <string name="about_rate">App bewerten</string>
     <string name="about_share">App teilen</string>
     <string name="about_open_source">Open Source (MIT)</string>
-    <string name="about_star_github">Auf GitHub bewerten</string>
-    <string name="about_vote_ph">Auf Product Hunt abstimmen</string>
-    <string name="about_support">Projekt unterstützen</string>
     <string name="about_report_issue">Problem melden</string>
     <string name="about_request_feature">Funktion vorschlagen</string>
-    <string name="about_contact">Kontakt</string>
-    <string name="about_follow_x">Auf X folgen</string>
-    <string name="about_follow_instagram">Auf Instagram folgen</string>
-    <string name="about_follow_linkedin">Auf LinkedIn folgen</string>
     <string name="about_privacy">Datenschutzrichtlinie</string>
-    <string name="about_terms">Nutzungsbedingungen</string>
     <string name="about_made_by">Erstellt von Apoorv Darshan</string>
     <string name="about_with_care">mit Sorgfalt, für alle</string>
     <string name="about_share_message">Ich tracke meine Mahlzeiten mit NoFUD — fotografieren, einsprechen oder eintippen, die KI erfasst die Kalorien. Kostenlos, Open Source, alle Daten bleiben auf deinem Gerät.\n\nHerunterladen: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Körperfett-Verlauf: einzelne Einträge ansehen und löschen, genau wie beim Gewicht.</string>
     <string name="whats_new_v30_units">Größen- und Gewichtseinheiten lassen sich jetzt unabhängig einstellen.</string>
     <string name="whats_new_v30_adaptive">Adaptive Ziele und Energieverbrauch sind nicht mehr experimentell und bei Neuinstallationen standardmäßig aktiv.</string>
-    <string name="whats_new_v30_widgets">Widget-Redesign: der Tacho-Stil vom Home-Tab, gezeichnet in der echten Größe jedes Widgets.</string>
     <string name="whats_new_v30_restore">Neu installiert oder neues Handy? Ernährungstagebuch, Gewicht und Körperfett werden jetzt automatisch aus Health Connect wiederhergestellt.</string>
 </resources>

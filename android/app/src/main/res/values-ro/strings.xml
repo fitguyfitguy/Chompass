@@ -578,17 +578,9 @@
     <string name="about_rate">Evaluează aplicația</string>
     <string name="about_share">Distribuie aplicația</string>
     <string name="about_open_source">Sursă deschisă (MIT)</string>
-    <string name="about_star_github">Dă stea pe GitHub</string>
-    <string name="about_vote_ph">Votează pe Product Hunt</string>
-    <string name="about_support">Susține proiectul</string>
     <string name="about_report_issue">Raportează o problemă</string>
     <string name="about_request_feature">Solicită o funcție</string>
-    <string name="about_contact">Contactează-ne</string>
-    <string name="about_follow_x">Urmărește pe X</string>
-    <string name="about_follow_instagram">Urmărește pe Instagram</string>
-    <string name="about_follow_linkedin">Urmărește pe LinkedIn</string>
     <string name="about_privacy">Politica de confidențialitate</string>
-    <string name="about_terms">Termenii serviciului</string>
     <string name="about_made_by">Realizat de Apoorv Darshan</string>
     <string name="about_with_care">cu grijă, pentru toată lumea</string>
     <string name="about_share_message">Îmi urmăresc mesele cu NoFUD — fă o poză, spune-o sau tasteaz-o, iar AI înregistrează caloriile. E gratuit, open source, iar datele rămân pe dispozitivul tău.\n\nDescarcă: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Istoric grăsime corporală: vezi și șterge intrări individuale, la fel ca la greutate.</string>
     <string name="whats_new_v30_units">Unitățile pentru înălțime și greutate se setează acum separat.</string>
     <string name="whats_new_v30_adaptive">Obiectivele adaptive și Energia consumată au ieșit din faza experimentală și sunt activate implicit la instalările noi.</string>
-    <string name="whats_new_v30_widgets">Widgeturi reproiectate: stilul vitezometru din ecranul principal, desenat la dimensiunea reală a fiecărui widget.</string>
     <string name="whats_new_v30_restore">Ai reinstalat sau ai schimbat telefonul? Jurnalul alimentar, greutatea și grăsimea corporală se restaurează acum automat din Health Connect.</string>
 </resources>

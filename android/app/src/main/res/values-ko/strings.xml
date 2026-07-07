@@ -578,17 +578,9 @@
     <string name="about_rate">앱 평가하기</string>
     <string name="about_share">앱 공유하기</string>
     <string name="about_open_source">오픈 소스 (MIT)</string>
-    <string name="about_star_github">GitHub에 별 주기</string>
-    <string name="about_vote_ph">Product Hunt에서 투표</string>
-    <string name="about_support">프로젝트 후원</string>
     <string name="about_report_issue">문제 신고</string>
     <string name="about_request_feature">기능 요청</string>
-    <string name="about_contact">문의하기</string>
-    <string name="about_follow_x">X에서 팔로우</string>
-    <string name="about_follow_instagram">Instagram에서 팔로우</string>
-    <string name="about_follow_linkedin">LinkedIn에서 팔로우</string>
     <string name="about_privacy">개인정보 처리방침</string>
-    <string name="about_terms">서비스 약관</string>
     <string name="about_made_by">Apoorv Darshan 제작</string>
     <string name="about_with_care">모두를 위해, 세심하게</string>
     <string name="about_share_message">NoFUD로 식단을 기록하고 있어요 — 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">체지방 기록: 체중과 마찬가지로 개별 항목을 확인하고 삭제할 수 있습니다.</string>
     <string name="whats_new_v30_units">키와 몸무게 단위를 이제 따로 설정할 수 있습니다.</string>
     <string name="whats_new_v30_adaptive">적응형 목표와 에너지 소모가 실험 단계를 졸업하고 새 설치에서 기본으로 켜집니다.</string>
-    <string name="whats_new_v30_widgets">위젯 개편: 홈의 속도계 스타일을 각 위젯의 실제 크기로 그립니다.</string>
     <string name="whats_new_v30_restore">재설치했거나 휴대폰을 바꿨나요? 이제 음식 기록, 체중, 체지방이 Health Connect에서 자동으로 복원됩니다.</string>
 </resources>

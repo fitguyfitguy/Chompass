@@ -578,17 +578,9 @@
     <string name="about_rate">Beoordeel de app</string>
     <string name="about_share">App delen</string>
     <string name="about_open_source">Open source (MIT)</string>
-    <string name="about_star_github">Ster op GitHub</string>
-    <string name="about_vote_ph">Stem op Product Hunt</string>
-    <string name="about_support">Steun het project</string>
     <string name="about_report_issue">Probleem melden</string>
     <string name="about_request_feature">Functie aanvragen</string>
-    <string name="about_contact">Neem contact op</string>
-    <string name="about_follow_x">Volg op X</string>
-    <string name="about_follow_instagram">Volg op Instagram</string>
-    <string name="about_follow_linkedin">Volg op LinkedIn</string>
     <string name="about_privacy">Privacybeleid</string>
-    <string name="about_terms">Servicevoorwaarden</string>
     <string name="about_made_by">Gemaakt door Apoorv Darshan</string>
     <string name="about_with_care">met zorg, voor iedereen</string>
     <string name="about_share_message">Ik houd mijn maaltijden bij met NoFUD — maak een foto, spreek het in of typ het, en de AI logt de calorieën. Het is gratis, open source, en je gegevens blijven op je apparaat.\n\nDownload: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Vetpercentagegeschiedenis: bekijk en verwijder losse metingen, net als bij gewicht.</string>
     <string name="whats_new_v30_units">Lengte- en gewichtseenheden zijn nu apart in te stellen.</string>
     <string name="whats_new_v30_adaptive">Adaptieve doelen en Energieverbruik zijn niet langer experimenteel en staan standaard aan bij nieuwe installaties.</string>
-    <string name="whats_new_v30_widgets">Widgets vernieuwd: de snelheidsmeterstijl van Home, getekend op de echte grootte van elk widget.</string>
     <string name="whats_new_v30_restore">Opnieuw geïnstalleerd of een nieuwe telefoon? Je voedingslogboek, gewicht en vetpercentage worden nu automatisch hersteld uit Health Connect.</string>
 </resources>

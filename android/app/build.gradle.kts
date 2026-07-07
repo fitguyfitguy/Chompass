@@ -35,6 +35,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("play") {
+            dimension = "distribution"
+        }
+        create("fdroid") {
+            dimension = "distribution"
+        }
+    }
+
     signingConfigs {
         if (keystoreProps.isNotEmpty()) {
             create("release") {
@@ -90,7 +100,8 @@ kotlin {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.play.review.ktx)
+    "playImplementation"(libs.play.review.ktx)
+    "playImplementation"(libs.play.app.update)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.coil.compose)
@@ -118,7 +129,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.play.app.update)
     implementation(libs.vico.compose.m3)
 
     testImplementation(libs.junit)

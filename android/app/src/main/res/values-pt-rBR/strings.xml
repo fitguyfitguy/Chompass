@@ -578,17 +578,9 @@
     <string name="about_rate">Avaliar o app</string>
     <string name="about_share">Compartilhar o app</string>
     <string name="about_open_source">Código aberto (MIT)</string>
-    <string name="about_star_github">Favoritar no GitHub</string>
-    <string name="about_vote_ph">Votar no Product Hunt</string>
-    <string name="about_support">Apoiar o projeto</string>
     <string name="about_report_issue">Relatar um problema</string>
     <string name="about_request_feature">Solicitar um recurso</string>
-    <string name="about_contact">Fale conosco</string>
-    <string name="about_follow_x">Seguir no X</string>
-    <string name="about_follow_instagram">Seguir no Instagram</string>
-    <string name="about_follow_linkedin">Seguir no LinkedIn</string>
     <string name="about_privacy">Política de privacidade</string>
-    <string name="about_terms">Termos de serviço</string>
     <string name="about_made_by">Feito por Apoorv Darshan</string>
     <string name="about_with_care">com cuidado, para todos</string>
     <string name="about_share_message">Eu acompanho minhas refeições com o NoFUD — tire uma foto, fale ou digite, e a IA registra as calorias. É grátis, código aberto, e seus dados ficam no seu dispositivo.\n\nBaixar: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Histórico de gordura corporal: veja e exclua entradas individuais, como no peso.</string>
     <string name="whats_new_v30_units">As unidades de altura e peso agora são definidas separadamente.</string>
     <string name="whats_new_v30_adaptive">Metas adaptativas e Queima de energia saíram da fase experimental e vêm ativadas por padrão em novas instalações.</string>
-    <string name="whats_new_v30_widgets">Widgets redesenhados: o estilo velocímetro da tela inicial, desenhado no tamanho real de cada widget.</string>
     <string name="whats_new_v30_restore">Reinstalou ou trocou de celular? Seu diário alimentar, peso e gordura corporal agora são restaurados automaticamente do Health Connect.</string>
 </resources>

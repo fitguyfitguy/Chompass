@@ -578,17 +578,9 @@
     <string name="about_rate">アプリを評価</string>
     <string name="about_share">アプリを共有</string>
     <string name="about_open_source">オープンソース (MIT)</string>
-    <string name="about_star_github">GitHubでスターを付ける</string>
-    <string name="about_vote_ph">Product Huntで投票</string>
-    <string name="about_support">プロジェクトを支援</string>
     <string name="about_report_issue">問題を報告</string>
     <string name="about_request_feature">機能をリクエスト</string>
-    <string name="about_contact">お問い合わせ</string>
-    <string name="about_follow_x">Xでフォロー</string>
-    <string name="about_follow_instagram">Instagramでフォロー</string>
-    <string name="about_follow_linkedin">LinkedInでフォロー</string>
     <string name="about_privacy">プライバシーポリシー</string>
-    <string name="about_terms">利用規約</string>
     <string name="about_made_by">Apoorv Darshan 制作</string>
     <string name="about_with_care">すべての人へ、心を込めて</string>
     <string name="about_share_message">食事の記録は NoFUD で。写真を撮るか話すか入力するだけで、AI がカロリーを記録します。無料・オープンソースで、データは端末内に残ります。\n\nダウンロード: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">体脂肪履歴：体重と同じように、個別の記録を確認・削除できます。</string>
     <string name="whats_new_v30_units">身長と体重の単位を別々に設定できるようになりました。</string>
     <string name="whats_new_v30_adaptive">アダプティブ目標とエネルギー消費が実験的機能を卒業し、新規インストールではデフォルトでオンに。</string>
-    <string name="whats_new_v30_widgets">ウィジェットを刷新：ホームのスピードメーターデザインを各ウィジェットの実サイズで描画。</string>
     <string name="whats_new_v30_restore">再インストールや機種変更をしても、食事記録・体重・体脂肪がHealth Connectから自動的に復元されるようになりました。</string>
 </resources>

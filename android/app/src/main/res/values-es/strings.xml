@@ -578,17 +578,9 @@
     <string name="about_rate">Valorar la app</string>
     <string name="about_share">Compartir la app</string>
     <string name="about_open_source">Código abierto (MIT)</string>
-    <string name="about_star_github">Destacar en GitHub</string>
-    <string name="about_vote_ph">Votar en Product Hunt</string>
-    <string name="about_support">Apoyar el proyecto</string>
     <string name="about_report_issue">Informar de un problema</string>
     <string name="about_request_feature">Solicitar una función</string>
-    <string name="about_contact">Contáctanos</string>
-    <string name="about_follow_x">Seguir en X</string>
-    <string name="about_follow_instagram">Seguir en Instagram</string>
-    <string name="about_follow_linkedin">Seguir en LinkedIn</string>
     <string name="about_privacy">Política de privacidad</string>
-    <string name="about_terms">Términos del servicio</string>
     <string name="about_made_by">Hecho por Apoorv Darshan</string>
     <string name="about_with_care">con cuidado, para todos</string>
     <string name="about_share_message">Llevo el control de mis comidas con NoFUD — haz una foto, dícela o escríbela, y la IA registra las calorías. Es gratis, de código abierto, y tus datos se quedan en tu dispositivo.\n\nDescargar: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Historial de grasa corporal: revisa y elimina entradas individuales, igual que con el peso.</string>
     <string name="whats_new_v30_units">Las unidades de altura y peso ahora se configuran por separado.</string>
     <string name="whats_new_v30_adaptive">Objetivos adaptativos y Quema de energía dejan de ser experimentales y vienen activados por defecto en instalaciones nuevas.</string>
-    <string name="whats_new_v30_widgets">Rediseño de widgets: el estilo velocímetro de Inicio, dibujado al tamaño real de cada widget.</string>
     <string name="whats_new_v30_restore">¿Reinstalaste o cambiaste de teléfono? Tu registro de comidas, peso y grasa corporal ahora se restauran automáticamente desde Health Connect.</string>
 </resources>

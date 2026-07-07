@@ -578,17 +578,9 @@
     <string name="about_rate">Tətbiqi qiymətləndir</string>
     <string name="about_share">Tətbiqi Paylaş</string>
     <string name="about_open_source">Açıq Mənbə (MIT)</string>
-    <string name="about_star_github">GitHub-da Ulduz Ver</string>
-    <string name="about_vote_ph">Product Hunt-da Səs Ver</string>
-    <string name="about_support">Layihəni Dəstəklə</string>
     <string name="about_report_issue">Problemi Bildir</string>
     <string name="about_request_feature">Funksiya Tələb Et</string>
-    <string name="about_contact">Bizimlə Əlaqə</string>
-    <string name="about_follow_x">X-də İzlə</string>
-    <string name="about_follow_instagram">Instagram-da İzlə</string>
-    <string name="about_follow_linkedin">LinkedIn-də İzlə</string>
     <string name="about_privacy">Məxfilik Siyasəti</string>
-    <string name="about_terms">Xidmət Şərtləri</string>
     <string name="about_made_by">Apoorv Darshan tərəfindən hazırlanıb</string>
     <string name="about_with_care">hər kəs üçün, qayğı ilə</string>
     <string name="about_share_message">Yeməklərimi NoFUD ilə izləyirəm — şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nEndir: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,6 +644,5 @@
     <string name="whats_new_v30_bodyfat">Bədən yağı tarixçəsi: çəki kimi ayrı-ayrı qeydlərə baxın və silin.</string>
     <string name="whats_new_v30_units">Boy və çəki vahidləri indi ayrıca seçilir.</string>
     <string name="whats_new_v30_adaptive">Adaptiv Məqsədlər və Enerji Sərfi eksperimental mərhələdən çıxdı və yeni quraşdırmalarda defolt olaraq aktivdir.</string>
-    <string name="whats_new_v30_widgets">Vidcetlər yeniləndi: Ana səhifənin spidometr üslubu, hər vidcetin real ölçüsündə çəkilir.</string>
     <string name="whats_new_v30_restore">Yenidən quraşdırmısınız və ya telefonu dəyişmisiniz? Yemək jurnalınız, çəkiniz və bədən yağınız indi Health Connect-dən avtomatik bərpa olunur.</string>
 </resources>

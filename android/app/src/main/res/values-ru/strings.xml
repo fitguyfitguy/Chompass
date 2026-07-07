@@ -578,17 +578,9 @@
     <string name="about_rate">Оценить приложение</string>
     <string name="about_share">Поделиться приложением</string>
     <string name="about_open_source">Открытый код (MIT)</string>
-    <string name="about_star_github">Поставить звезду на GitHub</string>
-    <string name="about_vote_ph">Проголосовать на Product Hunt</string>
-    <string name="about_support">Поддержать проект</string>
     <string name="about_report_issue">Сообщить о проблеме</string>
     <string name="about_request_feature">Предложить функцию</string>
-    <string name="about_contact">Связаться с нами</string>
-    <string name="about_follow_x">Подписаться в X</string>
-    <string name="about_follow_instagram">Подписаться в Instagram</string>
-    <string name="about_follow_linkedin">Подписаться в LinkedIn</string>
     <string name="about_privacy">Политика конфиденциальности</string>
-    <string name="about_terms">Условия использования</string>
     <string name="about_made_by">Автор: Apoorv Darshan</string>
     <string name="about_with_care">с заботой, для каждого</string>
     <string name="about_share_message">Я слежу за питанием с помощью NoFUD — сфотографируй блюдо, наговори его или введи текстом, и ИИ запишет калории. Бесплатно, с открытым кодом, все данные остаются на твоём устройстве.\n\nСкачать: https://codeberg.org/fitguy/NoFUD</string>
@@ -652,7 +644,6 @@
     <string name="whats_new_v30_bodyfat">История жира: просматривайте и удаляйте отдельные записи, как и с весом.</string>
     <string name="whats_new_v30_units">Единицы роста и веса теперь настраиваются независимо.</string>
     <string name="whats_new_v30_adaptive">«Адаптивные цели» и «Расход энергии» вышли из экспериментального статуса и включены по умолчанию для новых установок.</string>
-    <string name="whats_new_v30_widgets">Новые виджеты: стиль спидометра с главного экрана, отрисованный в реальном размере каждого виджета.</string>
     <string name="whats_new_v30_restore">Переустановили приложение или сменили телефон? Дневник питания, вес и процент жира теперь автоматически восстанавливаются из Health Connect.</string>
     <string name="action_info">Инфо</string>
     <string name="action_what_if">А что если?</string>
