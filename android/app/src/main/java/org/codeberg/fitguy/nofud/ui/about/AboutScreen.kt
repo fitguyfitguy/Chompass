@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
@@ -62,6 +63,7 @@ private const val WHATS_NEW_SEEN_VERSION_KEY = "whats_new_seen_version"
 private const val CODEBERG_REPO = "https://codeberg.org/fitguy/NoFUD"
 private const val UPSTREAM_REPO = "https://github.com/apoorvdarshan/fud-ai"
 private const val PRIVACY_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/PRIVACY.md"
+private const val ASSET_CREDITS_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/ASSET_CREDITS.md"
 
 @Composable
 fun AboutSettingsRows(container: AppContainer) {
@@ -130,6 +132,8 @@ fun AboutSettingsRows(container: AppContainer) {
         AboutRow(Icons.Filled.Share, stringResource(R.string.about_share), onClick = ::share)
         Hairline()
         AboutRow(Icons.Filled.Code, stringResource(R.string.about_open_source)) { open(CODEBERG_REPO) }
+        Hairline()
+        AboutRow(Icons.Filled.Description, stringResource(R.string.about_asset_credits)) { open(ASSET_CREDITS_URL) }
         Hairline()
         AboutRow(Icons.Filled.History, stringResource(R.string.about_upstream)) { open(UPSTREAM_REPO) }
         Hairline()

@@ -683,6 +683,7 @@
     <string name="about_rate">Rate the App</string>
     <string name="about_share">Share the App</string>
     <string name="about_open_source">Source Code (MIT)</string>
+    <string name="about_asset_credits">Open Source &amp; Assets</string>
     <string name="about_upstream">Based on Fud AI (upstream)</string>
     <string name="about_report_issue">Report an Issue</string>
     <string name="about_request_feature">Request a Feature</string>

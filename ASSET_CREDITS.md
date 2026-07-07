@@ -6,7 +6,9 @@ NoFUD is forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai) by Apoorv
 
 ## Exercise library
 
-Exercise data, names, instructions, and images in the Workouts tab come from the [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) and are bundled locally under `android/app/src/main/assets/exercises/` (see `LICENSE.md` and `README.md` in that folder).
+Exercise data, names, instructions, and images in the Workouts tab come from the [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (original dataset lineage: [wrkout/exercises.json](https://github.com/wrkout/exercises.json) by Ollie Jennings). Data and source photos are bundled locally under `android/app/src/main/assets/exercises/` (see `LICENSE.md` and `README.md` in that folder).
+
+NoFUD ships resized, single-frame **WebP** derivatives of the upstream JPEG photos (max 800px longest edge) to reduce APK size. Processing metadata is recorded in `IMAGE_MANIFEST.json` in that folder. The upstream photos remain under the [Unlicense](https://unlicense.org/).
 
 ## Barcode nutrition
 
@@ -20,4 +22,4 @@ NoFUD launcher icons and splash logos are original artwork by fitguy, distinct f
 
 Muscle glyph assets (the muscle-filter icons in the Workouts tab) are cropped/rasterized derivatives of SVG muscle paths from [`react-muscle-highlighter`](https://github.com/soroojshehryar/react-muscle-highlighter) 1.2.0, MIT License. The generated app assets are bundled locally (`android/app/src/main/assets/muscle/`) and do not depend on the upstream repository at runtime.
 
-Copyright (c) 2024 My Muscle Contributors — MIT License (see upstream package).
+Copyright (c) 2024 My Muscle Contributors — MIT License (see `LICENSE` in that folder and the upstream package).

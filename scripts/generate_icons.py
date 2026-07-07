@@ -42,7 +42,7 @@ THEMES: list[tuple[str, tuple[int, int, int], tuple[int, int, int], str | None]]
     ("_lime", (0xA0, 0xD9, 0x11), (0xC3, 0xE9, 0x56), None),
 ]
 
-LOGO_SIZE = 2048
+LOGO_SIZE = 512
 
 
 def lerp(a: int, b: int, t: float) -> int:
