@@ -16,6 +16,8 @@
   enterShell = ''
     mkdir -p android
     printf 'sdk.dir=%s\n' "$ANDROID_HOME" > android/local.properties
+    # Avoid hanging adb commands when Windows also runs adb on the shared WSL localhost.
+    export ANDROID_ADB_SERVER_PORT=5038
   '';
 
   scripts.build-debug.exec = "cd android && ./gradlew :app:assemblePlayDebug";
