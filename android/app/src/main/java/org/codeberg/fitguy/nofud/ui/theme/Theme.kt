@@ -8,6 +8,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.luminance
 
@@ -43,11 +45,18 @@ private fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
     outline = AppColors.DividerDark
 )
 
+/**
+ * Controls whether glass components may use real blur (API 31+).
+ * Kept as a CompositionLocal so `FudGlass*` components don't need ViewModel wiring.
+ */
+val LocalGlassBlurEnabled = staticCompositionLocalOf { false }
+
 @Composable
 fun NoFUDTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     themeColor: AppThemeColor = AppThemeColor.TEAL,
     useDynamicColor: Boolean = true,
+    glassBlurEnabled: Boolean = false,
     content: @Composable () -> Unit
 ) {
     AppColors.setThemeColor(themeColor)
@@ -75,9 +84,11 @@ fun NoFUDTheme(
         } else {
             baseScheme
         }
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalGlassBlurEnabled provides glassBlurEnabled) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

@@ -380,7 +380,8 @@ private fun CardSection(content: @Composable () -> Unit) {
     FudGlassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 16.dp,
-        padding = 16.dp
+        padding = 16.dp,
+        allowBlur = false
     ) { content() }
 }
 

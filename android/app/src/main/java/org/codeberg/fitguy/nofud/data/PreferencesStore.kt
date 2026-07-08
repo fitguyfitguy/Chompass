@@ -262,6 +262,10 @@ class PreferencesStore(private val context: Context) {
     val appThemeColor: Flow<String> = ds.data.map { it[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY }
     suspend fun setAppThemeColor(v: String) { ds.edit { it[Keys.APP_THEME_COLOR] = v } }
 
+    /** Controls whether glass surfaces try to use a real blur effect (API 31+). Default OFF. */
+    val glassBlurEnabled: Flow<Boolean> = ds.data.map { it[Keys.GLASS_BLUR_ENABLED] ?: false }
+    suspend fun setGlassBlurEnabled(v: Boolean) { ds.edit { it[Keys.GLASS_BLUR_ENABLED] = v } }
+
     /** false = Sunday, true = Monday (default). Mirrors iOS @AppStorage("weekStartsOnMonday"). */
     val weekStartsOnMonday: Flow<Boolean> = ds.data.map { it[Keys.WEEK_STARTS_MONDAY] ?: true }
     suspend fun setWeekStartsOnMonday(v: Boolean) { ds.edit { it[Keys.WEEK_STARTS_MONDAY] = v } }
@@ -557,6 +561,7 @@ class PreferencesStore(private val context: Context) {
         val PREFER_GRAMS_BY_DEFAULT = booleanPreferencesKey("foodMeasurementPreferGramsByDefault")
         val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
+        val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
         val WEEK_STARTS_MONDAY = booleanPreferencesKey("weekStartsOnMonday")
         val LAST_SAVED_MEALS_SEGMENT = stringPreferencesKey("lastRecentsSegment")
         val FOOD_LOG_SORT_ORDER = stringPreferencesKey("foodLogSortOrder")

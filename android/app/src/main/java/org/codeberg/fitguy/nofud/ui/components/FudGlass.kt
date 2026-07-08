@@ -1,5 +1,6 @@
 package org.codeberg.fitguy.nofud.ui.components
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.LocalGlassBlurEnabled
 
 @Composable
 fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
@@ -88,18 +91,71 @@ fun FudGlassSurface(
     padding: Dp = 16.dp,
     contentAlignment: Alignment = Alignment.TopStart,
     elevated: Boolean = true,
+    allowBlur: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
     val isDark = isDarkTheme()
     val shape = RoundedCornerShape(cornerRadius)
 
+    val blurAllowed = allowBlur && LocalGlassBlurEnabled.current && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+    if (!blurAllowed) {
+        Box(
+            modifier = modifier
+                .fudTranslucentSurface(shape, elevated = elevated, isDark = isDark)
+                .padding(padding),
+            contentAlignment = contentAlignment,
+            content = content
+        )
+        return
+    }
+
+    // Blur path: blur only the background layer (child content remains crisp).
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.20f) else Color.Black.copy(alpha = 0.06f)
+    val elevationDp = if (elevated) (if (isDark) 8.dp else 4.dp) else 0.dp
+    val outline = hairlineBorder(isDark)
+    val glassFill = translucentFill(isDark)
+    val blurRadius = if (isDark) 20.dp else 16.dp
+
     Box(
         modifier = modifier
-            .fudTranslucentSurface(shape, elevated = elevated, isDark = isDark)
-            .padding(padding),
-        contentAlignment = contentAlignment,
-        content = content
-    )
+            .then(
+                if (elevated) {
+                    Modifier.shadow(
+                        elevation = elevationDp,
+                        shape = shape,
+                        ambientColor = shadowColor,
+                        spotColor = shadowColor
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .clip(shape)
+    ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape)
+                .background(glassFill)
+                .blur(radius = blurRadius)
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape)
+                .border(0.5.dp, outline, shape)
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(padding),
+            contentAlignment = contentAlignment,
+            content = content
+        )
+    }
 }
 
 @Composable

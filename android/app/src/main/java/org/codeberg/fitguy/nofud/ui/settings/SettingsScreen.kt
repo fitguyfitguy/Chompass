@@ -631,6 +631,13 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     }
                 }
                 HorizontalDivider()
+                ToggleRow(
+                    label = stringResource(R.string.settings_glass_blur),
+                    checked = ui.glassBlurEnabled,
+                    icon = Icons.Outlined.AutoAwesome,
+                    onChange = vm::setGlassBlurEnabled
+                )
+                HorizontalDivider()
                 ToggleRowWithInfo(
                     label = stringResource(R.string.settings_default_to_grams),
                     checked = ui.preferGramsByDefault,
@@ -1274,7 +1281,8 @@ fun OptionalNutrientGoalsScreen(
                 FudGlassSurface(
                     modifier = Modifier.fillMaxWidth(),
                     cornerRadius = 22.dp,
-                    padding = 0.dp
+                    padding = 0.dp,
+                    allowBlur = false
                 ) {
                     Column {
                         OptionalNutrient.values().forEachIndexed { index, nutrient ->
@@ -1502,7 +1510,8 @@ private fun CalcFormulaCard(
     FudGlassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 18.dp,
-        padding = 14.dp
+        padding = 14.dp,
+        allowBlur = false
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
@@ -2537,7 +2546,8 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 18.dp,
-            padding = 0.dp
+            padding = 0.dp,
+            allowBlur = false
         ) {
             Column(Modifier.padding(vertical = 4.dp)) { content() }
         }
