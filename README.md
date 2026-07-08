@@ -50,6 +50,27 @@ NoFUD keeps the core Android features from Fud AI:
 - Meal sharing and import
 - 15-language localization
 
+## Migration: FUD-AI -> NoFUD
+
+Two practical migration paths are supported today:
+
+- **Path A (file-based):** in FUD-AI, export your food diary as JSON. In NoFUD, open `Settings` and use `Import Food Diary JSON`.
+- **Path B (Health Connect):** enable Health Connect in both apps and grant read permissions so historical data can be restored from Health Connect.
+
+Before switching apps:
+
+- Export a food diary JSON from FUD-AI if you want a file backup/import path.
+- Optionally sync your latest entries to Health Connect in FUD-AI.
+
+What transfers today:
+
+- **Food log:** JSON import and/or Health Connect restore.
+- **Weight + body fat:** Health Connect read import and sync behavior.
+
+Current limitation:
+
+- No dedicated **weight/body-composition file import/export** exists yet; those metrics currently migrate through Health Connect.
+
 | Area | Fud AI | NoFUD |
 |---|---|---|
 | Android AI calorie tracking app | Yes | Yes |

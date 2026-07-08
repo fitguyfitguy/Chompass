@@ -95,8 +95,12 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun addWeight(kg: Double) {
+        addWeightAt(kg, Instant.now())
+    }
+
+    fun addWeightAt(kg: Double, at: Instant) {
         viewModelScope.launch {
-            val event = container.weightRepository.addEntry(WeightEntry(weightKg = kg))
+            val event = container.weightRepository.addEntry(WeightEntry(weightKg = kg, date = at))
             if (event != null) {
                 goalReached.value = true
                 if (container.prefs.notificationsEnabled.first() &&
@@ -113,8 +117,12 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun addBodyFat(fraction: Double) {
+        addBodyFatAt(fraction, Instant.now())
+    }
+
+    fun addBodyFatAt(fraction: Double, at: Instant) {
         viewModelScope.launch {
-            container.bodyFatRepository.addEntry(BodyFatEntry(bodyFatFraction = fraction))
+            container.bodyFatRepository.addEntry(BodyFatEntry(bodyFatFraction = fraction, date = at))
         }
     }
 

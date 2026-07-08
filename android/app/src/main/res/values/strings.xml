@@ -39,6 +39,9 @@
     <string name="action_send">Send</string>
     <string name="action_pin">Pin</string>
     <string name="action_retry">Retry</string>
+    <string name="action_show">Show</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_advanced">Advanced</string>
 
     <!-- Generic units / labels -->
     <string name="unit_kcal">kcal</string>
@@ -789,6 +792,14 @@
     <string name="whats_new_v30_adaptive">Adaptive Goals and Energy Burn left Experimental and are on by default for new installs.</string>
     <string name="whats_new_v30_restore">Reinstalled or switched phones? Your food log, weight, and body fat now restore automatically from Health Connect.</string>
     <string name="export_diary_title">Export Food Diary</string>
+    <string name="export_body_metrics_title">Export Weight &amp; Body Fat</string>
+    <string name="export_body_metrics_subtitle">Exports your historical weight and body-fat entries as a CSV file.</string>
+    <string name="export_body_metrics_empty">No weight or body-fat entries found to export.</string>
+    <string name="import_diary_title">Import Food Diary JSON</string>
+    <string name="import_diary_success_count">Imported %1$d food entries.</string>
+    <string name="import_diary_empty">This file has no diary entries to import.</string>
+    <string name="import_diary_unsupported">Unsupported diary file. Export a JSON diary from FUD-AI or NoFUD first.</string>
+    <string name="import_diary_malformed">Invalid JSON: %1$s</string>
     <string name="export_range">Range</string>
     <string name="export_format">Format</string>
     <string name="export_action">Export</string>

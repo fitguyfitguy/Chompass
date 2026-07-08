@@ -78,11 +78,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.Gender
 import org.codeberg.fitguy.nofud.ui.components.DecimalWheelPicker
+import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialog
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialogActions
 import org.codeberg.fitguy.nofud.ui.components.FudGlassPrimaryButton
 import org.codeberg.fitguy.nofud.ui.components.FudGlassSurface
 import org.codeberg.fitguy.nofud.ui.components.FudGlassTextButton
+import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import org.codeberg.fitguy.nofud.ui.components.FudIconBubble
 import org.codeberg.fitguy.nofud.ui.components.SplitDecimalWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.UnitToggle
@@ -101,6 +103,7 @@ import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -278,8 +281,8 @@ fun ProgressScreen(container: AppContainer) {
                 scope.launch { container.prefs.setWeightUnit(if (metric) "kg" else "lbs") }
             },
             onDismiss = { showAddDialog = false }
-        ) { kg ->
-            vm.addWeight(kg); showAddDialog = false
+        ) { kg, whenLogged ->
+            vm.addWeightAt(kg, whenLogged); showAddDialog = false
         }
     }
     if (showAddBodyFatDialog) {
@@ -287,8 +290,8 @@ fun ProgressScreen(container: AppContainer) {
         val seedFraction = ui.bodyFatEntries.maxByOrNull { it.date }?.bodyFatFraction
             ?: ui.profile?.bodyFatPercentage
             ?: 0.20
-        AddBodyFatDialog(initialFraction = seedFraction, onDismiss = { showAddBodyFatDialog = false }) { fraction ->
-            vm.addBodyFat(fraction); showAddBodyFatDialog = false
+        AddBodyFatDialog(initialFraction = seedFraction, onDismiss = { showAddBodyFatDialog = false }) { fraction, whenLogged ->
+            vm.addBodyFatAt(fraction, whenLogged); showAddBodyFatDialog = false
         }
     }
     if (showAllWeights) {
@@ -1107,12 +1110,16 @@ private fun AddWeightDialog(
     initialKg: Double,
     onUnitChange: (Boolean) -> Unit,
     onDismiss: () -> Unit,
-    onSubmit: (Double) -> Unit
+    onSubmit: (Double, Instant) -> Unit
 ) {
     // Wheel picker matches Settings → Goal Weight + the onboarding height/weight
     // step — split-decimal so users land on e.g. 72.4 without typing.
     var pickerKg by remember { mutableStateOf(initialKg) }
     var metric by remember { mutableStateOf(useMetric) }
+    var advanced by remember { mutableStateOf(false) }
+    var pickedDate by remember { mutableStateOf(LocalDate.now()) }
+    var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
+    var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.progress_log_weight_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
@@ -1135,6 +1142,51 @@ private fun AddWeightDialog(
                 unit = stringResource(R.string.unit_lbs)
             )
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { advanced = !advanced }
+                .padding(top = 8.dp, bottom = if (advanced) 6.dp else 0.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.action_advanced),
+                fontSize = 14.sp,
+                color = AppColors.Calorie,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = if (advanced) stringResource(R.string.action_hide) else stringResource(R.string.action_show),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+            )
+        }
+        if (advanced) {
+            DateWheelPicker(
+                selected = pickedDate,
+                onSelect = { pickedDate = it },
+                minYear = LocalDate.now().year - 10,
+                maxYear = LocalDate.now().year,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FudGlassTextField(
+                    value = hourText,
+                    onValueChange = { hourText = it.filter(Char::isDigit).take(2) },
+                    placeholder = stringResource(R.string.placeholder_hour),
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+                FudGlassTextField(
+                    value = minuteText,
+                    onValueChange = { minuteText = it.filter(Char::isDigit).take(2) },
+                    placeholder = stringResource(R.string.placeholder_minute),
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
             FudGlassTextButton(
                 text = stringResource(R.string.action_cancel),
@@ -1144,7 +1196,16 @@ private fun AddWeightDialog(
             Spacer(Modifier.width(8.dp))
             FudGlassPrimaryButton(
                 text = stringResource(R.string.action_save),
-                onClick = { onSubmit(pickerKg) },
+                onClick = {
+                    val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: LocalTime.now().hour
+                    val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: LocalTime.now().minute
+                    val loggedAt = if (advanced) {
+                        pickedDate.atTime(hour, minute).atZone(ZoneId.systemDefault()).toInstant()
+                    } else {
+                        Instant.now()
+                    }
+                    onSubmit(pickerKg, loggedAt)
+                },
                 modifier = Modifier.width(132.dp)
             )
         }
@@ -1505,11 +1566,15 @@ private fun formatPercentTick(value: Double): String {
 private fun AddBodyFatDialog(
     initialFraction: Double,
     onDismiss: () -> Unit,
-    onSubmit: (Double) -> Unit
+    onSubmit: (Double, Instant) -> Unit
 ) {
     // Whole-percent wheel — body fat measurements rarely justify 0.1% resolution
     // given the noise of calipers / smart scales (matches iOS LogBodyFatSheet).
     var pct by remember { mutableStateOf(initialFraction * 100) }
+    var advanced by remember { mutableStateOf(false) }
+    var pickedDate by remember { mutableStateOf(LocalDate.now()) }
+    var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
+    var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.progress_log_body_fat_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         DecimalWheelPicker(
@@ -1520,6 +1585,51 @@ private fun AddBodyFatDialog(
             step = 0.5,
             unit = stringResource(R.string.unit_percent)
         )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { advanced = !advanced }
+                .padding(top = 8.dp, bottom = if (advanced) 6.dp else 0.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.action_advanced),
+                fontSize = 14.sp,
+                color = AppColors.Calorie,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = if (advanced) stringResource(R.string.action_hide) else stringResource(R.string.action_show),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+            )
+        }
+        if (advanced) {
+            DateWheelPicker(
+                selected = pickedDate,
+                onSelect = { pickedDate = it },
+                minYear = LocalDate.now().year - 10,
+                maxYear = LocalDate.now().year,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FudGlassTextField(
+                    value = hourText,
+                    onValueChange = { hourText = it.filter(Char::isDigit).take(2) },
+                    placeholder = stringResource(R.string.placeholder_hour),
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+                FudGlassTextField(
+                    value = minuteText,
+                    onValueChange = { minuteText = it.filter(Char::isDigit).take(2) },
+                    placeholder = stringResource(R.string.placeholder_minute),
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
             FudGlassTextButton(
                 text = stringResource(R.string.action_cancel),
@@ -1529,7 +1639,16 @@ private fun AddBodyFatDialog(
             Spacer(Modifier.width(8.dp))
             FudGlassPrimaryButton(
                 text = stringResource(R.string.action_save),
-                onClick = { onSubmit(pct / 100.0) },
+                onClick = {
+                    val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: LocalTime.now().hour
+                    val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: LocalTime.now().minute
+                    val loggedAt = if (advanced) {
+                        pickedDate.atTime(hour, minute).atZone(ZoneId.systemDefault()).toInstant()
+                    } else {
+                        Instant.now()
+                    }
+                    onSubmit(pct / 100.0, loggedAt)
+                },
                 modifier = Modifier.width(132.dp)
             )
         }

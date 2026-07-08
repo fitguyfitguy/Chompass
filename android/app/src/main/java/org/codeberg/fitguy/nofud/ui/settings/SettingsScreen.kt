@@ -119,6 +119,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -151,6 +152,8 @@ import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.export.DiaryImportResult
+import org.codeberg.fitguy.nofud.export.DiaryImporter
 import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import org.codeberg.fitguy.nofud.ui.home.FoodLogSortOrder
 import java.time.Instant
@@ -175,6 +178,7 @@ import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDRoutes
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 private enum class SettingsSheet {
@@ -201,6 +205,8 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showClearFoodDialog by remember { mutableStateOf(false) }
     var showExportSheet by remember { mutableStateOf(false) }
+    var showBodyMetricsExportSheet by remember { mutableStateOf(false) }
+    var importDiaryMessage by remember { mutableStateOf<String?>(null) }
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }
     var showMaxPinnedAlert by remember { mutableStateOf(false) }
     var showRebalanceBlockedAlert by remember { mutableStateOf(false) }
@@ -212,6 +218,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     var showSafetyMedicalInfo by remember { mutableStateOf(false) }
     var pendingHealthPermissionAction by remember { mutableStateOf<HealthConnectPermissionAction?>(null) }
     val activityContext = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     // Notifications: API 33+ requires runtime POST_NOTIFICATIONS. We only flip the
     // pref to true if the user actually grants. Denial leaves the toggle off so
@@ -242,6 +249,46 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             }
         } else {
             permissionDeniedMessage = healthDeniedMsg
+        }
+    }
+
+    val importDiaryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val text = runCatching {
+                activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+            }.getOrNull()
+            if (text.isNullOrBlank()) {
+                importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                return@launch
+            }
+            when (val result = DiaryImporter.parse(text)) {
+                is DiaryImportResult.Success -> {
+                    if (result.entries.isEmpty()) {
+                        importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                        return@launch
+                    }
+                    result.entries.forEach { container.foodRepository.addEntry(it) }
+                    importDiaryMessage = activityContext.getString(
+                        R.string.import_diary_success_count,
+                        result.entries.size
+                    )
+                }
+                DiaryImportResult.EmptyPayload -> {
+                    importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                }
+                DiaryImportResult.UnsupportedFormat -> {
+                    importDiaryMessage = activityContext.getString(R.string.import_diary_unsupported)
+                }
+                is DiaryImportResult.Malformed -> {
+                    importDiaryMessage = activityContext.getString(
+                        R.string.import_diary_malformed,
+                        result.reason
+                    )
+                }
+            }
         }
     }
 
@@ -802,6 +849,38 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 Row(
                     Modifier
                         .fillMaxWidth()
+                        .clickable { showBodyMetricsExportSheet = true }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FudIconBubble(icon = Icons.Outlined.MonitorWeight, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    Spacer(Modifier.width(14.dp))
+                    Text(
+                        stringResource(R.string.export_body_metrics_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                HorizontalDivider()
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { importDiaryLauncher.launch(arrayOf("application/json", "text/plain")) }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FudIconBubble(icon = Icons.Outlined.Link, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    Spacer(Modifier.width(14.dp))
+                    Text(
+                        stringResource(R.string.import_diary_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                HorizontalDivider()
+                Row(
+                    Modifier
+                        .fillMaxWidth()
                         .clickable { showClearFoodDialog = true }
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -851,6 +930,12 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             container = container,
             profile = profile,
             onDismiss = { showExportSheet = false },
+        )
+    }
+    if (showBodyMetricsExportSheet) {
+        ExportBodyMetricsSheet(
+            container = container,
+            onDismiss = { showBodyMetricsExportSheet = false },
         )
     }
 
@@ -1042,6 +1127,17 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { permissionDeniedMessage = null }
+            )
+        }
+    }
+
+    importDiaryMessage?.let { msg ->
+        FudGlassDialog(onDismissRequest = { importDiaryMessage = null }) {
+            Text(stringResource(R.string.import_diary_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_ok),
+                onPrimary = { importDiaryMessage = null }
             )
         }
     }
