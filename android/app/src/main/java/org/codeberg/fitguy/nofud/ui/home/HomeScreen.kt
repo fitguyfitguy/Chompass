@@ -1133,16 +1133,12 @@ private fun SectionCardWrapper(
     content: @Composable () -> Unit
 ) {
     val shape = sectionCardShape(isFirst, isLast)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     Box(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(shape)
-            .background(
-                if (transparent) Color.Transparent
-                else MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.85f else 0.92f)
-            )
+            .background(if (transparent) Color.Transparent else MaterialTheme.colorScheme.surface)
     ) { content() }
 }
 

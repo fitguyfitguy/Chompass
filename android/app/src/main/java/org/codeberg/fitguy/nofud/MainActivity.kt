@@ -108,7 +108,6 @@ open class MainActivity : ComponentActivity() {
         var startOnboarding by mutableStateOf<Boolean?>(null)
         var initialAppearance by mutableStateOf("system")
         var initialThemeColorKey by mutableStateOf(AppThemeColor.DEFAULT_KEY)
-        var initialGlassBlurEnabled by mutableStateOf(true)
 
         // Hold the splash on screen until the saved profile has loaded from
         // DataStore so Home doesn't briefly render its 2000/150/220/70 fallback
@@ -130,7 +129,6 @@ open class MainActivity : ComponentActivity() {
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
             initialThemeColorKey = container.prefs.appThemeColor.first()
-            initialGlassBlurEnabled = container.prefs.glassBlurEnabled.first()
             AndroidAppIconManager.apply(this@MainActivity, AppThemeColor.fromKey(initialThemeColorKey))
             startOnboarding = resolvedStartOnboarding
             if (!resolvedStartOnboarding) {
@@ -143,7 +141,6 @@ open class MainActivity : ComponentActivity() {
             val resolvedStartOnboarding = startOnboarding ?: return@setContent
             val appearance by container.prefs.appearanceMode.collectAsState(initial = initialAppearance)
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
-            val glassBlurEnabled by container.prefs.glassBlurEnabled.collectAsState(initial = initialGlassBlurEnabled)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
             val systemDark = isSystemInDarkTheme()
             val darkTheme = when (appearance) {
@@ -151,11 +148,7 @@ open class MainActivity : ComponentActivity() {
                 "dark" -> true
                 else -> systemDark
             }
-            NoFUDTheme(
-                darkTheme = darkTheme,
-                themeColor = themeColor,
-                glassBlurEnabled = glassBlurEnabled
-            ) {
+            NoFUDTheme(darkTheme = darkTheme, themeColor = themeColor) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

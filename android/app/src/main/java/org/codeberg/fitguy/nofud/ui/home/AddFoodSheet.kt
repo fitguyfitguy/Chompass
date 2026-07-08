@@ -74,7 +74,7 @@ fun AddFoodSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.92f else 0.96f)
+        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
     ) {
         Column(
             Modifier

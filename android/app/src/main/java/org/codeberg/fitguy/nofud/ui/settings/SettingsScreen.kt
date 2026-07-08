@@ -631,12 +631,6 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     }
                 }
                 HorizontalDivider()
-                ToggleRow(
-                    label = stringResource(R.string.settings_glass_blur),
-                    checked = ui.glassBlurEnabled,
-                    onChange = vm::setGlassBlurEnabled
-                )
-                HorizontalDivider()
                 ToggleRowWithInfo(
                     label = stringResource(R.string.settings_default_to_grams),
                     checked = ui.preferGramsByDefault,
@@ -1584,7 +1578,7 @@ private fun SettingsSheets(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.92f else 0.96f)
+        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
             when (sheet) {

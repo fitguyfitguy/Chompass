@@ -554,7 +554,6 @@
     <string name="settings_appearance_light">Light</string>
     <string name="settings_appearance_dark">Dark</string>
     <string name="settings_theme_color">Theme Color</string>
-    <string name="settings_glass_blur">Glass blur</string>
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main app color used for tabs, buttons, icons, charts, and progress rings.</string>
     <string name="theme_color_fud_pink">NoFUD Pink</string>
