@@ -7,6 +7,8 @@ import org.codeberg.fitguy.nofud.models.ActivityLevel
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.ChatMessage
+import org.codeberg.fitguy.nofud.models.DietMode
+import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.UserProfile
@@ -131,6 +133,11 @@ class ChatService(
         lines.add("- Current weight: ${wUnit(profile.weightKg)}")
         lines.add("- Activity: ${activityEnglish(profile.activityLevel)}")
         lines.add("- Goal: ${goalEnglish(profile.goal)}")
+        lines.add("- Diet mode: ${dietModeEnglish(profile.dietMode)}")
+        if (profile.dietMode == DietMode.KETO) {
+            lines.add("- Keto carb mode: ${ketoCarbModeEnglish(profile.ketoCarbMode)}")
+            lines.add("- Keto net carbs target: ${profile.ketoActiveCarbTarget} g/day")
+        }
         profile.goalWeightKg?.let { lines.add("- Goal weight: ${wUnit(it)}") }
         profile.bodyFatPercentage?.let { lines.add("- Body fat: ${(it * 100).toInt()}%") }
         profile.goalBodyFatPercentage?.let { lines.add("- Goal body fat: ${(it * 100).toInt()}%") }
@@ -528,6 +535,16 @@ class ChatService(
         WeightGoal.LOSE -> "Lose Weight"
         WeightGoal.MAINTAIN -> "Maintain"
         WeightGoal.GAIN -> "Gain Weight"
+    }
+
+    private fun dietModeEnglish(mode: DietMode): String = when (mode) {
+        DietMode.STANDARD -> "Standard"
+        DietMode.KETO -> "Keto (beta)"
+    }
+
+    private fun ketoCarbModeEnglish(mode: KetoCarbMode): String = when (mode) {
+        KetoCarbMode.ADAPTIVE -> "Adaptive recommendation"
+        KetoCarbMode.MANUAL -> "Manual override"
     }
 
     @Suppress("unused")

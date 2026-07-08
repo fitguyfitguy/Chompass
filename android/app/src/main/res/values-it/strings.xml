@@ -660,4 +660,21 @@
     <string name="whats_new_v30_units">Le unità di altezza e peso ora si impostano separatamente.</string>
     <string name="whats_new_v30_adaptive">Obiettivi adattivi ed Energia bruciata escono dalla fase sperimentale e sono attivi di default sulle nuove installazioni.</string>
     <string name="whats_new_v30_restore">Hai reinstallato o cambiato telefono? Diario alimentare, peso e grasso corporeo ora si ripristinano automaticamente da Health Connect.</string>
+    <string name="diet_mode_standard">Standard</string>
+    <string name="diet_mode_keto_beta">Keto (Beta)</string>
+    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
+    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
+    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
+    <string name="settings_diet_mode">Diet Mode</string>
+    <string name="sheet_diet_mode">Diet Mode</string>
+    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
+    <string name="keto_carb_mode_manual">Manual carbs</string>
+    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
+    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
+    <string name="keto_carb_grams_format">%1$d g/day</string>
+    <string name="keto_carb_setup_title">Keto carb setup</string>
+    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
+    <string name="settings_keto_carb_mode">Keto carb mode</string>
+    <string name="settings_keto_net_carbs">Keto net carbs</string>
+    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 </resources>

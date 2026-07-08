@@ -1,6 +1,7 @@
 package org.codeberg.fitguy.nofud.models
 
 import kotlinx.serialization.Serializable
+import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
@@ -16,6 +17,9 @@ data class UserProfile(
     val weightKg: Double = 70.0,
     val activityLevel: ActivityLevel = ActivityLevel.MODERATE,
     val goal: WeightGoal = WeightGoal.MAINTAIN,
+    val dietMode: DietMode = DietMode.STANDARD,
+    val ketoCarbMode: KetoCarbMode = KetoCarbMode.ADAPTIVE,
+    val ketoCarbManualTarget: Int? = null,
     val bodyFatPercentage: Double? = null,
     /** Display-only goal — explicitly NOT used in BMR/TDEE/macro math. */
     val goalBodyFatPercentage: Double? = null,
@@ -83,7 +87,7 @@ data class UserProfile(
 
     val dailyCalories: Int get() = tdee.toInt() + calorieAdjustment
 
-    val proteinGoal: Int get() {
+    private val standardProteinGoal: Int get() {
         // +0.2 g/kg during cutting phase to preserve lean mass (Helms et al 2014).
         val cuttingBoost = if (goal == WeightGoal.LOSE) 0.2 else 0.0
         val multiplier = activityLevel.proteinRequirementPerKg(bodyFatPercentage, cuttingBoost)
@@ -93,9 +97,41 @@ data class UserProfile(
     private val proteinBasisWeightKg: Double get() =
         bodyFatPercentage?.let { weightKg * (1.0 - it).coerceIn(0.05, 1.0) } ?: weightKg
 
-    val fatGoal: Int get() = (0.6 * weightKg).toInt()
+    private val standardFatGoal: Int get() = (0.6 * weightKg).toInt()
 
-    val carbsGoal: Int get() = maxOf(0, (dailyCalories - proteinGoal * 4 - fatGoal * 9) / 4)
+    private val ketoAdaptiveCarbTarget: Int
+        get() = KetoCarbRecommendationService.recommendNetCarbs(this)
+
+    val ketoActiveCarbTarget: Int get() = when (ketoCarbMode) {
+        KetoCarbMode.ADAPTIVE -> ketoAdaptiveCarbTarget
+        KetoCarbMode.MANUAL -> KetoCarbRecommendationService.clampManualNetCarbs(ketoCarbManualTarget ?: ketoAdaptiveCarbTarget)
+    }
+
+    val proteinGoal: Int get() = when (dietMode) {
+        DietMode.STANDARD -> standardProteinGoal
+        DietMode.KETO -> {
+            val ketoProteinFloor = (1.6 * proteinBasisWeightKg).toInt().coerceAtLeast(60)
+            maxOf(standardProteinGoal, ketoProteinFloor)
+        }
+    }
+
+    val carbsGoal: Int get() = when (dietMode) {
+        DietMode.STANDARD -> maxOf(0, (dailyCalories - proteinGoal * 4 - fatGoal * 9) / 4)
+        DietMode.KETO -> ketoActiveCarbTarget
+    }
+
+    val fatGoal: Int get() = when (dietMode) {
+        DietMode.STANDARD -> standardFatGoal
+        DietMode.KETO -> {
+            val minFat = maxOf(standardFatGoal, 45)
+            val carbs = carbsGoal
+            val caloriesAfterCarbs = maxOf(0, dailyCalories - carbs * 4)
+            val maxProteinForFloor = maxOf(0, (caloriesAfterCarbs - minFat * 9) / 4)
+            val adjustedProtein = minOf(proteinGoal, maxProteinForFloor.takeIf { it > 0 } ?: proteinGoal)
+            val remainingAfterProtein = maxOf(0, caloriesAfterCarbs - adjustedProtein * 4)
+            maxOf(minFat, remainingAfterProtein / 9)
+        }
+    }
 
     val effectiveCalories: Int get() = customCalories ?: dailyCalories
 
@@ -146,7 +182,8 @@ data class UserProfile(
      * actually consume (see [dailyCalories], [bmr], [proteinGoal]).
      */
     val goalInputSignature: String get() = listOf(
-        gender, birthday.epochSecond, heightCm, weightKg, activityLevel, goal,
+        gender, birthday.epochSecond, heightCm, weightKg, activityLevel, goal, dietMode,
+        ketoCarbMode, ketoCarbManualTarget,
         weeklyChangeKg, goalWeightKg, bodyFatPercentage, useBodyFatInBMR
     ).joinToString("|")
 

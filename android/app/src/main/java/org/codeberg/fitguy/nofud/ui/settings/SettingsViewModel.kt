@@ -7,6 +7,8 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
+import org.codeberg.fitguy.nofud.models.DietMode
+import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
@@ -14,6 +16,7 @@ import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
+import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import org.codeberg.fitguy.nofud.services.WeightAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
 import org.codeberg.fitguy.nofud.ui.home.FoodLogSortOrder
@@ -323,6 +326,20 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.prefs.setWeightUnit(v)
             _ui.value = _ui.value.copy(weightUnit = v)
+        }
+    }
+
+    fun setDietMode(mode: DietMode) {
+        updateProfile { it.copy(dietMode = mode) }
+    }
+
+    fun setKetoCarbMode(mode: KetoCarbMode) {
+        updateProfile { it.copy(ketoCarbMode = mode) }
+    }
+
+    fun setKetoCarbManualTarget(target: Int?) {
+        updateProfile {
+            it.copy(ketoCarbManualTarget = target?.let(KetoCarbRecommendationService::clampManualNetCarbs))
         }
     }
 

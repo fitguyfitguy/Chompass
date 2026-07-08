@@ -93,6 +93,14 @@
     <string name="goal_lose">Lose Weight / Cutting</string>
     <string name="goal_maintain">Maintain / Recomp</string>
     <string name="goal_gain">Gain Weight / Bulking</string>
+    <string name="diet_mode_standard">Standard</string>
+    <string name="diet_mode_keto_beta">Keto (Beta)</string>
+    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
+    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
+    <string name="keto_carb_mode_manual">Manual carbs</string>
+    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
+    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
+    <string name="keto_carb_grams_format">%1$d g/day</string>
 
     <!-- Meal Type -->
     <string name="meal_breakfast">Breakfast</string>
@@ -215,6 +223,10 @@
 
     <string name="onboarding_goal_title">What\'s your goal?</string>
     <string name="onboarding_goal_subtitle">You can change this anytime</string>
+    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
+    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
+    <string name="keto_carb_setup_title">Keto carb setup</string>
+    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
 
     <string name="onboarding_desired_weight_title">What\'s your\ndesired weight?</string>
 
@@ -519,6 +531,9 @@
     <string name="settings_birthday_age_format">%1$s (age %2$d)</string>
 
     <string name="settings_weight_goal">Weight Goal</string>
+    <string name="settings_diet_mode">Diet Mode</string>
+    <string name="settings_keto_carb_mode">Keto carb mode</string>
+    <string name="settings_keto_net_carbs">Keto net carbs</string>
     <string name="settings_activity_level">Activity Level</string>
     <string name="settings_weekly_change">Weekly Change</string>
     <string name="settings_weekly_default">0.50 kg/wk</string>
@@ -643,6 +658,8 @@
     <string name="sheet_gender">Gender</string>
     <string name="sheet_activity_level">Activity level</string>
     <string name="sheet_goal">Goal</string>
+    <string name="sheet_diet_mode">Diet Mode</string>
+    <string name="sheet_keto_carb_mode">Keto carb mode</string>
     <string name="sheet_target_weight">Target weight</string>
     <string name="sheet_weight">Weight</string>
     <string name="sheet_birthday">Birthday</string>

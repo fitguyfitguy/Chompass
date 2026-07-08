@@ -57,6 +57,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Cake
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DeleteSweep
@@ -78,6 +79,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Percent
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.BatteryAlert
@@ -140,13 +142,16 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.models.ActivityLevel
 import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
+import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.Gender
+import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.OptionalNutrient
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import org.codeberg.fitguy.nofud.ui.home.FoodLogSortOrder
 import java.time.Instant
 import java.time.LocalDate
@@ -177,7 +182,7 @@ import java.util.Locale
 private enum class SettingsSheet {
     AI_PROVIDER, AI_MODEL, MAX_TOKENS, API_KEY, CUSTOM_BASE_URL, SPEECH_PROVIDER, SPEECH_LANGUAGE, SPEECH_KEY,
     FALLBACK_PROVIDER, FALLBACK_MODEL, FALLBACK_KEY, FALLBACK_BASE_URL,
-    GENDER, BIRTHDAY, HEIGHT, WEIGHT, BODY_FAT, GOAL_BODY_FAT, ACTIVITY, GOAL, GOAL_WEIGHT, GOAL_SPEED,
+    GENDER, BIRTHDAY, HEIGHT, WEIGHT, BODY_FAT, GOAL_BODY_FAT, ACTIVITY, GOAL, DIET_MODE, DIET_CARB_MODE, DIET_CARB_TARGET, GOAL_WEIGHT, GOAL_SPEED,
     CALORIES, PROTEIN, CARBS, FAT, OPTIONAL_NUTRIENTS,
     APPEARANCE, FOOD_LOG_SORT, WEEK_START
 }
@@ -377,6 +382,25 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             SectionCard(title = stringResource(R.string.settings_section_goals)) {
                 profile?.let { p ->
                     SettingRow(stringResource(R.string.settings_weight_goal), stringResource(p.goal.displayNameRes), icon = Icons.Outlined.Equalizer, inlineMenu = true) { sheet = SettingsSheet.GOAL }
+                    HorizontalDivider()
+                    SettingRow(stringResource(R.string.settings_diet_mode), stringResource(p.dietMode.displayNameRes), icon = Icons.Outlined.Restaurant) { sheet = SettingsSheet.DIET_MODE }
+                    if (p.dietMode == DietMode.KETO) {
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_keto_carb_mode),
+                            stringResource(p.ketoCarbMode.displayNameRes),
+                            icon = Icons.Outlined.Tune
+                        ) { sheet = SettingsSheet.DIET_CARB_MODE }
+                        HorizontalDivider()
+                        val carbValue = if (p.ketoCarbMode == KetoCarbMode.MANUAL) {
+                            p.ketoCarbManualTarget ?: p.ketoActiveCarbTarget
+                        } else p.ketoActiveCarbTarget
+                        SettingRow(
+                            stringResource(R.string.settings_keto_net_carbs),
+                            stringResource(R.string.keto_carb_grams_format, carbValue),
+                            icon = Icons.Outlined.Restaurant
+                        ) { sheet = SettingsSheet.DIET_CARB_TARGET }
+                    }
                     HorizontalDivider()
                     ActivityLevelSettingRow(p.activityLevel) { sheet = SettingsSheet.ACTIVITY }
                     if (p.goal != WeightGoal.MAINTAIN) {
@@ -1661,6 +1685,57 @@ private fun SettingsSheets(
                                 }
                             }
                         }
+                        onDismiss()
+                    }
+                )
+                SettingsSheet.DIET_MODE -> ListSheet(
+                    title = stringResource(R.string.sheet_diet_mode),
+                    items = DietMode.values().toList(),
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.profile?.dietMode },
+                    subtitle = { if (it == DietMode.KETO) stringResource(R.string.diet_mode_beta_note) else null },
+                    onSelect = { mode -> vm.setDietMode(mode); onDismiss() },
+                    icon = {
+                        when (it) {
+                            DietMode.STANDARD -> Icons.Outlined.Restaurant
+                            DietMode.KETO -> Icons.Outlined.LocalFireDepartment
+                        }
+                    }
+                )
+                SettingsSheet.DIET_CARB_MODE -> ListSheet(
+                    title = stringResource(R.string.sheet_keto_carb_mode),
+                    items = KetoCarbMode.values().toList(),
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.profile?.ketoCarbMode },
+                    subtitle = {
+                        when (it) {
+                            KetoCarbMode.ADAPTIVE -> stringResource(R.string.keto_carb_mode_adaptive_subtitle)
+                            KetoCarbMode.MANUAL -> stringResource(R.string.keto_carb_mode_manual_subtitle)
+                        }
+                    },
+                    onSelect = { mode -> vm.setKetoCarbMode(mode); onDismiss() },
+                    icon = {
+                        when (it) {
+                            KetoCarbMode.ADAPTIVE -> Icons.Outlined.AutoAwesome
+                            KetoCarbMode.MANUAL -> Icons.Outlined.Tune
+                        }
+                    }
+                )
+                SettingsSheet.DIET_CARB_TARGET -> NutritionPickerSheet(
+                    label = stringResource(R.string.settings_keto_net_carbs),
+                    unit = stringResource(R.string.unit_g),
+                    currentValue = (ui.profile?.ketoCarbManualTarget ?: ui.profile?.ketoActiveCarbTarget)
+                        ?: KetoCarbRecommendationService.MIN_NET_CARBS_G,
+                    range = KetoCarbRecommendationService.MIN_NET_CARBS_G..KetoCarbRecommendationService.MAX_NET_CARBS_G,
+                    step = 1,
+                    onSave = { grams ->
+                        vm.setKetoCarbMode(KetoCarbMode.MANUAL)
+                        vm.setKetoCarbManualTarget(grams)
+                        onDismiss()
+                    },
+                    onResetToAuto = {
+                        vm.setKetoCarbMode(KetoCarbMode.ADAPTIVE)
+                        vm.setKetoCarbManualTarget(null)
                         onDismiss()
                     }
                 )

@@ -2,8 +2,10 @@ package org.codeberg.fitguy.nofud.services
 
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
+import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
+import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
@@ -29,6 +31,29 @@ import kotlin.random.Random
  */
 class TestDataSeeder(private val container: AppContainer) {
     private val json = Json { ignoreUnknownKeys = true }
+
+    /**
+     * Focused seeder for Keto mode debugging. It mutates only profile fields (diet mode + keto
+     * carb controls + a realistic body-fat context) and leaves food/weight/body-fat history intact.
+     *
+     *   adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_keto_settings true
+     */
+    suspend fun seedKetoSettings() {
+        snapshotRealDataIfNeeded()
+
+        val baseProfile = container.profileRepository.profile.first()
+            ?: UserProfile(weightKg = 80.0, goalWeightKg = 72.0)
+        container.profileRepository.save(
+            baseProfile.copy(
+                dietMode = DietMode.KETO,
+                ketoCarbMode = KetoCarbMode.MANUAL,
+                ketoCarbManualTarget = 25,
+                bodyFatPercentage = baseProfile.bodyFatPercentage ?: 0.22,
+                goalBodyFatPercentage = baseProfile.goalBodyFatPercentage ?: 0.15
+            )
+        )
+        container.prefs.setOnboardingCompleted(true)
+    }
 
     suspend fun seedYear() {
         snapshotRealDataIfNeeded()

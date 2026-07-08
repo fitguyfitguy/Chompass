@@ -97,6 +97,12 @@ open class MainActivity : ComponentActivity() {
             runBlocking { container.testDataSeeder.seedTwoYearsBodyMetrics() }
             intent.removeExtra("seed_body_metrics_2y")
         }
+        // Focused keto-settings seeder for Diet Mode and carb target debugging.
+        // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_keto_settings true
+        if (intent?.getBooleanExtra("seed_keto_settings", false) == true) {
+            runBlocking { container.testDataSeeder.seedKetoSettings() }
+            intent.removeExtra("seed_keto_settings")
+        }
         if (intent?.getBooleanExtra("restore_real_data", false) == true) {
             runBlocking { container.testDataSeeder.restore() }
             intent.removeExtra("restore_real_data")

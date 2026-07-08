@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.models.ActivityLevel
 import org.codeberg.fitguy.nofud.models.AIProvider
+import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.Gender
+import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +22,7 @@ import java.time.ZoneId
 
 enum class OnboardingStep {
     WELCOME, GENDER, BIRTHDAY, HEIGHT_WEIGHT, BODY_FAT,
-    ACTIVITY, GOAL, GOAL_WEIGHT, GOAL_SPEED,
+    ACTIVITY, GOAL, DIET_MODE, GOAL_WEIGHT, GOAL_SPEED,
     NOTIFICATIONS, HEALTH_CONNECT, PROVIDER,
     BUILDING_PLAN, PLAN_READY
 }
@@ -37,6 +40,9 @@ data class OnboardingState(
     val goalBodyFatPercentage: Double? = null,
     val activity: ActivityLevel = ActivityLevel.MODERATE,
     val goal: WeightGoal = WeightGoal.MAINTAIN,
+    val dietMode: DietMode = DietMode.STANDARD,
+    val ketoCarbMode: KetoCarbMode = KetoCarbMode.ADAPTIVE,
+    val ketoCarbManualTarget: Int? = null,
     val goalWeightKg: Double = 70.0,
     /** 0.25 (slow), 0.5 (moderate), 1.0 (fast) kg/week */
     val weeklyChangeKg: Double = 0.5,
@@ -74,6 +80,9 @@ data class OnboardingState(
         weightKg = weightKg,
         activityLevel = activity,
         goal = goal,
+        dietMode = dietMode,
+        ketoCarbMode = ketoCarbMode,
+        ketoCarbManualTarget = ketoCarbManualTarget,
         bodyFatPercentage = bodyFatPercentage,
         goalBodyFatPercentage = if (bodyFatPercentage != null) goalBodyFatPercentage else null,
         weeklyChangeKg = if (goal == WeightGoal.MAINTAIN) null else weeklyChangeKg,
@@ -120,6 +129,13 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         _ui.value = _ui.value.copy(goal = v, goalWeightKg = defaultGoalWeight)
     }
     fun setGoalWeight(v: Double) { _ui.value = _ui.value.copy(goalWeightKg = v) }
+    fun setDietMode(v: DietMode) { _ui.value = _ui.value.copy(dietMode = v) }
+    fun setKetoCarbMode(v: KetoCarbMode) { _ui.value = _ui.value.copy(ketoCarbMode = v) }
+    fun setKetoCarbManualTarget(v: Int?) {
+        _ui.value = _ui.value.copy(
+            ketoCarbManualTarget = v?.let { KetoCarbRecommendationService.clampManualNetCarbs(it) }
+        )
+    }
     fun setWeeklyChange(v: Double) { _ui.value = _ui.value.copy(weeklyChangeKg = v) }
     fun setNotificationsEnabled(v: Boolean) {
         _ui.value = _ui.value.copy(notificationsEnabled = v)

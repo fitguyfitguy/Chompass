@@ -43,6 +43,7 @@ import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Man
@@ -102,8 +103,11 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.ActivityLevel
 import org.codeberg.fitguy.nofud.models.AIProvider
+import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.Gender
+import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import org.codeberg.fitguy.nofud.services.update.AndroidUpdateChecker
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.DecimalWheelPicker
@@ -199,6 +203,14 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     onSelect = vm::setActivity
                 )
                 OnboardingStep.GOAL -> GoalStep(selected = ui.goal, onSelect = vm::setGoal)
+                OnboardingStep.DIET_MODE -> DietModeStep(
+                    selected = ui.dietMode,
+                    ketoCarbMode = ui.ketoCarbMode,
+                    ketoCarbManualTarget = ui.ketoCarbManualTarget,
+                    onSelect = vm::setDietMode,
+                    onKetoCarbModeSelect = vm::setKetoCarbMode,
+                    onKetoCarbManualTargetChange = vm::setKetoCarbManualTarget
+                )
                 OnboardingStep.GOAL_WEIGHT -> GoalWeightStep(
                     current = ui.goalWeightKg,
                     goal = ui.goal,
@@ -656,6 +668,75 @@ private fun GoalStep(selected: WeightGoal, onSelect: (WeightGoal) -> Unit) {
                 selected = g == selected
             ) { onSelect(g) }
             Spacer(Modifier.height(12.dp))
+        }
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun DietModeStep(
+    selected: DietMode,
+    ketoCarbMode: KetoCarbMode,
+    ketoCarbManualTarget: Int?,
+    onSelect: (DietMode) -> Unit,
+    onKetoCarbModeSelect: (KetoCarbMode) -> Unit,
+    onKetoCarbManualTargetChange: (Int?) -> Unit
+) {
+    Column(Modifier.fillMaxSize()) {
+        StepHeader(
+            stringResource(R.string.onboarding_diet_mode_title),
+            subtitle = stringResource(R.string.onboarding_diet_mode_subtitle)
+        )
+        Spacer(Modifier.height(8.dp))
+        for (mode in DietMode.values()) {
+            SelectionCard(
+                icon = when (mode) {
+                    DietMode.STANDARD -> Icons.Outlined.Restaurant
+                    DietMode.KETO -> Icons.Outlined.LocalFireDepartment
+                },
+                title = stringResource(mode.displayNameRes),
+                subtitle = if (mode == DietMode.KETO) stringResource(R.string.diet_mode_beta_note) else null,
+                selected = mode == selected
+            ) { onSelect(mode) }
+            Spacer(Modifier.height(12.dp))
+        }
+        if (selected == DietMode.KETO) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.keto_carb_setup_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(8.dp))
+            for (mode in KetoCarbMode.values()) {
+                SelectionCard(
+                    icon = if (mode == KetoCarbMode.ADAPTIVE) Icons.Outlined.AutoAwesome else Icons.Outlined.Tune,
+                    title = stringResource(mode.displayNameRes),
+                    subtitle = if (mode == KetoCarbMode.ADAPTIVE) {
+                        stringResource(R.string.keto_carb_mode_adaptive_subtitle)
+                    } else {
+                        stringResource(R.string.keto_carb_mode_manual_subtitle)
+                    },
+                    selected = mode == ketoCarbMode
+                ) { onKetoCarbModeSelect(mode) }
+                Spacer(Modifier.height(10.dp))
+            }
+            if (ketoCarbMode == KetoCarbMode.MANUAL) {
+                val fallback = KetoCarbRecommendationService.MIN_NET_CARBS_G
+                NumericWheelPicker(
+                    value = ketoCarbManualTarget ?: fallback,
+                    onValueChange = { onKetoCarbManualTargetChange(it) },
+                    min = KetoCarbRecommendationService.MIN_NET_CARBS_G,
+                    max = KetoCarbRecommendationService.MAX_NET_CARBS_G,
+                    unit = stringResource(R.string.unit_g)
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.keto_carb_manual_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+            }
         }
         Spacer(Modifier.weight(1f))
     }
