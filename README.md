@@ -1,27 +1,51 @@
 # NoFUD
 
-**Ad-free AI calorie tracker for Android** - a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+**Ad-free AI calorie tracker for Android** - a privacy-focused app based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-Snap, speak, or type your food. Bring your own AI provider key. Everything stays on your device - no accounts, no cloud sync, **no ads**.
+NoFUD keeps the core Fud AI experience while removing monetization and tracking surface area.  
+Snap, speak, scan, or type your food using your own AI provider key - no account required, no cloud sync, **no ads**.
 
 Home: https://codeberg.org/fitguy/NoFUD
 
-## What changed from Fud AI
+## Why NoFUD
 
-| | Fud AI | NoFUD |
-|---|--------|-------|
-| Banner ads | Yes (AdMob) | **Removed** |
-| Analytics / tracking SDKs | None | None |
-| Package ID | `com.apoorvdarshan.calorietracker` | `org.codeberg.fitguy.nofud` |
-| Source home | GitHub | Codeberg |
+NoFUD focuses on a few high-impact product changes:
 
-All other core features are preserved: AI food logging, Coach, workouts library, Health Connect, widgets, diary export, meal sharing, and 15 languages.
+- **Diet modes, including keto mode** 
+- **Better entry flow** with `AddFoodSheet` and improved camera/text/photo logging
+- **Opinionated UX/UI refinements** for clearer nutrient display and smoother day-to-day use
+- **Lighter app package** via image optimization and asset cleanup
+- **No ads** with AdMob removed
 
-See [CHANGELOG.md](CHANGELOG.md) for full version history.
+## Feature and compatibility status
+
+NoFUD keeps the core Android features i love from Fud AI:
+
+- AI food logging (camera, text, voice, barcode, manual entry)
+- AI Coach chat
+- Diet modes (including keto carb mode)
+- Workouts library
+- Health Connect sync and restore behavior
+- Home-screen widgets
+- Diary export (JSON / Markdown / CSV)
+- Meal sharing and import
+- 15-language localization
+
+| Area | Fud AI | NoFUD |
+|---|---|---|
+| Android AI calorie tracking app | Yes | Yes |
+| Banner ads (AdMob) | Yes | **Removed** |
+| Analytics/tracking SDKs | None | None |
+| Diet mode / keto carb mode | Not in Fud AI | **Added in NoFUD** |
+| Improved add-entry flow | Baseline Fud AI flow | **Enhanced (`AddFoodSheet` + logging UX refinements)** |
+| APK/package size optimization | Varies by build/assets | **Improved via asset optimization + cleanup** |
+| Opinionated UX/UI updates | Baseline | **Expanded in NoFUD** |
+
+See [CHANGELOG.md](CHANGELOG.md) for version-by-version details.
 
 ## Fork attribution
 
-NoFUD is a fork of Fud AI (https://github.com/apoorvdarshan/fud-ai).
+NoFUD is based on Fud AI (https://github.com/apoorvdarshan/fud-ai).
 
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License
@@ -107,13 +131,13 @@ See [RELEASE.md](RELEASE.md) for maintainer build and release steps.
 
 ## App icon
 
-NoFUD uses original launcher and splash artwork (distinct from upstream Fud AI). Regenerate themed variants with `uv run --with pillow python scripts/generate_icons.py` after editing `scripts/nofud_icon_master.png`. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
+NoFUD uses original launcher and splash artwork (distinct from Fud AI). Regenerate themed variants with `uv run --with pillow python scripts/generate_icons.py` after editing `scripts/nofud_icon_master.png`. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
 ## Exercise data
 
 The Workouts tab bundles the [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) dataset under `android/app/src/main/assets/exercises/` (~20 MB of optimized WebP photos plus `exercises.json`). License: see `exercises/LICENSE.md` in that folder.
 
-Regenerate optimized exercise photos after updating upstream JPEGs:
+Regenerate optimized exercise photos after updating source JPEGs:
 
 ```bash
 uv run --with pillow python scripts/optimize_exercise_images.py
