@@ -69,7 +69,7 @@ fun <T> OptionPickerSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.92f else 0.96f)
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
