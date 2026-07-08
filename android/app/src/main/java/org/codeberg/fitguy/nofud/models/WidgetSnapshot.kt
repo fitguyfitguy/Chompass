@@ -41,7 +41,11 @@ data class WidgetSnapshot(
     val homeNutrients: List<WidgetNutrient>? = null,
     /** User's theme gradient as raw RGB hex (e.g. 0x0D9488). Teal when absent. */
     val themeStartHex: Int? = null,
-    val themeEndHex: Int? = null
+    val themeEndHex: Int? = null,
+    val proteinHex: Int? = null,
+    val carbsHex: Int? = null,
+    val fatHex: Int? = null,
+    val fiberHex: Int? = null,
 ) {
     val caloriesRemaining: Int get() = maxOf(0, calorieGoal - calories)
     val proteinRemaining: Double get() = maxOf(0.0, proteinGoal.toDouble() - protein)
@@ -70,6 +74,17 @@ data class WidgetSnapshot(
 
     /** First selected nutrient — what the "Protein" widget actually tracks. */
     val primaryHomeNutrient: WidgetNutrient get() = displayedHomeNutrients.first()
+
+    fun nutrientColorHex(id: String): Int {
+        val paletteFallback = themeStartHex ?: 0x006B5E
+        return when (id) {
+            "protein" -> proteinHex ?: paletteFallback
+            "carbs" -> carbsHex ?: paletteFallback
+            "fat" -> fatHex ?: paletteFallback
+            "fiber" -> fiberHex ?: paletteFallback
+            else -> paletteFallback
+        }
+    }
 
     companion object {
         fun placeholder(): WidgetSnapshot {

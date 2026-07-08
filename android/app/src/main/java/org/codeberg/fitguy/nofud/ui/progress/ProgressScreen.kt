@@ -903,18 +903,18 @@ private fun MacroAveragesSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.progress_macro_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-        MacroProgressRow(stringResource(R.string.macro_protein), avgProtein, proteinGoal)
-        MacroProgressRow(stringResource(R.string.macro_carbs), avgCarbs, carbsGoal)
-        MacroProgressRow(stringResource(R.string.macro_fat), avgFat, fatGoal)
+        MacroProgressRow(stringResource(R.string.macro_protein), avgProtein, proteinGoal, AppColors.Protein)
+        MacroProgressRow(stringResource(R.string.macro_carbs), avgCarbs, carbsGoal, AppColors.Carbs)
+        MacroProgressRow(stringResource(R.string.macro_fat), avgFat, fatGoal, AppColors.Fat)
     }
 }
 
 @Composable
-private fun MacroProgressRow(label: String, current: Double, goal: Int) {
+private fun MacroProgressRow(label: String, current: Double, goal: Int, accentColor: Color) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+            Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = accentColor)
             Spacer(Modifier.weight(1f))
             Text(
                 "${MacroValueFormatter.string(current)}g / ${goal}g",
@@ -926,21 +926,15 @@ private fun MacroProgressRow(label: String, current: Double, goal: Int) {
             val w = maxWidth
             Box(
                 Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp))
-                    .background(AppColors.Calorie.copy(alpha = 0.12f))
+                    .background(accentColor.copy(alpha = 0.16f))
             )
             val barWidth = (w * progress).coerceAtLeast(6.dp)
             Box(
                 Modifier
                     .width(barWidth)
                     .height(8.dp)
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = RoundedCornerShape(4.dp),
-                        ambientColor = AppColors.Calorie.copy(alpha = 0.3f),
-                        spotColor = AppColors.Calorie.copy(alpha = 0.3f)
-                    )
                     .clip(RoundedCornerShape(4.dp))
-                    .background(AppColors.CalorieGradient)
+                    .background(accentColor)
             )
         }
     }

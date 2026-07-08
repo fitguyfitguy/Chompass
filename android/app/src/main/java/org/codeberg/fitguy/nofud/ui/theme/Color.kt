@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 
 enum class AppThemeColor(
     val key: String,
@@ -25,6 +26,9 @@ enum class AppThemeColor(
 
     /** Accent gradient end — lighter blend of [primary]. */
     val end: Color get() = lerp(primary, Color.White, 0.28f)
+
+    val macroPalette: MacroPalette
+        get() = ThemeMacroPalettes.getValue(this)
 
     companion object {
         const val DEFAULT_KEY = "teal"
@@ -74,9 +78,23 @@ object AppColors {
     val Calorie: Color
         get() = CalorieStart
 
-    val Protein: Color = Color(0xFF4F6BED)
-    val Carbs: Color = Color(0xFFE8A317)
-    val Fat: Color = Color(0xFFE46962)
+    val Protein: Color
+        get() = activeThemeColor.macroPalette.protein
+
+    val Carbs: Color
+        get() = activeThemeColor.macroPalette.carbs
+
+    val Fat: Color
+        get() = activeThemeColor.macroPalette.fat
+
+    val Fiber: Color
+        get() = activeThemeColor.macroPalette.fiber
+
+    /** Muted tone for non-core nutrients (sodium, vitamins, etc.). */
+    val SecondaryNutrient: Color = Color(0xFF79747E)
+
+    fun nutrientColor(nutrient: HomeTopNutrient): Color =
+        activeThemeColor.macroPalette.colorFor(nutrient)
 
     val CalorieGradient: Brush
         get() = Brush.linearGradient(listOf(CalorieStart, CalorieEnd))

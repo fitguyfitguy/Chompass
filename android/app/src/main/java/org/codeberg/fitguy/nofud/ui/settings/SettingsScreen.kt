@@ -509,6 +509,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         label = stringResource(R.string.macro_protein),
                         value = "${p.effectiveProtein}g",
                         icon = Icons.Outlined.DataUsage,
+                        iconTint = AppColors.Protein,
                         locked = p.isMacroLocked(AutoBalanceMacro.PROTEIN),
                         lockEnabled = lockEnabled,
                         onClick = { openGoal(SettingsSheet.PROTEIN) }
@@ -518,6 +519,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         label = stringResource(R.string.macro_carbs),
                         value = "${p.effectiveCarbs}g",
                         icon = Icons.Outlined.DataUsage,
+                        iconTint = AppColors.Carbs,
                         locked = p.isMacroLocked(AutoBalanceMacro.CARBS),
                         lockEnabled = lockEnabled,
                         onClick = { openGoal(SettingsSheet.CARBS) }
@@ -527,6 +529,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         label = stringResource(R.string.macro_fat),
                         value = "${p.effectiveFat}g",
                         icon = Icons.Outlined.DataUsage,
+                        iconTint = AppColors.Fat,
                         locked = p.isMacroLocked(AutoBalanceMacro.FAT),
                         lockEnabled = lockEnabled,
                         onClick = { openGoal(SettingsSheet.FAT) }
@@ -2624,7 +2627,8 @@ private fun LockableGoalRow(
     icon: ImageVector,
     locked: Boolean,
     lockEnabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    iconTint: Color = AppColors.Calorie,
 ) {
     Row(
         Modifier
@@ -2633,7 +2637,7 @@ private fun LockableGoalRow(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
+        FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp, tint = iconTint)
         Spacer(Modifier.width(14.dp))
         Text(
             label,

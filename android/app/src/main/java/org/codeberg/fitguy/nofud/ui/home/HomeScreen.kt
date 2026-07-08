@@ -125,6 +125,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import org.codeberg.fitguy.nofud.ui.util.clockTimePattern
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -342,7 +345,7 @@ fun HomeScreen(container: AppContainer) {
                                 current = nutrient.current(ui.todayEntries),
                                 goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals),
                                 unit = nutrient.unit,
-                                accentColor = nutrientAccentColor(nutrient),
+                                accentColor = AppColors.nutrientColor(nutrient),
                                 modifier = Modifier.weight(1f),
                             )
                         }
@@ -966,13 +969,19 @@ private fun MealSectionHeader(
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
             Spacer(Modifier.weight(1f))
-            val compactSummary =
-                "$totalCalories kcal · ${totalProtein.roundToInt()}P ${totalCarbs.roundToInt()}C ${totalFat.roundToInt()}F"
+            val summary = buildAnnotatedString {
+                append("$totalCalories kcal · ")
+                withStyle(SpanStyle(color = AppColors.Protein)) { append("${totalProtein.roundToInt()}P") }
+                append(' ')
+                withStyle(SpanStyle(color = AppColors.Carbs)) { append("${totalCarbs.roundToInt()}C") }
+                append(' ')
+                withStyle(SpanStyle(color = AppColors.Fat)) { append("${totalFat.roundToInt()}F") }
+            }
             Text(
-                compactSummary,
+                summary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
             )
         }
     }
@@ -1702,12 +1711,12 @@ private fun AnalysisResultDialog(
         FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("${analysis.calories} kcal", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = AppColors.Calorie)
-                Text(stringResource(R.string.macro_protein_format, MacroValueFormatter.withUnit(analysis.protein)))
-                Text(stringResource(R.string.macro_carbs_format, MacroValueFormatter.withUnit(analysis.carbs)))
-                Text(stringResource(R.string.macro_fat_format, MacroValueFormatter.withUnit(analysis.fat)))
+                MacroLine(stringResource(R.string.macro_protein_format, MacroValueFormatter.withUnit(analysis.protein)), AppColors.Protein)
+                MacroLine(stringResource(R.string.macro_carbs_format, MacroValueFormatter.withUnit(analysis.carbs)), AppColors.Carbs)
+                MacroLine(stringResource(R.string.macro_fat_format, MacroValueFormatter.withUnit(analysis.fat)), AppColors.Fat)
                 if (analysis.fiber != null || analysis.sugar != null || analysis.sodium != null) {
                     Spacer(Modifier.height(2.dp))
-                    analysis.fiber?.let { Text(stringResource(R.string.nutrient_fiber_format, it.toString()), fontSize = 12.sp) }
+                    analysis.fiber?.let { MacroLine(stringResource(R.string.nutrient_fiber_format, it.toString()), AppColors.Fiber, fontSize = 12.sp) }
                     analysis.sugar?.let { Text(stringResource(R.string.nutrient_sugar_format, it.toString()), fontSize = 12.sp) }
                     analysis.saturatedFat?.let { Text(stringResource(R.string.nutrient_sat_fat_format, it.toString()), fontSize = 12.sp) }
                     analysis.sodium?.let { Text(stringResource(R.string.nutrient_sodium_format, it.toString()), fontSize = 12.sp) }
@@ -1852,9 +1861,7 @@ private fun NumberField(label: String, value: String, onValueChange: (String) ->
 private fun filterDecimalInput(value: String): String =
     value.filter { it.isDigit() || it == '.' || it == ',' }
 
-private fun nutrientAccentColor(nutrient: HomeTopNutrient): Color = when (nutrient) {
-    HomeTopNutrient.PROTEIN -> AppColors.Protein
-    HomeTopNutrient.CARBS -> AppColors.Carbs
-    HomeTopNutrient.FAT -> AppColors.Fat
-    else -> AppColors.Calorie
+@Composable
+private fun MacroLine(text: String, color: Color, fontSize: androidx.compose.ui.unit.TextUnit = 16.sp) {
+    Text(text, fontSize = fontSize, color = color, fontWeight = FontWeight.Medium)
 }

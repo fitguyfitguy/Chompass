@@ -24,4 +24,9 @@ object WidgetTheme {
         val color = Color(0xFF000000L or themeStart(hex).toLong())
         return ColorProvider(day = color, night = color)
     }
+
+    fun colorProvider(rgb: Int): GlanceColorProvider {
+        val color = Color(0xFF000000L or rgb.toLong())
+        return ColorProvider(day = color, night = color)
+    }
 }

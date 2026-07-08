@@ -146,13 +146,13 @@ fun NutritionDetailSheet(
             item { SectionHeader(stringResource(R.string.nutrition_section_macros)) }
             item {
                 Card {
-                    DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "$calories", stringResource(R.string.unit_kcal), goal = "${profile?.effectiveCalories ?: 2000}")
+                    DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "$calories", stringResource(R.string.unit_kcal), goal = "${profile?.effectiveCalories ?: 2000}", accentColor = AppColors.Calorie)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "${profile?.effectiveProtein ?: 150}", labelGlyph = "P")
+                    DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "${profile?.effectiveProtein ?: 150}", labelGlyph = "P", accentColor = AppColors.Protein)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(carbs), stringResource(R.string.unit_g), goal = "${profile?.effectiveCarbs ?: 220}", labelGlyph = "C")
+                    DetailRow(null, stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(carbs), stringResource(R.string.unit_g), goal = "${profile?.effectiveCarbs ?: 220}", labelGlyph = "C", accentColor = AppColors.Carbs)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(fat), stringResource(R.string.unit_g), goal = "${profile?.effectiveFat ?: 70}", labelGlyph = "F")
+                    DetailRow(null, stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(fat), stringResource(R.string.unit_g), goal = "${profile?.effectiveFat ?: 70}", labelGlyph = "F", accentColor = AppColors.Fat)
                 }
             }
 
@@ -163,7 +163,7 @@ fun NutritionDetailSheet(
                     Hairline()
                     DetailRow(null, stringResource(R.string.nutrition_label_added_sugar), fmt(addedSugar), stringResource(R.string.unit_g), goal = "${optionalGoals.addedSugar}", labelGlyph = "+")
                     Hairline()
-                    DetailRow(Icons.Filled.Spa, stringResource(R.string.nutrition_label_fiber), fmt(fiber), stringResource(R.string.unit_g), goal = "${optionalGoals.fiber}")
+                    DetailRow(Icons.Filled.Spa, stringResource(R.string.nutrition_label_fiber), fmt(fiber), stringResource(R.string.unit_g), goal = "${optionalGoals.fiber}", accentColor = AppColors.Fiber)
                     Hairline()
                     DetailRow(Icons.Filled.WaterDrop, stringResource(R.string.nutrition_label_saturated_fat), fmt(satFat), stringResource(R.string.unit_g), goal = "${optionalGoals.saturatedFat}")
                     Hairline()
@@ -302,6 +302,7 @@ private fun HomeTopNutrientPickerDialog(
         ) {
             items(HomeTopNutrient.values().toList()) { nutrient ->
                 val checked = nutrient in draft
+                val nutrientColor = AppColors.nutrientColor(nutrient)
                 val shape = RoundedCornerShape(16.dp)
                 val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
                 Row(
@@ -309,13 +310,13 @@ private fun HomeTopNutrientPickerDialog(
                         .fillMaxWidth()
                         .clip(shape)
                         .background(
-                            if (checked) AppColors.Calorie.copy(alpha = 0.11f)
+                            if (checked) nutrientColor.copy(alpha = 0.14f)
                             else if (isDark) AppColors.TranslucentSurfaceDark
                             else AppColors.TranslucentSurfaceLight
                         )
                         .border(
                             0.5.dp,
-                            if (checked) AppColors.Calorie.copy(alpha = 0.22f)
+                            if (checked) nutrientColor.copy(alpha = 0.28f)
                             else if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
                             shape
                         )
@@ -327,18 +328,10 @@ private fun HomeTopNutrientPickerDialog(
                         Modifier
                             .size(28.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (checked) Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
-                                else Brush.linearGradient(
-                                    listOf(
-                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
-                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.32f)
-                                    )
-                                )
-                            )
+                            .background(if (checked) nutrientColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
                             .border(
                                 1.dp,
-                                if (checked) AppColors.Calorie.copy(alpha = 0.40f)
+                                if (checked) nutrientColor.copy(alpha = 0.55f)
                                 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
                                 RoundedCornerShape(8.dp)
                             ),
@@ -391,7 +384,8 @@ private fun DetailRow(
     value: String,
     unit: String,
     goal: String? = null,
-    labelGlyph: String? = null
+    labelGlyph: String? = null,
+    accentColor: Color = AppColors.Calorie,
 ) {
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 14.dp),
@@ -399,13 +393,13 @@ private fun DetailRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (icon != null) {
-            Icon(icon, null, tint = AppColors.Calorie, modifier = Modifier.size(20.dp))
+            Icon(icon, null, tint = accentColor, modifier = Modifier.size(20.dp))
         } else if (labelGlyph != null) {
             Box(
                 Modifier
                     .size(20.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AppColors.Calorie),
+                    .background(accentColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(labelGlyph, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color.White)
@@ -415,7 +409,7 @@ private fun DetailRow(
         }
         Text(label, fontSize = 17.sp, modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-            Text(value, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+            Text(value, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
             Text(unit, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
         }
         goal?.let {

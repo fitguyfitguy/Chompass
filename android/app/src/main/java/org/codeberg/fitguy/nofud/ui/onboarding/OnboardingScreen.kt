@@ -927,7 +927,7 @@ private fun GoalSpeedStep(
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
-                    tint = AppColors.Protein,
+                    tint = AppColors.Calorie,
                     modifier = Modifier.size(56.dp)
                 )
                 Spacer(Modifier.height(12.dp))
@@ -1675,19 +1675,19 @@ private fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
             MacroCard(
                 label = stringResource(R.string.macro_protein),
                 value = profile.effectiveProtein,
-                gradient = macroGradient,
+                gradient = listOf(AppColors.Protein, AppColors.Protein.copy(alpha = 0.75f)),
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.PROTEIN }
             )
             MacroCard(
                 label = stringResource(R.string.macro_carbs),
                 value = profile.effectiveCarbs,
-                gradient = macroGradient,
+                gradient = listOf(AppColors.Carbs, AppColors.Carbs.copy(alpha = 0.75f)),
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.CARBS }
             )
             MacroCard(
                 label = stringResource(R.string.macro_fat),
                 value = profile.effectiveFat,
-                gradient = macroGradient,
+                gradient = listOf(AppColors.Fat, AppColors.Fat.copy(alpha = 0.75f)),
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.FAT }
             )
         }

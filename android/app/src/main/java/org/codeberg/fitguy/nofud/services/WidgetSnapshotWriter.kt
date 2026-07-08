@@ -82,7 +82,11 @@ class WidgetSnapshotWriter(
                     )
                 },
                 themeStartHex = theme.start.toArgb() and 0xFFFFFF,
-                themeEndHex = theme.end.toArgb() and 0xFFFFFF
+                themeEndHex = theme.end.toArgb() and 0xFFFFFF,
+                proteinHex = theme.macroPalette.proteinArgb(),
+                carbsHex = theme.macroPalette.carbsArgb(),
+                fatHex = theme.macroPalette.fatArgb(),
+                fiberHex = theme.macroPalette.fiberArgb(),
             )
             prefs.setWidgetSnapshot(snapshot)
         }

@@ -266,8 +266,7 @@ internal fun NutrientBarsRow(
             Box(modifier = GlanceModifier.defaultWeight()) {
                 VerticalNutrientBarCell(
                     nutrient = nutrient,
-                    startHex = snapshot.themeStartHex,
-                    endHex = snapshot.themeEndHex,
+                    barRgb = snapshot.nutrientColorHex(nutrient.id),
                     barHeightDp = barHeightDp,
                     barWidthDp = barWidthDp,
                     valueFontSp = valueFontSp
@@ -280,8 +279,7 @@ internal fun NutrientBarsRow(
 @Composable
 internal fun VerticalNutrientBarCell(
     nutrient: WidgetNutrient,
-    startHex: Int?,
-    endHex: Int?,
+    barRgb: Int,
     barHeightDp: Int,
     barWidthDp: Int,
     valueFontSp: Int
@@ -291,8 +289,8 @@ internal fun VerticalNutrientBarCell(
         widthPx = (barWidthDp * density).toInt().coerceAtLeast(2),
         heightPx = (barHeightDp * density).toInt().coerceAtLeast(2),
         progress = nutrient.progress.toFloat(),
-        startRgb = WidgetTheme.themeStart(startHex),
-        endRgb = WidgetTheme.themeEnd(endHex)
+        startRgb = barRgb,
+        endRgb = barRgb
     )
     Column(
         modifier = GlanceModifier.fillMaxWidth(),
@@ -301,7 +299,7 @@ internal fun VerticalNutrientBarCell(
         Text(
             text = MacroValueFormatter.string(nutrient.value),
             style = TextStyle(
-                color = WidgetTheme.themeTextProvider(startHex),
+                color = WidgetTheme.colorProvider(barRgb),
                 fontWeight = FontWeight.Bold,
                 fontSize = valueFontSp.sp
             ),
