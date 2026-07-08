@@ -4,6 +4,19 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-08
+
+### Added
+
+- Optional glass blur effect with a settings toggle for frosted UI surfaces
+
+### Changed
+
+- Macro nutrient chips and color palette aligned with Material theme across home and detail views
+- Text input sheets use `FudGlassTextField` for consistent glass styling
+- UI components refactored to `MaterialTheme` colors for better light/dark consistency
+- Release APK size optimizations (debug symbols, native lib packaging, dependency metadata exclusions) for F-Droid and IzzyOnDroid compliance
+
 ## [1.5.1] - 2026-07-08
 
 ### Changed
