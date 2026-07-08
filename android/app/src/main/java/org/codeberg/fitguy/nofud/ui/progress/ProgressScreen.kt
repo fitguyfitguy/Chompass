@@ -93,7 +93,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
-import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.MacroValueFormatter
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
@@ -140,57 +139,18 @@ enum class TimeRange(@StringRes val labelRes: Int, val days: Int) {
 fun ProgressScreen(container: AppContainer) {
     val vm: ProgressViewModel = viewModel(factory = ProgressViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
-    val foods by container.foodRepository.entries.collectAsState(initial = emptyList())
-    val weightUnit by container.prefs.weightUnit.collectAsState(initial = "kg")
-    val weightMetric = weightUnit == "kg"
+    val weightMetric = ui.weightUnit == "kg"
 
-    var range by remember { mutableStateOf(TimeRange.WEEK) }
     var showAddDialog by remember { mutableStateOf(false) }
     var showAddBodyFatDialog by remember { mutableStateOf(false) }
     var showAllWeights by remember { mutableStateOf(false) }
     var showAllBodyFats by remember { mutableStateOf(false) }
     var bodyMetric by remember { mutableStateOf(BodyMetric.WEIGHT) }
-
-    // Filter weights + body fats to range
-    val (rangeStartDate, rangeEndDate) = range.dateRange()
-    val zone = ZoneId.systemDefault()
-    val rangeStart = rangeStartDate.atStartOfDay(zone).toInstant()
-    val rangeEnd = rangeEndDate.atTime(23, 59, 59).atZone(zone).toInstant()
-    val filteredWeights = ui.entries.filter { it.date in rangeStart..rangeEnd }.sortedBy { it.date }
-    val filteredBodyFats = ui.bodyFatEntries.filter { it.date in rangeStart..rangeEnd }.sortedBy { it.date }
     // Body Fat segment only renders when the user has opted in — same visibility
     // rule as iOS: hidden entirely for users who never set body fat OR a goal.
     val bodyFatAvailable = ui.bodyFatEntries.isNotEmpty()
         || ui.profile?.bodyFatPercentage != null
         || ui.profile?.goalBodyFatPercentage != null
-
-    // Build per-day calorie totals over the range (drop empty days, like iOS)
-    val dailyCalories = remember(foods, range) {
-        val today = LocalDate.now()
-        (0 until range.days).mapNotNull { offset ->
-            val day = today.minusDays(offset.toLong())
-            val cals = foods
-                .filter { it.timestamp.atZone(zone).toLocalDate() == day }
-                .sumOf { it.calories }
-            if (cals == 0) null else day to cals
-        }.reversed()
-    }
-
-    // Macro averages over the range, only counting days with logged food
-    val macroAverages = remember(foods, range) {
-        val today = LocalDate.now()
-        var p = 0.0; var c = 0.0; var f = 0.0; var n = 0
-        for (offset in 0 until range.days) {
-            val day = today.minusDays(offset.toLong())
-            val dayEntries = foods.filter { it.timestamp.atZone(zone).toLocalDate() == day }
-            if (dayEntries.isEmpty()) continue
-            p += dayEntries.sumOf { it.protein }
-            c += dayEntries.sumOf { it.carbs }
-            f += dayEntries.sumOf { it.fat }
-            n += 1
-        }
-        if (n == 0) Triple(0.0, 0.0, 0.0) else Triple(p / n, c / n, f / n)
-    }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         LazyColumn(
@@ -204,7 +164,7 @@ fun ProgressScreen(container: AppContainer) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // 1. Segmented TimeRange picker
-            item { TimeRangePicker(selected = range, onSelect = { range = it }) }
+            item { TimeRangePicker(selected = ui.timeRange, onSelect = vm::setTimeRange) }
 
             // 2. Weight / Body Fat chart — single card with a segmented toggle
             //    when the user has opted into body-fat tracking, or just the
@@ -217,16 +177,16 @@ fun ProgressScreen(container: AppContainer) {
                         CardSection {
                             when (bodyMetric) {
                                 BodyMetric.WEIGHT -> WeightSection(
-                                    entries = filteredWeights,
-                                    latest = ui.entries.maxByOrNull { it.date },
+                                    entries = ui.filteredWeights,
+                                    stats = ui.weightStats,
                                     goalKg = ui.profile?.goalWeightKg,
                                     useMetric = weightMetric,
                                     onLogWeight = { showAddDialog = true }
                                 )
                                 BodyMetric.BODY_FAT -> BodyFatSection(
-                                    entries = filteredBodyFats,
-                                    latest = ui.bodyFatEntries.maxByOrNull { it.date }?.bodyFatFraction
-                                        ?: ui.profile?.bodyFatPercentage,
+                                    entries = ui.filteredBodyFats,
+                                    stats = ui.bodyFatStats,
+                                    profileBodyFatFraction = ui.profile?.bodyFatPercentage,
                                     goalFraction = ui.profile?.goalBodyFatPercentage,
                                     onLogBodyFat = { showAddBodyFatDialog = true }
                                 )
@@ -236,8 +196,8 @@ fun ProgressScreen(container: AppContainer) {
                 } else {
                     CardSection {
                         WeightSection(
-                            entries = filteredWeights,
-                            latest = ui.entries.maxByOrNull { it.date },
+                            entries = ui.filteredWeights,
+                            stats = ui.weightStats,
                             goalKg = ui.profile?.goalWeightKg,
                             useMetric = weightMetric,
                             onLogWeight = { showAddDialog = true }
@@ -264,7 +224,7 @@ fun ProgressScreen(container: AppContainer) {
             item {
                 CardSection {
                     CalorieSection(
-                        dailyCalories = dailyCalories,
+                        dailyCalories = ui.dailyCalories,
                         calorieGoal = ui.profile?.effectiveCalories ?: 2000
                     )
                 }
@@ -275,9 +235,9 @@ fun ProgressScreen(container: AppContainer) {
                 item {
                     CardSection {
                         MacroAveragesSection(
-                            avgProtein = macroAverages.first,
-                            avgCarbs = macroAverages.second,
-                            avgFat = macroAverages.third,
+                            avgProtein = ui.macroAverages.first,
+                            avgCarbs = ui.macroAverages.second,
+                            avgFat = ui.macroAverages.third,
                             proteinGoal = p.effectiveProtein,
                             carbsGoal = p.effectiveCarbs,
                             fatGoal = p.effectiveFat
@@ -409,7 +369,7 @@ private fun CardSection(content: @Composable () -> Unit) {
 @Composable
 private fun WeightSection(
     entries: List<WeightEntry>,
-    latest: WeightEntry?,
+    stats: WeightSummaryStats,
     goalKg: Double?,
     useMetric: Boolean,
     onLogWeight: () -> Unit
@@ -438,23 +398,20 @@ private fun WeightSection(
                 )
             }
         } else {
-            val sortedEntries = entries.sortedBy { it.date }
-            val netChangeKg = sortedEntries.last().weightKg - sortedEntries.first().weightKg
-            val averageKg = sortedEntries.map { it.weightKg }.average()
             val currentLabel = stringResource(R.string.progress_stat_current)
             val goalLabel = stringResource(R.string.progress_stat_goal)
             val netChangeLabel = stringResource(R.string.progress_stat_net_change)
             val averageLabel = stringResource(R.string.progress_stat_average)
             StatBadgeRow(
                 buildList {
-                    latest?.let {
-                        add(currentLabel to formatWeight(it.weightKg, useMetric))
+                    stats.currentKg?.let {
+                        add(currentLabel to formatWeight(it, useMetric))
                     }
                     goalKg?.let {
                         add(goalLabel to formatWeight(it, useMetric))
                     }
-                    add(netChangeLabel to formatWeightChange(netChangeKg, useMetric))
-                    add(averageLabel to formatWeight(averageKg, useMetric))
+                    add(netChangeLabel to formatWeightChange(stats.netChangeKg, useMetric))
+                    add(averageLabel to formatWeight(stats.averageKg, useMetric))
                 }
             )
             WeightChartCanvas(entries = entries, goalKg = goalKg, useMetric = useMetric)
@@ -1240,7 +1197,8 @@ private fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Uni
 @Composable
 private fun BodyFatSection(
     entries: List<BodyFatEntry>,
-    latest: Double?,
+    stats: BodyFatSummaryStats,
+    profileBodyFatFraction: Double?,
     goalFraction: Double?,
     onLogBodyFat: () -> Unit
 ) {
@@ -1257,7 +1215,8 @@ private fun BodyFatSection(
                 Text(stringResource(R.string.progress_log_body_fat), fontSize = 15.sp, fontWeight = FontWeight.Medium, color = AppColors.Calorie)
             }
         }
-        if (entries.isEmpty() && latest == null) {
+        val currentBodyFat = stats.currentFraction ?: profileBodyFatFraction
+        if (entries.isEmpty() && currentBodyFat == null) {
             Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
                 Text(
                     stringResource(R.string.progress_log_first_body_fat),
@@ -1272,18 +1231,15 @@ private fun BodyFatSection(
             val averageLabel = stringResource(R.string.progress_stat_average)
             StatBadgeRow(
                 buildList {
-                    latest?.let {
+                    currentBodyFat?.let {
                         add(currentLabel to formatPercent(it))
                     }
                     goalFraction?.let {
                         add(goalLabel to formatPercent(it))
                     }
                     if (entries.isNotEmpty()) {
-                        val sortedEntries = entries.sortedBy { it.date }
-                        val netChange = sortedEntries.last().bodyFatPercent - sortedEntries.first().bodyFatPercent
-                        val average = sortedEntries.map { it.bodyFatPercent }.average()
-                        add(netChangeLabel to formatPercentChange(netChange))
-                        add(averageLabel to formatPercentValue(average))
+                        add(netChangeLabel to formatPercentChange(stats.netChangePercent))
+                        add(averageLabel to formatPercentValue(stats.averagePercent))
                     }
                 }
             )

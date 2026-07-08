@@ -3,11 +3,6 @@ package org.codeberg.fitguy.nofud.ui.progress
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import org.codeberg.fitguy.nofud.AppContainer
-import org.codeberg.fitguy.nofud.models.BodyFatEntry
-import org.codeberg.fitguy.nofud.models.BodyMeasurement
-import org.codeberg.fitguy.nofud.models.UserProfile
-import org.codeberg.fitguy.nofud.models.WeightEntry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,20 +10,59 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.codeberg.fitguy.nofud.AppContainer
+import org.codeberg.fitguy.nofud.models.BodyFatEntry
+import org.codeberg.fitguy.nofud.models.BodyMeasurement
+import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.models.WeightEntry
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.UUID
+
+data class WeightSummaryStats(
+    val currentKg: Double? = null,
+    val netChangeKg: Double = 0.0,
+    val averageKg: Double = 0.0
+)
+
+data class BodyFatSummaryStats(
+    val currentFraction: Double? = null,
+    val netChangePercent: Double = 0.0,
+    val averagePercent: Double = 0.0
+)
 
 data class ProgressUiState(
     val entries: List<WeightEntry> = emptyList(),
     val bodyFatEntries: List<BodyFatEntry> = emptyList(),
     val bodyMeasurements: List<BodyMeasurement> = emptyList(),
+    val foods: List<FoodEntry> = emptyList(),
     val profile: UserProfile? = null,
+    val weightUnit: String = "kg",
+    val timeRange: TimeRange = TimeRange.WEEK,
+    val filteredWeights: List<WeightEntry> = emptyList(),
+    val filteredBodyFats: List<BodyFatEntry> = emptyList(),
+    val dailyCalories: List<Pair<LocalDate, Int>> = emptyList(),
+    val macroAverages: Triple<Double, Double, Double> = Triple(0.0, 0.0, 0.0),
+    val weightStats: WeightSummaryStats = WeightSummaryStats(),
+    val bodyFatStats: BodyFatSummaryStats = BodyFatSummaryStats(),
     val goalReached: Boolean = false
 )
 
 class ProgressViewModel(private val container: AppContainer) : ViewModel() {
+    private data class BaseProgressData(
+        val profile: UserProfile?,
+        val entries: List<WeightEntry>,
+        val bodyFatEntries: List<BodyFatEntry>,
+        val bodyMeasurements: List<BodyMeasurement>
+    )
+
     private val _ui = MutableStateFlow(ProgressUiState())
     val ui: StateFlow<ProgressUiState> = _ui.asStateFlow()
+    private val timeRange = MutableStateFlow(TimeRange.WEEK)
+    private val goalReached = MutableStateFlow(false)
 
     init {
         combine(
@@ -36,16 +70,79 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
             container.weightRepository.entries,
             container.bodyFatRepository.entries,
             container.bodyMeasurementRepository.entries
-        ) { p, weights, bodyFats, measurements ->
-            _ui.value.copy(profile = p, entries = weights, bodyFatEntries = bodyFats, bodyMeasurements = measurements)
-        }.onEach { _ui.value = it }.launchIn(viewModelScope)
+        ) { profile, weights, bodyFats, measurements ->
+            BaseProgressData(
+                profile = profile,
+                entries = weights,
+                bodyFatEntries = bodyFats,
+                bodyMeasurements = measurements
+            )
+        }.let { baseData ->
+            combine(
+                baseData,
+                container.foodRepository.entries,
+                container.prefs.weightUnit,
+                timeRange,
+                goalReached
+            ) { base, foods, weightUnit, selectedRange, showGoalReached ->
+                val zone = ZoneId.systemDefault()
+                val (rangeStart, rangeEnd) = selectedRange.instantRange(zone)
+                val filteredWeights = base.entries
+                    .asSequence()
+                    .filter { it.date in rangeStart..rangeEnd }
+                    .sortedBy { it.date }
+                    .toList()
+                val filteredBodyFats = base.bodyFatEntries
+                    .asSequence()
+                    .filter { it.date in rangeStart..rangeEnd }
+                    .sortedBy { it.date }
+                    .toList()
+                val foodByDay = foods.groupByLocalDateInRange(
+                    rangeStart = rangeStart,
+                    rangeEnd = rangeEnd,
+                    zone = zone
+                )
+                val dailyCalories = foodByDay
+                    .toSortedMap()
+                    .mapNotNull { (day, aggregate) ->
+                        if (aggregate.calories == 0) null else day to aggregate.calories
+                    }
+                val macroAverages = if (foodByDay.isEmpty()) {
+                    Triple(0.0, 0.0, 0.0)
+                } else {
+                    val days = foodByDay.size.toDouble()
+                    val protein = foodByDay.values.sumOf { it.protein } / days
+                    val carbs = foodByDay.values.sumOf { it.carbs } / days
+                    val fat = foodByDay.values.sumOf { it.fat } / days
+                    Triple(protein, carbs, fat)
+                }
+                val weightStats = filteredWeights.toWeightStats()
+                val bodyFatStats = filteredBodyFats.toBodyFatStats()
+                ProgressUiState(
+                    profile = base.profile,
+                    entries = base.entries,
+                    bodyFatEntries = base.bodyFatEntries,
+                    bodyMeasurements = base.bodyMeasurements,
+                    foods = foods,
+                    weightUnit = weightUnit,
+                    timeRange = selectedRange,
+                    filteredWeights = filteredWeights,
+                    filteredBodyFats = filteredBodyFats,
+                    dailyCalories = dailyCalories,
+                    macroAverages = macroAverages,
+                    weightStats = weightStats,
+                    bodyFatStats = bodyFatStats,
+                    goalReached = showGoalReached
+                )
+            }.onEach { _ui.value = it }.launchIn(viewModelScope)
+        }
     }
 
     fun addWeight(kg: Double) {
         viewModelScope.launch {
             val event = container.weightRepository.addEntry(WeightEntry(weightKg = kg))
             if (event != null) {
-                _ui.value = _ui.value.copy(goalReached = true)
+                goalReached.value = true
                 if (container.prefs.notificationsEnabled.first() &&
                     container.prefs.goalReachedNotificationsEnabled.first()
                 ) {
@@ -78,7 +175,11 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun dismissGoalReached() {
-        _ui.value = _ui.value.copy(goalReached = false)
+        goalReached.value = false
+    }
+
+    fun setTimeRange(range: TimeRange) {
+        timeRange.value = range
     }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
@@ -86,4 +187,60 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
             ProgressViewModel(container) as T
     }
+}
+
+private data class DailyFoodAggregate(
+    val calories: Int = 0,
+    val protein: Double = 0.0,
+    val carbs: Double = 0.0,
+    val fat: Double = 0.0
+)
+
+private fun TimeRange.instantRange(zone: ZoneId, today: LocalDate = LocalDate.now()): Pair<Instant, Instant> {
+    val (startDate, endDate) = dateRange(today)
+    val start = startDate.atStartOfDay(zone).toInstant()
+    val end = endDate.atTime(23, 59, 59).atZone(zone).toInstant()
+    return start to end
+}
+
+private fun List<FoodEntry>.groupByLocalDateInRange(
+    rangeStart: Instant,
+    rangeEnd: Instant,
+    zone: ZoneId
+): Map<LocalDate, DailyFoodAggregate> {
+    val perDay = mutableMapOf<LocalDate, DailyFoodAggregate>()
+    for (entry in this) {
+        if (entry.timestamp < rangeStart || entry.timestamp > rangeEnd) continue
+        val day = entry.timestamp.atZone(zone).toLocalDate()
+        val existing = perDay[day] ?: DailyFoodAggregate()
+        perDay[day] = existing.copy(
+            calories = existing.calories + entry.calories,
+            protein = existing.protein + entry.protein,
+            carbs = existing.carbs + entry.carbs,
+            fat = existing.fat + entry.fat
+        )
+    }
+    return perDay
+}
+
+private fun List<WeightEntry>.toWeightStats(): WeightSummaryStats {
+    if (isEmpty()) return WeightSummaryStats()
+    val first = first()
+    val last = last()
+    return WeightSummaryStats(
+        currentKg = last.weightKg,
+        netChangeKg = last.weightKg - first.weightKg,
+        averageKg = map { it.weightKg }.average()
+    )
+}
+
+private fun List<BodyFatEntry>.toBodyFatStats(): BodyFatSummaryStats {
+    if (isEmpty()) return BodyFatSummaryStats()
+    val first = first()
+    val last = last()
+    return BodyFatSummaryStats(
+        currentFraction = last.bodyFatFraction,
+        netChangePercent = last.bodyFatPercent - first.bodyFatPercent,
+        averagePercent = map { it.bodyFatPercent }.average()
+    )
 }
