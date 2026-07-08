@@ -19,11 +19,6 @@ CHECKSUMS="$ROOT/SHA256SUMS"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 ASSETS=(
   # Play flavor
-  "$ROOT/NoFUD-${VERSION}.apk"
-  "$ROOT/NoFUD-${VERSION}-arm64-v8a.apk"
-  "$ROOT/NoFUD-${VERSION}-armeabi-v7a.apk"
-  "$ROOT/NoFUD-${VERSION}-x86_64.apk"
-
   "$ROOT/NoFUD-play-${VERSION}.apk"
   "$ROOT/NoFUD-play-${VERSION}-arm64-v8a.apk"
   "$ROOT/NoFUD-play-${VERSION}-armeabi-v7a.apk"
