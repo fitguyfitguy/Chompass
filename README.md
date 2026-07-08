@@ -26,17 +26,17 @@ Install note: if multiple APKs are listed in a release, use `arm64-v8a` for most
 
 ## Why NoFUD
 
-NoFUD focuses on a few high-impact product changes:
+NoFUD focuses on a few high-impact changes:
 
-- **Diet modes, including keto mode** 
+- **Diet modes, including keto mode**
 - **Better entry flow** with `AddFoodSheet` and improved camera/text/photo logging
 - **Opinionated UX/UI refinements** for clearer nutrient display and smoother day-to-day use
-- **Lighter app package** via image optimization and asset cleanup
+- **Smaller Android package footprint** via image optimization and asset cleanup
 - **No ads** with AdMob removed
 
 ## Feature and compatibility status
 
-NoFUD keeps the core Android features i love from Fud AI:
+NoFUD keeps the core Android features from Fud AI:
 
 - AI food logging (camera, text, voice, barcode, manual entry)
 - AI Coach chat
@@ -59,6 +59,21 @@ NoFUD keeps the core Android features i love from Fud AI:
 | Opinionated UX/UI updates | Baseline | **Expanded in NoFUD** |
 
 See [CHANGELOG.md](CHANGELOG.md) for version-by-version details.
+
+## Package size comparison (`fud-ai` vs `NoFUD`)
+
+Latest release assets (APK files) show:
+
+| APK artifact | Fud AI (`android-v3.0.4`) | NoFUD (`v1.3.0`) |
+|---|---:|---:|
+| Universal APK | 121.4 MB | **45.0 MB** |
+| arm64-v8a APK | n/a (single APK published) | **30.2 MB** |
+| armeabi-v7a APK | n/a (single APK published) | **28.6 MB** |
+| x86_64 APK | n/a (single APK published) | **31.1 MB** |
+
+- Universal APK delta: NoFUD is ~76.4 MB smaller (~62.9% smaller).
+- Numbers are from release asset byte sizes converted with `1 MiB = 1,048,576 bytes`.
+- Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases) and [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases).
 
 ## Performance note
 
