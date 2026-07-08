@@ -118,6 +118,7 @@ import org.codeberg.fitguy.nofud.ui.components.FeetInchesWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.NumericWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.UnitToggle
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import java.time.LocalDate
 import java.time.Period
 import java.util.Locale
@@ -349,7 +350,7 @@ private fun WelcomeStep() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_logo),
+            painter = painterResource(id = onboardingLogoRes(AppColors.ThemeColor)),
             contentDescription = stringResource(R.string.onboarding_logo_description),
             modifier = Modifier.size(120.dp)
         )
@@ -389,6 +390,18 @@ private fun WelcomeStep() {
             WelcomeFeatureRow(Icons.Outlined.Widgets, stringResource(R.string.onboarding_feature_widgets))
         }
     }
+}
+
+private fun onboardingLogoRes(themeColor: AppThemeColor): Int = when (themeColor) {
+    AppThemeColor.NOFUD_PINK -> R.drawable.ic_logo
+    AppThemeColor.RED -> R.drawable.ic_logo_red
+    AppThemeColor.ORANGE -> R.drawable.ic_logo_orange
+    AppThemeColor.GREEN -> R.drawable.ic_logo_green
+    AppThemeColor.MINT -> R.drawable.ic_logo_mint
+    AppThemeColor.TEAL -> R.drawable.ic_logo_teal
+    AppThemeColor.BLUE -> R.drawable.ic_logo_blue
+    AppThemeColor.PURPLE -> R.drawable.ic_logo_purple
+    else -> R.drawable.ic_logo_teal
 }
 
 @Composable
