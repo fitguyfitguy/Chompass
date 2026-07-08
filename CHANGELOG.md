@@ -4,6 +4,20 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-07-08
+
+### Added
+
+- Bulk diary import support for migrating larger food-log datasets in one pass
+
+### Changed
+
+- Barcode scanning flow updates and APK size optimizations
+
+### Fixed
+
+- Import error handling improvements for clearer recovery during migration/import flows
+
 ## [1.4.0] - 2026-07-08
 
 ### Added
