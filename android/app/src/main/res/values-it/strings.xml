@@ -81,10 +81,10 @@
     <string name="activity_very_active">Molto attivo</string>
     <string name="activity_extra_active">Estremamente attivo</string>
     <string name="activity_sedentary_subtitle">Poco o nessun esercizio</string>
-    <string name="activity_light_subtitle">Esercizio 1–3 volte a settimana</string>
-    <string name="activity_moderate_subtitle">Esercizio 4–5 volte a settimana</string>
-    <string name="activity_active_subtitle">Esercizio quotidiano o intenso 3–4 volte a settimana</string>
-    <string name="activity_very_active_subtitle">Esercizio intenso 6–7 volte a settimana</string>
+    <string name="activity_light_subtitle">Esercizio 1-3 volte a settimana</string>
+    <string name="activity_moderate_subtitle">Esercizio 4-5 volte a settimana</string>
+    <string name="activity_active_subtitle">Esercizio quotidiano o intenso 3-4 volte a settimana</string>
+    <string name="activity_very_active_subtitle">Esercizio intenso 6-7 volte a settimana</string>
     <string name="activity_extra_active_subtitle">Molto intenso ogni giorno, o lavoro fisico</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">Personalizzato (compatibile OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">Nessuna chiave necessaria</string>
     <string name="ai_key_placeholder_custom">Chiave API (o qualsiasi cosa se l\'endpoint non ne richiede una)</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Non necessaria</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token tua-chiave-deepgram</string>
     <string name="speech_key_placeholder_assemblyai">La tua chiave AssemblyAI</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">Ci aiuta a calcolare il tuo metabolismo in modo più preciso</string>
     <string name="onboarding_yes">Sì</string>
     <string name="onboarding_no">No</string>
-    <string name="onboarding_body_fat_ranges">Intervalli comuni: Uomini 10–25%, Donne 18–35%</string>
+    <string name="onboarding_body_fat_ranges">Intervalli comuni: Uomini 10-25%, Donne 18-35%</string>
     <string name="onboarding_body_fat_no_worries">Nessun problema! Useremo una formula standard\nbasata su altezza, peso ed età.</string>
 
     <string name="onboarding_pace_title_maintain">Il tuo ritmo</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">Piano gratuito disponibile, veloce e preciso</string>
     <string name="onboarding_provider_step_1">Ottieni una chiave gratuita su aistudio.google.com/apikey</string>
     <string name="onboarding_provider_step_2">Apri Impostazioni → Fornitore IA</string>
-    <string name="onboarding_provider_step_3">Incolla la tua chiave — fatto</string>
+    <string name="onboarding_provider_step_3">Incolla la tua chiave - fatto</string>
     <string name="onboarding_provider_footer">13 fornitori supportati. La tua chiave resta su\nquesto dispositivo, crittografata.</string>
 
     <string name="onboarding_building_calories">Calorie</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">Punteggio salute</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">Stiamo preparando tutto\nper te</string>
-    <string name="onboarding_building_finalizing">Finalizzazione dei risultati…</string>
+    <string name="onboarding_building_finalizing">Finalizzazione dei risultati...</string>
     <string name="onboarding_building_recommendation">Raccomandazione giornaliera per</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">Rimuovi preferito</string>
     <string name="home_favorited">Preferito</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">Analisi del tuo cibo…</string>
-    <string name="home_looking_up_nutrition">Ricerca dei valori nutrizionali…</string>
+    <string name="home_analyzing_food">Analisi del tuo cibo...</string>
+    <string name="home_looking_up_nutrition">Ricerca dei valori nutrizionali...</string>
     <string name="home_fiber_format">Fibra: %1$.1fg</string>
     <string name="home_sugar_format">Zuccheri: %1$.1fg</string>
     <string name="home_sat_fat_format">Grassi sat.: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">es. senza olio, formaggio extra, porzione grande</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">In ascolto…</string>
+    <string name="voice_listening">In ascolto...</string>
     <string name="voice_tap_to_start">Tocca il microfono per iniziare</string>
-    <string name="voice_transcribing_format">Trascrizione tramite %1$s…</string>
+    <string name="voice_transcribing_format">Trascrizione tramite %1$s...</string>
     <string name="voice_mic_permission_denied">Autorizzazione al microfono negata.</string>
     <string name="voice_mic_start_failed">Impossibile avviare il microfono. Controlla i permessi.</string>
     <string name="voice_transcription_failed">Trascrizione non riuscita</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">Colesterolo</string>
     <string name="nutrition_label_sodium">Sodio</string>
     <string name="nutrition_label_potassium">Potassio</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">Coach</string>
     <string name="coach_reset_chat_a11y">Reimposta chat</string>
     <string name="coach_send_a11y">Invia</string>
     <string name="coach_input_voice_a11y">Input vocale</string>
-    <string name="coach_input_placeholder">Chiedi al Coach…</string>
+    <string name="coach_input_placeholder">Chiedi al Coach...</string>
     <string name="coach_empty_title">Chiedi al tuo Coach</string>
     <string name="coach_empty_subtitle">Il tuo coach può vedere la cronologia del peso, il registro delle calorie e gli obiettivi. Chiedi del peso previsto, di cosa mangiare o di come raggiungere il tuo obiettivo.</string>
     <string name="coach_reset_dialog_title">Reimposta chat</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">Modello</string>
     <string name="sheet_model_footer">Oppure digita un ID modello personalizzato qui sotto.</string>
     <string name="sheet_any_model_id">Qualsiasi ID modello</string>
-    <string name="sheet_api_key_format">Chiave API — %1$s</string>
-    <string name="sheet_speech_api_key_format">Chiave API vocale — %1$s</string>
+    <string name="sheet_api_key_format">Chiave API - %1$s</string>
+    <string name="sheet_speech_api_key_format">Chiave API vocale - %1$s</string>
     <string name="sheet_speech_engine">Motore vocale</string>
     <string name="sheet_gender">Genere</string>
     <string name="sheet_activity_level">Livello di attività</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">Informativa sulla privacy</string>
     <string name="about_made_by">Realizzato da Apoorv Darshan</string>
     <string name="about_with_care">con cura, per tutti</string>
-    <string name="about_share_message">Sto monitorando i miei pasti con NoFUD — scatta una foto, parla o digita, e l\'IA registra le calorie. È gratis, open source e i tuoi dati restano sul tuo dispositivo.\n\nScarica: https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">Sto monitorando i miei pasti con NoFUD - scatta una foto, parla o digita, e l\'IA registra le calorie. È gratis, open source e i tuoi dati restano sul tuo dispositivo.\n\nScarica: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">Condividi NoFUD</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">Obiettivo di peso</string>
     <string name="notif_channel_weight_goal_desc">Celebrazione quando raggiungi il tuo peso obiettivo.</string>
     <string name="notif_streak_title">Non dimenticare di registrare i tuoi pasti</string>
-    <string name="notif_streak_text">Mantieni la tua serie — registra qualcosa di oggi.</string>
+    <string name="notif_streak_text">Mantieni la tua serie - registra qualcosa di oggi.</string>
     <string name="notif_summary_title">Il riepilogo di oggi è pronto</string>
     <string name="notif_summary_text">Tocca per vedere come sono andati i macro di oggi.</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">Nessun pasto corrispondente</string>
     <string name="settings_section_custom_instructions">Istruzioni IA personalizzate</string>
     <string name="settings_custom_instructions_placeholder">Es. vivo in Germania, considera porzioni europee, preferisco i marchi ALDI/REWE. Sono in fase di definizione per il bodybuilding.</string>
-    <string name="settings_custom_instructions_footer">Contesto opzionale inviato a ogni richiesta IA — regione, dieta, obiettivi sportivi, qualsiasi cosa che altrimenti ripeteresti ogni volta. Lascia vuoto per disattivare.</string>
+    <string name="settings_custom_instructions_footer">Contesto opzionale inviato a ogni richiesta IA - regione, dieta, obiettivi sportivi, qualsiasi cosa che altrimenti ripeteresti ogni volta. Lascia vuoto per disattivare.</string>
     <string name="settings_save">Salva</string>
     <string name="settings_saved">Salvato</string>
     <string name="settings_section_fallback">Provider di riserva</string>
     <string name="settings_enable_fallback">Attiva provider di riserva</string>
-    <string name="settings_fallback_footer">Se il tuo provider principale fallisce (sovraccarico, limite di velocità, errore di rete), l\'app riprova automaticamente con questo provider di riserva. È consentito lo stesso provider del principale — basta scegliere un modello diverso.</string>
+    <string name="settings_fallback_footer">Se il tuo provider principale fallisce (sovraccarico, limite di velocità, errore di rete), l\'app riprova automaticamente con questo provider di riserva. È consentito lo stesso provider del principale - basta scegliere un modello diverso.</string>
     <string name="widget_all_metrics_label">NoFUD Oggi</string>
     <string name="widget_all_metrics_description">Vedi calorie, proteine, carboidrati e grassi di oggi in un solo widget.</string>
     <string name="settings_needs_health_connect">Richiede Health Connect</string>
-    <string name="settings_energy_goals_info">Quando è attivo, NoFUD usa le tue calorie bruciate misurate da Health Connect — una media di 14 giorni di energia attiva + basale — come àncora di mantenimento (TDEE) nel calcolo degli obiettivi, invece della stima con formula. Nessuna IA viene usata per leggere il tuo consumo. Richiede Health Connect. Funziona con il pulsante Ricalcola e con Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Circa una volta a settimana, all\'apertura dell\'app, NoFUD riesegue automaticamente il calcolo completo degli obiettivi — lo stesso del pulsante Ricalcola — in base al tuo profilo, ai pasti registrati di recente e al trend del peso. Se Energy Burn è attivo, usa il tuo consumo misurato come àncora di mantenimento. Se l\'IA non è disponibile, l\'esecuzione viene saltata in silenzio. Disattivandolo vengono ripristinati gli obiettivi precedenti alla prima modifica fatta da questa funzione. Questo non è un consiglio medico.</string>
-    <string name="onboarding_plan_adaptive_note">Il tuo piano si adatta automaticamente ogni settimana in base ai log — disattiva Adaptive Goals nelle Impostazioni per mantenerlo fisso.</string>
-    <string name="onboarding_feature_snap">Scatta una foto — l\'IA la registra</string>
+    <string name="settings_energy_goals_info">Quando è attivo, NoFUD usa le tue calorie bruciate misurate da Health Connect - una media di 14 giorni di energia attiva + basale - come àncora di mantenimento (TDEE) nel calcolo degli obiettivi, invece della stima con formula. Nessuna IA viene usata per leggere il tuo consumo. Richiede Health Connect. Funziona con il pulsante Ricalcola e con Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">Circa una volta a settimana, all\'apertura dell\'app, NoFUD riesegue automaticamente il calcolo completo degli obiettivi - lo stesso del pulsante Ricalcola - in base al tuo profilo, ai pasti registrati di recente e al trend del peso. Se Energy Burn è attivo, usa il tuo consumo misurato come àncora di mantenimento. Se l\'IA non è disponibile, l\'esecuzione viene saltata in silenzio. Disattivandolo vengono ripristinati gli obiettivi precedenti alla prima modifica fatta da questa funzione. Questo non è un consiglio medico.</string>
+    <string name="onboarding_plan_adaptive_note">Il tuo piano si adatta automaticamente ogni settimana in base ai log - disattiva Adaptive Goals nelle Impostazioni per mantenerlo fisso.</string>
+    <string name="onboarding_feature_snap">Scatta una foto - l\'IA la registra</string>
     <string name="onboarding_feature_coach">Un coach che conosce i tuoi dati</string>
     <string name="onboarding_feature_library">Libreria di 870+ esercizi</string>
     <string name="onboarding_feature_widgets">Widget nella schermata Home</string>
-    <string name="whats_new_v30_workouts">Nuova scheda Allenamenti — sfoglia 873 esercizi con foto, filtri per muscolo e attrezzatura, ricerca e pagine di dettaglio.</string>
+    <string name="whats_new_v30_workouts">Nuova scheda Allenamenti - sfoglia 873 esercizi con foto, filtri per muscolo e attrezzatura, ricerca e pagine di dettaglio.</string>
     <string name="whats_new_v30_home">Nuova Home: tachimetro delle calorie, barre verticali dei macro, quattro schede nutrienti e un pulsante di aggiunta flottante.</string>
     <string name="whats_new_v30_coach_voice">Chiedi al Coach a voce con il nuovo registratore integrato.</string>
     <string name="whats_new_v30_share">Condividi qualsiasi pasto come link che si apre direttamente in NoFUD, su iPhone o Android.</string>
     <string name="whats_new_v30_export">Esporta il diario alimentare in JSON, Markdown o CSV dalle Impostazioni.</string>
-    <string name="whats_new_v30_reprocess">Rielabora un pasto registrato con l\'AI — modifica nome, porzione o nota e rianalizza.</string>
+    <string name="whats_new_v30_reprocess">Rielabora un pasto registrato con l\'AI - modifica nome, porzione o nota e rianalizza.</string>
     <string name="whats_new_v30_camera">Fotocamera + Fotocamera conserva entrambi gli scatti, uniti fianco a fianco.</string>
     <string name="whats_new_v30_colors">10 nuovi colori tema, ora scelti direttamente nelle Impostazioni.</string>
     <string name="whats_new_v30_bodyfat">Storico grasso corporeo: consulta ed elimina le singole voci, proprio come per il peso.</string>

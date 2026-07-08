@@ -81,10 +81,10 @@
     <string name="activity_very_active">نشط جدًا</string>
     <string name="activity_extra_active">نشط للغاية</string>
     <string name="activity_sedentary_subtitle">قليل من التمارين أو لا توجد</string>
-    <string name="activity_light_subtitle">تمارين 1–3 مرات / أسبوع</string>
-    <string name="activity_moderate_subtitle">تمارين 4–5 مرات / أسبوع</string>
-    <string name="activity_active_subtitle">تمارين يومية أو مكثفة 3–4 مرات / أسبوع</string>
-    <string name="activity_very_active_subtitle">تمارين مكثفة 6–7 مرات / أسبوع</string>
+    <string name="activity_light_subtitle">تمارين 1-3 مرات / أسبوع</string>
+    <string name="activity_moderate_subtitle">تمارين 4-5 مرات / أسبوع</string>
+    <string name="activity_active_subtitle">تمارين يومية أو مكثفة 3-4 مرات / أسبوع</string>
+    <string name="activity_very_active_subtitle">تمارين مكثفة 6-7 مرات / أسبوع</string>
     <string name="activity_extra_active_subtitle">تمارين مكثفة جدًا يوميًا أو وظيفة بدنية</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">مخصص (متوافق مع OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">لا حاجة لمفتاح</string>
     <string name="ai_key_placeholder_custom">مفتاح API (أو أي شيء إذا لم تكن نقطة النهاية بحاجة إلى مفتاح)</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">غير مطلوب</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">مفتاح AssemblyAI الخاص بك</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">يساعدنا في حساب معدل الأيض لديك بدقة أكبر</string>
     <string name="onboarding_yes">نعم</string>
     <string name="onboarding_no">لا</string>
-    <string name="onboarding_body_fat_ranges">النطاقات الشائعة: الرجال 10–25%، النساء 18–35%</string>
+    <string name="onboarding_body_fat_ranges">النطاقات الشائعة: الرجال 10-25%، النساء 18-35%</string>
     <string name="onboarding_body_fat_no_worries">لا تقلق! سنستخدم صيغة قياسية\nبناءً على طولك ووزنك وعمرك.</string>
 
     <string name="onboarding_pace_title_maintain">وتيرتك</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">طبقة مجانية متاحة، سريعة ودقيقة</string>
     <string name="onboarding_provider_step_1">احصل على مفتاح مجاني من aistudio.google.com/apikey</string>
     <string name="onboarding_provider_step_2">افتح الإعدادات ← مزود الذكاء الاصطناعي</string>
-    <string name="onboarding_provider_step_3">الصق مفتاحك — تم</string>
+    <string name="onboarding_provider_step_3">الصق مفتاحك - تم</string>
     <string name="onboarding_provider_footer">يدعم 13 مزودًا. يبقى مفتاحك على\nهذا الجهاز، مشفّرًا.</string>
 
     <string name="onboarding_building_calories">السعرات الحرارية</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">نقاط الصحة</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">نقوم بإعداد كل شيء\nمن أجلك</string>
-    <string name="onboarding_building_finalizing">جارٍ إنهاء النتائج…</string>
+    <string name="onboarding_building_finalizing">جارٍ إنهاء النتائج...</string>
     <string name="onboarding_building_recommendation">التوصية اليومية لـ</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">إزالة من المفضلة</string>
     <string name="home_favorited">مفضّلة</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">جارٍ تحليل طعامك…</string>
-    <string name="home_looking_up_nutrition">جارٍ البحث عن التغذية…</string>
+    <string name="home_analyzing_food">جارٍ تحليل طعامك...</string>
+    <string name="home_looking_up_nutrition">جارٍ البحث عن التغذية...</string>
     <string name="home_fiber_format">الألياف: %1$.1fg</string>
     <string name="home_sugar_format">السكر: %1$.1fg</string>
     <string name="home_sat_fat_format">الدهون المشبعة: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">مثال: بدون زيت، جبنة إضافية، حصة كبيرة</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">جارٍ الاستماع…</string>
+    <string name="voice_listening">جارٍ الاستماع...</string>
     <string name="voice_tap_to_start">اضغط على الميكروفون للبدء</string>
-    <string name="voice_transcribing_format">جارٍ التحويل عبر %1$s…</string>
+    <string name="voice_transcribing_format">جارٍ التحويل عبر %1$s...</string>
     <string name="voice_mic_permission_denied">تم رفض إذن الميكروفون.</string>
     <string name="voice_mic_start_failed">تعذّر تشغيل الميكروفون. تحقّق من الأذونات.</string>
     <string name="voice_transcription_failed">فشل تحويل الكلام</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">الكوليسترول</string>
     <string name="nutrition_label_sodium">الصوديوم</string>
     <string name="nutrition_label_potassium">البوتاسيوم</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">المدرب</string>
     <string name="coach_reset_chat_a11y">إعادة تعيين المحادثة</string>
     <string name="coach_send_a11y">إرسال</string>
     <string name="coach_input_voice_a11y">الإدخال الصوتي</string>
-    <string name="coach_input_placeholder">اسأل المدرب…</string>
+    <string name="coach_input_placeholder">اسأل المدرب...</string>
     <string name="coach_empty_title">اسأل مدربك</string>
     <string name="coach_empty_subtitle">يمكن لمدربك الاطلاع على سجل وزنك وسعراتك الحرارية وأهدافك. اسأل عن الوزن المتوقع أو ماذا تأكل أو كيف تحقق هدفك.</string>
     <string name="coach_reset_dialog_title">إعادة تعيين المحادثة</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">النموذج</string>
     <string name="sheet_model_footer">أو اكتب أي معرّف نموذج مخصص أدناه.</string>
     <string name="sheet_any_model_id">أي معرّف نموذج</string>
-    <string name="sheet_api_key_format">مفتاح API — %1$s</string>
-    <string name="sheet_speech_api_key_format">مفتاح API للكلام — %1$s</string>
+    <string name="sheet_api_key_format">مفتاح API - %1$s</string>
+    <string name="sheet_speech_api_key_format">مفتاح API للكلام - %1$s</string>
     <string name="sheet_speech_engine">محرك الكلام</string>
     <string name="sheet_gender">الجنس</string>
     <string name="sheet_activity_level">مستوى النشاط</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">سياسة الخصوصية</string>
     <string name="about_made_by">صنع بواسطة Apoorv Darshan</string>
     <string name="about_with_care">بعناية، للجميع</string>
-    <string name="about_share_message">أتتبّع وجباتي مع NoFUD — التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">أتتبّع وجباتي مع NoFUD - التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">شارك NoFUD</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">هدف الوزن</string>
     <string name="notif_channel_weight_goal_desc">احتفال عند الوصول إلى وزن هدفك.</string>
     <string name="notif_streak_title">لا تنسَ تسجيل وجباتك</string>
-    <string name="notif_streak_text">حافظ على سلسلتك — سجّل شيئًا من اليوم.</string>
+    <string name="notif_streak_text">حافظ على سلسلتك - سجّل شيئًا من اليوم.</string>
     <string name="notif_summary_title">ملخص اليوم جاهز</string>
     <string name="notif_summary_text">اضغط لرؤية كيف اتسقت ماكروهات اليوم.</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">لا توجد أطعمة مطابقة</string>
     <string name="settings_section_custom_instructions">تعليمات الذكاء الاصطناعي المخصصة</string>
     <string name="settings_custom_instructions_placeholder">مثلاً: أعيش في ألمانيا، افترض أحجام حصص أوروبية، أُفضّل ماركات ALDI/REWE. أنا في مرحلة تنشيف لكمال الأجسام.</string>
-    <string name="settings_custom_instructions_footer">سياق اختياري يُرسَل مع كل طلب للذكاء الاصطناعي — المنطقة، النظام الغذائي، الأهداف الرياضية، أي شيء كنت ستكرره في كل مرة. اتركه فارغاً للتعطيل.</string>
+    <string name="settings_custom_instructions_footer">سياق اختياري يُرسَل مع كل طلب للذكاء الاصطناعي - المنطقة، النظام الغذائي، الأهداف الرياضية، أي شيء كنت ستكرره في كل مرة. اتركه فارغاً للتعطيل.</string>
     <string name="settings_save">حفظ</string>
     <string name="settings_saved">تم الحفظ</string>
     <string name="settings_section_fallback">المزود الاحتياطي</string>
     <string name="settings_enable_fallback">تفعيل الاحتياطي</string>
-    <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي — فقط اختر طرازاً مختلفاً.</string>
+    <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي - فقط اختر طرازاً مختلفاً.</string>
     <string name="widget_all_metrics_label">NoFUD اليوم</string>
     <string name="widget_all_metrics_description">شاهد سعرات اليوم والبروتين والكربوهيدرات والدهون في أداة واحدة.</string>
     <string name="settings_needs_health_connect">يتطلب Health Connect</string>
-    <string name="settings_energy_goals_info">عند التفعيل، يستخدم NoFUD السعرات المحروقة المقاسة من Health Connect — متوسط 14 يومًا للطاقة النشطة + الأساسية — كمرجع لسعرات الثبات (TDEE) عند حساب الأهداف، بدلًا من التقدير بالمعادلة. لا يُستخدم الذكاء الاصطناعي لقراءة الحرق. يتطلب Health Connect. يعمل مع زر إعادة الحساب ومع Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">مرة واحدة تقريبًا في الأسبوع عند فتح التطبيق، يعيد NoFUD تلقائيًا تشغيل حساب الأهداف الكامل — وهو نفس الحساب الذي يستخدمه زر إعادة الحساب — استنادًا إلى ملفك الشخصي والطعام المسجّل مؤخرًا واتجاه وزنك. إذا كان Energy Burn مفعّلًا، يُستخدم حرقك المقاس كمرجع لسعرات الثبات. إذا لم يكن الذكاء الاصطناعي متاحًا، يتم التخطي بصمت. عند إيقاف هذه الميزة تُستعاد الأهداف التي كانت قبل أول تغيير أجرته. هذه ليست نصيحة طبية.</string>
-    <string name="onboarding_plan_adaptive_note">تتعدّل خطتك تلقائيًا كل أسبوع حسب تسجيلاتك — أوقف Adaptive Goals من الإعدادات لإبقائها ثابتة.</string>
-    <string name="onboarding_feature_snap">التقط صورة — والذكاء الاصطناعي يسجّلها</string>
+    <string name="settings_energy_goals_info">عند التفعيل، يستخدم NoFUD السعرات المحروقة المقاسة من Health Connect - متوسط 14 يومًا للطاقة النشطة + الأساسية - كمرجع لسعرات الثبات (TDEE) عند حساب الأهداف، بدلًا من التقدير بالمعادلة. لا يُستخدم الذكاء الاصطناعي لقراءة الحرق. يتطلب Health Connect. يعمل مع زر إعادة الحساب ومع Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">مرة واحدة تقريبًا في الأسبوع عند فتح التطبيق، يعيد NoFUD تلقائيًا تشغيل حساب الأهداف الكامل - وهو نفس الحساب الذي يستخدمه زر إعادة الحساب - استنادًا إلى ملفك الشخصي والطعام المسجّل مؤخرًا واتجاه وزنك. إذا كان Energy Burn مفعّلًا، يُستخدم حرقك المقاس كمرجع لسعرات الثبات. إذا لم يكن الذكاء الاصطناعي متاحًا، يتم التخطي بصمت. عند إيقاف هذه الميزة تُستعاد الأهداف التي كانت قبل أول تغيير أجرته. هذه ليست نصيحة طبية.</string>
+    <string name="onboarding_plan_adaptive_note">تتعدّل خطتك تلقائيًا كل أسبوع حسب تسجيلاتك - أوقف Adaptive Goals من الإعدادات لإبقائها ثابتة.</string>
+    <string name="onboarding_feature_snap">التقط صورة - والذكاء الاصطناعي يسجّلها</string>
     <string name="onboarding_feature_coach">مدرّب يعرف بياناتك</string>
     <string name="onboarding_feature_library">مكتبة تضم أكثر من 870 تمرينًا</string>
     <string name="onboarding_feature_widgets">أدوات الشاشة الرئيسية</string>
-    <string name="whats_new_v30_workouts">علامة تبويب تمارين جديدة — تصفّح 873 تمرينًا مع الصور وفلاتر العضلات والمعدات والبحث وصفحات التفاصيل.</string>
+    <string name="whats_new_v30_workouts">علامة تبويب تمارين جديدة - تصفّح 873 تمرينًا مع الصور وفلاتر العضلات والمعدات والبحث وصفحات التفاصيل.</string>
     <string name="whats_new_v30_home">تصميم جديد للرئيسية: عدّاد سرعة للسعرات، وأشرطة ماكرو عمودية، وأربع بطاقات مغذّيات، وزر إضافة عائم.</string>
     <string name="whats_new_v30_coach_voice">اسأل المدرب صوتيًا عبر المسجّل المدمج الجديد.</string>
-    <string name="whats_new_v30_share">شارك أي وجبة كرابط يفتح مباشرة في NoFUD — على iPhone أو Android.</string>
+    <string name="whats_new_v30_share">شارك أي وجبة كرابط يفتح مباشرة في NoFUD - على iPhone أو Android.</string>
     <string name="whats_new_v30_export">صدّر يوميات طعامك بصيغة JSON أو Markdown أو CSV من الإعدادات.</string>
-    <string name="whats_new_v30_reprocess">أعد معالجة وجبة مسجلة بالذكاء الاصطناعي — عدّل الاسم أو الكمية أو الملاحظة ثم أعد التحليل.</string>
+    <string name="whats_new_v30_reprocess">أعد معالجة وجبة مسجلة بالذكاء الاصطناعي - عدّل الاسم أو الكمية أو الملاحظة ثم أعد التحليل.</string>
     <string name="whats_new_v30_camera">كاميرا + كاميرا تحتفظ باللقطتين معًا جنبًا إلى جنب.</string>
     <string name="whats_new_v30_colors">10 ألوان جديدة للسمة، تُختار الآن مباشرة من الإعدادات.</string>
     <string name="whats_new_v30_bodyfat">سجل دهون الجسم: راجع واحذف الإدخالات الفردية تمامًا كما في الوزن.</string>

@@ -12,7 +12,7 @@ NoFUD ships resized, single-frame **WebP** derivatives of the upstream JPEG phot
 
 ## Barcode nutrition
 
-Barcode product lookups are powered by the [Open Food Facts](https://world.openfoodfacts.org) database, queried live via its public API. Open Food Facts data is available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). NoFUD does not bundle the database — nutrition facts are fetched per scanned barcode.
+Barcode product lookups are powered by the [Open Food Facts](https://world.openfoodfacts.org) database, queried live via its public API. Open Food Facts data is available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). NoFUD does not bundle the database - nutrition facts are fetched per scanned barcode.
 
 ## App icon
 
@@ -22,4 +22,4 @@ NoFUD launcher icons and splash logos are original artwork by fitguy, distinct f
 
 Muscle glyph assets (the muscle-filter icons in the Workouts tab) are cropped/rasterized derivatives of SVG muscle paths from [`react-muscle-highlighter`](https://github.com/soroojshehryar/react-muscle-highlighter) 1.2.0, MIT License. The generated app assets are bundled locally (`android/app/src/main/assets/muscle/`) and do not depend on the upstream repository at runtime.
 
-Copyright (c) 2024 My Muscle Contributors — MIT License (see `LICENSE` in that folder and the upstream package).
+Copyright (c) 2024 My Muscle Contributors - MIT License (see `LICENSE` in that folder and the upstream package).

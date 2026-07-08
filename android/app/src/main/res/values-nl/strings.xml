@@ -81,10 +81,10 @@
     <string name="activity_very_active">Zeer actief</string>
     <string name="activity_extra_active">Extra actief</string>
     <string name="activity_sedentary_subtitle">Weinig of geen beweging</string>
-    <string name="activity_light_subtitle">1–3 keer per week sporten</string>
-    <string name="activity_moderate_subtitle">4–5 keer per week sporten</string>
-    <string name="activity_active_subtitle">Dagelijkse beweging of intensief 3–4x / week</string>
-    <string name="activity_very_active_subtitle">Intensief sporten 6–7 keer per week</string>
+    <string name="activity_light_subtitle">1-3 keer per week sporten</string>
+    <string name="activity_moderate_subtitle">4-5 keer per week sporten</string>
+    <string name="activity_active_subtitle">Dagelijkse beweging of intensief 3-4x / week</string>
+    <string name="activity_very_active_subtitle">Intensief sporten 6-7 keer per week</string>
     <string name="activity_extra_active_subtitle">Zeer intensief dagelijks of fysieke baan</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">Aangepast (OpenAI-compatibel)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">Geen sleutel nodig</string>
     <string name="ai_key_placeholder_custom">API-sleutel (of wat dan ook als endpoint er geen nodig heeft)</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Niet nodig</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token jouw-deepgram-sleutel</string>
     <string name="speech_key_placeholder_assemblyai">Jouw AssemblyAI-sleutel</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">Helpt ons je metabolisme nauwkeuriger te berekenen</string>
     <string name="onboarding_yes">Ja</string>
     <string name="onboarding_no">Nee</string>
-    <string name="onboarding_body_fat_ranges">Normale bereiken: mannen 10–25%, vrouwen 18–35%</string>
+    <string name="onboarding_body_fat_ranges">Normale bereiken: mannen 10-25%, vrouwen 18-35%</string>
     <string name="onboarding_body_fat_no_worries">Geen zorgen! We gebruiken een standaardformule\ngebaseerd op je lengte, gewicht en leeftijd.</string>
 
     <string name="onboarding_pace_title_maintain">Jouw tempo</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">Gratis abonnement beschikbaar, snel &amp; nauwkeurig</string>
     <string name="onboarding_provider_step_1">Haal een gratis sleutel op bij aistudio.google.com/apikey</string>
     <string name="onboarding_provider_step_2">Open Instellingen → AI-provider</string>
-    <string name="onboarding_provider_step_3">Plak je sleutel — klaar</string>
+    <string name="onboarding_provider_step_3">Plak je sleutel - klaar</string>
     <string name="onboarding_provider_footer">13 providers ondersteund. Je sleutel blijft op\ndit apparaat, versleuteld.</string>
 
     <string name="onboarding_building_calories">Calorieën</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">Gezondheidsscore</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">We zetten alles\nvoor je klaar</string>
-    <string name="onboarding_building_finalizing">Resultaten afronden…</string>
+    <string name="onboarding_building_finalizing">Resultaten afronden...</string>
     <string name="onboarding_building_recommendation">Dagelijkse aanbeveling voor</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">Verwijder favoriet</string>
     <string name="home_favorited">Favoriet gemaakt</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">Je eten analyseren…</string>
-    <string name="home_looking_up_nutrition">Voeding opzoeken…</string>
+    <string name="home_analyzing_food">Je eten analyseren...</string>
+    <string name="home_looking_up_nutrition">Voeding opzoeken...</string>
     <string name="home_fiber_format">Vezels: %1$.1fg</string>
     <string name="home_sugar_format">Suiker: %1$.1fg</string>
     <string name="home_sat_fat_format">Verzadigd vet: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">bijv. zonder olie, extra kaas, grote portie</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">Luisteren…</string>
+    <string name="voice_listening">Luisteren...</string>
     <string name="voice_tap_to_start">Tik op de microfoon om te beginnen</string>
-    <string name="voice_transcribing_format">Transcriberen via %1$s…</string>
+    <string name="voice_transcribing_format">Transcriberen via %1$s...</string>
     <string name="voice_mic_permission_denied">Microfoonpermissie geweigerd.</string>
     <string name="voice_mic_start_failed">Kon de microfoon niet starten. Controleer permissies.</string>
     <string name="voice_transcription_failed">Transcriptie mislukt</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">Cholesterol</string>
     <string name="nutrition_label_sodium">Natrium</string>
     <string name="nutrition_label_potassium">Kalium</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">Coach</string>
     <string name="coach_reset_chat_a11y">Chat resetten</string>
     <string name="coach_send_a11y">Verstuur</string>
     <string name="coach_input_voice_a11y">Spraakinvoer</string>
-    <string name="coach_input_placeholder">Vraag de coach…</string>
+    <string name="coach_input_placeholder">Vraag de coach...</string>
     <string name="coach_empty_title">Vraag je coach</string>
     <string name="coach_empty_subtitle">Je coach ziet je gewichtsgeschiedenis, calorielogboek en doelen. Vraag naar verwacht gewicht, wat je moet eten of hoe je je doel haalt.</string>
     <string name="coach_reset_dialog_title">Chat resetten</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">Model</string>
     <string name="sheet_model_footer">Of typ hieronder een aangepaste model-ID.</string>
     <string name="sheet_any_model_id">Elke model-ID</string>
-    <string name="sheet_api_key_format">API-sleutel — %1$s</string>
-    <string name="sheet_speech_api_key_format">Spraak-API-sleutel — %1$s</string>
+    <string name="sheet_api_key_format">API-sleutel - %1$s</string>
+    <string name="sheet_speech_api_key_format">Spraak-API-sleutel - %1$s</string>
     <string name="sheet_speech_engine">Spraakengine</string>
     <string name="sheet_gender">Geslacht</string>
     <string name="sheet_activity_level">Activiteitsniveau</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">Privacybeleid</string>
     <string name="about_made_by">Gemaakt door Apoorv Darshan</string>
     <string name="about_with_care">met zorg, voor iedereen</string>
-    <string name="about_share_message">Ik houd mijn maaltijden bij met NoFUD — maak een foto, spreek het in of typ het, en de AI logt de calorieën. Het is gratis, open source, en je gegevens blijven op je apparaat.\n\nDownload: https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">Ik houd mijn maaltijden bij met NoFUD - maak een foto, spreek het in of typ het, en de AI logt de calorieën. Het is gratis, open source, en je gegevens blijven op je apparaat.\n\nDownload: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">NoFUD delen</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">Gewichtsdoel</string>
     <string name="notif_channel_weight_goal_desc">Felicitatie wanneer je je streefgewicht bereikt.</string>
     <string name="notif_streak_title">Vergeet niet je maaltijden te loggen</string>
-    <string name="notif_streak_text">Houd je streak gaande — log iets van vandaag.</string>
+    <string name="notif_streak_text">Houd je streak gaande - log iets van vandaag.</string>
     <string name="notif_summary_title">De samenvatting van vandaag is klaar</string>
     <string name="notif_summary_text">Tik om te zien hoe de macro\'s van vandaag uitkwamen.</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">Geen overeenkomende maaltijden</string>
     <string name="settings_section_custom_instructions">Aangepaste AI-instructies</string>
     <string name="settings_custom_instructions_placeholder">Bijv. ik woon in Duitsland, ga uit van Europese portiegroottes, voorkeur voor ALDI/REWE-merken. Ik zit in een bodybuilding-cut.</string>
-    <string name="settings_custom_instructions_footer">Optionele context die met elk AI-verzoek wordt meegestuurd — regio, dieet, sportieve doelen, alles wat je anders elke keer zou herhalen. Laat leeg om uit te schakelen.</string>
+    <string name="settings_custom_instructions_footer">Optionele context die met elk AI-verzoek wordt meegestuurd - regio, dieet, sportieve doelen, alles wat je anders elke keer zou herhalen. Laat leeg om uit te schakelen.</string>
     <string name="settings_save">Opslaan</string>
     <string name="settings_saved">Opgeslagen</string>
     <string name="settings_section_fallback">Reserveprovider</string>
     <string name="settings_enable_fallback">Reserve inschakelen</string>
-    <string name="settings_fallback_footer">Als je primaire provider faalt (overbelasting, snelheidslimiet, netwerkfout), probeert de app automatisch opnieuw met deze reserve. Dezelfde provider als de primaire is toegestaan — kies gewoon een ander model.</string>
+    <string name="settings_fallback_footer">Als je primaire provider faalt (overbelasting, snelheidslimiet, netwerkfout), probeert de app automatisch opnieuw met deze reserve. Dezelfde provider als de primaire is toegestaan - kies gewoon een ander model.</string>
     <string name="widget_all_metrics_label">NoFUD Vandaag</string>
     <string name="widget_all_metrics_description">Bekijk de calorieën, eiwitten, koolhydraten en vetten van vandaag in één widget.</string>
     <string name="settings_needs_health_connect">Vereist Health Connect</string>
-    <string name="settings_energy_goals_info">Indien ingeschakeld gebruikt NoFUD je gemeten verbrande calorieën uit Health Connect — een 14-daags gemiddelde van actieve + basale energie — als onderhoudsanker (TDEE) bij het berekenen van doelen, in plaats van de formuleschatting. Er wordt geen AI gebruikt om je verbruik te lezen. Vereist Health Connect. Werkt met de knop Opnieuw berekenen en met Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Ongeveer één keer per week, wanneer je de app opent, voert NoFUD automatisch de volledige doelberekening opnieuw uit — dezelfde als de knop Opnieuw berekenen — op basis van je profiel, recent gelogde voeding en je gewichtstrend. Als Energy Burn aanstaat, wordt je gemeten verbruik gebruikt als onderhoudsanker. Als de AI niet beschikbaar is, wordt de run stilletjes overgeslagen. Bij uitschakelen worden de doelen hersteld van vóór de eerste wijziging door deze functie. Dit is geen medisch advies.</string>
-    <string name="onboarding_plan_adaptive_note">Je plan past zich wekelijks aan op basis van je logs — zet Adaptive Goals uit in Instellingen om het vast te houden.</string>
-    <string name="onboarding_feature_snap">Maak een foto — de AI logt het</string>
+    <string name="settings_energy_goals_info">Indien ingeschakeld gebruikt NoFUD je gemeten verbrande calorieën uit Health Connect - een 14-daags gemiddelde van actieve + basale energie - als onderhoudsanker (TDEE) bij het berekenen van doelen, in plaats van de formuleschatting. Er wordt geen AI gebruikt om je verbruik te lezen. Vereist Health Connect. Werkt met de knop Opnieuw berekenen en met Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">Ongeveer één keer per week, wanneer je de app opent, voert NoFUD automatisch de volledige doelberekening opnieuw uit - dezelfde als de knop Opnieuw berekenen - op basis van je profiel, recent gelogde voeding en je gewichtstrend. Als Energy Burn aanstaat, wordt je gemeten verbruik gebruikt als onderhoudsanker. Als de AI niet beschikbaar is, wordt de run stilletjes overgeslagen. Bij uitschakelen worden de doelen hersteld van vóór de eerste wijziging door deze functie. Dit is geen medisch advies.</string>
+    <string name="onboarding_plan_adaptive_note">Je plan past zich wekelijks aan op basis van je logs - zet Adaptive Goals uit in Instellingen om het vast te houden.</string>
+    <string name="onboarding_feature_snap">Maak een foto - de AI logt het</string>
     <string name="onboarding_feature_coach">Coach die je gegevens kent</string>
     <string name="onboarding_feature_library">Bibliotheek met 870+ oefeningen</string>
     <string name="onboarding_feature_widgets">Widgets op het startscherm</string>
-    <string name="whats_new_v30_workouts">Nieuw Workouts-tabblad — blader door 873 oefeningen met foto\'s, spier- en materiaalfilters, zoeken en detailpagina\'s.</string>
+    <string name="whats_new_v30_workouts">Nieuw Workouts-tabblad - blader door 873 oefeningen met foto\'s, spier- en materiaalfilters, zoeken en detailpagina\'s.</string>
     <string name="whats_new_v30_home">Home vernieuwd: snelheidsmeter voor calorieën, verticale macrobalken, vier voedingskaarten en een zwevende toevoegknop.</string>
     <string name="whats_new_v30_coach_voice">Stel de Coach een vraag met je stem via de nieuwe ingebouwde recorder.</string>
-    <string name="whats_new_v30_share">Deel elke maaltijd als een link die direct in NoFUD opent — op iPhone of Android.</string>
+    <string name="whats_new_v30_share">Deel elke maaltijd als een link die direct in NoFUD opent - op iPhone of Android.</string>
     <string name="whats_new_v30_export">Exporteer je eetdagboek als JSON, Markdown of CSV via Instellingen.</string>
-    <string name="whats_new_v30_reprocess">Verwerk een gelogde maaltijd opnieuw met AI — pas naam, portie of notitie aan en analyseer opnieuw.</string>
+    <string name="whats_new_v30_reprocess">Verwerk een gelogde maaltijd opnieuw met AI - pas naam, portie of notitie aan en analyseer opnieuw.</string>
     <string name="whats_new_v30_camera">Camera + Camera bewaart beide foto\'s, zij aan zij samengevoegd.</string>
     <string name="whats_new_v30_colors">10 nieuwe themakleuren, nu direct te kiezen in Instellingen.</string>
     <string name="whats_new_v30_bodyfat">Vetpercentagegeschiedenis: bekijk en verwijder losse metingen, net als bij gewicht.</string>

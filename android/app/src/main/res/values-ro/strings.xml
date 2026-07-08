@@ -81,10 +81,10 @@
     <string name="activity_very_active">Foarte activ</string>
     <string name="activity_extra_active">Extra activ</string>
     <string name="activity_sedentary_subtitle">Puțin sau deloc exercițiu</string>
-    <string name="activity_light_subtitle">Exercițiu de 1–3 ori / săptămână</string>
-    <string name="activity_moderate_subtitle">Exercițiu de 4–5 ori / săptămână</string>
-    <string name="activity_active_subtitle">Exercițiu zilnic sau intens de 3–4x / săptămână</string>
-    <string name="activity_very_active_subtitle">Exercițiu intens de 6–7 ori / săptămână</string>
+    <string name="activity_light_subtitle">Exercițiu de 1-3 ori / săptămână</string>
+    <string name="activity_moderate_subtitle">Exercițiu de 4-5 ori / săptămână</string>
+    <string name="activity_active_subtitle">Exercițiu zilnic sau intens de 3-4x / săptămână</string>
+    <string name="activity_very_active_subtitle">Exercițiu intens de 6-7 ori / săptămână</string>
     <string name="activity_extra_active_subtitle">Foarte intens zilnic sau muncă fizică</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">Personalizat (compatibil OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">Nu e nevoie de cheie</string>
     <string name="ai_key_placeholder_custom">Cheie API (sau orice dacă endpoint-ul nu cere)</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Nu e necesar</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token cheia-ta-deepgram</string>
     <string name="speech_key_placeholder_assemblyai">Cheia ta AssemblyAI</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">Ne ajută să calculăm metabolismul mai precis</string>
     <string name="onboarding_yes">Da</string>
     <string name="onboarding_no">Nu</string>
-    <string name="onboarding_body_fat_ranges">Intervale obișnuite: Bărbați 10–25%, Femei 18–35%</string>
+    <string name="onboarding_body_fat_ranges">Intervale obișnuite: Bărbați 10-25%, Femei 18-35%</string>
     <string name="onboarding_body_fat_no_worries">Nicio grijă! Vom folosi o formulă standard\npe baza înălțimii, greutății și vârstei tale.</string>
 
     <string name="onboarding_pace_title_maintain">Ritmul tău</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">Versiune gratuită disponibilă, rapidă &amp; precisă</string>
     <string name="onboarding_provider_step_1">Obține o cheie gratuită la aistudio.google.com/apikey</string>
     <string name="onboarding_provider_step_2">Deschide Setări → Furnizor AI</string>
-    <string name="onboarding_provider_step_3">Lipește cheia — gata</string>
+    <string name="onboarding_provider_step_3">Lipește cheia - gata</string>
     <string name="onboarding_provider_footer">13 furnizori suportați. Cheia ta rămâne pe\nacest dispozitiv, criptată.</string>
 
     <string name="onboarding_building_calories">Calorii</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">Scor de sănătate</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">Pregătim totul\npentru tine</string>
-    <string name="onboarding_building_finalizing">Se finalizează rezultatele…</string>
+    <string name="onboarding_building_finalizing">Se finalizează rezultatele...</string>
     <string name="onboarding_building_recommendation">Recomandare zilnică pentru</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">Elimină din favorite</string>
     <string name="home_favorited">Adăugat la favorite</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">Se analizează mâncarea ta…</string>
-    <string name="home_looking_up_nutrition">Se caută informațiile nutriționale…</string>
+    <string name="home_analyzing_food">Se analizează mâncarea ta...</string>
+    <string name="home_looking_up_nutrition">Se caută informațiile nutriționale...</string>
     <string name="home_fiber_format">Fibre: %1$.1fg</string>
     <string name="home_sugar_format">Zahăr: %1$.1fg</string>
     <string name="home_sat_fat_format">Grăsimi sat.: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">ex. fără ulei, brânză în plus, porție mare</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">Ascult…</string>
+    <string name="voice_listening">Ascult...</string>
     <string name="voice_tap_to_start">Atinge microfonul pentru a începe</string>
-    <string name="voice_transcribing_format">Se transcrie prin %1$s…</string>
+    <string name="voice_transcribing_format">Se transcrie prin %1$s...</string>
     <string name="voice_mic_permission_denied">Permisiunea pentru microfon a fost refuzată.</string>
     <string name="voice_mic_start_failed">Nu s-a putut porni microfonul. Verifică permisiunile.</string>
     <string name="voice_transcription_failed">Transcrierea a eșuat</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">Colesterol</string>
     <string name="nutrition_label_sodium">Sodiu</string>
     <string name="nutrition_label_potassium">Potasiu</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">Antrenor</string>
     <string name="coach_reset_chat_a11y">Resetează chatul</string>
     <string name="coach_send_a11y">Trimite</string>
     <string name="coach_input_voice_a11y">Introducere vocală</string>
-    <string name="coach_input_placeholder">Întreabă Antrenorul…</string>
+    <string name="coach_input_placeholder">Întreabă Antrenorul...</string>
     <string name="coach_empty_title">Întreabă-ți Antrenorul</string>
     <string name="coach_empty_subtitle">Antrenorul tău îți vede istoricul greutății, jurnalul de calorii și obiectivele. Întreabă despre greutatea estimată, ce să mănânci sau cum să îți atingi ținta.</string>
     <string name="coach_reset_dialog_title">Resetează chatul</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">Model</string>
     <string name="sheet_model_footer">Sau scrie orice ID de model personalizat mai jos.</string>
     <string name="sheet_any_model_id">Orice ID de model</string>
-    <string name="sheet_api_key_format">Cheie API — %1$s</string>
-    <string name="sheet_speech_api_key_format">Cheie API voce — %1$s</string>
+    <string name="sheet_api_key_format">Cheie API - %1$s</string>
+    <string name="sheet_speech_api_key_format">Cheie API voce - %1$s</string>
     <string name="sheet_speech_engine">Motor vocal</string>
     <string name="sheet_gender">Sex</string>
     <string name="sheet_activity_level">Nivel de activitate</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">Politica de confidențialitate</string>
     <string name="about_made_by">Realizat de Apoorv Darshan</string>
     <string name="about_with_care">cu grijă, pentru toată lumea</string>
-    <string name="about_share_message">Îmi urmăresc mesele cu NoFUD — fă o poză, spune-o sau tasteaz-o, iar AI înregistrează caloriile. E gratuit, open source, iar datele rămân pe dispozitivul tău.\n\nDescarcă: https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">Îmi urmăresc mesele cu NoFUD - fă o poză, spune-o sau tasteaz-o, iar AI înregistrează caloriile. E gratuit, open source, iar datele rămân pe dispozitivul tău.\n\nDescarcă: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">Distribuie NoFUD</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">Obiectiv de greutate</string>
     <string name="notif_channel_weight_goal_desc">Sărbătoare când îți atingi greutatea obiectiv.</string>
     <string name="notif_streak_title">Nu uita să îți înregistrezi mesele</string>
-    <string name="notif_streak_text">Menține-ți seria — înregistrează ceva din ziua de azi.</string>
+    <string name="notif_streak_text">Menține-ți seria - înregistrează ceva din ziua de azi.</string>
     <string name="notif_summary_title">Rezumatul de azi e gata</string>
     <string name="notif_summary_text">Atinge pentru a vedea cum s-au aliniat macronutrienții de azi.</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">Nicio mâncare potrivită</string>
     <string name="settings_section_custom_instructions">Instrucțiuni AI personalizate</string>
     <string name="settings_custom_instructions_placeholder">Ex.: locuiesc în Germania, presupune porții europene, prefer mărcile ALDI/REWE. Sunt într-o etapă de definire la culturism.</string>
-    <string name="settings_custom_instructions_footer">Context opțional trimis cu fiecare cerere AI — regiune, dietă, obiective sportive, orice ai repeta altfel de fiecare dată. Lasă gol pentru a dezactiva.</string>
+    <string name="settings_custom_instructions_footer">Context opțional trimis cu fiecare cerere AI - regiune, dietă, obiective sportive, orice ai repeta altfel de fiecare dată. Lasă gol pentru a dezactiva.</string>
     <string name="settings_save">Salvează</string>
     <string name="settings_saved">Salvat</string>
     <string name="settings_section_fallback">Furnizor de rezervă</string>
     <string name="settings_enable_fallback">Activează rezerva</string>
-    <string name="settings_fallback_footer">Dacă furnizorul principal eșuează (suprasolicitare, limită de rată, eroare de rețea), aplicația reîncearcă automat cu această rezervă. Este permis același furnizor ca cel principal — doar alege un model diferit.</string>
+    <string name="settings_fallback_footer">Dacă furnizorul principal eșuează (suprasolicitare, limită de rată, eroare de rețea), aplicația reîncearcă automat cu această rezervă. Este permis același furnizor ca cel principal - doar alege un model diferit.</string>
     <string name="widget_all_metrics_label">NoFUD Astăzi</string>
     <string name="widget_all_metrics_description">Vezi caloriile, proteinele, carbohidrații și grăsimile de azi într-un singur widget.</string>
     <string name="settings_needs_health_connect">Necesită Health Connect</string>
-    <string name="settings_energy_goals_info">Când este activat, NoFUD folosește caloriile arse măsurate din Health Connect — o medie pe 14 zile a energiei active + bazale — ca ancoră de întreținere (TDEE) la calcularea obiectivelor, în locul estimării prin formulă. Nu se folosește IA pentru citirea consumului. Necesită Health Connect. Funcționează cu butonul Recalculează și cu Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Aproximativ o dată pe săptămână, la deschiderea aplicației, NoFUD reia automat calculul complet al obiectivelor — același folosit de butonul Recalculează — pe baza profilului tău, a alimentelor înregistrate recent și a tendinței greutății. Dacă Energy Burn este activat, consumul tău măsurat este folosit ca ancoră de întreținere. Dacă IA nu este disponibilă, rularea este omisă silențios. Dezactivarea restaurează obiectivele de dinainte de prima modificare făcută de această funcție. Acesta nu este un sfat medical.</string>
-    <string name="onboarding_plan_adaptive_note">Planul tău se ajustează automat săptămânal pe măsură ce înregistrezi — dezactivează Adaptive Goals din Setări pentru a-l păstra fix.</string>
-    <string name="onboarding_feature_snap">Fă o poză — IA o înregistrează</string>
+    <string name="settings_energy_goals_info">Când este activat, NoFUD folosește caloriile arse măsurate din Health Connect - o medie pe 14 zile a energiei active + bazale - ca ancoră de întreținere (TDEE) la calcularea obiectivelor, în locul estimării prin formulă. Nu se folosește IA pentru citirea consumului. Necesită Health Connect. Funcționează cu butonul Recalculează și cu Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">Aproximativ o dată pe săptămână, la deschiderea aplicației, NoFUD reia automat calculul complet al obiectivelor - același folosit de butonul Recalculează - pe baza profilului tău, a alimentelor înregistrate recent și a tendinței greutății. Dacă Energy Burn este activat, consumul tău măsurat este folosit ca ancoră de întreținere. Dacă IA nu este disponibilă, rularea este omisă silențios. Dezactivarea restaurează obiectivele de dinainte de prima modificare făcută de această funcție. Acesta nu este un sfat medical.</string>
+    <string name="onboarding_plan_adaptive_note">Planul tău se ajustează automat săptămânal pe măsură ce înregistrezi - dezactivează Adaptive Goals din Setări pentru a-l păstra fix.</string>
+    <string name="onboarding_feature_snap">Fă o poză - IA o înregistrează</string>
     <string name="onboarding_feature_coach">Antrenor care îți cunoaște datele</string>
     <string name="onboarding_feature_library">Bibliotecă cu 870+ exerciții</string>
     <string name="onboarding_feature_widgets">Widgeturi pe ecranul principal</string>
-    <string name="whats_new_v30_workouts">Filă nouă Antrenamente — răsfoiește 873 de exerciții cu fotografii, filtre după mușchi și echipament, căutare și pagini de detalii.</string>
+    <string name="whats_new_v30_workouts">Filă nouă Antrenamente - răsfoiește 873 de exerciții cu fotografii, filtre după mușchi și echipament, căutare și pagini de detalii.</string>
     <string name="whats_new_v30_home">Ecran principal reproiectat: vitezometru pentru calorii, bare verticale de macronutrienți, patru carduri de nutrienți și un buton plutitor de adăugare.</string>
     <string name="whats_new_v30_coach_voice">Întreabă Coach-ul cu vocea, cu noul recorder integrat.</string>
-    <string name="whats_new_v30_share">Trimite orice masă ca link care se deschide direct în NoFUD — pe iPhone sau Android.</string>
+    <string name="whats_new_v30_share">Trimite orice masă ca link care se deschide direct în NoFUD - pe iPhone sau Android.</string>
     <string name="whats_new_v30_export">Exportă jurnalul alimentar ca JSON, Markdown sau CSV din Setări.</string>
-    <string name="whats_new_v30_reprocess">Reprocesează o masă înregistrată cu AI — ajustează numele, porția sau nota și analizează din nou.</string>
+    <string name="whats_new_v30_reprocess">Reprocesează o masă înregistrată cu AI - ajustează numele, porția sau nota și analizează din nou.</string>
     <string name="whats_new_v30_camera">Cameră + Cameră păstrează ambele cadre, lipite una lângă alta.</string>
     <string name="whats_new_v30_colors">10 culori noi de temă, alese acum direct din Setări.</string>
     <string name="whats_new_v30_bodyfat">Istoric grăsime corporală: vezi și șterge intrări individuale, la fel ca la greutate.</string>

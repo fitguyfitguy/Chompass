@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">カスタム (OpenAI互換)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">キーは不要</string>
     <string name="ai_key_placeholder_custom">APIキー（エンドポイントが不要なら任意の文字列）</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">不要</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">あなたのAssemblyAIキー</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">代謝をより正確に計算するのに役立ちます</string>
     <string name="onboarding_yes">はい</string>
     <string name="onboarding_no">いいえ</string>
-    <string name="onboarding_body_fat_ranges">一般的な範囲：男性10–25%、女性18–35%</string>
+    <string name="onboarding_body_fat_ranges">一般的な範囲：男性10-25%、女性18-35%</string>
     <string name="onboarding_body_fat_no_worries">大丈夫です！身長、体重、年齢から\n標準的な計算式を使用します。</string>
 
     <string name="onboarding_pace_title_maintain">あなたのペース</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">健康スコア</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">あなたのために\nすべて準備しています</string>
-    <string name="onboarding_building_finalizing">結果を確定中…</string>
+    <string name="onboarding_building_finalizing">結果を確定中...</string>
     <string name="onboarding_building_recommendation">1日の推奨量</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">お気に入り解除</string>
     <string name="home_favorited">お気に入り済み</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">食事を分析中…</string>
-    <string name="home_looking_up_nutrition">栄養情報を検索中…</string>
+    <string name="home_analyzing_food">食事を分析中...</string>
+    <string name="home_looking_up_nutrition">栄養情報を検索中...</string>
     <string name="home_fiber_format">食物繊維: %1$.1fg</string>
     <string name="home_sugar_format">糖質: %1$.1fg</string>
     <string name="home_sat_fat_format">飽和脂肪酸: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">例：油なし、チーズ多め、大盛り</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">聞き取り中…</string>
+    <string name="voice_listening">聞き取り中...</string>
     <string name="voice_tap_to_start">マイクをタップして開始</string>
-    <string name="voice_transcribing_format">%1$s で文字起こし中…</string>
+    <string name="voice_transcribing_format">%1$s で文字起こし中...</string>
     <string name="voice_mic_permission_denied">マイクの権限が拒否されました。</string>
     <string name="voice_mic_start_failed">マイクを開始できませんでした。権限を確認してください。</string>
     <string name="voice_transcription_failed">文字起こしに失敗しました</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">コレステロール</string>
     <string name="nutrition_label_sodium">ナトリウム</string>
     <string name="nutrition_label_potassium">カリウム</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">コーチ</string>
     <string name="coach_reset_chat_a11y">チャットをリセット</string>
     <string name="coach_send_a11y">送信</string>
     <string name="coach_input_voice_a11y">音声入力</string>
-    <string name="coach_input_placeholder">コーチに質問…</string>
+    <string name="coach_input_placeholder">コーチに質問...</string>
     <string name="coach_empty_title">コーチに聞いてみよう</string>
     <string name="coach_empty_subtitle">コーチはあなたの体重履歴、カロリー記録、目標を確認できます。予想体重、食事内容、目標達成の方法を聞いてみましょう。</string>
     <string name="coach_reset_dialog_title">チャットをリセット</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">モデル</string>
     <string name="sheet_model_footer">または下にカスタムモデルIDを入力してください。</string>
     <string name="sheet_any_model_id">任意のモデルID</string>
-    <string name="sheet_api_key_format">APIキー — %1$s</string>
-    <string name="sheet_speech_api_key_format">音声APIキー — %1$s</string>
+    <string name="sheet_api_key_format">APIキー - %1$s</string>
+    <string name="sheet_speech_api_key_format">音声APIキー - %1$s</string>
     <string name="sheet_speech_engine">音声エンジン</string>
     <string name="sheet_gender">性別</string>
     <string name="sheet_activity_level">活動レベル</string>
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">体重目標</string>
     <string name="notif_channel_weight_goal_desc">目標体重に到達したときのお祝い。</string>
     <string name="notif_streak_title">食事の記録を忘れずに</string>
-    <string name="notif_streak_text">連続記録を続けましょう — 今日のものを記録してください。</string>
+    <string name="notif_streak_text">連続記録を続けましょう - 今日のものを記録してください。</string>
     <string name="notif_summary_title">今日のサマリーが準備できました</string>
     <string name="notif_summary_text">タップして今日のマクロの状況を確認。</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">一致する食事がありません</string>
     <string name="settings_section_custom_instructions">カスタムAIインストラクション</string>
     <string name="settings_custom_instructions_placeholder">例: ドイツ在住で、ヨーロッパの分量を想定し、ALDI/REWEのブランドを優先します。ボディビルの減量期です。</string>
-    <string name="settings_custom_instructions_footer">すべてのAIリクエストと一緒に送信される任意のコンテキスト — 地域、食事制限、トレーニング目標など、毎回繰り返したくない情報。無効にするには空のままにしてください。</string>
+    <string name="settings_custom_instructions_footer">すべてのAIリクエストと一緒に送信される任意のコンテキスト - 地域、食事制限、トレーニング目標など、毎回繰り返したくない情報。無効にするには空のままにしてください。</string>
     <string name="settings_save">保存</string>
     <string name="settings_saved">保存しました</string>
     <string name="settings_section_fallback">フォールバックプロバイダー</string>
     <string name="settings_enable_fallback">フォールバックを有効にする</string>
-    <string name="settings_fallback_footer">プライマリプロバイダーが失敗した場合（過負荷、レート制限、ネットワークエラー）、アプリはこのフォールバックで自動的に再試行します。プライマリと同じプロバイダーも使用できます — 別のモデルを選んでください。</string>
+    <string name="settings_fallback_footer">プライマリプロバイダーが失敗した場合（過負荷、レート制限、ネットワークエラー）、アプリはこのフォールバックで自動的に再試行します。プライマリと同じプロバイダーも使用できます - 別のモデルを選んでください。</string>
     <string name="widget_all_metrics_label">NoFUD 今日</string>
     <string name="widget_all_metrics_description">今日のカロリー・タンパク質・炭水化物・脂質を1つのウィジェットで確認。</string>
     <string name="settings_needs_health_connect">Health Connectが必要</string>
     <string name="settings_energy_goals_info">オンにすると、NoFUDはHealth Connectから取得した実測の消費カロリー（アクティブ＋基礎代謝の14日間平均）を、数式による推定の代わりに維持カロリー（TDEE）の基準として目標計算に使います。消費カロリーの読み取りにAIは使いません。Health Connectが必要です。「再計算」ボタンおよびAdaptive Goalsと連動します。</string>
     <string name="settings_adaptive_goals_info">週に1回ほど、アプリを開いたときに、NoFUDがプロフィール・最近の食事記録・体重トレンドをもとに、「再計算」ボタンと同じ目標計算全体を自動で再実行します。Energy Burnがオンの場合は、実測の消費カロリーを維持カロリーの基準として使います。AIが利用できないときは何もせずスキップします。オフにすると、この機能が最初に変更する前の目標に戻ります。これは医療アドバイスではありません。</string>
     <string name="onboarding_plan_adaptive_note">プランは記録に合わせて週1回自動調整されます。固定したい場合は設定でAdaptive Goalsをオフにしてください。</string>
-    <string name="onboarding_feature_snap">写真を撮るだけ — AIが記録</string>
+    <string name="onboarding_feature_snap">写真を撮るだけ - AIが記録</string>
     <string name="onboarding_feature_coach">あなたのデータを知るコーチ</string>
     <string name="onboarding_feature_library">870以上のエクササイズライブラリ</string>
     <string name="onboarding_feature_widgets">ホーム画面ウィジェット</string>
-    <string name="whats_new_v30_workouts">新しいワークアウトタブ — 写真、筋肉・器具フィルター、検索、詳細ページ付きの873種目をブラウズ。</string>
+    <string name="whats_new_v30_workouts">新しいワークアウトタブ - 写真、筋肉・器具フィルター、検索、詳細ページ付きの873種目をブラウズ。</string>
     <string name="whats_new_v30_home">ホームを刷新：スピードメーター型カロリーゲージ、縦型マクロバー、4枚の栄養素カード、フローティング追加ボタン。</string>
     <string name="whats_new_v30_coach_voice">新しいインラインレコーダーで、コーチに音声で質問できます。</string>
-    <string name="whats_new_v30_share">食事をリンクとして共有 — iPhoneでもAndroidでもNoFUDが直接開きます。</string>
+    <string name="whats_new_v30_share">食事をリンクとして共有 - iPhoneでもAndroidでもNoFUDが直接開きます。</string>
     <string name="whats_new_v30_export">設定から食事日記をJSON・Markdown・CSVでエクスポート。</string>
-    <string name="whats_new_v30_reprocess">記録済みの食事をAIで再解析 — 名前・分量・メモを調整して再分析できます。</string>
+    <string name="whats_new_v30_reprocess">記録済みの食事をAIで再解析 - 名前・分量・メモを調整して再分析できます。</string>
     <string name="whats_new_v30_camera">カメラ＋カメラは2枚の写真を並べて保存します。</string>
     <string name="whats_new_v30_colors">テーマカラーを10色追加。設定内でそのまま選べます。</string>
     <string name="whats_new_v30_bodyfat">体脂肪履歴：体重と同じように、個別の記録を確認・削除できます。</string>

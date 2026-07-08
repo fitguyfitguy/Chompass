@@ -6,7 +6,7 @@ All notable changes to NoFUD are documented here.
 
 ## [1.0.0] - 2026-07-07
 
-Initial public release of NoFUD — an ad-free, privacy-focused Android fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Initial public release of NoFUD - an ad-free, privacy-focused Android fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 ### Added
 
@@ -25,7 +25,7 @@ Initial public release of NoFUD — an ad-free, privacy-focused Android fork of 
 
 ### Changed
 
-- Application ID → `org.codeberg.fitguy.nofud`
+- Application ID -> `org.codeberg.fitguy.nofud`
 - App name, user-facing strings, privacy copy, and share text
 - Source home from GitHub to Codeberg
 - Exercise photos: single-frame WebP derivatives (max 800 px edge, ~19 MB total vs ~94 MB JPEG) via `scripts/optimize_exercise_images.py`

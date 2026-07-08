@@ -4,7 +4,7 @@ Maintainer steps for tagging and publishing an Android release on Codeberg.
 
 ## One-time setup: signing key
 
-Generate the release keystore (back it up offline — losing it blocks updates):
+Generate the release keystore (back it up offline - losing it blocks updates):
 
 ```bash
 cd android
@@ -43,7 +43,7 @@ sha256sum NoFUD-<version>.apk > SHA256SUMS
 3. Commit, tag, push:
 
 ```bash
-git tag -a v1.0.0 -m "NoFUD 1.0.0 — initial public release"
+git tag -a v1.0.0 -m "NoFUD 1.0.0 - initial public release"
 git push origin v1.0.0
 ```
 
@@ -67,7 +67,7 @@ The script auto-runs `nix shell nixpkgs#tea` when `tea` is not on PATH (e.g. ins
 
 Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 
-- Build the `fdroid` flavor (`assembleFdroidRelease`) — omits proprietary Play Core libraries
+- Build the `fdroid` flavor (`assembleFdroidRelease`) - omits proprietary Play Core libraries
 - Add store metadata under `metadata/en-US/`
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
 

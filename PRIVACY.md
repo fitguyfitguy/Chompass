@@ -4,11 +4,11 @@ NoFUD is a privacy-first, ad-free calorie tracker forked from [Fud AI](https://g
 
 ## Summary
 
-- **No ads** — NoFUD does not include AdMob or any other advertising SDK.
-- **No analytics** — No usage tracking, crash analytics, or telemetry SDKs are bundled.
-- **No accounts** — There is no sign-in, cloud sync, or central user database.
-- **Local-first** — Food logs, weight history, profile, and Coach chat are stored on your device.
-- **Bring your own AI key** — API keys are encrypted on-device (Android Keystore + EncryptedSharedPreferences). Food analysis and Coach requests go directly from your phone to the AI provider you choose.
+- **No ads** - NoFUD does not include AdMob or any other advertising SDK.
+- **No analytics** - No usage tracking, crash analytics, or telemetry SDKs are bundled.
+- **No accounts** - There is no sign-in, cloud sync, or central user database.
+- **Local-first** - Food logs, weight history, profile, and Coach chat are stored on your device.
+- **Bring your own AI key** - API keys are encrypted on-device (Android Keystore + EncryptedSharedPreferences). Food analysis and Coach requests go directly from your phone to the AI provider you choose.
 
 ## Data on your device
 
@@ -20,7 +20,7 @@ The app stores locally:
 - Coach conversation history
 - Widget snapshots
 
-**Delete All Data** (Settings) wipes app storage only. It does not remove records you previously synced to Health Connect — manage those in the Health Connect app if needed.
+**Delete All Data** (Settings) wipes app storage only. It does not remove records you previously synced to Health Connect - manage those in the Health Connect app if needed.
 
 ## Network requests
 

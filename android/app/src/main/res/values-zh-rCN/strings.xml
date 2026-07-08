@@ -81,10 +81,10 @@
     <string name="activity_very_active">非常活跃</string>
     <string name="activity_extra_active">超级活跃</string>
     <string name="activity_sedentary_subtitle">很少或不运动</string>
-    <string name="activity_light_subtitle">每周运动 1–3 次</string>
-    <string name="activity_moderate_subtitle">每周运动 4–5 次</string>
-    <string name="activity_active_subtitle">每天运动或每周高强度 3–4 次</string>
-    <string name="activity_very_active_subtitle">每周高强度运动 6–7 次</string>
+    <string name="activity_light_subtitle">每周运动 1-3 次</string>
+    <string name="activity_moderate_subtitle">每周运动 4-5 次</string>
+    <string name="activity_active_subtitle">每天运动或每周高强度 3-4 次</string>
+    <string name="activity_very_active_subtitle">每周高强度运动 6-7 次</string>
     <string name="activity_extra_active_subtitle">每天高强度运动，或体力劳动</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">自定义（兼容 OpenAI）</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">无需密钥</string>
     <string name="ai_key_placeholder_custom">API 密钥（如端点不需要可填任意内容）</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">无需密钥</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">你的 AssemblyAI 密钥</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">有助于更准确地计算你的代谢</string>
     <string name="onboarding_yes">是</string>
     <string name="onboarding_no">否</string>
-    <string name="onboarding_body_fat_ranges">常见范围：男性 10–25%，女性 18–35%</string>
+    <string name="onboarding_body_fat_ranges">常见范围：男性 10-25%，女性 18-35%</string>
     <string name="onboarding_body_fat_no_worries">没关系！我们会根据你的身高、体重和\n年龄使用标准公式计算。</string>
 
     <string name="onboarding_pace_title_maintain">你的节奏</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">提供免费套餐，快速且准确</string>
     <string name="onboarding_provider_step_1">在 aistudio.google.com/apikey 获取免费密钥</string>
     <string name="onboarding_provider_step_2">打开“设置”→ AI 提供商</string>
-    <string name="onboarding_provider_step_3">粘贴你的密钥——完成</string>
+    <string name="onboarding_provider_step_3">粘贴你的密钥--完成</string>
     <string name="onboarding_provider_footer">支持 13 个提供商。你的密钥仅保留在\n本设备上，并经过加密。</string>
 
     <string name="onboarding_building_calories">卡路里</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">健康评分</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">我们正在为你\n设置一切</string>
-    <string name="onboarding_building_finalizing">正在完成结果…</string>
+    <string name="onboarding_building_finalizing">正在完成结果...</string>
     <string name="onboarding_building_recommendation">每日推荐量</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">取消收藏</string>
     <string name="home_favorited">已收藏</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">正在分析你的食物…</string>
-    <string name="home_looking_up_nutrition">正在查询营养信息…</string>
+    <string name="home_analyzing_food">正在分析你的食物...</string>
+    <string name="home_looking_up_nutrition">正在查询营养信息...</string>
     <string name="home_fiber_format">纤维：%1$.1fg</string>
     <string name="home_sugar_format">糖：%1$.1fg</string>
     <string name="home_sat_fat_format">饱和脂肪：%1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">如：不放油、加双倍奶酪、大份</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">聆听中…</string>
+    <string name="voice_listening">聆听中...</string>
     <string name="voice_tap_to_start">点按麦克风开始</string>
-    <string name="voice_transcribing_format">正在通过 %1$s 转写…</string>
+    <string name="voice_transcribing_format">正在通过 %1$s 转写...</string>
     <string name="voice_mic_permission_denied">麦克风权限被拒绝。</string>
     <string name="voice_mic_start_failed">无法启动麦克风。请检查权限。</string>
     <string name="voice_transcription_failed">转写失败</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">胆固醇</string>
     <string name="nutrition_label_sodium">钠</string>
     <string name="nutrition_label_potassium">钾</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">教练</string>
     <string name="coach_reset_chat_a11y">重置聊天</string>
     <string name="coach_send_a11y">发送</string>
     <string name="coach_input_voice_a11y">语音输入</string>
-    <string name="coach_input_placeholder">问教练…</string>
+    <string name="coach_input_placeholder">问教练...</string>
     <string name="coach_empty_title">问问你的教练</string>
     <string name="coach_empty_subtitle">你的教练可以查看你的体重记录、卡路里日志和目标。问问预期体重、吃什么或如何达成目标。</string>
     <string name="coach_reset_dialog_title">重置聊天</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">模型</string>
     <string name="sheet_model_footer">或在下方输入任意自定义模型 ID。</string>
     <string name="sheet_any_model_id">任意模型 ID</string>
-    <string name="sheet_api_key_format">API 密钥 — %1$s</string>
-    <string name="sheet_speech_api_key_format">语音 API 密钥 — %1$s</string>
+    <string name="sheet_api_key_format">API 密钥 - %1$s</string>
+    <string name="sheet_speech_api_key_format">语音 API 密钥 - %1$s</string>
     <string name="sheet_speech_engine">语音引擎</string>
     <string name="sheet_gender">性别</string>
     <string name="sheet_activity_level">活动水平</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">隐私政策</string>
     <string name="about_made_by">由 Apoorv Darshan 制作</string>
     <string name="about_with_care">用心为每个人</string>
-    <string name="about_share_message">我用 NoFUD 记录每一餐——拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">我用 NoFUD 记录每一餐--拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">分享 NoFUD</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">体重目标</string>
     <string name="notif_channel_weight_goal_desc">达成目标体重时的庆祝。</string>
     <string name="notif_streak_title">别忘了记录你的餐食</string>
-    <string name="notif_streak_text">保持连续记录——记录今天吃的内容。</string>
+    <string name="notif_streak_text">保持连续记录--记录今天吃的内容。</string>
     <string name="notif_summary_title">今日摘要已就绪</string>
     <string name="notif_summary_text">点按查看今日宏量营养素的完成情况。</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">没有匹配的食物</string>
     <string name="settings_section_custom_instructions">自定义 AI 指令</string>
     <string name="settings_custom_instructions_placeholder">例如：我住在德国，按欧洲份量计算，优先选择 ALDI/REWE 品牌。我正在进行健美减脂期。</string>
-    <string name="settings_custom_instructions_footer">随每次 AI 请求一同发送的可选上下文——地区、饮食、运动目标，任何你本来需要每次都重复的信息。留空即可停用。</string>
+    <string name="settings_custom_instructions_footer">随每次 AI 请求一同发送的可选上下文--地区、饮食、运动目标，任何你本来需要每次都重复的信息。留空即可停用。</string>
     <string name="settings_save">保存</string>
     <string name="settings_saved">已保存</string>
     <string name="settings_section_fallback">备用提供商</string>
     <string name="settings_enable_fallback">启用备用</string>
-    <string name="settings_fallback_footer">如果主提供商失败（过载、速率限制、网络错误），应用会自动使用此备用提供商重试。允许与主提供商相同——只需选择不同的模型即可。</string>
+    <string name="settings_fallback_footer">如果主提供商失败（过载、速率限制、网络错误），应用会自动使用此备用提供商重试。允许与主提供商相同--只需选择不同的模型即可。</string>
     <string name="widget_all_metrics_label">NoFUD 今天</string>
     <string name="widget_all_metrics_description">在一个小部件中查看今天的卡路里、蛋白质、碳水和脂肪。</string>
     <string name="settings_needs_health_connect">需要 Health Connect</string>
     <string name="settings_energy_goals_info">开启后，NoFUD 会使用来自 Health Connect 的实测消耗热量（活动 + 基础能量的 14 天平均值）作为计算目标时的维持热量（TDEE）基准，而不是公式估算。读取消耗数据不使用 AI。需要 Health Connect。与“重新计算”按钮及 Adaptive Goals 配合使用。</string>
     <string name="settings_adaptive_goals_info">大约每周一次，当你打开应用时，NoFUD 会根据你的资料、最近记录的饮食和体重趋势，自动重新运行完整的目标计算（与“重新计算”按钮相同）。如果已开启 Energy Burn，则会以实测消耗作为维持热量的基准。若 AI 不可用则静默跳过。关闭后会恢复到该功能首次更改前的目标。这不是医疗建议。</string>
-    <string name="onboarding_plan_adaptive_note">你的计划会根据记录每周自动调整 — 想保持不变，可在设置中关闭 Adaptive Goals。</string>
-    <string name="onboarding_feature_snap">拍张照片 — AI 帮你记录</string>
+    <string name="onboarding_plan_adaptive_note">你的计划会根据记录每周自动调整 - 想保持不变，可在设置中关闭 Adaptive Goals。</string>
+    <string name="onboarding_feature_snap">拍张照片 - AI 帮你记录</string>
     <string name="onboarding_feature_coach">了解你数据的教练</string>
     <string name="onboarding_feature_library">870+ 动作练习库</string>
     <string name="onboarding_feature_widgets">主屏幕小组件</string>
-    <string name="whats_new_v30_workouts">全新“锻炼”标签页 — 浏览 873 个动作，配照片、肌群和器械筛选、搜索及详情页。</string>
+    <string name="whats_new_v30_workouts">全新“锻炼”标签页 - 浏览 873 个动作，配照片、肌群和器械筛选、搜索及详情页。</string>
     <string name="whats_new_v30_home">主页焕新：仪表盘式卡路里表、竖向宏量条、四张营养卡片和悬浮添加按钮。</string>
     <string name="whats_new_v30_coach_voice">用新的内置录音条向教练语音提问。</string>
     <string name="whats_new_v30_share">把任意一餐分享为链接，在 iPhone 或 Android 上直接打开 NoFUD。</string>
     <string name="whats_new_v30_export">在设置中将饮食日记导出为 JSON、Markdown 或 CSV。</string>
-    <string name="whats_new_v30_reprocess">用 AI 重新处理已记录的餐食 — 调整名称、份量或备注后重新分析。</string>
+    <string name="whats_new_v30_reprocess">用 AI 重新处理已记录的餐食 - 调整名称、份量或备注后重新分析。</string>
     <string name="whats_new_v30_camera">相机 + 相机会保留两张照片，并排拼接。</string>
     <string name="whats_new_v30_colors">新增 10 种主题色，现在可在设置中直接选择。</string>
     <string name="whats_new_v30_bodyfat">体脂历史：像体重一样查看并删除单条记录。</string>

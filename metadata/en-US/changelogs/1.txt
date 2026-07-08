@@ -1,4 +1,4 @@
-Initial public release of NoFUD — an ad-free, privacy-focused Android fork of Fud AI.
+Initial public release of NoFUD - an ad-free, privacy-focused Android fork of Fud AI.
 
 • No ads or analytics SDKs
 • Original NoFUD branding and launcher icon

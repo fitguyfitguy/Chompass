@@ -81,10 +81,10 @@
     <string name="activity_very_active">매우 활동적</string>
     <string name="activity_extra_active">극도로 활동적</string>
     <string name="activity_sedentary_subtitle">운동을 거의 안 함</string>
-    <string name="activity_light_subtitle">주 1–3회 운동</string>
-    <string name="activity_moderate_subtitle">주 4–5회 운동</string>
-    <string name="activity_active_subtitle">매일 운동 또는 주 3–4회 강도 높은 운동</string>
-    <string name="activity_very_active_subtitle">주 6–7회 강도 높은 운동</string>
+    <string name="activity_light_subtitle">주 1-3회 운동</string>
+    <string name="activity_moderate_subtitle">주 4-5회 운동</string>
+    <string name="activity_active_subtitle">매일 운동 또는 주 3-4회 강도 높은 운동</string>
+    <string name="activity_very_active_subtitle">주 6-7회 강도 높은 운동</string>
     <string name="activity_extra_active_subtitle">매일 매우 강한 운동 또는 육체 노동</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">사용자 지정 (OpenAI 호환)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">키 필요 없음</string>
     <string name="ai_key_placeholder_custom">API 키 (엔드포인트가 키를 요구하지 않으면 아무 값)</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">필요 없음</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">AssemblyAI 키</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">대사량을 더 정확하게 계산하는 데 도움이 됩니다</string>
     <string name="onboarding_yes">네</string>
     <string name="onboarding_no">아니요</string>
-    <string name="onboarding_body_fat_ranges">일반 범위: 남성 10–25%, 여성 18–35%</string>
+    <string name="onboarding_body_fat_ranges">일반 범위: 남성 10-25%, 여성 18-35%</string>
     <string name="onboarding_body_fat_no_worries">괜찮아요! 키, 체중, 나이를 기반으로\n표준 공식을 사용합니다.</string>
 
     <string name="onboarding_pace_title_maintain">속도</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">무료 등급 제공, 빠르고 정확함</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey 에서 무료 키 받기</string>
     <string name="onboarding_provider_step_2">설정 → AI 제공자 열기</string>
-    <string name="onboarding_provider_step_3">키 붙여넣기 — 완료</string>
+    <string name="onboarding_provider_step_3">키 붙여넣기 - 완료</string>
     <string name="onboarding_provider_footer">13개 제공자 지원. 키는 이 기기에\n암호화되어 저장됩니다.</string>
 
     <string name="onboarding_building_calories">칼로리</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">건강 점수</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">모든 것을\n준비하고 있어요</string>
-    <string name="onboarding_building_finalizing">결과를 마무리하는 중…</string>
+    <string name="onboarding_building_finalizing">결과를 마무리하는 중...</string>
     <string name="onboarding_building_recommendation">일일 권장량</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">즐겨찾기 해제</string>
     <string name="home_favorited">즐겨찾기됨</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">음식을 분석하는 중…</string>
-    <string name="home_looking_up_nutrition">영양 정보 검색 중…</string>
+    <string name="home_analyzing_food">음식을 분석하는 중...</string>
+    <string name="home_looking_up_nutrition">영양 정보 검색 중...</string>
     <string name="home_fiber_format">식이섬유: %1$.1fg</string>
     <string name="home_sugar_format">당류: %1$.1fg</string>
     <string name="home_sat_fat_format">포화지방: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">예: 기름 없이, 치즈 추가, 큰 분량</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">듣고 있어요…</string>
+    <string name="voice_listening">듣고 있어요...</string>
     <string name="voice_tap_to_start">마이크를 탭하여 시작</string>
-    <string name="voice_transcribing_format">%1$s(으)로 변환 중…</string>
+    <string name="voice_transcribing_format">%1$s(으)로 변환 중...</string>
     <string name="voice_mic_permission_denied">마이크 권한이 거부되었습니다.</string>
     <string name="voice_mic_start_failed">마이크를 시작할 수 없어요. 권한을 확인하세요.</string>
     <string name="voice_transcription_failed">음성 변환 실패</string>
@@ -416,14 +416,14 @@
     <string name="nutrition_label_cholesterol">콜레스테롤</string>
     <string name="nutrition_label_sodium">나트륨</string>
     <string name="nutrition_label_potassium">칼륨</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">코치</string>
     <string name="coach_reset_chat_a11y">채팅 초기화</string>
     <string name="coach_send_a11y">보내기</string>
     <string name="coach_input_voice_a11y">음성 입력</string>
-    <string name="coach_input_placeholder">코치에게 질문…</string>
+    <string name="coach_input_placeholder">코치에게 질문...</string>
     <string name="coach_empty_title">코치에게 물어보세요</string>
     <string name="coach_empty_subtitle">코치는 체중 기록, 칼로리 로그, 목표를 볼 수 있어요. 예상 체중, 무엇을 먹을지, 목표 달성 방법을 물어보세요.</string>
     <string name="coach_reset_dialog_title">채팅 초기화</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">모델</string>
     <string name="sheet_model_footer">또는 아래에 사용자 지정 모델 ID를 입력하세요.</string>
     <string name="sheet_any_model_id">모델 ID</string>
-    <string name="sheet_api_key_format">API 키 — %1$s</string>
-    <string name="sheet_speech_api_key_format">음성 API 키 — %1$s</string>
+    <string name="sheet_api_key_format">API 키 - %1$s</string>
+    <string name="sheet_speech_api_key_format">음성 API 키 - %1$s</string>
     <string name="sheet_speech_engine">음성 엔진</string>
     <string name="sheet_gender">성별</string>
     <string name="sheet_activity_level">활동 수준</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">개인정보 처리방침</string>
     <string name="about_made_by">Apoorv Darshan 제작</string>
     <string name="about_with_care">모두를 위해, 세심하게</string>
-    <string name="about_share_message">NoFUD로 식단을 기록하고 있어요 — 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">NoFUD로 식단을 기록하고 있어요 - 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">NoFUD 공유</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">체중 목표</string>
     <string name="notif_channel_weight_goal_desc">목표 체중 달성 축하 알림.</string>
     <string name="notif_streak_title">식사 기록을 잊지 마세요</string>
-    <string name="notif_streak_text">연속 기록을 유지하세요 — 오늘 먹은 음식을 기록해 보세요.</string>
+    <string name="notif_streak_text">연속 기록을 유지하세요 - 오늘 먹은 음식을 기록해 보세요.</string>
     <string name="notif_summary_title">오늘의 요약이 준비되었어요</string>
     <string name="notif_summary_text">탭하여 오늘의 매크로 결과를 확인하세요.</string>
 
@@ -632,30 +632,30 @@
     <string name="saved_meals_no_match">일치하는 음식이 없습니다</string>
     <string name="settings_section_custom_instructions">사용자 지정 AI 지침</string>
     <string name="settings_custom_instructions_placeholder">예: 독일에 거주하며, 유럽식 1인분 크기를 기준으로 하고, ALDI/REWE 브랜드를 선호합니다. 보디빌딩 감량 중입니다.</string>
-    <string name="settings_custom_instructions_footer">모든 AI 요청과 함께 전송되는 선택적 컨텍스트 — 지역, 식단, 운동 목표 등 매번 반복해서 입력해야 하는 정보. 비활성화하려면 비워 두세요.</string>
+    <string name="settings_custom_instructions_footer">모든 AI 요청과 함께 전송되는 선택적 컨텍스트 - 지역, 식단, 운동 목표 등 매번 반복해서 입력해야 하는 정보. 비활성화하려면 비워 두세요.</string>
     <string name="settings_save">저장</string>
     <string name="settings_saved">저장됨</string>
     <string name="settings_section_fallback">폴백 제공자</string>
     <string name="settings_enable_fallback">폴백 사용</string>
-    <string name="settings_fallback_footer">기본 제공자가 실패할 경우(과부하, 속도 제한, 네트워크 오류) 앱이 이 폴백으로 자동 재시도합니다. 기본과 동일한 제공자도 허용됩니다 — 다른 모델을 선택하세요.</string>
+    <string name="settings_fallback_footer">기본 제공자가 실패할 경우(과부하, 속도 제한, 네트워크 오류) 앱이 이 폴백으로 자동 재시도합니다. 기본과 동일한 제공자도 허용됩니다 - 다른 모델을 선택하세요.</string>
     <string name="widget_all_metrics_label">NoFUD 오늘</string>
     <string name="widget_all_metrics_description">오늘의 칼로리, 단백질, 탄수화물, 지방을 위젯 하나로 확인하세요.</string>
     <string name="settings_needs_health_connect">Health Connect 필요</string>
     <string name="settings_energy_goals_info">켜면 NoFUD가 Health Connect에서 측정된 소모 칼로리(활동 + 기초 에너지의 14일 평균)를 공식 추정치 대신 유지 칼로리(TDEE) 기준으로 사용해 목표를 계산합니다. 소모 칼로리를 읽는 데 AI는 사용되지 않습니다. Health Connect가 필요합니다. 다시 계산 버튼 및 Adaptive Goals와 함께 작동합니다.</string>
-    <string name="settings_adaptive_goals_info">일주일에 한 번 정도 앱을 열 때 NoFUD가 프로필, 최근 기록한 음식, 체중 추세를 바탕으로 전체 목표 계산을 자동으로 다시 실행합니다 — 다시 계산 버튼과 동일한 계산입니다. Energy Burn이 켜져 있으면 측정된 소모 칼로리를 유지 기준으로 사용합니다. AI를 사용할 수 없으면 조용히 건너뜁니다. 끄면 이 기능이 처음 변경하기 전의 목표로 복원됩니다. 이는 의학적 조언이 아닙니다.</string>
-    <string name="onboarding_plan_adaptive_note">플랜은 기록에 따라 매주 자동 조정됩니다 — 고정하려면 설정에서 Adaptive Goals를 끄세요.</string>
+    <string name="settings_adaptive_goals_info">일주일에 한 번 정도 앱을 열 때 NoFUD가 프로필, 최근 기록한 음식, 체중 추세를 바탕으로 전체 목표 계산을 자동으로 다시 실행합니다 - 다시 계산 버튼과 동일한 계산입니다. Energy Burn이 켜져 있으면 측정된 소모 칼로리를 유지 기준으로 사용합니다. AI를 사용할 수 없으면 조용히 건너뜁니다. 끄면 이 기능이 처음 변경하기 전의 목표로 복원됩니다. 이는 의학적 조언이 아닙니다.</string>
+    <string name="onboarding_plan_adaptive_note">플랜은 기록에 따라 매주 자동 조정됩니다 - 고정하려면 설정에서 Adaptive Goals를 끄세요.</string>
     <string name="onboarding_feature_snap">사진만 찍으면 AI가 기록</string>
     <string name="onboarding_feature_coach">내 데이터를 아는 코치</string>
     <string name="onboarding_feature_library">870개 이상의 운동 라이브러리</string>
     <string name="onboarding_feature_widgets">홈 화면 위젯</string>
-    <string name="whats_new_v30_workouts">새로운 운동 탭 — 사진, 근육·장비 필터, 검색, 상세 페이지와 함께 873가지 운동을 둘러보세요.</string>
+    <string name="whats_new_v30_workouts">새로운 운동 탭 - 사진, 근육·장비 필터, 검색, 상세 페이지와 함께 873가지 운동을 둘러보세요.</string>
     <string name="whats_new_v30_home">홈 화면 개편: 속도계형 칼로리 게이지, 세로 매크로 바, 영양소 카드 4개, 플로팅 추가 버튼.</string>
     <string name="whats_new_v30_coach_voice">새 인라인 녹음기로 코치에게 음성으로 질문하세요.</string>
-    <string name="whats_new_v30_share">식사를 링크로 공유 — iPhone과 Android 모두에서 NoFUD가 바로 열립니다.</string>
+    <string name="whats_new_v30_share">식사를 링크로 공유 - iPhone과 Android 모두에서 NoFUD가 바로 열립니다.</string>
     <string name="whats_new_v30_export">설정에서 음식 일기를 JSON, Markdown, CSV로 내보내세요.</string>
-    <string name="whats_new_v30_reprocess">기록된 식사를 AI로 다시 분석 — 이름, 양, 메모를 조정한 뒤 재분석할 수 있습니다.</string>
+    <string name="whats_new_v30_reprocess">기록된 식사를 AI로 다시 분석 - 이름, 양, 메모를 조정한 뒤 재분석할 수 있습니다.</string>
     <string name="whats_new_v30_camera">카메라 + 카메라가 두 장의 사진을 나란히 이어 붙여 보관합니다.</string>
-    <string name="whats_new_v30_colors">테마 색상 10종 추가 — 이제 설정에서 바로 선택합니다.</string>
+    <string name="whats_new_v30_colors">테마 색상 10종 추가 - 이제 설정에서 바로 선택합니다.</string>
     <string name="whats_new_v30_bodyfat">체지방 기록: 체중과 마찬가지로 개별 항목을 확인하고 삭제할 수 있습니다.</string>
     <string name="whats_new_v30_units">키와 몸무게 단위를 이제 따로 설정할 수 있습니다.</string>
     <string name="whats_new_v30_adaptive">적응형 목표와 에너지 소모가 실험 단계를 졸업하고 새 설치에서 기본으로 켜집니다.</string>

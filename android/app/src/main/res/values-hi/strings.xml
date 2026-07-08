@@ -81,10 +81,10 @@
     <string name="activity_very_active">बहुत सक्रिय</string>
     <string name="activity_extra_active">अत्यधिक सक्रिय</string>
     <string name="activity_sedentary_subtitle">कम या कोई व्यायाम नहीं</string>
-    <string name="activity_light_subtitle">सप्ताह में 1–3 बार व्यायाम</string>
-    <string name="activity_moderate_subtitle">सप्ताह में 4–5 बार व्यायाम</string>
-    <string name="activity_active_subtitle">रोज़ाना व्यायाम या सप्ताह में 3–4 बार तीव्र</string>
-    <string name="activity_very_active_subtitle">सप्ताह में 6–7 बार तीव्र व्यायाम</string>
+    <string name="activity_light_subtitle">सप्ताह में 1-3 बार व्यायाम</string>
+    <string name="activity_moderate_subtitle">सप्ताह में 4-5 बार व्यायाम</string>
+    <string name="activity_active_subtitle">रोज़ाना व्यायाम या सप्ताह में 3-4 बार तीव्र</string>
+    <string name="activity_very_active_subtitle">सप्ताह में 6-7 बार तीव्र व्यायाम</string>
     <string name="activity_extra_active_subtitle">रोज़ाना बहुत तीव्र, या शारीरिक काम</string>
 
     <!-- Weight Goal -->
@@ -120,17 +120,17 @@
     <string name="ai_provider_custom">कस्टम (OpenAI-संगत)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza…</string>
-    <string name="ai_key_placeholder_openai">sk-…</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-…</string>
-    <string name="ai_key_placeholder_xai">xai-…</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-…</string>
-    <string name="ai_key_placeholder_together">…</string>
-    <string name="ai_key_placeholder_groq">gsk_…</string>
-    <string name="ai_key_placeholder_huggingface">hf_…</string>
-    <string name="ai_key_placeholder_fireworks">fw_…</string>
-    <string name="ai_key_placeholder_deepinfra">…</string>
-    <string name="ai_key_placeholder_mistral">…</string>
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+    <string name="ai_key_placeholder_openai">sk-...</string>
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+    <string name="ai_key_placeholder_xai">xai-...</string>
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+    <string name="ai_key_placeholder_together">...</string>
+    <string name="ai_key_placeholder_groq">gsk_...</string>
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+    <string name="ai_key_placeholder_deepinfra">...</string>
+    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">कुंजी की ज़रूरत नहीं</string>
     <string name="ai_key_placeholder_custom">API कुंजी (या कुछ भी, अगर एंडपॉइंट को ज़रूरत न हो)</string>
 
@@ -142,8 +142,8 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">ज़रूरत नहीं</string>
-    <string name="speech_key_placeholder_openai">sk-…</string>
-    <string name="speech_key_placeholder_groq">gsk_…</string>
+    <string name="speech_key_placeholder_openai">sk-...</string>
+    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">आपकी AssemblyAI कुंजी</string>
 
@@ -217,7 +217,7 @@
     <string name="onboarding_body_fat_subtitle">आपके मेटाबॉलिज़्म की अधिक सटीक गणना में मदद करता है</string>
     <string name="onboarding_yes">हाँ</string>
     <string name="onboarding_no">नहीं</string>
-    <string name="onboarding_body_fat_ranges">सामान्य रेंज: पुरुष 10–25%, महिला 18–35%</string>
+    <string name="onboarding_body_fat_ranges">सामान्य रेंज: पुरुष 10-25%, महिला 18-35%</string>
     <string name="onboarding_body_fat_no_worries">कोई बात नहीं! हम आपकी ऊंचाई, वज़न और उम्र\nके आधार पर एक मानक फ़ॉर्मूला उपयोग करेंगे।</string>
 
     <string name="onboarding_pace_title_maintain">आपकी गति</string>
@@ -258,7 +258,7 @@
     <string name="onboarding_provider_recommended_subtitle">मुफ़्त टियर उपलब्ध, तेज़ और सटीक</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey पर मुफ़्त कुंजी पाएँ</string>
     <string name="onboarding_provider_step_2">सेटिंग्स खोलें → AI प्रदाता</string>
-    <string name="onboarding_provider_step_3">अपनी कुंजी पेस्ट करें — हो गया</string>
+    <string name="onboarding_provider_step_3">अपनी कुंजी पेस्ट करें - हो गया</string>
     <string name="onboarding_provider_footer">13 प्रदाता समर्थित। आपकी कुंजी इसी डिवाइस पर,\nएन्क्रिप्टेड रहती है।</string>
 
     <string name="onboarding_building_calories">कैलोरी</string>
@@ -268,7 +268,7 @@
     <string name="onboarding_building_health_score">स्वास्थ्य स्कोर</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">हम आपके लिए सब कुछ\nसेट कर रहे हैं</string>
-    <string name="onboarding_building_finalizing">परिणाम अंतिम रूप दे रहे हैं…</string>
+    <string name="onboarding_building_finalizing">परिणाम अंतिम रूप दे रहे हैं...</string>
     <string name="onboarding_building_recommendation">दैनिक अनुशंसा</string>
     <string name="onboarding_building_bullet">•</string>
 
@@ -319,8 +319,8 @@
     <string name="home_swipe_unfavorite">पसंदीदा से हटाएं</string>
     <string name="home_favorited">पसंदीदा में जोड़ा गया</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
-    <string name="home_analyzing_food">आपके भोजन का विश्लेषण हो रहा है…</string>
-    <string name="home_looking_up_nutrition">पोषण देखा जा रहा है…</string>
+    <string name="home_analyzing_food">आपके भोजन का विश्लेषण हो रहा है...</string>
+    <string name="home_looking_up_nutrition">पोषण देखा जा रहा है...</string>
     <string name="home_fiber_format">फ़ाइबर: %1$.1fg</string>
     <string name="home_sugar_format">चीनी: %1$.1fg</string>
     <string name="home_sat_fat_format">सैट. फैट: %1$.1fg</string>
@@ -377,9 +377,9 @@
     <string name="context_note_placeholder">जैसे तेल नहीं, अतिरिक्त चीज़, बड़ा हिस्सा</string>
 
     <!-- Voice input sheet -->
-    <string name="voice_listening">सुन रहे हैं…</string>
+    <string name="voice_listening">सुन रहे हैं...</string>
     <string name="voice_tap_to_start">शुरू करने के लिए माइक पर टैप करें</string>
-    <string name="voice_transcribing_format">%1$s के माध्यम से ट्रांसक्राइब हो रहा है…</string>
+    <string name="voice_transcribing_format">%1$s के माध्यम से ट्रांसक्राइब हो रहा है...</string>
     <string name="voice_mic_permission_denied">माइक्रोफ़ोन की अनुमति अस्वीकृत।</string>
     <string name="voice_mic_start_failed">माइक शुरू नहीं हो सका। अनुमतियाँ जाँचें।</string>
     <string name="voice_transcription_failed">ट्रांसक्रिप्शन विफल</string>
@@ -416,16 +416,16 @@
     <string name="nutrition_label_cholesterol">कोलेस्ट्रॉल</string>
     <string name="nutrition_label_sodium">सोडियम</string>
     <string name="nutrition_label_potassium">पोटैशियम</string>
-    <string name="nutrition_em_dash">—</string>
+    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">कोच</string>
     <string name="coach_reset_chat_a11y">चैट रीसेट करें</string>
     <string name="coach_send_a11y">भेजें</string>
     <string name="coach_input_voice_a11y">वॉइस इनपुट</string>
-    <string name="coach_input_placeholder">कोच से पूछें…</string>
+    <string name="coach_input_placeholder">कोच से पूछें...</string>
     <string name="coach_empty_title">अपने कोच से पूछें</string>
-    <string name="coach_empty_subtitle">आपका कोच आपके वज़न का इतिहास, कैलोरी लॉग और लक्ष्य देख सकता है। अपेक्षित वज़न, क्या खाएँ, या अपने लक्ष्य तक कैसे पहुँचें — पूछें।</string>
+    <string name="coach_empty_subtitle">आपका कोच आपके वज़न का इतिहास, कैलोरी लॉग और लक्ष्य देख सकता है। अपेक्षित वज़न, क्या खाएँ, या अपने लक्ष्य तक कैसे पहुँचें - पूछें।</string>
     <string name="coach_reset_dialog_title">चैट रीसेट करें</string>
     <string name="coach_reset_dialog_message">सभी संदेश साफ़ करके नई शुरुआत करें? इसे पूर्ववत नहीं किया जा सकता।</string>
     <string name="coach_reset_confirm">रीसेट</string>
@@ -560,8 +560,8 @@
     <string name="sheet_model">मॉडल</string>
     <string name="sheet_model_footer">या नीचे कोई कस्टम मॉडल ID टाइप करें।</string>
     <string name="sheet_any_model_id">कोई भी मॉडल ID</string>
-    <string name="sheet_api_key_format">API कुंजी — %1$s</string>
-    <string name="sheet_speech_api_key_format">स्पीच API कुंजी — %1$s</string>
+    <string name="sheet_api_key_format">API कुंजी - %1$s</string>
+    <string name="sheet_speech_api_key_format">स्पीच API कुंजी - %1$s</string>
     <string name="sheet_speech_engine">स्पीच इंजन</string>
     <string name="sheet_gender">लिंग</string>
     <string name="sheet_activity_level">गतिविधि स्तर</string>
@@ -598,7 +598,7 @@
     <string name="about_privacy">गोपनीयता नीति</string>
     <string name="about_made_by">Apoorv Darshan द्वारा निर्मित</string>
     <string name="about_with_care">देखभाल के साथ, सभी के लिए</string>
-    <string name="about_share_message">मैं NoFUD से अपने भोजन ट्रैक कर रहा हूँ — एक तस्वीर खींचें, बोलें, या टाइप करें, और AI कैलोरी लॉग कर देता है। यह मुफ़्त है, ओपन सोर्स है, और आपका डेटा आपके डिवाइस पर ही रहता है।\n\nडाउनलोड: https://codeberg.org/fitguy/NoFUD</string>
+    <string name="about_share_message">मैं NoFUD से अपने भोजन ट्रैक कर रहा हूँ - एक तस्वीर खींचें, बोलें, या टाइप करें, और AI कैलोरी लॉग कर देता है। यह मुफ़्त है, ओपन सोर्स है, और आपका डेटा आपके डिवाइस पर ही रहता है।\n\nडाउनलोड: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">NoFUD शेयर करें</string>
 
     <!-- Notifications -->
@@ -609,7 +609,7 @@
     <string name="notif_channel_weight_goal">वज़न लक्ष्य</string>
     <string name="notif_channel_weight_goal_desc">जब आप अपने लक्ष्य वज़न तक पहुँचते हैं तो जश्न।</string>
     <string name="notif_streak_title">अपने भोजन लॉग करना न भूलें</string>
-    <string name="notif_streak_text">अपनी स्ट्रीक जारी रखें — आज का कुछ लॉग करें।</string>
+    <string name="notif_streak_text">अपनी स्ट्रीक जारी रखें - आज का कुछ लॉग करें।</string>
     <string name="notif_summary_title">आज का सारांश तैयार है</string>
     <string name="notif_summary_text">देखने के लिए टैप करें कि आज के मैक्रो कैसे रहे।</string>
 
@@ -632,28 +632,28 @@
     <string name="saved_meals_no_match">कोई मेल खाता खाना नहीं</string>
     <string name="settings_section_custom_instructions">कस्टम AI निर्देश</string>
     <string name="settings_custom_instructions_placeholder">उदा. मैं जर्मनी में रहता हूँ, यूरोपीय पोर्शन साइज़ मानें, ALDI/REWE ब्रांड्स को प्राथमिकता दें। मैं बॉडीबिल्डिंग कट पर हूँ।</string>
-    <string name="settings_custom_instructions_footer">हर AI अनुरोध के साथ भेजा जाने वाला वैकल्पिक संदर्भ — क्षेत्र, डाइट, एथलेटिक लक्ष्य, और जो कुछ भी आप हर बार दोहराते हैं। बंद करने के लिए खाली छोड़ें।</string>
+    <string name="settings_custom_instructions_footer">हर AI अनुरोध के साथ भेजा जाने वाला वैकल्पिक संदर्भ - क्षेत्र, डाइट, एथलेटिक लक्ष्य, और जो कुछ भी आप हर बार दोहराते हैं। बंद करने के लिए खाली छोड़ें।</string>
     <string name="settings_save">सहेजें</string>
     <string name="settings_saved">सहेजा गया</string>
     <string name="settings_section_fallback">फ़ॉलबैक प्रदाता</string>
     <string name="settings_enable_fallback">फ़ॉलबैक चालू करें</string>
-    <string name="settings_fallback_footer">यदि आपका प्राथमिक प्रदाता विफल हो जाता है (ओवरलोड, रेट लिमिट, नेटवर्क त्रुटि), तो ऐप स्वचालित रूप से इस फ़ॉलबैक के साथ पुनः प्रयास करता है। प्राथमिक के समान प्रदाता की अनुमति है — बस एक अलग मॉडल चुनें।</string>
+    <string name="settings_fallback_footer">यदि आपका प्राथमिक प्रदाता विफल हो जाता है (ओवरलोड, रेट लिमिट, नेटवर्क त्रुटि), तो ऐप स्वचालित रूप से इस फ़ॉलबैक के साथ पुनः प्रयास करता है। प्राथमिक के समान प्रदाता की अनुमति है - बस एक अलग मॉडल चुनें।</string>
     <string name="widget_all_metrics_label">NoFUD आज</string>
     <string name="widget_all_metrics_description">आज की कैलोरी, प्रोटीन, कार्ब्स और फैट एक ही विजेट में देखें।</string>
     <string name="settings_needs_health_connect">Health Connect ज़रूरी है</string>
-    <string name="settings_energy_goals_info">चालू होने पर, NoFUD Health Connect से मापी गई आपकी बर्न हुई कैलोरी — सक्रिय + बेसल ऊर्जा का 14-दिन का औसत — को फ़ॉर्मूला अनुमान की जगह लक्ष्य कैलकुलेशन में मेंटेनेंस (TDEE) आधार के रूप में इस्तेमाल करता है। बर्न पढ़ने के लिए कोई AI इस्तेमाल नहीं होता। Health Connect ज़रूरी है। पुनः गणना करें बटन और Adaptive Goals के साथ काम करता है।</string>
-    <string name="settings_adaptive_goals_info">हफ़्ते में लगभग एक बार, ऐप खोलने पर NoFUD आपकी प्रोफ़ाइल, हाल में लॉग किए गए खाने और वज़न के ट्रेंड के आधार पर पूरा लक्ष्य कैलकुलेशन अपने आप दोबारा चलाता है — वही जो पुनः गणना करें बटन चलाता है। अगर Energy Burn चालू है, तो आपकी मापी गई बर्न को मेंटेनेंस का आधार बनाया जाता है। AI उपलब्ध न होने पर यह चुपचाप छूट जाता है। इसे बंद करने पर वे लक्ष्य वापस आ जाते हैं जो इस फ़ीचर के पहले बदलाव से पहले थे। यह चिकित्सा सलाह नहीं है।</string>
-    <string name="onboarding_plan_adaptive_note">आपका प्लान आपकी लॉगिंग के अनुसार हर हफ़्ते अपने आप एडजस्ट होता है — इसे स्थिर रखने के लिए सेटिंग्स में Adaptive Goals बंद करें।</string>
-    <string name="onboarding_feature_snap">फोटो खींचें — AI लॉग कर देगा</string>
+    <string name="settings_energy_goals_info">चालू होने पर, NoFUD Health Connect से मापी गई आपकी बर्न हुई कैलोरी - सक्रिय + बेसल ऊर्जा का 14-दिन का औसत - को फ़ॉर्मूला अनुमान की जगह लक्ष्य कैलकुलेशन में मेंटेनेंस (TDEE) आधार के रूप में इस्तेमाल करता है। बर्न पढ़ने के लिए कोई AI इस्तेमाल नहीं होता। Health Connect ज़रूरी है। पुनः गणना करें बटन और Adaptive Goals के साथ काम करता है।</string>
+    <string name="settings_adaptive_goals_info">हफ़्ते में लगभग एक बार, ऐप खोलने पर NoFUD आपकी प्रोफ़ाइल, हाल में लॉग किए गए खाने और वज़न के ट्रेंड के आधार पर पूरा लक्ष्य कैलकुलेशन अपने आप दोबारा चलाता है - वही जो पुनः गणना करें बटन चलाता है। अगर Energy Burn चालू है, तो आपकी मापी गई बर्न को मेंटेनेंस का आधार बनाया जाता है। AI उपलब्ध न होने पर यह चुपचाप छूट जाता है। इसे बंद करने पर वे लक्ष्य वापस आ जाते हैं जो इस फ़ीचर के पहले बदलाव से पहले थे। यह चिकित्सा सलाह नहीं है।</string>
+    <string name="onboarding_plan_adaptive_note">आपका प्लान आपकी लॉगिंग के अनुसार हर हफ़्ते अपने आप एडजस्ट होता है - इसे स्थिर रखने के लिए सेटिंग्स में Adaptive Goals बंद करें।</string>
+    <string name="onboarding_feature_snap">फोटो खींचें - AI लॉग कर देगा</string>
     <string name="onboarding_feature_coach">कोच जो आपका डेटा जानता है</string>
     <string name="onboarding_feature_library">870+ एक्सरसाइज़ लाइब्रेरी</string>
     <string name="onboarding_feature_widgets">होम स्क्रीन विजेट</string>
-    <string name="whats_new_v30_workouts">नया Workouts टैब — फ़ोटो, मांसपेशी और उपकरण फ़िल्टर, खोज और विवरण पेजों के साथ 873 व्यायाम ब्राउज़ करें।</string>
+    <string name="whats_new_v30_workouts">नया Workouts टैब - फ़ोटो, मांसपेशी और उपकरण फ़िल्टर, खोज और विवरण पेजों के साथ 873 व्यायाम ब्राउज़ करें।</string>
     <string name="whats_new_v30_home">नया होम: स्पीडोमीटर कैलोरी गेज, खड़ी मैक्रो बार, चार पोषक कार्ड और फ़्लोटिंग जोड़ें बटन।</string>
     <string name="whats_new_v30_coach_voice">नए इनलाइन रिकॉर्डर से कोच से आवाज़ में पूछें।</string>
-    <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें — iPhone या Android पर सीधे NoFUD में खुलता है।</string>
+    <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें - iPhone या Android पर सीधे NoFUD में खुलता है।</string>
     <string name="whats_new_v30_export">सेटिंग्स से अपनी फ़ूड डायरी JSON, Markdown या CSV में निर्यात करें।</string>
-    <string name="whats_new_v30_reprocess">लॉग किए भोजन को AI से दोबारा प्रोसेस करें — नाम, मात्रा या नोट बदलकर फिर से विश्लेषण करें।</string>
+    <string name="whats_new_v30_reprocess">लॉग किए भोजन को AI से दोबारा प्रोसेस करें - नाम, मात्रा या नोट बदलकर फिर से विश्लेषण करें।</string>
     <string name="whats_new_v30_camera">कैमरा + कैमरा दोनों फ़ोटो साथ-साथ जोड़कर रखता है।</string>
     <string name="whats_new_v30_colors">10 नए थीम रंग, अब सेटिंग्स में ही चुनें।</string>
     <string name="whats_new_v30_bodyfat">बॉडी फ़ैट इतिहास: वज़न की तरह हर प्रविष्टि देखें और हटाएँ।</string>

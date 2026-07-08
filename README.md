@@ -1,8 +1,8 @@
 # NoFUD
 
-**Ad-free AI calorie tracker for Android** — a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+**Ad-free AI calorie tracker for Android** - a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-Snap, speak, or type your food. Bring your own AI provider key. Everything stays on your device — no accounts, no cloud sync, **no ads**.
+Snap, speak, or type your food. Bring your own AI provider key. Everything stays on your device - no accounts, no cloud sync, **no ads**.
 
 Home: https://codeberg.org/fitguy/NoFUD
 
@@ -23,8 +23,8 @@ See [CHANGELOG.md](CHANGELOG.md) for full version history.
 
 NoFUD is a fork of Fud AI (https://github.com/apoorvdarshan/fud-ai).
 
-- Copyright (c) 2026 Apoorv Darshan — [MIT License](LICENSE)
-- Modifications Copyright (c) 2026 fitguy — MIT License
+- Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
+- Modifications Copyright (c) 2026 fitguy - MIT License
 
 See [NOTICE](NOTICE) and [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
@@ -43,7 +43,7 @@ If you use home-manager with devenv and direnv (as on WSL2 Arch + Nix), the repo
 ```bash
 cd NoFUD
 direnv allow          # first time only
-devenv update         # first time only; downloads SDK (~1–2 GB without emulator)
+devenv update         # first time only; downloads SDK (~1-2 GB without emulator)
 devenv shell          # or rely on direnv auto-load after allow
 ```
 
@@ -90,7 +90,7 @@ Install the debug APK (side-by-side package `org.codeberg.fitguy.nofud.debug`):
 adb install -r android/app/build/outputs/apk/play/debug/app-play-debug.apk
 ```
 
-First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey — configure any supported provider under **Settings → AI Access**.
+First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings → AI Access**.
 
 ## Install (release APK)
 
@@ -127,4 +127,4 @@ uv run --with pillow python scripts/optimize_exercise_images.py --check-only
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).
