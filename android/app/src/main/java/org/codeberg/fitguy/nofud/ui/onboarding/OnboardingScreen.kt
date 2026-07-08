@@ -1607,6 +1607,49 @@ private fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.FAT }
             )
         }
+        Spacer(Modifier.height(20.dp))
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFFF9500).copy(alpha = 0.12f)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                Modifier.padding(14.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = null,
+                    tint = Color(0xFFFF9500),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        stringResource(R.string.onboarding_safety_title),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        stringResource(R.string.onboarding_safety_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                    Text(
+                        stringResource(R.string.onboarding_safety_low_bf),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                    Text(
+                        stringResource(R.string.onboarding_safety_settings_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                    )
+                }
+            }
+        }
         editing?.let { field ->
             PlanEditDialog(
                 field = field,

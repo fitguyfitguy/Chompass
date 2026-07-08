@@ -206,6 +206,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     var showDefaultGramsInfo by remember { mutableStateOf(false) }
     var showHealthEnergyGoalsInfo by remember { mutableStateOf(false) }
     var showAdaptiveGoalsInfo by remember { mutableStateOf(false) }
+    var showSafetyMedicalInfo by remember { mutableStateOf(false) }
     var pendingHealthPermissionAction by remember { mutableStateOf<HealthConnectPermissionAction?>(null) }
     val activityContext = LocalContext.current
 
@@ -709,6 +710,57 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             SectionCard(title = stringResource(R.string.settings_section_health)) {
                 ToggleRow(stringResource(R.string.settings_health_connect), ui.healthConnectEnabled, icon = Icons.Outlined.Favorite, onChange = ::onHealthConnectToggle)
                 HorizontalDivider()
+                SettingRow(
+                    label = stringResource(R.string.settings_safety_medical),
+                    value = stringResource(
+                        if (showSafetyMedicalInfo) R.string.settings_safety_hide
+                        else R.string.settings_safety_open
+                    ),
+                    icon = Icons.Outlined.Info
+                ) { showSafetyMedicalInfo = !showSafetyMedicalInfo }
+                if (showSafetyMedicalInfo) {
+                    HorizontalDivider()
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.settings_safety_summary),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            stringResource(R.string.settings_safety_body),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
+                        Text(
+                            stringResource(R.string.settings_safety_consult),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
+                        Text(
+                            stringResource(R.string.settings_safety_ed),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
+                        Text(
+                            stringResource(R.string.settings_safety_low_bf),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
+                        Text(
+                            stringResource(R.string.settings_safety_escalate),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
+                    }
+                    HorizontalDivider()
+                } else {
+                    HorizontalDivider()
+                }
                 Row(
                     Modifier
                         .fillMaxWidth()

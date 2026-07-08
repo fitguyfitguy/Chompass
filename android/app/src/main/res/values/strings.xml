@@ -758,10 +758,6 @@
     <string name="whats_new_nofud_ad_free">Completely ad-free - no banners, no tracking SDKs.</string>
     <string name="whats_new_nofud_privacy">Privacy-first: local storage, bring-your-own AI key, optional Health Connect.</string>
     <string name="whats_new_nofud_fork">Fork of Fud AI with upstream MIT attribution preserved.</string>
-<<<<<<< HEAD
-=======
-    <string name="whats_new_v30_workouts">New Workouts tab - browse 873 exercises with photos, muscle and equipment filters, search, and detail pages.</string>
->>>>>>> dd5a8c3 (tmp: worktree apply snapshot)
     <string name="whats_new_v30_home">Home redesign: speedometer calorie gauge, vertical macro bars, four nutrient cards, and a floating add button.</string>
     <string name="whats_new_v30_coach_voice">Ask Coach by voice with the new inline recorder.</string>
     <string name="whats_new_v30_share">Share any meal as a link that opens straight in NoFUD on iPhone or Android.</string>
@@ -951,6 +947,20 @@
     <string name="settings_calc_micro_used">Calorie, macro, fiber, sugar, saturated fat, cholesterol, sodium, potassium and other micronutrient values returned per meal are AI-generated estimates from the food image, voice transcript, or text description, using the AI provider you selected.</string>
     <string name="settings_not_medical_title">Not medical advice</string>
     <string name="settings_not_medical_body">NoFUD is an estimation tool, not a clinical instrument. Predictive equations carry inherent error (typically ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
+    <string name="settings_safety_medical">Safety &amp; Medical</string>
+    <string name="settings_safety_summary">Friendly guidance before making major changes</string>
+    <string name="settings_safety_open">View</string>
+    <string name="settings_safety_hide">Hide</string>
+    <string name="settings_safety_title">Safety first</string>
+    <string name="settings_safety_body">NoFUD can support awareness and habit building, but it is not a medical device and it is not a replacement for care from a doctor, therapist, or dietitian.</string>
+    <string name="settings_safety_consult">If you are planning major diet or body-composition changes, check in with a qualified clinician first so your plan fits your health history.</string>
+    <string name="settings_safety_ed">If you have a current or past eating disorder, or tracking starts increasing anxiety around food or body image, pause app use and speak with your care team.</string>
+    <string name="settings_safety_low_bf">Low body-fat caution: staying very lean for long periods can carry risk. In women, very low body fat can affect hormonal and menstrual health. In men, very low body fat can affect hormones, mood, recovery, and performance.</string>
+    <string name="settings_safety_escalate">If you notice fatigue, dizziness, sleep disruption, mood changes, menstrual changes, or reduced libido, get medical advice promptly.</string>
+    <string name="onboarding_safety_title">Friendly safety notice</string>
+    <string name="onboarding_safety_body">NoFUD is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
+    <string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string>
+    <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
     <string name="settings_waist_cm_format">Waist %1$.0f cm</string>
     <string name="settings_waist_in_format">Waist %1$.0f in</string>
     <string name="export_range_today">Today</string>
