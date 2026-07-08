@@ -45,6 +45,10 @@ NoFUD keeps the core Android features i love from Fud AI:
 
 See [CHANGELOG.md](CHANGELOG.md) for version-by-version details.
 
+## Performance note
+
+On our Android debug perf baseline, recent Progress-screen optimizations reduced worst-frame latency from about ~1.1s to ~0.5s and significantly lowered jank in the captured navigation/render path.
+
 ## Fork attribution
 
 NoFUD is based on Fud AI (https://github.com/apoorvdarshan/fud-ai).
