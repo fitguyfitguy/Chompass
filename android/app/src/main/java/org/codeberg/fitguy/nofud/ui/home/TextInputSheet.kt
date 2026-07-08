@@ -93,7 +93,7 @@ fun TextInputSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.92f else 0.96f)
     ) {
         Column(
             Modifier

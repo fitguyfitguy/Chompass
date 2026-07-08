@@ -107,8 +107,9 @@ fun NoFUDBottomNavBar(
 
     val barShape = RoundedCornerShape(BarCorner)
 
-    val backdropColor = if (isDark) AppColors.NavBarDark else AppColors.NavBarLight
-    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val backdropAlpha = if (isDark) 0.85f else 0.80f
+    val backdropColor = MaterialTheme.colorScheme.surface.copy(alpha = backdropAlpha)
+    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isDark) 0.18f else 0.14f)
     val shadowAlpha = if (isDark) 0.20f else 0.08f
 
     Box(
@@ -272,8 +273,8 @@ fun NoFUDBottomNavBar(
 @Composable
 private fun ActivePill(tabWidth: Dp, isDark: Boolean, modifier: Modifier = Modifier) {
     val pillShape = RoundedCornerShape(PillCorner)
-    val fill = if (isDark) AppColors.ActivePillDark else AppColors.ActivePillLight
-    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val fill = MaterialTheme.colorScheme.primary.copy(alpha = if (isDark) 0.18f else 0.12f)
+    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isDark) 0.20f else 0.16f)
 
     Box(
         modifier

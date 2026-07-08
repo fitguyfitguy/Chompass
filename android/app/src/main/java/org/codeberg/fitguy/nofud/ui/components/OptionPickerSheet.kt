@@ -69,7 +69,7 @@ fun <T> OptionPickerSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.92f else 0.96f)
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -126,19 +126,21 @@ private fun OptionPickerRow(
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(16.dp)
+    val surfaceAlpha = if (isDark) 0.80f else 0.78f
+    val unselectedBg = MaterialTheme.colorScheme.surface.copy(alpha = surfaceAlpha)
+    val unselectedBorder = MaterialTheme.colorScheme.outline.copy(alpha = if (isDark) 0.18f else 0.14f)
+    val selectedBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.13f)
+    val selectedBorder = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
     Row(
         Modifier
             .fillMaxWidth()
             .clip(shape)
             .background(
-                if (isSelected) AppColors.Calorie.copy(alpha = 0.13f)
-                else if (isDark) AppColors.TranslucentSurfaceDark
-                else AppColors.TranslucentSurfaceLight
+                if (isSelected) selectedBg else unselectedBg
             )
             .border(
                 0.5.dp,
-                if (isSelected) AppColors.Calorie.copy(alpha = 0.22f)
-                else if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
+                if (isSelected) selectedBorder else unselectedBorder,
                 shape
             )
             .clickable(onClick = onClick)

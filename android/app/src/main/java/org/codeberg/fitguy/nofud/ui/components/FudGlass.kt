@@ -1,5 +1,6 @@
 package org.codeberg.fitguy.nofud.ui.components
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,16 +46,24 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.LocalGlassBlurEnabled
 
 @Composable
 fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-fun translucentFill(isDark: Boolean): Color =
-    if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+@Composable
+fun translucentFill(isDark: Boolean): Color {
+    val alpha = if (isDark) 0.80f else 0.78f
+    return MaterialTheme.colorScheme.surface.copy(alpha = alpha)
+}
 
-fun hairlineBorder(isDark: Boolean): Color =
-    if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+@Composable
+fun hairlineBorder(isDark: Boolean): Color {
+    val alpha = if (isDark) 0.18f else 0.14f
+    return MaterialTheme.colorScheme.outline.copy(alpha = alpha)
+}
 
+@Composable
 fun Modifier.fudTranslucentSurface(
     shape: Shape,
     elevated: Boolean = true,
@@ -93,13 +103,70 @@ fun FudGlassSurface(
     val isDark = isDarkTheme()
     val shape = RoundedCornerShape(cornerRadius)
 
+    val blurEnabled = LocalGlassBlurEnabled.current && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.20f) else Color.Black.copy(alpha = 0.06f)
+    val elevationDp = if (elevated) (if (isDark) 8.dp else 4.dp) else 0.dp
+
+    val outline = hairlineBorder(isDark)
+    val surface = MaterialTheme.colorScheme.surface
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+    val glassAlpha = if (isDark) 0.80f else 0.78f
+    val glassBrush = Brush.linearGradient(
+        listOf(
+            surface.copy(alpha = glassAlpha),
+            surfaceVariant.copy(alpha = glassAlpha)
+        )
+    )
+
     Box(
         modifier = modifier
-            .fudTranslucentSurface(shape, elevated = elevated, isDark = isDark)
-            .padding(padding),
-        contentAlignment = contentAlignment,
-        content = content
-    )
+            .then(
+                if (elevated) {
+                    Modifier.shadow(
+                        elevation = elevationDp,
+                        shape = shape,
+                        ambientColor = shadowColor,
+                        spotColor = shadowColor
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .clip(shape)
+    ) {
+        // Background layer: optionally blurred to give the glass look without
+        // smearing the child content.
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape)
+                .background(glassBrush)
+                .then(
+                    if (blurEnabled) {
+                        Modifier.blur(radius = if (isDark) 20.dp else 16.dp)
+                    } else {
+                        Modifier
+                    }
+                )
+        )
+
+        // Crisp border on top of the background layer (not blurred).
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape)
+                .border(0.5.dp, outline, shape)
+        )
+
+        // Content is never blurred; keep alignment + padding semantics unchanged.
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(padding),
+            contentAlignment = contentAlignment,
+            content = content
+        )
+    }
 }
 
 @Composable
@@ -146,6 +213,7 @@ fun FudGlassTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
+    enabled: Boolean = true,
     singleLine: Boolean = true,
     minLines: Int = 1,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
@@ -160,11 +228,12 @@ fun FudGlassTextField(
 ) {
     val shape = RoundedCornerShape(14.dp)
     val isDark = isDarkTheme()
-    val fieldFill = if (isDark) AppColors.TranslucentFieldDark else AppColors.TranslucentFieldLight
+    val fieldFill = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isDark) 0.60f else 0.55f)
     val borderColor = hairlineBorder(isDark)
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
+        enabled = enabled,
         singleLine = singleLine,
         minLines = minLines,
         maxLines = maxLines,

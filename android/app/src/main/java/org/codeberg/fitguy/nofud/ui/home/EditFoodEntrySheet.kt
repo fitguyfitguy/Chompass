@@ -30,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -481,17 +480,14 @@ fun EditFoodEntrySheet(
             item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
+                    FudGlassTextField(
                         value = noteText,
                         onValueChange = { noteText = it },
                         enabled = !isReprocessing,
-                        placeholder = {
-                            Text(
-                                stringResource(R.string.edit_reprocess_hint),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                            )
-                        },
-                        shape = RoundedCornerShape(20.dp),
+                        placeholder = stringResource(R.string.edit_reprocess_hint),
+                        singleLine = false,
+                        minLines = 3,
+                        maxLines = 6,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                     )
                     errorText?.let {

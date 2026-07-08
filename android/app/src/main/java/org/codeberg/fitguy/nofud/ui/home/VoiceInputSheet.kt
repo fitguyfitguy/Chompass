@@ -37,7 +37,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -68,6 +67,7 @@ import org.codeberg.fitguy.nofud.services.speech.AudioRecorder
 import org.codeberg.fitguy.nofud.services.speech.NativeSpeechRecognizer
 import org.codeberg.fitguy.nofud.services.speech.SttEvent
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -265,13 +265,17 @@ fun VoiceInputSheet(
             // Always-visible transcript box (gray rounded surface). Shows placeholder
             // when empty, "Transcribing…" while remote upload is running, or the live
             // transcript otherwise.
+            val isEditing = phase == VoicePhase.REVIEWING
             Box(
                 Modifier
                     .fillMaxWidth()
                     .heightIn(min = 100.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-                    .padding(horizontal = 14.dp, vertical = 12.dp)
+                    .background(if (isEditing) Color.Transparent else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                    .padding(
+                        horizontal = if (isEditing) 0.dp else 14.dp,
+                        vertical = if (isEditing) 0.dp else 12.dp
+                    )
             ) {
                 when {
                     phase == VoicePhase.TRANSCRIBING -> {
@@ -292,9 +296,13 @@ fun VoiceInputSheet(
                     transcript.isNotEmpty() -> {
                         // Editable in REVIEW phase, read-only otherwise (live partial).
                         if (phase == VoicePhase.REVIEWING) {
-                            OutlinedTextField(
+                            FudGlassTextField(
                                 value = transcript,
                                 onValueChange = { transcript = it },
+                                placeholder = "",
+                                singleLine = false,
+                                minLines = 3,
+                                maxLines = 6,
                                 modifier = Modifier.fillMaxWidth()
                             )
                         } else {

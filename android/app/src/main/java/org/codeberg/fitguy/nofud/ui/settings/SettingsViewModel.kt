@@ -63,6 +63,7 @@ data class SettingsUiState(
     val speechApiKeyMasked: String = "",
     val appearanceMode: String = "system",
     val appThemeColor: AppThemeColor = AppThemeColor.TEAL,
+    val glassBlurEnabled: Boolean = true,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val userContext: String = "",
@@ -120,6 +121,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val appearance = container.prefs.appearanceMode.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
+            val glassBlurEnabled = container.prefs.glassBlurEnabled.first()
             val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
             val weekMon = container.prefs.weekStartsOnMonday.first()
             val userContext = container.prefs.userContext.first()
@@ -160,6 +162,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 speechApiKeyMasked = speechMasked,
                 appearanceMode = appearance,
                 appThemeColor = appThemeColor,
+                glassBlurEnabled = glassBlurEnabled,
                 foodLogSortOrder = foodLogSortOrder,
                 weekStartsOnMonday = weekMon,
                 userContext = userContext,
@@ -242,6 +245,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.prefs.setAppThemeColor(themeColor.key)
             AndroidAppIconManager.apply(container.appContext, themeColor)
             _ui.value = _ui.value.copy(appThemeColor = themeColor)
+        }
+    }
+
+    fun setGlassBlurEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            container.prefs.setGlassBlurEnabled(enabled)
+            _ui.value = _ui.value.copy(glassBlurEnabled = enabled)
         }
     }
 
