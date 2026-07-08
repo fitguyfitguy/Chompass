@@ -7,6 +7,8 @@
 NoFUD keeps the core Fud AI experience while removing monetization and tracking surface area.  
 Snap, speak, scan, or type your food using your own AI provider key - no account required, no cloud sync, **no ads**.
 
+> **Platform status:** NoFUD is currently **Android-only**. iOS is not supported yet.
+
 Home: https://codeberg.org/fitguy/NoFUD
 
 ## Install (Android)
