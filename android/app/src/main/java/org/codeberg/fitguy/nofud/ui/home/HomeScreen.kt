@@ -934,7 +934,7 @@ private fun MealSectionHeader(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(start = 22.dp, end = 30.dp, top = 18.dp, bottom = 10.dp),
+            .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -953,20 +953,14 @@ private fun MealSectionHeader(
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
             Spacer(Modifier.weight(1f))
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    "$totalCalories kcal",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie
-                )
-                Text(
-                    "${totalProtein.roundToInt()}P · ${totalCarbs.roundToInt()}C · ${totalFat.roundToInt()}F",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
-                )
-            }
+            val compactSummary =
+                "$totalCalories kcal · ${totalProtein.roundToInt()}P ${totalCarbs.roundToInt()}C ${totalFat.roundToInt()}F"
+            Text(
+                compactSummary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f)
+            )
         }
     }
 }
