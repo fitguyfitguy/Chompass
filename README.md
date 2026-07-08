@@ -1,6 +1,6 @@
 # NoFUD
 
-![NoFUD teal icon](android/app/src/main/res/drawable-nodpi/ic_logo_teal.png)
+<img src="android/app/src/main/res/drawable-nodpi/ic_logo_teal.png" alt="NoFUD teal icon" width="120" />
 
 **Ad-free AI calorie tracker for Android** - a privacy-focused app based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
@@ -12,6 +12,8 @@ Home: https://codeberg.org/fitguy/NoFUD
 ## Install (Android)
 
 No Play Store/F-Droid yet. Install NoFUD using one of these options:
+
+Install note: if multiple APKs are listed in a release, use `arm64-v8a` for most modern phones, `armeabi-v7a` for older 32-bit devices, and `x86_64` for emulators/Chromebooks. Use the universal APK only when unsure.
 
 [![Get it on Obtainium](https://img.shields.io/badge/Get%20it%20on-Obtainium-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud)
 
