@@ -3,38 +3,55 @@ package org.codeberg.fitguy.nofud.ui.theme
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import org.codeberg.fitguy.nofud.R
 
 enum class AppThemeColor(
     val key: String,
     @param:StringRes val displayNameRes: Int,
-    val start: Color,
-    val end: Color
+    val primary: Color,
 ) {
-    NOFUD_PINK("fudPink", R.string.theme_color_fud_pink, Color(0xFFFF375F), Color(0xFFFF6B8A)),
-    RED("red", R.string.theme_color_red, Color(0xFFFF3B30), Color(0xFFFF6961)),
-    ORANGE("orange", R.string.theme_color_orange, Color(0xFFFF9500), Color(0xFFFFB340)),
-    GREEN("green", R.string.theme_color_green, Color(0xFF34C759), Color(0xFF62D46F)),
-    MINT("mint", R.string.theme_color_mint, Color(0xFF00C7BE), Color(0xFF66D4CF)),
-    TEAL("teal", R.string.theme_color_teal, Color(0xFF0D9488), Color(0xFF2DD4BF)),
-    BLUE("blue", R.string.theme_color_blue, Color(0xFF0A84FF), Color(0xFF5EAEFF)),
-    PURPLE("purple", R.string.theme_color_purple, Color(0xFFAF52DE), Color(0xFFBF5AF2)),
-    YELLOW("yellow", R.string.theme_color_yellow, Color(0xFFFFCC00), Color(0xFFFFD60A)),
-    CORAL("coral", R.string.theme_color_coral, Color(0xFFFF7F50), Color(0xFFFFA382)),
-    ROSE_GOLD("roseGold", R.string.theme_color_rose_gold, Color(0xFFC9807C), Color(0xFFE8B4B0)),
-    MOCHA_BROWN("mochaBrown", R.string.theme_color_mocha_brown, Color(0xFFA2845E), Color(0xFFC9A57E)),
-    INDIGO("indigo", R.string.theme_color_indigo, Color(0xFF5856D6), Color(0xFF7D7AFF)),
-    LAVENDER("lavender", R.string.theme_color_lavender, Color(0xFFB57EDC), Color(0xFFD0A9F5)),
-    SKY_CYAN("skyCyan", R.string.theme_color_sky_cyan, Color(0xFF32ADE6), Color(0xFF70CFFF)),
-    GRAPHITE("graphite", R.string.theme_color_graphite, Color(0xFF8E8E93), Color(0xFFB8B8BE)),
-    BABY_PINK("babyPink", R.string.theme_color_baby_pink, Color(0xFFFF8FAB), Color(0xFFFFB3C6)),
-    LIME("lime", R.string.theme_color_lime, Color(0xFFA0D911), Color(0xFFC3E956));
+    TEAL("teal", R.string.theme_color_teal, Color(0xFF006B5E)),
+    BLUE("blue", R.string.theme_color_blue, Color(0xFF0061A4)),
+    GREEN("green", R.string.theme_color_green, Color(0xFF386A20)),
+    PURPLE("purple", R.string.theme_color_purple, Color(0xFF6750A4)),
+    PINK("pink", R.string.theme_color_pink, Color(0xFF984061)),
+    ORANGE("orange", R.string.theme_color_orange, Color(0xFF8B5000)),
+    INDIGO("indigo", R.string.theme_color_indigo, Color(0xFF4F378B)),
+    NEUTRAL("neutral", R.string.theme_color_neutral, Color(0xFF5E5E62));
+
+    /** Accent gradient start — kept for rings/charts. */
+    val start: Color get() = primary
+
+    /** Accent gradient end — lighter blend of [primary]. */
+    val end: Color get() = lerp(primary, Color.White, 0.28f)
 
     companion object {
         const val DEFAULT_KEY = "teal"
 
-        fun fromKey(key: String?): AppThemeColor =
-            values().firstOrNull { it.key == key } ?: TEAL
+        private val LEGACY_KEY_MIGRATION = mapOf(
+            "fudPink" to PINK,
+            "babyPink" to PINK,
+            "red" to PINK,
+            "roseGold" to PINK,
+            "coral" to PINK,
+            "yellow" to ORANGE,
+            "mochaBrown" to ORANGE,
+            "mint" to GREEN,
+            "lime" to GREEN,
+            "skyCyan" to BLUE,
+            "lavender" to PURPLE,
+            "graphite" to NEUTRAL,
+        )
+
+        fun fromKey(key: String?): AppThemeColor {
+            if (key == null) return TEAL
+            values().firstOrNull { it.key == key }?.let { return it }
+            LEGACY_KEY_MIGRATION[key]?.let { return it }
+            return TEAL
+        }
+
+        fun migrateKey(key: String?): String = fromKey(key).key
     }
 }
 
@@ -57,46 +74,47 @@ object AppColors {
     val Calorie: Color
         get() = CalorieStart
 
-    val Protein: Color
-        get() = CalorieStart
-
-    val Carbs: Color
-        get() = CalorieStart
-
-    val Fat: Color
-        get() = CalorieStart
+    val Protein: Color = Color(0xFF4F6BED)
+    val Carbs: Color = Color(0xFFE8A317)
+    val Fat: Color = Color(0xFFE46962)
 
     val CalorieGradient: Brush
         get() = Brush.linearGradient(listOf(CalorieStart, CalorieEnd))
 
-    val AppBackgroundLight = Color(0xFFF8FAFC)
-    val AppBackgroundDark = Color(0xFF0F172A)
+    // M3 neutral surfaces
+    val AppBackgroundLight = Color(0xFFFEF7FF)
+    val AppBackgroundDark = Color(0xFF1C1B1F)
 
-    val AppCardLight = Color(0xFFFFFFFF)
-    val AppCardDark = Color(0xFF111827)
+    val AppCardLight = Color(0xFFFFFBFE)
+    val AppCardDark = Color(0xFF1C1B1F)
 
-    val OnLight = Color(0xFF0F172A)
-    val OnDark = Color(0xFFE2E8F0)
+    val SurfaceContainerLowLight = Color(0xFFF7F2FA)
+    val SurfaceContainerLowDark = Color(0xFF1D1B20)
 
-    val MutedLight = Color(0xFF64748B)
-    val MutedDark = Color(0xFF94A3B8)
+    val SurfaceContainerHighLight = Color(0xFFECE6F0)
+    val SurfaceContainerHighDark = Color(0xFF2B2930)
 
-    val DividerLight = Color(0xFFE2E8F0)
-    val DividerDark = Color(0xFF334155)
+    val OnLight = Color(0xFF1C1B1F)
+    val OnDark = Color(0xFFE6E1E5)
 
-    // Cool-minimal translucent surface tokens (replaces glass sheen stacks).
-    val TranslucentSurfaceLight = Color(0xFFF8FAFC).copy(alpha = 0.78f)
-    val TranslucentSurfaceDark = Color(0xFF111827).copy(alpha = 0.80f)
+    val MutedLight = Color(0xFF49454F)
+    val MutedDark = Color(0xFFCAC4D0)
 
-    val TranslucentFieldLight = Color(0xFFE2E8F0).copy(alpha = 0.65f)
-    val TranslucentFieldDark = Color(0xFF334155).copy(alpha = 0.55f)
+    val DividerLight = Color(0xFFE7E0EC)
+    val DividerDark = Color(0xFF49454F)
 
-    val HairlineBorderLight = Color(0xFF334155).copy(alpha = 0.18f)
-    val HairlineBorderDark = Color(0xFFE2E8F0).copy(alpha = 0.14f)
+    val TranslucentSurfaceLight = SurfaceContainerLowLight.copy(alpha = 0.92f)
+    val TranslucentSurfaceDark = SurfaceContainerLowDark.copy(alpha = 0.92f)
 
-    val NavBarLight = Color(0xFFF8FAFC).copy(alpha = 0.80f)
-    val NavBarDark = Color(0xFF111827).copy(alpha = 0.85f)
+    val TranslucentFieldLight = Color(0xFFE7E0EC).copy(alpha = 0.65f)
+    val TranslucentFieldDark = Color(0xFF49454F).copy(alpha = 0.55f)
 
-    val ActivePillLight = Color.White.copy(alpha = 0.55f)
-    val ActivePillDark = Color(0xFF334155).copy(alpha = 0.72f)
+    val HairlineBorderLight = Color(0xFF79747E).copy(alpha = 0.24f)
+    val HairlineBorderDark = Color(0xFFCAC4D0).copy(alpha = 0.20f)
+
+    val NavBarLight = SurfaceContainerLowLight
+    val NavBarDark = SurfaceContainerLowDark
+
+    val ActivePillLight = Color(0xFFE8DEF8)
+    val ActivePillDark = Color(0xFF4A4458)
 }

@@ -158,7 +158,7 @@ fun FoodResultSheet(
     var mealMenuExpanded by remember { mutableStateOf(false) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val sheetSurface = if (isDark) MaterialTheme.colorScheme.surface else Color(0xFFFAF3EE)
+    val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val dismissKeyboard = {

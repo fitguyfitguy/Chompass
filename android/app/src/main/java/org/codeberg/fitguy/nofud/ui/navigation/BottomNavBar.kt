@@ -1,70 +1,31 @@
 package org.codeberg.fitguy.nofud.ui.navigation
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
-import androidx.annotation.StringRes
-import org.codeberg.fitguy.nofud.R
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import org.codeberg.fitguy.nofud.ui.theme.AppColors
-import kotlinx.coroutines.launch
+import org.codeberg.fitguy.nofud.R
 
 data class BottomTab(val route: String, val icon: ImageVector, @get:StringRes val labelRes: Int)
 
@@ -72,277 +33,61 @@ val BottomTabs = listOf(
     BottomTab(NoFUDRoutes.HOME, Icons.Filled.Home, R.string.nav_home),
     BottomTab(NoFUDRoutes.PROGRESS, Icons.Filled.BarChart, R.string.nav_progress),
     BottomTab(NoFUDRoutes.COACH, Icons.Filled.Forum, R.string.nav_coach),
-    BottomTab(NoFUDRoutes.SETTINGS, Icons.Filled.Settings, R.string.nav_settings)
+    BottomTab(NoFUDRoutes.SETTINGS, Icons.Filled.Settings, R.string.nav_settings),
 )
 
-private val BarHeight = 72.dp
-private val BarCorner = 28.dp
-private val PillCorner = 26.dp
-private val PillInsetH = 8.dp
-private val PillInsetV = 6.dp
+/** Content padding above the standard M3 navigation bar. */
+val BottomNavScrollPadding = 80.dp
 
-val BottomNavScrollPadding = 132.dp
-val BottomNavDockedControlPadding = 82.dp
+val BottomNavDockedControlPadding = 72.dp
 
-/**
- * Floating translucent tab bar — matte capsule with hairline border and a flat
- * active pill behind the selected tab.
- *
- * The pill is **draggable**: place a finger anywhere on the bar and slide
- * horizontally to drag it across tabs. Taps still work normally (drag is
- * only claimed after horizontal touch slop). On release the pill snaps to
- * the nearest tab; haptic ticks fire each time the pill crosses a boundary
- * during the drag, preserving the same springy interaction feel.
- */
 @Composable
 fun NoFUDBottomNavBar(
     currentRoute: String?,
     showAboutBadge: Boolean = false,
     onTap: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val isDark = MaterialTheme.colorScheme.background.let {
-        (it.red + it.green + it.blue) / 3f < 0.5f
-    }
-
-    val barShape = RoundedCornerShape(BarCorner)
-
-    val backdropAlpha = if (isDark) 0.85f else 0.80f
-    val backdropColor = MaterialTheme.colorScheme.surface.copy(alpha = backdropAlpha)
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isDark) 0.18f else 0.14f)
-    val shadowAlpha = if (isDark) 0.20f else 0.08f
-
-    Box(
+    NavigationBar(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 14.dp, vertical = 10.dp)
+            .navigationBarsPadding(),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 0.dp,
     ) {
-        BoxWithConstraints(
-            Modifier
-                .fillMaxWidth()
-                .height(BarHeight)
-                .shadow(
-                    elevation = if (isDark) 8.dp else 6.dp,
-                    shape = barShape,
-                    ambientColor = Color.Black.copy(alpha = shadowAlpha),
-                    spotColor = Color.Black.copy(alpha = shadowAlpha)
-                )
-                .clip(barShape)
-                .background(backdropColor)
-                .border(0.5.dp, borderColor, barShape)
-        ) {
-            val density = LocalDensity.current
-            val haptic = LocalHapticFeedback.current
-            val scope = rememberCoroutineScope()
-
-            val barWidthDp = maxWidth
-            val tabCount = BottomTabs.size
-            val tabWidthDp = barWidthDp / tabCount
-            val tabWidthPx = with(density) { tabWidthDp.toPx() }
-            val maxOffsetPx = tabWidthPx * (tabCount - 1)
-
-            val selectedIndex = BottomTabs.indexOfFirst { it.route == currentRoute }
-                .coerceAtLeast(0)
-
-            // Spring animator drives the pill when it's NOT being dragged
-            // (initial mount, external route changes, settle-after-release).
-            val pillAnim = remember { Animatable(0f) }
-            var isDragging by remember { mutableStateOf(false) }
-            var dragOffsetPx by remember { mutableFloatStateOf(0f) }
-            var hoverIndex by remember { mutableIntStateOf(selectedIndex) }
-
-            // Sync pill position once the bar's width has been measured, and on
-            // any later external selectedIndex change. Skip while dragging so a
-            // mid-drag recomposition doesn't yank the pill back to a snapped
-            // position.
-            LaunchedEffect(selectedIndex, tabWidthPx) {
-                if (!isDragging) {
-                    val target = selectedIndex * tabWidthPx
-                    if (pillAnim.value == 0f && selectedIndex > 0) {
-                        pillAnim.snapTo(target)
-                    } else {
-                        pillAnim.animateTo(
-                            target,
-                            spring(
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                                stiffness = 320f
-                            )
-                        )
-                    }
-                }
-            }
-
-            val pillPx = if (isDragging) dragOffsetPx else pillAnim.value
-            val pillOffsetDp = with(density) { pillPx.toDp() }
-
-            val pillScale by animateFloatAsState(
-                targetValue = if (isDragging) 1.06f else 1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = 380f
-                ),
-                label = "pillDragScale"
-            )
-
-            // Active-tab pill — flat matte highlight.
-            ActivePill(
-                tabWidth = tabWidthDp,
-                isDark = isDark,
-                modifier = Modifier
-                    .offset(x = pillOffsetDp)
-                    .graphicsLayer {
-                        scaleX = pillScale
-                        scaleY = pillScale
-                        transformOrigin = TransformOrigin(0.5f, 0.5f)
-                    }
-            )
-
-            // Shared drag handlers used by every TabItem. clickable on the
-            // tab handles the tap (proven reliable); a sibling pointerInput
-            // with detectHorizontalDragGestures handles the drag — both can
-            // listen on the same pointer stream because clickable claims on
-            // release-without-slop and the drag detector claims on slop.
-            fun startDrag() {
-                isDragging = true
-                dragOffsetPx = pillAnim.value
-                hoverIndex = selectedIndex
-            }
-            fun endDrag() {
-                val landed = hoverIndex
-                scope.launch {
-                    pillAnim.snapTo(dragOffsetPx)
-                    isDragging = false
-                    pillAnim.animateTo(
-                        landed * tabWidthPx,
-                        spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = 320f
-                        )
-                    )
-                }
-                if (BottomTabs[landed].route != currentRoute) {
-                    onTap(BottomTabs[landed].route)
-                }
-            }
-            fun onDragDelta(delta: Float) {
-                dragOffsetPx = (dragOffsetPx + delta).coerceIn(0f, maxOffsetPx)
-                val newHover = ((dragOffsetPx + tabWidthPx / 2f) / tabWidthPx)
-                    .toInt().coerceIn(0, tabCount - 1)
-                if (newHover != hoverIndex) {
-                    hoverIndex = newHover
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                }
-            }
-
-            Row(
-                Modifier.fillMaxWidth().fillMaxHeight(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                for (tab in BottomTabs) {
-                    val selected = tab.route == currentRoute
-                    TabItem(
-                        tab = tab,
-                        selected = selected,
-                        showBadge = showAboutBadge && tab.route == NoFUDRoutes.SETTINGS,
-                        isDark = isDark,
-                        modifier = Modifier
-                            .width(tabWidthDp)
-                            .fillMaxHeight()
-                            .pointerInput(tabWidthPx, tabCount) {
-                                if (tabWidthPx <= 0f) return@pointerInput
-                                detectHorizontalDragGestures(
-                                    onDragStart = { startDrag() },
-                                    onDragEnd = { endDrag() },
-                                    onDragCancel = { endDrag() },
-                                    onHorizontalDrag = { change, dragAmount ->
-                                        onDragDelta(dragAmount)
-                                        change.consume()
-                                    }
+        BottomTabs.forEach { tab ->
+            val selected = tab.route == currentRoute
+            val label = stringResource(tab.labelRes)
+            NavigationBarItem(
+                selected = selected,
+                onClick = { onTap(tab.route) },
+                icon = {
+                    if (showAboutBadge && tab.route == NoFUDRoutes.SETTINGS) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    modifier = Modifier
+                                        .offset(x = (-4).dp, y = 4.dp)
+                                        .size(8.dp)
+                                        .clip(CircleShape),
                                 )
-                            }
-                    ) { onTap(tab.route) }
-                }
-            }
-        }
-    }
-}
-
-/** Flat pill highlighting the active tab within the translucent bar. */
-@Composable
-private fun ActivePill(tabWidth: Dp, isDark: Boolean, modifier: Modifier = Modifier) {
-    val pillShape = RoundedCornerShape(PillCorner)
-    val fill = MaterialTheme.colorScheme.primary.copy(alpha = if (isDark) 0.18f else 0.12f)
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isDark) 0.20f else 0.16f)
-
-    Box(
-        modifier
-            .width(tabWidth)
-            .fillMaxHeight()
-            .padding(horizontal = PillInsetH, vertical = PillInsetV)
-            .clip(pillShape)
-            .background(fill)
-            .border(0.5.dp, borderColor, pillShape)
-    )
-}
-
-@Composable
-private fun TabItem(
-    tab: BottomTab,
-    selected: Boolean,
-    showBadge: Boolean,
-    isDark: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    val activeColor = AppColors.Calorie
-    val inactiveColor = if (isDark) Color.White.copy(alpha = 0.62f)
-                        else Color.Black.copy(alpha = 0.55f)
-    val tint = if (selected) activeColor else inactiveColor
-
-    val iconScale by animateFloatAsState(
-        targetValue = if (selected) 1.08f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = 380f
-        ),
-        label = "tabIconScale"
-    )
-
-    val label = stringResource(tab.labelRes)
-    Column(
-        modifier = modifier.clickable(
-            interactionSource = MutableInteractionSource(),
-            indication = null,
-            onClick = onClick
-        ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box {
-            Icon(
-                tab.icon,
-                contentDescription = label,
-                tint = tint,
-                modifier = Modifier.size(if (selected) 26.dp else 24.dp).scale(iconScale)
+                            },
+                        ) {
+                            Icon(tab.icon, contentDescription = label)
+                        }
+                    } else {
+                        Icon(tab.icon, contentDescription = label)
+                    }
+                },
+                label = { Text(label) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
-            if (showBadge) {
-                Box(
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(AppColors.Calorie)
-                )
-            }
         }
-        Spacer(Modifier.height(3.dp))
-        Text(
-            label,
-            color = tint,
-            fontSize = 11.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
-        )
     }
 }

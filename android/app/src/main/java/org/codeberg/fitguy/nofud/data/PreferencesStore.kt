@@ -258,8 +258,10 @@ class PreferencesStore(private val context: Context) {
     val appearanceMode: Flow<String> = ds.data.map { it[Keys.APPEARANCE_MODE] ?: "system" }
     suspend fun setAppearanceMode(v: String) { ds.edit { it[Keys.APPEARANCE_MODE] = v } }
 
-    /** Mirrors iOS @AppStorage("appThemeColor"). */
-    val appThemeColor: Flow<String> = ds.data.map { it[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY }
+    /** User-selected accent; legacy keys are migrated to the curated 8-color set. */
+    val appThemeColor: Flow<String> = ds.data.map {
+        AppThemeColor.migrateKey(it[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY)
+    }
     suspend fun setAppThemeColor(v: String) { ds.edit { it[Keys.APP_THEME_COLOR] = v } }
 
     /** Controls whether glass surfaces try to use a real blur effect (API 31+). Default OFF. */

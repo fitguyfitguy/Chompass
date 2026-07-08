@@ -55,7 +55,7 @@ fun ExportBodyMetricsSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
             Modifier

@@ -111,7 +111,7 @@ fun NutritionDetailSheet(
     val folate = entries.sumOf { it.folate ?: 0.0 }
     val omega3 = entries.sumOf { it.omega3 ?: 0.0 }
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val sheetSurface = if (isDark) MaterialTheme.colorScheme.surface else Color(0xFFFAF3EE)
+    val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
 
     fun fmt(v: Double): String = if (v == 0.0) "—" else String.format("%.1f", v)
 

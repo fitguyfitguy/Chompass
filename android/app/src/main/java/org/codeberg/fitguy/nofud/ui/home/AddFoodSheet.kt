@@ -74,7 +74,7 @@ fun AddFoodSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(
             Modifier
@@ -218,7 +218,7 @@ private fun AddFoodHeroTile(
             .clip(shape)
             .background(
                 if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.38f)
-                else Color(0xFFEDE3DD).copy(alpha = 0.76f)
+                else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.76f)
             )
             .background(
                 Brush.verticalGradient(
@@ -282,7 +282,7 @@ private fun AddFoodMoreRow(
             .clip(shape)
             .background(
                 if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.30f)
-                else Color(0xFFEDE3DD).copy(alpha = 0.55f)
+                else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f)
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 14.dp),

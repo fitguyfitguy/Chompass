@@ -631,13 +631,6 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     }
                 }
                 HorizontalDivider()
-                ToggleRow(
-                    label = stringResource(R.string.settings_glass_blur),
-                    checked = ui.glassBlurEnabled,
-                    icon = Icons.Outlined.AutoAwesome,
-                    onChange = vm::setGlassBlurEnabled
-                )
-                HorizontalDivider()
                 ToggleRowWithInfo(
                     label = stringResource(R.string.settings_default_to_grams),
                     checked = ui.preferGramsByDefault,
@@ -1587,7 +1580,7 @@ private fun SettingsSheets(
         onDismissRequest = onDismiss,
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE)
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
             when (sheet) {
@@ -2095,7 +2088,7 @@ private fun ThemeColorSwatch(themeColor: AppThemeColor, modifier: Modifier = Mod
     Box(
         modifier
             .clip(CircleShape)
-            .background(Brush.linearGradient(listOf(themeColor.start, themeColor.end)))
+            .background(themeColor.primary),
     )
 }
 
@@ -2119,38 +2112,18 @@ private fun <T> ListSheet(
             val isSel = selected(item)
             val rowIcon = icon?.invoke(item)
             val sub = subtitle?.invoke(item)
-            val shape = RoundedCornerShape(16.dp)
+            val shape = MaterialTheme.shapes.medium
             Row(
                 Modifier
                     .fillMaxWidth()
                     .clip(shape)
                     .background(
-                        if (isSel) AppColors.Calorie.copy(alpha = 0.13f)
-                        else if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.38f)
-                        else Color(0xFFEDE3DD).copy(alpha = 0.76f)
-                    )
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = if (isDark) 0.08f else 0.18f),
-                                Color.White.copy(alpha = if (isDark) 0.02f else 0.04f),
-                                AppColors.Calorie.copy(alpha = if (isSel) 0.065f else if (isDark) 0.025f else 0.050f)
-                            )
-                        )
-                    )
-                    .border(
-                        0.7.dp,
-                        Brush.linearGradient(
-                            listOf(
-                                Color.White.copy(alpha = if (isDark) 0.16f else 0.46f),
-                                AppColors.Calorie.copy(alpha = if (isSel) 0.22f else if (isDark) 0.08f else 0.16f)
-                            )
-                        ),
-                        shape
+                        if (isSel) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.surfaceContainerHigh,
                     )
                     .clickable { onSelect(item) }
                     .padding(horizontal = 14.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (rowIcon != null) {
                     FudIconBubble(rowIcon, size = 22.dp, iconSize = 14.dp)
@@ -2348,7 +2321,7 @@ private fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolean
                     .background(
                         if (isSel) AppColors.Calorie.copy(alpha = 0.13f)
                         else if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
-                        else Color(0xFFEDE3DD).copy(alpha = 0.78f)
+                        else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.78f)
                     )
                     .clickable { onSave(kg) }
                     .padding(horizontal = 14.dp, vertical = 14.dp),

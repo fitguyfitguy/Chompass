@@ -24,20 +24,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.models.MacroValueFormatter
 import org.codeberg.fitguy.nofud.ui.navigation.LocalLaunchFillEpoch
-import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
 /**
  * A single macro shown as a vertical fill bar (rounded tube that fills bottom-up toward the goal),
- * with the value above and the name + goal beneath. Port of iOS `MacroVerticalBar`.
+ * with the value above and the name + goal beneath.
  */
 @Composable
 fun MacroCard(
@@ -46,11 +42,9 @@ fun MacroCard(
     goal: Int,
     unit: String = "g",
     modifier: Modifier = Modifier,
-    gradientColors: List<Color> = listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
+    accentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
-    // Fill-from-zero on app open (see CalorieHero). Saveable lastEpoch survives tab
-    // switches so only a real app-open replays the fill; tab returns snap.
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
@@ -65,73 +59,57 @@ fun MacroCard(
         }
     }
     val animated = animatable.value
-    val firstColor = gradientColors.firstOrNull() ?: AppColors.Calorie
 
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // Value (gradient), above the bar
         Text(
             MacroValueFormatter.string(current),
-            style = TextStyle(
-                brush = Brush.verticalGradient(gradientColors),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            maxLines = 1
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = accentColor,
+            maxLines = 1,
         )
 
-        // Vertical fill bar (rounded tube, fills bottom-up)
         Box(
             modifier = Modifier.size(width = 16.dp, height = 74.dp),
-            contentAlignment = Alignment.BottomCenter
+            contentAlignment = Alignment.BottomCenter,
         ) {
             Box(
                 Modifier
                     .fillMaxSize()
                     .clip(CircleShape)
-                    .background(firstColor.copy(alpha = 0.12f))
+                    .background(accentColor.copy(alpha = 0.16f)),
             )
             val fillHeight = (74.dp * animated).coerceAtLeast(16.dp)
             Box(
                 Modifier
                     .width(16.dp)
                     .height(fillHeight)
-                    .shadow(
-                        elevation = 5.dp,
-                        shape = CircleShape,
-                        ambientColor = firstColor.copy(alpha = 0.4f),
-                        spotColor = firstColor.copy(alpha = 0.4f)
-                    )
                     .clip(CircleShape)
-                    // iOS fills bottom-up with the base color at the BOTTOM
-                    // (LinearGradient startPoint: .bottom). verticalGradient puts the
-                    // first color at the top, so reverse to match.
-                    .background(Brush.verticalGradient(gradientColors.reversed()))
+                    .background(accentColor),
             )
         }
 
-        // Name + goal — a tight pair (iOS groups them in an inner VStack(spacing: 1)
-        // inside the outer VStack(spacing: 10)).
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(1.dp)
+            verticalArrangement = Arrangement.spacedBy(1.dp),
         ) {
             Text(
                 label,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
                 "/$goal$unit",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                maxLines = 1
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
             )
         }
     }

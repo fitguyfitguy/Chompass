@@ -328,49 +328,17 @@ fun ProgressScreen(container: AppContainer) {
 
 @Composable
 private fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit) {
-    // iOS .pickerStyle(.segmented): a track tinted with the system fill colour,
-    // active segment drawn as a slightly raised darker pill, active text uses
-    // the primary on-background colour (white in dark mode), not the brand pink.
-    val shape = RoundedCornerShape(16.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val trackFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
-    val shadowAlpha = if (isDark) 0.12f else 0.05f
     Row(
-        Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = if (isDark) 8.dp else 3.dp,
-                shape = shape,
-                ambientColor = Color.Black.copy(alpha = shadowAlpha),
-                spotColor = Color.Black.copy(alpha = shadowAlpha)
-            )
-            .clip(shape)
-            .background(trackFill)
-            .border(0.5.dp, borderColor, shape)
-            .padding(3.dp)
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        for (r in TimeRange.values()) {
-            val isSel = r == selected
-            Box(
-                Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(13.dp))
-                    .then(
-                        if (isSel) Modifier.background(AppColors.CalorieGradient)
-                        else Modifier.background(Color.Transparent)
-                    )
-                    .clickable { onSelect(r) }
-                    .padding(vertical = 7.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    stringResource(r.labelRes),
-                    fontSize = 13.sp,
-                    fontWeight = if (isSel) FontWeight.SemiBold else FontWeight.Medium,
-                    color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
-                )
-            }
+        TimeRange.entries.forEach { range ->
+            androidx.compose.material3.FilterChip(
+                selected = range == selected,
+                onClick = { onSelect(range) },
+                label = { Text(stringResource(range.labelRes)) },
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
@@ -989,7 +957,7 @@ private fun AllWeightHistorySheet(
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val fmt = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US).withZone(ZoneId.systemDefault())
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val sheetSurface = if (isDark) MaterialTheme.colorScheme.surface else Color(0xFFFAF3EE)
+    val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
@@ -1052,7 +1020,7 @@ private fun AllBodyFatHistorySheet(
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val fmt = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US).withZone(ZoneId.systemDefault())
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val sheetSurface = if (isDark) MaterialTheme.colorScheme.surface else Color(0xFFFAF3EE)
+    val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = state,
@@ -1715,7 +1683,7 @@ private fun BodyMeasurementsHistorySheet(
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val sheetSurface = if (isDark) MaterialTheme.colorScheme.surface else Color(0xFFFAF3EE)
+    val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = state,

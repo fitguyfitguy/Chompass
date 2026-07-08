@@ -17,8 +17,8 @@ import android.graphics.Shader
  * the iOS widget's SpeedometerGauge / VerticalNutrientBar pair.
  */
 
-const val DEFAULT_THEME_START = 0x0D9488
-const val DEFAULT_THEME_END = 0x2DD4BF
+const val DEFAULT_THEME_START = 0x006B5E
+const val DEFAULT_THEME_END = 0x4DB6AC
 
 private fun opaque(rgb: Int): Int =
     AndroidColor.rgb((rgb shr 16) and 0xFF, (rgb shr 8) and 0xFF, rgb and 0xFF)

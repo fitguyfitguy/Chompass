@@ -392,17 +392,8 @@ private fun WelcomeStep() {
     }
 }
 
-private fun onboardingLogoRes(themeColor: AppThemeColor): Int = when (themeColor) {
-    AppThemeColor.NOFUD_PINK -> R.drawable.ic_logo
-    AppThemeColor.RED -> R.drawable.ic_logo_red
-    AppThemeColor.ORANGE -> R.drawable.ic_logo_orange
-    AppThemeColor.GREEN -> R.drawable.ic_logo_green
-    AppThemeColor.MINT -> R.drawable.ic_logo_mint
-    AppThemeColor.TEAL -> R.drawable.ic_logo_teal
-    AppThemeColor.BLUE -> R.drawable.ic_logo_blue
-    AppThemeColor.PURPLE -> R.drawable.ic_logo_purple
-    else -> R.drawable.ic_logo_teal
-}
+private fun onboardingLogoRes(@Suppress("UNUSED_PARAMETER") themeColor: AppThemeColor): Int =
+    R.drawable.ic_logo_teal
 
 @Composable
 private fun WelcomeFeatureRow(icon: ImageVector, text: String) {

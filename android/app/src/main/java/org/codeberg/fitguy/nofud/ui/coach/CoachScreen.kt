@@ -553,54 +553,24 @@ private fun AssistantBadge() {
  */
 @Composable
 private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: String? = null) {
-    val shape = RoundedCornerShape(20.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val borderColor = if (isUser) {
-        AppColors.Calorie.copy(alpha = 0.24f)
-    } else if (isDark) {
-        AppColors.HairlineBorderDark
+    val shape = MaterialTheme.shapes.large
+    val backgroundColor = if (isUser) {
+        MaterialTheme.colorScheme.primaryContainer
     } else {
-        AppColors.HairlineBorderLight
+        MaterialTheme.colorScheme.surfaceContainerHigh
     }
-    val shadowElevation = if (isUser) 8.dp else 4.dp
-    val shadowColor = if (isUser) AppColors.Calorie.copy(alpha = 0.20f) else Color.Black.copy(alpha = 0.10f)
+    val textColor = if (isUser) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
 
     Box(
         modifier = Modifier
             .widthIn(max = 320.dp)
-            .shadow(
-                elevation = shadowElevation,
-                shape = shape,
-                ambientColor = shadowColor,
-                spotColor = shadowColor
-            )
             .clip(shape)
-            .then(
-                if (isUser) {
-                    Modifier.background(AppColors.CalorieGradient)
-                } else {
-                    Modifier
-                        .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-                }
-            )
-            .border(0.5.dp, borderColor, shape)
+            .background(backgroundColor),
     ) {
-        if (isUser) {
-            // Top white highlight — fakes SwiftUI .blendMode(.plusLighter).
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(28.dp)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.35f),
-                                Color.Transparent
-                            )
-                        )
-                    )
-            )
-        }
         Column(Modifier.padding(horizontal = 16.dp, vertical = 11.dp)) {
             attachmentImageBase64?.let { encoded ->
                 val bitmap = rememberDecodedBitmap(encoded) {
@@ -623,13 +593,12 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
                 }
             }
             if (isUser) {
-                // User's own typed text — show verbatim, no markdown.
                 Text(
                     content,
                     fontSize = 17.sp,
-                    color = Color.White,
+                    color = textColor,
                     lineHeight = 22.sp,
-                    style = TextStyle(fontWeight = FontWeight.Normal)
+                    style = TextStyle(fontWeight = FontWeight.Normal),
                 )
             } else {
                 // Coach replies often use markdown — render it.
@@ -697,23 +666,15 @@ private fun InputBar(
     onSend: () -> Unit
 ) {
     val canSend = !sending && (value.trim().isNotEmpty() || attachedImageBytes != null)
-    val capsule = RoundedCornerShape(28.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val capsule = MaterialTheme.shapes.extraLarge
 
     Column(
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .padding(top = 4.dp, bottom = 10.dp)
             .fillMaxWidth()
-            .shadow(
-                elevation = if (isDark) 10.dp else 6.dp,
-                shape = capsule,
-                ambientColor = Color.Black.copy(alpha = if (isDark) 0.16f else 0.08f),
-                spotColor = Color.Black.copy(alpha = if (isDark) 0.16f else 0.08f)
-            )
             .clip(capsule)
-            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, capsule)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(start = 4.dp, end = 5.dp, top = 4.dp, bottom = 4.dp),
     ) {
         attachedImageBytes?.let { bytes ->
@@ -777,7 +738,7 @@ private fun InputBar(
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Normal
                         ),
-                        cursorBrush = SolidColor(AppColors.Calorie),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                         keyboardActions = KeyboardActions(onSend = { onSend() }),
                         maxLines = 5,
@@ -870,39 +831,21 @@ private fun CoachMediaActionButton(
 
 @Composable
 private fun SendButton(canSend: Boolean, onClick: () -> Unit) {
-    val size: Dp = 34.dp
-    val shape = CircleShape
-    Box(
-        Modifier
-            .size(size)
-            .then(
-                if (canSend) {
-                    Modifier.shadow(
-                        elevation = 8.dp,
-                        shape = shape,
-                        ambientColor = AppColors.Calorie.copy(alpha = 0.35f),
-                        spotColor = AppColors.Calorie.copy(alpha = 0.35f)
-                    )
-                } else Modifier
-            )
-            .clip(shape)
-            .then(
-                if (canSend) Modifier.background(AppColors.CalorieGradient)
-                else Modifier.background(Color.Gray.copy(alpha = 0.35f))
-            )
-            .border(
-                0.6.dp,
-                Color.White.copy(alpha = if (canSend) 0.25f else 0.10f),
-                shape
-            )
-            .clickable(enabled = canSend, onClick = onClick),
-        contentAlignment = Alignment.Center
+    androidx.compose.material3.FilledIconButton(
+        onClick = onClick,
+        enabled = canSend,
+        modifier = Modifier.size(40.dp),
+        colors = androidx.compose.material3.IconButtonDefaults.filledIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
     ) {
         Icon(
             Icons.Filled.ArrowUpward,
             contentDescription = stringResource(R.string.coach_send_a11y),
-            tint = Color.White,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(18.dp),
         )
     }
 }

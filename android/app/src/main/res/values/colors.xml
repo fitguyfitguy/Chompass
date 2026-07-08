@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="purple_200">#FF99F6E4</color>
-    <color name="purple_500">#FF0D9488</color>
-    <color name="purple_700">#FF0F766E</color>
-    <color name="teal_200">#FF7C3AED</color>
-    <color name="teal_700">#FF5B21B6</color>
+    <color name="purple_500">#FF006B5E</color>
+    <color name="purple_700">#FF004D43</color>
+    <color name="teal_200">#FF6750A4</color>
+    <color name="teal_700">#FF4F378B</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="app_splash_background">#FFF8FAFC</color>
+    <color name="app_splash_background">#FFFEF7FF</color>
 
-    <color name="nofud_primary">#FF0D9488</color>
+    <color name="nofud_primary">#FF006B5E</color>
     <color name="nofud_on_primary">#FFFFFFFF</color>
-    <color name="nofud_primary_dark">#FF0F766E</color>
-    <color name="nofud_secondary">#FF334155</color>
+    <color name="nofud_primary_dark">#FF004D43</color>
+    <color name="nofud_secondary">#FF49454F</color>
     <color name="nofud_on_secondary">#FFFFFFFF</color>
-    <color name="nofud_background">#FFF8FAFC</color>
-    <color name="nofud_on_background">#FF0F172A</color>
-    <color name="nofud_surface">#FFFFFFFF</color>
-    <color name="nofud_on_surface">#FF0F172A</color>
-    <color name="nofud_accent">#FF7C3AED</color>
-    <color name="nofud_error">#FFDC2626</color>
+    <color name="nofud_background">#FFFEF7FF</color>
+    <color name="nofud_on_background">#FF1C1B1F</color>
+    <color name="nofud_surface">#FFFFFBFE</color>
+    <color name="nofud_on_surface">#FF1C1B1F</color>
+    <color name="nofud_accent">#FF6750A4</color>
+    <color name="nofud_error">#FFB3261E</color>
 </resources>

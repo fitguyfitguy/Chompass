@@ -86,6 +86,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -143,6 +144,7 @@ import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import org.codeberg.fitguy.nofud.ui.components.InAppCameraCaptureDialog
 import org.codeberg.fitguy.nofud.ui.components.MacroCard
+import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialog
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialogActions
@@ -286,7 +288,7 @@ fun HomeScreen(container: AppContainer) {
                 .fillMaxSize(),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 top = if (inSelectionMode) 72.dp else 8.dp,
-                bottom = BottomNavScrollPadding + 72.dp
+                bottom = BottomNavScrollPadding
             )
         ) {
             // Week strip — verbatim port of WeekEnergyStrip in HomeComponents.swift,
@@ -340,7 +342,8 @@ fun HomeScreen(container: AppContainer) {
                                 current = nutrient.current(ui.todayEntries),
                                 goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals),
                                 unit = nutrient.unit,
-                                modifier = Modifier.weight(1f)
+                                accentColor = nutrientAccentColor(nutrient),
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
@@ -437,38 +440,19 @@ fun HomeScreen(container: AppContainer) {
         // bottom nav bar. The parent Scaffold renders content full-screen behind the
         // bar, so the Scaffold FAB slot would sit hidden underneath it. Mirrors the iOS
         // ContentView FAB: .overlay(alignment: .bottomTrailing) + .padding(.bottom).
-        Box(
+        FloatingActionButton(
+            onClick = { showAddFoodSheet = true },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(end = 24.dp, bottom = 100.dp)
+                .padding(end = 24.dp, bottom = 24.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .shadow(
-                        elevation = if (isDark) 10.dp else 6.dp,
-                        shape = CircleShape,
-                        ambientColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f),
-                        spotColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f)
-                    )
-                    .clip(CircleShape)
-                    .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-                    .border(
-                        0.5.dp,
-                        if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
-                        CircleShape
-                    )
-                    .clickable { showAddFoodSheet = true },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.cd_add_food),
-                    tint = AppColors.Calorie,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = stringResource(R.string.cd_add_food),
+            )
         }
         if (inSelectionMode) {
             SelectionActionBar(
@@ -823,8 +807,8 @@ private fun CalorieHero(current: Int, goal: Int) {
         }
     }
     val remaining = maxOf(0, goal - current)
-    val gradientColors = listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
-    val trackColor = AppColors.Calorie.copy(alpha = 0.12f)
+    val trackColor = MaterialTheme.colorScheme.surfaceVariant
+    val progressColor = MaterialTheme.colorScheme.primary
 
     Box(
         modifier = Modifier
@@ -843,7 +827,6 @@ private fun CalorieHero(current: Int, goal: Int) {
             val inset = stroke / 2f
             val arcSize = Size(size.width - stroke, size.width - stroke)
             val topLeft = Offset(inset, inset)
-            val dash = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 6.dp.toPx()), 0f)
             drawArc(
                 color = trackColor,
                 startAngle = 180f,
@@ -851,16 +834,16 @@ private fun CalorieHero(current: Int, goal: Int) {
                 useCenter = false,
                 topLeft = topLeft,
                 size = arcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Butt, pathEffect = dash)
+                style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
             drawArc(
-                brush = Brush.horizontalGradient(gradientColors),
+                color = progressColor,
                 startAngle = 180f,
                 sweepAngle = 180f * animatedRatio.value,
                 useCenter = false,
                 topLeft = topLeft,
                 size = arcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Butt, pathEffect = dash)
+                style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
         }
 
@@ -879,12 +862,10 @@ private fun CalorieHero(current: Int, goal: Int) {
             )
             Text(
                 "$current",
-                style = TextStyle(
-                    brush = Brush.linearGradient(gradientColors),
-                    fontSize = 54.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                maxLines = 1
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
             )
             // Flame + remaining, mirroring iOS HStack(spacing: 5) { flame.fill (11pt) ;
             // Text("\(remaining) left") } tinted to AppColors.calorie — a pink monochrome
@@ -896,14 +877,14 @@ private fun CalorieHero(current: Int, goal: Int) {
                 Icon(
                     Icons.Filled.LocalFireDepartment,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(13.dp)
                 )
                 Text(
                     "$remaining left",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -1138,7 +1119,7 @@ private fun SectionCardWrapper(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(shape)
-            .background(if (transparent) Color.Transparent else MaterialTheme.colorScheme.surface)
+            .background(if (transparent) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerLow)
     ) { content() }
 }
 
@@ -1316,7 +1297,7 @@ private fun FoodRow(
                 else -> Icon(
                     Icons.Filled.Restaurant,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -1347,7 +1328,7 @@ private fun FoodRow(
                         Icon(
                             Icons.Filled.Favorite,
                             contentDescription = stringResource(R.string.cd_favorited),
-                            tint = AppColors.Calorie,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(12.dp)
                         )
                     }
@@ -1368,7 +1349,7 @@ private fun FoodRow(
                     "${entry.calories} kcal",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie
+                    color = MaterialTheme.colorScheme.primary
                 )
                 entry.servingSizeGrams?.takeIf { it > 0 }?.let { grams ->
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
@@ -1461,7 +1442,7 @@ private fun CopyFromDaySheet(
                             sourceDate.format(dateFmt),
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Medium,
-                            color = AppColors.Calorie
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -1529,7 +1510,7 @@ private fun CopyFromDaySheet(
                             ) {
                                 Text(
                                     stringResource(R.string.copy_meal_format, stringResource(group.meal.displayNameRes)),
-                                    color = AppColors.Calorie,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -1608,7 +1589,7 @@ private fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
                 Icon(
                     Icons.Filled.ImageSearch,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(64.dp)
                 )
             }
@@ -1802,14 +1783,14 @@ private fun ManualEntryDialog(
                             Icon(
                                 sheetMealIcon(mealType),
                                 contentDescription = null,
-                                tint = AppColors.Calorie,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 stringResource(mealType.displayNameRes),
                                 fontSize = 16.sp,
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -1870,3 +1851,10 @@ private fun NumberField(label: String, value: String, onValueChange: (String) ->
 
 private fun filterDecimalInput(value: String): String =
     value.filter { it.isDigit() || it == '.' || it == ',' }
+
+private fun nutrientAccentColor(nutrient: HomeTopNutrient): Color = when (nutrient) {
+    HomeTopNutrient.PROTEIN -> AppColors.Protein
+    HomeTopNutrient.CARBS -> AppColors.Carbs
+    HomeTopNutrient.FAT -> AppColors.Fat
+    else -> AppColors.Calorie
+}
