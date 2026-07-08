@@ -1,5 +1,7 @@
 # NoFUD
 
+![NoFUD teal icon](android/app/src/main/res/drawable-nodpi/ic_logo_teal.png)
+
 **Ad-free AI calorie tracker for Android** - a privacy-focused app based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 NoFUD keeps the core Fud AI experience while removing monetization and tracking surface area.  
