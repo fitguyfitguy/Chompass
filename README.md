@@ -120,6 +120,9 @@ First launch walks through onboarding. A free Gemini key is available at https:/
 
 Download the latest signed APK from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases). On your phone, allow **Install unknown apps** for the browser or file manager you use to open the APK.
 
+- **Quick add to Obtainium (recommended):** [![Get it on Obtainium](https://img.shields.io/badge/Get%20it%20on-Obtainium-2ea043?logo=android&logoColor=white)](obtainium://add/codeberg.org/fitguy/nofud)
+- **If the deep link is blocked by your browser:** in Obtainium tap **Add App** and paste `https://codeberg.org/fitguy/nofud`
+
 - Release package: `org.codeberg.fitguy.nofud`
 - Debug builds (from source) install side-by-side as `org.codeberg.fitguy.nofud.debug`
 
