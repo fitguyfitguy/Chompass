@@ -147,6 +147,7 @@ import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.ui.home.FoodLogSortOrder
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -178,7 +179,7 @@ private enum class SettingsSheet {
     FALLBACK_PROVIDER, FALLBACK_MODEL, FALLBACK_KEY, FALLBACK_BASE_URL,
     GENDER, BIRTHDAY, HEIGHT, WEIGHT, BODY_FAT, GOAL_BODY_FAT, ACTIVITY, GOAL, GOAL_WEIGHT, GOAL_SPEED,
     CALORIES, PROTEIN, CARBS, FAT, OPTIONAL_NUTRIENTS,
-    APPEARANCE, WEEK_START
+    APPEARANCE, FOOD_LOG_SORT, WEEK_START
 }
 
 private enum class HealthConnectPermissionAction {
@@ -562,6 +563,12 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     onInfo = { showDefaultGramsInfo = true },
                     onChange = vm::setPreferGramsByDefault
                 )
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_food_log_sort),
+                    stringResource(ui.foodLogSortOrder.displayNameRes),
+                    icon = Icons.Filled.UnfoldMore
+                ) { sheet = SettingsSheet.FOOD_LOG_SORT }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_week_starts),
@@ -1661,6 +1668,13 @@ private fun SettingsSheets(
                     selected = { it.first == ui.appearanceMode },
                     onSelect = { vm.setAppearanceMode(it.first); onDismiss() },
                     icon = { appearanceIcon(it.first) }
+                )
+                SettingsSheet.FOOD_LOG_SORT -> ListSheet(
+                    title = stringResource(R.string.settings_food_log_sort),
+                    items = FoodLogSortOrder.values().toList(),
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.foodLogSortOrder },
+                    onSelect = { vm.setFoodLogSortOrder(it); onDismiss() }
                 )
                 SettingsSheet.WEEK_START -> ListSheet(
                     title = stringResource(R.string.sheet_week_starts),

@@ -44,6 +44,16 @@ object MealShare {
         context.startActivity(Intent.createChooser(send, "Share meal"))
     }
 
+    fun shareSeparately(context: Context, entries: List<FoodEntry>) {
+        if (entries.isEmpty()) return
+        val payload = entries.joinToString("\n\n") { entry -> shareText(listOf(entry)) }
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, payload)
+        }
+        context.startActivity(Intent.createChooser(send, "Share meals"))
+    }
+
     fun shareText(entries: List<FoodEntry>): String {
         val lines = entries.map { e ->
             val macros = "${e.protein.roundToInt()}P · ${e.carbs.roundToInt()}C · ${e.fat.roundToInt()}F"

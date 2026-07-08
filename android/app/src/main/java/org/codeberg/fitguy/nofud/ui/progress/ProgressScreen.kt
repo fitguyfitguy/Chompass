@@ -666,15 +666,19 @@ private fun downsampleTrend(points: List<TrendPoint>, maxPoints: Int = 60): List
 private fun smoothTrendPath(points: List<Offset>): Path {
     val path = Path()
     if (points.isEmpty()) return path
+    // Lower tension than the default Catmull-Rom handles to avoid exaggerated
+    // bends when adjacent dates have sharp value changes.
+    val smoothing = 0.42f
     path.moveTo(points.first().x, points.first().y)
     for (i in 1 until points.size) {
         val p0 = points[maxOf(i - 2, 0)]
         val p1 = points[i - 1]
         val p2 = points[i]
         val p3 = points[minOf(i + 1, points.size - 1)]
+        val handleScale = smoothing / 6f
         path.cubicTo(
-            p1.x + (p2.x - p0.x) / 6f, p1.y + (p2.y - p0.y) / 6f,
-            p2.x - (p3.x - p1.x) / 6f, p2.y - (p3.y - p1.y) / 6f,
+            p1.x + (p2.x - p0.x) * handleScale, p1.y + (p2.y - p0.y) * handleScale,
+            p2.x - (p3.x - p1.x) * handleScale, p2.y - (p3.y - p1.y) * handleScale,
             p2.x, p2.y
         )
     }

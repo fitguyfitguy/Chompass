@@ -560,6 +560,7 @@
     <string name="settings_weight_unit">Weight Unit</string>
     <string name="settings_default_to_grams">Default to Grams</string>
     <string name="settings_default_to_grams_info">New food review sheets open with grams selected first. You can still switch to serving, slice, cup, or any other detected unit before logging.</string>
+    <string name="settings_food_log_sort">Food log sort</string>
     <string name="settings_week_starts">Week Starts On</string>
     <string name="settings_week_monday">Monday</string>
     <string name="settings_week_sunday">Sunday</string>
@@ -724,7 +725,6 @@
     <string name="widget_all_metrics_description">See today\'s calories, protein, carbs, and fat in one widget.</string>
 
     <!-- Workouts tab (exercise library ported from Delts) -->
-    <string name="nav_workouts">Workouts</string>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
     <string name="empty_subtitle">Try a different muscle, equipment, or search — or reset the filters above.</string>
@@ -758,7 +758,6 @@
     <string name="whats_new_nofud_ad_free">Completely ad-free — no banners, no tracking SDKs.</string>
     <string name="whats_new_nofud_privacy">Privacy-first: local storage, bring-your-own AI key, optional Health Connect.</string>
     <string name="whats_new_nofud_fork">Fork of Fud AI with upstream MIT attribution preserved.</string>
-    <string name="whats_new_v30_workouts">New Workouts tab — browse 873 exercises with photos, muscle and equipment filters, search, and detail pages.</string>
     <string name="whats_new_v30_home">Home redesign: speedometer calorie gauge, vertical macro bars, four nutrient cards, and a floating add button.</string>
     <string name="whats_new_v30_coach_voice">Ask Coach by voice with the new inline recorder.</string>
     <string name="whats_new_v30_share">Share any meal as a link that opens straight in NoFUD on iPhone or Android.</string>
@@ -767,6 +766,7 @@
     <string name="whats_new_v30_camera">Camera + Camera keeps both shots, stitched side by side.</string>
     <string name="whats_new_v30_colors">10 new theme colors, now picked inline in Settings.</string>
     <string name="whats_new_v30_bodyfat">Body fat history: review and delete individual entries, just like weight.</string>
+    <string name="whats_new_v30_workouts">Workouts tab was removed.</string>
     <string name="whats_new_v30_units">Height and weight units can now be set independently.</string>
     <string name="whats_new_v30_adaptive">Adaptive Goals and Energy Burn left Experimental and are on by default for new installs.</string>
     <string name="whats_new_v30_restore">Reinstalled or switched phones? Your food log, weight, and body fat now restore automatically from Health Connect.</string>
@@ -966,5 +966,8 @@
     <string name="nutrient_short_omega">Omega</string>
     <string name="sort_standard">Breakfast → Lunch → Dinner</string>
     <string name="sort_latest_first">Latest Meals First</string>
+    <string name="home_selected_count">%1$d selected</string>
+    <string name="home_share_together">Share together</string>
+    <string name="home_share_separately">Share separately</string>
     <string name="copy_meal_format">Copy %1$s</string>
 </resources>

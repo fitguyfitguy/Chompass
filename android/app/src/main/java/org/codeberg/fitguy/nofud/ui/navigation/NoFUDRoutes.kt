@@ -9,7 +9,6 @@ object NoFUDRoutes {
     const val OPTIONAL_NUTRIENT_GOALS = "settings/optional-nutrient-goals"
     const val CALCULATION_METHODS = "settings/calculation-methods"
     const val BODY_MEASUREMENTS = "settings/body-measurements"
-    const val WORKOUTS = "workouts"
 
-    val bottomTabs = listOf(HOME, PROGRESS, COACH, SETTINGS, WORKOUTS)
+    val bottomTabs = listOf(HOME, PROGRESS, COACH, SETTINGS)
 }

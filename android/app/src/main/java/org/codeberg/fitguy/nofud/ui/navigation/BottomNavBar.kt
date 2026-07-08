@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -73,8 +72,7 @@ val BottomTabs = listOf(
     BottomTab(NoFUDRoutes.HOME, Icons.Filled.Home, R.string.nav_home),
     BottomTab(NoFUDRoutes.PROGRESS, Icons.Filled.BarChart, R.string.nav_progress),
     BottomTab(NoFUDRoutes.COACH, Icons.Filled.Forum, R.string.nav_coach),
-    BottomTab(NoFUDRoutes.SETTINGS, Icons.Filled.Settings, R.string.nav_settings),
-    BottomTab(NoFUDRoutes.WORKOUTS, Icons.Filled.FitnessCenter, R.string.nav_workouts)
+    BottomTab(NoFUDRoutes.SETTINGS, Icons.Filled.Settings, R.string.nav_settings)
 )
 
 private val BarHeight = 72.dp

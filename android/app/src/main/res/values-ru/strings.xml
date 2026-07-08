@@ -734,7 +734,6 @@
     <string name="about_whats_new">Что нового</string>
     <string name="about_whats_new_version_format">Версия %1$s</string>
     <string name="about_whats_new_android_summary">Изменения для Android в этом обновлении:</string>
-    <string name="nav_workouts">Тренировки</string>
     <string name="back">Назад</string>
     <string name="clear_search">Очистить поиск</string>
     <string name="empty_subtitle">Попробуйте другую мышцу, инвентарь или запрос — либо сбросьте фильтры выше.</string>

@@ -16,6 +16,7 @@ import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
 import org.codeberg.fitguy.nofud.services.WeightAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
+import org.codeberg.fitguy.nofud.ui.home.FoodLogSortOrder
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -59,6 +60,7 @@ data class SettingsUiState(
     val speechApiKeyMasked: String = "",
     val appearanceMode: String = "system",
     val appThemeColor: AppThemeColor = AppThemeColor.NOFUD_PINK,
+    val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val userContext: String = "",
     val fallbackEnabled: Boolean = false,
@@ -115,6 +117,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val appearance = container.prefs.appearanceMode.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
+            val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
             val weekMon = container.prefs.weekStartsOnMonday.first()
             val userContext = container.prefs.userContext.first()
             val maxTokens = container.prefs.maxResponseTokens.first()
@@ -154,6 +157,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 speechApiKeyMasked = speechMasked,
                 appearanceMode = appearance,
                 appThemeColor = appThemeColor,
+                foodLogSortOrder = foodLogSortOrder,
                 weekStartsOnMonday = weekMon,
                 userContext = userContext,
                 fallbackEnabled = fbEnabled,
@@ -242,6 +246,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.prefs.setWeekStartsOnMonday(monday)
             _ui.value = _ui.value.copy(weekStartsOnMonday = monday)
+        }
+    }
+
+    fun setFoodLogSortOrder(order: FoodLogSortOrder) {
+        viewModelScope.launch {
+            container.prefs.setFoodLogSortOrder(order.storageValue)
+            _ui.value = _ui.value.copy(foodLogSortOrder = order)
         }
     }
 

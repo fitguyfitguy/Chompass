@@ -36,7 +36,6 @@ import org.codeberg.fitguy.nofud.ui.progress.ProgressScreen
 import org.codeberg.fitguy.nofud.ui.settings.CalculationMethodsScreen
 import org.codeberg.fitguy.nofud.ui.settings.OptionalNutrientGoalsScreen
 import org.codeberg.fitguy.nofud.ui.settings.SettingsScreen
-import org.codeberg.fitguy.nofud.ui.workouts.WorkoutsScreen
 
 /**
  * Increments each time the app is opened: 1 on cold launch, then +1 on every
@@ -150,7 +149,6 @@ fun NoFUDNavHost(
                 composable(NoFUDRoutes.BODY_MEASUREMENTS) {
                     BodyMeasurementsScreen(container = container, onBack = { nav.popBackStack() })
                 }
-                composable(NoFUDRoutes.WORKOUTS) { WorkoutsScreen() }
             }
         }
     }

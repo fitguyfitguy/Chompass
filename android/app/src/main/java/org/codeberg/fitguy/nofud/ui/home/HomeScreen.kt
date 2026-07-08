@@ -17,7 +17,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.filled.IosShare
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +50,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
+import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Bookmark
@@ -75,7 +76,6 @@ import androidx.compose.material.icons.filled.Nightlight
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -127,6 +127,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -158,6 +159,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
 import java.util.Locale
+import java.util.UUID
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -176,7 +178,6 @@ fun HomeScreen(container: AppContainer) {
     var showBarcodeScanner by remember { mutableStateOf(false) }
     var showCopyFromDay by remember { mutableStateOf(false) }
     var showAddFoodSheet by remember { mutableStateOf(false) }
-    var showSortMenu by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var showNutritionDetail by remember { mutableStateOf(false) }
 
@@ -264,6 +265,11 @@ fun HomeScreen(container: AppContainer) {
     val mealGroups = remember(ui.todayEntries, ui.foodLogSortOrder) {
         foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
     }
+    var selectedEntryIds by remember(ui.date) { mutableStateOf<Set<UUID>>(emptySet()) }
+    val selectedEntries = remember(ui.todayEntries, selectedEntryIds) {
+        ui.todayEntries.filter { it.id in selectedEntryIds }
+    }
+    val inSelectionMode = selectedEntryIds.isNotEmpty()
 
     // No topBar: the empty TopAppBar used to act as the status-bar spacer, but the
     // ad strip above this screen (TabWithBanner) now owns that inset.
@@ -274,7 +280,10 @@ fun HomeScreen(container: AppContainer) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 8.dp, bottom = BottomNavScrollPadding + 72.dp)
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                top = if (inSelectionMode) 72.dp else 8.dp,
+                bottom = BottomNavScrollPadding + 72.dp
+            )
         ) {
             // Week strip — verbatim port of WeekEnergyStrip in HomeComponents.swift,
             // with horizontal pagination across 53 weeks of history.
@@ -367,17 +376,7 @@ fun HomeScreen(container: AppContainer) {
                             totalCalories = group.totalCalories,
                             totalProtein = group.totalProtein,
                             totalCarbs = group.totalCarbs,
-                            totalFat = group.totalFat,
-                            onShare = { MealShare.share(ctx, group.entries) },
-                            showSortMenu = groupIndex == 0,
-                            sortOrder = ui.foodLogSortOrder,
-                            sortMenuExpanded = showSortMenu,
-                            onSortClick = { showSortMenu = true },
-                            onSortDismiss = { showSortMenu = false },
-                            onSortOrderSelected = { order ->
-                                showSortMenu = false
-                                vm.setFoodLogSortOrder(order)
-                            }
+                            totalFat = group.totalFat
                         )
                     }
                     items(group.entries, key = { it.id }) { entry ->
@@ -390,15 +389,40 @@ fun HomeScreen(container: AppContainer) {
                             // Swipe trailing edge -> delete; swipe leading edge -> toggle favorite.
                             // Mirrors iOS ContentView.swift .swipeActions(edge: .trailing) on the row,
                             // which exposes Delete (destructive) + Favorite/Unfavorite buttons.
-                            val isFav = ui.isFavorite(entry)
-                            SwipeableFoodRow(
-                                entry = entry,
-                                isFavorite = isFav,
-                                rowShape = rowShape,
-                                onTap = { editingEntry = entry },
-                                onDelete = { vm.deleteEntry(entry.id) },
-                                onToggleFavorite = { vm.toggleFavorite(entry) }
-                            )
+                            val isSelected = selectedEntryIds.contains(entry.id)
+                            val onSelectToggle = {
+                                selectedEntryIds = if (selectedEntryIds.contains(entry.id)) {
+                                    selectedEntryIds - entry.id
+                                } else {
+                                    selectedEntryIds + entry.id
+                                }
+                            }
+                            if (inSelectionMode) {
+                                Box(
+                                    modifier = Modifier.combinedClickable(
+                                        onClick = onSelectToggle,
+                                        onLongClick = onSelectToggle
+                                    )
+                                ) {
+                                    FoodRow(
+                                        entry = entry,
+                                        isFavorite = ui.isFavorite(entry),
+                                        rowShape = rowShape,
+                                        isSelected = isSelected
+                                    )
+                                }
+                            } else {
+                                val isFav = ui.isFavorite(entry)
+                                SwipeableFoodRow(
+                                    entry = entry,
+                                    isFavorite = isFav,
+                                    rowShape = rowShape,
+                                    onTap = { editingEntry = entry },
+                                    onLongPress = { selectedEntryIds = setOf(entry.id) },
+                                    onDelete = { vm.deleteEntry(entry.id) },
+                                    onToggleFavorite = { vm.toggleFavorite(entry) }
+                                )
+                            }
                             if (index != group.entries.lastIndex) Divider()
                         }
                     }
@@ -431,6 +455,20 @@ fun HomeScreen(container: AppContainer) {
                     modifier = Modifier.size(30.dp)
                 )
             }
+        }
+        if (inSelectionMode) {
+            SelectionActionBar(
+                selectedCount = selectedEntryIds.size,
+                onCancel = { selectedEntryIds = emptySet() },
+                onShare = {
+                    MealShare.share(ctx, selectedEntries)
+                    selectedEntryIds = emptySet()
+                },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .zIndex(2f)
+            )
         }
         }
     }
@@ -890,14 +928,7 @@ private fun MealSectionHeader(
     totalCalories: Int? = null,
     totalProtein: Double = 0.0,
     totalCarbs: Double = 0.0,
-    totalFat: Double = 0.0,
-    onShare: (() -> Unit)? = null,
-    showSortMenu: Boolean = false,
-    sortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
-    sortMenuExpanded: Boolean = false,
-    onSortClick: () -> Unit = {},
-    onSortDismiss: () -> Unit = {},
-    onSortOrderSelected: (FoodLogSortOrder) -> Unit = {}
+    totalFat: Double = 0.0
 ) {
     // iOS layout: small dim icon + sentence-case label, regular weight ~17sp.
     Row(
@@ -919,59 +950,9 @@ private fun MealSectionHeader(
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f)
         )
-        if (showSortMenu) {
-            Spacer(Modifier.width(12.dp))
-            Box {
-                Row(
-                    modifier = Modifier.clickable { onSortClick() },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.SwapVert,
-                        contentDescription = null,
-                        tint = AppColors.Calorie,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        stringResource(R.string.sort),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = AppColors.Calorie
-                    )
-                }
-                SheetGlassDropdownMenu(
-                    expanded = sortMenuExpanded,
-                    onDismissRequest = onSortDismiss,
-                    menuWidth = 226.dp
-                ) {
-                    for (order in FoodLogSortOrder.values()) {
-                        SheetGlassDropdownMenuItem(
-                            label = stringResource(order.displayNameRes),
-                            selected = order == sortOrder,
-                            reserveSelectionSlot = true,
-                            onClick = { onSortOrderSelected(order) }
-                        )
-                    }
-                }
-            }
-        }
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
             Spacer(Modifier.weight(1f))
-            // Share the whole meal as a fudai://add-meal link (issue #107)
-            if (onShare != null) {
-                Icon(
-                    Icons.Filled.IosShare,
-                    contentDescription = stringResource(R.string.cd_share_meal),
-                    tint = AppColors.Calorie,
-                    modifier = Modifier
-                        .clickable { onShare() }
-                        .padding(4.dp)
-                        .size(18.dp),
-                )
-                Spacer(Modifier.width(14.dp))
-            }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "$totalCalories kcal",
@@ -984,6 +965,54 @@ private fun MealSectionHeader(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelectionActionBar(
+    selectedCount: Int,
+    onCancel: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FudGlassSurface(
+        modifier = modifier.fillMaxWidth(),
+        cornerRadius = 22.dp,
+        padding = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconButton(onClick = onCancel) {
+                Icon(
+                    imageVector = Icons.Filled.ChevronRight,
+                    contentDescription = stringResource(R.string.action_cancel),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                    modifier = Modifier
+                        .size(18.dp)
+                        .graphicsLayer { rotationZ = 180f }
+                )
+            }
+            Text(
+                text = selectedCount.toString(),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onShare, enabled = selectedCount > 0) {
+                Icon(
+                    imageVector = Icons.Outlined.IosShare,
+                    contentDescription = stringResource(R.string.cd_share_meal),
+                    tint = if (selectedCount > 0) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -1116,6 +1145,7 @@ private fun SwipeableFoodRow(
     isFavorite: Boolean,
     rowShape: RoundedCornerShape,
     onTap: () -> Unit,
+    onLongPress: () -> Unit,
     onDelete: () -> Unit,
     onToggleFavorite: () -> Unit
 ) {
@@ -1152,7 +1182,10 @@ private fun SwipeableFoodRow(
                             }
                         )
                     }
-                    .clickable(onClick = onTap)
+                    .combinedClickable(
+                        onClick = onTap,
+                        onLongClick = onLongPress
+                    )
             ) {
                 FoodRow(entry = entry, isFavorite = isFavorite, rowShape = rowShape)
             }
@@ -1207,7 +1240,8 @@ private data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
 private fun FoodRow(
     entry: FoodEntry,
     isFavorite: Boolean = false,
-    rowShape: RoundedCornerShape = RoundedCornerShape(22.dp)
+    rowShape: RoundedCornerShape = RoundedCornerShape(22.dp),
+    isSelected: Boolean = false
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val ctx = LocalContext.current
@@ -1222,10 +1256,16 @@ private fun FoodRow(
         Modifier
             .fillMaxWidth()
             .clip(rowShape)
-            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .background(
+                if (isSelected) AppColors.Calorie.copy(alpha = if (isDark) 0.25f else 0.12f)
+                else if (isDark) AppColors.TranslucentSurfaceDark
+                else AppColors.TranslucentSurfaceLight
+            )
             .border(
-                0.5.dp,
-                if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
+                if (isSelected) 1.dp else 0.5.dp,
+                if (isSelected) AppColors.Calorie.copy(alpha = 0.65f)
+                else if (isDark) AppColors.HairlineBorderDark
+                else AppColors.HairlineBorderLight,
                 rowShape
             )
             .padding(horizontal = 14.dp, vertical = 12.dp),
