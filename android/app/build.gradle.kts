@@ -61,7 +61,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE"
+                debugSymbolLevel = "NONE"
             }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -91,6 +91,21 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    // IzzyOnDroid (and F-Droid infra) strongly prefer keeping APKs small.
+    // Compress native *.so libs to reduce the on-disk size of "fat" builds.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    // Avoid Google-encrypted "dependency info" blobs in the APK.
+    // These are often flagged during Izzy/F-Droid scanning and add size overhead.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
     // Produce per-ABI APKs plus a universal APK for wider device coverage.
     splits {
