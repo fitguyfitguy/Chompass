@@ -15,9 +15,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION="${1:-1.0.0}"
 TAG="v${VERSION}"
-APK="$ROOT/NoFUD-${VERSION}.apk"
 CHECKSUMS="$ROOT/SHA256SUMS"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
+ASSETS=(
+  "$ROOT/NoFUD-${VERSION}.apk"
+  "$ROOT/NoFUD-${VERSION}-arm64-v8a.apk"
+  "$ROOT/NoFUD-${VERSION}-armeabi-v7a.apk"
+  "$ROOT/NoFUD-${VERSION}-x86_64.apk"
+  "$CHECKSUMS"
+)
 
 run_tea() {
   if command -v tea >/dev/null 2>&1; then
@@ -27,8 +33,14 @@ run_tea() {
   fi
 }
 
-if [[ ! -f "$APK" ]]; then
-  echo "Missing $APK — run: devenv tasks run build:release" >&2
+MISSING=0
+for ASSET in "${ASSETS[@]}"; do
+  if [[ ! -f "$ASSET" ]]; then
+    echo "Missing $ASSET — build/package release artifacts first." >&2
+    MISSING=1
+  fi
+done
+if [[ "$MISSING" -ne 0 ]]; then
   exit 1
 fi
 
@@ -55,14 +67,19 @@ fi
 
 NOTES="$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$ROOT/CHANGELOG.md")"
 
+CREATE_ARGS=(
+  --login codeberg
+  --repo fitguy/NoFUD
+  --tag "$TAG"
+  --title "NoFUD ${VERSION}"
+  --note "$NOTES"
+)
+for ASSET in "${ASSETS[@]}"; do
+  CREATE_ARGS+=(--asset "$ASSET")
+done
+
 run_tea releases create \
-  --login codeberg \
-  --repo fitguy/NoFUD \
-  --tag "$TAG" \
-  --title "NoFUD ${VERSION}" \
-  --note "$NOTES" \
-  --asset "$APK" \
-  --asset "$CHECKSUMS" \
+  "${CREATE_ARGS[@]}" \
   || {
     echo >&2
     echo "If you see 'target couldn't be found', enable Releases in the repo:" >&2

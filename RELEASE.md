@@ -32,8 +32,15 @@ devenv tasks run build:release
 
 ```bash
 devenv tasks run build:release
-cp android/app/build/outputs/apk/play/release/app-play-release.apk NoFUD-<version>.apk
-sha256sum NoFUD-<version>.apk > SHA256SUMS
+cp android/app/build/outputs/apk/play/release/app-play-universal-release.apk NoFUD-<version>.apk
+cp android/app/build/outputs/apk/play/release/app-play-arm64-v8a-release.apk NoFUD-<version>-arm64-v8a.apk
+cp android/app/build/outputs/apk/play/release/app-play-armeabi-v7a-release.apk NoFUD-<version>-armeabi-v7a.apk
+cp android/app/build/outputs/apk/play/release/app-play-x86_64-release.apk NoFUD-<version>-x86_64.apk
+sha256sum \
+  NoFUD-<version>.apk \
+  NoFUD-<version>-arm64-v8a.apk \
+  NoFUD-<version>-armeabi-v7a.apk \
+  NoFUD-<version>-x86_64.apk > SHA256SUMS
 ```
 
 ## Tag and publish on Codeberg
@@ -48,7 +55,7 @@ git push origin v1.0.0
 ```
 
 4. Create a release at https://codeberg.org/fitguy/nofud/releases
-   - Attach `NoFUD-<version>.apk` and `SHA256SUMS`
+   - Attach all APK assets (`NoFUD-<version>.apk` + ABI APKs) and `SHA256SUMS`
    - Paste changelog notes
    - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-<version>.apk`
 

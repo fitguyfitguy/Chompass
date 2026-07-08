@@ -29,8 +29,8 @@ android {
         applicationId = "org.codeberg.fitguy.nofud"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.2.0"
+        versionCode = 4
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,6 +91,15 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    // Produce per-ABI APKs plus a universal APK for wider device coverage.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
     }
 }
 

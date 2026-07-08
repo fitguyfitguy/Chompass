@@ -4,6 +4,19 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-07-08
+
+### Added
+
+- Multi-architecture Android release packaging with dedicated APKs for `arm64-v8a`, `armeabi-v7a`, and `x86_64`
+- Universal APK output preserved for users who prefer a single download artifact
+
+### Changed
+
+- Build/release pipeline now emits ABI-targeted artifacts to improve compatibility across more devices
+- Onboarding logo handling refined for dynamic theme changes
+- Documentation updates for Android development and performance workflow clarity
+
 ## [1.2.0] - 2026-07-08
 
 ### Added
