@@ -355,42 +355,21 @@ private fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit) 
     // the primary on-background colour (white in dark mode), not the brand pink.
     val shape = RoundedCornerShape(16.dp)
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val trackFill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.34f)
-    } else {
-        Color(0xFFE5DAD3).copy(alpha = 0.88f)
-    }
-    val shadowAlpha = if (isDark) 0.16f else 0.06f
+    val trackFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shadowAlpha = if (isDark) 0.12f else 0.05f
     Row(
         Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = if (isDark) 10.dp else 4.dp,
+                elevation = if (isDark) 8.dp else 3.dp,
                 shape = shape,
                 ambientColor = Color.Black.copy(alpha = shadowAlpha),
                 spotColor = Color.Black.copy(alpha = shadowAlpha)
             )
             .clip(shape)
             .background(trackFill)
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.08f else 0.20f),
-                        Color.White.copy(alpha = if (isDark) 0.02f else 0.05f),
-                        AppColors.Calorie.copy(alpha = if (isDark) 0.025f else 0.045f)
-                    )
-                )
-            )
-            .border(
-                0.7.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.15f else 0.50f),
-                        AppColors.Calorie.copy(alpha = if (isDark) 0.08f else 0.16f)
-                    )
-                ),
-                shape
-            )
+            .border(0.5.dp, borderColor, shape)
             .padding(3.dp)
     ) {
         for (r in TimeRange.values()) {
@@ -1211,42 +1190,21 @@ private fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Uni
     val labelBodyFat = stringResource(R.string.progress_metric_body_fat)
     val shape = RoundedCornerShape(18.dp)
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val trackFill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.34f)
-    } else {
-        Color(0xFFE5DAD3).copy(alpha = 0.88f)
-    }
-    val shadowAlpha = if (isDark) 0.14f else 0.05f
+    val trackFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shadowAlpha = if (isDark) 0.12f else 0.05f
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = if (isDark) 10.dp else 4.dp,
+                elevation = if (isDark) 8.dp else 3.dp,
                 shape = shape,
                 ambientColor = Color.Black.copy(alpha = shadowAlpha),
                 spotColor = Color.Black.copy(alpha = shadowAlpha)
             )
             .clip(shape)
             .background(trackFill)
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.08f else 0.20f),
-                        Color.White.copy(alpha = if (isDark) 0.02f else 0.05f),
-                        AppColors.Calorie.copy(alpha = if (isDark) 0.025f else 0.045f)
-                    )
-                )
-            )
-            .border(
-                0.7.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.15f else 0.50f),
-                        AppColors.Calorie.copy(alpha = if (isDark) 0.08f else 0.16f)
-                    )
-                ),
-                shape
-            )
+            .border(0.5.dp, borderColor, shape)
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(0.dp)
     ) {

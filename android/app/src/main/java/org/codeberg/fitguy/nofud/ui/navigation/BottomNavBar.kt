@@ -78,7 +78,7 @@ val BottomTabs = listOf(
 )
 
 private val BarHeight = 72.dp
-private val BarCorner = 36.dp
+private val BarCorner = 28.dp
 private val PillCorner = 26.dp
 private val PillInsetH = 8.dp
 private val PillInsetV = 6.dp
@@ -87,15 +87,14 @@ val BottomNavScrollPadding = 132.dp
 val BottomNavDockedControlPadding = 82.dp
 
 /**
- * Floating Liquid Glass tab bar — capsule with translucent backdrop, glassy
- * sheen, hairline border, soft shadow, and a spring-animated bright pill
- * behind the active tab.
+ * Floating translucent tab bar — matte capsule with hairline border and a flat
+ * active pill behind the selected tab.
  *
  * The pill is **draggable**: place a finger anywhere on the bar and slide
  * horizontally to drag it across tabs. Taps still work normally (drag is
  * only claimed after horizontal touch slop). On release the pill snaps to
  * the nearest tab; haptic ticks fire each time the pill crosses a boundary
- * during the drag, mirroring the iOS 26 Liquid Glass tab-bar feel.
+ * during the drag, preserving the same springy interaction feel.
  */
 @Composable
 fun NoFUDBottomNavBar(
@@ -110,35 +109,9 @@ fun NoFUDBottomNavBar(
 
     val barShape = RoundedCornerShape(BarCorner)
 
-    val backdropColor = if (isDark) Color(0xFF15151A).copy(alpha = 0.86f)
-                        else Color(0xFFFCF6F1).copy(alpha = 0.74f)
-
-    val barSheen = Brush.verticalGradient(
-        colors = if (isDark)
-            listOf(Color.White.copy(alpha = 0.14f), Color.White.copy(alpha = 0.0f))
-        else
-            listOf(
-                Color.White.copy(alpha = 0.76f),
-                Color.White.copy(alpha = 0.22f),
-                AppColors.Calorie.copy(alpha = 0.035f)
-            )
-    )
-
-    val barBorder = Brush.linearGradient(
-        if (isDark) {
-            listOf(
-                Color.White.copy(alpha = 0.28f),
-                Color.White.copy(alpha = 0.06f)
-            )
-        } else {
-            listOf(
-                Color.White.copy(alpha = 0.95f),
-                Color.White.copy(alpha = 0.32f),
-                AppColors.Calorie.copy(alpha = 0.16f)
-            )
-        }
-    )
-    val shadowAlpha = if (isDark) 0.35f else 0.16f
+    val backdropColor = if (isDark) AppColors.NavBarDark else AppColors.NavBarLight
+    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shadowAlpha = if (isDark) 0.20f else 0.08f
 
     Box(
         modifier = modifier
@@ -151,16 +124,14 @@ fun NoFUDBottomNavBar(
                 .fillMaxWidth()
                 .height(BarHeight)
                 .shadow(
-                    elevation = if (isDark) 22.dp else 18.dp,
+                    elevation = if (isDark) 8.dp else 6.dp,
                     shape = barShape,
                     ambientColor = Color.Black.copy(alpha = shadowAlpha),
                     spotColor = Color.Black.copy(alpha = shadowAlpha)
                 )
                 .clip(barShape)
                 .background(backdropColor)
-                .background(if (isDark) Brush.linearGradient(listOf(Color.Transparent, Color.Transparent)) else Brush.linearGradient(listOf(Color.White.copy(alpha = 0.18f), AppColors.Calorie.copy(alpha = 0.020f))))
-                .background(barSheen)
-                .border(0.8.dp, barBorder, barShape)
+                .border(0.5.dp, borderColor, barShape)
         ) {
             val density = LocalDensity.current
             val haptic = LocalHapticFeedback.current
@@ -215,7 +186,7 @@ fun NoFUDBottomNavBar(
                 label = "pillDragScale"
             )
 
-            // Active-tab pill — the bright glass disc.
+            // Active-tab pill — flat matte highlight.
             ActivePill(
                 tabWidth = tabWidthDp,
                 isDark = isDark,
@@ -299,30 +270,12 @@ fun NoFUDBottomNavBar(
     }
 }
 
-/**
- * Bright "glass-on-glass" pill highlighting the active tab. Layered on top of
- * the bar so it reads like a brighter slab of glass within the larger one.
- */
+/** Flat pill highlighting the active tab within the translucent bar. */
 @Composable
 private fun ActivePill(tabWidth: Dp, isDark: Boolean, modifier: Modifier = Modifier) {
     val pillShape = RoundedCornerShape(PillCorner)
-
-    val fill = if (isDark) Color.White.copy(alpha = 0.16f)
-               else AppColors.Calorie.copy(alpha = 0.14f)
-
-    val sheen = Brush.verticalGradient(
-        colors = if (isDark)
-            listOf(Color.White.copy(alpha = 0.20f), Color.White.copy(alpha = 0.0f))
-        else
-            listOf(Color.White.copy(alpha = 0.55f), Color.White.copy(alpha = 0.10f))
-    )
-
-    val border = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.32f else 0.75f),
-            Color.White.copy(alpha = if (isDark) 0.06f else 0.18f)
-        )
-    )
+    val fill = if (isDark) AppColors.ActivePillDark else AppColors.ActivePillLight
+    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
 
     Box(
         modifier
@@ -331,8 +284,7 @@ private fun ActivePill(tabWidth: Dp, isDark: Boolean, modifier: Modifier = Modif
             .padding(horizontal = PillInsetH, vertical = PillInsetV)
             .clip(pillShape)
             .background(fill)
-            .background(sheen)
-            .border(0.7.dp, border, pillShape)
+            .border(0.5.dp, borderColor, pillShape)
     )
 }
 

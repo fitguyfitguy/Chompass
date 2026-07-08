@@ -2,6 +2,7 @@ package org.codeberg.fitguy.nofud.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -34,15 +35,13 @@ fun UnitToggle(
     modifier: Modifier = Modifier
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val trackColor = if (isDark) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-    } else {
-        Color(0xFFE5DAD3).copy(alpha = 0.88f)
-    }
+    val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(22.dp))
             .background(trackColor)
+            .border(0.5.dp, trackBorder, RoundedCornerShape(22.dp))
             .padding(4.dp)
     ) {
         Row {

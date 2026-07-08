@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -45,46 +46,56 @@ import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
 @Composable
+fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
+fun translucentFill(isDark: Boolean): Color =
+    if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+
+fun hairlineBorder(isDark: Boolean): Color =
+    if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+
+fun Modifier.fudTranslucentSurface(
+    shape: Shape,
+    elevated: Boolean = true,
+    isDark: Boolean = false
+): Modifier {
+    val fill = translucentFill(isDark)
+    val borderColor = hairlineBorder(isDark)
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.20f) else Color.Black.copy(alpha = 0.06f)
+    val elevation = if (elevated) (if (isDark) 8.dp else 4.dp) else 0.dp
+    return this
+        .then(
+            if (elevated) {
+                Modifier.shadow(
+                    elevation = elevation,
+                    shape = shape,
+                    ambientColor = shadowColor,
+                    spotColor = shadowColor
+                )
+            } else {
+                Modifier
+            }
+        )
+        .clip(shape)
+        .background(fill)
+        .border(0.5.dp, borderColor, shape)
+}
+
+@Composable
 fun FudGlassSurface(
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 24.dp,
+    cornerRadius: Dp = 20.dp,
     padding: Dp = 16.dp,
     contentAlignment: Alignment = Alignment.TopStart,
+    elevated: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val shape = RoundedCornerShape(cornerRadius)
-    val baseColor = if (isDark) Color(0xFF17171B).copy(alpha = 0.84f)
-                    else Color(0xFFFAF2EC).copy(alpha = 0.98f)
-    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.28f)
-                      else Color.Black.copy(alpha = 0.11f)
-    val sheen = Brush.verticalGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.070f else 0.34f),
-            Color.White.copy(alpha = if (isDark) 0.018f else 0.08f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.026f else 0.045f)
-        )
-    )
-    val border = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.18f else 0.78f),
-            Color.White.copy(alpha = if (isDark) 0.045f else 0.28f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.075f else 0.14f)
-        )
-    )
 
     Box(
         modifier = modifier
-            .shadow(
-                elevation = if (isDark) 14.dp else 10.dp,
-                shape = shape,
-                ambientColor = shadowColor,
-                spotColor = shadowColor
-            )
-            .clip(shape)
-            .background(baseColor)
-            .background(sheen)
-            .border(0.8.dp, border, shape)
+            .fudTranslucentSurface(shape, elevated = elevated, isDark = isDark)
             .padding(padding),
         contentAlignment = contentAlignment,
         content = content
@@ -94,7 +105,7 @@ fun FudGlassSurface(
 @Composable
 fun FudGlassColumn(
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 24.dp,
+    cornerRadius: Dp = 20.dp,
     padding: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -147,26 +158,10 @@ fun FudGlassTextField(
         fontWeight = FontWeight.Medium
     )
 ) {
-    val shape = RoundedCornerShape(18.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val fieldFill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.38f)
-    } else {
-        Color(0xFFEDE3DD).copy(alpha = 0.72f)
-    }
-    val fieldSheen = Brush.verticalGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.09f else 0.24f),
-            Color.White.copy(alpha = if (isDark) 0.02f else 0.06f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.025f else 0.040f)
-        )
-    )
-    val fieldBorder = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.16f else 0.62f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.09f else 0.14f)
-        )
-    )
+    val shape = RoundedCornerShape(14.dp)
+    val isDark = isDarkTheme()
+    val fieldFill = if (isDark) AppColors.TranslucentFieldDark else AppColors.TranslucentFieldLight
+    val borderColor = hairlineBorder(isDark)
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
@@ -183,8 +178,7 @@ fun FudGlassTextField(
             .heightIn(min = if (singleLine) 52.dp else 118.dp)
             .clip(shape)
             .background(fieldFill)
-            .background(fieldSheen)
-            .border(0.7.dp, fieldBorder, shape)
+            .border(0.5.dp, borderColor, shape)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         decorationBox = { inner ->
             Box(
@@ -219,7 +213,7 @@ fun FudGlassDialog(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            cornerRadius = 28.dp,
+            cornerRadius = 20.dp,
             padding = 20.dp
         ) {
             Column(
@@ -252,7 +246,7 @@ fun FudGlassPrimaryButton(
     Row(
         modifier
             .height(height)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(brush)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 18.dp),
@@ -274,23 +268,13 @@ fun FudGlassTextButton(
     modifier: Modifier = Modifier,
     color: Color = AppColors.Calorie
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val shape = RoundedCornerShape(14.dp)
-    val fill = if (isDark) {
-        Color.White.copy(alpha = 0.035f)
-    } else {
-        Color(0xFFEDE3DD).copy(alpha = 0.42f)
-    }
-    val border = if (isDark) {
-        Color.White.copy(alpha = 0.08f)
-    } else {
-        Color.White.copy(alpha = 0.38f)
-    }
+    val isDark = isDarkTheme()
+    val shape = RoundedCornerShape(12.dp)
+    val borderColor = hairlineBorder(isDark)
     Box(
-        modifier
+        modifier = modifier
             .clip(shape)
-            .background(fill)
-            .border(0.6.dp, border, shape)
+            .border(0.5.dp, borderColor, shape)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center

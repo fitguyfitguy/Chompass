@@ -1209,6 +1209,7 @@ private fun FoodRow(
     isFavorite: Boolean = false,
     rowShape: RoundedCornerShape = RoundedCornerShape(22.dp)
 ) {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val ctx = LocalContext.current
     val timeFmt = DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.US).withZone(ZoneId.systemDefault())
     val container = (ctx.applicationContext as org.codeberg.fitguy.nofud.NoFUDApp).container
@@ -1221,17 +1222,10 @@ private fun FoodRow(
         Modifier
             .fillMaxWidth()
             .clip(rowShape)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.86f))
-            .background(AppColors.Calorie.copy(alpha = 0.025f))
+            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
             .border(
-                0.7.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.14f),
-                        Color.White.copy(alpha = 0.035f),
-                        AppColors.Calorie.copy(alpha = 0.07f)
-                    )
-                ),
+                0.5.dp,
+                if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
                 rowShape
             )
             .padding(horizontal = 14.dp, vertical = 12.dp),

@@ -128,20 +128,8 @@ private fun SheetToolbarPill(
     } else {
         Modifier
             .clip(shape)
-            .background(if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f) else Color(0xFFEDE3DD).copy(alpha = 0.82f))
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.08f else 0.24f),
-                        Color.White.copy(alpha = if (isDark) 0.02f else 0.06f)
-                    )
-                )
-            )
-            .border(
-                0.7.dp,
-                Color.White.copy(alpha = if (isDark) 0.10f else 0.48f),
-                shape
-            )
+            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, shape)
     }
     Box(
         modifier
@@ -176,29 +164,16 @@ internal fun SheetPillRow(
     val shape = RoundedCornerShape(24.dp)
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val rowFill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.38f)
+        AppColors.TranslucentSurfaceDark
     } else {
-        Color(0xFFE9DCD5).copy(alpha = 0.82f)
+        AppColors.TranslucentSurfaceLight
     }
-    val rowSheen = Brush.verticalGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.075f else 0.18f),
-            Color.White.copy(alpha = if (isDark) 0.018f else 0.04f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.022f else 0.060f)
-        )
-    )
-    val rowBorder = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.14f else 0.50f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.07f else 0.18f)
-        )
-    )
+    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     val base = Modifier
         .fillMaxWidth()
         .clip(shape)
         .background(rowFill)
-        .background(rowSheen)
-        .border(0.7.dp, rowBorder, shape)
+        .border(0.5.dp, rowBorder, shape)
     val withClick = if (onClick != null) base.clickable(onClick = onClick) else base
     Row(
         withClick.padding(horizontal = 18.dp, vertical = 15.dp),
@@ -212,30 +187,17 @@ internal fun SheetPillCard(content: @Composable ColumnScope.() -> Unit) {
     val shape = RoundedCornerShape(24.dp)
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val cardFill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.38f)
+        AppColors.TranslucentSurfaceDark
     } else {
-        Color(0xFFE9DCD5).copy(alpha = 0.82f)
+        AppColors.TranslucentSurfaceLight
     }
-    val cardSheen = Brush.verticalGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.075f else 0.18f),
-            Color.White.copy(alpha = if (isDark) 0.018f else 0.04f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.022f else 0.060f)
-        )
-    )
-    val cardBorder = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.14f else 0.50f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.07f else 0.18f)
-        )
-    )
+    val cardBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Column(
         Modifier
             .fillMaxWidth()
             .clip(shape)
             .background(cardFill)
-            .background(cardSheen)
-            .border(0.7.dp, cardBorder, shape)
+            .border(0.5.dp, cardBorder, shape)
             .padding(vertical = 4.dp),
         content = content
     )
@@ -456,40 +418,11 @@ internal fun SheetGlassDropdownMenu(
     menuWidth: Dp? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(22.dp)
+    val shape = RoundedCornerShape(18.dp)
     val sizedModifier = if (menuWidth != null) modifier.width(menuWidth) else modifier
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val menuContainer = if (isDark) Color(0xF2141416) else Color(0xFFFAF3EE).copy(alpha = 0.98f)
-    val menuSheen = Brush.verticalGradient(
-        colors = if (isDark) {
-            listOf(
-                Color.White.copy(alpha = 0.045f),
-                Color.White.copy(alpha = 0.015f),
-                AppColors.Calorie.copy(alpha = 0.025f)
-            )
-        } else {
-            listOf(
-                Color.White.copy(alpha = 0.70f),
-                Color.White.copy(alpha = 0.24f),
-                AppColors.Calorie.copy(alpha = 0.040f)
-            )
-        }
-    )
-    val menuBorder = Brush.linearGradient(
-        colors = if (isDark) {
-            listOf(
-                Color.White.copy(alpha = 0.18f),
-                Color.White.copy(alpha = 0.055f),
-                AppColors.Calorie.copy(alpha = 0.08f)
-            )
-        } else {
-            listOf(
-                Color.White.copy(alpha = 0.95f),
-                Color.White.copy(alpha = 0.40f),
-                AppColors.Calorie.copy(alpha = 0.14f)
-            )
-        }
-    )
+    val menuContainer = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
 
     DropdownMenu(
         expanded = expanded,
@@ -499,8 +432,7 @@ internal fun SheetGlassDropdownMenu(
         tonalElevation = 0.dp,
         shadowElevation = 0.dp,
         modifier = sizedModifier
-            .background(menuSheen, shape)
-            .border(0.8.dp, menuBorder, shape)
+            .border(0.5.dp, borderColor, shape)
             .padding(vertical = 5.dp),
         content = content
     )

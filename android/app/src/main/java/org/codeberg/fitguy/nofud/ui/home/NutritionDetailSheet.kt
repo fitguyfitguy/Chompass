@@ -310,26 +310,13 @@ private fun HomeTopNutrientPickerDialog(
                         .clip(shape)
                         .background(
                             if (checked) AppColors.Calorie.copy(alpha = 0.11f)
-                            else if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.36f)
-                            else Color(0xFFEDE3DD).copy(alpha = 0.76f)
-                        )
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.White.copy(alpha = if (isDark) 0.08f else 0.18f),
-                                    Color.White.copy(alpha = if (isDark) 0.02f else 0.04f),
-                                    AppColors.Calorie.copy(alpha = if (checked) 0.065f else if (isDark) 0.025f else 0.050f)
-                                )
-                            )
+                            else if (isDark) AppColors.TranslucentSurfaceDark
+                            else AppColors.TranslucentSurfaceLight
                         )
                         .border(
-                            0.7.dp,
-                            Brush.linearGradient(
-                                listOf(
-                                    Color.White.copy(alpha = if (isDark) 0.16f else 0.46f),
-                                    AppColors.Calorie.copy(alpha = if (checked) 0.22f else if (isDark) 0.08f else 0.16f)
-                                )
-                            ),
+                            0.5.dp,
+                            if (checked) AppColors.Calorie.copy(alpha = 0.22f)
+                            else if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
                             shape
                         )
                         .clickable { toggle(nutrient) }

@@ -93,6 +93,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -350,11 +351,12 @@ fun CoachScreen(container: AppContainer) {
 
 /**
  * Verbatim port of `emptyState` in ChatView.swift.
- * 108dp glassy disc with bubble.left.and.bubble.right.fill (44sp) icon,
+ * 108dp translucent disc with bubble.left.and.bubble.right.fill (44sp) icon,
  * "Ask your Coach" title (rounded title2 semibold), subtitle.
  */
 @Composable
 private fun EmptyState(modifier: Modifier = Modifier) {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -364,20 +366,14 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             Modifier
                 .size(108.dp)
                 .shadow(
-                    elevation = 16.dp,
+                    elevation = if (isDark) 10.dp else 6.dp,
                     shape = CircleShape,
-                    ambientColor = AppColors.Calorie.copy(alpha = 0.18f),
-                    spotColor = AppColors.Calorie.copy(alpha = 0.18f)
+                    ambientColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f),
+                    spotColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f)
                 )
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                .border(
-                    0.8.dp,
-                    Brush.linearGradient(
-                        listOf(Color.White.copy(alpha = 0.35f), Color.White.copy(alpha = 0.05f))
-                    ),
-                    CircleShape
-                ),
+                .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+                .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -412,6 +408,7 @@ private fun MessageList(
     listState: androidx.compose.foundation.lazy.LazyListState,
     modifier: Modifier = Modifier
 ) {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth(),
@@ -429,12 +426,8 @@ private fun MessageList(
                     Box(
                         Modifier
                             .clip(RoundedCornerShape(18.dp))
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                            .border(
-                                0.5.dp,
-                                Color.White.copy(alpha = 0.15f),
-                                RoundedCornerShape(18.dp)
-                            )
+                            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+                            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, RoundedCornerShape(18.dp))
                             .padding(horizontal = 14.dp, vertical = 10.dp)
                     ) { TypingIndicator() }
                     Spacer(Modifier.weight(1f))
@@ -522,16 +515,17 @@ private fun MessageBubble(msg: ChatMessage) {
     }
 }
 
-/** 26dp glassy disc with gradient sparkles icon. Verbatim port of `assistantBadge`. */
+/** 26dp translucent disc with gradient sparkles icon. Verbatim port of `assistantBadge`. */
 @Composable
 private fun AssistantBadge() {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     Box(
         Modifier
             .padding(top = 8.dp)
             .size(26.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-            .border(0.5.dp, Color.White.copy(alpha = 0.18f), CircleShape),
+            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -548,7 +542,7 @@ private fun AssistantBadge() {
  *   .font(.system(.body, design: .rounded))            -> 17sp
  *   .padding(.horizontal, 16).padding(.vertical, 11)    -> same
  *   user background = LinearGradient(calorieGradient)
- *   assistant background = ultraThinMaterial + Calorie 0.035 tint
+ *   assistant background = translucent surface + subtle Calorie tint
  *   stroke = LinearGradient white 0.45->0.05 user / 0.22->0.04 assistant
  *   user has top white 0.35->0 highlight (fakes .blendMode(.plusLighter))
  *   shadow user: Calorie 0.28, radius 10, y 6
@@ -557,14 +551,16 @@ private fun AssistantBadge() {
 @Composable
 private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: String? = null) {
     val shape = RoundedCornerShape(20.dp)
-    val borderBrush = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isUser) 0.45f else 0.22f),
-            Color.White.copy(alpha = if (isUser) 0.05f else 0.04f)
-        )
-    )
-    val shadowElevation = if (isUser) 10.dp else 6.dp
-    val shadowColor = if (isUser) AppColors.Calorie.copy(alpha = 0.28f) else Color.Black.copy(alpha = 0.12f)
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val borderColor = if (isUser) {
+        AppColors.Calorie.copy(alpha = 0.24f)
+    } else if (isDark) {
+        AppColors.HairlineBorderDark
+    } else {
+        AppColors.HairlineBorderLight
+    }
+    val shadowElevation = if (isUser) 8.dp else 4.dp
+    val shadowColor = if (isUser) AppColors.Calorie.copy(alpha = 0.20f) else Color.Black.copy(alpha = 0.10f)
 
     Box(
         modifier = Modifier
@@ -581,11 +577,10 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
                     Modifier.background(AppColors.CalorieGradient)
                 } else {
                     Modifier
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                        .background(AppColors.Calorie.copy(alpha = 0.035f))
+                        .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
                 }
             )
-            .border(0.7.dp, borderBrush, shape)
+            .border(0.5.dp, borderColor, shape)
     ) {
         if (isUser) {
             // Top white highlight — fakes SwiftUI .blendMode(.plusLighter).
@@ -644,7 +639,7 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
 /**
  * Horizontal scrolling chips. Verbatim port of `promptChips`.
  *   ScrollView(.horizontal) HStack spacing 8
- *     Capsule (ultraThinMaterial + Calorie 0.10 fill + Calorie 0.35->0.10 stroke)
+ *     Capsule (translucent surface + subtle accent tint + hairline stroke)
  *     padding 14h × 9v, footnote rounded medium, calorie text
  */
 @Composable
@@ -661,18 +656,13 @@ private fun PromptChipRow(chips: List<String>, enabled: Boolean, onTap: (String)
 @Composable
 private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) {
     val shape = RoundedCornerShape(20.dp)
-    val strokeBrush = Brush.linearGradient(
-        listOf(
-            AppColors.Calorie.copy(alpha = 0.35f),
-            AppColors.Calorie.copy(alpha = 0.10f)
-        )
-    )
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Box(
         Modifier
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-            .background(AppColors.Calorie.copy(alpha = 0.10f))
-            .border(0.6.dp, strokeBrush, shape)
+            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .border(0.5.dp, borderColor, shape)
             .clickable(enabled = enabled) { onTap(text) }
             .padding(horizontal = 14.dp, vertical = 9.dp)
     ) {
@@ -688,7 +678,7 @@ private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) 
 /**
  * Capsule input bar. Verbatim port of `inputBar`.
  *   capsule containing TextField + 34dp gradient send button
- *   ultraThinMaterial fill + glassy stroke + drop shadow
+ *   translucent fill + hairline stroke + soft shadow
  *   send: arrow.up icon, 16sp bold, white-on-gradient when canSend, gray otherwise
  */
 @Composable
@@ -705,6 +695,7 @@ private fun InputBar(
 ) {
     val canSend = !sending && (value.trim().isNotEmpty() || attachedImageBytes != null)
     val capsule = RoundedCornerShape(28.dp)
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     Column(
         modifier = Modifier
@@ -712,20 +703,14 @@ private fun InputBar(
             .padding(top = 4.dp, bottom = 10.dp)
             .fillMaxWidth()
             .shadow(
-                elevation = 14.dp,
+                elevation = if (isDark) 10.dp else 6.dp,
                 shape = capsule,
-                ambientColor = Color.Black.copy(alpha = 0.18f),
-                spotColor = Color.Black.copy(alpha = 0.18f)
+                ambientColor = Color.Black.copy(alpha = if (isDark) 0.16f else 0.08f),
+                spotColor = Color.Black.copy(alpha = if (isDark) 0.16f else 0.08f)
             )
             .clip(capsule)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-            .border(
-                0.8.dp,
-                Brush.linearGradient(
-                    listOf(Color.White.copy(alpha = 0.25f), Color.White.copy(alpha = 0.05f))
-                ),
-                capsule
-            )
+            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, capsule)
             .padding(start = 4.dp, end = 5.dp, top = 4.dp, bottom = 4.dp),
     ) {
         attachedImageBytes?.let { bytes ->

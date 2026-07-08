@@ -208,47 +208,15 @@ fun DateWheelPicker(
 private fun WheelSelectionHighlight(modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(14.dp)
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val fill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
-    } else {
-        Color(0xFFE2D6CF).copy(alpha = 0.96f)
-    }
-    val sheen = Brush.verticalGradient(
-        colors = if (isDark) {
-            listOf(
-                Color.White.copy(alpha = 0.10f),
-                Color.White.copy(alpha = 0.025f),
-                AppColors.Calorie.copy(alpha = 0.045f)
-            )
-        } else {
-            listOf(
-                Color.White.copy(alpha = 0.22f),
-                Color.White.copy(alpha = 0.06f),
-                AppColors.Calorie.copy(alpha = 0.070f)
-            )
-        }
-    )
-    val stroke = Brush.linearGradient(
-        colors = if (isDark) {
-            listOf(
-                Color.White.copy(alpha = 0.18f),
-                AppColors.Calorie.copy(alpha = 0.14f)
-            )
-        } else {
-            listOf(
-                Color.White.copy(alpha = 0.50f),
-                AppColors.Calorie.copy(alpha = 0.22f)
-            )
-        }
-    )
+    val fill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val stroke = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Box(
         modifier
             .fillMaxWidth()
             .height(ITEM_HEIGHT)
             .clip(shape)
             .background(fill)
-            .background(sheen)
-            .border(0.7.dp, stroke, shape)
+            .border(0.5.dp, stroke, shape)
     )
 }
 

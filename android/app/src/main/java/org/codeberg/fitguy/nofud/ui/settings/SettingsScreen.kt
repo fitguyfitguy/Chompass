@@ -1146,7 +1146,7 @@ fun OptionalNutrientGoalsScreen(
 /**
  * Port of iOS CalculationMethodsView. Documents every formula Fud AI uses as the reference its AI
  * goal calculation starts from (BMR, TDEE, calorie target, macro split) plus per-meal estimates,
- * with peer-reviewed sources. Styled to match the rest of Android Settings (glass cards, back row,
+ * with peer-reviewed sources. Styled to match the rest of Android Settings (translucent cards, back row,
  * 28sp title). Reachable from Settings → Goals & Nutrition → Calculation Methods.
  */
 @Composable

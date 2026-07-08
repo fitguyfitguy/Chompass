@@ -44,7 +44,7 @@ import org.codeberg.fitguy.nofud.ui.theme.AppColors
 /**
  * Polished selection bottom sheet shared by Settings and Onboarding so the two stay
  * pixel-identical: rounded top corners, the app's surface tint, rounded-card option rows
- * with a glass sheen + accent border, and an accent checkmark on the selected item.
+ * with a matte translucent surface, subtle border, and accent checkmark on selection.
  * Optionally accepts a free-form custom value (e.g. a custom model ID).
  *
  * Mirrors the styling of SettingsScreen's internal ListSheet.
@@ -132,26 +132,13 @@ private fun OptionPickerRow(
             .clip(shape)
             .background(
                 if (isSelected) AppColors.Calorie.copy(alpha = 0.13f)
-                else if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.38f)
-                else Color(0xFFEDE3DD).copy(alpha = 0.76f)
-            )
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.08f else 0.18f),
-                        Color.White.copy(alpha = if (isDark) 0.02f else 0.04f),
-                        AppColors.Calorie.copy(alpha = if (isSelected) 0.065f else if (isDark) 0.025f else 0.050f)
-                    )
-                )
+                else if (isDark) AppColors.TranslucentSurfaceDark
+                else AppColors.TranslucentSurfaceLight
             )
             .border(
-                0.7.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = if (isDark) 0.16f else 0.46f),
-                        AppColors.Calorie.copy(alpha = if (isSelected) 0.22f else if (isDark) 0.08f else 0.16f)
-                    )
-                ),
+                0.5.dp,
+                if (isSelected) AppColors.Calorie.copy(alpha = 0.22f)
+                else if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
                 shape
             )
             .clickable(onClick = onClick)

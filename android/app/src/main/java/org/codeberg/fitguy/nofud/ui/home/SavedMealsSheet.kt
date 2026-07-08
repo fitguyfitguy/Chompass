@@ -301,16 +301,14 @@ fun SavedMealsSheet(
 @Composable
 private fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val trackColor = if (isDark) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    } else {
-        Color(0xFFE5DAD3).copy(alpha = 0.88f)
-    }
+    val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Row(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(trackColor)
+            .border(0.5.dp, trackBorder, RoundedCornerShape(10.dp))
             .padding(2.dp)
     ) {
         for (t in SavedTab.values()) {
@@ -596,33 +594,15 @@ private fun SavedMealRow(
     trailing: (@Composable () -> Unit)? = null
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val rowFill = if (isDark) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.50f)
-    } else {
-        Color(0xFFF0E1DB).copy(alpha = 0.98f)
-    }
-    val rowSheen = Brush.verticalGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.13f else 0.18f),
-            Color.White.copy(alpha = if (isDark) 0.035f else 0.04f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.06f else 0.060f)
-        )
-    )
-    val rowBorder = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = if (isDark) 0.13f else 0.46f),
-            Color.White.copy(alpha = if (isDark) 0.035f else 0.12f),
-            AppColors.Calorie.copy(alpha = if (isDark) 0.06f else 0.18f)
-        )
-    )
+    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
             .background(rowFill)
-            .background(rowSheen)
             .border(
-                0.6.dp,
+                0.5.dp,
                 rowBorder,
                 RoundedCornerShape(18.dp)
             )

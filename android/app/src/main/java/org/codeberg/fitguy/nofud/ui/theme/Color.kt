@@ -69,7 +69,7 @@ object AppColors {
     val CalorieGradient: Brush
         get() = Brush.linearGradient(listOf(CalorieStart, CalorieEnd))
 
-    val AppBackgroundLight = Color(0xFFF3ECE6)
+    val AppBackgroundLight = Color(0xFFF0F0F3)
     val AppBackgroundDark = Color(0xFF0C0C0C)
 
     val AppCardLight = Color(0xFFFFFFFF)
@@ -83,4 +83,20 @@ object AppColors {
 
     val DividerLight = Color(0xFFE5E5EA)
     val DividerDark = Color(0xFF2C2C2E)
+
+    // Cool-minimal translucent surface tokens (replaces glass sheen stacks).
+    val TranslucentSurfaceLight = Color(0xFFF5F5F7).copy(alpha = 0.78f)
+    val TranslucentSurfaceDark = Color(0xFF1A1A1E).copy(alpha = 0.80f)
+
+    val TranslucentFieldLight = Color(0xFFE8E8ED).copy(alpha = 0.65f)
+    val TranslucentFieldDark = Color(0xFF2C2C2E).copy(alpha = 0.55f)
+
+    val HairlineBorderLight = Color(0xFF3C3C43).copy(alpha = 0.18f)
+    val HairlineBorderDark = Color(0xFFEBEBF5).copy(alpha = 0.14f)
+
+    val NavBarLight = Color(0xFFF5F5F7).copy(alpha = 0.80f)
+    val NavBarDark = Color(0xFF1A1A1E).copy(alpha = 0.85f)
+
+    val ActivePillLight = Color.White.copy(alpha = 0.55f)
+    val ActivePillDark = Color(0xFF2C2C2E).copy(alpha = 0.72f)
 }
