@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.PathEffect
@@ -266,6 +265,7 @@ fun HomeScreen(container: AppContainer) {
     val today = LocalDate.now()
     val selectedDate = ui.date
     val isToday = selectedDate == today
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val mealGroups = remember(ui.todayEntries, ui.foodLogSortOrder) {
         foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
     }
@@ -446,15 +446,26 @@ fun HomeScreen(container: AppContainer) {
             Box(
                 modifier = Modifier
                     .size(60.dp)
+                    .shadow(
+                        elevation = if (isDark) 10.dp else 6.dp,
+                        shape = CircleShape,
+                        ambientColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f),
+                        spotColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f)
+                    )
                     .clip(CircleShape)
-                    .background(AppColors.Calorie)
+                    .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+                    .border(
+                        0.5.dp,
+                        if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
+                        CircleShape
+                    )
                     .clickable { showAddFoodSheet = true },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Filled.Add,
                     contentDescription = stringResource(R.string.cd_add_food),
-                    tint = Color.White,
+                    tint = AppColors.Calorie,
                     modifier = Modifier.size(30.dp)
                 )
             }
