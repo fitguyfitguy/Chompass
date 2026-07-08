@@ -4,6 +4,17 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-08
+
+### Added
+
+- Migration and export flow improvements for smoother data portability
+
+### Changed
+
+- README install guidance refined, including architecture-aware APK selection notes
+- README feature/platform status copy clarified and package-size context improved
+
 ## [1.3.0] - 2026-07-08
 
 ### Added
