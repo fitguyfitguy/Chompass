@@ -106,6 +106,21 @@ class FoodRepository(
         prefs.setFoodEntries(entries)
     }
 
+    /**
+     * Bulk-import diary entries into the existing log in a single write.
+     * We preserve current rows and dedupe only by id to avoid clobbering
+     * user edits that share similar nutrition values.
+     */
+    suspend fun importEntries(entries: List<FoodEntry>): Int {
+        if (entries.isEmpty()) return 0
+        val current = prefs.foodEntries.first()
+        val existingIds = current.asSequence().map { it.id }.toHashSet()
+        val incoming = entries.filter { existingIds.add(it.id) }
+        if (incoming.isEmpty()) return 0
+        prefs.setFoodEntries((current + incoming).sortedBy { it.timestamp })
+        return incoming.size
+    }
+
     suspend fun clear() {
         prefs.setFoodEntries(emptyList())
     }

@@ -257,37 +257,42 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
-            val text = runCatching {
-                activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-            }.getOrNull()
-            if (text.isNullOrBlank()) {
-                importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
-                return@launch
-            }
-            when (val result = DiaryImporter.parse(text)) {
-                is DiaryImportResult.Success -> {
-                    if (result.entries.isEmpty()) {
-                        importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
-                        return@launch
-                    }
-                    result.entries.forEach { container.foodRepository.addEntry(it) }
-                    importDiaryMessage = activityContext.getString(
-                        R.string.import_diary_success_count,
-                        result.entries.size
-                    )
-                }
-                DiaryImportResult.EmptyPayload -> {
+            runCatching {
+                val text = activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                if (text.isNullOrBlank()) {
                     importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                    return@runCatching
                 }
-                DiaryImportResult.UnsupportedFormat -> {
-                    importDiaryMessage = activityContext.getString(R.string.import_diary_unsupported)
+                when (val result = DiaryImporter.parse(text)) {
+                    is DiaryImportResult.Success -> {
+                        val imported = container.foodRepository.importEntries(result.entries)
+                        if (imported <= 0) {
+                            importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                            return@runCatching
+                        }
+                        importDiaryMessage = activityContext.getString(
+                            R.string.import_diary_success_count,
+                            imported
+                        )
+                    }
+                    DiaryImportResult.EmptyPayload -> {
+                        importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                    }
+                    DiaryImportResult.UnsupportedFormat -> {
+                        importDiaryMessage = activityContext.getString(R.string.import_diary_unsupported)
+                    }
+                    is DiaryImportResult.Malformed -> {
+                        importDiaryMessage = activityContext.getString(
+                            R.string.import_diary_malformed,
+                            result.reason
+                        )
+                    }
                 }
-                is DiaryImportResult.Malformed -> {
-                    importDiaryMessage = activityContext.getString(
-                        R.string.import_diary_malformed,
-                        result.reason
-                    )
-                }
+            }.onFailure { t ->
+                importDiaryMessage = activityContext.getString(
+                    R.string.import_diary_failed,
+                    t.localizedMessage ?: "unknown error"
+                )
             }
         }
     }
