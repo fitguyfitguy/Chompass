@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,6 +65,8 @@ import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import kotlin.math.roundToInt
 import java.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * First-time review sheet shown after photo / text / voice analysis returns
@@ -92,9 +95,7 @@ fun FoodResultSheet(
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val bitmap = remember(imageBytes) {
-        imageBytes?.let { android.graphics.BitmapFactory.decodeByteArray(it, 0, it.size) }
-    }
+    val bitmap = rememberDecodedBitmap(imageBytes)
     val state = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { it != SheetValue.Hidden }
@@ -801,3 +802,17 @@ private fun WhatIfImpactRow(
 }
 
 private fun whatIfGrams(value: Double): String = "${MacroValueFormatter.string(value)}g"
+
+@Composable
+private fun rememberDecodedBitmap(bytes: ByteArray?): android.graphics.Bitmap? {
+    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = bytes) {
+        value = if (bytes == null) {
+            null
+        } else {
+            withContext(Dispatchers.Default) {
+                android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }
+        }
+    }
+    return state.value
+}

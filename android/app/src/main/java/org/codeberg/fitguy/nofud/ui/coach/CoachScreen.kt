@@ -73,6 +73,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -119,6 +120,8 @@ import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import java.io.ByteArrayOutputStream
 import java.util.Base64
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Verbatim port of struct ChatView in
@@ -600,7 +603,7 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
         }
         Column(Modifier.padding(horizontal = 16.dp, vertical = 11.dp)) {
             attachmentImageBase64?.let { encoded ->
-                val bitmap = remember(encoded) {
+                val bitmap = rememberDecodedBitmap(encoded) {
                     runCatching {
                         val bytes = Base64.getDecoder().decode(encoded)
                         BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
@@ -714,7 +717,7 @@ private fun InputBar(
             .padding(start = 4.dp, end = 5.dp, top = 4.dp, bottom = 4.dp),
     ) {
         attachedImageBytes?.let { bytes ->
-            val bitmap = remember(bytes) { BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
+            val bitmap = rememberDecodedBitmap(bytes) { BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
             if (bitmap != null) {
                 Box(
                     modifier = Modifier
@@ -922,6 +925,14 @@ private fun resizedJpeg(bytes: ByteArray, maxDimension: Int, quality: Int): Byte
         scaled.compress(Bitmap.CompressFormat.JPEG, quality.coerceIn(1, 100), out)
         out.toByteArray()
     }
+}
+
+@Composable
+private fun <K> rememberDecodedBitmap(key: K, decode: () -> Bitmap?): Bitmap? {
+    val state = produceState<Bitmap?>(initialValue = null, key1 = key) {
+        value = withContext(Dispatchers.Default) { decode() }
+    }
+    return state.value
 }
 
 // ── Markdown rendering for Coach replies ────────────────────────────────

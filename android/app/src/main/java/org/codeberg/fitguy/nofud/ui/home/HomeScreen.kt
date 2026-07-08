@@ -46,6 +46,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -106,6 +107,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
@@ -161,6 +163,8 @@ import java.time.temporal.WeekFields
 import java.util.Locale
 import java.util.UUID
 import kotlin.math.roundToInt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -379,8 +383,7 @@ fun HomeScreen(container: AppContainer) {
                             totalFat = group.totalFat
                         )
                     }
-                    items(group.entries, key = { it.id }) { entry ->
-                        val index = group.entries.indexOf(entry)
+                    itemsIndexed(group.entries, key = { _, entry -> entry.id }) { index, entry ->
                         val isFirst = index == 0
                         val isLast = index == group.entries.lastIndex
                         val rowShape = sectionCardShape(isFirst, isLast)
@@ -1504,8 +1507,7 @@ private fun CopyFromDaySheet(
                             }
                         }
                     }
-                    items(group.entries, key = { "copy-entry-${it.id}" }) { entry ->
-                        val index = group.entries.indexOf(entry)
+                    itemsIndexed(group.entries, key = { _, entry -> "copy-entry-${entry.id}" }) { index, entry ->
                         val isFirst = index == 0
                         val isLast = index == group.entries.lastIndex
                         val rowShape = sectionCardShape(isFirst, isLast)
@@ -1552,9 +1554,7 @@ private fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
     // Verbatim port of ios/calorietracker/Views/AnalyzingView.swift:
     //   VStack { (image | text.magnifyingglass) → ProgressView(.large) → "Analyzing your food..." }
     //   filling the screen, opaque background, calorie-pink accents.
-    val bitmap = remember(imageBytes) {
-        imageBytes?.let { android.graphics.BitmapFactory.decodeByteArray(it, 0, it.size) }
-    }
+    val bitmap = rememberDecodedBitmap(imageBytes)
     Box(
         Modifier
             .fillMaxSize()
@@ -1600,6 +1600,20 @@ private fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
             )
         }
     }
+}
+
+@Composable
+private fun rememberDecodedBitmap(bytes: ByteArray?): android.graphics.Bitmap? {
+    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = bytes) {
+        value = if (bytes == null) {
+            null
+        } else {
+            withContext(Dispatchers.Default) {
+                android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }
+        }
+    }
+    return state.value
 }
 
 @Composable

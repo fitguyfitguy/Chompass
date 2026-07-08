@@ -38,3 +38,4 @@ ios/**/xcuserdata/
 NoFUD-*.apk
 SHA256SUMS
 .env.local
+scripts/capture_android_perf_baseline.sh

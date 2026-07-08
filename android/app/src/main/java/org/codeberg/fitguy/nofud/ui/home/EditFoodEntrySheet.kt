@@ -39,6 +39,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,6 +76,8 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Edit page for an existing FoodEntry. Visually identical to [FoodResultSheet]
@@ -314,8 +317,8 @@ fun EditFoodEntrySheet(
             item {
                 val ctx = LocalContext.current
                 val container = (ctx.applicationContext as org.codeberg.fitguy.nofud.NoFUDApp).container
-                val bitmap = remember(currentBaseEntry.imageFilename) {
-                    currentBaseEntry.imageFilename?.let { container.imageStore.load(it) }
+                val bitmap = rememberDecodedBitmap(currentBaseEntry.imageFilename) { filename ->
+                    filename?.let { container.imageStore.load(it) }
                 }
                 Box(
                     Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -608,6 +611,14 @@ fun EditFoodEntrySheet(
             onDismiss = { showTimePicker = false }
         )
     }
+}
+
+@Composable
+private fun <K> rememberDecodedBitmap(key: K, decode: (K) -> android.graphics.Bitmap?): android.graphics.Bitmap? {
+    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = key) {
+        value = withContext(Dispatchers.Default) { decode(key) }
+    }
+    return state.value
 }
 
 @Composable

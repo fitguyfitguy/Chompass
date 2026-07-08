@@ -98,7 +98,7 @@ private const val HEALTH_READ_TYPE_BODY_FAT = "bodyfat"
 class AppContainer(app: NoFUDApp) {
     val appContext = app.applicationContext
     val prefs = PreferencesStore(app)
-    val keyStore = KeyStore(app)
+    val keyStore: KeyStore by lazy(LazyThreadSafetyMode.NONE) { KeyStore(app) }
     val imageStore = FoodImageStore(app)
     val notifications = NotificationService(app)
     val health = HealthConnectManager(app)

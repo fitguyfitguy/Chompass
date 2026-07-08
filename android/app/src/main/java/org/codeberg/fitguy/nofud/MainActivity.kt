@@ -2,6 +2,7 @@ package org.codeberg.fitguy.nofud
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,12 +25,14 @@ import org.codeberg.fitguy.nofud.ui.navigation.NoFUDNavHost
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.theme.NoFUDTheme
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 open class MainActivity : ComponentActivity() {
     // Shared-meal deep link (issue #107). Non-empty -> the confirm sheet is shown over the app.
     private var pendingSharedMeals by mutableStateOf<List<FoodEntry>>(emptyList())
+    private var foregroundSyncJob: Job? = null
+    private var lastForegroundSyncAtMs: Long = 0L
 
     /** Decode a `fudai://add-meal` link (if that's what launched us) into pending meals. */
     private fun handleShareIntent(intent: Intent?) {
@@ -45,7 +48,11 @@ open class MainActivity : ComponentActivity() {
     }
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launch {
+        val now = SystemClock.elapsedRealtime()
+        if (foregroundSyncJob?.isActive == true) return
+        if (now - lastForegroundSyncAtMs < FOREGROUND_SYNC_MIN_INTERVAL_MS) return
+        lastForegroundSyncAtMs = now
+        foregroundSyncJob = lifecycleScope.launch {
             // Adaptive Goals auto-runs the full goal calculation about once a week (Energy Burn,
             // when on, supplies the measured-burn anchor it consumes — separate toggle).
             val container = (application as NoFUDApp).container
@@ -53,6 +60,7 @@ open class MainActivity : ComponentActivity() {
             // Pull any new external weight / body-fat readings (e.g. a Withings scale)
             // from Health Connect into the app on every foreground (issue #91).
             container.syncHealthConnectReads()
+            foregroundSyncJob = null
         }
     }
 
@@ -67,68 +75,68 @@ open class MainActivity : ComponentActivity() {
 
         InAppReview.bind(this)
 
-        // Support --reset-onboarding launch flag (parallel to iOS CLAUDE.md convention).
-        if (intent?.getBooleanExtra("reset_onboarding", false) == true) {
-            runBlocking { (application as NoFUDApp).container.prefs.setOnboardingCompleted(false) }
-            intent.removeExtra("reset_onboarding")
-        }
-
         val container = (application as NoFUDApp).container
+        val app = application as NoFUDApp
         // Dev-only seeders for verifying the Progress tab UI without polluting Health Connect.
         // adb shell am start -n org.codeberg.fitguy.nofud/.MainActivity --ez seed_test_data true
         // adb shell am start -n org.codeberg.fitguy.nofud/.MainActivity --ez restore_real_data true
         // Extras are removed after handling so Activity.recreate() (used by Delete All
         // Data) doesn't re-fire the same flag on the next onCreate.
-        if (intent?.getBooleanExtra("seed_test_data", false) == true) {
-            runBlocking { container.testDataSeeder.seedYear() }
-            intent.removeExtra("seed_test_data")
-        }
+        val shouldResetOnboarding = intent?.getBooleanExtra("reset_onboarding", false) == true
+        val shouldSeedTestData = intent?.getBooleanExtra("seed_test_data", false) == true
         // Focused 30-day weight + body-fat seeder for verifying the v3.2 Body
         // Fat chart + segmented Progress toggle without polluting food data.
         // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_body_metrics true
-        if (intent?.getBooleanExtra("seed_body_metrics", false) == true) {
-            runBlocking { container.testDataSeeder.seedBodyMetrics() }
-            intent.removeExtra("seed_body_metrics")
-        }
+        val shouldSeedBodyMetrics = intent?.getBooleanExtra("seed_body_metrics", false) == true
         // Long-range variant: 2 years of weight + body-fat for the 1Y / All
         // ranges and the history lists.
         // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_body_metrics_2y true
-        if (intent?.getBooleanExtra("seed_body_metrics_2y", false) == true) {
-            runBlocking { container.testDataSeeder.seedTwoYearsBodyMetrics() }
-            intent.removeExtra("seed_body_metrics_2y")
-        }
+        val shouldSeedBodyMetricsTwoYears = intent?.getBooleanExtra("seed_body_metrics_2y", false) == true
         // Focused keto-settings seeder for Diet Mode and carb target debugging.
         // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_keto_settings true
-        if (intent?.getBooleanExtra("seed_keto_settings", false) == true) {
-            runBlocking { container.testDataSeeder.seedKetoSettings() }
-            intent.removeExtra("seed_keto_settings")
-        }
-        if (intent?.getBooleanExtra("restore_real_data", false) == true) {
-            runBlocking { container.testDataSeeder.restore() }
-            intent.removeExtra("restore_real_data")
-        }
+        val shouldSeedKetoSettings = intent?.getBooleanExtra("seed_keto_settings", false) == true
+        val shouldRestoreRealData = intent?.getBooleanExtra("restore_real_data", false) == true
+        if (shouldResetOnboarding) intent?.removeExtra("reset_onboarding")
+        if (shouldSeedTestData) intent?.removeExtra("seed_test_data")
+        if (shouldSeedBodyMetrics) intent?.removeExtra("seed_body_metrics")
+        if (shouldSeedBodyMetricsTwoYears) intent?.removeExtra("seed_body_metrics_2y")
+        if (shouldSeedKetoSettings) intent?.removeExtra("seed_keto_settings")
+        if (shouldRestoreRealData) intent?.removeExtra("restore_real_data")
         // A fudai://add-meal link may have cold-launched us.
         handleShareIntent(intent)
-
-        val startOnboarding = runBlocking { !container.prefs.hasCompletedOnboarding.first() }
-        val initialAppearance = runBlocking { container.prefs.appearanceMode.first() }
-        val initialThemeColorKey = runBlocking { container.prefs.appThemeColor.first() }
+        var startOnboarding by mutableStateOf<Boolean?>(null)
+        var initialAppearance by mutableStateOf("system")
+        var initialThemeColorKey by mutableStateOf(AppThemeColor.DEFAULT_KEY)
 
         // Hold the splash on screen until the saved profile has loaded from
         // DataStore so Home doesn't briefly render its 2000/150/220/70 fallback
         // goal numbers before snapping to the user's real targets. Onboarding
         // doesn't show those numbers, so we let the splash dismiss immediately
         // in that case.
-        var contentReady = startOnboarding
+        var contentReady by mutableStateOf(false)
         splashScreen.setKeepOnScreenCondition { !contentReady }
-        if (!startOnboarding) {
-            lifecycleScope.launch {
-                container.profileRepository.profile.first { it != null }
-                contentReady = true
+        lifecycleScope.launch {
+            if (shouldResetOnboarding) {
+                app.container.prefs.setOnboardingCompleted(false)
             }
+            if (shouldSeedTestData) container.testDataSeeder.seedYear()
+            if (shouldSeedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
+            if (shouldSeedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
+            if (shouldSeedKetoSettings) container.testDataSeeder.seedKetoSettings()
+            if (shouldRestoreRealData) container.testDataSeeder.restore()
+
+            val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
+            initialAppearance = container.prefs.appearanceMode.first()
+            initialThemeColorKey = container.prefs.appThemeColor.first()
+            startOnboarding = resolvedStartOnboarding
+            if (!resolvedStartOnboarding) {
+                container.profileRepository.profile.first { it != null }
+            }
+            contentReady = true
         }
 
         setContent {
+            val resolvedStartOnboarding = startOnboarding ?: return@setContent
             val appearance by container.prefs.appearanceMode.collectAsState(initial = initialAppearance)
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
@@ -143,7 +151,7 @@ open class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NoFUDNavHost(container = container, startOnboarding = startOnboarding)
+                    NoFUDNavHost(container = container, startOnboarding = resolvedStartOnboarding)
 
                     if (pendingSharedMeals.isNotEmpty()) {
                         ImportSharedMealSheet(
@@ -160,5 +168,9 @@ open class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private companion object {
+        const val FOREGROUND_SYNC_MIN_INTERVAL_MS = 60_000L
     }
 }

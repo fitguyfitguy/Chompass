@@ -22,11 +22,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -55,7 +53,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.key
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -360,8 +357,8 @@ private fun <T> SavedList(items: List<T>, row: @Composable (T) -> Unit) {
  *
  * The original drag-to-reorder using long-press + pointerInput was unreliable
  * because the favorites list lives inside a ModalBottomSheet (vertical drag
- * to dismiss) AND a verticalScroll Column — both compete for vertical pointer
- * events and would intermittently steal the drag. The native Android pattern
+ * to dismiss), so full-row drag handles can compete with parent gestures. The
+ * native Android pattern
  * for manual list ordering (used by system Settings for default-app priority,
  * accessibility shortcut order, etc.) is per-row up/down arrow buttons; we
  * use that here.
@@ -374,37 +371,39 @@ private fun FavoritesReorderableList(
     onRemove: (FoodEntry) -> Unit,
     onMove: (Int, Int) -> Unit
 ) {
-    val scrollState = rememberScrollState()
-    Column(
-        Modifier
+    val listState = rememberLazyListState()
+    val lastIndex = favorites.lastIndex
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
             .fillMaxWidth()
             .heightConstraint()
-            .blockSheetDragAtScrollEdges(scrollState)
-            .verticalScroll(scrollState),
+            .blockSheetDragAtLazyListEdges(listState),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        favorites.forEachIndexed { idx, entry ->
-            key(entry.favoriteKey) {
-                FavoriteSwipeToUnfavoriteRow(
+        itemsIndexed(
+            items = favorites,
+            key = { _, entry -> entry.favoriteKey }
+        ) { idx, entry ->
+            FavoriteSwipeToUnfavoriteRow(
+                entry = entry,
+                onUnfavorite = { onRemove(entry) }
+            ) {
+                SavedMealRow(
                     entry = entry,
-                    onUnfavorite = { onRemove(entry) }
-                ) {
-                    SavedMealRow(
-                        entry = entry,
-                        isFavorite = true,
-                        subtitle = null,
-                        imageStore = imageStore,
-                        onClick = { onTap(entry) },
-                        trailing = {
-                            MoveButtons(
-                                canMoveUp = idx > 0,
-                                canMoveDown = idx < favorites.size - 1,
-                                onMoveUp = { onMove(idx, idx - 1) },
-                                onMoveDown = { onMove(idx, idx + 1) }
-                            )
-                        }
-                    )
-                }
+                    isFavorite = true,
+                    subtitle = null,
+                    imageStore = imageStore,
+                    onClick = { onTap(entry) },
+                    trailing = {
+                        MoveButtons(
+                            canMoveUp = idx > 0,
+                            canMoveDown = idx < lastIndex,
+                            onMoveUp = { onMove(idx, idx - 1) },
+                            onMoveDown = { onMove(idx, idx + 1) }
+                        )
+                    }
+                )
             }
         }
     }
@@ -466,29 +465,6 @@ private fun Modifier.blockSheetDragAtLazyListEdges(listState: LazyListState): Mo
                 val shouldBlock =
                     (available.y > 0f && !listState.canScrollBackward) ||
                     (available.y < 0f && !listState.canScrollForward)
-                return if (shouldBlock) Velocity(0f, available.y) else Velocity.Zero
-            }
-        }
-    }
-    return nestedScroll(connection)
-}
-
-@Composable
-private fun Modifier.blockSheetDragAtScrollEdges(scrollState: ScrollState): Modifier {
-    val connection = remember(scrollState) {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (source != NestedScrollSource.UserInput) return Offset.Zero
-                val shouldBlock =
-                    (available.y > 0f && scrollState.value <= 0) ||
-                    (available.y < 0f && scrollState.value >= scrollState.maxValue)
-                return if (shouldBlock) Offset(0f, available.y) else Offset.Zero
-            }
-
-            override suspend fun onPreFling(available: Velocity): Velocity {
-                val shouldBlock =
-                    (available.y > 0f && scrollState.value <= 0) ||
-                    (available.y < 0f && scrollState.value >= scrollState.maxValue)
                 return if (shouldBlock) Velocity(0f, available.y) else Velocity.Zero
             }
         }

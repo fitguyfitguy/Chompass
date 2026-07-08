@@ -175,8 +175,6 @@ import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDRoutes
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import java.util.Locale
 
 private enum class SettingsSheet {
@@ -1507,10 +1505,12 @@ private fun SettingsSheets(
                     onSave = { vm.setApiKey(it); onDismiss() }
                 )
                 SettingsSheet.CUSTOM_BASE_URL -> {
-                    val existing = remember { runBlocking { vm.container.prefs.customBaseUrl(ui.selectedAI).first().orEmpty() } }
+                    val existing by vm.container.prefs
+                        .customBaseUrl(ui.selectedAI)
+                        .collectAsState(initial = "")
                     TextFieldSheet(
                         title = stringResource(R.string.settings_custom_url_title),
-                        initial = existing,
+                        initial = existing.orEmpty(),
                         placeholder = stringResource(R.string.settings_custom_url_placeholder),
                         onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() }
                     )
@@ -1588,10 +1588,12 @@ private fun SettingsSheets(
                     onSave = { vm.setFallbackApiKey(it); onDismiss() }
                 )
                 SettingsSheet.FALLBACK_BASE_URL -> {
-                    val existing = remember { runBlocking { vm.container.prefs.customBaseUrl(ui.fallbackProvider).first().orEmpty() } }
+                    val existing by vm.container.prefs
+                        .customBaseUrl(ui.fallbackProvider)
+                        .collectAsState(initial = "")
                     TextFieldSheet(
                         title = stringResource(R.string.settings_custom_url_title),
-                        initial = existing,
+                        initial = existing.orEmpty(),
                         placeholder = stringResource(R.string.settings_custom_url_placeholder),
                         onSave = { vm.setCustomBaseUrl(ui.fallbackProvider, it); onDismiss() }
                     )
