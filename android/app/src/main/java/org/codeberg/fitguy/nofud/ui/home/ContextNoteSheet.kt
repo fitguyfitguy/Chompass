@@ -57,12 +57,13 @@ import org.codeberg.fitguy.nofud.ui.theme.AppColors
 @Composable
 fun ContextNoteSheet(
     imageBytes: ByteArray,
+    initialNote: String = "",
     onAnalyze: (note: String) -> Unit,
     onAddPhoto: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var note by remember { mutableStateOf("") }
+    var note by remember(initialNote) { mutableStateOf(initialNote) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 

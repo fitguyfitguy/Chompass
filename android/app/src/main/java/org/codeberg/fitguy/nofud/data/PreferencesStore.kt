@@ -16,6 +16,7 @@ import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.PendingFoodAnalysisDraft
+import org.codeberg.fitguy.nofud.models.PendingFoodInputDraft
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
@@ -432,6 +433,23 @@ class PreferencesStore(private val context: Context) {
         }
     }
 
+    // -- Pending food input draft (failed camera+note input) --------------
+    val pendingFoodInputDraft: Flow<PendingFoodInputDraft?> = ds.data.map { prefs ->
+        prefs[Keys.PENDING_FOOD_INPUT_DRAFT]?.let {
+            runCatching { json.decodeFromString<PendingFoodInputDraft>(it) }.getOrNull()
+        }
+    }
+
+    suspend fun setPendingFoodInputDraft(draft: PendingFoodInputDraft?) {
+        ds.edit {
+            if (draft == null) {
+                it.remove(Keys.PENDING_FOOD_INPUT_DRAFT)
+            } else {
+                it[Keys.PENDING_FOOD_INPUT_DRAFT] = json.encodeToString(PendingFoodInputDraft.serializer(), draft)
+            }
+        }
+    }
+
     // -- Weight entries ---------------------------------------------------
     val weightEntries: Flow<List<WeightEntry>> = ds.data.map { prefs ->
         prefs[Keys.WEIGHT_ENTRIES]?.let {
@@ -558,6 +576,7 @@ class PreferencesStore(private val context: Context) {
         val FAVORITE_KEYS = stringPreferencesKey("favorites")
         val FAVORITE_ENTRIES = stringPreferencesKey("favoriteFoodEntries")
         val PENDING_FOOD_ANALYSIS_DRAFT = stringPreferencesKey("pendingFoodAnalysisDraft")
+        val PENDING_FOOD_INPUT_DRAFT = stringPreferencesKey("pendingFoodInputDraft")
         val WEIGHT_ENTRIES = stringPreferencesKey("weightEntries")
         val BODY_FAT_ENTRIES = stringPreferencesKey("bodyFatEntries")
         val BODY_MEASUREMENTS = stringPreferencesKey("bodyMeasurements")

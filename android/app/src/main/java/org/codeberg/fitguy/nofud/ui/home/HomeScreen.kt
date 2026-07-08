@@ -616,10 +616,14 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    // Photo captured or picked → optional note → analyze.
-    pendingNoteImageBytes?.let { bytes ->
+    // Photo captured or picked -> optional note -> analyze.
+    // If a failed camera+note attempt was restored from disk, reuse that image+note.
+    val contextSheetImageBytes = pendingNoteImageBytes ?: ui.pendingInputImageBytes
+    contextSheetImageBytes?.let { bytes ->
+        val isRestoredFailedInput = pendingNoteImageBytes == null
         ContextNoteSheet(
             imageBytes = bytes,
+            initialNote = if (isRestoredFailedInput) ui.pendingInputNote.orEmpty() else "",
             onAnalyze = { note ->
                 pendingNoteImageBytes = null
                 vm.analyzePhotoWithNote(bytes, note)
@@ -627,9 +631,13 @@ fun HomeScreen(container: AppContainer) {
             onAddPhoto = {
                 pendingCameraPairFirstImageBytes = bytes
                 pendingNoteImageBytes = null
+                if (isRestoredFailedInput) vm.dismissFailedInput()
                 openCamera(withSecondPhoto = true)
             },
-            onDismiss = { pendingNoteImageBytes = null }
+            onDismiss = {
+                pendingNoteImageBytes = null
+                if (isRestoredFailedInput) vm.dismissFailedInput()
+            }
         )
     }
 
@@ -663,13 +671,23 @@ fun HomeScreen(container: AppContainer) {
     }
 
     ui.error?.let { err ->
-        FudGlassDialog(onDismissRequest = { vm.dismissPending() }) {
+        val hasRetryableInput = ui.pendingInputImageBytes != null || ui.pendingInputDraftImageFilename != null
+        FudGlassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
-            FudGlassDialogActions(
-                primaryText = stringResource(R.string.action_ok),
-                onPrimary = { vm.dismissPending() }
-            )
+            if (hasRetryableInput) {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_retry),
+                    onPrimary = { vm.retryFailedInput() },
+                    dismissText = stringResource(R.string.action_discard),
+                    onDismiss = { vm.dismissFailedInput() }
+                )
+            } else {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_ok),
+                    onPrimary = { vm.clearError() }
+                )
+            }
         }
     }
 }

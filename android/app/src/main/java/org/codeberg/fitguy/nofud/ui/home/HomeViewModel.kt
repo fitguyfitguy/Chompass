@@ -11,6 +11,7 @@ import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.PendingFoodAnalysisDraft
+import org.codeberg.fitguy.nofud.models.PendingFoodInputDraft
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.FoodImageComposer
 import org.codeberg.fitguy.nofud.services.OpenFoodFactsService
@@ -63,6 +64,9 @@ data class HomeUiState(
      * re-storing the image bytes as a new file on disk.
      */
     val pendingReviewSource: FoodEntry? = null,
+    val pendingInputImageBytes: ByteArray? = null,
+    val pendingInputNote: String? = null,
+    val pendingInputDraftImageFilename: String? = null,
     val analyzing: Boolean = false,
     val error: String? = null
 ) {
@@ -126,7 +130,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .launchIn(viewModelScope)
 
         viewModelScope.launch {
-            container.prefs.pendingFoodAnalysisDraft.first()?.let { restorePendingDraft(it) }
+            val analysisDraft = container.prefs.pendingFoodAnalysisDraft.first()
+            if (analysisDraft != null) {
+                restorePendingDraft(analysisDraft)
+            } else {
+                container.prefs.pendingFoodInputDraft.first()?.let { restorePendingInputDraft(it) }
+            }
         }
     }
 
@@ -241,6 +250,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val previousDraftImage = _ui.value.pendingDraftImageFilename
             container.analyzingFood.value = true
+            savePendingInputDraft(bytes, note, FoodSource.SNAP_FOOD)
             _ui.value = _ui.value.copy(
                 analyzing = true,
                 error = null,
@@ -254,6 +264,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             try {
                 val analysis = container.foodAnalysis.analyzeFood(bytes, note.takeIf { it.isNotBlank() })
                     .copy(customNote = note.takeIf { it.isNotBlank() })
+                clearPendingInputDraft()
                 savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD)
             } catch (e: AiError) {
                 _ui.value = _ui.value.copy(analyzing = false, error = e.message)
@@ -397,6 +408,34 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    fun retryFailedInput() {
+        viewModelScope.launch {
+            val snapshot = _ui.value
+            val bytes = snapshot.pendingInputImageBytes ?: snapshot.pendingInputDraftImageFilename?.let { filename ->
+                runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+            }
+            if (bytes == null) {
+                clearPendingInputDraft()
+                _ui.value = _ui.value.copy(
+                    error = container.appContext.getString(R.string.error_failed_input_missing)
+                )
+                return@launch
+            }
+            analyzePhotoWithNote(bytes, snapshot.pendingInputNote.orEmpty())
+        }
+    }
+
+    fun dismissFailedInput() {
+        viewModelScope.launch {
+            clearPendingInputDraft()
+            _ui.value = _ui.value.copy(error = null)
+        }
+    }
+
+    fun clearError() {
+        _ui.value = _ui.value.copy(error = null)
+    }
+
     /**
      * Tap a row in Saved Meals (Recents / Frequent / Favorites) → open the
      * FoodResultSheet for review instead of logging immediately. The user
@@ -521,7 +560,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingImageBytes = imageBytes,
             pendingFoodSource = source,
             pendingDraftImageFilename = imageFilename,
-            pendingReviewSource = null
+            pendingReviewSource = null,
+            pendingInputImageBytes = null,
+            pendingInputNote = null,
+            pendingInputDraftImageFilename = null
         )
     }
 
@@ -536,7 +578,64 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingFoodSource = draft.source,
             pendingDraftImageFilename = draft.imageFilename,
             pendingReviewSource = null,
+            pendingInputImageBytes = null,
+            pendingInputNote = null,
+            pendingInputDraftImageFilename = null,
             error = null
+        )
+    }
+
+    private suspend fun savePendingInputDraft(
+        imageBytes: ByteArray,
+        note: String,
+        source: FoodSource = FoodSource.SNAP_FOOD
+    ) {
+        val previousFilename = _ui.value.pendingInputDraftImageFilename
+            ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
+        val imageFilename = container.imageStore.storeBytes(imageBytes, UUID.randomUUID()) ?: return
+        if (previousFilename != null && previousFilename != imageFilename) {
+            container.imageStore.delete(previousFilename)
+        }
+        container.prefs.setPendingFoodInputDraft(
+            PendingFoodInputDraft(
+                imageFilename = imageFilename,
+                note = note,
+                source = source
+            )
+        )
+        _ui.value = _ui.value.copy(
+            pendingInputImageBytes = imageBytes,
+            pendingInputNote = note,
+            pendingInputDraftImageFilename = imageFilename
+        )
+    }
+
+    private suspend fun restorePendingInputDraft(draft: PendingFoodInputDraft) {
+        val bytes = runCatching { container.imageStore.file(draft.imageFilename).readBytes() }.getOrNull()
+        if (bytes == null) {
+            clearPendingInputDraft()
+            _ui.value = _ui.value.copy(
+                error = container.appContext.getString(R.string.error_failed_input_missing)
+            )
+            return
+        }
+        _ui.value = _ui.value.copy(
+            pendingInputImageBytes = bytes,
+            pendingInputNote = draft.note,
+            pendingInputDraftImageFilename = draft.imageFilename,
+            error = null
+        )
+    }
+
+    private suspend fun clearPendingInputDraft() {
+        val filename = _ui.value.pendingInputDraftImageFilename
+            ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
+        container.prefs.setPendingFoodInputDraft(null)
+        filename?.let { container.imageStore.delete(it) }
+        _ui.value = _ui.value.copy(
+            pendingInputImageBytes = null,
+            pendingInputNote = null,
+            pendingInputDraftImageFilename = null
         )
     }
 
