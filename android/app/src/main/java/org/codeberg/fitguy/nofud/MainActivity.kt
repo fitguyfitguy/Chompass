@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
 import org.codeberg.fitguy.nofud.services.MealShare
 import org.codeberg.fitguy.nofud.services.InAppReview
 import org.codeberg.fitguy.nofud.ui.home.ImportSharedMealSheet
@@ -128,6 +129,7 @@ open class MainActivity : ComponentActivity() {
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
             initialThemeColorKey = container.prefs.appThemeColor.first()
+            AndroidAppIconManager.apply(this@MainActivity, AppThemeColor.fromKey(initialThemeColorKey))
             startOnboarding = resolvedStartOnboarding
             if (!resolvedStartOnboarding) {
                 container.profileRepository.profile.first { it != null }
