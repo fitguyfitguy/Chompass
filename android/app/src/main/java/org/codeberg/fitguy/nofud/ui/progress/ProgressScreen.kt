@@ -488,6 +488,14 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
     val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    var chartRenderPhase by remember(entries, goalKg, useMetric) { mutableStateOf(0) }
+    LaunchedEffect(entries, goalKg, useMetric) {
+        chartRenderPhase = 0
+        withFrameNanos { }
+        chartRenderPhase = 1
+        withFrameNanos { }
+        chartRenderPhase = 2
+    }
 
     Row(Modifier.fillMaxWidth().height(180.dp)) {
         Canvas(Modifier.weight(1f).fillMaxSize()) {
@@ -530,8 +538,9 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
             // clipRect: the smoothed curve can overshoot the value range a
             // touch between points — keep it inside the plot like iOS .clipped()
             clipRect {
-                drawPath(smoothTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (chartModel.showsDots) {
+                val trendPath = if (chartRenderPhase >= 1) smoothTrendPath(offsets) else straightTrendPath(offsets)
+                drawPath(trendPath, AppColors.Calorie, style = Stroke(width = 5f))
+                if (chartRenderPhase >= 2 && chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
@@ -550,15 +559,17 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
             }
         }
     }
-    TrendXAxisLabels(
-        chartModel.tStart,
-        chartModel.tEnd,
-        chartModel.showsYear,
-        chartModel.singleEntry,
-        chartModel.xLabelFmt,
-        secondaryColor,
-        endPadding = 36.dp
-    )
+    if (chartRenderPhase >= 1) {
+        TrendXAxisLabels(
+            chartModel.tStart,
+            chartModel.tEnd,
+            chartModel.showsYear,
+            chartModel.singleEntry,
+            chartModel.xLabelFmt,
+            secondaryColor,
+            endPadding = 36.dp
+        )
+    }
 }
 
 /** X-axis labels under a trend chart, matching the label density of the iOS
@@ -639,6 +650,16 @@ private fun smoothTrendPath(points: List<Offset>): Path {
             p2.x - (p3.x - p1.x) * handleScale, p2.y - (p3.y - p1.y) * handleScale,
             p2.x, p2.y
         )
+    }
+    return path
+}
+
+private fun straightTrendPath(points: List<Offset>): Path {
+    val path = Path()
+    if (points.isEmpty()) return path
+    path.moveTo(points.first().x, points.first().y)
+    for (i in 1 until points.size) {
+        path.lineTo(points[i].x, points[i].y)
     }
     return path
 }
@@ -1262,6 +1283,14 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
     val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    var chartRenderPhase by remember(entries, goalFraction) { mutableStateOf(0) }
+    LaunchedEffect(entries, goalFraction) {
+        chartRenderPhase = 0
+        withFrameNanos { }
+        chartRenderPhase = 1
+        withFrameNanos { }
+        chartRenderPhase = 2
+    }
 
     Row(Modifier.fillMaxWidth().height(180.dp)) {
         Canvas(Modifier.weight(1f).fillMaxSize()) {
@@ -1302,8 +1331,9 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
                 )
             }
             clipRect {
-                drawPath(smoothTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (chartModel.showsDots) {
+                val trendPath = if (chartRenderPhase >= 1) smoothTrendPath(offsets) else straightTrendPath(offsets)
+                drawPath(trendPath, AppColors.Calorie, style = Stroke(width = 5f))
+                if (chartRenderPhase >= 2 && chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
@@ -1322,15 +1352,17 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
             }
         }
     }
-    TrendXAxisLabels(
-        chartModel.tStart,
-        chartModel.tEnd,
-        chartModel.showsYear,
-        chartModel.singleEntry,
-        chartModel.xLabelFmt,
-        secondaryColor,
-        endPadding = 40.dp
-    )
+    if (chartRenderPhase >= 1) {
+        TrendXAxisLabels(
+            chartModel.tStart,
+            chartModel.tEnd,
+            chartModel.showsYear,
+            chartModel.singleEntry,
+            chartModel.xLabelFmt,
+            secondaryColor,
+            endPadding = 40.dp
+        )
+    }
 }
 
 @Composable
