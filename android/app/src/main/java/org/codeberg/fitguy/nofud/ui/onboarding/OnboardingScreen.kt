@@ -60,13 +60,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import org.codeberg.fitguy.nofud.ui.components.OptionPickerSheet
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
+import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -1388,13 +1388,12 @@ private fun ProviderStep(
                 )
                 if (provider.requiresApiKey) {
                     HorizontalDivider(Modifier.padding(horizontal = 14.dp))
-                    OutlinedTextField(
+                    FudGlassTextField(
                         value = apiKey,
                         onValueChange = onKeyChange,
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
-                        label = { Text(stringResource(R.string.settings_api_key)) },
-                        placeholder = { Text(stringResource(provider.apiKeyPlaceholderRes)) },
+                        placeholder = stringResource(provider.apiKeyPlaceholderRes),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 14.dp, vertical = 8.dp)

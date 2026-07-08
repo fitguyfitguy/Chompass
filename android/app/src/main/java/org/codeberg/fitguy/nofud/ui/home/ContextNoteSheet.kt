@@ -21,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import org.codeberg.fitguy.nofud.ui.components.FudGlassPrimaryButton
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
@@ -141,16 +141,13 @@ fun ContextNoteSheet(
 
                 SheetSectionHeader(stringResource(R.string.context_note_section))
 
-                OutlinedTextField(
+                FudGlassTextField(
                     value = note,
                     onValueChange = { note = it },
-                    placeholder = {
-                        Text(
-                            stringResource(R.string.context_note_placeholder),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                        )
-                    },
-                    shape = RoundedCornerShape(20.dp),
+                    placeholder = stringResource(R.string.context_note_placeholder),
+                    singleLine = false,
+                    minLines = 3,
+                    maxLines = 6,
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 110.dp)
