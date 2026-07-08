@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -53,6 +54,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -146,6 +148,11 @@ fun ProgressScreen(container: AppContainer) {
     var showAllWeights by remember { mutableStateOf(false) }
     var showAllBodyFats by remember { mutableStateOf(false) }
     var bodyMetric by remember { mutableStateOf(BodyMetric.WEIGHT) }
+    var heavySectionsReady by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        repeat(2) { withFrameNanos { } }
+        heavySectionsReady = true
+    }
     // Body Fat segment only renders when the user has opted in — same visibility
     // rule as iOS: hidden entirely for users who never set body fat OR a goal.
     val bodyFatAvailable = ui.bodyFatEntries.isNotEmpty()
@@ -221,29 +228,37 @@ fun ProgressScreen(container: AppContainer) {
             }
 
             // 4. Calorie chart section
-            item {
-                CardSection {
-                    CalorieSection(
-                        dailyCalories = ui.dailyCalories,
-                        calorieGoal = ui.profile?.effectiveCalories ?: 2000
-                    )
-                }
-            }
-
-            // 5. Macro averages
-            ui.profile?.let { p ->
+            if (heavySectionsReady) {
                 item {
                     CardSection {
-                        MacroAveragesSection(
-                            avgProtein = ui.macroAverages.first,
-                            avgCarbs = ui.macroAverages.second,
-                            avgFat = ui.macroAverages.third,
-                            proteinGoal = p.effectiveProtein,
-                            carbsGoal = p.effectiveCarbs,
-                            fatGoal = p.effectiveFat
+                        CalorieSection(
+                            dailyCalories = ui.dailyCalories,
+                            calorieGoal = ui.profile?.effectiveCalories ?: 2000
                         )
                     }
                 }
+            } else {
+                item { CardSection { ChartPlaceholder() } }
+            }
+
+            // 5. Macro averages
+            if (heavySectionsReady) {
+                ui.profile?.let { p ->
+                    item {
+                        CardSection {
+                            MacroAveragesSection(
+                                avgProtein = ui.macroAverages.first,
+                                avgCarbs = ui.macroAverages.second,
+                                avgFat = ui.macroAverages.third,
+                                proteinGoal = p.effectiveProtein,
+                                carbsGoal = p.effectiveCarbs,
+                                fatGoal = p.effectiveFat
+                            )
+                        }
+                    }
+                }
+            } else {
+                item { CardSection { ChartPlaceholder(height = 120.dp) } }
             }
         }
     }
@@ -414,7 +429,7 @@ private fun WeightSection(
                     add(averageLabel to formatWeight(stats.averageKg, useMetric))
                 }
             )
-            WeightChartCanvas(entries = entries, goalKg = goalKg, useMetric = useMetric)
+            DeferredChart { WeightChartCanvas(entries = entries, goalKg = goalKg, useMetric = useMetric) }
         }
     }
 }
@@ -467,40 +482,19 @@ private fun StatBadge(label: String, value: String, modifier: Modifier = Modifie
 
 @Composable
 private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMetric: Boolean) {
-    val displayKg = { kg: Double -> if (useMetric) kg else kg * 2.20462 }
-    val unitLabel = if (useMetric) "" else ""
-    val displayWeights = entries.map { displayKg(it.weightKg) } + listOfNotNull(goalKg?.let(displayKg))
-    val minW = displayWeights.min()
-    val maxW = displayWeights.max()
-    val pad = maxOf((maxW - minW) * 0.15, 2.0)
-    val yMin = minW - pad
-    val yMax = maxW + pad
-    val tStart = entries.first().date.toEpochMilli()
-    val tEnd = entries.last().date.toEpochMilli()
-    val singleEntry = entries.size == 1
-    val tRange = maxOf(1L, tEnd - tStart)
+    val chartModel = remember(entries, goalKg, useMetric) {
+        buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
+    }
     val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-    val ticks = niceAxisTicks(yMin, yMax, count = 5)
-    val zone = ZoneId.systemDefault()
-    // Labels pick up the year once a longer range crosses a calendar-year
-    // boundary — "Jul 2024" instead of an ambiguous "Jul 3" (same iOS rule).
-    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
-    val showsYear = spanDays > 150 &&
-        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
-    val xLabelFmt = DateTimeFormatter.ofPattern(if (showsYear) "MMM yyyy" else "MMM d", Locale.US).withZone(zone)
-    // Dense ranges plot bucket averages so the line stays a readable curve;
-    // dots only render while each reading is still distinguishable.
-    val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), displayKg(it.weightKg)) })
-    val showsDots = points.size <= 31
 
     Row(Modifier.fillMaxWidth().height(180.dp)) {
         Canvas(Modifier.weight(1f).fillMaxSize()) {
             val w = size.width; val h = size.height
             // Horizontal grid + tick marks
-            ticks.forEach { tick ->
-                val y = h - (((tick - yMin) / (yMax - yMin)).toFloat() * h)
+            chartModel.ticks.forEach { tick ->
+                val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 drawLine(
                     color = gridColor,
                     start = Offset(0f, y), end = Offset(w, y),
@@ -517,9 +511,8 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
                 )
             }
-            goalKg?.let { gk ->
-                val gv = displayKg(gk)
-                val y = h - (((gv - yMin) / (yMax - yMin)).toFloat() * h)
+            chartModel.goalDisplayValue?.let { gv ->
+                val y = h - (((gv - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 drawLine(
                     color = goalLineColor,
                     start = Offset(0f, y), end = Offset(w, y),
@@ -527,18 +520,18 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
                 )
             }
-            val offsets = points.map { p ->
+            val offsets = chartModel.points.map { p ->
                 Offset(
-                    if (singleEntry) w / 2f
-                    else ((p.timeMs - tStart).toDouble() / tRange * w).toFloat(),
-                    h - (((p.value - yMin) / (yMax - yMin)).toFloat() * h)
+                    if (chartModel.singleEntry) w / 2f
+                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 )
             }
             // clipRect: the smoothed curve can overshoot the value range a
             // touch between points — keep it inside the plot like iOS .clipped()
             clipRect {
                 drawPath(smoothTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (showsDots) {
+                if (chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
@@ -548,7 +541,7 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
             Modifier.width(36.dp).fillMaxSize().padding(start = 4.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            ticks.reversed().forEach { tick ->
+            chartModel.ticks.reversed().forEach { tick ->
                 Text(
                     formatTick(tick),
                     fontSize = 11.sp,
@@ -557,7 +550,15 @@ private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMe
             }
         }
     }
-    TrendXAxisLabels(tStart, tEnd, showsYear, singleEntry, xLabelFmt, secondaryColor, endPadding = 36.dp)
+    TrendXAxisLabels(
+        chartModel.tStart,
+        chartModel.tEnd,
+        chartModel.showsYear,
+        chartModel.singleEntry,
+        chartModel.xLabelFmt,
+        secondaryColor,
+        endPadding = 36.dp
+    )
 }
 
 /** X-axis labels under a trend chart, matching the label density of the iOS
@@ -1244,7 +1245,7 @@ private fun BodyFatSection(
                 }
             )
             if (entries.isNotEmpty()) {
-                BodyFatChartCanvas(entries = entries, goalFraction = goalFraction)
+                DeferredChart { BodyFatChartCanvas(entries = entries, goalFraction = goalFraction) }
             }
         }
     }
@@ -1255,35 +1256,19 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
     // Mirrors WeightChartCanvas — same horizontal grid + tick marks, vertical
     // dashed columns, dashed green goal line, right-side Y-axis labels (with
     // "%" suffix), and bottom date labels showing first/last point in range.
-    val percents = entries.map { it.bodyFatFraction * 100 } + listOfNotNull(goalFraction?.let { it * 100 })
-    val minP = percents.min()
-    val maxP = percents.max()
-    val pad = maxOf((maxP - minP) * 0.15, 1.0)
-    val yMin = (minP - pad).coerceAtLeast(0.0)
-    val yMax = maxP + pad
-    val tStart = entries.first().date.toEpochMilli()
-    val tEnd = entries.last().date.toEpochMilli()
-    val singleEntry = entries.size == 1
-    val tRange = maxOf(1L, tEnd - tStart)
+    val chartModel = remember(entries, goalFraction) {
+        buildBodyFatChartModel(entries = entries, goalFraction = goalFraction)
+    }
     val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-    val ticks = niceAxisTicks(yMin, yMax, count = 5)
-    val zone = ZoneId.systemDefault()
-    // Same year-label + downsampling policy as WeightChartCanvas.
-    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
-    val showsYear = spanDays > 150 &&
-        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
-    val xLabelFmt = DateTimeFormatter.ofPattern(if (showsYear) "MMM yyyy" else "MMM d", Locale.US).withZone(zone)
-    val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), it.bodyFatFraction * 100) })
-    val showsDots = points.size <= 31
 
     Row(Modifier.fillMaxWidth().height(180.dp)) {
         Canvas(Modifier.weight(1f).fillMaxSize()) {
             val w = size.width; val h = size.height
             // Horizontal grid + tick marks
-            ticks.forEach { tick ->
-                val y = h - (((tick - yMin) / (yMax - yMin)).toFloat() * h)
+            chartModel.ticks.forEach { tick ->
+                val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 drawLine(
                     color = gridColor,
                     start = Offset(0f, y), end = Offset(w, y),
@@ -1300,9 +1285,8 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
                 )
             }
-            goalFraction?.let { g ->
-                val gPct = g * 100
-                val y = h - (((gPct - yMin) / (yMax - yMin)).toFloat() * h)
+            chartModel.goalPercent?.let { gPct ->
+                val y = h - (((gPct - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 drawLine(
                     color = goalLineColor,
                     start = Offset(0f, y), end = Offset(w, y),
@@ -1310,16 +1294,16 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
                 )
             }
-            val offsets = points.map { p ->
+            val offsets = chartModel.points.map { p ->
                 Offset(
-                    if (singleEntry) w / 2f
-                    else ((p.timeMs - tStart).toDouble() / tRange * w).toFloat(),
-                    h - (((p.value - yMin) / (yMax - yMin)).toFloat() * h)
+                    if (chartModel.singleEntry) w / 2f
+                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 )
             }
             clipRect {
                 drawPath(smoothTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (showsDots) {
+                if (chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
@@ -1329,7 +1313,7 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
             Modifier.width(40.dp).fillMaxSize().padding(start = 4.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            ticks.reversed().forEach { tick ->
+            chartModel.ticks.reversed().forEach { tick ->
                 Text(
                     formatPercentTick(tick),
                     fontSize = 11.sp,
@@ -1338,7 +1322,142 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
             }
         }
     }
-    TrendXAxisLabels(tStart, tEnd, showsYear, singleEntry, xLabelFmt, secondaryColor, endPadding = 40.dp)
+    TrendXAxisLabels(
+        chartModel.tStart,
+        chartModel.tEnd,
+        chartModel.showsYear,
+        chartModel.singleEntry,
+        chartModel.xLabelFmt,
+        secondaryColor,
+        endPadding = 40.dp
+    )
+}
+
+@Composable
+private fun DeferredChart(content: @Composable () -> Unit) {
+    var ready by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        withFrameNanos { }
+        ready = true
+    }
+    if (ready) content() else ChartPlaceholder()
+}
+
+@Composable
+private fun ChartPlaceholder(height: Dp = 180.dp) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Loading chart...",
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        )
+    }
+}
+
+private data class WeightChartModel(
+    val yMin: Double,
+    val yMax: Double,
+    val ticks: List<Double>,
+    val tStart: Long,
+    val tEnd: Long,
+    val tRange: Long,
+    val singleEntry: Boolean,
+    val showsYear: Boolean,
+    val xLabelFmt: DateTimeFormatter,
+    val points: List<TrendPoint>,
+    val showsDots: Boolean,
+    val goalDisplayValue: Double?
+)
+
+private fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, useMetric: Boolean): WeightChartModel {
+    val displayKg = { kg: Double -> if (useMetric) kg else kg * 2.20462 }
+    val displayWeights = entries.map { displayKg(it.weightKg) } + listOfNotNull(goalKg?.let(displayKg))
+    val minW = displayWeights.min()
+    val maxW = displayWeights.max()
+    val pad = maxOf((maxW - minW) * 0.15, 2.0)
+    val yMin = minW - pad
+    val yMax = maxW + pad
+    val tStart = entries.first().date.toEpochMilli()
+    val tEnd = entries.last().date.toEpochMilli()
+    val singleEntry = entries.size == 1
+    val tRange = maxOf(1L, tEnd - tStart)
+    val ticks = niceAxisTicks(yMin, yMax, count = 5)
+    val zone = ZoneId.systemDefault()
+    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
+    val showsYear = spanDays > 150 &&
+        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
+    val xLabelFmt = DateTimeFormatter.ofPattern(if (showsYear) "MMM yyyy" else "MMM d", Locale.US).withZone(zone)
+    val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), displayKg(it.weightKg)) })
+    val showsDots = points.size <= 31
+    return WeightChartModel(
+        yMin = yMin,
+        yMax = yMax,
+        ticks = ticks,
+        tStart = tStart,
+        tEnd = tEnd,
+        tRange = tRange,
+        singleEntry = singleEntry,
+        showsYear = showsYear,
+        xLabelFmt = xLabelFmt,
+        points = points,
+        showsDots = showsDots,
+        goalDisplayValue = goalKg?.let(displayKg)
+    )
+}
+
+private data class BodyFatChartModel(
+    val yMin: Double,
+    val yMax: Double,
+    val ticks: List<Double>,
+    val tStart: Long,
+    val tEnd: Long,
+    val tRange: Long,
+    val singleEntry: Boolean,
+    val showsYear: Boolean,
+    val xLabelFmt: DateTimeFormatter,
+    val points: List<TrendPoint>,
+    val showsDots: Boolean,
+    val goalPercent: Double?
+)
+
+private fun buildBodyFatChartModel(entries: List<BodyFatEntry>, goalFraction: Double?): BodyFatChartModel {
+    val percents = entries.map { it.bodyFatFraction * 100 } + listOfNotNull(goalFraction?.let { it * 100 })
+    val minP = percents.min()
+    val maxP = percents.max()
+    val pad = maxOf((maxP - minP) * 0.15, 1.0)
+    val yMin = (minP - pad).coerceAtLeast(0.0)
+    val yMax = maxP + pad
+    val tStart = entries.first().date.toEpochMilli()
+    val tEnd = entries.last().date.toEpochMilli()
+    val singleEntry = entries.size == 1
+    val tRange = maxOf(1L, tEnd - tStart)
+    val ticks = niceAxisTicks(yMin, yMax, count = 5)
+    val zone = ZoneId.systemDefault()
+    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
+    val showsYear = spanDays > 150 &&
+        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
+    val xLabelFmt = DateTimeFormatter.ofPattern(if (showsYear) "MMM yyyy" else "MMM d", Locale.US).withZone(zone)
+    val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), it.bodyFatFraction * 100) })
+    val showsDots = points.size <= 31
+    return BodyFatChartModel(
+        yMin = yMin,
+        yMax = yMax,
+        ticks = ticks,
+        tStart = tStart,
+        tEnd = tEnd,
+        tRange = tRange,
+        singleEntry = singleEntry,
+        showsYear = showsYear,
+        xLabelFmt = xLabelFmt,
+        points = points,
+        showsDots = showsDots,
+        goalPercent = goalFraction?.times(100)
+    )
 }
 
 /** Format a body-fat tick value for the Y-axis label (e.g. 17.5 → "17.5%"
