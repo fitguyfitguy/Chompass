@@ -4,6 +4,25 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-08
+
+### Added
+
+- Android performance baseline capture workflow (`scripts/capture_android_perf_baseline.sh`, `PERFORMANCE.md`)
+- Pending food-input draft persistence to recover interrupted logging sessions
+- Diet mode and keto-carb configuration support across onboarding, settings, and profile models
+
+### Changed
+
+- Progress charts now use phased animations and improved loading-state handling for smoother rendering
+- Progress data processing/state management refactors to reduce UI jank and improve stability
+- Home screen theming, shadows, and meal section nutrient presentation polish
+- App/icon activity-alias theming consistency and updated docs for install/distribution flows
+
+### Fixed
+
+- State restoration edge cases in home/progress flows to prevent lost in-flight input
+
 ## [1.1.0] - 2026-07-08
 
 ### Added
