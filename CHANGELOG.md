@@ -4,6 +4,11 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-07-08
+
+### Changed
+- Publish both `play` and `fdroid` flavor APK assets on Codeberg releases (with `NoFUD-play-*` and `NoFUD-fdroid-*` filenames).
+
 ## [1.5.0] - 2026-07-08
 
 ### Added

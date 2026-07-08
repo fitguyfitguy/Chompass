@@ -26,21 +26,42 @@ cp keystore.properties.template keystore.properties
 devenv shell -- bash -lc 'cd android && ./gradlew test'
 devenv shell -- bash -lc 'uv run --with pillow python scripts/optimize_exercise_images.py --check-only'
 devenv tasks run build:release
+devenv tasks run build:fdroid-release
 ```
 
 ## Build and package
 
 ```bash
 devenv tasks run build:release
+devenv tasks run build:fdroid-release
 cp android/app/build/outputs/apk/play/release/app-play-universal-release.apk NoFUD-<version>.apk
 cp android/app/build/outputs/apk/play/release/app-play-arm64-v8a-release.apk NoFUD-<version>-arm64-v8a.apk
 cp android/app/build/outputs/apk/play/release/app-play-armeabi-v7a-release.apk NoFUD-<version>-armeabi-v7a.apk
 cp android/app/build/outputs/apk/play/release/app-play-x86_64-release.apk NoFUD-<version>-x86_64.apk
+
+cp android/app/build/outputs/apk/play/release/app-play-universal-release.apk NoFUD-play-<version>.apk
+cp android/app/build/outputs/apk/play/release/app-play-arm64-v8a-release.apk NoFUD-play-<version>-arm64-v8a.apk
+cp android/app/build/outputs/apk/play/release/app-play-armeabi-v7a-release.apk NoFUD-play-<version>-armeabi-v7a.apk
+cp android/app/build/outputs/apk/play/release/app-play-x86_64-release.apk NoFUD-play-<version>-x86_64.apk
+
+cp android/app/build/outputs/apk/fdroid/release/app-fdroid-universal-release.apk NoFUD-fdroid-<version>.apk
+cp android/app/build/outputs/apk/fdroid/release/app-fdroid-arm64-v8a-release.apk NoFUD-fdroid-<version>-arm64-v8a.apk
+cp android/app/build/outputs/apk/fdroid/release/app-fdroid-armeabi-v7a-release.apk NoFUD-fdroid-<version>-armeabi-v7a.apk
+cp android/app/build/outputs/apk/fdroid/release/app-fdroid-x86_64-release.apk NoFUD-fdroid-<version>-x86_64.apk
+
 sha256sum \
   NoFUD-<version>.apk \
   NoFUD-<version>-arm64-v8a.apk \
   NoFUD-<version>-armeabi-v7a.apk \
-  NoFUD-<version>-x86_64.apk > SHA256SUMS
+  NoFUD-<version>-x86_64.apk \
+  NoFUD-play-<version>.apk \
+  NoFUD-play-<version>-arm64-v8a.apk \
+  NoFUD-play-<version>-armeabi-v7a.apk \
+  NoFUD-play-<version>-x86_64.apk \
+  NoFUD-fdroid-<version>.apk \
+  NoFUD-fdroid-<version>-arm64-v8a.apk \
+  NoFUD-fdroid-<version>-armeabi-v7a.apk \
+  NoFUD-fdroid-<version>-x86_64.apk > SHA256SUMS
 ```
 
 ## Tag and publish on Codeberg
@@ -55,9 +76,11 @@ git push origin v1.0.0
 ```
 
 4. Create a release at https://codeberg.org/fitguy/nofud/releases
-   - Attach all APK assets (`NoFUD-<version>.apk` + ABI APKs) and `SHA256SUMS`
+   - Attach all Play APK assets (`NoFUD-play-<version>.apk` + ABI APKs) and `SHA256SUMS` (also upload `NoFUD-<version>.apk` as a legacy alias)
+   - Also attach F-Droid APK assets (`NoFUD-fdroid-<version>.apk` + ABI APKs) and `SHA256SUMS`
    - Paste changelog notes
-   - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-<version>.apk`
+   - Stable download URL pattern (Play flavor): `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-play-<version>.apk`
+   - Stable download URL pattern (F-Droid flavor): `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
 
    Or with [tea](https://codeberg.org/tea/tea):
 

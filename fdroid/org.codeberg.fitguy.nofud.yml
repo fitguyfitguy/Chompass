@@ -16,7 +16,7 @@ AutoName: NoFUD
 RepoType: git
 Repo: https://codeberg.org/fitguy/nofud.git
 
-Binaries: https://codeberg.org/fitguy/nofud/releases/download/v%v/NoFUD-%v.apk
+Binaries: https://codeberg.org/fitguy/nofud/releases/download/v%v/NoFUD-fdroid-%v.apk
 AllowedAPKSigningKeys: 2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf
 
 AutoUpdateMode: Version
