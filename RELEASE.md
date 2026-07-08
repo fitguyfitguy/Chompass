@@ -79,3 +79,13 @@ Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
 
 See the plan in `.cursor/plans/` or project issues for the full F-Droid checklist.
+
+## APK size baselines (1.4.0)
+
+- Pre-optimization `fdroid` release APK (`app-fdroid-release.apk`): ~45 MB
+- Post-optimization `fdroid` release APKs:
+  - `app-fdroid-universal-release.apk`: ~25 MB
+  - `app-fdroid-arm64-v8a-release.apk`: ~25 MB
+  - `app-fdroid-armeabi-v7a-release.apk`: ~25 MB
+  - `app-fdroid-x86_64-release.apk`: ~25 MB
+- Main reduction: move ML Kit barcode scanner implementation to `play` flavor and use a lightweight fallback dialog in `fdroid`.

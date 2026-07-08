@@ -39,3 +39,4 @@ NoFUD-*.apk
 SHA256SUMS
 .env.local
 scripts/capture_android_perf_baseline.sh
+Fud-Food-Diary-2026-04-27_to_2026-07-08.json
