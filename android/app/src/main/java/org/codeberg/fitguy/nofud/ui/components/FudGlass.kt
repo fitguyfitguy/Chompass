@@ -144,7 +144,9 @@ fun FudGlassTextField(
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(
         color = MaterialTheme.colorScheme.onSurface,
     ),
+    accentColor: Color? = null,
 ) {
+    val fieldAccent = accentColor ?: MaterialTheme.colorScheme.primary
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -163,8 +165,8 @@ fun FudGlassTextField(
         textStyle = textStyle,
         shape = MaterialTheme.shapes.small,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedBorderColor = fieldAccent,
+            cursorColor = fieldAccent,
         ),
     )
 }

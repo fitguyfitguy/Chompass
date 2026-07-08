@@ -177,6 +177,7 @@ import org.codeberg.fitguy.nofud.ui.components.UnitToggle
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
+import org.codeberg.fitguy.nofud.ui.theme.macroAccentColor
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDRoutes
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -1314,6 +1315,7 @@ fun OptionalNutrientGoalsScreen(
                 currentValue = ui.optionalNutrientGoals.valueFor(nutrient),
                 range = nutrient.pickerRange(),
                 step = nutrient.pickerStep(),
+                accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
                 onSave = { value ->
                     vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(nutrient, value))
                     editing = null
@@ -1937,6 +1939,7 @@ private fun SettingsSheets(
                     label = stringResource(R.string.macro_protein), unit = stringResource(R.string.unit_g),
                     currentValue = ui.profile?.effectiveProtein ?: 0,
                     range = 10..500, step = 5,
+                    accentColor = AppColors.Protein,
                     onSave = { v ->
                         vm.editMacroGoal(AutoBalanceMacro.PROTEIN, v) { onRebalanceBlocked() }
                         onDismiss()
@@ -1949,6 +1952,7 @@ private fun SettingsSheets(
                     label = stringResource(R.string.macro_carbs), unit = stringResource(R.string.unit_g),
                     currentValue = ui.profile?.effectiveCarbs ?: 0,
                     range = 0..800, step = 5,
+                    accentColor = AppColors.Carbs,
                     onSave = { v ->
                         vm.editMacroGoal(AutoBalanceMacro.CARBS, v) { onRebalanceBlocked() }
                         onDismiss()
@@ -1961,6 +1965,7 @@ private fun SettingsSheets(
                     label = stringResource(R.string.macro_fat), unit = stringResource(R.string.unit_g),
                     currentValue = ui.profile?.effectiveFat ?: 0,
                     range = 10..300, step = 5,
+                    accentColor = AppColors.Fat,
                     onSave = { v ->
                         vm.editMacroGoal(AutoBalanceMacro.FAT, v) { onRebalanceBlocked() }
                         onDismiss()
@@ -2000,6 +2005,7 @@ private fun OptionalNutrientGoalsSheet(
             currentValue = goals.valueFor(nutrient),
             range = nutrient.pickerRange(),
             step = nutrient.pickerStep(),
+            accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
             onSave = { value ->
                 onChange(goals.withValue(nutrient, value))
                 editing = null
@@ -2045,6 +2051,7 @@ private fun OptionalNutrientGoalRow(
     value: Int,
     onClick: () -> Unit
 ) {
+    val accent = nutrient.macroAccentColor()
     Row(
         Modifier
             .fillMaxWidth()
@@ -2055,14 +2062,16 @@ private fun OptionalNutrientGoalRow(
         FudIconBubble(
             Icons.Outlined.DataUsage,
             size = 22.dp,
-            iconSize = 15.dp
+            iconSize = 15.dp,
+            tint = accent ?: MaterialTheme.colorScheme.primary,
         )
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             Text(
                 stringResource(nutrient.displayNameRes),
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color = accent ?: MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 stringResource(nutrient.unitRes),
@@ -2074,7 +2083,7 @@ private fun OptionalNutrientGoalRow(
             "$value${nutrient.unit}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = accent?.copy(alpha = 0.85f) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
         Spacer(Modifier.width(8.dp))
         Icon(
@@ -2371,7 +2380,8 @@ fun NutritionPickerSheet(
     resetLabel: String? = null,
     // Live wheel-selection reporter, for hosts that need the current value
     // before Save (e.g. to convert it when a unit switcher flips).
-    onValueChange: ((Int) -> Unit)? = null
+    onValueChange: ((Int) -> Unit)? = null,
+    accentColor: Color = AppColors.Calorie,
 ) {
     val items = remember(range, step) { (range.first..range.last step step).toList() }
     val snapped = (currentValue / step) * step
@@ -2379,7 +2389,7 @@ fun NutritionPickerSheet(
         items.minByOrNull { kotlin.math.abs(it - v) } ?: items.first()
     }
     var selected by remember(initial) { mutableStateOf(initial) }
-    Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = accentColor)
     Spacer(Modifier.height(12.dp))
     Row(
         Modifier.fillMaxWidth(),
@@ -2405,7 +2415,7 @@ fun NutritionPickerSheet(
             .fillMaxWidth()
             .height(54.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(AppColors.CalorieGradient)
+            .background(accentColor)
             .clickable { onSave(selected) },
         contentAlignment = Alignment.Center
     ) {
@@ -2450,7 +2460,7 @@ private fun MacrosSheet(
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     )
     Spacer(Modifier.height(12.dp))
-    MacroField(stringResource(R.string.macro_calories), caloriesText, { caloriesText = it }, stringResource(R.string.unit_kcal)) {
+    MacroField(stringResource(R.string.macro_calories), caloriesText, { caloriesText = it }, stringResource(R.string.unit_kcal), accentColor = AppColors.Calorie) {
         caloriesText.toIntOrNull()?.let { onSaveCalories(it) }
     }
     Spacer(Modifier.height(6.dp))
@@ -2460,7 +2470,8 @@ private fun MacrosSheet(
         onChange = { proteinText = it },
         unit = stringResource(R.string.unit_g),
         pinned = profile.isPinned(AutoBalanceMacro.PROTEIN),
-        onClearPin = { onClearPin(AutoBalanceMacro.PROTEIN) }
+        onClearPin = { onClearPin(AutoBalanceMacro.PROTEIN) },
+        accentColor = AppColors.Protein,
     ) { proteinText.toIntOrNull()?.let { onSaveMacro(AutoBalanceMacro.PROTEIN, it) } }
     Spacer(Modifier.height(6.dp))
     MacroField(
@@ -2469,7 +2480,8 @@ private fun MacrosSheet(
         onChange = { carbsText = it },
         unit = stringResource(R.string.unit_g),
         pinned = profile.isPinned(AutoBalanceMacro.CARBS),
-        onClearPin = { onClearPin(AutoBalanceMacro.CARBS) }
+        onClearPin = { onClearPin(AutoBalanceMacro.CARBS) },
+        accentColor = AppColors.Carbs,
     ) { carbsText.toIntOrNull()?.let { onSaveMacro(AutoBalanceMacro.CARBS, it) } }
     Spacer(Modifier.height(6.dp))
     MacroField(
@@ -2478,7 +2490,8 @@ private fun MacrosSheet(
         onChange = { fatText = it },
         unit = stringResource(R.string.unit_g),
         pinned = profile.isPinned(AutoBalanceMacro.FAT),
-        onClearPin = { onClearPin(AutoBalanceMacro.FAT) }
+        onClearPin = { onClearPin(AutoBalanceMacro.FAT) },
+        accentColor = AppColors.Fat,
     ) { fatText.toIntOrNull()?.let { onSaveMacro(AutoBalanceMacro.FAT, it) } }
 }
 
@@ -2490,6 +2503,7 @@ private fun MacroField(
     unit: String,
     pinned: Boolean = false,
     onClearPin: (() -> Unit)? = null,
+    accentColor: Color = AppColors.Calorie,
     onPin: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2499,11 +2513,12 @@ private fun MacroField(
             placeholder = "$label ($unit)",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
+            accentColor = accentColor,
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.height(6.dp))
         TextButton(onClick = { if (pinned) onClearPin?.invoke() else onPin() }) {
-            Text(if (pinned) stringResource(R.string.action_clear) else stringResource(R.string.action_pin), color = AppColors.Calorie)
+            Text(if (pinned) stringResource(R.string.action_clear) else stringResource(R.string.action_pin), color = accentColor)
         }
     }
 }

@@ -79,7 +79,9 @@ import org.codeberg.fitguy.nofud.data.FrequentFoodGroup
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.MacroValueFormatter
 import org.codeberg.fitguy.nofud.services.FoodImageStore
+import org.codeberg.fitguy.nofud.ui.components.MacroChip
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.MacroKind
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -626,9 +628,9 @@ private fun SavedMealRow(
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                MacroTag("P", entry.protein)
-                MacroTag("C", entry.carbs)
-                MacroTag("F", entry.fat)
+                MacroChip(MacroKind.PROTEIN, entry.protein)
+                MacroChip(MacroKind.CARBS, entry.carbs)
+                MacroChip(MacroKind.FAT, entry.fat)
             }
         }
 
@@ -678,23 +680,6 @@ private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodIm
                 modifier = Modifier.size(22.dp)
             )
         }
-    }
-}
-
-@Composable
-private fun MacroTag(label: String, value: Double) {
-    Box(
-        Modifier
-            .clip(CircleShape)
-            .background(AppColors.Calorie.copy(alpha = 0.08f))
-            .padding(horizontal = 6.dp, vertical = 2.dp)
-    ) {
-        Text(
-            "$label ${MacroValueFormatter.withUnit(value)}",
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
     }
 }
 

@@ -2,7 +2,54 @@ package org.codeberg.fitguy.nofud.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
+import org.codeberg.fitguy.nofud.models.OptionalNutrient
+
+/** Core nutrients that share a per-theme palette (P / C / F / fiber). */
+enum class MacroKind {
+    CALORIES,
+    PROTEIN,
+    CARBS,
+    FAT,
+    FIBER,
+    ;
+
+    fun color(): Color = when (this) {
+        CALORIES -> AppColors.Calorie
+        PROTEIN -> AppColors.Protein
+        CARBS -> AppColors.Carbs
+        FAT -> AppColors.Fat
+        FIBER -> AppColors.Fiber
+    }
+
+    val glyph: String
+        get() = when (this) {
+            PROTEIN -> "P"
+            CARBS -> "C"
+            FAT -> "F"
+            FIBER -> "Fi"
+            CALORIES -> "kcal"
+        }
+}
+
+fun AutoBalanceMacro.toMacroKind(): MacroKind = when (this) {
+    AutoBalanceMacro.PROTEIN -> MacroKind.PROTEIN
+    AutoBalanceMacro.CARBS -> MacroKind.CARBS
+    AutoBalanceMacro.FAT -> MacroKind.FAT
+}
+
+fun macroKindFromGlyph(glyph: String): MacroKind? = when (glyph.uppercase()) {
+    "P" -> MacroKind.PROTEIN
+    "C" -> MacroKind.CARBS
+    "F" -> MacroKind.FAT
+    else -> null
+}
+
+fun OptionalNutrient.macroAccentColor(): Color? = when (this) {
+    OptionalNutrient.FIBER -> AppColors.Fiber
+    else -> null
+}
 
 /** Per-theme macro colors — distinct but harmonious with each accent. */
 data class MacroPalette(

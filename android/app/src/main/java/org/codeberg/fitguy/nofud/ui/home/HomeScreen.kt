@@ -146,6 +146,7 @@ import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import org.codeberg.fitguy.nofud.ui.components.InAppCameraCaptureDialog
+import org.codeberg.fitguy.nofud.ui.components.MacroChip
 import org.codeberg.fitguy.nofud.ui.components.MacroCard
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
@@ -157,6 +158,7 @@ import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import org.codeberg.fitguy.nofud.ui.components.WeekEnergyStrip
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.MacroKind
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -1374,28 +1376,11 @@ private fun FoodRow(
 
             // Macro pills (P / C / F) — tinted dark capsules with gray text.
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                MacroChip("P", entry.protein)
-                MacroChip("C", entry.carbs)
-                MacroChip("F", entry.fat)
+                MacroChip(MacroKind.PROTEIN, entry.protein)
+                MacroChip(MacroKind.CARBS, entry.carbs)
+                MacroChip(MacroKind.FAT, entry.fat)
             }
         }
-    }
-}
-
-@Composable
-private fun MacroChip(label: String, value: Double) {
-    Box(
-        Modifier
-            .clip(CircleShape)
-            .background(AppColors.Calorie.copy(alpha = 0.10f))
-            .padding(horizontal = 8.dp, vertical = 3.dp)
-    ) {
-        Text(
-            "$label ${MacroValueFormatter.withUnit(value)}",
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
     }
 }
 
@@ -1766,12 +1751,12 @@ private fun ManualEntryDialog(
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    NumberField(stringResource(R.string.manual_calories), calories, { calories = it.filter(Char::isDigit) }, Modifier.weight(1f))
-                    NumberField(stringResource(R.string.manual_protein), protein, { protein = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true)
+                    NumberField(stringResource(R.string.manual_calories), calories, { calories = it.filter(Char::isDigit) }, Modifier.weight(1f), accentColor = AppColors.Calorie)
+                    NumberField(stringResource(R.string.manual_protein), protein, { protein = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Protein)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    NumberField(stringResource(R.string.manual_carbs), carbs, { carbs = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true)
-                    NumberField(stringResource(R.string.manual_fat), fat, { fat = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true)
+                    NumberField(stringResource(R.string.manual_carbs), carbs, { carbs = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Carbs)
+                    NumberField(stringResource(R.string.manual_fat), fat, { fat = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fat)
                 }
 
                 // Meal Type — DropdownMenu styled to match the FoodResultSheet /
@@ -1845,7 +1830,14 @@ private fun ManualEntryDialog(
 }
 
 @Composable
-private fun NumberField(label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, decimal: Boolean = false) {
+private fun NumberField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    decimal: Boolean = false,
+    accentColor: Color = AppColors.Calorie,
+) {
     FudGlassTextField(
         value = value,
         onValueChange = onValueChange,
@@ -1854,6 +1846,7 @@ private fun NumberField(label: String, value: String, onValueChange: (String) ->
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
             keyboardType = if (decimal) androidx.compose.ui.text.input.KeyboardType.Decimal else androidx.compose.ui.text.input.KeyboardType.Number
         ),
+        accentColor = accentColor,
         modifier = modifier
     )
 }

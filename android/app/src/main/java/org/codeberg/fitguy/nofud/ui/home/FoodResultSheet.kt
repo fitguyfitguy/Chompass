@@ -364,6 +364,7 @@ fun FoodResultSheet(
                         editValue = "${scaledInt(editableCalories)}",
                         unit = stringResource(R.string.unit_kcal),
                         unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Calorie,
                         onEdit = { editableCalories = baseDoubleFromText(it).roundToInt() }
                     )
                     SheetHairline()
@@ -373,6 +374,7 @@ fun FoodResultSheet(
                         editValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Protein,
                         onEdit = { editableProtein = baseDoubleFromText(it) }
                     )
                     SheetHairline()
@@ -382,6 +384,7 @@ fun FoodResultSheet(
                         editValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Carbs,
                         onEdit = { editableCarbs = baseDoubleFromText(it) }
                     )
                     SheetHairline()
@@ -391,6 +394,7 @@ fun FoodResultSheet(
                         editValue = MacroValueFormatter.string(scaledMacro(editableFat)),
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Fat,
                         onEdit = { editableFat = baseDoubleFromText(it) }
                     )
                 }
@@ -418,7 +422,7 @@ fun FoodResultSheet(
                         val micros = listOf(
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_sugar), scaledD(editableSugar), gUnit, { editableSugar = baseOptionalFromText(it) }),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_added_sugar), scaledD(editableAddedSugar), gUnit, { editableAddedSugar = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_fiber), scaledD(editableFiber), gUnit, { editableFiber = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_fiber), scaledD(editableFiber), gUnit, { editableFiber = baseOptionalFromText(it) }, AppColors.Fiber),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_saturated_fat), scaledD(editableSaturatedFat), gUnit, { editableSaturatedFat = baseOptionalFromText(it) }),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_mono_fat), scaledD(editableMonounsaturatedFat), gUnit, { editableMonounsaturatedFat = baseOptionalFromText(it) }),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_poly_fat), scaledD(editablePolyunsaturatedFat), gUnit, { editablePolyunsaturatedFat = baseOptionalFromText(it) }),
@@ -448,6 +452,7 @@ fun FoodResultSheet(
                                 unit = spec.unit,
                                 unlocked = nutritionUnlocked,
                                 dim = true,
+                                accentColor = spec.accentColor,
                                 onEdit = spec.onEdit
                             )
                         }
@@ -523,7 +528,8 @@ private data class ReviewNutrientEditSpec(
     val label: String,
     val value: Double?,
     val unit: String,
-    val onEdit: (String) -> Unit
+    val onEdit: (String) -> Unit,
+    val accentColor: Color? = null,
 )
 
 @Composable
@@ -571,12 +577,22 @@ private fun ReviewNutritionValueRow(
     unit: String,
     unlocked: Boolean,
     dim: Boolean = false,
+    accentColor: Color? = null,
     onEdit: (String) -> Unit
 ) {
     var draft by remember { mutableStateOf(editValue) }
     LaunchedEffect(unlocked) {
         if (unlocked) draft = editValue
     }
+    val labelColor = accentColor?.let {
+        if (dim) it.copy(alpha = 0.72f) else it
+    } ?: if (dim) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val valueColor = accentColor ?: MaterialTheme.colorScheme.onSurface
+    val cursorColor = accentColor ?: AppColors.Calorie
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -584,8 +600,7 @@ private fun ReviewNutritionValueRow(
         Text(
             label,
             fontSize = 16.sp,
-            color = if (dim) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onSurface,
+            color = labelColor,
             modifier = Modifier.weight(1f)
         )
         if (unlocked) {
@@ -597,13 +612,13 @@ private fun ReviewNutritionValueRow(
                 },
                 singleLine = true,
                 textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = valueColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.End
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                cursorBrush = androidx.compose.ui.graphics.SolidColor(AppColors.Calorie),
+                cursorBrush = androidx.compose.ui.graphics.SolidColor(cursorColor),
                 modifier = Modifier.width(92.dp)
             )
         } else {
@@ -611,7 +626,7 @@ private fun ReviewNutritionValueRow(
                 displayValue,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = valueColor
             )
         }
         Spacer(Modifier.width(6.dp))
@@ -699,28 +714,32 @@ private fun WhatIfMealImpactDialog(
                         label = stringResource(R.string.nutrition_label_calories),
                         added = "+${entry.calories} kcal",
                         total = profile?.let { "${after.calories} / ${it.effectiveCalories} kcal" }
-                            ?: "${after.calories} kcal"
+                            ?: "${after.calories} kcal",
+                        accentColor = AppColors.Calorie
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_protein),
                         added = "+${whatIfGrams(entry.protein)}",
                         total = profile?.let { "${whatIfGrams(after.protein)} / ${it.effectiveProtein}g" }
-                            ?: whatIfGrams(after.protein)
+                            ?: whatIfGrams(after.protein),
+                        accentColor = AppColors.Protein
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_carbs),
                         added = "+${whatIfGrams(entry.carbs)}",
                         total = profile?.let { "${whatIfGrams(after.carbs)} / ${it.effectiveCarbs}g" }
-                            ?: whatIfGrams(after.carbs)
+                            ?: whatIfGrams(after.carbs),
+                        accentColor = AppColors.Carbs
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_fat),
                         added = "+${whatIfGrams(entry.fat)}",
                         total = profile?.let { "${whatIfGrams(after.fat)} / ${it.effectiveFat}g" }
-                            ?: whatIfGrams(after.fat)
+                            ?: whatIfGrams(after.fat),
+                        accentColor = AppColors.Fat
                     )
                 }
 
@@ -775,7 +794,8 @@ private fun WhatIfMealImpactDialog(
 private fun WhatIfImpactRow(
     label: String,
     added: String,
-    total: String
+    total: String,
+    accentColor: Color = AppColors.Calorie,
 ) {
     Row(
         Modifier
@@ -784,11 +804,11 @@ private fun WhatIfImpactRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
-            Text(label, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            Text(label, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
             Text(
                 added,
                 fontSize = 13.sp,
-                color = AppColors.Calorie,
+                color = accentColor.copy(alpha = 0.85f),
                 fontWeight = FontWeight.Medium
             )
         }

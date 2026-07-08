@@ -371,7 +371,21 @@ internal fun ServingQuantityCard(
 }
 
 @Composable
-internal fun SheetNutritionRow(label: String, value: String, unit: String, dim: Boolean = false) {
+internal fun SheetNutritionRow(
+    label: String,
+    value: String,
+    unit: String,
+    dim: Boolean = false,
+    accentColor: Color? = null,
+) {
+    val labelColor = accentColor?.let {
+        if (dim) it.copy(alpha = 0.72f) else it
+    } ?: if (dim) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val valueColor = accentColor ?: MaterialTheme.colorScheme.onSurface
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -379,15 +393,14 @@ internal fun SheetNutritionRow(label: String, value: String, unit: String, dim: 
         Text(
             label,
             fontSize = 16.sp,
-            color = if (dim) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onSurface,
+            color = labelColor,
             modifier = Modifier.weight(1f)
         )
         Text(
             value,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = valueColor
         )
         Spacer(Modifier.width(6.dp))
         Text(

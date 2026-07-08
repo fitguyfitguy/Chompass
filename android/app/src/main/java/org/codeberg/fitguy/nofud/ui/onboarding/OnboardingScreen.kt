@@ -1671,23 +1671,22 @@ private fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val macroGradient = listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
             MacroCard(
                 label = stringResource(R.string.macro_protein),
                 value = profile.effectiveProtein,
-                gradient = listOf(AppColors.Protein, AppColors.Protein.copy(alpha = 0.75f)),
+                color = AppColors.Protein,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.PROTEIN }
             )
             MacroCard(
                 label = stringResource(R.string.macro_carbs),
                 value = profile.effectiveCarbs,
-                gradient = listOf(AppColors.Carbs, AppColors.Carbs.copy(alpha = 0.75f)),
+                color = AppColors.Carbs,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.CARBS }
             )
             MacroCard(
                 label = stringResource(R.string.macro_fat),
                 value = profile.effectiveFat,
-                gradient = listOf(AppColors.Fat, AppColors.Fat.copy(alpha = 0.75f)),
+                color = AppColors.Fat,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.FAT }
             )
         }
@@ -1814,13 +1813,13 @@ private fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
 private fun MacroCard(
     label: String,
     value: Int,
-    gradient: List<Color>,
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .background(color.copy(alpha = 0.10f))
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -1828,8 +1827,8 @@ private fun MacroCard(
             Text(
                 label,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
-                fontWeight = FontWeight.Medium
+                color = color.copy(alpha = 0.85f),
+                fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.Bottom) {
@@ -1837,15 +1836,13 @@ private fun MacroCard(
                     "$value",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    style = LocalTextStyle.current.copy(
-                        brush = Brush.linearGradient(gradient)
-                    )
+                    color = color,
                 )
                 Spacer(Modifier.width(2.dp))
                 Text(
                     "g",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                    color = color.copy(alpha = 0.7f),
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -1993,9 +1990,15 @@ private fun PlanEditDialog(
     var picked by remember(currentValue) {
         mutableStateOf(currentValue.coerceIn(min, max))
     }
+    val accent = when (field) {
+        PlanField.CALORIES -> AppColors.Calorie
+        PlanField.PROTEIN -> AppColors.Protein
+        PlanField.CARBS -> AppColors.Carbs
+        PlanField.FAT -> AppColors.Fat
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(field.titleRes)) },
+        title = { Text(stringResource(field.titleRes), color = accent) },
         text = {
             NumericWheelPicker(
                 value = picked,
@@ -2009,7 +2012,7 @@ private fun PlanEditDialog(
         },
         confirmButton = {
             TextButton(onClick = { onSave(picked) }) {
-                Text(stringResource(R.string.action_save), color = AppColors.Calorie)
+                Text(stringResource(R.string.action_save), color = accent)
             }
         },
         dismissButton = {

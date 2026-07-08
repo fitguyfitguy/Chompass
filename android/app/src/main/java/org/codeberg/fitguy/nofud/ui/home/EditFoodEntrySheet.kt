@@ -278,28 +278,28 @@ fun EditFoodEntrySheet(
         val mgUnit = stringResource(R.string.unit_mg)
         val mcgUnit = stringResource(R.string.unit_mcg)
         val micros = listOf(
-            Triple(stringResource(R.string.sheet_micro_sugar), scaledD(currentBaseEntry.sugar), gUnit),
-            Triple(stringResource(R.string.sheet_micro_added_sugar), scaledD(currentBaseEntry.addedSugar), gUnit),
-            Triple(stringResource(R.string.sheet_micro_fiber), scaledD(currentBaseEntry.fiber), gUnit),
-            Triple(stringResource(R.string.sheet_micro_saturated_fat), scaledD(currentBaseEntry.saturatedFat), gUnit),
-            Triple(stringResource(R.string.sheet_micro_mono_fat), scaledD(currentBaseEntry.monounsaturatedFat), gUnit),
-            Triple(stringResource(R.string.sheet_micro_poly_fat), scaledD(currentBaseEntry.polyunsaturatedFat), gUnit),
-            Triple(stringResource(R.string.sheet_micro_cholesterol), scaledD(currentBaseEntry.cholesterol), mgUnit),
-            Triple(stringResource(R.string.sheet_micro_sodium), scaledD(currentBaseEntry.sodium), mgUnit),
-            Triple(stringResource(R.string.sheet_micro_potassium), scaledD(currentBaseEntry.potassium), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_trans_fat), scaledD(currentBaseEntry.transFat), gUnit),
-            Triple(stringResource(R.string.nutrition_label_calcium), scaledD(currentBaseEntry.calcium), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_iron), scaledD(currentBaseEntry.iron), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_magnesium), scaledD(currentBaseEntry.magnesium), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_zinc), scaledD(currentBaseEntry.zinc), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_vitamin_a), scaledD(currentBaseEntry.vitaminA), mcgUnit),
-            Triple(stringResource(R.string.nutrition_label_vitamin_c), scaledD(currentBaseEntry.vitaminC), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_vitamin_d), scaledD(currentBaseEntry.vitaminD), mcgUnit),
-            Triple(stringResource(R.string.nutrition_label_vitamin_b12), scaledD(currentBaseEntry.vitaminB12), mcgUnit),
-            Triple(stringResource(R.string.nutrition_label_vitamin_e), scaledD(currentBaseEntry.vitaminE), mgUnit),
-            Triple(stringResource(R.string.nutrition_label_vitamin_k), scaledD(currentBaseEntry.vitaminK), mcgUnit),
-            Triple(stringResource(R.string.nutrition_label_folate), scaledD(currentBaseEntry.folate), mcgUnit),
-            Triple(stringResource(R.string.nutrition_label_omega3), scaledD(currentBaseEntry.omega3), gUnit)
+            EditMicroRow(stringResource(R.string.sheet_micro_sugar), scaledD(currentBaseEntry.sugar), gUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_added_sugar), scaledD(currentBaseEntry.addedSugar), gUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_fiber), scaledD(currentBaseEntry.fiber), gUnit, AppColors.Fiber),
+            EditMicroRow(stringResource(R.string.sheet_micro_saturated_fat), scaledD(currentBaseEntry.saturatedFat), gUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_mono_fat), scaledD(currentBaseEntry.monounsaturatedFat), gUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_poly_fat), scaledD(currentBaseEntry.polyunsaturatedFat), gUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_cholesterol), scaledD(currentBaseEntry.cholesterol), mgUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_sodium), scaledD(currentBaseEntry.sodium), mgUnit),
+            EditMicroRow(stringResource(R.string.sheet_micro_potassium), scaledD(currentBaseEntry.potassium), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_trans_fat), scaledD(currentBaseEntry.transFat), gUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_calcium), scaledD(currentBaseEntry.calcium), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_iron), scaledD(currentBaseEntry.iron), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_magnesium), scaledD(currentBaseEntry.magnesium), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_zinc), scaledD(currentBaseEntry.zinc), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_a), scaledD(currentBaseEntry.vitaminA), mcgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_c), scaledD(currentBaseEntry.vitaminC), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_d), scaledD(currentBaseEntry.vitaminD), mcgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_b12), scaledD(currentBaseEntry.vitaminB12), mcgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_e), scaledD(currentBaseEntry.vitaminE), mgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_k), scaledD(currentBaseEntry.vitaminK), mcgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_folate), scaledD(currentBaseEntry.folate), mcgUnit),
+            EditMicroRow(stringResource(R.string.nutrition_label_omega3), scaledD(currentBaseEntry.omega3), gUnit)
         )
 
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -387,13 +387,13 @@ fun EditFoodEntrySheet(
             item { SheetSectionHeader(stringResource(R.string.sheet_nutrition)) }
             item {
                 SheetPillCard {
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_calories), "${scaledInt(currentBaseEntry.calories)}", stringResource(R.string.unit_kcal))
+                    SheetNutritionRow(stringResource(R.string.nutrition_label_calories), "${scaledInt(currentBaseEntry.calories)}", stringResource(R.string.unit_kcal), accentColor = AppColors.Calorie)
                     SheetHairline()
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(scaledMacro(currentBaseEntry.protein)), stringResource(R.string.unit_g))
+                    SheetNutritionRow(stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(scaledMacro(currentBaseEntry.protein)), stringResource(R.string.unit_g), accentColor = AppColors.Protein)
                     SheetHairline()
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(scaledMacro(currentBaseEntry.carbs)), stringResource(R.string.unit_g))
+                    SheetNutritionRow(stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(scaledMacro(currentBaseEntry.carbs)), stringResource(R.string.unit_g), accentColor = AppColors.Carbs)
                     SheetHairline()
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(scaledMacro(currentBaseEntry.fat)), stringResource(R.string.unit_g))
+                    SheetNutritionRow(stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(scaledMacro(currentBaseEntry.fat)), stringResource(R.string.unit_g), accentColor = AppColors.Fat)
                 }
             }
 
@@ -401,7 +401,7 @@ fun EditFoodEntrySheet(
             // chevron-down when expanded; matches iOS DisclosureGroup behavior.
             // (gUnit / mgUnit / micros hoisted above the LazyColumn so the
             // composable reads happen in @Composable scope.)
-            if (micros.any { it.second != null }) {
+            if (micros.any { it.value != null }) {
                 item {
                     SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
                         Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
@@ -416,10 +416,16 @@ fun EditFoodEntrySheet(
                 if (moreNutritionExpanded) {
                     item {
                         SheetPillCard {
-                            val present = micros.filter { it.second != null }
-                            present.forEachIndexed { idx, (label, value, unit) ->
+                            val present = micros.filter { it.value != null }
+                            present.forEachIndexed { idx, row ->
                                 if (idx > 0) SheetHairline()
-                                SheetNutritionRow(label, String.format("%.1f", value), unit, dim = true)
+                                SheetNutritionRow(
+                                    row.label,
+                                    String.format("%.1f", row.value),
+                                    row.unit,
+                                    dim = true,
+                                    accentColor = row.accentColor,
+                                )
                             }
                         }
                     }
@@ -660,3 +666,10 @@ private fun EditFoodTimeDialog(
         )
     }
 }
+
+private data class EditMicroRow(
+    val label: String,
+    val value: Double?,
+    val unit: String,
+    val accentColor: androidx.compose.ui.graphics.Color? = null,
+)
