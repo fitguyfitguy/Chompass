@@ -62,7 +62,7 @@ data class SettingsUiState(
     val apiKeyMasked: String = "",
     val speechApiKeyMasked: String = "",
     val appearanceMode: String = "system",
-    val appThemeColor: AppThemeColor = AppThemeColor.NOFUD_PINK,
+    val appThemeColor: AppThemeColor = AppThemeColor.TEAL,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val userContext: String = "",

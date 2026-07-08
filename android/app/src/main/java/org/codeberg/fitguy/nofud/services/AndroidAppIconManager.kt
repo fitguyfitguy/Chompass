@@ -41,7 +41,7 @@ object AndroidAppIconManager {
     }
 
     private fun applyLauncherIcon(context: Context, themeColor: AppThemeColor) {
-        val selectedLauncher = launcherActivities[themeColor] ?: launcherActivities.getValue(AppThemeColor.NOFUD_PINK)
+        val selectedLauncher = launcherActivities[themeColor] ?: launcherActivities.getValue(AppThemeColor.TEAL)
         val packageManager = context.packageManager
         val packageName = context.packageName
 

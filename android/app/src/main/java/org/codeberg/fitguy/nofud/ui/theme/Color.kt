@@ -16,7 +16,7 @@ enum class AppThemeColor(
     ORANGE("orange", R.string.theme_color_orange, Color(0xFFFF9500), Color(0xFFFFB340)),
     GREEN("green", R.string.theme_color_green, Color(0xFF34C759), Color(0xFF62D46F)),
     MINT("mint", R.string.theme_color_mint, Color(0xFF00C7BE), Color(0xFF66D4CF)),
-    TEAL("teal", R.string.theme_color_teal, Color(0xFF30B0C7), Color(0xFF64D2FF)),
+    TEAL("teal", R.string.theme_color_teal, Color(0xFF0D9488), Color(0xFF2DD4BF)),
     BLUE("blue", R.string.theme_color_blue, Color(0xFF0A84FF), Color(0xFF5EAEFF)),
     PURPLE("purple", R.string.theme_color_purple, Color(0xFFAF52DE), Color(0xFFBF5AF2)),
     YELLOW("yellow", R.string.theme_color_yellow, Color(0xFFFFCC00), Color(0xFFFFD60A)),
@@ -31,15 +31,15 @@ enum class AppThemeColor(
     LIME("lime", R.string.theme_color_lime, Color(0xFFA0D911), Color(0xFFC3E956));
 
     companion object {
-        const val DEFAULT_KEY = "fudPink"
+        const val DEFAULT_KEY = "teal"
 
         fun fromKey(key: String?): AppThemeColor =
-            values().firstOrNull { it.key == key } ?: NOFUD_PINK
+            values().firstOrNull { it.key == key } ?: TEAL
     }
 }
 
 object AppColors {
-    private var activeThemeColor: AppThemeColor = AppThemeColor.NOFUD_PINK
+    private var activeThemeColor: AppThemeColor = AppThemeColor.TEAL
 
     fun setThemeColor(themeColor: AppThemeColor) {
         activeThemeColor = themeColor
@@ -69,34 +69,34 @@ object AppColors {
     val CalorieGradient: Brush
         get() = Brush.linearGradient(listOf(CalorieStart, CalorieEnd))
 
-    val AppBackgroundLight = Color(0xFFF0F0F3)
-    val AppBackgroundDark = Color(0xFF0C0C0C)
+    val AppBackgroundLight = Color(0xFFF8FAFC)
+    val AppBackgroundDark = Color(0xFF0F172A)
 
     val AppCardLight = Color(0xFFFFFFFF)
-    val AppCardDark = Color(0xFF1C1C1E)
+    val AppCardDark = Color(0xFF111827)
 
-    val OnLight = Color(0xFF1C1C1E)
-    val OnDark = Color(0xFFF2F2F7)
+    val OnLight = Color(0xFF0F172A)
+    val OnDark = Color(0xFFE2E8F0)
 
-    val MutedLight = Color(0xFF8E8E93)
-    val MutedDark = Color(0xFF8E8E93)
+    val MutedLight = Color(0xFF64748B)
+    val MutedDark = Color(0xFF94A3B8)
 
-    val DividerLight = Color(0xFFE5E5EA)
-    val DividerDark = Color(0xFF2C2C2E)
+    val DividerLight = Color(0xFFE2E8F0)
+    val DividerDark = Color(0xFF334155)
 
     // Cool-minimal translucent surface tokens (replaces glass sheen stacks).
-    val TranslucentSurfaceLight = Color(0xFFF5F5F7).copy(alpha = 0.78f)
-    val TranslucentSurfaceDark = Color(0xFF1A1A1E).copy(alpha = 0.80f)
+    val TranslucentSurfaceLight = Color(0xFFF8FAFC).copy(alpha = 0.78f)
+    val TranslucentSurfaceDark = Color(0xFF111827).copy(alpha = 0.80f)
 
-    val TranslucentFieldLight = Color(0xFFE8E8ED).copy(alpha = 0.65f)
-    val TranslucentFieldDark = Color(0xFF2C2C2E).copy(alpha = 0.55f)
+    val TranslucentFieldLight = Color(0xFFE2E8F0).copy(alpha = 0.65f)
+    val TranslucentFieldDark = Color(0xFF334155).copy(alpha = 0.55f)
 
-    val HairlineBorderLight = Color(0xFF3C3C43).copy(alpha = 0.18f)
-    val HairlineBorderDark = Color(0xFFEBEBF5).copy(alpha = 0.14f)
+    val HairlineBorderLight = Color(0xFF334155).copy(alpha = 0.18f)
+    val HairlineBorderDark = Color(0xFFE2E8F0).copy(alpha = 0.14f)
 
-    val NavBarLight = Color(0xFFF5F5F7).copy(alpha = 0.80f)
-    val NavBarDark = Color(0xFF1A1A1E).copy(alpha = 0.85f)
+    val NavBarLight = Color(0xFFF8FAFC).copy(alpha = 0.80f)
+    val NavBarDark = Color(0xFF111827).copy(alpha = 0.85f)
 
     val ActivePillLight = Color.White.copy(alpha = 0.55f)
-    val ActivePillDark = Color(0xFF2C2C2E).copy(alpha = 0.72f)
+    val ActivePillDark = Color(0xFF334155).copy(alpha = 0.72f)
 }

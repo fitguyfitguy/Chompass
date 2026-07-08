@@ -41,7 +41,7 @@ private fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
 @Composable
 fun NoFUDTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    themeColor: AppThemeColor = AppThemeColor.NOFUD_PINK,
+    themeColor: AppThemeColor = AppThemeColor.TEAL,
     content: @Composable () -> Unit
 ) {
     AppColors.setThemeColor(themeColor)

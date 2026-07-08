@@ -39,7 +39,7 @@ data class WidgetSnapshot(
     val fatGoal: Int,
     /** The user's 4 selected Home nutrients. Null in snapshots persisted by older builds. */
     val homeNutrients: List<WidgetNutrient>? = null,
-    /** User's theme gradient as raw RGB hex (e.g. 0xFF375F). Fud Pink when absent. */
+    /** User's theme gradient as raw RGB hex (e.g. 0x0D9488). Teal when absent. */
     val themeStartHex: Int? = null,
     val themeEndHex: Int? = null
 ) {

@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.NoFUD" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.NoFUD" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/nofud_primary</item>
+        <item name="android:colorPrimaryDark">@color/nofud_primary_dark</item>
+        <item name="android:colorAccent">@color/nofud_accent</item>
+        <item name="android:statusBarColor">@color/nofud_primary_dark</item>
+        <item name="android:navigationBarColor">@color/nofud_surface</item>
+        <item name="android:windowBackground">@color/nofud_background</item>
+    </style>
 
     <style name="Theme.NoFUD.Splash.Base" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/app_splash_background</item>
         <item name="postSplashScreenTheme">@style/Theme.NoFUD</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash" parent="Theme.NoFUD.Splash.Pink" />
+    <style name="Theme.NoFUD.Splash" parent="Theme.NoFUD.Splash.Teal" />
 
     <style name="Theme.NoFUD.Splash.Pink" parent="Theme.NoFUD.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
