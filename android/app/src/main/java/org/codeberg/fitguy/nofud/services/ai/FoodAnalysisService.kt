@@ -7,6 +7,8 @@ import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
+import org.codeberg.fitguy.nofud.models.GoalFormulaReference
+import org.codeberg.fitguy.nofud.models.NutritionConstants
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.WeightForecast
 import org.codeberg.fitguy.nofud.services.health.HealthEnergySummary
@@ -159,12 +161,18 @@ class FoodAnalysisService(
             if (forecast != null && forecast.hasEnoughData) {
                 appendLine()
                 appendLine("OBSERVED DATA — from the user's OWN logs (prefer this over the formula when reliable):")
-                appendLine("- Logged intake: avg ${forecast.avgDailyCalories} kcal/day across ${forecast.daysOfFoodData} logged days")
+                val intakeBasis = if (forecast.usesCalendarDayAverage) {
+                    "avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days — sparse logging)"
+                } else {
+                    "avg ${forecast.avgDailyCalories} kcal/day across ${forecast.daysOfFoodData} logged days"
+                }
+                appendLine("- Logged intake: $intakeBasis")
                 val obs = forecast.observedWeeklyChangeKg
                 if (obs != null) {
                     val obsStr = if (weightMetric) String.format(Locale.US, "%+.2f kg/week", obs)
                         else String.format(Locale.US, "%+.2f lb/week", obs * 2.20462)
-                    val empiricalTdee = forecast.avgDailyCalories - (obs * 7700.0 / 7.0).roundToInt()
+                    val empiricalTdee = forecast.avgDailyCalories -
+                        NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
                     appendLine("- Observed weight trend: $obsStr from ${forecast.weightEntriesUsed} weigh-ins")
                     appendLine("- Implied actual maintenance (logged intake minus the weekly change): ~$empiricalTdee kcal/day")
                 } else {
@@ -200,9 +208,9 @@ class FoodAnalysisService(
             FORMULAS
             - BMR (Mifflin-St Jeor): base = 10*weightKg + 6.25*heightCm - 5*age - 161; if male add 166; female/other use base.
             - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg.
-            - TDEE = BMR * activity multiplier. Multipliers: sedentary 1.2, light 1.375, moderate 1.465, active 1.55, very active 1.725, extra active 1.9.
-            - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; lose: -(weeklyChangeKg*7000/7); gain: +(weeklyChangeKg*7000/7).
-            - Protein: aim NEAR the formula protein value shown below — that value is the activity multiplier (sedentary 0.8, light 1.2, moderate 1.6, active 1.8, very active 2.0, extra active 2.2 g/kg; +0.2 if losing) applied to the user's ${if (profile.bodyFatPercentage != null) "lean body mass" else "full bodyweight"}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
+            - TDEE = BMR * activity multiplier. Multipliers: ${GoalFormulaReference.activityMultipliersLine()}.
+            - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${GoalFormulaReference.calorieAdjustmentLine()}.
+            - Protein: aim NEAR the formula protein value shown below — that value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's ${if (profile.bodyFatPercentage != null) "lean body mass" else "full bodyweight"}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
             - Fat: 0.6 g/kg of full bodyweight.
             - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
             BMR method in effect for this user: $bmrMethod.

@@ -1472,6 +1472,37 @@ fun CalculationMethodsScreen(
             }
 
             item {
+                CalcMethodSection(stringResource(R.string.settings_calc_sec_forecast)) {
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_forecast_name),
+                        usedWhen = stringResource(R.string.settings_calc_forecast_used),
+                        formula = stringResource(R.string.settings_calc_forecast_formula),
+                        citation = "Hall KD, et al. (2011). \"Quantification of the effect of energy imbalance on bodyweight.\" Lancet 378(9793):826–837.",
+                        url = "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(11)60812-X/fulltext"
+                    )
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_adaptive_name),
+                        usedWhen = stringResource(R.string.settings_calc_adaptive_used),
+                        formula = stringResource(R.string.settings_calc_adaptive_formula),
+                        citation = "Adaptive nudge limits are app policy guardrails, not a published clinical protocol. Energy conversion uses the same 7,700 kcal/kg constant as goal pacing.",
+                        url = null
+                    )
+                }
+            }
+
+            item {
+                CalcMethodSection(stringResource(R.string.settings_calc_sec_body)) {
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_body_name),
+                        usedWhen = stringResource(R.string.settings_calc_body_used),
+                        formula = stringResource(R.string.settings_calc_body_formula),
+                        citation = "Hodgdon JA, Beckett MB. (1984). \"Prediction of percent body fat for U.S. Navy men and women from body circumferences and height.\" Report No. 84–29, Naval Health Research Center.",
+                        url = null
+                    )
+                }
+            }
+
+            item {
                 Column(
                     Modifier
                         .fillMaxWidth()

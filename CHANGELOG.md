@@ -4,6 +4,20 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Nutrition calculation audit documentation ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md)) with formula register, scientific policy decisions, and release checklist
+- Unit tests for BMR/TDEE, macro goals, keto carb heuristics, weight forecast, adaptive goals, and body-composition estimates
+- Calculation Methods UI sections for weight forecast, adaptive goals, and tape-measure body metrics
+- Golden scenario tests (`CalculationGoldenScenariosTest`) and shared `GoalFormulaReference` for AI prompt parity
+
+### Changed
+
+- Unified energy-balance constant to **7,700 kcal/kg** across goal pacing, forecasts, adaptive goals, and AI prompts (was 7,000 in goal math only; ~10% underestimate at 0.5 kg/week pace)
+- Weight forecast uses **calendar-day intake averaging** when fewer than 50% of lookback days have food logs
+- Observed weight trend now uses **Theil–Sen** robust regression instead of ordinary least squares
+- AI goal prompts pull multiplier/protein constants from shared `GoalFormulaReference`
+
 ## [1.7.0] - 2026-07-09
 
 ### Added

@@ -89,6 +89,17 @@ Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 
 See the plan in `.cursor/plans/` or project issues for the full F-Droid checklist.
 
+## Calculation changes
+
+Before shipping formula, constant, or guardrail changes:
+
+1. Update implementation and [`NutritionConstants.kt`](android/app/src/main/java/org/codeberg/fitguy/nofud/models/NutritionConstants.kt) when applicable
+2. Update [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md) (formula register + policy table)
+3. Update in-app strings (`settings_calc_*` in `strings.xml`) if user-visible
+4. Add or adjust unit tests under `android/app/src/test/`
+5. Document user impact in `CHANGELOG.md`
+6. Run `devenv shell bash -lc 'cd android && ./gradlew test'`
+
 ## APK size baselines (1.4.0)
 
 - `fdroid` release APKs with ML Kit barcode scanning: ~45 MB (universal and per-ABI splits are similar)

@@ -77,11 +77,11 @@ data class UserProfile(
         WeightGoal.MAINTAIN -> 0
         WeightGoal.LOSE -> {
             val rate = weeklyChangeKg ?: 0.5
-            -(rate * 7000 / 7).toInt()
+            -NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(rate)
         }
         WeightGoal.GAIN -> {
             val rate = weeklyChangeKg ?: 0.5
-            (rate * 7000 / 7).toInt()
+            NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(rate)
         }
     }
 

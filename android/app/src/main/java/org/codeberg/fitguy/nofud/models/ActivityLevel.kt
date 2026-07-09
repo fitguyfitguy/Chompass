@@ -37,6 +37,7 @@ enum class ActivityLevel {
     val multiplier: Double get() = when (this) {
         SEDENTARY -> 1.2
         LIGHT -> 1.375
+        // Intentionally between FAO/WHO "light" (1.375) and "moderate" (1.55) — see GoalFormulaReference.
         MODERATE -> 1.465
         ACTIVE -> 1.55
         VERY_ACTIVE -> 1.725

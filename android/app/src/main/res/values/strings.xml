@@ -999,7 +999,7 @@
     <string name="settings_calc_katch_used">Used automatically when you\'ve entered a body fat %. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = weight × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Activity-multiplier method</string>
-    <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>
+    <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. Moderate uses 1.465 — between FAO/WHO light (1.375) and moderate (1.55) — for desk-active users who exercise a few times per week. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>
     <string name="settings_calc_tdee_formula">Sedentary: 1.2 · Light: 1.375 · Moderate: 1.465 · Active: 1.55 · Very Active: 1.725 · Extra Active: 1.9</string>
     <string name="settings_calc_target_name">Maintenance &amp;amp; goal adjustment</string>
     <string name="settings_calc_target_used">Maintenance starts from your TDEE - or, when Energy Burn is on, your measured Health Connect burn (a 14-day Active + Basal average) instead of the formula estimate. The AI refines maintenance against your logged intake and weight trend, then applies your goal: a weekly weight-change rate becomes a daily calorie deficit (Lose) or surplus (Gain).</string>
@@ -1009,6 +1009,17 @@
     <string name="settings_calc_split_formula">Protein: ~0.8-2.2 g per kg by activity level (raised slightly when losing)\nFat: ~0.6 g per kg bodyweight\nCarbs: remaining calories ÷ 4 kcal/g</string>
     <string name="settings_calc_micro_name">Per-meal estimates</string>
     <string name="settings_calc_micro_used">Calorie, macro, fiber, sugar, saturated fat, cholesterol, sodium, potassium and other micronutrient values returned per meal are AI-generated estimates from the food image, voice transcript, or text description, using the AI provider you selected.</string>
+    <string name="settings_calc_sec_forecast">Weight trend &amp; adaptive goals</string>
+    <string name="settings_calc_forecast_name">Energy-balance forecast</string>
+    <string name="settings_calc_forecast_used">Progress charts and goal ETA use your recent food logs and weigh-ins (up to 90 days). When you log on fewer than half the days in the window, intake is averaged across calendar days so occasional big-log days do not inflate the forecast. Otherwise intake is averaged across logged days only. Observed weight trend uses a robust median-slope (Theil–Sen) fit on scale entries.</string>
+    <string name="settings_calc_forecast_formula">predicted kg/week = (avgDailyCalories − TDEE) × 7 ÷ 7,700\nobserved kg/week = Theil–Sen slope × 7\nsparse logging: avg intake ÷ calendar days when logged days &lt; 50%% of window</string>
+    <string name="settings_calc_adaptive_name">Adaptive Goals (weekly)</string>
+    <string name="settings_calc_adaptive_used">When enabled, NoFUD compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins — or Health Connect energy data.</string>
+    <string name="settings_calc_adaptive_formula">adjustment = (targetWeeklyChange − observedWeeklyChange) × 7,700 ÷ 7\nclamped to ±150 kcal/day</string>
+    <string name="settings_calc_sec_body">Body composition estimates</string>
+    <string name="settings_calc_body_name">Tape-measure derived metrics</string>
+    <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are field estimates for coaching context — they do not override BMR unless you separately enter a body-fat percentage on your profile.</string>
+    <string name="settings_calc_body_formula">Waist-to-hip = waist ÷ hips\nWaist-to-height = waist ÷ height\nUS Navy %BF: sex-specific log equations (neck, waist, hips, height)</string>
     <string name="settings_not_medical_title">Not medical advice</string>
     <string name="settings_not_medical_body">NoFUD is an estimation tool, not a clinical instrument. Predictive equations carry inherent error (typically ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
     <string name="settings_safety_medical">Safety &amp; Medical</string>

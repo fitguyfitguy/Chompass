@@ -1,11 +1,11 @@
 package org.codeberg.fitguy.nofud.services
 
 import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.models.NutritionConstants
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.math.abs
 import kotlin.math.max
@@ -32,7 +32,11 @@ data class WeightForecast(
     val hasEnoughData: Boolean,
     val trendsDisagree: Boolean,
     val daysOfFoodData: Int,
-    val weightEntriesUsed: Int
+    val weightEntriesUsed: Int,
+    /** Calendar days in the 90-day lookback window (inclusive). */
+    val calendarDaysInWindow: Int = WeightForecast.MAX_LOOKBACK_DAYS,
+    /** True when sparse logging triggered calendar-day intake averaging. */
+    val usesCalendarDayAverage: Boolean = false,
 ) {
     companion object {
         const val MAX_LOOKBACK_DAYS = 90
@@ -51,7 +55,7 @@ object AdaptiveGoalService {
     private const val MINIMUM_WEIGHT_ENTRIES = 3
     private const val MINIMUM_DAILY_ADJUSTMENT = 25
     private const val MAXIMUM_DAILY_ADJUSTMENT = 150
-    private const val CALORIES_PER_KG = 7_700.0
+    private val caloriesPerKg: Double get() = NutritionConstants.KCAL_PER_KG_BODY_MASS
 
     /**
      * [measuredTdee] (Health Connect active + basal energy, kcal/day) is preferred over the
@@ -80,12 +84,13 @@ object AdaptiveGoalService {
 
         val limitedAdjustment: Int = if (hasWeightTrend && observedWeeklyChangeKg != null) {
             // Primary: correct from the real weight trend vs the target pace.
-            val raw = (targetWeeklyChangeKg - observedWeeklyChangeKg) * CALORIES_PER_KG / 7.0
+            val raw = (targetWeeklyChangeKg - observedWeeklyChangeKg) * caloriesPerKg / 7.0
             raw.roundToInt().coerceIn(-MAXIMUM_DAILY_ADJUSTMENT, MAXIMUM_DAILY_ADJUSTMENT)
         } else if (measuredTdee != null) {
             // Not enough weigh-ins/food yet, but Health Connect gives measured burn: steer the
             // target toward measured maintenance + the goal pace.
-            val targetCalories = measuredTdee + (targetWeeklyChangeKg * CALORIES_PER_KG / 7.0).roundToInt()
+            val targetCalories = measuredTdee +
+                NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(targetWeeklyChangeKg)
             (targetCalories - currentCalories).coerceIn(-MAXIMUM_DAILY_ADJUSTMENT, MAXIMUM_DAILY_ADJUSTMENT)
         } else {
             return AdaptiveGoalResult(
@@ -171,18 +176,20 @@ object WeightAnalysisService {
         val recentFoods = foods.filter { it.timestamp in cutoff..now }
         val daysLogged = recentFoods.map { it.timestamp.atZone(zone).toLocalDate() }.toSet().size
         val totalRecentCal = recentFoods.sumOf { it.calories }
-        val avgDailyCal = if (daysLogged > 0) totalRecentCal / daysLogged else 0
+        val calendarDays = WeightForecastMath.calendarDaysInclusive(cutoff, now, zone)
+        val intake = WeightForecastMath.averageDailyIntake(totalRecentCal, daysLogged, calendarDays)
+        val avgDailyCal = intake.avgDailyCalories
 
         val tdee = profile.tdee.toInt()
         val balance = avgDailyCal - tdee
         // 7,700 kcal ≈ 1 kg body fat (ISSN standard for deficit/surplus math).
-        val predictedWeeklyKg = balance.toDouble() * 7.0 / 7_700.0
+        val predictedWeeklyKg = balance.toDouble() * 7.0 / NutritionConstants.KCAL_PER_KG_BODY_MASS
 
         val sortedWeights = weights.sortedByDescending { it.date }
         val currentWeight = sortedWeights.firstOrNull()?.weightKg ?: profile.weightKg
 
         val regressionWindow = sortedWeights.filter { it.date >= cutoff }
-        val observedWeeklyKg = linearRegressionSlopePerDay(regressionWindow)?.let { it * 7.0 }
+        val observedWeeklyKg = WeightForecastMath.theilSenSlopePerDay(regressionWindow, zone)?.let { it * 7.0 }
 
         val pred30 = currentWeight + predictedWeeklyKg * 30.0 / 7.0
         val pred60 = currentWeight + predictedWeeklyKg * 60.0 / 7.0
@@ -206,9 +213,11 @@ object WeightAnalysisService {
 
         val hasEnoughData = daysLogged >= 2 && weights.size >= 2
 
-        val trendsDisagree = observedWeeklyKg?.let { observed ->
-            hasEnoughData && abs(predictedWeeklyKg - observed) > 0.3
-        } ?: false
+        val trendsDisagree = WeightForecastMath.trendsDisagree(
+            predictedWeeklyKg,
+            observedWeeklyKg,
+            hasEnoughData,
+        )
 
         return WeightForecast(
             avgDailyCalories = avgDailyCal,
@@ -225,34 +234,9 @@ object WeightAnalysisService {
             hasEnoughData = hasEnoughData,
             trendsDisagree = trendsDisagree,
             daysOfFoodData = daysLogged,
-            weightEntriesUsed = regressionWindow.size
+            weightEntriesUsed = regressionWindow.size,
+            calendarDaysInWindow = intake.calendarDaysInWindow,
+            usesCalendarDayAverage = intake.usesCalendarDayAverage,
         )
     }
-
-    /**
-     * Slope of a simple linear regression (y = mx + b) over weight entries, returning m in
-     * kg per day. Returns null if fewer than 2 entries or all x's are the same.
-     */
-    private fun linearRegressionSlopePerDay(entries: List<WeightEntry>): Double? {
-        if (entries.size < 2) return null
-        val xs = entries.map { it.date.epochSecond.toDouble() }
-        val ys = entries.map { it.weightKg }
-        val n = xs.size.toDouble()
-        val meanX = xs.sum() / n
-        val meanY = ys.sum() / n
-        var num = 0.0
-        var den = 0.0
-        for (i in xs.indices) {
-            val dx = xs[i] - meanX
-            num += dx * (ys[i] - meanY)
-            den += dx * dx
-        }
-        if (den == 0.0) return null
-        val kgPerSecond = num / den
-        return kgPerSecond * 86_400.0
-    }
 }
-
-@Suppress("unused")
-private fun Instant.toLocalDateInZone(zone: ZoneId): LocalDate =
-    this.atZone(zone).toLocalDate()
