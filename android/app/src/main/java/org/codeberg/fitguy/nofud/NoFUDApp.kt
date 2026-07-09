@@ -19,6 +19,7 @@ import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.ai.ChatService
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
+import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
 import org.codeberg.fitguy.nofud.services.speech.SpeechService
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +48,7 @@ class NoFUDApp : Application() {
         super.onCreate()
         container = AppContainer(this)
         container.notifications.createChannels()
+        appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         container.widgetSnapshotWriter.observe().launchIn(appScope)
         // Re-arm the daily weight-log alarm on every cold start. AlarmManager
         // drops scheduled alarms on device reboot and (sometimes) on app
@@ -103,6 +105,7 @@ class AppContainer(app: NoFUDApp) {
     val imageStore = FoodImageStore(app)
     val notifications = NotificationService(app)
     val health = HealthConnectManager(app)
+    val homeActivityReader = HomeActivityReader(health, prefs)
 
     val profileRepository = ProfileRepository(prefs)
     val foodRepository = FoodRepository(prefs, health)
@@ -115,7 +118,7 @@ class AppContainer(app: NoFUDApp) {
     val chatService = ChatService(prefs, keyStore)
     val speechService = SpeechService(prefs, keyStore)
 
-    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository)
+    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader)
     val testDataSeeder = TestDataSeeder(this)
 
     /**

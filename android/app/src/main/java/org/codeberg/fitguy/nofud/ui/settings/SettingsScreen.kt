@@ -58,6 +58,7 @@ import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DeleteSweep
@@ -585,6 +586,12 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
 
             // Section 3 — App Settings (matches iOS Section "App Settings")
             SectionCard(title = stringResource(R.string.settings_section_app)) {
+                SettingRow(
+                    stringResource(R.string.settings_home_display),
+                    "",
+                    icon = Icons.Outlined.Dashboard
+                ) { nav.navigate(NoFUDRoutes.HOME_DISPLAY) }
+                HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_appearance),
                     when (ui.appearanceMode) {
@@ -2584,7 +2591,8 @@ private fun SettingRow(
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
+            maxLines = 1,
         )
         Icon(
             if (inlineMenu) Icons.Filled.UnfoldMore else Icons.Filled.ChevronRight,

@@ -146,7 +146,15 @@ import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import org.codeberg.fitguy.nofud.ui.components.InAppCameraCaptureDialog
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
 import org.codeberg.fitguy.nofud.ui.components.MacroChip
+import org.codeberg.fitguy.nofud.ui.components.StepsCard
 import org.codeberg.fitguy.nofud.ui.components.MacroCard
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
@@ -181,6 +189,14 @@ fun HomeScreen(container: AppContainer) {
     val ctx = LocalContext.current
     val weekStartsOnMonday by container.prefs.weekStartsOnMonday.collectAsState(initial = true)
     val allEntries by container.foodRepository.entries.collectAsState(initial = emptyList())
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) vm.refreshActivitySnapshot()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     var showText by remember { mutableStateOf(false) }
     var showVoice by remember { mutableStateOf(false) }
@@ -349,7 +365,30 @@ fun HomeScreen(container: AppContainer) {
                     }
                 ) {
                     Spacer(Modifier.height(4.dp))
-                    CalorieHero(current = ui.caloriesToday, goal = ui.profile?.effectiveCalories ?: 2000)
+                    val baseGoal = ui.baseCalorieGoal
+                    val activeCalories = ui.activitySnapshot.activeCalories
+                    val calorieMode = ui.effectiveCalorieMode
+                    CalorieHero(
+                        current = ui.caloriesToday,
+                        baseGoal = baseGoal,
+                        activeCalories = activeCalories,
+                        displayMode = calorieMode,
+                    )
+                    if (ui.homeDisplay.showSteps) {
+                        Spacer(Modifier.height(12.dp))
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            StepsCard(
+                                steps = ui.activitySnapshot.steps,
+                                goal = ui.homeDisplay.stepGoal,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(20.dp))
                     Row(
                         Modifier
@@ -404,7 +443,8 @@ fun HomeScreen(container: AppContainer) {
                             totalCalories = group.totalCalories,
                             totalProtein = group.totalProtein,
                             totalCarbs = group.totalCarbs,
-                            totalFat = group.totalFat
+                            totalFat = group.totalFat,
+                            macroChips = ui.foodLogMacroChips,
                         )
                     }
                     itemsIndexed(group.entries, key = { _, entry -> entry.id }) { index, entry ->
@@ -435,7 +475,8 @@ fun HomeScreen(container: AppContainer) {
                                         entry = entry,
                                         isFavorite = ui.isFavorite(entry),
                                         rowShape = rowShape,
-                                        isSelected = isSelected
+                                        isSelected = isSelected,
+                                        macroChips = ui.foodLogMacroChips,
                                     )
                                 }
                             } else {
@@ -444,6 +485,7 @@ fun HomeScreen(container: AppContainer) {
                                     entry = entry,
                                     isFavorite = isFav,
                                     rowShape = rowShape,
+                                    macroChips = ui.foodLogMacroChips,
                                     onTap = { editingEntry = entry },
                                     onLongPress = { selectedEntryIds = setOf(entry.id) },
                                     onDelete = { vm.deleteEntry(entry.id) },
@@ -809,11 +851,20 @@ private fun shortDay(dow: DayOfWeek): String = when (dow) {
  *   .padding(.vertical, 20)
  */
 @Composable
-private fun CalorieHero(current: Int, goal: Int) {
-    val ratio = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
-    // Fill-from-zero on app open. lastEpoch is saveable so it survives tab switches
-    // (where Home leaves/re-enters composition) — only a real app-open (new epoch)
-    // replays the sweep; tab returns snap to the current value.
+private fun CalorieHero(
+    current: Int,
+    baseGoal: Int,
+    activeCalories: Int,
+    displayMode: HomeCalorieDisplayMode,
+) {
+    val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
+    val remaining = HomeCalorieDisplay.remaining(displayMode, current, baseGoal, activeCalories)
+    val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
+    val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
+    val goalLabel = when (displayMode) {
+        HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal
+        else -> baseGoal
+    }
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatedRatio = remember { Animatable(if (lastEpoch == epoch) ratio else 0f) }
@@ -827,9 +878,12 @@ private fun CalorieHero(current: Int, goal: Int) {
             animatedRatio.animateTo(ratio, spec)
         }
     }
-    val remaining = maxOf(0, goal - current)
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val progressColor = MaterialTheme.colorScheme.primary
+    val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
+    val baseTrackColor = progressColor.copy(alpha = 0.28f)
+    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val tertiary = MaterialTheme.colorScheme.tertiary
 
     Box(
         modifier = Modifier
@@ -837,8 +891,6 @@ private fun CalorieHero(current: Int, goal: Int) {
             .padding(top = 8.dp, bottom = 4.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-        // Segmented (dashed) semicircle speedometer arc. Fixed 260dp dome to mirror
-        // iOS CalorieGauge's hard .frame(width: 260) (244dp arc + 16dp stroke = 260dp).
         Canvas(
             modifier = Modifier
                 .width(260.dp)
@@ -857,6 +909,44 @@ private fun CalorieHero(current: Int, goal: Int) {
                 size = arcSize,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
+            if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
+                val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
+                val bonusSweep = (180f - baseSweep).coerceAtLeast(0f)
+                if (baseSweep > 0f) {
+                    drawArc(
+                        color = baseTrackColor,
+                        startAngle = 180f,
+                        sweepAngle = baseSweep,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round)
+                    )
+                }
+                if (bonusSweep > 0f) {
+                    drawArc(
+                        color = bonusColor,
+                        startAngle = 180f + baseSweep,
+                        sweepAngle = bonusSweep,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round)
+                    )
+                }
+            }
+            if (displayMode == HomeCalorieDisplayMode.DUAL && activeCalories > 0 && baseGoal > 0) {
+                val burnSweep = (180f * (activeCalories.toFloat() / baseGoal.toFloat())).coerceIn(4f, 36f)
+                drawArc(
+                    color = tertiary.copy(alpha = 0.35f),
+                    startAngle = 180f,
+                    sweepAngle = burnSweep,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(width = stroke * 0.55f, cap = StrokeCap.Round)
+                )
+            }
             drawArc(
                 color = progressColor,
                 startAngle = 180f,
@@ -868,18 +958,17 @@ private fun CalorieHero(current: Int, goal: Int) {
             )
         }
 
-        // Centered readout, sitting inside the dome
         Column(
             modifier = Modifier.padding(top = 44.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
-                "CALORIES",
+                stringResource(R.string.home_calories_label),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.5.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = muted
             )
             Text(
                 "$current",
@@ -888,9 +977,32 @@ private fun CalorieHero(current: Int, goal: Int) {
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
             )
-            // Flame + remaining, mirroring iOS HStack(spacing: 5) { flame.fill (11pt) ;
-            // Text("\(remaining) left") } tinted to AppColors.calorie — a pink monochrome
-            // glyph, not a multicolor emoji, and the count is un-grouped (no thousands comma).
+            Text(
+                stringResource(R.string.home_calorie_of_goal, goalLabel),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = muted,
+            )
+            if (integratesBurn) {
+                Text(
+                    stringResource(R.string.home_calorie_active_bonus, activeCalories),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = tertiary,
+                )
+                if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
+                    Text(
+                        stringResource(
+                            R.string.home_calorie_goal_breakdown,
+                            baseGoal,
+                            activeCalories,
+                        ),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = muted
+                    )
+                }
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -902,7 +1014,11 @@ private fun CalorieHero(current: Int, goal: Int) {
                     modifier = Modifier.size(13.dp)
                 )
                 Text(
-                    "$remaining left",
+                    when (displayMode) {
+                        HomeCalorieDisplayMode.NET ->
+                            stringResource(R.string.home_calories_net_left, remaining)
+                        else -> stringResource(R.string.home_calories_left, remaining)
+                    },
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
@@ -962,7 +1078,8 @@ private fun MealSectionHeader(
     totalCalories: Int? = null,
     totalProtein: Double = 0.0,
     totalCarbs: Double = 0.0,
-    totalFat: Double = 0.0
+    totalFat: Double = 0.0,
+    macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     // iOS layout: small dim icon + sentence-case label, regular weight ~17sp.
     Row(
@@ -988,12 +1105,21 @@ private fun MealSectionHeader(
         if (totalCalories != null) {
             Spacer(Modifier.weight(1f))
             val summary = buildAnnotatedString {
-                append("$totalCalories kcal · ")
-                withStyle(SpanStyle(color = AppColors.Protein)) { append("${totalProtein.roundToInt()}P") }
-                append(' ')
-                withStyle(SpanStyle(color = AppColors.Carbs)) { append("${totalCarbs.roundToInt()}C") }
-                append(' ')
-                withStyle(SpanStyle(color = AppColors.Fat)) { append("${totalFat.roundToInt()}F") }
+                append("$totalCalories kcal")
+                if (macroChips.isNotEmpty()) {
+                    append(" · ")
+                    macroChips.forEachIndexed { index, chip ->
+                        if (index > 0) append(' ')
+                        val value = when (chip) {
+                            FoodLogMacroChip.PROTEIN -> totalProtein.roundToInt()
+                            FoodLogMacroChip.CARBS -> totalCarbs.roundToInt()
+                            FoodLogMacroChip.FAT -> totalFat.roundToInt()
+                            else -> 0
+                        }
+                        val color = chip.macroKind()?.color() ?: AppColors.Calorie
+                        withStyle(SpanStyle(color = color)) { append("${value}${chip.glyph}") }
+                    }
+                }
             }
             Text(
                 summary,
@@ -1178,6 +1304,7 @@ private fun SwipeableFoodRow(
     entry: FoodEntry,
     isFavorite: Boolean,
     rowShape: RoundedCornerShape,
+    macroChips: List<FoodLogMacroChip>,
     onTap: () -> Unit,
     onLongPress: () -> Unit,
     onDelete: () -> Unit,
@@ -1221,7 +1348,7 @@ private fun SwipeableFoodRow(
                         onLongClick = onLongPress
                     )
             ) {
-                FoodRow(entry = entry, isFavorite = isFavorite, rowShape = rowShape)
+                FoodRow(entry = entry, isFavorite = isFavorite, rowShape = rowShape, macroChips = macroChips)
             }
         }
     }
@@ -1275,7 +1402,8 @@ private fun FoodRow(
     entry: FoodEntry,
     isFavorite: Boolean = false,
     rowShape: RoundedCornerShape = RoundedCornerShape(22.dp),
-    isSelected: Boolean = false
+    isSelected: Boolean = false,
+    macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val ctx = LocalContext.current
@@ -1392,9 +1520,9 @@ private fun FoodRow(
 
             // Macro pills (P / C / F) — tinted dark capsules with gray text.
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                MacroChip(MacroKind.PROTEIN, entry.protein)
-                MacroChip(MacroKind.CARBS, entry.carbs)
-                MacroChip(MacroKind.FAT, entry.fat)
+                macroChips.forEach { chip ->
+                    FoodLogMacroChipView(chip, chip.valueFrom(entry))
+                }
             }
         }
     }

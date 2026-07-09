@@ -34,6 +34,7 @@ import org.codeberg.fitguy.nofud.ui.onboarding.OnboardingScreen
 import org.codeberg.fitguy.nofud.ui.progress.BodyMeasurementsScreen
 import org.codeberg.fitguy.nofud.ui.progress.ProgressScreen
 import org.codeberg.fitguy.nofud.ui.settings.CalculationMethodsScreen
+import org.codeberg.fitguy.nofud.ui.settings.HomeDisplaySettingsScreen
 import org.codeberg.fitguy.nofud.ui.settings.OptionalNutrientGoalsScreen
 import org.codeberg.fitguy.nofud.ui.settings.SettingsScreen
 
@@ -153,6 +154,9 @@ fun NoFUDNavHost(
                 composable(NoFUDRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
                 composable(NoFUDRoutes.OPTIONAL_NUTRIENT_GOALS) {
                     OptionalNutrientGoalsScreen(container = container, onBack = { nav.popBackStack() })
+                }
+                composable(NoFUDRoutes.HOME_DISPLAY) {
+                    HomeDisplaySettingsScreen(container = container, onBack = { nav.popBackStack() })
                 }
                 composable(NoFUDRoutes.CALCULATION_METHODS) {
                     CalculationMethodsScreen(onBack = { nav.popBackStack() })

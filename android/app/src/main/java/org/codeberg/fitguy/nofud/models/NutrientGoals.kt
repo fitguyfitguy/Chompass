@@ -91,7 +91,7 @@ enum class HomeTopNutrient(
         val DefaultSelection = listOf(PROTEIN, CARBS, FAT, FIBER)
         val DefaultStorageValue = DefaultSelection.joinToString(",") { it.storageKey }
 
-        fun fromStorage(raw: String?): List<HomeTopNutrient> {
+        fun fromStorage(raw: String?, cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT): List<HomeTopNutrient> {
             val selected = raw
                 ?.split(",")
                 ?.mapNotNull { part ->
@@ -99,16 +99,19 @@ enum class HomeTopNutrient(
                     values().firstOrNull { it.storageKey == key || it.name == key }
                 }
                 .orEmpty()
-            return normalized(selected)
+            return normalized(selected, cardCount)
         }
 
-        fun toStorage(selection: List<HomeTopNutrient>): String =
-            normalized(selection).joinToString(",") { it.storageKey }
+        fun toStorage(selection: List<HomeTopNutrient>, cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT): String =
+            normalized(selection, cardCount).joinToString(",") { it.storageKey }
 
-        fun normalized(selection: List<HomeTopNutrient>): List<HomeTopNutrient> =
+        fun normalized(
+            selection: List<HomeTopNutrient>,
+            cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT,
+        ): List<HomeTopNutrient> =
             (selection.distinct() + DefaultSelection)
                 .distinct()
-                .take(4)
+                .take(cardCount.coerceIn(HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT, HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT))
     }
 }
 

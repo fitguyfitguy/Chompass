@@ -7,6 +7,10 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
+import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
+import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
@@ -16,6 +20,7 @@ import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.FoodImageComposer
 import org.codeberg.fitguy.nofud.services.OpenFoodFactsService
 import org.codeberg.fitguy.nofud.services.ai.AiError
+import org.codeberg.fitguy.nofud.services.health.HomeActivitySnapshot
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +52,10 @@ data class HomeUiState(
     val date: LocalDate = LocalDate.now(),
     val profile: UserProfile? = null,
     val todayEntries: List<FoodEntry> = emptyList(),
+    val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val homeTopNutrients: List<HomeTopNutrient> = HomeTopNutrient.DefaultSelection,
+    val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
+    val activitySnapshot: HomeActivitySnapshot = HomeActivitySnapshot(date = LocalDate.now()),
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val preferGramsByDefault: Boolean = false,
@@ -74,6 +82,9 @@ data class HomeUiState(
     val proteinToday: Double get() = todayEntries.sumOf { it.protein }
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
     val fatToday: Double get() = todayEntries.sumOf { it.fat }
+    val baseCalorieGoal: Int get() = profile?.effectiveCalories ?: 2000
+    val effectiveCalorieMode: HomeCalorieDisplayMode get() =
+        HomeCalorieDisplay.effectiveMode(homeDisplay.calorieDisplayMode, activitySnapshot.energyAvailable)
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
 }
 
@@ -105,10 +116,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { _ui.value = it }
             .launchIn(viewModelScope)
 
-        container.prefs.homeTopNutrients
-            .onEach { raw ->
-                _ui.value = _ui.value.copy(homeTopNutrients = HomeTopNutrient.fromStorage(raw))
+        container.prefs.homeDisplayPreferences
+            .onEach { display ->
+                _ui.value = _ui.value.copy(
+                    homeDisplay = display,
+                    homeTopNutrients = display.homeTopNutrients,
+                    foodLogMacroChips = display.foodLogMacroChips,
+                )
+                refreshActivitySnapshot()
             }
+            .launchIn(viewModelScope)
+
+        _selectedDate
+            .onEach { refreshActivitySnapshot() }
             .launchIn(viewModelScope)
 
         container.prefs.optionalNutrientGoals
@@ -143,6 +163,20 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _selectedDate.value = date
     }
 
+    fun refreshActivitySnapshot() {
+        viewModelScope.launch {
+            val day = _selectedDate.value
+            val display = _ui.value.homeDisplay
+            val needsEnergy = display.calorieDisplayMode != HomeCalorieDisplayMode.STATIC
+            if (!display.showSteps && !needsEnergy) {
+                _ui.value = _ui.value.copy(activitySnapshot = HomeActivitySnapshot(date = day))
+                return@launch
+            }
+            val snapshot = container.homeActivityReader.readForDate(day)
+            _ui.value = _ui.value.copy(activitySnapshot = snapshot)
+        }
+    }
+
     fun setFoodLogSortOrder(order: FoodLogSortOrder) {
         viewModelScope.launch {
             container.prefs.setFoodLogSortOrder(order.storageValue)
@@ -151,7 +185,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
         viewModelScope.launch {
-            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection))
+            val cardCount = container.prefs.homeNutrientCardCount.first()
+            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
         }
     }
 

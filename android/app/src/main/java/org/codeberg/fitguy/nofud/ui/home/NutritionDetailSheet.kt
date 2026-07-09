@@ -210,11 +210,14 @@ fun NutritionDetailSheet(
     if (showHomeCardsPicker) {
         HomeTopNutrientPickerDialog(
             selected = homeTopNutrients,
+            cardCount = homeTopNutrients.size.coerceIn(1, 4),
             onSave = onHomeTopNutrientsChange,
             onDismiss = { showHomeCardsPicker = false }
         )
     }
 }
+
+// HomeTopNutrientPickerDialog moved to HomeNutrientPicker.kt
 
 @Composable
 private fun Card(content: @Composable () -> Unit) {
@@ -266,106 +269,6 @@ private fun HomeCardsRow(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
             modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-@Composable
-private fun HomeTopNutrientPickerDialog(
-    selected: List<HomeTopNutrient>,
-    onSave: (List<HomeTopNutrient>) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var draft by remember(selected) { mutableStateOf(HomeTopNutrient.normalized(selected)) }
-
-    fun toggle(nutrient: HomeTopNutrient) {
-        draft = if (nutrient in draft) {
-            if (draft.size <= 1) draft else draft - nutrient
-        } else {
-            // iOS swaps out the last when full (removeLast + append) rather than ignoring.
-            if (draft.size >= 4) draft.dropLast(1) + nutrient else draft + nutrient
-        }
-    }
-
-    FudGlassDialog(onDismissRequest = onDismiss) {
-        Text(stringResource(R.string.home_nutrients), fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Text(
-            stringResource(R.string.home_nutrients_pick_four),
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
-        )
-        LazyColumn(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(max = 430.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(HomeTopNutrient.values().toList()) { nutrient ->
-                val checked = nutrient in draft
-                val nutrientColor = AppColors.nutrientColor(nutrient)
-                val shape = RoundedCornerShape(16.dp)
-                val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(shape)
-                        .background(
-                            if (checked) nutrientColor.copy(alpha = 0.14f)
-                            else if (isDark) AppColors.TranslucentSurfaceDark
-                            else AppColors.TranslucentSurfaceLight
-                        )
-                        .border(
-                            0.5.dp,
-                            if (checked) nutrientColor.copy(alpha = 0.28f)
-                            else if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
-                            shape
-                        )
-                        .clickable { toggle(nutrient) }
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier
-                            .size(28.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (checked) nutrientColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
-                            .border(
-                                1.dp,
-                                if (checked) nutrientColor.copy(alpha = 0.55f)
-                                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-                                RoundedCornerShape(8.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (checked) {
-                            Icon(
-                                Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(14.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(stringResource(nutrient.displayNameRes), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-                        Text(
-                            stringResource(nutrient.unitRes),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-                        )
-                    }
-                }
-            }
-        }
-        FudGlassDialogActions(
-            primaryText = stringResource(R.string.action_done),
-            onPrimary = {
-                onSave(HomeTopNutrient.normalized(draft))
-                onDismiss()
-            },
-            dismissText = stringResource(R.string.action_cancel),
-            onDismiss = onDismiss
         )
     }
 }

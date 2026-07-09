@@ -113,7 +113,7 @@ private fun CalorieSmall(snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.calorieGoal}"
+                centerSmall = "/ ${snapshot.resolvedEffectiveCalorieGoal}"
             )
         }
         Text(
@@ -145,7 +145,7 @@ private fun CalorieMedium(snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.calorieGoal}"
+                centerSmall = "/ ${snapshot.resolvedEffectiveCalorieGoal}"
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(

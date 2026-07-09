@@ -8,6 +8,11 @@ import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
 import org.codeberg.fitguy.nofud.models.DietMode
+import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
+import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
+import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
@@ -26,6 +31,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -72,6 +79,7 @@ data class SettingsUiState(
     val fallbackModel: String = AIProvider.GEMINI.defaultModel,
     val fallbackApiKeyMasked: String = "",
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
+    val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     /** A goal-relevant input changed since the last Recalculate. Drives a soft nudge on the
      *  Recalculate row; the button stays tappable at all times — this never disables it. */
     val goalsNeedRecalc: Boolean = false
@@ -131,6 +139,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbModel = fbProvider.supportedModelOrDefault(container.prefs.selectedFallbackModel.first())
             val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
+            val homeDisplay = container.prefs.homeDisplayPreferences.first()
             // Seed the recalc baseline for existing users / first launch so the nudge only fires
             // after a genuine change from here on, never immediately on open.
             val storedSignature = container.prefs.lastRecalcGoalSignature.first()
@@ -171,9 +180,51 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 fallbackModel = fbModel,
                 fallbackApiKeyMasked = fbMasked,
                 optionalNutrientGoals = optionalGoals,
+                homeDisplay = homeDisplay,
                 goalsNeedRecalc = needsRecalc(profile)
             )
         }
+
+        container.prefs.homeDisplayPreferences
+            .onEach { display -> _ui.value = _ui.value.copy(homeDisplay = display) }
+            .launchIn(viewModelScope)
+    }
+
+    fun setHomeNutrientCardCount(count: Int) {
+        viewModelScope.launch {
+            container.prefs.setHomeNutrientCardCount(count)
+            val nutrients = container.prefs.homeTopNutrients.first()
+            container.prefs.setHomeTopNutrients(
+                HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(nutrients, count), count)
+            )
+        }
+    }
+
+    fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
+        viewModelScope.launch {
+            val cardCount = container.prefs.homeNutrientCardCount.first()
+            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+        }
+    }
+
+    fun setHomeShowSteps(enabled: Boolean) {
+        viewModelScope.launch { container.prefs.setHomeShowSteps(enabled) }
+    }
+
+    fun setHomeShowActiveCalories(enabled: Boolean) {
+        viewModelScope.launch { container.prefs.setHomeShowActiveCalories(enabled) }
+    }
+
+    fun setHomeStepGoal(goal: Int) {
+        viewModelScope.launch { container.prefs.setHomeStepGoal(goal) }
+    }
+
+    fun setHomeCalorieDisplayMode(mode: HomeCalorieDisplayMode) {
+        viewModelScope.launch { container.prefs.setHomeCalorieDisplayMode(mode.storageKey) }
+    }
+
+    fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) {
+        viewModelScope.launch { container.prefs.setFoodLogMacroChips(FoodLogMacroChip.toStorage(chips)) }
     }
 
     fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) {

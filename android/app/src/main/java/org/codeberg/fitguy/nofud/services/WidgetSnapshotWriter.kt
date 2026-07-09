@@ -8,10 +8,12 @@ import org.codeberg.fitguy.nofud.data.FoodRepository
 import org.codeberg.fitguy.nofud.data.PreferencesStore
 import org.codeberg.fitguy.nofud.data.ProfileRepository
 import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WidgetNutrient
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
+import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.widget.AllMetricsAppWidget
 import org.codeberg.fitguy.nofud.widget.CalorieAppWidget
@@ -35,12 +37,13 @@ class WidgetSnapshotWriter(
     private val context: Context,
     private val prefs: PreferencesStore,
     private val foodRepository: FoodRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val homeActivityReader: HomeActivityReader,
 ) {
     fun observe() = combine(
         foodRepository.entries,
         profileRepository.profile,
-        prefs.homeTopNutrients,
+        prefs.homeDisplayPreferences,
         prefs.appThemeColor,
         prefs.optionalNutrientGoals
     ) { entries, profile, _, _, _ ->
@@ -58,9 +61,17 @@ class WidgetSnapshotWriter(
         if (profile == null) {
             prefs.clearWidgetSnapshot()
         } else {
-            val selection = HomeTopNutrient.fromStorage(prefs.homeTopNutrients.first())
+            val display = prefs.homeDisplayPreferences.first()
+            val selection = display.homeTopNutrients
             val optionalGoals = prefs.optionalNutrientGoals.first()
             val theme = AppThemeColor.fromKey(prefs.appThemeColor.first())
+            val activity = homeActivityReader.readForDate(LocalDate.now())
+            val activeCalories = if (activity.energyAvailable) activity.activeCalories else 0
+            val effectiveGoal = HomeCalorieDisplay.effectiveGoal(
+                display.calorieDisplayMode,
+                profile.effectiveCalories,
+                activeCalories
+            )
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
                 dayStart = WidgetSnapshot.todayStart(),
@@ -87,6 +98,12 @@ class WidgetSnapshotWriter(
                 carbsHex = theme.macroPalette.carbsArgb(),
                 fatHex = theme.macroPalette.fatArgb(),
                 fiberHex = theme.macroPalette.fiberArgb(),
+                nutrientCardCount = display.nutrientCardCount,
+                calorieDisplayMode = display.calorieDisplayMode.storageKey,
+                effectiveCalorieGoal = effectiveGoal,
+                activeCaloriesToday = activeCalories,
+                stepsToday = activity.steps,
+                stepGoal = display.stepGoal,
             )
             prefs.setWidgetSnapshot(snapshot)
         }

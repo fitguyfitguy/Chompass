@@ -6,9 +6,11 @@ import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.models.KetoCarbMode
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
+import org.codeberg.fitguy.nofud.services.health.DebugActivityDay
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -26,7 +28,8 @@ import kotlin.random.Random
  *   adb shell am start -n org.codeberg.fitguy.nofud/.MainActivity --ez restore_real_data true
  *
  * `seed` snapshots the live state into a single backup blob, disables Health Connect so the
- * synthetic entries can't sync upstream, then writes 365 days of food + weights + body fat.
+ * synthetic entries can't sync upstream, then writes 365 days of food + weights + body fat +
+ * debug steps/active-calorie burn for the home activity cards.
  * `restore` puts everything back exactly as it was.
  */
 class TestDataSeeder(private val container: AppContainer) {
@@ -77,6 +80,16 @@ class TestDataSeeder(private val container: AppContainer) {
         container.bodyFatRepository.replaceAll(
             generateBodyFatSeries(totalDays = 365, startFraction = 0.225, endFraction = 0.175, seed = 0xFA7365)
         )
+        seedDebugHomeActivity(totalDays = 365)
+    }
+
+    private suspend fun seedDebugHomeActivity(totalDays: Int) {
+        container.prefs.setDebugActivityDays(generateDebugActivity(totalDays))
+        container.prefs.setHomeCalorieDisplayMode(HomeCalorieDisplayMode.ADD_ACTIVE.storageKey)
+        // Keep seed defaults aligned with production home defaults:
+        // no separate activity cards, burn integrated into the hero gauge.
+        container.prefs.setHomeShowSteps(false)
+        container.prefs.setHomeShowActiveCalories(false)
     }
 
     /**
@@ -177,7 +190,8 @@ class TestDataSeeder(private val container: AppContainer) {
                 json.encodeToString(UserProfile.serializer(), it)
             },
             healthConnectEnabled = container.prefs.healthConnectEnabled.first(),
-            onboarded = container.prefs.hasCompletedOnboarding.first()
+            onboarded = container.prefs.hasCompletedOnboarding.first(),
+            debugActivityJson = container.prefs.debugActivityDaysJson(),
         )
         container.prefs.setTestSeedBackupJson(json.encodeToString(SeedBackup.serializer(), backup))
     }
@@ -201,6 +215,11 @@ class TestDataSeeder(private val container: AppContainer) {
                 json.decodeFromString(ListSerializer(BodyFatEntry.serializer()), it)
             } ?: emptyList()
         )
+        backup.debugActivityJson?.let {
+            container.prefs.setDebugActivityDays(
+                json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), it)
+            )
+        } ?: container.prefs.clearDebugActivityDays()
         backup.profileJson?.let {
             container.profileRepository.save(json.decodeFromString(UserProfile.serializer(), it))
         }
@@ -317,6 +336,30 @@ class TestDataSeeder(private val container: AppContainer) {
         return out
     }
 
+    /** Synthetic steps + active/total calories aligned with [generateFood] skip days. */
+    private fun generateDebugActivity(totalDays: Int): List<DebugActivityDay> {
+        val today = LocalDate.now()
+        val rng = Random(seed = 0xF0D)
+        val out = mutableListOf<DebugActivityDay>()
+        for (daysAgo in totalDays downTo 0) {
+            val day = today.minusDays(daysAgo.toLong())
+            val skipDay = daysAgo != 0 && rng.nextInt(20) == 0
+            if (skipDay) continue
+            val steps = rng.nextLong(4_500, 14_000)
+            val active = rng.nextInt(280, 650)
+            val basal = rng.nextInt(1_520, 1_780)
+            out.add(
+                DebugActivityDay(
+                    date = day.toString(),
+                    steps = steps,
+                    activeCalories = active,
+                    totalCalories = active + basal,
+                )
+            )
+        }
+        return out
+    }
+
     private fun generateWeights(): List<WeightEntry> {
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now()
@@ -350,7 +393,8 @@ private data class SeedBackup(
     val healthConnectEnabled: Boolean,
     val onboarded: Boolean,
     // Added after BodyFatRepository shipped — null in older backups.
-    val bodyFatsJson: String? = null
+    val bodyFatsJson: String? = null,
+    val debugActivityJson: String? = null,
 )
 
 private data class Quad(

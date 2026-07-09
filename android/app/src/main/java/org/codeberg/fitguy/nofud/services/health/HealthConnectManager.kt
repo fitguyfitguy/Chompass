@@ -320,6 +320,30 @@ class HealthConnectManager(private val context: Context) {
 
     // -- Energy burn summary --------------------------------------------
 
+    /** Active + total kilocalories for a single calendar day (today or past). */
+    suspend fun readDailyEnergy(date: LocalDate): DailyEnergyBurn? {
+        val c = client ?: return null
+        if (!hasEnergyRead()) return null
+        val zone = ZoneId.systemDefault()
+        val start = date.atStartOfDay(zone).toInstant()
+        val end = date.plusDays(1).atStartOfDay(zone).toInstant()
+        val result = runCatching {
+            c.aggregate(
+                AggregateRequest(
+                    metrics = setOf(
+                        ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
+                        TotalCaloriesBurnedRecord.ENERGY_TOTAL
+                    ),
+                    timeRangeFilter = TimeRangeFilter.between(start, end)
+                )
+            )
+        }.getOrNull() ?: return null
+        val active = result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0
+        val total = result[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories?.takeIf { it > 0.0 }
+        if (active + (total ?: 0.0) <= 0.0) return null
+        return DailyEnergyBurn(date = date, active = active, total = total)
+    }
+
     suspend fun readRecentEnergySummary(days: Int = 14): HealthEnergySummary? {
         val c = client ?: return null
         val requestedDays = maxOf(3, days)
@@ -585,6 +609,13 @@ data class HealthCapabilities(
     val energyRead: Boolean,
     val stepsRead: Boolean,
     val exerciseRead: Boolean
+)
+
+/** Per-day energy burn from Health Connect (not persisted). */
+data class DailyEnergyBurn(
+    val date: LocalDate,
+    val active: Double,
+    val total: Double?,
 )
 
 /** One day of aggregated Health Connect activity — steps plus exercise-session

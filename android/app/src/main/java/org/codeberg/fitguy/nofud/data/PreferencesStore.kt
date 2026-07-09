@@ -13,6 +13,9 @@ import org.codeberg.fitguy.nofud.models.BodyFatEntry
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.ChatMessage
 import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
+import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.PendingFoodAnalysisDraft
@@ -22,7 +25,9 @@ import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
+import org.codeberg.fitguy.nofud.services.health.DebugActivityDay
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
+import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -280,12 +285,82 @@ class PreferencesStore(private val context: Context) {
     val foodLogSortOrder: Flow<String> = ds.data.map { it[Keys.FOOD_LOG_SORT_ORDER] ?: "standard" }
     suspend fun setFoodLogSortOrder(v: String) { ds.edit { it[Keys.FOOD_LOG_SORT_ORDER] = v } }
 
-    /** Comma-separated [HomeTopNutrient.storageKey] values for the three home nutrient cards. */
+    /** Comma-separated [HomeTopNutrient.storageKey] values for the home nutrient cards. */
     val homeTopNutrients: Flow<String> = ds.data.map {
         it[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
     }
     suspend fun setHomeTopNutrients(v: String) {
         ds.edit { it[Keys.HOME_TOP_NUTRIENTS] = v }
+    }
+
+    val homeNutrientCardCount: Flow<Int> = ds.data.map {
+        it[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
+    }
+    suspend fun setHomeNutrientCardCount(v: Int) {
+        val safe = v.coerceIn(
+            HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
+            HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
+        )
+        ds.edit { it[Keys.HOME_NUTRIENT_CARD_COUNT] = safe }
+    }
+
+    val homeShowSteps: Flow<Boolean> = ds.data.map { it[Keys.HOME_SHOW_STEPS] ?: false }
+    suspend fun setHomeShowSteps(v: Boolean) { ds.edit { it[Keys.HOME_SHOW_STEPS] = v } }
+
+    val homeShowActiveCalories: Flow<Boolean> = ds.data.map { it[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false }
+    suspend fun setHomeShowActiveCalories(v: Boolean) { ds.edit { it[Keys.HOME_SHOW_ACTIVE_CALORIES] = v } }
+
+    val homeStepGoal: Flow<Int> = ds.data.map {
+        it[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL
+    }
+    suspend fun setHomeStepGoal(v: Int) {
+        val safe = v.coerceIn(HomeDisplayPreferences.MIN_STEP_GOAL, HomeDisplayPreferences.MAX_STEP_GOAL)
+        ds.edit { it[Keys.HOME_STEP_GOAL] = safe }
+    }
+
+    val homeCalorieDisplayMode: Flow<String> = ds.data.map {
+        it[Keys.HOME_CALORIE_DISPLAY_MODE] ?: HomeCalorieDisplayMode.Default.storageKey
+    }
+    suspend fun setHomeCalorieDisplayMode(v: String) {
+        ds.edit { it[Keys.HOME_CALORIE_DISPLAY_MODE] = v }
+    }
+
+    val foodLogMacroChips: Flow<String> = ds.data.map {
+        it[Keys.FOOD_LOG_MACRO_CHIPS] ?: FoodLogMacroChip.DefaultStorageValue
+    }
+    suspend fun setFoodLogMacroChips(v: String) {
+        ds.edit { it[Keys.FOOD_LOG_MACRO_CHIPS] = v }
+    }
+
+    /**
+     * One-shot migration from the first home-layout prototype (separate activity
+     * cards on by default, settings gated on Health Connect). Resets activity
+     * cards off; burn stays integrated in the calorie gauge via [HOME_CALORIE_DISPLAY_MODE].
+     */
+    suspend fun migrateHomeDisplayLayoutIfNeeded() {
+        ds.edit { prefs ->
+            if ((prefs[Keys.HOME_DISPLAY_LAYOUT_VERSION] ?: 0) >= HOME_DISPLAY_LAYOUT_VERSION) return@edit
+            prefs[Keys.HOME_SHOW_STEPS] = false
+            prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] = false
+            if (prefs[Keys.HOME_CALORIE_DISPLAY_MODE] == null) {
+                prefs[Keys.HOME_CALORIE_DISPLAY_MODE] = HomeCalorieDisplayMode.Default.storageKey
+            }
+            prefs[Keys.HOME_DISPLAY_LAYOUT_VERSION] = HOME_DISPLAY_LAYOUT_VERSION
+        }
+    }
+
+    val homeDisplayPreferences: Flow<HomeDisplayPreferences> = ds.data.map { prefs ->
+        val cardCount = prefs[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
+        val nutrientsRaw = prefs[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
+        HomeDisplayPreferences(
+            nutrientCardCount = cardCount,
+            homeTopNutrients = HomeTopNutrient.fromStorage(nutrientsRaw, cardCount),
+            showSteps = prefs[Keys.HOME_SHOW_STEPS] ?: false,
+            showActiveCalories = prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
+            stepGoal = prefs[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
+            calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(prefs[Keys.HOME_CALORIE_DISPLAY_MODE]),
+            foodLogMacroChips = FoodLogMacroChip.fromStorage(prefs[Keys.FOOD_LOG_MACRO_CHIPS]),
+        )
     }
 
     /** Goals for nutrients outside the calorie/protein/carb/fat calculator. */
@@ -524,6 +599,30 @@ class PreferencesStore(private val context: Context) {
         ds.edit { it.remove(Keys.TEST_SEED_BACKUP) }
     }
 
+  // -- Debug activity (TestDataSeeder synthetic steps / energy burn) --------
+    suspend fun setDebugActivityDays(days: List<DebugActivityDay>) {
+        ds.edit {
+            it[Keys.DEBUG_ACTIVITY_DAYS] = json.encodeToString(
+                ListSerializer(DebugActivityDay.serializer()),
+                days
+            )
+        }
+    }
+
+    suspend fun clearDebugActivityDays() {
+        ds.edit { it.remove(Keys.DEBUG_ACTIVITY_DAYS) }
+    }
+
+    suspend fun debugActivityDaysJson(): String? = ds.data.first()[Keys.DEBUG_ACTIVITY_DAYS]
+
+    suspend fun debugActivityDay(date: LocalDate): DebugActivityDay? {
+        val raw = ds.data.first()[Keys.DEBUG_ACTIVITY_DAYS] ?: return null
+        val days = runCatching {
+            json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), raw)
+        }.getOrNull() ?: return null
+        return days.firstOrNull { it.date == date.toString() }
+    }
+
     // -- Wipe everything --------------------------------------------------
     suspend fun clearAll() {
         ds.edit { it.clear() }
@@ -568,6 +667,13 @@ class PreferencesStore(private val context: Context) {
         val LAST_SAVED_MEALS_SEGMENT = stringPreferencesKey("lastRecentsSegment")
         val FOOD_LOG_SORT_ORDER = stringPreferencesKey("foodLogSortOrder")
         val HOME_TOP_NUTRIENTS = stringPreferencesKey("homeTopNutrients")
+        val HOME_NUTRIENT_CARD_COUNT = intPreferencesKey("homeNutrientCardCount")
+        val HOME_SHOW_STEPS = booleanPreferencesKey("homeShowSteps")
+        val HOME_SHOW_ACTIVE_CALORIES = booleanPreferencesKey("homeShowActiveCalories")
+        val HOME_STEP_GOAL = intPreferencesKey("homeStepGoal")
+        val HOME_CALORIE_DISPLAY_MODE = stringPreferencesKey("homeCalorieDisplayMode")
+        val HOME_DISPLAY_LAYOUT_VERSION = intPreferencesKey("homeDisplayLayoutVersion")
+        val FOOD_LOG_MACRO_CHIPS = stringPreferencesKey("foodLogMacroChips")
         val OPTIONAL_NUTRIENT_GOALS = stringPreferencesKey("optionalNutrientGoals")
         val SELECTED_AI_PROVIDER = stringPreferencesKey("selectedAIProvider")
         val SELECTED_AI_MODEL = stringPreferencesKey("selectedAIModel")
@@ -590,9 +696,11 @@ class PreferencesStore(private val context: Context) {
         val CHAT_HISTORY = stringPreferencesKey("coachChatHistory")
         val WIDGET_SNAPSHOT = stringPreferencesKey("widget_snapshot_v1")
         val TEST_SEED_BACKUP = stringPreferencesKey("test_seed_backup_v1")
+        val DEBUG_ACTIVITY_DAYS = stringPreferencesKey("debugActivityDays")
     }
 
     companion object {
         private const val CUSTOM_BASE_URL_PREFIX = "customBaseURL_"
+        private const val HOME_DISPLAY_LAYOUT_VERSION = 2
     }
 }

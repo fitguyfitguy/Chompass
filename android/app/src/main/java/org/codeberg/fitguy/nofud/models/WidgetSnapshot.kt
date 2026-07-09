@@ -46,12 +46,37 @@ data class WidgetSnapshot(
     val carbsHex: Int? = null,
     val fatHex: Int? = null,
     val fiberHex: Int? = null,
+    val nutrientCardCount: Int? = null,
+    val calorieDisplayMode: String? = null,
+    val effectiveCalorieGoal: Int? = null,
+    val activeCaloriesToday: Int? = null,
+    val stepsToday: Long? = null,
+    val stepGoal: Int? = null,
 ) {
-    val caloriesRemaining: Int get() = maxOf(0, calorieGoal - calories)
+    val resolvedCalorieMode: HomeCalorieDisplayMode
+        get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)
+
+    val resolvedEffectiveCalorieGoal: Int
+        get() = effectiveCalorieGoal ?: calorieGoal
+
+    val caloriesRemaining: Int
+        get() = HomeCalorieDisplay.remaining(
+            resolvedCalorieMode,
+            calories,
+            calorieGoal,
+            activeCaloriesToday ?: 0
+        )
+
     val proteinRemaining: Double get() = maxOf(0.0, proteinGoal.toDouble() - protein)
     val carbsRemaining: Double get() = maxOf(0.0, carbsGoal.toDouble() - carbs)
     val fatRemaining: Double get() = maxOf(0.0, fatGoal.toDouble() - fat)
-    val calorieProgress: Double get() = if (calorieGoal > 0) minOf(1.0, calories.toDouble() / calorieGoal) else 0.0
+    val calorieProgress: Double
+        get() = HomeCalorieDisplay.progressRatio(
+            resolvedCalorieMode,
+            calories,
+            calorieGoal,
+            activeCaloriesToday ?: 0
+        ).toDouble()
     val proteinProgress: Double get() = if (proteinGoal > 0) minOf(1.0, protein / proteinGoal) else 0.0
     val carbsProgress: Double get() = if (carbsGoal > 0) minOf(1.0, carbs / carbsGoal) else 0.0
     val fatProgress: Double get() = if (fatGoal > 0) minOf(1.0, fat / fatGoal) else 0.0
@@ -65,12 +90,14 @@ data class WidgetSnapshot(
      * The 4 nutrient bars to render, matching the user's Home selection.
      * Legacy snapshots (no homeNutrients) yield the classic protein/carbs/fat.
      */
-    val displayedHomeNutrients: List<WidgetNutrient> get() =
-        homeNutrients?.takeIf { it.isNotEmpty() }?.take(4) ?: listOf(
+    val displayedHomeNutrients: List<WidgetNutrient> get() {
+        val count = nutrientCardCount?.coerceIn(1, 4) ?: 4
+        return homeNutrients?.takeIf { it.isNotEmpty() }?.take(count) ?: listOf(
             WidgetNutrient("protein", "Protein", "g", protein, proteinGoal.toDouble()),
             WidgetNutrient("carbs", "Carbs", "g", carbs, carbsGoal.toDouble()),
             WidgetNutrient("fat", "Fat", "g", fat, fatGoal.toDouble())
         )
+    }
 
     /** First selected nutrient — what the "Protein" widget actually tracks. */
     val primaryHomeNutrient: WidgetNutrient get() = displayedHomeNutrients.first()
