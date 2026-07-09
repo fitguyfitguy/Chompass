@@ -27,14 +27,23 @@ Or from outside the shell:
 ```bash
 devenv tasks run build:debug
 devenv tasks run build:release
+devenv tasks run build:all-release
 devenv shell -- build-debug
 ```
 
 In Cursor/agent shells where direnv does not load, run builds explicitly:
 
 ```bash
-devenv shell -c 'cd android && ./gradlew :app:assemblePlayDebug'
+devenv shell bash -lc 'cd android && ./gradlew :app:assemblePlayDebug'
 ```
+
+For flavor-scoped unit tests while iterating on the play debug build:
+
+```bash
+devenv shell bash -lc 'cd android && ./gradlew :app:testPlayDebugUnitTest'
+```
+
+Prefer `assemblePlayDebug` over `assembleDebug` — with product flavors, `assembleDebug` builds every flavor's debug variant. Reserve `debug2` (`assemblePlayDebug2`) for side-by-side installs only.
 
 If `platforms;android-36.1` is missing from nixpkgs, add the android-nixpkgs input:
 
@@ -47,7 +56,7 @@ devenv update
 
 ```bash
 cd android
-./gradlew :app:assembleDebug
+./gradlew :app:assemblePlayDebug
 ```
 
 Install the debug APK (side-by-side package `org.codeberg.fitguy.nofud.debug`):

@@ -16,6 +16,8 @@ val keystorePropsFile = rootProject.file("keystore.properties")
 val keystoreProps = Properties().apply {
     if (keystorePropsFile.exists()) load(keystorePropsFile.inputStream())
 }
+// Optional: -PreleaseAbi=arm64-v8a for a single local smoke-test release APK.
+val releaseAbi: String? = providers.gradleProperty("releaseAbi").orNull
 
 android {
     namespace = "org.codeberg.fitguy.nofud"
@@ -112,8 +114,13 @@ android {
         abi {
             isEnable = true
             reset()
-            include("arm64-v8a", "armeabi-v7a", "x86_64")
-            isUniversalApk = true
+            if (releaseAbi != null) {
+                include(releaseAbi)
+                isUniversalApk = false
+            } else {
+                include("arm64-v8a", "armeabi-v7a", "x86_64")
+                isUniversalApk = true
+            }
         }
     }
 }

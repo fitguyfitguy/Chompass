@@ -37,4 +37,19 @@
     exec = "cd android && ./gradlew :app:assembleFdroidRelease";
     description = "Assemble the F-Droid release APK (no Play Core)";
   };
+
+  tasks."build:all-release" = {
+    exec = "cd android && ./gradlew :app:assemblePlayRelease :app:assembleFdroidRelease";
+    description = "Assemble play + fdroid release APKs in one Gradle run";
+  };
+
+  tasks."release:package" = {
+    exec = "./scripts/package_release.sh";
+    description = "Run pre-release checks, build both flavors, package APKs, and write SHA256SUMS";
+  };
+
+  tasks."release:check-metadata" = {
+    exec = "./scripts/check_release_metadata.sh";
+    description = "Verify version consistency across build.gradle.kts, CHANGELOG.md, and fdroid metadata";
+  };
 }
