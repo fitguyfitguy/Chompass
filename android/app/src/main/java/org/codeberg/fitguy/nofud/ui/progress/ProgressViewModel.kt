@@ -184,9 +184,9 @@ private data class ProgressSnapshot(
     val showGoalReached: Boolean
 )
 
-private fun ProgressSnapshot.toUiState(): ProgressUiState {
+private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()): ProgressUiState {
     val zone = ZoneId.systemDefault()
-    val (rangeStart, rangeEnd) = selectedRange.instantRange(zone)
+    val (rangeStart, rangeEnd) = selectedRange.instantRange(zone, today = anchorDate)
     val filteredWeights = base.entries
         .asSequence()
         .filter { it.date in rangeStart..rangeEnd }
@@ -278,4 +278,28 @@ private fun List<BodyFatEntry>.toBodyFatStats(): BodyFatSummaryStats {
         netChangePercent = last.bodyFatPercent - first.bodyFatPercent,
         averagePercent = map { it.bodyFatPercent }.average()
     )
+}
+
+/** Builds Progress UI state for screenshot previews with a fixed anchor date. */
+internal fun buildProgressPreviewUiState(
+    profile: UserProfile?,
+    weights: List<WeightEntry>,
+    bodyFatEntries: List<BodyFatEntry>,
+    foods: List<FoodEntry>,
+    timeRange: TimeRange,
+    anchorDate: LocalDate,
+    weightUnit: String = "kg",
+): ProgressUiState {
+    return ProgressSnapshot(
+        base = BaseProgressData(
+            profile = profile,
+            entries = weights,
+            bodyFatEntries = bodyFatEntries,
+            bodyMeasurements = emptyList(),
+        ),
+        foods = foods,
+        weightUnit = weightUnit,
+        selectedRange = timeRange,
+        showGoalReached = false,
+    ).toUiState(anchorDate)
 }

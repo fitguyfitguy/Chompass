@@ -52,4 +52,9 @@
     exec = "./scripts/check_release_metadata.sh";
     description = "Verify version consistency across build.gradle.kts, CHANGELOG.md, and fdroid metadata";
   };
+
+  tasks."release:screenshots" = {
+    exec = "./scripts/export_release_screenshots.sh";
+    description = "Render JVM screenshot previews; export to release-screenshots/ and docs/screenshots/";
+  };
 }

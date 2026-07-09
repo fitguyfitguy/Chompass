@@ -4,10 +4,8 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
 import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodEntry
-import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
-import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.services.health.DebugActivityDay
@@ -16,9 +14,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import kotlin.random.Random
 
 /**
  * Dev-only helper that swaps the user's real data for a year of synthetic food + weight
@@ -75,16 +70,16 @@ class TestDataSeeder(private val container: AppContainer) {
         )
         container.prefs.setOnboardingCompleted(true)
 
-        container.foodRepository.replaceAll(generateFood())
-        container.weightRepository.replaceAll(generateWeights())
+        container.foodRepository.replaceAll(SampleDataGenerators.foodEntries())
+        container.weightRepository.replaceAll(SampleDataGenerators.yearWeights())
         container.bodyFatRepository.replaceAll(
-            generateBodyFatSeries(totalDays = 365, startFraction = 0.225, endFraction = 0.175, seed = 0xFA7365)
+            SampleDataGenerators.bodyFatSeries(totalDays = 365, startFraction = 0.225, endFraction = 0.175, seed = 0xFA7365)
         )
         seedDebugHomeActivity(totalDays = 365)
     }
 
     private suspend fun seedDebugHomeActivity(totalDays: Int) {
-        container.prefs.setDebugActivityDays(generateDebugActivity(totalDays))
+        container.prefs.setDebugActivityDays(SampleDataGenerators.debugActivityDays(totalDays))
         container.prefs.setHomeCalorieDisplayMode(HomeCalorieDisplayMode.ADD_ACTIVE.storageKey)
         // Keep seed defaults aligned with production home defaults:
         // no separate activity cards, burn integrated into the hero gauge.
@@ -128,10 +123,10 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.setOnboardingCompleted(true)
 
         container.weightRepository.replaceAll(
-            generateWeightSeries(totalDays = 30, startKg = 75.5, endKg = 73.0, seed = 0xBEEF)
+            SampleDataGenerators.weightSeries(totalDays = 30, startKg = 75.5, endKg = 73.0, seed = 0xBEEF)
         )
         container.bodyFatRepository.replaceAll(
-            generateBodyFatSeries(totalDays = 30, startFraction = 0.180, endFraction = 0.165, seed = 0xFA7)
+            SampleDataGenerators.bodyFatSeries(totalDays = 30, startFraction = 0.180, endFraction = 0.165, seed = 0xFA7)
         )
     }
 
@@ -161,10 +156,10 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.setOnboardingCompleted(true)
 
         container.weightRepository.replaceAll(
-            generateWeightSeries(totalDays = 730, startKg = 82.0, endKg = 73.0, seed = 0x2BEEF)
+            SampleDataGenerators.weightSeries(totalDays = 730, startKg = 82.0, endKg = 73.0, seed = 0x2BEEF)
         )
         container.bodyFatRepository.replaceAll(
-            generateBodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.165, seed = 0x2FA7)
+            SampleDataGenerators.bodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.165, seed = 0x2FA7)
         )
     }
 
@@ -228,161 +223,6 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.clearTestSeedBackup()
     }
 
-    private fun generateFood(): List<FoodEntry> {
-        val zone = ZoneId.systemDefault()
-        val today = LocalDate.now()
-        val rng = Random(seed = 0xF0D)
-
-        val breakfast = listOf(
-            Quad("Greek yogurt with berries", 280, 22, 32, 6, "🥣"),
-            Quad("Oatmeal with banana", 340, 12, 60, 8, "🥣"),
-            Quad("Avocado toast", 380, 14, 38, 18, "🥑"),
-            Quad("Protein smoothie", 310, 30, 28, 7, "🥤"),
-            Quad("Eggs and toast", 420, 22, 30, 22, "🍳")
-        )
-        val lunch = listOf(
-            Quad("Chicken caesar salad", 540, 38, 22, 32, "🥗"),
-            Quad("Turkey sandwich", 480, 32, 48, 16, "🥪"),
-            Quad("Sushi rolls", 620, 28, 84, 14, "🍣"),
-            Quad("Burrito bowl", 720, 36, 78, 24, "🌯"),
-            Quad("Pasta primavera", 560, 18, 82, 18, "🍝")
-        )
-        val dinner = listOf(
-            Quad("Grilled salmon and rice", 640, 42, 58, 22, "🐟"),
-            Quad("Steak and broccoli", 720, 50, 18, 46, "🥩"),
-            Quad("Chicken stir-fry", 580, 40, 52, 20, "🍛"),
-            Quad("Veggie curry", 510, 18, 72, 18, "🍛"),
-            Quad("Margherita pizza", 780, 28, 92, 28, "🍕")
-        )
-        val snacks = listOf(
-            Quad("Apple", 95, 0, 25, 0, "🍎"),
-            Quad("Almonds", 170, 6, 6, 14, "🥜"),
-            Quad("Protein bar", 210, 20, 22, 6, "🍫"),
-            Quad("Banana", 105, 1, 27, 0, "🍌"),
-            Quad("Greek yogurt", 130, 18, 8, 4, "🥛")
-        )
-
-        val out = mutableListOf<FoodEntry>()
-        for (daysAgo in 365 downTo 0) {
-            val day = today.minusDays(daysAgo.toLong())
-            val skipDay = rng.nextInt(20) == 0
-            if (skipDay) continue
-
-            fun add(template: Quad, hour: Int, meal: MealType) {
-                val jitter = rng.nextDouble(0.85, 1.15)
-                val ts = day.atTime(LocalTime.of(hour, rng.nextInt(0, 50)))
-                    .atZone(zone).toInstant()
-                out.add(
-                    FoodEntry(
-                        name = template.name,
-                        calories = (template.cal * jitter).toInt(),
-                        protein = template.p * jitter,
-                        carbs = template.c * jitter,
-                        fat = template.f * jitter,
-                        timestamp = ts,
-                        emoji = template.emoji,
-                        source = FoodSource.TEXT_INPUT,
-                        mealType = meal
-                    )
-                )
-            }
-
-            add(breakfast.random(rng), hour = 8, meal = MealType.BREAKFAST)
-            add(lunch.random(rng), hour = 13, meal = MealType.LUNCH)
-            add(dinner.random(rng), hour = 19, meal = MealType.DINNER)
-            if (rng.nextBoolean()) add(snacks.random(rng), hour = 16, meal = MealType.SNACK)
-        }
-        return out
-    }
-
-    /** Weight readings over [totalDays], linear [startKg]→[endKg] trend with
-     *  day-to-day noise, ~20% skipped days for realism. */
-    private fun generateWeightSeries(totalDays: Int, startKg: Double, endKg: Double, seed: Long): List<WeightEntry> {
-        val zone = ZoneId.systemDefault()
-        val today = LocalDate.now()
-        val rng = Random(seed)
-        val out = mutableListOf<WeightEntry>()
-        for (daysAgo in (totalDays - 1) downTo 0) {
-            // Always log today + yesterday so the 1W view always shows 2+ points.
-            if (daysAgo > 1 && rng.nextInt(10) < 2) continue
-            val day = today.minusDays(daysAgo.toLong())
-            val progress = (totalDays - 1 - daysAgo).toDouble() / (totalDays - 1)
-            val baseline = startKg - (startKg - endKg) * progress
-            val noise = rng.nextDouble(-0.5, 0.5)
-            val ts = day.atTime(8, rng.nextInt(0, 30)).atZone(zone).toInstant()
-            out.add(WeightEntry(date = ts, weightKg = baseline + noise))
-        }
-        return out
-    }
-
-    /** Body-fat readings over [totalDays], linear [startFraction]→[endFraction]
-     *  trend, ~40% skipped days since people measure body fat less often. */
-    private fun generateBodyFatSeries(totalDays: Int, startFraction: Double, endFraction: Double, seed: Long): List<BodyFatEntry> {
-        val zone = ZoneId.systemDefault()
-        val today = LocalDate.now()
-        val rng = Random(seed)
-        val out = mutableListOf<BodyFatEntry>()
-        for (daysAgo in (totalDays - 1) downTo 0) {
-            // Always log today + yesterday so the 1W chart isn't empty.
-            if (daysAgo > 1 && rng.nextInt(10) < 4) continue
-            val day = today.minusDays(daysAgo.toLong())
-            val progress = (totalDays - 1 - daysAgo).toDouble() / (totalDays - 1)
-            val baseline = startFraction - (startFraction - endFraction) * progress
-            // ±0.3% jitter to simulate caliper / smart-scale measurement noise.
-            val noise = rng.nextDouble(-0.003, 0.003)
-            val ts = day.atTime(8, rng.nextInt(0, 30)).atZone(zone).toInstant()
-            out.add(BodyFatEntry(date = ts, bodyFatFraction = baseline + noise))
-        }
-        return out
-    }
-
-    /** Synthetic steps + active/total calories aligned with [generateFood] skip days. */
-    private fun generateDebugActivity(totalDays: Int): List<DebugActivityDay> {
-        val today = LocalDate.now()
-        val rng = Random(seed = 0xF0D)
-        val out = mutableListOf<DebugActivityDay>()
-        for (daysAgo in totalDays downTo 0) {
-            val day = today.minusDays(daysAgo.toLong())
-            val skipDay = daysAgo != 0 && rng.nextInt(20) == 0
-            if (skipDay) continue
-            val steps = rng.nextLong(4_500, 14_000)
-            val active = rng.nextInt(280, 650)
-            val basal = rng.nextInt(1_520, 1_780)
-            out.add(
-                DebugActivityDay(
-                    date = day.toString(),
-                    steps = steps,
-                    activeCalories = active,
-                    totalCalories = active + basal,
-                )
-            )
-        }
-        return out
-    }
-
-    private fun generateWeights(): List<WeightEntry> {
-        val zone = ZoneId.systemDefault()
-        val today = LocalDate.now()
-        val rng = Random(seed = 0xC0FFEE)
-        val startKg = 78.0
-        val endKg = 73.5
-        val totalDays = 365
-
-        val out = mutableListOf<WeightEntry>()
-        for (daysAgo in (totalDays - 1) downTo 0) {
-            // Skip ~30% of days for realism — most users don't weigh in every day.
-            // Always log today + yesterday so the 1W view always has fresh points.
-            if (daysAgo > 1 && rng.nextInt(10) < 3) continue
-            val day = today.minusDays(daysAgo.toLong())
-            val progress = (totalDays - 1 - daysAgo).toDouble() / (totalDays - 1)
-            val baseline = startKg - (startKg - endKg) * progress
-            // Larger day-to-day noise (water weight, time of day, etc.)
-            val noise = rng.nextDouble(-0.6, 0.6)
-            val ts = day.atTime(8, rng.nextInt(0, 30)).atZone(zone).toInstant()
-            out.add(WeightEntry(date = ts, weightKg = baseline + noise))
-        }
-        return out
-    }
 }
 
 @Serializable
@@ -395,13 +235,4 @@ private data class SeedBackup(
     // Added after BodyFatRepository shipped — null in older backups.
     val bodyFatsJson: String? = null,
     val debugActivityJson: String? = null,
-)
-
-private data class Quad(
-    val name: String,
-    val cal: Int,
-    val p: Int,
-    val c: Int,
-    val f: Int,
-    val emoji: String
 )

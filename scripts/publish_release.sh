@@ -7,15 +7,38 @@
 #
 #   export CODEBERG_TOKEN='your-token'
 #   ./scripts/publish_release.sh 1.0.0
+#   ./scripts/publish_release.sh 1.0.0 --with-screenshots
 #
 # or persist a login:
 #   nix shell nixpkgs#tea -c tea logins add -n codeberg -u https://codeberg.org -t "$CODEBERG_TOKEN"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION="${1:-1.0.0}"
+WITH_SCREENSHOTS=0
+POSITIONAL=()
+for arg in "$@"; do
+  case "$arg" in
+    --with-screenshots)
+      WITH_SCREENSHOTS=1
+      ;;
+    -h|--help)
+      cat <<'EOF'
+Usage: publish_release.sh <version> [--with-screenshots]
+
+Publish APK assets (and optionally release-screenshots/*.png) to Codeberg.
+EOF
+      exit 0
+      ;;
+    *)
+      POSITIONAL+=("$arg")
+      ;;
+  esac
+done
+
+VERSION="${POSITIONAL[0]:-1.0.0}"
 TAG="v${VERSION}"
 CHECKSUMS="$ROOT/SHA256SUMS"
+SCREENSHOT_DIR="$ROOT/release-screenshots"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 ASSETS=(
   # Play flavor
@@ -32,6 +55,17 @@ ASSETS=(
 
   "$CHECKSUMS"
 )
+
+if [[ "$WITH_SCREENSHOTS" -eq 1 ]]; then
+  shopt -s nullglob
+  SCREENSHOTS=("$SCREENSHOT_DIR"/*.png)
+  shopt -u nullglob
+  if [[ ${#SCREENSHOTS[@]} -eq 0 ]]; then
+    echo "No PNGs in $SCREENSHOT_DIR — run devenv tasks run release:screenshots first." >&2
+    exit 1
+  fi
+  ASSETS+=("${SCREENSHOTS[@]}")
+fi
 
 run_tea() {
   if command -v tea >/dev/null 2>&1; then

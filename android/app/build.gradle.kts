@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.screenshot)
 }
 
 // Release signing config is read from android/keystore.properties (gitignored).
@@ -95,6 +96,8 @@ android {
         buildConfig = true
     }
 
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
     // IzzyOnDroid (and F-Droid infra) strongly prefer keeping APKs small.
     // Compress native *.so libs to reduce the on-disk size of "fat" builds.
     packaging {
@@ -170,4 +173,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }

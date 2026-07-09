@@ -1026,3 +1026,119 @@ private fun MarkdownText(content: String, color: Color) {
         }
     }
 }
+
+/** Static coach layout for release screenshot previews (no microphone / camera). */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+internal fun CoachScreenPreviewContent(
+    ui: CoachUiState,
+    input: String = "",
+) {
+    val listState = rememberLazyListState()
+    val resolvedChips = ui.suggestions.map { stringResource(it) }
+    val resolvedError = ui.error ?: ui.errorRes?.let { stringResource(it) }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(R.string.coach_title), fontWeight = FontWeight.SemiBold) },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .size(34.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.10f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            Icons.Filled.Replay,
+                            contentDescription = stringResource(R.string.coach_reset_chat_a11y),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(top = padding.calculateTopPadding())
+                .padding(bottom = BottomNavDockedControlPadding),
+        ) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                if (ui.messages.isEmpty()) {
+                    EmptyState(modifier = Modifier.fillMaxSize())
+                } else {
+                    MessageList(
+                        messages = ui.messages,
+                        sending = ui.sending,
+                        error = resolvedError,
+                        listState = listState,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+            PromptChipRow(chips = resolvedChips, enabled = !ui.sending, onTap = {})
+            CoachInputBarPreviewStub(value = input, sending = ui.sending)
+        }
+    }
+}
+
+@Composable
+private fun CoachInputBarPreviewStub(value: String, sending: Boolean) {
+    val capsule = MaterialTheme.shapes.extraLarge
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .padding(top = 4.dp, bottom = 10.dp)
+            .fillMaxWidth()
+            .clip(capsule)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 14.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = value.ifEmpty { stringResource(R.string.coach_input_placeholder) },
+            modifier = Modifier.weight(1f),
+            fontSize = 17.sp,
+            color = if (value.isEmpty()) {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+        )
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(
+                    if (value.isNotBlank() && !sending) {
+                        Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
+                    } else {
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                            ),
+                        )
+                    },
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                Icons.Filled.ArrowUpward,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
