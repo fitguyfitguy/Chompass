@@ -596,8 +596,8 @@
     <string name="about_report_issue">Problem melden</string>
     <string name="about_request_feature">Funktion vorschlagen</string>
     <string name="about_privacy">Datenschutzrichtlinie</string>
-    <string name="about_made_by">Erstellt von Apoorv Darshan</string>
-    <string name="about_with_care">mit Sorgfalt, für alle</string>
+    <string name="about_made_by">NoFUD von fitguy</string>
+    <string name="about_with_care">Basiert auf Fud AI von Apoorv Darshan</string>
     <string name="about_share_message">Ich tracke meine Mahlzeiten mit NoFUD - fotografieren, einsprechen oder eintippen, die KI erfasst die Kalorien. Kostenlos, Open Source, alle Daten bleiben auf deinem Gerät.\n\nHerunterladen: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">NoFUD teilen</string>
 

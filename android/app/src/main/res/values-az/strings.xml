@@ -596,8 +596,8 @@
     <string name="about_report_issue">Problemi Bildir</string>
     <string name="about_request_feature">Funksiya Tələb Et</string>
     <string name="about_privacy">Məxfilik Siyasəti</string>
-    <string name="about_made_by">Apoorv Darshan tərəfindən hazırlanıb</string>
-    <string name="about_with_care">hər kəs üçün, qayğı ilə</string>
+    <string name="about_made_by">NoFUD — fitguy</string>
+    <string name="about_with_care">Apoorv Darshan tərəfindən hazırlanmış Fud AI əsasında</string>
     <string name="about_share_message">Yeməklərimi NoFUD ilə izləyirəm - şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nEndir: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">NoFUD-ı Paylaş</string>
 

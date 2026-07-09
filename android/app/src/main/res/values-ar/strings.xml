@@ -596,8 +596,8 @@
     <string name="about_report_issue">الإبلاغ عن مشكلة</string>
     <string name="about_request_feature">طلب ميزة</string>
     <string name="about_privacy">سياسة الخصوصية</string>
-    <string name="about_made_by">صنع بواسطة Apoorv Darshan</string>
-    <string name="about_with_care">بعناية، للجميع</string>
+    <string name="about_made_by">NoFUD بواسطة fitguy</string>
+    <string name="about_with_care">مبني على Fud AI بواسطة Apoorv Darshan</string>
     <string name="about_share_message">أتتبّع وجباتي مع NoFUD - التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">شارك NoFUD</string>
 

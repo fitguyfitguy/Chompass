@@ -596,8 +596,8 @@
     <string name="about_report_issue">Informar de un problema</string>
     <string name="about_request_feature">Solicitar una función</string>
     <string name="about_privacy">Política de privacidad</string>
-    <string name="about_made_by">Hecho por Apoorv Darshan</string>
-    <string name="about_with_care">con cuidado, para todos</string>
+    <string name="about_made_by">NoFUD por fitguy</string>
+    <string name="about_with_care">Basado en Fud AI de Apoorv Darshan</string>
     <string name="about_share_message">Llevo el control de mis comidas con NoFUD - haz una foto, dícela o escríbela, y la IA registra las calorías. Es gratis, de código abierto, y tus datos se quedan en tu dispositivo.\n\nDescargar: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">Compartir NoFUD</string>
 
