@@ -21,21 +21,35 @@ class FoodImageStore(context: Context) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
     }
 
-    /** Writes the bitmap as JPEG (quality 80) under a new filename. Returns filename or null. */
+    /** Writes the bitmap as JPEG under a new filename. Returns filename or null. */
     fun store(bitmap: Bitmap, entryId: UUID): String? = runCatching {
         val filename = "${entryId}.jpg"
+        val full = bitmap.scaledToMaxDimension(FULL_IMAGE_MAX_DIMENSION)
         FileOutputStream(File(dir, filename)).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
+            full.compress(Bitmap.CompressFormat.JPEG, FULL_IMAGE_JPEG_QUALITY, out)
         }
-        runCatching { writeThumbnail(filename, bitmap) }
+        runCatching { writeThumbnail(filename, full) }
         filename
     }.getOrNull()
 
+    /**
+     * Persists [bytes] as a capped JPEG plus a 320px thumbnail. Camera/gallery
+     * shots are downscaled on write so the log does not retain multi-megapixel
+     * originals on disk.
+     */
     fun storeBytes(bytes: ByteArray, entryId: UUID): String? = runCatching {
         val filename = "${entryId}.jpg"
-        File(dir, filename).writeBytes(bytes)
-        runCatching {
-            decodeSampled(bytes, THUMBNAIL_MAX_DIMENSION)?.let { writeThumbnail(filename, it) }
+        val fullBitmap = decodeSampled(bytes, FULL_IMAGE_MAX_DIMENSION)
+        if (fullBitmap != null) {
+            FileOutputStream(File(dir, filename)).use { out ->
+                fullBitmap.compress(Bitmap.CompressFormat.JPEG, FULL_IMAGE_JPEG_QUALITY, out)
+            }
+            runCatching { writeThumbnail(filename, fullBitmap) }
+        } else {
+            File(dir, filename).writeBytes(bytes)
+            runCatching {
+                decodeSampled(bytes, THUMBNAIL_MAX_DIMENSION)?.let { writeThumbnail(filename, it) }
+            }
         }
         filename
     }.getOrNull()
@@ -79,7 +93,7 @@ class FoodImageStore(context: Context) {
     private fun writeThumbnail(filename: String, bitmap: Bitmap) {
         val thumb = bitmap.scaledToMaxDimension(THUMBNAIL_MAX_DIMENSION)
         FileOutputStream(File(thumbnailDir, filename)).use { out ->
-            thumb.compress(Bitmap.CompressFormat.JPEG, 76, out)
+            thumb.compress(Bitmap.CompressFormat.JPEG, THUMBNAIL_JPEG_QUALITY, out)
         }
         thumbnailCache.put("$filename:$THUMBNAIL_MAX_DIMENSION", thumb)
     }
@@ -129,7 +143,11 @@ class FoodImageStore(context: Context) {
     companion object {
         private const val DIR_NAME = "fudai-food-images"
         private const val THUMBNAIL_DIR_NAME = "fudai-food-thumbnails"
+        /** Longest edge for stored full images (edit sheet is 240dp). */
+        const val FULL_IMAGE_MAX_DIMENSION = 1600
+        const val FULL_IMAGE_JPEG_QUALITY = 80
         private const val THUMBNAIL_MAX_DIMENSION = 320
+        private const val THUMBNAIL_JPEG_QUALITY = 76
         private const val THUMBNAIL_CACHE_KB = 12 * 1024
     }
 }

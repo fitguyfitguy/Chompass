@@ -2,6 +2,7 @@ package org.codeberg.fitguy.nofud.data
 
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
+import org.codeberg.fitguy.nofud.services.FoodImageStore
 import org.codeberg.fitguy.nofud.services.ReviewPrompter
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
@@ -20,7 +21,8 @@ import kotlin.math.roundToInt
  */
 class FoodRepository(
     private val prefs: PreferencesStore,
-    private val health: HealthConnectManager? = null
+    private val health: HealthConnectManager? = null,
+    private val imageStore: FoodImageStore? = null,
 ) {
     val entries: Flow<List<FoodEntry>> = prefs.foodEntries
 
@@ -96,7 +98,9 @@ class FoodRepository(
 
     suspend fun deleteEntry(entryId: UUID) {
         val current = prefs.foodEntries.first()
+        val removed = current.find { it.id == entryId } ?: return
         prefs.setFoodEntries(current.filter { it.id != entryId })
+        deleteImageIfUnreferenced(removed.imageFilename)
         // Delete even when sync is off (iOS parity, best-effort) — a surviving
         // fudai-tagged record would resurrect through restoreFromHealthConnect.
         health?.deleteNutrition(entryId)
@@ -143,7 +147,11 @@ class FoodRepository(
         val current = prefs.favoriteFoodEntries.first().toMutableList()
         val idx = current.indexOfFirst { it.favoriteKey == entry.favoriteKey }
         if (idx >= 0) {
-            current.removeAt(idx)
+            val removed = current.removeAt(idx)
+            prefs.setFavoriteFoodEntries(current)
+            prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+            deleteImageIfUnreferenced(removed.imageFilename)
+            return
         } else {
             // Drop any other entry with the same id (defensive — should not
             // normally happen since we matched by favoriteKey above).
@@ -188,6 +196,15 @@ class FoodRepository(
     private suspend fun shouldSyncHealth(): Boolean {
         val manager = health ?: return false
         return prefs.healthConnectEnabled.first() && manager.hasNutritionWrite()
+    }
+
+    /** Drop on-disk JPEGs once no log row or favorite still references them. */
+    private suspend fun deleteImageIfUnreferenced(imageFilename: String?) {
+        val filename = imageFilename ?: return
+        val store = imageStore ?: return
+        if (prefs.foodEntries.first().any { it.imageFilename == filename }) return
+        if (prefs.favoriteFoodEntries.first().any { it.imageFilename == filename }) return
+        store.delete(filename)
     }
 
     // -- Restore from Health Connect --------------------------------------

@@ -163,6 +163,7 @@ import org.codeberg.fitguy.nofud.ui.components.FudGlassDialogActions
 import org.codeberg.fitguy.nofud.ui.components.FudGlassPrimaryButton
 import org.codeberg.fitguy.nofud.ui.components.FudGlassSurface
 import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
+import org.codeberg.fitguy.nofud.ui.components.rememberFoodThumbnail
 import org.codeberg.fitguy.nofud.ui.components.WeekEnergyStrip
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavDockedControlPadding
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
@@ -1414,9 +1415,7 @@ private fun FoodRow(
     val ctx = LocalContext.current
     val timeFmt = DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.US).withZone(ZoneId.systemDefault())
     val container = (ctx.applicationContext as? org.codeberg.fitguy.nofud.NoFUDApp)?.container
-    val bitmap = remember(entry.imageFilename, container) {
-        entry.imageFilename?.let { filename -> container?.imageStore?.loadThumbnail(filename) }
-    }
+    val bitmap = rememberFoodThumbnail(entry.imageFilename, container?.imageStore)
     // iOS layout: large 76dp square thumb · column with (Name + heart on left,
     // time on right) · pink kcal · serving · macro tag pills row.
     Row(
