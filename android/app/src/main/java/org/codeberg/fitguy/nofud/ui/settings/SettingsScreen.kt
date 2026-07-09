@@ -153,6 +153,8 @@ import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.export.BodyMetricsImportResult
+import org.codeberg.fitguy.nofud.export.BodyMetricsImporter
 import org.codeberg.fitguy.nofud.export.DiaryImportResult
 import org.codeberg.fitguy.nofud.export.DiaryImporter
 import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
@@ -209,6 +211,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     var showExportSheet by remember { mutableStateOf(false) }
     var showBodyMetricsExportSheet by remember { mutableStateOf(false) }
     var importDiaryMessage by remember { mutableStateOf<String?>(null) }
+    var importBodyMetricsMessage by remember { mutableStateOf<String?>(null) }
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }
     var showMaxPinnedAlert by remember { mutableStateOf(false) }
     var showRebalanceBlockedAlert by remember { mutableStateOf(false) }
@@ -292,6 +295,51 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 }
             }.onFailure { t ->
                 importDiaryMessage = activityContext.getString(
+                    R.string.import_diary_failed,
+                    t.localizedMessage ?: "unknown error"
+                )
+            }
+        }
+    }
+
+    val importBodyMetricsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            runCatching {
+                val text = activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                if (text.isNullOrBlank()) {
+                    importBodyMetricsMessage = activityContext.getString(R.string.import_body_metrics_empty)
+                    return@runCatching
+                }
+                when (val result = BodyMetricsImporter.parse(text)) {
+                    is BodyMetricsImportResult.Success -> {
+                        val w = container.weightRepository.importFromFile(result.weights)
+                        val f = container.bodyFatRepository.importFromFile(result.bodyFats)
+                        val m = container.bodyMeasurementRepository.importFromFile(result.measurements)
+                        if (w + f + m <= 0) {
+                            importBodyMetricsMessage = activityContext.getString(R.string.import_body_metrics_empty)
+                            return@runCatching
+                        }
+                        importBodyMetricsMessage = activityContext.getString(
+                            R.string.import_body_metrics_success, w, f, m
+                        )
+                    }
+                    BodyMetricsImportResult.EmptyPayload -> {
+                        importBodyMetricsMessage = activityContext.getString(R.string.import_body_metrics_empty)
+                    }
+                    BodyMetricsImportResult.UnsupportedFormat -> {
+                        importBodyMetricsMessage = activityContext.getString(R.string.import_body_metrics_unsupported)
+                    }
+                    is BodyMetricsImportResult.Malformed -> {
+                        importBodyMetricsMessage = activityContext.getString(
+                            R.string.import_body_metrics_malformed, result.reason
+                        )
+                    }
+                }
+            }.onFailure { t ->
+                importBodyMetricsMessage = activityContext.getString(
                     R.string.import_diary_failed,
                     t.localizedMessage ?: "unknown error"
                 )
@@ -905,6 +953,30 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 Row(
                     Modifier
                         .fillMaxWidth()
+                        .clickable {
+                            // CSV is often reported as octet-stream by SAF providers, so accept broadly.
+                            importBodyMetricsLauncher.launch(
+                                arrayOf(
+                                    "application/json", "text/csv", "text/comma-separated-values",
+                                    "text/plain", "application/octet-stream"
+                                )
+                            )
+                        }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FudIconBubble(icon = Icons.Outlined.MonitorWeight, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    Spacer(Modifier.width(14.dp))
+                    Text(
+                        stringResource(R.string.import_body_metrics_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                HorizontalDivider()
+                Row(
+                    Modifier
+                        .fillMaxWidth()
                         .clickable { showClearFoodDialog = true }
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -1162,6 +1234,17 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importDiaryMessage = null }
+            )
+        }
+    }
+
+    importBodyMetricsMessage?.let { msg ->
+        FudGlassDialog(onDismissRequest = { importBodyMetricsMessage = null }) {
+            Text(stringResource(R.string.import_body_metrics_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_ok),
+                onPrimary = { importBodyMetricsMessage = null }
             )
         }
     }

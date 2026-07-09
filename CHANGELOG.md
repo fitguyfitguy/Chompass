@@ -2,10 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
-## [Unreleased]
+## [1.8.0] - 2026-07-09
 
 ### Added
 
+- Import weight and body data from a file (Settings → Health &amp; Data): NoFUD JSON/CSV exports, [openScale](https://github.com/oliexdev/openScale) CSV, and generic weight CSVs (MyFitnessPal / SparkyFitness style, kg or lb). Re-importing the same file is idempotent and never duplicates manual entries
+- Export now covers weight, body-fat **and** body-measurement history, in either CSV or JSON
 - Nutrition calculation audit documentation ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md)) with formula register, scientific policy decisions, and release checklist
 - Unit tests for BMR/TDEE, macro goals, keto carb heuristics, weight forecast, adaptive goals, and body-composition estimates
 - Calculation Methods UI sections for weight forecast, adaptive goals, and tape-measure body metrics

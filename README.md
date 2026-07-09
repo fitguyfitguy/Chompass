@@ -132,9 +132,9 @@ Two paths:
 **What transfers**
 
 - **Food log**: JSON import and/or Health Connect restore
-- **Weight + body fat**: Health Connect import and ongoing sync
+- **Weight + body fat + measurements**: file import/export (CSV or JSON) **or** Health Connect import and ongoing sync
 
-> **Limitation:** no dedicated weight/body-composition file import/export yet. Those metrics migrate through Health Connect.
+Weight and body data now import from a file too: **Settings → Import Weight & Body Data** accepts NoFUD's own JSON/CSV export, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and generic weight CSVs (MyFitnessPal / SparkyFitness style, kg or lb). Body-circumference sites (waist, neck, etc.) have no Health Connect record type, so file transfer is the way to move those between installs.
 
 ### NoFUD vs Fud AI
 
