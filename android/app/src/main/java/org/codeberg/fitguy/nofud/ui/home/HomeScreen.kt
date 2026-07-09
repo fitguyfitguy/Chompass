@@ -134,7 +134,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.AppContainer
@@ -998,11 +999,18 @@ private fun CalorieHero(
                     ActiveCalorieSource.ESTIMATED -> R.string.home_calorie_active_bonus_estimated
                     ActiveCalorieSource.UNAVAILABLE, null -> R.string.home_calorie_active_bonus
                 }
+                val bonusText = stringResource(bonusRes, activeCalories)
+                val estimatedA11y = stringResource(R.string.home_calorie_active_estimated_a11y)
                 Text(
-                    stringResource(bonusRes, activeCalories),
+                    bonusText,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = tertiary,
+                    modifier = if (activeCalorieSource == ActiveCalorieSource.ESTIMATED) {
+                        Modifier.semantics { contentDescription = "$estimatedA11y: $bonusText" }
+                    } else {
+                        Modifier
+                    },
                 )
                 if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
                     val breakdownRes = when (activeCalorieSource) {
@@ -1010,15 +1018,17 @@ private fun CalorieHero(
                         ActiveCalorieSource.ESTIMATED -> R.string.home_calorie_goal_breakdown_estimated
                         ActiveCalorieSource.UNAVAILABLE, null -> R.string.home_calorie_goal_breakdown
                     }
+                    val breakdownText = stringResource(breakdownRes, baseGoal, activeCalories)
                     Text(
-                        stringResource(
-                            breakdownRes,
-                            baseGoal,
-                            activeCalories,
-                        ),
+                        breakdownText,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
-                        color = muted
+                        color = muted,
+                        modifier = if (activeCalorieSource == ActiveCalorieSource.ESTIMATED) {
+                            Modifier.semantics { contentDescription = "$estimatedA11y: $breakdownText" }
+                        } else {
+                            Modifier
+                        },
                     )
                 }
             }

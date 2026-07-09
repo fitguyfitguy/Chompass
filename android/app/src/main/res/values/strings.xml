@@ -853,11 +853,12 @@
     <string name="home_calories_label">CALORIES</string>
     <string name="home_calorie_of_goal">of %1$d</string>
     <string name="home_calorie_active_bonus">+%1$d active</string>
-    <string name="home_calorie_active_bonus_estimated">+%1$d active (estimated)</string>
+    <string name="home_calorie_active_bonus_estimated">+%1$d active ~</string>
     <string name="home_calorie_active_bonus_measured">+%1$d active (Health Connect)</string>
     <string name="home_calorie_goal_breakdown">%1$d base + %2$d active</string>
-    <string name="home_calorie_goal_breakdown_estimated">%1$d base + %2$d active (estimated)</string>
+    <string name="home_calorie_goal_breakdown_estimated">%1$d base + %2$d ~active</string>
     <string name="home_calorie_goal_breakdown_measured">%1$d base + %2$d active (Health Connect)</string>
+    <string name="home_calorie_active_estimated_a11y">Active calories estimated from your activity level</string>
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active calories to goal</string>
     <string name="home_calorie_mode_net">Net calories (eaten minus active)</string>
