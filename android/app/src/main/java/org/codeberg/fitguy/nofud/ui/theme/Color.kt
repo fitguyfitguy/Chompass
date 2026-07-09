@@ -68,7 +68,43 @@ enum class AppThemeColor(
         }
 
         fun migrateKey(key: String?): String = fromKey(key).key
+
+        /** Accent colors selectable in settings (excludes [SYSTEM]). */
+        fun iconSelectableColors(): List<AppThemeColor> =
+            entries.filter { !it.usesSystemPalette }
     }
+}
+
+private data class LauncherIconAccent(
+    val theme: AppThemeColor,
+    val accent: Color,
+)
+
+/** Representative launcher-icon gradient colors from [scripts/generate_icons.py]. */
+private val LauncherIconAccents: List<LauncherIconAccent> = listOf(
+    LauncherIconAccent(AppThemeColor.TEAL, Color(0xFF30B0C7)),
+    LauncherIconAccent(AppThemeColor.BLUE, Color(0xFF0A84FF)),
+    LauncherIconAccent(AppThemeColor.GREEN, Color(0xFF34C759)),
+    LauncherIconAccent(AppThemeColor.PURPLE, Color(0xFFAF52DE)),
+    LauncherIconAccent(AppThemeColor.PINK, Color(0xFFFF8FAB)),
+    LauncherIconAccent(AppThemeColor.ORANGE, Color(0xFFFF9500)),
+    LauncherIconAccent(AppThemeColor.INDIGO, Color(0xFF5856D6)),
+    LauncherIconAccent(AppThemeColor.NEUTRAL, Color(0xFF8E8E93)),
+)
+
+/** Maps a Material You / wallpaper accent to the closest pre-rendered launcher icon. */
+fun nearestLauncherIconTheme(accent: Color): AppThemeColor =
+    LauncherIconAccents.minBy { (accent.red - it.accent.red) * (accent.red - it.accent.red) +
+        (accent.green - it.accent.green) * (accent.green - it.accent.green) +
+        (accent.blue - it.accent.blue) * (accent.blue - it.accent.blue)
+    }.theme
+
+/** Theme color used for the home-screen launcher icon. */
+fun AppThemeColor.resolveLauncherIconTheme(context: Context): AppThemeColor {
+    if (!usesSystemPalette) return this
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return AppThemeColor.TEAL
+    val (accent, _) = widgetAccentColors(context)
+    return nearestLauncherIconTheme(accent)
 }
 
 /** Accent colors for widgets and other non-Compose surfaces. */
