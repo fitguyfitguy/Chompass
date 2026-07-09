@@ -65,18 +65,27 @@ if [[ ! -d "$REF_DIR" ]]; then
   exit 1
 fi
 
-# prefix|release-screenshots name|docs/screenshots name (README)
-declare -a EXPORTS=(
-  "HomeLightScreenshot_01-home-light|01-home-light.png|home-light.png"
-  "ProgressLightScreenshot_02-progress-light|02-progress-light.png|progress-light.png"
-  "CoachLightScreenshot_03-coach-light|03-coach-light.png|coach-light.png"
-  "SettingsLightScreenshot_04-settings-light|04-settings-light.png|settings-light.png"
-  "HomeDarkScreenshot_05-home-dark|05-home-dark.png|home-dark.png"
-  "ProgressDarkScreenshot_06-progress-dark|06-progress-dark.png|progress-dark.png"
-  "AddFoodLightScreenshot_07-add-food-light|07-add-food-light.png|add-food-light.png"
-  "CoachDarkScreenshot_08-coach-dark|08-coach-dark.png|coach-dark.png"
-  "SettingsDarkScreenshot_09-settings-dark|09-settings-dark.png|settings-dark.png"
-  "AddFoodDarkScreenshot_10-add-food-dark|10-add-food-dark.png|add-food-dark.png"
+# prefix|release-screenshots filename
+declare -a RELEASE_EXPORTS=(
+  "HomeLightScreenshot_01-home-light|01-home-light.png"
+  "ProgressLightScreenshot_02-progress-light|02-progress-light.png"
+  "CoachLightScreenshot_03-coach-light|03-coach-light.png"
+  "SettingsLightScreenshot_04-settings-light|04-settings-light.png"
+  "HomeDarkScreenshot_05-home-dark|05-home-dark.png"
+  "ProgressDarkScreenshot_06-progress-dark|06-progress-dark.png"
+  "AddFoodLightScreenshot_07-add-food-light|07-add-food-light.png"
+  "CoachDarkScreenshot_08-coach-dark|08-coach-dark.png"
+  "SettingsDarkScreenshot_09-settings-dark|09-settings-dark.png"
+  "AddFoodDarkScreenshot_10-add-food-dark|10-add-food-dark.png"
+)
+
+# Dark-mode previews only — embedded in README.md
+declare -a README_EXPORTS=(
+  "HomeDarkScreenshot_05-home-dark|home.png"
+  "ProgressDarkScreenshot_06-progress-dark|progress.png"
+  "AddFoodDarkScreenshot_10-add-food-dark|add-food.png"
+  "CoachDarkScreenshot_08-coach-dark|coach.png"
+  "SettingsDarkScreenshot_09-settings-dark|settings.png"
 )
 
 find_newest_ref() {
@@ -90,8 +99,8 @@ rm -f "$OUT_DIR"/*.png "$README_DIR"/*.png
 
 echo "==> Exporting release screenshots to release-screenshots/ and docs/screenshots/"
 MISSING=0
-for entry in "${EXPORTS[@]}"; do
-  IFS='|' read -r prefix release_name readme_name <<<"$entry"
+for entry in "${RELEASE_EXPORTS[@]}"; do
+  IFS='|' read -r prefix release_name <<<"$entry"
   src="$(find_newest_ref "$prefix")"
   if [[ -z "$src" ]]; then
     echo "Missing reference for $prefix" >&2
@@ -99,8 +108,19 @@ for entry in "${EXPORTS[@]}"; do
     continue
   fi
   cp "$src" "$OUT_DIR/$release_name"
+  echo "  $release_name"
+done
+
+for entry in "${README_EXPORTS[@]}"; do
+  IFS='|' read -r prefix readme_name <<<"$entry"
+  src="$(find_newest_ref "$prefix")"
+  if [[ -z "$src" ]]; then
+    echo "Missing reference for $prefix" >&2
+    MISSING=1
+    continue
+  fi
   cp "$src" "$README_DIR/$readme_name"
-  echo "  $release_name  ->  docs/screenshots/$readme_name"
+  echo "  docs/screenshots/$readme_name"
 done
 
 if [[ "$MISSING" -ne 0 ]]; then
@@ -113,7 +133,7 @@ Screenshot export complete.
 
 Artifacts:
   $OUT_DIR/          (gitignored; attach on Codeberg with --with-screenshots)
-  $README_DIR/       (committed; embedded in README.md)
+  $README_DIR/       (committed; dark-theme README gallery)
 
 Attach on publish:
   ./scripts/publish_release.sh <version> --with-screenshots
