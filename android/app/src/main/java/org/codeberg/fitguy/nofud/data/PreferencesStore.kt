@@ -147,6 +147,10 @@ class PreferencesStore(private val context: Context) {
     val healthEnergyGoalsEnabled: Flow<Boolean> = ds.data.map { it[Keys.HEALTH_ENERGY_GOALS_ENABLED] ?: false }
     suspend fun setHealthEnergyGoalsEnabled(v: Boolean) { ds.edit { it[Keys.HEALTH_ENERGY_GOALS_ENABLED] = v } }
 
+    /** Opt-in periodic background Health Connect sync. Default OFF — see HealthSyncWorker. */
+    val healthBackgroundSyncEnabled: Flow<Boolean> = ds.data.map { it[Keys.HEALTH_BACKGROUND_SYNC_ENABLED] ?: false }
+    suspend fun setHealthBackgroundSyncEnabled(v: Boolean) { ds.edit { it[Keys.HEALTH_BACKGROUND_SYNC_ENABLED] = v } }
+
     val healthEnergyGoalsLastAutoRefreshDay: Flow<String?> = ds.data.map {
         it[Keys.HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY]
     }
@@ -650,6 +654,7 @@ class PreferencesStore(private val context: Context) {
         val HEALTH_CHANGES_TOKEN_TYPES = stringPreferencesKey("healthChangesTokenTypes")
         val HEALTH_FOOD_RESTORE_DONE = booleanPreferencesKey("healthFoodRestoreDone")
         val HEALTH_ENERGY_GOALS_ENABLED = booleanPreferencesKey("healthEnergyGoalsEnabled")
+        val HEALTH_BACKGROUND_SYNC_ENABLED = booleanPreferencesKey("healthBackgroundSyncEnabled")
         val HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS = stringPreferencesKey("healthEnergyGoalsPreviousTargets")
         val HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY = stringPreferencesKey("healthEnergyGoalsLastAutoRefreshDay")
         val ADAPTIVE_GOALS_ENABLED = booleanPreferencesKey("adaptiveGoalsEnabled")

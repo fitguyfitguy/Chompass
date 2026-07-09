@@ -8,6 +8,9 @@ All notable changes to NoFUD are documented here.
 
 - Import weight and body data from a file (Settings → Health &amp; Data): NoFUD JSON/CSV exports, [openScale](https://github.com/oliexdev/openScale) CSV, and generic weight CSVs (MyFitnessPal / SparkyFitness style, kg or lb). Re-importing the same file is idempotent and never duplicates manual entries
 - Export now covers weight, body-fat **and** body-measurement history, in either CSV or JSON
+- Wellness card on the Progress tab: sleep, resting heart rate and hydration read from Health Connect (new Sleep, Resting Heart Rate and Hydration read permissions)
+- Height now syncs to Health Connect (new Height write permission), so scales and other apps can use it
+- Optional background sync (Settings → Health &amp; Data, **off by default**): checks Health Connect for new data every few hours even when NoFUD is closed
 - Nutrition calculation audit documentation ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md)) with formula register, scientific policy decisions, and release checklist
 - Unit tests for BMR/TDEE, macro goals, keto carb heuristics, weight forecast, adaptive goals, and body-composition estimates
 - Calculation Methods UI sections for weight forecast, adaptive goals, and tape-measure body metrics

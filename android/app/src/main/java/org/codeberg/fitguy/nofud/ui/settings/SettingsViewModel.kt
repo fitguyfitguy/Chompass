@@ -24,6 +24,7 @@ import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
 import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
 import org.codeberg.fitguy.nofud.services.WeightAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
+import org.codeberg.fitguy.nofud.services.health.HealthSyncWorker
 import org.codeberg.fitguy.nofud.ui.home.FoodLogSortOrder
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,6 +59,7 @@ data class SettingsUiState(
     val appUpdateNotificationsEnabled: Boolean = true,
     val healthConnectEnabled: Boolean = false,
     val healthEnergyGoalsEnabled: Boolean = false,
+    val healthBackgroundSyncEnabled: Boolean = false,
     val adaptiveGoalsEnabled: Boolean = false,
     val applyingHealthEnergyGoals: Boolean = false,
     val applyingAdaptiveGoals: Boolean = false,
@@ -124,6 +126,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val hc = reconcileHealthConnectState()
             val profile = container.profileRepository.current()
             val energyGoals = container.prefs.healthEnergyGoalsEnabled.first() && hc
+            val backgroundSync = container.prefs.healthBackgroundSyncEnabled.first() && hc
             val adaptiveGoals = container.prefs.adaptiveGoalsEnabled.first()
             val masked = maskKey(container.keyStore.apiKey(provider))
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
@@ -166,6 +169,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 appUpdateNotificationsEnabled = appUpdateNotifications,
                 healthConnectEnabled = hc,
                 healthEnergyGoalsEnabled = energyGoals,
+                healthBackgroundSyncEnabled = backgroundSync,
                 adaptiveGoalsEnabled = adaptiveGoals,
                 apiKeyMasked = masked,
                 speechApiKeyMasked = speechMasked,
@@ -522,10 +526,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 }
                 container.prefs.setHealthConnectEnabled(false)
                 container.prefs.setHealthEnergyGoalsEnabled(false)
+                // Disconnecting Health Connect stops any background sync too.
+                container.prefs.setHealthBackgroundSyncEnabled(false)
+                HealthSyncWorker.cancel(container.appContext)
                 _ui.value = _ui.value.copy(
                     profile = restored ?: _ui.value.profile,
                     healthConnectEnabled = false,
-                    healthEnergyGoalsEnabled = false
+                    healthEnergyGoalsEnabled = false,
+                    healthBackgroundSyncEnabled = false
                 )
                 return@launch
             }
@@ -542,6 +550,18 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 healthConnectEnabled = enabled,
                 healthEnergyGoalsEnabled = if (enabled) _ui.value.healthEnergyGoalsEnabled else false
             )
+        }
+    }
+
+    /** Opt-in periodic background sync. Requires Health Connect to already be
+     *  connected; enabling schedules the worker, disabling cancels it. Default OFF. */
+    fun setHealthBackgroundSyncEnabled(v: Boolean) {
+        viewModelScope.launch {
+            if (v && !container.prefs.healthConnectEnabled.first()) return@launch
+            container.prefs.setHealthBackgroundSyncEnabled(v)
+            if (v) HealthSyncWorker.schedule(container.appContext)
+            else HealthSyncWorker.cancel(container.appContext)
+            _ui.value = _ui.value.copy(healthBackgroundSyncEnabled = v)
         }
     }
 
@@ -564,6 +584,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 container.prefs.clearHealthEnergyGoalPreviousTargets()
             }
             container.prefs.setHealthEnergyGoalsEnabled(false)
+            // Losing all permissions also stops background sync.
+            container.prefs.setHealthBackgroundSyncEnabled(false)
+            HealthSyncWorker.cancel(container.appContext)
         }
 
         // "Connected" is now any-permission, so revoking ONLY the energy reads leaves granted=true
@@ -709,6 +732,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 container.health.deleteBodyFat(entry.id)
                 container.health.writeBodyFat(entry)
             }
+        }
+        if (caps.heightWrite) {
+            container.profileRepository.current()?.heightCm?.let { container.health.writeHeight(it) }
         }
     }
 

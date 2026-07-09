@@ -849,6 +849,17 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
                     )
+                    ToggleRow(
+                        stringResource(R.string.settings_health_background_sync),
+                        ui.healthBackgroundSyncEnabled,
+                        onChange = { vm.setHealthBackgroundSyncEnabled(it) }
+                    )
+                    Text(
+                        stringResource(R.string.settings_health_background_sync_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                    )
                 }
                 HorizontalDivider()
                 SettingRow(

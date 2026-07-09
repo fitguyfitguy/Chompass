@@ -8,8 +8,12 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BodyFatRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeightRecord
+import androidx.health.connect.client.records.HydrationRecord
 import androidx.health.connect.client.records.MealType as HCMealType
 import androidx.health.connect.client.records.NutritionRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
+import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
@@ -18,6 +22,7 @@ import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.Energy
+import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
 import androidx.health.connect.client.units.Percentage
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
@@ -63,11 +68,15 @@ class HealthConnectManager(private val context: Context) {
     private val totalEnergyRead = HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
     private val stepsRead = HealthPermission.getReadPermission(StepsRecord::class)
     private val exerciseRead = HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+    private val heightWrite = HealthPermission.getWritePermission(HeightRecord::class)
+    private val sleepRead = HealthPermission.getReadPermission(SleepSessionRecord::class)
+    private val restingHrRead = HealthPermission.getReadPermission(RestingHeartRateRecord::class)
+    private val hydrationRead = HealthPermission.getReadPermission(HydrationRecord::class)
 
     val permissions: Set<String> = setOf(
         weightRead, weightWrite, nutritionRead, nutritionWrite,
         bodyFatRead, bodyFatWrite, activeEnergyRead, totalEnergyRead,
-        stepsRead, exerciseRead
+        stepsRead, exerciseRead, heightWrite, sleepRead, restingHrRead, hydrationRead
     )
 
     private suspend fun granted(): Set<String> =
@@ -85,6 +94,9 @@ class HealthConnectManager(private val context: Context) {
     suspend fun hasNutritionWrite(): Boolean = nutritionWrite in granted()
     suspend fun hasEnergyRead(): Boolean = granted().let { activeEnergyRead in it && totalEnergyRead in it }
     suspend fun hasActivityRead(): Boolean = granted().let { stepsRead in it || exerciseRead in it }
+    suspend fun hasHeightWrite(): Boolean = heightWrite in granted()
+    suspend fun hasWellnessRead(): Boolean =
+        granted().let { sleepRead in it || restingHrRead in it || hydrationRead in it }
 
     /** One permission read snapshotting every capability — used by the read-sync coordinator. */
     suspend fun capabilities(): HealthCapabilities {
@@ -98,7 +110,11 @@ class HealthConnectManager(private val context: Context) {
             nutritionWrite = nutritionWrite in g,
             energyRead = activeEnergyRead in g && totalEnergyRead in g,
             stepsRead = stepsRead in g,
-            exerciseRead = exerciseRead in g
+            exerciseRead = exerciseRead in g,
+            heightWrite = heightWrite in g,
+            sleepRead = sleepRead in g,
+            restingHrRead = restingHrRead in g,
+            hydrationRead = hydrationRead in g
         )
     }
 
@@ -226,6 +242,32 @@ class HealthConnectManager(private val context: Context) {
             pageToken = response.pageToken
         } while (pageToken != null)
         return out
+    }
+
+    // -- Height -----------------------------------------------------------
+
+    /** Push the user's height as a single Health Connect record. Delete-then-write
+     *  under a fixed clientRecordId so re-saving a corrected height replaces the
+     *  record instead of stacking duplicates. Body-circumference sites have no HC
+     *  record type, so height is the only body-measurement we can mirror. */
+    suspend fun writeHeight(heightCm: Double): Boolean {
+        val c = client ?: return false
+        if (heightCm <= 0) return false
+        val clientId = "${CLIENT_PREFIX}height"
+        runCatching {
+            c.deleteRecords(
+                recordType = HeightRecord::class,
+                recordIdsList = emptyList(),
+                clientRecordIdsList = listOf(clientId)
+            )
+        }
+        val record = HeightRecord(
+            time = Instant.now(),
+            zoneOffset = null,
+            height = Length.meters(heightCm / 100.0),
+            metadata = Metadata.manualEntry(clientRecordId = clientId)
+        )
+        return runCatching { c.insertRecords(listOf(record)) }.isSuccess
     }
 
     // -- Nutrition --------------------------------------------------------
@@ -432,6 +474,55 @@ class HealthConnectManager(private val context: Context) {
         return out
     }
 
+    /**
+     * Per-day sleep minutes, resting heart rate and hydration for the last [days]
+     * days, today included — the display counterpart to [readDailyActivity].
+     * Aggregates only the metrics whose read permission is granted; a day with no
+     * data for a metric returns null for it. Nothing is persisted.
+     */
+    suspend fun readDailyWellness(days: Int = 7): List<DailyWellness> {
+        val c = client ?: return emptyList()
+        val g = granted()
+        val wantSleep = sleepRead in g
+        val wantHr = restingHrRead in g
+        val wantHydration = hydrationRead in g
+        val metrics = buildSet {
+            if (wantSleep) add(SleepSessionRecord.SLEEP_DURATION_TOTAL)
+            if (wantHr) add(RestingHeartRateRecord.BPM_AVG)
+            if (wantHydration) add(HydrationRecord.VOLUME_TOTAL)
+        }
+        if (metrics.isEmpty()) return emptyList()
+
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
+        val out = mutableListOf<DailyWellness>()
+        for (offset in (maxOf(1, days) - 1) downTo 0) {
+            val date = today.minusDays(offset.toLong())
+            val start = date.atStartOfDay(zone).toInstant()
+            val end = date.plusDays(1).atStartOfDay(zone).toInstant()
+            val result = runCatching {
+                c.aggregate(
+                    AggregateRequest(
+                        metrics = metrics,
+                        timeRangeFilter = TimeRangeFilter.between(start, end)
+                    )
+                )
+            }.getOrNull()
+            val sleepMinutes = result?.get(SleepSessionRecord.SLEEP_DURATION_TOTAL)?.toMinutes()?.toInt()
+            val restingHr = result?.get(RestingHeartRateRecord.BPM_AVG)
+            val hydrationMl = result?.get(HydrationRecord.VOLUME_TOTAL)?.inMilliliters
+            out.add(
+                DailyWellness(
+                    date = date,
+                    sleepMinutes = sleepMinutes?.takeIf { it > 0 },
+                    restingHeartRateBpm = restingHr?.takeIf { it > 0 },
+                    hydrationMl = hydrationMl?.takeIf { it > 0 }
+                )
+            )
+        }
+        return out
+    }
+
     // -- Change observation (external weight imports) --------------------
 
     /** Opaque token used to fetch incremental changes. Call once, persist, pass back later.
@@ -589,8 +680,9 @@ class HealthConnectManager(private val context: Context) {
          *  v2 = added BodyFatRecord read+write permissions.
          *  v3 = added energy burn read permissions.
          *  v4 = added NutritionRecord read permission (food-log restore).
-         *  v5 = added Steps + ExerciseSession read permissions (activity card). */
-        const val CURRENT_TYPES_VERSION = 5
+         *  v5 = added Steps + ExerciseSession read permissions (activity card).
+         *  v6 = added Height write + Sleep/RestingHeartRate/Hydration reads (wellness card). */
+        const val CURRENT_TYPES_VERSION = 6
     }
 }
 
@@ -608,7 +700,11 @@ data class HealthCapabilities(
     val nutritionWrite: Boolean,
     val energyRead: Boolean,
     val stepsRead: Boolean,
-    val exerciseRead: Boolean
+    val exerciseRead: Boolean,
+    val heightWrite: Boolean,
+    val sleepRead: Boolean,
+    val restingHrRead: Boolean,
+    val hydrationRead: Boolean
 )
 
 /** Per-day energy burn from Health Connect (not persisted). */
@@ -624,6 +720,16 @@ data class DailyActivity(
     val date: LocalDate,
     val steps: Long,
     val exerciseMinutes: Int
+)
+
+/** One day of aggregated Health Connect wellness signals — sleep minutes, resting
+ *  heart rate and hydration. Each is null when unavailable/ungranted for that day.
+ *  Display-only; nothing is persisted. */
+data class DailyWellness(
+    val date: LocalDate,
+    val sleepMinutes: Int?,
+    val restingHeartRateBpm: Long?,
+    val hydrationMl: Double?
 )
 
 /** A NutritionRecord read back from Health Connect in Fud AI's own units —

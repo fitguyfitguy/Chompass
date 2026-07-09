@@ -19,6 +19,7 @@ import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.ai.ChatService
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
+import org.codeberg.fitguy.nofud.services.health.HealthSyncWorker
 import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
 import org.codeberg.fitguy.nofud.services.speech.SpeechService
 import kotlin.math.roundToInt
@@ -50,6 +51,13 @@ class NoFUDApp : Application() {
         container.notifications.createChannels()
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         container.widgetSnapshotWriter.observe().launchIn(appScope)
+        // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
+        // this a no-op when the periodic work is already enqueued.
+        appScope.launch {
+            if (container.prefs.healthBackgroundSyncEnabled.first()) {
+                HealthSyncWorker.schedule(this@NoFUDApp)
+            }
+        }
         // Re-arm the daily weight-log alarm on every cold start. AlarmManager
         // drops scheduled alarms on device reboot and (sometimes) on app
         // updates — without this, a user who enabled Notifications once would
