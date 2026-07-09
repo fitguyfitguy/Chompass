@@ -43,12 +43,14 @@ fun MacroCard(
     unit: String = "g",
     modifier: Modifier = Modifier,
     accentColor: Color = MaterialTheme.colorScheme.primary,
+    freezeProgress: Boolean = false,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
     LaunchedEffect(epoch, progress) {
+        if (freezeProgress) return@LaunchedEffect
         val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
         if (lastEpoch != epoch) {
             animatable.snapTo(0f)
@@ -58,7 +60,7 @@ fun MacroCard(
             animatable.animateTo(progress, spec)
         }
     }
-    val animated = animatable.value
+    val animated = if (freezeProgress) progress else animatable.value
 
     Column(
         modifier = modifier.fillMaxWidth(),

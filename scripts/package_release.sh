@@ -90,6 +90,11 @@ run_in_devenv 'cd android && ./gradlew test'
 echo "==> Checking exercise image budget"
 run_in_devenv 'uv run --with pillow python scripts/optimize_exercise_images.py --check-only'
 
+if [[ "$CHECK_ONLY" -eq 0 ]]; then
+  echo "==> Updating README and release screenshots"
+  "$ROOT/scripts/export_release_screenshots.sh"
+fi
+
 if [[ "$CHECK_ONLY" -eq 1 ]]; then
   echo "Check-only mode complete."
   exit 0
@@ -150,7 +155,7 @@ Packaging complete for NoFUD ${VERSION}.
 Next steps:
   1. Bump versionCode / versionName in android/app/build.gradle.kts (if not done yet)
   2. Update CHANGELOG.md
-  3. Commit, tag, and push:
+  3. Commit (include docs/screenshots/ if UI changed), tag, and push:
        git tag -a v${VERSION} -m "NoFUD ${VERSION}"
        git push origin v${VERSION}
   4. Publish to Codeberg:

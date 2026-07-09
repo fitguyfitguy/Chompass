@@ -11,6 +11,34 @@ Snap, speak, scan, or type your food using your own AI provider key - no account
 
 Home: https://codeberg.org/fitguy/NoFUD
 
+## Screenshots
+
+Light and dark Material 3 themes. Images in [`docs/screenshots/`](docs/screenshots/) are regenerated automatically during [`release:package`](RELEASE.md#release-screenshots-optional) whenever UI previews change.
+
+<table>
+  <tr>
+    <th align="center">Home</th>
+    <th align="center">Progress</th>
+    <th align="center">Add food</th>
+    <th align="center">Coach</th>
+    <th align="center">Settings</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/home-light.png" width="180" alt="Home — light theme" /><br /><sub>Light</sub></td>
+    <td align="center"><img src="docs/screenshots/progress-light.png" width="180" alt="Progress — light theme" /><br /><sub>Light</sub></td>
+    <td align="center"><img src="docs/screenshots/add-food-light.png" width="180" alt="Add food sheet — light theme" /><br /><sub>Light</sub></td>
+    <td align="center"><img src="docs/screenshots/coach-light.png" width="180" alt="Coach — light theme" /><br /><sub>Light</sub></td>
+    <td align="center"><img src="docs/screenshots/settings-light.png" width="180" alt="Settings — light theme" /><br /><sub>Light</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/home-dark.png" width="180" alt="Home — dark theme" /><br /><sub>Dark</sub></td>
+    <td align="center"><img src="docs/screenshots/progress-dark.png" width="180" alt="Progress — dark theme" /><br /><sub>Dark</sub></td>
+    <td align="center"><img src="docs/screenshots/add-food-dark.png" width="180" alt="Add food sheet — dark theme" /><br /><sub>Dark</sub></td>
+    <td align="center"><img src="docs/screenshots/coach-dark.png" width="180" alt="Coach — dark theme" /><br /><sub>Dark</sub></td>
+    <td align="center"><img src="docs/screenshots/settings-dark.png" width="180" alt="Settings — dark theme" /><br /><sub>Dark</sub></td>
+  </tr>
+</table>
+
 ## Install (Android)
 
 No Play Store/F-Droid yet. Install NoFUD using one of these options:

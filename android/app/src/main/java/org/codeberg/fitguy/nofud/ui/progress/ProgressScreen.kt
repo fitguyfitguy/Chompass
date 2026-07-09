@@ -335,6 +335,106 @@ fun ProgressScreen(container: AppContainer) {
     }
 }
 
+/** Static progress layout for release screenshot previews (no ViewModel). */
+@Composable
+internal fun ProgressScreenPreviewContent(
+    ui: ProgressUiState,
+    activity: List<DailyActivity> = emptyList(),
+    bodyMetric: BodyMetric = BodyMetric.WEIGHT,
+    chartsImmediate: Boolean = true,
+) {
+    val weightMetric = ui.weightUnit == "kg"
+    val bodyFatAvailable = ui.bodyFatEntries.isNotEmpty()
+        || ui.profile?.bodyFatPercentage != null
+        || ui.profile?.goalBodyFatPercentage != null
+
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = BottomNavScrollPadding,
+            ),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item { TimeRangePicker(selected = ui.timeRange, onSelect = {}) }
+            item {
+                if (bodyFatAvailable) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        BodyMetricToggle(selected = bodyMetric, onSelect = {})
+                        CardSection {
+                            when (bodyMetric) {
+                                BodyMetric.WEIGHT -> WeightSection(
+                                    entries = ui.filteredWeights,
+                                    stats = ui.weightStats,
+                                    goalKg = ui.profile?.goalWeightKg,
+                                    useMetric = weightMetric,
+                                    onLogWeight = {},
+                                    chartsImmediate = chartsImmediate,
+                                )
+                                BodyMetric.BODY_FAT -> BodyFatSection(
+                                    entries = ui.filteredBodyFats,
+                                    stats = ui.bodyFatStats,
+                                    profileBodyFatFraction = ui.profile?.bodyFatPercentage,
+                                    goalFraction = ui.profile?.goalBodyFatPercentage,
+                                    onLogBodyFat = {},
+                                    chartsImmediate = chartsImmediate,
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    CardSection {
+                        WeightSection(
+                            entries = ui.filteredWeights,
+                            stats = ui.weightStats,
+                            goalKg = ui.profile?.goalWeightKg,
+                            useMetric = weightMetric,
+                            onLogWeight = {},
+                            chartsImmediate = chartsImmediate,
+                        )
+                    }
+                }
+            }
+            if (ui.entries.isNotEmpty()) {
+                item { WeightHistoryLink(count = ui.entries.size) {} }
+            }
+            if (ui.bodyFatEntries.isNotEmpty()) {
+                item { BodyFatHistoryLink(count = ui.bodyFatEntries.size) {} }
+            }
+            item {
+                CardSection {
+                    CalorieSection(
+                        dailyCalories = ui.dailyCalories,
+                        calorieGoal = ui.profile?.effectiveCalories ?: 2000,
+                    )
+                }
+            }
+            ui.profile?.let { p ->
+                item {
+                    CardSection {
+                        MacroAveragesSection(
+                            avgProtein = ui.macroAverages.first,
+                            avgCarbs = ui.macroAverages.second,
+                            avgFat = ui.macroAverages.third,
+                            proteinGoal = p.effectiveProtein,
+                            carbsGoal = p.effectiveCarbs,
+                            fatGoal = p.effectiveFat,
+                        )
+                    }
+                }
+            }
+            if (activity.isNotEmpty()) {
+                item {
+                    CardSection { ActivitySection(days = activity) }
+                }
+            }
+        }
+    }
+}
+
 // ── Components ──────────────────────────────────────────────────────
 
 @Composable
@@ -370,7 +470,8 @@ private fun WeightSection(
     stats: WeightSummaryStats,
     goalKg: Double?,
     useMetric: Boolean,
-    onLogWeight: () -> Unit
+    onLogWeight: () -> Unit,
+    chartsImmediate: Boolean = false,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -412,7 +513,14 @@ private fun WeightSection(
                     add(averageLabel to formatWeight(stats.averageKg, useMetric))
                 }
             )
-            DeferredChart { WeightChartCanvas(entries = entries, goalKg = goalKg, useMetric = useMetric) }
+            DeferredChart(immediate = chartsImmediate) {
+                WeightChartCanvas(
+                    entries = entries,
+                    goalKg = goalKg,
+                    useMetric = useMetric,
+                    immediate = chartsImmediate,
+                )
+            }
         }
     }
 }
@@ -464,20 +572,29 @@ private fun StatBadge(label: String, value: String, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun WeightChartCanvas(entries: List<WeightEntry>, goalKg: Double?, useMetric: Boolean) {
+private fun WeightChartCanvas(
+    entries: List<WeightEntry>,
+    goalKg: Double?,
+    useMetric: Boolean,
+    immediate: Boolean = false,
+) {
     val chartModel = remember(entries, goalKg, useMetric) {
         buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
     }
     val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-    var chartRenderPhase by remember(entries, goalKg, useMetric) { mutableStateOf(0) }
-    LaunchedEffect(entries, goalKg, useMetric) {
-        chartRenderPhase = 0
-        withFrameNanos { }
-        chartRenderPhase = 1
-        withFrameNanos { }
-        chartRenderPhase = 2
+    var chartRenderPhase by remember(entries, goalKg, useMetric, immediate) {
+        mutableStateOf(if (immediate) 2 else 0)
+    }
+    if (!immediate) {
+        LaunchedEffect(entries, goalKg, useMetric) {
+            chartRenderPhase = 0
+            withFrameNanos { }
+            chartRenderPhase = 1
+            withFrameNanos { }
+            chartRenderPhase = 2
+        }
     }
 
     Row(Modifier.fillMaxWidth().height(180.dp)) {
@@ -1286,7 +1403,8 @@ private fun BodyFatSection(
     stats: BodyFatSummaryStats,
     profileBodyFatFraction: Double?,
     goalFraction: Double?,
-    onLogBodyFat: () -> Unit
+    onLogBodyFat: () -> Unit,
+    chartsImmediate: Boolean = false,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1330,14 +1448,24 @@ private fun BodyFatSection(
                 }
             )
             if (entries.isNotEmpty()) {
-                DeferredChart { BodyFatChartCanvas(entries = entries, goalFraction = goalFraction) }
+                DeferredChart(immediate = chartsImmediate) {
+                    BodyFatChartCanvas(
+                        entries = entries,
+                        goalFraction = goalFraction,
+                        immediate = chartsImmediate,
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double?) {
+private fun BodyFatChartCanvas(
+    entries: List<BodyFatEntry>,
+    goalFraction: Double?,
+    immediate: Boolean = false,
+) {
     // Mirrors WeightChartCanvas — same horizontal grid + tick marks, vertical
     // dashed columns, dashed green goal line, right-side Y-axis labels (with
     // "%" suffix), and bottom date labels showing first/last point in range.
@@ -1347,13 +1475,17 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
     val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-    var chartRenderPhase by remember(entries, goalFraction) { mutableStateOf(0) }
-    LaunchedEffect(entries, goalFraction) {
-        chartRenderPhase = 0
-        withFrameNanos { }
-        chartRenderPhase = 1
-        withFrameNanos { }
-        chartRenderPhase = 2
+    var chartRenderPhase by remember(entries, goalFraction, immediate) {
+        mutableStateOf(if (immediate) 2 else 0)
+    }
+    if (!immediate) {
+        LaunchedEffect(entries, goalFraction) {
+            chartRenderPhase = 0
+            withFrameNanos { }
+            chartRenderPhase = 1
+            withFrameNanos { }
+            chartRenderPhase = 2
+        }
     }
 
     Row(Modifier.fillMaxWidth().height(180.dp)) {
@@ -1430,13 +1562,17 @@ private fun BodyFatChartCanvas(entries: List<BodyFatEntry>, goalFraction: Double
 }
 
 @Composable
-private fun DeferredChart(content: @Composable () -> Unit) {
-    var ready by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        withFrameNanos { }
-        ready = true
+private fun DeferredChart(immediate: Boolean = false, content: @Composable () -> Unit) {
+    if (immediate) {
+        content()
+    } else {
+        var ready by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            withFrameNanos { }
+            ready = true
+        }
+        if (ready) content() else ChartPlaceholder()
     }
-    if (ready) content() else ChartPlaceholder()
 }
 
 @Composable

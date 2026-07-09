@@ -78,6 +78,50 @@ export CODEBERG_TOKEN='paste-token-here'
 
 The script auto-runs `nix shell nixpkgs#tea` when `tea` is not on PATH (e.g. inside devenv).
 
+## Release screenshots (optional)
+
+JVM-based Compose screenshot previews render on the maintainer machine inside devenv — no phone or adb required.
+
+```bash
+devenv tasks run release:screenshots
+```
+
+This runs `./scripts/export_release_screenshots.sh`, which:
+
+1. Renders `@PreviewTest` composables via `./gradlew :app:updatePlayDebugScreenshotTest`
+2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and stable copies to `docs/screenshots/` for [README.md](README.md)
+
+`release:package` runs this export automatically after unit tests (commit `docs/screenshots/` with your release).
+
+Validate without updating reference images:
+
+```bash
+./scripts/export_release_screenshots.sh --validate
+```
+
+Attach screenshots when publishing:
+
+```bash
+devenv tasks run release:screenshots
+devenv tasks run release:package
+./scripts/publish_release.sh 1.8.0 --with-screenshots
+```
+
+Reference images for regression live under `android/app/src/screenshotTestPlayDebug/reference/`.
+
+### Screenshot fallbacks (if JVM previews are insufficient)
+
+**Tier 2 — headless Android emulator (no phone):** enable `emulator.enable` and a system image in `devenv.nix`, then capture from a running emulator with `adb exec-out screencap`. A dedicated `scripts/capture_release_screenshots_emulator.sh` can be added when needed.
+
+**Tier 3 — physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](scripts/capture_android_perf_baseline.sh):
+
+```powershell
+adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_test_data true
+adb exec-out screencap -p > 01-home.png
+```
+
+Prefer the emulator over coordinate-based phone taps when automating — screen sizes vary.
+
 ## F-Droid follow-up
 
 Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):

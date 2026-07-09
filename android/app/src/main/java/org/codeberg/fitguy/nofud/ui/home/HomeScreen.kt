@@ -856,6 +856,7 @@ private fun CalorieHero(
     baseGoal: Int,
     activeCalories: Int,
     displayMode: HomeCalorieDisplayMode,
+    freezeProgress: Boolean = false,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val remaining = HomeCalorieDisplay.remaining(displayMode, current, baseGoal, activeCalories)
@@ -869,6 +870,10 @@ private fun CalorieHero(
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatedRatio = remember { Animatable(if (lastEpoch == epoch) ratio else 0f) }
     LaunchedEffect(epoch, ratio) {
+        if (freezeProgress) {
+            animatedRatio.snapTo(ratio)
+            return@LaunchedEffect
+        }
         val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
         if (lastEpoch != epoch) {
             animatedRatio.snapTo(0f)
@@ -950,7 +955,7 @@ private fun CalorieHero(
             drawArc(
                 color = progressColor,
                 startAngle = 180f,
-                sweepAngle = 180f * animatedRatio.value,
+                sweepAngle = 180f * (if (freezeProgress) ratio else animatedRatio.value),
                 useCenter = false,
                 topLeft = topLeft,
                 size = arcSize,
@@ -1408,9 +1413,9 @@ private fun FoodRow(
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val ctx = LocalContext.current
     val timeFmt = DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.US).withZone(ZoneId.systemDefault())
-    val container = (ctx.applicationContext as org.codeberg.fitguy.nofud.NoFUDApp).container
-    val bitmap = remember(entry.imageFilename) {
-        entry.imageFilename?.let { container.imageStore.loadThumbnail(it) }
+    val container = (ctx.applicationContext as? org.codeberg.fitguy.nofud.NoFUDApp)?.container
+    val bitmap = remember(entry.imageFilename, container) {
+        entry.imageFilename?.let { filename -> container?.imageStore?.loadThumbnail(filename) }
     }
     // iOS layout: large 76dp square thumb · column with (Name + heart on left,
     // time on right) · pink kcal · serving · macro tag pills row.
@@ -2001,4 +2006,139 @@ private fun filterDecimalInput(value: String): String =
 @Composable
 private fun MacroLine(text: String, color: Color, fontSize: androidx.compose.ui.unit.TextUnit = 16.sp) {
     Text(text, fontSize = fontSize, color = color, fontWeight = FontWeight.Medium)
+}
+
+/** Static home layout for release screenshot previews (no ViewModel / permissions). */
+@Composable
+internal fun HomeScreenPreviewContent(
+    ui: HomeUiState,
+    weekStartsOnMonday: Boolean = true,
+    freezeAnimations: Boolean = true,
+) {
+    val selectedDate = ui.date
+    val isToday = true
+    val mealGroups = remember(ui.todayEntries, ui.foodLogSortOrder) {
+        foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
+    }
+
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+        Box(Modifier.fillMaxSize().padding(padding)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                    top = 8.dp,
+                    bottom = BottomNavScrollPadding,
+                ),
+            ) {
+                item {
+                    Box(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                        WeekEnergyStrip(
+                            selectedDate = selectedDate,
+                            onSelect = {},
+                            weekStartsOnMonday = weekStartsOnMonday,
+                        )
+                    }
+                }
+                item {
+                    Column {
+                        Spacer(Modifier.height(4.dp))
+                        CalorieHero(
+                            current = ui.caloriesToday,
+                            baseGoal = ui.baseCalorieGoal,
+                            activeCalories = ui.activitySnapshot.activeCalories,
+                            displayMode = ui.effectiveCalorieMode,
+                            freezeProgress = freezeAnimations,
+                        )
+                        Spacer(Modifier.height(20.dp))
+                        Row(
+                            Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            if (ui.homeDisplay.showSteps) {
+                                StepsCard(
+                                    steps = ui.activitySnapshot.steps,
+                                    goal = ui.homeDisplay.stepGoal,
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
+                            ui.homeTopNutrients.forEach { nutrient ->
+                                MacroCard(
+                                    label = stringResource(nutrient.displayNameRes),
+                                    current = nutrient.current(ui.todayEntries),
+                                    goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals),
+                                    unit = nutrient.unit,
+                                    accentColor = AppColors.nutrientColor(nutrient),
+                                    modifier = Modifier.weight(1f),
+                                    freezeProgress = freezeAnimations,
+                                )
+                            }
+                        }
+                        Box(
+                            Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            ViewMoreButton()
+                        }
+                    }
+                }
+                item { Spacer(Modifier.height(8.dp)) }
+                if (mealGroups.isEmpty()) {
+                    item { SectionHeader(if (isToday) stringResource(R.string.home_todays_food) else stringResource(R.string.home_food_log)) }
+                    item {
+                        SectionCardWrapper(isFirst = true, isLast = true) {
+                            Box(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp)) {
+                                Text(
+                                    stringResource(R.string.home_no_foods_logged),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    for (group in mealGroups) {
+                        item(key = "header-${group.id}") {
+                            MealSectionHeader(
+                                meal = group.meal,
+                                totalCalories = group.totalCalories,
+                                totalProtein = group.totalProtein,
+                                totalCarbs = group.totalCarbs,
+                                totalFat = group.totalFat,
+                                macroChips = ui.foodLogMacroChips,
+                            )
+                        }
+                        itemsIndexed(group.entries, key = { _, entry -> entry.id }) { index, entry ->
+                            val isFirst = index == 0
+                            val isLast = index == group.entries.lastIndex
+                            val rowShape = sectionCardShape(isFirst, isLast)
+                            SectionCardWrapper(isFirst = isFirst, isLast = isLast, transparent = true) {
+                                FoodRow(
+                                    entry = entry,
+                                    isFavorite = ui.isFavorite(entry),
+                                    rowShape = rowShape,
+                                    macroChips = ui.foodLogMacroChips,
+                                )
+                                if (index != group.entries.lastIndex) Divider()
+                            }
+                        }
+                    }
+                }
+            }
+
+            FloatingActionButton(
+                onClick = {},
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(end = 24.dp, bottom = BottomNavDockedControlPadding + 16.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.cd_add_food),
+                )
+            }
+        }
+    }
 }
