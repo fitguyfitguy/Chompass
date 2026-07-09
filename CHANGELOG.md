@@ -15,6 +15,9 @@ All notable changes to NoFUD are documented here.
 - Unit tests for BMR/TDEE, macro goals, keto carb heuristics, weight forecast, adaptive goals, and body-composition estimates
 - Calculation Methods UI sections for weight forecast, adaptive goals, and tape-measure body metrics
 - Golden scenario tests (`CalculationGoldenScenariosTest`) and shared `GoalFormulaReference` for AI prompt parity
+- **System** accent theme (Android 12+): follows the device wallpaper / Material You palette; now the default in Settings → Appearance
+- Dynamic launcher icon that matches your selected accent color
+- Food entry thumbnails load off the UI thread; orphaned photos are removed when entries or favorites are deleted
 
 ### Changed
 
@@ -23,6 +26,8 @@ All notable changes to NoFUD are documented here.
 - Observed weight trend now uses **Theil–Sen** robust regression instead of ordinary least squares
 - AI goal prompts pull multiplier/protein constants from shared `GoalFormulaReference`
 - Home calorie gauge **Add Active** and **Dual** modes now use your activity-level estimate (TDEE minus BMR) when Health Connect is unavailable; **Add Active** no longer double-counts activity when Health Connect is on (goal is split into sedentary base + today's burn)
+- Home calorie gauge shows whether today's active burn is measured (Health Connect) or estimated, with clearer breakdown copy and screen-reader labels
+- About screen attribution updated to NoFUD by fitguy (fork of Fud AI)
 
 ## [1.7.0] - 2026-07-09
 
