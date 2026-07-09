@@ -89,7 +89,7 @@ devenv tasks run release:screenshots
 This runs `./scripts/export_release_screenshots.sh`, which:
 
 1. Renders `@PreviewTest` composables via `./gradlew :app:updatePlayDebugScreenshotTest`
-2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and stable copies to `docs/screenshots/` for [README.md](README.md)
+2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and dark-theme copies to `docs/screenshots/` for [README.md](README.md)
 
 `release:package` runs this export automatically after unit tests (commit `docs/screenshots/` with your release).
 
