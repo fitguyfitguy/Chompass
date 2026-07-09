@@ -787,6 +787,14 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             // Section 6 — Health & Data (matches iOS Section "Health & Data")
             SectionCard(title = stringResource(R.string.settings_section_health)) {
                 ToggleRow(stringResource(R.string.settings_health_connect), ui.healthConnectEnabled, icon = Icons.Outlined.Favorite, onChange = ::onHealthConnectToggle)
+                if (ui.healthConnectEnabled) {
+                    Text(
+                        stringResource(R.string.settings_health_companions),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                    )
+                }
                 HorizontalDivider()
                 SettingRow(
                     label = stringResource(R.string.settings_safety_medical),

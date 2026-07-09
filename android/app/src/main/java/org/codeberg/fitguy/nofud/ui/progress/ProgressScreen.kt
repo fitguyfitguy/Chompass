@@ -77,6 +77,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.Gender
+import org.codeberg.fitguy.nofud.services.health.DailyActivity
+import java.text.NumberFormat
 import org.codeberg.fitguy.nofud.ui.components.DecimalWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialog
@@ -144,6 +146,7 @@ enum class TimeRange(@StringRes val labelRes: Int, val days: Int) {
 fun ProgressScreen(container: AppContainer) {
     val vm: ProgressViewModel = viewModel(factory = ProgressViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
+    val activity by vm.activity.collectAsState()
     val weightMetric = ui.weightUnit == "kg"
 
     var showAddDialog by remember { mutableStateOf(false) }
@@ -262,6 +265,14 @@ fun ProgressScreen(container: AppContainer) {
                 }
             } else {
                 item { CardSection { ChartPlaceholder(height = 120.dp) } }
+            }
+
+            // 6. Activity from Health Connect (steps + exercise) — only when the
+            //    user connected Health and granted the activity read permissions.
+            if (activity.isNotEmpty()) {
+                item {
+                    CardSection { ActivitySection(days = activity) }
+                }
             }
         }
     }
@@ -729,6 +740,35 @@ private fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
                 modifier = Modifier.size(18.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun ActivitySection(days: List<DailyActivity>) {
+    val integerFormat = remember { NumberFormat.getIntegerInstance() }
+    val todayActivity = days.lastOrNull()
+    val avgSteps = if (days.isEmpty()) 0L else days.sumOf { it.steps } / days.size
+    val weekExerciseMinutes = days.sumOf { it.exerciseMinutes }
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.progress_activity_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.weight(1f))
+            Text(
+                stringResource(R.string.progress_activity_from_health),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+        StatBadgeRow(
+            listOf(
+                stringResource(R.string.progress_activity_steps_today) to
+                    integerFormat.format(todayActivity?.steps ?: 0L),
+                stringResource(R.string.progress_activity_steps_avg) to
+                    integerFormat.format(avgSteps),
+                stringResource(R.string.progress_activity_exercise_week) to
+                    stringResource(R.string.progress_activity_minutes_format, weekExerciseMinutes)
+            )
+        )
     }
 }
 

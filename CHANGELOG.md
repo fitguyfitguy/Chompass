@@ -4,6 +4,21 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-07-09
+
+### Added
+
+- Share photos into NoFUD from the camera or gallery (system share sheet) to start an image food entry — up to two images, composed side-by-side like dual capture
+- Activity card on the Progress tab: daily steps and exercise minutes from Health Connect (new Steps + Exercise read permissions; wearables via Gadgetbridge, Samsung Health, etc.)
+- Live import of meals other apps log to Health Connect (incremental, deduplicated; own records are never echoed back)
+- Health-ecosystem compatibility notes in README and Settings (Gadgetbridge, openScale, Samsung Health, Fitbit — all via Health Connect, no vendor SDKs)
+
+### Fixed
+
+- The floating "+" add button no longer sits underneath the bottom navigation bar
+- Keto diet mode now reaches the AI goal calculation and meal advice prompts (previously only the Coach chat knew about it, so AI goals could contradict the app's keto carb target)
+- AI responses (food names, coach replies, advice) follow the app's language instead of always answering in English
+
 ## [1.6.0] - 2026-07-08
 
 ### Added

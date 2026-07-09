@@ -247,6 +247,72 @@ class FoodRepository(
         prefs.setFoodEntries((current + restored).sortedBy { it.timestamp })
     }
 
+    /**
+     * Live-merge meals other apps wrote to Health Connect (the change-token path;
+     * own fudai_ records are already filtered at the manager level). Same idempotent
+     * upsert scheme as [WeightRepository.importExternalWeights]: a deterministic id
+     * per external record, so re-imports and in-place edits update instead of
+     * duplicating. Nameless records are skipped — they can't be shown in the log.
+     */
+    suspend fun importExternalNutrition(external: List<org.codeberg.fitguy.nofud.services.health.ExternalNutrition>) {
+        if (external.isEmpty()) return
+        val incoming = external.mapNotNull { record ->
+            val name = record.name?.trim().orEmpty()
+            if (name.isEmpty()) return@mapNotNull null
+            FoodEntry(
+                id = externalId(record.clientRecordId, record.recordId, record.time),
+                name = name,
+                calories = (record.calories ?: 0.0).roundToInt(),
+                protein = record.protein ?: 0.0,
+                carbs = record.carbs ?: 0.0,
+                fat = record.fat ?: 0.0,
+                timestamp = record.time,
+                source = FoodSource.MANUAL,
+                mealType = record.mealType,
+                sugar = record.sugar,
+                fiber = record.fiber,
+                saturatedFat = record.saturatedFat,
+                monounsaturatedFat = record.monounsaturatedFat,
+                polyunsaturatedFat = record.polyunsaturatedFat,
+                cholesterol = record.cholesterol,
+                sodium = record.sodium,
+                potassium = record.potassium,
+                transFat = record.transFat,
+                calcium = record.calcium,
+                iron = record.iron,
+                magnesium = record.magnesium,
+                zinc = record.zinc,
+                vitaminA = record.vitaminA,
+                vitaminC = record.vitaminC,
+                vitaminD = record.vitaminD,
+                vitaminB12 = record.vitaminB12,
+                vitaminE = record.vitaminE,
+                vitaminK = record.vitaminK,
+                folate = record.folate
+            )
+        }
+        if (incoming.isEmpty()) return
+        val byId = prefs.foodEntries.first().associateBy { it.id }.toMutableMap()
+        var changed = false
+        for (entry in incoming) {
+            if (byId[entry.id] != entry) {
+                byId[entry.id] = entry
+                changed = true
+            }
+        }
+        if (!changed) return
+        prefs.setFoodEntries(byId.values.sortedBy { it.timestamp })
+    }
+
+    /** Stable id for an external nutrition record — see [WeightRepository.externalId]:
+     *  clientRecordId, then the HC record id, then the timestamp; never the values. */
+    private fun externalId(clientRecordId: String?, recordId: String, time: Instant): UUID {
+        val seed = clientRecordId?.takeIf { it.isNotBlank() }
+            ?: recordId.takeIf { it.isNotBlank() }
+            ?: "hc-nutrition:${time.toEpochMilli()}"
+        return UUID.nameUUIDFromBytes(seed.toByteArray())
+    }
+
     // -- Recents / Frequent ---------------------------------------------
 
     suspend fun recent(limit: Int = 50): List<FoodEntry> =

@@ -77,6 +77,17 @@ fun NoFUDNavHost(
         }
     }
 
+    // A photo was shared into the app while another tab (or a detail screen) was
+    // showing — bring Home forward so it can consume the inbox and start the
+    // photo entry flow. No-op during onboarding (HOME isn't on the stack yet);
+    // the inbox is sticky, so Home picks it up once it composes.
+    val sharedImages by container.sharedImageInbox.collectAsState()
+    LaunchedEffect(sharedImages) {
+        if (sharedImages.isNotEmpty() && currentRoute != null && currentRoute != NoFUDRoutes.HOME) {
+            nav.popBackStack(NoFUDRoutes.HOME, inclusive = false)
+        }
+    }
+
     // App-open epoch for the Home fill-from-zero reveal. Bumped only on ON_START
     // that follows an ON_STOP (a genuine background -> foreground return), so
     // transient pauses (notification shade, permission dialog) don't retrigger it.

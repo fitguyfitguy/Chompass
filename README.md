@@ -50,6 +50,23 @@ NoFUD keeps the core Android features from Fud AI:
 - Meal sharing and import
 - 15-language localization
 
+## Health ecosystem connectivity
+
+NoFUD talks to the rest of your health setup through **Android Health Connect** — no vendor SDKs, no accounts. Anything that syncs into Health Connect works with NoFUD, including fully free/open-source bridges:
+
+| Companion | What it brings | Notes |
+|-----------|----------------|-------|
+| [Gadgetbridge](https://gadgetbridge.org/) | Steps, exercise sessions, weight from wearables (Huawei, Honor, Amazfit, Mi Band, Pebble, …) | FOSS, on F-Droid; enable *Settings → External Integrations → Health Connect* in Gadgetbridge |
+| [openScale](https://f-droid.org/en/packages/com.health.openscale/) | Weight and body composition from Bluetooth scales | FOSS, on F-Droid |
+| Samsung Health, Fitbit, Withings, … | Weight, activity, energy burn | Via each app's Health Connect sync |
+
+What syncs:
+
+- **In:** weight and body fat (live, incremental), meals logged by other apps (live), steps + exercise (shown on the Progress tab), active/total energy burn (feeds the Energy Burn goal anchor)
+- **Out:** every meal you log, as a full `NutritionRecord` (macros + micronutrients), plus weight and body fat entries
+
+Huawei Health users: pair your wearable with Gadgetbridge (which supports Huawei devices natively) instead of the Huawei Health app — the proprietary Huawei Health Kit requires an HMS account and is not supported.
+
 ## Migration: FUD-AI -> NoFUD
 
 Two practical migration paths are supported today:

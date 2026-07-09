@@ -4,6 +4,7 @@ import org.codeberg.fitguy.nofud.data.KeyStore
 import org.codeberg.fitguy.nofud.data.PreferencesStore
 import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
+import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.UserProfile
@@ -38,6 +39,7 @@ class FoodAnalysisService(
                 - daily_protein_g: ${it.effectiveProtein}
                 - daily_carbs_g: ${it.effectiveCarbs}
                 - daily_fat_g: ${it.effectiveFat}
+                - diet_mode: ${it.dietMode.name.lowercase()}${if (it.dietMode == DietMode.KETO) " (net carbs capped at ${it.ketoActiveCarbTarget} g/day — keep sugar and added_sugar goals low and consistent with keto)" else ""}
             """.trimIndent()
         } ?: "No user profile is available. Use conservative general adult defaults."
         val prompt = """
@@ -113,6 +115,7 @@ class FoodAnalysisService(
             - Weekly change preference: ${profile.weeklyChangeKg?.let { String.format(java.util.Locale.US, "%.2f kg/week", it) } ?: "maintain"}
             - Goal weight: $goalWeight
             - Body fat: $bodyFat
+            ${dietModeLine(profile)}
 
             Existing app formula:
             - BMR: ${profile.bmr.toInt()} kcal/day
@@ -215,7 +218,8 @@ class FoodAnalysisService(
             - Weight goal: ${profile.goal.name.lowercase()}
             - Weekly change preference: $weekly
             - Goal weight: $goalWeight
-
+            ${dietModeLine(profile)}
+            ${ketoGoalRulesSection(profile)}
             APP FORMULA REFERENCE (already computed deterministically — use as the anchor)
             - BMR: ${profile.bmr.toInt()} kcal/day
             - TDEE: ${profile.tdee.toInt()} kcal/day
@@ -256,7 +260,7 @@ class FoodAnalysisService(
             The user tapped "What if?" before logging a meal in a nutrition tracker.
             Return 2-4 short sentences, no markdown, under 90 words.
             Explain how this meal changes today's calorie/protein/carbs/fat totals compared with the user's goals, then give one practical action: log it as-is, reduce portion, replace part of it, or adjust the next meal.
-            Stay practical and non-medical.
+            Stay practical and non-medical.${if (profile.dietMode == DietMode.KETO) "\nThe user follows a KETO diet: the carb goal below is a hard net-carb ceiling of ${profile.ketoActiveCarbTarget}g/day, not a target to fill. Frame the advice around staying under it (carb-heavy meals deserve a swap or smaller portion; high fat is expected and fine)." else ""}
 
             User profile:
             - Gender: ${profile.gender.name.lowercase()}
@@ -265,6 +269,7 @@ class FoodAnalysisService(
             - Activity level: ${profile.activityLevel.name.lowercase()}
             - Weight goal: ${profile.goal.name.lowercase()}
             - Body fat: $bodyFat
+            ${dietModeLine(profile)}
 
             Daily goals:
             - Calories: ${profile.effectiveCalories} kcal
@@ -374,6 +379,30 @@ class FoodAnalysisService(
         return addingFallbackServingUnits(analysis, imageBytes).scaled(servingGrams)
     }
 
+    // -- Diet mode ---------------------------------------------------------
+
+    /** One-line diet-mode summary for profile blocks in prompts. */
+    private fun dietModeLine(profile: UserProfile): String =
+        if (profile.dietMode == DietMode.KETO) {
+            "- Diet mode: keto (net carbs target ${profile.ketoActiveCarbTarget} g/day)"
+        } else {
+            "- Diet mode: standard"
+        }
+
+    /**
+     * Keto override for the goal-calculation FORMULAS block. Mirrors the keto
+     * macro math in [UserProfile] (carbsGoal/proteinGoal/fatGoal) so the
+     * model's targets can't drift from what the app computes deterministically.
+     */
+    private fun ketoGoalRulesSection(profile: UserProfile): String {
+        if (profile.dietMode != DietMode.KETO) return ""
+        return "\nDIET MODE OVERRIDE — the user follows a KETO diet. Ignore the standard fat/carb formulas above and use these rules instead (they match the app's own keto math):" +
+            "\n- Carbs: fixed at the keto net-carb target of ${profile.ketoActiveCarbTarget} g/day. Do not raise it to fill remaining calories." +
+            "\n- Protein: at least the formula protein below (it already includes the keto floor of 1.6 g/kg lean mass, minimum 60 g)." +
+            "\n- Fat: fills the calories remaining after carbs and protein, never below 45 g/day. Fat is the primary energy source." +
+            "\n- Keep 4*protein + 4*carbs + 9*fat approximately equal to calories."
+    }
+
     // -- Internal dispatch ------------------------------------------------
 
     private suspend fun callAi(prompt: String, imageBytes: ByteArray?): String {
@@ -382,7 +411,13 @@ class FoodAnalysisService(
 
     private suspend fun callAi(prompt: String, imageBytesList: List<ByteArray>): String {
         val context = prefs.userContext.first()
-        val finalPrompt = if (context.isNotBlank()) "User context (apply to every analysis): $context\n\n$prompt" else prompt
+        // Non-English UI locales get localized prose (food names, reasons, advice)
+        // while the machine-read parts of the JSON stay English for the parser.
+        val languageLine = nonEnglishResponseLanguage()?.let {
+            "Write all human-readable text (food name, reason, advice prose) in $it. Keep JSON keys, numbers, and unit_options unit words in English.\n\n"
+        } ?: ""
+        val contextLine = if (context.isNotBlank()) "User context (apply to every analysis): $context\n\n" else ""
+        val finalPrompt = languageLine + contextLine + prompt
 
         val primary = prefs.selectedAIProvider.first()
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())

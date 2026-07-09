@@ -510,6 +510,13 @@
     <string name="progress_macro_averages">Macro Averages</string>
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
+    <string name="progress_activity_section">Activity</string>
+    <string name="progress_activity_from_health">From Health Connect</string>
+    <string name="progress_activity_steps_today">Steps today</string>
+    <string name="progress_activity_steps_avg">Avg steps (7d)</string>
+    <string name="progress_activity_exercise_week">Exercise (7d)</string>
+    <string name="progress_activity_minutes_format">%1$d min</string>
+
     <string name="progress_log_weight_title">Log Weight</string>
 
     <string name="progress_goal_reached_title">Congratulations! 🎉</string>
@@ -639,6 +646,7 @@
     <string name="notif_weight_log_text">Log today\'s weight to keep your progress chart accurate.</string>
     <string name="notif_body_fat_log_title">Body fat check-in</string>
     <string name="notif_body_fat_log_text">Log today\'s body fat % to track your composition trend.</string>
+    <string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in.</string>
     <string name="settings_health_denied">Health Connect needs Weight, Body Fat, Active Calories, Total Calories, and permission to write Nutrition. Re-tap the toggle and grant all requested permissions to sync and estimate energy goals.</string>
     <string name="settings_health_unavailable">Health Connect isn\'t available on this device. Install it from the Play Store, then re-tap the toggle.</string>
 

@@ -18,6 +18,7 @@ import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
+import org.codeberg.fitguy.nofud.services.health.DailyActivity
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -66,7 +67,22 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     private val timeRange = MutableStateFlow(TimeRange.WEEK)
     private val goalReached = MutableStateFlow(false)
 
+    /** Last 7 days of Health Connect steps + exercise (today included). Kept
+     *  outside [ui] — it's a one-shot suspend read against Health Connect, not
+     *  part of the reactive DataStore combine. Empty when Health Connect is off,
+     *  unavailable, or activity read permissions weren't granted. */
+    private val _activity = MutableStateFlow<List<DailyActivity>>(emptyList())
+    val activity: StateFlow<List<DailyActivity>> = _activity.asStateFlow()
+
     init {
+        viewModelScope.launch {
+            if (container.prefs.healthConnectEnabled.first() &&
+                container.health.isAvailable() &&
+                container.health.hasActivityRead()
+            ) {
+                _activity.value = container.health.readDailyActivity(days = 7)
+            }
+        }
         combine(
             container.profileRepository.profile,
             container.weightRepository.entries,

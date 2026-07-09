@@ -156,6 +156,7 @@ import org.codeberg.fitguy.nofud.ui.components.FudGlassPrimaryButton
 import org.codeberg.fitguy.nofud.ui.components.FudGlassSurface
 import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import org.codeberg.fitguy.nofud.ui.components.WeekEnergyStrip
+import org.codeberg.fitguy.nofud.ui.navigation.BottomNavDockedControlPadding
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import org.codeberg.fitguy.nofud.ui.theme.MacroKind
@@ -212,6 +213,21 @@ fun HomeScreen(container: AppContainer) {
                     pendingNoteImageBytes = bytes
                 }
             }
+        }
+    }
+
+    // Photos shared into the app via the system share sheet (filled by
+    // MainActivity). One image enters the same context-note flow as an in-app
+    // capture; two are analyzed side-by-side like dual capture.
+    val sharedImages by container.sharedImageInbox.collectAsState()
+    LaunchedEffect(sharedImages) {
+        val images = sharedImages
+        if (images.isEmpty()) return@LaunchedEffect
+        container.sharedImageInbox.value = emptyList()
+        if (images.size >= 2) {
+            vm.analyzePhotos(images[0], images[1])
+        } else {
+            pendingNoteImageBytes = images[0]
         }
     }
 
@@ -450,7 +466,7 @@ fun HomeScreen(container: AppContainer) {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(end = 24.dp, bottom = 24.dp),
+                .padding(end = 24.dp, bottom = BottomNavDockedControlPadding + 16.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ) {

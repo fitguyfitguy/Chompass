@@ -94,6 +94,7 @@ class NoFUDApp : Application() {
  *  persisted alongside the token so we can detect a newly-granted read capability. */
 private const val HEALTH_READ_TYPE_WEIGHT = "weight"
 private const val HEALTH_READ_TYPE_BODY_FAT = "bodyfat"
+private const val HEALTH_READ_TYPE_NUTRITION = "nutrition"
 
 class AppContainer(app: NoFUDApp) {
     val appContext = app.applicationContext
@@ -124,6 +125,16 @@ class AppContainer(app: NoFUDApp) {
      * tab bar).
      */
     val analyzingFood: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * Photos shared into the app via the system share sheet (ACTION_SEND /
+     * ACTION_SEND_MULTIPLE). [MainActivity] fills it; the Home screen consumes
+     * it and starts the photo food-entry flow — one image goes through the
+     * context-note sheet, two are analyzed side-by-side like dual capture.
+     * Survives until Home is composed, so a share that lands during
+     * onboarding is picked up right after it completes.
+     */
+    val sharedImageInbox: MutableStateFlow<List<ByteArray>> = MutableStateFlow(emptyList())
 
     private var adaptiveGoalsRefreshInFlight = false
 
@@ -161,11 +172,12 @@ class AppContainer(app: NoFUDApp) {
                     prefs.setHealthFoodRestoreDone(true)
                 }
             }
-            if (!caps.weightRead && !caps.bodyFatRead) return
+            if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
 
             val desiredTypes = buildSet {
                 if (caps.weightRead) add(HEALTH_READ_TYPE_WEIGHT)
                 if (caps.bodyFatRead) add(HEALTH_READ_TYPE_BODY_FAT)
+                if (caps.nutritionRead) add(HEALTH_READ_TYPE_NUTRITION)
             }
             // If a read type was granted AFTER the token was seeded, the existing token never
             // observes it. Drop the token so we re-enter the backfill branch and import that
@@ -185,10 +197,15 @@ class AppContainer(app: NoFUDApp) {
                 if (caps.bodyFatRead) {
                     bodyFatRepository.importExternalBodyFats(health.readBodyFats(from, now))
                 }
-                // Seed a token covering only the types we can actually read.
+                // Seed a token covering only the types we can actually read. Nutrition
+                // gets no external backfill on purpose — the one-shot restore above
+                // already brings back Fud AI's own history, and silently importing two
+                // years of another tracker's diary would be surprising; external meals
+                // flow in live from here on.
                 val recordTypes = buildSet {
                     if (caps.weightRead) add(androidx.health.connect.client.records.WeightRecord::class)
                     if (caps.bodyFatRead) add(androidx.health.connect.client.records.BodyFatRecord::class)
+                    if (caps.nutritionRead) add(androidx.health.connect.client.records.NutritionRecord::class)
                 }
                 health.getChangesToken(recordTypes)?.let {
                     prefs.setHealthChangesToken(it)
@@ -206,6 +223,12 @@ class AppContainer(app: NoFUDApp) {
                     val result = health.consumeBodyFatChanges(token)
                     if (result == null) { prefs.clearHealthChangesToken(); return }
                     bodyFatRepository.importExternalBodyFats(result.first)
+                    next = result.second ?: next
+                }
+                if (caps.nutritionRead) {
+                    val result = health.consumeNutritionChanges(token)
+                    if (result == null) { prefs.clearHealthChangesToken(); return }
+                    foodRepository.importExternalNutrition(result.first)
                     next = result.second ?: next
                 }
                 next?.let { prefs.setHealthChangesToken(it) }

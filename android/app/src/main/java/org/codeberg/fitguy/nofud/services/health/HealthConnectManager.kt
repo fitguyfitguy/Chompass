@@ -7,8 +7,10 @@ import androidx.health.connect.client.changes.UpsertionChange
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BodyFatRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.MealType as HCMealType
 import androidx.health.connect.client.records.NutritionRecord
+import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.metadata.Metadata
@@ -59,10 +61,13 @@ class HealthConnectManager(private val context: Context) {
     private val nutritionWrite = HealthPermission.getWritePermission(NutritionRecord::class)
     private val activeEnergyRead = HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
     private val totalEnergyRead = HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+    private val stepsRead = HealthPermission.getReadPermission(StepsRecord::class)
+    private val exerciseRead = HealthPermission.getReadPermission(ExerciseSessionRecord::class)
 
     val permissions: Set<String> = setOf(
         weightRead, weightWrite, nutritionRead, nutritionWrite,
-        bodyFatRead, bodyFatWrite, activeEnergyRead, totalEnergyRead
+        bodyFatRead, bodyFatWrite, activeEnergyRead, totalEnergyRead,
+        stepsRead, exerciseRead
     )
 
     private suspend fun granted(): Set<String> =
@@ -79,6 +84,7 @@ class HealthConnectManager(private val context: Context) {
     suspend fun hasNutritionRead(): Boolean = nutritionRead in granted()
     suspend fun hasNutritionWrite(): Boolean = nutritionWrite in granted()
     suspend fun hasEnergyRead(): Boolean = granted().let { activeEnergyRead in it && totalEnergyRead in it }
+    suspend fun hasActivityRead(): Boolean = granted().let { stepsRead in it || exerciseRead in it }
 
     /** One permission read snapshotting every capability — used by the read-sync coordinator. */
     suspend fun capabilities(): HealthCapabilities {
@@ -90,7 +96,9 @@ class HealthConnectManager(private val context: Context) {
             bodyFatWrite = bodyFatWrite in g,
             nutritionRead = nutritionRead in g,
             nutritionWrite = nutritionWrite in g,
-            energyRead = activeEnergyRead in g && totalEnergyRead in g
+            energyRead = activeEnergyRead in g && totalEnergyRead in g,
+            stepsRead = stepsRead in g,
+            exerciseRead = exerciseRead in g
         )
     }
 
@@ -304,40 +312,7 @@ class HealthConnectManager(private val context: Context) {
                     )
                 )
             }.getOrNull() ?: return null
-            response.records.forEach {
-                out.add(
-                    ExternalNutrition(
-                        time = it.startTime,
-                        name = it.name,
-                        mealType = mealTypeFrom(it.mealType),
-                        calories = it.energy?.inKilocalories,
-                        protein = it.protein?.inGrams,
-                        carbs = it.totalCarbohydrate?.inGrams,
-                        fat = it.totalFat?.inGrams,
-                        fiber = it.dietaryFiber?.inGrams,
-                        sugar = it.sugar?.inGrams,
-                        saturatedFat = it.saturatedFat?.inGrams,
-                        monounsaturatedFat = it.monounsaturatedFat?.inGrams,
-                        polyunsaturatedFat = it.polyunsaturatedFat?.inGrams,
-                        transFat = it.transFat?.inGrams,
-                        cholesterol = it.cholesterol?.inMilligrams,
-                        sodium = it.sodium?.inMilligrams,
-                        potassium = it.potassium?.inMilligrams,
-                        calcium = it.calcium?.inMilligrams,
-                        iron = it.iron?.inMilligrams,
-                        magnesium = it.magnesium?.inMilligrams,
-                        zinc = it.zinc?.inMilligrams,
-                        vitaminA = it.vitaminA?.inMicrograms,
-                        vitaminC = it.vitaminC?.inMilligrams,
-                        vitaminD = it.vitaminD?.inMicrograms,
-                        vitaminB12 = it.vitaminB12?.inMicrograms,
-                        vitaminE = it.vitaminE?.inMilligrams,
-                        vitaminK = it.vitaminK?.inMicrograms,
-                        folate = it.folate?.inMicrograms,
-                        clientRecordId = it.metadata.clientRecordId
-                    )
-                )
-            }
+            response.records.forEach { out.add(externalNutritionFrom(it)) }
             pageToken = response.pageToken
         } while (pageToken != null)
         return out
@@ -387,6 +362,50 @@ class HealthConnectManager(private val context: Context) {
             daysUsed = daily.size,
             requestedDays = requestedDays
         )
+    }
+
+    /**
+     * Per-day steps + exercise minutes for the last [days] days, today included
+     * (unlike the energy summary, partial "today" is exactly what an activity
+     * card shows). Aggregates only the metrics whose read permission is granted;
+     * days with no data are returned with zeros so the caller gets a full range.
+     * Aggregated daily totals only — nothing is persisted (a per-record import
+     * of high-frequency step data would bloat the DataStore JSON blobs).
+     */
+    suspend fun readDailyActivity(days: Int = 7): List<DailyActivity> {
+        val c = client ?: return emptyList()
+        val g = granted()
+        val metrics = buildSet {
+            if (stepsRead in g) add(StepsRecord.COUNT_TOTAL)
+            if (exerciseRead in g) add(ExerciseSessionRecord.EXERCISE_DURATION_TOTAL)
+        }
+        if (metrics.isEmpty()) return emptyList()
+
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
+        val out = mutableListOf<DailyActivity>()
+        for (offset in (maxOf(1, days) - 1) downTo 0) {
+            val date = today.minusDays(offset.toLong())
+            val start = date.atStartOfDay(zone).toInstant()
+            val end = date.plusDays(1).atStartOfDay(zone).toInstant()
+            val result = runCatching {
+                c.aggregate(
+                    AggregateRequest(
+                        metrics = metrics,
+                        timeRangeFilter = TimeRangeFilter.between(start, end)
+                    )
+                )
+            }.getOrNull()
+            out.add(
+                DailyActivity(
+                    date = date,
+                    steps = result?.get(StepsRecord.COUNT_TOTAL) ?: 0L,
+                    exerciseMinutes = result?.get(ExerciseSessionRecord.EXERCISE_DURATION_TOTAL)
+                        ?.toMinutes()?.toInt() ?: 0
+                )
+            )
+        }
+        return out
     }
 
     // -- Change observation (external weight imports) --------------------
@@ -467,6 +486,60 @@ class HealthConnectManager(private val context: Context) {
         return results to token
     }
 
+    /** Sibling of [consumeWeightChanges] for NutritionRecords — powers the live
+     *  import of meals other apps log to Health Connect. Own records (fudai_ tag)
+     *  are skipped here so app-written meals don't echo back in. */
+    suspend fun consumeNutritionChanges(sinceToken: String): Pair<List<ExternalNutrition>, String?>? {
+        val c = client ?: return null
+        val results = mutableListOf<ExternalNutrition>()
+        var token = sinceToken
+        while (true) {
+            val changes = runCatching { c.getChanges(token) }.getOrNull() ?: return null
+            if (changes.changesTokenExpired) return null
+            changes.changes.filterIsInstance<UpsertionChange>().forEach { change ->
+                val rec = change.record as? NutritionRecord ?: return@forEach
+                val cid = rec.metadata.clientRecordId
+                if (cid != null && cid.startsWith(CLIENT_PREFIX)) return@forEach
+                results.add(externalNutritionFrom(rec))
+            }
+            token = changes.nextChangesToken
+            if (!changes.hasMore) break
+        }
+        return results to token
+    }
+
+    private fun externalNutritionFrom(it: NutritionRecord): ExternalNutrition = ExternalNutrition(
+        time = it.startTime,
+        name = it.name,
+        mealType = mealTypeFrom(it.mealType),
+        calories = it.energy?.inKilocalories,
+        protein = it.protein?.inGrams,
+        carbs = it.totalCarbohydrate?.inGrams,
+        fat = it.totalFat?.inGrams,
+        fiber = it.dietaryFiber?.inGrams,
+        sugar = it.sugar?.inGrams,
+        saturatedFat = it.saturatedFat?.inGrams,
+        monounsaturatedFat = it.monounsaturatedFat?.inGrams,
+        polyunsaturatedFat = it.polyunsaturatedFat?.inGrams,
+        transFat = it.transFat?.inGrams,
+        cholesterol = it.cholesterol?.inMilligrams,
+        sodium = it.sodium?.inMilligrams,
+        potassium = it.potassium?.inMilligrams,
+        calcium = it.calcium?.inMilligrams,
+        iron = it.iron?.inMilligrams,
+        magnesium = it.magnesium?.inMilligrams,
+        zinc = it.zinc?.inMilligrams,
+        vitaminA = it.vitaminA?.inMicrograms,
+        vitaminC = it.vitaminC?.inMilligrams,
+        vitaminD = it.vitaminD?.inMicrograms,
+        vitaminB12 = it.vitaminB12?.inMicrograms,
+        vitaminE = it.vitaminE?.inMilligrams,
+        vitaminK = it.vitaminK?.inMicrograms,
+        folate = it.folate?.inMicrograms,
+        clientRecordId = it.metadata.clientRecordId,
+        recordId = it.metadata.id
+    )
+
     private fun tag(id: UUID): String = "$CLIENT_PREFIX${id}"
 
     private fun mealTypeFor(meal: org.codeberg.fitguy.nofud.models.MealType): Int = when (meal) {
@@ -491,8 +564,9 @@ class HealthConnectManager(private val context: Context) {
         /** Bump this when we add a new record type so users re-auth.
          *  v2 = added BodyFatRecord read+write permissions.
          *  v3 = added energy burn read permissions.
-         *  v4 = added NutritionRecord read permission (food-log restore). */
-        const val CURRENT_TYPES_VERSION = 4
+         *  v4 = added NutritionRecord read permission (food-log restore).
+         *  v5 = added Steps + ExerciseSession read permissions (activity card). */
+        const val CURRENT_TYPES_VERSION = 5
     }
 }
 
@@ -508,7 +582,17 @@ data class HealthCapabilities(
     val bodyFatWrite: Boolean,
     val nutritionRead: Boolean,
     val nutritionWrite: Boolean,
-    val energyRead: Boolean
+    val energyRead: Boolean,
+    val stepsRead: Boolean,
+    val exerciseRead: Boolean
+)
+
+/** One day of aggregated Health Connect activity — steps plus exercise-session
+ *  minutes. Daily totals only; individual records are never persisted. */
+data class DailyActivity(
+    val date: LocalDate,
+    val steps: Long,
+    val exerciseMinutes: Int
 )
 
 /** A NutritionRecord read back from Health Connect in Fud AI's own units —
@@ -542,7 +626,9 @@ data class ExternalNutrition(
     val vitaminE: Double?,
     val vitaminK: Double?,
     val folate: Double?,
-    val clientRecordId: String?
+    val clientRecordId: String?,
+    /** Stable Health Connect record id (Metadata.id) — see [ExternalWeight.recordId]. */
+    val recordId: String = ""
 )
 
 data class ExternalWeight(

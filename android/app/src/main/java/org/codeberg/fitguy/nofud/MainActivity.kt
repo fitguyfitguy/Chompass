@@ -1,8 +1,10 @@
 package org.codeberg.fitguy.nofud
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.SystemClock
+import androidx.core.content.IntentCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +28,7 @@ import org.codeberg.fitguy.nofud.ui.navigation.NoFUDNavHost
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.theme.NoFUDTheme
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -35,11 +38,47 @@ open class MainActivity : ComponentActivity() {
     private var foregroundSyncJob: Job? = null
     private var lastForegroundSyncAtMs: Long = 0L
 
-    /** Decode a `fudai://add-meal` link (if that's what launched us) into pending meals. */
+    /**
+     * Route whatever launched (or re-launched) us: a `fudai://add-meal` link into
+     * pending meals, or a system share-sheet image into the photo entry flow.
+     */
     private fun handleShareIntent(intent: Intent?) {
-        val uri = intent?.data ?: return
-        if (!MealShare.handles(uri)) return
-        MealShare.meals(uri)?.let { pendingSharedMeals = it }
+        intent ?: return
+        when (intent.action) {
+            Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE -> handleSharedImages(intent)
+            else -> {
+                val uri = intent.data ?: return
+                if (!MealShare.handles(uri)) return
+                MealShare.meals(uri)?.let { pendingSharedMeals = it }
+            }
+        }
+    }
+
+    /**
+     * Photos shared from another app (camera, gallery). At most two are used —
+     * the analysis pipeline composes a pair side-by-side, same as dual capture.
+     * Bytes are read off the main thread, then handed to Home via the
+     * container's [sharedImageInbox][AppContainer.sharedImageInbox].
+     */
+    private fun handleSharedImages(intent: Intent) {
+        if (intent.type?.startsWith("image/") != true) return
+        val uris = when (intent.action) {
+            Intent.ACTION_SEND ->
+                listOfNotNull(IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java))
+            else ->
+                IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java).orEmpty()
+        }.take(2)
+        if (uris.isEmpty()) return
+        lifecycleScope.launch(Dispatchers.IO) {
+            val images = uris.mapNotNull { uri ->
+                runCatching {
+                    contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                }.getOrNull()?.takeIf { it.isNotEmpty() }
+            }
+            if (images.isNotEmpty()) {
+                (application as NoFUDApp).container.sharedImageInbox.value = images
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
