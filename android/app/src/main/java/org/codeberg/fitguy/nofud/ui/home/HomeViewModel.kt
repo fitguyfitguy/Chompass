@@ -8,9 +8,10 @@ import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
-import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
+import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
 import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
+import org.codeberg.fitguy.nofud.models.ResolvedActiveBurn
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
@@ -83,8 +84,22 @@ data class HomeUiState(
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
     val fatToday: Double get() = todayEntries.sumOf { it.fat }
     val baseCalorieGoal: Int get() = profile?.effectiveCalories ?: 2000
+    val resolvedActiveBurn: ResolvedActiveBurn? get() {
+        val p = profile ?: return null
+        return HomeCalorieDisplay.resolveActiveBurn(
+            homeDisplay.calorieDisplayMode,
+            activitySnapshot,
+            p.estimatedDailyActiveCalories,
+        )
+    }
     val effectiveCalorieMode: HomeCalorieDisplayMode get() =
-        HomeCalorieDisplay.effectiveMode(homeDisplay.calorieDisplayMode, activitySnapshot.energyAvailable)
+        HomeCalorieDisplay.effectiveMode(homeDisplay.calorieDisplayMode, resolvedActiveBurn)
+    val gaugeBaseCalorieGoal: Int get() {
+        val p = profile ?: return baseCalorieGoal
+        val sedentary = p.sedentaryCalorieBudget(baseCalorieGoal)
+        return HomeCalorieDisplay.gaugeBaseGoal(effectiveCalorieMode, baseCalorieGoal, sedentary)
+    }
+    val displayActiveCalories: Int get() = resolvedActiveBurn?.calories ?: 0
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
 }
 
@@ -167,8 +182,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val day = _selectedDate.value
             val display = _ui.value.homeDisplay
-            val needsEnergy = display.calorieDisplayMode != HomeCalorieDisplayMode.STATIC
-            if (!display.showSteps && !needsEnergy) {
+            val needsMeasuredEnergy = when (display.calorieDisplayMode) {
+                HomeCalorieDisplayMode.STATIC -> false
+                HomeCalorieDisplayMode.NET -> true
+                HomeCalorieDisplayMode.ADD_ACTIVE,
+                HomeCalorieDisplayMode.DUAL -> container.prefs.healthConnectEnabled.first()
+            }
+            if (!display.showSteps && !needsMeasuredEnergy) {
                 _ui.value = _ui.value.copy(activitySnapshot = HomeActivitySnapshot(date = day))
                 return@launch
             }

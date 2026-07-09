@@ -30,6 +30,9 @@ class CalculationGoldenScenariosTest {
     assertEquals(2607.7, p.tdee, 0.5)
     assertEquals(0, p.calorieAdjustment)
     assertEquals(2607, p.dailyCalories)
+    assertEquals(828, p.estimatedDailyActiveCalories) // round(2607.7 - 1780)
+    assertEquals(1779, p.sedentaryCalorieBudget()) // 2607 - 828
+    assertEquals(2607, p.sedentaryCalorieBudget() + p.estimatedDailyActiveCalories)
     assertEquals(128, p.proteinGoal) // 1.6 * 80
     assertEquals(48, p.fatGoal) // 0.6 * 80
   }

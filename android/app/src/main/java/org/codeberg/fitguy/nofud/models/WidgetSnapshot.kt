@@ -50,20 +50,42 @@ data class WidgetSnapshot(
     val calorieDisplayMode: String? = null,
     val effectiveCalorieGoal: Int? = null,
     val activeCaloriesToday: Int? = null,
+    /** Decomposed gauge base for ADD_ACTIVE (sedentary budget); null in older snapshots. */
+    val gaugeBaseCalorieGoal: Int? = null,
+    /** [ActiveCalorieSource.storageKey] for today's active burn layer. */
+    val activeCalorieSource: String? = null,
     val stepsToday: Long? = null,
     val stepGoal: Int? = null,
 ) {
     val resolvedCalorieMode: HomeCalorieDisplayMode
         get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)
 
+    private val resolvedBurn: ResolvedActiveBurn?
+        get() {
+            val calories = activeCaloriesToday ?: return null
+            if (calories <= 0) return null
+            val source = ActiveCalorieSource.fromStorage(activeCalorieSource)
+            return if (source == ActiveCalorieSource.UNAVAILABLE) {
+                null
+            } else {
+                ResolvedActiveBurn(calories, source)
+            }
+        }
+
+    val resolvedEffectiveCalorieMode: HomeCalorieDisplayMode
+        get() = HomeCalorieDisplay.effectiveMode(resolvedCalorieMode, resolvedBurn)
+
+    val resolvedGaugeBaseGoal: Int
+        get() = gaugeBaseCalorieGoal ?: calorieGoal
+
     val resolvedEffectiveCalorieGoal: Int
         get() = effectiveCalorieGoal ?: calorieGoal
 
     val caloriesRemaining: Int
         get() = HomeCalorieDisplay.remaining(
-            resolvedCalorieMode,
+            resolvedEffectiveCalorieMode,
             calories,
-            calorieGoal,
+            resolvedGaugeBaseGoal,
             activeCaloriesToday ?: 0
         )
 
@@ -72,9 +94,9 @@ data class WidgetSnapshot(
     val fatRemaining: Double get() = maxOf(0.0, fatGoal.toDouble() - fat)
     val calorieProgress: Double
         get() = HomeCalorieDisplay.progressRatio(
-            resolvedCalorieMode,
+            resolvedEffectiveCalorieMode,
             calories,
-            calorieGoal,
+            resolvedGaugeBaseGoal,
             activeCaloriesToday ?: 0
         ).toDouble()
     val proteinProgress: Double get() = if (proteinGoal > 0) minOf(1.0, protein / proteinGoal) else 0.0

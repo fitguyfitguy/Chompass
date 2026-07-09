@@ -1,6 +1,7 @@
 package org.codeberg.fitguy.nofud.models
 
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.services.health.HomeActivitySnapshot
 import org.codeberg.fitguy.nofud.ui.theme.MacroKind
 
 /** How the home calorie gauge interprets Health Connect active burn for the selected day. */
@@ -87,13 +88,67 @@ data class HomeDisplayPreferences(
 }
 
 /** Pure calorie-gauge math for home + widgets. */
+enum class ActiveCalorieSource(val storageKey: String) {
+    UNAVAILABLE("unavailable"),
+    ESTIMATED("estimated"),
+    MEASURED("measured");
+
+    companion object {
+        fun fromStorage(raw: String?): ActiveCalorieSource =
+            entries.firstOrNull { it.storageKey == raw } ?: UNAVAILABLE
+    }
+}
+
+data class ResolvedActiveBurn(
+    val calories: Int,
+    val source: ActiveCalorieSource,
+)
+
 object HomeCalorieDisplay {
-    fun effectiveMode(requested: HomeCalorieDisplayMode, energyAvailable: Boolean): HomeCalorieDisplayMode =
-        if (!energyAvailable && requested != HomeCalorieDisplayMode.STATIC) {
-            HomeCalorieDisplayMode.STATIC
+    fun resolveActiveBurn(
+        mode: HomeCalorieDisplayMode,
+        snapshot: HomeActivitySnapshot,
+        estimatedDailyActive: Int,
+    ): ResolvedActiveBurn? {
+        val measured = if (snapshot.energyAvailable) {
+            ResolvedActiveBurn(snapshot.activeCalories, ActiveCalorieSource.MEASURED)
         } else {
-            requested
+            null
         }
+        return when (mode) {
+            HomeCalorieDisplayMode.STATIC -> null
+            HomeCalorieDisplayMode.NET -> measured
+            HomeCalorieDisplayMode.ADD_ACTIVE,
+            HomeCalorieDisplayMode.DUAL -> measured ?: estimatedDailyActive
+                .takeIf { it > 0 }
+                ?.let { ResolvedActiveBurn(it, ActiveCalorieSource.ESTIMATED) }
+        }
+    }
+
+    fun effectiveMode(requested: HomeCalorieDisplayMode, burn: ResolvedActiveBurn?): HomeCalorieDisplayMode =
+        when (requested) {
+            HomeCalorieDisplayMode.STATIC -> HomeCalorieDisplayMode.STATIC
+            HomeCalorieDisplayMode.NET ->
+                if (burn?.source == ActiveCalorieSource.MEASURED && burn.calories > 0) {
+                    requested
+                } else {
+                    HomeCalorieDisplayMode.STATIC
+                }
+            HomeCalorieDisplayMode.ADD_ACTIVE,
+            HomeCalorieDisplayMode.DUAL ->
+                if (burn != null && burn.calories > 0) requested else HomeCalorieDisplayMode.STATIC
+        }
+
+    fun gaugeBaseGoal(
+        mode: HomeCalorieDisplayMode,
+        effectiveCalories: Int,
+        sedentaryBudget: Int,
+    ): Int = when (mode) {
+        HomeCalorieDisplayMode.ADD_ACTIVE -> sedentaryBudget
+        HomeCalorieDisplayMode.STATIC,
+        HomeCalorieDisplayMode.NET,
+        HomeCalorieDisplayMode.DUAL -> effectiveCalories
+    }
 
     fun effectiveGoal(mode: HomeCalorieDisplayMode, baseGoal: Int, activeCalories: Int): Int = when (mode) {
         HomeCalorieDisplayMode.ADD_ACTIVE -> baseGoal + activeCalories.coerceAtLeast(0)

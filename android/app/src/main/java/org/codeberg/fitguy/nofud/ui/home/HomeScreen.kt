@@ -150,6 +150,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import org.codeberg.fitguy.nofud.models.ActiveCalorieSource
 import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
@@ -366,14 +367,15 @@ fun HomeScreen(container: AppContainer) {
                     }
                 ) {
                     Spacer(Modifier.height(4.dp))
-                    val baseGoal = ui.baseCalorieGoal
-                    val activeCalories = ui.activitySnapshot.activeCalories
+                    val baseGoal = ui.gaugeBaseCalorieGoal
+                    val activeCalories = ui.displayActiveCalories
                     val calorieMode = ui.effectiveCalorieMode
                     CalorieHero(
                         current = ui.caloriesToday,
                         baseGoal = baseGoal,
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
+                        activeCalorieSource = ui.resolvedActiveBurn?.source,
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
@@ -857,6 +859,7 @@ private fun CalorieHero(
     baseGoal: Int,
     activeCalories: Int,
     displayMode: HomeCalorieDisplayMode,
+    activeCalorieSource: ActiveCalorieSource? = null,
     freezeProgress: Boolean = false,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
@@ -990,16 +993,26 @@ private fun CalorieHero(
                 color = muted,
             )
             if (integratesBurn) {
+                val bonusRes = when (activeCalorieSource) {
+                    ActiveCalorieSource.MEASURED -> R.string.home_calorie_active_bonus_measured
+                    ActiveCalorieSource.ESTIMATED -> R.string.home_calorie_active_bonus_estimated
+                    ActiveCalorieSource.UNAVAILABLE, null -> R.string.home_calorie_active_bonus
+                }
                 Text(
-                    stringResource(R.string.home_calorie_active_bonus, activeCalories),
+                    stringResource(bonusRes, activeCalories),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = tertiary,
                 )
                 if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
+                    val breakdownRes = when (activeCalorieSource) {
+                        ActiveCalorieSource.MEASURED -> R.string.home_calorie_goal_breakdown_measured
+                        ActiveCalorieSource.ESTIMATED -> R.string.home_calorie_goal_breakdown_estimated
+                        ActiveCalorieSource.UNAVAILABLE, null -> R.string.home_calorie_goal_breakdown
+                    }
                     Text(
                         stringResource(
-                            R.string.home_calorie_goal_breakdown,
+                            breakdownRes,
                             baseGoal,
                             activeCalories,
                         ),
@@ -2043,9 +2056,10 @@ internal fun HomeScreenPreviewContent(
                         Spacer(Modifier.height(4.dp))
                         CalorieHero(
                             current = ui.caloriesToday,
-                            baseGoal = ui.baseCalorieGoal,
-                            activeCalories = ui.activitySnapshot.activeCalories,
+                            baseGoal = ui.gaugeBaseCalorieGoal,
+                            activeCalories = ui.displayActiveCalories,
                             displayMode = ui.effectiveCalorieMode,
+                            activeCalorieSource = ui.resolvedActiveBurn?.source,
                             freezeProgress = freezeAnimations,
                         )
                         Spacer(Modifier.height(20.dp))

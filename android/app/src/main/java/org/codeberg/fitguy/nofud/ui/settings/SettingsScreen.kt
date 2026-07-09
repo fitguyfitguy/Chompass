@@ -1566,6 +1566,18 @@ fun CalculationMethodsScreen(
             }
 
             item {
+                CalcMethodSection(stringResource(R.string.settings_calc_sec_home_gauge)) {
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_home_gauge_name),
+                        usedWhen = stringResource(R.string.settings_calc_home_gauge_used),
+                        formula = stringResource(R.string.settings_calc_home_gauge_formula),
+                        citation = "PAL multipliers follow FAO/WHO physical activity levels; moderate 1.465 is an app-specific gradation.",
+                        url = null
+                    )
+                }
+            }
+
+            item {
                 CalcMethodSection(stringResource(R.string.settings_calc_sec_forecast)) {
                     CalcFormulaCard(
                         name = stringResource(R.string.settings_calc_forecast_name),
