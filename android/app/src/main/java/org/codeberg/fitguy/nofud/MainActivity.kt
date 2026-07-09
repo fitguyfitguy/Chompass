@@ -13,6 +13,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -104,6 +105,17 @@ open class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val container = (application as NoFUDApp).container
+        lifecycleScope.launch {
+            val themeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
+            if (themeColor.usesSystemPalette) {
+                AndroidAppIconManager.apply(this@MainActivity, themeColor)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must run before super.onCreate so the system swaps the splash theme
         // back to Theme.NoFUD before the first frame, preventing a white flash
@@ -189,6 +201,9 @@ open class MainActivity : ComponentActivity() {
                 "light" -> false
                 "dark" -> true
                 else -> systemDark
+            }
+            LaunchedEffect(themeColorKey) {
+                AndroidAppIconManager.apply(this@MainActivity, themeColor)
             }
             NoFUDTheme(
                 darkTheme = darkTheme,
