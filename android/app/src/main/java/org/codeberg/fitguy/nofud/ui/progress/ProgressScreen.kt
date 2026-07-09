@@ -78,7 +78,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.Gender
 import org.codeberg.fitguy.nofud.services.health.DailyActivity
+import org.codeberg.fitguy.nofud.services.health.DailyWellness
 import java.text.NumberFormat
+import kotlin.math.roundToInt
 import org.codeberg.fitguy.nofud.ui.components.DecimalWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialog
@@ -147,6 +149,7 @@ fun ProgressScreen(container: AppContainer) {
     val vm: ProgressViewModel = viewModel(factory = ProgressViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
     val activity by vm.activity.collectAsState()
+    val wellness by vm.wellness.collectAsState()
     val weightMetric = ui.weightUnit == "kg"
 
     var showAddDialog by remember { mutableStateOf(false) }
@@ -272,6 +275,14 @@ fun ProgressScreen(container: AppContainer) {
             if (activity.isNotEmpty()) {
                 item {
                     CardSection { ActivitySection(days = activity) }
+                }
+            }
+
+            // 7. Wellness from Health Connect (sleep, resting HR, hydration) — only
+            //    when connected and at least one wellness metric has data.
+            if (wellness.any { it.sleepMinutes != null || it.restingHeartRateBpm != null || it.hydrationMl != null }) {
+                item {
+                    CardSection { WellnessSection(days = wellness) }
                 }
             }
         }
@@ -886,6 +897,53 @@ private fun ActivitySection(days: List<DailyActivity>) {
                     stringResource(R.string.progress_activity_minutes_format, weekExerciseMinutes)
             )
         )
+    }
+}
+
+@Composable
+private fun WellnessSection(days: List<DailyWellness>) {
+    val integerFormat = remember { NumberFormat.getIntegerInstance() }
+    val todaySleep = days.lastOrNull { it.sleepMinutes != null }?.sleepMinutes
+    val restingValues = days.mapNotNull { it.restingHeartRateBpm }
+    val avgResting = if (restingValues.isEmpty()) null else restingValues.average().roundToInt()
+    val todayHydrationMl = days.lastOrNull { it.hydrationMl != null }?.hydrationMl
+
+    val badges = buildList {
+        if (todaySleep != null) {
+            add(
+                stringResource(R.string.progress_wellness_sleep) to
+                    stringResource(R.string.progress_wellness_sleep_format, todaySleep / 60, todaySleep % 60)
+            )
+        }
+        if (avgResting != null) {
+            add(
+                stringResource(R.string.progress_wellness_resting_hr) to
+                    stringResource(R.string.progress_wellness_bpm_format, avgResting)
+            )
+        }
+        if (todayHydrationMl != null) {
+            add(
+                stringResource(R.string.progress_wellness_hydration) to
+                    stringResource(
+                        R.string.progress_wellness_hydration_format,
+                        integerFormat.format(todayHydrationMl.roundToInt())
+                    )
+            )
+        }
+    }
+    if (badges.isEmpty()) return
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.progress_wellness_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.weight(1f))
+            Text(
+                stringResource(R.string.progress_activity_from_health),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+        StatBadgeRow(badges)
     }
 }
 

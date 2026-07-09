@@ -19,6 +19,7 @@ import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.services.health.DailyActivity
+import org.codeberg.fitguy.nofud.services.health.DailyWellness
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -74,13 +75,23 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     private val _activity = MutableStateFlow<List<DailyActivity>>(emptyList())
     val activity: StateFlow<List<DailyActivity>> = _activity.asStateFlow()
 
+    /** Last 7 days of Health Connect sleep / resting HR / hydration (today included).
+     *  Same one-shot suspend read as [activity]; empty when Health Connect is off,
+     *  unavailable, or no wellness read permission was granted. */
+    private val _wellness = MutableStateFlow<List<DailyWellness>>(emptyList())
+    val wellness: StateFlow<List<DailyWellness>> = _wellness.asStateFlow()
+
     init {
         viewModelScope.launch {
             if (container.prefs.healthConnectEnabled.first() &&
-                container.health.isAvailable() &&
-                container.health.hasActivityRead()
+                container.health.isAvailable()
             ) {
-                _activity.value = container.health.readDailyActivity(days = 7)
+                if (container.health.hasActivityRead()) {
+                    _activity.value = container.health.readDailyActivity(days = 7)
+                }
+                if (container.health.hasWellnessRead()) {
+                    _wellness.value = container.health.readDailyWellness(days = 7)
+                }
             }
         }
         combine(

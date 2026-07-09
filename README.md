@@ -110,8 +110,10 @@ NoFUD uses **Android Health Connect**. No vendor SDKs, no accounts. Anything tha
 
 | Direction | Data |
 |-----------|------|
-| **In** | Weight and body fat (live), meals from other apps, steps and exercise (Progress tab), active/total energy burn (Energy Burn goal anchor) |
-| **Out** | Every meal as a full `NutritionRecord` (macros + micronutrients), plus weight and body fat entries |
+| **In** | Weight and body fat (live), meals from other apps, steps and exercise (Progress tab), sleep / resting heart rate / hydration (Wellness card), active/total energy burn (Energy Burn goal anchor) |
+| **Out** | Every meal as a full `NutritionRecord` (macros + micronutrients), plus weight, body fat and height entries |
+
+Optionally, **background sync** (Settings → Health &amp; Data, off by default) checks Health Connect for new data every few hours even when NoFUD is closed.
 
 > **Huawei Health users:** pair your wearable with [Gadgetbridge](https://gadgetbridge.org/) instead of the Huawei Health app. Huawei Health Kit requires an HMS account and is not supported.
 

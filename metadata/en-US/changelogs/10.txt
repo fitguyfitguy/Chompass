@@ -1,3 +1,5 @@
 Import weight and body data from a file: NoFUD JSON/CSV, openScale CSV, and generic weight CSVs (kg or lb). Export now covers weight, body-fat and body-measurement history as CSV or JSON.
 
+Health Connect: new Wellness card (sleep, resting heart rate, hydration), height now syncs out, and an optional background sync that checks for new data every few hours (off by default).
+
 Nutrition calculation audit: unified 7,700 kcal/kg energy balance, Theil–Sen weight-trend regression, calendar-day intake averaging, and a Calculation Methods reference in the app. Extensive new formula unit tests.
