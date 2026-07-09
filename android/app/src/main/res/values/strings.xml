@@ -570,6 +570,7 @@
     <string name="settings_theme_color">Theme Color</string>
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main accent used for buttons, charts, and progress indicators.</string>
+    <string name="theme_color_system">System</string>
     <string name="theme_color_teal">Teal</string>
     <string name="theme_color_blue">Blue</string>
     <string name="theme_color_green">Green</string>

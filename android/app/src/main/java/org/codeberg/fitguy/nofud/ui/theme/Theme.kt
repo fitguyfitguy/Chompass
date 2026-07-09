@@ -88,44 +88,57 @@ val LocalGlassBlurEnabled = staticCompositionLocalOf { false }
 @Composable
 fun NoFUDTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    themeColor: AppThemeColor = AppThemeColor.TEAL,
+    themeColor: AppThemeColor = AppThemeColor.SYSTEM,
     useDynamicColor: Boolean = true,
     glassBlurEnabled: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    AppColors.setThemeColor(themeColor)
-    val baseScheme = if (darkTheme) darkColors(themeColor) else lightColors(themeColor)
     val context = LocalContext.current
+    val usesSystemPalette = themeColor.usesSystemPalette &&
+        useDynamicColor &&
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-    val colorScheme =
-        if (useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val colorScheme = when {
+        usesSystemPalette -> {
             val dynamicScheme =
                 if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-
-            val primary = if (darkTheme) {
-                lerp(themeColor.primary, Color.White, 0.25f)
-            } else {
-                themeColor.primary
-            }
-            val onPrimary = onColorFor(primary)
-
-            dynamicScheme.copy(
-                primary = primary,
-                onPrimary = onPrimary,
-                primaryContainer = if (darkTheme) {
-                    lerp(themeColor.primary, Color.Black, 0.55f)
-                } else {
-                    lerp(themeColor.primary, Color.White, 0.82f)
-                },
-                onPrimaryContainer = if (darkTheme) {
-                    lerp(themeColor.primary, Color.White, 0.75f)
-                } else {
-                    lerp(themeColor.primary, Color.Black, 0.35f)
-                },
-            )
-        } else {
-            baseScheme
+            AppColors.setThemeColor(themeColor, dynamicScheme.primary)
+            dynamicScheme
         }
+        else -> {
+            val accent = if (themeColor.usesSystemPalette) AppThemeColor.TEAL else themeColor
+            AppColors.setThemeColor(themeColor)
+            val baseScheme = if (darkTheme) darkColors(accent) else lightColors(accent)
+            if (useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val dynamicScheme =
+                    if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+
+                val primary = if (darkTheme) {
+                    lerp(accent.primary, Color.White, 0.25f)
+                } else {
+                    accent.primary
+                }
+                val onPrimary = onColorFor(primary)
+
+                dynamicScheme.copy(
+                    primary = primary,
+                    onPrimary = onPrimary,
+                    primaryContainer = if (darkTheme) {
+                        lerp(accent.primary, Color.Black, 0.55f)
+                    } else {
+                        lerp(accent.primary, Color.White, 0.82f)
+                    },
+                    onPrimaryContainer = if (darkTheme) {
+                        lerp(accent.primary, Color.White, 0.75f)
+                    } else {
+                        lerp(accent.primary, Color.Black, 0.35f)
+                    },
+                )
+            } else {
+                baseScheme
+            }
+        }
+    }
     CompositionLocalProvider(LocalGlassBlurEnabled provides glassBlurEnabled) {
         MaterialTheme(
             colorScheme = colorScheme,

@@ -677,6 +677,7 @@
     <string name="settings_theme_color">Цвет темы</string>
     <string name="sheet_theme_color">Цвет темы</string>
     <string name="sheet_theme_color_footer">Меняет основной акцент: кнопки, графики и индикаторы прогресса.</string>
+    <string name="theme_color_system">Системный</string>
     <string name="theme_color_teal">Бирюзовый</string>
     <string name="theme_color_blue">Синий</string>
     <string name="theme_color_green">Зелёный</string>

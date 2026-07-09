@@ -1,7 +1,13 @@
 package org.codeberg.fitguy.nofud.services
 
 import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
 import android.util.Log
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.glance.appwidget.updateAll
 import org.codeberg.fitguy.nofud.data.FoodRepository
@@ -15,6 +21,7 @@ import org.codeberg.fitguy.nofud.models.WidgetNutrient
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
 import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
+import org.codeberg.fitguy.nofud.ui.theme.widgetAccentColors
 import org.codeberg.fitguy.nofud.widget.AllMetricsAppWidget
 import org.codeberg.fitguy.nofud.widget.CalorieAppWidget
 import org.codeberg.fitguy.nofud.widget.ProteinAppWidget
@@ -65,6 +72,7 @@ class WidgetSnapshotWriter(
             val selection = display.homeTopNutrients
             val optionalGoals = prefs.optionalNutrientGoals.first()
             val theme = AppThemeColor.fromKey(prefs.appThemeColor.first())
+            val (themeStart, themeEnd) = theme.widgetAccentColors(context)
             val activity = homeActivityReader.readForDate(LocalDate.now())
             val effectiveCalories = profile.effectiveCalories
             val burn = HomeCalorieDisplay.resolveActiveBurn(
@@ -100,8 +108,8 @@ class WidgetSnapshotWriter(
                         goal = nutrient.goal(profile, optionalGoals).toDouble()
                     )
                 },
-                themeStartHex = theme.start.toArgb() and 0xFFFFFF,
-                themeEndHex = theme.end.toArgb() and 0xFFFFFF,
+                themeStartHex = themeStart.toArgb() and 0xFFFFFF,
+                themeEndHex = themeEnd.toArgb() and 0xFFFFFF,
                 proteinHex = theme.macroPalette.proteinArgb(),
                 carbsHex = theme.macroPalette.carbsArgb(),
                 fatHex = theme.macroPalette.fatArgb(),
