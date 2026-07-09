@@ -80,6 +80,7 @@ import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.MacroValueFormatter
 import org.codeberg.fitguy.nofud.services.FoodImageStore
 import org.codeberg.fitguy.nofud.ui.components.MacroChip
+import org.codeberg.fitguy.nofud.ui.components.rememberFoodThumbnail
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import org.codeberg.fitguy.nofud.ui.theme.MacroKind
 import kotlinx.coroutines.launch
@@ -655,7 +656,7 @@ private fun SavedMealRow(
 @Composable
 private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodImageStore) {
     val shape = RoundedCornerShape(12.dp)
-    val bitmap = remember(imageFilename) { imageFilename?.let { imageStore.loadThumbnail(it) } }
+    val bitmap = rememberFoodThumbnail(imageFilename, imageStore)
 
     Box(
         Modifier

@@ -116,7 +116,7 @@ class AppContainer(app: NoFUDApp) {
     val homeActivityReader = HomeActivityReader(health, prefs)
 
     val profileRepository = ProfileRepository(prefs)
-    val foodRepository = FoodRepository(prefs, health)
+    val foodRepository = FoodRepository(prefs, health, imageStore)
     val weightRepository = WeightRepository(prefs, profileRepository, health)
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs)

@@ -358,7 +358,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             // bytes as a new file under the new entry id.
             val filename = reviewSource?.imageFilename
                 ?: pendingDraftImageFilename
-                ?: imageBytes?.let { container.imageStore.storeBytes(it, id) }
+                ?: imageBytes?.let { persistImage(it, id) }
             fun s(v: Int) = (v * scale).roundToInt()
             fun macro(v: Double) = v * scale
             fun s(v: Double?) = v?.let { it * scale }
@@ -581,7 +581,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         imageBytes: ByteArray?,
         source: FoodSource
     ) {
-        val imageFilename = imageBytes?.let { container.imageStore.storeBytes(it, UUID.randomUUID()) }
+        val imageFilename = imageBytes?.let { persistImage(it, UUID.randomUUID()) }
         container.prefs.setPendingFoodAnalysisDraft(
             PendingFoodAnalysisDraft(
                 analysis = analysis,
@@ -627,7 +627,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     ) {
         val previousFilename = _ui.value.pendingInputDraftImageFilename
             ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
-        val imageFilename = container.imageStore.storeBytes(imageBytes, UUID.randomUUID()) ?: return
+        val imageFilename = persistImage(imageBytes, UUID.randomUUID()) ?: return
         if (previousFilename != null && previousFilename != imageFilename) {
             container.imageStore.delete(previousFilename)
         }
@@ -679,6 +679,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         container.prefs.setPendingFoodAnalysisDraft(null)
         filename?.let { container.imageStore.delete(it) }
     }
+
+    private suspend fun persistImage(bytes: ByteArray, entryId: UUID): String? =
+        withContext(Dispatchers.IO) { container.imageStore.storeBytes(bytes, entryId) }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
