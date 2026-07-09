@@ -6,6 +6,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
+import kotlin.math.roundToInt
 
 @Serializable
 data class UserProfile(
@@ -134,6 +135,14 @@ data class UserProfile(
     }
 
     val effectiveCalories: Int get() = customCalories ?: dailyCalories
+
+    /** PAL-implied average active burn: TDEE minus BMR. Used when Health Connect is unavailable. */
+    val estimatedDailyActiveCalories: Int
+        get() = (tdee - bmr).roundToInt().coerceAtLeast(0)
+
+    /** BMR + goal adjustment only — activity stripped from the stored effective goal. */
+    fun sedentaryCalorieBudget(effectiveCalories: Int = this.effectiveCalories): Int =
+        (effectiveCalories - estimatedDailyActiveCalories).coerceAtLeast(0)
 
     fun isPinned(macro: AutoBalanceMacro): Boolean = customValue(macro) != null
 

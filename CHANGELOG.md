@@ -22,6 +22,7 @@ All notable changes to NoFUD are documented here.
 - Weight forecast uses **calendar-day intake averaging** when fewer than 50% of lookback days have food logs
 - Observed weight trend now uses **Theil–Sen** robust regression instead of ordinary least squares
 - AI goal prompts pull multiplier/protein constants from shared `GoalFormulaReference`
+- Home calorie gauge **Add Active** and **Dual** modes now use your activity-level estimate (TDEE minus BMR) when Health Connect is unavailable; **Add Active** no longer double-counts activity when Health Connect is on (goal is split into sedentary base + today's burn)
 
 ## [1.7.0] - 2026-07-09
 

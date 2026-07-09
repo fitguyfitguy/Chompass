@@ -31,6 +31,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | BMR-MSJ | Mifflin-St Jeor BMR | Deterministic | `UserProfile.bmr` when no body fat % | kcal/day |
 | BMR-KM | Katch-McArdle BMR | Deterministic | `UserProfile.bmr` when `bodyFatPercentage` set | kcal/day |
 | TDEE | Activity multiplier TDEE | Deterministic | `UserProfile.tdee` | kcal/day |
+| ACT-EST | Estimated daily active | Deterministic | `UserProfile.estimatedDailyActiveCalories` | kcal/day |
 | CAL-ADJ | Goal calorie adjustment | Deterministic | `UserProfile.calorieAdjustment` | kcal/day |
 | MACRO-P | Protein target | Deterministic | `UserProfile.proteinGoal` | g/day |
 | MACRO-F | Fat target | Deterministic | `UserProfile.fatGoal` | g/day |
@@ -85,6 +86,28 @@ TDEE = BMR × PAL multiplier
 **Note:** Moderate uses **1.465** (between common “light” and “moderate” PAL tables). Documented intentionally — finer gradation for desk-active users.
 
 **Call sites:** `dailyCalories`, forecasts (when measured burn unavailable), adaptive ceiling basis.
+
+### ACT-EST — Estimated daily active burn
+
+```
+estimatedDailyActive = round(TDEE − BMR)
+sedentaryBudget = effectiveCalories − estimatedDailyActive
+```
+
+**When:** Home calorie gauge modes (Add Active, Dual) when Health Connect active burn is unavailable. The PAL multiplier portion of TDEE is surfaced as today's estimated active layer.
+
+**Call sites:** `UserProfile.estimatedDailyActiveCalories`, `HomeCalorieDisplay.resolveActiveBurn`, home ring + widgets.
+
+### Home calorie gauge modes
+
+| Mode | HC off | HC on |
+|------|--------|-------|
+| Static | Fixed `effectiveCalories` goal | Same |
+| Add Active | Sedentary budget + estimated active | Sedentary budget + measured active |
+| Net | Falls back to Static | Net intake (eaten − active) vs fixed goal |
+| Dual | Burn hint arc uses estimated active | Burn hint arc uses measured active |
+
+Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied.
 
 ### CAL-ADJ — Goal calorie adjustment
 
@@ -241,6 +264,7 @@ When changing any formula, constant, or guardrail:
 | Area | Path |
 |------|------|
 | Profile & macros | `android/app/src/main/java/.../models/UserProfile.kt` |
+| Home gauge math | `android/app/src/main/java/.../models/HomeDisplayPreferences.kt` |
 | Constants | `android/app/src/main/java/.../models/NutritionConstants.kt` |
 | Activity / protein | `android/app/src/main/java/.../models/ActivityLevel.kt` |
 | Forecast & adaptive | `android/app/src/main/java/.../services/WeightAnalysisService.kt` |

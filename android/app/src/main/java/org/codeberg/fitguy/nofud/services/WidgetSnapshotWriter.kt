@@ -66,17 +66,25 @@ class WidgetSnapshotWriter(
             val optionalGoals = prefs.optionalNutrientGoals.first()
             val theme = AppThemeColor.fromKey(prefs.appThemeColor.first())
             val activity = homeActivityReader.readForDate(LocalDate.now())
-            val activeCalories = if (activity.energyAvailable) activity.activeCalories else 0
-            val effectiveGoal = HomeCalorieDisplay.effectiveGoal(
+            val effectiveCalories = profile.effectiveCalories
+            val burn = HomeCalorieDisplay.resolveActiveBurn(
                 display.calorieDisplayMode,
-                profile.effectiveCalories,
-                activeCalories
+                activity,
+                profile.estimatedDailyActiveCalories,
             )
+            val mode = HomeCalorieDisplay.effectiveMode(display.calorieDisplayMode, burn)
+            val gaugeBase = HomeCalorieDisplay.gaugeBaseGoal(
+                mode,
+                effectiveCalories,
+                profile.sedentaryCalorieBudget(effectiveCalories),
+            )
+            val activeCalories = burn?.calories ?: 0
+            val effectiveGoal = HomeCalorieDisplay.effectiveGoal(mode, gaugeBase, activeCalories)
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
                 dayStart = WidgetSnapshot.todayStart(),
                 calories = todaysEntries.sumOf { it.calories },
-                calorieGoal = profile.effectiveCalories,
+                calorieGoal = effectiveCalories,
                 protein = todaysEntries.sumOf { it.protein },
                 proteinGoal = profile.effectiveProtein,
                 carbs = todaysEntries.sumOf { it.carbs },
@@ -102,6 +110,8 @@ class WidgetSnapshotWriter(
                 calorieDisplayMode = display.calorieDisplayMode.storageKey,
                 effectiveCalorieGoal = effectiveGoal,
                 activeCaloriesToday = activeCalories,
+                gaugeBaseCalorieGoal = gaugeBase,
+                activeCalorieSource = burn?.source?.storageKey,
                 stepsToday = activity.steps,
                 stepGoal = display.stepGoal,
             )
