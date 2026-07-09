@@ -2,165 +2,175 @@
 
 <img src="android/app/src/main/res/drawable-nodpi/ic_logo_teal.png" alt="NoFUD teal icon" width="120" />
 
-**Ad-free AI calorie tracker for Android** - a privacy-focused app based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+**Ad-free AI calorie tracker for Android**, a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-NoFUD keeps the core Fud AI experience while removing monetization and tracking surface area.  
-Snap, speak, scan, or type your food using your own AI provider key - no account required, no cloud sync, **no ads**.
+Snap, speak, scan, or type your food with your own AI provider key. No account, no cloud sync, **no ads**.
 
-> **Platform status:** NoFUD is currently **Android-only**. iOS is not supported yet.
+[![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
+[![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
+[![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](PRIVACY.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+[![Health Connect](https://img.shields.io/badge/Health-Connect-4285F4?style=flat-square)](https://developer.android.com/health-and-fitness/guides/health-connect)
 
-Home: https://codeberg.org/fitguy/NoFUD
+> **Android only.** iOS is not supported yet.  
+> **Project home:** [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD)
+
+## Get started
+
+Not on Play Store or F-Droid yet. Install from one of these:
+
+[![Get it on Obtainium](https://img.shields.io/badge/Get%20it%20on-Obtainium-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud)
+
+| Method | What to do |
+|--------|------------|
+| **Obtainium** *(recommended)* | Tap the banner above, then confirm in Obtainium |
+| **Direct APK** | Download from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases) |
+| **Manual Obtainium add** | Paste `https://codeberg.org/fitguy/nofud` into Obtainium's **Add App** screen |
+
+> **Which APK?** Use `arm64-v8a` on most modern phones, `armeabi-v7a` on older 32-bit devices, and `x86_64` on emulators or Chromebooks. Use the universal APK only when unsure.
+
+| Build | Package ID |
+|-------|------------|
+| Release | `org.codeberg.fitguy.nofud` |
+| Debug (from source) | `org.codeberg.fitguy.nofud.debug` |
 
 ## Screenshots
 
-Material 3 **dark theme** (light theme is also available). Images in [`docs/screenshots/`](docs/screenshots/) are regenerated automatically during [`release:package`](RELEASE.md#release-screenshots-optional) whenever UI previews change.
+Material 3 **dark theme** (light theme is also available). Images in [`docs/screenshots/`](docs/screenshots/) are regenerated during [`release:package`](RELEASE.md#release-screenshots-optional) when UI previews change.
 
 <table>
   <tr>
     <td align="center">
       <img src="docs/screenshots/home.png" width="200" alt="Home screen in dark theme" /><br />
-      <sub><b>Home</b> — calorie ring, macro bars, and today's meal log</sub>
+      <sub><b>Home</b>: calorie ring, macro bars, today's meal log</sub>
     </td>
     <td align="center">
       <img src="docs/screenshots/progress.png" width="200" alt="Progress screen in dark theme" /><br />
-      <sub><b>Progress</b> — weight &amp; body-fat charts, calorie history, goals</sub>
+      <sub><b>Progress</b>: weight &amp; body-fat charts, calorie history, goals</sub>
     </td>
     <td align="center">
       <img src="docs/screenshots/add-food.png" width="200" alt="Add food sheet in dark theme" /><br />
-      <sub><b>Add food</b> — photo, voice, barcode, manual, and saved meals</sub>
+      <sub><b>Add food</b>: photo, voice, barcode, manual, saved meals</sub>
     </td>
   </tr>
   <tr>
     <td align="center">
       <img src="docs/screenshots/coach.png" width="200" alt="AI Coach in dark theme" /><br />
-      <sub><b>Coach</b> — on-device AI chat with your own provider key</sub>
+      <sub><b>Coach</b>: AI chat with your own provider key</sub>
     </td>
     <td align="center" colspan="2">
       <img src="docs/screenshots/settings.png" width="200" alt="Settings in dark theme" /><br />
-      <sub><b>Settings</b> — profile, diet modes (incl. keto), Health Connect, themes</sub>
+      <sub><b>Settings</b>: profile, diet modes (incl. keto), Health Connect, themes</sub>
     </td>
   </tr>
 </table>
 
-## Install (Android)
+## Features
 
-No Play Store/F-Droid yet. Install NoFUD using one of these options:
+Core Fud AI features, minus ads:
 
-Install note: if multiple APKs are listed in a release, use `arm64-v8a` for most modern phones, `armeabi-v7a` for older 32-bit devices, and `x86_64` for emulators/Chromebooks. Use the universal APK only when unsure.
-
-[![Get it on Obtainium](https://img.shields.io/badge/Get%20it%20on-Obtainium-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud)
-
-- **Obtainium (recommended):** tap the banner above, then confirm in Obtainium.
-- **Direct APK:** download from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases).
-- **Fallback for manual Obtainium add:** paste `https://codeberg.org/fitguy/nofud` into Obtainium's **Add App** screen.
-
-- Release package: `org.codeberg.fitguy.nofud`
-- Debug package (from source): `org.codeberg.fitguy.nofud.debug`
+| Feature | Details |
+|---------|---------|
+| **Food logging** | Camera, voice, barcode, text, and manual entry via `AddFoodSheet` |
+| **AI Coach** | Chat with your own provider key |
+| **Diet modes** | Including keto carb mode |
+| **Progress** | Weight, body fat, calorie history, and goals |
+| **Workouts** | Built-in exercise library |
+| **Health Connect** | Read and write sync with other health apps |
+| **Widgets** | Home-screen widgets |
+| **Export & share** | Diary export (JSON / Markdown / CSV), meal sharing, and import |
+| **Localization** | 15 languages |
 
 ## Why NoFUD
 
-NoFUD focuses on a few high-impact changes:
+NoFUD keeps the Fud AI core and removes monetization. Main fork changes:
 
-- **Diet modes, including keto mode**
-- **Better entry flow** with `AddFoodSheet` and improved camera/text/photo logging
-- **Opinionated UX/UI refinements** for clearer nutrient display and smoother day-to-day use
-- **Smaller Android package footprint** via image optimization and asset cleanup
-- **No ads** with AdMob removed
+- **No ads**: AdMob removed
+- **Diet modes**: keto and other modes not in upstream Fud AI
+- **Logging UX**: `AddFoodSheet` and camera/text/photo flow updates
+- **UI updates**: nutrient display and day-to-day UX changes
+- **Smaller APK**: ~79% smaller than upstream (~25 MB vs 121 MB universal)
 
-## Feature and compatibility status
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
-NoFUD keeps the core Android features from Fud AI:
+## Health Connect
 
-- AI food logging (camera, text, voice, barcode, manual entry)
-- AI Coach chat
-- Diet modes (including keto carb mode)
-- Workouts library
-- Health Connect sync and restore behavior
-- Home-screen widgets
-- Diary export (JSON / Markdown / CSV)
-- Meal sharing and import
-- 15-language localization
-
-## Health ecosystem connectivity
-
-NoFUD talks to the rest of your health setup through **Android Health Connect** — no vendor SDKs, no accounts. Anything that syncs into Health Connect works with NoFUD, including fully free/open-source bridges:
+NoFUD uses **Android Health Connect**. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with NoFUD, including FOSS bridges:
 
 | Companion | What it brings | Notes |
 |-----------|----------------|-------|
-| [Gadgetbridge](https://gadgetbridge.org/) | Steps, exercise sessions, weight from wearables (Huawei, Honor, Amazfit, Mi Band, Pebble, …) | FOSS, on F-Droid; enable *Settings → External Integrations → Health Connect* in Gadgetbridge |
+| [Gadgetbridge](https://gadgetbridge.org/) | Steps, exercise sessions, weight from wearables (Huawei, Honor, Amazfit, Mi Band, Pebble, …) | FOSS, on F-Droid; enable *Settings → External Integrations → Health Connect* |
 | [openScale](https://f-droid.org/en/packages/com.health.openscale/) | Weight and body composition from Bluetooth scales | FOSS, on F-Droid |
 | Samsung Health, Fitbit, Withings, … | Weight, activity, energy burn | Via each app's Health Connect sync |
 
-What syncs:
+**What syncs**
 
-- **In:** weight and body fat (live, incremental), meals logged by other apps (live), steps + exercise (shown on the Progress tab), active/total energy burn (feeds the Energy Burn goal anchor)
-- **Out:** every meal you log, as a full `NutritionRecord` (macros + micronutrients), plus weight and body fat entries
+| Direction | Data |
+|-----------|------|
+| **In** | Weight and body fat (live), meals from other apps, steps and exercise (Progress tab), active/total energy burn (Energy Burn goal anchor) |
+| **Out** | Every meal as a full `NutritionRecord` (macros + micronutrients), plus weight and body fat entries |
 
-Huawei Health users: pair your wearable with Gadgetbridge (which supports Huawei devices natively) instead of the Huawei Health app — the proprietary Huawei Health Kit requires an HMS account and is not supported.
+> **Huawei Health users:** pair your wearable with [Gadgetbridge](https://gadgetbridge.org/) instead of the Huawei Health app. Huawei Health Kit requires an HMS account and is not supported.
 
-## Migration: FUD-AI -> NoFUD
+## Migrate from Fud AI
 
-Two practical migration paths are supported today:
+Two paths:
 
-- **Path A (file-based):** in FUD-AI, export your food diary as JSON. In NoFUD, open `Settings` and use `Import Food Diary JSON`.
-- **Path B (Health Connect):** enable Health Connect in both apps and grant read permissions so historical data can be restored from Health Connect.
+| Path | Steps |
+|------|-------|
+| **A: File export** | In Fud AI, export your food diary as JSON. In NoFUD, open **Settings → Import Food Diary JSON** |
+| **B: Health Connect** | Enable Health Connect in both apps and grant read permissions to restore historical data |
 
-Before switching apps:
+**Before you switch**
 
-- Export a food diary JSON from FUD-AI if you want a file backup/import path.
-- Optionally sync your latest entries to Health Connect in FUD-AI.
+1. Export a food diary JSON from Fud AI if you want a file backup.
+2. Optionally sync your latest entries to Health Connect in Fud AI.
 
-What transfers today:
+**What transfers**
 
-- **Food log:** JSON import and/or Health Connect restore.
-- **Weight + body fat:** Health Connect read import and sync behavior.
+- **Food log**: JSON import and/or Health Connect restore
+- **Weight + body fat**: Health Connect import and ongoing sync
 
-Current limitation:
+> **Limitation:** no dedicated weight/body-composition file import/export yet. Those metrics migrate through Health Connect.
 
-- No dedicated **weight/body-composition file import/export** exists yet; those metrics currently migrate through Health Connect.
+### NoFUD vs Fud AI
 
 | Area | Fud AI | NoFUD |
-|---|---|---|
-| Android AI calorie tracking app | Yes | Yes |
+|------|--------|-------|
+| Android AI calorie tracking | Yes | Yes |
 | Banner ads (AdMob) | Yes | **Removed** |
-| Analytics/tracking SDKs | None | None |
-| Diet mode / keto carb mode | Not in Fud AI | **Added in NoFUD** |
-| Improved add-entry flow | Baseline Fud AI flow | **Enhanced (`AddFoodSheet` + logging UX refinements)** |
-| APK/package size optimization | Varies by build/assets | **Improved via asset optimization + cleanup** |
-| Opinionated UX/UI updates | Baseline | **Expanded in NoFUD** |
+| Analytics / tracking SDKs | None | None |
+| Diet mode / keto carb mode | No | **Added** |
+| Add-entry flow | Baseline | **Enhanced** (`AddFoodSheet` + UX refinements) |
+| APK size (`universal`) | 121.4 MB (`android-v3.0.4`) | **~25 MB** (`v1.4.0`) |
+| UX / UI polish | Baseline | **Expanded** |
 
-See [CHANGELOG.md](CHANGELOG.md) for version-by-version details.
+Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
 
-## Package size comparison (`fud-ai` vs `NoFUD`)
+## Performance
 
-- `fud-ai` (`android-v3.0.4`) universal APK: **121.4 MB**
-- `NoFUD` (`v1.4.0`) release APKs: **~25 MB** (universal + per-ABI)
-- Size delta (universal): NoFUD is about **96.4 MB smaller** (~**79% smaller**)
-- Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
+On our Android debug perf baseline, recent Progress-screen optimizations cut worst-frame latency from ~1.1s to ~0.5s and reduced jank in the captured navigation/render path. See [PERFORMANCE.md](PERFORMANCE.md).
 
-## Performance note
+## Privacy
 
-On our Android debug perf baseline, recent Progress-screen optimizations reduced worst-frame latency from about ~1.1s to ~0.5s and significantly lowered jank in the captured navigation/render path.
+No ads, analytics, or tracking SDKs. AI requests go to the provider you configure with your own API key. See [PRIVACY.md](PRIVACY.md).
 
-## Fork attribution
+## Development
 
-NoFUD is based on Fud AI (https://github.com/apoorvdarshan/fud-ai).
+| Doc | Contents |
+|-----|----------|
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Build from source (devenv / Gradle) |
+| [RELEASE.md](RELEASE.md) | Maintainer release flow |
+| [PERFORMANCE.md](PERFORMANCE.md) | Perf baseline and validation |
+| [CALCULATION_METHODS.md](CALCULATION_METHODS.md) | Formula register and audit trail |
+
+## Attribution & license
+
+NoFUD is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License
 
-See [NOTICE](NOTICE) and [ASSET_CREDITS.md](ASSET_CREDITS.md).
+See also [NOTICE](NOTICE) and [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
-## Privacy
-
-See [PRIVACY.md](PRIVACY.md).
-
-## Development docs
-
-- Build from source: [DEVELOPMENT.md](DEVELOPMENT.md)
-- Maintainer release flow: [RELEASE.md](RELEASE.md)
-- Performance notes: [PERFORMANCE.md](PERFORMANCE.md)
-
-## License
-
-MIT - see [LICENSE](LICENSE).
+MIT License. See [LICENSE](LICENSE).
