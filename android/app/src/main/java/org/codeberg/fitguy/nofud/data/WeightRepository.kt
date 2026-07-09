@@ -132,6 +132,23 @@ class WeightRepository(
         syncProfileWeightToLatest()
     }
 
+    /**
+     * Merge file-imported weigh-ins (NoFUD JSON/CSV, openScale, generic CSV) into
+     * local history. Same by-id upsert semantics as [importExternalWeights] — the
+     * importer assigns deterministic ids, so re-importing the same file is a no-op.
+     * Deliberately does NOT push the imported history to Health Connect: a bulk
+     * file import echoing hundreds of writes into HC would spam every connected app.
+     * Returns the number of entries added or updated.
+     */
+    suspend fun importFromFile(entries: List<WeightEntry>): Int {
+        if (entries.isEmpty()) return 0
+        val (merged, changed) = mergeWeightsById(prefs.weightEntries.first(), entries)
+        if (changed == 0) return 0
+        prefs.setWeightEntries(merged)
+        syncProfileWeightToLatest()
+        return changed
+    }
+
     /** Stable id for an external record: prefer the source's clientRecordId, then the
      *  Health Connect record id, then the timestamp. Crucially the VALUE is never part of
      *  the seed, so an in-place correction (same record, new weight) upserts in place
@@ -148,4 +165,36 @@ class WeightRepository(
         val manager = health ?: return false
         return prefs.healthConnectEnabled.first() && manager.hasWeightWrite()
     }
+}
+
+/**
+ * Pure merge for file imports: by-id upsert plus a near-duplicate guard — an incoming
+ * entry whose value matches an existing entry (any id) within the same minute is
+ * skipped, so importing a file that mirrors manually-logged weigh-ins doesn't double
+ * them. Returns the merged list and the number of entries added or updated.
+ */
+internal fun mergeWeightsById(
+    existing: List<WeightEntry>,
+    incoming: List<WeightEntry>,
+): Pair<List<WeightEntry>, Int> {
+    val byId = existing.associateBy { it.id }.toMutableMap()
+    var changed = 0
+    for (entry in incoming) {
+        val current = byId[entry.id]
+        if (current != null) {
+            if (abs(current.weightKg - entry.weightKg) > 0.0001 || current.date != entry.date) {
+                byId[entry.id] = entry
+                changed++
+            }
+            continue
+        }
+        val nearDuplicate = existing.any {
+            abs(it.weightKg - entry.weightKg) < 0.005 &&
+                abs(it.date.toEpochMilli() - entry.date.toEpochMilli()) < 60_000
+        }
+        if (nearDuplicate) continue
+        byId[entry.id] = entry
+        changed++
+    }
+    return byId.values.sortedBy { it.date } to changed
 }

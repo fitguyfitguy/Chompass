@@ -56,6 +56,21 @@ class BodyMeasurementRepository(private val prefs: PreferencesStore) {
         }
     }
 
+    /**
+     * Merge file-imported circumference snapshots into local history. By-id upsert —
+     * the importer assigns deterministic ids keyed on the timestamp, so re-importing
+     * the same file is a no-op. Empty snapshots are skipped. Returns entries added or
+     * updated.
+     */
+    suspend fun importFromFile(entries: List<BodyMeasurement>): Int {
+        val incoming = entries.filter { it.hasAnyValue }
+        if (incoming.isEmpty()) return 0
+        val (merged, changed) = mergeMeasurementsById(prefs.bodyMeasurements.first(), incoming)
+        if (changed == 0) return 0
+        prefs.setBodyMeasurements(merged)
+        return changed
+    }
+
     suspend fun replaceAll(entries: List<BodyMeasurement>) {
         prefs.setBodyMeasurements(entries)
     }
@@ -67,4 +82,28 @@ class BodyMeasurementRepository(private val prefs: PreferencesStore) {
     /** Current latest snapshot — used by the goal calc + Coach call sites. */
     suspend fun latestSnapshot(): BodyMeasurement? =
         prefs.bodyMeasurements.first().maxByOrNull { it.date }
+}
+
+/**
+ * Pure merge for file imports: by-id upsert. An incoming snapshot replaces the
+ * existing one with the same id only when its site values actually differ, so
+ * re-importing the same file reports no changes. Returns the merged list and the
+ * number of entries added or updated.
+ */
+internal fun mergeMeasurementsById(
+    existing: List<BodyMeasurement>,
+    incoming: List<BodyMeasurement>,
+): Pair<List<BodyMeasurement>, Int> {
+    val byId = existing.associateBy { it.id }.toMutableMap()
+    var changed = 0
+    for (entry in incoming) {
+        val current = byId[entry.id]
+        val sameValues = current != null &&
+            BodyMeasurement.Site.values().all { current.value(it) == entry.value(it) } &&
+            current.date == entry.date
+        if (sameValues) continue
+        byId[entry.id] = entry
+        changed++
+    }
+    return byId.values.sortedBy { it.date } to changed
 }

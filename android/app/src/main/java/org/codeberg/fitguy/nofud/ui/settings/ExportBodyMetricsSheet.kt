@@ -6,10 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -34,12 +38,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.export.BodyMetricsExporter
+import org.codeberg.fitguy.nofud.export.BodyMetricsFormat
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import java.io.File
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ExportBodyMetricsSheet(
     container: AppContainer,
@@ -48,7 +52,7 @@ fun ExportBodyMetricsSheet(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val isDark = MaterialTheme.colorScheme.background.let { (it.red + it.green + it.blue) / 3f < 0.5f }
+    var format by remember { mutableStateOf(BodyMetricsFormat.CSV) }
     var status by remember { mutableStateOf<String?>(null) }
 
     ModalBottomSheet(
@@ -75,6 +79,26 @@ fun ExportBodyMetricsSheet(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
             )
 
+            Text(
+                stringResource(R.string.export_body_metrics_format),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                BodyMetricsFormat.values().forEach { f ->
+                    FilterChip(
+                        selected = format == f,
+                        onClick = { format = f },
+                        label = { Text(f.label) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                            selectedLabelColor = AppColors.Calorie,
+                        ),
+                    )
+                }
+            }
+
             status?.let {
                 Text(it, color = Color(0xFFFF3B30), fontSize = 13.sp)
             }
@@ -89,22 +113,24 @@ fun ExportBodyMetricsSheet(
                         scope.launch {
                             val weights = container.weightRepository.entries.first()
                             val bodyFats = container.bodyFatRepository.entries.first()
-                            if (weights.isEmpty() && bodyFats.isEmpty()) {
+                            val measurements = container.bodyMeasurementRepository.entries.first()
+                            val result = BodyMetricsExporter.build(weights, bodyFats, measurements, format)
+                            if (result == null) {
                                 status = context.getString(R.string.export_body_metrics_empty)
                                 return@launch
                             }
+                            val (name, content) = result
                             try {
-                                val csv = buildMetricsCsv(weights, bodyFats)
                                 val dir = File(context.cacheDir, "capture").apply { mkdirs() }
-                                val file = File(dir, "NoFUD-Body-Metrics.csv")
-                                file.writeText(csv)
+                                val file = File(dir, name)
+                                file.writeText(content)
                                 val uri = FileProvider.getUriForFile(
                                     context,
                                     "${context.packageName}.fileprovider",
                                     file
                                 )
                                 val send = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/csv"
+                                    type = format.mime
                                     putExtra(Intent.EXTRA_STREAM, uri)
                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 }
@@ -130,32 +156,3 @@ fun ExportBodyMetricsSheet(
         }
     }
 }
-
-private fun buildMetricsCsv(
-    weights: List<org.codeberg.fitguy.nofud.models.WeightEntry>,
-    bodyFats: List<org.codeberg.fitguy.nofud.models.BodyFatEntry>
-): String {
-    val timeFmt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())
-    val rows = StringBuilder()
-    rows.append("metric,timestamp,value,unit\n")
-    weights.sortedBy { it.date }.forEach { entry ->
-        rows.append("weight,")
-            .append(csvEscape(timeFmt.format(entry.date)))
-            .append(",")
-            .append(csvEscape(String.format(java.util.Locale.US, "%.2f", entry.weightKg)))
-            .append(",kg\n")
-    }
-    bodyFats.sortedBy { it.date }.forEach { entry ->
-        rows.append("body_fat,")
-            .append(csvEscape(timeFmt.format(entry.date)))
-            .append(",")
-            .append(csvEscape(String.format(java.util.Locale.US, "%.2f", entry.bodyFatPercent)))
-            .append(",percent\n")
-    }
-    return rows.toString()
-}
-
-private fun csvEscape(field: String): String =
-    if (field.contains(',') || field.contains('"') || field.contains('\n')) {
-        "\"" + field.replace("\"", "\"\"") + "\""
-    } else field

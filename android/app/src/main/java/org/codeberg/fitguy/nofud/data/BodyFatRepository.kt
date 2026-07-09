@@ -107,6 +107,21 @@ class BodyFatRepository(
         syncProfileBodyFatToLatest()
     }
 
+    /**
+     * Merge file-imported body-fat readings into local history. Same by-id upsert
+     * semantics as [importExternalBodyFats]; the importer assigns deterministic ids,
+     * so re-importing the same file is a no-op. Does NOT push to Health Connect —
+     * see WeightRepository.importFromFile. Returns entries added or updated.
+     */
+    suspend fun importFromFile(entries: List<BodyFatEntry>): Int {
+        if (entries.isEmpty()) return 0
+        val (merged, changed) = mergeBodyFatsById(prefs.bodyFatEntries.first(), entries)
+        if (changed == 0) return 0
+        prefs.setBodyFatEntries(merged)
+        syncProfileBodyFatToLatest()
+        return changed
+    }
+
     /** Stable id for an external record: prefer the source's clientRecordId, then the
      *  Health Connect record id, then the timestamp. The VALUE is never part of the seed,
      *  so an in-place correction upserts in place instead of duplicating. */
@@ -135,4 +150,35 @@ class BodyFatRepository(
         val manager = health ?: return false
         return prefs.healthConnectEnabled.first() && manager.hasBodyFatWrite()
     }
+}
+
+/**
+ * Pure merge for file imports: by-id upsert plus a near-duplicate guard (same value
+ * within the same minute of an existing entry is skipped). Mirrors [mergeWeightsById].
+ * Returns the merged list and the number of entries added or updated.
+ */
+internal fun mergeBodyFatsById(
+    existing: List<BodyFatEntry>,
+    incoming: List<BodyFatEntry>,
+): Pair<List<BodyFatEntry>, Int> {
+    val byId = existing.associateBy { it.id }.toMutableMap()
+    var changed = 0
+    for (entry in incoming) {
+        val current = byId[entry.id]
+        if (current != null) {
+            if (abs(current.bodyFatFraction - entry.bodyFatFraction) > 0.0001 || current.date != entry.date) {
+                byId[entry.id] = entry
+                changed++
+            }
+            continue
+        }
+        val nearDuplicate = existing.any {
+            abs(it.bodyFatFraction - entry.bodyFatFraction) < 0.0005 &&
+                abs(it.date.toEpochMilli() - entry.date.toEpochMilli()) < 60_000
+        }
+        if (nearDuplicate) continue
+        byId[entry.id] = entry
+        changed++
+    }
+    return byId.values.sortedBy { it.date } to changed
 }
