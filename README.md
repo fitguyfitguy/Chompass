@@ -4,7 +4,7 @@
 
 **Ad-free AI calorie tracker for Android**, a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-Snap, speak, scan, or type your food with your own AI provider key. No account, no cloud sync, **no ads**.
+Snap, speak, scan, share, or type your food with your own AI provider key. No account, no cloud sync, **no ads**.
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
 [![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
@@ -46,11 +46,11 @@ Material 3 **dark theme** (light theme is also available). Images in [`docs/scre
     </td>
     <td align="center">
       <img src="docs/screenshots/progress.png" width="200" alt="Progress screen in dark theme" /><br />
-      <sub><b>Progress</b>: weight &amp; body-fat charts, calorie history, goals</sub>
+      <sub><b>Progress</b>: weight &amp; body-fat charts, steps &amp; exercise, goals</sub>
     </td>
     <td align="center">
       <img src="docs/screenshots/add-food.png" width="200" alt="Add food sheet in dark theme" /><br />
-      <sub><b>Add food</b>: photo, voice, barcode, manual, saved meals</sub>
+      <sub><b>Add food</b>: photo, share from gallery, voice, barcode, manual, saved meals</sub>
     </td>
   </tr>
   <tr>
@@ -67,18 +67,18 @@ Material 3 **dark theme** (light theme is also available). Images in [`docs/scre
 
 ## Features
 
-Core Fud AI features, minus ads:
+Core Fud AI features, minus ads, plus fork-specific additions through v1.7.0:
 
 | Feature | Details |
 |---------|---------|
-| **Food logging** | Camera, voice, barcode, text, and manual entry via `AddFoodSheet` |
-| **AI Coach** | Chat with your own provider key |
-| **Diet modes** | Including keto carb mode |
-| **Progress** | Weight, body fat, calorie history, and goals |
+| **Food logging** | Camera, share from gallery/camera, voice, barcode, text, and manual entry via `AddFoodSheet`; draft recovery if logging is interrupted |
+| **AI Coach** | Chat with your own provider key; replies follow the app language |
+| **Diet modes** | Including keto carb mode (goals, meal advice, and Coach stay in sync) |
+| **Progress** | Weight, body fat, calorie history, goals, and daily steps/exercise from Health Connect |
 | **Workouts** | Built-in exercise library |
-| **Health Connect** | Read and write sync with other health apps |
+| **Health Connect** | Two-way sync; live import of meals logged by other apps |
 | **Widgets** | Home-screen widgets |
-| **Export & share** | Diary export (JSON / Markdown / CSV), meal sharing, and import |
+| **Export & share** | Diary export (JSON / Markdown / CSV), meal sharing, bulk JSON import |
 | **Localization** | 15 languages |
 
 ## Why NoFUD
@@ -87,9 +87,12 @@ NoFUD keeps the Fud AI core and removes monetization. Main fork changes:
 
 - **No ads**: AdMob removed
 - **Diet modes**: keto and other modes not in upstream Fud AI
-- **Logging UX**: `AddFoodSheet` and camera/text/photo flow updates
-- **UI updates**: nutrient display and day-to-day UX changes
-- **Smaller APK**: ~79% smaller than upstream (~25 MB vs 121 MB universal)
+- **Logging UX**: `AddFoodSheet`, share-into-app photos, draft recovery, camera/text/photo flow updates
+- **Health ecosystem**: steps, exercise, and live meal import via Health Connect (Gadgetbridge, openScale, Samsung Health, etc.)
+- **UI updates**: Material 3 theming, optional glass blur, nutrient display polish
+- **Audited nutrition math**: documented formulas and unit tests ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md))
+- **Smaller APK**: much smaller than upstream Fud AI (~45 MB vs 121 MB universal; see [releases](https://codeberg.org/fitguy/NoFUD/releases))
+- **F-Droid-ready builds**: `play` and `fdroid` release flavors on Codeberg
 
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
@@ -118,7 +121,7 @@ Two paths:
 
 | Path | Steps |
 |------|-------|
-| **A: File export** | In Fud AI, export your food diary as JSON. In NoFUD, open **Settings → Import Food Diary JSON** |
+| **A: File export** | In Fud AI, export your food diary as JSON. In NoFUD, open **Settings → Import Food Diary JSON** (bulk import supported) |
 | **B: Health Connect** | Enable Health Connect in both apps and grant read permissions to restore historical data |
 
 **Before you switch**
@@ -141,9 +144,14 @@ Two paths:
 | Banner ads (AdMob) | Yes | **Removed** |
 | Analytics / tracking SDKs | None | None |
 | Diet mode / keto carb mode | No | **Added** |
+| Share photo into app | No | **Added** |
+| Progress steps & exercise card | No | **Added** (Health Connect) |
+| Live Health Connect meal import | No | **Added** |
+| Bulk diary JSON import | No | **Added** |
 | Add-entry flow | Baseline | **Enhanced** (`AddFoodSheet` + UX refinements) |
-| APK size (`universal`) | 121.4 MB (`android-v3.0.4`) | **~25 MB** (`v1.4.0`) |
+| APK size (`universal`) | 121.4 MB (`android-v3.0.4`) | **~45 MB** (`v1.7.0`) |
 | UX / UI polish | Baseline | **Expanded** |
+| F-Droid / play release flavors | N/A | **Both on Codeberg** |
 
 Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
 
