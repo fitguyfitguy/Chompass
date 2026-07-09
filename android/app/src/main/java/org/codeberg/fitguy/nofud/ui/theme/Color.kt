@@ -1,6 +1,11 @@
 package org.codeberg.fitguy.nofud.ui.theme
 
+import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
 import androidx.annotation.StringRes
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
@@ -12,6 +17,8 @@ enum class AppThemeColor(
     @param:StringRes val displayNameRes: Int,
     val primary: Color,
 ) {
+    /** Follows the device wallpaper / Material You palette (Android 12+). */
+    SYSTEM("system", R.string.theme_color_system, Color(0xFF6750A4)),
     TEAL("teal", R.string.theme_color_teal, Color(0xFF006B5E)),
     BLUE("blue", R.string.theme_color_blue, Color(0xFF0061A4)),
     GREEN("green", R.string.theme_color_green, Color(0xFF386A20)),
@@ -22,16 +29,21 @@ enum class AppThemeColor(
     NEUTRAL("neutral", R.string.theme_color_neutral, Color(0xFF5E5E62));
 
     /** Accent gradient start — kept for rings/charts. */
-    val start: Color get() = primary
+    val start: Color
+        get() = if (this == SYSTEM) TEAL.primary else primary
 
     /** Accent gradient end — lighter blend of [primary]. */
-    val end: Color get() = lerp(primary, Color.White, 0.28f)
+    val end: Color
+        get() = if (this == SYSTEM) TEAL.end else lerp(primary, Color.White, 0.28f)
 
     val macroPalette: MacroPalette
-        get() = ThemeMacroPalettes.getValue(this)
+        get() = ThemeMacroPalettes.getValue(if (this == SYSTEM) TEAL else this)
+
+    val usesSystemPalette: Boolean
+        get() = this == SYSTEM
 
     companion object {
-        const val DEFAULT_KEY = "teal"
+        const val DEFAULT_KEY = "system"
 
         private val LEGACY_KEY_MIGRATION = mapOf(
             "fudPink" to PINK,
@@ -49,31 +61,45 @@ enum class AppThemeColor(
         )
 
         fun fromKey(key: String?): AppThemeColor {
-            if (key == null) return TEAL
+            if (key == null) return SYSTEM
             values().firstOrNull { it.key == key }?.let { return it }
             LEGACY_KEY_MIGRATION[key]?.let { return it }
-            return TEAL
+            return SYSTEM
         }
 
         fun migrateKey(key: String?): String = fromKey(key).key
     }
 }
 
-object AppColors {
-    private var activeThemeColor: AppThemeColor = AppThemeColor.TEAL
+/** Accent colors for widgets and other non-Compose surfaces. */
+fun AppThemeColor.widgetAccentColors(context: Context): Pair<Color, Color> {
+    if (!usesSystemPalette || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+        return start to end
+    }
+    val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    val dark = nightMode == Configuration.UI_MODE_NIGHT_YES
+    val scheme = if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val primary = scheme.primary
+    return primary to lerp(primary, Color.White, 0.28f)
+}
 
-    fun setThemeColor(themeColor: AppThemeColor) {
+object AppColors {
+    private var activeThemeColor: AppThemeColor = AppThemeColor.SYSTEM
+    private var dynamicPrimary: Color? = null
+
+    fun setThemeColor(themeColor: AppThemeColor, dynamicPrimary: Color? = null) {
         activeThemeColor = themeColor
+        this.dynamicPrimary = if (themeColor.usesSystemPalette) dynamicPrimary else null
     }
 
     val ThemeColor: AppThemeColor
         get() = activeThemeColor
 
     val CalorieStart: Color
-        get() = activeThemeColor.start
+        get() = dynamicPrimary ?: activeThemeColor.start
 
     val CalorieEnd: Color
-        get() = activeThemeColor.end
+        get() = dynamicPrimary?.let { lerp(it, Color.White, 0.28f) } ?: activeThemeColor.end
 
     val Calorie: Color
         get() = CalorieStart

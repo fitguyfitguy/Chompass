@@ -2249,10 +2249,24 @@ private fun OptionalNutrientGoalRow(
 
 @Composable
 private fun ThemeColorSwatch(themeColor: AppThemeColor, modifier: Modifier = Modifier) {
+    val background = if (themeColor.usesSystemPalette) {
+        Brush.sweepGradient(
+            listOf(
+                Color(0xFF6750A4),
+                Color(0xFF7D5260),
+                Color(0xFFB3261E),
+                Color(0xFF006E1C),
+                Color(0xFF0061A4),
+                Color(0xFF6750A4),
+            )
+        )
+    } else {
+        Brush.linearGradient(listOf(themeColor.primary, themeColor.primary))
+    }
     Box(
         modifier
             .clip(CircleShape)
-            .background(themeColor.primary),
+            .background(background),
     )
 }
 
