@@ -4,7 +4,7 @@
 
 **Ad-free AI calorie tracker for Android**, a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-Snap, speak, scan, share, or type your food with your own AI provider key. No account, no cloud sync, **no ads**.
+Snap, speak, scan, share, or type your food with your own AI provider key. Same BYOK model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). No account, no cloud sync. **No banner ads.**
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
 [![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
@@ -85,7 +85,7 @@ Core Fud AI features, minus ads, plus fork-specific additions through v1.7.0:
 
 NoFUD keeps the Fud AI core and removes monetization. Main fork changes:
 
-- **No ads**: AdMob removed
+- **No ads**: AdMob removed (Fud AI still shows banner ads)
 - **Diet modes**: keto and other modes not in upstream Fud AI
 - **Logging UX**: `AddFoodSheet`, share-into-app photos, draft recovery, camera/text/photo flow updates
 - **Health ecosystem**: steps, exercise, and live meal import via Health Connect (Gadgetbridge, openScale, Samsung Health, etc.)
@@ -142,6 +142,7 @@ Two paths:
 |------|--------|-------|
 | Android AI calorie tracking | Yes | Yes |
 | Banner ads (AdMob) | Yes | **Removed** |
+| Bring your own API key | Yes | Yes |
 | Analytics / tracking SDKs | None | None |
 | Diet mode / keto carb mode | No | **Added** |
 | Share photo into app | No | **Added** |
@@ -161,7 +162,7 @@ On our Android debug perf baseline, recent Progress-screen optimizations cut wor
 
 ## Privacy
 
-No ads, analytics, or tracking SDKs. AI requests go to the provider you configure with your own API key. See [PRIVACY.md](PRIVACY.md).
+No ads, analytics, or tracking SDKs. AI requests go to whichever provider you configure, same as Fud AI. See [PRIVACY.md](PRIVACY.md).
 
 ## Development
 
