@@ -1,5 +1,9 @@
-Import weight and body data from a file: NoFUD JSON/CSV, openScale CSV, and generic weight CSVs (kg or lb). Export now covers weight, body-fat and body-measurement history as CSV or JSON.
+Import/export weight, body-fat and body-measurement history (NoFUD JSON/CSV, openScale CSV, generic weight CSVs).
 
-Health Connect: new Wellness card (sleep, resting heart rate, hydration), height now syncs out, and an optional background sync that checks for new data every few hours (off by default).
+Health Connect: Wellness card (sleep, resting heart rate, hydration), height sync, optional background sync (off by default).
 
-Nutrition calculation audit: unified 7,700 kcal/kg energy balance, Theil–Sen weight-trend regression, calendar-day intake averaging, and a Calculation Methods reference in the app. Extensive new formula unit tests.
+Home calorie gauge: estimated active burn when Health Connect is off; measured vs estimated labels; no double-counting in Add Active mode.
+
+System accent theme (Material You, Android 12+), dynamic launcher icon, food photo thumbnails with cleanup.
+
+Nutrition calculation audit: 7,700 kcal/kg energy balance, Theil–Sen weight trend, calendar-day intake averaging, Calculation Methods reference and formula unit tests.
