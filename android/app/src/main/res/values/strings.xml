@@ -734,8 +734,8 @@
     <string name="about_report_issue">Report an Issue</string>
     <string name="about_request_feature">Request a Feature</string>
     <string name="about_privacy">Privacy Policy</string>
-    <string name="about_made_by">Based on Fud AI by Apoorv Darshan</string>
-    <string name="about_with_care">NoFUD fork by fitguy - ad-free and privacy-first</string>
+    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_with_care">Based on Fud AI by Apoorv Darshan</string>
     <string name="about_share_message">I\'ve been tracking my meals with NoFUD - an ad-free fork of Fud AI. Snap a photo, speak it, or type it, and the AI logs the calories. Open source, and your data stays on your device.\n\nSource: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">Share NoFUD</string>
 

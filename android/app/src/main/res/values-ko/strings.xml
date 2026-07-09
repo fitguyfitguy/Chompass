@@ -596,8 +596,8 @@
     <string name="about_report_issue">문제 신고</string>
     <string name="about_request_feature">기능 요청</string>
     <string name="about_privacy">개인정보 처리방침</string>
-    <string name="about_made_by">Apoorv Darshan 제작</string>
-    <string name="about_with_care">모두를 위해, 세심하게</string>
+    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_with_care">Apoorv Darshan의 Fud AI 기반</string>
     <string name="about_share_message">NoFUD로 식단을 기록하고 있어요 - 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">NoFUD 공유</string>
 

@@ -596,8 +596,8 @@
     <string name="about_report_issue">报告问题</string>
     <string name="about_request_feature">请求功能</string>
     <string name="about_privacy">隐私政策</string>
-    <string name="about_made_by">由 Apoorv Darshan 制作</string>
-    <string name="about_with_care">用心为每个人</string>
+    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_with_care">基于 Apoorv Darshan 的 Fud AI</string>
     <string name="about_share_message">我用 NoFUD 记录每一餐--拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/NoFUD</string>
     <string name="about_share_chooser">分享 NoFUD</string>
 
