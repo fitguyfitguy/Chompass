@@ -848,6 +848,7 @@
     <string name="home_calorie_mode_dual_desc">Intake progress on your fixed goal; a subtle leading arc hints at today\'s active burn.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>
+    <string name="home_steps_goal_format">Goal %1$s</string>
     <string name="home_active_calories_label">Active kcal</string>
     <string name="home_calories_left">%1$d left</string>
     <string name="home_calories_net_left">%1$d net left</string>
