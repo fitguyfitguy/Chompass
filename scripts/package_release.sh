@@ -160,7 +160,9 @@ Next steps:
        git push origin v${VERSION}
   4. Publish to Codeberg:
        export CODEBERG_TOKEN='...'
+       ./scripts/manage_release_assets.sh list    # check quota headroom
        ./scripts/publish_release.sh ${VERSION}
+       # if quota exceeded: prune old ABI splits, then --assets-only
 
 Optional metadata guard before tagging:
   devenv tasks run release:check-metadata
