@@ -146,9 +146,15 @@ import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
 import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.Gender
+import org.codeberg.fitguy.nofud.models.HeuristicRuleOverride
+import org.codeberg.fitguy.nofud.models.HeuristicServingUnitSettings
 import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.OptionalNutrient
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
+import org.codeberg.fitguy.nofud.models.ServingUnitHeuristicRule
+import org.codeberg.fitguy.nofud.models.ServingUnitHeuristics
+import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
+import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
@@ -187,6 +193,7 @@ import java.util.Locale
 
 private enum class SettingsSheet {
     AI_PROVIDER, AI_MODEL, MAX_TOKENS, API_KEY, CUSTOM_BASE_URL, SPEECH_PROVIDER, SPEECH_LANGUAGE, SPEECH_KEY,
+    SERVING_UNIT_MODE, SERVING_UNIT_HEURISTICS,
     FALLBACK_PROVIDER, FALLBACK_MODEL, FALLBACK_KEY, FALLBACK_BASE_URL,
     GENDER, BIRTHDAY, HEIGHT, WEIGHT, BODY_FAT, GOAL_BODY_FAT, ACTIVITY, GOAL, DIET_MODE, DIET_CARB_MODE, DIET_CARB_TARGET, GOAL_WEIGHT, GOAL_SPEED,
     CALORIES, PROTEIN, CARBS, FAT, OPTIONAL_NUTRIENTS,
@@ -749,6 +756,20 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         ui.maxResponseTokens.toString(),
                         icon = Icons.Outlined.Numbers
                     ) { sheet = SettingsSheet.MAX_TOKENS }
+                }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_serving_unit_mode),
+                    stringResource(ui.servingUnitInferenceMode.displayNameRes),
+                    icon = Icons.Outlined.Straighten
+                ) { sheet = SettingsSheet.SERVING_UNIT_MODE }
+                if (ui.servingUnitInferenceMode == ServingUnitInferenceMode.HEURISTIC) {
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_serving_unit_heuristics),
+                        stringResource(R.string.settings_tap_to_edit),
+                        icon = Icons.Outlined.Tune
+                    ) { sheet = SettingsSheet.SERVING_UNIT_HEURISTICS }
                 }
             }
 
@@ -1784,6 +1805,19 @@ private fun SettingsSheets(
                         onSave = { it.trim().toIntOrNull()?.let(vm::setMaxResponseTokens); onDismiss() }
                     )
                 }
+                SettingsSheet.SERVING_UNIT_MODE -> ListSheet(
+                    title = stringResource(R.string.sheet_serving_unit_mode),
+                    items = ServingUnitInferenceMode.entries,
+                    label = { stringResource(it.displayNameRes) },
+                    subtitle = { stringResource(it.subtitleRes) },
+                    selected = { it == ui.servingUnitInferenceMode },
+                    onSelect = { vm.setServingUnitInferenceMode(it); onDismiss() }
+                )
+                SettingsSheet.SERVING_UNIT_HEURISTICS -> ServingUnitHeuristicsSheet(
+                    settings = ui.heuristicServingUnitSettings,
+                    onToggle = vm::setHeuristicRuleEnabled,
+                    onGramsPerUnitChange = vm::setHeuristicRuleGramsPerUnit
+                )
                 SettingsSheet.SPEECH_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_speech_engine),
                     items = SpeechProvider.values().toList(),
@@ -2134,6 +2168,87 @@ private fun SettingsSheets(
             }
             Spacer(Modifier.height(14.dp))
         }
+    }
+}
+
+@Composable
+private fun ServingUnitHeuristicsSheet(
+    settings: HeuristicServingUnitSettings,
+    onToggle: (String, Boolean) -> Unit,
+    onGramsPerUnitChange: (String, Double?) -> Unit
+) {
+    Text(
+        stringResource(R.string.sheet_serving_unit_heuristics),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold
+    )
+    Spacer(Modifier.height(4.dp))
+    Text(
+        stringResource(R.string.serving_unit_heuristics_footer),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    )
+    Spacer(Modifier.height(8.dp))
+    LazyColumn(
+        Modifier.fillMaxWidth().heightIn(max = 480.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(ServingUnitHeuristics.RULES, key = { it.id }) { rule ->
+            ServingUnitHeuristicRuleRow(
+                rule = rule,
+                override = settings.overrides[rule.id],
+                onToggle = { onToggle(rule.id, it) },
+                onGramsPerUnitChange = { onGramsPerUnitChange(rule.id, it) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ServingUnitHeuristicRuleRow(
+    rule: ServingUnitHeuristicRule,
+    override: HeuristicRuleOverride?,
+    onToggle: (Boolean) -> Unit,
+    onGramsPerUnitChange: (Double?) -> Unit
+) {
+    val enabled = override?.enabled ?: true
+    var text by remember(rule.id, override?.gramsPerUnit) {
+        mutableStateOf(
+            (override?.gramsPerUnit ?: rule.defaultGramsPerUnit).let {
+                if (it == it.toLong().toDouble()) it.toLong().toString() else it.toString()
+            }
+        )
+    }
+    Column(Modifier.fillMaxWidth()) {
+        ToggleRow(label = rule.label, checked = enabled, onChange = onToggle)
+        if (enabled) {
+            Row(
+                Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FudGlassTextField(
+                    value = text,
+                    onValueChange = { new ->
+                        text = new
+                        val parsed = new.trim().replace(',', '.').toDoubleOrNull()
+                        onGramsPerUnitChange(if (parsed != null && parsed > 0) parsed else null)
+                    },
+                    placeholder = stringResource(
+                        R.string.serving_unit_heuristics_default_value,
+                        ServingUnitOption.formatQuantity(rule.defaultGramsPerUnit)
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.weight(1f)
+                )
+                if (override?.gramsPerUnit != null) {
+                    Spacer(Modifier.width(8.dp))
+                    TextButton(onClick = { text = ""; onGramsPerUnitChange(null) }) {
+                        Text(stringResource(R.string.serving_unit_heuristics_reset), fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+        HorizontalDivider()
     }
 }
 

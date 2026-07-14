@@ -8,7 +8,11 @@ import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.GoalFormulaReference
+import org.codeberg.fitguy.nofud.models.HeuristicServingUnitSettings
 import org.codeberg.fitguy.nofud.models.NutritionConstants
+import org.codeberg.fitguy.nofud.models.ServingUnitHeuristics
+import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
+import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.BuildConfig
 import org.codeberg.fitguy.nofud.services.PerfLog
@@ -460,14 +464,7 @@ class FoodAnalysisService(
         description: String?
     ): FoodAnalysis {
         if (analysis.servingUnitOptions.isNotEmpty()) return analysis
-        val options = runCatching {
-            inferServingUnitOptions(
-                name = analysis.name,
-                servingSizeGrams = analysis.servingSizeGrams,
-                imageBytes = imageBytes,
-                description = description
-            )
-        }.getOrDefault(emptyList())
+        val options = servingUnitFallbackOptions(analysis.name, analysis.servingSizeGrams, imageBytes, description)
         if (options.isEmpty()) return analysis
         val selected = options.first()
         return analysis.copy(
@@ -483,16 +480,69 @@ class FoodAnalysisService(
     ): NutritionLabelAnalysis {
         if (analysis.servingUnitOptions.isNotEmpty()) return analysis
         val servingSizeGrams = analysis.servingSizeGrams ?: return analysis
-        val options = runCatching {
-            inferServingUnitOptions(
-                name = analysis.name,
-                servingSizeGrams = servingSizeGrams,
-                imageBytes = imageBytes,
-                description = null
-            )
-        }.getOrDefault(emptyList())
+        val options = servingUnitFallbackOptions(analysis.name, servingSizeGrams, imageBytes, description = null)
         if (options.isEmpty()) return analysis
         return analysis.copy(servingUnitOptions = options)
+    }
+
+    /**
+     * Dispatches to whichever serving-unit strategy the user picked in Settings
+     * ([ServingUnitInferenceMode]) — these are mutually exclusive, not chained:
+     * grams-only never guesses a unit, heuristic never calls the network, and
+     * AI-call always uses [inferServingUnitOptions] (today's original behavior).
+     */
+    private suspend fun servingUnitFallbackOptions(
+        name: String,
+        servingSizeGrams: Double,
+        imageBytes: ByteArray?,
+        description: String?
+    ): List<ServingUnitOption> = when (prefs.servingUnitInferenceMode.first()) {
+        ServingUnitInferenceMode.GRAMS_ONLY -> emptyList()
+        ServingUnitInferenceMode.HEURISTIC ->
+            heuristicServingUnitOptions(name, servingSizeGrams, prefs.heuristicServingUnitSettings.first()).orEmpty()
+        ServingUnitInferenceMode.AI_CALL -> runCatching {
+            inferServingUnitOptions(name, servingSizeGrams, imageBytes, description)
+        }.getOrDefault(emptyList())
+    }
+
+    /**
+     * Zero-network guess at a non-gram serving unit from the food name alone,
+     * using [ServingUnitHeuristics.RULES] adjusted by the user's [settings]
+     * (disabled rules are skipped; a custom gramsPerUnit overrides the
+     * built-in default). Returns null when no keyword matches or the
+     * matching rule is disabled.
+     */
+    private fun heuristicServingUnitOptions(
+        name: String,
+        servingSizeGrams: Double,
+        settings: HeuristicServingUnitSettings
+    ): List<ServingUnitOption>? {
+        if (servingSizeGrams <= 0) return null
+        // Word-boundary matching (not raw substring) so short keywords like "egg" or
+        // "cake" don't false-positive inside unrelated words ("eggplant", "cheesecake",
+        // "chicken pieces" vs. the "piece" unit). A simple trailing-"s" strip handles
+        // most plurals; "-es" plurals (e.g. "sandwiches") are listed as their own keyword.
+        val words = name.lowercase(Locale.US).split(Regex("[^a-z]+")).filter { it.isNotEmpty() }
+        if (words.isEmpty()) return null
+        val wordForms = words.toHashSet()
+        for (word in words) {
+            if (word.length > 3 && word.endsWith("s") && !word.endsWith("ss")) wordForms.add(word.dropLast(1))
+        }
+        val normalized = words.joinToString(" ")
+        val rule = ServingUnitHeuristics.RULES.firstOrNull { rule ->
+            rule.keywords.any { keyword -> if (' ' in keyword) normalized.contains(keyword) else keyword in wordForms }
+        } ?: return null
+        val override = settings.overrides[rule.id]
+        if (override?.enabled == false) return null
+        val gramsPerUnit = override?.gramsPerUnit?.takeIf { it > 0 } ?: rule.defaultGramsPerUnit
+        PerfLog.event("op=servingUnits phase=heuristic unit=${rule.unit}")
+        return listOf(
+            ServingUnitOption(
+                unit = rule.unit,
+                gramsPerUnit = gramsPerUnit,
+                quantity = servingSizeGrams / gramsPerUnit
+            )
+        )
     }
 
     private suspend fun inferServingUnitOptions(
