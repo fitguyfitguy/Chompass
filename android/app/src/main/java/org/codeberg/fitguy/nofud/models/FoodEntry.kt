@@ -46,7 +46,10 @@ data class FoodEntry(
     val servingUnitOptions: List<ServingUnitOption> = emptyList(),
     val selectedServingUnit: String? = null,
     val selectedServingQuantity: Double? = null,
-    val customNote: String? = null
+    val customNote: String? = null,
+    /** Shared id across all diary rows produced by one Recipe log; null for non-recipe entries. */
+    @Serializable(with = UuidSerializer::class)
+    val recipeLogId: UUID? = null
 ) {
     /** Unique key for favorite deduplication (name + calorie combo). */
     val favoriteKey: String get() = "${name.lowercase()}|$calories"

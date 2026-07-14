@@ -95,6 +95,7 @@ fun HomeScreen(container: AppContainer) {
     var showAddFoodSheet by remember { mutableStateOf(false) }
     var showCustomWaterLog by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
+    var editingRecipe by remember { mutableStateOf<org.codeberg.fitguy.nofud.models.Recipe?>(null) }
     var showNutritionDetail by remember { mutableStateOf(false) }
 
     var showCameraCapture by remember { mutableStateOf(false) }
@@ -479,7 +480,30 @@ fun HomeScreen(container: AppContainer) {
             onDismiss = { showSaved = false },
             // Tapping a Saved Meals row opens the FoodResultSheet for review
             // instead of logging immediately — same UX as the photo flow.
-            onRelogEntry = { vm.reviewSavedMeal(it) }
+            onRelogEntry = { vm.reviewSavedMeal(it) },
+            onLogRecipe = { vm.logRecipe(it) },
+            onEditRecipe = { recipe -> showSaved = false; editingRecipe = recipe },
+            onCreateRecipe = {
+                showSaved = false
+                editingRecipe = org.codeberg.fitguy.nofud.models.Recipe(name = "")
+            }
+        )
+    }
+
+    editingRecipe?.let { recipe ->
+        RecipeBuilderSheet(
+            container = container,
+            recipe = recipe,
+            onDismiss = { editingRecipe = null },
+            onSave = { updated ->
+                vm.saveRecipe(updated)
+                editingRecipe = null
+            },
+            onLogNow = { updated ->
+                vm.saveRecipe(updated)
+                vm.logRecipe(updated)
+                editingRecipe = null
+            }
         )
     }
 

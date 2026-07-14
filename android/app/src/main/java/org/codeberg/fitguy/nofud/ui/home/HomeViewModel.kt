@@ -669,6 +669,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /** Log every ingredient of a Recipe as its own diary row, timestamped to the selected day. */
+    fun logRecipe(recipe: org.codeberg.fitguy.nofud.models.Recipe) {
+        viewModelScope.launch {
+            container.recipeRepository.logRecipe(recipe, timestampForSelectedDay())
+        }
+    }
+
+    fun saveRecipe(recipe: org.codeberg.fitguy.nofud.models.Recipe) {
+        viewModelScope.launch {
+            container.recipeRepository.saveRecipe(recipe)
+        }
+    }
+
     fun copyEntriesToSelectedDay(entries: List<FoodEntry>) {
         if (entries.isEmpty() || _ui.value.saving) return
         viewModelScope.launch {
