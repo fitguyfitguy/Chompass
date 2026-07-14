@@ -1,23 +1,14 @@
 package org.codeberg.fitguy.nofud.data
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import org.codeberg.fitguy.nofud.models.AIProvider
-import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
 import org.codeberg.fitguy.nofud.models.BodyMeasurement
 import org.codeberg.fitguy.nofud.models.ChatMessage
 import org.codeberg.fitguy.nofud.models.FoodEntry
-import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
-import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
-import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
 import org.codeberg.fitguy.nofud.models.HeuristicServingUnitSettings
-import org.codeberg.fitguy.nofud.models.HomeTopNutrient
+import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.PendingFoodAnalysisDraft
 import org.codeberg.fitguy.nofud.models.PendingFoodInputDraft
@@ -28,35 +19,13 @@ import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
 import org.codeberg.fitguy.nofud.services.health.DebugActivityDay
-import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.ZoneId
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.SetSerializer
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 val Context.fudaiDataStore by preferencesDataStore(name = "fudai_prefs")
-
-/** Key-name prefix for the per-calendar-month food entry buckets (see [PreferencesStore.foodEntries]). */
-private const val FOOD_ENTRIES_BUCKET_PREFIX = "foodEntries_"
-
-@Serializable
-private data class HealthEnergyGoalTargetSnapshot(
-    val customCalories: Int? = null,
-    val customProtein: Int? = null,
-    val customFat: Int? = null,
-    val customCarbs: Int? = null,
-    val autoBalanceMacro: AutoBalanceMacro? = null
-)
 
 /**
  * Thin wrapper over DataStore Preferences for all app state except API keys
@@ -64,776 +33,163 @@ private data class HealthEnergyGoalTargetSnapshot(
  * functions for writes. Complex values (profile, entries, history) are stored
  * as JSON strings via kotlinx.serialization.
  */
-class PreferencesStore(private val context: Context) {
-
-    private val json = Json { ignoreUnknownKeys = true }
-    private val ds get() = context.fudaiDataStore
-
-    // -- User profile -----------------------------------------------------
-    val userProfile: Flow<UserProfile?> = ds.data.map { prefs ->
-        prefs[Keys.USER_PROFILE]?.let { runCatching { json.decodeFromString<UserProfile>(it) }.getOrNull() }
-    }
-
-    suspend fun setUserProfile(profile: UserProfile) {
-        ds.edit { it[Keys.USER_PROFILE] = json.encodeToString(UserProfile.serializer(), profile) }
-    }
-
-    // -- Onboarding -------------------------------------------------------
-    val hasCompletedOnboarding: Flow<Boolean> = ds.data.map { it[Keys.ONBOARDING_COMPLETED] ?: false }
-    suspend fun setOnboardingCompleted(value: Boolean) {
-        ds.edit { it[Keys.ONBOARDING_COMPLETED] = value }
-    }
-
-    // -- Notifications ----------------------------------------------------
-    val notificationsEnabled: Flow<Boolean> = ds.data.map { it[Keys.NOTIFICATIONS_ENABLED] ?: false }
-    suspend fun setNotificationsEnabled(v: Boolean) { ds.edit { it[Keys.NOTIFICATIONS_ENABLED] = v } }
-
-    val streakReminderEnabled: Flow<Boolean> = ds.data.map { it[Keys.STREAK_ENABLED] ?: false }
-    suspend fun setStreakReminderEnabled(v: Boolean) { ds.edit { it[Keys.STREAK_ENABLED] = v } }
-
-    val streakReminderHour: Flow<Int> = ds.data.map { it[Keys.STREAK_HOUR] ?: 19 }
-    suspend fun setStreakReminderHour(v: Int) { ds.edit { it[Keys.STREAK_HOUR] = v } }
-
-    val streakReminderMinute: Flow<Int> = ds.data.map { it[Keys.STREAK_MINUTE] ?: 0 }
-    suspend fun setStreakReminderMinute(v: Int) { ds.edit { it[Keys.STREAK_MINUTE] = v } }
-
-    val dailySummaryEnabled: Flow<Boolean> = ds.data.map { it[Keys.DAILY_ENABLED] ?: false }
-    suspend fun setDailySummaryEnabled(v: Boolean) { ds.edit { it[Keys.DAILY_ENABLED] = v } }
-
-    val dailySummaryHour: Flow<Int> = ds.data.map { it[Keys.DAILY_HOUR] ?: 21 }
-    suspend fun setDailySummaryHour(v: Int) { ds.edit { it[Keys.DAILY_HOUR] = v } }
-
-    val dailySummaryMinute: Flow<Int> = ds.data.map { it[Keys.DAILY_MINUTE] ?: 0 }
-    suspend fun setDailySummaryMinute(v: Int) { ds.edit { it[Keys.DAILY_MINUTE] = v } }
-
-    val weightReminderEnabled: Flow<Boolean> = ds.data.map { it[Keys.WEIGHT_REMINDER_ENABLED] ?: true }
-    suspend fun setWeightReminderEnabled(v: Boolean) { ds.edit { it[Keys.WEIGHT_REMINDER_ENABLED] = v } }
-
-    val bodyFatReminderEnabled: Flow<Boolean> = ds.data.map { it[Keys.BODY_FAT_REMINDER_ENABLED] ?: true }
-    suspend fun setBodyFatReminderEnabled(v: Boolean) { ds.edit { it[Keys.BODY_FAT_REMINDER_ENABLED] = v } }
-
-    val goalReachedNotificationsEnabled: Flow<Boolean> = ds.data.map { it[Keys.GOAL_REACHED_NOTIFICATIONS_ENABLED] ?: true }
-    suspend fun setGoalReachedNotificationsEnabled(v: Boolean) { ds.edit { it[Keys.GOAL_REACHED_NOTIFICATIONS_ENABLED] = v } }
-
-    val appUpdateNotificationsEnabled: Flow<Boolean> = ds.data.map { it[Keys.APP_UPDATE_NOTIFICATIONS_ENABLED] ?: true }
-    suspend fun setAppUpdateNotificationsEnabled(v: Boolean) { ds.edit { it[Keys.APP_UPDATE_NOTIFICATIONS_ENABLED] = v } }
-
-    /// Last app version a "new update" notification was posted for — so it fires at most once per
-    /// version even though the update check runs on every launch.
-    val lastNotifiedUpdateVersion: Flow<String?> = ds.data.map { it[Keys.LAST_NOTIFIED_UPDATE_VERSION] }
-    suspend fun setLastNotifiedUpdateVersion(v: String) { ds.edit { it[Keys.LAST_NOTIFIED_UPDATE_VERSION] = v } }
-
-    // -- Health Connect ---------------------------------------------------
-    val healthConnectEnabled: Flow<Boolean> = ds.data.map { it[Keys.HEALTH_CONNECT_ENABLED] ?: false }
-    suspend fun setHealthConnectEnabled(v: Boolean) { ds.edit { it[Keys.HEALTH_CONNECT_ENABLED] = v } }
-
-    val healthPermissionsVersion: Flow<Int> = ds.data.map { it[Keys.HEALTH_TYPES_VERSION] ?: 0 }
-    suspend fun setHealthPermissionsVersion(v: Int) { ds.edit { it[Keys.HEALTH_TYPES_VERSION] = v } }
-
-    /// Opaque Health Connect changes token for incremental weight/body-fat read-sync.
-    /// Null means "no sync yet" → the coordinator does a one-time historical backfill.
-    val healthChangesToken: Flow<String?> = ds.data.map { it[Keys.HEALTH_CHANGES_TOKEN] }
-    suspend fun setHealthChangesToken(v: String) { ds.edit { it[Keys.HEALTH_CHANGES_TOKEN] = v } }
-    suspend fun clearHealthChangesToken() {
-        ds.edit { it.remove(Keys.HEALTH_CHANGES_TOKEN); it.remove(Keys.HEALTH_CHANGES_TOKEN_TYPES) }
-    }
-
-    /// Which read types the current changes token was seeded for (e.g. {"weight","bodyfat"}).
-    /// If a newly-granted read type isn't covered, the coordinator drops the token and
-    /// re-backfills so the new metric's history is imported.
-    val healthChangesTokenTypes: Flow<Set<String>> = ds.data.map {
-        it[Keys.HEALTH_CHANGES_TOKEN_TYPES]?.split(",")?.filter { s -> s.isNotBlank() }?.toSet() ?: emptySet()
-    }
-    suspend fun setHealthChangesTokenTypes(types: Set<String>) {
-        ds.edit { it[Keys.HEALTH_CHANGES_TOKEN_TYPES] = types.joinToString(",") }
-    }
-
-    /// One-shot flag for the food-log restore from Health Connect. Cleared with the
-    /// rest of the store on Delete All Data / fresh install, which is exactly when
-    /// the restore should be allowed to run again.
-    val healthFoodRestoreDone: Flow<Boolean> = ds.data.map { it[Keys.HEALTH_FOOD_RESTORE_DONE] ?: false }
-    suspend fun setHealthFoodRestoreDone(v: Boolean) { ds.edit { it[Keys.HEALTH_FOOD_RESTORE_DONE] = v } }
-
-    val healthEnergyGoalsEnabled: Flow<Boolean> = ds.data.map { it[Keys.HEALTH_ENERGY_GOALS_ENABLED] ?: false }
-    suspend fun setHealthEnergyGoalsEnabled(v: Boolean) { ds.edit { it[Keys.HEALTH_ENERGY_GOALS_ENABLED] = v } }
-
-    /** Opt-in periodic background Health Connect sync. Default OFF — see HealthSyncWorker. */
-    val healthBackgroundSyncEnabled: Flow<Boolean> = ds.data.map { it[Keys.HEALTH_BACKGROUND_SYNC_ENABLED] ?: false }
-    suspend fun setHealthBackgroundSyncEnabled(v: Boolean) { ds.edit { it[Keys.HEALTH_BACKGROUND_SYNC_ENABLED] = v } }
-
-    val healthEnergyGoalsLastAutoRefreshDay: Flow<String?> = ds.data.map {
-        it[Keys.HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY]
-    }
-    suspend fun setHealthEnergyGoalsLastAutoRefreshDay(v: String) {
-        ds.edit { it[Keys.HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY] = v }
-    }
-
-    val reviewPromptedAfterFirstLog: Flow<Boolean> = ds.data.map { it[Keys.REVIEW_PROMPTED_AFTER_FIRST_LOG] ?: false }
-    suspend fun setReviewPromptedAfterFirstLog(v: Boolean) { ds.edit { it[Keys.REVIEW_PROMPTED_AFTER_FIRST_LOG] = v } }
-
-    val adaptiveGoalsEnabled: Flow<Boolean> = ds.data.map { it[Keys.ADAPTIVE_GOALS_ENABLED] ?: false }
-    suspend fun setAdaptiveGoalsEnabled(v: Boolean) { ds.edit { it[Keys.ADAPTIVE_GOALS_ENABLED] = v } }
-
-    val adaptiveGoalsLastCheckDay: Flow<String?> = ds.data.map {
-        it[Keys.ADAPTIVE_GOALS_LAST_CHECK_DAY]
-    }
-    suspend fun setAdaptiveGoalsLastCheckDay(v: String) {
-        ds.edit { it[Keys.ADAPTIVE_GOALS_LAST_CHECK_DAY] = v }
-    }
-
-    suspend fun saveAdaptiveGoalPreviousTargetsIfNeeded(profile: UserProfile) {
-        ds.edit { prefs ->
-            if (prefs[Keys.ADAPTIVE_GOALS_PREVIOUS_TARGETS] != null) return@edit
-            val snapshot = HealthEnergyGoalTargetSnapshot(
-                customCalories = profile.customCalories,
-                customProtein = profile.customProtein,
-                customFat = profile.customFat,
-                customCarbs = profile.customCarbs,
-                autoBalanceMacro = profile.autoBalanceMacro
-            )
-            prefs[Keys.ADAPTIVE_GOALS_PREVIOUS_TARGETS] =
-                json.encodeToString(HealthEnergyGoalTargetSnapshot.serializer(), snapshot)
-        }
-    }
-
-    suspend fun restoreAdaptiveGoalPreviousTargets(profile: UserProfile): UserProfile {
-        val snapshot = ds.data.first()[Keys.ADAPTIVE_GOALS_PREVIOUS_TARGETS]
-            ?.let { runCatching { json.decodeFromString<HealthEnergyGoalTargetSnapshot>(it) }.getOrNull() }
-            ?: return profile
-        return profile.copy(
-            customCalories = snapshot.customCalories,
-            customProtein = snapshot.customProtein,
-            customFat = snapshot.customFat,
-            customCarbs = snapshot.customCarbs,
-            autoBalanceMacro = snapshot.autoBalanceMacro
-        )
-    }
-
-    suspend fun clearAdaptiveGoalPreviousTargets() {
-        ds.edit { it.remove(Keys.ADAPTIVE_GOALS_PREVIOUS_TARGETS) }
-    }
-
-    suspend fun saveHealthEnergyGoalPreviousTargetsIfNeeded(profile: UserProfile) {
-        ds.edit { prefs ->
-            if (prefs[Keys.HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS] != null) return@edit
-            val snapshot = HealthEnergyGoalTargetSnapshot(
-                customCalories = profile.customCalories,
-                customProtein = profile.customProtein,
-                customFat = profile.customFat,
-                customCarbs = profile.customCarbs,
-                autoBalanceMacro = profile.autoBalanceMacro
-            )
-            prefs[Keys.HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS] =
-                json.encodeToString(HealthEnergyGoalTargetSnapshot.serializer(), snapshot)
-        }
-    }
-
-    suspend fun restoreHealthEnergyGoalPreviousTargets(profile: UserProfile): UserProfile {
-        val snapshot = ds.data.first()[Keys.HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS]
-            ?.let { runCatching { json.decodeFromString<HealthEnergyGoalTargetSnapshot>(it) }.getOrNull() }
-        return if (snapshot == null) {
-            profile.copy(
-                customCalories = null,
-                customProtein = null,
-                customFat = null,
-                customCarbs = null,
-                autoBalanceMacro = null
-            )
-        } else {
-            profile.copy(
-                customCalories = snapshot.customCalories,
-                customProtein = snapshot.customProtein,
-                customFat = snapshot.customFat,
-                customCarbs = snapshot.customCarbs,
-                autoBalanceMacro = snapshot.autoBalanceMacro
-            )
-        }
-    }
-
-    suspend fun clearHealthEnergyGoalPreviousTargets() {
-        ds.edit { it.remove(Keys.HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS) }
-    }
-
-    // -- Units ------------------------------------------------------------
-    val useMetric: Flow<Boolean> = ds.data.map { it[Keys.USE_METRIC] ?: true }
-    suspend fun setUseMetric(v: Boolean) { ds.edit { it[Keys.USE_METRIC] = v } }
-
-    /** "cm" | "ftin". Falls back to the legacy useMetric flag when unset. */
-    val heightUnit: Flow<String> = ds.data.map {
-        it[Keys.HEIGHT_UNIT] ?: (if (it[Keys.USE_METRIC] ?: true) "cm" else "ftin")
-    }
-    suspend fun setHeightUnit(v: String) { ds.edit { it[Keys.HEIGHT_UNIT] = v } }
-
-    /** "kg" | "lbs". Falls back to the legacy useMetric flag when unset. */
-    val weightUnit: Flow<String> = ds.data.map {
-        it[Keys.WEIGHT_UNIT] ?: (if (it[Keys.USE_METRIC] ?: true) "kg" else "lbs")
-    }
-    suspend fun setWeightUnit(v: String) { ds.edit { it[Keys.WEIGHT_UNIT] = v } }
-
-    val preferGramsByDefault: Flow<Boolean> = ds.data.map { it[Keys.PREFER_GRAMS_BY_DEFAULT] ?: false }
-    suspend fun setPreferGramsByDefault(v: Boolean) { ds.edit { it[Keys.PREFER_GRAMS_BY_DEFAULT] = v } }
-
-    /** "system" | "light" | "dark". Mirrors iOS @AppStorage("appearanceMode"). */
-    val appearanceMode: Flow<String> = ds.data.map { it[Keys.APPEARANCE_MODE] ?: "system" }
-    suspend fun setAppearanceMode(v: String) { ds.edit { it[Keys.APPEARANCE_MODE] = v } }
-
-    /** User-selected accent; legacy keys are migrated to the curated 8-color set. */
-    val appThemeColor: Flow<String> = ds.data.map {
-        AppThemeColor.migrateKey(it[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY)
-    }
-    suspend fun setAppThemeColor(v: String) { ds.edit { it[Keys.APP_THEME_COLOR] = v } }
-
-    /** Controls whether glass surfaces try to use a real blur effect (API 31+). Default OFF. */
-    val glassBlurEnabled: Flow<Boolean> = ds.data.map { it[Keys.GLASS_BLUR_ENABLED] ?: false }
-    suspend fun setGlassBlurEnabled(v: Boolean) { ds.edit { it[Keys.GLASS_BLUR_ENABLED] = v } }
-
-    /** false = Sunday, true = Monday (default). Mirrors iOS @AppStorage("weekStartsOnMonday"). */
-    val weekStartsOnMonday: Flow<Boolean> = ds.data.map { it[Keys.WEEK_STARTS_MONDAY] ?: true }
-    suspend fun setWeekStartsOnMonday(v: Boolean) { ds.edit { it[Keys.WEEK_STARTS_MONDAY] = v } }
-
-    /** "RECENTS" | "FREQUENT" | "FAVORITES". Mirrors iOS @AppStorage("lastRecentsSegment"). */
-    val lastSavedMealsSegment: Flow<String> = ds.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
-    suspend fun setLastSavedMealsSegment(v: String) { ds.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }
-
-    /** "standard" | "latestMealsFirst". Mirrors iOS @AppStorage("foodLogSortOrder"). */
-    val foodLogSortOrder: Flow<String> = ds.data.map { it[Keys.FOOD_LOG_SORT_ORDER] ?: "standard" }
-    suspend fun setFoodLogSortOrder(v: String) { ds.edit { it[Keys.FOOD_LOG_SORT_ORDER] = v } }
-
-    /** Comma-separated [HomeTopNutrient.storageKey] values for the home nutrient cards. */
-    val homeTopNutrients: Flow<String> = ds.data.map {
-        it[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
-    }
-    suspend fun setHomeTopNutrients(v: String) {
-        ds.edit { it[Keys.HOME_TOP_NUTRIENTS] = v }
-    }
-
-    val homeNutrientCardCount: Flow<Int> = ds.data.map {
-        it[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
-    }
-    suspend fun setHomeNutrientCardCount(v: Int) {
-        val safe = v.coerceIn(
-            HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
-            HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
-        )
-        ds.edit { it[Keys.HOME_NUTRIENT_CARD_COUNT] = safe }
-    }
-
-    val homeShowSteps: Flow<Boolean> = ds.data.map { it[Keys.HOME_SHOW_STEPS] ?: false }
-    suspend fun setHomeShowSteps(v: Boolean) { ds.edit { it[Keys.HOME_SHOW_STEPS] = v } }
-
-    val homeShowActiveCalories: Flow<Boolean> = ds.data.map { it[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false }
-    suspend fun setHomeShowActiveCalories(v: Boolean) { ds.edit { it[Keys.HOME_SHOW_ACTIVE_CALORIES] = v } }
-
-    val homeStepGoal: Flow<Int> = ds.data.map {
-        it[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL
-    }
-    suspend fun setHomeStepGoal(v: Int) {
-        val safe = v.coerceIn(HomeDisplayPreferences.MIN_STEP_GOAL, HomeDisplayPreferences.MAX_STEP_GOAL)
-        ds.edit { it[Keys.HOME_STEP_GOAL] = safe }
-    }
-
-    val homeCalorieDisplayMode: Flow<String> = ds.data.map {
-        it[Keys.HOME_CALORIE_DISPLAY_MODE] ?: HomeCalorieDisplayMode.Default.storageKey
-    }
-    suspend fun setHomeCalorieDisplayMode(v: String) {
-        ds.edit { it[Keys.HOME_CALORIE_DISPLAY_MODE] = v }
-    }
-
-    val foodLogMacroChips: Flow<String> = ds.data.map {
-        it[Keys.FOOD_LOG_MACRO_CHIPS] ?: FoodLogMacroChip.DefaultStorageValue
-    }
-    suspend fun setFoodLogMacroChips(v: String) {
-        ds.edit { it[Keys.FOOD_LOG_MACRO_CHIPS] = v }
-    }
-
-    /**
-     * One-shot migration from the first home-layout prototype (separate activity
-     * cards on by default, settings gated on Health Connect). Resets activity
-     * cards off; burn stays integrated in the calorie gauge via [HOME_CALORIE_DISPLAY_MODE].
-     */
-    suspend fun migrateHomeDisplayLayoutIfNeeded() {
-        ds.edit { prefs ->
-            if ((prefs[Keys.HOME_DISPLAY_LAYOUT_VERSION] ?: 0) >= HOME_DISPLAY_LAYOUT_VERSION) return@edit
-            prefs[Keys.HOME_SHOW_STEPS] = false
-            prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] = false
-            if (prefs[Keys.HOME_CALORIE_DISPLAY_MODE] == null) {
-                prefs[Keys.HOME_CALORIE_DISPLAY_MODE] = HomeCalorieDisplayMode.Default.storageKey
-            }
-            prefs[Keys.HOME_DISPLAY_LAYOUT_VERSION] = HOME_DISPLAY_LAYOUT_VERSION
-        }
-    }
-
-    val homeDisplayPreferences: Flow<HomeDisplayPreferences> = ds.data.map { prefs ->
-        val cardCount = prefs[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
-        val nutrientsRaw = prefs[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
-        HomeDisplayPreferences(
-            nutrientCardCount = cardCount,
-            homeTopNutrients = HomeTopNutrient.fromStorage(nutrientsRaw, cardCount),
-            showSteps = prefs[Keys.HOME_SHOW_STEPS] ?: false,
-            showActiveCalories = prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
-            stepGoal = prefs[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
-            calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(prefs[Keys.HOME_CALORIE_DISPLAY_MODE]),
-            foodLogMacroChips = FoodLogMacroChip.fromStorage(prefs[Keys.FOOD_LOG_MACRO_CHIPS]),
-        )
-    }
-
-    /** Goals for nutrients outside the calorie/protein/carb/fat calculator. */
-    val optionalNutrientGoals: Flow<OptionalNutrientGoals> = ds.data.map { prefs ->
-        prefs[Keys.OPTIONAL_NUTRIENT_GOALS]?.let {
-            runCatching { json.decodeFromString<OptionalNutrientGoals>(it) }.getOrNull()
-        } ?: OptionalNutrientGoals.Default
-    }
-    suspend fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) {
-        ds.edit {
-            it[Keys.OPTIONAL_NUTRIENT_GOALS] =
-                json.encodeToString(OptionalNutrientGoals.serializer(), goals)
-        }
-    }
-
-    // -- AI Provider selection --------------------------------------------
-    val selectedAIProvider: Flow<AIProvider> = ds.data.map {
-        val raw = it[Keys.SELECTED_AI_PROVIDER]
-        AIProvider.values().firstOrNull { p -> p.name == raw } ?: AIProvider.GEMINI
-    }
-    suspend fun setSelectedAIProvider(p: AIProvider) {
-        ds.edit { it[Keys.SELECTED_AI_PROVIDER] = p.name }
-    }
-
-    val selectedAIModel: Flow<String?> = ds.data.map { it[Keys.SELECTED_AI_MODEL] }
-    suspend fun setSelectedAIModel(model: String) {
-        ds.edit { it[Keys.SELECTED_AI_MODEL] = AIProvider.normalizeModelId(model) }
-    }
-
-    fun customBaseUrl(provider: AIProvider): Flow<String?> = ds.data.map {
-        it[stringPreferencesKey(CUSTOM_BASE_URL_PREFIX + provider.name)]
-    }
-
-    suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) {
-        val key = stringPreferencesKey(CUSTOM_BASE_URL_PREFIX + provider.name)
-        ds.edit {
-            if (url.isNullOrEmpty()) it.remove(key) else it[key] = url
-        }
-    }
-
-    /** AI output-token cap sent with every request. Default 1024; raise it for local
-     *  models whose replies get truncated. */
-    val maxResponseTokens: Flow<Int> = ds.data.map { it[Keys.MAX_RESPONSE_TOKENS] ?: 1024 }
-    suspend fun setMaxResponseTokens(v: Int) { ds.edit { it[Keys.MAX_RESPONSE_TOKENS] = v.coerceAtLeast(1) } }
-
-    // -- Serving unit inference --------------------------------------------
-    val servingUnitInferenceMode: Flow<ServingUnitInferenceMode> = ds.data.map { prefs ->
-        ServingUnitInferenceMode.fromStorage(prefs[Keys.SERVING_UNIT_INFERENCE_MODE])
-    }
-    suspend fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) {
-        ds.edit { it[Keys.SERVING_UNIT_INFERENCE_MODE] = mode.storageKey }
-    }
-
-    val heuristicServingUnitSettings: Flow<HeuristicServingUnitSettings> = ds.data.map { prefs ->
-        prefs[Keys.HEURISTIC_SERVING_UNIT_SETTINGS]?.let {
-            runCatching { json.decodeFromString<HeuristicServingUnitSettings>(it) }.getOrNull()
-        } ?: HeuristicServingUnitSettings.Default
-    }
-    suspend fun setHeuristicServingUnitSettings(settings: HeuristicServingUnitSettings) {
-        ds.edit {
-            it[Keys.HEURISTIC_SERVING_UNIT_SETTINGS] =
-                json.encodeToString(HeuristicServingUnitSettings.serializer(), settings)
-        }
-    }
-
-    // -- Custom AI Instructions ------------------------------------------
-    /** Free-form text appended to every AI request. Empty = disabled. */
-    val userContext: Flow<String> = ds.data.map { it[Keys.USER_CONTEXT].orEmpty() }
-    suspend fun setUserContext(value: String) {
-        val trimmed = value.trim()
-        ds.edit {
-            if (trimmed.isEmpty()) it.remove(Keys.USER_CONTEXT) else it[Keys.USER_CONTEXT] = trimmed
-        }
-    }
-
-    // -- Recalculate nudge -----------------------------------------------
-    // Fingerprint of the goal inputs at the last Recalculate. When it differs from the current
-    // profile, Settings shows a soft "recalculate suggested" hint. null = no baseline yet.
-    val lastRecalcGoalSignature: Flow<String?> = ds.data.map { it[Keys.LAST_RECALC_GOAL_SIGNATURE] }
-    suspend fun setLastRecalcGoalSignature(value: String) {
-        ds.edit { it[Keys.LAST_RECALC_GOAL_SIGNATURE] = value }
-    }
-
-    // -- Fallback AI Provider --------------------------------------------
-    val fallbackEnabled: Flow<Boolean> = ds.data.map { it[Keys.FALLBACK_ENABLED] ?: false }
-    suspend fun setFallbackEnabled(v: Boolean) { ds.edit { it[Keys.FALLBACK_ENABLED] = v } }
-
-    val selectedFallbackProvider: Flow<AIProvider> = ds.data.map {
-        val raw = it[Keys.FALLBACK_PROVIDER]
-        AIProvider.values().firstOrNull { p -> p.name == raw } ?: AIProvider.GEMINI
-    }
-    suspend fun setSelectedFallbackProvider(p: AIProvider) {
-        ds.edit { it[Keys.FALLBACK_PROVIDER] = p.name }
-    }
-
-    val selectedFallbackModel: Flow<String?> = ds.data.map { it[Keys.FALLBACK_MODEL] }
-    suspend fun setSelectedFallbackModel(model: String) {
-        ds.edit { it[Keys.FALLBACK_MODEL] = AIProvider.normalizeModelId(model) }
-    }
-
-    // -- Speech Provider selection ---------------------------------------
-    val selectedSpeechProvider: Flow<SpeechProvider> = ds.data.map {
-        val raw = it[Keys.SELECTED_SPEECH_PROVIDER]
-        SpeechProvider.values().firstOrNull { p -> p.name == raw } ?: SpeechProvider.NATIVE
-    }
-    suspend fun setSelectedSpeechProvider(p: SpeechProvider) {
-        ds.edit { it[Keys.SELECTED_SPEECH_PROVIDER] = p.name }
-    }
-
-    fun selectedSpeechLanguage(provider: SpeechProvider): Flow<SpeechLanguage> = ds.data.map {
-        val raw = it[Keys.selectedSpeechLanguage(provider)]
-        SpeechLanguage.values().firstOrNull { language -> language.name == raw }
-            ?: SpeechLanguage.defaultFor(provider)
-    }
-
-    suspend fun setSelectedSpeechLanguage(provider: SpeechProvider, language: SpeechLanguage) {
-        ds.edit { it[Keys.selectedSpeechLanguage(provider)] = language.name }
-    }
-
-    // -- Food entries (bucketed by calendar month) -------------------------
-    //
-    // Entries are stored one JSON blob per calendar month (key
-    // "foodEntries_2026-07") instead of one blob for all history, so adding/
-    // editing/deleting a single entry only decodes+encodes the entries in
-    // its own month, not every entry ever logged (which used to cost ~1s+
-    // per save and grow linearly forever — see PerfLog "save"/"dataStore").
-    // Legacy single-blob data (key "foodEntries") is migrated into buckets
-    // once via [migrateFoodEntriesToBucketsIfNeeded].
-
-    private fun decodeEntryList(raw: String?): List<FoodEntry> =
-        raw?.let { runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull() }
-            ?: emptyList()
-
-    private fun encodeEntryList(entries: List<FoodEntry>): String =
-        json.encodeToString(ListSerializer(FoodEntry.serializer()), entries)
-
-    private fun foodEntriesForBucketRaw(month: YearMonth): Flow<List<FoodEntry>> = ds.data.map { prefs ->
-        decodeEntryList(prefs[Keys.foodEntriesBucket(month)])
-    }
-
-    /** Full history, reconstructed by merging every foodEntries_* bucket. O(n) —
-     *  only meant for whole-history consumers (recent/frequent/favorites-migration/etc). */
-    private val allFoodEntriesRaw: Flow<List<FoodEntry>> = ds.data.map { prefs ->
-        prefs.asMap().entries
-            .filter { it.key.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }
-            .flatMap { decodeEntryList(it.value as? String) }
-    }
-
-    /** Whole food log across all months. Gated on the one-time bucket migration. */
-    val foodEntries: Flow<List<FoodEntry>> = flow {
-        migrateFoodEntriesToBucketsIfNeeded()
-        emitAll(allFoodEntriesRaw)
-    }
-
-    /** One calendar month's entries only, gated on migration — the fast path for date-scoped reads. */
-    fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = flow {
-        migrateFoodEntriesToBucketsIfNeeded()
-        emitAll(foodEntriesForBucketRaw(month))
-    }
-
-    /**
-     * Applies upserts (by id) and/or removals (by id) to exactly the named
-     * month buckets, in one atomic DataStore edit — so a cross-month move
-     * (remove from old bucket + insert into new) can never be observed
-     * half-applied. A bucket that ends up empty is removed entirely, so key
-     * count stays bounded (~12/year) rather than growing without limit.
-     */
+class PreferencesStore(private val appContext: Context) {
+    internal val dataStore get() = appContext.fudaiDataStore
+    internal val json = Json { ignoreUnknownKeys = true }
+
+    val userProfile: Flow<UserProfile?> get() = userProfileImpl
+    suspend fun setUserProfile(profile: UserProfile) = setUserProfileImpl(profile)
+    val hasCompletedOnboarding: Flow<Boolean> get() = hasCompletedOnboardingImpl
+    suspend fun setOnboardingCompleted(value: Boolean) = setOnboardingCompletedImpl(value)
+    val notificationsEnabled: Flow<Boolean> get() = notificationsEnabledImpl
+    suspend fun setNotificationsEnabled(v: Boolean) = setNotificationsEnabledImpl(v)
+    val streakReminderEnabled: Flow<Boolean> get() = streakReminderEnabledImpl
+    suspend fun setStreakReminderEnabled(v: Boolean) = setStreakReminderEnabledImpl(v)
+    val streakReminderHour: Flow<Int> get() = streakReminderHourImpl
+    suspend fun setStreakReminderHour(v: Int) = setStreakReminderHourImpl(v)
+    val streakReminderMinute: Flow<Int> get() = streakReminderMinuteImpl
+    suspend fun setStreakReminderMinute(v: Int) = setStreakReminderMinuteImpl(v)
+    val dailySummaryEnabled: Flow<Boolean> get() = dailySummaryEnabledImpl
+    suspend fun setDailySummaryEnabled(v: Boolean) = setDailySummaryEnabledImpl(v)
+    val dailySummaryHour: Flow<Int> get() = dailySummaryHourImpl
+    suspend fun setDailySummaryHour(v: Int) = setDailySummaryHourImpl(v)
+    val dailySummaryMinute: Flow<Int> get() = dailySummaryMinuteImpl
+    suspend fun setDailySummaryMinute(v: Int) = setDailySummaryMinuteImpl(v)
+    val weightReminderEnabled: Flow<Boolean> get() = weightReminderEnabledImpl
+    suspend fun setWeightReminderEnabled(v: Boolean) = setWeightReminderEnabledImpl(v)
+    val bodyFatReminderEnabled: Flow<Boolean> get() = bodyFatReminderEnabledImpl
+    suspend fun setBodyFatReminderEnabled(v: Boolean) = setBodyFatReminderEnabledImpl(v)
+    val goalReachedNotificationsEnabled: Flow<Boolean> get() = goalReachedNotificationsEnabledImpl
+    suspend fun setGoalReachedNotificationsEnabled(v: Boolean) = setGoalReachedNotificationsEnabledImpl(v)
+    val appUpdateNotificationsEnabled: Flow<Boolean> get() = appUpdateNotificationsEnabledImpl
+    suspend fun setAppUpdateNotificationsEnabled(v: Boolean) = setAppUpdateNotificationsEnabledImpl(v)
+    val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
+    suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
+    val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl
+    suspend fun setHealthConnectEnabled(v: Boolean) = setHealthConnectEnabledImpl(v)
+    val healthPermissionsVersion: Flow<Int> get() = healthPermissionsVersionImpl
+    suspend fun setHealthPermissionsVersion(v: Int) = setHealthPermissionsVersionImpl(v)
+    val healthChangesToken: Flow<String?> get() = healthChangesTokenImpl
+    suspend fun setHealthChangesToken(v: String) = setHealthChangesTokenImpl(v)
+    suspend fun clearHealthChangesToken() = clearHealthChangesTokenImpl()
+    val healthChangesTokenTypes: Flow<Set<String>> get() = healthChangesTokenTypesImpl
+    suspend fun setHealthChangesTokenTypes(types: Set<String>) = setHealthChangesTokenTypesImpl(types)
+    val healthFoodRestoreDone: Flow<Boolean> get() = healthFoodRestoreDoneImpl
+    suspend fun setHealthFoodRestoreDone(v: Boolean) = setHealthFoodRestoreDoneImpl(v)
+    val healthEnergyGoalsEnabled: Flow<Boolean> get() = healthEnergyGoalsEnabledImpl
+    suspend fun setHealthEnergyGoalsEnabled(v: Boolean) = setHealthEnergyGoalsEnabledImpl(v)
+    val healthBackgroundSyncEnabled: Flow<Boolean> get() = healthBackgroundSyncEnabledImpl
+    suspend fun setHealthBackgroundSyncEnabled(v: Boolean) = setHealthBackgroundSyncEnabledImpl(v)
+    val healthEnergyGoalsLastAutoRefreshDay: Flow<String?> get() = healthEnergyGoalsLastAutoRefreshDayImpl
+    suspend fun setHealthEnergyGoalsLastAutoRefreshDay(v: String) = setHealthEnergyGoalsLastAutoRefreshDayImpl(v)
+    val reviewPromptedAfterFirstLog: Flow<Boolean> get() = reviewPromptedAfterFirstLogImpl
+    suspend fun setReviewPromptedAfterFirstLog(v: Boolean) = setReviewPromptedAfterFirstLogImpl(v)
+    val adaptiveGoalsEnabled: Flow<Boolean> get() = adaptiveGoalsEnabledImpl
+    suspend fun setAdaptiveGoalsEnabled(v: Boolean) = setAdaptiveGoalsEnabledImpl(v)
+    val adaptiveGoalsLastCheckDay: Flow<String?> get() = adaptiveGoalsLastCheckDayImpl
+    suspend fun setAdaptiveGoalsLastCheckDay(v: String) = setAdaptiveGoalsLastCheckDayImpl(v)
+    suspend fun saveAdaptiveGoalPreviousTargetsIfNeeded(profile: UserProfile) = saveAdaptiveGoalPreviousTargetsIfNeededImpl(profile)
+    suspend fun restoreAdaptiveGoalPreviousTargets(profile: UserProfile): UserProfile = restoreAdaptiveGoalPreviousTargetsImpl(profile)
+    suspend fun clearAdaptiveGoalPreviousTargets() = clearAdaptiveGoalPreviousTargetsImpl()
+    suspend fun saveHealthEnergyGoalPreviousTargetsIfNeeded(profile: UserProfile) = saveHealthEnergyGoalPreviousTargetsIfNeededImpl(profile)
+    suspend fun restoreHealthEnergyGoalPreviousTargets(profile: UserProfile): UserProfile = restoreHealthEnergyGoalPreviousTargetsImpl(profile)
+    suspend fun clearHealthEnergyGoalPreviousTargets() = clearHealthEnergyGoalPreviousTargetsImpl()
+    val useMetric: Flow<Boolean> get() = useMetricImpl
+    suspend fun setUseMetric(v: Boolean) = setUseMetricImpl(v)
+    val heightUnit: Flow<String> get() = heightUnitImpl
+    suspend fun setHeightUnit(v: String) = setHeightUnitImpl(v)
+    val weightUnit: Flow<String> get() = weightUnitImpl
+    suspend fun setWeightUnit(v: String) = setWeightUnitImpl(v)
+    val preferGramsByDefault: Flow<Boolean> get() = preferGramsByDefaultImpl
+    suspend fun setPreferGramsByDefault(v: Boolean) = setPreferGramsByDefaultImpl(v)
+    val appearanceMode: Flow<String> get() = appearanceModeImpl
+    suspend fun setAppearanceMode(v: String) = setAppearanceModeImpl(v)
+    val appThemeColor: Flow<String> get() = appThemeColorImpl
+    suspend fun setAppThemeColor(v: String) = setAppThemeColorImpl(v)
+    val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl
+    suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
+    val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
+    suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
+    val lastSavedMealsSegment: Flow<String> get() = lastSavedMealsSegmentImpl
+    suspend fun setLastSavedMealsSegment(v: String) = setLastSavedMealsSegmentImpl(v)
+    val foodLogSortOrder: Flow<String> get() = foodLogSortOrderImpl
+    suspend fun setFoodLogSortOrder(v: String) = setFoodLogSortOrderImpl(v)
+    val homeTopNutrients: Flow<String> get() = homeTopNutrientsImpl
+    suspend fun setHomeTopNutrients(v: String) = setHomeTopNutrientsImpl(v)
+    val homeNutrientCardCount: Flow<Int> get() = homeNutrientCardCountImpl
+    suspend fun setHomeNutrientCardCount(v: Int) = setHomeNutrientCardCountImpl(v)
+    val homeShowSteps: Flow<Boolean> get() = homeShowStepsImpl
+    suspend fun setHomeShowSteps(v: Boolean) = setHomeShowStepsImpl(v)
+    val homeShowActiveCalories: Flow<Boolean> get() = homeShowActiveCaloriesImpl
+    suspend fun setHomeShowActiveCalories(v: Boolean) = setHomeShowActiveCaloriesImpl(v)
+    val homeStepGoal: Flow<Int> get() = homeStepGoalImpl
+    suspend fun setHomeStepGoal(v: Int) = setHomeStepGoalImpl(v)
+    val homeCalorieDisplayMode: Flow<String> get() = homeCalorieDisplayModeImpl
+    suspend fun setHomeCalorieDisplayMode(v: String) = setHomeCalorieDisplayModeImpl(v)
+    val foodLogMacroChips: Flow<String> get() = foodLogMacroChipsImpl
+    suspend fun setFoodLogMacroChips(v: String) = setFoodLogMacroChipsImpl(v)
+    suspend fun migrateHomeDisplayLayoutIfNeeded() = migrateHomeDisplayLayoutIfNeededImpl()
+    val homeDisplayPreferences: Flow<HomeDisplayPreferences> get() = homeDisplayPreferencesImpl
+    val optionalNutrientGoals: Flow<OptionalNutrientGoals> get() = optionalNutrientGoalsImpl
+    suspend fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) = setOptionalNutrientGoalsImpl(goals)
+    val selectedAIProvider: Flow<AIProvider> get() = selectedAIProviderImpl
+    suspend fun setSelectedAIProvider(p: AIProvider) = setSelectedAIProviderImpl(p)
+    val selectedAIModel: Flow<String?> get() = selectedAIModelImpl
+    suspend fun setSelectedAIModel(model: String) = setSelectedAIModelImpl(model)
+    fun customBaseUrl(provider: AIProvider): Flow<String?> = customBaseUrlImpl(provider)
+    suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlImpl(provider, url)
+    val maxResponseTokens: Flow<Int> get() = maxResponseTokensImpl
+    suspend fun setMaxResponseTokens(v: Int) = setMaxResponseTokensImpl(v)
+    val servingUnitInferenceMode: Flow<ServingUnitInferenceMode> get() = servingUnitInferenceModeImpl
+    suspend fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) = setServingUnitInferenceModeImpl(mode)
+    val heuristicServingUnitSettings: Flow<HeuristicServingUnitSettings> get() = heuristicServingUnitSettingsImpl
+    suspend fun setHeuristicServingUnitSettings(settings: HeuristicServingUnitSettings) = setHeuristicServingUnitSettingsImpl(settings)
+    val userContext: Flow<String> get() = userContextImpl
+    suspend fun setUserContext(value: String) = setUserContextImpl(value)
+    val lastRecalcGoalSignature: Flow<String?> get() = lastRecalcGoalSignatureImpl
+    suspend fun setLastRecalcGoalSignature(value: String) = setLastRecalcGoalSignatureImpl(value)
+    val fallbackEnabled: Flow<Boolean> get() = fallbackEnabledImpl
+    suspend fun setFallbackEnabled(v: Boolean) = setFallbackEnabledImpl(v)
+    val selectedFallbackProvider: Flow<AIProvider> get() = selectedFallbackProviderImpl
+    suspend fun setSelectedFallbackProvider(p: AIProvider) = setSelectedFallbackProviderImpl(p)
+    val selectedFallbackModel: Flow<String?> get() = selectedFallbackModelImpl
+    suspend fun setSelectedFallbackModel(model: String) = setSelectedFallbackModelImpl(model)
+    val selectedSpeechProvider: Flow<SpeechProvider> get() = selectedSpeechProviderImpl
+    suspend fun setSelectedSpeechProvider(p: SpeechProvider) = setSelectedSpeechProviderImpl(p)
+    fun selectedSpeechLanguage(provider: SpeechProvider): Flow<SpeechLanguage> = selectedSpeechLanguageImpl(provider)
+    suspend fun setSelectedSpeechLanguage(provider: SpeechProvider, language: SpeechLanguage) = setSelectedSpeechLanguageImpl(provider, language)
+    val foodEntries: Flow<List<FoodEntry>> get() = foodEntriesImpl
+    fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = foodEntriesForMonthImpl(month)
     suspend fun applyFoodEntryBucketChanges(
         upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
-    ) {
-        if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
-        ds.edit { prefs ->
-            for (month in upsertsByMonth.keys + removalIdsByMonth.keys) {
-                val key = Keys.foodEntriesBucket(month)
-                val existing = decodeEntryList(prefs[key])
-                val removals = removalIdsByMonth[month].orEmpty()
-                val kept = if (removals.isEmpty()) existing else existing.filterNot { it.id in removals }
-                val byId = kept.associateByTo(LinkedHashMap()) { it.id }
-                for (entry in upsertsByMonth[month].orEmpty()) byId[entry.id] = entry
-                val merged = byId.values.sortedBy { it.timestamp }
-                if (merged.isEmpty()) prefs.remove(key) else prefs[key] = encodeEntryList(merged)
-            }
-        }
-    }
-
-    /** Full replace (reseed / clear-all) — wipes every existing bucket and regroups [entries] by month. */
-    suspend fun replaceAllFoodEntries(entries: List<FoodEntry>) {
-        ds.edit { prefs ->
-            prefs.asMap().keys.filter { it.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }.forEach { prefs.remove(it) }
-            prefs.remove(Keys.FOOD_ENTRIES)
-            prefs[Keys.FOOD_ENTRIES_MIGRATED] = true
-            entries.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
-                .forEach { (month, monthEntries) ->
-                    prefs[Keys.foodEntriesBucket(month)] = encodeEntryList(monthEntries.sortedBy { it.timestamp })
-                }
-        }
-    }
-
-    /**
-     * One-time migration of the legacy single-blob `foodEntries` key into
-     * monthly buckets. Idempotent: a fast no-op read once already migrated,
-     * otherwise a single atomic edit. DataStore's edit() commits via atomic
-     * file rename, so this can never leave a partially-migrated state on
-     * disk, and it's safe to re-run from scratch if interrupted.
-     */
-    private suspend fun migrateFoodEntriesToBucketsIfNeeded() {
-        if (ds.data.first()[Keys.FOOD_ENTRIES_MIGRATED] == true) return
-        ds.edit { prefs ->
-            if (prefs[Keys.FOOD_ENTRIES_MIGRATED] == true) return@edit
-            val legacy = decodeEntryList(prefs[Keys.FOOD_ENTRIES])
-            legacy.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
-                .forEach { (month, monthEntries) ->
-                    val key = Keys.foodEntriesBucket(month)
-                    val existing = decodeEntryList(prefs[key])
-                    val merged = (existing + monthEntries).distinctBy { it.id }.sortedBy { it.timestamp }
-                    prefs[key] = encodeEntryList(merged)
-                }
-            prefs.remove(Keys.FOOD_ENTRIES)
-            prefs[Keys.FOOD_ENTRIES_MIGRATED] = true
-        }
-    }
-
-    val favoriteKeys: Flow<Set<String>> = ds.data.map { prefs ->
-        prefs[Keys.FAVORITE_KEYS]?.let {
-            runCatching { json.decodeFromString(SetSerializer(String.serializer()), it) }.getOrNull()
-        } ?: emptySet()
-    }
-
-    suspend fun setFavoriteKeys(keys: Set<String>) {
-        ds.edit { it[Keys.FAVORITE_KEYS] = json.encodeToString(SetSerializer(String.serializer()), keys) }
-    }
-
-    /**
-     * Ordered list of favorite FoodEntry copies — mirrors iOS UserDefaults
-     * key "favoriteFoodEntries". Stored as a separate copy (not a reference
-     * into [foodEntries]) so a favorite survives deletion of the original
-     * log entry, AND so user-defined order is preserved across restarts.
-     */
-    val favoriteFoodEntries: Flow<List<FoodEntry>> = ds.data.map { prefs ->
-        prefs[Keys.FAVORITE_ENTRIES]?.let {
-            runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
-
-    suspend fun setFavoriteFoodEntries(entries: List<FoodEntry>) {
-        ds.edit { it[Keys.FAVORITE_ENTRIES] = json.encodeToString(ListSerializer(FoodEntry.serializer()), entries) }
-    }
-
-    // -- Pending food analysis draft --------------------------------------
-    val pendingFoodAnalysisDraft: Flow<PendingFoodAnalysisDraft?> = ds.data.map { prefs ->
-        prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT]?.let {
-            runCatching { json.decodeFromString<PendingFoodAnalysisDraft>(it) }.getOrNull()
-        }
-    }
-
-    suspend fun setPendingFoodAnalysisDraft(draft: PendingFoodAnalysisDraft?) {
-        ds.edit {
-            if (draft == null) {
-                it.remove(Keys.PENDING_FOOD_ANALYSIS_DRAFT)
-            } else {
-                it[Keys.PENDING_FOOD_ANALYSIS_DRAFT] = json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
-            }
-        }
-    }
-
-    // -- Pending food input draft (failed camera+note input) --------------
-    val pendingFoodInputDraft: Flow<PendingFoodInputDraft?> = ds.data.map { prefs ->
-        prefs[Keys.PENDING_FOOD_INPUT_DRAFT]?.let {
-            runCatching { json.decodeFromString<PendingFoodInputDraft>(it) }.getOrNull()
-        }
-    }
-
-    suspend fun setPendingFoodInputDraft(draft: PendingFoodInputDraft?) {
-        ds.edit {
-            if (draft == null) {
-                it.remove(Keys.PENDING_FOOD_INPUT_DRAFT)
-            } else {
-                it[Keys.PENDING_FOOD_INPUT_DRAFT] = json.encodeToString(PendingFoodInputDraft.serializer(), draft)
-            }
-        }
-    }
-
-    // -- Weight entries ---------------------------------------------------
-    val weightEntries: Flow<List<WeightEntry>> = ds.data.map { prefs ->
-        prefs[Keys.WEIGHT_ENTRIES]?.let {
-            runCatching { json.decodeFromString(ListSerializer(WeightEntry.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
-
-    suspend fun setWeightEntries(entries: List<WeightEntry>) {
-        ds.edit { it[Keys.WEIGHT_ENTRIES] = json.encodeToString(ListSerializer(WeightEntry.serializer()), entries) }
-    }
-
-    // -- Body fat entries --------------------------------------------------
-    val bodyFatEntries: Flow<List<BodyFatEntry>> = ds.data.map { prefs ->
-        prefs[Keys.BODY_FAT_ENTRIES]?.let {
-            runCatching { json.decodeFromString(ListSerializer(BodyFatEntry.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
-
-    suspend fun setBodyFatEntries(entries: List<BodyFatEntry>) {
-        ds.edit { it[Keys.BODY_FAT_ENTRIES] = json.encodeToString(ListSerializer(BodyFatEntry.serializer()), entries) }
-    }
-
-    // -- Body measurement (circumference) entries --------------------------
-    val bodyMeasurements: Flow<List<BodyMeasurement>> = ds.data.map { prefs ->
-        prefs[Keys.BODY_MEASUREMENTS]?.let {
-            runCatching { json.decodeFromString(ListSerializer(BodyMeasurement.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
-
-    suspend fun setBodyMeasurements(entries: List<BodyMeasurement>) {
-        ds.edit { it[Keys.BODY_MEASUREMENTS] = json.encodeToString(ListSerializer(BodyMeasurement.serializer()), entries) }
-    }
-
-    // -- Coach chat history ----------------------------------------------
-    val chatHistory: Flow<List<ChatMessage>> = ds.data.map { prefs ->
-        prefs[Keys.CHAT_HISTORY]?.let {
-            runCatching { json.decodeFromString(ListSerializer(ChatMessage.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
-
-    suspend fun setChatHistory(history: List<ChatMessage>) {
-        ds.edit { it[Keys.CHAT_HISTORY] = json.encodeToString(ListSerializer(ChatMessage.serializer()), history) }
-    }
-
-    // -- Widget snapshot --------------------------------------------------
-    val widgetSnapshot: Flow<WidgetSnapshot?> = ds.data.map { prefs ->
-        prefs[Keys.WIDGET_SNAPSHOT]?.let {
-            runCatching { json.decodeFromString<WidgetSnapshot>(it) }.getOrNull()
-        }
-    }
-
-    suspend fun setWidgetSnapshot(snapshot: WidgetSnapshot) {
-        ds.edit { it[Keys.WIDGET_SNAPSHOT] = json.encodeToString(WidgetSnapshot.serializer(), snapshot) }
-    }
-
-    suspend fun clearWidgetSnapshot() {
-        ds.edit { it.remove(Keys.WIDGET_SNAPSHOT) }
-    }
-
-    // -- Test data backup (used by TestDataSeeder during dev seeding) -------
-    val testSeedBackupJson: Flow<String?> = ds.data.map { it[Keys.TEST_SEED_BACKUP] }
-    suspend fun setTestSeedBackupJson(json: String) {
-        ds.edit { it[Keys.TEST_SEED_BACKUP] = json }
-    }
-    suspend fun clearTestSeedBackup() {
-        ds.edit { it.remove(Keys.TEST_SEED_BACKUP) }
-    }
-
-  // -- Debug activity (TestDataSeeder synthetic steps / energy burn) --------
-    suspend fun setDebugActivityDays(days: List<DebugActivityDay>) {
-        ds.edit {
-            it[Keys.DEBUG_ACTIVITY_DAYS] = json.encodeToString(
-                ListSerializer(DebugActivityDay.serializer()),
-                days
-            )
-        }
-    }
-
-    suspend fun clearDebugActivityDays() {
-        ds.edit { it.remove(Keys.DEBUG_ACTIVITY_DAYS) }
-    }
-
-    suspend fun debugActivityDaysJson(): String? = ds.data.first()[Keys.DEBUG_ACTIVITY_DAYS]
-
-    suspend fun debugActivityDay(date: LocalDate): DebugActivityDay? {
-        val raw = ds.data.first()[Keys.DEBUG_ACTIVITY_DAYS] ?: return null
-        val days = runCatching {
-            json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), raw)
-        }.getOrNull() ?: return null
-        return days.firstOrNull { it.date == date.toString() }
-    }
-
-    // -- Wipe everything --------------------------------------------------
-    suspend fun clearAll() {
-        ds.edit { it.clear() }
-    }
-
-    private object Keys {
-        val USER_PROFILE = stringPreferencesKey("userProfile")
-        val LAST_RECALC_GOAL_SIGNATURE = stringPreferencesKey("lastRecalcGoalSignature")
-        val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
-        val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notificationsEnabled")
-        val STREAK_ENABLED = booleanPreferencesKey("streakReminderEnabled")
-        val STREAK_HOUR = intPreferencesKey("streakReminderHour")
-        val STREAK_MINUTE = intPreferencesKey("streakReminderMinute")
-        val DAILY_ENABLED = booleanPreferencesKey("dailySummaryEnabled")
-        val DAILY_HOUR = intPreferencesKey("dailySummaryHour")
-        val DAILY_MINUTE = intPreferencesKey("dailySummaryMinute")
-        val WEIGHT_REMINDER_ENABLED = booleanPreferencesKey("weightReminderEnabled")
-        val BODY_FAT_REMINDER_ENABLED = booleanPreferencesKey("bodyFatReminderEnabled")
-        val GOAL_REACHED_NOTIFICATIONS_ENABLED = booleanPreferencesKey("goalReachedNotificationsEnabled")
-        val APP_UPDATE_NOTIFICATIONS_ENABLED = booleanPreferencesKey("appUpdateNotificationsEnabled")
-        val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
-        val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
-        val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")
-        val HEALTH_CHANGES_TOKEN = stringPreferencesKey("healthChangesToken")
-        val HEALTH_CHANGES_TOKEN_TYPES = stringPreferencesKey("healthChangesTokenTypes")
-        val HEALTH_FOOD_RESTORE_DONE = booleanPreferencesKey("healthFoodRestoreDone")
-        val HEALTH_ENERGY_GOALS_ENABLED = booleanPreferencesKey("healthEnergyGoalsEnabled")
-        val HEALTH_BACKGROUND_SYNC_ENABLED = booleanPreferencesKey("healthBackgroundSyncEnabled")
-        val HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS = stringPreferencesKey("healthEnergyGoalsPreviousTargets")
-        val HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY = stringPreferencesKey("healthEnergyGoalsLastAutoRefreshDay")
-        val ADAPTIVE_GOALS_ENABLED = booleanPreferencesKey("adaptiveGoalsEnabled")
-        val REVIEW_PROMPTED_AFTER_FIRST_LOG = booleanPreferencesKey("reviewPromptedAfterFirstLog")
-        val ADAPTIVE_GOALS_PREVIOUS_TARGETS = stringPreferencesKey("adaptiveGoalsPreviousTargets")
-        val ADAPTIVE_GOALS_LAST_CHECK_DAY = stringPreferencesKey("adaptiveGoalsLastCheckDay")
-        val USE_METRIC = booleanPreferencesKey("useMetric")
-        val HEIGHT_UNIT = stringPreferencesKey("heightUnit")
-        val WEIGHT_UNIT = stringPreferencesKey("weightUnit")
-        val PREFER_GRAMS_BY_DEFAULT = booleanPreferencesKey("foodMeasurementPreferGramsByDefault")
-        val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
-        val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
-        val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
-        val WEEK_STARTS_MONDAY = booleanPreferencesKey("weekStartsOnMonday")
-        val LAST_SAVED_MEALS_SEGMENT = stringPreferencesKey("lastRecentsSegment")
-        val FOOD_LOG_SORT_ORDER = stringPreferencesKey("foodLogSortOrder")
-        val HOME_TOP_NUTRIENTS = stringPreferencesKey("homeTopNutrients")
-        val HOME_NUTRIENT_CARD_COUNT = intPreferencesKey("homeNutrientCardCount")
-        val HOME_SHOW_STEPS = booleanPreferencesKey("homeShowSteps")
-        val HOME_SHOW_ACTIVE_CALORIES = booleanPreferencesKey("homeShowActiveCalories")
-        val HOME_STEP_GOAL = intPreferencesKey("homeStepGoal")
-        val HOME_CALORIE_DISPLAY_MODE = stringPreferencesKey("homeCalorieDisplayMode")
-        val HOME_DISPLAY_LAYOUT_VERSION = intPreferencesKey("homeDisplayLayoutVersion")
-        val FOOD_LOG_MACRO_CHIPS = stringPreferencesKey("foodLogMacroChips")
-        val OPTIONAL_NUTRIENT_GOALS = stringPreferencesKey("optionalNutrientGoals")
-        val SELECTED_AI_PROVIDER = stringPreferencesKey("selectedAIProvider")
-        val SELECTED_AI_MODEL = stringPreferencesKey("selectedAIModel")
-        val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
-        val SERVING_UNIT_INFERENCE_MODE = stringPreferencesKey("servingUnitInferenceMode")
-        val HEURISTIC_SERVING_UNIT_SETTINGS = stringPreferencesKey("heuristicServingUnitSettings")
-        val USER_CONTEXT = stringPreferencesKey("userContext")
-        val FALLBACK_ENABLED = booleanPreferencesKey("aiFallbackEnabled")
-        val FALLBACK_PROVIDER = stringPreferencesKey("selectedFallbackAIProvider")
-        val FALLBACK_MODEL = stringPreferencesKey("selectedFallbackAIModel")
-        val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")
-        fun selectedSpeechLanguage(provider: SpeechProvider) =
-            stringPreferencesKey("selectedSpeechLanguage_${provider.name}")
-        val FOOD_ENTRIES = stringPreferencesKey("foodEntries") // legacy, kept only for one-time migration
-        val FOOD_ENTRIES_MIGRATED = booleanPreferencesKey("foodEntriesMigrated")
-        fun foodEntriesBucket(month: YearMonth): Preferences.Key<String> =
-            stringPreferencesKey(FOOD_ENTRIES_BUCKET_PREFIX + month.toString())
-        val FAVORITE_KEYS = stringPreferencesKey("favorites")
-        val FAVORITE_ENTRIES = stringPreferencesKey("favoriteFoodEntries")
-        val PENDING_FOOD_ANALYSIS_DRAFT = stringPreferencesKey("pendingFoodAnalysisDraft")
-        val PENDING_FOOD_INPUT_DRAFT = stringPreferencesKey("pendingFoodInputDraft")
-        val WEIGHT_ENTRIES = stringPreferencesKey("weightEntries")
-        val BODY_FAT_ENTRIES = stringPreferencesKey("bodyFatEntries")
-        val BODY_MEASUREMENTS = stringPreferencesKey("bodyMeasurements")
-        val CHAT_HISTORY = stringPreferencesKey("coachChatHistory")
-        val WIDGET_SNAPSHOT = stringPreferencesKey("widget_snapshot_v1")
-        val TEST_SEED_BACKUP = stringPreferencesKey("test_seed_backup_v1")
-        val DEBUG_ACTIVITY_DAYS = stringPreferencesKey("debugActivityDays")
-    }
-
-    companion object {
-        private const val CUSTOM_BASE_URL_PREFIX = "customBaseURL_"
-        private const val HOME_DISPLAY_LAYOUT_VERSION = 2
-    }
+    ) = applyFoodEntryBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
+    suspend fun replaceAllFoodEntries(entries: List<FoodEntry>) = replaceAllFoodEntriesImpl(entries)
+    val favoriteKeys: Flow<Set<String>> get() = favoriteKeysImpl
+    suspend fun setFavoriteKeys(keys: Set<String>) = setFavoriteKeysImpl(keys)
+    val favoriteFoodEntries: Flow<List<FoodEntry>> get() = favoriteFoodEntriesImpl
+    suspend fun setFavoriteFoodEntries(entries: List<FoodEntry>) = setFavoriteFoodEntriesImpl(entries)
+    val pendingFoodAnalysisDraft: Flow<PendingFoodAnalysisDraft?> get() = pendingFoodAnalysisDraftImpl
+    suspend fun setPendingFoodAnalysisDraft(draft: PendingFoodAnalysisDraft?) = setPendingFoodAnalysisDraftImpl(draft)
+    val pendingFoodInputDraft: Flow<PendingFoodInputDraft?> get() = pendingFoodInputDraftImpl
+    suspend fun setPendingFoodInputDraft(draft: PendingFoodInputDraft?) = setPendingFoodInputDraftImpl(draft)
+    val weightEntries: Flow<List<WeightEntry>> get() = weightEntriesImpl
+    suspend fun setWeightEntries(entries: List<WeightEntry>) = setWeightEntriesImpl(entries)
+    val bodyFatEntries: Flow<List<BodyFatEntry>> get() = bodyFatEntriesImpl
+    suspend fun setBodyFatEntries(entries: List<BodyFatEntry>) = setBodyFatEntriesImpl(entries)
+    val bodyMeasurements: Flow<List<BodyMeasurement>> get() = bodyMeasurementsImpl
+    suspend fun setBodyMeasurements(entries: List<BodyMeasurement>) = setBodyMeasurementsImpl(entries)
+    val chatHistory: Flow<List<ChatMessage>> get() = chatHistoryImpl
+    suspend fun setChatHistory(history: List<ChatMessage>) = setChatHistoryImpl(history)
+    val widgetSnapshot: Flow<WidgetSnapshot?> get() = widgetSnapshotImpl
+    suspend fun setWidgetSnapshot(snapshot: WidgetSnapshot) = setWidgetSnapshotImpl(snapshot)
+    suspend fun clearWidgetSnapshot() = clearWidgetSnapshotImpl()
+    val testSeedBackupJson: Flow<String?> get() = testSeedBackupJsonImpl
+    suspend fun setTestSeedBackupJson(json: String) = setTestSeedBackupJsonImpl(json)
+    suspend fun clearTestSeedBackup() = clearTestSeedBackupImpl()
+    suspend fun setDebugActivityDays(days: List<DebugActivityDay>) = setDebugActivityDaysImpl(days)
+    suspend fun clearDebugActivityDays() = clearDebugActivityDaysImpl()
+    suspend fun debugActivityDaysJson(): String? = debugActivityDaysJsonImpl()
+    suspend fun debugActivityDay(date: LocalDate): DebugActivityDay? = debugActivityDayImpl(date)
+    suspend fun clearAll() = clearAllImpl()
 }

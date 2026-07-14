@@ -113,12 +113,12 @@ fun HomeDisplaySettingsScreen(
             item {
                 FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
                     Column {
-                        SettingsLinkRow(
-                            title = stringResource(R.string.home_display_nutrient_cards),
-                            subtitle = display.homeTopNutrients.joinToString(", ") {
+                        SettingRow(
+                            label = stringResource(R.string.home_display_nutrient_cards),
+                            value = display.homeTopNutrients.joinToString(", ") {
                                 container.appContext.getString(it.displayNameRes)
                             },
-                            onClick = { showNutrientPicker = true }
+                            onClick = { showNutrientPicker = true },
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                         CardCountRow(
@@ -137,12 +137,10 @@ fun HomeDisplaySettingsScreen(
             item {
                 FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
                     Column {
-                        SettingsToggleRow(
-                            title = stringResource(R.string.home_display_show_steps),
-                            subtitle = stringResource(R.string.home_display_show_steps_desc),
+                        ToggleRow(
+                            label = stringResource(R.string.home_display_show_steps),
                             checked = display.showSteps,
-                            enabled = true,
-                            onChange = vm::setHomeShowSteps
+                            onChange = vm::setHomeShowSteps,
                         )
                         if (display.showSteps) {
                             HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
@@ -159,10 +157,10 @@ fun HomeDisplaySettingsScreen(
             item {
                 FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
                     Column {
-                        SettingsLinkRow(
-                            title = stringResource(R.string.home_display_calorie_mode),
-                            subtitle = stringResource(display.calorieDisplayMode.displayNameRes),
-                            onClick = { showCalorieModePicker = true }
+                        SettingRow(
+                            label = stringResource(R.string.home_display_calorie_mode),
+                            value = stringResource(display.calorieDisplayMode.displayNameRes),
+                            onClick = { showCalorieModePicker = true },
                         )
                         Text(
                             stringResource(
@@ -183,10 +181,10 @@ fun HomeDisplaySettingsScreen(
 
             item {
                 FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
-                    SettingsLinkRow(
-                        title = stringResource(R.string.home_display_food_log_chips),
-                        subtitle = display.foodLogMacroChips.joinToString(" ") { it.glyph },
-                        onClick = { showChipPicker = true }
+                    SettingRow(
+                        label = stringResource(R.string.home_display_food_log_chips),
+                        value = display.foodLogMacroChips.joinToString(" ") { it.glyph },
+                        onClick = { showChipPicker = true },
                     )
                 }
             }
@@ -217,48 +215,6 @@ fun HomeDisplaySettingsScreen(
             },
             onDismiss = { showCalorieModePicker = false }
         )
-    }
-}
-
-@Composable
-private fun SettingsLinkRow(title: String, subtitle: String, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(title, fontSize = 17.sp)
-            Text(subtitle, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
-        }
-        Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f))
-    }
-}
-
-@Composable
-private fun SettingsToggleRow(
-    title: String,
-    checked: Boolean,
-    enabled: Boolean = true,
-    subtitle: String? = null,
-    onChange: (Boolean) -> Unit,
-) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled) { onChange(!checked) }
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(title, fontSize = 17.sp, color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f))
-            subtitle?.let {
-                Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
-            }
-        }
-        androidx.compose.material3.Switch(checked = checked, onCheckedChange = onChange, enabled = enabled)
     }
 }
 
