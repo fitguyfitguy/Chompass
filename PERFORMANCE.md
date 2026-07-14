@@ -71,7 +71,10 @@ The USB device is reachable from Windows adb, not WSL adb. Build + install the
 debug APK (see CLAUDE.md), then:
 
 ```bash
-# From WSL against a Windows adb.exe:
+# From WSL: the script auto-detects a Windows adb.exe (Downloads/platform-tools,
+# the Android SDK, C:\platform-tools) and drops the WSL-only adb server port.
+scripts/capture_entry_perf.sh
+# Override the adb binary if it lives elsewhere:
 ADB_BIN=/mnt/c/path/to/adb.exe scripts/capture_entry_perf.sh
 # Optional: LAUNCH=1 to cold-launch first; DURATION=60 to auto-stop after 60s.
 ```
