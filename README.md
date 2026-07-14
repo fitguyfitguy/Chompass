@@ -2,9 +2,11 @@
 
 <img src="android/app/src/main/res/drawable-nodpi/ic_logo_teal.png" alt="NoFUD teal icon" width="120" />
 
-**Ad-free AI calorie tracker for Android**, a privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+**Ad-free AI calorie tracker for Android.** Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai). Lean app, open exports, Health Connect for scales and wearables.
 
-Snap, speak, scan, share, or type your food with your own AI provider key. Same BYOK model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). No account, no cloud sync. **No banner ads.**
+NoFUD started in July 2026 when upstream Fud AI [added banner ads (AdMob)](https://github.com/apoorvdarshan/fud-ai/releases). Upstream removed ads again in 3.0.3. This fork keeps its own roadmap: Android-first UX, smaller APK (no workout library or ad SDKs), snappier UI, open export/import, and [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for live data from scales, phones, and wearables.
+
+Snap, speak, scan, share, or type your food with your own AI provider key. Same BYOK model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). No account, no cloud sync. No banner ads in NoFUD.
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
 [![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
@@ -36,7 +38,7 @@ Not on Play Store or F-Droid yet. Install from one of these:
 
 ## Screenshots
 
-Material 3 **dark theme** (light theme is also available). Images in [`docs/screenshots/`](docs/screenshots/) are regenerated during [`release:package`](RELEASE.md#release-screenshots-optional) when UI previews change.
+Material 3 **dark theme** (light theme is also available). Images in [`docs/screenshots/`](docs/screenshots/) are updated when release screenshots are regenerated.
 
 <table>
   <tr>
@@ -50,7 +52,7 @@ Material 3 **dark theme** (light theme is also available). Images in [`docs/scre
     </td>
     <td align="center">
       <img src="docs/screenshots/add-food.png" width="200" alt="Add food sheet in dark theme" /><br />
-      <sub><b>Add food</b>: photo, share from gallery, voice, barcode, manual, saved meals</sub>
+      <sub><b>Add food</b>: photo, note, saved meals; voice, barcode, optional water quick-log</sub>
     </td>
   </tr>
   <tr>
@@ -67,32 +69,37 @@ Material 3 **dark theme** (light theme is also available). Images in [`docs/scre
 
 ## Features
 
-Core Fud AI features, minus ads, plus fork-specific additions through v1.7.0:
+Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-specific additions:
 
 | Feature | Details |
 |---------|---------|
-| **Food logging** | Camera, share from gallery/camera, voice, barcode, text, and manual entry via `AddFoodSheet`; draft recovery if logging is interrupted |
-| **AI Coach** | Chat with your own provider key; replies follow the app language |
+| **Food logging** | Multi-photo capture (up to 10), share into app, voice, barcode, text, manual entry, saved meals; draft recovery if analysis is interrupted |
+| **AI Coach** | Chat with your own provider key; optional fallback provider; replies follow the app language |
 | **Diet modes** | Including keto carb mode (goals, meal advice, and Coach stay in sync) |
-| **Progress** | Weight, body fat, calorie history, goals, and daily steps/exercise from Health Connect |
-| **Water tracking** | Optional local water log with home shortcuts, reminders, and widget (off by default) |
-| **Health Connect** | Two-way sync; live import of meals logged by other apps; manage access from Settings |
-| **Widgets** | Home-screen widgets |
-| **Export & share** | Diary export (JSON / Markdown / CSV), meal sharing, bulk JSON import |
+| **Progress** | Weight, body fat, calorie history, goals, steps/exercise, and wellness (sleep, HR, hydration) from Health Connect |
+| **Water tracking** | Optional local water log with home shortcuts, configurable quick-log presets, reminders, and widget (off by default) |
+| **Health Connect** | Two-way sync; live import of meals from other apps; manage access from Settings; optional background sync |
+| **Widgets** | Calorie, protein, all-metrics, and water home-screen widgets |
+| **Export & share** | Diary export (JSON / Markdown / CSV), weight & body-metrics import/export, meal sharing, bulk JSON import |
 | **Localization** | 15 languages |
 
 ## Why NoFUD
 
-NoFUD keeps the Fud AI core and removes monetization. Main fork changes:
+**Origin.** Fud AI briefly shipped AdMob banners. NoFUD forked the same week to stay ad-free on [Codeberg](https://codeberg.org/fitguy/NoFUD). Upstream dropped ads again later. NoFUD does not chase upstream feature-for-feature; it stays a focused Android food tracker.
 
-- **No ads**: AdMob removed (Fud AI still shows banner ads)
-- **Diet modes**: keto and other modes not in upstream Fud AI
-- **Logging UX**: `AddFoodSheet`, share-into-app photos, draft recovery, camera/text/photo flow updates
-- **Health ecosystem**: steps, exercise, and live meal import via Health Connect (Gadgetbridge, openScale, Samsung Health, etc.)
-- **UI updates**: Material 3 theming, optional glass blur, nutrient display polish
-- **Audited nutrition math**: documented formulas and unit tests ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md))
-- **Smaller APK**: much smaller than upstream Fud AI (~45 MB vs 121 MB universal; see [releases](https://codeberg.org/fitguy/NoFUD/releases))
-- **F-Droid-ready builds**: `play` and `fdroid` release flavors on Codeberg
+**Priorities**
+
+- **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK AI ([PRIVACY.md](PRIVACY.md))
+- **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect; `nofud://` meal share links
+- **Wearables:** Health Connect in/out for steps, exercise, weight, meals, sleep, hydration, energy burn (Gadgetbridge, openScale, Samsung Health, etc.)
+- **Lean scope:** no workouts tab or bundled exercise library; `play` and `fdroid` builds on Codeberg
+
+**UX, size, speed**
+
+- **APK:** ~34 MB universal (v1.11.0) vs ~120 MB upstream with workouts ([releases](https://codeberg.org/fitguy/NoFUD/releases))
+- **Responsiveness:** monthly diary buckets, off-main-thread thumbnails, phased AI progress UI
+- **UI:** Material 3, `AddFoodSheet`, customizable home nutrients and meal times, macro remaining/over, multi-photo flow
+- **Extras:** keto/diet modes, fallback AI provider, audited nutrition math
 
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
@@ -140,40 +147,42 @@ Weight and body data now import from a file too: **Settings → Import Weight & 
 
 ### NoFUD vs Fud AI
 
-| Area | Fud AI | NoFUD |
-|------|--------|-------|
+| Area | Fud AI (upstream) | NoFUD |
+|------|-------------------|-------|
 | Android AI calorie tracking | Yes | Yes |
-| Banner ads (AdMob) | Yes | **Removed** |
+| Banner ads (AdMob) | Added Jul 2026, removed in 3.0.3 | **Never shipped** |
 | Bring your own API key | Yes | Yes |
 | Analytics / tracking SDKs | None | None |
-| Diet mode / keto carb mode | No | **Added** |
-| Share photo into app | No | **Added** |
-| Progress steps & exercise card | No | **Added** (Health Connect) |
-| Live Health Connect meal import | No | **Added** |
-| Bulk diary JSON import | No | **Added** |
-| Add-entry flow | Baseline | **Enhanced** (`AddFoodSheet` + UX refinements) |
-| APK size (`universal`) | 121.4 MB (`android-v3.0.4`) | **~45 MB** (`v1.7.0`) |
-| UX / UI polish | Baseline | **Expanded** |
-| F-Droid / play release flavors | N/A | **Both on Codeberg** |
+| Workouts tab + exercise library | Yes (~873 exercises, large APK) | **Omitted** (food tracking focus) |
+| Diet mode / keto carb mode | No | **Yes** |
+| Share photo into app | No | **Yes** |
+| Multi-photo meal capture | Up to 10 (3.1+) | **Yes** |
+| Water tracking (local) | Yes (3.1+) | **Yes** |
+| Custom meal time boundaries | Yes (3.1+) | **Yes** |
+| Progress steps, exercise, wellness | Partial | **Yes** (Health Connect) |
+| Live Health Connect meal import | Yes | **Yes** |
+| Bulk diary / body-metrics import | Limited | **Yes** (JSON, CSV, openScale) |
+| Fallback AI provider | No | **Yes** |
+| APK size (universal, approx.) | ~120 MB (with workouts) | **~34 MB** (v1.11.0) |
+| UX / UI polish | Baseline | **Android-optimized** (`AddFoodSheet`, widgets, themes) |
+| F-Droid / play release flavors | Play-focused | **Both on Codeberg** |
 
 Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
 
 ## Performance
 
-On our Android debug perf baseline, recent Progress-screen optimizations cut worst-frame latency from ~1.1s to ~0.5s and reduced jank in the captured navigation/render path. See [PERFORMANCE.md](PERFORMANCE.md).
+Focused on a fast Android app rather than matching every upstream feature:
+
+- **Install size:** no workouts bundle or ad SDK; universal APK ~34 MB (v1.11.0)
+- **Food log I/O:** monthly diary buckets for large histories
+- **UI:** off-main-thread entry thumbnails; Progress screen frame-time improvements in our perf baseline
+- **AI uploads:** image downscaling before provider requests
+
+On our Android debug perf baseline, recent Progress-screen work cut worst-frame latency from ~1.1s to ~0.5s.
 
 ## Privacy
 
-No ads, analytics, or tracking SDKs. AI requests go to whichever provider you configure, same as Fud AI. See [PRIVACY.md](PRIVACY.md).
-
-## Development
-
-| Doc | Contents |
-|-----|----------|
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Build from source (devenv / Gradle) |
-| [RELEASE.md](RELEASE.md) | Maintainer release flow |
-| [PERFORMANCE.md](PERFORMANCE.md) | Perf baseline and validation |
-| [CALCULATION_METHODS.md](CALCULATION_METHODS.md) | Formula register and audit trail |
+No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. AI requests go to the provider you configure (BYOK). See [PRIVACY.md](PRIVACY.md).
 
 ## Attribution & license
 
