@@ -53,22 +53,47 @@ START_ARGS+=(--ez run_entry_benchmark true --ei benchmark_count "${COUNT}")
 "${ADB_BIN}" shell "${START_ARGS[@]}" >/dev/null
 
 echo
-echo ">>> Benchmark running on device (${COUNT} live requests). Capturing FudAIPerf..."
+echo ">>> Benchmark running on device (${COUNT} live requests). Live FudAIPerf below;"
+echo ">>> auto-stops at 'phase=done' or after ${TIMEOUT}s. Seeding a year of data can"
+echo ">>> delay the first line by ~10-30s. Ctrl-C to abort."
 echo
 
-# Stream to the log AND to a watcher that exits on the closing marker; that
-# SIGPIPEs logcat so we stop as soon as the batch finishes. `timeout` is a
-# backstop in case the app never emits phase=done.
-timeout "${TIMEOUT}" "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" \
-  | tee "${LOG}" \
-  | awk '/op=benchmark phase=done/ { exit } { }' >/dev/null || true
+# Capture in the background to the log; a Windows adb.exe doesn't always die from
+# a pipeline SIGPIPE, so track its PID and kill it explicitly on exit.
+"${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${LOG}" &
+LOGCAT_PID=$!
+cleanup() { kill "${LOGCAT_PID}" 2>/dev/null || true; }
+trap 'cleanup; exit 130' INT TERM
+trap cleanup EXIT
+
+# Follow the log live and stop as soon as the batch finishes. Warn once if no
+# benchmark marker shows up quickly (usually a stale APK without benchmark code).
+tail -n +1 -f "${LOG}" &
+TAIL_PID=$!
+started=0
+deadline=$((SECONDS + TIMEOUT))
+while kill -0 "${LOGCAT_PID}" 2>/dev/null; do
+  if grep -q "op=benchmark phase=done" "${LOG}" 2>/dev/null; then break; fi
+  if [ "${started}" -eq 0 ] && grep -q "op=benchmark phase=start" "${LOG}" 2>/dev/null; then
+    started=1
+  fi
+  if [ "${started}" -eq 0 ] && [ "${SECONDS}" -ge $((deadline - TIMEOUT + 45)) ]; then
+    echo ">>> (still no benchmark markers after 45s — did you reinstall the freshly built"
+    echo ">>>  debug APK? old builds ignore the run_entry_benchmark intent.)"
+    started=-1  # only warn once
+  fi
+  if [ "${SECONDS}" -ge "${deadline}" ]; then echo ">>> Timed out after ${TIMEOUT}s."; break; fi
+  sleep 1
+done
+kill "${TAIL_PID}" 2>/dev/null || true
+cleanup
 
 echo
 echo "Saved raw log: ${LOG}"
 
 if ! grep -q "op=benchmark phase=done" "${LOG}" 2>/dev/null; then
-  echo "WARNING: no 'phase=done' marker — batch may have timed out (${TIMEOUT}s) or the"
-  echo "         build isn't DEBUG / has no benchmark support. Partial log kept above."
+  echo "WARNING: no 'phase=done' marker. Most likely the running app is an older APK"
+  echo "         without benchmark support — reinstall app-play-universal-debug.apk and retry."
 fi
 
 SUMMARIZER="$(dirname "$0")/summarize_entry_perf.py"
