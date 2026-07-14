@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
+import org.codeberg.fitguy.nofud.services.EntryPerfBenchmark
 import org.codeberg.fitguy.nofud.services.MealShare
 import org.codeberg.fitguy.nofud.services.InAppReview
 import org.codeberg.fitguy.nofud.ui.home.ImportSharedMealSheet
@@ -148,6 +149,12 @@ open class MainActivity : ComponentActivity() {
         // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_keto_settings true
         val shouldSeedKetoSettings = intent?.getBooleanExtra("seed_keto_settings", false) == true
         val shouldRestoreRealData = intent?.getBooleanExtra("restore_real_data", false) == true
+        // Debug-only entry-perf benchmark: fire N real analyze+save requests so the
+        // FudAIPerf timers emit a batch on demand (see scripts/perf_entry_benchmark.sh).
+        val shouldRunEntryBenchmark = BuildConfig.DEBUG &&
+            intent?.getBooleanExtra("run_entry_benchmark", false) == true
+        val entryBenchmarkCount = intent?.getIntExtra("benchmark_count", 3) ?: 3
+        if (shouldRunEntryBenchmark) intent?.removeExtra("run_entry_benchmark")
         if (shouldResetOnboarding) intent?.removeExtra("reset_onboarding")
         if (shouldSeedTestData) intent?.removeExtra("seed_test_data")
         if (shouldSeedBodyMetrics) intent?.removeExtra("seed_body_metrics")
@@ -177,6 +184,15 @@ open class MainActivity : ComponentActivity() {
             if (shouldSeedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
             if (shouldSeedKetoSettings) container.testDataSeeder.seedKetoSettings()
             if (shouldRestoreRealData) container.testDataSeeder.restore()
+
+            // Independent of seeding/onboarding: the benchmark only needs the AI
+            // provider + key (seeded at Application.onCreate), so run it off the
+            // splash-gating path in its own coroutine.
+            if (shouldRunEntryBenchmark) {
+                lifecycleScope.launch {
+                    EntryPerfBenchmark(container).run(entryBenchmarkCount)
+                }
+            }
 
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
