@@ -155,7 +155,7 @@ class AppContainer(app: NoFUDApp) {
     val waterRepository = WaterRepository(prefs)
 
     val foodAnalysis = FoodAnalysisService(prefs, keyStore)
-    val chatService = ChatService(prefs, keyStore)
+    val chatService = ChatService(prefs, keyStore, foodAnalysis)
     val speechService = SpeechService(prefs, keyStore)
 
     val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository)

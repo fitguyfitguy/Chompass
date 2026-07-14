@@ -460,7 +460,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             } ?: return@launch
             discardPendingDraft(start.previousDraftImage)
             try {
-                val analysis = OpenFoodFactsService.lookup(barcode)
+                val analysis = OpenFoodFactsService.lookup(barcode, container.prefs)
                 savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE, generation = start.generation)
             } catch (e: Throwable) {
                 failAnalysis(

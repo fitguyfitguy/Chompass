@@ -1,9 +1,11 @@
 package org.codeberg.fitguy.nofud.services
 
+import org.codeberg.fitguy.nofud.data.PreferencesStore
 import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -19,13 +21,27 @@ object OpenFoodFactsService {
 
     class LookupException(message: String) : Exception(message)
 
+    /**
+     * Looks up [barcode], preferring a cached result from a previous lookup
+     * (instant, works offline) and falling back to a live Open Food Facts
+     * call on a cache miss. Successful network lookups are cached for next time.
+     */
     suspend fun lookup(
         barcode: String,
+        prefs: PreferencesStore,
         client: OkHttpClient = FoodAnalysisService.defaultClient
     ): FoodAnalysis = withContext(Dispatchers.IO) {
         val code = barcode.trim()
         if (code.isEmpty()) throw LookupException("That barcode could not be read. Try scanning it again.")
 
+        prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
+
+        val result = lookupNetwork(code, client)
+        prefs.cacheBarcodeLookup(code, result)
+        result
+    }
+
+    private suspend fun lookupNetwork(code: String, client: OkHttpClient): FoodAnalysis = run {
         val encodedCode = URLEncoder.encode(code, "UTF-8")
         val url = "https://world.openfoodfacts.org/api/v2/product/$encodedCode.json?fields=$FIELDS"
         val request = Request.Builder()

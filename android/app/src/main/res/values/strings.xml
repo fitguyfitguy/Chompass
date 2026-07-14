@@ -502,6 +502,9 @@
     <string name="coach_reset_confirm">Reset</string>
     <string name="coach_no_profile_error">No profile yet. Finish onboarding first.</string>
     <string name="coach_chat_failed">Chat failed</string>
+    <string name="coach_confirm_log_food_title">Log this food?</string>
+    <string name="coach_confirm_log_weight_title">Log this weight?</string>
+    <string name="coach_confirm_log_water_title">Log this water?</string>
 
     <string name="coach_chip_predict_30_days">What\'s my expected weight in 30 days?</string>
     <string name="coach_chip_lose_faster">How do I lose weight faster safely?</string>
