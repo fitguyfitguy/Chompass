@@ -272,9 +272,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val display = _ui.value.homeDisplay
             val needsMeasuredEnergy = when (display.calorieDisplayMode) {
                 HomeCalorieDisplayMode.STATIC -> false
-                HomeCalorieDisplayMode.NET -> true
-                HomeCalorieDisplayMode.ADD_ACTIVE,
-                HomeCalorieDisplayMode.DUAL -> container.prefs.healthConnectEnabled.first()
+                HomeCalorieDisplayMode.ADD_ACTIVE -> container.prefs.healthConnectEnabled.first()
             }
             if (!display.showSteps && !needsMeasuredEnergy) {
                 _ui.value = _ui.value.copy(activitySnapshot = HomeActivitySnapshot(date = day))

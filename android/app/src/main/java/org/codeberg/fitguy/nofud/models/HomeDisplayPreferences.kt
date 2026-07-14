@@ -7,9 +7,7 @@ import org.codeberg.fitguy.nofud.ui.theme.MacroKind
 /** How the home calorie gauge interprets Health Connect active burn for the selected day. */
 enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: Int) {
     STATIC("static", R.string.home_calorie_mode_static),
-    ADD_ACTIVE("addActive", R.string.home_calorie_mode_add_active),
-    NET("net", R.string.home_calorie_mode_net),
-    DUAL("dual", R.string.home_calorie_mode_dual);
+    ADD_ACTIVE("addActive", R.string.home_calorie_mode_add_active);
 
     companion object {
         val Default = STATIC
@@ -117,9 +115,7 @@ object HomeCalorieDisplay {
         }
         return when (mode) {
             HomeCalorieDisplayMode.STATIC -> null
-            HomeCalorieDisplayMode.NET -> measured
-            HomeCalorieDisplayMode.ADD_ACTIVE,
-            HomeCalorieDisplayMode.DUAL -> measured ?: estimatedDailyActive
+            HomeCalorieDisplayMode.ADD_ACTIVE -> measured ?: estimatedDailyActive
                 .takeIf { it > 0 }
                 ?.let { ResolvedActiveBurn(it, ActiveCalorieSource.ESTIMATED) }
         }
@@ -128,14 +124,7 @@ object HomeCalorieDisplay {
     fun effectiveMode(requested: HomeCalorieDisplayMode, burn: ResolvedActiveBurn?): HomeCalorieDisplayMode =
         when (requested) {
             HomeCalorieDisplayMode.STATIC -> HomeCalorieDisplayMode.STATIC
-            HomeCalorieDisplayMode.NET ->
-                if (burn?.source == ActiveCalorieSource.MEASURED && burn.calories > 0) {
-                    requested
-                } else {
-                    HomeCalorieDisplayMode.STATIC
-                }
-            HomeCalorieDisplayMode.ADD_ACTIVE,
-            HomeCalorieDisplayMode.DUAL ->
+            HomeCalorieDisplayMode.ADD_ACTIVE ->
                 if (burn != null && burn.calories > 0) requested else HomeCalorieDisplayMode.STATIC
         }
 
@@ -145,16 +134,12 @@ object HomeCalorieDisplay {
         sedentaryBudget: Int,
     ): Int = when (mode) {
         HomeCalorieDisplayMode.ADD_ACTIVE -> sedentaryBudget
-        HomeCalorieDisplayMode.STATIC,
-        HomeCalorieDisplayMode.NET,
-        HomeCalorieDisplayMode.DUAL -> effectiveCalories
+        HomeCalorieDisplayMode.STATIC -> effectiveCalories
     }
 
     fun effectiveGoal(mode: HomeCalorieDisplayMode, baseGoal: Int, activeCalories: Int): Int = when (mode) {
         HomeCalorieDisplayMode.ADD_ACTIVE -> baseGoal + activeCalories.coerceAtLeast(0)
-        HomeCalorieDisplayMode.STATIC,
-        HomeCalorieDisplayMode.NET,
-        HomeCalorieDisplayMode.DUAL -> baseGoal
+        HomeCalorieDisplayMode.STATIC -> baseGoal
     }
 
     fun progressRatio(
@@ -164,16 +149,12 @@ object HomeCalorieDisplay {
         activeCalories: Int,
     ): Float {
         if (baseGoal <= 0) return 0f
-        val numerator = when (mode) {
-            HomeCalorieDisplayMode.NET -> (eaten - activeCalories).coerceAtLeast(0)
-            else -> eaten
-        }
         val denominator = when (mode) {
             HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal(mode, baseGoal, activeCalories)
-            else -> baseGoal
+            HomeCalorieDisplayMode.STATIC -> baseGoal
         }
         if (denominator <= 0) return 0f
-        return (numerator.toFloat() / denominator).coerceIn(0f, 1f)
+        return (eaten.toFloat() / denominator).coerceIn(0f, 1f)
     }
 
     fun remaining(
@@ -184,12 +165,7 @@ object HomeCalorieDisplay {
     ): Int = when (mode) {
         HomeCalorieDisplayMode.ADD_ACTIVE ->
             (effectiveGoal(mode, baseGoal, activeCalories) - eaten).coerceAtLeast(0)
-        HomeCalorieDisplayMode.NET ->
-            (baseGoal - (eaten - activeCalories)).coerceAtLeast(0)
-        HomeCalorieDisplayMode.STATIC,
-        HomeCalorieDisplayMode.DUAL ->
+        HomeCalorieDisplayMode.STATIC ->
             (baseGoal - eaten).coerceAtLeast(0)
     }
-
-    fun netCalories(eaten: Int, activeCalories: Int): Int = eaten - activeCalories
 }

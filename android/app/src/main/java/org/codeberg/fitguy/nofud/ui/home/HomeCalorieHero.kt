@@ -203,10 +203,14 @@ internal fun CalorieHero(
             animatedRatio.animateTo(ratio, spec)
         }
     }
+    // Ring color roles, one meaning per hue across every mode:
+    // - trackColor (neutral) = unfilled budget, always.
+    // - progressColor (primary, opaque) = consumed/eaten. Never reused elsewhere.
+    // - tertiary = activity-derived calories, exclusively — the ADD_ACTIVE bonus segment,
+    //   the DUAL burn ring, and the tertiary text clause in the goal line all share this hue.
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val progressColor = MaterialTheme.colorScheme.primary
     val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
-    val baseTrackColor = progressColor.copy(alpha = 0.28f)
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     val tertiary = MaterialTheme.colorScheme.tertiary
 
@@ -235,19 +239,11 @@ internal fun CalorieHero(
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
             if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
+                // Base segment of the track stays plain neutral (drawn above); only the bonus
+                // (activity-earned) tail beyond it gets the tertiary tint, so the ring reads as
+                // "normal track, extended by activity" rather than two similarly-dim greys.
                 val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
                 val bonusSweep = (180f - baseSweep).coerceAtLeast(0f)
-                if (baseSweep > 0f) {
-                    drawArc(
-                        color = baseTrackColor,
-                        startAngle = 180f,
-                        sweepAngle = baseSweep,
-                        useCenter = false,
-                        topLeft = topLeft,
-                        size = arcSize,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round)
-                    )
-                }
                 if (bonusSweep > 0f) {
                     drawArc(
                         color = bonusColor,
@@ -259,18 +255,6 @@ internal fun CalorieHero(
                         style = Stroke(width = stroke, cap = StrokeCap.Round)
                     )
                 }
-            }
-            if (displayMode == HomeCalorieDisplayMode.DUAL && activeCalories > 0 && baseGoal > 0) {
-                val burnSweep = (180f * (activeCalories.toFloat() / baseGoal.toFloat())).coerceIn(4f, 36f)
-                drawArc(
-                    color = tertiary.copy(alpha = 0.35f),
-                    startAngle = 180f,
-                    sweepAngle = burnSweep,
-                    useCenter = false,
-                    topLeft = topLeft,
-                    size = arcSize,
-                    style = Stroke(width = stroke * 0.55f, cap = StrokeCap.Round)
-                )
             }
             drawArc(
                 color = progressColor,
@@ -302,49 +286,38 @@ internal fun CalorieHero(
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
             )
-            Text(
-                stringResource(R.string.home_calorie_of_goal, goalLabel),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = muted,
-            )
-            if (integratesBurn) {
-                val bonusRes = when (activeCalorieSource) {
-                    ActiveCalorieSource.MEASURED -> R.string.home_calorie_active_bonus_measured
-                    ActiveCalorieSource.ESTIMATED -> R.string.home_calorie_active_bonus_estimated
-                    ActiveCalorieSource.UNAVAILABLE, null -> R.string.home_calorie_active_bonus
-                }
-                val bonusText = stringResource(bonusRes, activeCalories)
-                val estimatedA11y = stringResource(R.string.home_calorie_active_estimated_a11y)
+            // Single goal line: the active-calorie figure appears at most once, folded into a
+            // trailing clause whose wording matches what the mode actually does to the goal
+            // (ADD_ACTIVE extends it, NET subtracts from intake, DUAL is purely informational).
+            Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    bonusText,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = tertiary,
-                    modifier = if (activeCalorieSource == ActiveCalorieSource.ESTIMATED) {
-                        Modifier.semantics { contentDescription = "$estimatedA11y: $bonusText" }
-                    } else {
-                        Modifier
-                    },
+                    stringResource(R.string.home_calorie_of_goal, goalLabel),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = muted,
                 )
-                if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
-                    val breakdownRes = when (activeCalorieSource) {
-                        ActiveCalorieSource.MEASURED -> R.string.home_calorie_goal_breakdown_measured
-                        ActiveCalorieSource.ESTIMATED -> R.string.home_calorie_goal_breakdown_estimated
-                        ActiveCalorieSource.UNAVAILABLE, null -> R.string.home_calorie_goal_breakdown
+                if (integratesBurn) {
+                    val isEstimated = activeCalorieSource == ActiveCalorieSource.ESTIMATED
+                    val clauseRes = when (displayMode) {
+                        HomeCalorieDisplayMode.ADD_ACTIVE -> R.string.home_calorie_clause_add_active
+                        HomeCalorieDisplayMode.STATIC -> null
                     }
-                    val breakdownText = stringResource(breakdownRes, baseGoal, activeCalories)
-                    Text(
-                        breakdownText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = muted,
-                        modifier = if (activeCalorieSource == ActiveCalorieSource.ESTIMATED) {
-                            Modifier.semantics { contentDescription = "$estimatedA11y: $breakdownText" }
-                        } else {
-                            Modifier
-                        },
-                    )
+                    if (clauseRes != null) {
+                        val clauseText = stringResource(clauseRes, activeCalories)
+                        val displayText = if (isEstimated) "~$clauseText" else clauseText
+                        val estimatedA11y = stringResource(R.string.home_calorie_active_estimated_a11y)
+                        Text(
+                            " $displayText",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = tertiary,
+                            modifier = if (isEstimated) {
+                                Modifier.semantics { contentDescription = "$estimatedA11y: $displayText" }
+                            } else {
+                                Modifier
+                            },
+                        )
+                    }
                 }
             }
             Row(
@@ -358,11 +331,7 @@ internal fun CalorieHero(
                     modifier = Modifier.size(13.dp)
                 )
                 Text(
-                    when (displayMode) {
-                        HomeCalorieDisplayMode.NET ->
-                            stringResource(R.string.home_calories_net_left, remaining)
-                        else -> stringResource(R.string.home_calories_left, remaining)
-                    },
+                    stringResource(R.string.home_calories_left, remaining),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
