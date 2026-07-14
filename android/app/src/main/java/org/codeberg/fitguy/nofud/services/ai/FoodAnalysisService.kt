@@ -10,6 +10,8 @@ import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.GoalFormulaReference
 import org.codeberg.fitguy.nofud.models.NutritionConstants
 import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.BuildConfig
+import org.codeberg.fitguy.nofud.services.PerfLog
 import org.codeberg.fitguy.nofud.services.WeightForecast
 import org.codeberg.fitguy.nofud.services.health.HealthEnergySummary
 import kotlinx.coroutines.flow.first
@@ -318,7 +320,8 @@ class FoodAnalysisService(
             unit_options is required when the text names an obvious non-gram serving unit, and optional otherwise. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. Do not copy any sample number; use the quantity stated or clearly implied by the meal. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
             For "emoji" pick the single most specific food emoji that depicts this dish — e.g. 🥚 for eggs, 🍕 for pizza, 🍎 for an apple, 🥗 for a salad, 🍔 for a burger, 🍜 for ramen, 🍰 for cake, 🥑 for avocado, ☕ for coffee, 🍣 for sushi. Only fall back to 🍽️ when the food truly cannot be represented by any specific emoji. Use null for any nutrient you cannot estimate.
         """.trimIndent()
-        val analysis = FoodJsonParser.parseFood(callAi(prompt, null))
+        val raw = callAi(prompt, null, op = "analyzeText")
+        val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return addingFallbackServingUnits(analysis, imageBytes = null, description = description)
     }
 
@@ -336,7 +339,8 @@ class FoodAnalysisService(
             unit_options is required for obvious non-gram units visible in the image or label. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
             Use null for any nutrient you cannot estimate.
         """.trimIndent()
-        val analysis = FoodJsonParser.parseFood(callAi(prompt, imageBytes))
+        val raw = callAi(prompt, imageBytes, op = "analyzeAuto")
+        val analysis = PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return addingFallbackServingUnits(analysis, imageBytes = imageBytes, description = null)
     }
 
@@ -353,7 +357,8 @@ class FoodAnalysisService(
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
-        val analysis = FoodJsonParser.parseFood(callAi(prompt, imageBytes))
+        val raw = callAi(prompt, imageBytes, op = "analyzeFood")
+        val analysis = PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return addingFallbackServingUnits(analysis, imageBytes = imageBytes, description = description)
     }
 
@@ -371,7 +376,8 @@ class FoodAnalysisService(
         """.trimIndent()
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
-        val analysis = FoodJsonParser.parseFood(callAi(prompt, images))
+        val raw = callAi(prompt, images, op = "analyzeFoodMulti")
+        val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return addingFallbackServingUnits(analysis, imageBytes = images.first(), description = null)
     }
 
@@ -383,7 +389,8 @@ class FoodAnalysisService(
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is visible.
             All values should be numbers. If serving size or any nutrient is not available, use null. unit_options is required when a non-gram label serving unit is visible, such as slice, piece, tbsp, cup, ml, fl oz, can, or packet. Do not copy any sample number; use the quantity shown on the label. Use [] only when no non-gram unit is visible. Do not include g/grams in unit_options.
         """.trimIndent()
-        val analysis = FoodJsonParser.parseLabel(callAi(prompt, imageBytes))
+        val raw = callAi(prompt, imageBytes, op = "analyzeLabel")
+        val analysis = PerfLog.measure("analyzeLabel", "parse", "chars=${raw.length}") { FoodJsonParser.parseLabel(raw) }
         return addingFallbackServingUnits(analysis, imageBytes).scaled(servingGrams)
     }
 
@@ -413,19 +420,24 @@ class FoodAnalysisService(
 
     // -- Internal dispatch ------------------------------------------------
 
-    private suspend fun callAi(prompt: String, imageBytes: ByteArray?): String {
-        return callAi(prompt, imageBytes?.let { listOf(it) }.orEmpty())
+    private suspend fun callAi(prompt: String, imageBytes: ByteArray?, op: String = "callAi"): String {
+        return callAi(prompt, imageBytes?.let { listOf(it) }.orEmpty(), op)
     }
 
-    private suspend fun callAi(prompt: String, imageBytesList: List<ByteArray>): String {
-        val context = prefs.userContext.first()
-        // Non-English UI locales get localized prose (food names, reasons, advice)
-        // while the machine-read parts of the JSON stay English for the parser.
-        val languageLine = nonEnglishResponseLanguage()?.let {
-            "Write all human-readable text (food name, reason, advice prose) in $it. Keep JSON keys, numbers, and unit_options unit words in English.\n\n"
-        } ?: ""
-        val contextLine = if (context.isNotBlank()) "User context (apply to every analysis): $context\n\n" else ""
-        val finalPrompt = languageLine + contextLine + prompt
+    private suspend fun callAi(prompt: String, imageBytesList: List<ByteArray>, op: String = "callAi"): String {
+        // Time input/prompt assembly (includes the suspending userContext read) as
+        // the "promptBuild" phase; the network round-trip itself is captured by the
+        // OkHttp PerfEventListener, and JSON parse is timed at the call site.
+        val finalPrompt = PerfLog.measure(op, "promptBuild") {
+            val context = prefs.userContext.first()
+            // Non-English UI locales get localized prose (food names, reasons, advice)
+            // while the machine-read parts of the JSON stay English for the parser.
+            val languageLine = nonEnglishResponseLanguage()?.let {
+                "Write all human-readable text (food name, reason, advice prose) in $it. Keep JSON keys, numbers, and unit_options unit words in English.\n\n"
+            } ?: ""
+            val contextLine = if (context.isNotBlank()) "User context (apply to every analysis): $context\n\n" else ""
+            languageLine + contextLine + prompt
+        }
 
         val primary = prefs.selectedAIProvider.first()
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
@@ -516,7 +528,10 @@ class FoodAnalysisService(
             {"unit_options":[{"unit":"can","quantity":1.0,"grams_per_unit":330.0}]}
             {"unit_options":[{"unit":"piece","quantity":5.0,"grams_per_unit":18.0}]}
         """.trimIndent()
-        return FoodJsonParser.parseServingUnitOptions(callAi(prompt, imageBytes), servingSizeGrams)
+        val raw = callAi(prompt, imageBytes, op = "inferServing")
+        return PerfLog.measure("inferServing", "parse", "chars=${raw.length}") {
+            FoodJsonParser.parseServingUnitOptions(raw, servingSizeGrams)
+        }
     }
 
     private suspend fun dispatch(
@@ -566,6 +581,9 @@ class FoodAnalysisService(
     companion object {
         internal val defaultClient: OkHttpClient by lazy {
             OkHttpClient.Builder()
+                // Debug-only: capture per-call network latency phases (DNS/connect/
+                // TLS/TTFB/total + byte counts) for every AI/STT/OpenFoodFacts call.
+                .apply { if (BuildConfig.DEBUG) eventListenerFactory(PerfEventListener.Factory) }
                 .connectTimeout(20, java.util.concurrent.TimeUnit.SECONDS)
                 .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
                 .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
