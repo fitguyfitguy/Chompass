@@ -64,6 +64,7 @@ import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import org.codeberg.fitguy.nofud.ui.components.NumericWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.OptionPickerSheet
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.warning
 
 @Composable
 internal fun ProviderStep(
@@ -508,7 +509,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFF9500).copy(alpha = 0.12f)
+                containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f)
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -519,7 +520,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = null,
-                    tint = Color(0xFFFF9500),
+                    tint = MaterialTheme.colorScheme.warning,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(10.dp))
@@ -590,7 +591,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
             Card(
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFF9500).copy(alpha = 0.12f)
+                    containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f)
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -601,7 +602,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                     Icon(
                         imageVector = Icons.Outlined.Bolt,
                         contentDescription = null,
-                        tint = Color(0xFFFF9500),
+                        tint = MaterialTheme.colorScheme.warning,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(10.dp))

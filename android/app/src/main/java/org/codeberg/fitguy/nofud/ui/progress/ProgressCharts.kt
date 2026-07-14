@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.models.BodyFatEntry
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.success
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -294,7 +295,7 @@ internal fun WeightChartCanvas(
     val chartModel = remember(entries, goalKg, useMetric) {
         buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
     }
-    val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
+    val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     var chartRenderPhase by remember(entries, goalKg, useMetric, immediate) {
@@ -389,7 +390,7 @@ internal fun BodyFatChartCanvas(
     val chartModel = remember(entries, goalFraction) {
         buildBodyFatChartModel(entries = entries, goalFraction = goalFraction)
     }
-    val goalLineColor = Color(0xFF34C759).copy(alpha = 0.7f)
+    val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     var chartRenderPhase by remember(entries, goalFraction, immediate) {

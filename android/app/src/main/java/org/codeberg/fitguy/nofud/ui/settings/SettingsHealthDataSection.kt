@@ -74,6 +74,7 @@ import org.codeberg.fitguy.nofud.ui.components.FudIconBubble
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDRoutes
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
+import org.codeberg.fitguy.nofud.ui.theme.warning
 import java.util.Locale
 
 
@@ -252,7 +253,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val warning = Color(0xFFFF9500)
+                    val warning = MaterialTheme.colorScheme.warning
                     FudIconBubble(icon = Icons.Outlined.DeleteSweep, size = 22.dp, iconSize = 14.dp, tint = warning)
                     Spacer(Modifier.width(14.dp))
                     Text(
@@ -270,7 +271,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val destructive = Color(0xFFFF3B30)
+                    val destructive = MaterialTheme.colorScheme.error
                     FudIconBubble(icon = Icons.Outlined.DeleteForever, size = 22.dp, iconSize = 14.dp, tint = destructive)
                     Spacer(Modifier.width(14.dp))
                     Text(

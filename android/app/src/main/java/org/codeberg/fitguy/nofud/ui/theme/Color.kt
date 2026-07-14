@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 
@@ -197,4 +198,20 @@ object AppColors {
 
     val ActivePillLight = Color(0xFFE8DEF8)
     val ActivePillDark = Color(0xFF4A4458)
+
+    /** Semantic warning tone (non-destructive caution states). */
+    val WarningLight = Color(0xFF8B5000)
+    val WarningDark = Color(0xFFFFB77C)
+
+    /** Semantic success tone (goal-met, positive confirmation states). */
+    val SuccessLight = Color(0xFF386A20)
+    val SuccessDark = Color(0xFF9CD67D)
 }
+
+/** Resolves [AppColors.WarningLight]/[AppColors.WarningDark] against the active theme. */
+val androidx.compose.material3.ColorScheme.warning: Color
+    get() = if (background.luminance() < 0.5f) AppColors.WarningDark else AppColors.WarningLight
+
+/** Resolves [AppColors.SuccessLight]/[AppColors.SuccessDark] against the active theme. */
+val androidx.compose.material3.ColorScheme.success: Color
+    get() = if (background.luminance() < 0.5f) AppColors.SuccessDark else AppColors.SuccessLight

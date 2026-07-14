@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -428,7 +429,12 @@ private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
         label = "micScale"
     )
     val bgBrush = if (recording)
-        Brush.linearGradient(listOf(Color(0xFFFF3B30), Color(0xFFFF6B60))) // iOS red.fill
+        Brush.linearGradient(
+            listOf(
+                MaterialTheme.colorScheme.error,
+                lerp(MaterialTheme.colorScheme.error, Color.White, 0.25f),
+            )
+        )
     else
         Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
     val interactionSource = remember { MutableInteractionSource() }

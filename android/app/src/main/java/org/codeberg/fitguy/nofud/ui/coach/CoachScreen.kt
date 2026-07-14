@@ -333,7 +333,7 @@ fun CoachScreen(container: AppContainer) {
                 TextButton(onClick = {
                     vm.resetConversation()
                     showResetConfirm = false
-                }) { Text(stringResource(R.string.coach_reset_confirm), color = Color(0xFFD32F2F)) }
+                }) { Text(stringResource(R.string.coach_reset_confirm), color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
                 TextButton(onClick = { showResetConfirm = false }) { Text(stringResource(R.string.action_cancel)) }

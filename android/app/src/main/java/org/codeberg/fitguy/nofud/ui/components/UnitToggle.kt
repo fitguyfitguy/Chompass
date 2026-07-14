@@ -1,31 +1,16 @@
 package org.codeberg.fitguy.nofud.ui.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
-/**
- * iOS-style segmented control. Two options side-by-side inside a pill;
- * the selected side gets the pink fill and white text.
- */
+/** Two-option segmented control, e.g. metric/imperial unit switches. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnitToggle(
     leftLabel: String,
@@ -34,68 +19,18 @@ fun UnitToggle(
     onSelect: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(22.dp))
-            .background(trackColor)
-            .border(0.5.dp, trackBorder, RoundedCornerShape(22.dp))
-            .padding(4.dp)
-    ) {
-        Row {
-            UnitSegment(
-                label = leftLabel,
-                selected = isLeft,
-                onClick = { if (!isLeft) onSelect(true) },
-                modifier = Modifier.weight(1f)
-            )
-            UnitSegment(
-                label = rightLabel,
-                selected = !isLeft,
-                onClick = { if (isLeft) onSelect(false) },
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun UnitSegment(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    // iOS UISegmentedControl uses a slightly lighter neutral fill for the
-    // selected thumb (not an accent colour) — matches that look.
-    val bg by animateColorAsState(
-        if (selected) {
-            if (isDark) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.22f)
-            else Color.White.copy(alpha = 0.72f)
-        }
-        else Color.Transparent,
-        label = "segBg"
-    )
-    val fg by animateColorAsState(
-        if (selected) MaterialTheme.colorScheme.onSurface
-        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-        label = "segFg"
-    )
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .background(bg)
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = null,
-                onClick = onClick
-            )
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(label, color = fg, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+    SingleChoiceSegmentedButtonRow(modifier = modifier) {
+        SegmentedButton(
+            selected = isLeft,
+            onClick = { if (!isLeft) onSelect(true) },
+            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+            label = { Text(leftLabel, style = MaterialTheme.typography.titleSmall) },
+        )
+        SegmentedButton(
+            selected = !isLeft,
+            onClick = { if (isLeft) onSelect(false) },
+            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+            label = { Text(rightLabel, style = MaterialTheme.typography.titleSmall) },
+        )
     }
 }
