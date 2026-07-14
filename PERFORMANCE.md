@@ -62,8 +62,12 @@ Phases: `promptBuild` (input assembly + prefs read), `parse` (JSON deserialize),
 AI/STT/OpenFoodFacts call), and the Phase-2 persistence `imageWrite` / `dataStore`
 / `healthWrite`. Notes: `dataStore` re-serializes the whole log per add, so it
 scales with `entries=`; a single photo analysis fires **two** `net` calls (main
-analysis + serving-unit inference, `op=inferServing`); `net` metrics are `-1` when
-a phase is skipped (e.g. pooled connection) or on failure (`status=-1`).
+analysis + serving-unit inference, `op=inferServing`) when the main analysis
+prompt's own `unit_options` comes back empty — the primary prompts were
+strengthened to make that less common, but the fallback still exists
+structurally since `inferServing` depends on the main call's parsed result;
+`net` metrics are `-1` when a phase is skipped (e.g. pooled connection) or on
+failure (`status=-1`).
 
 ### Capture
 

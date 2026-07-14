@@ -1,8 +1,8 @@
 package org.codeberg.fitguy.nofud.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,12 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.codeberg.fitguy.nofud.ui.theme.AppColors
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.math.abs
@@ -47,8 +45,9 @@ private const val VISIBLE_ITEMS = 5
 private val ROW_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS
 
 /**
- * iOS-style scrolling wheel picker. Items snap to the center row. The highlighted
- * row is styled with full opacity + semibold; rows away from center fade.
+ * Scrolling wheel picker. Items snap to the center row. The highlighted row
+ * sits on a Material3 secondaryContainer tonal band (same selection pattern as
+ * BottomNavBar's indicator); rows away from center fade to onSurfaceVariant.
  */
 @Composable
 fun <T> WheelPicker(
@@ -109,8 +108,16 @@ fun <T> WheelPicker(
             items(items) { item ->
                 val isSelected = item == items.getOrNull(centerIndex)
                 val alpha by animateFloatAsState(
-                    targetValue = if (isSelected) 1f else 0.35f,
+                    targetValue = if (isSelected) 1f else 0.6f,
                     label = "wheelAlpha"
+                )
+                val textColor by animateColorAsState(
+                    targetValue = if (isSelected) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    label = "wheelTextColor"
                 )
                 Box(
                     modifier = Modifier
@@ -123,7 +130,7 @@ fun <T> WheelPicker(
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = if (isSelected) 24.sp else 20.sp,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = alpha),
+                        color = textColor.copy(alpha = alpha),
                         maxLines = 1,
                         softWrap = false
                     )
@@ -206,17 +213,15 @@ fun DateWheelPicker(
 
 @Composable
 private fun WheelSelectionHighlight(modifier: Modifier = Modifier) {
+    // Material3 tonal indicator — same secondaryContainer band BottomNavBar
+    // uses for its selected-tab pill, instead of a translucent glass capsule.
     val shape = RoundedCornerShape(14.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val fill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val stroke = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Box(
         modifier
             .fillMaxWidth()
             .height(ITEM_HEIGHT)
             .clip(shape)
-            .background(fill)
-            .border(0.5.dp, stroke, shape)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
     )
 }
 
