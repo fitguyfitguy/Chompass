@@ -21,8 +21,8 @@ AllowedAPKSigningKeys: 2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f15
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: '1.8.0'
-CurrentVersionCode: 10
+CurrentVersion: '1.9.0'
+CurrentVersionCode: 11
 
 Builds:
   - versionName: '1.0.0'
@@ -46,6 +46,12 @@ Builds:
   - versionName: '1.8.0'
     versionCode: 10
     commit: v1.8.0
+    subdir: android
+    gradle:
+      - fdroidRelease
+  - versionName: '1.9.0'
+    versionCode: 11
+    commit: v1.9.0
     subdir: android
     gradle:
       - fdroidRelease
