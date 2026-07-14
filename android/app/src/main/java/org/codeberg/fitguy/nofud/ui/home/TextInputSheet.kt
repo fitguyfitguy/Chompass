@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,7 +57,8 @@ import org.codeberg.fitguy.nofud.ui.theme.AppColors
 @Composable
 fun TextInputSheet(
     onDismiss: () -> Unit,
-    onSubmit: (String) -> Unit
+    onSubmit: (String) -> Unit,
+    isSubmitting: Boolean = false,
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -71,6 +74,8 @@ fun TextInputSheet(
     )
     var input by remember { mutableStateOf("") }
     var placeholderIdx by remember { mutableIntStateOf(0) }
+    var submitted by remember { mutableStateOf(false) }
+    val busy = isSubmitting || submitted
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -86,7 +91,10 @@ fun TextInputSheet(
     }
 
     val submit = {
-        if (input.isNotBlank()) onSubmit(input.trim())
+        if (input.isNotBlank() && !busy) {
+            submitted = true
+            onSubmit(input.trim())
+        }
     }
 
     ModalBottomSheet(
@@ -137,7 +145,7 @@ fun TextInputSheet(
             ) {
                 FudGlassTextField(
                     value = input,
-                    onValueChange = { input = it },
+                    onValueChange = { if (!busy) input = it },
                     placeholder = placeholders[placeholderIdx],
                     singleLine = false,
                     minLines = 3,
@@ -152,8 +160,19 @@ fun TextInputSheet(
                 FudGlassPrimaryButton(
                     text = stringResource(R.string.action_analyze),
                     onClick = submit,
-                    enabled = input.isNotBlank(),
-                    modifier = Modifier.fillMaxWidth()
+                    enabled = input.isNotBlank() && !busy,
+                    modifier = Modifier.fillMaxWidth(),
+                    content = if (busy) {
+                        {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    } else {
+                        null
+                    }
                 )
             }
 

@@ -228,7 +228,7 @@ fun HomeScreen(container: AppContainer) {
                 if (firstPair != null) {
                     pendingCameraPairFirstImageBytes = null
                     cameraCaptureWantsSecondPhoto = false
-                    vm.analyzePhotos(firstPair, bytes)
+                    if (!ui.analyzing) vm.analyzePhotos(firstPair, bytes)
                 } else {
                     pendingNoteImageBytes = bytes
                 }
@@ -240,9 +240,10 @@ fun HomeScreen(container: AppContainer) {
     // MainActivity). One image enters the same context-note flow as an in-app
     // capture; two are analyzed side-by-side like dual capture.
     val sharedImages by container.sharedImageInbox.collectAsState()
-    LaunchedEffect(sharedImages) {
+    LaunchedEffect(sharedImages, ui.analyzing) {
         val images = sharedImages
         if (images.isEmpty()) return@LaunchedEffect
+        if (ui.analyzing) return@LaunchedEffect
         container.sharedImageInbox.value = emptyList()
         if (images.size >= 2) {
             vm.analyzePhotos(images[0], images[1])
@@ -555,7 +556,13 @@ fun HomeScreen(container: AppContainer) {
     if (showText) {
         TextInputSheet(
             onDismiss = { showText = false },
-            onSubmit = { showText = false; vm.analyzeText(it) }
+            isSubmitting = ui.analyzing,
+            onSubmit = {
+                if (!ui.analyzing) {
+                    showText = false
+                    vm.analyzeText(it)
+                }
+            }
         )
     }
 
@@ -563,16 +570,25 @@ fun HomeScreen(container: AppContainer) {
         VoiceInputSheet(
             container = container,
             onDismiss = { showVoice = false },
-            onSubmit = { showVoice = false; vm.analyzeText(it) }
+            isSubmitting = ui.analyzing,
+            onSubmit = {
+                if (!ui.analyzing) {
+                    showVoice = false
+                    vm.analyzeText(it)
+                }
+            }
         )
     }
 
     if (showManual) {
         ManualEntryDialog(
+            isSaving = ui.saving,
             onDismiss = { showManual = false },
             onSave = { name, kcal, p, c, f, meal ->
-                showManual = false
-                vm.saveManualEntry(name, kcal, p, c, f, meal)
+                if (!ui.saving) {
+                    showManual = false
+                    vm.saveManualEntry(name, kcal, p, c, f, meal)
+                }
             }
         )
     }
@@ -591,9 +607,12 @@ fun HomeScreen(container: AppContainer) {
         CopyFromDaySheet(
             targetDate = ui.date,
             allEntries = allEntries,
+            isSaving = ui.saving,
             onCopy = { entries ->
-                vm.copyEntriesToSelectedDay(entries)
-                showCopyFromDay = false
+                if (!ui.saving) {
+                    vm.copyEntriesToSelectedDay(entries)
+                    showCopyFromDay = false
+                }
             },
             onDismiss = { showCopyFromDay = false }
         )
@@ -621,7 +640,7 @@ fun HomeScreen(container: AppContainer) {
                     showCameraPairTransition = true
                 } else if (wantsSecondPhoto && firstPairImage != null) {
                     pendingCameraPairFirstImageBytes = null
-                    vm.analyzePhotos(firstPairImage, bytes)
+                    if (!ui.analyzing) vm.analyzePhotos(firstPairImage, bytes)
                 } else {
                     pendingNoteImageBytes = bytes
                 }
@@ -676,9 +695,12 @@ fun HomeScreen(container: AppContainer) {
         ContextNoteSheet(
             imageBytes = bytes,
             initialNote = if (isRestoredFailedInput) ui.pendingInputNote.orEmpty() else "",
+            isSubmitting = ui.analyzing,
             onAnalyze = { note ->
-                pendingNoteImageBytes = null
-                vm.analyzePhotoWithNote(bytes, note)
+                if (!ui.analyzing) {
+                    pendingNoteImageBytes = null
+                    vm.analyzePhotoWithNote(bytes, note)
+                }
             },
             onAddPhoto = {
                 pendingCameraPairFirstImageBytes = bytes
@@ -703,6 +725,7 @@ fun HomeScreen(container: AppContainer) {
             preferGramsByDefault = ui.preferGramsByDefault,
             profile = ui.profile,
             dayEntries = ui.todayEntries,
+            isSaving = ui.saving,
             source = ui.pendingReviewSource?.source
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
@@ -731,6 +754,7 @@ fun HomeScreen(container: AppContainer) {
                 FudGlassDialogActions(
                     primaryText = stringResource(R.string.action_retry),
                     onPrimary = { vm.retryFailedInput() },
+                    primaryEnabled = !ui.analyzing,
                     dismissText = stringResource(R.string.action_discard),
                     onDismiss = { vm.dismissFailedInput() }
                 )
@@ -1561,6 +1585,7 @@ private fun FoodRow(
 private fun CopyFromDaySheet(
     targetDate: LocalDate,
     allEntries: List<FoodEntry>,
+    isSaving: Boolean = false,
     onCopy: (List<FoodEntry>) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -1590,9 +1615,20 @@ private fun CopyFromDaySheet(
     ) {
         SheetReviewToolbar(
             title = stringResource(R.string.home_menu_copy_from_day),
-            primaryLabel = if (sourceEntries.isEmpty()) stringResource(R.string.action_done) else stringResource(R.string.copy_all),
+            primaryLabel = if (sourceEntries.isEmpty()) {
+                stringResource(R.string.action_done)
+            } else if (isSaving) {
+                stringResource(R.string.action_logging)
+            } else {
+                stringResource(R.string.copy_all)
+            },
+            primaryEnabled = !isSaving,
             onCancel = onDismiss,
-            onPrimary = { if (sourceEntries.isEmpty()) onDismiss() else onCopy(sourceEntries) }
+            onPrimary = {
+                if (!isSaving) {
+                    if (sourceEntries.isEmpty()) onDismiss() else onCopy(sourceEntries)
+                }
+            }
         )
 
         LazyColumn(
@@ -1647,7 +1683,8 @@ private fun CopyFromDaySheet(
                 item {
                     FudGlassPrimaryButton(
                         text = pluralStringResource(R.plurals.copy_foods_to, sourceEntries.size, sourceEntries.size, targetText),
-                        onClick = { onCopy(sourceEntries) },
+                        onClick = { if (!isSaving) onCopy(sourceEntries) },
+                        enabled = !isSaving,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
@@ -1669,7 +1706,7 @@ private fun CopyFromDaySheet(
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .clickable { onCopy(group.entries) }
+                                    .clickable(enabled = !isSaving) { if (!isSaving) onCopy(group.entries) }
                                     .padding(horizontal = 16.dp, vertical = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
@@ -1688,7 +1725,7 @@ private fun CopyFromDaySheet(
                         val isLast = index == group.entries.lastIndex
                         val rowShape = sectionCardShape(isFirst, isLast)
                         SectionCardWrapper(isFirst = isFirst, isLast = isLast, transparent = true) {
-                            Box(Modifier.clickable { onCopy(listOf(entry)) }) {
+                            Box(Modifier.clickable(enabled = !isSaving) { if (!isSaving) onCopy(listOf(entry)) }) {
                                 FoodRow(entry = entry, rowShape = rowShape)
                             }
                             if (index != group.entries.lastIndex) Divider()
@@ -1898,6 +1935,7 @@ private fun AnalysisResultDialog(
 
 @Composable
 private fun ManualEntryDialog(
+    isSaving: Boolean = false,
     onDismiss: () -> Unit,
     onSave: (name: String, calories: Int, protein: Double, carbs: Double, fat: Double, mealType: MealType) -> Unit
 ) {
@@ -1909,7 +1947,7 @@ private fun ManualEntryDialog(
     var mealType by remember { mutableStateOf(MealType.currentMeal) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
-    val canSave = name.isNotBlank() && calories.toIntOrNull() != null
+    val canSave = name.isNotBlank() && calories.toIntOrNull() != null && !isSaving
 
     FudGlassDialog(onDismissRequest = onDismiss) {
                 Text(stringResource(R.string.manual_title), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
@@ -1981,16 +2019,22 @@ private fun ManualEntryDialog(
                 }
 
                 FudGlassPrimaryButton(
-                    text = stringResource(R.string.action_save),
+                    text = if (isSaving) {
+                        stringResource(R.string.action_logging)
+                    } else {
+                        stringResource(R.string.action_save)
+                    },
                     onClick = {
-                        onSave(
-                            name.trim(),
-                            calories.toIntOrNull() ?: 0,
-                            ServingUnitOption.parseQuantity(protein) ?: 0.0,
-                            ServingUnitOption.parseQuantity(carbs) ?: 0.0,
-                            ServingUnitOption.parseQuantity(fat) ?: 0.0,
-                            mealType
-                        )
+                        if (!isSaving) {
+                            onSave(
+                                name.trim(),
+                                calories.toIntOrNull() ?: 0,
+                                ServingUnitOption.parseQuantity(protein) ?: 0.0,
+                                ServingUnitOption.parseQuantity(carbs) ?: 0.0,
+                                ServingUnitOption.parseQuantity(fat) ?: 0.0,
+                                mealType
+                            )
+                        }
                     },
                     enabled = canSave,
                     modifier = Modifier.fillMaxWidth()

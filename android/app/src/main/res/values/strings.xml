@@ -31,6 +31,7 @@
     <string name="action_continue">Continue</string>
     <string name="action_get_started">Get Started</string>
     <string name="action_log">Log</string>
+    <string name="action_logging">Logging...</string>
     <string name="action_what_if">What if?</string>
     <string name="action_analyze">Analyze</string>
     <string name="action_discard">Discard</string>

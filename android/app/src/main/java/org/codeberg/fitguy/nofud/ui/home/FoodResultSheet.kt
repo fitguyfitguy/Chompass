@@ -93,7 +93,8 @@ fun FoodResultSheet(
         selectedServingQuantity: Double?,
         editedAnalysis: FoodAnalysis
     ) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    isSaving: Boolean = false,
 ) {
     val bitmap = rememberDecodedBitmap(imageBytes)
     val state = rememberModalBottomSheetState(
@@ -253,19 +254,26 @@ fun FoodResultSheet(
     ) {
         SheetReviewToolbar(
             title = stringResource(R.string.sheet_review_food),
-            primaryLabel = stringResource(R.string.action_log),
+            primaryLabel = if (isSaving) {
+                stringResource(R.string.action_logging)
+            } else {
+                stringResource(R.string.action_log)
+            },
             secondaryLabel = stringResource(R.string.action_what_if),
+            primaryEnabled = !isSaving,
             onCancel = onDismiss,
             onPrimary = {
-                onSave(
-                    name.trim().ifEmpty { analysis.name },
-                    servingGrams,
-                    scale,
-                    mealType,
-                    if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                    if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                    editedAnalysis()
-                )
+                if (!isSaving) {
+                    onSave(
+                        name.trim().ifEmpty { analysis.name },
+                        servingGrams,
+                        scale,
+                        mealType,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        editedAnalysis()
+                    )
+                }
             },
             onSecondary = { whatIfEntry = previewEntry() }
         )
