@@ -94,3 +94,27 @@ uv run python scripts/summarize_entry_perf.py android/build/perf-entry/<timestam
 
 The summarizer prints per-`(op, phase)` count/min/p50/p90/max/mean(ms) and a
 network-phase breakdown.
+
+### All-in-one benchmark
+
+`scripts/perf_entry_benchmark.sh` does the whole loop in one shot: seed the app's
+settings + tracking data, fire N real analyze+save requests through the live AI
+provider, then capture and summarize their timings. It stops automatically when
+the batch finishes (a `op=benchmark phase=done` marker). Debug build only, and it
+needs a Gemini key in `secrets.properties` so requests actually go out.
+
+```bash
+scripts/perf_entry_benchmark.sh          # 3 entries, seeds data first
+scripts/perf_entry_benchmark.sh 5        # 5 entries
+SEED=0 scripts/perf_entry_benchmark.sh   # benchmark only, no data seeding
+```
+
+It force-stops and cold-launches MainActivity with all extras in one intent:
+`seed_test_data` / `seed_body_metrics` / `seed_keto_settings` populate the app,
+and `run_entry_benchmark` + `benchmark_count` drive
+`EntryPerfBenchmark.run(...)`, which calls `FoodAnalysisService.analyzeText` and
+persists via `FoodRepository.addEntry` for each sample — so every phase
+(promptBuild / net / parse / dataStore / healthWrite) is timed. The batch also
+emits `op=benchmark phase=entry ms=<wall>` per entry (full analyze+save time).
+Artifacts land under `android/build/perf-entry/<timestamp>/` like the manual
+capture.

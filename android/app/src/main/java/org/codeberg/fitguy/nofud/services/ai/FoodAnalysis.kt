@@ -46,6 +46,54 @@ data class FoodAnalysis(
     val customNote: String? = null
 )
 
+/**
+ * Straight 1:1 mapping to a persistable [org.codeberg.fitguy.nofud.models.FoodEntry]
+ * (no scaling or user edits). Used by the debug entry-perf benchmark to persist an
+ * analyzed result; the interactive save path in HomeViewModel builds its own entry
+ * because it also applies serving scaling and manual field overrides.
+ */
+fun FoodAnalysis.toFoodEntry(
+    source: org.codeberg.fitguy.nofud.models.FoodSource,
+    mealType: org.codeberg.fitguy.nofud.models.MealType,
+): org.codeberg.fitguy.nofud.models.FoodEntry =
+    org.codeberg.fitguy.nofud.models.FoodEntry(
+        name = name,
+        calories = calories,
+        protein = protein,
+        carbs = carbs,
+        fat = fat,
+        emoji = emoji,
+        source = source,
+        mealType = mealType,
+        sugar = sugar,
+        addedSugar = addedSugar,
+        fiber = fiber,
+        saturatedFat = saturatedFat,
+        monounsaturatedFat = monounsaturatedFat,
+        polyunsaturatedFat = polyunsaturatedFat,
+        cholesterol = cholesterol,
+        sodium = sodium,
+        potassium = potassium,
+        transFat = transFat,
+        calcium = calcium,
+        iron = iron,
+        magnesium = magnesium,
+        zinc = zinc,
+        vitaminA = vitaminA,
+        vitaminC = vitaminC,
+        vitaminD = vitaminD,
+        vitaminB12 = vitaminB12,
+        vitaminE = vitaminE,
+        vitaminK = vitaminK,
+        folate = folate,
+        omega3 = omega3,
+        servingSizeGrams = servingSizeGrams,
+        servingUnitOptions = servingUnitOptions,
+        selectedServingUnit = selectedServingUnit,
+        selectedServingQuantity = selectedServingQuantity,
+        customNote = customNote,
+    )
+
 /** Per-100g nutrition-label reading. Scaled to a real serving via [scaled]. */
 data class NutritionLabelAnalysis(
     val name: String,
