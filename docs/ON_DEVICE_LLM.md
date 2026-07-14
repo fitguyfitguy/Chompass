@@ -2,7 +2,7 @@
 
 Debug-only proof of concept for running **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developers.google.com/edge/litert-lm/android). Validates food-analysis JSON extraction (Tier A), **food photo analysis (Tier B)**, and Coach tool-calling (Tier C) on real hardware before any production integration.
 
-**Status (2026-07-14):** Smoke test **passes end-to-end** on **Pixel 9a / GrapheneOS** with GPU backend (`litertlm-android` **0.14.0**). **Tier A + Tier C experiments complete**; **Tier B vision validated** (4/4 fixtures, multi-turn OK); **daily matrix run 4 (MTP + preset)** recorded below. Run 1 (cold, no MTP) still needs `daily_summary` logcat. Not wired into Settings or production AI dispatch — debug builds only.
+**Status (2026-07-14):** Smoke test **passes end-to-end** on **Pixel 9a / GrapheneOS** with GPU backend (`litertlm-android` **0.14.0**). **Tier B vision + daily matrix complete** (runs 1 and 4 recorded). Recommended daily-driver: **`preset=daily`** (`gpu` + `fewshot_units` + MTP when cache warm). Not wired into Settings or production AI dispatch — debug builds only.
 
 ---
 
@@ -236,16 +236,41 @@ adb logcat -s FudOnDeviceLlm
 | Tier A | jsonOk ≥ 3/3; pizza text `unitOptions` ≥ 1 | **Pass** — 3/3 ok; pizza sample `unitOptions=2` (run 4) |
 | Tier B | jsonOk ≥ 3/4; pizza photo `unitOptions` ≥ 1; multi-turn `status=ok` | **Pass** — 4/4 ok; pizza `unitOptions=1`; multi-turn ok (both runs) |
 | Tier C daily | `single_tool` + `ambiguous` complete without timeout | **Pass** — ~9.7 s + ~8.5 s (run 4) |
-| MTP | Tier A+B faster with MTP vs no-MTP baseline; no quality regression | **Pass (vision)** — Tier B median ~18 s (MTP) vs ~26 s (no MTP, tier=b); Tier A ~18 s median (MTP) vs ~25–30 s (prior fewshot without MTP). JSON/units intact. Run 1 daily baseline still pending. |
+| MTP | Tier A+B ≥25% faster with MTP vs no-MTP baseline; no quality regression | **Pass** — run 1 vs run 4: Tier A **−32%**, Tier B **−32%**, total **−30%** (see comparison below). JSON/units intact both runs. Run 4 also had warm cache (confounded); MTP benefit confirmed from prior Tier A-only Exp 2c too. |
 
 **Daily matrix results (Pixel 9a, real photo fixtures, 2026-07-14 PM):**
 
 | Run | engineInit_ms | tierA_ms | tierB_ms | tierC_ms | total_ms | Notes |
 |-----|---------------|----------|----------|----------|----------|-------|
-| 1 cold, no MTP | — | — | — | — | — | Started; **`daily_summary` not captured** — re-run with logcat |
+| 1 cold, no MTP | **34 745** | **88 788** | **102 294** | **20 029** | **211 111** | `clearCache=true`, `cache/`. Tier B ms = 4 fixtures only. Wall ~3.5 min incl. init. |
 | 2 warm, no MTP | — | — | — | — | — | Not run |
 | 3 cold + MTP | — | — | — | — | — | Not run |
-| 4 preset daily | **36 360** | **60 207** | **69 256** | **18 194** | **147 657** | `mtp=true`, warm `cache/litert-mtp`, `clearCache=false`. Tier B ms = 4 fixtures only (excludes multi-turn). Wall ~2.5 min incl. init. |
+| 4 preset daily | **36 360** | **60 207** | **69 256** | **18 194** | **147 657** | `mtp=true`, warm `cache/litert-mtp`, `clearCache=false`. Wall ~2.5 min incl. init. |
+
+**Run 1 vs run 4 comparison** (not isolated A/B — run 4 combines MTP **and** warm compile cache):
+
+| Metric | Run 1 (cold, no MTP) | Run 4 (warm, MTP) | Delta |
+|--------|----------------------|-------------------|-------|
+| `engineInit_ms` | 34 745 | 36 360 | +5% (comparable) |
+| `tierA_ms` | 88 788 | 60 207 | **−32%** |
+| `tierB_ms` | 102 294 | 69 256 | **−32%** |
+| `tierC_ms` | 20 029 | 18 194 | −9% |
+| `total_ms` | 211 111 | 147 657 | **−30%** |
+
+**Run 1 breakdown:**
+
+| Tier | Sample / fixture | ms | Quality |
+|------|------------------|-----|---------|
+| A | pizza + coke (text) | 36 286 | ok, `unitOptions=2` |
+| A | oatmeal (text) | 24 592 | ok, `unitOptions=1` |
+| A | chicken/rice (text) | 27 910 | ok, `unitOptions=2` |
+| B | `food_plate` | 27 073 | ok, `unitOptions=1` |
+| B | `fast_food_combo` | 27 317 | ok, `unitOptions=1` |
+| B | `nutrition_label` | 21 704 | ok, `unitOptions=1` |
+| B | `pizza_slices` | 26 200 | ok, `unitOptions=1` |
+| B | multi-turn (2 images) | 53 976 | ok (not in `tierB_ms` sum) |
+| C | `single_tool` | 10 717 | grounded — 4 foods listed |
+| C | `ambiguous` | 9 312 | `get_data_summary`, reasonable follow-up |
 
 **Run 4 breakdown:**
 
@@ -273,7 +298,7 @@ adb logcat -s FudOnDeviceLlm
 | `pizza_slices` | 25 637 | ok |
 | multi-turn | 52 891 | 2 turns, no crash |
 
-**Preliminary daily-driver recommendation:** `gpu` + `fewshot_units` + **`mtp=true`** when the engine is warm (same session or prior compile cache). Expect **~36 s** cold MTP init first launch, then **~16–26 s** text food log, **~15–19 s** photo food log, **~9 s** simple Coach query. First query after process kill pays full init cost — keep-alive or accept one-time penalty.
+**Daily-driver recommendation (confirmed):** `ondevice_llm_preset=daily` → `gpu` + `fewshot_units` + **`mtp=true`**. After warm compile cache, expect **~16–26 s** text food log, **~15–27 s** photo food log (no MTP) or **~15–19 s** (MTP), **~9–10 s** simple Coach. First launch after `clear_cache` or cold install: **~35 s** `engineInit` + full matrix **~3.5 min** (no MTP) vs **~2.5 min** (MTP + warm cache). Keep process alive or accept one-time cold-start penalty.
 
 ### Experiment examples
 
@@ -433,6 +458,7 @@ adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.
 | **Exp 4** E4B | — | — | — | — | **Skip** — E2B adequate; ~2 GB download not justified |
 | **Exp 5** `six_round_chain` + Tier C (2026-07-14 PM) | `tier=c` (E2B, no MTP) | n/a | n/a | **4/5 good** | See Tier C breakdown below; `six_round_chain` partial — wrong counts, missed propose_log_* |
 | **Tier B** vision (2026-07-14 PM) | `tier=b`, real photo fixtures | n/a | n/a (4× ~21–34 s) | n/a | **PASS** — 4/4 json ok; multi-turn ok; no MTP |
+| **Daily run 1** | `tier=daily`, cold cache, no MTP | 2/1/2 (text) | 4/4 (photo) | 2/2 Coach | tierA 89 s / tierB 102 s / tierC 20 s / total 211 s | **PASS** — no-MTP baseline |
 | **Daily run 4** | `preset=daily`, warm MTP cache | 2/1/2 (text) | 4/4 (photo) | 2/2 Coach | tierA 60 s / tierB 69 s / tierC 18 s / total 148 s | **PASS** — recommended daily-driver preset |
 
 ---
@@ -471,21 +497,20 @@ Fill in after experiment log runs on Pixel 9a:
 | `malformed_recovery` | ~15.0 s | summary + truncated weight JSON | Answered from summary + partial weights | **Pass** (intentional corrupt) |
 | `six_round_chain` | ~31.0 s | 4 tools (summary, weight, calories, food) | Summary partly wrong; no propose_log calls | **Partial** |
 
-**Suggested production prompt strategy (preliminary):** `fewshot_units` + optional MTP for Tier A on-device; Tier C stays **cloud default**, on-device E2B for offline simple Coach queries only.
+**Suggested production prompt strategy:** `fewshot_units` + **MTP** for Tier A and Tier B on-device; disclose ~15–35 s latency in Settings; Tier C stays **cloud default**, on-device E2B for offline simple Coach only.
 
 ---
 
 ## What next
 
-**Tier A/C experiments: complete** (2026-07-14). **Tier B + daily run 4: complete** — see daily matrix table above. Optional: run 1 (cold, no MTP) for MTP A/B baseline.
+**Tier A/C/B experiments + daily matrix: complete** (2026-07-14).
 
 | Step | Status |
 |------|--------|
 | Exp 1a, 2a/2b/2c, 5 | **Done** |
 | Exp 1b, 3, 4 | **Skipped** |
 | **Tier B vision harness** | **Done** — 4/4 fixtures, multi-turn OK |
-| **Daily matrix run 4** | **Done** — `preset=daily` PASS |
-| **Daily matrix run 1** | **Pending** — capture `daily_summary` for no-MTP baseline |
+| **Daily matrix runs 1 + 4** | **Done** — baseline + daily-driver preset PASS |
 | **Production integration** | **Next** — Tier A + B on-device provider behind Settings; Tier C stays cloud-first |
 
 See **Final assessment** under Decision gate above. Run Tier B + daily matrix before production wiring; re-test on litertlm upgrades.
