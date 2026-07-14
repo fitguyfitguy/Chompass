@@ -78,6 +78,34 @@ export CODEBERG_TOKEN='paste-token-here'
 
 The script auto-runs `nix shell nixpkgs#tea` when `tea` is not on PATH (e.g. inside devenv).
 
+### Codeberg storage quota
+
+Codeberg applies a combined quota for **releases, packages, LFS, and attachments** (default **1.5 GiB** per user/org, separate from the 750 MiB git-repo limit). Eight signed APKs per release are ~250 MB, so accumulated release history can hit the cap.
+
+**Symptoms:** `quota exceeded` from `tea`, or a release page with only some APKs attached.
+
+**Before publishing**, check attachment usage:
+
+```bash
+./scripts/manage_release_assets.sh list
+```
+
+**Free space** by removing old per-ABI split APKs (universal APKs and `SHA256SUMS` stay — enough for direct installs and F-Droid):
+
+```bash
+./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0   # dry-run first with --dry-run
+```
+
+**Publish** uploads in batches (play → fdroid → checksums). If a run stops mid-way, resume without recreating the release:
+
+```bash
+./scripts/publish_release.sh 1.10.0 --assets-only
+```
+
+**Screenshots:** `--with-screenshots` adds ~10 PNGs on top of the APK set. Prefer committing `docs/screenshots/` for the README and skip attaching screenshots to Codeberg unless you have headroom.
+
+**Need more quota?** Libre projects can request an increase (no payment): [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests). Check current usage under user/org settings on Codeberg.
+
 ## Release screenshots (optional)
 
 JVM-based Compose screenshot previews render on the maintainer machine inside devenv — no phone or adb required.
@@ -99,7 +127,7 @@ Validate without updating reference images:
 ./scripts/export_release_screenshots.sh --validate
 ```
 
-Attach screenshots when publishing:
+Attach screenshots when publishing (only if release quota has room — see [Codeberg storage quota](RELEASE.md#codeberg-storage-quota)):
 
 ```bash
 devenv tasks run release:screenshots

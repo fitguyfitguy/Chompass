@@ -57,4 +57,9 @@
     exec = "./scripts/export_release_screenshots.sh";
     description = "Render JVM screenshot previews; export to release-screenshots/ and docs/screenshots/";
   };
+
+  tasks."release:assets-list" = {
+    exec = "./scripts/manage_release_assets.sh list";
+    description = "List Codeberg release attachments and estimated total size";
+  };
 }
