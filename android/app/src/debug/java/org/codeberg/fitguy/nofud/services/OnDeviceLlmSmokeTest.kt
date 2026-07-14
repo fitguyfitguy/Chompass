@@ -10,6 +10,7 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import java.io.File
 import java.time.LocalDate
+import java.util.Locale
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -18,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.codeberg.fitguy.nofud.AppContainer
+import org.codeberg.fitguy.nofud.debug.OnDeviceLlmDebugConfig
+import org.codeberg.fitguy.nofud.debug.OnDeviceLlmDefaults
 import org.codeberg.fitguy.nofud.services.ai.CoachTools
 import org.codeberg.fitguy.nofud.services.ai.FoodJsonParser
 import org.codeberg.fitguy.nofud.services.ai.ON_DEVICE_LLM_TAG
@@ -27,29 +30,37 @@ import org.json.JSONObject
 
 /**
  * Debug-only on-device LLM smoke test, triggered by the `run_ondevice_llm_test`
- * intent extra in MainActivity (mirrors [EntryPerfBenchmark]'s shape). Runs the
- * same Tier A (`analyzeText`) and Tier C (Coach tool-calling) prompts used in
- * the earlier WSL2/Ollama doability tests against a local LiteRT-LM model, to
- * validate real on-device latency/quality on the Pixel 9a / GrapheneOS target.
- *
- * Model delivery is manual (`adb push` into app-private storage) — see
- * MODEL_FILENAME below and docs/ON_DEVICE_LLM.md for the exact push sequence.
- * Results go to logcat under tag [ON_DEVICE_LLM_TAG] as `op=ondevice_llm phase=... key=value` lines.
- *
- * Backend selection: defaults to GPU. Override with intent extra
- * `--es ondevice_llm_backend cpu` for A/B comparison.
+ * intent extra in MainActivity. See docs/ON_DEVICE_LLM.md for model delivery,
+ * intent extras, and experiment matrix.
  */
 class OnDeviceLlmSmokeTest(
     private val container: AppContainer,
-    backendName: String = "gpu",
-    private val enableMtp: Boolean = false,
+    private val config: OnDeviceLlmDebugConfig,
 ) {
 
-    private val backend: Backend = OnDeviceLlmClient.backendFromIntentValue(backendName)
+    constructor(
+        container: AppContainer,
+        backendName: String = "gpu",
+        enableMtp: Boolean = false,
+    ) : this(
+        container,
+        OnDeviceLlmDebugConfig(
+            enabled = true,
+            backendName = backendName,
+            enableMtp = enableMtp,
+        ),
+    )
+
+    private val backend: Backend = OnDeviceLlmClient.backendFromIntentValue(config.backendName)
     private val backendLabel: String = OnDeviceLlmClient.backendLabel(backend)
+    private val tierMode: TierMode = TierMode.fromIntent(config.tier)
+    private val promptMode: PromptMode = PromptMode.fromIntent(config.promptMode)
+    private val repeatCount: Int = config.repeatCount.coerceIn(1, 5)
+    private val useFunctionGemmaPrompt: Boolean =
+        config.modelFilename.contains("functiongemma", ignoreCase = true)
 
     suspend fun run() {
-        val modelFile = File(container.appContext.filesDir, "models/$MODEL_FILENAME")
+        val modelFile = File(container.appContext.filesDir, "models/${config.modelFilename}")
         if (!modelFile.exists()) {
             Log.e(
                 ON_DEVICE_LLM_TAG,
@@ -57,26 +68,28 @@ class OnDeviceLlmSmokeTest(
             )
             return
         }
-        val cacheDir = container.appContext.cacheDir.absolutePath
+        val cacheDir = resolveCacheDir()
         Log.i(
             ON_DEVICE_LLM_TAG,
-            "op=ondevice_llm phase=start backend=$backendLabel mtp=$enableMtp cacheDir=$cacheDir path=${modelFile.absolutePath}"
+            "op=ondevice_llm phase=start backend=$backendLabel mtp=${config.enableMtp} tier=$tierMode " +
+                "prompt=$promptMode repeat=$repeatCount model=${config.modelFilename} " +
+                "functionGemmaPrompt=$useFunctionGemmaPrompt cacheDir=$cacheDir path=${modelFile.absolutePath}"
         )
 
         val client = OnDeviceLlmClient(
             modelPath = modelFile.absolutePath,
             cacheDir = cacheDir,
             backend = backend,
-            enableMtp = enableMtp,
+            enableMtp = config.enableMtp,
         )
         try {
             val loadMs = client.ensureLoaded()
             Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=modelLoad backend=$backendLabel ms=$loadMs")
 
-            runTierA(client)
-            runTierC(client)
+            if (tierMode.runA) runTierA(client)
+            if (tierMode.runC) runTierC(client)
 
-            Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=done backend=$backendLabel")
+            Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=done backend=$backendLabel tier=$tierMode prompt=$promptMode")
         } catch (e: Throwable) {
             Log.e(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=fatal backend=$backendLabel err=${e.message}", e)
         } finally {
@@ -84,37 +97,93 @@ class OnDeviceLlmSmokeTest(
         }
     }
 
-    // MARK: - Tier A: free-text food description -> structured nutrition JSON
+    /** MTP uses a separate compile-cache dir to avoid drafter/main-model cache collisions. */
+    private fun resolveCacheDir(): String {
+        val base = container.appContext.cacheDir
+        if (!config.enableMtp) return base.absolutePath
+        return File(base, "litert-mtp").apply { mkdirs() }.absolutePath
+    }
 
     private suspend fun runTierA(client: OnDeviceLlmClient) {
-        for ((i, description) in SAMPLES.withIndex()) {
-            Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=tierA_begin backend=$backendLabel i=$i")
-            val start = System.nanoTime()
-            try {
-                val raw = withInferenceHeartbeat(phase = "tierA", detail = "i=$i") {
-                    withTimeout(INFERENCE_TIMEOUT_MS) {
-                        client.generate(systemPrompt = "", userPrompt = tierAPrompt(description))
-                    }
-                }
-                val ms = (System.nanoTime() - start) / 1_000_000
-                val analysis = runCatching { FoodJsonParser.parseFood(raw) }.getOrNull()
-                val status = if (analysis != null) "ok" else "parseFail"
+        repeat(repeatCount) { pass ->
+            for ((i, description) in SAMPLES.withIndex()) {
                 Log.i(
                     ON_DEVICE_LLM_TAG,
-                    "op=ondevice_llm phase=tierA backend=$backendLabel i=$i ms=$ms status=$status " +
-                        "name=${analysis?.name} calories=${analysis?.calories} unitOptions=${analysis?.servingUnitOptions?.size}"
+                    "op=ondevice_llm phase=tierA_begin backend=$backendLabel pass=$pass i=$i prompt=$promptMode"
                 )
-            } catch (e: Throwable) {
-                val ms = (System.nanoTime() - start) / 1_000_000
-                Log.e(
-                    ON_DEVICE_LLM_TAG,
-                    "op=ondevice_llm phase=tierA backend=$backendLabel i=$i ms=$ms status=fail err=${e.message}"
-                )
+                val start = System.nanoTime()
+                try {
+                    val prompt = tierAPrompt(description)
+                    Log.i(
+                        ON_DEVICE_LLM_TAG,
+                        "op=ondevice_llm phase=tierA_prompt backend=$backendLabel pass=$pass i=$i " +
+                            "promptChars=${prompt.length}"
+                    )
+                    val raw = withInferenceHeartbeat(phase = "tierA", detail = "pass=$pass i=$i") {
+                        withTimeout(INFERENCE_TIMEOUT_MS) {
+                            client.generate(systemPrompt = "", userPrompt = prompt)
+                        }
+                    }
+                    val pass1Ms = (System.nanoTime() - start) / 1_000_000
+                    val analysis = runCatching { FoodJsonParser.parseFood(raw) }.getOrNull()
+                    var unitOptions = analysis?.servingUnitOptions?.size ?: 0
+                    var totalMs = pass1Ms
+
+                    if (promptMode == PromptMode.TWOPASS && analysis != null) {
+                        val twoPassStart = System.nanoTime()
+                        val unitsRaw = withInferenceHeartbeat(phase = "tierA_units", detail = "pass=$pass i=$i") {
+                            withTimeout(INFERENCE_TIMEOUT_MS) {
+                                client.generate(
+                                    systemPrompt = "",
+                                    userPrompt = inferServingUnitPrompt(
+                                        name = analysis.name,
+                                        servingSizeGrams = analysis.servingSizeGrams,
+                                        description = description,
+                                    ),
+                                )
+                            }
+                        }
+                        val twoPassMs = (System.nanoTime() - twoPassStart) / 1_000_000
+                        totalMs += twoPassMs
+                        val inferred = runCatching {
+                            FoodJsonParser.parseServingUnitOptions(unitsRaw, analysis.servingSizeGrams)
+                        }.getOrNull()
+                        if (inferred != null && inferred.isNotEmpty()) {
+                            unitOptions = inferred.size
+                        }
+                        Log.i(
+                            ON_DEVICE_LLM_TAG,
+                            "op=ondevice_llm phase=tierA_twopass backend=$backendLabel pass=$pass i=$i ms=$twoPassMs " +
+                                "unitOptions=$unitOptions"
+                        )
+                    }
+
+                    val status = if (analysis != null) "ok" else "parseFail"
+                    Log.i(
+                        ON_DEVICE_LLM_TAG,
+                        "op=ondevice_llm phase=tierA backend=$backendLabel pass=$pass i=$i ms=$totalMs pass1Ms=$pass1Ms " +
+                            "status=$status name=${analysis?.name} calories=${analysis?.calories} " +
+                            "unitOptions=$unitOptions prompt=$promptMode"
+                    )
+                } catch (e: Throwable) {
+                    val ms = (System.nanoTime() - start) / 1_000_000
+                    Log.e(
+                        ON_DEVICE_LLM_TAG,
+                        "op=ondevice_llm phase=tierA backend=$backendLabel pass=$pass i=$i ms=$ms " +
+                            "status=fail err=${e.message}"
+                    )
+                }
             }
         }
     }
 
-    private fun tierAPrompt(description: String): String = """
+    private fun tierAPrompt(description: String): String = when (promptMode) {
+        PromptMode.COMPACT -> tierACompactPrompt(description)
+        PromptMode.FEWSHOT_UNITS -> tierAFewshotUnitsPrompt(description)
+        PromptMode.TWOPASS, PromptMode.FULL -> tierAFullPrompt(description)
+    }
+
+    private fun tierAFullPrompt(description: String): String = """
         Estimate the nutritional content for: $description
         Parse any quantities, brands, and multiple items from the text. If a brand is mentioned, use that brand's known nutritional data. If multiple items are described, sum up the total nutrition.
         Respond ONLY with JSON:
@@ -125,21 +194,71 @@ class OnDeviceLlmSmokeTest(
         For "emoji" pick the single most specific food emoji that depicts this dish — e.g. 🥚 for eggs, 🍕 for pizza, 🍎 for an apple, 🥗 for a salad, 🍔 for a burger, 🍜 for ramen, 🍰 for cake, 🥑 for avocado, ☕ for coffee, 🍣 for sushi. Only fall back to 🍽️ when the food truly cannot be represented by any specific emoji. Use null for any nutrient you cannot estimate.
     """.trimIndent()
 
-    // MARK: - Tier C: Coach tool-calling loop, against real CoachTools + real logged data
+    private fun tierACompactPrompt(description: String): String = """
+        Estimate the nutritional content for: $description
+        Parse quantities and multiple items from the text. Sum total nutrition when multiple items are described.
+        Respond ONLY with JSON:
+        {"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","unit_options":[]}
+        Calories are integers. Macros are decimal grams. serving_size_grams is total estimated weight in grams.
+        unit_options: use slice/piece for pizza etc., ml/can for drinks when obvious; [] only when no non-gram unit applies.
+        Pick the most specific food emoji; fall back to 🍽️ only when necessary.
+    """.trimIndent()
+
+    private fun tierAFewshotUnitsPrompt(description: String): String = """
+        Estimate the nutritional content for: $description
+        Parse any quantities, brands, and multiple items from the text. If multiple items are described, sum up the total nutrition.
+        Respond ONLY with JSON:
+        {"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}
+
+        unit_options examples (replace numbers with your estimates):
+        Pizza: {"unit_options":[{"unit":"slice","quantity":2.0,"grams_per_unit":120.0}]}
+        Soda can: {"unit_options":[{"unit":"can","quantity":1.0,"grams_per_unit":355.0},{"unit":"ml","quantity":355.0,"grams_per_unit":1.03}]}
+        Oatmeal bowl: {"unit_options":[{"unit":"bowl","quantity":1.0,"grams_per_unit":250.0}]}
+
+        unit_options is required when the text names an obvious non-gram serving unit. Use slice/piece for pizza, cake, bread; ml/cup/can for drinks; tbsp/tsp for spooned foods. Quantity must match the analyzed amount. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
+        For "emoji" pick the single most specific food emoji. Use null for nutrients you cannot estimate.
+    """.trimIndent()
+
+    private fun inferServingUnitPrompt(name: String, servingSizeGrams: Double, description: String): String = """
+        The previous food analysis returned grams only. Infer non-gram serving unit options for the same food and amount.
+
+        Food: $name
+        Total grams for the analyzed amount: ${String.format(Locale.US, "%.1f", servingSizeGrams)}
+        User context: $description
+
+        Return ONLY JSON:
+        {"unit_options":[{"unit":"slice","quantity":8.0,"grams_per_unit":45.0}]}
+
+        Rules:
+        - Replace the sample numbers with the actual best estimate.
+        - For pizza, cake, pie, bread, cookies, fruit pieces, use slice or piece.
+        - For liquids (soda, milk, soup), use ml or can when packaged.
+        - grams_per_unit is grams for one unit. For countable units, use total grams / visible quantity.
+        - Return [] only if no non-gram unit is apparent.
+
+        Good outputs:
+        {"unit_options":[{"unit":"slice","quantity":2.0,"grams_per_unit":120.0}]}
+        {"unit_options":[{"unit":"can","quantity":1.0,"grams_per_unit":355.0},{"unit":"ml","quantity":355.0,"grams_per_unit":1.03}]}
+    """.trimIndent()
 
     private suspend fun runTierC(client: OnDeviceLlmClient) {
         val weights = container.weightRepository.entries.first()
         val bodyFats = container.bodyFatRepository.entries.first()
         val foods = container.foodRepository.entries.first()
         val tools = CoachTools(weights, bodyFats, foods, container.foodAnalysis)
-        val systemPrompt = tierCSystemPrompt(weights.size, bodyFats.size, foods.size)
+        val systemPrompt = if (useFunctionGemmaPrompt) {
+            tierCFunctionGemmaSystemPrompt()
+        } else {
+            tierCSystemPrompt(weights.size, bodyFats.size, foods.size)
+        }
 
         for (scenario in TIER_C_SCENARIOS) {
             val corrupting = scenario.corruptTool != null
             val toolSet = CoachToolsToolSet(tools, corruptToolName = scenario.corruptTool)
             Log.i(
                 ON_DEVICE_LLM_TAG,
-                "op=ondevice_llm phase=tierC_begin backend=$backendLabel scenario=${scenario.name} corrupting=$corrupting"
+                "op=ondevice_llm phase=tierC_begin backend=$backendLabel scenario=${scenario.name} " +
+                    "corrupting=$corrupting functionGemmaPrompt=$useFunctionGemmaPrompt"
             )
             val start = System.nanoTime()
             try {
@@ -167,16 +286,6 @@ class OnDeviceLlmSmokeTest(
         }
     }
 
-    /**
-     * Mirrors the structure (date framing, when-to-call-tools guidance, propose_log_*
-     * guidance) of the real [org.codeberg.fitguy.nofud.services.ai.ChatService]'s
-     * `buildSystemPrompt`, trimmed of profile/formula/forecast sections this harness
-     * has no equivalent for. Adds one explicit instruction beyond the production
-     * prompt — "always weave the tool's JSON result into your final answer" — as an
-     * experiment: the production prompt has no such line (cloud models apparently
-     * infer it), but the first on-device run showed the model calling tools
-     * correctly and then ignoring their results in 3/4 scenarios.
-     */
     private fun tierCSystemPrompt(weightCount: Int, bodyFatCount: Int, foodCount: Int): String = """
         You are Coach, an AI nutrition and weight-change assistant inside a calorie tracking app. Answer in plain English, be specific and factual, and ground your answers in the user's own logged data. Be concise — 2-5 sentences per response unless asked for detail.
 
@@ -197,17 +306,16 @@ class OnDeviceLlmSmokeTest(
         - $weightCount weight entries, $bodyFatCount body-fat readings, $foodCount food entries logged total. Use get_data_summary to see exact date ranges.
     """.trimIndent()
 
-    /**
-     * Wraps the real [CoachTools] as LiteRT-LM `@Tool` functions, one per name in
-     * [CoachTools.TOOL_NAMES], so the engine drives the exact same tool set the cloud
-     * Coach uses. Each call is logged for round-by-round visibility. When
-     * [corruptToolName] matches, that tool's JSON result is truncated before being
-     * returned to the model, to probe malformed-tool-result recovery (scenario
-     * `malformed_recovery`).
-     *
-     * Return type is [JsonElement], NOT [String] — LiteRT-LM's `ToolManager.execute`
-     * double-encodes raw JSON strings; returning [JsonElement] preserves structure.
-     */
+    private fun tierCFunctionGemmaSystemPrompt(): String = """
+        You are a function-calling assistant for a calorie tracking app. Today is ${LocalDate.now()}.
+
+        Call the appropriate function when the user asks about logged food, weight, body fat, calorie totals, or wants to propose logging food/weight/water.
+        Resolve relative dates yourself: "yesterday" = today minus 1 day; "last week" = the 7 days ending yesterday.
+        After receiving a function result, use the returned JSON data directly in your answer. Never claim data was unavailable when a function succeeded.
+        propose_log_* functions only prepare a confirmation — tell the user what you are proposing to log.
+        Answer in plain English, 2-5 sentences unless more detail is requested.
+    """.trimIndent()
+
     private class CoachToolsToolSet(
         private val tools: CoachTools,
         private val corruptToolName: String? = null
@@ -291,7 +399,38 @@ class OnDeviceLlmSmokeTest(
 
     private data class TierCScenario(val name: String, val message: String, val corruptTool: String? = null)
 
-    /** Emits a log line every 15s while a blocking LiteRT call runs — decode can take minutes on cold GPU. */
+    private enum class TierMode(val runA: Boolean, val runC: Boolean) {
+        ALL(runA = true, runC = true),
+        A(runA = true, runC = false),
+        C(runA = false, runC = true),
+        ;
+
+        companion object {
+            fun fromIntent(value: String): TierMode = when (value.lowercase()) {
+                "a" -> A
+                "c" -> C
+                else -> ALL
+            }
+        }
+    }
+
+    private enum class PromptMode {
+        FULL,
+        COMPACT,
+        FEWSHOT_UNITS,
+        TWOPASS,
+        ;
+
+        companion object {
+            fun fromIntent(value: String): PromptMode = when (value.lowercase()) {
+                "compact" -> COMPACT
+                "fewshot_units" -> FEWSHOT_UNITS
+                "twopass" -> TWOPASS
+                else -> FULL
+            }
+        }
+    }
+
     private suspend fun <T> withInferenceHeartbeat(
         phase: String,
         detail: String,
@@ -318,11 +457,9 @@ class OnDeviceLlmSmokeTest(
     }
 
     companion object {
-        /** Per-call inference budget; Tier A/C on GPU should finish well under this. */
         private const val INFERENCE_TIMEOUT_MS = 300_000L
 
-        /** Expected on-device path: `filesDir/models/$MODEL_FILENAME`, landed via `adb push`. */
-        const val MODEL_FILENAME = "gemma-e2b-int4.litertlm"
+        const val MODEL_FILENAME = OnDeviceLlmDefaults.DEFAULT_MODEL_FILENAME
 
         private val SAMPLES = listOf(
             "2 slices of pepperoni pizza and a can of coke",
@@ -341,7 +478,12 @@ class OnDeviceLlmSmokeTest(
                 "malformed_recovery",
                 "Give me my data summary, then tell me what my weight history looks like for the last 30 days.",
                 corruptTool = "get_weight_history"
-            )
+            ),
+            TierCScenario(
+                "six_round_chain",
+                "Give me a data summary, my weight history for the last 30 days, my calorie totals for last week, " +
+                    "what I ate yesterday, then propose logging 2000ml of water and 75kg weight."
+            ),
         )
     }
 }

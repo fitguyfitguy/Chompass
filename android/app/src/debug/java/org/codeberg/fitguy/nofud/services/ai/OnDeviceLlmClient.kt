@@ -32,9 +32,7 @@ fun Message.plainText(): String =
  * Debug-only wrapper around Google AI Edge's LiteRT-LM engine, used by
  * [org.codeberg.fitguy.nofud.services.OnDeviceLlmSmokeTest]. Deliberately NOT
  * wired into [org.codeberg.fitguy.nofud.models.AIProvider] /
- * [FoodAnalysisService] / [ChatService] dispatch — this is a standalone
- * prototype to validate LiteRT-LM on real hardware before any of that
- * production plumbing is built.
+ * [FoodAnalysisService] / [ChatService] dispatch.
  */
 class OnDeviceLlmClient(
     private val modelPath: String,
@@ -94,7 +92,7 @@ class OnDeviceLlmClient(
         loadMs
     }
 
-    /** Single-shot prompt/response, no tool calling. Used for the Tier A (`analyzeText`) scenario. */
+    /** Single-shot prompt/response, no tool calling. Used for Tier A (`analyzeText`) scenarios. */
     suspend fun generate(systemPrompt: String, userPrompt: String): String = withContext(Dispatchers.Default) {
         val active = engine ?: error("Engine not initialized — call ensureLoaded() first")
         active.createConversation(
@@ -103,10 +101,8 @@ class OnDeviceLlmClient(
     }
 
     /**
-     * Opens a tool-enabled conversation for the Tier C (Coach) scenarios. LiteRT-LM's
-     * native function-calling drives the tool round-trip internally when [toolSet]'s
-     * `@Tool`-annotated functions are invoked — callers just send messages and read
-     * the final response; per-round detail is logged inside the tool functions themselves.
+     * Opens a tool-enabled conversation for Tier C (Coach) scenarios. LiteRT-LM's
+     * native function-calling drives the tool round-trip internally.
      */
     suspend fun createToolConversation(systemPrompt: String, toolSet: ToolSet): Conversation =
         withContext(Dispatchers.Default) {
@@ -114,7 +110,7 @@ class OnDeviceLlmClient(
             active.createConversation(
                 ConversationConfig(
                     systemInstruction = Contents.of(systemPrompt),
-                    tools = listOf(tool(toolSet))
+                    tools = listOf(tool(toolSet)),
                 )
             )
         }
@@ -130,6 +126,12 @@ class OnDeviceLlmClient(
             runCatching {
                 ExperimentalFlags.enableSpeculativeDecoding = true
                 Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineConfig mtp=enabled")
+                Log.w(
+                    ON_DEVICE_LLM_TAG,
+                    "op=ondevice_llm phase=engineConfig mtp=warning note=token_budget_bug_2816 " +
+                        "draft+rejected tokens may count toward output limit; " +
+                        "double maxOutputToken when API supports it (not in litertlm 0.14.0 ConversationConfig)"
+                )
             }.onFailure {
                 Log.w(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineConfig mtp=skipped err=${it.message}")
             }
