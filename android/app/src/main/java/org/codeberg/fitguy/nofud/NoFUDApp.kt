@@ -8,6 +8,7 @@ import org.codeberg.fitguy.nofud.data.FoodRepository
 import org.codeberg.fitguy.nofud.data.KeyStore
 import org.codeberg.fitguy.nofud.data.PreferencesStore
 import org.codeberg.fitguy.nofud.data.ProfileRepository
+import org.codeberg.fitguy.nofud.data.RecipeRepository
 import org.codeberg.fitguy.nofud.data.WaterRepository
 import org.codeberg.fitguy.nofud.data.WeightRepository
 import org.codeberg.fitguy.nofud.models.AIProvider
@@ -148,6 +149,7 @@ class AppContainer(app: NoFUDApp) {
 
     val profileRepository = ProfileRepository(prefs)
     val foodRepository = FoodRepository(prefs, health, imageStore)
+    val recipeRepository = RecipeRepository(prefs, foodRepository)
     val weightRepository = WeightRepository(prefs, profileRepository, health)
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs)

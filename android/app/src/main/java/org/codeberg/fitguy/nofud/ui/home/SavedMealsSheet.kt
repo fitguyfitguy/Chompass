@@ -78,6 +78,7 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.data.FrequentFoodGroup
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.MacroValueFormatter
+import org.codeberg.fitguy.nofud.models.Recipe
 import org.codeberg.fitguy.nofud.services.FoodImageStore
 import org.codeberg.fitguy.nofud.ui.components.MacroChip
 import org.codeberg.fitguy.nofud.ui.components.rememberFoodThumbnail
@@ -86,7 +87,7 @@ import org.codeberg.fitguy.nofud.ui.theme.MacroKind
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-enum class SavedTab { RECENTS, FREQUENT, FAVORITES }
+enum class SavedTab { RECENTS, FREQUENT, FAVORITES, RECIPES }
 
 /**
  * Verbatim port of `RecentsView` in
@@ -111,7 +112,10 @@ enum class SavedTab { RECENTS, FREQUENT, FAVORITES }
 fun SavedMealsSheet(
     container: AppContainer,
     onDismiss: () -> Unit,
-    onRelogEntry: (FoodEntry) -> Unit
+    onRelogEntry: (FoodEntry) -> Unit,
+    onLogRecipe: (Recipe) -> Unit = {},
+    onEditRecipe: (Recipe) -> Unit = {},
+    onCreateRecipe: () -> Unit = {}
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -132,6 +136,7 @@ fun SavedMealsSheet(
     // so the UI updates as soon as toggleFavorite/moveFavorite writes back.
     val favorites by container.foodRepository.favorites.collectAsState(initial = emptyList())
     val favKeys by container.foodRepository.favoriteKeys.collectAsState(initial = emptySet())
+    val recipes by container.recipeRepository.recipes.collectAsState(initial = emptyList())
 
     // Per-tab search query — substring + case-insensitive match against
     // entry.name (or group.template.name for Frequent). Resets when the user
@@ -151,6 +156,10 @@ fun SavedMealsSheet(
         if (searchQuery.isBlank()) favorites
         else favorites.filter { it.name.contains(searchQuery.trim(), ignoreCase = true) }
     }
+    val filteredRecipes = remember(recipes, searchQuery) {
+        if (searchQuery.isBlank()) recipes
+        else recipes.filter { it.name.contains(searchQuery.trim(), ignoreCase = true) }
+    }
 
     // Run the legacy → ordered favorites migration once on mount so existing
     // users see their previous favorites in the new ordered list.
@@ -161,6 +170,7 @@ fun SavedMealsSheet(
             SavedTab.RECENTS -> recents = container.foodRepository.recent(50)
             SavedTab.FREQUENT -> frequent = container.foodRepository.frequent()
             SavedTab.FAVORITES -> Unit  // driven by `favorites` Flow above
+            SavedTab.RECIPES -> Unit    // driven by `recipes` Flow above
         }
     }
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
@@ -293,6 +303,34 @@ fun SavedMealsSheet(
                         )
                     }
                 }
+                SavedTab.RECIPES -> {
+                    Row(
+                        Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        androidx.compose.material3.IconButton(onClick = onCreateRecipe) {
+                            Icon(
+                                Icons.Filled.AddCircle,
+                                contentDescription = stringResource(R.string.cd_new_recipe),
+                                tint = AppColors.Calorie
+                            )
+                        }
+                    }
+                    if (filteredRecipes.isEmpty()) {
+                        val msg = if (isSearching) stringResource(R.string.saved_meals_no_match)
+                                  else stringResource(R.string.saved_meals_no_recipes)
+                        EmptyState(icon = if (isSearching) Icons.Outlined.Search else Icons.Filled.Restaurant, text = msg)
+                    } else {
+                        SavedList(items = filteredRecipes) { recipe ->
+                            RecipeRow(
+                                recipe = recipe,
+                                imageStore = container.imageStore,
+                                onLog = { onLogRecipe(recipe); onDismiss() },
+                                onEdit = { onEditRecipe(recipe) }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -330,9 +368,10 @@ private fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
                         SavedTab.RECENTS -> stringResource(R.string.saved_meals_tab_recents)
                         SavedTab.FREQUENT -> stringResource(R.string.saved_meals_tab_frequent)
                         SavedTab.FAVORITES -> stringResource(R.string.saved_meals_tab_favorites)
+                        SavedTab.RECIPES -> stringResource(R.string.saved_meals_tab_recipes)
                     },
                     color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface,
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -638,6 +677,64 @@ private fun SavedMealRow(
         if (trailing != null) {
             trailing()
         } else {
+            Icon(
+                Icons.Filled.AddCircle,
+                contentDescription = stringResource(R.string.cd_log),
+                tint = AppColors.Calorie,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Row for a saved [Recipe] — mirrors [SavedMealRow]'s shell, using the first
+ * ingredient's emoji as the recipe's face and the summed macros as totals.
+ * Tapping the row opens the recipe builder for editing; the trailing "+"
+ * logs every ingredient immediately.
+ */
+@Composable
+private fun RecipeRow(
+    recipe: Recipe,
+    imageStore: FoodImageStore,
+    onLog: () -> Unit,
+    onEdit: () -> Unit
+) {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(rowFill)
+            .border(0.5.dp, rowBorder, RoundedCornerShape(18.dp))
+            .clickable(onClick = onEdit)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Thumbnail(emoji = recipe.emoji ?: recipe.ingredients.firstOrNull()?.emoji, imageFilename = null, imageStore = imageStore)
+
+        Column(verticalArrangement = Arrangement.spacedBy(3.dp), modifier = Modifier.weight(1f)) {
+            Text(recipe.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("${recipe.totalCalories} kcal", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+                Text(
+                    stringResource(R.string.recipe_ingredient_count_format, recipe.ingredients.size),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                MacroChip(MacroKind.PROTEIN, recipe.totalProtein)
+                MacroChip(MacroKind.CARBS, recipe.totalCarbs)
+                MacroChip(MacroKind.FAT, recipe.totalFat)
+            }
+        }
+
+        androidx.compose.material3.IconButton(onClick = onLog) {
             Icon(
                 Icons.Filled.AddCircle,
                 contentDescription = stringResource(R.string.cd_log),

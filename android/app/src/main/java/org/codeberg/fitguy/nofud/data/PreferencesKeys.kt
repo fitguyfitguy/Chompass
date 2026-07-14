@@ -86,6 +86,7 @@ internal object Keys {
             stringPreferencesKey(FOOD_ENTRIES_BUCKET_PREFIX + month.toString())
         val FAVORITE_KEYS = stringPreferencesKey("favorites")
         val FAVORITE_ENTRIES = stringPreferencesKey("favoriteFoodEntries")
+        val RECIPES = stringPreferencesKey("recipes")
         val PENDING_FOOD_ANALYSIS_DRAFT = stringPreferencesKey("pendingFoodAnalysisDraft")
         val PENDING_FOOD_INPUT_DRAFT = stringPreferencesKey("pendingFoodInputDraft")
         val WEIGHT_ENTRIES = stringPreferencesKey("weightEntries")

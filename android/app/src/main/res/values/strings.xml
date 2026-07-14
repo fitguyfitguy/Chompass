@@ -469,6 +469,22 @@
     <string name="saved_meals_remove_favorite">Remove favorite</string>
     <string name="saved_meals_move_up">Move up</string>
     <string name="saved_meals_move_down">Move down</string>
+    <string name="saved_meals_tab_recipes">Recipes</string>
+    <string name="saved_meals_no_recipes">No recipes yet\nTap + to build one from multiple ingredients</string>
+    <string name="recipe_builder_title_new">New Recipe</string>
+    <string name="recipe_builder_title_edit">Edit Recipe</string>
+    <string name="recipe_builder_name_placeholder">Recipe name</string>
+    <string name="recipe_builder_add_ingredient">Add ingredient</string>
+    <string name="recipe_builder_add_from_favorites">From Favorites</string>
+    <string name="recipe_builder_add_manual">Manual entry</string>
+    <string name="recipe_builder_no_ingredients">No ingredients yet</string>
+    <string name="recipe_builder_save">Save</string>
+    <string name="recipe_builder_log_now">Log Now</string>
+    <string name="recipe_builder_remove_ingredient">Remove ingredient</string>
+    <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_ingredient_count_format">%1$d ingredients</string>
+    <string name="cd_new_recipe">New recipe</string>
+    <string name="cd_edit_recipe">Edit recipe</string>
 
     <!-- Nutrition detail sheet -->
     <string name="nutrition_details_title">Nutrition Details</string>

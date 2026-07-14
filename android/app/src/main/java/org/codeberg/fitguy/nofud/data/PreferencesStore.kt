@@ -186,6 +186,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setFavoriteKeys(keys: Set<String>) = setFavoriteKeysImpl(keys)
     val favoriteFoodEntries: Flow<List<FoodEntry>> get() = favoriteFoodEntriesImpl
     suspend fun setFavoriteFoodEntries(entries: List<FoodEntry>) = setFavoriteFoodEntriesImpl(entries)
+    val recipes: Flow<List<org.codeberg.fitguy.nofud.models.Recipe>> get() = recipesImpl
+    suspend fun setRecipes(recipes: List<org.codeberg.fitguy.nofud.models.Recipe>) = setRecipesImpl(recipes)
     val pendingFoodAnalysisDraft: Flow<PendingFoodAnalysisDraft?> get() = pendingFoodAnalysisDraftImpl
     suspend fun setPendingFoodAnalysisDraft(draft: PendingFoodAnalysisDraft?) = setPendingFoodAnalysisDraftImpl(draft)
     val barcodeCache: Flow<Map<String, CachedBarcodeProduct>> get() = barcodeCacheImpl
