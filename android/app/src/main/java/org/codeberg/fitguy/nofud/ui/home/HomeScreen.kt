@@ -494,7 +494,7 @@ fun HomeScreen(container: AppContainer) {
                                     macroChips = ui.foodLogMacroChips,
                                     onTap = { editingEntry = entry },
                                     onLongPress = { selectedEntryIds = setOf(entry.id) },
-                                    onDelete = { vm.deleteEntry(entry.id) },
+                                    onDelete = { vm.deleteEntry(entry) },
                                     onToggleFavorite = { vm.toggleFavorite(entry) }
                                 )
                             }
@@ -669,7 +669,7 @@ fun HomeScreen(container: AppContainer) {
                 vm.reprocessFoodEntry(entry, updatedNote)
             },
             onSave = { updated ->
-                vm.updateEntry(updated)
+                vm.updateEntry(entry, updated)
                 editingEntry = null
             },
             onDismiss = { editingEntry = null }

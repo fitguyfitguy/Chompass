@@ -16,10 +16,12 @@ import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
 import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
+import org.codeberg.fitguy.nofud.models.HeuristicServingUnitSettings
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.PendingFoodAnalysisDraft
 import org.codeberg.fitguy.nofud.models.PendingFoodInputDraft
+import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
@@ -28,8 +30,13 @@ import org.codeberg.fitguy.nofud.models.WidgetSnapshot
 import org.codeberg.fitguy.nofud.services.health.DebugActivityDay
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import java.time.LocalDate
+import java.time.YearMonth
+import java.time.ZoneId
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -38,6 +45,9 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 val Context.fudaiDataStore by preferencesDataStore(name = "fudai_prefs")
+
+/** Key-name prefix for the per-calendar-month food entry buckets (see [PreferencesStore.foodEntries]). */
+private const val FOOD_ENTRIES_BUCKET_PREFIX = "foodEntries_"
 
 @Serializable
 private data class HealthEnergyGoalTargetSnapshot(
@@ -410,6 +420,26 @@ class PreferencesStore(private val context: Context) {
     val maxResponseTokens: Flow<Int> = ds.data.map { it[Keys.MAX_RESPONSE_TOKENS] ?: 1024 }
     suspend fun setMaxResponseTokens(v: Int) { ds.edit { it[Keys.MAX_RESPONSE_TOKENS] = v.coerceAtLeast(1) } }
 
+    // -- Serving unit inference --------------------------------------------
+    val servingUnitInferenceMode: Flow<ServingUnitInferenceMode> = ds.data.map { prefs ->
+        ServingUnitInferenceMode.fromStorage(prefs[Keys.SERVING_UNIT_INFERENCE_MODE])
+    }
+    suspend fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) {
+        ds.edit { it[Keys.SERVING_UNIT_INFERENCE_MODE] = mode.storageKey }
+    }
+
+    val heuristicServingUnitSettings: Flow<HeuristicServingUnitSettings> = ds.data.map { prefs ->
+        prefs[Keys.HEURISTIC_SERVING_UNIT_SETTINGS]?.let {
+            runCatching { json.decodeFromString<HeuristicServingUnitSettings>(it) }.getOrNull()
+        } ?: HeuristicServingUnitSettings.Default
+    }
+    suspend fun setHeuristicServingUnitSettings(settings: HeuristicServingUnitSettings) {
+        ds.edit {
+            it[Keys.HEURISTIC_SERVING_UNIT_SETTINGS] =
+                json.encodeToString(HeuristicServingUnitSettings.serializer(), settings)
+        }
+    }
+
     // -- Custom AI Instructions ------------------------------------------
     /** Free-form text appended to every AI request. Empty = disabled. */
     val userContext: Flow<String> = ds.data.map { it[Keys.USER_CONTEXT].orEmpty() }
@@ -464,15 +494,108 @@ class PreferencesStore(private val context: Context) {
         ds.edit { it[Keys.selectedSpeechLanguage(provider)] = language.name }
     }
 
-    // -- Food entries -----------------------------------------------------
-    val foodEntries: Flow<List<FoodEntry>> = ds.data.map { prefs ->
-        prefs[Keys.FOOD_ENTRIES]?.let {
-            runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull()
-        } ?: emptyList()
+    // -- Food entries (bucketed by calendar month) -------------------------
+    //
+    // Entries are stored one JSON blob per calendar month (key
+    // "foodEntries_2026-07") instead of one blob for all history, so adding/
+    // editing/deleting a single entry only decodes+encodes the entries in
+    // its own month, not every entry ever logged (which used to cost ~1s+
+    // per save and grow linearly forever — see PerfLog "save"/"dataStore").
+    // Legacy single-blob data (key "foodEntries") is migrated into buckets
+    // once via [migrateFoodEntriesToBucketsIfNeeded].
+
+    private fun decodeEntryList(raw: String?): List<FoodEntry> =
+        raw?.let { runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull() }
+            ?: emptyList()
+
+    private fun encodeEntryList(entries: List<FoodEntry>): String =
+        json.encodeToString(ListSerializer(FoodEntry.serializer()), entries)
+
+    private fun foodEntriesForBucketRaw(month: YearMonth): Flow<List<FoodEntry>> = ds.data.map { prefs ->
+        decodeEntryList(prefs[Keys.foodEntriesBucket(month)])
     }
 
-    suspend fun setFoodEntries(entries: List<FoodEntry>) {
-        ds.edit { it[Keys.FOOD_ENTRIES] = json.encodeToString(ListSerializer(FoodEntry.serializer()), entries) }
+    /** Full history, reconstructed by merging every foodEntries_* bucket. O(n) —
+     *  only meant for whole-history consumers (recent/frequent/favorites-migration/etc). */
+    private val allFoodEntriesRaw: Flow<List<FoodEntry>> = ds.data.map { prefs ->
+        prefs.asMap().entries
+            .filter { it.key.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }
+            .flatMap { decodeEntryList(it.value as? String) }
+    }
+
+    /** Whole food log across all months. Gated on the one-time bucket migration. */
+    val foodEntries: Flow<List<FoodEntry>> = flow {
+        migrateFoodEntriesToBucketsIfNeeded()
+        emitAll(allFoodEntriesRaw)
+    }
+
+    /** One calendar month's entries only, gated on migration — the fast path for date-scoped reads. */
+    fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = flow {
+        migrateFoodEntriesToBucketsIfNeeded()
+        emitAll(foodEntriesForBucketRaw(month))
+    }
+
+    /**
+     * Applies upserts (by id) and/or removals (by id) to exactly the named
+     * month buckets, in one atomic DataStore edit — so a cross-month move
+     * (remove from old bucket + insert into new) can never be observed
+     * half-applied. A bucket that ends up empty is removed entirely, so key
+     * count stays bounded (~12/year) rather than growing without limit.
+     */
+    suspend fun applyFoodEntryBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) {
+        if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
+        ds.edit { prefs ->
+            for (month in upsertsByMonth.keys + removalIdsByMonth.keys) {
+                val key = Keys.foodEntriesBucket(month)
+                val existing = decodeEntryList(prefs[key])
+                val removals = removalIdsByMonth[month].orEmpty()
+                val kept = if (removals.isEmpty()) existing else existing.filterNot { it.id in removals }
+                val byId = kept.associateByTo(LinkedHashMap()) { it.id }
+                for (entry in upsertsByMonth[month].orEmpty()) byId[entry.id] = entry
+                val merged = byId.values.sortedBy { it.timestamp }
+                if (merged.isEmpty()) prefs.remove(key) else prefs[key] = encodeEntryList(merged)
+            }
+        }
+    }
+
+    /** Full replace (reseed / clear-all) — wipes every existing bucket and regroups [entries] by month. */
+    suspend fun replaceAllFoodEntries(entries: List<FoodEntry>) {
+        ds.edit { prefs ->
+            prefs.asMap().keys.filter { it.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }.forEach { prefs.remove(it) }
+            prefs.remove(Keys.FOOD_ENTRIES)
+            prefs[Keys.FOOD_ENTRIES_MIGRATED] = true
+            entries.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
+                .forEach { (month, monthEntries) ->
+                    prefs[Keys.foodEntriesBucket(month)] = encodeEntryList(monthEntries.sortedBy { it.timestamp })
+                }
+        }
+    }
+
+    /**
+     * One-time migration of the legacy single-blob `foodEntries` key into
+     * monthly buckets. Idempotent: a fast no-op read once already migrated,
+     * otherwise a single atomic edit. DataStore's edit() commits via atomic
+     * file rename, so this can never leave a partially-migrated state on
+     * disk, and it's safe to re-run from scratch if interrupted.
+     */
+    private suspend fun migrateFoodEntriesToBucketsIfNeeded() {
+        if (ds.data.first()[Keys.FOOD_ENTRIES_MIGRATED] == true) return
+        ds.edit { prefs ->
+            if (prefs[Keys.FOOD_ENTRIES_MIGRATED] == true) return@edit
+            val legacy = decodeEntryList(prefs[Keys.FOOD_ENTRIES])
+            legacy.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
+                .forEach { (month, monthEntries) ->
+                    val key = Keys.foodEntriesBucket(month)
+                    val existing = decodeEntryList(prefs[key])
+                    val merged = (existing + monthEntries).distinctBy { it.id }.sortedBy { it.timestamp }
+                    prefs[key] = encodeEntryList(merged)
+                }
+            prefs.remove(Keys.FOOD_ENTRIES)
+            prefs[Keys.FOOD_ENTRIES_MIGRATED] = true
+        }
     }
 
     val favoriteKeys: Flow<Set<String>> = ds.data.map { prefs ->
@@ -683,6 +806,8 @@ class PreferencesStore(private val context: Context) {
         val SELECTED_AI_PROVIDER = stringPreferencesKey("selectedAIProvider")
         val SELECTED_AI_MODEL = stringPreferencesKey("selectedAIModel")
         val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
+        val SERVING_UNIT_INFERENCE_MODE = stringPreferencesKey("servingUnitInferenceMode")
+        val HEURISTIC_SERVING_UNIT_SETTINGS = stringPreferencesKey("heuristicServingUnitSettings")
         val USER_CONTEXT = stringPreferencesKey("userContext")
         val FALLBACK_ENABLED = booleanPreferencesKey("aiFallbackEnabled")
         val FALLBACK_PROVIDER = stringPreferencesKey("selectedFallbackAIProvider")
@@ -690,7 +815,10 @@ class PreferencesStore(private val context: Context) {
         val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")
         fun selectedSpeechLanguage(provider: SpeechProvider) =
             stringPreferencesKey("selectedSpeechLanguage_${provider.name}")
-        val FOOD_ENTRIES = stringPreferencesKey("foodEntries")
+        val FOOD_ENTRIES = stringPreferencesKey("foodEntries") // legacy, kept only for one-time migration
+        val FOOD_ENTRIES_MIGRATED = booleanPreferencesKey("foodEntriesMigrated")
+        fun foodEntriesBucket(month: YearMonth): Preferences.Key<String> =
+            stringPreferencesKey(FOOD_ENTRIES_BUCKET_PREFIX + month.toString())
         val FAVORITE_KEYS = stringPreferencesKey("favorites")
         val FAVORITE_ENTRIES = stringPreferencesKey("favoriteFoodEntries")
         val PENDING_FOOD_ANALYSIS_DRAFT = stringPreferencesKey("pendingFoodAnalysisDraft")

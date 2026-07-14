@@ -12,9 +12,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.roundToInt
+
+private fun FoodEntry.month(): YearMonth = YearMonth.from(timestamp.atZone(ZoneId.systemDefault()))
 
 /**
  * CRUD + reactive reads for food entries. Port of iOS FoodStore.
@@ -55,10 +58,11 @@ class FoodRepository(
         list.map { it.favoriteKey }.toSet()
     }
 
-    fun entriesForDate(date: LocalDate): Flow<List<FoodEntry>> = entries.map { list ->
-        list.filter { it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == date }
-            .sortedByDescending { it.timestamp }
-    }
+    fun entriesForDate(date: LocalDate): Flow<List<FoodEntry>> =
+        prefs.foodEntriesForMonth(YearMonth.from(date)).map { monthEntries ->
+            monthEntries.filter { it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == date }
+                .sortedByDescending { it.timestamp }
+        }
 
     fun entriesByMealForDate(date: LocalDate): Flow<List<Pair<MealType, List<FoodEntry>>>> =
         entriesForDate(date).map { dayEntries ->
@@ -69,11 +73,10 @@ class FoodRepository(
         }
 
     suspend fun addEntry(entry: FoodEntry) {
-        val current = prefs.foodEntries.first()
-        // Persistence commit — full-list JSON re-serialize + DataStore write, cost
-        // scales with total log size (entries=), then the Health Connect IPC insert.
-        PerfLog.measure("save", "dataStore", "entries=${current.size + 1}") {
-            prefs.setFoodEntries(current + entry)
+        // Persistence commit — only this entry's month bucket is re-serialized
+        // and written, not the whole food log, then the Health Connect IPC insert.
+        PerfLog.measure("save", "dataStore", "month=${entry.month()}") {
+            prefs.applyFoodEntryBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
         }
         if (shouldSyncHealth()) {
             PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
@@ -85,34 +88,37 @@ class FoodRepository(
         }
     }
 
-    suspend fun updateEntry(entry: FoodEntry) {
-        val current = prefs.foodEntries.first()
-        val index = current.indexOfFirst { it.id == entry.id }
-        if (index < 0) return
-        val updated = current.toMutableList().also { it[index] = entry }
-        prefs.setFoodEntries(updated)
+    suspend fun updateEntry(original: FoodEntry, updated: FoodEntry) {
+        val oldMonth = original.month()
+        val newMonth = updated.month()
+        if (oldMonth == newMonth) {
+            prefs.applyFoodEntryBucketChanges(upsertsByMonth = mapOf(newMonth to listOf(updated)))
+        } else {
+            prefs.applyFoodEntryBucketChanges(
+                upsertsByMonth = mapOf(newMonth to listOf(updated)),
+                removalIdsByMonth = mapOf(oldMonth to setOf(updated.id)),
+            )
+        }
         if (shouldSyncHealth()) {
-            health?.updateNutrition(entry)
+            health?.updateNutrition(updated)
         } else {
             // Sync off: still clean up the stale HC record for this entry (iOS
             // parity, best-effort) so the restore path can't resurrect the
             // pre-edit version later.
-            health?.deleteNutrition(entry.id)
+            health?.deleteNutrition(updated.id)
         }
     }
 
-    suspend fun deleteEntry(entryId: UUID) {
-        val current = prefs.foodEntries.first()
-        val removed = current.find { it.id == entryId } ?: return
-        prefs.setFoodEntries(current.filter { it.id != entryId })
-        deleteImageIfUnreferenced(removed.imageFilename)
+    suspend fun deleteEntry(entry: FoodEntry) {
+        prefs.applyFoodEntryBucketChanges(removalIdsByMonth = mapOf(entry.month() to setOf(entry.id)))
+        deleteImageIfUnreferenced(entry.imageFilename)
         // Delete even when sync is off (iOS parity, best-effort) — a surviving
         // fudai-tagged record would resurrect through restoreFromHealthConnect.
-        health?.deleteNutrition(entryId)
+        health?.deleteNutrition(entry.id)
     }
 
     suspend fun replaceAll(entries: List<FoodEntry>) {
-        prefs.setFoodEntries(entries)
+        prefs.replaceAllFoodEntries(entries)
     }
 
     /**
@@ -122,16 +128,15 @@ class FoodRepository(
      */
     suspend fun importEntries(entries: List<FoodEntry>): Int {
         if (entries.isEmpty()) return 0
-        val current = prefs.foodEntries.first()
-        val existingIds = current.asSequence().map { it.id }.toHashSet()
+        val existingIds = prefs.foodEntries.first().asSequence().map { it.id }.toHashSet()
         val incoming = entries.filter { existingIds.add(it.id) }
         if (incoming.isEmpty()) return 0
-        prefs.setFoodEntries((current + incoming).sortedBy { it.timestamp })
+        prefs.applyFoodEntryBucketChanges(upsertsByMonth = incoming.groupBy { it.month() })
         return incoming.size
     }
 
     suspend fun clear() {
-        prefs.setFoodEntries(emptyList())
+        prefs.replaceAllFoodEntries(emptyList())
     }
 
     // -- Favorites --------------------------------------------------------
@@ -266,7 +271,7 @@ class FoodRepository(
             )
         }
         if (restored.isEmpty()) return
-        prefs.setFoodEntries((current + restored).sortedBy { it.timestamp })
+        prefs.applyFoodEntryBucketChanges(upsertsByMonth = restored.groupBy { it.month() })
     }
 
     /**
@@ -314,16 +319,20 @@ class FoodRepository(
             )
         }
         if (incoming.isEmpty()) return
-        val byId = prefs.foodEntries.first().associateBy { it.id }.toMutableMap()
-        var changed = false
-        for (entry in incoming) {
-            if (byId[entry.id] != entry) {
-                byId[entry.id] = entry
-                changed = true
-            }
-        }
-        if (!changed) return
-        prefs.setFoodEntries(byId.values.sortedBy { it.timestamp })
+        val existingById = prefs.foodEntries.first().associateBy { it.id }
+        val changed = incoming.filter { existingById[it.id] != it }
+        if (changed.isEmpty()) return
+        // A record can carry a new timestamp on re-sync, moving it to a different
+        // month bucket than the one it's currently stored in — remove the stale
+        // copy from its old bucket alongside upserting the new one.
+        val staleRemovals = changed.mapNotNull { entry ->
+            val existingMonth = existingById[entry.id]?.month() ?: return@mapNotNull null
+            existingMonth.takeIf { it != entry.month() }?.let { it to entry.id }
+        }.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
+        prefs.applyFoodEntryBucketChanges(
+            upsertsByMonth = changed.groupBy { it.month() },
+            removalIdsByMonth = staleRemovals,
+        )
     }
 
     /** Stable id for an external nutrition record — see [WeightRepository.externalId]:

@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -155,15 +156,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     init {
         combine(
             container.profileRepository.profile,
-            container.foodRepository.entries,
+            _selectedDate.flatMapLatest { day -> container.foodRepository.entriesForDate(day) },
             container.foodRepository.favoriteKeys,
             container.prefs.foodLogSortOrder,
             _selectedDate
-        ) { p, entries, favKeys, sortOrder, day ->
-            val zone = ZoneId.systemDefault()
-            val dayEntries = entries
-                .filter { it.timestamp.atZone(zone).toLocalDate() == day }
-                .sortedByDescending { it.timestamp }
+        ) { p, dayEntries, favKeys, sortOrder, day ->
             _ui.value.copy(
                 profile = p,
                 date = day,
@@ -559,9 +556,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         )
     }
 
-    fun deleteEntry(id: UUID) {
+    fun deleteEntry(entry: FoodEntry) {
         viewModelScope.launch {
-            container.foodRepository.deleteEntry(id)
+            container.foodRepository.deleteEntry(entry)
         }
     }
 
@@ -571,9 +568,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun updateEntry(entry: FoodEntry) {
+    fun updateEntry(original: FoodEntry, updated: FoodEntry) {
         viewModelScope.launch {
-            container.foodRepository.updateEntry(entry)
+            container.foodRepository.updateEntry(original, updated)
         }
     }
 

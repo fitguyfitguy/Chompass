@@ -9,12 +9,15 @@ import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.AutoBalanceMacro
 import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
+import org.codeberg.fitguy.nofud.models.HeuristicRuleOverride
+import org.codeberg.fitguy.nofud.models.HeuristicServingUnitSettings
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplay
 import org.codeberg.fitguy.nofud.models.HomeCalorieDisplayMode
 import org.codeberg.fitguy.nofud.models.HomeDisplayPreferences
 import org.codeberg.fitguy.nofud.models.HomeTopNutrient
 import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
+import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
@@ -42,6 +45,8 @@ data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
     val selectedModel: String = AIProvider.GEMINI.defaultModel,
     val maxResponseTokens: Int = 1024,
+    val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
+    val heuristicServingUnitSettings: HeuristicServingUnitSettings = HeuristicServingUnitSettings.Default,
     val selectedSpeech: SpeechProvider = SpeechProvider.NATIVE,
     val selectedSpeechLanguage: SpeechLanguage = SpeechLanguage.defaultFor(SpeechProvider.NATIVE),
     /** "cm" | "ftin" — governs all length display/input. */
@@ -109,6 +114,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         viewModelScope.launch {
+            container.prefs.heuristicServingUnitSettings.collect { settings ->
+                _ui.value = _ui.value.copy(heuristicServingUnitSettings = settings)
+            }
+        }
+
+        viewModelScope.launch {
             val provider = container.prefs.selectedAIProvider.first()
             val model = provider.supportedModelOrDefault(container.prefs.selectedAIModel.first())
             val speech = container.prefs.selectedSpeechProvider.first()
@@ -137,6 +148,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val weekMon = container.prefs.weekStartsOnMonday.first()
             val userContext = container.prefs.userContext.first()
             val maxTokens = container.prefs.maxResponseTokens.first()
+            val servingUnitInferenceMode = container.prefs.servingUnitInferenceMode.first()
             val fbEnabled = container.prefs.fallbackEnabled.first()
             val fbProvider = container.prefs.selectedFallbackProvider.first()
             val fbModel = fbProvider.supportedModelOrDefault(container.prefs.selectedFallbackModel.first())
@@ -154,6 +166,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 selectedAI = provider,
                 selectedModel = model,
                 maxResponseTokens = maxTokens,
+                servingUnitInferenceMode = servingUnitInferenceMode,
                 selectedSpeech = speech,
                 selectedSpeechLanguage = speechLanguage,
                 heightUnit = heightUnit,
@@ -250,6 +263,34 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.prefs.setMaxResponseTokens(clamped)
             _ui.value = _ui.value.copy(maxResponseTokens = clamped)
+        }
+    }
+
+    fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) {
+        viewModelScope.launch {
+            container.prefs.setServingUnitInferenceMode(mode)
+            _ui.value = _ui.value.copy(servingUnitInferenceMode = mode)
+        }
+    }
+
+    fun setHeuristicRuleEnabled(ruleId: String, enabled: Boolean) {
+        viewModelScope.launch {
+            val current = _ui.value.heuristicServingUnitSettings
+            val existing = current.overrides[ruleId] ?: HeuristicRuleOverride()
+            val updated = current.copy(overrides = current.overrides + (ruleId to existing.copy(enabled = enabled)))
+            container.prefs.setHeuristicServingUnitSettings(updated)
+        }
+    }
+
+    /** [gramsPerUnit] null (or blank in the UI) resets the rule back to its built-in default. */
+    fun setHeuristicRuleGramsPerUnit(ruleId: String, gramsPerUnit: Double?) {
+        viewModelScope.launch {
+            val current = _ui.value.heuristicServingUnitSettings
+            val existing = current.overrides[ruleId] ?: HeuristicRuleOverride()
+            val updated = current.copy(
+                overrides = current.overrides + (ruleId to existing.copy(gramsPerUnit = gramsPerUnit))
+            )
+            container.prefs.setHeuristicServingUnitSettings(updated)
         }
     }
 
