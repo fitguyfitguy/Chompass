@@ -2,6 +2,18 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.10.0] - 2026-07-14
+
+### Added
+
+- Live progress while AI analyzes a food entry (preparing request, calling AI, reading result, inferring serving units)
+- Fallback AI provider: when the primary provider fails (overload, rate limit, network), NoFUD retries automatically with a configured fallback model
+
+### Changed
+
+- Home calorie gauge simplified: removed Net and Dual display modes; active calories shown with clearer copy in Static and Add Active modes
+- Food photos downscaled more efficiently before upload to AI providers (smaller payloads, faster analysis)
+
 ## [1.9.0] - 2026-07-14
 
 ### Added
