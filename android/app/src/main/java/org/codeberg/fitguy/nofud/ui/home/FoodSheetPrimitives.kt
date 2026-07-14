@@ -3,6 +3,7 @@ package org.codeberg.fitguy.nofud.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.DropdownMenu
@@ -216,7 +218,8 @@ internal fun ServingQuantityCard(
     unitOptions: List<ServingUnitOption>,
     menuExpanded: Boolean,
     onMenuExpandedChange: (Boolean) -> Unit,
-    gramUnit: String
+    gramUnit: String,
+    isLoadingUnits: Boolean = false,
 ) {
     val pickerOptions = ServingUnitOption.pickerOptions(unitOptions)
     val selectedOption = ServingUnitOption.optionMatching(selectedUnitId, unitOptions)
@@ -301,7 +304,7 @@ internal fun ServingQuantityCard(
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable {
+                            .clickable(enabled = !isLoadingUnits) {
                                 dismissKeyboard()
                                 onMenuExpandedChange(true)
                             }
@@ -352,6 +355,28 @@ internal fun ServingQuantityCard(
                     modifier = Modifier
                         .width(24.dp)
                         .clickable { dismissKeyboard() }
+                )
+            }
+        }
+
+        if (isLoadingUnits && unitOptions.isEmpty()) {
+            SheetHairline()
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                CircularProgressIndicator(
+                    color = AppColors.Calorie,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(18.dp),
+                )
+                Text(
+                    stringResource(R.string.entry_analysis_inferring_units),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 )
             }
         }

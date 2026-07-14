@@ -321,6 +321,10 @@
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">आपके भोजन का विश्लेषण हो रहा है...</string>
     <string name="home_looking_up_nutrition">पोषण देखा जा रहा है...</string>
+    <string name="entry_analysis_phase_preparing">Preparing request…</string>
+    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
+    <string name="entry_analysis_phase_parsing">Reading result…</string>
+    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">फ़ाइबर: %1$.1fg</string>
     <string name="home_sugar_format">चीनी: %1$.1fg</string>
     <string name="home_sat_fat_format">सैट. फैट: %1$.1fg</string>

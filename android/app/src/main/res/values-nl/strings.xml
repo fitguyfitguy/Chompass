@@ -321,6 +321,10 @@
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">Je eten analyseren...</string>
     <string name="home_looking_up_nutrition">Voeding opzoeken...</string>
+    <string name="entry_analysis_phase_preparing">Preparing request…</string>
+    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
+    <string name="entry_analysis_phase_parsing">Reading result…</string>
+    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">Vezels: %1$.1fg</string>
     <string name="home_sugar_format">Suiker: %1$.1fg</string>
     <string name="home_sat_fat_format">Verzadigd vet: %1$.1fg</string>

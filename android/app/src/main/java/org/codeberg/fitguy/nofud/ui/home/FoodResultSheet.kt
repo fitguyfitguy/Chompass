@@ -95,6 +95,7 @@ fun FoodResultSheet(
     ) -> Unit,
     onDismiss: () -> Unit,
     isSaving: Boolean = false,
+    inferringUnits: Boolean = false,
 ) {
     val bitmap = rememberDecodedBitmap(imageBytes)
     val state = rememberModalBottomSheetState(
@@ -158,6 +159,22 @@ fun FoodResultSheet(
     var editableOmega3 by remember(analysis) { mutableStateOf(analysis.omega3) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(analysis.servingUnitOptions, inferringUnits) {
+        if (!inferringUnits && analysis.servingUnitOptions.isNotEmpty()) {
+            val options = ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
+            if (selectedServingUnitId !in options.map { it.id }) {
+                selectedServingUnitId = ServingUnitOption.initialUnitId(analysis.selectedServingUnit, options)
+                servingQuantityText = ServingUnitOption.initialQuantityText(
+                    totalGrams = servingGrams,
+                    selectedUnitId = selectedServingUnitId,
+                    selectedQuantity = analysis.selectedServingQuantity,
+                    options = options,
+                )
+            }
+        }
+    }
+
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val focusManager = LocalFocusManager.current
@@ -350,7 +367,8 @@ fun FoodResultSheet(
                     unitOptions = servingUnitOptions,
                     menuExpanded = servingMenuExpanded,
                     onMenuExpandedChange = { servingMenuExpanded = it },
-                    gramUnit = stringResource(R.string.unit_g)
+                    gramUnit = stringResource(R.string.unit_g),
+                    isLoadingUnits = inferringUnits,
                 )
             }
 
