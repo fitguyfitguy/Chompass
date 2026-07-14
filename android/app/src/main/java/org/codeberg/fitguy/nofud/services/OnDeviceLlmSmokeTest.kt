@@ -1,6 +1,7 @@
 package org.codeberg.fitguy.nofud.services
 
 import android.util.Log
+import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Tool
 import com.google.ai.edge.litertlm.ToolParam
 import com.google.ai.edge.litertlm.ToolSet
@@ -9,16 +10,20 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import java.io.File
 import java.time.LocalDate
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.services.ai.CoachTools
 import org.codeberg.fitguy.nofud.services.ai.FoodJsonParser
+import org.codeberg.fitguy.nofud.services.ai.ON_DEVICE_LLM_TAG
 import org.codeberg.fitguy.nofud.services.ai.OnDeviceLlmClient
 import org.codeberg.fitguy.nofud.services.ai.plainText
 import org.json.JSONObject
-
-private const val TAG = "FudOnDeviceLlm"
 
 /**
  * Debug-only on-device LLM smoke test, triggered by the `run_ondevice_llm_test`
@@ -29,29 +34,51 @@ private const val TAG = "FudOnDeviceLlm"
  *
  * Model delivery is manual (`adb push` into app-private storage) — see
  * MODEL_FILENAME below and the on-device LLM plan for the exact push sequence.
- * Results go to logcat under tag [TAG] as `op=ondevice_llm phase=... key=value` lines.
+ * Results go to logcat under tag [ON_DEVICE_LLM_TAG] as `op=ondevice_llm phase=... key=value` lines.
+ *
+ * Backend selection: defaults to GPU. Override with intent extra
+ * `--es ondevice_llm_backend cpu` for A/B comparison.
  */
-class OnDeviceLlmSmokeTest(private val container: AppContainer) {
+class OnDeviceLlmSmokeTest(
+    private val container: AppContainer,
+    backendName: String = "gpu",
+    private val enableMtp: Boolean = false,
+) {
+
+    private val backend: Backend = OnDeviceLlmClient.backendFromIntentValue(backendName)
+    private val backendLabel: String = OnDeviceLlmClient.backendLabel(backend)
 
     suspend fun run() {
         val modelFile = File(container.appContext.filesDir, "models/$MODEL_FILENAME")
         if (!modelFile.exists()) {
-            Log.e(TAG, "op=ondevice_llm phase=start status=fail err=model_missing path=${modelFile.absolutePath}")
+            Log.e(
+                ON_DEVICE_LLM_TAG,
+                "op=ondevice_llm phase=start status=fail err=model_missing path=${modelFile.absolutePath}"
+            )
             return
         }
-        Log.i(TAG, "op=ondevice_llm phase=start path=${modelFile.absolutePath}")
+        val cacheDir = container.appContext.cacheDir.absolutePath
+        Log.i(
+            ON_DEVICE_LLM_TAG,
+            "op=ondevice_llm phase=start backend=$backendLabel mtp=$enableMtp cacheDir=$cacheDir path=${modelFile.absolutePath}"
+        )
 
-        val client = OnDeviceLlmClient(modelFile.absolutePath)
+        val client = OnDeviceLlmClient(
+            modelPath = modelFile.absolutePath,
+            cacheDir = cacheDir,
+            backend = backend,
+            enableMtp = enableMtp,
+        )
         try {
             val loadMs = client.ensureLoaded()
-            Log.i(TAG, "op=ondevice_llm phase=modelLoad ms=$loadMs")
+            Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=modelLoad backend=$backendLabel ms=$loadMs")
 
             runTierA(client)
             runTierC(client)
 
-            Log.i(TAG, "op=ondevice_llm phase=done")
+            Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=done backend=$backendLabel")
         } catch (e: Throwable) {
-            Log.e(TAG, "op=ondevice_llm phase=fatal err=${e.message}", e)
+            Log.e(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=fatal backend=$backendLabel err=${e.message}", e)
         } finally {
             client.close()
         }
@@ -61,20 +88,28 @@ class OnDeviceLlmSmokeTest(private val container: AppContainer) {
 
     private suspend fun runTierA(client: OnDeviceLlmClient) {
         for ((i, description) in SAMPLES.withIndex()) {
+            Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=tierA_begin backend=$backendLabel i=$i")
             val start = System.nanoTime()
             try {
-                val raw = client.generate(systemPrompt = "", userPrompt = tierAPrompt(description))
+                val raw = withInferenceHeartbeat(phase = "tierA", detail = "i=$i") {
+                    withTimeout(INFERENCE_TIMEOUT_MS) {
+                        client.generate(systemPrompt = "", userPrompt = tierAPrompt(description))
+                    }
+                }
                 val ms = (System.nanoTime() - start) / 1_000_000
                 val analysis = runCatching { FoodJsonParser.parseFood(raw) }.getOrNull()
                 val status = if (analysis != null) "ok" else "parseFail"
                 Log.i(
-                    TAG,
-                    "op=ondevice_llm phase=tierA i=$i ms=$ms status=$status " +
+                    ON_DEVICE_LLM_TAG,
+                    "op=ondevice_llm phase=tierA backend=$backendLabel i=$i ms=$ms status=$status " +
                         "name=${analysis?.name} calories=${analysis?.calories} unitOptions=${analysis?.servingUnitOptions?.size}"
                 )
             } catch (e: Throwable) {
                 val ms = (System.nanoTime() - start) / 1_000_000
-                Log.e(TAG, "op=ondevice_llm phase=tierA i=$i ms=$ms status=fail err=${e.message}")
+                Log.e(
+                    ON_DEVICE_LLM_TAG,
+                    "op=ondevice_llm phase=tierA backend=$backendLabel i=$i ms=$ms status=fail err=${e.message}"
+                )
             }
         }
     }
@@ -102,20 +137,32 @@ class OnDeviceLlmSmokeTest(private val container: AppContainer) {
         for (scenario in TIER_C_SCENARIOS) {
             val corrupting = scenario.corruptTool != null
             val toolSet = CoachToolsToolSet(tools, corruptToolName = scenario.corruptTool)
+            Log.i(
+                ON_DEVICE_LLM_TAG,
+                "op=ondevice_llm phase=tierC_begin backend=$backendLabel scenario=${scenario.name} corrupting=$corrupting"
+            )
             val start = System.nanoTime()
             try {
-                client.createToolConversation(systemPrompt, toolSet).use { conversation ->
-                    val response = conversation.sendMessage(scenario.message)
-                    val ms = (System.nanoTime() - start) / 1_000_000
-                    Log.i(
-                        TAG,
-                        "op=ondevice_llm phase=tierC scenario=${scenario.name} ms=$ms corrupting=$corrupting " +
-                            "response=${response.plainText().take(400).replace('\n', ' ')}"
-                    )
+                withInferenceHeartbeat(phase = "tierC", detail = "scenario=${scenario.name}") {
+                    withTimeout(INFERENCE_TIMEOUT_MS) {
+                        client.createToolConversation(systemPrompt, toolSet).use { conversation ->
+                            val response = conversation.sendMessage(scenario.message)
+                            val ms = (System.nanoTime() - start) / 1_000_000
+                            Log.i(
+                                ON_DEVICE_LLM_TAG,
+                                "op=ondevice_llm phase=tierC backend=$backendLabel scenario=${scenario.name} ms=$ms " +
+                                    "corrupting=$corrupting response=${response.plainText().take(400).replace('\n', ' ')}"
+                            )
+                        }
+                    }
                 }
             } catch (e: Throwable) {
                 val ms = (System.nanoTime() - start) / 1_000_000
-                Log.e(TAG, "op=ondevice_llm phase=tierC scenario=${scenario.name} ms=$ms status=fail err=${e.message}")
+                Log.e(
+                    ON_DEVICE_LLM_TAG,
+                    "op=ondevice_llm phase=tierC backend=$backendLabel scenario=${scenario.name} ms=$ms " +
+                        "status=fail err=${e.message}"
+                )
             }
         }
     }
@@ -158,18 +205,8 @@ class OnDeviceLlmSmokeTest(private val container: AppContainer) {
      * returned to the model, to probe malformed-tool-result recovery (scenario
      * `malformed_recovery`).
      *
-     * Return type is [JsonElement], NOT [String] — this is a deliberate fix, not a
-     * style choice. LiteRT-LM's `ToolManager.execute` runs the tool's return value
-     * through `Any?.toJsonElement()` (see JsonConverters.kt in the LiteRT-LM repo),
-     * which has `is String -> JsonPrimitive(this)`: an already-JSON string gets
-     * wrapped as an opaque quoted/escaped string literal instead of being embedded
-     * as a real JSON object in the `tool_response` sent back to the model. The first
-     * two on-device runs (raw `String` return type) showed the model calling tools
-     * correctly, getting real data back, and then reporting the data as missing or
-     * erroring — consistent with the model receiving a double-encoded string blob
-     * instead of a parseable object. Returning [JsonElement] directly hits
-     * `is JsonElement -> this` in that same conversion function, so the real object
-     * structure survives into the model's context.
+     * Return type is [JsonElement], NOT [String] — LiteRT-LM's `ToolManager.execute`
+     * double-encodes raw JSON strings; returning [JsonElement] preserves structure.
      */
     private class CoachToolsToolSet(
         private val tools: CoachTools,
@@ -183,11 +220,12 @@ class OnDeviceLlmSmokeTest(private val container: AppContainer) {
                 result = result.substring(0, result.length / 2)
             }
             val ms = (System.nanoTime() - start) / 1_000_000
-            Log.i(TAG, "op=ondevice_llm phase=toolCall tool=$name args=$args ms=$ms result=${result.take(200)}")
+            Log.i(
+                ON_DEVICE_LLM_TAG,
+                "op=ondevice_llm phase=toolCall tool=$name args=$args ms=$ms result=${result.take(200)}"
+            )
             return runCatching { JsonParser.parseString(result) }.getOrElse {
-                // Expected for the deliberately-corrupted call in malformed_recovery;
-                // unexpected anywhere else, so log it either way.
-                Log.w(TAG, "op=ondevice_llm phase=toolCallParseFail tool=$name err=${it.message}")
+                Log.w(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=toolCallParseFail tool=$name err=${it.message}")
                 JsonPrimitive(result)
             }
         }
@@ -253,8 +291,37 @@ class OnDeviceLlmSmokeTest(private val container: AppContainer) {
 
     private data class TierCScenario(val name: String, val message: String, val corruptTool: String? = null)
 
+    /** Emits a log line every 15s while a blocking LiteRT call runs — decode can take minutes on cold GPU. */
+    private suspend fun <T> withInferenceHeartbeat(
+        phase: String,
+        detail: String,
+        block: suspend () -> T,
+    ): T = coroutineScope {
+        val start = System.nanoTime()
+        val heartbeat = launch {
+            var tick = 0
+            while (isActive) {
+                delay(15_000)
+                tick++
+                val elapsedMs = (System.nanoTime() - start) / 1_000_000
+                Log.i(
+                    ON_DEVICE_LLM_TAG,
+                    "op=ondevice_llm phase=${phase}_waiting backend=$backendLabel $detail tick=$tick elapsedMs=$elapsedMs"
+                )
+            }
+        }
+        try {
+            block()
+        } finally {
+            heartbeat.cancel()
+        }
+    }
+
     companion object {
-        /** Expected on-device path: `filesDir/models/$MODEL_FILENAME`, landed via `adb push` — see the on-device LLM plan. */
+        /** Per-call inference budget; Tier A/C on GPU should finish well under this. */
+        private const val INFERENCE_TIMEOUT_MS = 300_000L
+
+        /** Expected on-device path: `filesDir/models/$MODEL_FILENAME`, landed via `adb push`. */
         const val MODEL_FILENAME = "gemma-e2b-int4.litertlm"
 
         private val SAMPLES = listOf(
@@ -264,17 +331,12 @@ class OnDeviceLlmSmokeTest(private val container: AppContainer) {
         )
 
         private val TIER_C_SCENARIOS = listOf(
-            // Straightforward single-tool-call request.
             TierCScenario("single_tool", "What did I eat yesterday?"),
-            // Genuinely ambiguous tool choice — log what the model picks, not pass/fail.
             TierCScenario("ambiguous", "How am I doing?"),
-            // Forced multi-step chain: needs a data fetch + a proposal in the same turn.
             TierCScenario(
                 "multi_round_chain",
                 "How many calories did I average last week, and log that I drank 500ml of water."
             ),
-            // Malformed-result recovery: get_weight_history's JSON is truncated before
-            // being fed back to the model — does it notice, retry, or hallucinate?
             TierCScenario(
                 "malformed_recovery",
                 "Give me my data summary, then tell me what my weight history looks like for the last 30 days.",

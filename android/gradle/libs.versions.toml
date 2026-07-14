@@ -26,7 +26,7 @@ mlkitBarcode = "17.3.0"
 vico = "2.0.2"
 splashscreen = "1.0.1"
 screenshot = "0.0.1-alpha15"
-litertlm = "0.9.0-beta"
+litertlm = "0.14.0"
 
 [libraries]
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }

@@ -1,5 +1,6 @@
 package org.codeberg.fitguy.nofud.services.ai
 
+import android.util.Log
 import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Content
 import com.google.ai.edge.litertlm.Contents
@@ -7,12 +8,21 @@ import com.google.ai.edge.litertlm.Conversation
 import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Engine
 import com.google.ai.edge.litertlm.EngineConfig
+import com.google.ai.edge.litertlm.ExperimentalApi
+import com.google.ai.edge.litertlm.ExperimentalFlags
 import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.ToolSet
 import com.google.ai.edge.litertlm.tool
 import java.io.Closeable
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
+/** Shared log tag for the on-device LLM smoke test harness. */
+const val ON_DEVICE_LLM_TAG = "FudOnDeviceLlm"
 
 /** [Message.contents] is a list of [Content] parts; concatenates only the text parts. */
 fun Message.plainText(): String =
@@ -24,12 +34,16 @@ fun Message.plainText(): String =
  * wired into [org.codeberg.fitguy.nofud.models.AIProvider] /
  * [FoodAnalysisService] / [ChatService] dispatch — this is a standalone
  * prototype to validate LiteRT-LM on real hardware before any of that
- * production plumbing is built. API surface (Engine/EngineConfig/Backend/
- * Conversation/ToolSet) is per developers.google.com/edge/litert-lm/android
- * as of this writing; verify against current docs if this fails to compile
- * against whatever `litertlm-android` version resolves.
+ * production plumbing is built.
  */
-class OnDeviceLlmClient(private val modelPath: String) : Closeable {
+class OnDeviceLlmClient(
+    private val modelPath: String,
+    private val cacheDir: String,
+    private val backend: Backend = Backend.GPU(),
+    private val enableMtp: Boolean = false,
+) : Closeable {
+
+    val backendName: String get() = backend.name
 
     private var engine: Engine? = null
 
@@ -37,10 +51,47 @@ class OnDeviceLlmClient(private val modelPath: String) : Closeable {
     suspend fun ensureLoaded(): Long = withContext(Dispatchers.Default) {
         if (engine != null) return@withContext 0L
         val start = System.nanoTime()
-        val loaded = Engine(EngineConfig(modelPath = modelPath, backend = Backend.CPU()))
-        loaded.initialize()
-        engine = loaded
-        (System.nanoTime() - start) / 1_000_000
+        val config = EngineConfig(
+            modelPath = modelPath,
+            backend = backend,
+            cacheDir = cacheDir,
+        )
+        Log.i(
+            ON_DEVICE_LLM_TAG,
+            "op=ondevice_llm phase=engineInit_begin backend=$backendName mtp=$enableMtp " +
+                "note=gpu_cold_init_may_take_several_minutes"
+        )
+        try {
+            if (backend is Backend.GPU && enableMtp) {
+                enableGpuMtpIfAvailable()
+            }
+            coroutineScope {
+                val heartbeat = launch {
+                    var tick = 0
+                    while (isActive) {
+                        delay(15_000)
+                        tick++
+                        val elapsedMs = (System.nanoTime() - start) / 1_000_000
+                        Log.i(
+                            ON_DEVICE_LLM_TAG,
+                            "op=ondevice_llm phase=engineInit_waiting backend=$backendName tick=$tick elapsedMs=$elapsedMs"
+                        )
+                    }
+                }
+                try {
+                    val loaded = Engine(config)
+                    loaded.initialize()
+                    engine = loaded
+                } finally {
+                    heartbeat.cancel()
+                }
+            }
+        } catch (e: Throwable) {
+            throw IllegalStateException("LiteRT-LM engine init failed (backend=$backendName): ${e.message}", e)
+        }
+        val loadMs = (System.nanoTime() - start) / 1_000_000
+        Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineInit backend=$backendName cacheDir=$cacheDir ms=$loadMs")
+        loadMs
     }
 
     /** Single-shot prompt/response, no tool calling. Used for the Tier A (`analyzeText`) scenario. */
@@ -71,5 +122,28 @@ class OnDeviceLlmClient(private val modelPath: String) : Closeable {
     override fun close() {
         engine?.close()
         engine = null
+    }
+
+    companion object {
+        @OptIn(ExperimentalApi::class)
+        private fun enableGpuMtpIfAvailable() {
+            runCatching {
+                ExperimentalFlags.enableSpeculativeDecoding = true
+                Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineConfig mtp=enabled")
+            }.onFailure {
+                Log.w(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineConfig mtp=skipped err=${it.message}")
+            }
+        }
+
+        fun backendFromIntentValue(value: String?): Backend = when (value?.lowercase()) {
+            "cpu" -> Backend.CPU(numOfThreads = 4)
+            else -> Backend.GPU()
+        }
+
+        fun backendLabel(backend: Backend): String = when (backend) {
+            is Backend.CPU -> "cpu"
+            is Backend.GPU -> "gpu"
+            else -> backend.name.lowercase()
+        }
     }
 }
