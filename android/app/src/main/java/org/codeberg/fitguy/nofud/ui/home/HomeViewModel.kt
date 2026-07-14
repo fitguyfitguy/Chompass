@@ -79,9 +79,13 @@ data class HomeUiState(
     val pendingInputNote: String? = null,
     val pendingInputDraftImageFilename: String? = null,
     val analyzing: Boolean = false,
+    val analysisPhase: EntryAnalysisPhase? = null,
+    val analysisPreview: FoodAnalysis? = null,
+    val inferringUnits: Boolean = false,
     val saving: Boolean = false,
     val error: String? = null
 ) {
+    val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
     val proteinToday: Double get() = todayEntries.sumOf { it.protein }
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
@@ -120,9 +124,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val previousDraftImage: String?,
     )
 
-    private fun beginAnalysis(configure: (HomeUiState) -> HomeUiState): AnalysisStart? =
+    private fun beginAnalysis(
+        phased: Boolean = false,
+        configure: (HomeUiState) -> HomeUiState,
+    ): AnalysisStart? =
         synchronized(this) {
-            if (analysisInFlight || _ui.value.analyzing) return null
+            if (analysisInFlight || _ui.value.isEntryAnalysisBusy) return null
             analysisInFlight = true
             val gen = ++analysisGeneration
             val previousDraftImage = _ui.value.pendingDraftImageFilename
@@ -133,14 +140,54 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingAnalysis = null,
                     pendingReviewSource = null,
                     analyzing = true,
+                    analysisPhase = if (phased) EntryAnalysisPhase.Preparing else null,
+                    analysisPreview = null,
+                    inferringUnits = false,
                 )
             )
             AnalysisStart(gen, previousDraftImage)
         }
 
+    private fun onFoodAnalysisProgress(generation: Int, progress: FoodAnalysisProgress) {
+        if (generation != analysisGeneration) return
+        when (progress) {
+            is FoodAnalysisProgress.Phase -> {
+                _ui.value = _ui.value.copy(analysisPhase = progress.phase)
+            }
+            is FoodAnalysisProgress.Parsed -> {
+                if (progress.unitsPending) {
+                    _ui.value = _ui.value.copy(
+                        analysisPhase = null,
+                        analysisPreview = progress.analysis,
+                        pendingAnalysis = progress.analysis,
+                        analyzing = false,
+                        inferringUnits = true,
+                    )
+                    container.analyzingFood.value = false
+                } else {
+                    _ui.value = _ui.value.copy(analysisPreview = progress.analysis)
+                }
+            }
+            is FoodAnalysisProgress.Complete -> {
+                _ui.value = _ui.value.copy(
+                    pendingAnalysis = progress.analysis,
+                    inferringUnits = false,
+                    analysisPreview = null,
+                    analysisPhase = null,
+                )
+            }
+        }
+    }
+
     private fun failAnalysis(gen: Int, message: String?) {
         if (gen != analysisGeneration) return
-        _ui.value = _ui.value.copy(analyzing = false, error = message)
+        _ui.value = _ui.value.copy(
+            analyzing = false,
+            analysisPhase = null,
+            analysisPreview = null,
+            inferringUnits = false,
+            error = message,
+        )
     }
 
     private fun endAnalysis(gen: Int) {
@@ -253,7 +300,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun analyzeText(description: String) {
         viewModelScope.launch {
-            val start = beginAnalysis { state ->
+            val start = beginAnalysis(phased = true) { state ->
                 state.copy(
                     pendingImageBytes = null,
                     pendingFoodSource = FoodSource.TEXT_INPUT,
@@ -262,7 +309,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             } ?: return@launch
             discardPendingDraft(start.previousDraftImage)
             try {
-                val analysis = container.foodAnalysis.analyzeText(description)
+                val analysis = container.foodAnalysis.analyzeText(description) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }
                 savePendingDraft(analysis, imageBytes = null, source = FoodSource.TEXT_INPUT, generation = start.generation)
             } catch (e: AiError) {
                 failAnalysis(start.generation, e.message)
@@ -279,7 +328,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun analyzePhoto(bytes: ByteArray) {
         viewModelScope.launch {
-            val start = beginAnalysis { state ->
+            val start = beginAnalysis(phased = true) { state ->
                 state.copy(
                     pendingImageBytes = bytes,
                     pendingFoodSource = FoodSource.SNAP_FOOD,
@@ -288,7 +337,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             } ?: return@launch
             discardPendingDraft(start.previousDraftImage)
             try {
-                val analysis = container.foodAnalysis.analyzeAuto(bytes)
+                val analysis = container.foodAnalysis.analyzeAuto(bytes) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }
                 savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
             } catch (e: AiError) {
                 failAnalysis(start.generation, e.message)
@@ -305,7 +356,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun analyzePhotos(firstBytes: ByteArray, secondBytes: ByteArray) {
         viewModelScope.launch {
-            val start = beginAnalysis { state ->
+            val start = beginAnalysis(phased = true) { state ->
                 state.copy(
                     pendingFoodSource = FoodSource.SNAP_FOOD,
                     pendingDraftImageFilename = null,
@@ -320,7 +371,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 }
                 if (start.generation != analysisGeneration) return@launch
                 _ui.value = _ui.value.copy(pendingImageBytes = combinedBytes)
-                val analysis = container.foodAnalysis.analyzeFood(listOf(firstBytes, secondBytes))
+                val analysis = container.foodAnalysis.analyzeFood(listOf(firstBytes, secondBytes)) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }
                 savePendingDraft(analysis, imageBytes = combinedBytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
             } catch (e: AiError) {
                 failAnalysis(start.generation, e.message)
@@ -342,7 +395,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      */
     fun analyzePhotoWithNote(bytes: ByteArray, note: String) {
         viewModelScope.launch {
-            val start = beginAnalysis { state ->
+            val start = beginAnalysis(phased = true) { state ->
                 state.copy(
                     pendingImageBytes = bytes,
                     pendingFoodSource = FoodSource.SNAP_FOOD,
@@ -352,8 +405,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             savePendingInputDraft(bytes, note, FoodSource.SNAP_FOOD)
             discardPendingDraft(start.previousDraftImage)
             try {
-                val analysis = container.foodAnalysis.analyzeFood(bytes, note.takeIf { it.isNotBlank() })
-                    .copy(customNote = note.takeIf { it.isNotBlank() })
+                val analysis = container.foodAnalysis.analyzeFood(bytes, note.takeIf { it.isNotBlank() }) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }.copy(customNote = note.takeIf { it.isNotBlank() })
                 clearPendingInputDraft()
                 savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
             } catch (e: AiError) {
@@ -494,14 +548,22 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun dismissPending() {
         val previousDraftImage = _ui.value.pendingDraftImageFilename
+        synchronized(this) {
+            ++analysisGeneration
+        }
         _ui.value = _ui.value.copy(
             pendingAnalysis = null,
             pendingImageBytes = null,
             pendingFoodSource = null,
             pendingDraftImageFilename = null,
             pendingReviewSource = null,
+            analysisPhase = null,
+            analysisPreview = null,
+            inferringUnits = false,
+            analyzing = false,
             error = null
         )
+        container.analyzingFood.value = false
         viewModelScope.launch {
             discardPendingDraft(previousDraftImage)
         }
@@ -671,6 +733,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (generation != analysisGeneration) return
         _ui.value = _ui.value.copy(
             analyzing = false,
+            analysisPhase = null,
+            analysisPreview = null,
+            inferringUnits = false,
             pendingAnalysis = analysis,
             pendingImageBytes = imageBytes,
             pendingFoodSource = source,
@@ -688,6 +753,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
         _ui.value = _ui.value.copy(
             analyzing = false,
+            analysisPhase = null,
+            analysisPreview = null,
+            inferringUnits = false,
             pendingAnalysis = draft.analysis,
             pendingImageBytes = bytes,
             pendingFoodSource = draft.source,

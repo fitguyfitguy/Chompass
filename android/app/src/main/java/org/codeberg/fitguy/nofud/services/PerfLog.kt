@@ -40,13 +40,21 @@ object PerfLog {
         } finally {
             val ms = (System.nanoTime() - start) / 1_000_000
             val suffix = if (extra.isEmpty()) "" else " $extra"
-            Log.i(TAG, "op=$op phase=$phase ms=$ms$suffix")
+            try {
+                Log.i(TAG, "op=$op phase=$phase ms=$ms$suffix")
+            } catch (_: RuntimeException) {
+                // JVM unit tests run without a mocked android.util.Log.
+            }
         }
     }
 
     /** Raw structured emit (already formatted `key=value ...`). Used by [org.codeberg.fitguy.nofud.services.ai.PerfEventListener]. */
     fun event(line: String) {
         if (!enabled) return
-        Log.i(TAG, line)
+        try {
+            Log.i(TAG, line)
+        } catch (_: RuntimeException) {
+            // JVM unit tests run without a mocked android.util.Log.
+        }
     }
 }

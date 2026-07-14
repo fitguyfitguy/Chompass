@@ -112,7 +112,7 @@ fun HomeScreen(container: AppContainer) {
                 if (firstPair != null) {
                     pendingCameraPairFirstImageBytes = null
                     cameraCaptureWantsSecondPhoto = false
-                    if (!ui.analyzing) vm.analyzePhotos(firstPair, bytes)
+                    if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(firstPair, bytes)
                 } else {
                     pendingNoteImageBytes = bytes
                 }
@@ -124,10 +124,10 @@ fun HomeScreen(container: AppContainer) {
     // MainActivity). One image enters the same context-note flow as an in-app
     // capture; two are analyzed side-by-side like dual capture.
     val sharedImages by container.sharedImageInbox.collectAsState()
-    LaunchedEffect(sharedImages, ui.analyzing) {
+    LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy) {
         val images = sharedImages
         if (images.isEmpty()) return@LaunchedEffect
-        if (ui.analyzing) return@LaunchedEffect
+        if (ui.isEntryAnalysisBusy) return@LaunchedEffect
         container.sharedImageInbox.value = emptyList()
         if (images.size >= 2) {
             vm.analyzePhotos(images[0], images[1])
@@ -440,9 +440,9 @@ fun HomeScreen(container: AppContainer) {
     if (showText) {
         TextInputSheet(
             onDismiss = { showText = false },
-            isSubmitting = ui.analyzing,
+            isSubmitting = ui.isEntryAnalysisBusy,
             onSubmit = {
-                if (!ui.analyzing) {
+                if (!ui.isEntryAnalysisBusy) {
                     showText = false
                     vm.analyzeText(it)
                 }
@@ -454,9 +454,9 @@ fun HomeScreen(container: AppContainer) {
         VoiceInputSheet(
             container = container,
             onDismiss = { showVoice = false },
-            isSubmitting = ui.analyzing,
+            isSubmitting = ui.isEntryAnalysisBusy,
             onSubmit = {
-                if (!ui.analyzing) {
+                if (!ui.isEntryAnalysisBusy) {
                     showVoice = false
                     vm.analyzeText(it)
                 }
@@ -524,7 +524,7 @@ fun HomeScreen(container: AppContainer) {
                     showCameraPairTransition = true
                 } else if (wantsSecondPhoto && firstPairImage != null) {
                     pendingCameraPairFirstImageBytes = null
-                    if (!ui.analyzing) vm.analyzePhotos(firstPairImage, bytes)
+                    if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(firstPairImage, bytes)
                 } else {
                     pendingNoteImageBytes = bytes
                 }
@@ -579,9 +579,9 @@ fun HomeScreen(container: AppContainer) {
         ContextNoteSheet(
             imageBytes = bytes,
             initialNote = if (isRestoredFailedInput) ui.pendingInputNote.orEmpty() else "",
-            isSubmitting = ui.analyzing,
+            isSubmitting = ui.isEntryAnalysisBusy,
             onAnalyze = { note ->
-                if (!ui.analyzing) {
+                if (!ui.isEntryAnalysisBusy) {
                     pendingNoteImageBytes = null
                     vm.analyzePhotoWithNote(bytes, note)
                 }
@@ -599,7 +599,16 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    if (ui.analyzing) AnalyzingOverlay(imageBytes = ui.pendingImageBytes)
+    ui.analysisPhase?.let { phase ->
+        EntryAnalysisOverlay(
+            phase = phase,
+            preview = ui.analysisPreview,
+            imageBytes = ui.pendingImageBytes,
+        )
+    }
+    if (ui.analyzing && ui.analysisPhase == null) {
+        AnalyzingOverlay(imageBytes = ui.pendingImageBytes)
+    }
     if (showCameraPairTransition) CameraPairTransitionOverlay()
 
     ui.pendingAnalysis?.let { analysis ->
@@ -610,6 +619,7 @@ fun HomeScreen(container: AppContainer) {
             profile = ui.profile,
             dayEntries = ui.todayEntries,
             isSaving = ui.saving,
+            inferringUnits = ui.inferringUnits,
             source = ui.pendingReviewSource?.source
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
@@ -638,7 +648,7 @@ fun HomeScreen(container: AppContainer) {
                 FudGlassDialogActions(
                     primaryText = stringResource(R.string.action_retry),
                     onPrimary = { vm.retryFailedInput() },
-                    primaryEnabled = !ui.analyzing,
+                    primaryEnabled = !ui.isEntryAnalysisBusy,
                     dismissText = stringResource(R.string.action_discard),
                     onDismiss = { vm.dismissFailedInput() }
                 )

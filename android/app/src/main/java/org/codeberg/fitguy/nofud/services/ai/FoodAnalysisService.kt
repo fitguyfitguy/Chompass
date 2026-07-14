@@ -17,6 +17,8 @@ import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.BuildConfig
 import org.codeberg.fitguy.nofud.services.PerfLog
 import org.codeberg.fitguy.nofud.services.WeightForecast
+import org.codeberg.fitguy.nofud.ui.home.EntryAnalysisPhase
+import org.codeberg.fitguy.nofud.ui.home.FoodAnalysisProgress
 import org.codeberg.fitguy.nofud.services.health.HealthEnergySummary
 import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
@@ -28,10 +30,17 @@ import java.util.Locale
  * Routes the call to the right per-format client based on the user's selected provider.
  */
 class FoodAnalysisService(
-    private val prefs: PreferencesStore,
-    private val keyStore: KeyStore,
-    private val okHttp: OkHttpClient = defaultClient
+    private val prefs: PreferencesStore? = null,
+    private val keyStore: KeyStore? = null,
+    private val okHttp: OkHttpClient = defaultClient,
+    internal val callAiDelegate: (suspend (prompt: String, imageBytesList: List<ByteArray>, op: String) -> String)? = null,
+    internal val inferenceModeForTest: ServingUnitInferenceMode? = null,
 ) {
+    init {
+        require((prefs != null && keyStore != null) || callAiDelegate != null) {
+            "FoodAnalysisService requires prefs and keyStore unless callAiDelegate is provided"
+        }
+    }
 
     suspend fun estimateOptionalNutrientGoals(profile: UserProfile?): OptionalNutrientGoals {
         val profileContext = profile?.let {
@@ -313,7 +322,10 @@ class FoodAnalysisService(
         return callAi(prompt, imageBytes = null).trim()
     }
 
-    suspend fun analyzeText(description: String): FoodAnalysis {
+    suspend fun analyzeText(
+        description: String,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis {
         val prompt = """
             Estimate the nutritional content for: $description
             Parse any quantities, brands, and multiple items from the text. If a brand is mentioned, use that brand's known nutritional data. If multiple items are described, sum up the total nutrition.
@@ -324,12 +336,16 @@ class FoodAnalysisService(
             unit_options is required when the text names an obvious non-gram serving unit, and optional otherwise. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. Do not copy any sample number; use the quantity stated or clearly implied by the meal. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
             For "emoji" pick the single most specific food emoji that depicts this dish — e.g. 🥚 for eggs, 🍕 for pizza, 🍎 for an apple, 🥗 for a salad, 🍔 for a burger, 🍜 for ramen, 🍰 for cake, 🥑 for avocado, ☕ for coffee, 🍣 for sushi. Only fall back to 🍽️ when the food truly cannot be represented by any specific emoji. Use null for any nutrient you cannot estimate.
         """.trimIndent()
-        val raw = callAi(prompt, null, op = "analyzeText")
+        val raw = callAi(prompt, null, op = "analyzeText", onProgress = onProgress)
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
-        return addingFallbackServingUnits(analysis, imageBytes = null, description = description)
+        return finalizeAnalysis(analysis, imageBytes = null, description = description, onProgress = onProgress)
     }
 
-    suspend fun analyzeAuto(imageBytes: ByteArray): FoodAnalysis {
+    suspend fun analyzeAuto(
+        imageBytes: ByteArray,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis {
         val prompt = """
             Analyze this image. It could be either a photo of food OR a nutrition facts label.
 
@@ -343,12 +359,17 @@ class FoodAnalysisService(
             unit_options is required for obvious non-gram units visible in the image or label. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
             Use null for any nutrient you cannot estimate.
         """.trimIndent()
-        val raw = callAi(prompt, imageBytes, op = "analyzeAuto")
+        val raw = callAi(prompt, imageBytes, op = "analyzeAuto", onProgress = onProgress)
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
-        return addingFallbackServingUnits(analysis, imageBytes = imageBytes, description = null)
+        return finalizeAnalysis(analysis, imageBytes = imageBytes, description = null, onProgress = onProgress)
     }
 
-    suspend fun analyzeFood(imageBytes: ByteArray, description: String? = null): FoodAnalysis {
+    suspend fun analyzeFood(
+        imageBytes: ByteArray,
+        description: String? = null,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis {
         var prompt = """
             Analyze this food image. Identify the food and estimate its nutritional content.
             Respond ONLY with JSON:
@@ -361,12 +382,16 @@ class FoodAnalysisService(
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
-        val raw = callAi(prompt, imageBytes, op = "analyzeFood")
+        val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
-        return addingFallbackServingUnits(analysis, imageBytes = imageBytes, description = description)
+        return finalizeAnalysis(analysis, imageBytes = imageBytes, description = description, onProgress = onProgress)
     }
 
-    suspend fun analyzeFood(imageBytesList: List<ByteArray>): FoodAnalysis {
+    suspend fun analyzeFood(
+        imageBytesList: List<ByteArray>,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis {
         val prompt = """
             Analyze these food images together. They are different angles or supporting photos of the same meal.
             Use all images to identify the food and estimate the total nutritional content for the serving shown.
@@ -380,9 +405,10 @@ class FoodAnalysisService(
         """.trimIndent()
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
-        val raw = callAi(prompt, images, op = "analyzeFoodMulti")
+        val raw = callAi(prompt, images, op = "analyzeFoodMulti", onProgress = onProgress)
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
-        return addingFallbackServingUnits(analysis, imageBytes = images.first(), description = null)
+        return finalizeAnalysis(analysis, imageBytes = images.first(), description = null, onProgress = onProgress)
     }
 
     suspend fun analyzeNutritionLabel(imageBytes: ByteArray, servingGrams: Double): FoodAnalysis {
@@ -424,16 +450,37 @@ class FoodAnalysisService(
 
     // -- Internal dispatch ------------------------------------------------
 
-    private suspend fun callAi(prompt: String, imageBytes: ByteArray?, op: String = "callAi"): String {
-        return callAi(prompt, imageBytes?.let { listOf(it) }.orEmpty(), op)
+    private suspend fun callAi(
+        prompt: String,
+        imageBytes: ByteArray?,
+        op: String = "callAi",
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+        reportPhases: Boolean = true,
+    ): String {
+        return callAi(prompt, imageBytes?.let { listOf(it) }.orEmpty(), op, onProgress, reportPhases)
     }
 
-    private suspend fun callAi(prompt: String, imageBytesList: List<ByteArray>, op: String = "callAi"): String {
+    private suspend fun callAi(
+        prompt: String,
+        imageBytesList: List<ByteArray>,
+        op: String = "callAi",
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+        reportPhases: Boolean = true,
+    ): String {
+        callAiDelegate?.let { delegate ->
+            if (reportPhases) {
+                onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Preparing))
+                onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
+            }
+            return delegate(prompt, imageBytesList, op)
+        }
+
+        if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Preparing))
         // Time input/prompt assembly (includes the suspending userContext read) as
         // the "promptBuild" phase; the network round-trip itself is captured by the
         // OkHttp PerfEventListener, and JSON parse is timed at the call site.
         val finalPrompt = PerfLog.measure(op, "promptBuild") {
-            val context = prefs.userContext.first()
+            val context = prefs!!.userContext.first()
             // Non-English UI locales get localized prose (food names, reasons, advice)
             // while the machine-read parts of the JSON stay English for the parser.
             val languageLine = nonEnglishResponseLanguage()?.let {
@@ -443,13 +490,14 @@ class FoodAnalysisService(
             languageLine + contextLine + prompt
         }
 
-        val primary = prefs.selectedAIProvider.first()
+        val primary = prefs!!.selectedAIProvider.first()
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() } ?: primary.baseUrl
-        val primaryKey = keyStore.apiKey(primary)
+        val primaryKey = keyStore!!.apiKey(primary)
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
 
+        if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
         return try {
             dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, imageBytesList, maxTokens)
         } catch (primaryError: Throwable) {
@@ -458,10 +506,28 @@ class FoodAnalysisService(
         }
     }
 
+    private suspend fun servingUnitInferenceMode(): ServingUnitInferenceMode =
+        inferenceModeForTest ?: prefs!!.servingUnitInferenceMode.first()
+
+    private suspend fun finalizeAnalysis(
+        analysis: FoodAnalysis,
+        imageBytes: ByteArray?,
+        description: String?,
+        onProgress: (FoodAnalysisProgress) -> Unit,
+    ): FoodAnalysis {
+        val unitsPending = analysis.servingUnitOptions.isEmpty() &&
+            servingUnitInferenceMode() == ServingUnitInferenceMode.AI_CALL
+        onProgress(FoodAnalysisProgress.Parsed(analysis, unitsPending))
+        val final = addingFallbackServingUnits(analysis, imageBytes, description, onProgress)
+        onProgress(FoodAnalysisProgress.Complete(final))
+        return final
+    }
+
     private suspend fun addingFallbackServingUnits(
         analysis: FoodAnalysis,
         imageBytes: ByteArray?,
-        description: String?
+        description: String?,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         if (analysis.servingUnitOptions.isNotEmpty()) return analysis
         val options = servingUnitFallbackOptions(analysis.name, analysis.servingSizeGrams, imageBytes, description)
@@ -496,10 +562,10 @@ class FoodAnalysisService(
         servingSizeGrams: Double,
         imageBytes: ByteArray?,
         description: String?
-    ): List<ServingUnitOption> = when (prefs.servingUnitInferenceMode.first()) {
+    ): List<ServingUnitOption> = when (servingUnitInferenceMode()) {
         ServingUnitInferenceMode.GRAMS_ONLY -> emptyList()
         ServingUnitInferenceMode.HEURISTIC ->
-            heuristicServingUnitOptions(name, servingSizeGrams, prefs.heuristicServingUnitSettings.first()).orEmpty()
+            heuristicServingUnitOptions(name, servingSizeGrams, prefs!!.heuristicServingUnitSettings.first()).orEmpty()
         ServingUnitInferenceMode.AI_CALL -> runCatching {
             inferServingUnitOptions(name, servingSizeGrams, imageBytes, description)
         }.getOrDefault(emptyList())
@@ -578,7 +644,7 @@ class FoodAnalysisService(
             {"unit_options":[{"unit":"can","quantity":1.0,"grams_per_unit":330.0}]}
             {"unit_options":[{"unit":"piece","quantity":5.0,"grams_per_unit":18.0}]}
         """.trimIndent()
-        val raw = callAi(prompt, imageBytes, op = "inferServing")
+        val raw = callAi(prompt, imageBytes, op = "inferServing", reportPhases = false)
         return PerfLog.measure("inferServing", "parse", "chars=${raw.length}") {
             FoodJsonParser.parseServingUnitOptions(raw, servingSizeGrams)
         }
@@ -609,12 +675,12 @@ class FoodAnalysisService(
         primary: AIProvider,
         primaryModel: String
     ): FallbackConfig? {
-        if (!prefs.fallbackEnabled.first()) return null
+        if (!prefs!!.fallbackEnabled.first()) return null
         val provider = prefs.selectedFallbackProvider.first()
         val model = provider.supportedModelOrDefault(prefs.selectedFallbackModel.first())
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
-        val key = keyStore.apiKey(provider)
+        val key = keyStore!!.apiKey(provider)
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
         val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() } ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null

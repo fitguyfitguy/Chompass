@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -61,6 +62,159 @@ import org.codeberg.fitguy.nofud.ui.components.FudGlassTextField
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
+
+@Composable
+internal fun EntryAnalysisOverlay(
+    phase: EntryAnalysisPhase,
+    preview: FoodAnalysis? = null,
+    imageBytes: ByteArray? = null,
+) {
+    val bitmap = rememberDecodedBitmap(imageBytes)
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.padding(horizontal = 32.dp)
+        ) {
+            if (bitmap != null) {
+                androidx.compose.foundation.Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                    modifier = Modifier
+                        .size(220.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            } else {
+                Icon(
+                    Icons.Filled.ImageSearch,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(64.dp)
+                )
+            }
+
+            EntryAnalysisStepRow(currentPhase = phase)
+
+            Text(
+                text = when (phase) {
+                    EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
+                    EntryAnalysisPhase.CallingAi -> stringResource(R.string.entry_analysis_phase_calling_ai)
+                    EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
+                },
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = AppColors.Calorie,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            )
+
+            if (preview != null) {
+                AnalysisPreviewCard(analysis = preview)
+            } else {
+                CircularProgressIndicator(
+                    color = AppColors.Calorie,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
+    val phases = EntryAnalysisPhase.entries
+    val currentIndex = phases.indexOf(currentPhase)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        phases.forEachIndexed { index, step ->
+            val done = index < currentIndex
+            val active = index == currentIndex
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(
+                        when {
+                            done -> AppColors.Calorie.copy(alpha = 0.85f)
+                            active -> AppColors.Calorie.copy(alpha = 0.2f)
+                            else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+                        }
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (done) {
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp),
+                    )
+                } else if (active) {
+                    CircularProgressIndicator(
+                        color = AppColors.Calorie,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+            if (index < phases.lastIndex) {
+                Box(
+                    Modifier
+                        .width(24.dp)
+                        .height(2.dp)
+                        .background(
+                            if (done) AppColors.Calorie.copy(alpha = 0.5f)
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+internal fun AnalysisPreviewCard(analysis: FoodAnalysis) {
+    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                "${analysis.emoji ?: "🍽"}  ${analysis.name}",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                "${analysis.calories} kcal",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.Calorie,
+            )
+            MacroLine(
+                stringResource(R.string.macro_protein_format, MacroValueFormatter.withUnit(analysis.protein)),
+                AppColors.Protein,
+            )
+            MacroLine(
+                stringResource(R.string.macro_carbs_format, MacroValueFormatter.withUnit(analysis.carbs)),
+                AppColors.Carbs,
+            )
+            MacroLine(
+                stringResource(R.string.macro_fat_format, MacroValueFormatter.withUnit(analysis.fat)),
+                AppColors.Fat,
+            )
+            Text(
+                stringResource(R.string.home_serving_format, analysis.servingSizeGrams.toInt()),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            )
+        }
+    }
+}
 
 @Composable
 internal fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
@@ -201,29 +355,7 @@ internal fun AnalysisResultDialog(
     onDismiss: () -> Unit
 ) {
     FudGlassDialog(onDismissRequest = onDismiss) {
-        Text("${analysis.emoji ?: "🍽"}  ${analysis.name}", fontSize = 21.sp, fontWeight = FontWeight.Bold)
-        FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("${analysis.calories} kcal", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = AppColors.Calorie)
-                MacroLine(stringResource(R.string.macro_protein_format, MacroValueFormatter.withUnit(analysis.protein)), AppColors.Protein)
-                MacroLine(stringResource(R.string.macro_carbs_format, MacroValueFormatter.withUnit(analysis.carbs)), AppColors.Carbs)
-                MacroLine(stringResource(R.string.macro_fat_format, MacroValueFormatter.withUnit(analysis.fat)), AppColors.Fat)
-                if (analysis.fiber != null || analysis.sugar != null || analysis.sodium != null) {
-                    Spacer(Modifier.height(2.dp))
-                    analysis.fiber?.let { MacroLine(stringResource(R.string.nutrient_fiber_format, it.toString()), AppColors.Fiber, fontSize = 12.sp) }
-                    analysis.sugar?.let { Text(stringResource(R.string.nutrient_sugar_format, it.toString()), fontSize = 12.sp) }
-                    analysis.saturatedFat?.let { Text(stringResource(R.string.nutrient_sat_fat_format, it.toString()), fontSize = 12.sp) }
-                    analysis.sodium?.let { Text(stringResource(R.string.nutrient_sodium_format, it.toString()), fontSize = 12.sp) }
-                    analysis.potassium?.let { Text(stringResource(R.string.nutrient_potassium_format, it.toString()), fontSize = 12.sp) }
-                    analysis.cholesterol?.let { Text(stringResource(R.string.nutrient_cholesterol_format, it.toString()), fontSize = 12.sp) }
-                }
-                Text(
-                    stringResource(R.string.home_serving_format, analysis.servingSizeGrams.toInt()),
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-                )
-            }
-        }
+        AnalysisPreviewCard(analysis = analysis)
         FudGlassDialogActions(
             primaryText = stringResource(R.string.action_save),
             onPrimary = onSave,
