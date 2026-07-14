@@ -39,9 +39,11 @@ class OnDeviceLlmClient(
     private val cacheDir: String,
     private val backend: Backend = Backend.GPU(),
     private val enableMtp: Boolean = false,
+    private val enableVision: Boolean = false,
 ) : Closeable {
 
     val backendName: String get() = backend.name
+    val visionEnabled: Boolean get() = enableVision
 
     private var engine: Engine? = null
 
@@ -52,11 +54,13 @@ class OnDeviceLlmClient(
         val config = EngineConfig(
             modelPath = modelPath,
             backend = backend,
+            visionBackend = if (enableVision) Backend.GPU() else null,
             cacheDir = cacheDir,
         )
         Log.i(
             ON_DEVICE_LLM_TAG,
             "op=ondevice_llm phase=engineInit_begin backend=$backendName mtp=$enableMtp " +
+                "vision=$enableVision visionBackend=${if (enableVision) "gpu" else "none"} " +
                 "note=gpu_cold_init_may_take_several_minutes"
         )
         try {
@@ -98,6 +102,63 @@ class OnDeviceLlmClient(
         active.createConversation(
             ConversationConfig(systemInstruction = Contents.of(systemPrompt))
         ).use { conversation -> conversation.sendMessage(userPrompt).plainText() }
+    }
+
+    /**
+     * Single-shot multimodal prompt/response. Image bytes must precede text in the content list.
+     * Requires [enableVision] with `visionBackend = GPU` — otherwise native SIGSEGV.
+     */
+    suspend fun generateWithImage(
+        userPrompt: String,
+        imageBytes: ByteArray,
+        systemPrompt: String = "",
+    ): String = withContext(Dispatchers.Default) {
+        require(enableVision) { "Vision not enabled — construct OnDeviceLlmClient with enableVision=true" }
+        val active = engine ?: error("Engine not initialized — call ensureLoaded() first")
+        Log.i(
+            ON_DEVICE_LLM_TAG,
+            "op=ondevice_llm phase=visionSend backend=$backendName visionBackend=gpu " +
+                "imageBytes=${imageBytes.size} promptChars=${userPrompt.length}"
+        )
+        active.createConversation(
+            ConversationConfig(systemInstruction = Contents.of(systemPrompt))
+        ).use { conversation ->
+            conversation.sendMessage(
+                Contents.of(
+                    Content.ImageBytes(imageBytes),
+                    Content.Text(userPrompt),
+                )
+            ).plainText()
+        }
+    }
+
+    /**
+     * Multiple image+text turns in one conversation — validates 2nd-image stability on GPU vision.
+     */
+    suspend fun generateMultiTurnWithImages(
+        turns: List<Pair<ByteArray, String>>,
+        systemPrompt: String = "",
+    ): List<String> = withContext(Dispatchers.Default) {
+        require(enableVision) { "Vision not enabled — construct OnDeviceLlmClient with enableVision=true" }
+        require(turns.isNotEmpty()) { "At least one turn required" }
+        val active = engine ?: error("Engine not initialized — call ensureLoaded() first")
+        active.createConversation(
+            ConversationConfig(systemInstruction = Contents.of(systemPrompt))
+        ).use { conversation ->
+            turns.mapIndexed { index, (imageBytes, userPrompt) ->
+                Log.i(
+                    ON_DEVICE_LLM_TAG,
+                    "op=ondevice_llm phase=visionSend backend=$backendName visionBackend=gpu " +
+                        "turn=$index imageBytes=${imageBytes.size} promptChars=${userPrompt.length}"
+                )
+                conversation.sendMessage(
+                    Contents.of(
+                        Content.ImageBytes(imageBytes),
+                        Content.Text(userPrompt),
+                    )
+                ).plainText()
+            }
+        }
     }
 
     /**

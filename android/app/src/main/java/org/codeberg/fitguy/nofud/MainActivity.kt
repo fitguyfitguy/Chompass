@@ -236,10 +236,12 @@ open class MainActivity : ComponentActivity() {
         val onDeviceLlmTier: String = "all",
         val onDeviceLlmPrompt: String = "full",
         val onDeviceLlmRepeat: Int = 1,
+        val onDeviceLlmClearCache: Boolean = false,
     )
 
     private fun consumeDebugIntentExtras(intent: Intent?): DebugIntentActions {
         intent ?: return DebugIntentActions()
+        val presetDaily = intent.getStringExtra("ondevice_llm_preset")?.lowercase() == "daily"
         val actions = DebugIntentActions(
             resetOnboarding = intent.getBooleanExtra("reset_onboarding", false),
             seedTestData = intent.getBooleanExtra("seed_test_data", false),
@@ -250,13 +252,14 @@ open class MainActivity : ComponentActivity() {
             runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
             entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
             runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
-            onDeviceLlmBackend = intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
-            onDeviceLlmMtp = intent.getBooleanExtra("ondevice_llm_mtp", false),
+            onDeviceLlmBackend = if (presetDaily) "gpu" else intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
+            onDeviceLlmMtp = presetDaily || intent.getBooleanExtra("ondevice_llm_mtp", false),
             onDeviceLlmModel = intent.getStringExtra("ondevice_llm_model")
                 ?: OnDeviceLlmDefaults.DEFAULT_MODEL_FILENAME,
-            onDeviceLlmTier = intent.getStringExtra("ondevice_llm_tier") ?: "all",
-            onDeviceLlmPrompt = intent.getStringExtra("ondevice_llm_prompt") ?: "full",
+            onDeviceLlmTier = if (presetDaily) "daily" else intent.getStringExtra("ondevice_llm_tier") ?: "all",
+            onDeviceLlmPrompt = if (presetDaily) "fewshot_units" else intent.getStringExtra("ondevice_llm_prompt") ?: "full",
             onDeviceLlmRepeat = intent.getIntExtra("ondevice_llm_repeat", 1).coerceIn(1, 5),
+            onDeviceLlmClearCache = intent.getBooleanExtra("ondevice_llm_clear_cache", false),
         )
         if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
         if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -273,6 +276,8 @@ open class MainActivity : ComponentActivity() {
             intent.removeExtra("ondevice_llm_tier")
             intent.removeExtra("ondevice_llm_prompt")
             intent.removeExtra("ondevice_llm_repeat")
+            intent.removeExtra("ondevice_llm_clear_cache")
+            intent.removeExtra("ondevice_llm_preset")
         }
         return actions
     }
@@ -317,6 +322,7 @@ open class MainActivity : ComponentActivity() {
                         tier = actions.onDeviceLlmTier,
                         promptMode = actions.onDeviceLlmPrompt,
                         repeatCount = actions.onDeviceLlmRepeat,
+                        clearCache = actions.onDeviceLlmClearCache,
                     ),
                 )
             }
