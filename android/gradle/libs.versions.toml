@@ -26,6 +26,7 @@ mlkitBarcode = "17.3.0"
 vico = "2.0.2"
 splashscreen = "1.0.1"
 screenshot = "0.0.1-alpha15"
+litertlm = "0.9.0-beta"
 
 [libraries]
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
@@ -67,6 +68,7 @@ play-review-ktx = { group = "com.google.android.play", name = "review-ktx", vers
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
+litertlm-android = { group = "com.google.ai.edge.litertlm", name = "litertlm-android", version.ref = "litertlm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

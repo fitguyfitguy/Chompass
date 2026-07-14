@@ -24,6 +24,7 @@ import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
 import org.codeberg.fitguy.nofud.services.EntryPerfBenchmark
 import org.codeberg.fitguy.nofud.services.MealShare
+import org.codeberg.fitguy.nofud.services.OnDeviceLlmSmokeTest
 import org.codeberg.fitguy.nofud.services.InAppReview
 import org.codeberg.fitguy.nofud.ui.home.ImportSharedMealSheet
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDNavHost
@@ -155,6 +156,12 @@ open class MainActivity : ComponentActivity() {
             intent?.getBooleanExtra("run_entry_benchmark", false) == true
         val entryBenchmarkCount = intent?.getIntExtra("benchmark_count", 3) ?: 3
         if (shouldRunEntryBenchmark) intent?.removeExtra("run_entry_benchmark")
+        // Debug-only on-device LLM smoke test (LiteRT-LM) — requires a model file
+        // manually adb-pushed to filesDir/models/ first; see the on-device LLM plan.
+        // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true
+        val shouldRunOnDeviceLlmTest = BuildConfig.DEBUG &&
+            intent?.getBooleanExtra("run_ondevice_llm_test", false) == true
+        if (shouldRunOnDeviceLlmTest) intent?.removeExtra("run_ondevice_llm_test")
         if (shouldResetOnboarding) intent?.removeExtra("reset_onboarding")
         if (shouldSeedTestData) intent?.removeExtra("seed_test_data")
         if (shouldSeedBodyMetrics) intent?.removeExtra("seed_body_metrics")
@@ -191,6 +198,12 @@ open class MainActivity : ComponentActivity() {
             if (shouldRunEntryBenchmark) {
                 lifecycleScope.launch {
                     EntryPerfBenchmark(container).run(entryBenchmarkCount)
+                }
+            }
+            // Same rationale as the benchmark above: independent of the splash-gating path.
+            if (shouldRunOnDeviceLlmTest) {
+                lifecycleScope.launch {
+                    OnDeviceLlmSmokeTest(container).run()
                 }
             }
 
