@@ -83,7 +83,7 @@ data class SettingsUiState(
     val userContext: String = "",
     val fallbackEnabled: Boolean = false,
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
-    val fallbackModel: String = AIProvider.GEMINI.defaultModel,
+    val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
     val fallbackApiKeyMasked: String = "",
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
@@ -151,7 +151,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val servingUnitInferenceMode = container.prefs.servingUnitInferenceMode.first()
             val fbEnabled = container.prefs.fallbackEnabled.first()
             val fbProvider = container.prefs.selectedFallbackProvider.first()
-            val fbModel = fbProvider.supportedModelOrDefault(container.prefs.selectedFallbackModel.first())
+            val fbModel = fbProvider.supportedFallbackModelOrDefault(container.prefs.selectedFallbackModel.first())
             val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
             val homeDisplay = container.prefs.homeDisplayPreferences.first()
@@ -297,7 +297,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setFallbackEnabled(v: Boolean) {
         viewModelScope.launch {
             container.prefs.setFallbackEnabled(v)
-            _ui.value = _ui.value.copy(fallbackEnabled = v)
+            if (v && container.prefs.selectedFallbackModel.first().isNullOrBlank()) {
+                val provider = container.prefs.selectedFallbackProvider.first()
+                val model = provider.defaultFallbackModel
+                container.prefs.setSelectedFallbackModel(model)
+                _ui.value = _ui.value.copy(fallbackEnabled = v, fallbackModel = model)
+            } else {
+                _ui.value = _ui.value.copy(fallbackEnabled = v)
+            }
         }
     }
 
@@ -306,7 +313,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.prefs.setSelectedFallbackProvider(p)
             // Reset model to provider default if old model isn't in the new provider's list.
             val current = _ui.value.fallbackModel
-            val newModel = p.supportedModelOrDefault(current)
+            val newModel = p.supportedFallbackModelOrDefault(current)
             container.prefs.setSelectedFallbackModel(newModel)
             val masked = maskKey(container.keyStore.apiKey(p))
             _ui.value = _ui.value.copy(fallbackProvider = p, fallbackModel = newModel, fallbackApiKeyMasked = masked)
@@ -315,7 +322,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun selectFallbackModel(m: String) {
         viewModelScope.launch {
-            val model = _ui.value.fallbackProvider.supportedModelOrDefault(m)
+            val model = _ui.value.fallbackProvider.supportedFallbackModelOrDefault(m)
             container.prefs.setSelectedFallbackModel(model)
             _ui.value = _ui.value.copy(fallbackModel = model)
         }

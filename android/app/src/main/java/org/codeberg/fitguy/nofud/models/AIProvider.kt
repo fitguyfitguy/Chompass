@@ -132,6 +132,12 @@ enum class AIProvider {
 
     val defaultModel: String get() = models.firstOrNull() ?: ""
 
+    /** Separate from [defaultModel] so Gemini fallback can use a higher-quota lite model. */
+    val defaultFallbackModel: String get() = when (this) {
+        GEMINI -> "gemini-3.1-flash-lite"
+        else -> models.getOrNull(1) ?: defaultModel
+    }
+
     fun supportedModelOrDefault(model: String?): String {
         val normalized = model?.let(::normalizeModelId)
         return when {
@@ -139,6 +145,16 @@ enum class AIProvider {
             supportsCustomModelName -> normalized
             models.contains(normalized) -> normalized
             else -> defaultModel
+        }
+    }
+
+    fun supportedFallbackModelOrDefault(model: String?): String {
+        val normalized = model?.let(::normalizeModelId)
+        return when {
+            normalized.isNullOrBlank() -> defaultFallbackModel
+            supportsCustomModelName -> normalized
+            models.contains(normalized) -> normalized
+            else -> defaultFallbackModel
         }
     }
 

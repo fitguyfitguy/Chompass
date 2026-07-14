@@ -21,6 +21,8 @@ import org.codeberg.fitguy.nofud.ui.home.EntryAnalysisPhase
 import org.codeberg.fitguy.nofud.ui.home.FoodAnalysisProgress
 import org.codeberg.fitguy.nofud.services.health.HealthEnergySummary
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import kotlin.math.roundToInt
 import okhttp3.OkHttpClient
 import java.util.Locale
@@ -496,13 +498,20 @@ class FoodAnalysisService(
         val primaryKey = keyStore!!.apiKey(primary)
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
+        val aiImages = if (imageBytesList.isEmpty()) {
+            imageBytesList
+        } else {
+            withContext(Dispatchers.Default) {
+                imageBytesList.map { AiImageBytes.jpegForUpload(it) }
+            }
+        }
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
         return try {
-            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, imageBytesList, maxTokens)
+            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages, maxTokens)
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
-            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, imageBytesList, maxTokens)
+            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages, maxTokens)
         }
     }
 
@@ -677,7 +686,7 @@ class FoodAnalysisService(
     ): FallbackConfig? {
         if (!prefs!!.fallbackEnabled.first()) return null
         val provider = prefs.selectedFallbackProvider.first()
-        val model = provider.supportedModelOrDefault(prefs.selectedFallbackModel.first())
+        val model = provider.supportedFallbackModelOrDefault(prefs.selectedFallbackModel.first())
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
         val key = keyStore!!.apiKey(provider)
