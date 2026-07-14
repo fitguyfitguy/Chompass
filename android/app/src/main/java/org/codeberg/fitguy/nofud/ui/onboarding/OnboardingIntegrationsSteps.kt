@@ -28,6 +28,8 @@ import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -114,6 +116,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
 internal fun HealthConnectStep(container: AppContainer, enabled: Boolean, onToggle: (Boolean) -> Unit) {
     // iOS appleHealthStep: heart.fill in pink circle, title "Connect to\nApple Health",
     // feature row list, pink CTA "Connect". Android maps Apple Health → Health Connect.
+    val context = LocalContext.current
     val hcLauncher = rememberLauncherForActivityResult(
         container.health.permissionRequestContract()
     ) { granted ->
@@ -192,6 +195,14 @@ internal fun HealthConnectStep(container: AppContainer, enabled: Boolean, onTogg
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
+        }
+        if (available) {
+            TextButton(onClick = { context.startActivity(container.health.manageAccessIntent()) }) {
+                Text(
+                    stringResource(R.string.settings_manage_health_access),
+                    color = AppColors.Calorie,
+                )
+            }
         }
     }
 }

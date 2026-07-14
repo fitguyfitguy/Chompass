@@ -38,11 +38,12 @@ import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.TrackChanges
-import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -152,6 +153,27 @@ internal fun SettingsAppSection(
                     onChange = vm::setPreferGramsByDefault
                 )
                 HorizontalDivider()
+                ToggleRow(
+                    stringResource(R.string.settings_water_tracking),
+                    ui.waterTrackingEnabled,
+                    icon = Icons.Outlined.WaterDrop,
+                    onChange = vm::setWaterTrackingEnabled,
+                )
+                if (ui.waterTrackingEnabled) {
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_water_goal),
+                        stringResource(R.string.settings_water_goal_summary, ui.waterDailyGoalMl),
+                        icon = Icons.Outlined.WaterDrop,
+                    ) { onOpenSheet(SettingsSheet.WATER_GOAL) }
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_water_quick_presets),
+                        formatWaterQuickPresetsSummary(ui.waterQuickPresetsMl, ui.weightMetric),
+                        icon = Icons.Outlined.WaterDrop,
+                    ) { onOpenSheet(SettingsSheet.WATER_QUICK_PRESETS) }
+                }
+                HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_food_log_sort),
                     stringResource(ui.foodLogSortOrder.displayNameRes),
@@ -163,6 +185,12 @@ internal fun SettingsAppSection(
                     if (ui.weekStartsOnMonday) stringResource(R.string.settings_week_monday) else stringResource(R.string.settings_week_sunday),
                     icon = Icons.Outlined.CalendarToday
                 ) { onOpenSheet(SettingsSheet.WEEK_START) }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_meal_times),
+                    stringResource(R.string.settings_meal_times_customize),
+                    icon = Icons.Outlined.Schedule,
+                ) { onOpenSheet(SettingsSheet.MEAL_TIMES) }
                 HorizontalDivider()
                 ToggleRow(stringResource(R.string.settings_notifications), ui.notificationsEnabled, icon = Icons.Outlined.Notifications, onChange = onNotificationsToggle)
                 if (ui.notificationsEnabled) {

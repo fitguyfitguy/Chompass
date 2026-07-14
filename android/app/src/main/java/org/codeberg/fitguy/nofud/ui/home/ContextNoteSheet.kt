@@ -1,5 +1,7 @@
 package org.codeberg.fitguy.nofud.ui.home
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +14,20 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -37,7 +46,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -219,4 +230,138 @@ fun ContextNoteSheet(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MultiPhotoCaptureSheet(
+    imageBytesList: List<ByteArray>,
+    addsFromLibrary: Boolean,
+    onAddPhoto: () -> Unit,
+    onRemove: (Int) -> Unit,
+    onAnalyze: (String?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var note by remember { mutableStateOf("") }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = state,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+    ) {
+        SheetReviewToolbar(
+            title = stringResource(R.string.meal_photos_title),
+            primaryLabel = stringResource(R.string.action_analyze),
+            onCancel = onDismiss,
+            onPrimary = { onAnalyze(note.takeIf { it.isNotBlank() }) },
+        )
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(bottom = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    stringResource(R.string.meal_photos_count, imageBytesList.size),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                )
+                if (imageBytesList.size < 10) {
+                    OutlinedButton(onClick = onAddPhoto) {
+                        Icon(
+                            if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            stringResource(
+                                if (addsFromLibrary) R.string.meal_photos_add_from_library
+                                else R.string.meal_photos_add_photo,
+                            ),
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
+                }
+            }
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp),
+            ) {
+                itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
+                    val bitmap = remember(bytes) { decodePreviewBitmap(bytes) }
+                    Box {
+                        if (bitmap != null) {
+                            androidx.compose.foundation.Image(
+                                bitmap = bitmap.asImageBitmap(),
+                                contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(width = 240.dp, height = 260.dp)
+                                    .clip(RoundedCornerShape(20.dp)),
+                            )
+                        }
+                        IconButton(
+                            onClick = { onRemove(index) },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .size(34.dp)
+                                .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                        ) {
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.action_remove),
+                                tint = Color.White,
+                            )
+                        }
+                    }
+                }
+            }
+
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    stringResource(R.string.context_note_section),
+                    fontWeight = FontWeight.SemiBold,
+                )
+                FudGlassTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 110.dp),
+                    placeholder = stringResource(R.string.context_note_placeholder),
+                )
+            }
+        }
+    }
+}
+
+private fun decodePreviewBitmap(bytes: ByteArray): android.graphics.Bitmap? {
+    val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+    var sample = 1
+    while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 720) sample *= 2
+    return android.graphics.BitmapFactory.decodeByteArray(
+        bytes,
+        0,
+        bytes.size,
+        android.graphics.BitmapFactory.Options().apply { inSampleSize = sample },
+    )
 }

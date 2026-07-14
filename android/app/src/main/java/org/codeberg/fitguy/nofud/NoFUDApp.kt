@@ -8,15 +8,17 @@ import org.codeberg.fitguy.nofud.data.FoodRepository
 import org.codeberg.fitguy.nofud.data.KeyStore
 import org.codeberg.fitguy.nofud.data.PreferencesStore
 import org.codeberg.fitguy.nofud.data.ProfileRepository
+import org.codeberg.fitguy.nofud.data.WaterRepository
 import org.codeberg.fitguy.nofud.data.WeightRepository
+import org.codeberg.fitguy.nofud.models.AIProvider
+import org.codeberg.fitguy.nofud.models.CurrentMealSchedule
+import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.services.AdaptiveGoalResult
 import org.codeberg.fitguy.nofud.services.FoodImageStore
 import org.codeberg.fitguy.nofud.services.NotificationService
 import org.codeberg.fitguy.nofud.services.TestDataSeeder
-import org.codeberg.fitguy.nofud.services.WidgetSnapshotWriter
-import org.codeberg.fitguy.nofud.services.AdaptiveGoalResult
 import org.codeberg.fitguy.nofud.services.WeightAnalysisService
-import org.codeberg.fitguy.nofud.models.AIProvider
-import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.services.WidgetSnapshotWriter
 import org.codeberg.fitguy.nofud.services.ai.ChatService
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
@@ -30,6 +32,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
@@ -52,6 +55,9 @@ class NoFUDApp : Application() {
         seedDebugGeminiKeyIfNeeded()
         container.notifications.createChannels()
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
+        container.prefs.mealSchedule
+            .onEach { CurrentMealSchedule.value = it }
+            .launchIn(appScope)
         container.widgetSnapshotWriter.observe().launchIn(appScope)
         // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
         // this a no-op when the periodic work is already enqueued.
@@ -97,6 +103,14 @@ class NoFUDApp : Application() {
                 } else {
                     container.notifications.cancelBodyFatReminder()
                 }
+                if (container.prefs.waterTrackingEnabled.first() && container.prefs.waterReminderEnabled.first()) {
+                    container.notifications.scheduleWaterReminder(
+                        container.prefs.waterReminderHour.first(),
+                        container.prefs.waterReminderMinute.first(),
+                    )
+                } else {
+                    container.notifications.cancelWaterReminder()
+                }
             }
         }
     }
@@ -138,12 +152,13 @@ class AppContainer(app: NoFUDApp) {
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs)
     val chatRepository = ChatRepository(prefs)
+    val waterRepository = WaterRepository(prefs)
 
     val foodAnalysis = FoodAnalysisService(prefs, keyStore)
     val chatService = ChatService(prefs, keyStore)
     val speechService = SpeechService(prefs, keyStore)
 
-    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader)
+    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository)
     val testDataSeeder = TestDataSeeder(this)
 
     /**

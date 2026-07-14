@@ -16,6 +16,7 @@ import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.models.WaterEntry
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
 import org.codeberg.fitguy.nofud.services.health.DebugActivityDay
@@ -63,6 +64,20 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setGoalReachedNotificationsEnabled(v: Boolean) = setGoalReachedNotificationsEnabledImpl(v)
     val appUpdateNotificationsEnabled: Flow<Boolean> get() = appUpdateNotificationsEnabledImpl
     suspend fun setAppUpdateNotificationsEnabled(v: Boolean) = setAppUpdateNotificationsEnabledImpl(v)
+    val waterTrackingEnabled: Flow<Boolean> get() = waterTrackingEnabledImpl
+    suspend fun setWaterTrackingEnabled(v: Boolean) = setWaterTrackingEnabledImpl(v)
+    val waterDailyGoalMl: Flow<Int> get() = waterDailyGoalMlImpl
+    suspend fun setWaterDailyGoalMl(v: Int) = setWaterDailyGoalMlImpl(v)
+    val waterReminderEnabled: Flow<Boolean> get() = waterReminderEnabledImpl
+    suspend fun setWaterReminderEnabled(v: Boolean) = setWaterReminderEnabledImpl(v)
+    val waterReminderHour: Flow<Int> get() = waterReminderHourImpl
+    suspend fun setWaterReminderHour(v: Int) = setWaterReminderHourImpl(v)
+    val waterReminderMinute: Flow<Int> get() = waterReminderMinuteImpl
+    suspend fun setWaterReminderMinute(v: Int) = setWaterReminderMinuteImpl(v)
+    val waterQuickPresetsMl: Flow<List<Int>> get() = waterQuickPresetsMlImpl
+    suspend fun setWaterQuickPresetsMl(amountsMl: List<Int>) = setWaterQuickPresetsMlImpl(amountsMl)
+    val waterEntries: Flow<List<WaterEntry>> get() = waterEntriesImpl
+    suspend fun setWaterEntries(entries: List<WaterEntry>) = setWaterEntriesImpl(entries)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
     suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
     val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl
@@ -110,6 +125,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
     val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
     suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
+    val mealSchedule: Flow<org.codeberg.fitguy.nofud.models.MealSchedule> get() = mealScheduleImpl
+    suspend fun setMealSchedule(schedule: org.codeberg.fitguy.nofud.models.MealSchedule) = setMealScheduleImpl(schedule)
     val lastSavedMealsSegment: Flow<String> get() = lastSavedMealsSegmentImpl
     suspend fun setLastSavedMealsSegment(v: String) = setLastSavedMealsSegmentImpl(v)
     val foodLogSortOrder: Flow<String> get() = foodLogSortOrderImpl

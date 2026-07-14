@@ -22,9 +22,11 @@ import org.codeberg.fitguy.nofud.models.WidgetSnapshot
 import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.theme.widgetAccentColors
+import org.codeberg.fitguy.nofud.models.WaterEntry
 import org.codeberg.fitguy.nofud.widget.AllMetricsAppWidget
 import org.codeberg.fitguy.nofud.widget.CalorieAppWidget
 import org.codeberg.fitguy.nofud.widget.ProteinAppWidget
+import org.codeberg.fitguy.nofud.widget.WaterAppWidget
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -46,22 +48,34 @@ class WidgetSnapshotWriter(
     private val foodRepository: FoodRepository,
     private val profileRepository: ProfileRepository,
     private val homeActivityReader: HomeActivityReader,
+    private val waterRepository: org.codeberg.fitguy.nofud.data.WaterRepository,
 ) {
     fun observe() = combine(
-        foodRepository.entries,
-        profileRepository.profile,
-        prefs.homeDisplayPreferences,
-        prefs.appThemeColor,
-        prefs.optionalNutrientGoals
-    ) { entries, profile, _, _, _ ->
-        // Selection / theme / goals are re-read inside publish; they're combined
-        // here only so their changes re-trigger a snapshot write.
-        entries to profile
-    }
+        combine(
+            foodRepository.entries,
+            profileRepository.profile,
+            prefs.homeDisplayPreferences,
+            prefs.appThemeColor,
+            prefs.optionalNutrientGoals,
+        ) { entries, profile, _, _, _ ->
+            entries to profile
+        },
+        combine(
+            prefs.waterTrackingEnabled,
+            prefs.waterDailyGoalMl,
+            waterRepository.entries,
+        ) { enabled, goalMl, waterEntries ->
+            Triple(enabled, goalMl, waterEntries)
+        },
+    ) { core, water -> Triple(core.first, core.second, water) }
         .distinctUntilChanged()
-        .onEach { (entries, profile) -> publish(entries, profile) }
+        .onEach { (entries, profile, water) -> publish(entries, profile, water) }
 
-    suspend fun publish(entries: List<FoodEntry>, profile: UserProfile?) {
+    private suspend fun publish(
+        entries: List<FoodEntry>,
+        profile: UserProfile?,
+        water: Triple<Boolean, Int, List<WaterEntry>>,
+    ) {
         val todaysEntries = entries.filter {
             it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
         }
@@ -88,6 +102,9 @@ class WidgetSnapshotWriter(
             )
             val activeCalories = burn?.calories ?: 0
             val effectiveGoal = HomeCalorieDisplay.effectiveGoal(mode, gaugeBase, activeCalories)
+            val waterTodayMl = water.third
+                .filter { it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now() }
+                .sumOf { it.milliliters }
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
                 dayStart = WidgetSnapshot.todayStart(),
@@ -122,6 +139,9 @@ class WidgetSnapshotWriter(
                 activeCalorieSource = burn?.source?.storageKey,
                 stepsToday = activity.steps,
                 stepGoal = display.stepGoal,
+                waterTrackingEnabled = water.first,
+                waterCurrentMl = waterTodayMl,
+                waterGoalMl = water.second.coerceAtLeast(1),
             )
             prefs.setWidgetSnapshot(snapshot)
         }
@@ -131,6 +151,8 @@ class WidgetSnapshotWriter(
             .onFailure { Log.e(TAG, "ProteinAppWidget.updateAll failed", it) }
         runCatching { AllMetricsAppWidget().updateAll(context) }
             .onFailure { Log.e(TAG, "AllMetricsAppWidget.updateAll failed", it) }
+        runCatching { WaterAppWidget().updateAll(context) }
+            .onFailure { Log.e(TAG, "WaterAppWidget.updateAll failed", it) }
     }
 
     private companion object {

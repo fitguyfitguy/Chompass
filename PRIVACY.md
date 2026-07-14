@@ -16,6 +16,7 @@ The app stores locally:
 
 - Food entries, photos, favorites, and diary exports
 - Weight and body-fat history
+- Optional water intake log (local only; not written to Health Connect unless you use a separate app that syncs hydration)
 - Profile, goals, and settings
 - Coach conversation history
 - Widget snapshots

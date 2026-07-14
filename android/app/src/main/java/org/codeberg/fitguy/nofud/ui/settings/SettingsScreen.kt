@@ -242,6 +242,11 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
         healthConnectLauncher.launch(container.health.permissions)
     }
 
+    fun openHealthConnectAccess() {
+        runCatching { activityContext.startActivity(container.health.manageAccessIntent()) }
+            .onFailure { permissionDeniedMessage = healthUnavailableMsg }
+    }
+
     fun openBatteryOptimizationSettings() {
         val intents = buildList {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -324,6 +329,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 safetyMedicalExpanded = showSafetyMedicalInfo,
                 onToggleSafetyMedical = { showSafetyMedicalInfo = !showSafetyMedicalInfo },
                 onHealthConnectToggle = ::onHealthConnectToggle,
+                onManageHealthAccess = ::openHealthConnectAccess,
                 onShowExportDiary = { showExportSheet = true },
                 onShowExportBodyMetrics = { showBodyMetricsExportSheet = true },
                 onImportDiary = { importDiaryLauncher.launch(arrayOf("application/json", "text/plain")) },

@@ -47,6 +47,7 @@
     <!-- Generic units / labels -->
     <string name="unit_kcal">kcal</string>
     <string name="unit_g">g</string>
+    <string name="unit_ml">ml</string>
     <string name="unit_mg">mg</string>
     <string name="unit_percent">%</string>
     <string name="unit_cm">cm</string>
@@ -75,6 +76,10 @@
     <string name="macro_fat">Fat</string>
     <string name="macro_calories">Calories</string>
     <string name="macro_goal_of">of %1$d%2$s</string>
+    <string name="macro_status_left">%1$s%2$s left</string>
+    <string name="macro_status_over">%1$s%2$s over</string>
+    <string name="macro_status_goal_reached">Goal reached</string>
+    <string name="macro_status_no_goal">No goal</string>
 
     <!-- Gender -->
     <string name="gender_male">Male</string>
@@ -335,6 +340,21 @@
     <string name="add_food_hero_saved">Saved</string>
     <string name="add_food_hero_saved_sub">Recents &amp; favorites</string>
     <string name="add_food_more_section">More ways to log</string>
+    <string name="add_food_water_section">Water</string>
+    <string name="water_amount_ml">%1$d ml</string>
+    <string name="water_amount_fl_oz">%1$d fl oz</string>
+    <string name="unit_fl_oz">fl oz</string>
+    <string name="water_custom_short">Custom</string>
+    <string name="cd_log_water">Log water</string>
+    <string name="water">Water</string>
+    <string name="water_log_title">Log water</string>
+    <string name="water_how_much">How much water?</string>
+    <string name="water_one_glass_amount">1 glass (~250 ml)</string>
+    <string name="water_two_glasses_amount">2 glasses (~500 ml)</string>
+    <string name="water_three_glasses_amount">3 glasses (~750 ml)</string>
+    <string name="water_custom_amount">Custom amount</string>
+    <string name="water_add">Add water</string>
+    <string name="water_progress">%1$d / %2$d ml</string>
     <string name="add_food_photo_source_title">Add a photo</string>
     <string name="add_food_photo_camera">Take Photo</string>
     <string name="add_food_photo_gallery">Choose from Gallery</string>
@@ -418,6 +438,14 @@
     <string name="context_note_title">Review photo</string>
     <string name="context_note_section">Add a note (optional)</string>
     <string name="context_note_placeholder">e.g. no oil, extra cheese, large portion</string>
+
+    <!-- Multi-photo capture sheet -->
+    <string name="meal_photos_title">Meal photos</string>
+    <string name="meal_photos_count">%1$d of 10 photos</string>
+    <string name="meal_photos_add_photo">Add photo</string>
+    <string name="meal_photos_add_from_library">Add photos</string>
+    <string name="meal_photo_cd">Photo %1$d</string>
+    <string name="action_remove">Remove</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Listening...</string>
@@ -590,11 +618,30 @@
     <string name="settings_weight_unit">Weight Unit</string>
     <string name="settings_default_to_grams">Default to Grams</string>
     <string name="settings_default_to_grams_info">New food review sheets open with grams selected first. You can still switch to serving, slice, cup, or any other detected unit before logging.</string>
+    <string name="settings_water_tracking">Water tracking</string>
+    <string name="settings_water_goal">Daily water goal</string>
+    <string name="settings_water_goal_summary">%1$d ml</string>
+    <string name="settings_water_goal_wheel_help">Scroll in 50 ml steps to select a daily goal from 50 to 10,000 ml.</string>
+    <string name="settings_water_quick_presets">Quick-log presets</string>
+    <string name="settings_water_quick_presets_help">Snap points on the Add food water slider. Stored in milliliters; shown in fluid ounces when you use imperial units.</string>
+    <string name="settings_water_preset_label">Preset %1$d</string>
+    <string name="settings_water_add_preset">Add preset</string>
+    <string name="settings_water_remove_preset">Remove last preset</string>
     <string name="settings_glass_blur">Glass blur</string>
     <string name="settings_food_log_sort">Food log sort</string>
     <string name="settings_week_starts">Week Starts On</string>
     <string name="settings_week_monday">Monday</string>
     <string name="settings_week_sunday">Sunday</string>
+    <string name="settings_meal_times">Meal times</string>
+    <string name="settings_meal_times_customize">Customize</string>
+    <string name="settings_meal_times_description">Set when automatic meal selection switches to the next meal.</string>
+    <string name="settings_breakfast_starts">Breakfast starts</string>
+    <string name="settings_lunch_starts">Lunch starts</string>
+    <string name="settings_dinner_starts">Dinner starts</string>
+    <string name="settings_late_snack_starts">Late snack starts</string>
+    <string name="settings_meal_times_help">Each meal continues until the next one starts. Late snack continues overnight until breakfast starts. You can still change the meal manually before logging.</string>
+    <string name="settings_meal_time_edit_format">%1$s</string>
+    <string name="settings_restore_default_times">Restore default times</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_battery_opt">Battery Optimization</string>
     <string name="settings_battery_opt_value">Whitelist NoFUD</string>
@@ -623,6 +670,8 @@
     <string name="settings_fallback_footer">If your primary provider fails (overload, rate limit, network error), the app retries automatically with this fallback. Same provider as primary is allowed - just pick a different model.</string>
 
     <string name="settings_health_connect">Health Connect</string>
+    <string name="settings_manage_health_access">Manage Health Connect access</string>
+    <string name="settings_permissions">Permissions</string>
     <string name="settings_energy_goals">Energy Burn Goals</string>
     <string name="settings_needs_health_connect">Needs Health Connect</string>
     <string name="settings_energy_goals_info">When on, NoFUD uses your measured calories burned from Health Connect - a 14-day average of active + basal energy - as your maintenance anchor when calculating goals, instead of the formula estimate. No AI is used to read your burn. Requires Health Connect. Works with the Recalculate button and with Adaptive Goals.</string>
@@ -759,6 +808,9 @@
 
     <string name="widget_all_metrics_label">NoFUD Today</string>
     <string name="widget_all_metrics_description">See today\'s calories, protein, carbs, and fat in one widget.</string>
+    <string name="widget_water_label">NoFUD Water</string>
+    <string name="widget_water_description">See today\'s water progress at a glance.</string>
+    <string name="widget_water_disabled">Enable Water Tracking in NoFUD</string>
 
     <!-- Workouts tab (exercise library ported from Delts) -->
     <string name="back">Back</string>
@@ -962,6 +1014,7 @@
     <string name="settings_notif_daily_summary">Daily summary</string>
     <string name="settings_notif_weight_reminder">Weight log reminder</string>
     <string name="settings_notif_body_fat_reminder">Body fat reminder</string>
+    <string name="settings_notif_water_reminder">Water reminder</string>
     <string name="settings_notif_goal_alerts">Goal reached alerts</string>
     <string name="settings_notif_app_updates">App updates</string>
     <string name="settings_notif_none_selected">No notification type is selected. You can leave notifications allowed and keep every app reminder off.</string>
@@ -1017,6 +1070,10 @@
     <string name="notif_channel_body_fat_desc">Daily reminder to log a body-fat reading.</string>
     <string name="notif_channel_updates">App Updates</string>
     <string name="notif_channel_updates_desc">A new version of NoFUD is available on the Play Store.</string>
+    <string name="notif_channel_water">Water reminder</string>
+    <string name="notif_channel_water_desc">Daily reminder to drink and log water.</string>
+    <string name="notif_water_title">Time to hydrate</string>
+    <string name="notif_water_text">Have some water and log it in NoFUD.</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of NoFUD is ready. Tap to update.</string>
     <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals - or automatically about once a week if Adaptive Goals is on - NoFUD sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your real data to estimate your true maintenance and targets.</string>

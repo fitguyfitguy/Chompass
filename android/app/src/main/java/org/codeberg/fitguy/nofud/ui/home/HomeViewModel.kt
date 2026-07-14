@@ -18,6 +18,8 @@ import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import org.codeberg.fitguy.nofud.models.PendingFoodAnalysisDraft
 import org.codeberg.fitguy.nofud.models.PendingFoodInputDraft
 import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.models.WaterQuickPresets
+import org.codeberg.fitguy.nofud.models.WaterEntry
 import org.codeberg.fitguy.nofud.services.FoodImageComposer
 import org.codeberg.fitguy.nofud.services.OpenFoodFactsService
 import org.codeberg.fitguy.nofud.services.PerfLog
@@ -83,7 +85,11 @@ data class HomeUiState(
     val analysisPreview: FoodAnalysis? = null,
     val inferringUnits: Boolean = false,
     val saving: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val waterTrackingEnabled: Boolean = false,
+    val waterDailyGoalMl: Int = 2_000,
+    val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
+    val waterTodayMl: Int = 0,
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
@@ -252,6 +258,27 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.waterTrackingEnabled
+            .onEach { enabled -> _ui.value = _ui.value.copy(waterTrackingEnabled = enabled) }
+            .launchIn(viewModelScope)
+
+        container.prefs.waterDailyGoalMl
+            .onEach { goal -> _ui.value = _ui.value.copy(waterDailyGoalMl = goal) }
+            .launchIn(viewModelScope)
+
+        container.prefs.waterQuickPresetsMl
+            .onEach { presets -> _ui.value = _ui.value.copy(waterQuickPresetsMl = presets) }
+            .launchIn(viewModelScope)
+
+        combine(container.waterRepository.entries, _selectedDate) { entries, day ->
+            val zone = ZoneId.systemDefault()
+            entries
+                .filter { it.date.atZone(zone).toLocalDate() == day }
+                .sumOf { it.milliliters }
+        }
+            .onEach { total -> _ui.value = _ui.value.copy(waterTodayMl = total) }
+            .launchIn(viewModelScope)
+
         viewModelScope.launch {
             val analysisDraft = container.prefs.pendingFoodAnalysisDraft.first()
             if (analysisDraft != null) {
@@ -264,6 +291,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setSelectedDate(date: LocalDate) {
         _selectedDate.value = date
+    }
+
+    fun addWater(milliliters: Int) {
+        if (milliliters <= 0) return
+        viewModelScope.launch {
+            container.waterRepository.add(
+                WaterEntry(date = timestampForSelectedDay(), milliliters = milliliters),
+            )
+        }
     }
 
     fun refreshActivitySnapshot() {
@@ -352,38 +388,56 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun analyzePhotos(firstBytes: ByteArray, secondBytes: ByteArray) {
+    fun analyzePhotos(imageBytesList: List<ByteArray>, note: String? = null) {
         viewModelScope.launch {
+            val images = imageBytesList.filter { it.isNotEmpty() }.take(10)
+            if (images.isEmpty()) return@launch
+            val displayBytes = when {
+                images.size >= 2 -> withContext(Dispatchers.Default) {
+                    FoodImageComposer.sideBySide(images[0], images[1])
+                }
+                else -> images.first()
+            }
             val start = beginAnalysis(phased = true) { state ->
                 state.copy(
+                    pendingImageBytes = displayBytes,
                     pendingFoodSource = FoodSource.SNAP_FOOD,
                     pendingDraftImageFilename = null,
                 )
             } ?: return@launch
+            if (!note.isNullOrBlank() && images.size == 1) {
+                savePendingInputDraft(images.first(), note, FoodSource.SNAP_FOOD)
+            }
             discardPendingDraft(start.previousDraftImage)
             try {
-                // Both shots side by side — this composite becomes the entry's stored
-                // image, so the log row and edit sheet show both photos (mirrors iOS).
-                val combinedBytes = withContext(Dispatchers.Default) {
-                    FoodImageComposer.sideBySide(firstBytes, secondBytes)
-                }
-                if (start.generation != analysisGeneration) return@launch
-                _ui.value = _ui.value.copy(pendingImageBytes = combinedBytes)
-                val analysis = container.foodAnalysis.analyzeFood(listOf(firstBytes, secondBytes)) { progress ->
+                val analysis = container.foodAnalysis.analyzeFood(
+                    images,
+                    note?.takeIf { it.isNotBlank() },
+                ) { progress ->
                     onFoodAnalysisProgress(start.generation, progress)
-                }
-                savePendingDraft(analysis, imageBytes = combinedBytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
+                }.copy(customNote = note?.takeIf { it.isNotBlank() })
+                clearPendingInputDraft()
+                savePendingDraft(
+                    analysis,
+                    imageBytes = displayBytes,
+                    source = FoodSource.SNAP_FOOD,
+                    generation = start.generation,
+                )
             } catch (e: AiError) {
                 failAnalysis(start.generation, e.message)
             } catch (e: Throwable) {
                 failAnalysis(
                     start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed),
                 )
             } finally {
                 endAnalysis(start.generation)
             }
         }
+    }
+
+    fun analyzePhotos(firstBytes: ByteArray, secondBytes: ByteArray) {
+        analyzePhotos(listOf(firstBytes, secondBytes))
     }
 
     /**
@@ -392,33 +446,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * `cameraMode == .snapFoodWithContext` → `GeminiService.analyzeFood(image, description:)`.
      */
     fun analyzePhotoWithNote(bytes: ByteArray, note: String) {
-        viewModelScope.launch {
-            val start = beginAnalysis(phased = true) { state ->
-                state.copy(
-                    pendingImageBytes = bytes,
-                    pendingFoodSource = FoodSource.SNAP_FOOD,
-                    pendingDraftImageFilename = null,
-                )
-            } ?: return@launch
-            savePendingInputDraft(bytes, note, FoodSource.SNAP_FOOD)
-            discardPendingDraft(start.previousDraftImage)
-            try {
-                val analysis = container.foodAnalysis.analyzeFood(bytes, note.takeIf { it.isNotBlank() }) { progress ->
-                    onFoodAnalysisProgress(start.generation, progress)
-                }.copy(customNote = note.takeIf { it.isNotBlank() })
-                clearPendingInputDraft()
-                savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
-            } catch (e: AiError) {
-                failAnalysis(start.generation, e.message)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
-                )
-            } finally {
-                endAnalysis(start.generation)
-            }
-        }
+        analyzePhotos(listOf(bytes), note)
     }
 
     fun lookupBarcode(barcode: String) {

@@ -21,6 +21,7 @@ import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
+import org.codeberg.fitguy.nofud.models.WaterQuickPresets
 import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
@@ -60,6 +61,10 @@ data class SettingsUiState(
     val dailySummaryEnabled: Boolean = false,
     val weightReminderEnabled: Boolean = true,
     val bodyFatReminderEnabled: Boolean = true,
+    val waterTrackingEnabled: Boolean = false,
+    val waterDailyGoalMl: Int = 2_000,
+    val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
+    val waterReminderEnabled: Boolean = false,
     val goalReachedNotificationsEnabled: Boolean = true,
     val appUpdateNotificationsEnabled: Boolean = true,
     val healthConnectEnabled: Boolean = false,
@@ -87,6 +92,7 @@ data class SettingsUiState(
     val fallbackApiKeyMasked: String = "",
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
+    val mealSchedule: org.codeberg.fitguy.nofud.models.MealSchedule = org.codeberg.fitguy.nofud.models.MealSchedule.Default,
     /** A goal-relevant input changed since the last Recalculate. Drives a soft nudge on the
      *  Recalculate row; the button stays tappable at all times — this never disables it. */
     val goalsNeedRecalc: Boolean = false
@@ -132,6 +138,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val dailySummary = container.prefs.dailySummaryEnabled.first()
             val weightReminder = container.prefs.weightReminderEnabled.first()
             val bodyFatReminder = container.prefs.bodyFatReminderEnabled.first()
+            val waterTracking = container.prefs.waterTrackingEnabled.first()
+            val waterGoal = container.prefs.waterDailyGoalMl.first()
+            val waterQuickPresets = container.prefs.waterQuickPresetsMl.first()
+            val waterReminder = container.prefs.waterReminderEnabled.first()
             val goalReachedNotifications = container.prefs.goalReachedNotificationsEnabled.first()
             val appUpdateNotifications = container.prefs.appUpdateNotificationsEnabled.first()
             val hc = reconcileHealthConnectState()
@@ -155,6 +165,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
             val homeDisplay = container.prefs.homeDisplayPreferences.first()
+            val mealSchedule = container.prefs.mealSchedule.first()
             // Seed the recalc baseline for existing users / first launch so the nudge only fires
             // after a genuine change from here on, never immediately on open.
             val storedSignature = container.prefs.lastRecalcGoalSignature.first()
@@ -178,6 +189,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 dailySummaryEnabled = dailySummary,
                 weightReminderEnabled = weightReminder,
                 bodyFatReminderEnabled = bodyFatReminder,
+                waterTrackingEnabled = waterTracking,
+                waterDailyGoalMl = waterGoal,
+                waterQuickPresetsMl = waterQuickPresets,
+                waterReminderEnabled = waterReminder,
                 goalReachedNotificationsEnabled = goalReachedNotifications,
                 appUpdateNotificationsEnabled = appUpdateNotifications,
                 healthConnectEnabled = hc,
@@ -198,6 +213,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 fallbackApiKeyMasked = fbMasked,
                 optionalNutrientGoals = optionalGoals,
                 homeDisplay = homeDisplay,
+                mealSchedule = mealSchedule,
                 goalsNeedRecalc = needsRecalc(profile)
             )
         }
@@ -365,6 +381,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
+    fun setMealSchedule(schedule: org.codeberg.fitguy.nofud.models.MealSchedule) {
+        viewModelScope.launch {
+            val validated = schedule.validatedOrDefault()
+            container.prefs.setMealSchedule(validated)
+            _ui.value = _ui.value.copy(mealSchedule = validated)
+        }
+    }
+
     fun setFoodLogSortOrder(order: FoodLogSortOrder) {
         viewModelScope.launch {
             container.prefs.setFoodLogSortOrder(order.storageValue)
@@ -524,6 +548,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.notifications.cancelDailySummary()
             container.notifications.cancelWeightReminder()
             container.notifications.cancelBodyFatReminder()
+            container.notifications.cancelWaterReminder()
             return
         }
 
@@ -556,6 +581,51 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.notifications.scheduleBodyFatReminder()
         } else {
             container.notifications.cancelBodyFatReminder()
+        }
+        if (container.prefs.waterTrackingEnabled.first() && container.prefs.waterReminderEnabled.first()) {
+            container.notifications.scheduleWaterReminder(
+                container.prefs.waterReminderHour.first(),
+                container.prefs.waterReminderMinute.first(),
+            )
+        } else {
+            container.notifications.cancelWaterReminder()
+        }
+    }
+
+    fun setWaterTrackingEnabled(v: Boolean) {
+        viewModelScope.launch {
+            container.prefs.setWaterTrackingEnabled(v)
+            if (!v) {
+                container.prefs.setWaterReminderEnabled(false)
+                container.notifications.cancelWaterReminder()
+            }
+            _ui.value = _ui.value.copy(
+                waterTrackingEnabled = v,
+                waterReminderEnabled = if (v) _ui.value.waterReminderEnabled else false,
+            )
+        }
+    }
+
+    fun setWaterDailyGoalMl(v: Int) {
+        viewModelScope.launch {
+            container.prefs.setWaterDailyGoalMl(v)
+            _ui.value = _ui.value.copy(waterDailyGoalMl = v)
+        }
+    }
+
+    fun setWaterQuickPresetsMl(amountsMl: List<Int>) {
+        viewModelScope.launch {
+            val validated = WaterQuickPresets(amountsMl).validatedOrDefault().amountsMl
+            container.prefs.setWaterQuickPresetsMl(validated)
+            _ui.value = _ui.value.copy(waterQuickPresetsMl = validated)
+        }
+    }
+
+    fun setWaterReminderEnabled(v: Boolean) {
+        viewModelScope.launch {
+            container.prefs.setWaterReminderEnabled(v)
+            _ui.value = _ui.value.copy(waterReminderEnabled = v)
+            syncNotificationSchedules()
         }
     }
 

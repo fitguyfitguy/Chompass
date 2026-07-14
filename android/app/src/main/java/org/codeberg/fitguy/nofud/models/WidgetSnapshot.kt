@@ -56,6 +56,10 @@ data class WidgetSnapshot(
     val activeCalorieSource: String? = null,
     val stepsToday: Long? = null,
     val stepGoal: Int? = null,
+    /** Defaults preserve decoding of snapshots written before the Water widget. */
+    val waterTrackingEnabled: Boolean = false,
+    val waterCurrentMl: Int = 0,
+    val waterGoalMl: Int = 2_000,
 ) {
     val resolvedCalorieMode: HomeCalorieDisplayMode
         get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)
@@ -102,6 +106,8 @@ data class WidgetSnapshot(
     val proteinProgress: Double get() = if (proteinGoal > 0) minOf(1.0, protein / proteinGoal) else 0.0
     val carbsProgress: Double get() = if (carbsGoal > 0) minOf(1.0, carbs / carbsGoal) else 0.0
     val fatProgress: Double get() = if (fatGoal > 0) minOf(1.0, fat / fatGoal) else 0.0
+    val waterRemaining: Int get() = maxOf(0, waterGoalMl - waterCurrentMl)
+    val waterProgress: Double get() = if (waterGoalMl > 0) minOf(1.0, waterCurrentMl.toDouble() / waterGoalMl) else 0.0
 
     val isStale: Boolean get() {
         val snapshotDay = dayStart.atZone(ZoneId.systemDefault()).toLocalDate()
@@ -123,6 +129,12 @@ data class WidgetSnapshot(
 
     /** First selected nutrient — what the "Protein" widget actually tracks. */
     val primaryHomeNutrient: WidgetNutrient get() = displayedHomeNutrients.first()
+
+    fun emptyForToday(): WidgetSnapshot = copy(
+        date = Instant.now(),
+        dayStart = todayStart(),
+        waterCurrentMl = 0,
+    )
 
     fun nutrientColorHex(id: String): Int {
         val paletteFallback = themeStartHex ?: 0x006B5E

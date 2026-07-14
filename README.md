@@ -75,8 +75,8 @@ Core Fud AI features, minus ads, plus fork-specific additions through v1.7.0:
 | **AI Coach** | Chat with your own provider key; replies follow the app language |
 | **Diet modes** | Including keto carb mode (goals, meal advice, and Coach stay in sync) |
 | **Progress** | Weight, body fat, calorie history, goals, and daily steps/exercise from Health Connect |
-| **Workouts** | Built-in exercise library |
-| **Health Connect** | Two-way sync; live import of meals logged by other apps |
+| **Water tracking** | Optional local water log with home shortcuts, reminders, and widget (off by default) |
+| **Health Connect** | Two-way sync; live import of meals logged by other apps; manage access from Settings |
 | **Widgets** | Home-screen widgets |
 | **Export & share** | Diary export (JSON / Markdown / CSV), meal sharing, bulk JSON import |
 | **Localization** | 15 languages |

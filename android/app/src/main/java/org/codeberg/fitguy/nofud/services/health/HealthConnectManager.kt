@@ -1,6 +1,8 @@
 package org.codeberg.fitguy.nofud.services.health
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -135,6 +137,21 @@ class HealthConnectManager(private val context: Context) {
     /** Used to build the permission-request ActivityResultContract on the UI side. */
     fun permissionRequestContract() = PermissionController.createRequestPermissionResultContract()
 
+    /**
+     * Opens Health Connect's permission UI. Android 14+ supports an app-specific destination;
+     * older devices use the standalone Health Connect app's settings screen.
+     */
+    fun manageAccessIntent(): Intent {
+        val appSpecific = Intent(ACTION_MANAGE_HEALTH_PERMISSIONS)
+            .putExtra(Intent.EXTRA_PACKAGE_NAME, context.packageName)
+        val generic = Intent(HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS)
+        return (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            appSpecific
+        } else {
+            generic
+        }).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
     suspend fun writeWeight(entry: WeightEntry): Boolean = writer.writeWeight(entry)
 
     suspend fun deleteWeight(entryId: UUID): Boolean = writer.deleteWeight(entryId)
@@ -184,6 +201,8 @@ class HealthConnectManager(private val context: Context) {
         reader.consumeNutritionChanges(sinceToken)
 
     companion object {
+        private const val ACTION_MANAGE_HEALTH_PERMISSIONS =
+            "android.health.connect.action.MANAGE_HEALTH_PERMISSIONS"
         internal const val CLIENT_PREFIX = "fudai_"
 
         /** Bump this when we add a new record type so users re-auth.

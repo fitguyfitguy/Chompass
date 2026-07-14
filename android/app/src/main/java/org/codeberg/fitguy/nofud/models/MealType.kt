@@ -24,14 +24,6 @@ enum class MealType {
     }
 
     companion object {
-        val currentMeal: MealType get() {
-            val hour = LocalTime.now().hour
-            return when (hour) {
-                in 5..10 -> BREAKFAST
-                in 11..14 -> LUNCH
-                in 15..20 -> DINNER
-                else -> SNACK
-            }
-        }
+        val currentMeal: MealType get() = CurrentMealSchedule.value.mealTypeAt(LocalTime.now())
     }
 }

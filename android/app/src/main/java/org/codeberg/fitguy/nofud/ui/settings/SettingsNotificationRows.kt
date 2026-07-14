@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +55,15 @@ internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel) {
         onChange = vm::setBodyFatReminderEnabled
     )
     HorizontalDivider()
+    if (ui.waterTrackingEnabled) {
+        ToggleRow(
+            stringResource(R.string.settings_notif_water_reminder),
+            ui.waterReminderEnabled,
+            icon = Icons.Outlined.WaterDrop,
+            onChange = vm::setWaterReminderEnabled,
+        )
+        HorizontalDivider()
+    }
     ToggleRow(
         stringResource(R.string.settings_notif_goal_alerts),
         ui.goalReachedNotificationsEnabled,
@@ -71,6 +81,7 @@ internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel) {
         !ui.dailySummaryEnabled &&
         !ui.weightReminderEnabled &&
         !ui.bodyFatReminderEnabled &&
+        (!ui.waterTrackingEnabled || !ui.waterReminderEnabled) &&
         !ui.goalReachedNotificationsEnabled &&
         !ui.appUpdateNotificationsEnabled
     if (noneSelected) {
