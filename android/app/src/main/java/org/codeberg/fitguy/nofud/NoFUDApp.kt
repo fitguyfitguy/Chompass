@@ -15,6 +15,7 @@ import org.codeberg.fitguy.nofud.services.TestDataSeeder
 import org.codeberg.fitguy.nofud.services.WidgetSnapshotWriter
 import org.codeberg.fitguy.nofud.services.AdaptiveGoalResult
 import org.codeberg.fitguy.nofud.services.WeightAnalysisService
+import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.ai.ChatService
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
@@ -48,6 +49,7 @@ class NoFUDApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        seedDebugGeminiKeyIfNeeded()
         container.notifications.createChannels()
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         container.widgetSnapshotWriter.observe().launchIn(appScope)
@@ -97,6 +99,21 @@ class NoFUDApp : Application() {
                 }
             }
         }
+    }
+
+    /**
+     * Debug-only: if android/local.properties carries a GEMINI_API_KEY, seed it
+     * into the encrypted KeyStore once so testing survives reinstalls without
+     * re-typing the key in Settings. Only fills an empty slot — a key you set or
+     * change in Settings always wins and is never overwritten on later launches.
+     * Release builds compile GEMINI_API_KEY to "" so this is a no-op there.
+     */
+    private fun seedDebugGeminiKeyIfNeeded() {
+        if (!BuildConfig.DEBUG) return
+        val key = BuildConfig.GEMINI_API_KEY
+        if (key.isBlank()) return
+        if (!container.keyStore.apiKey(AIProvider.GEMINI).isNullOrBlank()) return
+        container.keyStore.setApiKey(AIProvider.GEMINI, key)
     }
 }
 

@@ -17,6 +17,25 @@ val keystorePropsFile = rootProject.file("keystore.properties")
 val keystoreProps = Properties().apply {
     if (keystorePropsFile.exists()) load(keystorePropsFile.inputStream())
 }
+
+// Optional dev convenience: a Gemini API key read from the gitignored
+// android/secrets.properties (add a line `GEMINI_API_KEY=AIza...`). It is baked
+// into the DEBUG BuildConfig only and seeded into the encrypted KeyStore on
+// first launch so you don't have to re-enter it in Settings after every
+// reinstall. Release builds always get an empty string — never ship a key.
+// secrets.properties is preferred; local.properties works as a fallback, but
+// the Android tooling rewrites that file and can drop the line, so prefer the
+// dedicated file.
+val secretsProps = Properties().apply {
+    rootProject.file("secrets.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { fallback ->
+        val lp = Properties().apply { load(fallback) }
+        lp.getProperty("GEMINI_API_KEY")?.let { if (getProperty("GEMINI_API_KEY") == null) setProperty("GEMINI_API_KEY", it) }
+    }
+}
+fun bcString(value: String): String =
+    "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "").trim()
 // Optional: -PreleaseAbi=arm64-v8a for a single local smoke-test release APK.
 val releaseAbi: String? = providers.gradleProperty("releaseAbi").orNull
 
@@ -74,12 +93,16 @@ android {
             // it, gradle emits app-release-unsigned.apk and you sign manually with
             // apksigner before uploading to the Play Console.
             signingConfigs.findByName("release")?.let { signingConfig = it }
+            // Never bake an API key into a shippable build.
+            buildConfigField("String", "GEMINI_API_KEY", bcString(""))
         }
         debug {
             // Suffix the package + version so the debug build installs side-by-side
             // with a release build on the same device.
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            // Seeded into the encrypted KeyStore on first launch (see NoFUDApp).
+            buildConfigField("String", "GEMINI_API_KEY", bcString(geminiDebugApiKey))
         }
         create("debug2") {
             initWith(getByName("debug"))
