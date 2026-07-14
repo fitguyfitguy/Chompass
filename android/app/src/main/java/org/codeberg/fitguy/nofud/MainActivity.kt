@@ -88,6 +88,7 @@ open class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         handleShareIntent(intent)
+        handleDebugIntentExtras(intent, (application as NoFUDApp).container)
     }
     override fun onStart() {
         super.onStart()
@@ -131,43 +132,9 @@ open class MainActivity : ComponentActivity() {
 
         val container = (application as NoFUDApp).container
         val app = application as NoFUDApp
-        // Dev-only seeders for verifying the Progress tab UI without polluting Health Connect.
-        // adb shell am start -n org.codeberg.fitguy.nofud/.MainActivity --ez seed_test_data true
-        // adb shell am start -n org.codeberg.fitguy.nofud/.MainActivity --ez restore_real_data true
-        // Extras are removed after handling so Activity.recreate() (used by Delete All
-        // Data) doesn't re-fire the same flag on the next onCreate.
-        val shouldResetOnboarding = intent?.getBooleanExtra("reset_onboarding", false) == true
-        val shouldSeedTestData = intent?.getBooleanExtra("seed_test_data", false) == true
-        // Focused 30-day weight + body-fat seeder for verifying the v3.2 Body
-        // Fat chart + segmented Progress toggle without polluting food data.
-        // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_body_metrics true
-        val shouldSeedBodyMetrics = intent?.getBooleanExtra("seed_body_metrics", false) == true
-        // Long-range variant: 2 years of weight + body-fat for the 1Y / All
-        // ranges and the history lists.
-        // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_body_metrics_2y true
-        val shouldSeedBodyMetricsTwoYears = intent?.getBooleanExtra("seed_body_metrics_2y", false) == true
-        // Focused keto-settings seeder for Diet Mode and carb target debugging.
-        // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_keto_settings true
-        val shouldSeedKetoSettings = intent?.getBooleanExtra("seed_keto_settings", false) == true
-        val shouldRestoreRealData = intent?.getBooleanExtra("restore_real_data", false) == true
-        // Debug-only entry-perf benchmark: fire N real analyze+save requests so the
-        // FudAIPerf timers emit a batch on demand (see scripts/perf_entry_benchmark.sh).
-        val shouldRunEntryBenchmark = BuildConfig.DEBUG &&
-            intent?.getBooleanExtra("run_entry_benchmark", false) == true
-        val entryBenchmarkCount = intent?.getIntExtra("benchmark_count", 3) ?: 3
-        if (shouldRunEntryBenchmark) intent?.removeExtra("run_entry_benchmark")
-        // Debug-only on-device LLM smoke test (LiteRT-LM) — requires a model file
-        // manually adb-pushed to filesDir/models/ first; see the on-device LLM plan.
-        // adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true
-        val shouldRunOnDeviceLlmTest = BuildConfig.DEBUG &&
-            intent?.getBooleanExtra("run_ondevice_llm_test", false) == true
-        if (shouldRunOnDeviceLlmTest) intent?.removeExtra("run_ondevice_llm_test")
-        if (shouldResetOnboarding) intent?.removeExtra("reset_onboarding")
-        if (shouldSeedTestData) intent?.removeExtra("seed_test_data")
-        if (shouldSeedBodyMetrics) intent?.removeExtra("seed_body_metrics")
-        if (shouldSeedBodyMetricsTwoYears) intent?.removeExtra("seed_body_metrics_2y")
-        if (shouldSeedKetoSettings) intent?.removeExtra("seed_keto_settings")
-        if (shouldRestoreRealData) intent?.removeExtra("restore_real_data")
+        // Dev-only seeders / benchmarks — see handleDebugIntentExtras() for adb examples.
+        // Extras are consumed there so Activity.recreate() doesn't re-fire them.
+        val debugActions = consumeDebugIntentExtras(intent)
         // A fudai://add-meal link may have cold-launched us.
         handleShareIntent(intent)
         var startOnboarding by mutableStateOf<Boolean?>(null)
@@ -183,29 +150,7 @@ open class MainActivity : ComponentActivity() {
         var contentReady by mutableStateOf(false)
         splashScreen.setKeepOnScreenCondition { !contentReady }
         lifecycleScope.launch {
-            if (shouldResetOnboarding) {
-                app.container.prefs.setOnboardingCompleted(false)
-            }
-            if (shouldSeedTestData) container.testDataSeeder.seedYear()
-            if (shouldSeedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
-            if (shouldSeedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
-            if (shouldSeedKetoSettings) container.testDataSeeder.seedKetoSettings()
-            if (shouldRestoreRealData) container.testDataSeeder.restore()
-
-            // Independent of seeding/onboarding: the benchmark only needs the AI
-            // provider + key (seeded at Application.onCreate), so run it off the
-            // splash-gating path in its own coroutine.
-            if (shouldRunEntryBenchmark) {
-                lifecycleScope.launch {
-                    EntryPerfBenchmark(container).run(entryBenchmarkCount)
-                }
-            }
-            // Same rationale as the benchmark above: independent of the splash-gating path.
-            if (shouldRunOnDeviceLlmTest) {
-                lifecycleScope.launch {
-                    OnDeviceLlmSmokeTest(container).run()
-                }
-            }
+            launchDebugIntentActions(debugActions, container, app)
 
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
@@ -264,5 +209,96 @@ open class MainActivity : ComponentActivity() {
 
     private companion object {
         const val FOREGROUND_SYNC_MIN_INTERVAL_MS = 60_000L
+    }
+
+    /**
+     * Debug-only intent extras (seeders, benchmarks, on-device LLM smoke test).
+     * Parsed once and stripped so [Activity.recreate] does not re-fire them.
+     *
+     * When the activity is already foreground ([launchMode] singleTop), adb delivers
+     * extras via [onNewIntent] — not [onCreate]. Both paths call [handleDebugIntentExtras].
+     */
+    private data class DebugIntentActions(
+        val resetOnboarding: Boolean = false,
+        val seedTestData: Boolean = false,
+        val seedBodyMetrics: Boolean = false,
+        val seedBodyMetricsTwoYears: Boolean = false,
+        val seedKetoSettings: Boolean = false,
+        val restoreRealData: Boolean = false,
+        val runEntryBenchmark: Boolean = false,
+        val entryBenchmarkCount: Int = 3,
+        val runOnDeviceLlmTest: Boolean = false,
+        val onDeviceLlmBackend: String = "gpu",
+        val onDeviceLlmMtp: Boolean = false,
+    )
+
+    private fun consumeDebugIntentExtras(intent: Intent?): DebugIntentActions {
+        intent ?: return DebugIntentActions()
+        val actions = DebugIntentActions(
+            resetOnboarding = intent.getBooleanExtra("reset_onboarding", false),
+            seedTestData = intent.getBooleanExtra("seed_test_data", false),
+            seedBodyMetrics = intent.getBooleanExtra("seed_body_metrics", false),
+            seedBodyMetricsTwoYears = intent.getBooleanExtra("seed_body_metrics_2y", false),
+            seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
+            restoreRealData = intent.getBooleanExtra("restore_real_data", false),
+            runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
+            entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
+            runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
+            onDeviceLlmBackend = intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
+            onDeviceLlmMtp = intent.getBooleanExtra("ondevice_llm_mtp", false),
+        )
+        if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
+        if (actions.seedTestData) intent.removeExtra("seed_test_data")
+        if (actions.seedBodyMetrics) intent.removeExtra("seed_body_metrics")
+        if (actions.seedBodyMetricsTwoYears) intent.removeExtra("seed_body_metrics_2y")
+        if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")
+        if (actions.restoreRealData) intent.removeExtra("restore_real_data")
+        if (actions.runEntryBenchmark) intent.removeExtra("run_entry_benchmark")
+        if (actions.runOnDeviceLlmTest) {
+            intent.removeExtra("run_ondevice_llm_test")
+            intent.removeExtra("ondevice_llm_backend")
+            intent.removeExtra("ondevice_llm_mtp")
+        }
+        return actions
+    }
+
+    /** Handles debug extras from cold start ([onCreate]) or warm relaunch ([onNewIntent]). */
+    private fun handleDebugIntentExtras(intent: Intent?, container: AppContainer) {
+        val actions = consumeDebugIntentExtras(intent)
+        launchDebugIntentActions(actions, container, application as NoFUDApp)
+    }
+
+    private fun launchDebugIntentActions(
+        actions: DebugIntentActions,
+        container: AppContainer,
+        app: NoFUDApp,
+    ) {
+        if (actions == DebugIntentActions()) return
+        lifecycleScope.launch {
+            if (actions.resetOnboarding) {
+                app.container.prefs.setOnboardingCompleted(false)
+            }
+            if (actions.seedTestData) container.testDataSeeder.seedYear()
+            if (actions.seedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
+            if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
+            if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
+            if (actions.restoreRealData) container.testDataSeeder.restore()
+
+            // Independent of seeding/onboarding: benchmarks only need the AI provider + key.
+            if (actions.runEntryBenchmark) {
+                lifecycleScope.launch {
+                    EntryPerfBenchmark(container).run(actions.entryBenchmarkCount)
+                }
+            }
+            if (actions.runOnDeviceLlmTest) {
+                lifecycleScope.launch {
+                    OnDeviceLlmSmokeTest(
+                        container,
+                        backendName = actions.onDeviceLlmBackend,
+                        enableMtp = actions.onDeviceLlmMtp,
+                    ).run()
+                }
+            }
+        }
     }
 }
