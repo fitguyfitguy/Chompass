@@ -100,7 +100,7 @@ fun ExportBodyMetricsSheet(
             }
 
             status?.let {
-                Text(it, color = Color(0xFFFF3B30), fontSize = 13.sp)
+                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
 
             Box(

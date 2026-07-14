@@ -34,6 +34,7 @@ import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.ui.components.FudGlassSurface
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.ui.theme.warning
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 
@@ -204,7 +205,7 @@ fun CalculationMethodsScreen(
                     Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFFFF9800).copy(alpha = 0.09f))
+                        .background(MaterialTheme.colorScheme.warning.copy(alpha = 0.09f))
                         .padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {

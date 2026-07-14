@@ -158,11 +158,11 @@ internal fun MessageList(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFFFEBEE).copy(alpha = 0.6f))
-                        .border(0.5.dp, Color(0xFFD32F2F).copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f))
+                        .border(0.5.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
-                    Text(error, fontSize = 12.sp, color = Color(0xFFD32F2F))
+                    Text(error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
             }
         }

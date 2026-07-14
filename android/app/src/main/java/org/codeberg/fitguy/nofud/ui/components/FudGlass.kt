@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -53,12 +52,6 @@ fun translucentFill(isDark: Boolean): Color =
 
 fun hairlineBorder(isDark: Boolean): Color =
     if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
-
-fun Modifier.fudTranslucentSurface(
-    shape: Shape,
-    elevated: Boolean = true,
-    isDark: Boolean = false,
-): Modifier = this
 
 @Composable
 fun FudGlassSurface(

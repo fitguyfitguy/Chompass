@@ -10,7 +10,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -336,7 +337,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
                 .size(9.dp)
                 .alpha(dotAlpha)
                 .clip(CircleShape)
-                .background(Color(0xFFFF3B30))
+                .background(MaterialTheme.colorScheme.error)
         )
         Text(
             formatElapsed(controller.elapsedMs),
@@ -355,7 +356,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
                 else -> stringResource(R.string.voice_listening)
             },
             fontSize = 15.sp,
-            color = if (armed) Color(0xFFFF3B30)
+            color = if (armed) MaterialTheme.colorScheme.error
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
             maxLines = 1,
             modifier = Modifier.weight(1f, fill = false)
@@ -366,18 +367,17 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
 /** Small circular cancel (trash) button used in the locked recording state. */
 @Composable
 fun CoachVoiceCancelButton(onClick: () -> Unit) {
-    Box(
-        Modifier
-            .size(34.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+    FilledIconButton(
+        onClick = onClick,
+        modifier = Modifier.size(34.dp),
+        colors = IconButtonDefaults.filledIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+            contentColor = MaterialTheme.colorScheme.error,
+        ),
     ) {
         Icon(
             Icons.Filled.Delete,
             contentDescription = stringResource(R.string.cd_cancel_recording),
-            tint = Color(0xFFFF3B30),
             modifier = Modifier.size(18.dp)
         )
     }

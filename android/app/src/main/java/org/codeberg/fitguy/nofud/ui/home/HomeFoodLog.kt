@@ -379,7 +379,7 @@ private fun BoxScope.SwipeBackground(offsetPx: Float, isFavorite: Boolean) {
     }
     val (bg, icon, label) = if (offsetPx < 0f) {
         Triple(
-            Color(0xFFD32F2F),
+            MaterialTheme.colorScheme.error,
             Icons.Filled.Delete,
             stringResource(R.string.home_swipe_delete)
         )
