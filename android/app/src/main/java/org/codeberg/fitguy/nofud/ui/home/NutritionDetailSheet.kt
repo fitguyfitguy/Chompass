@@ -133,7 +133,7 @@ fun NutritionDetailSheet(
                 }
             }
 
-            item { SectionHeader(stringResource(R.string.nutrition_section_home_cards)) }
+            item { NutritionSheetSectionHeader(stringResource(R.string.nutrition_section_home_cards)) }
             item {
                 Card {
                     HomeCardsRow(
@@ -143,7 +143,7 @@ fun NutritionDetailSheet(
                 }
             }
 
-            item { SectionHeader(stringResource(R.string.nutrition_section_macros)) }
+            item { NutritionSheetSectionHeader(stringResource(R.string.nutrition_section_macros)) }
             item {
                 Card {
                     DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "$calories", stringResource(R.string.unit_kcal), goal = "${profile?.effectiveCalories ?: 2000}", accentColor = AppColors.Calorie)
@@ -156,7 +156,7 @@ fun NutritionDetailSheet(
                 }
             }
 
-            item { SectionHeader(stringResource(R.string.nutrition_section_detailed)) }
+            item { NutritionSheetSectionHeader(stringResource(R.string.nutrition_section_detailed)) }
             item {
                 Card {
                     DetailRow(null, stringResource(R.string.nutrition_label_sugar), fmt(sugar), stringResource(R.string.unit_g), goal = "${optionalGoals.sugar}", labelGlyph = "S")
@@ -231,7 +231,7 @@ private fun Card(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun SectionHeader(title: String) {
+private fun NutritionSheetSectionHeader(title: String) {
     Text(
         title.uppercase(),
         fontSize = 12.sp,
