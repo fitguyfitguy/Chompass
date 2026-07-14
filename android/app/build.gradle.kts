@@ -198,6 +198,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    // On-device LLM debug smoke test (LiteRT-LM) — see the on-device LLM plan.
+    // Debug-only: keeps the native libs out of release/ABI-split APKs.
+    debugImplementation(libs.litertlm.android)
 
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
