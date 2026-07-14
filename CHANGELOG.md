@@ -2,6 +2,19 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.9.0] - 2026-07-14
+
+### Added
+
+- Serving unit inference settings (Settings → Food logging): choose grams-only, heuristic, or AI-inferred units, with customizable grams-per-unit heuristics per food category
+- Loading indicators and disabled submit buttons while food entries are being saved, preventing duplicate submissions
+
+### Changed
+
+- Food diary stored in monthly buckets for faster add, update, and delete on large histories
+- Home screen and food-entry flows refactored for snappier UI responsiveness
+- Preferences and Health Connect code split into focused modules (no user-facing behavior change)
+
 ## [1.8.0] - 2026-07-09
 
 ### Added
