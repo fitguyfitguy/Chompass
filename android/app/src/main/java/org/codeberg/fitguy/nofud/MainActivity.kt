@@ -22,9 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
+import org.codeberg.fitguy.nofud.debug.OnDeviceLlmDebugConfig
+import org.codeberg.fitguy.nofud.debug.OnDeviceLlmDebugLauncher
+import org.codeberg.fitguy.nofud.debug.OnDeviceLlmDefaults
 import org.codeberg.fitguy.nofud.services.EntryPerfBenchmark
 import org.codeberg.fitguy.nofud.services.MealShare
-import org.codeberg.fitguy.nofud.services.OnDeviceLlmSmokeTest
 import org.codeberg.fitguy.nofud.services.InAppReview
 import org.codeberg.fitguy.nofud.ui.home.ImportSharedMealSheet
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDNavHost
@@ -230,6 +232,10 @@ open class MainActivity : ComponentActivity() {
         val runOnDeviceLlmTest: Boolean = false,
         val onDeviceLlmBackend: String = "gpu",
         val onDeviceLlmMtp: Boolean = false,
+        val onDeviceLlmModel: String = OnDeviceLlmDefaults.DEFAULT_MODEL_FILENAME,
+        val onDeviceLlmTier: String = "all",
+        val onDeviceLlmPrompt: String = "full",
+        val onDeviceLlmRepeat: Int = 1,
     )
 
     private fun consumeDebugIntentExtras(intent: Intent?): DebugIntentActions {
@@ -246,6 +252,11 @@ open class MainActivity : ComponentActivity() {
             runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
             onDeviceLlmBackend = intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
             onDeviceLlmMtp = intent.getBooleanExtra("ondevice_llm_mtp", false),
+            onDeviceLlmModel = intent.getStringExtra("ondevice_llm_model")
+                ?: OnDeviceLlmDefaults.DEFAULT_MODEL_FILENAME,
+            onDeviceLlmTier = intent.getStringExtra("ondevice_llm_tier") ?: "all",
+            onDeviceLlmPrompt = intent.getStringExtra("ondevice_llm_prompt") ?: "full",
+            onDeviceLlmRepeat = intent.getIntExtra("ondevice_llm_repeat", 1).coerceIn(1, 5),
         )
         if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
         if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -258,6 +269,10 @@ open class MainActivity : ComponentActivity() {
             intent.removeExtra("run_ondevice_llm_test")
             intent.removeExtra("ondevice_llm_backend")
             intent.removeExtra("ondevice_llm_mtp")
+            intent.removeExtra("ondevice_llm_model")
+            intent.removeExtra("ondevice_llm_tier")
+            intent.removeExtra("ondevice_llm_prompt")
+            intent.removeExtra("ondevice_llm_repeat")
         }
         return actions
     }
@@ -291,13 +306,19 @@ open class MainActivity : ComponentActivity() {
                 }
             }
             if (actions.runOnDeviceLlmTest) {
-                lifecycleScope.launch {
-                    OnDeviceLlmSmokeTest(
-                        container,
+                OnDeviceLlmDebugLauncher.launchIfRequested(
+                    scope = lifecycleScope,
+                    container = container,
+                    config = OnDeviceLlmDebugConfig(
+                        enabled = true,
                         backendName = actions.onDeviceLlmBackend,
                         enableMtp = actions.onDeviceLlmMtp,
-                    ).run()
-                }
+                        modelFilename = actions.onDeviceLlmModel,
+                        tier = actions.onDeviceLlmTier,
+                        promptMode = actions.onDeviceLlmPrompt,
+                        repeatCount = actions.onDeviceLlmRepeat,
+                    ),
+                )
             }
         }
     }
