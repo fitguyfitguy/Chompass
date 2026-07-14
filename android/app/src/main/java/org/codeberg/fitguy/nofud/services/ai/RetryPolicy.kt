@@ -10,13 +10,18 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /**
- * Retries 503/429/529 with 1s/2s/4s exponential backoff (same as iOS).
+ * Retries transient overload (503/529) with 1s/2s/4s exponential backoff (same as iOS).
+ * HTTP 429 is not retried — quota is exhausted and immediate retries only burn more
+ * requests; callers may try a different fallback model instead.
  * On final failure, throws [AiError.Api] with a user-friendly message.
  * The caller supplies a factory that builds a fresh [Call] per attempt
  * because OkHttp [Call] instances can only be executed once.
  */
 object RetryPolicy {
     private val delays = longArrayOf(1_000, 2_000, 4_000)
+
+    internal fun isRetryableHttpStatus(code: Int): Boolean =
+        code == 503 || code == 529
 
     suspend fun execute(callFactory: () -> Call): String {
         var lastMessage = "Request failed"
@@ -35,8 +40,7 @@ object RetryPolicy {
             val raw = parseErrorMessage(bodyStr)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
             lastMessage = friendlyMessage(code, raw)
 
-            val retryable = code == 503 || code == 529 || code == 429
-            if (retryable && attempt < delays.size) {
+            if (isRetryableHttpStatus(code) && attempt < delays.size) {
                 delay(delays[attempt])
                 continue
             }
