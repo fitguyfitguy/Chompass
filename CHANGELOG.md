@@ -10,11 +10,13 @@ All notable changes to NoFUD are documented here.
 - Customizable meal time boundaries in Settings (defaults match previous automatic breakfast/lunch/dinner/snack windows)
 - Multi-photo meal capture: add up to 10 photos from camera or gallery before AI analysis
 - Health Connect **Manage access** entry in Settings and onboarding for easier permission review on Android 14+
+- Configurable water quick-log presets for the Add food slider (ml or fl oz when using imperial units)
 
 ### Changed
 
 - Home macro cards show grams remaining or over goal instead of a static goal subtitle
 - Widget gauge labels scale down for long values so numbers do not crowd the ring
+- Add food sheet: compact water slider (replaces large water tile grid)
 
 ## [1.10.0] - 2026-07-14
 
