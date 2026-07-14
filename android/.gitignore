@@ -20,3 +20,6 @@ gradle/gradle-daemon-jvm.properties
 keystore.properties
 *.jks
 *.keystore
+
+# Dev-only API keys (e.g. GEMINI_API_KEY) seeded into DEBUG builds. Never commit.
+secrets.properties
