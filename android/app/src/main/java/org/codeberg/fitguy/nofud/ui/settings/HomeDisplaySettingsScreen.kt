@@ -167,8 +167,6 @@ fun HomeDisplaySettingsScreen(
                                 when (display.calorieDisplayMode) {
                                     HomeCalorieDisplayMode.STATIC -> R.string.home_calorie_mode_static_desc
                                     HomeCalorieDisplayMode.ADD_ACTIVE -> R.string.home_calorie_mode_add_active_desc
-                                    HomeCalorieDisplayMode.NET -> R.string.home_calorie_mode_net_desc
-                                    HomeCalorieDisplayMode.DUAL -> R.string.home_calorie_mode_dual_desc
                                 }
                             ),
                             fontSize = 13.sp,
