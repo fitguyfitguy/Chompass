@@ -439,6 +439,28 @@ internal fun SettingsSheets(
                     selected = { it.first == ui.weekStartsOnMonday },
                     onSelect = { vm.setWeekStartsOnMonday(it.first); onDismiss() }
                 )
+                SettingsSheet.MEAL_TIMES -> MealTimesSheet(
+                    current = ui.mealSchedule,
+                    onSave = {
+                        vm.setMealSchedule(it)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.WATER_GOAL -> WaterGoalSheet(
+                    current = ui.waterDailyGoalMl,
+                    onSave = {
+                        vm.setWaterDailyGoalMl(it)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.WATER_QUICK_PRESETS -> WaterQuickPresetsSheet(
+                    current = ui.waterQuickPresetsMl,
+                    useMetric = ui.weightMetric,
+                    onSave = {
+                        vm.setWaterQuickPresetsMl(it)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.CALORIES -> NutritionPickerSheet(
                     label = stringResource(R.string.macro_calories), unit = stringResource(R.string.unit_kcal),
                     currentValue = ui.profile?.effectiveCalories ?: 2000,

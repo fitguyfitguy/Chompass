@@ -21,11 +21,26 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,10 +51,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.ui.components.FudIconBubble
 import org.codeberg.fitguy.nofud.ui.components.NoFudBottomSheet
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import org.codeberg.fitguy.nofud.models.WaterQuickPresets
+import org.codeberg.fitguy.nofud.models.WaterAmountFormat
 
 private enum class AddFoodTileSize {
     Hero,
@@ -56,7 +74,12 @@ fun AddFoodSheet(
     onBarcode: () -> Unit,
     onManual: () -> Unit,
     onCopyFromDay: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    waterTrackingEnabled: Boolean = false,
+    waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
+    waterUseMetric: Boolean = true,
+    onWater: (Int) -> Unit = {},
+    onWaterCustom: () -> Unit = {},
 ) {
     NoFudBottomSheet(onDismiss = onDismiss) {
         AddFoodSheetContent(
@@ -67,6 +90,11 @@ fun AddFoodSheet(
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
             onCopyFromDay = { onDismiss(); onCopyFromDay() },
+            waterTrackingEnabled = waterTrackingEnabled,
+            waterQuickPresetsMl = waterQuickPresetsMl,
+            waterUseMetric = waterUseMetric,
+            onWater = { ml -> onDismiss(); onWater(ml) },
+            onWaterCustom = { onDismiss(); onWaterCustom() },
         )
     }
 }
@@ -81,6 +109,11 @@ internal fun AddFoodSheetContent(
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
     onCopyFromDay: () -> Unit = {},
+    waterTrackingEnabled: Boolean = false,
+    waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
+    waterUseMetric: Boolean = true,
+    onWater: (Int) -> Unit = {},
+    onWaterCustom: () -> Unit = {},
 ) {
     Column(
         Modifier
@@ -124,10 +157,10 @@ internal fun AddFoodSheetContent(
                 onClick = onSaved,
             )
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(20.dp))
         SheetSectionHeader(stringResource(R.string.add_food_more_section))
-        Spacer(Modifier.height(4.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Spacer(Modifier.height(6.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -167,8 +200,110 @@ internal fun AddFoodSheetContent(
                 )
             }
         }
+        if (waterTrackingEnabled) {
+            Spacer(Modifier.height(14.dp))
+            AddFoodWaterQuickRow(
+                presetsMl = waterQuickPresetsMl,
+                useMetric = waterUseMetric,
+                onWater = onWater,
+                onWaterCustom = onWaterCustom,
+            )
+        }
     }
 }
+
+@Composable
+private fun AddFoodWaterQuickRow(
+    presetsMl: List<Int>,
+    useMetric: Boolean,
+    onWater: (Int) -> Unit,
+    onWaterCustom: () -> Unit,
+) {
+    val presets = remember(presetsMl) {
+        WaterQuickPresets(presetsMl).validatedOrDefault().amountsMl
+    }
+    var selectedIndex by remember(presets) {
+        mutableIntStateOf((presets.size / 2).coerceAtMost(presets.lastIndex).coerceAtLeast(0))
+    }
+    LaunchedEffect(presets) {
+        selectedIndex = selectedIndex.coerceIn(0, presets.lastIndex)
+    }
+    val selectedMl = presets[selectedIndex]
+
+    SheetSectionHeader(stringResource(R.string.add_food_water_section))
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
+            .padding(start = 10.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Filled.WaterDrop,
+            contentDescription = null,
+            tint = AppColors.Calorie.copy(alpha = 0.85f),
+            modifier = Modifier.size(18.dp),
+        )
+        if (presets.size > 1) {
+            Slider(
+                value = selectedIndex.toFloat(),
+                onValueChange = { selectedIndex = it.roundToInt().coerceIn(0, presets.lastIndex) },
+                valueRange = 0f..presets.lastIndex.toFloat(),
+                steps = (presets.size - 2).coerceAtLeast(0),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 4.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = AppColors.Calorie,
+                    activeTrackColor = AppColors.Calorie.copy(alpha = 0.75f),
+                    inactiveTrackColor = AppColors.Calorie.copy(alpha = 0.16f),
+                ),
+            )
+        } else {
+            Spacer(Modifier.weight(1f))
+        }
+        Text(
+            waterAmountLabel(selectedMl, useMetric),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f),
+            maxLines = 1,
+            modifier = Modifier.widthIn(min = 52.dp),
+        )
+        IconButton(
+            onClick = { onWater(selectedMl) },
+            modifier = Modifier.size(40.dp),
+        ) {
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = stringResource(R.string.cd_log_water),
+                tint = AppColors.Calorie,
+                modifier = Modifier.size(22.dp),
+            )
+        }
+        TextButton(
+            onClick = onWaterCustom,
+            contentPadding = PaddingValues(horizontal = 4.dp),
+            modifier = Modifier.widthIn(max = 64.dp),
+        ) {
+            Icon(
+                Icons.Filled.DriveFileRenameOutline,
+                contentDescription = stringResource(R.string.water_custom_short),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun waterAmountLabel(ml: Int, useMetric: Boolean): String =
+    if (useMetric) {
+        stringResource(R.string.water_amount_ml, ml)
+    } else {
+        stringResource(R.string.water_amount_fl_oz, WaterAmountFormat.flOzFromMl(ml))
+    }
 
 /** Home with a static add-food sheet overlay for release screenshots (no ModalBottomSheet). */
 @Composable

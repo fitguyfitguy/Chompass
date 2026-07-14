@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.OptionalNutrient
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
+import org.codeberg.fitguy.nofud.models.WaterQuickPresets
+import org.codeberg.fitguy.nofud.models.WaterAmountFormat
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.ui.components.DateWheelPicker
 import org.codeberg.fitguy.nofud.ui.components.DecimalWheelPicker
@@ -311,6 +314,139 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
     GradientSaveButton { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))
     TextButton(onClick = { onSave(null) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_remove_goal)) }
+    Spacer(Modifier.height(8.dp))
+}
+
+@Composable
+internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit) {
+    val initialGoal = (((current.coerceIn(50, 10_000) + 25) / 50) * 50).coerceIn(50, 10_000)
+    var goal by remember(current) { mutableIntStateOf(initialGoal) }
+    Text(stringResource(R.string.settings_water_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(20.dp))
+    NumericWheelPicker(
+        value = goal,
+        onValueChange = { goal = it },
+        min = 50,
+        max = 10_000,
+        unit = stringResource(R.string.unit_ml),
+        step = 50,
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.settings_water_goal_wheel_help),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+    )
+    Spacer(Modifier.height(16.dp))
+    GradientSaveButton { onSave(goal) }
+    Spacer(Modifier.height(8.dp))
+}
+
+internal fun formatWaterQuickPresetsSummary(presetsMl: List<Int>, useMetric: Boolean): String =
+    presetsMl.joinToString(" · ") { ml ->
+        if (useMetric) {
+            "${ml} ml"
+        } else {
+            "${WaterAmountFormat.flOzFromMl(ml)} fl oz"
+        }
+    }
+
+@Composable
+internal fun WaterQuickPresetsSheet(
+    current: List<Int>,
+    useMetric: Boolean,
+    onSave: (List<Int>) -> Unit,
+) {
+    var presets by remember(current) { mutableStateOf(current.sorted()) }
+
+    fun updatePreset(index: Int, ml: Int) {
+        presets = presets.toMutableList().apply {
+            set(index, ml.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML))
+        }.sorted()
+    }
+
+    Text(
+        stringResource(R.string.settings_water_quick_presets),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.settings_water_quick_presets_help),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+    )
+    Spacer(Modifier.height(16.dp))
+    presets.forEachIndexed { index, ml ->
+        Text(
+            stringResource(R.string.settings_water_preset_label, index + 1),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+        )
+        Spacer(Modifier.height(6.dp))
+        if (useMetric) {
+            val snapped = (((ml.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML) + 25) / 50) * 50)
+                .coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML)
+            var value by remember(index, ml) { mutableIntStateOf(snapped) }
+            NumericWheelPicker(
+                value = value,
+                onValueChange = {
+                    value = it
+                    updatePreset(index, it)
+                },
+                min = WaterQuickPresets.MIN_ML,
+                max = WaterQuickPresets.MAX_ML,
+                unit = stringResource(R.string.unit_ml),
+                step = 50,
+            )
+        } else {
+            val flOz = WaterAmountFormat.flOzFromMl(ml).coerceIn(1, 68)
+            var value by remember(index, ml) { mutableIntStateOf(flOz) }
+            NumericWheelPicker(
+                value = value,
+                onValueChange = {
+                    value = it
+                    updatePreset(index, WaterAmountFormat.mlFromFlOz(it))
+                },
+                min = 1,
+                max = 68,
+                unit = stringResource(R.string.unit_fl_oz),
+                step = 1,
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+    }
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (presets.size < WaterQuickPresets.MAX_COUNT) {
+            TextButton(
+                onClick = {
+                    val next = (presets.lastOrNull() ?: 250) + 250
+                    presets = (presets + next.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML))
+                        .sorted()
+                        .distinct()
+                },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(stringResource(R.string.settings_water_add_preset))
+            }
+        }
+        if (presets.size > WaterQuickPresets.MIN_COUNT) {
+            TextButton(
+                onClick = { presets = presets.dropLast(1) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(stringResource(R.string.settings_water_remove_preset))
+            }
+        }
+    }
+    Spacer(Modifier.height(8.dp))
+    GradientSaveButton {
+        onSave(WaterQuickPresets(presets).validatedOrDefault().amountsMl)
+    }
     Spacer(Modifier.height(8.dp))
 }
 

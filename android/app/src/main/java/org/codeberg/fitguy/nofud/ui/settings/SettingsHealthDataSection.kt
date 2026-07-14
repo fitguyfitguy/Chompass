@@ -90,6 +90,7 @@ internal fun SettingsHealthDataSection(
     safetyMedicalExpanded: Boolean,
     onToggleSafetyMedical: () -> Unit,
     onHealthConnectToggle: (Boolean) -> Unit,
+    onManageHealthAccess: () -> Unit,
     onShowExportDiary: () -> Unit,
     onShowExportBodyMetrics: () -> Unit,
     onImportDiary: () -> Unit,
@@ -99,6 +100,13 @@ internal fun SettingsHealthDataSection(
 ) {
     SectionCard(title = stringResource(R.string.settings_section_health)) {
                 ToggleRow(stringResource(R.string.settings_health_connect), ui.healthConnectEnabled, icon = Icons.Outlined.Favorite, onChange = onHealthConnectToggle)
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_manage_health_access),
+                    stringResource(R.string.settings_permissions),
+                    icon = Icons.Outlined.Link,
+                    onClick = onManageHealthAccess,
+                )
                 if (ui.healthConnectEnabled) {
                     Text(
                         stringResource(R.string.settings_health_companions),

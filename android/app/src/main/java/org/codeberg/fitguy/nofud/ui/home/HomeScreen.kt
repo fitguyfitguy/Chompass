@@ -93,84 +93,60 @@ fun HomeScreen(container: AppContainer) {
     var showBarcodeScanner by remember { mutableStateOf(false) }
     var showCopyFromDay by remember { mutableStateOf(false) }
     var showAddFoodSheet by remember { mutableStateOf(false) }
+    var showCustomWaterLog by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var showNutritionDetail by remember { mutableStateOf(false) }
 
     var showCameraCapture by remember { mutableStateOf(false) }
-    var cameraCaptureWantsSecondPhoto by remember { mutableStateOf(false) }
-    var pendingCameraPairFirstImageBytes by remember { mutableStateOf<ByteArray?>(null) }
-    var showCameraPairTransition by remember { mutableStateOf(false) }
-    var pendingNoteImageBytes by remember { mutableStateOf<ByteArray?>(null) }
+    var showMultiPhotoCapture by remember { mutableStateOf(false) }
+    var pendingCaptureImageBytes by remember { mutableStateOf<List<ByteArray>>(emptyList()) }
+    var isImportingPhotos by remember { mutableStateOf(false) }
 
     val photoPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri: Uri? ->
-        if (uri != null) {
-            val bytes = ctx.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            if (bytes != null) {
-                val firstPair = pendingCameraPairFirstImageBytes
-                if (firstPair != null) {
-                    pendingCameraPairFirstImageBytes = null
-                    cameraCaptureWantsSecondPhoto = false
-                    if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(firstPair, bytes)
-                } else {
-                    pendingNoteImageBytes = bytes
-                }
-            }
+        ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
+    ) { uris ->
+        val remaining = 10 - pendingCaptureImageBytes.size
+        val imported = uris.take(remaining).mapNotNull { uri ->
+            ctx.contentResolver.openInputStream(uri)?.use { it.readBytes() }
         }
+        if (imported.isNotEmpty()) {
+            pendingCaptureImageBytes = (pendingCaptureImageBytes + imported).take(10)
+        }
+        if (pendingCaptureImageBytes.isNotEmpty()) showMultiPhotoCapture = true
     }
 
     // Photos shared into the app via the system share sheet (filled by
-    // MainActivity). One image enters the same context-note flow as an in-app
-    // capture; two are analyzed side-by-side like dual capture.
+    // MainActivity). Up to 10 images enter the multi-photo review sheet.
     val sharedImages by container.sharedImageInbox.collectAsState()
     LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy) {
         val images = sharedImages
         if (images.isEmpty()) return@LaunchedEffect
         if (ui.isEntryAnalysisBusy) return@LaunchedEffect
         container.sharedImageInbox.value = emptyList()
-        if (images.size >= 2) {
-            vm.analyzePhotos(images[0], images[1])
-        } else {
-            pendingNoteImageBytes = images[0]
-        }
+        pendingCaptureImageBytes = images.take(10)
+        isImportingPhotos = true
+        showMultiPhotoCapture = true
     }
 
-    var permissionWantsSecondPhoto by remember { mutableStateOf(false) }
     val cameraPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            cameraCaptureWantsSecondPhoto = permissionWantsSecondPhoto
+            isImportingPhotos = false
+            pendingCaptureImageBytes = emptyList()
             showCameraCapture = true
         }
-        permissionWantsSecondPhoto = false
     }
 
-    fun openCamera(withSecondPhoto: Boolean = false) {
+    fun openCamera() {
+        isImportingPhotos = false
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED
         ) {
-            cameraCaptureWantsSecondPhoto = withSecondPhoto
-            if (!withSecondPhoto) {
-                pendingCameraPairFirstImageBytes = null
-                showCameraPairTransition = false
-            }
+            pendingCaptureImageBytes = emptyList()
             showCameraCapture = true
         } else {
-            permissionWantsSecondPhoto = withSecondPhoto
             cameraPermission.launch(Manifest.permission.CAMERA)
-        }
-    }
-
-    LaunchedEffect(showCameraPairTransition) {
-        if (showCameraPairTransition) {
-            kotlinx.coroutines.delay(650)
-            showCameraPairTransition = false
-            if (pendingCameraPairFirstImageBytes != null) {
-                cameraCaptureWantsSecondPhoto = true
-                showCameraCapture = true
-            }
         }
     }
 
@@ -296,6 +272,14 @@ fun HomeScreen(container: AppContainer) {
                                 modifier = Modifier.weight(1f),
                             )
                         }
+                    }
+                    if (ui.waterTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        WaterProgressRow(
+                            current = ui.waterTodayMl,
+                            goal = ui.waterDailyGoalMl,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
                     }
                     Box(
                         Modifier
@@ -426,6 +410,9 @@ fun HomeScreen(container: AppContainer) {
 
     if (showAddFoodSheet) {
         AddFoodSheet(
+            waterTrackingEnabled = ui.waterTrackingEnabled,
+            waterQuickPresetsMl = ui.waterQuickPresetsMl,
+            waterUseMetric = ui.weightMetric,
             onPhoto = { openCamera() },
             onNote = { showText = true },
             onSaved = { showSaved = true },
@@ -433,7 +420,16 @@ fun HomeScreen(container: AppContainer) {
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
             onCopyFromDay = { showCopyFromDay = true },
+            onWater = { ml -> vm.addWater(ml) },
+            onWaterCustom = { showCustomWaterLog = true },
             onDismiss = { showAddFoodSheet = false }
+        )
+    }
+
+    if (showCustomWaterLog) {
+        WaterCustomAmountSheet(
+            onDismiss = { showCustomWaterLog = false },
+            onAdd = vm::addWater,
         )
     }
 
@@ -515,33 +511,52 @@ fun HomeScreen(container: AppContainer) {
     if (showCameraCapture) {
         InAppCameraCaptureDialog(
             onCapture = { bytes ->
-                val wantsSecondPhoto = cameraCaptureWantsSecondPhoto
-                val firstPairImage = pendingCameraPairFirstImageBytes
                 showCameraCapture = false
-                cameraCaptureWantsSecondPhoto = false
-                if (wantsSecondPhoto && firstPairImage == null) {
-                    pendingCameraPairFirstImageBytes = bytes
-                    showCameraPairTransition = true
-                } else if (wantsSecondPhoto && firstPairImage != null) {
-                    pendingCameraPairFirstImageBytes = null
-                    if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(firstPairImage, bytes)
-                } else {
-                    pendingNoteImageBytes = bytes
-                }
+                pendingCaptureImageBytes = (pendingCaptureImageBytes + bytes).take(10)
+                showMultiPhotoCapture = true
             },
             onOpenGallery = {
                 showCameraCapture = false
+                isImportingPhotos = true
                 photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             },
             onDismiss = {
                 showCameraCapture = false
-                cameraCaptureWantsSecondPhoto = false
-                if (pendingCameraPairFirstImageBytes != null && !showCameraPairTransition) {
-                    pendingNoteImageBytes = pendingCameraPairFirstImageBytes
+                if (pendingCaptureImageBytes.isNotEmpty()) {
+                    showMultiPhotoCapture = true
                 }
-                pendingCameraPairFirstImageBytes = null
-                showCameraPairTransition = false
             }
+        )
+    }
+
+    if (showMultiPhotoCapture && pendingCaptureImageBytes.isNotEmpty()) {
+        MultiPhotoCaptureSheet(
+            imageBytesList = pendingCaptureImageBytes,
+            addsFromLibrary = isImportingPhotos,
+            onAddPhoto = {
+                if (pendingCaptureImageBytes.size < 10) {
+                    if (isImportingPhotos) {
+                        photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    } else {
+                        showMultiPhotoCapture = false
+                        showCameraCapture = true
+                    }
+                }
+            },
+            onRemove = { index ->
+                pendingCaptureImageBytes = pendingCaptureImageBytes.filterIndexed { itemIndex, _ -> itemIndex != index }
+                if (pendingCaptureImageBytes.isEmpty()) showMultiPhotoCapture = false
+            },
+            onAnalyze = { note ->
+                val images = pendingCaptureImageBytes
+                pendingCaptureImageBytes = emptyList()
+                showMultiPhotoCapture = false
+                if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note)
+            },
+            onDismiss = {
+                showMultiPhotoCapture = false
+                pendingCaptureImageBytes = emptyList()
+            },
         )
     }
 
@@ -571,31 +586,22 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    // Photo captured or picked -> optional note -> analyze.
-    // If a failed camera+note attempt was restored from disk, reuse that image+note.
-    val contextSheetImageBytes = pendingNoteImageBytes ?: ui.pendingInputImageBytes
-    contextSheetImageBytes?.let { bytes ->
-        val isRestoredFailedInput = pendingNoteImageBytes == null
+    // Restored failed single-photo input — optional note before retry.
+    ui.pendingInputImageBytes?.let { bytes ->
         ContextNoteSheet(
             imageBytes = bytes,
-            initialNote = if (isRestoredFailedInput) ui.pendingInputNote.orEmpty() else "",
+            initialNote = ui.pendingInputNote.orEmpty(),
             isSubmitting = ui.isEntryAnalysisBusy,
             onAnalyze = { note ->
                 if (!ui.isEntryAnalysisBusy) {
-                    pendingNoteImageBytes = null
                     vm.analyzePhotoWithNote(bytes, note)
                 }
             },
             onAddPhoto = {
-                pendingCameraPairFirstImageBytes = bytes
-                pendingNoteImageBytes = null
-                if (isRestoredFailedInput) vm.dismissFailedInput()
-                openCamera(withSecondPhoto = true)
+                vm.dismissFailedInput()
+                openCamera()
             },
-            onDismiss = {
-                pendingNoteImageBytes = null
-                if (isRestoredFailedInput) vm.dismissFailedInput()
-            }
+            onDismiss = { vm.dismissFailedInput() },
         )
     }
 
@@ -609,7 +615,6 @@ fun HomeScreen(container: AppContainer) {
     if (ui.analyzing && ui.analysisPhase == null) {
         AnalyzingOverlay(imageBytes = ui.pendingImageBytes)
     }
-    if (showCameraPairTransition) CameraPairTransitionOverlay()
 
     ui.pendingAnalysis?.let { analysis ->
         FoodResultSheet(

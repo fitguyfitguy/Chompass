@@ -48,6 +48,7 @@ fun MacroCard(
     freezeProgress: Boolean = false,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
+    val goalValue = goal.toDouble()
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
@@ -109,10 +110,27 @@ fun MacroCard(
                 maxLines = 1,
             )
             Text(
-                stringResource(R.string.macro_goal_of, goal, unit),
+                when {
+                    goal <= 0 -> stringResource(R.string.macro_status_no_goal)
+                    current == goalValue -> stringResource(R.string.macro_status_goal_reached)
+                    current < goalValue -> stringResource(
+                        R.string.macro_status_left,
+                        MacroValueFormatter.string(goalValue - current),
+                        unit,
+                    )
+                    else -> stringResource(
+                        R.string.macro_status_over,
+                        MacroValueFormatter.string(current - goalValue),
+                        unit,
+                    )
+                },
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (goal > 0 && current > goalValue) {
+                    accentColor
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
                 maxLines = 1,
             )
         }

@@ -2,6 +2,20 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.11.0] - 2026-07-14
+
+### Added
+
+- Optional water tracking (off by default): quick-log from Home, daily goal, reminders, and a home-screen widget; stored locally only
+- Customizable meal time boundaries in Settings (defaults match previous automatic breakfast/lunch/dinner/snack windows)
+- Multi-photo meal capture: add up to 10 photos from camera or gallery before AI analysis
+- Health Connect **Manage access** entry in Settings and onboarding for easier permission review on Android 14+
+
+### Changed
+
+- Home macro cards show grams remaining or over goal instead of a static goal subtitle
+- Widget gauge labels scale down for long values so numbers do not crowd the ring
+
 ## [1.10.0] - 2026-07-14
 
 ### Added

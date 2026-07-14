@@ -392,9 +392,10 @@ class FoodAnalysisService(
 
     suspend fun analyzeFood(
         imageBytesList: List<ByteArray>,
+        description: String? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        val prompt = """
+        var prompt = """
             Analyze these food images together. They are different angles or supporting photos of the same meal.
             Use all images to identify the food and estimate the total nutritional content for the serving shown.
             Respond ONLY with JSON:
@@ -405,12 +406,15 @@ class FoodAnalysisService(
             Do not double-count the meal across images. Treat the photos as multiple views of the same item unless there are clearly separate foods.
             Use null for any nutrient you cannot estimate.
         """.trimIndent()
+        if (!description.isNullOrBlank()) {
+            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
+        }
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
         val raw = callAi(prompt, images, op = "analyzeFoodMulti", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
-        return finalizeAnalysis(analysis, imageBytes = images.first(), description = null, onProgress = onProgress)
+        return finalizeAnalysis(analysis, imageBytes = images.first(), description = description, onProgress = onProgress)
     }
 
     suspend fun analyzeNutritionLabel(imageBytes: ByteArray, servingGrams: Double): FoodAnalysis {
