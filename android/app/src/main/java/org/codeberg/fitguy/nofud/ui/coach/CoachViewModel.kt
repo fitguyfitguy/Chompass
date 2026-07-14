@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.ChatMessage
+import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.models.WaterEntry
+import org.codeberg.fitguy.nofud.models.WeightEntry
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.ai.AiError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +35,12 @@ data class CoachUiState(
     val sending: Boolean = false,
     val error: String? = null,
     val errorRes: Int? = null,
-    val suggestions: List<Int> = emptyList()
+    val suggestions: List<Int> = emptyList(),
+    /** A write action the coach proposed, awaiting explicit user confirmation.
+     *  At most one of these is non-null at a time. */
+    val pendingFood: FoodEntry? = null,
+    val pendingWeight: WeightEntry? = null,
+    val pendingWater: WaterEntry? = null,
 )
 
 class CoachViewModel(private val container: AppContainer) : ViewModel() {
@@ -104,7 +112,7 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                 val heightMetric = container.prefs.heightUnit.first() == "cm"
                 val weightMetric = container.prefs.weightUnit.first() == "kg"
 
-                val reply = container.chatService.sendMessage(
+                val result = container.chatService.sendMessage(
                     history = history,
                     newUserMessage = text,
                     profile = profile,
@@ -116,8 +124,13 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                     weightMetric = weightMetric,
                     imageBytes = imageBytes
                 )
-                container.chatRepository.append(ChatMessage(role = ChatMessage.Role.ASSISTANT, content = reply.trim()))
-                _ui.value = _ui.value.copy(sending = false)
+                container.chatRepository.append(ChatMessage(role = ChatMessage.Role.ASSISTANT, content = result.reply.trim()))
+                _ui.value = _ui.value.copy(
+                    sending = false,
+                    pendingFood = result.proposedFood,
+                    pendingWeight = result.proposedWeight,
+                    pendingWater = result.proposedWater,
+                )
             } catch (e: AiError) {
                 _ui.value = _ui.value.copy(sending = false, error = e.message)
             } catch (e: Throwable) {
@@ -127,6 +140,47 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                     errorRes = if (e.localizedMessage.isNullOrBlank()) R.string.coach_chat_failed else null
                 )
             }
+        }
+    }
+
+    fun confirmPendingFood() {
+        val entry = _ui.value.pendingFood ?: return
+        viewModelScope.launch {
+            container.foodRepository.addEntry(entry)
+            container.chatRepository.append(
+                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged: ${entry.name} (${entry.calories} kcal).")
+            )
+            _ui.value = _ui.value.copy(pendingFood = null)
+        }
+    }
+
+    fun confirmPendingWeight() {
+        val entry = _ui.value.pendingWeight ?: return
+        viewModelScope.launch {
+            container.weightRepository.addEntry(entry)
+            container.chatRepository.append(
+                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged weight: ${String.format(java.util.Locale.US, "%.1f", entry.weightKg)} kg.")
+            )
+            _ui.value = _ui.value.copy(pendingWeight = null)
+        }
+    }
+
+    fun confirmPendingWater() {
+        val entry = _ui.value.pendingWater ?: return
+        viewModelScope.launch {
+            container.waterRepository.add(entry)
+            container.chatRepository.append(
+                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged water: ${entry.milliliters} ml.")
+            )
+            _ui.value = _ui.value.copy(pendingWater = null)
+        }
+    }
+
+    /** Discards whichever pending proposal is currently set. */
+    fun discardPending() {
+        viewModelScope.launch {
+            container.chatRepository.append(ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Okay, I won't log that."))
+            _ui.value = _ui.value.copy(pendingFood = null, pendingWeight = null, pendingWater = null)
         }
     }
 

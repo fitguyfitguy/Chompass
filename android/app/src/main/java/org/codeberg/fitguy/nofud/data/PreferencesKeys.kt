@@ -95,4 +95,5 @@ internal object Keys {
         val WIDGET_SNAPSHOT = stringPreferencesKey("widget_snapshot_v1")
         val TEST_SEED_BACKUP = stringPreferencesKey("test_seed_backup_v1")
         val DEBUG_ACTIVITY_DAYS = stringPreferencesKey("debugActivityDays")
+        val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
 }

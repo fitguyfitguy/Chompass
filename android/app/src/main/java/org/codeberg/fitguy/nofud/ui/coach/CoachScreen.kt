@@ -65,8 +65,11 @@ import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.SpeechLanguage
 import org.codeberg.fitguy.nofud.models.SpeechProvider
+import org.codeberg.fitguy.nofud.ui.components.FudGlassDialog
+import org.codeberg.fitguy.nofud.ui.components.FudGlassDialogActions
 import org.codeberg.fitguy.nofud.ui.components.InAppCameraCaptureDialog
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavDockedControlPadding
+import java.util.Locale
 
 /**
  * Verbatim port of struct ChatView in
@@ -276,6 +279,49 @@ fun CoachScreen(container: AppContainer) {
             },
             onDismiss = { showCameraCapture = false }
         )
+    }
+
+    ui.pendingFood?.let { entry ->
+        FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
+            Text(stringResource(R.string.coach_confirm_log_food_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(
+                "${entry.name} — ${entry.calories} kcal (${String.format(Locale.US, "%.0f", entry.protein)}g protein, " +
+                    "${String.format(Locale.US, "%.0f", entry.carbs)}g carbs, ${String.format(Locale.US, "%.0f", entry.fat)}g fat)",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_log),
+                onPrimary = { vm.confirmPendingFood() },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { vm.discardPending() }
+            )
+        }
+    }
+
+    ui.pendingWeight?.let { entry ->
+        FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
+            Text(stringResource(R.string.coach_confirm_log_weight_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("${String.format(Locale.US, "%.1f", entry.weightKg)} kg", style = MaterialTheme.typography.bodyMedium)
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_log),
+                onPrimary = { vm.confirmPendingWeight() },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { vm.discardPending() }
+            )
+        }
+    }
+
+    ui.pendingWater?.let { entry ->
+        FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
+            Text(stringResource(R.string.coach_confirm_log_water_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("${entry.milliliters} ml", style = MaterialTheme.typography.bodyMedium)
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_log),
+                onPrimary = { vm.confirmPendingWater() },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { vm.discardPending() }
+            )
+        }
     }
 
     if (showResetConfirm) {

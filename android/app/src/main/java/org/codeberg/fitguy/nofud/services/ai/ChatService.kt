@@ -42,8 +42,19 @@ import java.util.Locale
 class ChatService(
     private val prefs: PreferencesStore,
     private val keyStore: KeyStore,
+    private val foodAnalysisService: FoodAnalysisService,
     private val okHttp: OkHttpClient = FoodAnalysisService.defaultClient
 ) {
+
+    /** Result of a coach turn: the assistant's reply text, plus at most one pending
+     *  write action the model proposed (via a `propose_log_*` tool) awaiting user
+     *  confirmation — see [CoachProposal]. Nothing is persisted at this point. */
+    data class ChatResult(
+        val reply: String,
+        val proposedFood: FoodEntry? = null,
+        val proposedWeight: WeightEntry? = null,
+        val proposedWater: org.codeberg.fitguy.nofud.models.WaterEntry? = null,
+    )
 
     suspend fun sendMessage(
         history: List<ChatMessage>,
@@ -56,13 +67,13 @@ class ChatService(
         heightMetric: Boolean,
         weightMetric: Boolean,
         imageBytes: ByteArray? = null
-    ): String {
+    ): ChatResult {
         val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric)
         val userContext = prefs.userContext.first()
         val systemPrompt = if (userContext.isNotBlank())
             "$baseSystemPrompt\n\n## User-provided context\n$userContext"
         else baseSystemPrompt
-        val tools = CoachTools(weights = weights, bodyFats = bodyFats, foods = foods)
+        val tools = CoachTools(weights = weights, bodyFats = bodyFats, foods = foods, foodAnalysisService = foodAnalysisService)
 
         val provider = prefs.selectedAIProvider.first()
         val model = provider.supportedModelOrDefault(prefs.selectedAIModel.first())
@@ -73,11 +84,17 @@ class ChatService(
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         val maxTokens = prefs.maxResponseTokens.first()
 
-        return when (provider.apiFormat) {
+        val reply = when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes)
             AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens)
         }
+        return ChatResult(
+            reply = reply,
+            proposedFood = (tools.lastProposal as? CoachProposal.Food)?.entry,
+            proposedWeight = (tools.lastProposal as? CoachProposal.Weight)?.entry,
+            proposedWater = (tools.lastProposal as? CoachProposal.Water)?.entry,
+        )
     }
 
     // MARK: - Slim system prompt
@@ -123,6 +140,9 @@ class ChatService(
         lines.add("- \"What did I eat last Tuesday?\" → call get_food_entries(from, to)")
         lines.add("- \"What's my data range?\" → call get_data_summary")
         lines.add("Do NOT call tools for questions you can answer from the profile/forecast below.")
+        lines.add("")
+        lines.add("## Logging on the user's behalf")
+        lines.add("If the user asks you to log/add/track food, weight, or water, call the matching propose_log_* tool. These tools NEVER save anything by themselves — they only prepare a confirmation the user must approve in the app. Call at most one propose_log_* tool per response. After calling it, briefly tell the user what you're proposing to log and that they need to confirm it.")
         lines.add("")
         lines.add("## User profile")
         lines.add("- Gender: ${profile.gender.name.lowercase()}")
@@ -455,8 +475,30 @@ class ChatService(
     /** Schema is the same shape across all three formats — JSON Schema-ish dict
      *  with type/properties/required. The wrapping is what differs per format. */
     private fun parametersSchemaFor(toolName: String): JSONObject {
-        if (toolName == "get_data_summary") {
-            return JSONObject().put("type", "object").put("properties", JSONObject())
+        when (toolName) {
+            "get_data_summary" -> return JSONObject().put("type", "object").put("properties", JSONObject())
+            "propose_log_food" -> return JSONObject().apply {
+                put("type", "object")
+                put("properties", JSONObject().apply {
+                    put("description", JSONObject().put("type", "string").put("description", "What the user ate, in their own words, e.g. \"2 eggs and toast\""))
+                    put("meal_type", JSONObject().put("type", "string").put("description", "One of: breakfast, lunch, dinner, snack, other. Omit to use the current meal based on time of day."))
+                })
+                put("required", JSONArray().put("description"))
+            }
+            "propose_log_weight" -> return JSONObject().apply {
+                put("type", "object")
+                put("properties", JSONObject().apply {
+                    put("weight_kg", JSONObject().put("type", "number").put("description", "Body weight in kilograms. Convert from pounds first if needed."))
+                })
+                put("required", JSONArray().put("weight_kg"))
+            }
+            "propose_log_water" -> return JSONObject().apply {
+                put("type", "object")
+                put("properties", JSONObject().apply {
+                    put("milliliters", JSONObject().put("type", "integer").put("description", "Water amount in milliliters. Convert from other units first if needed."))
+                })
+                put("required", JSONArray().put("milliliters"))
+            }
         }
         return JSONObject().apply {
             put("type", "object")
