@@ -33,7 +33,7 @@ import org.json.JSONObject
  * validate real on-device latency/quality on the Pixel 9a / GrapheneOS target.
  *
  * Model delivery is manual (`adb push` into app-private storage) — see
- * MODEL_FILENAME below and the on-device LLM plan for the exact push sequence.
+ * MODEL_FILENAME below and docs/ON_DEVICE_LLM.md for the exact push sequence.
  * Results go to logcat under tag [ON_DEVICE_LLM_TAG] as `op=ondevice_llm phase=... key=value` lines.
  *
  * Backend selection: defaults to GPU. Override with intent extra
