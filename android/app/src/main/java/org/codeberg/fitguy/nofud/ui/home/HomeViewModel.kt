@@ -77,6 +77,7 @@ data class HomeUiState(
     val pendingInputNote: String? = null,
     val pendingInputDraftImageFilename: String? = null,
     val analyzing: Boolean = false,
+    val saving: Boolean = false,
     val error: String? = null
 ) {
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
@@ -107,6 +108,48 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(HomeUiState())
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
     private val _selectedDate = MutableStateFlow(LocalDate.now())
+
+    @Volatile
+    private var analysisInFlight = false
+    private var analysisGeneration = 0
+
+    private data class AnalysisStart(
+        val generation: Int,
+        val previousDraftImage: String?,
+    )
+
+    private fun beginAnalysis(configure: (HomeUiState) -> HomeUiState): AnalysisStart? =
+        synchronized(this) {
+            if (analysisInFlight || _ui.value.analyzing) return null
+            analysisInFlight = true
+            val gen = ++analysisGeneration
+            val previousDraftImage = _ui.value.pendingDraftImageFilename
+            container.analyzingFood.value = true
+            _ui.value = configure(
+                _ui.value.copy(
+                    error = null,
+                    pendingAnalysis = null,
+                    pendingReviewSource = null,
+                    analyzing = true,
+                )
+            )
+            AnalysisStart(gen, previousDraftImage)
+        }
+
+    private fun failAnalysis(gen: Int, message: String?) {
+        if (gen != analysisGeneration) return
+        _ui.value = _ui.value.copy(analyzing = false, error = message)
+    }
+
+    private fun endAnalysis(gen: Int) {
+        synchronized(this) {
+            if (gen != analysisGeneration) return
+            analysisInFlight = false
+        }
+        if (gen == analysisGeneration) {
+            container.analyzingFood.value = false
+        }
+    }
 
     init {
         combine(
@@ -212,86 +255,84 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun analyzeText(description: String) {
         viewModelScope.launch {
-            val previousDraftImage = _ui.value.pendingDraftImageFilename
-            container.analyzingFood.value = true
-            _ui.value = _ui.value.copy(
-                analyzing = true,
-                error = null,
-                pendingAnalysis = null,
-                pendingImageBytes = null,
-                pendingFoodSource = FoodSource.TEXT_INPUT,
-                pendingDraftImageFilename = null,
-                pendingReviewSource = null
-            )
-            discardPendingDraft(previousDraftImage)
+            val start = beginAnalysis { state ->
+                state.copy(
+                    pendingImageBytes = null,
+                    pendingFoodSource = FoodSource.TEXT_INPUT,
+                    pendingDraftImageFilename = null,
+                )
+            } ?: return@launch
+            discardPendingDraft(start.previousDraftImage)
             try {
                 val analysis = container.foodAnalysis.analyzeText(description)
-                savePendingDraft(analysis, imageBytes = null, source = FoodSource.TEXT_INPUT)
+                savePendingDraft(analysis, imageBytes = null, source = FoodSource.TEXT_INPUT, generation = start.generation)
             } catch (e: AiError) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.message)
+                failAnalysis(start.generation, e.message)
             } catch (e: Throwable) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed))
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
+                )
             } finally {
-                container.analyzingFood.value = false
+                endAnalysis(start.generation)
             }
         }
     }
 
     fun analyzePhoto(bytes: ByteArray) {
         viewModelScope.launch {
-            val previousDraftImage = _ui.value.pendingDraftImageFilename
-            container.analyzingFood.value = true
-            _ui.value = _ui.value.copy(
-                analyzing = true,
-                error = null,
-                pendingAnalysis = null,
-                pendingImageBytes = bytes,
-                pendingFoodSource = FoodSource.SNAP_FOOD,
-                pendingDraftImageFilename = null,
-                pendingReviewSource = null
-            )
-            discardPendingDraft(previousDraftImage)
+            val start = beginAnalysis { state ->
+                state.copy(
+                    pendingImageBytes = bytes,
+                    pendingFoodSource = FoodSource.SNAP_FOOD,
+                    pendingDraftImageFilename = null,
+                )
+            } ?: return@launch
+            discardPendingDraft(start.previousDraftImage)
             try {
                 val analysis = container.foodAnalysis.analyzeAuto(bytes)
-                savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD)
+                savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
             } catch (e: AiError) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.message)
+                failAnalysis(start.generation, e.message)
             } catch (e: Throwable) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed))
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
+                )
             } finally {
-                container.analyzingFood.value = false
+                endAnalysis(start.generation)
             }
         }
     }
 
     fun analyzePhotos(firstBytes: ByteArray, secondBytes: ByteArray) {
         viewModelScope.launch {
-            val previousDraftImage = _ui.value.pendingDraftImageFilename
-            container.analyzingFood.value = true
-            // Both shots side by side — this composite becomes the entry's stored
-            // image, so the log row and edit sheet show both photos (mirrors iOS).
-            val combinedBytes = withContext(Dispatchers.Default) {
-                FoodImageComposer.sideBySide(firstBytes, secondBytes)
-            }
-            _ui.value = _ui.value.copy(
-                analyzing = true,
-                error = null,
-                pendingAnalysis = null,
-                pendingImageBytes = combinedBytes,
-                pendingFoodSource = FoodSource.SNAP_FOOD,
-                pendingDraftImageFilename = null,
-                pendingReviewSource = null
-            )
-            discardPendingDraft(previousDraftImage)
+            val start = beginAnalysis { state ->
+                state.copy(
+                    pendingFoodSource = FoodSource.SNAP_FOOD,
+                    pendingDraftImageFilename = null,
+                )
+            } ?: return@launch
+            discardPendingDraft(start.previousDraftImage)
             try {
+                // Both shots side by side — this composite becomes the entry's stored
+                // image, so the log row and edit sheet show both photos (mirrors iOS).
+                val combinedBytes = withContext(Dispatchers.Default) {
+                    FoodImageComposer.sideBySide(firstBytes, secondBytes)
+                }
+                if (start.generation != analysisGeneration) return@launch
+                _ui.value = _ui.value.copy(pendingImageBytes = combinedBytes)
                 val analysis = container.foodAnalysis.analyzeFood(listOf(firstBytes, secondBytes))
-                savePendingDraft(analysis, imageBytes = combinedBytes, source = FoodSource.SNAP_FOOD)
+                savePendingDraft(analysis, imageBytes = combinedBytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
             } catch (e: AiError) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.message)
+                failAnalysis(start.generation, e.message)
             } catch (e: Throwable) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed))
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
+                )
             } finally {
-                container.analyzingFood.value = false
+                endAnalysis(start.generation)
             }
         }
     }
@@ -303,55 +344,53 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      */
     fun analyzePhotoWithNote(bytes: ByteArray, note: String) {
         viewModelScope.launch {
-            val previousDraftImage = _ui.value.pendingDraftImageFilename
-            container.analyzingFood.value = true
+            val start = beginAnalysis { state ->
+                state.copy(
+                    pendingImageBytes = bytes,
+                    pendingFoodSource = FoodSource.SNAP_FOOD,
+                    pendingDraftImageFilename = null,
+                )
+            } ?: return@launch
             savePendingInputDraft(bytes, note, FoodSource.SNAP_FOOD)
-            _ui.value = _ui.value.copy(
-                analyzing = true,
-                error = null,
-                pendingAnalysis = null,
-                pendingImageBytes = bytes,
-                pendingFoodSource = FoodSource.SNAP_FOOD,
-                pendingDraftImageFilename = null,
-                pendingReviewSource = null
-            )
-            discardPendingDraft(previousDraftImage)
+            discardPendingDraft(start.previousDraftImage)
             try {
                 val analysis = container.foodAnalysis.analyzeFood(bytes, note.takeIf { it.isNotBlank() })
                     .copy(customNote = note.takeIf { it.isNotBlank() })
                 clearPendingInputDraft()
-                savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD)
+                savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
             } catch (e: AiError) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.message)
+                failAnalysis(start.generation, e.message)
             } catch (e: Throwable) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed))
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
+                )
             } finally {
-                container.analyzingFood.value = false
+                endAnalysis(start.generation)
             }
         }
     }
 
     fun lookupBarcode(barcode: String) {
         viewModelScope.launch {
-            val previousDraftImage = _ui.value.pendingDraftImageFilename
-            container.analyzingFood.value = true
-            _ui.value = _ui.value.copy(
-                analyzing = true,
-                error = null,
-                pendingAnalysis = null,
-                pendingImageBytes = null,
-                pendingFoodSource = FoodSource.BARCODE,
-                pendingDraftImageFilename = null,
-                pendingReviewSource = null
-            )
-            discardPendingDraft(previousDraftImage)
+            val start = beginAnalysis { state ->
+                state.copy(
+                    pendingImageBytes = null,
+                    pendingFoodSource = FoodSource.BARCODE,
+                    pendingDraftImageFilename = null,
+                )
+            } ?: return@launch
+            discardPendingDraft(start.previousDraftImage)
             try {
                 val analysis = OpenFoodFactsService.lookup(barcode)
-                savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE)
+                savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE, generation = start.generation)
             } catch (e: Throwable) {
-                _ui.value = _ui.value.copy(analyzing = false, error = e.localizedMessage ?: container.appContext.getString(R.string.error_barcode_lookup_failed))
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_barcode_lookup_failed)
+                )
             } finally {
-                container.analyzingFood.value = false
+                endAnalysis(start.generation)
             }
         }
     }
@@ -366,73 +405,80 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         editedAnalysis: FoodAnalysis? = null
     ) {
         val analysis = editedAnalysis ?: _ui.value.pendingAnalysis ?: return
+        if (_ui.value.saving) return
         val reviewSource = _ui.value.pendingReviewSource
         val pendingFoodSource = _ui.value.pendingFoodSource
         val pendingDraftImageFilename = _ui.value.pendingDraftImageFilename
         viewModelScope.launch {
-            val imageBytes = _ui.value.pendingImageBytes
-            val id = UUID.randomUUID()
-            // If this analysis came from a Saved Meals review, reuse the
-            // template's existing on-disk image so we don't duplicate the
-            // JPEG. Otherwise (fresh AI analysis), persist the in-memory
-            // bytes as a new file under the new entry id.
-            val filename = reviewSource?.imageFilename
-                ?: pendingDraftImageFilename
-                ?: imageBytes?.let { persistImage(it, id) }
-            fun s(v: Int) = (v * scale).roundToInt()
-            fun macro(v: Double) = v * scale
-            fun s(v: Double?) = v?.let { it * scale }
-            val entry = FoodEntry(
-                id = id,
-                name = name?.takeIf { it.isNotBlank() } ?: analysis.name,
-                calories = s(analysis.calories),
-                protein = macro(analysis.protein),
-                carbs = macro(analysis.carbs),
-                fat = macro(analysis.fat),
-                timestamp = timestampForSelectedDay(),
-                imageFilename = filename,
-                emoji = analysis.emoji,
-                source = reviewSource?.source
-                    ?: pendingFoodSource
-                    ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
-                mealType = mealType,
-                sugar = s(analysis.sugar),
-                addedSugar = s(analysis.addedSugar),
-                fiber = s(analysis.fiber),
-                saturatedFat = s(analysis.saturatedFat),
-                monounsaturatedFat = s(analysis.monounsaturatedFat),
-                polyunsaturatedFat = s(analysis.polyunsaturatedFat),
-                cholesterol = s(analysis.cholesterol),
-                sodium = s(analysis.sodium),
-                potassium = s(analysis.potassium),
-                transFat = s(analysis.transFat),
-                calcium = s(analysis.calcium),
-                iron = s(analysis.iron),
-                magnesium = s(analysis.magnesium),
-                zinc = s(analysis.zinc),
-                vitaminA = s(analysis.vitaminA),
-                vitaminC = s(analysis.vitaminC),
-                vitaminD = s(analysis.vitaminD),
-                vitaminB12 = s(analysis.vitaminB12),
-                vitaminE = s(analysis.vitaminE),
-                vitaminK = s(analysis.vitaminK),
-                folate = s(analysis.folate),
-                omega3 = s(analysis.omega3),
-                servingSizeGrams = servingGrams ?: analysis.servingSizeGrams,
-                servingUnitOptions = analysis.servingUnitOptions,
-                selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
-                selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                customNote = analysis.customNote
-            )
-            container.foodRepository.addEntry(entry)
-            container.prefs.setPendingFoodAnalysisDraft(null)
-            _ui.value = _ui.value.copy(
-                pendingAnalysis = null,
-                pendingImageBytes = null,
-                pendingFoodSource = null,
-                pendingDraftImageFilename = null,
-                pendingReviewSource = null
-            )
+            if (_ui.value.saving) return@launch
+            _ui.value = _ui.value.copy(saving = true)
+            try {
+                val imageBytes = _ui.value.pendingImageBytes
+                val id = UUID.randomUUID()
+                // If this analysis came from a Saved Meals review, reuse the
+                // template's existing on-disk image so we don't duplicate the
+                // JPEG. Otherwise (fresh AI analysis), persist the in-memory
+                // bytes as a new file under the new entry id.
+                val filename = reviewSource?.imageFilename
+                    ?: pendingDraftImageFilename
+                    ?: imageBytes?.let { persistImage(it, id) }
+                fun s(v: Int) = (v * scale).roundToInt()
+                fun macro(v: Double) = v * scale
+                fun s(v: Double?) = v?.let { it * scale }
+                val entry = FoodEntry(
+                    id = id,
+                    name = name?.takeIf { it.isNotBlank() } ?: analysis.name,
+                    calories = s(analysis.calories),
+                    protein = macro(analysis.protein),
+                    carbs = macro(analysis.carbs),
+                    fat = macro(analysis.fat),
+                    timestamp = timestampForSelectedDay(),
+                    imageFilename = filename,
+                    emoji = analysis.emoji,
+                    source = reviewSource?.source
+                        ?: pendingFoodSource
+                        ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
+                    mealType = mealType,
+                    sugar = s(analysis.sugar),
+                    addedSugar = s(analysis.addedSugar),
+                    fiber = s(analysis.fiber),
+                    saturatedFat = s(analysis.saturatedFat),
+                    monounsaturatedFat = s(analysis.monounsaturatedFat),
+                    polyunsaturatedFat = s(analysis.polyunsaturatedFat),
+                    cholesterol = s(analysis.cholesterol),
+                    sodium = s(analysis.sodium),
+                    potassium = s(analysis.potassium),
+                    transFat = s(analysis.transFat),
+                    calcium = s(analysis.calcium),
+                    iron = s(analysis.iron),
+                    magnesium = s(analysis.magnesium),
+                    zinc = s(analysis.zinc),
+                    vitaminA = s(analysis.vitaminA),
+                    vitaminC = s(analysis.vitaminC),
+                    vitaminD = s(analysis.vitaminD),
+                    vitaminB12 = s(analysis.vitaminB12),
+                    vitaminE = s(analysis.vitaminE),
+                    vitaminK = s(analysis.vitaminK),
+                    folate = s(analysis.folate),
+                    omega3 = s(analysis.omega3),
+                    servingSizeGrams = servingGrams ?: analysis.servingSizeGrams,
+                    servingUnitOptions = analysis.servingUnitOptions,
+                    selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
+                    selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                    customNote = analysis.customNote
+                )
+                container.foodRepository.addEntry(entry)
+                container.prefs.setPendingFoodAnalysisDraft(null)
+                _ui.value = _ui.value.copy(
+                    pendingAnalysis = null,
+                    pendingImageBytes = null,
+                    pendingFoodSource = null,
+                    pendingDraftImageFilename = null,
+                    pendingReviewSource = null
+                )
+            } finally {
+                _ui.value = _ui.value.copy(saving = false)
+            }
         }
     }
 
@@ -538,15 +584,21 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun copyEntriesToSelectedDay(entries: List<FoodEntry>) {
-        if (entries.isEmpty()) return
+        if (entries.isEmpty() || _ui.value.saving) return
         viewModelScope.launch {
-            entries.forEach { entry ->
-                container.foodRepository.addEntry(
-                    entry.duplicatedForLogging(
-                        logDate = timestampForSelectedDayPreservingTime(entry.timestamp),
-                        mealType = entry.mealType
+            if (_ui.value.saving) return@launch
+            _ui.value = _ui.value.copy(saving = true)
+            try {
+                entries.forEach { entry ->
+                    container.foodRepository.addEntry(
+                        entry.duplicatedForLogging(
+                            logDate = timestampForSelectedDayPreservingTime(entry.timestamp),
+                            mealType = entry.mealType
+                        )
                     )
-                )
+                }
+            } finally {
+                _ui.value = _ui.value.copy(saving = false)
             }
         }
     }
@@ -560,19 +612,26 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         fat: Double,
         mealType: MealType = MealType.currentMeal
     ) {
+        if (_ui.value.saving) return
         viewModelScope.launch {
-            container.foodRepository.addEntry(
-                FoodEntry(
-                    name = name,
-                    calories = calories,
-                    protein = protein,
-                    carbs = carbs,
-                    fat = fat,
-                    timestamp = timestampForSelectedDay(),
-                    source = FoodSource.MANUAL,
-                    mealType = mealType
+            if (_ui.value.saving) return@launch
+            _ui.value = _ui.value.copy(saving = true)
+            try {
+                container.foodRepository.addEntry(
+                    FoodEntry(
+                        name = name,
+                        calories = calories,
+                        protein = protein,
+                        carbs = carbs,
+                        fat = fat,
+                        timestamp = timestampForSelectedDay(),
+                        source = FoodSource.MANUAL,
+                        mealType = mealType
+                    )
                 )
-            )
+            } finally {
+                _ui.value = _ui.value.copy(saving = false)
+            }
         }
     }
 
@@ -599,8 +658,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private suspend fun savePendingDraft(
         analysis: FoodAnalysis,
         imageBytes: ByteArray?,
-        source: FoodSource
+        source: FoodSource,
+        generation: Int,
     ) {
+        if (generation != analysisGeneration) return
         val imageFilename = imageBytes?.let { persistImage(it, UUID.randomUUID()) }
         container.prefs.setPendingFoodAnalysisDraft(
             PendingFoodAnalysisDraft(
@@ -609,6 +670,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 source = source
             )
         )
+        if (generation != analysisGeneration) return
         _ui.value = _ui.value.copy(
             analyzing = false,
             pendingAnalysis = analysis,

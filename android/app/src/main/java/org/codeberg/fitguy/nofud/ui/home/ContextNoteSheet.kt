@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -58,12 +59,15 @@ import org.codeberg.fitguy.nofud.ui.theme.AppColors
 fun ContextNoteSheet(
     imageBytes: ByteArray,
     initialNote: String = "",
+    isSubmitting: Boolean = false,
     onAnalyze: (note: String) -> Unit,
     onAddPhoto: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember(initialNote) { mutableStateOf(initialNote) }
+    var submitted by remember { mutableStateOf(false) }
+    val busy = isSubmitting || submitted
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -143,7 +147,7 @@ fun ContextNoteSheet(
 
                 FudGlassTextField(
                     value = note,
-                    onValueChange = { note = it },
+                    onValueChange = { if (!busy) note = it },
                     placeholder = stringResource(R.string.context_note_placeholder),
                     singleLine = false,
                     minLines = 3,
@@ -167,6 +171,7 @@ fun ContextNoteSheet(
             ) {
                 OutlinedButton(
                     onClick = onAddPhoto,
+                    enabled = !busy,
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
@@ -188,11 +193,28 @@ fun ContextNoteSheet(
                 }
                 FudGlassPrimaryButton(
                     text = stringResource(R.string.action_analyze),
-                    onClick = { onAnalyze(note) },
+                    onClick = {
+                        if (!busy) {
+                            submitted = true
+                            onAnalyze(note)
+                        }
+                    },
+                    enabled = !busy,
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
-                    height = 48.dp
+                    height = 48.dp,
+                    content = if (busy) {
+                        {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    } else {
+                        null
+                    }
                 )
             }
         }

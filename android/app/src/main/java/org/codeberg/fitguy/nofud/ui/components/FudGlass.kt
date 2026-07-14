@@ -250,6 +250,7 @@ fun FudGlassDialogActions(
     dismissText: String? = null,
     onDismiss: (() -> Unit)? = null,
     destructive: Boolean = false,
+    primaryEnabled: Boolean = true,
 ) {
     Row(
         modifier.fillMaxWidth(),
@@ -265,6 +266,7 @@ fun FudGlassDialogActions(
         if (destructive) {
             TextButton(
                 onClick = onPrimary,
+                enabled = primaryEnabled,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.error,
                 ),
@@ -272,7 +274,7 @@ fun FudGlassDialogActions(
                 Text(primaryText)
             }
         } else {
-            Button(onClick = onPrimary) {
+            Button(onClick = onPrimary, enabled = primaryEnabled) {
                 Text(primaryText)
             }
         }

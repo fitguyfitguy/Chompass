@@ -92,7 +92,8 @@ private fun NativeRecognitionMode.nextAfterLanguageError(): NativeRecognitionMod
 fun VoiceInputSheet(
     container: AppContainer,
     onDismiss: () -> Unit,
-    onSubmit: (String) -> Unit
+    onSubmit: (String) -> Unit,
+    isSubmitting: Boolean = false,
 ) {
     val ctx = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -118,6 +119,8 @@ fun VoiceInputSheet(
     var recordedFile by remember { mutableStateOf<File?>(null) }
     var nativeJob by remember { mutableStateOf<Job?>(null) }
     var nativeRecognitionMode by remember { mutableStateOf(NativeRecognitionMode.OFFLINE_LANGUAGE) }
+    var submitted by remember { mutableStateOf(false) }
+    val busy = isSubmitting || submitted
 
     // Internal helper: spin up a fresh native recognizer session, appending
     // to [committed] on each Final event so a long pause doesn't end the
@@ -366,15 +369,19 @@ fun VoiceInputSheet(
             // a secondary Cancel text button. Native is one-tap (stops the live
             // recognizer and submits in one click); remote is two-tap (mic to
             // stop+transcribe, then Analyze on the reviewed transcript).
-            val canAnalyze = transcript.trim().isNotEmpty() && phase != VoicePhase.TRANSCRIBING
+            val canAnalyze = transcript.trim().isNotEmpty() && phase != VoicePhase.TRANSCRIBING && !busy
             Spacer(Modifier.height(20.dp))
             Button(
                 onClick = {
+                    if (busy) return@Button
                     if (provider == SpeechProvider.NATIVE && phase == VoicePhase.RECORDING) {
                         nativeJob?.cancel()
                         phase = VoicePhase.REVIEWING
                     }
-                    if (transcript.trim().isNotEmpty()) onSubmit(transcript.trim())
+                    if (transcript.trim().isNotEmpty()) {
+                        submitted = true
+                        onSubmit(transcript.trim())
+                    }
                 },
                 enabled = canAnalyze,
                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.Calorie),
