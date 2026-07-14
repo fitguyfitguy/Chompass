@@ -20,6 +20,7 @@ import org.codeberg.fitguy.nofud.models.PendingFoodInputDraft
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.services.FoodImageComposer
 import org.codeberg.fitguy.nofud.services.OpenFoodFactsService
+import org.codeberg.fitguy.nofud.services.PerfLog
 import org.codeberg.fitguy.nofud.services.ai.AiError
 import org.codeberg.fitguy.nofud.services.health.HomeActivitySnapshot
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
@@ -763,7 +764,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private suspend fun persistImage(bytes: ByteArray, entryId: UUID): String? =
-        withContext(Dispatchers.IO) { container.imageStore.storeBytes(bytes, entryId) }
+        withContext(Dispatchers.IO) {
+            PerfLog.measure("save", "imageWrite", "bytes=${bytes.size}") {
+                container.imageStore.storeBytes(bytes, entryId)
+            }
+        }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")

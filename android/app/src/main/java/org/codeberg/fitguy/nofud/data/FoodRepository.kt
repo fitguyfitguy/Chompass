@@ -3,6 +3,7 @@ package org.codeberg.fitguy.nofud.data
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.services.FoodImageStore
+import org.codeberg.fitguy.nofud.services.PerfLog
 import org.codeberg.fitguy.nofud.services.ReviewPrompter
 import org.codeberg.fitguy.nofud.models.MealType
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
@@ -69,9 +70,13 @@ class FoodRepository(
 
     suspend fun addEntry(entry: FoodEntry) {
         val current = prefs.foodEntries.first()
-        prefs.setFoodEntries(current + entry)
+        // Persistence commit — full-list JSON re-serialize + DataStore write, cost
+        // scales with total log size (entries=), then the Health Connect IPC insert.
+        PerfLog.measure("save", "dataStore", "entries=${current.size + 1}") {
+            prefs.setFoodEntries(current + entry)
+        }
         if (shouldSyncHealth()) {
-            health?.writeNutrition(entry)
+            PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
         }
         // One-time organic review moment: the first successful food log (iOS parity).
         if (!prefs.reviewPromptedAfterFirstLog.first()) {
