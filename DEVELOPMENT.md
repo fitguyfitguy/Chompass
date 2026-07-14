@@ -92,3 +92,11 @@ Validate the bundled image budget (fails if total WebP size exceeds 25 MB or any
 ```bash
 uv run --with pillow python scripts/optimize_exercise_images.py --check-only
 ```
+
+## On-device LLM smoke test (debug only)
+
+Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validated on Pixel 9a / GrapheneOS). Not integrated into production AI dispatch.
+
+Full workflow — model push, intent extras, GPU/CPU backends, latency results, known issues:
+
+**[docs/ON_DEVICE_LLM.md](docs/ON_DEVICE_LLM.md)**
