@@ -797,9 +797,6 @@
     <string name="about_check_updates">Check for Updates</string>
     <string name="about_app_version">App Version</string>
     <string name="about_version_format">Version %1$s</string>
-    <string name="about_whats_new">What\'s New</string>
-    <string name="about_whats_new_version_format">Version %1$s</string>
-    <string name="about_whats_new_android_summary">Android changes in this update:</string>
     <string name="about_rate">Rate the App</string>
     <string name="about_share">Share the App</string>
     <string name="about_open_source">Source Code (MIT)</string>
@@ -862,9 +859,6 @@
     <string name="onboarding_feature_coach">Coach that knows your data</string>
     <string name="onboarding_feature_library">870+ exercise library</string>
     <string name="onboarding_feature_widgets">Home screen widgets</string>
-    <string name="whats_new_nofud_ad_free">Completely ad-free - no banners, no tracking SDKs.</string>
-    <string name="whats_new_nofud_privacy">Privacy-first: local storage, bring-your-own AI key, optional Health Connect.</string>
-    <string name="whats_new_nofud_fork">Fork of Fud AI with upstream MIT attribution preserved.</string>
     <string name="whats_new_v30_home">Home redesign: speedometer calorie gauge, vertical macro bars, four nutrient cards, and a floating add button.</string>
     <string name="whats_new_v30_coach_voice">Ask Coach by voice with the new inline recorder.</string>
     <string name="whats_new_v30_share">Share any meal as a link that opens straight in NoFUD on iPhone or Android.</string>

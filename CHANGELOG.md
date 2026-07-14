@@ -2,6 +2,20 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.12.0] - 2026-07-14
+
+### Added
+
+- Recipes: multi-ingredient saved meals, created and edited via a dedicated recipe builder, with one-tap logging of every ingredient as its own diary entry
+- Coach can propose logging food, weight, or water entries from chat; you confirm or discard before anything is saved
+- Barcode lookup caching for faster, offline-friendly repeat scans
+
+### Changed
+
+- Settings: removed the "What's New" section from About (changelog notes live on Codeberg releases instead)
+- Food analysis guidance refined to prefer non-gram serving units where appropriate
+- Wheel picker visual feedback aligned with Material3 design
+
 ## [1.11.0] - 2026-07-14
 
 ### Added
