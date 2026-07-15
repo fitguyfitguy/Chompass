@@ -36,11 +36,12 @@ private fun gb(bytes: Long): String = String.format(Locale.US, "%.1f GB", bytes 
  * model is present), a storage pre-check, download progress, and
  * delete/unload actions. Pause/resume isn't implemented — [onCancelDownload]
  * discards the partial file and a retry starts over; the model is a one-time
- * ~2.4GB fetch, so simple restart was judged not worth range-resume complexity.
+ * large fetch, so simple restart was judged not worth range-resume complexity.
  */
 @Composable
 internal fun OnDeviceModelSheet(
     container: AppContainer,
+    selectedModelId: String,
     onUnload: () -> Unit,
     onDelete: () -> Unit,
     onStartDownload: () -> Unit,
@@ -48,11 +49,11 @@ internal fun OnDeviceModelSheet(
     onSetOverWifiOnly: (Boolean) -> Unit,
 ) {
     val manager = container.onDeviceModelDownloadManager
-    val state by manager.state().collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
+    val entry = remember(selectedModelId) { ModelCatalog.forModelId(selectedModelId) }
+    val state by manager.state(selectedModelId).collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
     val overWifiOnly by container.prefs.onDeviceDownloadOverWifiOnly.collectAsState(initial = true)
-    val entry = ModelCatalog.current
     val isLoaded = container.onDeviceLlmGateway.isLoaded
-    val freeBytes = remember {
+    val freeBytes = remember(entry) {
         manager.modelsDir().mkdirs()
         StatFs(manager.modelsDir().path).availableBytes
     }
@@ -70,6 +71,15 @@ internal fun OnDeviceModelSheet(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
+        if (entry.modelId == ModelCatalog.E4B.modelId) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Larger and slower than E2B, but may give better food descriptions. " +
+                    "Pick E2B in Settings → Model if you prefer faster responses.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+            )
+        }
         Spacer(Modifier.height(12.dp))
 
         when (val current = state) {
@@ -77,7 +87,7 @@ internal fun OnDeviceModelSheet(
                 Text(
                     "Runs entirely on this device — nothing you type or photograph is sent to a server. " +
                         "Downloading fetches the model file directly from Hugging Face " +
-                        "(${ModelCatalog.MODEL_CARD_URL}), a third-party host not otherwise used by this app.",
+                        "(${entry.modelCardUrl}), a third-party host not otherwise used by this app.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -140,7 +150,7 @@ internal fun OnDeviceModelSheet(
                 Spacer(Modifier.height(12.dp))
                 if (isLoaded) {
                     TextButton(onClick = onUnload, modifier = Modifier.fillMaxWidth()) {
-                        Text("Unload model (frees ~2GB memory)")
+                        Text("Unload model (frees memory)")
                     }
                 }
                 TextButton(onClick = onDelete, modifier = Modifier.fillMaxWidth()) {

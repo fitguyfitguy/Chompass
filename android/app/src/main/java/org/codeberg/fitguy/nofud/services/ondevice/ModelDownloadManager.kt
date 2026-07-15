@@ -23,48 +23,64 @@ sealed class OnDeviceDownloadState {
  */
 class ModelDownloadManager(private val context: Context) {
 
-    fun modelFile(): File = File(modelsDir(), ModelCatalog.current.filename)
+    fun modelFile(entry: OnDeviceModelEntry = ModelCatalog.default): File =
+        File(modelsDir(), entry.filename)
 
-    fun isDownloaded(): Boolean = modelFile().exists()
+    fun isDownloaded(entry: OnDeviceModelEntry = ModelCatalog.default): Boolean =
+        modelFile(entry).exists()
 
     fun modelsDir(): File = File(context.filesDir, "models")
 
-    fun startDownload(overWifiOnly: Boolean) {
-        ModelDownloadWorker.enqueue(context, overWifiOnly)
+    fun startDownload(entry: OnDeviceModelEntry, overWifiOnly: Boolean) {
+        ModelDownloadWorker.enqueue(context, entry, overWifiOnly)
     }
 
     fun cancelDownload() {
         WorkManager.getInstance(context).cancelUniqueWork(ModelDownloadWorker.UNIQUE_NAME)
     }
 
-    fun delete(): Boolean {
+    fun delete(entry: OnDeviceModelEntry = ModelCatalog.default): Boolean {
         cancelDownload()
-        val file = modelFile()
-        val partFile = File(modelsDir(), "${ModelCatalog.current.filename}.part")
+        val file = modelFile(entry)
+        val partFile = File(modelsDir(), "${entry.filename}.part")
         partFile.delete()
         return !file.exists() || file.delete()
     }
 
-    /** Live download state, driven by [ModelDownloadWorker]'s progress + WorkManager state. */
-    fun state(): Flow<OnDeviceDownloadState> =
-        WorkManager.getInstance(context)
+    /** Live download state for [modelId], driven by [ModelDownloadWorker] + WorkManager. */
+    fun state(modelId: String): Flow<OnDeviceDownloadState> {
+        val entry = ModelCatalog.forModelId(modelId)
+        return WorkManager.getInstance(context)
             .getWorkInfosForUniqueWorkFlow(ModelDownloadWorker.UNIQUE_NAME)
-            .map { infos ->
-                val info = infos.firstOrNull()
-                when {
-                    info == null -> if (isDownloaded()) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
-                    info.state == WorkInfo.State.RUNNING -> {
-                        val percent = info.progress.getInt(ModelDownloadWorker.PROGRESS_PERCENT, 0)
-                        if (percent >= 100) OnDeviceDownloadState.Verifying else OnDeviceDownloadState.Downloading(percent)
-                    }
-                    info.state == WorkInfo.State.ENQUEUED -> OnDeviceDownloadState.Downloading(0)
-                    info.state == WorkInfo.State.SUCCEEDED -> OnDeviceDownloadState.Downloaded
-                    info.state == WorkInfo.State.FAILED -> {
-                        val reason = info.outputData.getString(ModelDownloadWorker.FAILURE_REASON)
-                        OnDeviceDownloadState.Failed(reason ?: "Download failed")
-                    }
-                    info.state == WorkInfo.State.CANCELLED -> OnDeviceDownloadState.NotDownloaded
-                    else -> if (isDownloaded()) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+            .map { infos -> mapWorkState(infos.firstOrNull(), entry) }
+    }
+
+    private fun mapWorkState(info: WorkInfo?, entry: OnDeviceModelEntry): OnDeviceDownloadState {
+        val activeVersion = info?.tags
+            ?.firstOrNull { it.startsWith("model:") }
+            ?.removePrefix("model:")
+        val workMatchesEntry = activeVersion == null || activeVersion == entry.version
+        return when {
+            info == null -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+            !workMatchesEntry -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+            info.state == WorkInfo.State.RUNNING -> {
+                val percent = info.progress.getInt(ModelDownloadWorker.PROGRESS_PERCENT, 0)
+                if (percent >= 100) OnDeviceDownloadState.Verifying else OnDeviceDownloadState.Downloading(percent)
+            }
+            info.state == WorkInfo.State.ENQUEUED -> OnDeviceDownloadState.Downloading(0)
+            info.state == WorkInfo.State.SUCCEEDED -> {
+                if (ModelCatalog.forVersion(activeVersion) == entry || isDownloaded(entry)) {
+                    OnDeviceDownloadState.Downloaded
+                } else {
+                    OnDeviceDownloadState.NotDownloaded
                 }
             }
+            info.state == WorkInfo.State.FAILED -> {
+                val reason = info.outputData.getString(ModelDownloadWorker.FAILURE_REASON)
+                OnDeviceDownloadState.Failed(reason ?: "Download failed")
+            }
+            info.state == WorkInfo.State.CANCELLED -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+            else -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+        }
+    }
 }

@@ -105,7 +105,7 @@ internal fun SettingsAiSection(
                 }
                 if (ui.selectedAI == AIProvider.ON_DEVICE) {
                     HorizontalDivider()
-                    val downloadState by vm.container.onDeviceModelDownloadManager.state()
+                    val downloadState by vm.container.onDeviceModelDownloadManager.state(ui.selectedModel)
                         .collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
                     val ready = downloadState is OnDeviceDownloadState.Downloaded
                     SettingRow(

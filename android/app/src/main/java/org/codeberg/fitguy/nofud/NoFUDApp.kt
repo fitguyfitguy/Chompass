@@ -158,7 +158,7 @@ class AppContainer(app: NoFUDApp) {
     val chatRepository = ChatRepository(prefs)
     val waterRepository = WaterRepository(prefs)
 
-    val onDeviceLlmGateway = OnDeviceLlmGateway(appContext)
+    val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
     val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
     val chatService = ChatService(prefs, keyStore, foodAnalysis)

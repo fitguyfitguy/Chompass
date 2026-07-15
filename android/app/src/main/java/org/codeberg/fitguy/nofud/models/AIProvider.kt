@@ -132,8 +132,8 @@ enum class AIProvider {
             "moondream"
         )
         CUSTOM_OPENAI -> emptyList()
-        // Single bundled model — see services/ondevice/ModelCatalog.kt.
-        ON_DEVICE -> listOf("gemma-4-E2B-it")
+        // Downloadable on-device models — see services/ondevice/ModelCatalog.kt.
+        ON_DEVICE -> listOf("gemma-4-E2B-it", "gemma-4-E4B-it")
     }
 
     val defaultModel: String get() = models.firstOrNull() ?: ""

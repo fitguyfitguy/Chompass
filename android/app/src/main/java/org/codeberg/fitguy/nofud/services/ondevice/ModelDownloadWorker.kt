@@ -29,7 +29,7 @@ class ModelDownloadWorker(
 
     override suspend fun doWork(): Result {
         val container = (applicationContext as? NoFUDApp)?.container
-        val entry = ModelCatalog.current
+        val entry = ModelCatalog.forVersion(inputData.getString(MODEL_VERSION)) ?: ModelCatalog.default
         val modelsDir = File(applicationContext.filesDir, "models").apply { mkdirs() }
         val target = File(modelsDir, entry.filename)
         val partFile = File(modelsDir, "${entry.filename}.part")
@@ -41,7 +41,7 @@ class ModelDownloadWorker(
         }
 
         return try {
-            downloadWithProgress(entry.downloadUrl, partFile)
+            downloadWithProgress(entry, partFile)
             setProgress(workDataOf(PROGRESS_PERCENT to 100))
             if (!verifySha256(partFile, entry.sha256)) {
                 partFile.delete()
@@ -61,12 +61,12 @@ class ModelDownloadWorker(
         }
     }
 
-    private fun downloadWithProgress(url: String, dest: File) {
-        val request = Request.Builder().url(url).build()
+    private fun downloadWithProgress(entry: OnDeviceModelEntry, dest: File) {
+        val request = Request.Builder().url(entry.downloadUrl).build()
         FoodAnalysisService.defaultClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("HTTP ${response.code} downloading model")
             val body = response.body ?: throw IOException("Empty response body downloading model")
-            val total = body.contentLength().takeIf { it > 0 } ?: ModelCatalog.current.sizeBytes
+            val total = body.contentLength().takeIf { it > 0 } ?: entry.sizeBytes
             dest.outputStream().use { out ->
                 body.byteStream().use { input ->
                     val buffer = ByteArray(64 * 1024)
@@ -112,11 +112,14 @@ class ModelDownloadWorker(
 
     companion object {
         const val UNIQUE_NAME = "ondevice_model_download"
+        const val MODEL_VERSION = "modelVersion"
         const val PROGRESS_PERCENT = "progressPercent"
         const val FAILURE_REASON = "failureReason"
 
-        fun enqueue(context: Context, overWifiOnly: Boolean) {
+        fun enqueue(context: Context, entry: OnDeviceModelEntry, overWifiOnly: Boolean) {
             val request = OneTimeWorkRequestBuilder<ModelDownloadWorker>()
+                .setInputData(workDataOf(MODEL_VERSION to entry.version))
+                .addTag(modelTag(entry.version))
                 .setConstraints(
                     Constraints.Builder()
                         .setRequiredNetworkType(if (overWifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED)
@@ -125,9 +128,11 @@ class ModelDownloadWorker(
                 .build()
             WorkManager.getInstance(context).enqueueUniqueWork(
                 UNIQUE_NAME,
-                ExistingWorkPolicy.KEEP,
+                ExistingWorkPolicy.REPLACE,
                 request,
             )
         }
+
+        fun modelTag(version: String): String = "model:$version"
     }
 }
