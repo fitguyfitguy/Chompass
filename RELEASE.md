@@ -96,6 +96,15 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0   # dry-run first with --dry-run
 ```
 
+**Free more space** by removing disabled **play-flavor** APKs (`NoFUD-play-*`). F-Droid and legacy universal APKs are kept:
+
+```bash
+./scripts/manage_release_assets.sh prune-play-assets --dry-run
+./scripts/manage_release_assets.sh prune-play-assets -y
+```
+
+See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+
 **Publish** uploads in batches (release APKs → checksums). If a run stops mid-way, resume without recreating the release:
 
 ```bash
