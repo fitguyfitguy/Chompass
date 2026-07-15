@@ -7,6 +7,8 @@ sealed class AiError(message: String) : Exception(message) {
     object InvalidResponse : AiError("Could not understand the AI response. Please try again.")
     class Api(raw: String) : AiError(raw)
     class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.")
+    object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.")
+    object OnDeviceUnsupportedDevice : AiError("This device doesn't meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.")
 }
 
 internal fun friendlyMessage(status: Int, raw: String): String {

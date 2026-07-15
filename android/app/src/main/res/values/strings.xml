@@ -139,6 +139,7 @@
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Local)</string>
     <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
+    <string name="ai_provider_on_device">On-Device (Private)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="ai_key_placeholder_gemini">AIza...</string>
@@ -676,6 +677,9 @@
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Custom base URL</string>
     <string name="settings_clear_key">Clear key</string>
+    <string name="settings_on_device_model">Model</string>
+    <string name="settings_on_device_model_ready">Downloaded</string>
+    <string name="settings_on_device_model_not_downloaded">Not downloaded</string>
 
     <!-- Custom AI Instructions + Fallback Provider (v1.0.6) -->
     <string name="settings_section_custom_instructions">Custom AI Instructions</string>

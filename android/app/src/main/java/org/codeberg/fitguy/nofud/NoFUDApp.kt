@@ -25,6 +25,8 @@ import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
 import org.codeberg.fitguy.nofud.services.health.HealthSyncWorker
 import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
+import org.codeberg.fitguy.nofud.services.ondevice.ModelDownloadManager
+import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceLlmGateway
 import org.codeberg.fitguy.nofud.services.speech.SpeechService
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
@@ -156,7 +158,9 @@ class AppContainer(app: NoFUDApp) {
     val chatRepository = ChatRepository(prefs)
     val waterRepository = WaterRepository(prefs)
 
-    val foodAnalysis = FoodAnalysisService(prefs, keyStore)
+    val onDeviceLlmGateway = OnDeviceLlmGateway(appContext)
+    val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
+    val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
     val chatService = ChatService(prefs, keyStore, foodAnalysis)
     val speechService = SpeechService(prefs, keyStore)
 

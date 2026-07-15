@@ -175,6 +175,12 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSelectedSpeechProvider(p: SpeechProvider) = setSelectedSpeechProviderImpl(p)
     fun selectedSpeechLanguage(provider: SpeechProvider): Flow<SpeechLanguage> = selectedSpeechLanguageImpl(provider)
     suspend fun setSelectedSpeechLanguage(provider: SpeechProvider, language: SpeechLanguage) = setSelectedSpeechLanguageImpl(provider, language)
+    val onDeviceModelDownloadedVersion: Flow<String?> get() = onDeviceModelDownloadedVersionImpl
+    suspend fun setOnDeviceModelDownloadedVersion(version: String?) = setOnDeviceModelDownloadedVersionImpl(version)
+    val onDeviceDownloadOverWifiOnly: Flow<Boolean> get() = onDeviceDownloadOverWifiOnlyImpl
+    suspend fun setOnDeviceDownloadOverWifiOnly(v: Boolean) = setOnDeviceDownloadOverWifiOnlyImpl(v)
+    val onDeviceFeatureVisible: Flow<Boolean> get() = onDeviceFeatureVisibleImpl
+    suspend fun setOnDeviceFeatureVisible(v: Boolean) = setOnDeviceFeatureVisibleImpl(v)
     val foodEntries: Flow<List<FoodEntry>> get() = foodEntriesImpl
     fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = foodEntriesForMonthImpl(month)
     suspend fun applyFoodEntryBucketChanges(

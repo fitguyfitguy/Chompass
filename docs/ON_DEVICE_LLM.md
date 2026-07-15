@@ -1,8 +1,24 @@
-# On-device LLM smoke test (Gemma 4 E2B-it)
+# On-device LLM (Gemma 4 E2B-it)
 
-Debug-only proof of concept for running **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developers.google.com/edge/litert-lm/android). Validates food-analysis JSON extraction (Tier A), **food photo analysis (Tier B)**, and Coach tool-calling (Tier C) on real hardware before any production integration.
+Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developers.google.com/edge/litert-lm/android). Originally a debug-only proof of concept validating food-analysis JSON extraction (Tier A), food photo analysis (Tier B), and Coach tool-calling (Tier C); Tier A (text) and Tier B (photo) are now wired into production dispatch as `AIProvider.ON_DEVICE`, gated behind a default-off Settings toggle (`onDeviceFeatureVisible`).
 
-**Status (2026-07-14):** Smoke test **passes end-to-end** on **Pixel 9a / GrapheneOS** with GPU backend (`litertlm-android` **0.14.0**). **Tier B vision + daily matrix complete** (runs 1 and 4 recorded). Recommended daily-driver: **`preset=daily`** (`gpu` + `fewshot_units` + MTP when cache warm). Not wired into Settings or production AI dispatch — debug builds only.
+**Status (2026-07-15):** Smoke test **passes end-to-end** on **Pixel 9a / GrapheneOS** with GPU backend (`litertlm-android` **0.14.0**). **Tier B vision + daily matrix complete** (runs 1 and 4 recorded). Recommended daily-driver: **`preset=daily`** (`gpu` + `fewshot_units` + MTP when cache warm).
+
+**Device coverage note:** all validation above — and the production integration's device-capability gate ([`OnDeviceCapability.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceCapability.kt), 6GB RAM floor) — is based on **Pixel 9a only**. The production plan's Phase 0 called for a second, lower/mid-tier non-Tensor device to validate the CPU-backend fallback path before shipping; that pass was explicitly skipped for this integration. The RAM floor and CPU-fallback latency are provisional until a second device is tested. Settings surfaces this via a note in the on-device model download sheet ("Tested on Pixel 9a (GrapheneOS)...").
+
+## Production integration (Milestone 1: Tier A)
+
+| Piece | File |
+|-------|------|
+| Provider enum | [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt) — `ON_DEVICE` / `ApiFormat.ON_DEVICE` |
+| Model catalog | [`ModelCatalog.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/ModelCatalog.kt) — HF repo, filename, sha256, size |
+| Download | [`ModelDownloadManager.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/ModelDownloadManager.kt) / [`ModelDownloadWorker.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/ModelDownloadWorker.kt) — WorkManager, streamed OkHttp download, SHA-256 verify, atomic rename into `filesDir/models/` |
+| Capability gate | [`OnDeviceCapability.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceCapability.kt) — ABI + RAM floor |
+| Engine lifecycle | [`OnDeviceLlmGateway.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceLlmGateway.kt) — process-scoped lazy singleton, explicit unload |
+| Dispatch | [`FoodAnalysisService.dispatch()`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt) via [`OnDeviceLlmDispatchClient.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/OnDeviceLlmDispatchClient.kt) |
+| Settings UX | [`SettingsAiSection.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/ui/settings/SettingsAiSection.kt) / [`OnDeviceModelSheet.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/ui/settings/OnDeviceModelSheet.kt) |
+
+`OnDeviceLlmDispatchClient` routes to `generateWithImage` whenever an image is attached, so Tier B (photo) flows through the same dispatch path as Tier A — but it hasn't been re-validated against this specific pipeline (only against the debug smoke test harness), and the vision-enabled engine is a separate, larger load than text-only. Treat Tier B as untested-in-production until it gets its own pass. Not yet done: Tier C (Coach tool-calling), the `onDeviceFeatureVisible` flag flipping to default-on, and F-Droid packaging (currently `implementation` for both flavors pending an F-Droid policy check — see `build.gradle.kts` comment).
 
 ---
 
