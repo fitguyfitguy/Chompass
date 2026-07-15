@@ -2,6 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.1] - 2026-07-15
+
+### Fixed
+
+- On-device AI: photo analysis with the E4B model could get the app killed by the OS on lower-memory devices (GPU text + GPU vision loaded simultaneously). E4B photo analysis now runs text on CPU / vision on GPU, and a memory preflight check blocks the request with a clear in-app message instead of risking a silent kill when free memory is too low. On-device images are also downscaled further (1024px) before vision inference to reduce memory pressure.
+
 ## [1.14.0] - 2026-07-15
 
 ### Added

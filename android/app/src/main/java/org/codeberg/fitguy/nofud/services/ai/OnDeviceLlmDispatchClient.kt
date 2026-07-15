@@ -11,6 +11,9 @@ import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceLlmGateway
  * sends one image per analysis.
  */
 object OnDeviceLlmDispatchClient {
+    /** Tighter than [AiImageBytes.UPLOAD_MAX_DIMENSION] — shrinks vision-encoder memory pressure on-device. */
+    private const val ON_DEVICE_VISION_MAX_DIMENSION = 1024
+
     suspend fun analyze(
         gateway: OnDeviceLlmGateway,
         prompt: String,
@@ -18,6 +21,10 @@ object OnDeviceLlmDispatchClient {
     ): String = if (imageBytesList.isEmpty()) {
         gateway.generate(systemPrompt = "", userPrompt = prompt)
     } else {
-        gateway.generateWithImage(userPrompt = prompt, imageBytes = imageBytesList.first())
+        val imageBytes = AiImageBytes.jpegForUpload(
+            imageBytesList.first(),
+            maxDimension = ON_DEVICE_VISION_MAX_DIMENSION,
+        )
+        gateway.generateWithImage(userPrompt = prompt, imageBytes = imageBytes)
     }
 }

@@ -38,8 +38,12 @@ class OnDeviceLlmGateway(
         return engine.generate(systemPrompt, userPrompt)
     }
 
-    /** Tier B call with a single image. Throws if the model isn't downloaded. */
+    /** Tier B call with a single image. Throws if the model isn't downloaded or free memory is too low. */
     suspend fun generateWithImage(userPrompt: String, imageBytes: ByteArray, systemPrompt: String = ""): String {
+        val entry = selectedEntry()
+        if (!OnDeviceCapability.hasEnoughAvailableMemoryForVision(context, entry)) {
+            throw AiError.OnDeviceLowMemory
+        }
         val engine = ensureEngine(vision = true)
         return engine.generateWithImage(userPrompt, imageBytes, systemPrompt)
     }
@@ -78,7 +82,7 @@ class OnDeviceLlmGateway(
             val created = OnDeviceLlmClient(
                 modelPath = modelPath,
                 cacheDir = cacheDir,
-                backend = OnDeviceCapability.preferredBackend(context),
+                backend = OnDeviceCapability.preferredBackend(context, entry, vision),
                 enableVision = vision,
             )
             created.ensureLoaded()
