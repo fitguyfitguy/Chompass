@@ -171,6 +171,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSelectedFallbackProvider(p: AIProvider) = setSelectedFallbackProviderImpl(p)
     val selectedFallbackModel: Flow<String?> get() = selectedFallbackModelImpl
     suspend fun setSelectedFallbackModel(model: String) = setSelectedFallbackModelImpl(model)
+    val geminiGoogleSearchEnabled: Flow<Boolean> get() = geminiGoogleSearchEnabledImpl
+    suspend fun setGeminiGoogleSearchEnabled(v: Boolean) = setGeminiGoogleSearchEnabledImpl(v)
     val selectedSpeechProvider: Flow<SpeechProvider> get() = selectedSpeechProviderImpl
     suspend fun setSelectedSpeechProvider(p: SpeechProvider) = setSelectedSpeechProviderImpl(p)
     fun selectedSpeechLanguage(provider: SpeechProvider): Flow<SpeechLanguage> = selectedSpeechLanguageImpl(provider)

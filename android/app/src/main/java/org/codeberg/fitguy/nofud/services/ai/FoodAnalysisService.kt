@@ -504,6 +504,7 @@ class FoodAnalysisService(
         val primaryKey = keyStore!!.apiKey(primary)
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
+        val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
         val aiImages = if (imageBytesList.isEmpty()) {
             imageBytesList
         } else {
@@ -514,10 +515,10 @@ class FoodAnalysisService(
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
         return try {
-            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages, maxTokens)
+            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch)
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
-            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages, maxTokens)
+            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch)
         }
     }
 
@@ -672,7 +673,8 @@ class FoodAnalysisService(
         apiKey: String?,
         prompt: String,
         imageBytesList: List<ByteArray>,
-        maxTokens: Int
+        maxTokens: Int,
+        geminiGoogleSearch: Boolean,
     ): String {
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
@@ -680,9 +682,10 @@ class FoodAnalysisService(
         }
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
+        val enableGoogleSearch = provider.apiFormat == AIProvider.ApiFormat.GEMINI && geminiGoogleSearch
         return when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI ->
-                GeminiClient.analyze(okHttp, baseUrl, model, apiKey!!, prompt, imageBytesList)
+                GeminiClient.analyze(okHttp, baseUrl, model, apiKey!!, prompt, imageBytesList, enableGoogleSearch)
             AIProvider.ApiFormat.ANTHROPIC ->
                 AnthropicClient.analyze(okHttp, baseUrl, model, apiKey!!, prompt, imageBytesList, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE ->

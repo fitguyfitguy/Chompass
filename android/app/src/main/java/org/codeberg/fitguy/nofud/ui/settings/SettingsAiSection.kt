@@ -38,7 +38,7 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Straighten
@@ -131,6 +131,24 @@ internal fun SettingsAiSection(
                         ui.maxResponseTokens.toString(),
                         icon = Icons.Outlined.Numbers
                     ) { onOpenSheet(SettingsSheet.MAX_TOKENS) }
+                }
+                val showGeminiSearch = ui.selectedAI == AIProvider.GEMINI ||
+                    (ui.fallbackEnabled && ui.fallbackProvider == AIProvider.GEMINI)
+                if (showGeminiSearch) {
+                    HorizontalDivider()
+                    ToggleRow(
+                        stringResource(R.string.settings_gemini_google_search),
+                        ui.geminiGoogleSearchEnabled,
+                        icon = Icons.Outlined.Search,
+                        onChange = { vm.setGeminiGoogleSearchEnabled(it) }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.settings_gemini_google_search_footer),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
                 }
                 HorizontalDivider()
                 SettingRow(

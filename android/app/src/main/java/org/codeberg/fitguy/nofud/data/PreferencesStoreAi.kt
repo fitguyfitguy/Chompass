@@ -89,6 +89,14 @@ internal suspend fun PreferencesStore.setSelectedFallbackModelImpl(model: String
         dataStore.edit { it[Keys.FALLBACK_MODEL] = AIProvider.normalizeModelId(model) }
     }
 
+    /** When true, Gemini generateContent requests include the google_search grounding tool. */
+internal val PreferencesStore.geminiGoogleSearchEnabledImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false
+    }
+internal suspend fun PreferencesStore.setGeminiGoogleSearchEnabledImpl(v: Boolean) {
+        dataStore.edit { it[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] = v }
+    }
+
     // -- Speech Provider selection ---------------------------------------
 internal val PreferencesStore.selectedSpeechProviderImpl: Flow<SpeechProvider> get() = dataStore.data.map {
         val raw = it[Keys.SELECTED_SPEECH_PROVIDER]

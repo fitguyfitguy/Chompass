@@ -87,9 +87,10 @@ class ChatService(
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         val maxTokens = prefs.maxResponseTokens.first()
+        val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
 
         val reply = when (provider.apiFormat) {
-            AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes)
+            AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch)
             AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens)
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable — guarded above")
@@ -393,10 +394,11 @@ class ChatService(
         history: List<ChatMessage>,
         newUserMessage: String,
         tools: CoachTools,
-        imageBytes: ByteArray?
+        imageBytes: ByteArray?,
+        enableGoogleSearch: Boolean,
     ): String {
         val url = "$baseUrl/models/$model:generateContent"
-        // Gemini tool schema: tools=[{functionDeclarations:[{name,description,parameters}]}]
+        // Gemini tool schema: tools=[{google_search?}, {functionDeclarations:[{name,description,parameters}]}]
         val declarations = JSONArray()
         for (name in CoachTools.TOOL_NAMES) {
             declarations.put(JSONObject().apply {
@@ -405,7 +407,6 @@ class ChatService(
                 put("parameters", parametersSchemaFor(name))
             })
         }
-        val toolsObj = JSONObject().put("functionDeclarations", declarations)
 
         // Build the contents list (history + new user). Each turn's parts may
         // be either text or function_call / function_response.
@@ -426,7 +427,7 @@ class ChatService(
             val body = JSONObject().apply {
                 put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt))))
                 put("contents", contents)
-                put("tools", JSONArray().put(toolsObj))
+                GeminiClient.buildToolsArray(enableGoogleSearch, declarations)?.let { put("tools", it) }
             }
             val raw = RetryPolicy.execute {
                 okHttp.newCall(

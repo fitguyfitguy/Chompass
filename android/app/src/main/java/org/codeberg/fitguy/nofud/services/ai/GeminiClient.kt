@@ -12,11 +12,26 @@ import java.util.Base64
  * Gemini format:
  *   POST <base>/models/<model>:generateContent
  *   Header: X-goog-api-key: <apiKey>
- *   Body:   {systemInstruction?, contents: [{role?, parts: [...]}]}
+ *   Body:   {systemInstruction?, contents: [{role?, parts: [...]}], tools?}
  */
 object GeminiClient {
 
     private val jsonMedia = "application/json; charset=utf-8".toMediaType()
+
+    internal fun googleSearchTool(): JSONObject =
+        JSONObject().put("google_search", JSONObject())
+
+    internal fun buildToolsArray(
+        enableGoogleSearch: Boolean,
+        functionDeclarations: JSONArray? = null,
+    ): JSONArray? {
+        val tools = JSONArray()
+        if (enableGoogleSearch) tools.put(googleSearchTool())
+        if (functionDeclarations != null && functionDeclarations.length() > 0) {
+            tools.put(JSONObject().put("functionDeclarations", functionDeclarations))
+        }
+        return if (tools.length() > 0) tools else null
+    }
 
     suspend fun analyze(
         client: OkHttpClient,
@@ -24,7 +39,8 @@ object GeminiClient {
         model: String,
         apiKey: String,
         prompt: String,
-        imageBytesList: List<ByteArray>
+        imageBytesList: List<ByteArray>,
+        enableGoogleSearch: Boolean = false,
     ): String {
         val url = "$baseUrl/models/$model:generateContent"
 
@@ -44,6 +60,7 @@ object GeminiClient {
 
         val body = JSONObject().apply {
             put("contents", JSONArray().put(JSONObject().put("parts", parts)))
+            buildToolsArray(enableGoogleSearch)?.let { put("tools", it) }
         }
 
         val requestBody = body.toString().toRequestBody(jsonMedia)
@@ -71,7 +88,8 @@ object GeminiClient {
         apiKey: String,
         systemPrompt: String,
         history: List<Pair<String, String>>, // (role, content) role in {"user","model"}
-        userMessage: String
+        userMessage: String,
+        enableGoogleSearch: Boolean = false,
     ): String {
         val url = "$baseUrl/models/$model:generateContent"
 
@@ -95,6 +113,7 @@ object GeminiClient {
                 JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt)))
             )
             put("contents", contents)
+            buildToolsArray(enableGoogleSearch)?.let { put("tools", it) }
         }
 
         val requestBody = body.toString().toRequestBody(jsonMedia)
