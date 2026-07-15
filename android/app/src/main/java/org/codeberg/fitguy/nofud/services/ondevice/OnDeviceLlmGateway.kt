@@ -38,10 +38,16 @@ class OnDeviceLlmGateway(
         return engine.generate(systemPrompt, userPrompt)
     }
 
-    /** Tier B call with a single image. Throws if the model isn't downloaded or free memory is too low. */
+    /**
+     * Tier B call with a single image. Throws if the model isn't downloaded, or — for E4B
+     * specifically, the one combination known to OOM-kill the process on GPU+GPU vision — if
+     * free memory is too low. E2B+vision runs GPU+GPU unchanged and doesn't need this guard.
+     */
     suspend fun generateWithImage(userPrompt: String, imageBytes: ByteArray, systemPrompt: String = ""): String {
         val entry = selectedEntry()
-        if (!OnDeviceCapability.hasEnoughAvailableMemoryForVision(context, entry)) {
+        if (entry.modelId == ModelCatalog.E4B.modelId &&
+            !OnDeviceCapability.hasEnoughAvailableMemoryForVision(context, entry)
+        ) {
             throw AiError.OnDeviceLowMemory
         }
         val engine = ensureEngine(vision = true)
