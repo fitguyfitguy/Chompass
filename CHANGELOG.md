@@ -2,6 +2,17 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.0] - 2026-07-15
+
+### Added
+
+- **On-device AI (opt-in):** Settings → AI Provider → **On-Device (Private)** runs food text and photo analysis locally via Gemma 4 (E2B or E4B). Download the model once from Hugging Face (~2.4–3.4 GB); nothing you log is sent to a server. Automatic cloud fallback when Fallback Provider is enabled.
+- Clear accuracy disclosures in Settings: on-device models are much smaller than cloud AI (Gemini, GPT, Claude, etc.) and often misread portions, brands, and photos.
+
+### Changed
+
+- On-device provider is now visible on supported devices (arm64/x86_64, 6 GB+ RAM) instead of being hidden behind an internal rollout flag.
+
 ## [1.13.0] - 2026-07-15
 
 ### Added
