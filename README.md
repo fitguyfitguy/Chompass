@@ -2,17 +2,20 @@
 
 <img src="android/app/src/main/res/drawable-nodpi/ic_logo_teal.png" alt="NoFUD teal icon" width="120" />
 
-**Ad-free AI calorie tracker for Android.** Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai). Lean app, open exports, Health Connect for scales and wearables.
+**Ad-free AI calorie tracker for Android.** Cloud BYOK or opt-in on-device Gemma 4 inference. Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai). Lean app, open exports, Health Connect for scales and wearables.
 
 NoFUD started in July 2026 when upstream Fud AI [added banner ads (AdMob)](https://github.com/apoorvdarshan/fud-ai/releases). Upstream removed ads again in 3.0.3. This fork keeps its own roadmap: Android-first UX, smaller APK (no workout library or ad SDKs), snappier UI, open export/import, and [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for live data from scales, phones, and wearables.
 
-Snap, speak, scan, share, or type your food with your own AI provider key. Same BYOK model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). No account, no cloud sync. No banner ads in NoFUD.
+Snap, speak, scan, share, or type your food with cloud AI (your own provider key) or opt-in on-device inference with Gemma 4 Edge models. Food text and photos stay on your phone.
+
+**Cloud (BYOK):** same model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). **On-Device (Private):** Settings → AI Provider → download Gemma 4 once (~2.4–3.4 GB); no API key, no server upload for food analysis. No account, no cloud sync. No banner ads in NoFUD.
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
 [![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
 [![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](PRIVACY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![Health Connect](https://img.shields.io/badge/Health-Connect-4285F4?style=flat-square)](https://developer.android.com/health-and-fitness/guides/health-connect)
+[![On-device AI](https://img.shields.io/badge/On--device%20AI-Opt--in%20(Gemma%204)-9C27B0?style=flat-square)](#on-device-ai-private)
 
 > **Android only.** iOS is not supported yet.  
 > **Project home:** [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD)
@@ -52,7 +55,7 @@ Material 3 **dark theme** (light theme is also available). Images in [`docs/scre
     </td>
     <td align="center">
       <img src="docs/screenshots/add-food.png" width="200" alt="Add food sheet in dark theme" /><br />
-      <sub><b>Add food</b>: photo, note, saved meals; voice, barcode, optional water quick-log</sub>
+      <sub><b>Add food</b>: photo, note, saved meals; voice, barcode; cloud or on-device AI</sub>
     </td>
   </tr>
   <tr>
@@ -74,6 +77,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 | Feature | Details |
 |---------|---------|
 | **Food logging** | Multi-photo capture (up to 10), share into app, voice, barcode, text, manual entry, saved meals; draft recovery if analysis is interrupted |
+| **On-device AI (opt-in)** | **On-Device (Private)** in Settings → AI Provider: Gemma 4 E2B or E4B runs food text and photo analysis locally via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android); one-time model download (~2.4–3.4 GB). Less accurate than cloud AI; optional fallback provider retries in the cloud |
 | **AI Coach** | Chat with your own provider key; optional fallback provider; replies follow the app language |
 | **Diet modes** | Including keto carb mode (goals, meal advice, and Coach stay in sync) |
 | **Progress** | Weight, body fat, calorie history, goals, steps/exercise, and wellness (sleep, HR, hydration) from Health Connect |
@@ -89,7 +93,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 
 **Priorities**
 
-- **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK AI ([PRIVACY.md](PRIVACY.md))
+- **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK cloud AI or opt-in on-device Gemma 4 inference ([PRIVACY.md](PRIVACY.md))
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect; `nofud://` meal share links
 - **Wearables:** Health Connect in/out for steps, exercise, weight, meals, sleep, hydration, energy burn (Gadgetbridge, openScale, Samsung Health, etc.)
 - **Lean scope:** no workouts tab or bundled exercise library; `play` and `fdroid` builds on Codeberg
@@ -102,6 +106,20 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 - **Extras:** keto/diet modes, fallback AI provider, audited nutrition math
 
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
+## On-device AI (private)
+
+**Settings → AI Provider → On-Device (Private)** runs food logging AI on your phone. No API key, no account, and nothing sent to a cloud provider for text or photo analysis.
+
+| | |
+|---|---|
+| **Models** | [Gemma 4 Edge](https://developers.google.com/edge/litert-lm/android) (E2B ~2.4 GB or E4B ~3.4 GB), downloaded once from Hugging Face |
+| **What stays local** | Food text and photo analysis when logging meals |
+| **Requirements** | arm64 or x86_64, 6 GB+ RAM (hidden on unsupported devices) |
+| **Accuracy** | On-device models are much smaller than cloud AI (Gemini, GPT, Claude, etc.) and often misread portions, brands, and photos. Cloud AI remains the recommended default |
+| **Fallback** | Enable **Fallback Provider** so a cloud model retries when on-device inference fails |
+
+Coach chat still requires a cloud provider. New in [v1.14.0](CHANGELOG.md#1140---2026-07-15).
 
 ## Health Connect
 
@@ -152,6 +170,7 @@ Weight and body data now import from a file too: **Settings → Import Weight & 
 | Android AI calorie tracking | Yes | Yes |
 | Banner ads (AdMob) | Added Jul 2026, removed in 3.0.3 | **Never shipped** |
 | Bring your own API key | Yes | Yes |
+| On-device private AI (Gemma 4 Edge) | No | **Yes** (opt-in, v1.14.0) |
 | Analytics / tracking SDKs | None | None |
 | Workouts tab + exercise library | Yes (~873 exercises, large APK) | **Omitted** (food tracking focus) |
 | Diet mode / keto carb mode | No | **Yes** |
@@ -182,7 +201,7 @@ On our Android debug perf baseline, recent Progress-screen work cut worst-frame 
 
 ## Privacy
 
-No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. AI requests go to the provider you configure (BYOK). See [PRIVACY.md](PRIVACY.md).
+No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go to the provider you configure (BYOK). **On-Device (Private)** keeps food text and photo analysis on the device; nothing is uploaded to a server. See [PRIVACY.md](PRIVACY.md).
 
 ## Attribution & license
 
