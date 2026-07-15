@@ -687,7 +687,7 @@
     <string name="on_device_model_privacy_notice">Runs entirely on this device — nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
     <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or non-Tensor hardware — haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
     <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads — especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>
-    <string name="on_device_model_e4b_notice">Larger and slower than E2B, but may give better food descriptions. Pick E2B in Settings → Model if you prefer faster responses.</string>
+    <string name="on_device_model_e4b_notice">Larger and slower than E2B, but may give better food descriptions. Photo analysis runs a CPU/GPU split for stability, so it may be noticeably slower than text-only. Pick E2B in Settings → Model if you prefer faster responses.</string>
     <string name="on_device_model_storage_short">Not enough free storage. Need at least %1$s free (have %2$s).</string>
     <string name="on_device_model_wifi_only">Download over Wi-Fi only</string>
     <string name="on_device_model_download">Download</string>
