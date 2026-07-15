@@ -176,3 +176,16 @@ Before shipping formula, constant, or guardrail changes:
 
 - `fdroid` release APKs with ML Kit barcode scanning: ~45 MB (universal and per-ABI splits are similar)
 - Play and fdroid flavors share the same barcode scanner; only Play Core (in-app review/update) is play-only
+
+## litertlm-android size delta (1.13.0)
+
+Measured via `devenv tasks run release:package` (full multi-ABI build, not `-PreleaseAbi`), comparing 1.12.0 → 1.13.0 (first release with `litertlm-android` as `implementation` for both flavors — see `build.gradle.kts`):
+
+| APK | 1.12.0 | 1.13.0 | Delta |
+|-----|--------|--------|-------|
+| `arm64-v8a` (play/fdroid) | ~28.5 MB | ~38.0 MB | **+9.5 MB** |
+| `x86_64` (play/fdroid) | ~28.8 MB | ~39.3 MB | **+10.5 MB** |
+| `armeabi-v7a` (play/fdroid) | ~28.2 MB | ~28.7 MB | +0.5 MB (no native litertlm lib for this ABI — delta is just new Kotlin/resources) |
+| universal (play/fdroid) | ~35.3 MB | ~54.8 MB | **+19.5 MB** (carries both arm64-v8a and x86_64 native libs) |
+
+The model itself (~2.4 GB) is never bundled — it's downloaded at runtime into `filesDir/models/`. This delta is entirely `liblitertlm_jni.so` (R8/debug-symbol stripping couldn't strip it — see the "Unable to strip the following libraries" build warning). Users on `armeabi-v7a`-only devices (rare) get the on-device feature's UI but no working backend, since there's no native lib for that ABI; `OnDeviceCapability.isSupported()` already excludes non-`arm64-v8a`/`x86_64` ABIs from the capability gate, so the Settings picker correctly hides `ON_DEVICE` for them.

@@ -2,6 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.13.0] - 2026-07-15
+
+### Added
+
+- Groundwork for on-device AI food analysis (Gemma 4 E2B-it, runs fully on-device with automatic cloud fallback) — not yet enabled for any users; still gated behind an internal rollout flag pending a second-device validation pass.
+
 ## [1.12.0] - 2026-07-14
 
 ### Added
