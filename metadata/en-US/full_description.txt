@@ -1,7 +1,18 @@
-NoFUD is an ad-free, privacy-focused fork of Fud AI - a calorie tracker powered by the AI provider you choose.
+NoFUD is an ad-free, privacy-focused calorie tracker forked from Fud AI. Log meals with photos, voice, barcode scans, or text. Bring your own cloud AI key (Google AI Studio, OpenRouter, etc.) or use optional on-device Gemma 4 inference — nothing is sent to a server unless you choose a cloud provider.
 
-Snap a photo, scan a barcode, speak, or type a meal to log calories, macros, and nutrients. Coach chat, a workouts library, Health Connect sync, home-screen widgets, and diary export are all included. Your data stays on your device; bring your own API key.
+<b>Food logging</b>
+• Multi-photo capture, share-into-app, voice, barcode, manual entry, saved meals and recipes
+• Open Food Facts barcode lookup
+• Optional on-device AI (Gemma 4 via LiteRT-LM): one-time model download, opt-in, arm64/x86_64 with 6 GB+ RAM
 
-No ads. No analytics. No accounts. MIT licensed.
+<b>Progress &amp; health</b>
+• Weight, body fat, calorie history, goals, steps and exercise
+• Health Connect sync (read/write meals, weight, body fat, height; read sleep, heart rate, hydration, energy)
+• Optional local water tracking and home-screen widgets
 
-Source: https://codeberg.org/fitguy/nofud
+<b>Privacy</b>
+• No ads, no analytics SDKs, no accounts
+• Local-first storage; encrypted API keys on device
+• Diary and body-metrics export (JSON, Markdown, CSV)
+
+MIT licensed. Source: https://codeberg.org/fitguy/nofud

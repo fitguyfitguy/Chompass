@@ -1,0 +1,1 @@
+Fixed on-device AI: the E4B memory guard in 1.14.1 no longer blocks E2B photo analysis. E4B photo analysis still uses CPU text + GPU vision and a memory preflight check on lower-RAM devices.
