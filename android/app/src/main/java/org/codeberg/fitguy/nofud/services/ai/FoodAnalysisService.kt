@@ -20,6 +20,7 @@ import org.codeberg.fitguy.nofud.services.WeightForecast
 import org.codeberg.fitguy.nofud.ui.home.EntryAnalysisPhase
 import org.codeberg.fitguy.nofud.ui.home.FoodAnalysisProgress
 import org.codeberg.fitguy.nofud.services.health.HealthEnergySummary
+import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceLlmGateway
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class FoodAnalysisService(
     private val prefs: PreferencesStore? = null,
     private val keyStore: KeyStore? = null,
     private val okHttp: OkHttpClient = defaultClient,
+    private val onDeviceGateway: OnDeviceLlmGateway? = null,
     internal val callAiDelegate: (suspend (prompt: String, imageBytesList: List<ByteArray>, op: String) -> String)? = null,
     internal val inferenceModeForTest: ServingUnitInferenceMode? = null,
 ) {
@@ -672,6 +674,10 @@ class FoodAnalysisService(
         imageBytesList: List<ByteArray>,
         maxTokens: Int
     ): String {
+        if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
+            val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
+            return OnDeviceLlmDispatchClient.analyze(gateway, prompt, imageBytesList)
+        }
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
         return when (provider.apiFormat) {
@@ -681,6 +687,7 @@ class FoodAnalysisService(
                 AnthropicClient.analyze(okHttp, baseUrl, model, apiKey!!, prompt, imageBytesList, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
                 OpenAICompatibleClient.analyze(okHttp, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens)
+            AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
     }
 

@@ -80,6 +80,10 @@ class ChatService(
         val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() } ?: provider.baseUrl
         val apiKey = keyStore.apiKey(provider)
 
+        // Coach tool-calling (Tier C) stays debug/experimental for on-device — see docs/ON_DEVICE_LLM.md.
+        if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
+            throw AiError.Api("Coach isn't available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.")
+        }
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         val maxTokens = prefs.maxResponseTokens.first()
@@ -88,6 +92,7 @@ class ChatService(
             AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes)
             AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens)
+            AIProvider.ApiFormat.ON_DEVICE -> error("unreachable — guarded above")
         }
         return ChatResult(
             reply = reply,

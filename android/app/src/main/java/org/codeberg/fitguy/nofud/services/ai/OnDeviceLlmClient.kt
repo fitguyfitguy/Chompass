@@ -29,10 +29,11 @@ fun Message.plainText(): String =
     contents.contents.filterIsInstance<Content.Text>().joinToString("") { it.text }
 
 /**
- * Debug-only wrapper around Google AI Edge's LiteRT-LM engine, used by
- * [org.codeberg.fitguy.nofud.services.OnDeviceLlmSmokeTest]. Deliberately NOT
- * wired into [org.codeberg.fitguy.nofud.models.AIProvider] /
- * [FoodAnalysisService] / [ChatService] dispatch.
+ * Wrapper around Google AI Edge's LiteRT-LM engine. Used both by the debug
+ * smoke test ([org.codeberg.fitguy.nofud.services.OnDeviceLlmSmokeTest]) and,
+ * in production, by [org.codeberg.fitguy.nofud.services.ondevice.OnDeviceLlmGateway]
+ * for the [org.codeberg.fitguy.nofud.models.AIProvider.ON_DEVICE] dispatch
+ * path (Tier A text; Tier B image; tool-calling stays debug/experimental).
  */
 class OnDeviceLlmClient(
     private val modelPath: String,

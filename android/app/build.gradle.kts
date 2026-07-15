@@ -198,9 +198,19 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    // On-device LLM debug smoke test (LiteRT-LM) — see docs/ON_DEVICE_LLM.md.
-    // Debug-only: keeps the native libs out of release/ABI-split APKs.
-    debugImplementation(libs.litertlm.android)
+    // On-device LLM (LiteRT-LM) — see docs/ON_DEVICE_LLM.md. Promoted from
+    // debugImplementation now that OnDeviceLlmClient backs the production
+    // ON_DEVICE dispatch path (behind the onDeviceFeatureVisible flag,
+    // default off). Whether litertlm-android + a runtime fetch of a
+    // non-buildable binary blob from Hugging Face clear F-Droid's guidelines
+    // is still an open question (production plan Phase 3) — if F-Droid
+    // rejects it, this needs to become "playImplementation" with
+    // OnDeviceLlmClient split into src/play + a src/fdroid stub, mirroring
+    // the mlkit.barcode.scanning flavor-scoping precedent. Not done here
+    // because that would also require splitting the debug smoke test
+    // (OnDeviceLlmSmokeTest.kt), which directly uses litertlm ToolSet/
+    // Conversation types for Tier C.
+    implementation(libs.litertlm.android)
 
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)

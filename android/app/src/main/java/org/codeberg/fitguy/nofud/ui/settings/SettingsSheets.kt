@@ -94,7 +94,7 @@ internal fun SettingsSheets(
             when (sheet) {
                 SettingsSheet.AI_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_ai_provider),
-                    items = AIProvider.values().toList(),
+                    items = AIProvider.values().filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable },
                     label = { stringResource(it.displayNameRes) },
                     selected = { it == ui.selectedAI },
                     onSelect = { vm.selectProvider(it); onDismiss() }
@@ -126,6 +126,14 @@ internal fun SettingsSheets(
                         onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() }
                     )
                 }
+                SettingsSheet.ON_DEVICE_MODEL -> OnDeviceModelSheet(
+                    container = vm.container,
+                    onUnload = vm::unloadOnDeviceModel,
+                    onDelete = vm::deleteOnDeviceModel,
+                    onStartDownload = vm::startOnDeviceModelDownload,
+                    onCancelDownload = vm::cancelOnDeviceModelDownload,
+                    onSetOverWifiOnly = vm::setOnDeviceDownloadOverWifiOnly,
+                )
                 SettingsSheet.MAX_TOKENS -> {
                     TextFieldSheet(
                         title = stringResource(R.string.settings_max_tokens),
@@ -183,7 +191,9 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.FALLBACK_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_ai_provider),
-                    items = AIProvider.values().toList(),
+                    // ON_DEVICE is never resolved as a fallback target (currentFallbackConfig
+                    // needs a real baseUrl) — cloud is the fallback direction, not the reverse.
+                    items = AIProvider.values().filter { it != AIProvider.ON_DEVICE },
                     label = { stringResource(it.displayNameRes) },
                     selected = { it == ui.fallbackProvider },
                     onSelect = { vm.selectFallbackProvider(it); onDismiss() }

@@ -23,6 +23,7 @@ import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WaterQuickPresets
 import org.codeberg.fitguy.nofud.models.WeightEntry
+import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceCapability
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
 import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
@@ -80,6 +81,8 @@ data class SettingsUiState(
     val adaptiveGoalAlertMessage: String? = null,
     val apiKeyMasked: String = "",
     val speechApiKeyMasked: String = "",
+    /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
+    val onDeviceAvailable: Boolean = false,
     val appearanceMode: String = "system",
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
     val glassBlurEnabled: Boolean = false,
@@ -149,6 +152,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val energyGoals = container.prefs.healthEnergyGoalsEnabled.first() && hc
             val backgroundSync = container.prefs.healthBackgroundSyncEnabled.first() && hc
             val adaptiveGoals = container.prefs.adaptiveGoalsEnabled.first()
+            val onDeviceAvailable = container.prefs.onDeviceFeatureVisible.first() &&
+                OnDeviceCapability.isSupported(container.appContext)
             val masked = maskKey(container.keyStore.apiKey(provider))
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val appearance = container.prefs.appearanceMode.first()
@@ -201,6 +206,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 adaptiveGoalsEnabled = adaptiveGoals,
                 apiKeyMasked = masked,
                 speechApiKeyMasked = speechMasked,
+                onDeviceAvailable = onDeviceAvailable,
                 appearanceMode = appearance,
                 appThemeColor = appThemeColor,
                 glassBlurEnabled = glassBlurEnabled,
@@ -403,6 +409,34 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val masked = maskKey(container.keyStore.apiKey(p))
             _ui.value = _ui.value.copy(selectedAI = p, selectedModel = p.defaultModel, apiKeyMasked = masked)
         }
+    }
+
+    /** Frees the resident on-device engine (~1-2GB) — Settings "Unload model" action. */
+    fun unloadOnDeviceModel() {
+        viewModelScope.launch { container.onDeviceLlmGateway.unload() }
+    }
+
+    fun deleteOnDeviceModel() {
+        viewModelScope.launch {
+            container.onDeviceLlmGateway.unload()
+            container.onDeviceModelDownloadManager.delete()
+            container.prefs.setOnDeviceModelDownloadedVersion(null)
+        }
+    }
+
+    fun startOnDeviceModelDownload() {
+        viewModelScope.launch {
+            val overWifiOnly = container.prefs.onDeviceDownloadOverWifiOnly.first()
+            container.onDeviceModelDownloadManager.startDownload(overWifiOnly)
+        }
+    }
+
+    fun cancelOnDeviceModelDownload() {
+        container.onDeviceModelDownloadManager.cancelDownload()
+    }
+
+    fun setOnDeviceDownloadOverWifiOnly(v: Boolean) {
+        viewModelScope.launch { container.prefs.setOnDeviceDownloadOverWifiOnly(v) }
     }
 
     fun selectModel(m: String) {

@@ -97,4 +97,7 @@ internal object Keys {
         val TEST_SEED_BACKUP = stringPreferencesKey("test_seed_backup_v1")
         val DEBUG_ACTIVITY_DAYS = stringPreferencesKey("debugActivityDays")
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
+        val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
+        val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")
+        val ON_DEVICE_FEATURE_VISIBLE = booleanPreferencesKey("onDeviceFeatureVisible")
 }

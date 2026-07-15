@@ -19,7 +19,8 @@ enum class AIProvider {
     @SerialName("DeepInfra") DEEP_INFRA,
     @SerialName("Mistral") MISTRAL,
     @SerialName("Ollama (Local)") OLLAMA,
-    @SerialName("Custom (OpenAI-compatible)") CUSTOM_OPENAI;
+    @SerialName("Custom (OpenAI-compatible)") CUSTOM_OPENAI,
+    @SerialName("On-Device (Private)") ON_DEVICE;
 
     @get:StringRes
     val displayNameRes: Int get() = when (this) {
@@ -36,6 +37,7 @@ enum class AIProvider {
         MISTRAL -> R.string.ai_provider_mistral
         OLLAMA -> R.string.ai_provider_ollama
         CUSTOM_OPENAI -> R.string.ai_provider_custom
+        ON_DEVICE -> R.string.ai_provider_on_device
     }
 
     val baseUrl: String get() = when (this) {
@@ -52,6 +54,8 @@ enum class AIProvider {
         MISTRAL -> "https://api.mistral.ai/v1"
         OLLAMA -> "http://localhost:11434/v1"
         CUSTOM_OPENAI -> ""
+        // No network call — handled specially in FoodAnalysisService.dispatch().
+        ON_DEVICE -> ""
     }
 
     /**
@@ -128,6 +132,8 @@ enum class AIProvider {
             "moondream"
         )
         CUSTOM_OPENAI -> emptyList()
+        // Single bundled model — see services/ondevice/ModelCatalog.kt.
+        ON_DEVICE -> listOf("gemma-4-E2B-it")
     }
 
     val defaultModel: String get() = models.firstOrNull() ?: ""
@@ -158,7 +164,7 @@ enum class AIProvider {
         }
     }
 
-    val requiresApiKey: Boolean get() = this != OLLAMA
+    val requiresApiKey: Boolean get() = this != OLLAMA && this != ON_DEVICE
     val requiresCustomEndpoint: Boolean get() = this == CUSTOM_OPENAI
     val requiresCustomModelName: Boolean get() = this == CUSTOM_OPENAI
     val supportsCustomModelName: Boolean
@@ -169,6 +175,7 @@ enum class AIProvider {
         ANTHROPIC -> ApiFormat.ANTHROPIC
         OPENAI, XAI, OPENROUTER, TOGETHER_AI, GROQ, HUGGING_FACE,
         FIREWORKS, DEEP_INFRA, MISTRAL, OLLAMA, CUSTOM_OPENAI -> ApiFormat.OPENAI_COMPATIBLE
+        ON_DEVICE -> ApiFormat.ON_DEVICE
     }
 
     @get:StringRes
@@ -186,9 +193,10 @@ enum class AIProvider {
         MISTRAL -> R.string.ai_key_placeholder_mistral
         OLLAMA -> R.string.ai_key_placeholder_ollama
         CUSTOM_OPENAI -> R.string.ai_key_placeholder_custom
+        ON_DEVICE -> R.string.ai_key_placeholder_ollama
     }
 
-    enum class ApiFormat { GEMINI, OPENAI_COMPATIBLE, ANTHROPIC }
+    enum class ApiFormat { GEMINI, OPENAI_COMPATIBLE, ANTHROPIC, ON_DEVICE }
 
     companion object {
         fun normalizeModelId(model: String): String =

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.Height
 import androidx.compose.material.icons.outlined.Key
@@ -52,6 +53,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +72,7 @@ import org.codeberg.fitguy.nofud.models.DietMode
 import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.ServingUnitInferenceMode
 import org.codeberg.fitguy.nofud.models.WeightGoal
+import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceDownloadState
 import org.codeberg.fitguy.nofud.ui.components.FudIconBubble
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDRoutes
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
@@ -100,9 +103,21 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Link
                     ) { onOpenSheet(SettingsSheet.CUSTOM_BASE_URL) }
                 }
+                if (ui.selectedAI == AIProvider.ON_DEVICE) {
+                    HorizontalDivider()
+                    val downloadState by vm.container.onDeviceModelDownloadManager.state()
+                        .collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
+                    val ready = downloadState is OnDeviceDownloadState.Downloaded
+                    SettingRow(
+                        stringResource(R.string.settings_on_device_model),
+                        if (ready) stringResource(R.string.settings_on_device_model_ready) else stringResource(R.string.settings_on_device_model_not_downloaded),
+                        icon = Icons.Outlined.Download
+                    ) { onOpenSheet(SettingsSheet.ON_DEVICE_MODEL) }
+                }
                 // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
-                // uncapped, so hide this for Gemini.
-                if (ui.selectedAI.apiFormat != AIProvider.ApiFormat.GEMINI) {
+                // uncapped and on-device dispatch doesn't take one at all, so hide this
+                // for both.
+                if (ui.selectedAI.apiFormat != AIProvider.ApiFormat.GEMINI && ui.selectedAI != AIProvider.ON_DEVICE) {
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_max_tokens),

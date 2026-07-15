@@ -108,4 +108,20 @@ internal suspend fun PreferencesStore.setSelectedSpeechLanguageImpl(provider: Sp
         dataStore.edit { it[Keys.selectedSpeechLanguage(provider)] = language.name }
     }
 
-    
+    // -- On-device LLM ------------------------------------------------------
+    /** Catalog version string of the currently-downloaded model file, or null if none is downloaded. */
+internal val PreferencesStore.onDeviceModelDownloadedVersionImpl: Flow<String?> get() = dataStore.data.map { it[Keys.ON_DEVICE_MODEL_DOWNLOADED_VERSION] }
+internal suspend fun PreferencesStore.setOnDeviceModelDownloadedVersionImpl(version: String?) {
+        dataStore.edit {
+            if (version.isNullOrEmpty()) it.remove(Keys.ON_DEVICE_MODEL_DOWNLOADED_VERSION) else it[Keys.ON_DEVICE_MODEL_DOWNLOADED_VERSION] = version
+        }
+    }
+
+internal val PreferencesStore.onDeviceDownloadOverWifiOnlyImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY] ?: true }
+internal suspend fun PreferencesStore.setOnDeviceDownloadOverWifiOnlyImpl(v: Boolean) { dataStore.edit { it[Keys.ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY] = v } }
+
+    /** Rollout gate: whether ON_DEVICE even appears as a selectable provider. Default off. */
+internal val PreferencesStore.onDeviceFeatureVisibleImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ON_DEVICE_FEATURE_VISIBLE] ?: false }
+internal suspend fun PreferencesStore.setOnDeviceFeatureVisibleImpl(v: Boolean) { dataStore.edit { it[Keys.ON_DEVICE_FEATURE_VISIBLE] = v } }
+
+
