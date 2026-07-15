@@ -9,6 +9,8 @@
 #   ./scripts/manage_release_assets.sh prune-abi-splits v1.3.0 v1.4.0
 #   ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0
 #   ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0 --dry-run
+#   ./scripts/manage_release_assets.sh prune-play-assets --dry-run
+#   ./scripts/manage_release_assets.sh prune-play-assets -y
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -38,6 +40,11 @@ EOF
 is_abi_split() {
   local name="$1"
   [[ "$name" == *-arm64-v8a.apk || "$name" == *-armeabi-v7a.apk || "$name" == *-x86_64.apk ]]
+}
+
+is_play_asset() {
+  local name="$1"
+  [[ "$name" == NoFUD-play-* ]]
 }
 
 list_release_tags() {
@@ -90,7 +97,9 @@ cmd_list() {
       mb="$(parse_size_mb "$size")"
       total_mb=$((total_mb + mb))
       local marker=""
-      if is_abi_split "$name"; then
+      if is_play_asset "$name"; then
+        marker=" [play — disabled flavor]"
+      elif is_abi_split "$name"; then
         marker=" [abi split]"
       fi
       printf '  %-40s %8s%s\n' "$name" "$size" "$marker"
@@ -106,6 +115,8 @@ Quota notes:
   - Request more: https://codeberg.org/Codeberg-e.V./requests
   - Prune old ABI splits (keep universal APKs + SHA256SUMS):
       ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0
+  - Remove disabled play-flavor APKs (keep fdroid/universal + SHA256SUMS):
+      ./scripts/manage_release_assets.sh prune-play-assets --dry-run
 EOF
 }
 
@@ -217,6 +228,113 @@ EOF
   done
 }
 
+cmd_prune_play_assets() {
+  ensure_login
+  local dry_run=0
+  local assume_yes=0
+  local -a tags=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run)
+        dry_run=1
+        shift
+        ;;
+      -y|--yes)
+        assume_yes=1
+        shift
+        ;;
+      -h|--help)
+        cat <<'EOF'
+Usage:
+  manage_release_assets.sh prune-play-assets [options] [tag ...]
+
+Options:
+  --dry-run   Print deletions without applying them
+  -y, --yes   Skip confirmation prompt
+
+Deletes NoFUD-play-*.apk attachments from Codeberg releases. Keeps fdroid APKs,
+legacy NoFUD-<version>.apk files, and SHA256SUMS. The play product flavor is
+disabled — see docs/DISTRIBUTION.md.
+
+With no tags, prunes play assets on every release that has them.
+EOF
+        exit 0
+        ;;
+      v*)
+        tags+=("$1")
+        shift
+        ;;
+      *)
+        echo "Unknown argument: $1" >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  if [[ ${#tags[@]} -eq 0 ]]; then
+    while IFS= read -r tag; do
+      [[ -z "$tag" ]] && continue
+      tags+=("$tag")
+    done < <(list_release_tags)
+  fi
+
+  local -a to_delete=()
+  for tag in "${tags[@]}"; do
+    while IFS= read -r line; do
+      [[ -z "$line" ]] && continue
+      local name="${line%% *}"
+      if is_play_asset "$name"; then
+        to_delete+=("$tag|$name")
+      fi
+    done < <(list_assets_for_tag "$tag" || true)
+  done
+
+  if [[ ${#to_delete[@]} -eq 0 ]]; then
+    echo "No play-flavor assets to prune."
+    exit 0
+  fi
+
+  echo "Play-flavor assets to delete (${#to_delete[@]}):"
+  for entry in "${to_delete[@]}"; do
+    IFS='|' read -r tag name <<<"$entry"
+    echo "  $tag  $name"
+  done
+
+  if [[ "$dry_run" -eq 1 ]]; then
+    echo
+    echo "Dry run — no assets deleted."
+    exit 0
+  fi
+
+  if [[ "$assume_yes" -ne 1 ]]; then
+    echo
+    read -r -p "Delete these assets? [y/N] " confirm
+    if [[ "$confirm" != [yY] ]]; then
+      echo "Aborted."
+      exit 1
+    fi
+  fi
+
+  declare -A by_tag=()
+  for entry in "${to_delete[@]}"; do
+    IFS='|' read -r tag name <<<"$entry"
+    by_tag["$tag"]+="$name "
+  done
+
+  for tag in "${!by_tag[@]}"; do
+    # shellcheck disable=SC2206
+    local names=( ${by_tag[$tag]} )
+    run_tea releases assets delete \
+      --login "$LOGIN" \
+      --repo "$CODEBERG_REPO" \
+      -y \
+      "$tag" \
+      "${names[@]}"
+    echo "Deleted ${#names[@]} play asset(s) from $tag"
+  done
+}
+
 usage() {
   cat <<'EOF'
 Usage: manage_release_assets.sh <command> [options]
@@ -224,6 +342,7 @@ Usage: manage_release_assets.sh <command> [options]
 Commands:
   list                         List release attachments and estimated total size
   prune-abi-splits [options]   Delete per-ABI APK splits; keep universal APKs + SHA256SUMS
+  prune-play-assets [options]  Delete NoFUD-play-*.apk attachments (disabled flavor)
 
 Environment:
   CODEBERG_REPO   Default: fitguy/nofud
@@ -240,6 +359,9 @@ main() {
       ;;
     prune-abi-splits|prune)
       cmd_prune_abi_splits "$@"
+      ;;
+    prune-play-assets|prune-play)
+      cmd_prune_play_assets "$@"
       ;;
     -h|--help|"")
       usage
