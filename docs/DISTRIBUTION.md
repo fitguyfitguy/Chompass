@@ -2,7 +2,7 @@
 
 NoFUD ships a **single Gradle build** aimed at F-Droid, IzzyOnDroid, and direct APK downloads from [Codeberg releases](https://codeberg.org/fitguy/nofud/releases).
 
-## Google Play flavor — disabled
+## Google Play flavor (disabled)
 
 The former **`play` product flavor** (Google Play Core in-app review, in-app update, Play Store update checks) is **removed from the repo and build process for now**.
 
@@ -20,7 +20,7 @@ The former **`play` product flavor** (Google Play Core in-app review, in-app upd
 
 | Goal | Gradle task | Release artifact (packaged name) |
 |------|-------------|----------------------------------|
-| Debug | `:app:assembleDebug` | — |
+| Debug | `:app:assembleDebug` | - |
 | Release | `:app:assembleRelease` | `NoFUD-fdroid-<version>.apk` (+ ABI splits) |
 
 Inside devenv:
@@ -51,7 +51,7 @@ Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gra
 
 The single build intentionally omits proprietary **Google Play Core** libraries. ML Kit barcode scanning and other shared features remain included.
 
-On-device LLM (`litertlm-android`) is bundled in this build; whether F-Droid accepts the runtime model fetch is still under review — see [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
+On-device LLM (`litertlm-android`) is bundled in this build; whether F-Droid accepts the runtime model fetch is still under review. See [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
 
 ## Reclaim Codeberg quota
 

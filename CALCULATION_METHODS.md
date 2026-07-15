@@ -1,4 +1,4 @@
-# NoFUD Calculation Methods — Formula Register & Audit
+# NoFUD Calculation Methods: Formula Register & Audit
 
 Canonical reference for nutrition and sports-science math in NoFUD. In-app copy lives under **Settings → Calculation Methods**; this document is the maintainer audit trail.
 
@@ -43,7 +43,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | WHR | Waist-to-hip | Deterministic | `BodyMeasurement.waistToHipRatio` | ratio |
 | WTH | Waist-to-height | Deterministic | `BodyMeasurement.waistToHeightRatio` | ratio |
 
-### BMR-MSJ — Mifflin-St Jeor
+### BMR-MSJ: Mifflin-St Jeor
 
 **When:** No body fat % on profile.
 
@@ -53,11 +53,11 @@ Women: BMR = 10×weight(kg) + 6.25×height(cm) − 5×age − 161
 Other: same as women (no +5 sex term)
 ```
 
-**Code:** `UserProfile.kt` — implemented as `base = … − 161`, then `+166` for male (+5 net).
+**Code:** `UserProfile.kt`: implemented as `base = … − 161`, then `+166` for male (+5 net).
 
 **Call sites:** TDEE, adaptive safety floor, AI recalc context.
 
-### BMR-KM — Katch-McArdle
+### BMR-KM: Katch-McArdle
 
 **When:** `bodyFatPercentage` is set (fraction 0–1).
 
@@ -68,7 +68,7 @@ BMR = 370 + 21.6 × LBM(kg)
 
 **Call sites:** Same as BMR-MSJ. `goalBodyFatPercentage` is display-only and **not** used here.
 
-### TDEE — Activity multiplier
+### TDEE: Activity multiplier
 
 ```
 TDEE = BMR × PAL multiplier
@@ -83,11 +83,11 @@ TDEE = BMR × PAL multiplier
 | Very Active | 1.725 |
 | Extra Active | 1.9 |
 
-**Note:** Moderate uses **1.465** (between common “light” and “moderate” PAL tables). Documented intentionally — finer gradation for desk-active users.
+**Note:** Moderate uses **1.465** (between common “light” and “moderate” PAL tables). Documented intentionally; finer gradation for desk-active users.
 
 **Call sites:** `dailyCalories`, forecasts (when measured burn unavailable), adaptive ceiling basis.
 
-### ACT-EST — Estimated daily active burn
+### ACT-EST: Estimated daily active burn
 
 ```
 estimatedDailyActive = round(TDEE − BMR)
@@ -109,7 +109,7 @@ sedentaryBudget = effectiveCalories − estimatedDailyActive
 
 Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied.
 
-### CAL-ADJ — Goal calorie adjustment
+### CAL-ADJ: Goal calorie adjustment
 
 ```
 adjustment = weeklyChangeKg × 7,700 / 7   (signed: negative for lose, positive for gain)
@@ -120,7 +120,7 @@ dailyCalories = int(TDEE) + adjustment
 
 **Default pace:** 0.5 kg/week when `weeklyChangeKg` unset.
 
-### MACRO-P — Protein
+### MACRO-P: Protein
 
 ```
 base g/kg by activity: 0.8, 1.2, 1.6, 1.8, 2.0, 2.2
@@ -132,19 +132,19 @@ If body fat % set: requirement is expressed per kg total weight via lean-mass fr
 
 **Evidence:** Morton et al. 2018; Helms et al. 2014 (cutting boost).
 
-### MACRO-F — Fat
+### MACRO-F: Fat
 
 **Standard:** `0.6 × weight(kg)` g/day.
 
 **Keto:** Fill remaining calories after carbs and protein; floor `max(standard, 45 g)`.
 
-### MACRO-C — Carbs
+### MACRO-C: Carbs
 
 **Standard:** `(dailyCalories − protein×4 − fat×9) / 4`, floored at 0.
 
 **Keto:** Adaptive or manual net carbs (`KetoCarbRecommendationService`), clamped 20–50 g.
 
-### KETO-C — Net carb heuristic
+### KETO-C: Net carb heuristic
 
 | Signal | Adjustment |
 |--------|------------|
@@ -156,7 +156,7 @@ If body fat % set: requirement is expressed per kg total weight via lean-mass fr
 
 **Policy:** Conservative ketogenic range; not personalized to ketone response.
 
-### FCAST — Weight forecast
+### FCAST: Weight forecast
 
 **Window:** Up to 90 days of food + weight entries.
 
@@ -175,7 +175,7 @@ observedWeeklyChangeKg = theilSenSlope(kg/day) × 7
 
 **Sparse logging:** Calendar-day averaging prevents cheat-day-only logs from inflating intake.
 
-### ADAPT — Adaptive goals (weekly)
+### ADAPT: Adaptive goals (weekly)
 
 **Data gates:** ≥4 logged food days AND ≥3 weight entries in window, **or** measured Health Connect TDEE.
 
@@ -203,7 +203,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 
 ---
 
-## Scientific review — policy decisions
+## Scientific review: policy decisions
 
 | Item | Decision | Rationale |
 |------|----------|-----------|
@@ -237,12 +237,12 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 
 | Priority | Item | Status |
 |----------|------|--------|
-| P1 | Golden scenario tests for all deterministic formulas | **Done** — `CalculationGoldenScenariosTest` |
-| P2 | Calendar-day intake average for forecast | **Done** — `WeightForecastMath.averageDailyIntake` |
-| P2 | Document adaptive/forecast math in Calculation Methods UI | **Done** — settings strings + Calculation Methods screen |
-| P3 | Robust regression (Theil–Sen) for weight trend | **Done** — `WeightForecastMath.theilSenSlopePerDay` |
-| P3 | Review moderate PAL 1.465 vs literature 1.55 | **Done** — kept 1.465; documented in strings + `GoalFormulaReference` |
-| P4 | AI prompt parity via shared formula reference | **Done** — `GoalFormulaReference` + unit tests |
+| P1 | Golden scenario tests for all deterministic formulas | **Done:** `CalculationGoldenScenariosTest` |
+| P2 | Calendar-day intake average for forecast | **Done:** `WeightForecastMath.averageDailyIntake` |
+| P2 | Document adaptive/forecast math in Calculation Methods UI | **Done:** settings strings + Calculation Methods screen |
+| P3 | Robust regression (Theil–Sen) for weight trend | **Done:** `WeightForecastMath.theilSenSlopePerDay` |
+| P3 | Review moderate PAL 1.465 vs literature 1.55 | **Done:** kept 1.465; documented in strings + `GoalFormulaReference` |
+| P4 | AI prompt parity via shared formula reference | **Done:** `GoalFormulaReference` + unit tests |
 
 ---
 

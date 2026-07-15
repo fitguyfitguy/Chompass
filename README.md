@@ -96,7 +96,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 - **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK cloud AI or opt-in on-device Gemma 4 inference ([PRIVACY.md](PRIVACY.md))
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect; `nofud://` meal share links
 - **Wearables:** Health Connect in/out for steps, exercise, weight, meals, sleep, hydration, energy burn (Gadgetbridge, openScale, Samsung Health, etc.)
-- **Lean scope:** no workouts tab or bundled exercise library; F-Droid / Codeberg APKs (Google Play flavor disabled — see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md))
+- **Lean scope:** no workouts tab or bundled exercise library; F-Droid / Codeberg APKs (Google Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md))
 
 **UX, size, speed**
 

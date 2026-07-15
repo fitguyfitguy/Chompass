@@ -6,7 +6,7 @@ All notable changes to NoFUD are documented here.
 
 ### Fixed
 
-- On-device AI: the 1.14.1 memory guard for E4B photo analysis was accidentally blocking E2B photo analysis too. The preflight memory check and CPU/GPU backend split now only apply to E4B — E2B photo analysis works as before.
+- On-device AI: the 1.14.1 memory guard for E4B photo analysis was accidentally blocking E2B photo analysis too. The preflight memory check and CPU/GPU backend split now only apply to E4B. E2B photo analysis works as before.
 
 ## [1.14.1] - 2026-07-15
 
@@ -19,17 +19,17 @@ All notable changes to NoFUD are documented here.
 ### Added
 
 - **On-device AI (opt-in):** Settings → AI Provider → **On-Device (Private)** runs food text and photo analysis locally via Gemma 4 (E2B or E4B). Download the model once from Hugging Face (~2.4–3.4 GB); nothing you log is sent to a server. Automatic cloud fallback when Fallback Provider is enabled.
-- Clear accuracy disclosures in Settings: on-device models are much smaller than cloud AI (Gemini, GPT, Claude, etc.) and often misread portions, brands, and photos.
+- Settings explains that on-device models are much smaller than cloud AI (Gemini, GPT, Claude, etc.) and often misread portions, brands, and photos.
 
 ### Changed
 
-- On-device provider is now visible on supported devices (arm64/x86_64, 6 GB+ RAM) instead of being hidden behind an internal rollout flag.
+- On-device provider is now shown on supported devices (arm64/x86_64, 6 GB+ RAM).
 
 ## [1.13.0] - 2026-07-15
 
 ### Added
 
-- Groundwork for on-device AI food analysis (Gemma 4 E2B-it, runs fully on-device with automatic cloud fallback) — not yet enabled for any users; still gated behind an internal rollout flag pending a second-device validation pass.
+- Groundwork for on-device AI food analysis (Gemma 4 E2B-it). Runs fully on-device with automatic cloud fallback. Not enabled for any users yet; still behind an internal rollout flag until a second device is tested.
 
 ## [1.12.0] - 2026-07-14
 
@@ -117,10 +117,10 @@ All notable changes to NoFUD are documented here.
 
 ### Added
 
-- Share photos into NoFUD from the camera or gallery (system share sheet) to start an image food entry — up to two images, composed side-by-side like dual capture
+- Share photos into NoFUD from the camera or gallery (system share sheet) to start an image food entry: up to two images, composed side-by-side like dual capture
 - Activity card on the Progress tab: daily steps and exercise minutes from Health Connect (new Steps + Exercise read permissions; wearables via Gadgetbridge, Samsung Health, etc.)
 - Live import of meals other apps log to Health Connect (incremental, deduplicated; own records are never echoed back)
-- Health-ecosystem compatibility notes in README and Settings (Gadgetbridge, openScale, Samsung Health, Fitbit — all via Health Connect, no vendor SDKs)
+- Health-ecosystem compatibility notes in README and Settings (Gadgetbridge, openScale, Samsung Health, Fitbit; all via Health Connect, no vendor SDKs)
 
 ### Fixed
 

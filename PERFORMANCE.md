@@ -45,7 +45,7 @@ After each performance phase:
 ## Entry-addition timing (FudAIPerf)
 
 Debug builds emit per-phase latency for the add-a-food-entry pipeline under the
-logcat tag `FudAIPerf` (gated by `BuildConfig.DEBUG` — release builds emit
+logcat tag `FudAIPerf` (gated by `BuildConfig.DEBUG`; release builds emit
 nothing). Each line is one measurement in `key=value` form:
 
 ```
@@ -58,12 +58,12 @@ op=save phase=healthWrite ms=88
 ```
 
 Phases: `promptBuild` (input assembly + prefs read), `parse` (JSON deserialize),
-`net` (OkHttp round-trip — DNS/connect/TLS/TTFB/total + byte counts, covers every
+`net` (OkHttp round-trip: DNS/connect/TLS/TTFB/total + byte counts, covers every
 AI/STT/OpenFoodFacts call), and the Phase-2 persistence `imageWrite` / `dataStore`
 / `healthWrite`. Notes: `dataStore` re-serializes the whole log per add, so it
 scales with `entries=`; a single photo analysis fires **two** `net` calls (main
 analysis + serving-unit inference, `op=inferServing`) when the main analysis
-prompt's own `unit_options` comes back empty — the primary prompts were
+prompt's own `unit_options` comes back empty; the primary prompts were
 strengthened to make that less common, but the fallback still exists
 structurally since `inferServing` depends on the main call's parsed result;
 `net` metrics are `-1` when a phase is skipped (e.g. pooled connection) or on
@@ -117,7 +117,7 @@ It force-stops and cold-launches MainActivity with all extras in one intent:
 `seed_test_data` / `seed_body_metrics` / `seed_keto_settings` populate the app,
 and `run_entry_benchmark` + `benchmark_count` drive
 `EntryPerfBenchmark.run(...)`, which calls `FoodAnalysisService.analyzeText` and
-persists via `FoodRepository.addEntry` for each sample — so every phase
+persists via `FoodRepository.addEntry` for each sample, so every phase
 (promptBuild / net / parse / dataStore / healthWrite) is timed. The batch also
 emits `op=benchmark phase=entry ms=<wall>` per entry (full analyze+save time).
 Artifacts land under `android/build/perf-entry/<timestamp>/` like the manual

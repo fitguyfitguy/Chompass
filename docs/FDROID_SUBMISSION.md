@@ -16,7 +16,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] Public git repo: https://codeberg.org/fitguy/nofud
 - [x] MIT license in repo root
 - [x] Version tags matching `versionName` (`v1.14.2`, etc.)
-- [x] Single FOSS build — Play Core / ad SDKs removed ([`docs/DISTRIBUTION.md`](DISTRIBUTION.md))
+- [x] Single FOSS build; Play Core / ad SDKs removed ([`docs/DISTRIBUTION.md`](DISTRIBUTION.md))
 - [x] Confirm `v1.14.2` tag exists on Codeberg and `assembleRelease` succeeds
 - [x] Run `devenv tasks run release:check-metadata` before each release
 - [x] Push `metadata/en-US/` to Codeberg `main` (required before fdroiddata review)
@@ -45,7 +45,7 @@ Regenerate screenshots when UI changes: `devenv tasks run release:screenshots` (
 
 - [ ] Fork https://gitlab.com/fdroid/fdroiddata
 - [x] Copy [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml) → `metadata/org.codeberg.fitguy.nofud.yml` (prepared locally)
-- [ ] Push branch `org.codeberg.fitguy.nofud` and open MR (needs GitLab auth — see below)
+- [ ] Push branch `org.codeberg.fitguy.nofud` and open MR (needs GitLab auth; see below)
 - [ ] Respond to reviewer questions in the MR
 
 ### Optional (faster path)
@@ -96,17 +96,17 @@ No bundled analytics, ads, Firebase, or Google Play Services.
 
 ## Dependencies of note
 
-- `androidx.health.connect:connect-client` — Health Connect
-- `com.google.mlkit:barcode-scanning` — on-device barcode (no Play Services ads/analytics)
-- `com.google.ai.edge.litertlm:litertlm-android` — on-device LLM runtime (optional feature; model not bundled)
+- `androidx.health.connect:connect-client`: Health Connect
+- `com.google.mlkit:barcode-scanning`: on-device barcode (no Play Services ads/analytics)
+- `com.google.ai.edge.litertlm:litertlm-android`: on-device LLM runtime (optional feature; model not bundled)
 
 ## Anti-features
 
 Happy to add labels reviewers suggest. My reading:
 
-- **No Ads / No Tracking** — none bundled
-- **NonFreeNet** — only if BYOK cloud AI promotion counts; core app works without any cloud provider (manual entry, barcode, optional on-device AI)
-- **TetheredNet** — not applicable (OFF + user-chosen AI endpoint)
+- **No Ads / No Tracking:** none bundled
+- **NonFreeNet:** only if BYOK cloud AI promotion counts; core app works without any cloud provider (manual entry, barcode, optional on-device AI)
+- **TetheredNet:** not applicable (OFF + user-chosen AI endpoint)
 
 ## Health Connect
 

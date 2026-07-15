@@ -2,7 +2,7 @@
 
 Requirements: JDK 17+, Android SDK 36.
 
-Distribution: single F-Droid / Codeberg build — the former **`play` flavor is disabled**. See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+Distribution: single F-Droid / Codeberg build. The former **`play` flavor is disabled**. See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 
 ## WSL / Nix (devenv)
 
@@ -98,6 +98,6 @@ uv run --with pillow python scripts/optimize_exercise_images.py --check-only
 
 Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validated on Pixel 9a / GrapheneOS). Not integrated into production AI dispatch.
 
-Full workflow — model push, intent extras, GPU/CPU backends, latency results, known issues:
+Full workflow: model push, intent extras, GPU/CPU backends, latency results, known issues:
 
 **[docs/ON_DEVICE_LLM.md](docs/ON_DEVICE_LLM.md)**
