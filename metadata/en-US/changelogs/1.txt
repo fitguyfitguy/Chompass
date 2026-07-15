@@ -4,4 +4,4 @@ Initial public release of NoFUD - an ad-free, privacy-focused Android fork of Fu
 • Original NoFUD branding and launcher icon
 • AI food logging, Coach, workouts, Health Connect, widgets, diary export
 • Meal sharing via nofud:// deep links; imports upstream fudai:// links
-• Optimized offline exercise photos (~19 MB WebP bundle)
+• Exercise photos converted to WebP (~19 MB bundle)
