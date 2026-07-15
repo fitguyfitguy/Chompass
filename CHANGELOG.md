@@ -2,6 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.2] - 2026-07-15
+
+### Fixed
+
+- On-device AI: the 1.14.1 memory guard for E4B photo analysis was accidentally blocking E2B photo analysis too. The preflight memory check and CPU/GPU backend split now only apply to E4B — E2B photo analysis works as before.
+
 ## [1.14.1] - 2026-07-15
 
 ### Fixed
