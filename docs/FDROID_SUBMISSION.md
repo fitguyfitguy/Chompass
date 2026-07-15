@@ -17,8 +17,9 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] MIT license in repo root
 - [x] Version tags matching `versionName` (`v1.14.2`, etc.)
 - [x] Single FOSS build — Play Core / ad SDKs removed ([`docs/DISTRIBUTION.md`](DISTRIBUTION.md))
-- [ ] Confirm `v1.14.2` tag exists on Codeberg and `assembleRelease` succeeds
-- [ ] Run `devenv tasks run release:check-metadata` before each release
+- [x] Confirm `v1.14.2` tag exists on Codeberg and `assembleRelease` succeeds
+- [x] Run `devenv tasks run release:check-metadata` before each release
+- [x] Push `metadata/en-US/` to Codeberg `main` (required before fdroiddata review)
 
 ### Upstream store metadata (`metadata/en-US/`)
 
@@ -43,9 +44,8 @@ Regenerate screenshots when UI changes: `devenv tasks run release:screenshots` (
 ### fdroiddata MR
 
 - [ ] Fork https://gitlab.com/fdroid/fdroiddata
-- [ ] Copy [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml) → `metadata/org.codeberg.fitguy.nofud.yml`
-- [ ] Push branch `org.codeberg.fitguy.nofud`
-- [ ] Open MR titled **New App: org.codeberg.fitguy.nofud** (body below)
+- [x] Copy [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml) → `metadata/org.codeberg.fitguy.nofud.yml` (prepared locally)
+- [ ] Push branch `org.codeberg.fitguy.nofud` and open MR (needs GitLab auth — see below)
 - [ ] Respond to reviewer questions in the MR
 
 ### Optional (faster path)
@@ -61,14 +61,14 @@ Copy into the GitLab MR description:
 ```markdown
 ## Summary
 
-**New app:** NoFUD — ad-free, privacy-focused Android calorie and macro tracker.
+**New app:** NoFUD, an ad-free, privacy-focused Android calorie and macro tracker.
 
 - **Application ID:** `org.codeberg.fitguy.nofud`
 - **License:** MIT
 - **Upstream:** https://codeberg.org/fitguy/nofud
 - **Category:** Health & Fitness
 
-NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). The former `play` product flavor (Google Play Core) has been removed; there is a single `release` build.
+NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). there is a single `release` build.
 
 ## Build
 
@@ -127,23 +127,28 @@ Forked from Fud AI with permission of the fork maintainer (same person continuin
 
 ## Submit commands
 
+**One command** (after `glab auth login --hostname gitlab.com` or `GITLAB_TOKEN`):
+
 ```bash
-# 1. Verify metadata sync
+chmod +x scripts/submit_fdroiddata_mr.sh
+./scripts/submit_fdroiddata_mr.sh
+```
+
+**Manual fallback:**
+
+```bash
 devenv tasks run release:check-metadata
 
-# 2. Fork fdroiddata on GitLab, then:
 git clone https://gitlab.com/<your-gitlab-user>/fdroiddata.git
 cd fdroiddata
 git checkout -b org.codeberg.fitguy.nofud
-
 cp /path/to/NoFUD/fdroid/org.codeberg.fitguy.nofud.yml metadata/org.codeberg.fitguy.nofud.yml
-
 git add metadata/org.codeberg.fitguy.nofud.yml
 git commit -m "New App: NoFUD (org.codeberg.fitguy.nofud)"
 git push -u origin org.codeberg.fitguy.nofud
 ```
 
-Open MR: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/new
+Open MR: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/new (paste the MR body block above)
 
 ---
 
