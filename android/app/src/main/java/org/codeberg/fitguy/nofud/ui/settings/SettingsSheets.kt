@@ -96,6 +96,13 @@ internal fun SettingsSheets(
                     title = stringResource(R.string.sheet_ai_provider),
                     items = AIProvider.values().filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable },
                     label = { stringResource(it.displayNameRes) },
+                    subtitle = { provider ->
+                        if (provider == AIProvider.ON_DEVICE) {
+                            stringResource(R.string.ai_provider_on_device_subtitle)
+                        } else {
+                            null
+                        }
+                    },
                     selected = { it == ui.selectedAI },
                     onSelect = { vm.selectProvider(it); onDismiss() }
                 )

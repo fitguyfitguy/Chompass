@@ -113,6 +113,13 @@ internal fun SettingsAiSection(
                         if (ready) stringResource(R.string.settings_on_device_model_ready) else stringResource(R.string.settings_on_device_model_not_downloaded),
                         icon = Icons.Outlined.Download
                     ) { onOpenSheet(SettingsSheet.ON_DEVICE_MODEL) }
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.settings_on_device_accuracy_footer),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
                 }
                 // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
                 // uncapped and on-device dispatch doesn't take one at all, so hide this

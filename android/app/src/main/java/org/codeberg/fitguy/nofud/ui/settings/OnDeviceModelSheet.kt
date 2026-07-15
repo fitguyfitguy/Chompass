@@ -20,9 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.codeberg.fitguy.nofud.AppContainer
+import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.services.ondevice.ModelCatalog
 import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceDownloadState
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
@@ -61,7 +63,7 @@ internal fun OnDeviceModelSheet(
 
     Column(Modifier.fillMaxWidth().padding(bottom = 20.dp)) {
         Text(
-            "On-device model",
+            stringResource(R.string.on_device_model_sheet_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(vertical = 8.dp)
@@ -71,11 +73,16 @@ internal fun OnDeviceModelSheet(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.on_device_model_accuracy_notice),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+        )
         if (entry.modelId == ModelCatalog.E4B.modelId) {
             Spacer(Modifier.height(8.dp))
             Text(
-                "Larger and slower than E2B, but may give better food descriptions. " +
-                    "Pick E2B in Settings → Model if you prefer faster responses.",
+                stringResource(R.string.on_device_model_e4b_notice),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
             )
@@ -85,63 +92,73 @@ internal fun OnDeviceModelSheet(
         when (val current = state) {
             is OnDeviceDownloadState.NotDownloaded -> {
                 Text(
-                    "Runs entirely on this device — nothing you type or photograph is sent to a server. " +
-                        "Downloading fetches the model file directly from Hugging Face " +
-                        "(${entry.modelCardUrl}), a third-party host not otherwise used by this app.",
+                    stringResource(R.string.on_device_model_privacy_notice, entry.modelCardUrl),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or " +
-                        "non-Tensor hardware — haven't been validated yet and may be slower or " +
-                        "unsupported; a cloud provider is a safer default there.",
+                    stringResource(R.string.on_device_model_device_notice),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                 )
                 Spacer(Modifier.height(12.dp))
                 if (!hasEnoughSpace) {
                     Text(
-                        "Not enough free storage. Need at least ${gb(entry.sizeBytes)} free (have ${gb(freeBytes)}).",
+                        stringResource(
+                            R.string.on_device_model_storage_short,
+                            gb(entry.sizeBytes),
+                            gb(freeBytes)
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(Modifier.height(8.dp))
                 }
                 ToggleRow(
-                    label = "Download over Wi-Fi only",
+                    label = stringResource(R.string.on_device_model_wifi_only),
                     checked = overWifiOnly,
                     onChange = onSetOverWifiOnly
                 )
                 Spacer(Modifier.height(8.dp))
-                GradientSaveButton(text = "Download", enabled = hasEnoughSpace, onClick = onStartDownload)
+                GradientSaveButton(
+                    text = stringResource(R.string.on_device_model_download),
+                    enabled = hasEnoughSpace,
+                    onClick = onStartDownload
+                )
             }
             is OnDeviceDownloadState.Downloading -> {
-                val percent = current.progressPercent
-                Text("Downloading… $percent%", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    stringResource(R.string.on_device_model_downloading, current.progressPercent),
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = { percent / 100f },
+                    progress = { current.progressPercent / 100f },
                     modifier = Modifier.fillMaxWidth(),
                     color = AppColors.Calorie
                 )
                 Spacer(Modifier.height(12.dp))
                 TextButton(onClick = onCancelDownload, modifier = Modifier.fillMaxWidth()) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
             is OnDeviceDownloadState.Verifying -> {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(modifier = Modifier.height(18.dp), strokeWidth = 2.dp)
                     Spacer(Modifier.width(8.dp))
-                    Text("Verifying download…", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.on_device_model_verifying), style = MaterialTheme.typography.bodyMedium)
                 }
             }
             is OnDeviceDownloadState.Downloaded -> {
-                Text("Downloaded and ready.", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.on_device_model_ready), style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    if (isLoaded) "Model loaded — ready for instant use." else "Not loaded — first request after app start may take up to a minute.",
+                    if (isLoaded) {
+                        stringResource(R.string.on_device_model_loaded)
+                    } else {
+                        stringResource(R.string.on_device_model_not_loaded)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
                 )
@@ -150,11 +167,11 @@ internal fun OnDeviceModelSheet(
                 Spacer(Modifier.height(12.dp))
                 if (isLoaded) {
                     TextButton(onClick = onUnload, modifier = Modifier.fillMaxWidth()) {
-                        Text("Unload model (frees memory)")
+                        Text(stringResource(R.string.on_device_model_unload))
                     }
                 }
                 TextButton(onClick = onDelete, modifier = Modifier.fillMaxWidth()) {
-                    Text("Delete downloaded model", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.on_device_model_delete), color = MaterialTheme.colorScheme.error)
                 }
             }
             is OnDeviceDownloadState.Failed -> {
@@ -164,7 +181,10 @@ internal fun OnDeviceModelSheet(
                     color = MaterialTheme.colorScheme.error
                 )
                 Spacer(Modifier.height(12.dp))
-                GradientSaveButton(text = "Retry download", onClick = onStartDownload)
+                GradientSaveButton(
+                    text = stringResource(R.string.on_device_model_retry),
+                    onClick = onStartDownload
+                )
             }
         }
     }

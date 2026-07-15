@@ -140,6 +140,7 @@
     <string name="ai_provider_ollama">Ollama (Local)</string>
     <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
     <string name="ai_provider_on_device">On-Device (Private)</string>
+    <string name="ai_provider_on_device_subtitle">Private and offline — less accurate than cloud AI; ~2–4 GB download</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="ai_key_placeholder_gemini">AIza...</string>
@@ -677,9 +678,26 @@
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Custom base URL</string>
     <string name="settings_clear_key">Clear key</string>
-    <string name="settings_on_device_model">Model</string>
+    <string name="settings_on_device_model">Model file</string>
     <string name="settings_on_device_model_ready">Downloaded</string>
     <string name="settings_on_device_model_not_downloaded">Not downloaded</string>
+    <string name="settings_on_device_accuracy_footer">On-device models run locally for privacy. They are much smaller than cloud models (Gemini, GPT, Claude, etc.) and often misread portions, brand names, and photos. Enable Fallback Provider so a cloud model can retry when on-device fails.</string>
+    <string name="on_device_model_privacy_notice">Runs entirely on this device — nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
+    <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or non-Tensor hardware — haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
+    <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads — especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>
+    <string name="on_device_model_e4b_notice">Larger and slower than E2B, but may give better food descriptions. Pick E2B in Settings → Model if you prefer faster responses.</string>
+    <string name="on_device_model_storage_short">Not enough free storage. Need at least %1$s free (have %2$s).</string>
+    <string name="on_device_model_wifi_only">Download over Wi-Fi only</string>
+    <string name="on_device_model_download">Download</string>
+    <string name="on_device_model_downloading">Downloading… %1$d%%</string>
+    <string name="on_device_model_verifying">Verifying download…</string>
+    <string name="on_device_model_ready">Downloaded and ready.</string>
+    <string name="on_device_model_loaded">Model loaded — ready for instant use.</string>
+    <string name="on_device_model_not_loaded">Not loaded — first request after app start may take up to a minute.</string>
+    <string name="on_device_model_unload">Unload model (frees memory)</string>
+    <string name="on_device_model_delete">Delete downloaded model</string>
+    <string name="on_device_model_retry">Retry download</string>
+    <string name="on_device_model_sheet_title">On-device model</string>
 
     <!-- Custom AI Instructions + Fallback Provider (v1.0.6) -->
     <string name="settings_section_custom_instructions">Custom AI Instructions</string>
