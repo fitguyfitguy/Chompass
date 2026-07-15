@@ -12,7 +12,7 @@ All notable changes to NoFUD are documented here.
 
 ### Fixed
 
-- On-device AI: photo analysis with the E4B model could get the app killed by the OS on lower-memory devices (GPU text + GPU vision loaded simultaneously). E4B photo analysis now runs text on CPU / vision on GPU, and a memory preflight check blocks the request with a clear in-app message instead of risking a silent kill when free memory is too low. On-device images are also downscaled further (1024px) before vision inference to reduce memory pressure.
+- On-device AI: E4B photo analysis now runs text on CPU and vision on GPU. A memory preflight check shows an in-app message instead of letting the OS kill the app when free memory is too low. On-device images are downscaled to 1024px before vision inference.
 
 ## [1.14.0] - 2026-07-15
 
@@ -29,7 +29,7 @@ All notable changes to NoFUD are documented here.
 
 ### Added
 
-- Groundwork for on-device AI food analysis (Gemma 4 E2B-it). Runs fully on-device with automatic cloud fallback. Not enabled for any users yet; still behind an internal rollout flag until a second device is tested.
+- Internal prep for on-device AI food analysis (Gemma 4 E2B-it). Runs fully on-device with automatic cloud fallback. Not enabled for any users yet; still behind an internal rollout flag until a second device is tested.
 
 ## [1.12.0] - 2026-07-14
 
@@ -37,13 +37,13 @@ All notable changes to NoFUD are documented here.
 
 - Recipes: multi-ingredient saved meals, created and edited via a dedicated recipe builder, with one-tap logging of every ingredient as its own diary entry
 - Coach can propose logging food, weight, or water entries from chat; you confirm or discard before anything is saved
-- Barcode lookup caching for faster, offline-friendly repeat scans
+- Barcode lookup caching for faster repeat scans, including offline
 
 ### Changed
 
 - Settings: removed the "What's New" section from About (changelog notes live on Codeberg releases instead)
-- Food analysis guidance refined to prefer non-gram serving units where appropriate
-- Wheel picker visual feedback aligned with Material3 design
+- Food analysis prompts now prefer non-gram serving units where appropriate
+- Wheel picker feedback matches Material3
 
 ## [1.11.0] - 2026-07-14
 
@@ -52,7 +52,7 @@ All notable changes to NoFUD are documented here.
 - Optional water tracking (off by default): quick-log from Home, daily goal, reminders, and a home-screen widget; stored locally only
 - Customizable meal time boundaries in Settings (defaults match previous automatic breakfast/lunch/dinner/snack windows)
 - Multi-photo meal capture: add up to 10 photos from camera or gallery before AI analysis
-- Health Connect **Manage access** entry in Settings and onboarding for easier permission review on Android 14+
+- Health Connect **Manage access** entry in Settings and onboarding to review permissions on Android 14+
 - Configurable water quick-log presets for the Add food slider (ml or fl oz when using imperial units)
 
 ### Changed
@@ -70,8 +70,8 @@ All notable changes to NoFUD are documented here.
 
 ### Changed
 
-- Home calorie gauge simplified: removed Net and Dual display modes; active calories shown with clearer copy in Static and Add Active modes
-- Food photos downscaled more efficiently before upload to AI providers (smaller payloads, faster analysis)
+- Home calorie gauge simplified: removed Net and Dual display modes; active calories use simpler labels in Static and Add Active modes
+- Food photos downscaled before upload to AI providers (smaller payloads, faster analysis)
 
 ## [1.9.0] - 2026-07-14
 
@@ -83,7 +83,7 @@ All notable changes to NoFUD are documented here.
 ### Changed
 
 - Food diary stored in monthly buckets for faster add, update, and delete on large histories
-- Home screen and food-entry flows refactored for snappier UI responsiveness
+- Home screen and food-entry code reorganized for faster UI
 - Preferences and Health Connect code split into focused modules (no user-facing behavior change)
 
 ## [1.8.0] - 2026-07-09
@@ -110,7 +110,7 @@ All notable changes to NoFUD are documented here.
 - Observed weight trend now uses **Theil–Sen** robust regression instead of ordinary least squares
 - AI goal prompts pull multiplier/protein constants from shared `GoalFormulaReference`
 - Home calorie gauge **Add Active** and **Dual** modes now use your activity-level estimate (TDEE minus BMR) when Health Connect is unavailable; **Add Active** no longer double-counts activity when Health Connect is on (goal is split into sedentary base + today's burn)
-- Home calorie gauge shows whether today's active burn is measured (Health Connect) or estimated, with clearer breakdown copy and screen-reader labels
+- Home calorie gauge shows whether today's active burn is measured (Health Connect) or estimated, with breakdown labels and screen-reader text
 - About screen attribution updated to NoFUD by fitguy (fork of Fud AI)
 
 ## [1.7.0] - 2026-07-09
@@ -136,10 +136,10 @@ All notable changes to NoFUD are documented here.
 
 ### Changed
 
-- Macro nutrient chips and color palette aligned with Material theme across home and detail views
-- Text input sheets use `FudGlassTextField` for consistent glass styling
-- UI components refactored to `MaterialTheme` colors for better light/dark consistency
-- Release APK size optimizations (debug symbols, native lib packaging, dependency metadata exclusions) for F-Droid and IzzyOnDroid compliance
+- Macro nutrient chips and color palette use Material theme colors across home and detail views
+- Text input sheets use `FudGlassTextField` for the same glass styling
+- UI components use `MaterialTheme` colors for consistent light/dark mode
+- Release APK size cuts (debug symbols, native lib packaging, dependency metadata exclusions) for F-Droid and IzzyOnDroid compliance
 
 ## [1.5.1] - 2026-07-08
 
@@ -150,39 +150,39 @@ All notable changes to NoFUD are documented here.
 
 ### Added
 
-- Bulk diary import support for migrating larger food-log datasets in one pass
+- Bulk diary import for larger food-log datasets in one pass
 
 ### Changed
 
-- Barcode scanning flow updates and APK size optimizations
+- Barcode scanning updates and smaller release APKs
 
 ### Fixed
 
-- Import error handling improvements for clearer recovery during migration/import flows
+- Import errors show plain messages during migration
 
 ## [1.4.0] - 2026-07-08
 
 ### Added
 
-- Migration and export flow improvements for smoother data portability
+- Migration and export flow fixes
 
 ### Changed
 
-- README install guidance refined, including architecture-aware APK selection notes
-- README feature/platform status copy clarified and package-size context improved
+- README install notes updated, including architecture-aware APK selection
+- README feature list and package-size notes updated
 
 ## [1.3.0] - 2026-07-08
 
 ### Added
 
 - Multi-architecture Android release packaging with dedicated APKs for `arm64-v8a`, `armeabi-v7a`, and `x86_64`
-- Universal APK output preserved for users who prefer a single download artifact
+- Universal APK kept for users who want one download
 
 ### Changed
 
-- Build/release pipeline now emits ABI-targeted artifacts to improve compatibility across more devices
-- Onboarding logo handling refined for dynamic theme changes
-- Documentation updates for Android development and performance workflow clarity
+- Build/release pipeline emits ABI-targeted APKs for more devices
+- Onboarding logo updates when the theme changes
+- Docs updated for Android development and performance workflows
 
 ## [1.2.0] - 2026-07-08
 
@@ -194,21 +194,21 @@ All notable changes to NoFUD are documented here.
 
 ### Changed
 
-- Progress charts now use phased animations and improved loading-state handling for smoother rendering
-- Progress data processing/state management refactors to reduce UI jank and improve stability
-- Home screen theming, shadows, and meal section nutrient presentation polish
-- App/icon activity-alias theming consistency and updated docs for install/distribution flows
+- Progress charts use phased animations and loading states while data loads
+- Progress data processing reorganized to reduce UI jank
+- Home screen theming, shadows, and meal-section nutrient styling updated
+- App/icon activity-alias theming fixed; install/distribution docs updated
 
 ### Fixed
 
-- State restoration edge cases in home/progress flows to prevent lost in-flight input
+- State restoration fixes in home/progress flows so in-flight input is not lost
 
 ## [1.1.0] - 2026-07-08
 
 ### Added
 
 - Safety and medical guidance in onboarding and settings
-- New food logging `AddFoodSheet` flow and improved camera capture behavior
+- New food logging `AddFoodSheet` flow and camera capture fixes
 - Codeberg release publishing helper script (`scripts/publish_release.sh`)
 
 ### Removed
@@ -217,10 +217,10 @@ All notable changes to NoFUD are documented here.
 
 ### Changed
 
-- Food logging UX refinements for photo and text input flows
-- UI theme consistency and component behavior across key screens
-- Updated app icons/logos and localized string copy for improved clarity
-- Android development environment and release docs updates
+- Food logging UX tweaks for photo and text input
+- UI theme and component behavior fixes across key screens
+- App icons/logos and localized strings updated
+- Android development and release docs updated
 
 ## [1.0.0] - 2026-07-07
 
@@ -231,8 +231,8 @@ Initial public release of NoFUD - an ad-free, privacy-focused Android fork of [F
 - NoFUD branding, Codeberg home, and `nofud://` meal-share deep links
 - Upstream MIT attribution (`NOTICE`, `ASSET_CREDITS.md`, About screen, README)
 - Original NoFUD launcher icon and splash logo (see [ASSET_CREDITS.md](ASSET_CREDITS.md))
-- [PRIVACY.md](PRIVACY.md) describing local-first, no-ads data practices
-- `scripts/optimize_exercise_images.py` and `assets/exercises/IMAGE_MANIFEST.json` audit trail
+- [PRIVACY.md](PRIVACY.md) documents local-first, no-ads data practices
+- `scripts/optimize_exercise_images.py` and `assets/exercises/IMAGE_MANIFEST.json` for bundled exercise photos
 - About screen link to [ASSET_CREDITS.md](ASSET_CREDITS.md); `assets/muscle/LICENSE` (MIT)
 
 ### Removed
