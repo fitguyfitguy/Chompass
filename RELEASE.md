@@ -22,7 +22,7 @@ cp keystore.properties.template keystore.properties
 
 ## Build and package
 
-One command runs tests, checks bundled exercise images, builds both release flavors in a single Gradle invocation, copies 8 APKs to the repo root, and writes `SHA256SUMS`:
+One command runs tests, checks bundled exercise images, builds release APKs, copies 4 APKs to the repo root, and writes `SHA256SUMS`:
 
 ```bash
 devenv tasks run release:package
@@ -45,7 +45,7 @@ Useful flags:
 For a local single-ABI smoke-test release (not for publishing):
 
 ```bash
-devenv shell bash -lc 'cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assemblePlayRelease :app:assembleFdroidRelease'
+devenv shell bash -lc 'cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assembleRelease'
 ```
 
 ## Tag and publish on Codeberg
@@ -61,11 +61,11 @@ git push origin v1.0.0
 ```
 
 5. Create a release at https://codeberg.org/fitguy/nofud/releases
-   - Attach all Play APK assets (`NoFUD-play-<version>.apk` + ABI APKs) and `SHA256SUMS`
-   - Also attach F-Droid APK assets (`NoFUD-fdroid-<version>.apk` + ABI APKs) and `SHA256SUMS`
+   - Attach F-Droid APK assets (`NoFUD-fdroid-<version>.apk` + ABI APKs) and `SHA256SUMS`
    - Paste changelog notes
-   - Stable download URL pattern (Play flavor): `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-play-<version>.apk`
-   - Stable download URL pattern (F-Droid flavor): `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
+   - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
+
+   The former **`play` flavor is disabled** — see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 
    Or with [tea](https://codeberg.org/tea/tea):
 
@@ -96,7 +96,7 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0   # dry-run first with --dry-run
 ```
 
-**Publish** uploads in batches (play → fdroid → checksums). If a run stops mid-way, resume without recreating the release:
+**Publish** uploads in batches (release APKs → checksums). If a run stops mid-way, resume without recreating the release:
 
 ```bash
 ./scripts/publish_release.sh 1.10.0 --assets-only
@@ -116,7 +116,7 @@ devenv tasks run release:screenshots
 
 This runs `./scripts/export_release_screenshots.sh`, which:
 
-1. Renders `@PreviewTest` composables via `./gradlew :app:updatePlayDebugScreenshotTest`
+1. Renders `@PreviewTest` composables via `./gradlew :app:updateDebugScreenshotTest`
 2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and dark-theme copies to `docs/screenshots/` for [README.md](README.md)
 
 `release:package` runs this export automatically after unit tests (commit `docs/screenshots/` with your release).
@@ -135,7 +135,7 @@ devenv tasks run release:package
 ./scripts/publish_release.sh 1.8.0 --with-screenshots
 ```
 
-Reference images for regression live under `android/app/src/screenshotTestPlayDebug/reference/`.
+Reference images for regression live under `android/app/src/screenshotTestDebug/reference/`.
 
 ### Screenshot fallbacks (if JVM previews are insufficient)
 
@@ -154,7 +154,7 @@ Prefer the emulator over coordinate-based phone taps when automating — screen 
 
 Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 
-- Build the `fdroid` flavor (`assembleFdroidRelease`) - omits proprietary Play Core libraries
+- Build release APKs (`assembleRelease`) — no proprietary Play Core libraries; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)
 - Add store metadata under `metadata/en-US/`
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
 - Keep `fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
@@ -174,8 +174,7 @@ Before shipping formula, constant, or guardrail changes:
 
 ## APK size baselines (1.4.0)
 
-- `fdroid` release APKs with ML Kit barcode scanning: ~45 MB (universal and per-ABI splits are similar)
-- Play and fdroid flavors share the same barcode scanner; only Play Core (in-app review/update) is play-only
+- Release APKs with ML Kit barcode scanning: ~45 MB (universal and per-ABI splits are similar)
 
 ## litertlm-android size delta (1.13.0)
 
@@ -183,9 +182,9 @@ Measured via `devenv tasks run release:package` (full multi-ABI build, not `-Pre
 
 | APK | 1.12.0 | 1.13.0 | Delta |
 |-----|--------|--------|-------|
-| `arm64-v8a` (play/fdroid) | ~28.5 MB | ~38.0 MB | **+9.5 MB** |
-| `x86_64` (play/fdroid) | ~28.8 MB | ~39.3 MB | **+10.5 MB** |
-| `armeabi-v7a` (play/fdroid) | ~28.2 MB | ~28.7 MB | +0.5 MB (no native litertlm lib for this ABI — delta is just new Kotlin/resources) |
-| universal (play/fdroid) | ~35.3 MB | ~54.8 MB | **+19.5 MB** (carries both arm64-v8a and x86_64 native libs) |
+| `arm64-v8a` | ~28.5 MB | ~38.0 MB | **+9.5 MB** |
+| `x86_64` | ~28.8 MB | ~39.3 MB | **+10.5 MB** |
+| `armeabi-v7a` | ~28.2 MB | ~28.7 MB | +0.5 MB (no native litertlm lib for this ABI — delta is just new Kotlin/resources) |
+| universal | ~35.3 MB | ~54.8 MB | **+19.5 MB** (carries both arm64-v8a and x86_64 native libs) |
 
 The model itself (~2.4 GB) is never bundled — it's downloaded at runtime into `filesDir/models/`. This delta is entirely `liblitertlm_jni.so` (R8/debug-symbol stripping couldn't strip it — see the "Unable to strip the following libraries" build warning). Users on `armeabi-v7a`-only devices (rare) get the on-device feature's UI but no working backend, since there's no native lib for that ABI; `OnDeviceCapability.isSupported()` already excludes non-`arm64-v8a`/`x86_64` ABIs from the capability gate, so the Settings picker correctly hides `ON_DEVICE` for them.

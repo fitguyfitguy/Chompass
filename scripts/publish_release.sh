@@ -36,7 +36,7 @@ Options:
   --with-screenshots   Also attach release-screenshots/*.png (needs extra quota)
   --assets-only        Skip release creation; upload missing assets to an existing tag
 
-Uploads APKs in batches (play, fdroid, checksums) so a quota error mid-run can be
+Uploads APKs in batches (fdroid, checksums) so a quota error mid-run can be
 resumed with --assets-only after freeing space:
   ./scripts/manage_release_assets.sh list
   ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0
@@ -55,12 +55,6 @@ CHECKSUMS="$ROOT/SHA256SUMS"
 SCREENSHOT_DIR="$ROOT/release-screenshots"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 
-PLAY_ASSETS=(
-  "$ROOT/NoFUD-play-${VERSION}.apk"
-  "$ROOT/NoFUD-play-${VERSION}-arm64-v8a.apk"
-  "$ROOT/NoFUD-play-${VERSION}-armeabi-v7a.apk"
-  "$ROOT/NoFUD-play-${VERSION}-x86_64.apk"
-)
 FDROID_ASSETS=(
   "$ROOT/NoFUD-fdroid-${VERSION}.apk"
   "$ROOT/NoFUD-fdroid-${VERSION}-arm64-v8a.apk"
@@ -233,8 +227,7 @@ else
   echo "==> Resuming asset upload for $TAG"
 fi
 
-upload_assets "play APKs" "${PLAY_ASSETS[@]}"
-upload_assets "fdroid APKs" "${FDROID_ASSETS[@]}"
+upload_assets "release APKs" "${FDROID_ASSETS[@]}"
 upload_assets "SHA256SUMS" "${CHECKSUM_ASSETS[@]}"
 if [[ ${#SCREENSHOT_ASSETS[@]} -gt 0 ]]; then
   upload_assets "screenshots" "${SCREENSHOT_ASSETS[@]}"

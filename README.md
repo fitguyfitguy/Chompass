@@ -96,7 +96,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 - **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK cloud AI or opt-in on-device Gemma 4 inference ([PRIVACY.md](PRIVACY.md))
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect; `nofud://` meal share links
 - **Wearables:** Health Connect in/out for steps, exercise, weight, meals, sleep, hydration, energy burn (Gadgetbridge, openScale, Samsung Health, etc.)
-- **Lean scope:** no workouts tab or bundled exercise library; `play` and `fdroid` builds on Codeberg
+- **Lean scope:** no workouts tab or bundled exercise library; F-Droid / Codeberg APKs (Google Play flavor disabled — see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md))
 
 **UX, size, speed**
 
@@ -184,7 +184,7 @@ Weight and body data now import from a file too: **Settings → Import Weight & 
 | Fallback AI provider | No | **Yes** |
 | APK size (universal, approx.) | ~120 MB (with workouts) | **~34 MB** (v1.11.0) |
 | UX / UI polish | Baseline | **Android-optimized** (`AddFoodSheet`, widgets, themes) |
-| F-Droid / play release flavors | Play-focused | **Both on Codeberg** |
+| F-Droid / direct APK releases | Play-focused | **Codeberg** (play flavor disabled) |
 
 Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
 

@@ -93,7 +93,7 @@ echo "Saved raw log: ${LOG}"
 
 if ! grep -q "op=benchmark phase=done" "${LOG}" 2>/dev/null; then
   echo "WARNING: no 'phase=done' marker. Most likely the running app is an older APK"
-  echo "         without benchmark support — reinstall app-play-universal-debug.apk and retry."
+  echo "         without benchmark support — reinstall app-universal-debug.apk and retry."
 fi
 
 SUMMARIZER="$(dirname "$0")/summarize_entry_perf.py"

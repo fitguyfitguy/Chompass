@@ -80,11 +80,11 @@ Tool results must be returned as `com.google.gson.JsonElement` from `@Tool` func
 Build in WSL devenv; install from **Windows PowerShell** (USB adb):
 
 ```bash
-devenv shell bash -lc 'cd android && ./gradlew :app:assemblePlayDebug'
+devenv shell bash -lc 'cd android && ./gradlew :app:assembleDebug'
 ```
 
 ```powershell
-adb install -r \\wsl$\archlinux\home\archliNix\NoFUD\android\app\build\outputs\apk\play\debug\app-play-arm64-v8a-debug.apk
+adb install -r \\wsl$\archlinux\home\archliNix\NoFUD\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
 ```
 
 Use the **arm64-v8a** split on Pixel 9a (or the universal debug APK).

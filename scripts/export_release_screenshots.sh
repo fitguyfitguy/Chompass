@@ -8,7 +8,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ANDROID="$ROOT/android"
-REF_DIR="$ANDROID/app/src/screenshotTestPlayDebug/reference/org/codeberg/fitguy/nofud/ReleaseScreenshotPreviewsKt"
+REF_DIR="$ANDROID/app/src/screenshotTestDebug/reference/org/codeberg/fitguy/nofud/ReleaseScreenshotPreviewsKt"
 OUT_DIR="$ROOT/release-screenshots"
 README_DIR="$ROOT/docs/screenshots"
 VALIDATE_ONLY=0
@@ -18,7 +18,7 @@ usage() {
 Usage: export_release_screenshots.sh [options]
 
 Options:
-  --validate   Run validatePlayDebugScreenshotTest instead of updating references
+  --validate   Run validateDebugScreenshotTest instead of updating references
   -h, --help   Show this help
 EOF
 }
@@ -54,10 +54,10 @@ run_in_devenv() {
 
 if [[ "$VALIDATE_ONLY" -eq 1 ]]; then
   echo "==> Validating screenshot previews"
-  run_in_devenv 'cd android && ./gradlew :app:validatePlayDebugScreenshotTest'
+  run_in_devenv 'cd android && ./gradlew :app:validateDebugScreenshotTest'
 else
   echo "==> Updating screenshot preview references"
-  run_in_devenv 'cd android && ./gradlew :app:updatePlayDebugScreenshotTest'
+  run_in_devenv 'cd android && ./gradlew :app:updateDebugScreenshotTest'
 fi
 
 if [[ ! -d "$REF_DIR" ]]; then

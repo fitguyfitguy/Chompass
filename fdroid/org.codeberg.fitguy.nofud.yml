@@ -1,5 +1,9 @@
 # F-Droid metadata draft for fdroiddata merge request.
 # Copy to metadata/org.codeberg.fitguy.nofud.yml in https://gitlab.com/fdroid/fdroiddata
+#
+# Gradle tasks: tags through v1.14.1 use fdroidRelease (historical product flavor).
+# After the play-flavor removal, add new Builds entries with gradle: release.
+# See docs/DISTRIBUTION.md.
 
 Categories:
   - Health & Fitness

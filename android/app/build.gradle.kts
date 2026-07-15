@@ -57,16 +57,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    flavorDimensions += "distribution"
-    productFlavors {
-        create("play") {
-            dimension = "distribution"
-        }
-        create("fdroid") {
-            dimension = "distribution"
-        }
-    }
-
     signingConfigs {
         if (keystoreProps.isNotEmpty()) {
             create("release") {
@@ -91,7 +81,7 @@ android {
             )
             // Only attach the signing config if keystore.properties exists. Without
             // it, gradle emits app-release-unsigned.apk and you sign manually with
-            // apksigner before uploading to the Play Console.
+            // apksigner before uploading to a store or release host.
             signingConfigs.findByName("release")?.let { signingConfig = it }
             // Never bake an API key into a shippable build.
             buildConfigField("String", "GEMINI_API_KEY", bcString(""))
@@ -157,8 +147,6 @@ kotlin {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
-    "playImplementation"(libs.play.review.ktx)
-    "playImplementation"(libs.play.app.update)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.coil.compose)
@@ -183,8 +171,7 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    "playImplementation"(libs.mlkit.barcode.scanning)
-    "fdroidImplementation"(libs.mlkit.barcode.scanning)
+    implementation(libs.mlkit.barcode.scanning)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
@@ -203,13 +190,8 @@ dependencies {
     // ON_DEVICE dispatch path (behind the onDeviceFeatureVisible flag,
     // default off). Whether litertlm-android + a runtime fetch of a
     // non-buildable binary blob from Hugging Face clear F-Droid's guidelines
-    // is still an open question (production plan Phase 3) — if F-Droid
-    // rejects it, this needs to become "playImplementation" with
-    // OnDeviceLlmClient split into src/play + a src/fdroid stub, mirroring
-    // the mlkit.barcode.scanning flavor-scoping precedent. Not done here
-    // because that would also require splitting the debug smoke test
-    // (OnDeviceLlmSmokeTest.kt), which directly uses litertlm ToolSet/
-    // Conversation types for Tier C.
+    // is still an open question (production plan Phase 3). The Google Play
+    // distribution flavor is disabled for now — see docs/DISTRIBUTION.md.
     implementation(libs.litertlm.android)
 
     screenshotTestImplementation(libs.screenshot.validation.api)
