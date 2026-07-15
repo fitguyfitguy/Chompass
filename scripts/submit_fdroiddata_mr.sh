@@ -74,12 +74,29 @@ MR_BODY_FILE="$ROOT/docs/FDROID_SUBMISSION.md"
 # Extract the fenced MR body block from FDROID_SUBMISSION.md
 MR_BODY="$(awk '/^```markdown$/{flag=1;next} /^```$/{if(flag){exit}} flag' "$MR_BODY_FILE")"
 
-glab mr create \
-  --repo "fdroid/fdroiddata" \
-  --source-branch "$BRANCH" \
-  --target-branch master \
-  --title "New App: org.codeberg.fitguy.nofud" \
-  --description "$MR_BODY" \
-  --yes
+SOURCE_PROJECT_ID="$(glab api "projects/${FORK_PATH}%2Ffdroiddata" 2>/dev/null | sed -n 's/.*"id":\([0-9]*\).*/\1/p' | head -1)"
+TARGET_PROJECT_ID="$(glab api "projects/fdroid%2Ffdroiddata" 2>/dev/null | sed -n 's/.*"id":\([0-9]*\).*/\1/p' | head -1)"
 
-echo "Done. MR URL should appear above."
+if [[ -z "$SOURCE_PROJECT_ID" || -z "$TARGET_PROJECT_ID" ]]; then
+  echo "Could not resolve GitLab project IDs for fork MR." >&2
+  echo "Open the MR manually:" >&2
+  echo "  https://gitlab.com/${FORK_PATH}/fdroiddata/-/merge_requests/new?merge_request%5Bsource_branch%5D=${BRANCH}" >&2
+  exit 1
+fi
+
+# Use API to avoid glab's interactive "base repository" prompt when run inside the fork clone.
+MR_JSON="$(glab api -X POST "projects/${SOURCE_PROJECT_ID}/merge_requests" \
+  -f source_branch="$BRANCH" \
+  -f target_branch=master \
+  -f target_project_id="$TARGET_PROJECT_ID" \
+  -f title='New App: org.codeberg.fitguy.nofud' \
+  -f description="$MR_BODY")"
+
+MR_URL="$(printf '%s' "$MR_JSON" | sed -n 's/.*"web_url":"\([^"]*\/merge_requests\/[0-9]*\)".*/\1/p' | head -1)"
+if [[ -n "$MR_URL" ]]; then
+  echo "Merge request: $MR_URL"
+else
+  echo "$MR_JSON"
+fi
+
+echo "Done."
