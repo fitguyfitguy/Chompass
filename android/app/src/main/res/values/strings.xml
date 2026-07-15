@@ -682,6 +682,8 @@
     <string name="settings_on_device_model_ready">Downloaded</string>
     <string name="settings_on_device_model_not_downloaded">Not downloaded</string>
     <string name="settings_on_device_accuracy_footer">On-device models run locally for privacy. They are much smaller than cloud models (Gemini, GPT, Claude, etc.) and often misread portions, brand names, and photos. Enable Fallback Provider so a cloud model can retry when on-device fails.</string>
+    <string name="settings_gemini_google_search">Google Search grounding</string>
+    <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this — on Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
     <string name="on_device_model_privacy_notice">Runs entirely on this device — nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
     <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or non-Tensor hardware — haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
     <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads — especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>

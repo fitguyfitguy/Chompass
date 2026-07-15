@@ -94,6 +94,7 @@ data class SettingsUiState(
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
     val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
     val fallbackApiKeyMasked: String = "",
+    val geminiGoogleSearchEnabled: Boolean = false,
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val mealSchedule: org.codeberg.fitguy.nofud.models.MealSchedule = org.codeberg.fitguy.nofud.models.MealSchedule.Default,
@@ -169,6 +170,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbProvider = container.prefs.selectedFallbackProvider.first()
             val fbModel = fbProvider.supportedFallbackModelOrDefault(container.prefs.selectedFallbackModel.first())
             val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
+            val geminiGoogleSearch = container.prefs.geminiGoogleSearchEnabled.first()
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
             val homeDisplay = container.prefs.homeDisplayPreferences.first()
             val mealSchedule = container.prefs.mealSchedule.first()
@@ -218,6 +220,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 fallbackProvider = fbProvider,
                 fallbackModel = fbModel,
                 fallbackApiKeyMasked = fbMasked,
+                geminiGoogleSearchEnabled = geminiGoogleSearch,
                 optionalNutrientGoals = optionalGoals,
                 homeDisplay = homeDisplay,
                 mealSchedule = mealSchedule,
@@ -286,6 +289,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.prefs.setMaxResponseTokens(clamped)
             _ui.value = _ui.value.copy(maxResponseTokens = clamped)
+        }
+    }
+
+    fun setGeminiGoogleSearchEnabled(v: Boolean) {
+        viewModelScope.launch {
+            container.prefs.setGeminiGoogleSearchEnabled(v)
+            _ui.value = _ui.value.copy(geminiGoogleSearchEnabled = v)
         }
     }
 
