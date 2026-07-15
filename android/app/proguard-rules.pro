@@ -68,14 +68,13 @@
 -keep class com.google.android.gms.internal.mlkit_** { *; }
 
 # ─── Crash reporting ──────────────────────────────────────────────────────────
-# Keep line numbers so Play Console crash reports stay readable, but rename
+# Keep line numbers so release crash reports stay readable, but rename
 # the original source file name so we don't leak internal file structure.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# play-core-ktx (in-app review) references this compile-only annotation that no
-# runtime dependency ships; R8 in full mode fails the release build without the
-# suppression. Surfaced when play-services-ads 24.4 shifted basement versions.
+# play-core-ktx referenced a compile-only annotation; keep the suppression for
+# transitive Google Play Services / ML Kit dependencies.
 -dontwarn com.google.android.gms.common.annotation.NoNullnessRewrite
 
 # ─── Workouts exercise library (Gson) ─────────────────────────────────────────

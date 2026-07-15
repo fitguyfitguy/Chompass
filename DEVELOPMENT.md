@@ -2,6 +2,8 @@
 
 Requirements: JDK 17+, Android SDK 36.
 
+Distribution: single F-Droid / Codeberg build — the former **`play` flavor is disabled**. See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+
 ## WSL / Nix (devenv)
 
 If you use home-manager with devenv and direnv (as on WSL2 Arch + Nix), the repo provides a project environment with JDK 17 and Android SDK 36:
@@ -20,30 +22,29 @@ build-debug
 build-release
 ```
 
-Debug APK package: `org.codeberg.fitguy.nofud.debug` (`assemblePlayDebug`).
+Debug APK package: `org.codeberg.fitguy.nofud.debug` (`assembleDebug`).
 
 Or from outside the shell:
 
 ```bash
 devenv tasks run build:debug
 devenv tasks run build:release
-devenv tasks run build:all-release
 devenv shell -- build-debug
 ```
 
 In Cursor/agent shells where direnv does not load, run builds explicitly:
 
 ```bash
-devenv shell bash -lc 'cd android && ./gradlew :app:assemblePlayDebug'
+devenv shell bash -lc 'cd android && ./gradlew :app:assembleDebug'
 ```
 
-For flavor-scoped unit tests while iterating on the play debug build:
+For debug-scoped unit tests while iterating:
 
 ```bash
-devenv shell bash -lc 'cd android && ./gradlew :app:testPlayDebugUnitTest'
+devenv shell bash -lc 'cd android && ./gradlew :app:testDebugUnitTest'
 ```
 
-Prefer `assemblePlayDebug` over `assembleDebug` — with product flavors, `assembleDebug` builds every flavor's debug variant. Reserve `debug2` (`assemblePlayDebug2`) for side-by-side installs only.
+Reserve `debug2` (`assembleDebug2`) for side-by-side installs only.
 
 If `platforms;android-36.1` is missing from nixpkgs, add the android-nixpkgs input:
 
@@ -56,13 +57,13 @@ devenv update
 
 ```bash
 cd android
-./gradlew :app:assemblePlayDebug
+./gradlew :app:assembleDebug
 ```
 
 Install the debug APK (side-by-side package `org.codeberg.fitguy.nofud.debug`):
 
 ```bash
-adb install -r android/app/build/outputs/apk/play/debug/app-play-debug.apk
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.

@@ -101,26 +101,22 @@ if [[ "$CHECK_ONLY" -eq 1 ]]; then
 fi
 
 if [[ "$SKIP_BUILD" -eq 0 ]]; then
-  echo "==> Building play + fdroid release APKs"
-  run_in_devenv 'cd android && ./gradlew :app:assemblePlayRelease :app:assembleFdroidRelease'
+  echo "==> Building release APKs"
+  run_in_devenv 'cd android && ./gradlew :app:assembleRelease'
 fi
 
 declare -a ASSETS=(
-  "play|universal|android/app/build/outputs/apk/play/release/app-play-universal-release.apk|NoFUD-play-${VERSION}.apk"
-  "play|arm64-v8a|android/app/build/outputs/apk/play/release/app-play-arm64-v8a-release.apk|NoFUD-play-${VERSION}-arm64-v8a.apk"
-  "play|armeabi-v7a|android/app/build/outputs/apk/play/release/app-play-armeabi-v7a-release.apk|NoFUD-play-${VERSION}-armeabi-v7a.apk"
-  "play|x86_64|android/app/build/outputs/apk/play/release/app-play-x86_64-release.apk|NoFUD-play-${VERSION}-x86_64.apk"
-  "fdroid|universal|android/app/build/outputs/apk/fdroid/release/app-fdroid-universal-release.apk|NoFUD-fdroid-${VERSION}.apk"
-  "fdroid|arm64-v8a|android/app/build/outputs/apk/fdroid/release/app-fdroid-arm64-v8a-release.apk|NoFUD-fdroid-${VERSION}-arm64-v8a.apk"
-  "fdroid|armeabi-v7a|android/app/build/outputs/apk/fdroid/release/app-fdroid-armeabi-v7a-release.apk|NoFUD-fdroid-${VERSION}-armeabi-v7a.apk"
-  "fdroid|x86_64|android/app/build/outputs/apk/fdroid/release/app-fdroid-x86_64-release.apk|NoFUD-fdroid-${VERSION}-x86_64.apk"
+  "universal|android/app/build/outputs/apk/release/app-universal-release.apk|NoFUD-fdroid-${VERSION}.apk"
+  "arm64-v8a|android/app/build/outputs/apk/release/app-arm64-v8a-release.apk|NoFUD-fdroid-${VERSION}-arm64-v8a.apk"
+  "armeabi-v7a|android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk|NoFUD-fdroid-${VERSION}-armeabi-v7a.apk"
+  "x86_64|android/app/build/outputs/apk/release/app-x86_64-release.apk|NoFUD-fdroid-${VERSION}-x86_64.apk"
 )
 
 declare -a DEST_FILES=()
 echo "==> Copying APKs to repo root"
 MISSING=0
 for entry in "${ASSETS[@]}"; do
-  IFS='|' read -r _flavor _abi src rel <<<"$entry"
+  IFS='|' read -r _abi src rel <<<"$entry"
   src_path="$ROOT/$src"
   dest_path="$ROOT/$rel"
   if [[ ! -f "$src_path" ]]; then
@@ -134,7 +130,7 @@ for entry in "${ASSETS[@]}"; do
 done
 if [[ "$MISSING" -ne 0 ]]; then
   echo "One or more APK outputs are missing. For a single-ABI smoke test, rebuild with:" >&2
-  echo "  cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assemblePlayRelease :app:assembleFdroidRelease" >&2
+  echo "  cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assembleRelease" >&2
   exit 1
 fi
 

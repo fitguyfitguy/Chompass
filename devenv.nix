@@ -20,32 +20,22 @@
     export ANDROID_ADB_SERVER_PORT=5038
   '';
 
-  scripts.build-debug.exec = "cd android && ./gradlew :app:assemblePlayDebug";
-  scripts.build-release.exec = "cd android && ./gradlew :app:assemblePlayRelease";
+  scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
+  scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
 
   tasks."build:debug" = {
-    exec = "cd android && ./gradlew :app:assemblePlayDebug";
+    exec = "cd android && ./gradlew :app:assembleDebug";
     description = "Assemble the debug APK";
   };
 
   tasks."build:release" = {
-    exec = "cd android && ./gradlew :app:assemblePlayRelease";
-    description = "Assemble the signed play-flavor release APK";
-  };
-
-  tasks."build:fdroid-release" = {
-    exec = "cd android && ./gradlew :app:assembleFdroidRelease";
-    description = "Assemble the F-Droid release APK (no Play Core)";
-  };
-
-  tasks."build:all-release" = {
-    exec = "cd android && ./gradlew :app:assemblePlayRelease :app:assembleFdroidRelease";
-    description = "Assemble play + fdroid release APKs in one Gradle run";
+    exec = "cd android && ./gradlew :app:assembleRelease";
+    description = "Assemble the signed release APK (F-Droid / Codeberg distribution)";
   };
 
   tasks."release:package" = {
     exec = "./scripts/package_release.sh";
-    description = "Run pre-release checks, build both flavors, package APKs, and write SHA256SUMS";
+    description = "Run pre-release checks, build release APKs, package, and write SHA256SUMS";
   };
 
   tasks."release:check-metadata" = {
