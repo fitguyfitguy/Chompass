@@ -128,6 +128,7 @@ internal fun SettingsSheets(
                 }
                 SettingsSheet.ON_DEVICE_MODEL -> OnDeviceModelSheet(
                     container = vm.container,
+                    selectedModelId = ui.selectedModel,
                     onUnload = vm::unloadOnDeviceModel,
                     onDelete = vm::deleteOnDeviceModel,
                     onStartDownload = vm::startOnDeviceModelDownload,

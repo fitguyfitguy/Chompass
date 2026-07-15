@@ -23,6 +23,7 @@ import org.codeberg.fitguy.nofud.models.SpeechProvider
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WaterQuickPresets
 import org.codeberg.fitguy.nofud.models.WeightEntry
+import org.codeberg.fitguy.nofud.services.ondevice.ModelCatalog
 import org.codeberg.fitguy.nofud.services.ondevice.OnDeviceCapability
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
@@ -418,16 +419,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun deleteOnDeviceModel() {
         viewModelScope.launch {
+            val entry = ModelCatalog.forModelId(_ui.value.selectedModel)
             container.onDeviceLlmGateway.unload()
-            container.onDeviceModelDownloadManager.delete()
-            container.prefs.setOnDeviceModelDownloadedVersion(null)
+            container.onDeviceModelDownloadManager.delete(entry)
+            val stillDownloaded = ModelCatalog.entries.any { container.onDeviceModelDownloadManager.isDownloaded(it) }
+            if (!stillDownloaded) {
+                container.prefs.setOnDeviceModelDownloadedVersion(null)
+            }
         }
     }
 
     fun startOnDeviceModelDownload() {
         viewModelScope.launch {
+            val entry = ModelCatalog.forModelId(_ui.value.selectedModel)
             val overWifiOnly = container.prefs.onDeviceDownloadOverWifiOnly.first()
-            container.onDeviceModelDownloadManager.startDownload(overWifiOnly)
+            container.onDeviceModelDownloadManager.startDownload(entry, overWifiOnly)
         }
     }
 
@@ -441,8 +447,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun selectModel(m: String) {
         viewModelScope.launch {
+            val prev = _ui.value.selectedModel
             val model = _ui.value.selectedAI.supportedModelOrDefault(m)
             container.prefs.setSelectedAIModel(model)
+            if (_ui.value.selectedAI == AIProvider.ON_DEVICE && prev != model) {
+                container.onDeviceLlmGateway.unload()
+            }
             _ui.value = _ui.value.copy(selectedModel = model)
         }
     }

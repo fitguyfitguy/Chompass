@@ -2,8 +2,11 @@ package org.codeberg.fitguy.nofud.services.ondevice
 
 import android.content.Context
 import java.io.File
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.codeberg.fitguy.nofud.data.PreferencesStore
+import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.services.ai.AiError
 import org.codeberg.fitguy.nofud.services.ai.OnDeviceLlmClient
 
@@ -13,14 +16,21 @@ import org.codeberg.fitguy.nofud.services.ai.OnDeviceLlmClient
  * zero cost) and kept resident until [unload] is called explicitly from
  * Settings — per-call reload is not viable at this latency.
  */
-class OnDeviceLlmGateway(private val context: Context) {
+class OnDeviceLlmGateway(
+    private val context: Context,
+    private val prefs: PreferencesStore,
+) {
 
     private val lock = Mutex()
     private var client: OnDeviceLlmClient? = null
+    private var loadedModelId: String? = null
 
     val isLoaded: Boolean get() = client != null
 
-    fun isModelDownloaded(): Boolean = ModelDownloadManager(context).isDownloaded()
+    suspend fun isModelDownloaded(): Boolean {
+        val entry = selectedEntry()
+        return ModelDownloadManager(context).isDownloaded(entry)
+    }
 
     /** Text-only Tier A call. Throws if the model isn't downloaded. */
     suspend fun generate(systemPrompt: String, userPrompt: String): String {
@@ -34,23 +44,36 @@ class OnDeviceLlmGateway(private val context: Context) {
         return engine.generateWithImage(userPrompt, imageBytes, systemPrompt)
     }
 
-    /** Frees the resident engine (~1-2GB) on demand — exposed as a Settings action. */
+    /** Frees the resident engine on demand — exposed as a Settings action. */
     suspend fun unload() {
         lock.withLock {
             client?.close()
             client = null
+            loadedModelId = null
         }
     }
 
+    private suspend fun selectedEntry(): OnDeviceModelEntry {
+        val modelId = prefs.selectedAIModel.first()
+        return ModelCatalog.forModelId(AIProvider.ON_DEVICE.supportedModelOrDefault(modelId))
+    }
+
     private suspend fun ensureEngine(vision: Boolean): OnDeviceLlmClient {
-        if (!isModelDownloaded()) {
+        val entry = selectedEntry()
+        if (!ModelDownloadManager(context).isDownloaded(entry)) {
             throw AiError.OnDeviceModelNotDownloaded
         }
         return lock.withLock {
             val existing = client
-            if (existing != null && (!vision || existing.visionEnabled)) return@withLock existing
+            if (existing != null &&
+                loadedModelId == entry.modelId &&
+                (!vision || existing.visionEnabled)
+            ) {
+                return@withLock existing
+            }
             existing?.close()
-            val modelPath = ModelDownloadManager(context).modelFile().absolutePath
+            loadedModelId = entry.modelId
+            val modelPath = ModelDownloadManager(context).modelFile(entry).absolutePath
             val cacheDir = File(context.cacheDir, "litert").apply { mkdirs() }.absolutePath
             val created = OnDeviceLlmClient(
                 modelPath = modelPath,
