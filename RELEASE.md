@@ -168,7 +168,7 @@ Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
 - Keep `fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 
-See the plan in `.cursor/plans/` or project issues for the full F-Droid checklist.
+See [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md) for the full checklist and fdroiddata MR body.
 
 ## Calculation changes
 
