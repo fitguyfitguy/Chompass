@@ -65,7 +65,7 @@ git push origin v1.0.0
    - Paste changelog notes
    - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
 
-   The former **`play` flavor is disabled** — see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+   The former **`play` flavor is disabled**; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 
    Or with [tea](https://codeberg.org/tea/tea):
 
@@ -90,7 +90,7 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 ./scripts/manage_release_assets.sh list
 ```
 
-**Free space** by removing old per-ABI split APKs (universal APKs and `SHA256SUMS` stay — enough for direct installs and F-Droid):
+**Free space** by removing old per-ABI split APKs (universal APKs and `SHA256SUMS` stay; enough for direct installs and F-Droid):
 
 ```bash
 ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0   # dry-run first with --dry-run
@@ -117,7 +117,7 @@ See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 
 ## Release screenshots (optional)
 
-JVM-based Compose screenshot previews render on the maintainer machine inside devenv — no phone or adb required.
+JVM-based Compose screenshot previews render on the maintainer machine inside devenv. No phone or adb required.
 
 ```bash
 devenv tasks run release:screenshots
@@ -136,7 +136,7 @@ Validate without updating reference images:
 ./scripts/export_release_screenshots.sh --validate
 ```
 
-Attach screenshots when publishing (only if release quota has room — see [Codeberg storage quota](RELEASE.md#codeberg-storage-quota)):
+Attach screenshots when publishing (only if release quota has room; see [Codeberg storage quota](RELEASE.md#codeberg-storage-quota)):
 
 ```bash
 devenv tasks run release:screenshots
@@ -148,22 +148,22 @@ Reference images for regression live under `android/app/src/screenshotTestDebug/
 
 ### Screenshot fallbacks (if JVM previews are insufficient)
 
-**Tier 2 — headless Android emulator (no phone):** enable `emulator.enable` and a system image in `devenv.nix`, then capture from a running emulator with `adb exec-out screencap`. A dedicated `scripts/capture_release_screenshots_emulator.sh` can be added when needed.
+**Tier 2: headless Android emulator (no phone):** enable `emulator.enable` and a system image in `devenv.nix`, then capture from a running emulator with `adb exec-out screencap`. A dedicated `scripts/capture_release_screenshots_emulator.sh` can be added when needed.
 
-**Tier 3 — physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](scripts/capture_android_perf_baseline.sh):
+**Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](scripts/capture_android_perf_baseline.sh):
 
 ```powershell
 adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_test_data true
 adb exec-out screencap -p > 01-home.png
 ```
 
-Prefer the emulator over coordinate-based phone taps when automating — screen sizes vary.
+Prefer the emulator over coordinate-based phone taps when automating; screen sizes vary.
 
 ## F-Droid follow-up
 
 Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 
-- Build release APKs (`assembleRelease`) — no proprietary Play Core libraries; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)
+- Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)
 - Add store metadata under `metadata/en-US/`
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
 - Keep `fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
@@ -187,13 +187,13 @@ Before shipping formula, constant, or guardrail changes:
 
 ## litertlm-android size delta (1.13.0)
 
-Measured via `devenv tasks run release:package` (full multi-ABI build, not `-PreleaseAbi`), comparing 1.12.0 → 1.13.0 (first release with `litertlm-android` as `implementation` for both flavors — see `build.gradle.kts`):
+Measured via `devenv tasks run release:package` (full multi-ABI build, not `-PreleaseAbi`), comparing 1.12.0 → 1.13.0 (first release with `litertlm-android` as `implementation` for both flavors; see `build.gradle.kts`):
 
 | APK | 1.12.0 | 1.13.0 | Delta |
 |-----|--------|--------|-------|
 | `arm64-v8a` | ~28.5 MB | ~38.0 MB | **+9.5 MB** |
 | `x86_64` | ~28.8 MB | ~39.3 MB | **+10.5 MB** |
-| `armeabi-v7a` | ~28.2 MB | ~28.7 MB | +0.5 MB (no native litertlm lib for this ABI — delta is just new Kotlin/resources) |
+| `armeabi-v7a` | ~28.2 MB | ~28.7 MB | +0.5 MB (no native litertlm lib for this ABI; delta is just new Kotlin/resources) |
 | universal | ~35.3 MB | ~54.8 MB | **+19.5 MB** (carries both arm64-v8a and x86_64 native libs) |
 
-The model itself (~2.4 GB) is never bundled — it's downloaded at runtime into `filesDir/models/`. This delta is entirely `liblitertlm_jni.so` (R8/debug-symbol stripping couldn't strip it — see the "Unable to strip the following libraries" build warning). Users on `armeabi-v7a`-only devices (rare) get the on-device feature's UI but no working backend, since there's no native lib for that ABI; `OnDeviceCapability.isSupported()` already excludes non-`arm64-v8a`/`x86_64` ABIs from the capability gate, so the Settings picker correctly hides `ON_DEVICE` for them.
+The model itself (~2.4 GB) is never bundled; it's downloaded at runtime into `filesDir/models/`. This delta is entirely `liblitertlm_jni.so` (R8/debug-symbol stripping couldn't strip it; see the "Unable to strip the following libraries" build warning). Users on `armeabi-v7a`-only devices (rare) get the on-device feature's UI but no working backend, since there's no native lib for that ABI; `OnDeviceCapability.isSupported()` already excludes non-`arm64-v8a`/`x86_64` ABIs from the capability gate, so the Settings picker correctly hides `ON_DEVICE` for them.
