@@ -74,7 +74,7 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
 - **Subdir:** `android`
-- **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `release` from v1.14.2 onward
+- **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `yes` (no product flavors → `assembleRelease`) from v1.14.2 onward
 - **Current tag:** `v1.14.3` (versionCode 19)
 - **F-Droid build:** `release` with `-Pnofud.barcodeMlkit=false` (ML Kit excluded; barcode tile hidden)
 
