@@ -3,8 +3,8 @@
 Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
 **Application ID:** `org.codeberg.fitguy.nofud`  
-**Current version:** 1.14.5 (versionCode 21)  
-**Build task (v1.14.2+):** `release` in `android/` subdir  
+**Current version:** 1.14.6 (versionCode 22)  
+**Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
 
 ---
@@ -17,7 +17,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] MIT license in repo root
 - [x] Version tags matching `versionName` (`v1.14.2`, etc.)
 - [x] Single FOSS build; Play Core / ad SDKs removed ([`docs/DISTRIBUTION.md`](DISTRIBUTION.md))
-- [x] Confirm `v1.14.5` tag exists on Codeberg and `assembleRelease` succeeds
+- [x] Confirm `v1.14.6` tag exists on Codeberg and `assembleRelease` succeeds
 - [x] Run `devenv tasks run release:check-metadata` before each release
 - [x] Push `metadata/en-US/` to Codeberg `main` (required before fdroiddata review)
 
@@ -26,7 +26,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] `title.txt`, `short_description.txt`, `full_description.txt` (workouts wording removed)
 - [x] `images/icon.png` (512×512, from `ic_logo_teal.png`)
 - [x] `images/phoneScreenshots/1.png` … `5.png` (from `docs/screenshots/`)
-- [x] `changelogs/21.txt` for current `versionCode`
+- [x] `changelogs/22.txt` for current `versionCode`
 - [ ] Add `changelogs/<versionCode>.txt` for every future release
 
 ### Screenshot map
@@ -79,7 +79,7 @@ Copy into the GitLab MR description:
   No, I don't want this yet.
 * [ ] Multiple apks for native code
 
-  I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; splits disabled). `output:` points at `app/…/app-release-unsigned.apk` because `subdir` is the Gradle root (`android/`), not the `app` module.
+  I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; ABI splits disabled). `subdir` is `android/app` (the app module), so the unsigned APK lands at `build/outputs/apk/release/app-release-unsigned.apk` with no `output:` override.
 
 ---
 
@@ -94,15 +94,17 @@ Copy into the GitLab MR description:
 
 NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds — no ML Kit / proprietary scanner split.
 
+**v1.14.6** (2026-07-20): bug fixes for imperial water display, AI key trim / read timeout / token clamp, camera preview framing, delete undo, widget loading timeout, save durability, and swipe thresholds.
+
 ## Build
 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
-- **Subdir:** `android`
+- **Subdir:** `android/app` (app module; parent `android/settings.gradle.kts` is found automatically)
 - **Gradle:** `yes` (`assembleRelease`)
-- **Commit:** `9b2f924bc7341adc6718744fe6b7ef4ccc29da56` (tag `v1.14.5`, versionCode 21)
-- **Props:** `-PreleaseAbi=arm64-v8a`
-- **Output:** `app/build/outputs/apk/release/app-release-unsigned.apk` (required: Gradle root is `android/`, APK is under the `app` module; fdroidserver only auto-searches `subdir/build/outputs/`)
-- **Codeberg release:** https://codeberg.org/fitguy/NoFUD/releases/tag/v1.14.5 (same FOSS build as F-Droid; barcode via zxing-cpp)
+- **Commit:** `e836f9e737d70be8dbdc48308bddb0f4eceb8e22` (tag `v1.14.6`, versionCode 22)
+- **Props:** `-PreleaseAbi=arm64-v8a` (via `gradleprops:`)
+- **Output:** `build/outputs/apk/release/app-release-unsigned.apk` under `subdir` (no `output:` needed)
+- **Codeberg release:** https://codeberg.org/fitguy/NoFUD/releases/tag/v1.14.6 (same FOSS build as F-Droid; barcode via zxing-cpp)
 - **Reproducible builds:** not enabled yet
 
 Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
@@ -179,6 +181,9 @@ For each release:
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
 2. Update `CHANGELOG.md` and `metadata/en-US/changelogs/<versionCode>.txt`
-3. Sync `fdroid/org.codeberg.fitguy.nofud.yml` (`CurrentVersion`, new `Builds:` entry)
-4. Tag `v<version>` on Codeberg
-5. F-Droid `checkupdates` may open a follow-up MR automatically
+3. Sync [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml) (`CurrentVersion`, `CurrentVersionCode`, `Builds:` entry with commit hash)
+4. Run `./scripts/package_release.sh --check-metadata`, tag `v<version>` on Codeberg, publish APKs
+5. Push upstream metadata to Codeberg `main` before fdroiddata picks up the tag
+6. F-Droid `checkupdates` may open a follow-up MR automatically; otherwise refresh with `./scripts/submit_fdroiddata_mr.sh`
+
+**Latest release (2026-07-20):** v1.14.6 — upstream bug fixes (water fl oz, AI settings, widgets, swipe UX). Published at https://codeberg.org/fitguy/NoFUD/releases/tag/v1.14.6
