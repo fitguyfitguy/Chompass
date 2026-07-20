@@ -151,6 +151,15 @@ internal fun SettingsSheets(
                         onSave = { it.trim().toIntOrNull()?.let(vm::setMaxResponseTokens); onDismiss() }
                     )
                 }
+                SettingsSheet.AI_READ_TIMEOUT -> {
+                    TextFieldSheet(
+                        title = stringResource(R.string.settings_ai_read_timeout),
+                        initial = ui.aiReadTimeoutSeconds.toString(),
+                        placeholder = "60",
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onSave = { it.trim().toIntOrNull()?.let(vm::setAiReadTimeoutSeconds); onDismiss() }
+                    )
+                }
                 SettingsSheet.SERVING_UNIT_MODE -> ListSheet(
                     title = stringResource(R.string.sheet_serving_unit_mode),
                     items = ServingUnitInferenceMode.entries,

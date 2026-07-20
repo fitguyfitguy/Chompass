@@ -100,7 +100,7 @@ fun FoodResultSheet(
     val bitmap = rememberDecodedBitmap(imageBytes)
     val state = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { it != SheetValue.Hidden }
+        confirmValueChange = { target -> target != SheetValue.Hidden || !isSaving },
     )
     var name by remember { mutableStateOf(analysis.name) }
     val servingUnitOptions = remember(analysis.servingUnitOptions, analysis.servingSizeGrams) {
@@ -264,7 +264,7 @@ fun FoodResultSheet(
     var whatIfEntry by remember { mutableStateOf<FoodEntry?>(null) }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!isSaving) onDismiss() },
         sheetState = state,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         containerColor = sheetSurface
@@ -278,7 +278,7 @@ fun FoodResultSheet(
             },
             secondaryLabel = stringResource(R.string.action_what_if),
             primaryEnabled = !isSaving,
-            onCancel = onDismiss,
+            onCancel = { if (!isSaving) onDismiss() },
             onPrimary = {
                 if (!isSaving) {
                     onSave(

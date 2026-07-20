@@ -37,10 +37,28 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.models.WaterAmountFormat
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
 
 @Composable
-fun WaterProgressRow(current: Int, goal: Int, modifier: Modifier = Modifier) {
+private fun waterProgressLabel(currentMl: Int, goalMl: Int, useMetric: Boolean): String =
+    if (useMetric) {
+        stringResource(R.string.water_progress, currentMl, goalMl)
+    } else {
+        stringResource(
+            R.string.water_progress_fl_oz,
+            WaterAmountFormat.flOzFromMl(currentMl),
+            WaterAmountFormat.flOzFromMl(goalMl),
+        )
+    }
+
+@Composable
+fun WaterProgressRow(
+    current: Int,
+    goal: Int,
+    useMetric: Boolean = true,
+    modifier: Modifier = Modifier,
+) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     Column(
         modifier = modifier
@@ -63,7 +81,7 @@ fun WaterProgressRow(current: Int, goal: Int, modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.weight(1f))
             Text(
-                stringResource(R.string.water_progress, current, goal),
+                waterProgressLabel(current, goal, useMetric),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
                 fontSize = 12.sp,
             )
@@ -82,10 +100,18 @@ fun WaterProgressRow(current: Int, goal: Int, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WaterCustomAmountSheet(onDismiss: () -> Unit, onAdd: (Int) -> Unit) {
+fun WaterCustomAmountSheet(
+    useMetric: Boolean = true,
+    onDismiss: () -> Unit,
+    onAdd: (Int) -> Unit,
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var customAmount by remember { mutableStateOf("") }
-    val amount = customAmount.toIntOrNull()?.takeIf { it > 0 }
+    val amountMl = if (useMetric) {
+        customAmount.toIntOrNull()?.takeIf { it > 0 }
+    } else {
+        customAmount.toIntOrNull()?.takeIf { it > 0 }?.let(WaterAmountFormat::mlFromFlOz)
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -121,17 +147,21 @@ fun WaterCustomAmountSheet(onDismiss: () -> Unit, onAdd: (Int) -> Unit) {
                 onValueChange = { customAmount = it.filter(Char::isDigit).take(4) },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.water_custom_amount)) },
-                suffix = { Text(stringResource(R.string.unit_ml)) },
+                suffix = {
+                    Text(
+                        stringResource(if (useMetric) R.string.unit_ml else R.string.unit_fl_oz)
+                    )
+                },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
 
             Button(
                 onClick = {
-                    amount?.let(onAdd)
+                    amountMl?.let(onAdd)
                     onDismiss()
                 },
-                enabled = amount != null,
+                enabled = amountMl != null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),

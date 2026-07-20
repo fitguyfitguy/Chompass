@@ -78,7 +78,7 @@ class ChatService(
         val provider = prefs.selectedAIProvider.first()
         val model = provider.supportedModelOrDefault(prefs.selectedAIModel.first())
         val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() } ?: provider.baseUrl
-        val apiKey = keyStore.apiKey(provider)
+        val apiKey = AiHttp.sanitizeApiKey(keyStore.apiKey(provider))
 
         // Coach tool-calling (Tier C) stays debug/experimental for on-device — see docs/ON_DEVICE_LLM.md.
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
@@ -88,11 +88,12 @@ class ChatService(
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         val maxTokens = prefs.maxResponseTokens.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
+        val httpClient = AiHttp.clientWithReadTimeout(okHttp, prefs.aiReadTimeoutSeconds.first())
 
         val reply = when (provider.apiFormat) {
-            AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch)
-            AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
-            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens)
+            AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch)
+            AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
+            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(httpClient, baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens)
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable — guarded above")
         }
         return ChatResult(
@@ -210,6 +211,7 @@ class ChatService(
     // MARK: - OpenAI-compatible tool loop (10 of 13 providers)
 
     private suspend fun runOpenAIToolLoop(
+        client: OkHttpClient,
         baseUrl: String,
         model: String,
         apiKey: String?,
@@ -261,7 +263,7 @@ class ChatService(
                 builder.addHeader("HTTP-Referer", "https://codeberg.org/fitguy/NoFUD")
                 builder.addHeader("X-Title", "Fud AI")
             }
-            val raw = RetryPolicy.execute { okHttp.newCall(builder.build()) }
+            val raw = RetryPolicy.execute { client.newCall(builder.build()) }
             val json = runCatching { JSONObject(raw) }.getOrNull() ?: throw AiError.InvalidResponse
             val message = json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")
                 ?: throw AiError.InvalidResponse
@@ -296,6 +298,7 @@ class ChatService(
     // MARK: - Anthropic tool loop
 
     private suspend fun runAnthropicToolLoop(
+        client: OkHttpClient,
         baseUrl: String,
         model: String,
         apiKey: String,
@@ -334,7 +337,7 @@ class ChatService(
                 put("messages", messages)
             }
             val raw = RetryPolicy.execute {
-                okHttp.newCall(
+                client.newCall(
                     Request.Builder()
                         .url(url)
                         .addHeader("Content-Type", "application/json")
@@ -387,6 +390,7 @@ class ChatService(
     // MARK: - Gemini tool loop
 
     private suspend fun runGeminiToolLoop(
+        client: OkHttpClient,
         baseUrl: String,
         model: String,
         apiKey: String,
@@ -430,7 +434,7 @@ class ChatService(
                 GeminiClient.buildToolsArray(enableGoogleSearch, declarations)?.let { put("tools", it) }
             }
             val raw = RetryPolicy.execute {
-                okHttp.newCall(
+                client.newCall(
                     Request.Builder()
                         .url(url)
                         .addHeader("Content-Type", "application/json")

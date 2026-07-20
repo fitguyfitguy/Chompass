@@ -329,7 +329,7 @@ internal fun SwipeableFoodRow(
 ) {
     val density = LocalDensity.current
     val favoriteTriggerPx = with(density) { 150.dp.toPx() }
-    val deleteTriggerPx = with(density) { 220.dp.toPx() }
+    val deleteTriggerPx = with(density) { 280.dp.toPx() }
     var offsetPx by remember(entry.id) { mutableFloatStateOf(0f) }
 
     BoxWithConstraints(

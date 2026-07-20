@@ -48,6 +48,7 @@ data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
     val selectedModel: String = AIProvider.GEMINI.defaultModel,
     val maxResponseTokens: Int = 1024,
+    val aiReadTimeoutSeconds: Int = 60,
     val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
     val heuristicServingUnitSettings: HeuristicServingUnitSettings = HeuristicServingUnitSettings.Default,
     val selectedSpeech: SpeechProvider = SpeechProvider.NATIVE,
@@ -165,6 +166,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val weekMon = container.prefs.weekStartsOnMonday.first()
             val userContext = container.prefs.userContext.first()
             val maxTokens = container.prefs.maxResponseTokens.first()
+            val aiReadTimeout = container.prefs.aiReadTimeoutSeconds.first()
             val servingUnitInferenceMode = container.prefs.servingUnitInferenceMode.first()
             val fbEnabled = container.prefs.fallbackEnabled.first()
             val fbProvider = container.prefs.selectedFallbackProvider.first()
@@ -185,6 +187,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 selectedAI = provider,
                 selectedModel = model,
                 maxResponseTokens = maxTokens,
+                aiReadTimeoutSeconds = aiReadTimeout,
                 servingUnitInferenceMode = servingUnitInferenceMode,
                 selectedSpeech = speech,
                 selectedSpeechLanguage = speechLanguage,
@@ -285,10 +288,18 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     fun setMaxResponseTokens(v: Int) {
-        val clamped = v.coerceAtLeast(1)
+        val clamped = org.codeberg.fitguy.nofud.data.clampMaxResponseTokens(v)
         viewModelScope.launch {
             container.prefs.setMaxResponseTokens(clamped)
             _ui.value = _ui.value.copy(maxResponseTokens = clamped)
+        }
+    }
+
+    fun setAiReadTimeoutSeconds(v: Int) {
+        val clamped = org.codeberg.fitguy.nofud.data.clampAiReadTimeoutSeconds(v)
+        viewModelScope.launch {
+            container.prefs.setAiReadTimeoutSeconds(clamped)
+            _ui.value = _ui.value.copy(aiReadTimeoutSeconds = clamped)
         }
     }
 
@@ -364,8 +375,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setFallbackApiKey(raw: String) {
         viewModelScope.launch {
             val p = _ui.value.fallbackProvider
-            container.keyStore.setApiKey(p, raw.takeIf { it.isNotBlank() })
-            _ui.value = _ui.value.copy(fallbackApiKeyMasked = maskKey(raw.takeIf { it.isNotBlank() }))
+            val trimmed = raw.trim().takeIf { it.isNotEmpty() }
+            container.keyStore.setApiKey(p, trimmed)
+            _ui.value = _ui.value.copy(fallbackApiKeyMasked = maskKey(trimmed))
         }
     }
 
@@ -470,8 +482,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setApiKey(raw: String) {
         viewModelScope.launch {
             val p = _ui.value.selectedAI
-            container.keyStore.setApiKey(p, raw.takeIf { it.isNotBlank() })
-            _ui.value = _ui.value.copy(apiKeyMasked = maskKey(raw.takeIf { it.isNotBlank() }))
+            val trimmed = raw.trim().takeIf { it.isNotEmpty() }
+            container.keyStore.setApiKey(p, trimmed)
+            _ui.value = _ui.value.copy(apiKeyMasked = maskKey(trimmed))
         }
     }
 
@@ -501,8 +514,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setSpeechApiKey(raw: String) {
         viewModelScope.launch {
             val p = _ui.value.selectedSpeech
-            container.keyStore.setSpeechApiKey(p, raw.takeIf { it.isNotBlank() })
-            _ui.value = _ui.value.copy(speechApiKeyMasked = maskKey(raw.takeIf { it.isNotBlank() }))
+            val trimmed = raw.trim().takeIf { it.isNotEmpty() }
+            container.keyStore.setSpeechApiKey(p, trimmed)
+            _ui.value = _ui.value.copy(speechApiKeyMasked = maskKey(trimmed))
         }
     }
 

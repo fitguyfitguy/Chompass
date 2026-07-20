@@ -132,6 +132,14 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Numbers
                     ) { onOpenSheet(SettingsSheet.MAX_TOKENS) }
                 }
+                if (ui.selectedAI != AIProvider.ON_DEVICE) {
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_ai_read_timeout),
+                        stringResource(R.string.settings_ai_read_timeout_value, ui.aiReadTimeoutSeconds),
+                        icon = Icons.Outlined.Speed
+                    ) { onOpenSheet(SettingsSheet.AI_READ_TIMEOUT) }
+                }
                 val showGeminiSearch = ui.selectedAI == AIProvider.GEMINI ||
                     (ui.fallbackEnabled && ui.fallbackProvider == AIProvider.GEMINI)
                 if (showGeminiSearch) {

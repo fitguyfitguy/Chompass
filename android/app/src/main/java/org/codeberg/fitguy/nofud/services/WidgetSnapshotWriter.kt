@@ -105,6 +105,7 @@ class WidgetSnapshotWriter(
             val waterTodayMl = water.third
                 .filter { it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now() }
                 .sumOf { it.milliliters }
+            val weightUnit = prefs.weightUnit.first()
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
                 dayStart = WidgetSnapshot.todayStart(),
@@ -142,6 +143,7 @@ class WidgetSnapshotWriter(
                 waterTrackingEnabled = water.first,
                 waterCurrentMl = waterTodayMl,
                 waterGoalMl = water.second.coerceAtLeast(1),
+                waterUseMetric = weightUnit == "kg",
             )
             prefs.setWidgetSnapshot(snapshot)
         }

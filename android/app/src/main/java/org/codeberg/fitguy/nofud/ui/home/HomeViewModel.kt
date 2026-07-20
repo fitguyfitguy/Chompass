@@ -503,6 +503,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 fun s(v: Int) = (v * scale).roundToInt()
                 fun macro(v: Double) = v * scale
                 fun s(v: Double?) = v?.let { it * scale }
+                val entrySource = reviewSource?.source
+                    ?: pendingFoodSource
+                    ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT
                 val entry = FoodEntry(
                     id = id,
                     name = name?.takeIf { it.isNotBlank() } ?: analysis.name,
@@ -513,9 +516,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     timestamp = timestampForSelectedDay(),
                     imageFilename = filename,
                     emoji = analysis.emoji,
-                    source = reviewSource?.source
-                        ?: pendingFoodSource
-                        ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
+                    source = entrySource,
                     mealType = mealType,
                     sugar = s(analysis.sugar),
                     addedSugar = s(analysis.addedSugar),
@@ -544,6 +545,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
                     selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
                     customNote = analysis.customNote
+                )
+                container.prefs.setPendingFoodAnalysisDraft(
+                    PendingFoodAnalysisDraft(
+                        analysis = analysis,
+                        imageFilename = filename,
+                        source = entrySource,
+                    )
                 )
                 container.foodRepository.addEntry(entry)
                 container.prefs.setPendingFoodAnalysisDraft(null)
@@ -647,6 +655,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun deleteEntry(entry: FoodEntry) {
         viewModelScope.launch {
             container.foodRepository.deleteEntry(entry)
+        }
+    }
+
+    fun restoreEntry(entry: FoodEntry) {
+        viewModelScope.launch {
+            container.foodRepository.addEntry(entry)
         }
     }
 

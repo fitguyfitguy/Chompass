@@ -357,6 +357,9 @@
     <string name="water_custom_amount">Custom amount</string>
     <string name="water_add">Add water</string>
     <string name="water_progress">%1$d / %2$d ml</string>
+    <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
+    <string name="home_food_removed">Food removed</string>
+    <string name="action_undo">Undo</string>
     <string name="add_food_photo_source_title">Add a photo</string>
     <string name="add_food_photo_camera">Take Photo</string>
     <string name="add_food_photo_gallery">Choose from Gallery</string>
@@ -1034,6 +1037,8 @@
     <string name="settings_tap_to_update">Tap to update</string>
     <string name="settings_calc_methods">Calculation Methods</string>
     <string name="settings_max_tokens">Max response tokens</string>
+    <string name="settings_ai_read_timeout">AI read timeout</string>
+    <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_serving_unit_mode">Serving unit inference</string>
     <string name="settings_serving_unit_heuristics">Customize heuristics</string>
     <string name="sheet_serving_unit_mode">Serving unit inference</string>

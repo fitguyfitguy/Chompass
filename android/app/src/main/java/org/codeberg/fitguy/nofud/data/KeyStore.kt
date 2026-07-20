@@ -16,10 +16,10 @@ class KeyStore(context: Context) {
     private val prefs: SharedPreferences = openOrRecover(context)
 
     fun save(key: String, value: String) {
-        prefs.edit().putString(key, value).apply()
+        prefs.edit().putString(key, value.trim()).apply()
     }
 
-    fun load(key: String): String? = prefs.getString(key, null)
+    fun load(key: String): String? = prefs.getString(key, null)?.trim()?.takeIf { it.isNotEmpty() }
 
     fun delete(key: String) {
         prefs.edit().remove(key).apply()
