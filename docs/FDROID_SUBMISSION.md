@@ -79,7 +79,7 @@ Copy into the GitLab MR description:
   No, I don't want this. F-Droid builds exclude ML Kit (`-Pnofud.barcodeMlkit=false`); Codeberg release APKs include it, so they cannot match.
 * [ ] Multiple apks for native code
 
-  I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; ABI splits disabled so the artifact is plain `app-release-unsigned.apk`).
+  I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; splits disabled). `output:` points at `app/…/app-release-unsigned.apk` because `subdir` is the Gradle root (`android/`), not the `app` module.
 
 ---
 
@@ -101,7 +101,7 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 - **Gradle:** `yes` (`assembleRelease`)
 - **Commit:** `60f1fa5ebd612053375e63ff0876fef6d5f16569` (tag `v1.14.4`, versionCode 20)
 - **Props:** `-Pnofud.barcodeMlkit=false`, `-PreleaseAbi=arm64-v8a`
-- **Output:** none (plain `app-release-unsigned.apk`; single-ABI path uses `ndk.abiFilters` with splits disabled)
+- **Output:** `app/build/outputs/apk/release/app-release-unsigned.apk` (required: Gradle root is `android/`, APK is under the `app` module; fdroidserver only auto-searches `subdir/build/outputs/`)
 - **Reproducible builds:** no — F-Droid excludes ML Kit; Codeberg release APKs include it
 
 Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).

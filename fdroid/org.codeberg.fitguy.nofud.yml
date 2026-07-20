@@ -21,6 +21,7 @@ Builds:
     subdir: android
     gradle:
       - yes
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
     prebuild:
       - sed -i '/implementation(libs.mlkit.barcode.scanning)/d' app/build.gradle.kts
       - sed -i '/^kotlin {$/,/^}$/d' app/build.gradle.kts
@@ -32,8 +33,9 @@ MaintainerNotes: |-
   New app: single Builds entry (latest only). Older tags used a removed fdroidRelease flavor.
   F-Droid sets nofud.barcodeMlkit=false — ML Kit excluded; barcode scan tile hidden.
   prebuild strips ML Kit dep + kotlin jvmToolchain(17) if present (Trixie has Java 21 only).
-  releaseAbi=arm64-v8a: ndk.abiFilters + splits disabled → plain app-release-unsigned.apk
-  (no output:). Avoids litertlm ABI mismatch on universal/fat APKs.
+  subdir=android is the Gradle root (settings.gradle.kts). APK is under the app module, so
+  output: is required — fdroidserver only auto-searches subdir/build/outputs/, not app/build/.
+  releaseAbi=arm64-v8a: ndk.abiFilters + splits disabled → plain app-release-unsigned.apk.
   No Binaries URL: Codeberg release APKs include ML Kit; F-Droid builds do not.
 
 AutoUpdateMode: Version
