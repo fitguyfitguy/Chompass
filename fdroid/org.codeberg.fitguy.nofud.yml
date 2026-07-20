@@ -19,6 +19,10 @@ Builds:
     versionCode: 19
     commit: v1.14.3
     subdir: android
+    sudo:
+      - apt-get update
+      - apt-get install -y openjdk-17-jdk-headless
+      - update-java-alternatives -a
     gradle:
       - yes
     prebuild: sed -i '/implementation(libs.mlkit.barcode.scanning)/d' app/build.gradle.kts
