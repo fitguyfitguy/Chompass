@@ -39,7 +39,8 @@ class FoodRepository(
      * Reads also trigger a one-time migration from the legacy `favoriteKeys`
      * Set if the new list is empty but the old set has entries — done via a
      * suspend [migratedFavorites] helper that the Saved Meals UI calls
-     * directly when the sheet opens.
+     * directly when the sheet opens. That helper also collapses duplicates
+     * produced by the old name|calories identity key.
      */
     val favorites: Flow<List<FoodEntry>> = prefs.favoriteFoodEntries
 
@@ -192,15 +193,48 @@ class FoodRepository(
      * empty but the legacy favoriteKeys Set has entries, reconstruct the
      * ordered list from current food log entries (best-effort — no preserved
      * order since the old format never tracked one).
+     *
+     * Also collapses duplicate favorites that shared a name under the old
+     * `name|calories` identity (same food, different servings), and rewrites
+     * the legacy key set to the name-only identity.
      */
     private suspend fun ensureFavoritesMigrated() {
         val ordered = prefs.favoriteFoodEntries.first()
-        if (ordered.isNotEmpty()) return
-        val legacy = prefs.favoriteKeys.first()
-        if (legacy.isEmpty()) return
-        val all = prefs.foodEntries.first()
-        val seeded = legacy.mapNotNull { key -> all.firstOrNull { it.favoriteKey == key } }
-        if (seeded.isNotEmpty()) prefs.setFavoriteFoodEntries(seeded)
+        if (ordered.isEmpty()) {
+            val legacy = prefs.favoriteKeys.first()
+            if (legacy.isEmpty()) return
+            val all = prefs.foodEntries.first()
+            val seeded = legacy.mapNotNull { key ->
+                all.firstOrNull { matchesFavoriteIdentity(it, key) }
+            }.let { dedupeFavoritesByIdentity(it) }
+            if (seeded.isEmpty()) return
+            prefs.setFavoriteFoodEntries(seeded)
+            prefs.setFavoriteKeys(seeded.map { it.favoriteKey }.toSet())
+            return
+        }
+        val deduped = dedupeFavoritesByIdentity(ordered)
+        val newKeys = deduped.map { it.favoriteKey }.toSet()
+        val oldKeys = prefs.favoriteKeys.first()
+        if (deduped.size != ordered.size || newKeys != oldKeys) {
+            prefs.setFavoriteFoodEntries(deduped)
+            prefs.setFavoriteKeys(newKeys)
+        }
+    }
+
+    /** Keep first occurrence per [FoodEntry.favoriteKey] (preserves user order). */
+    private fun dedupeFavoritesByIdentity(entries: List<FoodEntry>): List<FoodEntry> {
+        val seen = mutableSetOf<String>()
+        return entries.filter { it.favoriteKey.isNotEmpty() && seen.add(it.favoriteKey) }
+    }
+
+    /**
+     * Match a stored favorite key against an entry. Accepts the current
+     * name-only identity and the legacy `name|calories` form.
+     */
+    private fun matchesFavoriteIdentity(entry: FoodEntry, storedKey: String): Boolean {
+        if (entry.favoriteKey == storedKey) return true
+        val namePart = storedKey.substringBefore('|').trim().lowercase()
+        return namePart.isNotEmpty() && entry.favoriteKey == namePart
     }
 
     private suspend fun shouldSyncHealth(): Boolean {
@@ -346,30 +380,89 @@ class FoodRepository(
 
     // -- Recents / Frequent ---------------------------------------------
 
-    suspend fun recent(limit: Int = 50): List<FoodEntry> =
-        prefs.foodEntries.first().sortedByDescending { it.timestamp }.take(limit)
-
-    suspend fun frequent(): List<FrequentFoodGroup> {
-        val all = prefs.foodEntries.first()
-        val aggregates = mutableMapOf<String, Pair<Int, FoodEntry>>()
-        for (entry in all) {
-            val key = entry.favoriteKey
-            val existing = aggregates[key]
-            if (existing != null) {
-                val (count, template) = existing
-                val newTemplate = if (entry.timestamp > template.timestamp) entry else template
-                aggregates[key] = (count + 1) to newTemplate
-            } else {
-                aggregates[key] = 1 to entry
-            }
-        }
-        return aggregates.map { (_, pair) ->
-            FrequentFoodGroup(template = pair.second, count = pair.first)
-        }.sortedWith(
-            compareByDescending<FrequentFoodGroup> { it.count }.thenBy { it.name.lowercase() }
-        )
+    /** Identity keys already taken by diary rows and favorites. */
+    suspend fun existingFoodIdentityKeys(): Set<String> {
+        val diary = prefs.foodEntries.first().mapNotNull { it.favoriteKey.takeIf { k -> k.isNotEmpty() } }
+        val favs = prefs.favoriteFoodEntries.first().mapNotNull { it.favoriteKey.takeIf { k -> k.isNotEmpty() } }
+        return diary.toSet() + favs
     }
+
+    /**
+     * Newest diary rows, collapsed by [FoodEntry.favoriteKey] so re-logging
+     * the same food at a new serving does not stack duplicate picker rows.
+     * Template for each food is the most recent log (latest grams/units).
+     */
+    suspend fun recent(limit: Int = 50): List<FoodEntry> =
+        recentFoodTemplates(prefs.foodEntries.first(), limit)
+
+    /**
+     * Groups diary rows by food identity ([FoodEntry.favoriteKey]). Count is
+     * how often that food was logged; template is the newest serving snapshot
+     * so a re-log with new grams/pieces becomes the amount offered next time.
+     */
+    suspend fun frequent(): List<FrequentFoodGroup> =
+        frequentFoodGroups(prefs.foodEntries.first())
 }
+
+/**
+ * Pure Recents collapse used by [FoodRepository.recent] — newest-first,
+ * one row per [FoodEntry.favoriteKey].
+ */
+internal fun recentFoodTemplates(entries: List<FoodEntry>, limit: Int = 50): List<FoodEntry> {
+    val seen = mutableSetOf<String>()
+    return entries
+        .sortedByDescending { it.timestamp }
+        .filter { it.favoriteKey.isNotEmpty() && seen.add(it.favoriteKey) }
+        .take(limit)
+}
+
+/**
+ * Pure Frequent aggregation used by [FoodRepository.frequent].
+ */
+internal fun frequentFoodGroups(entries: List<FoodEntry>): List<FrequentFoodGroup> {
+    val aggregates = mutableMapOf<String, Pair<Int, FoodEntry>>()
+    for (entry in entries) {
+        val key = entry.favoriteKey
+        if (key.isEmpty()) continue
+        val existing = aggregates[key]
+        if (existing != null) {
+            val (count, template) = existing
+            val newTemplate = if (entry.timestamp > template.timestamp) entry else template
+            aggregates[key] = (count + 1) to newTemplate
+        } else {
+            aggregates[key] = 1 to entry
+        }
+    }
+    return aggregates.map { (_, pair) ->
+        FrequentFoodGroup(template = pair.second, count = pair.first)
+    }.sortedWith(
+        compareByDescending<FrequentFoodGroup> { it.count }.thenBy { it.name.lowercase() }
+    )
+}
+
+/**
+ * Avoid accidental Saved Meals identity collisions for brand-new foods
+ * (scan / AI / manual). If [desired] already exists (case-insensitive),
+ * returns "Name (2)", "Name (3)", … based on the stem without a trailing
+ * numeric suffix. Relogs should keep the original name so servings merge.
+ */
+fun disambiguateFoodName(desired: String, existingKeys: Set<String>): String {
+    val trimmed = desired.trim()
+    if (trimmed.isEmpty()) return desired
+    val key = trimmed.lowercase()
+    if (key !in existingKeys) return trimmed
+
+    val stem = TRAILING_NUMERIC_SUFFIX.replace(trimmed, "").trim().ifEmpty { trimmed }
+    var n = 2
+    while (n <= 10_000) {
+        val candidate = "$stem ($n)"
+        if (candidate.lowercase() !in existingKeys) return candidate
+        n++
+    }
+    return "$stem ($n)"
+}
+
+private val TRAILING_NUMERIC_SUFFIX = Regex("""\s+\((\d+)\)$""")
 
 data class FrequentFoodGroup(
     val template: FoodEntry,

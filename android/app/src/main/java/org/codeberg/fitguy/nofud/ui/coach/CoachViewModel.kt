@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.data.disambiguateFoodName
 import org.codeberg.fitguy.nofud.models.ChatMessage
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.WaterEntry
@@ -146,9 +147,15 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
     fun confirmPendingFood() {
         val entry = _ui.value.pendingFood ?: return
         viewModelScope.launch {
-            container.foodRepository.addEntry(entry)
+            val unique = entry.copy(
+                name = disambiguateFoodName(
+                    entry.name,
+                    container.foodRepository.existingFoodIdentityKeys(),
+                )
+            )
+            container.foodRepository.addEntry(unique)
             container.chatRepository.append(
-                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged: ${entry.name} (${entry.calories} kcal).")
+                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged: ${unique.name} (${unique.calories} kcal).")
             )
             _ui.value = _ui.value.copy(pendingFood = null)
         }

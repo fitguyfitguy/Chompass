@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import org.codeberg.fitguy.nofud.AppContainer
 import org.codeberg.fitguy.nofud.R
+import org.codeberg.fitguy.nofud.data.disambiguateFoodName
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.models.FoodLogMacroChip
@@ -500,15 +501,23 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 val filename = reviewSource?.imageFilename
                     ?: pendingDraftImageFilename
                     ?: imageBytes?.let { persistImage(it, id) }
-                fun s(v: Int) = (v * scale).roundToInt()
-                fun macro(v: Double) = v * scale
-                fun s(v: Double?) = v?.let { it * scale }
+                // FoodResultSheet's editedAnalysis already has serving scale
+                // applied — only scale again when saving the raw pending analysis.
+                val effectiveScale = if (editedAnalysis != null) 1.0 else scale
+                fun s(v: Int) = (v * effectiveScale).roundToInt()
+                fun macro(v: Double) = v * effectiveScale
+                fun s(v: Double?) = v?.let { it * effectiveScale }
                 val entrySource = reviewSource?.source
                     ?: pendingFoodSource
                     ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT
+                val rawName = name?.takeIf { it.isNotBlank() } ?: analysis.name
+                // Relog of the same Saved Meals identity keeps the name so
+                // servings merge. Brand-new logs (or a rename that collides)
+                // get "Name (2)" etc.
+                val resolvedName = resolveNewFoodName(rawName, relogTemplate = reviewSource)
                 val entry = FoodEntry(
                     id = id,
-                    name = name?.takeIf { it.isNotBlank() } ?: analysis.name,
+                    name = resolvedName,
                     calories = s(analysis.calories),
                     protein = macro(analysis.protein),
                     carbs = macro(analysis.carbs),
@@ -733,7 +742,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             try {
                 container.foodRepository.addEntry(
                     FoodEntry(
-                        name = name,
+                        name = disambiguateFoodName(
+                            name,
+                            container.foodRepository.existingFoodIdentityKeys(),
+                        ),
                         calories = calories,
                         protein = protein,
                         carbs = carbs,
@@ -777,10 +789,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         generation: Int,
     ) {
         if (generation != analysisGeneration) return
+        val uniqueAnalysis = analysis.copy(
+            name = disambiguateFoodName(
+                analysis.name,
+                container.foodRepository.existingFoodIdentityKeys(),
+            )
+        )
         val imageFilename = imageBytes?.let { persistImage(it, UUID.randomUUID()) }
         container.prefs.setPendingFoodAnalysisDraft(
             PendingFoodAnalysisDraft(
-                analysis = analysis,
+                analysis = uniqueAnalysis,
                 imageFilename = imageFilename,
                 source = source
             )
@@ -791,7 +809,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             analysisPhase = null,
             analysisPreview = null,
             inferringUnits = false,
-            pendingAnalysis = analysis,
+            pendingAnalysis = uniqueAnalysis,
             pendingImageBytes = imageBytes,
             pendingFoodSource = source,
             pendingDraftImageFilename = imageFilename,
@@ -806,21 +824,42 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val bytes = draft.imageFilename?.let {
             runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
         }
-        _ui.value = _ui.value.copy(
-            analyzing = false,
-            analysisPhase = null,
-            analysisPreview = null,
-            inferringUnits = false,
-            pendingAnalysis = draft.analysis,
-            pendingImageBytes = bytes,
-            pendingFoodSource = draft.source,
-            pendingDraftImageFilename = draft.imageFilename,
-            pendingReviewSource = null,
-            pendingInputImageBytes = null,
-            pendingInputNote = null,
-            pendingInputDraftImageFilename = null,
-            error = null
-        )
+        // Re-check collisions: the diary may have grown since the draft was saved.
+        viewModelScope.launch {
+            val unique = draft.analysis.copy(
+                name = disambiguateFoodName(
+                    draft.analysis.name,
+                    container.foodRepository.existingFoodIdentityKeys(),
+                )
+            )
+            _ui.value = _ui.value.copy(
+                analyzing = false,
+                analysisPhase = null,
+                analysisPreview = null,
+                inferringUnits = false,
+                pendingAnalysis = unique,
+                pendingImageBytes = bytes,
+                pendingFoodSource = draft.source,
+                pendingDraftImageFilename = draft.imageFilename,
+                pendingReviewSource = null,
+                pendingInputImageBytes = null,
+                pendingInputNote = null,
+                pendingInputDraftImageFilename = null,
+                error = null
+            )
+        }
+    }
+
+    /**
+     * Keep [rawName] when re-logging the same Saved Meals food; otherwise
+     * append (2), (3), … if the name already identifies another food.
+     */
+    private suspend fun resolveNewFoodName(rawName: String, relogTemplate: FoodEntry?): String {
+        val trimmed = rawName.trim()
+        if (relogTemplate != null && trimmed.lowercase() == relogTemplate.favoriteKey) {
+            return trimmed.ifEmpty { rawName }
+        }
+        return disambiguateFoodName(rawName, container.foodRepository.existingFoodIdentityKeys())
     }
 
     private suspend fun savePendingInputDraft(
