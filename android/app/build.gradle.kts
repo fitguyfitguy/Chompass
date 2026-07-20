@@ -155,10 +155,6 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(17)
-}
-
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
