@@ -28,6 +28,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +73,8 @@ import org.codeberg.fitguy.nofud.ui.components.WeekEnergyStrip
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavDockedControlPadding
 import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -179,11 +186,16 @@ fun HomeScreen(container: AppContainer) {
         ui.todayEntries.filter { it.id in selectedEntryIds }
     }
     val inSelectionMode = selectedEntryIds.isNotEmpty()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val foodRemovedMessage = stringResource(R.string.home_food_removed)
+    val undoLabel = stringResource(R.string.action_undo)
 
     // No topBar: the empty TopAppBar used to act as the status-bar spacer, but the
     // ad strip above this screen (TabWithBanner) now owns that inset.
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
         LazyColumn(
@@ -213,11 +225,27 @@ fun HomeScreen(container: AppContainer) {
                 Column(
                     modifier = Modifier.pointerInput(selectedDate) {
                         var accum = 0f
-                        val threshold = 80.dp.toPx()
+                        var horizontalLocked = false
+                        val threshold = 120.dp.toPx()
+                        val deadZone = 16.dp.toPx()
                         detectHorizontalDragGestures(
-                            onDragStart = { accum = 0f },
-                            onDragCancel = { accum = 0f },
-                            onHorizontalDrag = { change, amount -> accum += amount; change.consume() },
+                            onDragStart = {
+                                accum = 0f
+                                horizontalLocked = false
+                            },
+                            onDragCancel = {
+                                accum = 0f
+                                horizontalLocked = false
+                            },
+                            onHorizontalDrag = { change, amount ->
+                                accum += amount
+                                if (!horizontalLocked && kotlin.math.abs(accum) > deadZone) {
+                                    horizontalLocked = true
+                                }
+                                if (horizontalLocked) {
+                                    change.consume()
+                                }
+                            },
                             onDragEnd = {
                                 if (accum > threshold) {
                                     vm.setSelectedDate(selectedDate.minusDays(1))
@@ -226,6 +254,7 @@ fun HomeScreen(container: AppContainer) {
                                     if (!next.isAfter(today)) vm.setSelectedDate(next)
                                 }
                                 accum = 0f
+                                horizontalLocked = false
                             }
                         )
                     }
@@ -279,6 +308,7 @@ fun HomeScreen(container: AppContainer) {
                         WaterProgressRow(
                             current = ui.waterTodayMl,
                             goal = ui.waterDailyGoalMl,
+                            useMetric = ui.weightMetric,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
@@ -363,7 +393,19 @@ fun HomeScreen(container: AppContainer) {
                                     macroChips = ui.foodLogMacroChips,
                                     onTap = { editingEntry = entry },
                                     onLongPress = { selectedEntryIds = setOf(entry.id) },
-                                    onDelete = { vm.deleteEntry(entry) },
+                                    onDelete = {
+                                        vm.deleteEntry(entry)
+                                        scope.launch {
+                                            val result = snackbarHostState.showSnackbar(
+                                                message = foodRemovedMessage,
+                                                actionLabel = undoLabel,
+                                                duration = SnackbarDuration.Short,
+                                            )
+                                            if (result == SnackbarResult.ActionPerformed) {
+                                                vm.restoreEntry(entry)
+                                            }
+                                        }
+                                    },
                                     onToggleFavorite = { vm.toggleFavorite(entry) }
                                 )
                             }
@@ -429,6 +471,7 @@ fun HomeScreen(container: AppContainer) {
 
     if (showCustomWaterLog) {
         WaterCustomAmountSheet(
+            useMetric = ui.weightMetric,
             onDismiss = { showCustomWaterLog = false },
             onAdd = vm::addWater,
         )

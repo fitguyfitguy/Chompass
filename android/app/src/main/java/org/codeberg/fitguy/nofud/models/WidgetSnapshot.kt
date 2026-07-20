@@ -60,6 +60,8 @@ data class WidgetSnapshot(
     val waterTrackingEnabled: Boolean = false,
     val waterCurrentMl: Int = 0,
     val waterGoalMl: Int = 2_000,
+    /** When false, water widget labels use fl oz (matches weight unit preference). */
+    val waterUseMetric: Boolean = true,
 ) {
     val resolvedCalorieMode: HomeCalorieDisplayMode
         get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)

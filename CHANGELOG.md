@@ -2,6 +2,21 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.6] - 2026-07-20
+
+### Fixed
+
+- Water tracking shows fl oz when using imperial units (home, widgets, add-food flows).
+- AI API keys are trimmed on save and in request headers (fixes auth failures from pasted trailing newlines).
+- Configurable AI read timeout in Settings (30–300 s, default 60 s).
+- Max AI response tokens clamped to 256–8192.
+- In-app camera preview matches the captured photo framing.
+- Settings weekly goal pace shows correct lbs values in imperial mode.
+- Undo snackbar after swipe-deleting a food entry.
+- Home screen widgets time out stale DataStore reads instead of hanging on the loading spinner.
+- Food log save finishes before clearing the draft (more durable if the app is killed mid-save).
+- Less accidental day swipes and swipe-to-delete (higher gesture thresholds).
+
 ## [1.14.5] - 2026-07-20
 
 ### Changed

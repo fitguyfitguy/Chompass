@@ -33,19 +33,14 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import org.codeberg.fitguy.nofud.MainActivity
 import org.codeberg.fitguy.nofud.R
-import org.codeberg.fitguy.nofud.data.PreferencesStore
+import org.codeberg.fitguy.nofud.models.WaterAmountFormat
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
-import kotlinx.coroutines.flow.first
 
 class WaterAppWidget : GlanceAppWidget() {
     override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val snapshot = runCatching {
-            PreferencesStore(context).widgetSnapshot.first()?.let {
-                if (it.isStale) it.emptyForToday() else it
-            }
-        }.getOrNull() ?: WidgetSnapshot.empty()
+        val snapshot = WidgetSnapshotLoader.load(context)
 
         provideContent {
             GlanceTheme {
@@ -88,6 +83,22 @@ private fun WaterProgressContent(snapshot: WidgetSnapshot) {
     val contentH = size.height.value - 28f
     val gaugeW = minOf(contentW, (contentH - 44f) / 0.58f).toInt().coerceAtLeast(80)
 
+    val currentLabel = if (snapshot.waterUseMetric) {
+        snapshot.waterCurrentMl.toString()
+    } else {
+        WaterAmountFormat.flOzFromMl(snapshot.waterCurrentMl).toString()
+    }
+    val goalLabel = if (snapshot.waterUseMetric) {
+        "${snapshot.waterGoalMl} ml"
+    } else {
+        "${WaterAmountFormat.flOzFromMl(snapshot.waterGoalMl)} fl oz"
+    }
+    val remainingLabel = if (snapshot.waterUseMetric) {
+        "${snapshot.waterRemaining} ml left"
+    } else {
+        "${WaterAmountFormat.flOzFromMl(snapshot.waterRemaining)} fl oz left"
+    }
+
     Column(modifier = GlanceModifier.fillMaxSize()) {
         WidgetHeader(iconRes = R.drawable.ic_widget_water, label = "Water")
         Box(
@@ -99,12 +110,12 @@ private fun WaterProgressContent(snapshot: WidgetSnapshot) {
                 gaugeWidthDp = gaugeW,
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
-                centerLarge = snapshot.waterCurrentMl.toString(),
-                centerSmall = "/ ${snapshot.waterGoalMl} ml",
+                centerLarge = currentLabel,
+                centerSmall = "/ $goalLabel",
             )
         }
         Text(
-            text = "${snapshot.waterRemaining} ml left",
+            text = remainingLabel,
             style = TextStyle(
                 color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                 fontWeight = FontWeight.Medium,

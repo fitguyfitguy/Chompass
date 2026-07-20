@@ -39,8 +39,32 @@ internal suspend fun PreferencesStore.setCustomBaseUrlImpl(provider: AIProvider,
 
     /** AI output-token cap sent with every request. Default 1024; raise it for local
      *  models whose replies get truncated. */
-internal val PreferencesStore.maxResponseTokensImpl: Flow<Int> get() = dataStore.data.map { it[Keys.MAX_RESPONSE_TOKENS] ?: 1024 }
-internal suspend fun PreferencesStore.setMaxResponseTokensImpl(v: Int) { dataStore.edit { it[Keys.MAX_RESPONSE_TOKENS] = v.coerceAtLeast(1) } }
+internal val PreferencesStore.maxResponseTokensImpl: Flow<Int> get() = dataStore.data.map {
+        clampMaxResponseTokens(it[Keys.MAX_RESPONSE_TOKENS] ?: 1024)
+    }
+internal suspend fun PreferencesStore.setMaxResponseTokensImpl(v: Int) {
+        dataStore.edit { it[Keys.MAX_RESPONSE_TOKENS] = clampMaxResponseTokens(v) }
+    }
+
+/** Read timeout for cloud AI HTTP calls (vision / chat). Default 60s; raise for slow local GPUs. */
+internal val PreferencesStore.aiReadTimeoutSecondsImpl: Flow<Int> get() = dataStore.data.map {
+        clampAiReadTimeoutSeconds(it[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS)
+    }
+internal suspend fun PreferencesStore.setAiReadTimeoutSecondsImpl(v: Int) {
+        dataStore.edit { it[Keys.AI_READ_TIMEOUT_SECONDS] = clampAiReadTimeoutSeconds(v) }
+    }
+
+internal const val MIN_MAX_RESPONSE_TOKENS = 256
+internal const val MAX_MAX_RESPONSE_TOKENS = 8192
+internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 60
+internal const val MIN_AI_READ_TIMEOUT_SECONDS = 30
+internal const val MAX_AI_READ_TIMEOUT_SECONDS = 300
+
+internal fun clampMaxResponseTokens(v: Int): Int =
+    v.coerceIn(MIN_MAX_RESPONSE_TOKENS, MAX_MAX_RESPONSE_TOKENS)
+
+internal fun clampAiReadTimeoutSeconds(v: Int): Int =
+    v.coerceIn(MIN_AI_READ_TIMEOUT_SECONDS, MAX_AI_READ_TIMEOUT_SECONDS)
 
     // -- Serving unit inference --------------------------------------------
 internal val PreferencesStore.servingUnitInferenceModeImpl: Flow<ServingUnitInferenceMode> get() = dataStore.data.map { prefs ->

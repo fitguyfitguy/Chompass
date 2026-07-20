@@ -157,6 +157,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlImpl(provider, url)
     val maxResponseTokens: Flow<Int> get() = maxResponseTokensImpl
     suspend fun setMaxResponseTokens(v: Int) = setMaxResponseTokensImpl(v)
+    val aiReadTimeoutSeconds: Flow<Int> get() = aiReadTimeoutSecondsImpl
+    suspend fun setAiReadTimeoutSeconds(v: Int) = setAiReadTimeoutSecondsImpl(v)
     val servingUnitInferenceMode: Flow<ServingUnitInferenceMode> get() = servingUnitInferenceModeImpl
     suspend fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) = setServingUnitInferenceModeImpl(mode)
     val heuristicServingUnitSettings: Flow<HeuristicServingUnitSettings> get() = heuristicServingUnitSettingsImpl

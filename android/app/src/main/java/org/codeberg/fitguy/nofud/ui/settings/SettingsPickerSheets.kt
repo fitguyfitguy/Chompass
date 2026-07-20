@@ -458,12 +458,18 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
     val wUnit = if (useMetric) stringResource(R.string.unit_kg) else stringResource(R.string.unit_lbs)
     val paceRes = if (goal == WeightGoal.LOSE) R.string.settings_pace_loss_format else R.string.settings_pace_gain_format
     val options = listOf(
-        Triple(0.25, stringResource(R.string.onboarding_pace_slow), stringResource(paceRes, "0.25 $wUnit")),
-        Triple(0.5, stringResource(R.string.onboarding_pace_recommended), stringResource(paceRes, "0.5 $wUnit")),
-        Triple(1.0, stringResource(R.string.onboarding_pace_fast), stringResource(paceRes, "1.0 $wUnit"))
+        Triple(0.25, stringResource(R.string.onboarding_pace_slow), 0.25),
+        Triple(0.5, stringResource(R.string.onboarding_pace_recommended), 0.5),
+        Triple(1.0, stringResource(R.string.onboarding_pace_fast), 1.0),
     )
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for ((kg, title, subtitle) in options) {
+        for ((kg, title, displayKg) in options) {
+            val displayAmount = if (useMetric) {
+                String.format(java.util.Locale.US, "%.1f", displayKg)
+            } else {
+                String.format(java.util.Locale.US, "%.1f", displayKg * 2.20462)
+            }
+            val subtitle = stringResource(paceRes, "$displayAmount $wUnit")
             val isSel = kotlin.math.abs(kg - current) < 0.01
             Row(
                 Modifier

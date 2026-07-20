@@ -65,7 +65,7 @@ fun InAppCameraCaptureDialog(
     val mainExecutor = ContextCompat.getMainExecutor(context)
     val previewView = remember {
         PreviewView(context).apply {
-            scaleType = PreviewView.ScaleType.FIT_CENTER
+            scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }

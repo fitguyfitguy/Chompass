@@ -501,9 +501,10 @@ class FoodAnalysisService(
         val primary = prefs!!.selectedAIProvider.first()
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() } ?: primary.baseUrl
-        val primaryKey = keyStore!!.apiKey(primary)
+        val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
+        val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
         val aiImages = if (imageBytesList.isEmpty()) {
             imageBytesList
@@ -515,10 +516,10 @@ class FoodAnalysisService(
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
         return try {
-            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch)
+            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch, readTimeoutSeconds)
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
-            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch)
+            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch, readTimeoutSeconds)
         }
     }
 
@@ -675,21 +676,24 @@ class FoodAnalysisService(
         imageBytesList: List<ByteArray>,
         maxTokens: Int,
         geminiGoogleSearch: Boolean,
+        readTimeoutSeconds: Int,
     ): String {
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
             return OnDeviceLlmDispatchClient.analyze(gateway, prompt, imageBytesList)
         }
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
-        if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
+        val sanitizedKey = AiHttp.sanitizeApiKey(apiKey)
+        if (provider.requiresApiKey && sanitizedKey.isNullOrEmpty()) throw AiError.NoApiKey
+        val httpClient = AiHttp.clientWithReadTimeout(okHttp, readTimeoutSeconds)
         val enableGoogleSearch = provider.apiFormat == AIProvider.ApiFormat.GEMINI && geminiGoogleSearch
         return when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI ->
-                GeminiClient.analyze(okHttp, baseUrl, model, apiKey!!, prompt, imageBytesList, enableGoogleSearch)
+                GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, enableGoogleSearch)
             AIProvider.ApiFormat.ANTHROPIC ->
-                AnthropicClient.analyze(okHttp, baseUrl, model, apiKey!!, prompt, imageBytesList, maxTokens)
+                AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                OpenAICompatibleClient.analyze(okHttp, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens)
+                OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens)
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
     }
@@ -703,7 +707,7 @@ class FoodAnalysisService(
         val model = provider.supportedFallbackModelOrDefault(prefs.selectedFallbackModel.first())
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
-        val key = keyStore!!.apiKey(provider)
+        val key = AiHttp.sanitizeApiKey(keyStore!!.apiKey(provider))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
         val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() } ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null

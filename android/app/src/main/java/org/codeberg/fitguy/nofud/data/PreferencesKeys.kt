@@ -71,6 +71,7 @@ internal object Keys {
         val SELECTED_AI_PROVIDER = stringPreferencesKey("selectedAIProvider")
         val SELECTED_AI_MODEL = stringPreferencesKey("selectedAIModel")
         val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
+        val AI_READ_TIMEOUT_SECONDS = intPreferencesKey("aiReadTimeoutSeconds")
         val SERVING_UNIT_INFERENCE_MODE = stringPreferencesKey("servingUnitInferenceMode")
         val HEURISTIC_SERVING_UNIT_SETTINGS = stringPreferencesKey("heuristicServingUnitSettings")
         val USER_CONTEXT = stringPreferencesKey("userContext")

@@ -1,0 +1,1 @@
+Fixes for water fl oz display, AI key/timeout settings, camera preview, delete undo, widget loading, save durability, and swipe thresholds.

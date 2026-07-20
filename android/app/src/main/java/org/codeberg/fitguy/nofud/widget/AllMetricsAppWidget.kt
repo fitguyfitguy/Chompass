@@ -33,7 +33,6 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import org.codeberg.fitguy.nofud.MainActivity
 import org.codeberg.fitguy.nofud.R
-import org.codeberg.fitguy.nofud.data.PreferencesStore
 import org.codeberg.fitguy.nofud.models.WidgetSnapshot
 import kotlinx.coroutines.flow.first
 
@@ -48,10 +47,7 @@ class AllMetricsAppWidget : GlanceAppWidget() {
     override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // Never let a data-read failure leave the widget stuck on the loading layout.
-        val snapshot = runCatching {
-            PreferencesStore(context).widgetSnapshot.first()?.takeUnless { it.isStale }
-        }.getOrNull() ?: WidgetSnapshot.empty()
+        val snapshot = WidgetSnapshotLoader.load(context)
 
         provideContent {
             GlanceTheme {
