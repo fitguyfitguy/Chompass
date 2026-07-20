@@ -1,0 +1,1 @@
+Saved Meals: same food at different servings no longer duplicates; new name collisions get Name (2). Fix double-scaled calories when changing portion on log.
