@@ -75,8 +75,8 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
 - **Subdir:** `android`
 - **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `yes` (no product flavors → `assembleRelease`) from v1.14.2 onward
-- **Current tag:** `v1.14.3` (versionCode 19)
-- **F-Droid build:** `release` with `-Pnofud.barcodeMlkit=false` (ML Kit excluded; barcode tile hidden) and `-PreleaseAbi=arm64-v8a` (avoids scanner Major: `liblitertlm_jni.so` missing on 32-bit ABIs in a universal APK)
+- **Current tag:** `v1.14.3` → commit `00e5a671d3ee430c04c098606eb00908d8d969a6` (versionCode 19; fdroiddata wants the full hash, not the tag name)
+- **F-Droid build:** `gradle: yes` in `subdir: android` with `-Pnofud.barcodeMlkit=false` and `-PreleaseAbi=arm64-v8a` (no `output:`; single arm64 APK). `prebuild` is a YAML list (not `&&`-chained).
 
 Store metadata is in the upstream repo under `metadata/en-US/` (Fastlane/Triple-T layout).
 
