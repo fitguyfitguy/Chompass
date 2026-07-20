@@ -55,7 +55,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
 import java.util.UUID
 import org.codeberg.fitguy.nofud.AppContainer
-import org.codeberg.fitguy.nofud.BuildConfig
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
@@ -415,7 +414,6 @@ fun HomeScreen(container: AppContainer) {
             waterTrackingEnabled = ui.waterTrackingEnabled,
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
-            barcodeEnabled = BuildConfig.BARCODE_MLKIT_ENABLED,
             onPhoto = { openCamera() },
             onNote = { showText = true },
             onSaved = { showSaved = true },

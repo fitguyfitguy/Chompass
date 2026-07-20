@@ -1085,8 +1085,6 @@
     <string name="camera_error_capture">Could not capture photo</string>
     <string name="barcode_hint">Point the camera at the barcode</string>
     <string name="barcode_off_note">Packaged foods use Open Food Facts when available.</string>
-    <string name="barcode_fdroid_unavailable_title">Barcode scan unavailable</string>
-    <string name="barcode_fdroid_unavailable_body">This F-Droid build excludes ML Kit barcode binaries to keep download size smaller. You can still add foods by search or manual entry.</string>
     <string name="measure_neck">Neck</string>
     <string name="measure_waist">Waist</string>
     <string name="measure_hips">Hips</string>

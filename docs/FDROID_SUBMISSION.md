@@ -3,7 +3,7 @@
 Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
 **Application ID:** `org.codeberg.fitguy.nofud`  
-**Current version:** 1.14.4 (versionCode 20)  
+**Current version:** 1.14.5 (versionCode 21)  
 **Build task (v1.14.2+):** `release` in `android/` subdir  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
 
@@ -76,7 +76,7 @@ Copy into the GitLab MR description:
 * [x] External repos are added as git submodules instead of srclibs
 * [ ] Enable [Reproducible Builds](https://f-droid.org/docs/Reproducible_Builds)
 
-  No, I don't want this. F-Droid builds exclude ML Kit (`-Pnofud.barcodeMlkit=false`); Codeberg release APKs include it, so they cannot match.
+  No, I don't want this yet.
 * [ ] Multiple apks for native code
 
   I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; splits disabled). `output:` points at `app/…/app-release-unsigned.apk` because `subdir` is the Gradle root (`android/`), not the `app` module.
@@ -100,9 +100,9 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 - **Subdir:** `android`
 - **Gradle:** `yes` (`assembleRelease`)
 - **Commit:** `60f1fa5ebd612053375e63ff0876fef6d5f16569` (tag `v1.14.4`, versionCode 20)
-- **Props:** `-Pnofud.barcodeMlkit=false`, `-PreleaseAbi=arm64-v8a`
+- **Props:** `-PreleaseAbi=arm64-v8a`
 - **Output:** `app/build/outputs/apk/release/app-release-unsigned.apk` (required: Gradle root is `android/`, APK is under the `app` module; fdroidserver only auto-searches `subdir/build/outputs/`)
-- **Reproducible builds:** no — F-Droid excludes ML Kit; Codeberg release APKs include it
+- **Reproducible builds:** not enabled yet
 
 Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
 
@@ -123,7 +123,7 @@ No bundled analytics, ads, Firebase, or Google Play Services.
 ## Dependencies of note
 
 - `androidx.health.connect:connect-client`: Health Connect
-- `com.google.mlkit:barcode-scanning`: on-device barcode (excluded on F-Droid via `-Pnofud.barcodeMlkit=false`)
+- `io.github.zxing-cpp:android`: on-device barcode (FOSS, Apache-2.0)
 - `com.google.ai.edge.litertlm:litertlm-android`: on-device LLM runtime (optional; model not bundled)
 
 ## Anti-features
