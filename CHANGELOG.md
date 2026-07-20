@@ -2,6 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.5] - 2026-07-20
+
+### Changed
+
+- Replace proprietary ML Kit barcode scanning with FOSS zxing-cpp (Apache-2.0). F-Droid and Codeberg builds now share the same on-device scanner and barcode tile.
+
 ## [1.14.4] - 2026-07-20
 
 ### Fixed

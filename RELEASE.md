@@ -183,7 +183,7 @@ Before shipping formula, constant, or guardrail changes:
 
 ## APK size baselines (1.4.0)
 
-- Release APKs with ML Kit barcode scanning: ~45 MB (universal and per-ABI splits are similar)
+- Release APKs with zxing-cpp barcode scanning: ~45 MB (universal and per-ABI splits are similar)
 
 ## litertlm-android size delta (1.13.0)
 

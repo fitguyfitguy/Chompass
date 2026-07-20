@@ -40,10 +40,6 @@ val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "
 // F-Droid). Uses ndk.abiFilters with ABI splits disabled so the artifact is the
 // plain app-*-release(-unsigned).apk name F-Droid discovers without `output:`.
 val releaseAbi: String? = providers.gradleProperty("releaseAbi").orNull
-// F-Droid sets -Pnofud.barcodeMlkit=false (ML Kit is flagged by fdroid scanner).
-val barcodeMlkitEnabled = providers.gradleProperty("nofud.barcodeMlkit")
-    .map { it != "false" }
-    .getOrElse(true)
 
 android {
     namespace = "org.codeberg.fitguy.nofud"
@@ -57,24 +53,14 @@ android {
         applicationId = "org.codeberg.fitguy.nofud"
         minSdk = 26
         targetSdk = 36
-        versionCode = 20
-        versionName = "1.14.4"
+        versionCode = 21
+        versionName = "1.14.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("boolean", "BARCODE_MLKIT_ENABLED", "$barcodeMlkitEnabled")
         if (releaseAbi != null) {
             ndk {
                 abiFilters += releaseAbi
             }
-        }
-    }
-
-    sourceSets {
-        getByName("main") {
-            val barcodeDir =
-                if (barcodeMlkitEnabled) "src/barcodeMlkit/java" else "src/barcodeStub/java"
-            java.srcDir(barcodeDir)
-            kotlin.srcDir(barcodeDir)
         }
     }
 
@@ -188,9 +174,7 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    if (barcodeMlkitEnabled) {
-        implementation(libs.mlkit.barcode.scanning)
-    }
+    implementation(libs.zxing.cpp.android)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)

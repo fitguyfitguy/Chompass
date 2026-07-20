@@ -1,0 +1,1 @@
+FOSS barcode scanning via zxing-cpp (Apache-2.0); same scanner on F-Droid and Codeberg builds.

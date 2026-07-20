@@ -49,7 +49,7 @@ Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gra
 
 ## Dependencies note
 
-The single build intentionally omits proprietary **Google Play Core** libraries. ML Kit barcode scanning and other shared features remain included.
+The single build intentionally omits proprietary **Google Play Core** libraries. Barcode scanning uses FOSS **zxing-cpp** (Apache-2.0).
 
 On-device LLM (`litertlm-android`) is bundled in this build; whether F-Droid accepts the runtime model fetch is still under review. See [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
 

@@ -1,7 +1,6 @@
 package org.codeberg.fitguy.nofud.ui.home
 
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -39,16 +38,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.ui.theme.AppColors
+import zxingcpp.BarcodeReader
 
-@OptIn(ExperimentalGetImage::class)
 @Composable
 internal fun BarcodeScannerContent(
     onBarcode: (String) -> Unit,
@@ -63,11 +58,14 @@ internal fun BarcodeScannerContent(
     }
     val executor = remember { Executors.newSingleThreadExecutor() }
     val hasScanned = remember { AtomicBoolean(false) }
-    val scanner = remember {
-        BarcodeScanning.getClient(
-            BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
-                .build()
+    val reader = remember {
+        BarcodeReader(
+            BarcodeReader.Options().apply {
+                formats = setOf(BarcodeReader.Format.EAN_UPC)
+                tryHarder = true
+                tryRotate = true
+                textMode = BarcodeReader.TextMode.PLAIN
+            }
         )
     }
 
@@ -88,24 +86,15 @@ internal fun BarcodeScannerContent(
                             imageProxy.close()
                             return@setAnalyzer
                         }
-                        val mediaImage = imageProxy.image
-                        if (mediaImage == null) {
-                            imageProxy.close()
-                            return@setAnalyzer
+                        val value = runCatching {
+                            imageProxy.use { proxy ->
+                                reader.read(proxy)
+                                    .firstNotNullOfOrNull { it.text?.trim()?.takeIf(String::isNotEmpty) }
+                            }
+                        }.getOrNull()
+                        if (value != null && hasScanned.compareAndSet(false, true)) {
+                            onBarcode(value)
                         }
-                        val input = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                        scanner.process(input)
-                            .addOnSuccessListener { barcodes ->
-                                val value = barcodes.firstNotNullOfOrNull {
-                                    it.rawValue?.trim()?.takeIf(String::isNotEmpty)
-                                }
-                                if (value != null && hasScanned.compareAndSet(false, true)) {
-                                    onBarcode(value)
-                                }
-                            }
-                            .addOnCompleteListener {
-                                imageProxy.close()
-                            }
                     }
                 }
 
@@ -123,7 +112,6 @@ internal fun BarcodeScannerContent(
 
         onDispose {
             runCatching { cameraProviderFuture.get().unbindAll() }
-            runCatching { scanner.close() }
             executor.shutdown()
         }
     }
