@@ -1,0 +1,37 @@
+Categories:
+  - Diet
+  - Sports & Health
+License: MIT
+AuthorName: fitguy
+WebSite: https://codeberg.org/fitguy/nofud
+SourceCode: https://codeberg.org/fitguy/nofud
+IssueTracker: https://codeberg.org/fitguy/nofud/issues
+Changelog: https://codeberg.org/fitguy/nofud/releases
+Donate: https://codeberg.org/fitguy/nofud
+
+AutoName: NoFUD
+
+RepoType: git
+Repo: https://codeberg.org/fitguy/nofud.git
+Binaries: https://codeberg.org/fitguy/nofud/releases/download/v%v/NoFUD-fdroid-%v.apk
+
+Builds:
+  - versionName: 1.14.3
+    versionCode: 19
+    commit: v1.14.3
+    subdir: android
+    gradle:
+      - release
+    gradleProps:
+      - nofud.barcodeMlkit=false
+
+AllowedAPKSigningKeys: 2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: 1.14.3
+CurrentVersionCode: 19
+
+MaintainerNotes: |-
+  New app: single Builds entry (v1.14.3+). Older tags used a removed fdroidRelease flavor.
+  F-Droid sets nofud.barcodeMlkit=false — ML Kit excluded; barcode scan tile hidden.
