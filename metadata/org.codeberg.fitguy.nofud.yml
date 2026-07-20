@@ -17,13 +17,13 @@ Repo: https://codeberg.org/fitguy/nofud.git
 Builds:
   - versionName: 1.14.3
     versionCode: 19
-    commit: v1.14.3
+    commit: 00e5a671d3ee430c04c098606eb00908d8d969a6
     subdir: android
     gradle:
       - yes
-    output: app/build/outputs/apk/release/app-arm64-v8a-release-unsigned.apk
-    prebuild: sed -i '/implementation(libs.mlkit.barcode.scanning)/d' app/build.gradle.kts
-      && sed -i '/^kotlin {$/,/^}$/d' app/build.gradle.kts
+    prebuild:
+      - sed -i '/implementation(libs.mlkit.barcode.scanning)/d' app/build.gradle.kts
+      - sed -i '/^kotlin {$/,/^}$/d' app/build.gradle.kts
     gradleprops:
       - nofud.barcodeMlkit=false
       - releaseAbi=arm64-v8a
