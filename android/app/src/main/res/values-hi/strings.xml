@@ -348,6 +348,7 @@
     <string name="manual_protein">प्रोटीन (g)</string>
     <string name="manual_carbs">कार्ब्स (g)</string>
     <string name="manual_fat">फैट (g)</string>
+    <string name="manual_fiber">फ़ाइबर (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">भोजन का प्रकार</string>
 

@@ -348,6 +348,7 @@
     <string name="manual_protein">Proteine (g)</string>
     <string name="manual_carbs">Carbohidrați (g)</string>
     <string name="manual_fat">Grăsimi (g)</string>
+    <string name="manual_fiber">Fibre (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Tipul mesei</string>
 

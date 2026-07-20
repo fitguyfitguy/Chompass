@@ -348,6 +348,7 @@
     <string name="manual_protein">タンパク質 (g)</string>
     <string name="manual_carbs">炭水化物 (g)</string>
     <string name="manual_fat">脂質 (g)</string>
+    <string name="manual_fiber">食物繊維 (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">食事タイプ</string>
 

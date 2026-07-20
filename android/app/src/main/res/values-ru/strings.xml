@@ -349,6 +349,7 @@
     <string name="manual_protein">Белок (g)</string>
     <string name="manual_carbs">Углеводы (g)</string>
     <string name="manual_fat">Жиры (g)</string>
+    <string name="manual_fiber">Клетчатка (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Приём пищи</string>
 

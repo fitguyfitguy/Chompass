@@ -402,6 +402,7 @@
     <string name="manual_protein">Protein (g)</string>
     <string name="manual_carbs">Carbs (g)</string>
     <string name="manual_fat">Fat (g)</string>
+    <string name="manual_fiber">Fiber (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Meal Type</string>
 

@@ -135,6 +135,8 @@ fun EditFoodEntrySheet(
     val scale = if (baseServing > 0) servingGrams / baseServing else 1.0
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
+    var nutritionUnlocked by remember { mutableStateOf(false) }
+    var editableFiber by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.fiber) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
     val zone = remember { ZoneId.systemDefault() }
@@ -158,6 +160,12 @@ fun EditFoodEntrySheet(
     fun scaledInt(v: Int) = (v * scale).roundToInt()
     fun scaledMacro(v: Double) = v * scale
     fun scaledD(v: Double?) = v?.let { ((it * scale) * 10).roundToInt() / 10.0 }
+    val emDashText = stringResource(R.string.nutrition_em_dash)
+    fun displayD(v: Double?) = v?.let { String.format("%.1f", it) } ?: emDashText
+    fun editD(v: Double?) = v?.let { String.format("%.1f", it) }.orEmpty()
+    fun decimalValue(text: String): Double? =
+        text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
+    fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
 
     fun buildUpdated(): FoodEntry = currentBaseEntry.copy(
         name = name.trim().ifEmpty { currentBaseEntry.name },
@@ -170,7 +178,7 @@ fun EditFoodEntrySheet(
         customNote = noteText.trim().takeIf { it.isNotEmpty() },
         sugar = scaledD(currentBaseEntry.sugar),
         addedSugar = scaledD(currentBaseEntry.addedSugar),
-        fiber = scaledD(currentBaseEntry.fiber),
+        fiber = scaledD(editableFiber),
         saturatedFat = scaledD(currentBaseEntry.saturatedFat),
         monounsaturatedFat = scaledD(currentBaseEntry.monounsaturatedFat),
         polyunsaturatedFat = scaledD(currentBaseEntry.polyunsaturatedFat),
@@ -239,6 +247,7 @@ fun EditFoodEntrySheet(
                     customNote = noteText.trim().takeIf { it.isNotEmpty() },
                     emoji = newAnalysis.emoji
                 )
+                editableFiber = newAnalysis.fiber
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
@@ -280,7 +289,6 @@ fun EditFoodEntrySheet(
         val micros = listOf(
             EditMicroRow(stringResource(R.string.sheet_micro_sugar), scaledD(currentBaseEntry.sugar), gUnit),
             EditMicroRow(stringResource(R.string.sheet_micro_added_sugar), scaledD(currentBaseEntry.addedSugar), gUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_fiber), scaledD(currentBaseEntry.fiber), gUnit, AppColors.Fiber),
             EditMicroRow(stringResource(R.string.sheet_micro_saturated_fat), scaledD(currentBaseEntry.saturatedFat), gUnit),
             EditMicroRow(stringResource(R.string.sheet_micro_mono_fat), scaledD(currentBaseEntry.monounsaturatedFat), gUnit),
             EditMicroRow(stringResource(R.string.sheet_micro_poly_fat), scaledD(currentBaseEntry.polyunsaturatedFat), gUnit),
@@ -384,7 +392,16 @@ fun EditFoodEntrySheet(
                 )
             }
 
-            item { SheetSectionHeader(stringResource(R.string.sheet_nutrition)) }
+            item {
+                SheetSectionHeaderWithLock(
+                    title = stringResource(R.string.sheet_nutrition),
+                    unlocked = nutritionUnlocked,
+                    onToggle = {
+                        nutritionUnlocked = !nutritionUnlocked
+                        if (!nutritionUnlocked) dismissKeyboard()
+                    }
+                )
+            }
             item {
                 SheetPillCard {
                     SheetNutritionRow(stringResource(R.string.nutrition_label_calories), "${scaledInt(currentBaseEntry.calories)}", stringResource(R.string.unit_kcal), accentColor = AppColors.Calorie)
@@ -394,6 +411,16 @@ fun EditFoodEntrySheet(
                     SheetNutritionRow(stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(scaledMacro(currentBaseEntry.carbs)), stringResource(R.string.unit_g), accentColor = AppColors.Carbs)
                     SheetHairline()
                     SheetNutritionRow(stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(scaledMacro(currentBaseEntry.fat)), stringResource(R.string.unit_g), accentColor = AppColors.Fat)
+                    SheetHairline()
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_fiber),
+                        displayValue = displayD(scaledD(editableFiber)),
+                        editValue = editD(scaledD(editableFiber)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Fiber,
+                        onEdit = { editableFiber = baseOptionalFromText(it) }
+                    )
                 }
             }
 

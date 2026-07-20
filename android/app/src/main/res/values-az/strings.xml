@@ -348,6 +348,7 @@
     <string name="manual_protein">Protein (g)</string>
     <string name="manual_carbs">Karbohidrat (g)</string>
     <string name="manual_fat">Yağ (g)</string>
+    <string name="manual_fiber">Lif (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Yemək Növü</string>
 

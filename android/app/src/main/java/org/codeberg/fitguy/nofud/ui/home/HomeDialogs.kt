@@ -369,13 +369,14 @@ internal fun AnalysisResultDialog(
 internal fun ManualEntryDialog(
     isSaving: Boolean = false,
     onDismiss: () -> Unit,
-    onSave: (name: String, calories: Int, protein: Double, carbs: Double, fat: Double, mealType: MealType) -> Unit
+    onSave: (name: String, calories: Int, protein: Double, carbs: Double, fat: Double, fiber: Double?, mealType: MealType) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var calories by remember { mutableStateOf("") }
     var protein by remember { mutableStateOf("") }
     var carbs by remember { mutableStateOf("") }
     var fat by remember { mutableStateOf("") }
+    var fiber by remember { mutableStateOf("") }
     var mealType by remember { mutableStateOf(MealType.currentMeal) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
@@ -399,6 +400,9 @@ internal fun ManualEntryDialog(
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     NumberField(stringResource(R.string.manual_carbs), carbs, { carbs = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Carbs)
                     NumberField(stringResource(R.string.manual_fat), fat, { fat = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fat)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    NumberField(stringResource(R.string.manual_fiber), fiber, { fiber = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fiber)
                 }
 
                 // Meal Type — DropdownMenu styled to match the FoodResultSheet /
@@ -464,6 +468,7 @@ internal fun ManualEntryDialog(
                                 ServingUnitOption.parseQuantity(protein) ?: 0.0,
                                 ServingUnitOption.parseQuantity(carbs) ?: 0.0,
                                 ServingUnitOption.parseQuantity(fat) ?: 0.0,
+                                fiber.trim().takeIf { it.isNotEmpty() }?.let { ServingUnitOption.parseQuantity(it) },
                                 mealType
                             )
                         }
