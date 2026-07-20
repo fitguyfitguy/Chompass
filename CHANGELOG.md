@@ -2,6 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.3] - 2026-07-20
+
+### Fixed
+
+- F-Droid build compatibility: remove Gradle foojay-resolver plugin (flagged by fdroid scanner); make ML Kit barcode optional via `-Pnofud.barcodeMlkit=false` (F-Droid builds hide the barcode tile).
+
 ## [1.14.2] - 2026-07-15
 
 ### Fixed

@@ -25,7 +25,7 @@ if ! grep -q "^## \\[${VERSION_NAME}\\]" "$CHANGELOG"; then
   exit 1
 fi
 
-FDROID_VERSION="$(sed -n "s/^CurrentVersion: '\\(.*\\)'/\\1/p" "$FDROID_YML" | head -1)"
+FDROID_VERSION="$(sed -n "s/^CurrentVersion: '\\?\\(.*\\)'\\?$/\\1/p" "$FDROID_YML" | head -1)"
 FDROID_CODE="$(sed -n 's/^CurrentVersionCode: \(.*\)/\1/p' "$FDROID_YML" | head -1)"
 
 if [[ "$FDROID_VERSION" != "$VERSION_NAME" ]]; then
