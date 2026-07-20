@@ -59,26 +59,52 @@ Regenerate screenshots when UI changes: `devenv tasks run release:screenshots` (
 Copy into the GitLab MR description:
 
 ```markdown
+## Required
+
+* [x] The app complies with the [inclusion criteria](https://f-droid.org/docs/Inclusion_Policy)
+* [x] The original app author has been notified (and does not oppose the inclusion)
+* [x] Builds with `fdroid build` and all pipelines pass
+* [x] There is an issue tracker and contact info of the author so that we can report bugs and contact the author.
+
+## Strongly Recommended
+
+* [x] The upstream app source code repo contains the app metadata _(summary/description/images/changelog/etc)_ in a [Fastlane](https://gitlab.com/snippets/1895688) or [Triple-T](https://gitlab.com/snippets/1901490) folder structure
+* [x] Releases are tagged and auto update is enabled
+
+## Suggested
+
+* [x] External repos are added as git submodules instead of srclibs
+* [ ] Enable [Reproducible Builds](https://f-droid.org/docs/Reproducible_Builds)
+
+  No, I don't want this. F-Droid builds exclude ML Kit (`-Pnofud.barcodeMlkit=false`); Codeberg release APKs include it, so they cannot match.
+* [ ] Multiple apks for native code
+
+  I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; ABI splits disabled so the artifact is plain `app-release-unsigned.apk`).
+
+---
+
 ## Summary
 
-**New app:** NoFUD, an ad-free, privacy-focused Android calorie and macro tracker.
+**New app:** NoFUD — ad-free, privacy-focused Android calorie and macro tracker.
 
 - **Application ID:** `org.codeberg.fitguy.nofud`
 - **License:** MIT
 - **Upstream:** https://codeberg.org/fitguy/nofud
-- **Category:** Diet, Sports & Health
+- **Category:** Sports & Health, Diet
 
-NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). there is a single `release` build.
+NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build.
 
 ## Build
 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
 - **Subdir:** `android`
-- **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `yes` (no product flavors → `assembleRelease`) from v1.14.2 onward
-- **Current tag:** `v1.14.4` (versionCode 20; fdroiddata `commit:` must be the full hash of that tag)
-- **F-Droid build:** `gradle: yes` in `subdir: android` with `-Pnofud.barcodeMlkit=false` and `-PreleaseAbi=arm64-v8a`. `output:` points at the ABI-split APK name (`app-arm64-v8a-release-unsigned.apk`) — required or CI fails with “Failed to find any output apks”. `prebuild` is a YAML list (not `&&`-chained).
+- **Gradle:** `yes` (`assembleRelease`)
+- **Commit:** `60f1fa5ebd612053375e63ff0876fef6d5f16569` (tag `v1.14.4`, versionCode 20)
+- **Props:** `-Pnofud.barcodeMlkit=false`, `-PreleaseAbi=arm64-v8a`
+- **Output:** none (plain `app-release-unsigned.apk`; single-ABI path uses `ndk.abiFilters` with splits disabled)
+- **Reproducible builds:** no — F-Droid excludes ML Kit; Codeberg release APKs include it
 
-Store metadata is in the upstream repo under `metadata/en-US/` (Fastlane/Triple-T layout).
+Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
 
 ## Privacy & network use
 
@@ -97,8 +123,8 @@ No bundled analytics, ads, Firebase, or Google Play Services.
 ## Dependencies of note
 
 - `androidx.health.connect:connect-client`: Health Connect
-- `com.google.mlkit:barcode-scanning`: on-device barcode (no Play Services ads/analytics)
-- `com.google.ai.edge.litertlm:litertlm-android`: on-device LLM runtime (optional feature; model not bundled)
+- `com.google.mlkit:barcode-scanning`: on-device barcode (excluded on F-Droid via `-Pnofud.barcodeMlkit=false`)
+- `com.google.ai.edge.litertlm:litertlm-android`: on-device LLM runtime (optional; model not bundled)
 
 ## Anti-features
 
@@ -114,13 +140,7 @@ Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, 
 
 ## Fork note
 
-Forked from Fud AI with permission of the fork maintainer (same person continuing the ad-free variant). Distinct package ID `org.codeberg.fitguy.nofud` vs upstream.
-
-## Test plan
-
-- [ ] `fdroid lint org.codeberg.fitguy.nofud`
-- [ ] `fdroid build org.codeberg.fitguy.nofud` (or CI on this MR)
-- [ ] Install APK; verify manual food entry and barcode without API key
+Forked from Fud AI with a distinct package ID `org.codeberg.fitguy.nofud` vs upstream. I am the NoFUD maintainer.
 ```
 
 ---
