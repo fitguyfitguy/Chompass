@@ -22,7 +22,7 @@ Builds:
     subdir: android
     gradle:
       - release
-    gradleProps:
+    gradleprops:
       - nofud.barcodeMlkit=false
 
 AllowedAPKSigningKeys: 2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf
