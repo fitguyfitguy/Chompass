@@ -18,12 +18,11 @@ Builds:
   - versionName: 1.14.5
     versionCode: 21
     commit: 9b2f924bc7341adc6718744fe6b7ef4ccc29da56
-    subdir: android
+    subdir: android/app
     gradle:
       - yes
-    output: app/build/outputs/apk/release/app-release-unsigned.apk
     prebuild:
-      - sed -i '/^kotlin {$/,/^}$/d' app/build.gradle.kts
+      - sed -i '/^kotlin {$/,/^}$/d' build.gradle.kts
     gradleprops:
       - releaseAbi=arm64-v8a
 
@@ -31,8 +30,8 @@ MaintainerNotes: |-
   New app: single Builds entry (latest only). Older tags used a removed fdroidRelease flavor.
   Barcode scanning uses FOSS zxing-cpp (Apache-2.0); same scanner in Codeberg and F-Droid builds.
   prebuild strips kotlin jvmToolchain(17) if present (Trixie has Java 21 only).
-  subdir=android is the Gradle root (settings.gradle.kts). APK is under the app module, so
-  output: is required — fdroidserver only auto-searches subdir/build/outputs/, not app/build/.
+  subdir=android/app (app module). Gradle still finds parent android/settings.gradle.kts;
+  APK lands in subdir/build/outputs so no output: needed.
   releaseAbi=arm64-v8a: ndk.abiFilters + splits disabled → plain app-release-unsigned.apk.
 
 AutoUpdateMode: Version
