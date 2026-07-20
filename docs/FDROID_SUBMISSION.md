@@ -66,7 +66,7 @@ Copy into the GitLab MR description:
 - **Application ID:** `org.codeberg.fitguy.nofud`
 - **License:** MIT
 - **Upstream:** https://codeberg.org/fitguy/nofud
-- **Category:** Health & Fitness
+- **Category:** Diet, Sports & Health
 
 NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). there is a single `release` build.
 
