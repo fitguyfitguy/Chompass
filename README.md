@@ -94,6 +94,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 **Priorities**
 
 - **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK cloud AI or opt-in on-device Gemma 4 inference ([PRIVACY.md](PRIVACY.md))
+- **FOSS barcode:** on-device scanning via [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) (Apache-2.0), not proprietary ML Kit.
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect; `nofud://` meal share links
 - **Wearables:** Health Connect in/out for steps, exercise, weight, meals, sleep, hydration, energy burn (Gadgetbridge, openScale, Samsung Health, etc.)
 - **Lean scope:** no workouts tab or bundled exercise library; F-Droid / Codeberg APKs (Google Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md))
@@ -171,6 +172,7 @@ Weight and body data now import from a file too: **Settings → Import Weight & 
 | Banner ads (AdMob) | Added Jul 2026, removed in 3.0.3 | **Never shipped** |
 | Bring your own API key | Yes | Yes |
 | On-device private AI (Gemma 4 Edge) | No | **Yes** (opt-in, v1.14.0) |
+| Barcode on-device scanner | Proprietary ML Kit | **FOSS zxing-cpp** (Apache-2.0) |
 | Analytics / tracking SDKs | None | None |
 | Workouts tab + exercise library | Yes (~873 exercises, large APK) | **Omitted** (food tracking focus) |
 | Diet mode / keto carb mode | No | **Yes** |
@@ -184,13 +186,13 @@ Weight and body data now import from a file too: **Settings → Import Weight & 
 | Fallback AI provider | No | **Yes** |
 | APK size (universal, approx.) | ~120 MB (with workouts) | **~34 MB** (v1.11.0) |
 | UX / UI polish | Baseline | **Android-optimized** (`AddFoodSheet`, widgets, themes) |
-| F-Droid / direct APK releases | Play-focused | **Codeberg** (play flavor disabled) |
+| F-Droid / direct APK releases | Play-focused | **Codeberg** |
 
 Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
 
 ## Performance
 
-Focused on a fast Android app rather than matching every upstream feature:
+We are focused on a fast Android app rather than matching upstream feature:
 
 - **Install size:** no workouts bundle or ad SDK; universal APK ~34 MB (v1.11.0)
 - **Food log I/O:** monthly diary buckets for large histories
