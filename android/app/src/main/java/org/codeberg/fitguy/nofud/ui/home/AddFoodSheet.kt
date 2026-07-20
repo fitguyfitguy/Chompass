@@ -75,6 +75,7 @@ fun AddFoodSheet(
     onManual: () -> Unit,
     onCopyFromDay: () -> Unit,
     onDismiss: () -> Unit,
+    barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
     waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     waterUseMetric: Boolean = true,
@@ -90,6 +91,7 @@ fun AddFoodSheet(
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
             onCopyFromDay = { onDismiss(); onCopyFromDay() },
+            barcodeEnabled = barcodeEnabled,
             waterTrackingEnabled = waterTrackingEnabled,
             waterQuickPresetsMl = waterQuickPresetsMl,
             waterUseMetric = waterUseMetric,
@@ -109,6 +111,7 @@ internal fun AddFoodSheetContent(
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
     onCopyFromDay: () -> Unit = {},
+    barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
     waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     waterUseMetric: Boolean = true,
@@ -172,13 +175,15 @@ internal fun AddFoodSheetContent(
                     modifier = Modifier.weight(1f),
                     onClick = onVoice,
                 )
-                AddFoodActionTile(
-                    label = stringResource(R.string.home_menu_barcode),
-                    icon = Icons.Filled.QrCodeScanner,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onBarcode,
-                )
+                if (barcodeEnabled) {
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_barcode),
+                        icon = Icons.Filled.QrCodeScanner,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onBarcode,
+                    )
+                }
             }
             Row(
                 Modifier.fillMaxWidth(),

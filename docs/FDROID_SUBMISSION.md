@@ -3,7 +3,7 @@
 Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
 **Application ID:** `org.codeberg.fitguy.nofud`  
-**Current version:** 1.14.2 (versionCode 18)  
+**Current version:** 1.14.3 (versionCode 19)  
 **Build task (v1.14.2+):** `release` in `android/` subdir  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
 
@@ -75,7 +75,7 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
 - **Subdir:** `android`
 - **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `release` from v1.14.2 onward
-- **Current tag:** `v1.14.2` (versionCode 18)
+- **Current tag:** `v1.14.3` (versionCode 19)
 - **Reproducible builds:** `Binaries` + `AllowedAPKSigningKeys` point at maintainer-signed Codeberg release APKs
 
 Store metadata is in the upstream repo under `metadata/en-US/` (Fastlane/Triple-T layout).
