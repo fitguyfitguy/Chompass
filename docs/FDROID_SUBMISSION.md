@@ -76,7 +76,7 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 - **Subdir:** `android`
 - **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `release` from v1.14.2 onward
 - **Current tag:** `v1.14.3` (versionCode 19)
-- **Reproducible builds:** `Binaries` + `AllowedAPKSigningKeys` point at maintainer-signed Codeberg release APKs
+- **F-Droid build:** `release` with `-Pnofud.barcodeMlkit=false` (ML Kit excluded; barcode tile hidden)
 
 Store metadata is in the upstream repo under `metadata/en-US/` (Fastlane/Triple-T layout).
 
