@@ -243,7 +243,7 @@ fun RecipeBuilderSheet(
     if (showManualEntry) {
         ManualEntryDialog(
             onDismiss = { showManualEntry = false },
-            onSave = { ingredientName, kcal, p, c, f, _ ->
+            onSave = { ingredientName, kcal, p, c, f, _, _ ->
                 ingredients = ingredients + RecipeIngredient(
                     name = ingredientName,
                     baseCalories = kcal,

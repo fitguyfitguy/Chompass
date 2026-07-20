@@ -348,6 +348,7 @@
     <string name="manual_protein">Proteína (g)</string>
     <string name="manual_carbs">Carboidratos (g)</string>
     <string name="manual_fat">Gordura (g)</string>
+    <string name="manual_fiber">Fibras (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Tipo de refeição</string>
 

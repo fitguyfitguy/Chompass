@@ -348,6 +348,7 @@
     <string name="manual_protein">蛋白质 (g)</string>
     <string name="manual_carbs">碳水 (g)</string>
     <string name="manual_fat">脂肪 (g)</string>
+    <string name="manual_fiber">纤维 (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">餐食类型</string>
 

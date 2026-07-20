@@ -709,6 +709,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         protein: Double,
         carbs: Double,
         fat: Double,
+        fiber: Double? = null,
         mealType: MealType = MealType.currentMeal
     ) {
         if (_ui.value.saving) return
@@ -723,6 +724,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         protein = protein,
                         carbs = carbs,
                         fat = fat,
+                        fiber = fiber,
                         timestamp = timestampForSelectedDay(),
                         source = FoodSource.MANUAL,
                         mealType = mealType

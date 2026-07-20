@@ -348,6 +348,7 @@
     <string name="manual_protein">Eiwit (g)</string>
     <string name="manual_carbs">Koolhydraten (g)</string>
     <string name="manual_fat">Vet (g)</string>
+    <string name="manual_fiber">Vezels (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Maaltijdtype</string>
 

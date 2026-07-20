@@ -348,6 +348,7 @@
     <string name="manual_protein">단백질 (g)</string>
     <string name="manual_carbs">탄수화물 (g)</string>
     <string name="manual_fat">지방 (g)</string>
+    <string name="manual_fiber">식이섬유 (g)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">식사 종류</string>
 

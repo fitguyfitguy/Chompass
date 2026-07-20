@@ -423,6 +423,16 @@ fun FoodResultSheet(
                         accentColor = AppColors.Fat,
                         onEdit = { editableFat = baseDoubleFromText(it) }
                     )
+                    SheetHairline()
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_fiber),
+                        displayValue = displayD(scaledD(editableFiber)),
+                        editValue = editD(scaledD(editableFiber)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Fiber,
+                        onEdit = { editableFiber = baseOptionalFromText(it) }
+                    )
                 }
             }
 
@@ -448,7 +458,6 @@ fun FoodResultSheet(
                         val micros = listOf(
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_sugar), scaledD(editableSugar), gUnit, { editableSugar = baseOptionalFromText(it) }),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_added_sugar), scaledD(editableAddedSugar), gUnit, { editableAddedSugar = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_fiber), scaledD(editableFiber), gUnit, { editableFiber = baseOptionalFromText(it) }, AppColors.Fiber),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_saturated_fat), scaledD(editableSaturatedFat), gUnit, { editableSaturatedFat = baseOptionalFromText(it) }),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_mono_fat), scaledD(editableMonounsaturatedFat), gUnit, { editableMonounsaturatedFat = baseOptionalFromText(it) }),
                             ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_poly_fat), scaledD(editablePolyunsaturatedFat), gUnit, { editablePolyunsaturatedFat = baseOptionalFromText(it) }),
@@ -559,7 +568,7 @@ private data class ReviewNutrientEditSpec(
 )
 
 @Composable
-private fun SheetSectionHeaderWithLock(
+internal fun SheetSectionHeaderWithLock(
     title: String,
     unlocked: Boolean,
     onToggle: () -> Unit
@@ -596,7 +605,7 @@ private fun SheetSectionHeaderWithLock(
 }
 
 @Composable
-private fun ReviewNutritionValueRow(
+internal fun ReviewNutritionValueRow(
     label: String,
     displayValue: String,
     editValue: String,
