@@ -17,7 +17,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] MIT license in repo root
 - [x] Version tags matching `versionName` (`v1.14.2`, etc.)
 - [x] Single FOSS build; Play Core / ad SDKs removed ([`docs/DISTRIBUTION.md`](DISTRIBUTION.md))
-- [x] Confirm `v1.14.2` tag exists on Codeberg and `assembleRelease` succeeds
+- [x] Confirm `v1.14.5` tag exists on Codeberg and `assembleRelease` succeeds
 - [x] Run `devenv tasks run release:check-metadata` before each release
 - [x] Push `metadata/en-US/` to Codeberg `main` (required before fdroiddata review)
 
@@ -26,7 +26,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] `title.txt`, `short_description.txt`, `full_description.txt` (workouts wording removed)
 - [x] `images/icon.png` (512×512, from `ic_logo_teal.png`)
 - [x] `images/phoneScreenshots/1.png` … `5.png` (from `docs/screenshots/`)
-- [x] `changelogs/20.txt` for current `versionCode`
+- [x] `changelogs/21.txt` for current `versionCode`
 - [ ] Add `changelogs/<versionCode>.txt` for every future release
 
 ### Screenshot map
@@ -92,16 +92,17 @@ Copy into the GitLab MR description:
 - **Upstream:** https://codeberg.org/fitguy/nofud
 - **Category:** Sports & Health, Diet
 
-NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build.
+NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds — no ML Kit / proprietary scanner split.
 
 ## Build
 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
 - **Subdir:** `android`
 - **Gradle:** `yes` (`assembleRelease`)
-- **Commit:** `60f1fa5ebd612053375e63ff0876fef6d5f16569` (tag `v1.14.4`, versionCode 20)
+- **Commit:** `9b2f924bc7341adc6718744fe6b7ef4ccc29da56` (tag `v1.14.5`, versionCode 21)
 - **Props:** `-PreleaseAbi=arm64-v8a`
 - **Output:** `app/build/outputs/apk/release/app-release-unsigned.apk` (required: Gradle root is `android/`, APK is under the `app` module; fdroidserver only auto-searches `subdir/build/outputs/`)
+- **Codeberg release:** https://codeberg.org/fitguy/NoFUD/releases/tag/v1.14.5 (same FOSS build as F-Droid; barcode via zxing-cpp)
 - **Reproducible builds:** not enabled yet
 
 Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
