@@ -1,0 +1,1 @@
+F-Droid packaging: single-ABI release builds use abiFilters (plain APK name, consistent native libs).

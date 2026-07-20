@@ -2,6 +2,12 @@
 
 All notable changes to NoFUD are documented here.
 
+## [1.14.4] - 2026-07-20
+
+### Fixed
+
+- F-Droid packaging: `-PreleaseAbi=arm64-v8a` now uses `ndk.abiFilters` with ABI splits disabled, so the APK is the plain `app-release-unsigned.apk` name (avoids F-Droid `output:` / “Failed to find any output apks”, and keeps native libs consistent for the scanner).
+
 ## [1.14.3] - 2026-07-20
 
 ### Fixed

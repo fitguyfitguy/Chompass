@@ -15,9 +15,9 @@ RepoType: git
 Repo: https://codeberg.org/fitguy/nofud.git
 
 Builds:
-  - versionName: 1.14.3
-    versionCode: 19
-    commit: 00e5a671d3ee430c04c098606eb00908d8d969a6
+  - versionName: 1.14.4
+    versionCode: 20
+    commit: 0000000000000000000000000000000000000000
     subdir: android
     gradle:
       - yes
@@ -29,15 +29,14 @@ Builds:
       - releaseAbi=arm64-v8a
 
 MaintainerNotes: |-
-  New app: single Builds entry (v1.14.3+). Older tags used a removed fdroidRelease flavor.
+  New app: single Builds entry (latest only). Older tags used a removed fdroidRelease flavor.
   F-Droid sets nofud.barcodeMlkit=false — ML Kit excluded; barcode scan tile hidden.
-  prebuild strips ML Kit dep + kotlin jvmToolchain(17) (Trixie buildserver has Java 21 only).
-  releaseAbi=arm64-v8a: single-ABI APK. litertlm-android ships liblitertlm_jni.so only for
-  arm64-v8a/x86_64; a universal APK triggered scanner Major "different libs in different ABI".
-  On-device AI already gates on those ABIs (OnDeviceCapability); 32-bit devices keep core features.
+  prebuild strips ML Kit dep + kotlin jvmToolchain(17) if present (Trixie has Java 21 only).
+  releaseAbi=arm64-v8a: ndk.abiFilters + splits disabled → plain app-release-unsigned.apk
+  (no output:). Avoids litertlm ABI mismatch on universal/fat APKs.
   No Binaries URL: Codeberg release APKs include ML Kit; F-Droid builds do not.
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 1.14.3
-CurrentVersionCode: 19
+CurrentVersion: 1.14.4
+CurrentVersionCode: 20
