@@ -3,7 +3,7 @@
 Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
 **Application ID:** `org.codeberg.fitguy.nofud`  
-**Current version:** 1.14.3 (versionCode 19)  
+**Current version:** 1.14.4 (versionCode 20)  
 **Build task (v1.14.2+):** `release` in `android/` subdir  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
 
@@ -26,7 +26,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 - [x] `title.txt`, `short_description.txt`, `full_description.txt` (workouts wording removed)
 - [x] `images/icon.png` (512×512, from `ic_logo_teal.png`)
 - [x] `images/phoneScreenshots/1.png` … `5.png` (from `docs/screenshots/`)
-- [x] `changelogs/18.txt` for current `versionCode`
+- [x] `changelogs/20.txt` for current `versionCode`
 - [ ] Add `changelogs/<versionCode>.txt` for every future release
 
 ### Screenshot map
@@ -75,8 +75,8 @@ NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) 
 - **Repo:** `https://codeberg.org/fitguy/nofud.git`
 - **Subdir:** `android`
 - **Gradle:** `fdroidRelease` for tags ≤ v1.14.1; `yes` (no product flavors → `assembleRelease`) from v1.14.2 onward
-- **Current tag:** `v1.14.3` → commit `00e5a671d3ee430c04c098606eb00908d8d969a6` (versionCode 19; fdroiddata wants the full hash, not the tag name)
-- **F-Droid build:** `gradle: yes` in `subdir: android` with `-Pnofud.barcodeMlkit=false` and `-PreleaseAbi=arm64-v8a` (no `output:`; single arm64 APK). `prebuild` is a YAML list (not `&&`-chained).
+- **Current tag:** `v1.14.4` (versionCode 20; fdroiddata `commit:` must be the full hash of that tag)
+- **F-Droid build:** `gradle: yes` in `subdir: android` with `-Pnofud.barcodeMlkit=false` and `-PreleaseAbi=arm64-v8a`. `output:` points at the ABI-split APK name (`app-arm64-v8a-release-unsigned.apk`) — required or CI fails with “Failed to find any output apks”. `prebuild` is a YAML list (not `&&`-chained).
 
 Store metadata is in the upstream repo under `metadata/en-US/` (Fastlane/Triple-T layout).
 

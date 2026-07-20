@@ -36,7 +36,9 @@ val secretsProps = Properties().apply {
 fun bcString(value: String): String =
     "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "").trim()
-// Optional: -PreleaseAbi=arm64-v8a for a single local smoke-test release APK.
+// Optional: -PreleaseAbi=arm64-v8a for a single-ABI release APK (local smoke test /
+// F-Droid). Uses ndk.abiFilters with ABI splits disabled so the artifact is the
+// plain app-*-release(-unsigned).apk name F-Droid discovers without `output:`.
 val releaseAbi: String? = providers.gradleProperty("releaseAbi").orNull
 // F-Droid sets -Pnofud.barcodeMlkit=false (ML Kit is flagged by fdroid scanner).
 val barcodeMlkitEnabled = providers.gradleProperty("nofud.barcodeMlkit")
@@ -55,11 +57,16 @@ android {
         applicationId = "org.codeberg.fitguy.nofud"
         minSdk = 26
         targetSdk = 36
-        versionCode = 19
-        versionName = "1.14.3"
+        versionCode = 20
+        versionName = "1.14.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("boolean", "BARCODE_MLKIT_ENABLED", "$barcodeMlkitEnabled")
+        if (releaseAbi != null) {
+            ndk {
+                abiFilters += releaseAbi
+            }
+        }
     }
 
     sourceSets {
@@ -139,15 +146,15 @@ android {
         includeInApk = false
         includeInBundle = false
     }
-    // Produce per-ABI APKs plus a universal APK for wider device coverage.
+    // Full releases: per-ABI APKs + universal. Single-ABI (-PreleaseAbi=…): no
+    // splits — plain APK name + abiFilters only (see releaseAbi above).
     splits {
         abi {
-            isEnable = true
-            reset()
             if (releaseAbi != null) {
-                include(releaseAbi)
-                isUniversalApk = false
+                isEnable = false
             } else {
+                isEnable = true
+                reset()
                 include("arm64-v8a", "armeabi-v7a", "x86_64")
                 isUniversalApk = true
             }
