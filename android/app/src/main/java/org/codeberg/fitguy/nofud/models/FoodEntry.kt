@@ -51,8 +51,16 @@ data class FoodEntry(
     @Serializable(with = UuidSerializer::class)
     val recipeLogId: UUID? = null
 ) {
-    /** Unique key for favorite deduplication (name + calorie combo). */
-    val favoriteKey: String get() = "${name.lowercase()}|$calories"
+    /**
+     * Stable identity for Favorites / Frequent / Recents dedup.
+     *
+     * Keyed by normalized name only — not calories or serving size — so re-logging
+     * the same food at a different grams / piece / unit amount stays one food.
+     * Brand-new scans / manual entries that would collide are renamed via
+     * [disambiguateFoodName] ("Name (2)", …) before save. Diary rows remain
+     * separate; only the Saved Meals pickers collapse by this key.
+     */
+    val favoriteKey: String get() = name.trim().lowercase()
 
     /** New entry for the given log date (new id), copying nutrition and media from this entry. */
     fun duplicatedForLogging(
