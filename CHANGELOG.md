@@ -2,6 +2,14 @@
 
 All notable changes to NoFUD are documented here.
 
+## [Unreleased]
+
+### Fixed
+
+- Saved Meals Recents / Frequent / Favorites no longer treat different servings of the same food as separate items. Re-logging with new grams, pieces, or units updates the template instead of stacking duplicates.
+- Brand-new foods (scan, AI, manual, coach) that would collide on name are auto-renamed (`Name (2)`, …) so accidental collisions stay distinct from intentional re-logs.
+- Logging from the review sheet no longer double-applies serving scale (could inflate calories when changing portion size).
+
 ## [1.14.6] - 2026-07-20
 
 ### Fixed
