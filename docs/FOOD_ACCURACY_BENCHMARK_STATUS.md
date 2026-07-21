@@ -48,6 +48,7 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 4. **`nofud/free` fixes reliability.** Image fill-in: parse_ok **58% → 98%**, zero content-safety routes.
 5. **Plate image estimation is still hard.** Even with 98% parse_ok, image WMAPE ≈ **43%**, within ±20% kcal ≈ **33%**. Reliability ≠ calorie accuracy for vision.
 6. **Image prompt shape does not fix plate WMAPE.** On pinned Gemma 26B :free (JFB 50), `compact` wins: WMAPE **39.8%** / ±20% **32%** / parse **100%** / ~9 s. `production_image` and `fewshot_units` are worse (~47% / ~46% WMAPE), slower (~17 s / ~14 s), and 96% parse. Stop prompt-chasing for cloud vision accuracy; next bets are models/datasets/priors.
+7. **Lab overhead (Nutrition5k) is only mildly easier than phone meals.** Cursory n=15 overhead RGB + Gemma compact: WMAPE **34.7%**, ±20% **40%**, mae kcal **80**, parse **100%**. Better than JFB (~40% WMAPE) but still far from text (~6%). Error is not “messy phone photo” alone — portion/macro estimation stays hard even with clean top-down plates.
 
 ---
 
@@ -83,6 +84,12 @@ Filled backend mix (nofud baseline): Gemma 26B 27/27, Nemotron nano-VL 14/15, Ne
 
 **Image prompt ranking (pinned Gemma):** compact ≫ fewshot_units ≥ production_image.
 
+### Image (Nutrition5k overhead RGB, cursory)
+
+| Run | Model | prompt | n | parse_ok | WMAPE | mae kcal | within 20% | Notes |
+|-----|-------|--------|---|----------|-------|----------|------------|-------|
+| `n5k_cursory_gemma_compact` | Gemma 4 26B :free | compact | 15 | **100%** | **34.7%** | **80** | **40%** | HTTPS overhead subset; ~7.5 s mean; small-kcal dishes inflate MAPE |
+
 Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 
 ---
@@ -105,7 +112,8 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 
 - [x] Image **prompt A/B** on pinned Gemma (`compact` vs `production_image` vs `fewshot_units`) — compact wins; longer prompts hurt
 - [ ] Full **fresh** 50-image run with `nofud/free` from cold start (current image set is openrouter/free survivors + nofud fill — fine for reliability proof, slightly mixed for pure router A/B)
-- [ ] Nutrition5k overhead RGB subset (metadata path exists; frames optional via GCS) — diagnose portion vs recognition error
+- [x] Nutrition5k overhead RGB **cursory** (n=15, Gemma compact) — WMAPE ~35%; lab plates still hard
+- [ ] Nutrition5k larger slice (n≥50) if model A/B needs a second image distribution
 - [ ] Stronger vision pins / paid VL vs Gemma free (prompt A/B saturated)
 - [ ] Nutrition-label OCR track (Open Food Facts)
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
