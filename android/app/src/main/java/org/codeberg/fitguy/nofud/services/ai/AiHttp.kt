@@ -1,5 +1,6 @@
 package org.codeberg.fitguy.nofud.services.ai
 
+import org.codeberg.fitguy.nofud.models.AIProvider
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -8,6 +9,14 @@ internal object AiHttp {
         base.newBuilder()
             .readTimeout(seconds.toLong(), TimeUnit.SECONDS)
             .build()
+
+    /** Local/custom endpoints use the user-configured timeout; cloud providers keep the default client. */
+    fun clientForProvider(base: OkHttpClient, provider: AIProvider, localTimeoutSeconds: Int): OkHttpClient =
+        if (provider.usesConfigurableRequestTimeout) {
+            clientWithReadTimeout(base, localTimeoutSeconds)
+        } else {
+            base
+        }
 
     fun sanitizeApiKey(raw: String?): String? =
         raw?.trim()?.takeIf { it.isNotEmpty() }

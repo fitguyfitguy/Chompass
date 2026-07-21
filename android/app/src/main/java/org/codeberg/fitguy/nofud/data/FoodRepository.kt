@@ -14,6 +14,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -112,7 +113,7 @@ class FoodRepository(
 
     suspend fun deleteEntry(entry: FoodEntry) {
         prefs.applyFoodEntryBucketChanges(removalIdsByMonth = mapOf(entry.month() to setOf(entry.id)))
-        deleteImageIfUnreferenced(entry.imageFilename)
+        pruneOrphanedImages()
         // Delete even when sync is off (iOS parity, best-effort) — a surviving
         // fudai-tagged record would resurrect through restoreFromHealthConnect.
         health?.deleteNutrition(entry.id)
@@ -120,6 +121,7 @@ class FoodRepository(
 
     suspend fun replaceAll(entries: List<FoodEntry>) {
         prefs.replaceAllFoodEntries(entries)
+        pruneOrphanedImages()
     }
 
     /**
@@ -138,6 +140,7 @@ class FoodRepository(
 
     suspend fun clear() {
         prefs.replaceAllFoodEntries(emptyList())
+        pruneOrphanedImages()
     }
 
     // -- Favorites --------------------------------------------------------
@@ -161,7 +164,7 @@ class FoodRepository(
             val removed = current.removeAt(idx)
             prefs.setFavoriteFoodEntries(current)
             prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
-            deleteImageIfUnreferenced(removed.imageFilename)
+            pruneOrphanedImages()
             return
         } else {
             // Drop any other entry with the same id (defensive — should not
@@ -242,12 +245,21 @@ class FoodRepository(
         return prefs.healthConnectEnabled.first() && manager.hasNutritionWrite()
     }
 
-    /** Drop on-disk JPEGs once no log row or favorite still references them. */
+    /** Drop on-disk JPEGs once no log row, favorite, or draft still references them. */
+    suspend fun pruneOrphanedImages() {
+        val store = imageStore ?: return
+        ensureFavoritesMigrated()
+        val referenced = prefs.foodImageReferenceFilenames() ?: return
+        store.pruneUnreferenced(referenced)
+    }
+
     private suspend fun deleteImageIfUnreferenced(imageFilename: String?) {
         val filename = imageFilename ?: return
         val store = imageStore ?: return
         if (prefs.foodEntries.first().any { it.imageFilename == filename }) return
         if (prefs.favoriteFoodEntries.first().any { it.imageFilename == filename }) return
+        if (prefs.pendingFoodAnalysisDraft.first()?.imageFilename == filename) return
+        if (prefs.pendingFoodInputDraft.first()?.imageFilename == filename) return
         store.delete(filename)
     }
 
@@ -392,16 +404,24 @@ class FoodRepository(
      * the same food at a new serving does not stack duplicate picker rows.
      * Template for each food is the most recent log (latest grams/units).
      */
-    suspend fun recent(limit: Int = 50): List<FoodEntry> =
-        recentFoodTemplates(prefs.foodEntries.first(), limit)
+    suspend fun recent(days: Int = 30, now: Instant = Instant.now()): List<FoodEntry> {
+        val cutoff = now.minus(days.toLong(), ChronoUnit.DAYS)
+        return recentFoodTemplates(
+            prefs.foodEntries.first().filter { !it.timestamp.isBefore(cutoff) },
+        )
+    }
 
     /**
      * Groups diary rows by food identity ([FoodEntry.favoriteKey]). Count is
      * how often that food was logged; template is the newest serving snapshot
      * so a re-log with new grams/pieces becomes the amount offered next time.
      */
-    suspend fun frequent(): List<FrequentFoodGroup> =
-        frequentFoodGroups(prefs.foodEntries.first())
+    suspend fun frequent(days: Int = 90, now: Instant = Instant.now()): List<FrequentFoodGroup> {
+        val cutoff = now.minus(days.toLong(), ChronoUnit.DAYS)
+        return frequentFoodGroups(
+            prefs.foodEntries.first().filter { !it.timestamp.isBefore(cutoff) },
+        )
+    }
 }
 
 /**

@@ -167,6 +167,7 @@ enum class AIProvider {
     val requiresApiKey: Boolean get() = this != OLLAMA && this != ON_DEVICE
     val requiresCustomEndpoint: Boolean get() = this == CUSTOM_OPENAI
     val requiresCustomModelName: Boolean get() = this == CUSTOM_OPENAI
+    val usesConfigurableRequestTimeout: Boolean get() = this == OLLAMA || this == CUSTOM_OPENAI
     val supportsCustomModelName: Boolean
         get() = this == OPENROUTER || this == HUGGING_FACE || this == CUSTOM_OPENAI
 

@@ -4,11 +4,28 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Activity level picker subtitles now include approximate daily step guides (upstream #141/#132).
+- Diary export (JSON / CSV / Markdown) includes all stored micronutrients; export format version 1.1.
+- Add-food sheet opens Recents, Frequent, or Favorites directly (upstream reuse-meal menu split).
+- Health Connect privacy rationale activity for API ≤33 discovery (`HealthPermissionsRationaleActivity`).
+
+### Changed
+
+- Saved Meals Recents limited to last 30 days; Frequent to last 90 days (upstream rolling windows).
+- AI read timeout: 30–600 s range; default 180 s applies to Ollama/Custom only (`AiHttp.clientForProvider`).
+- Clear food log prunes orphaned image files instead of wiping the entire image cache.
+
 ### Fixed
 
 - Saved Meals Recents / Frequent / Favorites no longer treat different servings of the same food as separate items. Re-logging with new grams, pieces, or units updates the template instead of stacking duplicates.
 - Brand-new foods (scan, AI, manual, coach) that would collide on name are auto-renamed (`Name (2)`, …) so accidental collisions stay distinct from intentional re-logs.
 - Logging from the review sheet no longer double-applies serving scale (could inflate calories when changing portion size).
+- Anthropic responses with thinking blocks no longer fail parsing (#139).
+- OpenRouter/OpenAI truncated or reasoning-only responses retry once with compact settings (#145).
+- Ollama over HTTP on a LAN address works (cleartext permitted for user-supplied local endpoints).
+- Orphaned food photo JPEGs from older builds are pruned safely at startup and after log edits.
 
 ## [1.14.6] - 2026-07-20
 

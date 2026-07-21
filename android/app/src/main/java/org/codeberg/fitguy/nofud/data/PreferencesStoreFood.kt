@@ -180,4 +180,36 @@ internal suspend fun PreferencesStore.setPendingFoodInputDraftImpl(draft: Pendin
         }
     }
 
+/**
+ * Returns an atomic snapshot of every persisted food-image reference. A decode
+ * failure returns null so cleanup never treats unreadable user data as empty.
+ */
+internal suspend fun PreferencesStore.foodImageReferenceFilenamesImpl(): Set<String>? {
+    migrateFoodEntriesToBucketsIfNeededImpl()
+    val prefs = dataStore.data.first()
+    val foods = prefs.asMap().entries
+        .filter { it.key.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }
+        .flatMap { decodeEntryListImpl(it.value as? String) }
+    val favorites = prefs[Keys.FAVORITE_ENTRIES]?.let { raw ->
+        runCatching {
+            json.decodeFromString(ListSerializer(FoodEntry.serializer()), raw)
+        }.getOrNull() ?: return null
+    }.orEmpty()
+    val analysisDraft = prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT]?.let { raw ->
+        runCatching { json.decodeFromString<PendingFoodAnalysisDraft>(raw) }.getOrNull()
+            ?: return null
+    }
+    val inputDraft = prefs[Keys.PENDING_FOOD_INPUT_DRAFT]?.let { raw ->
+        runCatching { json.decodeFromString<PendingFoodInputDraft>(raw) }.getOrNull()
+            ?: return null
+    }
+
+    return buildSet {
+        foods.forEach { entry -> entry.imageFilename?.let { add(it) } }
+        favorites.forEach { entry -> entry.imageFilename?.let { add(it) } }
+        analysisDraft?.imageFilename?.let { add(it) }
+        inputDraft?.imageFilename?.let { add(it) }
+    }
+}
+
     
