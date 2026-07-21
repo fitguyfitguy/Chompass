@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OpenAI-compatible and stub providers for food analysis eval."""
+"""OpenAI-compatible, OpenRouter, and stub providers for food analysis eval."""
 
 from __future__ import annotations
 
@@ -14,6 +14,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
 
+from env_local import openrouter_api_key
+
 
 @dataclass
 class ProviderResponse:
@@ -21,6 +23,7 @@ class ProviderResponse:
     latency_ms: float
     model: str
     usage: dict | None = None
+    routed_model: str | None = None
 
 
 class Provider(ABC):
@@ -62,15 +65,19 @@ class OpenAICompatibleProvider(Provider):
         api_key: str | None = None,
         base_url: str | None = None,
         timeout_s: float = 120.0,
+        extra_headers: dict[str, str] | None = None,
+        extra_body: dict | None = None,
     ) -> None:
         self.model = model
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.base_url = (base_url or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
         self.timeout_s = timeout_s
+        self.extra_headers = extra_headers or {}
+        self.extra_body = extra_body or {}
 
     def complete(self, *, prompt: str, image_path: Path | None = None) -> ProviderResponse:
         if not self.api_key:
-            raise RuntimeError("OPENAI_API_KEY is required for the openai provider")
+            raise RuntimeError("API key is required for this provider")
 
         content: list[dict] = [{"type": "text", "text": prompt}]
         if image_path is not None:
@@ -93,14 +100,17 @@ class OpenAICompatibleProvider(Provider):
             "model": self.model,
             "messages": [{"role": "user", "content": content}],
             "temperature": 0.2,
+            **self.extra_body,
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+            **self.extra_headers,
         }
         req = urllib.request.Request(
             f"{self.base_url}/chat/completions",
             data=json.dumps(body).encode("utf-8"),
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            },
+            headers=headers,
             method="POST",
         )
 
@@ -119,12 +129,45 @@ class OpenAICompatibleProvider(Provider):
             raise RuntimeError(f"Unexpected API response: {payload}") from exc
 
         usage = payload.get("usage")
-        return ProviderResponse(text=text or "", latency_ms=latency_ms, model=self.model, usage=usage)
+        routed = payload.get("model")
+        return ProviderResponse(
+            text=text or "",
+            latency_ms=latency_ms,
+            model=self.model,
+            usage=usage,
+            routed_model=routed if routed and routed != self.model else routed,
+        )
+
+
+class OpenRouterProvider(OpenAICompatibleProvider):
+    """OpenRouter chat/completions with NoFUD-aligned headers and reasoning disabled."""
+
+    def __init__(
+        self,
+        *,
+        model: str,
+        api_key: str | None = None,
+        timeout_s: float = 180.0,
+    ) -> None:
+        key = api_key or openrouter_api_key()
+        super().__init__(
+            model=model,
+            api_key=key,
+            base_url="https://openrouter.ai/api/v1",
+            timeout_s=timeout_s,
+            extra_headers={
+                "HTTP-Referer": "https://codeberg.org/fitguy/NoFUD",
+                "X-Title": "NoFUD Food Accuracy Benchmark",
+            },
+            extra_body={"reasoning": {"exclude": True}},
+        )
 
 
 def build_provider(name: str, *, model: str) -> Provider:
     if name == "stub":
         return StubProvider()
-    if name in {"openai", "ollama", "openrouter"}:
+    if name == "openrouter":
+        return OpenRouterProvider(model=model)
+    if name in {"openai", "ollama"}:
         return OpenAICompatibleProvider(model=model)
-    raise ValueError(f"Unknown provider {name!r}. Use stub or openai.")
+    raise ValueError(f"Unknown provider {name!r}. Use stub, openai, ollama, or openrouter.")
