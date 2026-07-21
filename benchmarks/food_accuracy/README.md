@@ -40,6 +40,25 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
   benchmarks/food_accuracy/results/ab/fewshot_units/summary.csv
 ```
 
+### Resume failed/missing only
+
+```bash
+# Preview which IDs would be re-run
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --prompt compact \
+  --resume benchmarks/food_accuracy/results/prompt_ab_gemma/compact \
+  --dry-run
+
+# Fill 429/parse failures only (keeps successful samples)
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter \
+  --model google/gemma-4-26b-a4b-it:free \
+  --prompt compact \
+  --resume benchmarks/food_accuracy/results/prompt_ab_gemma/compact \
+  --sleep 20 \
+  --retries 3
+```
+
 Replace `--provider stub` with OpenRouter free routing:
 
 ```bash
