@@ -75,3 +75,28 @@ uv run python benchmarks/food_accuracy/run_eval.py \
 | `manifest/eval_text.jsonl` | 42 | Text (FNDDS seed + composites) |
 | `data/manifests/jfb.jsonl` | 50 default | Image (after `download_jfb.py`) |
 | `data/manifests/n5k.jsonl` | 20 default | Image/metadata (after `download_nutrition5k.py`) |
+
+## Image baseline
+
+Wide free-router image run on JFB (prefer **`nofud/free`** — no content-safety):
+
+```bash
+uv run python benchmarks/food_accuracy/download_jfb.py --limit 50
+
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
+  --prompt compact \
+  --provider openrouter \
+  --model nofud/free \
+  --sleep 8 \
+  --retries 2 \
+  --out benchmarks/food_accuracy/results/baseline_image_nofud_free_compact
+```
+
+Inspect the pool:
+
+```bash
+uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
+```
+
+Stock `openrouter/free` often routes to `nvidia/nemotron-3.5-content-safety:free` (`User Safety: safe` → parse fail). Use `nofud/free` instead.

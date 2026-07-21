@@ -94,40 +94,33 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 | `compact` | Research ablation | Macros + serving_size_grams only |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
 
-## OpenRouter (free router)
+## OpenRouter / NoFUD free router
 
 Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatically.
 
+**Prefer `nofud/free`** for benchmarks: picks randomly among live OpenRouter `:free` chat models and **excludes content-safety / moderation / non-chat** entries (the stock `openrouter/free` router often routes to `nvidia/nemotron-3.5-content-safety:free`, which returns `User Safety: safe` instead of JSON).
+
 ```bash
-# List dynamically available free models from the live catalog
-uv run python benchmarks/food_accuracy/probe_openrouter_free.py --list-only
+# Inspect the pool (and what we exclude)
+uv run python benchmarks/food_accuracy/list_nofud_free_pool.py
+uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
 
-# Probe openrouter/free only (default; ~30s/sample on free tier)
-uv run python benchmarks/food_accuracy/probe_openrouter_free.py --limit 3
-
-# Also probe 2 discovered :free text models (slower — can take several minutes)
-uv run python benchmarks/food_accuracy/probe_openrouter_free.py --limit 3 --max-models 2
-
-# App-parity prompt (longer; cohere/north-mini-code:free can take ~80s/call)
-uv run python benchmarks/food_accuracy/probe_openrouter_free.py --prompt production_text --limit 2
-
-# Full eval with the free router (records which backend model OpenRouter picked)
+# Eval with NoFUD free router (default openrouter model)
 uv run python benchmarks/food_accuracy/run_eval.py \
   --provider openrouter \
-  --model openrouter/free \
+  --model nofud/free \
+  --prompt compact \
   --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --limit 10
+
+# Stock OpenRouter free router (includes content-safety — not recommended)
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model openrouter/free ...
 ```
 
-The app uses the same default slug: `openrouter/free` in [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt).
+On 429/502 the NoFUD router fails over to another free model in the pool (up to 3 attempts).
 
-## Providers
-
-| Provider | Env vars | Notes |
-|----------|----------|-------|
-| `openrouter` | `OPENROUTER_TOKEN` (or `OPENROUTER_API_KEY`) from `.env.local` | Default model `openrouter/free`; response includes routed backend model |
-| `openai` (default) | `OPENAI_API_KEY`, optional `OPENAI_BASE_URL` | Any OpenAI-compatible API |
-| `stub` | — | Deterministic fake output for pipeline testing |
+The app still lists `openrouter/free` in [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt); this harness router is benchmark-side only for now.
 
 Vision models: image samples are sent as base64 JPEG in the chat completion request.
 
