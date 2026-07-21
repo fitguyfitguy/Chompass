@@ -88,7 +88,8 @@ class ChatService(
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         val maxTokens = prefs.maxResponseTokens.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
-        val httpClient = AiHttp.clientWithReadTimeout(okHttp, prefs.aiReadTimeoutSeconds.first())
+        val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
+        val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
 
         val reply = when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch)
@@ -247,26 +248,43 @@ class ChatService(
         messages.put(JSONObject().put("role", "user").put("content", openAIUserContent(newUserMessage, imageBytes)))
 
         repeat(MAX_TOOL_ROUNDS) {
-            val body = JSONObject().apply {
-                put("model", model)
-                put("messages", messages)
-                put("tools", toolsArr)
-                put("tool_choice", "auto")
-                put(OpenAICompatibleClient.tokenLimitParameter(provider, model), maxTokens)
+            suspend fun request(compactRetry: Boolean): Pair<JSONObject, OpenAITextResponse> {
+                val body = JSONObject().apply {
+                    put("model", model)
+                    put("messages", messages)
+                    put("tools", toolsArr)
+                    put("tool_choice", "auto")
+                    put(OpenAICompatibleClient.tokenLimitParameter(provider, model), maxTokens)
+                    if (provider == AIProvider.OPENROUTER && compactRetry) {
+                        put("reasoning", JSONObject().put("effort", "low").put("exclude", true))
+                    }
+                }
+                val builder = Request.Builder()
+                    .url(url)
+                    .addHeader("Content-Type", "application/json")
+                    .post(body.toString().toRequestBody(JSON_MEDIA))
+                if (!apiKey.isNullOrEmpty()) builder.addHeader("Authorization", "Bearer $apiKey")
+                if (provider == AIProvider.OPENROUTER) {
+                    builder.addHeader("HTTP-Referer", "https://codeberg.org/fitguy/NoFUD")
+                    builder.addHeader("X-Title", "Fud AI")
+                }
+                val raw = RetryPolicy.execute { client.newCall(builder.build()) }
+                val json = runCatching { JSONObject(raw) }.getOrNull() ?: throw AiError.InvalidResponse
+                val parsed = OpenAIResponseParser.parse(raw)
+                val message = json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")
+                    ?: throw AiError.InvalidResponse
+                return message to parsed
             }
-            val builder = Request.Builder()
-                .url(url)
-                .addHeader("Content-Type", "application/json")
-                .post(body.toString().toRequestBody(JSON_MEDIA))
-            if (!apiKey.isNullOrEmpty()) builder.addHeader("Authorization", "Bearer $apiKey")
-            if (provider == AIProvider.OPENROUTER) {
-                builder.addHeader("HTTP-Referer", "https://codeberg.org/fitguy/NoFUD")
-                builder.addHeader("X-Title", "Fud AI")
+
+            var (message, parsed) = request(compactRetry = false)
+            if (parsed.needsCompactRetry && message.optJSONArray("tool_calls") == null) {
+                val retry = request(compactRetry = true)
+                parsed = retry.second
+                message = retry.first
+                if (parsed.wasTruncated) {
+                    throw AiError.Api("The AI response was truncated twice. Try a shorter question or another model.")
+                }
             }
-            val raw = RetryPolicy.execute { client.newCall(builder.build()) }
-            val json = runCatching { JSONObject(raw) }.getOrNull() ?: throw AiError.InvalidResponse
-            val message = json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")
-                ?: throw AiError.InvalidResponse
 
             // Tool calls take precedence; loop until the model returns plain content.
             val toolCalls = message.optJSONArray("tool_calls")
@@ -288,7 +306,7 @@ class ChatService(
                 }
                 return@repeat
             }
-            val content = message.optString("content")
+            val content = parsed.text ?: message.optString("content")
             if (content.isNotEmpty()) return content.trim()
             throw AiError.InvalidResponse
         }

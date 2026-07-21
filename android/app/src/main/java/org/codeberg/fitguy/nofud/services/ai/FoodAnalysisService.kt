@@ -685,7 +685,7 @@ class FoodAnalysisService(
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         val sanitizedKey = AiHttp.sanitizeApiKey(apiKey)
         if (provider.requiresApiKey && sanitizedKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val httpClient = AiHttp.clientWithReadTimeout(okHttp, readTimeoutSeconds)
+        val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
         val enableGoogleSearch = provider.apiFormat == AIProvider.ApiFormat.GEMINI && geminiGoogleSearch
         return when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI ->

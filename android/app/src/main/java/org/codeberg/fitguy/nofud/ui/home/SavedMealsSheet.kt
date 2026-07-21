@@ -111,6 +111,7 @@ enum class SavedTab { RECENTS, FREQUENT, FAVORITES, RECIPES }
 @Composable
 fun SavedMealsSheet(
     container: AppContainer,
+    initialTab: SavedTab? = null,
     onDismiss: () -> Unit,
     onRelogEntry: (FoodEntry) -> Unit,
     onLogRecipe: (Recipe) -> Unit = {},
@@ -124,9 +125,9 @@ fun SavedMealsSheet(
     // remembers whether the user was on Recents / Frequent / Favorites — same
     // as iOS @AppStorage("lastRecentsSegment") in RecentsView.swift.
     val savedSegment by container.prefs.lastSavedMealsSegment.collectAsState(initial = SavedTab.RECENTS.name)
-    var tab by remember(savedSegment) {
+    var tab by remember(initialTab, savedSegment) {
         mutableStateOf(
-            runCatching { SavedTab.valueOf(savedSegment) }.getOrDefault(SavedTab.RECENTS)
+            initialTab ?: runCatching { SavedTab.valueOf(savedSegment) }.getOrDefault(SavedTab.RECENTS)
         )
     }
     var recents by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
@@ -165,9 +166,9 @@ fun SavedMealsSheet(
     // users see their previous favorites in the new ordered list.
     LaunchedEffect(Unit) { container.foodRepository.migratedFavorites() }
 
-    LaunchedEffect(tab, favKeys) {
-        when (tab) {
-            SavedTab.RECENTS -> recents = container.foodRepository.recent(50)
+    LaunchedEffect(initialTab, tab, favKeys) {
+        when (initialTab ?: tab) {
+            SavedTab.RECENTS -> recents = container.foodRepository.recent()
             SavedTab.FREQUENT -> frequent = container.foodRepository.frequent()
             SavedTab.FAVORITES -> Unit  // driven by `favorites` Flow above
             SavedTab.RECIPES -> Unit    // driven by `recipes` Flow above
@@ -190,7 +191,12 @@ fun SavedMealsSheet(
                 .padding(bottom = 16.dp)
         ) {
             Text(
-                stringResource(R.string.saved_meals_title),
+                when (initialTab ?: tab) {
+                    SavedTab.RECENTS -> stringResource(R.string.saved_meals_tab_recents)
+                    SavedTab.FREQUENT -> stringResource(R.string.saved_meals_tab_frequent)
+                    SavedTab.FAVORITES -> stringResource(R.string.saved_meals_tab_favorites)
+                    SavedTab.RECIPES -> stringResource(R.string.saved_meals_tab_recipes)
+                },
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
@@ -198,11 +204,13 @@ fun SavedMealsSheet(
                     .padding(top = 4.dp, bottom = 12.dp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
-            SegmentedTabs(selected = tab, onSelect = { newTab ->
-                tab = newTab
-                scope.launch { container.prefs.setLastSavedMealsSegment(newTab.name) }
-            })
-            Spacer(Modifier.height(12.dp))
+            if (initialTab == null) {
+                SegmentedTabs(selected = tab, onSelect = { newTab ->
+                    tab = newTab
+                    scope.launch { container.prefs.setLastSavedMealsSegment(newTab.name) }
+                })
+                Spacer(Modifier.height(12.dp))
+            }
 
             // Search field — filters whichever tab is active. Substring match,
             // case-insensitive. Reset on tab switch via remember(tab) above.
@@ -232,7 +240,7 @@ fun SavedMealsSheet(
             )
             Spacer(Modifier.height(16.dp))
 
-            when (tab) {
+            when (initialTab ?: tab) {
                 SavedTab.RECENTS -> {
                     if (filteredRecents.isEmpty()) {
                         val msg = if (isSearching) stringResource(R.string.saved_meals_no_match)

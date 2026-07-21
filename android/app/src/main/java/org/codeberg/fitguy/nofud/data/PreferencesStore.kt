@@ -205,6 +205,7 @@ class PreferencesStore(private val appContext: Context) {
         cacheBarcodeLookupImpl(barcode, analysis)
     val pendingFoodInputDraft: Flow<PendingFoodInputDraft?> get() = pendingFoodInputDraftImpl
     suspend fun setPendingFoodInputDraft(draft: PendingFoodInputDraft?) = setPendingFoodInputDraftImpl(draft)
+    suspend fun foodImageReferenceFilenames(): Set<String>? = foodImageReferenceFilenamesImpl()
     val weightEntries: Flow<List<WeightEntry>> get() = weightEntriesImpl
     suspend fun setWeightEntries(entries: List<WeightEntry>) = setWeightEntriesImpl(entries)
     val bodyFatEntries: Flow<List<BodyFatEntry>> get() = bodyFatEntriesImpl

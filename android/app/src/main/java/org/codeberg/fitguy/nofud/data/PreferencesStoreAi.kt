@@ -56,9 +56,9 @@ internal suspend fun PreferencesStore.setAiReadTimeoutSecondsImpl(v: Int) {
 
 internal const val MIN_MAX_RESPONSE_TOKENS = 256
 internal const val MAX_MAX_RESPONSE_TOKENS = 8192
-internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 60
+internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 180
 internal const val MIN_AI_READ_TIMEOUT_SECONDS = 30
-internal const val MAX_AI_READ_TIMEOUT_SECONDS = 300
+internal const val MAX_AI_READ_TIMEOUT_SECONDS = 600
 
 internal fun clampMaxResponseTokens(v: Int): Int =
     v.coerceIn(MIN_MAX_RESPONSE_TOKENS, MAX_MAX_RESPONSE_TOKENS)

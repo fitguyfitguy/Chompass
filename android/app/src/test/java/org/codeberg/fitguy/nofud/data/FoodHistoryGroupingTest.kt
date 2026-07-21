@@ -93,6 +93,24 @@ class FoodHistoryGroupingTest {
         )
     }
 
+    @Test
+    fun recent_respectsRollingWindow() {
+        val now = Instant.parse("2026-07-20T12:00:00Z")
+        val recent = entry("Recent Oats", calories = 150, grams = 40.0, at = now.epochSecond)
+        val old = entry(
+            "Old Oats",
+            calories = 100,
+            grams = 30.0,
+            at = now.minus(31, java.time.temporal.ChronoUnit.DAYS).epochSecond,
+        )
+        val result = recentFoodTemplates(
+            listOf(recent, old).filter {
+                !it.timestamp.isBefore(now.minus(30, java.time.temporal.ChronoUnit.DAYS))
+            },
+        )
+        assertEquals(listOf(recent.id), result.map { it.id })
+    }
+
     private fun entry(
         name: String,
         calories: Int,

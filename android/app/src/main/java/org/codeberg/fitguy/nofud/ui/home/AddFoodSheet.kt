@@ -18,9 +18,11 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
@@ -69,7 +71,9 @@ private enum class AddFoodTileSize {
 fun AddFoodSheet(
     onPhoto: () -> Unit,
     onNote: () -> Unit,
-    onSaved: () -> Unit,
+    onSavedRecents: () -> Unit,
+    onSavedFrequent: () -> Unit,
+    onSavedFavorites: () -> Unit,
     onVoice: () -> Unit,
     onBarcode: () -> Unit,
     onManual: () -> Unit,
@@ -86,7 +90,9 @@ fun AddFoodSheet(
         AddFoodSheetContent(
             onPhoto = { onDismiss(); onPhoto() },
             onNote = { onNote(); onDismiss() },
-            onSaved = { onDismiss(); onSaved() },
+            onSavedRecents = { onDismiss(); onSavedRecents() },
+            onSavedFrequent = { onDismiss(); onSavedFrequent() },
+            onSavedFavorites = { onDismiss(); onSavedFavorites() },
             onVoice = { onDismiss(); onVoice() },
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
@@ -106,7 +112,9 @@ fun AddFoodSheet(
 internal fun AddFoodSheetContent(
     onPhoto: () -> Unit = {},
     onNote: () -> Unit = {},
-    onSaved: () -> Unit = {},
+    onSavedRecents: () -> Unit = {},
+    onSavedFrequent: () -> Unit = {},
+    onSavedFavorites: () -> Unit = {},
     onVoice: () -> Unit = {},
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
@@ -152,12 +160,12 @@ internal fun AddFoodSheetContent(
                 onClick = onNote,
             )
             AddFoodActionTile(
-                label = stringResource(R.string.add_food_hero_saved),
+                label = stringResource(R.string.saved_meals_tab_recents),
                 subtitle = stringResource(R.string.add_food_hero_saved_sub),
-                icon = Icons.Filled.Bookmark,
+                icon = Icons.Filled.History,
                 size = AddFoodTileSize.Hero,
                 modifier = Modifier.weight(1f),
-                onClick = onSaved,
+                onClick = onSavedRecents,
             )
         }
         Spacer(Modifier.height(20.dp))
@@ -184,6 +192,25 @@ internal fun AddFoodSheetContent(
                         onClick = onBarcode,
                     )
                 }
+            }
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                AddFoodActionTile(
+                    label = stringResource(R.string.saved_meals_tab_frequent),
+                    icon = Icons.Filled.Repeat,
+                    size = AddFoodTileSize.Compact,
+                    modifier = Modifier.weight(1f),
+                    onClick = onSavedFrequent,
+                )
+                AddFoodActionTile(
+                    label = stringResource(R.string.saved_meals_tab_favorites),
+                    icon = Icons.Filled.Bookmark,
+                    size = AddFoodTileSize.Compact,
+                    modifier = Modifier.weight(1f),
+                    onClick = onSavedFavorites,
+                )
             }
             Row(
                 Modifier.fillMaxWidth(),

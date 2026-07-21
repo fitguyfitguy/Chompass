@@ -96,7 +96,7 @@ fun HomeScreen(container: AppContainer) {
     var showText by remember { mutableStateOf(false) }
     var showVoice by remember { mutableStateOf(false) }
     var showManual by remember { mutableStateOf(false) }
-    var showSaved by remember { mutableStateOf(false) }
+    var savedMealsTab by remember { mutableStateOf<SavedTab?>(null) }
     var showBarcodeScanner by remember { mutableStateOf(false) }
     var showCopyFromDay by remember { mutableStateOf(false) }
     var showAddFoodSheet by remember { mutableStateOf(false) }
@@ -458,7 +458,9 @@ fun HomeScreen(container: AppContainer) {
             waterUseMetric = ui.weightMetric,
             onPhoto = { openCamera() },
             onNote = { showText = true },
-            onSaved = { showSaved = true },
+            onSavedRecents = { savedMealsTab = SavedTab.RECENTS },
+            onSavedFrequent = { savedMealsTab = SavedTab.FREQUENT },
+            onSavedFavorites = { savedMealsTab = SavedTab.FAVORITES },
             onVoice = { showVoice = true },
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
@@ -517,17 +519,18 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    if (showSaved) {
+    savedMealsTab?.let { tab ->
         SavedMealsSheet(
             container = container,
-            onDismiss = { showSaved = false },
+            initialTab = tab,
+            onDismiss = { savedMealsTab = null },
             // Tapping a Saved Meals row opens the FoodResultSheet for review
             // instead of logging immediately — same UX as the photo flow.
             onRelogEntry = { vm.reviewSavedMeal(it) },
             onLogRecipe = { vm.logRecipe(it) },
-            onEditRecipe = { recipe -> showSaved = false; editingRecipe = recipe },
+            onEditRecipe = { recipe -> savedMealsTab = null; editingRecipe = recipe },
             onCreateRecipe = {
-                showSaved = false
+                savedMealsTab = null
                 editingRecipe = org.codeberg.fitguy.nofud.models.Recipe(name = "")
             }
         )

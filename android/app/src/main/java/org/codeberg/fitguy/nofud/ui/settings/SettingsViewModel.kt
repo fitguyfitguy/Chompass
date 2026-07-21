@@ -48,7 +48,7 @@ data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
     val selectedModel: String = AIProvider.GEMINI.defaultModel,
     val maxResponseTokens: Int = 1024,
-    val aiReadTimeoutSeconds: Int = 60,
+    val aiReadTimeoutSeconds: Int = org.codeberg.fitguy.nofud.data.DEFAULT_AI_READ_TIMEOUT_SECONDS,
     val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
     val heuristicServingUnitSettings: HeuristicServingUnitSettings = HeuristicServingUnitSettings.Default,
     val selectedSpeech: SpeechProvider = SpeechProvider.NATIVE,
@@ -936,7 +936,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun clearFoodLog() {
         viewModelScope.launch {
             container.foodRepository.clear()
-            container.imageStore.clearAll()
         }
     }
 

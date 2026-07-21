@@ -62,6 +62,8 @@ class NoFUDApp : Application() {
             .onEach { CurrentMealSchedule.value = it }
             .launchIn(appScope)
         container.widgetSnapshotWriter.observe().launchIn(appScope)
+        // Older builds removed food rows without removing their JPEGs.
+        appScope.launch { container.foodRepository.pruneOrphanedImages() }
         // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
         // this a no-op when the periodic work is already enqueued.
         appScope.launch {
