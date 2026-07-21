@@ -14,6 +14,7 @@ _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
+from env_local import load_env_local
 from parse import parse_food_json
 from prompts import build_prompt, list_prompts
 from providers import build_provider
@@ -43,11 +44,25 @@ def main() -> None:
         help="Prompt variant",
     )
     parser.add_argument("--provider", default="openai", choices=["stub", "openai", "ollama", "openrouter"])
-    parser.add_argument("--model", default="gpt-4o-mini", help="Model id for the provider")
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Model id (default: gpt-4o-mini for openai, openrouter/free for openrouter, llama3.2 for ollama)",
+    )
     parser.add_argument("--limit", type=int, default=None, help="Max samples to evaluate")
     parser.add_argument("--out", default=None, help="Output directory (default: results/<timestamp>)")
     parser.add_argument("--dry-run", action="store_true", help="Validate manifest and exit")
     args = parser.parse_args()
+
+    load_env_local()
+
+    default_models = {
+        "openai": "gpt-4o-mini",
+        "openrouter": "openrouter/free",
+        "ollama": "llama3.2",
+        "stub": "stub",
+    }
+    model = args.model or default_models[args.provider]
 
     samples = load_manifest(args.manifest, limit=args.limit)
     if not samples:
@@ -65,7 +80,7 @@ def main() -> None:
         print(f"Manifest OK: {len(samples)} samples from {args.manifest}")
         return
 
-    provider = build_provider(args.provider, model=args.model)
+    provider = build_provider(args.provider, model=model)
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out_dir = Path(args.out) if args.out else RESULTS_DIR / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -110,7 +125,7 @@ def main() -> None:
                 "modality": sample.modality,
                 "source": sample.source,
                 "prompt": args.prompt,
-                "model": response.model,
+                "model": response.routed_model or response.model,
                 "latency_ms": response.latency_ms,
                 "parse_ok": scored.parse_ok,
                 "prediction": parsed.raw,
@@ -134,7 +149,7 @@ def main() -> None:
         "manifest": args.manifest,
         "prompt": args.prompt,
         "provider": args.provider,
-        "model": args.model,
+        "model": model,
         "n": agg.n,
         "parse_ok_rate": f"{agg.parse_ok_rate:.4f}",
         "wmape": "" if agg.wmape is None else f"{agg.wmape:.4f}",

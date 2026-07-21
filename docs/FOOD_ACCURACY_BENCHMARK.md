@@ -94,10 +94,38 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 | `compact` | Research ablation | Macros + serving_size_grams only |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
 
+## OpenRouter (free router)
+
+Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatically.
+
+```bash
+# List dynamically available free models from the live catalog
+uv run python benchmarks/food_accuracy/probe_openrouter_free.py --list-only
+
+# Probe openrouter/free only (default; ~30s/sample on free tier)
+uv run python benchmarks/food_accuracy/probe_openrouter_free.py --limit 3
+
+# Also probe 2 discovered :free text models (slower — can take several minutes)
+uv run python benchmarks/food_accuracy/probe_openrouter_free.py --limit 3 --max-models 2
+
+# App-parity prompt (longer; cohere/north-mini-code:free can take ~80s/call)
+uv run python benchmarks/food_accuracy/probe_openrouter_free.py --prompt production_text --limit 2
+
+# Full eval with the free router (records which backend model OpenRouter picked)
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter \
+  --model openrouter/free \
+  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+  --limit 10
+```
+
+The app uses the same default slug: `openrouter/free` in [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt).
+
 ## Providers
 
 | Provider | Env vars | Notes |
 |----------|----------|-------|
+| `openrouter` | `OPENROUTER_TOKEN` (or `OPENROUTER_API_KEY`) from `.env.local` | Default model `openrouter/free`; response includes routed backend model |
 | `openai` (default) | `OPENAI_API_KEY`, optional `OPENAI_BASE_URL` | Any OpenAI-compatible API |
 | `stub` | — | Deterministic fake output for pipeline testing |
 

@@ -40,7 +40,14 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
   benchmarks/food_accuracy/results/ab/fewshot_units/summary.csv
 ```
 
-Replace `--provider stub` with `--provider openai --model gpt-4o-mini` (and `OPENAI_API_KEY`) for real model eval.
+Replace `--provider stub` with OpenRouter free routing:
+
+```bash
+uv run python benchmarks/food_accuracy/probe_openrouter_free.py --limit 3 --max-models 2
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model openrouter/free \
+  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl --limit 10
+```
 
 ## Fixed eval split
 
