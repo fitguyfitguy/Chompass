@@ -51,3 +51,7 @@ android/app/src/debug/assets/ondevice_llm/food_plate.jpg
 android/app/src/debug/assets/ondevice_llm/nutrition_label.jpg
 android/app/src/debug/assets/ondevice_llm/pizza_slices.jpg
 docs/UPSTREAM_IDEAS.md
+
+# Food accuracy benchmark caches and results
+benchmarks/food_accuracy/data/
+benchmarks/food_accuracy/results/
