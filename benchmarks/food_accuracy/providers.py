@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OpenAI-compatible, OpenRouter, and stub providers for food analysis eval."""
+"""OpenAI-compatible, OpenRouter, NoFUD free-router, and stub providers."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import base64
 import hashlib
 import json
 import os
+import random
 import time
 import urllib.error
 import urllib.request
@@ -15,6 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from env_local import openrouter_api_key
+from openrouter_models import (
+    NOFUD_FREE_ROUTER_ID,
+    eligible_chat_free_models,
+)
 
 
 @dataclass
@@ -163,10 +168,98 @@ class OpenRouterProvider(OpenAICompatibleProvider):
         )
 
 
+class NofudFreeRouterProvider(Provider):
+    """Pick randomly among live OpenRouter :free chat models, excluding content-safety.
+
+    - Text prompts → any eligible free chat model
+    - Image prompts → vision-capable free models only
+    - On 429/502, try another model from the pool (up to ``failover`` attempts)
+    """
+
+    def __init__(
+        self,
+        *,
+        api_key: str | None = None,
+        timeout_s: float = 180.0,
+        failover: int = 3,
+        seed: int | None = None,
+    ) -> None:
+        self.api_key = api_key or openrouter_api_key()
+        if not self.api_key:
+            raise RuntimeError("OPENROUTER_TOKEN is required for nofud/free")
+        self.timeout_s = timeout_s
+        self.failover = max(1, failover)
+        self._rng = random.Random(seed)
+        self.model = NOFUD_FREE_ROUTER_ID
+        self._text_pool: list[str] | None = None
+        self._vision_pool: list[str] | None = None
+
+    def refresh_pools(self) -> None:
+        text = eligible_chat_free_models(api_key=self.api_key, require_vision=False)
+        vision = eligible_chat_free_models(api_key=self.api_key, require_vision=True)
+        self._text_pool = [m.id for m in text]
+        self._vision_pool = [m.id for m in vision]
+        if not self._text_pool:
+            raise RuntimeError("No eligible free chat models found on OpenRouter")
+        if not self._vision_pool:
+            # Fall back to text-only pool listing for diagnostics; image calls will fail clearly.
+            self._vision_pool = []
+
+    def _pool_for(self, *, need_vision: bool) -> list[str]:
+        if self._text_pool is None or self._vision_pool is None:
+            self.refresh_pools()
+        assert self._text_pool is not None and self._vision_pool is not None
+        if need_vision:
+            if not self._vision_pool:
+                raise RuntimeError("No vision-capable free models available for nofud/free")
+            return list(self._vision_pool)
+        return list(self._text_pool)
+
+    def complete(self, *, prompt: str, image_path: Path | None = None) -> ProviderResponse:
+        need_vision = image_path is not None
+        pool = self._pool_for(need_vision=need_vision)
+        self._rng.shuffle(pool)
+        candidates = pool[: self.failover]
+        if not candidates:
+            raise RuntimeError("Empty free-model pool")
+
+        errors: list[str] = []
+        for model_id in candidates:
+            backend = OpenRouterProvider(
+                model=model_id,
+                api_key=self.api_key,
+                timeout_s=self.timeout_s,
+            )
+            try:
+                response = backend.complete(prompt=prompt, image_path=image_path)
+            except Exception as exc:  # noqa: BLE001
+                msg = str(exc)
+                errors.append(f"{model_id}: {msg}")
+                retryable = "429" in msg or "rate-limited" in msg or "502" in msg or "ResourceExhausted" in msg
+                if retryable:
+                    continue
+                # Non-retryable: still try another free model once or twice.
+                continue
+
+            return ProviderResponse(
+                text=response.text,
+                latency_ms=response.latency_ms,
+                model=NOFUD_FREE_ROUTER_ID,
+                usage=response.usage,
+                routed_model=response.routed_model or model_id,
+            )
+
+        raise RuntimeError(
+            "nofud/free exhausted failover pool: " + " | ".join(errors[:5])
+        )
+
+
 def build_provider(name: str, *, model: str) -> Provider:
     if name == "stub":
         return StubProvider()
     if name == "openrouter":
+        if model in {NOFUD_FREE_ROUTER_ID, "nofud/free-router", "free"}:
+            return NofudFreeRouterProvider()
         return OpenRouterProvider(model=model)
     if name in {"openai", "ollama"}:
         return OpenAICompatibleProvider(model=model)

@@ -14,10 +14,10 @@ if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
 from env_local import load_env_local, openrouter_api_key
-from openrouter_models import FREE_ROUTER_ID, list_free_models
+from openrouter_models import NOFUD_FREE_ROUTER_ID, list_free_models
 from parse import parse_food_json
 from prompts import build_prompt, list_prompts
-from providers import OpenRouterProvider
+from providers import build_provider
 from schema import load_manifest
 from score import aggregate_scores, score_sample
 
@@ -32,9 +32,13 @@ def _pick_model_ids(
     if explicit.strip():
         return [m.strip() for m in explicit.split(",") if m.strip()]
     if router_only or max_models <= 0:
-        return [FREE_ROUTER_ID]
-    extras = [m.id for m in discovered if m.id != FREE_ROUTER_ID][:max_models]
-    return [FREE_ROUTER_ID, *extras]
+        return [NOFUD_FREE_ROUTER_ID]
+    extras = [
+        m.id
+        for m in discovered
+        if m.id not in {NOFUD_FREE_ROUTER_ID, "openrouter/free"}
+    ][:max_models]
+    return [NOFUD_FREE_ROUTER_ID, *extras]
 
 
 def _write_results(path: Path, results: list[dict]) -> None:
@@ -59,7 +63,7 @@ def main() -> None:
     parser.add_argument(
         "--models",
         default="",
-        help="Comma-separated model ids (default: openrouter/free only)",
+        help="Comma-separated model ids (default: nofud/free only)",
     )
     parser.add_argument(
         "--max-models",
@@ -70,7 +74,7 @@ def main() -> None:
     parser.add_argument(
         "--router-only",
         action="store_true",
-        help="Probe only openrouter/free (same as --max-models 0)",
+        help="Probe only nofud/free (same as --max-models 0)",
     )
     parser.add_argument(
         "--timeout",
@@ -98,7 +102,13 @@ def main() -> None:
         raise SystemExit("OPENROUTER_TOKEN not set. Add it to .env.local or export it in the shell.")
 
     vision_filter = True if args.include_vision else (False if args.text_only else None)
-    discovered = list_free_models(api_key=api_key, vision=vision_filter)
+    discovered = list_free_models(
+        api_key=api_key,
+        vision=vision_filter,
+        include_router=False,
+        include_nofud_router=True,
+        exclude_filters=True,
+    )
     if args.list_only:
         print(f"Discovered {len(discovered)} free model entries:\n")
         for model in discovered:
@@ -130,7 +140,7 @@ def main() -> None:
 
     for model_idx, model_id in enumerate(model_ids, start=1):
         print(f"[model {model_idx}/{len(model_ids)}] {model_id}", flush=True)
-        provider = OpenRouterProvider(model=model_id, api_key=api_key, timeout_s=args.timeout)
+        provider = build_provider("openrouter", model=model_id)
         sample_scores = []
         routed_models: set[str] = set()
         errors: list[str] = []

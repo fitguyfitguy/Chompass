@@ -150,7 +150,7 @@ def main() -> None:
     parser.add_argument(
         "--model",
         default=None,
-        help="Model id (default: gpt-4o-mini for openai, openrouter/free for openrouter, llama3.2 for ollama)",
+        help="Model id (default: gpt-4o-mini for openai, nofud/free for openrouter, llama3.2 for ollama)",
     )
     parser.add_argument("--limit", type=int, default=None, help="Max samples to evaluate")
     parser.add_argument("--out", default=None, help="Output directory (default: results/<timestamp>)")
@@ -186,7 +186,7 @@ def main() -> None:
 
     default_models = {
         "openai": "gpt-4o-mini",
-        "openrouter": "openrouter/free",
+        "openrouter": "nofud/free",
         "ollama": "llama3.2",
         "stub": "stub",
     }
