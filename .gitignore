@@ -55,3 +55,7 @@ docs/UPSTREAM_IDEAS.md
 # Food accuracy benchmark caches and results
 benchmarks/food_accuracy/data/
 benchmarks/food_accuracy/results/
+
+# Python
+__pycache__/
+*.pyc
