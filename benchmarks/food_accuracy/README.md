@@ -4,6 +4,10 @@ Python research harness for prompt and model comparison on food text/image entry
 
 Full documentation: [`docs/FOOD_ACCURACY_BENCHMARK.md`](../../docs/FOOD_ACCURACY_BENCHMARK.md)
 
+**Current results & defaults:** [`docs/FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md)
+
+**Free-tier default: `--provider openrouter --model nofud/free`.** Do not use stock `openrouter/free` for accuracy benches (it routes to content-safety models). `nofud/free` rebuilds its pool from the live OpenRouter catalog on each process start (new free models appear; cancelled ones drop); the pool is cached for that run only.
+
 ## Layout
 
 ```
@@ -59,12 +63,12 @@ uv run python benchmarks/food_accuracy/run_eval.py \
   --retries 3
 ```
 
-Replace `--provider stub` with OpenRouter free routing:
+Replace `--provider stub` with **NoFUD free routing** (preferred):
 
 ```bash
-uv run python benchmarks/food_accuracy/probe_openrouter_free.py --limit 3 --max-models 2
+uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded
 uv run python benchmarks/food_accuracy/run_eval.py \
-  --provider openrouter --model openrouter/free \
+  --provider openrouter --model nofud/free \
   --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl --limit 10
 ```
 
@@ -99,4 +103,4 @@ Inspect the pool:
 uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
 ```
 
-Stock `openrouter/free` often routes to `nvidia/nemotron-3.5-content-safety:free` (`User Safety: safe` → parse fail). Use `nofud/free` instead.
+Stock `openrouter/free` often routes to `nvidia/nemotron-3.5-content-safety:free` (`User Safety: safe` → parse fail). Prefer `nofud/free` always for free benches.

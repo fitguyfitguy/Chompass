@@ -2,6 +2,8 @@
 
 Offline research harness for comparing **prompts** and **models** on food text and image entry. Measures macronutrient error (calories, protein, carbs, fat) against labeled datasets. Usable for NoFUD prompt tuning and general food-AI research.
 
+**Status snapshot (results + defaults):** [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md)
+
 **Related:** production prompts in [`FoodAnalysisService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt); on-device smoke tests in [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) (latency/parse only, no GT scoring).
 
 ## Quick start
@@ -98,14 +100,33 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 
 Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatically.
 
-**Prefer `nofud/free`** for benchmarks: picks randomly among live OpenRouter `:free` chat models and **excludes content-safety / moderation / non-chat** entries (the stock `openrouter/free` router often routes to `nvidia/nemotron-3.5-content-safety:free`, which returns `User Safety: safe` instead of JSON).
+### Prefer `nofud/free` (default)
+
+**Always use `--model nofud/free` for free-tier benches** (this is also the default when `--provider openrouter` and no `--model` is set). Do **not** use stock `openrouter/free` for accuracy work: it frequently routes to `nvidia/nemotron-3.5-content-safety:free`, which returns `User Safety: safe` instead of food JSON (image baseline: 19/50 samples lost that way; fill with `nofud/free` recovered parse_ok to 98%).
+
+`nofud/free` is a **client-side** router in this harness:
+
+- Fetches the live OpenRouter `/api/v1/models` catalog
+- Keeps price-zero / `:free` chat models that accept text (and image, when the sample has a photo)
+- **Excludes** content-safety / moderation / embeddings / TTS / image-gen style IDs via [`openrouter_models.py`](../benchmarks/food_accuracy/openrouter_models.py)
+- Randomly picks from the pool; on 429/502/ResourceExhausted fails over to another pool member (up to 3 attempts)
+
+### Does the pool stay up to date?
+
+| When | Behavior |
+|------|----------|
+| **New process / `run_eval.py` start** | Yes — pools are built from a **fresh** OpenRouter models list. Newly published free models appear; cancelled / non-free / removed models drop out. |
+| **Mid-run (same process)** | No refresh — the pool is cached for the lifetime of that provider instance. A multi-hour eval will not pick up catalog changes until you restart (or call `refresh_pools()`). |
+| **Inspect anytime** | `list_nofud_free_pool.py` always hits the live API. |
+
+So: **yes, it finds newly added free models and drops cancelled ones across runs**; it does **not** continuously re-poll during a single long eval.
 
 ```bash
 # Inspect the pool (and what we exclude)
 uv run python benchmarks/food_accuracy/list_nofud_free_pool.py
 uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
 
-# Eval with NoFUD free router (default openrouter model)
+# Eval with NoFUD free router (preferred / default)
 uv run python benchmarks/food_accuracy/run_eval.py \
   --provider openrouter \
   --model nofud/free \
@@ -113,12 +134,10 @@ uv run python benchmarks/food_accuracy/run_eval.py \
   --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --limit 10
 
-# Stock OpenRouter free router (includes content-safety — not recommended)
+# Stock OpenRouter free router — not for accuracy benches
 uv run python benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model openrouter/free ...
 ```
-
-On 429/502 the NoFUD router fails over to another free model in the pool (up to 3 attempts).
 
 The app still lists `openrouter/free` in [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt); this harness router is benchmark-side only for now.
 
