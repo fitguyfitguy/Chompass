@@ -68,6 +68,50 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
 
+## Project website (Codeberg Pages)
+
+Hugo site sources live in [`website/`](website/). Screenshots are mounted from [`docs/screenshots/`](docs/screenshots/) at build time. Live URL: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
+
+**No Forgejo Actions runner required.** Deploy is local Hugo build + force-push to an orphan `pages` branch; Codeberg Pages picks it up via a repo webhook ([docs](https://docs.codeberg.org/codeberg-pages/)).
+
+### Preview / build
+
+```bash
+site-serve   # http://localhost:1313/NoFUD/
+site-build   # writes website/public/
+# or:
+devenv tasks run site:serve
+devenv tasks run site:build
+```
+
+### One-time webhook (Codeberg UI)
+
+1. Repo **Settings → Webhooks → Add webhook**
+2. Type: **Forgejo**
+3. Target URL: `https://fitguy.codeberg.page/NoFUD/`
+4. Branch filter: `pages`
+5. Save (do **not** use “Test delivery” — it fails by design)
+
+### Deploy
+
+Pushes use the SSH Host alias **`codeberg-fitguy`** (see `~/.ssh/config`) so Codeberg authenticates as **fitguy**, not KewLE (the agent often offers the KewLE key first for bare `codeberg.org`).
+
+```bash
+./scripts/deploy_pages.sh          # build + force-push pages
+./scripts/deploy_pages.sh --dry-run
+# or: site-deploy / devenv tasks run site:deploy
+```
+
+Optional overrides: `PAGES_SSH_HOST`, `PAGES_PUSH_URL`, `PAGES_REMOTE`, `PAGES_BRANCH`.
+
+For day-to-day git on this repo, prefer the same host in `origin`:
+
+```bash
+git remote set-url origin ssh://git@codeberg-fitguy/fitguy/nofud.git
+```
+
+Update product copy in `website/content/` when messaging changes, then run `deploy_pages.sh` again.
+
 ## App icon
 
 NoFUD uses original launcher and splash artwork (distinct from Fud AI). Regenerate themed variants with:
