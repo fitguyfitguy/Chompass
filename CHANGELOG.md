@@ -4,6 +4,8 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.14.7] - 2026-07-22
+
 ### Added
 
 - Activity level picker subtitles now include approximate daily step guides (upstream #141/#132).
@@ -16,6 +18,9 @@ All notable changes to NoFUD are documented here.
 - Saved Meals Recents limited to last 30 days; Frequent to last 90 days (upstream rolling windows).
 - AI read timeout: 30–600 s range; default 180 s applies to Ollama/Custom only (`AiHttp.clientForProvider`).
 - Clear food log prunes orphaned image files instead of wiping the entire image cache.
+- AI fallback provider is enabled by default for new installs / unset preference.
+- Gemini model list updated (`gemini-3.6-flash`, `gemini-3.5-flash-lite`); Gemini fallback default is `gemini-3.5-flash-lite`; Gemini speech default is `gemini-3.6-flash`.
+- Removed bundled exercise / muscle image assets (smaller APK).
 
 ### Fixed
 
