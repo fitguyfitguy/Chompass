@@ -27,7 +27,7 @@ THEMES: list[tuple[str, tuple[int, int, int], tuple[int, int, int], str | None]]
     ("_orange", (0xFF, 0x95, 0x00), (0xFF, 0xB3, 0x40), "ic_logo_orange.png"),
     ("_green", (0x34, 0xC7, 0x59), (0x62, 0xD4, 0x6F), "ic_logo_green.png"),
     ("_mint", (0x00, 0xC7, 0xBE), (0x66, 0xD4, 0xCF), "ic_logo_mint.png"),
-    ("_teal", (0x00, 0x6B, 0x5E), (0x4D, 0xB6, 0xAC), "ic_logo_teal.png"),
+    ("_teal", (0x00, 0x6B, 0x5E), (0x5C, 0xC4, 0x8F), "ic_logo_teal.png"),
     ("_blue", (0x0A, 0x84, 0xFF), (0x5E, 0xAE, 0xFF), "ic_logo_blue.png"),
     ("_purple", (0xAF, 0x52, 0xDE), (0xBF, 0x5A, 0xF2), "ic_logo_purple.png"),
     ("_yellow", (0xFF, 0xCC, 0x00), (0xFF, 0xD6, 0x0A), None),
@@ -64,6 +64,24 @@ def make_gradient(size: int, start: tuple[int, int, int], end: tuple[int, int, i
     return img
 
 
+def fill_mask_holes(mask: Image.Image) -> Image.Image:
+    """Fill enclosed zero regions in a binary L mask (keeps exterior transparent)."""
+    temp = mask.point(lambda v: 255 if v > 127 else 0)
+    # Mark exterior zeros reachable from the top-left corner.
+    ImageDraw.floodfill(temp, (0, 0), 128)
+    out = Image.new("L", mask.size, 0)
+    src = temp.load()
+    dst = out.load()
+    w, h = mask.size
+    for y in range(h):
+        for x in range(w):
+            v = src[x, y]
+            # 255 = original solid; 0 = enclosed hole → both become solid.
+            if v != 128:
+                dst[x, y] = 255
+    return out
+
+
 def extract_masks(master: Image.Image) -> tuple[Image.Image, Image.Image]:
     """Return (rounded_square_alpha, white_logo_alpha) from the master icon."""
     rgba = master.convert("RGBA")
@@ -86,13 +104,17 @@ def extract_masks(master: Image.Image) -> tuple[Image.Image, Image.Image]:
                 continue
             rounded_px[x, y] = 255
 
-    # Keep the white NF mark, but drop any white corner padding outside the squircle.
+    # White NF sits on top of the squircle, so those pixels are missing from
+    # `rounded`. Fill holes so the interior is solid, then keep only logo
+    # whites that fall inside that filled squircle (drop corner padding).
+    filled = fill_mask_holes(rounded)
+    filled_px = filled.load()
     for y in range(h):
         for x in range(w):
-            if logo_px[x, y] and not rounded_px[x, y]:
+            if logo_px[x, y] and not filled_px[x, y]:
                 logo_px[x, y] = 0
 
-    return rounded, logo
+    return filled, logo
 
 
 def compose_icon(
