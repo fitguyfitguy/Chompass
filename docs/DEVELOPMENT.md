@@ -105,6 +105,10 @@ Keep `website/hugo.toml` `params.version` in sync with `versionName` in `android
 
 Pushes use the SSH Host alias **`codeberg-fitguy`** (see `~/.ssh/config`) so Codeberg authenticates as **fitguy**, not KewLE (the agent often offers the KewLE key first for bare `codeberg.org`).
 
+**On release:** [`publish_release.sh`](../scripts/publish_release.sh) redeploys Pages automatically after uploading APKs (pass `--skip-pages` to skip).
+
+**Ad hoc** (copy/logo/content changes without a release):
+
 ```bash
 ./scripts/deploy_pages.sh          # build + force-push pages
 ./scripts/deploy_pages.sh --dry-run

@@ -52,31 +52,32 @@ devenv shell bash -lc 'cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assem
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
 2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
-3. Optional: sync `docs/fdroid/org.codeberg.fitguy.nofud.yml` and run `devenv tasks run release:check-metadata`
-4. Commit, tag, push:
+3. Bump `website/hugo.toml` `params.version` (same as `versionName`)
+4. Optional: sync `docs/fdroid/org.codeberg.fitguy.nofud.yml` and run `devenv tasks run release:check-metadata`
+5. Commit, tag, push:
 
 ```bash
 git tag -a v1.0.0 -m "NoFUD 1.0.0 - initial public release"
 git push origin v1.0.0
 ```
 
-5. Create a release at https://codeberg.org/fitguy/nofud/releases
-   - Attach F-Droid APK assets (`NoFUD-fdroid-<version>.apk` + ABI APKs) and `SHA256SUMS`
-   - Paste changelog notes
-   - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
-
-   The former **`play` flavor is disabled**; see [`DISTRIBUTION.md`](DISTRIBUTION.md).
-
-   Or with [tea](https://codeberg.org/tea/tea):
+6. Publish APKs and redeploy the project site:
 
 ```bash
 # One-time: create a token at https://codeberg.org/user/settings/applications
 # Scopes: read:user + write:repository (repo access: this repo or all)
 export CODEBERG_TOKEN='paste-token-here'
 ./scripts/publish_release.sh 1.0.0
+# or: RELEASE_VERSION=1.0.0 devenv tasks run release:publish
 ```
 
-The script auto-runs `nix shell nixpkgs#tea` when `tea` is not on PATH (e.g. inside devenv).
+`publish_release.sh` uploads F-Droid APK assets + `SHA256SUMS`, pastes changelog notes, then runs [`deploy_pages.sh`](../scripts/deploy_pages.sh) so [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/) shows the new version. Use `--skip-pages` to skip the site step.
+
+The former **`play` flavor is disabled**; see [`DISTRIBUTION.md`](DISTRIBUTION.md).
+
+The script auto-runs `nix shell nixpkgs#tea` / `nixpkgs#hugo` when those tools are not on PATH (e.g. outside devenv).
+
+Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
 
 ### Codeberg storage quota
 

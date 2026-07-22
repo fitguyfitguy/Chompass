@@ -27,8 +27,8 @@ Use the Hugo site as the link people should open first. Point builders at the Co
 
 ## After each release
 
-1. Bump `website/hugo.toml` `params.version` with `versionName` (guarded by `release:check-metadata`)
-2. Deploy Pages: `./scripts/deploy_pages.sh`
+1. Bump `website/hugo.toml` `params.version` with `versionName` (guarded by `release:check-metadata`) — usually done in the release commit
+2. Site redeploy is automatic: `./scripts/publish_release.sh <version>` runs [`deploy_pages.sh`](../scripts/deploy_pages.sh) after uploading APKs. Manual redeploy: `devenv tasks run site:deploy` or `./scripts/deploy_pages.sh`. Skip with `--skip-pages` on publish.
 3. Optionally refresh OG art: `uv run --with pillow python scripts/generate_og_image.py`
 
 See also [`DEVELOPMENT.md`](DEVELOPMENT.md) (site build/deploy) and [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md).

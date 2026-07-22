@@ -9,9 +9,14 @@
 #   ./scripts/publish_release.sh 1.0.0
 #   ./scripts/publish_release.sh 1.0.0 --with-screenshots
 #   ./scripts/publish_release.sh 1.0.0 --assets-only   # resume partial upload
+#   ./scripts/publish_release.sh 1.0.0 --skip-pages    # skip Codeberg Pages redeploy
 #
 # or persist a login:
 #   nix shell nixpkgs#tea -c tea logins add -n codeberg -u https://codeberg.org -t "$CODEBERG_TOKEN"
+#
+# After a successful asset upload, rebuilds and force-pushes the Hugo site to the
+# orphan `pages` branch (same as ./scripts/deploy_pages.sh) so fitguy.codeberg.page
+# picks up the new version. Requires hugo (devenv) or nixpkgs#hugo, plus SSH as fitguy.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -19,6 +24,7 @@ CODEBERG_REPO="${CODEBERG_REPO:-fitguy/nofud}"
 LOGIN="${CODEBERG_LOGIN:-codeberg}"
 WITH_SCREENSHOTS=0
 ASSETS_ONLY=0
+SKIP_PAGES=0
 POSITIONAL=()
 for arg in "$@"; do
   case "$arg" in
@@ -28,6 +34,9 @@ for arg in "$@"; do
     --assets-only)
       ASSETS_ONLY=1
       ;;
+    --skip-pages)
+      SKIP_PAGES=1
+      ;;
     -h|--help)
       cat <<'EOF'
 Usage: publish_release.sh <version> [options]
@@ -35,6 +44,10 @@ Usage: publish_release.sh <version> [options]
 Options:
   --with-screenshots   Also attach release-screenshots/*.png (needs extra quota)
   --assets-only        Skip release creation; upload missing assets to an existing tag
+  --skip-pages         Do not rebuild/redeploy the Codeberg Pages site
+
+After uploading assets, redeploys the Hugo site (scripts/deploy_pages.sh) unless
+--skip-pages is set. Keep website/hugo.toml params.version in sync with the release.
 
 Uploads APKs in batches (fdroid, checksums) so a quota error mid-run can be
 resumed with --assets-only after freeing space:
@@ -79,6 +92,20 @@ run_tea() {
     tea "$@"
   else
     nix shell nixpkgs#tea -c tea "$@"
+  fi
+}
+
+deploy_pages() {
+  if [[ "$SKIP_PAGES" -eq 1 ]]; then
+    echo "==> Skipping Codeberg Pages deploy (--skip-pages)"
+    return 0
+  fi
+
+  echo "==> Redeploying Codeberg Pages site"
+  if command -v hugo >/dev/null 2>&1; then
+    "$ROOT/scripts/deploy_pages.sh"
+  else
+    nix shell nixpkgs#hugo -c bash "$ROOT/scripts/deploy_pages.sh"
   fi
 }
 
@@ -232,5 +259,7 @@ upload_assets "SHA256SUMS" "${CHECKSUM_ASSETS[@]}"
 if [[ ${#SCREENSHOT_ASSETS[@]} -gt 0 ]]; then
   upload_assets "screenshots" "${SCREENSHOT_ASSETS[@]}"
 fi
+
+deploy_pages
 
 echo "Published: https://codeberg.org/fitguy/NoFUD/releases/tag/${TAG}"
