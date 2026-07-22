@@ -15,8 +15,14 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.codeberg.fitguy.nofud.MainActivity
+import org.codeberg.fitguy.nofud.NoFUDApp
 import org.codeberg.fitguy.nofud.R
+import java.time.LocalDate
 import java.util.Calendar
 
 /**
@@ -237,6 +243,12 @@ class NotificationService(private val context: Context) {
     }
 }
 
+/**
+ * Pure gate for streak reminders: skip the nudge when the diary already has
+ * food logged today (upstream #150). Non-streak channels ignore this helper.
+ */
+fun shouldNotifyStreak(hasFoodLoggedToday: Boolean): Boolean = !hasFoodLoggedToday
+
 /** Fired by the alarm. Posts the notification and re-schedules the same alarm +24h. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -245,32 +257,51 @@ class ReminderReceiver : BroadcastReceiver() {
         val text = intent.getStringExtra(NotificationService.EXTRA_TEXT) ?: return
         val request = intent.getIntExtra(NotificationService.EXTRA_REQUEST, -1)
 
-        val open = PendingIntent.getActivity(
-            context, 0,
-            Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            },
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        val pendingResult = goAsync()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val shouldPost = if (channel == NotificationService.CHANNEL_STREAK) {
+                    val hasFoodToday = runCatching {
+                        val container = (context.applicationContext as? NoFUDApp)?.container
+                            ?: return@runCatching false
+                        container.foodRepository.entriesForDate(LocalDate.now()).first().isNotEmpty()
+                    }.getOrDefault(false) // fail open: post if diary read fails / app not ready
+                    shouldNotifyStreak(hasFoodToday)
+                } else {
+                    true
+                }
 
-        val notif = NotificationCompat.Builder(context, channel)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(title)
-            .setContentText(text)
-            .setContentIntent(open)
-            .setAutoCancel(true)
-            .build()
-        NotificationManagerCompat.from(context).notifySafely(request, notif)
+                if (shouldPost) {
+                    val open = PendingIntent.getActivity(
+                        context, 0,
+                        Intent(context, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        },
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                    val notif = NotificationCompat.Builder(context, channel)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(title)
+                        .setContentText(text)
+                        .setContentIntent(open)
+                        .setAutoCancel(true)
+                        .build()
+                    NotificationManagerCompat.from(context).notifySafely(request, notif)
+                }
 
-        // Re-arm for +24h so the reminder fires daily.
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val nextFire = System.currentTimeMillis() + 24L * 60 * 60 * 1000
-        val reIntent = Intent(context, ReminderReceiver::class.java).apply { putExtras(intent) }
-        val pi = PendingIntent.getBroadcast(
-            context, request, reIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextFire, pi)
+                // Re-arm for +24h so the reminder fires daily (even when streak was skipped).
+                val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val nextFire = System.currentTimeMillis() + 24L * 60 * 60 * 1000
+                val reIntent = Intent(context, ReminderReceiver::class.java).apply { putExtras(intent) }
+                val pi = PendingIntent.getBroadcast(
+                    context, request, reIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextFire, pi)
+            } finally {
+                pendingResult.finish()
+            }
+        }
     }
 }
 

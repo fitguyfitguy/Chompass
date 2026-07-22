@@ -4,6 +4,13 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.14.9] - 2026-07-22
+
+### Fixed
+
+- Streak meal reminder no longer fires when today’s food diary already has entries (upstream #150).
+- Copy-from-day stamps new entries with the current time and current meal instead of the source entry’s clock/meal (upstream #149).
+
 ## [1.14.8] - 2026-07-22
 
 ### Fixed
