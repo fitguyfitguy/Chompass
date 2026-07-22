@@ -49,6 +49,8 @@ class GroundedFoodEntryService(
         val analysis: FoodAnalysis?,
         val needsUserChoice: Boolean,
         val question: String? = null,
+        val fallbackReason: GroundingFallbackReason? = null,
+        val portionUnresolved: Boolean = false,
     )
 
     data class GroundedResult(
@@ -68,9 +70,17 @@ class GroundedFoodEntryService(
         selectedSourceIds: Map<Int, String> = emptyMap(),
         /** Optional per-component gram overrides from the correction UI. */
         gramOverrides: Map<Int, Double> = emptyMap(),
+        /**
+         * When set (candidate-sheet follow-up), reuse the first-pass recognition
+         * instead of re-running the model — avoids component drift.
+         */
+        priorRecognition: FoodRecognitionResult? = null,
+        /** Source IDs returned by tools in the current cloud loop (finalize allow-list). */
+        allowedSourceIds: Set<String>? = null,
     ): GroundedResult {
         val historyPool = buildHistoryPool()
         val useToolLoop = selectedSourceIds.isEmpty() &&
+            priorRecognition == null &&
             recognizeDelegate == null &&
             runCatching { foodAnalysis.supportsGroundedToolLoop() }.getOrDefault(false)
 
@@ -91,6 +101,8 @@ class GroundedFoodEntryService(
             historyPool = historyPool,
             selectedSourceIds = selectedSourceIds,
             gramOverrides = gramOverrides,
+            priorRecognition = priorRecognition,
+            allowedSourceIds = allowedSourceIds,
         )
     }
 
@@ -139,6 +151,8 @@ class GroundedFoodEntryService(
         }
 
         val finalize = loop.finalize
+        // Only allow source_ids that tools actually returned in this run.
+        val allowed = loop.tools.seenSourceIds.toSet()
         val recognition = FoodRecognitionResult(
             mealName = finalize.mealName,
             emoji = finalize.emoji,
@@ -150,6 +164,8 @@ class GroundedFoodEntryService(
                     estimatedGrams = c.grams,
                     portionHint = c.portionHint,
                     barcode = c.barcode,
+                    quantity = c.quantity,
+                    unit = c.unit,
                 )
             },
             notes = finalize.notes,
@@ -161,6 +177,7 @@ class GroundedFoodEntryService(
                 pick = pick,
                 historyPool = historyPool,
                 gramOverride = gramOverrides[index],
+                allowedSourceIds = allowed,
             )
         }
         return finishResolutions(recognition, resolutions, onProgress, selectedSourceIdsEmpty = true)
@@ -173,9 +190,11 @@ class GroundedFoodEntryService(
         historyPool: List<org.codeberg.fitguy.nofud.models.FoodEntry>,
         selectedSourceIds: Map<Int, String>,
         gramOverrides: Map<Int, Double>,
+        priorRecognition: FoodRecognitionResult? = null,
+        allowedSourceIds: Set<String>? = null,
     ): GroundedResult {
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Recognizing))
-        val recognition = if (recognizeDelegate != null) {
+        val recognition = priorRecognition ?: if (recognizeDelegate != null) {
             recognizeDelegate.invoke(description, imageBytesList, onProgress)
         } else {
             foodAnalysis.recognizeFoodComponents(description, imageBytesList, onProgress)
@@ -189,6 +208,9 @@ class GroundedFoodEntryService(
                 historyPool = historyPool,
                 selectedSourceId = selectedSourceIds[index],
                 gramOverride = gramOverrides[index],
+                allowedSourceIds = allowedSourceIds,
+                identityConfirmed = selectedSourceIds.containsKey(index),
+                portionConfirmed = gramOverrides.containsKey(index),
             )
         }
 
@@ -207,7 +229,7 @@ class GroundedFoodEntryService(
         onProgress: (FoodAnalysisProgress) -> Unit,
         selectedSourceIdsEmpty: Boolean,
     ): GroundedResult {
-        val ambiguous = resolutions.filter { it.needsUserChoice }
+        val ambiguous = resolutions.filter { it.needsUserChoice || it.portionUnresolved }
         if (ambiguous.isNotEmpty() && selectedSourceIdsEmpty) {
             val partialParts = resolutions.mapNotNull { it.analysis }
             val draft = if (partialParts.isNotEmpty()) {
@@ -231,7 +253,7 @@ class GroundedFoodEntryService(
         val finalResolutions = resolutions.toMutableList()
         for ((index, resolution) in resolutions.withIndex()) {
             val analysis = resolution.analysis
-                ?: fallbackEstimate(resolution.component, null)
+                ?: fallbackEstimate(resolution.component, null, resolution.fallbackReason)
             parts += analysis
             if (resolution.analysis == null) {
                 finalResolutions[index] = resolution.copy(
@@ -241,9 +263,12 @@ class GroundedFoodEntryService(
                         sourceId = "model:${resolution.component.name}",
                         displayName = resolution.component.name,
                         score = 0.0,
-                        matchedBy = "model_fallback",
+                        matchedBy = resolution.fallbackReason?.name?.lowercase()
+                            ?: "model_fallback",
                     ),
                     needsUserChoice = false,
+                    fallbackReason = resolution.fallbackReason
+                        ?: GroundingFallbackReason.NO_MATCH,
                 )
             }
         }
@@ -258,6 +283,7 @@ class GroundedFoodEntryService(
         pick: GroundingTools.FinalizeComponent,
         historyPool: List<org.codeberg.fitguy.nofud.models.FoodEntry>,
         gramOverride: Double?,
+        allowedSourceIds: Set<String> = emptySet(),
     ): ComponentResolution {
         val component = RecognizedFoodComponent(
             name = pick.name,
@@ -266,8 +292,10 @@ class GroundedFoodEntryService(
             estimatedGrams = pick.grams,
             portionHint = pick.portionHint,
             barcode = pick.barcode,
+            quantity = pick.quantity,
+            unit = pick.unit,
         )
-        val query = listOfNotNull(pick.brand, pick.name, pick.preparation).joinToString(" ").trim()
+        val query = QueryNormalizer.searchQuery(pick.brand, pick.name, pick.preparation)
 
         if (pick.needsUserChoice) {
             val ranked = gatherCandidates(query, historyPool)
@@ -289,6 +317,29 @@ class GroundedFoodEntryService(
                 analysis = null,
                 needsUserChoice = false,
                 question = "No database match for \"${pick.name}\". Estimate nutrients?",
+                fallbackReason = if (pick.rejectToEstimate) {
+                    GroundingFallbackReason.REJECT_TO_ESTIMATE
+                } else {
+                    GroundingFallbackReason.NO_MATCH
+                },
+            )
+        }
+
+        // Reject source_ids that were never returned by a tool in this run.
+        if (allowedSourceIds.isNotEmpty() && pick.sourceId !in allowedSourceIds) {
+            val ranked = gatherCandidates(query, historyPool)
+            return ComponentResolution(
+                component = component,
+                selected = null,
+                candidates = ranked,
+                analysis = null,
+                needsUserChoice = ranked.isNotEmpty(),
+                question = if (ranked.isNotEmpty()) {
+                    "Which match is \"${pick.name}\"?"
+                } else {
+                    "No database match for \"${pick.name}\". Estimate nutrients?"
+                },
+                fallbackReason = GroundingFallbackReason.INVALID_SOURCE_ID,
             )
         }
 
@@ -304,6 +355,7 @@ class GroundedFoodEntryService(
                     historyPool = historyPool,
                     selectedSourceId = barcode,
                     gramOverride = grams,
+                    allowedSourceIds = allowedSourceIds,
                 )
             }
             NutrientSourceKind.USDA -> {
@@ -322,17 +374,51 @@ class GroundedFoodEntryService(
                         } else {
                             "No database match for \"${pick.name}\". Estimate nutrients?"
                         },
+                        fallbackReason = if (record != null && record.calories == null) {
+                            GroundingFallbackReason.INCOMPLETE_ENERGY
+                        } else {
+                            GroundingFallbackReason.INVALID_SOURCE_ID
+                        },
                     )
                 }
-                val g = grams ?: record.servingGrams ?: 100.0
+                val portion = PortionResolver.resolve(
+                    component = component,
+                    gramOverride = grams,
+                    candidateServingGrams = record.servingGrams,
+                    candidateServingUnit = record.servingUnit,
+                )
+                if (!portion.isResolved) {
+                    val candidate = record.toCandidate(10.0, usdaIndex.version())
+                    return ComponentResolution(
+                        component = component,
+                        selected = candidate,
+                        candidates = listOf(candidate),
+                        analysis = null,
+                        needsUserChoice = true,
+                        question = "Confirm portion for \"${pick.name}\"",
+                        fallbackReason = GroundingFallbackReason.UNRESOLVED_PORTION,
+                        portionUnresolved = true,
+                    )
+                }
+                val g = PortionResolver.roundGrams(portion.grams!!)
                 val candidate = record.toCandidate(10.0, usdaIndex.version())
-                val analysis = record.toFoodAnalysis(g, usdaIndex.version())
+                val analysis = record.toFoodAnalysis(g, usdaIndex.version()).let { a ->
+                    a.copy(
+                        grounding = a.grounding?.copy(
+                            portionEvidence = PortionResolver.formatEvidence(portion),
+                            portionConfirmed = portion.source == PortionResolver.Source.OVERRIDE,
+                        ),
+                    )
+                }
                 ComponentResolution(
                     component = component,
                     selected = candidate,
                     candidates = listOf(candidate),
                     analysis = analysis,
-                    needsUserChoice = false,
+                    needsUserChoice = portion.needsUserConfirmation && grams == null,
+                    question = if (portion.needsUserConfirmation && grams == null) {
+                        "Confirm portion for \"${pick.name}\""
+                    } else null,
                 )
             }
             NutrientSourceKind.HISTORY -> {
@@ -355,10 +441,28 @@ class GroundedFoodEntryService(
                         analysis = null,
                         needsUserChoice = true,
                         question = "Which match is \"${pick.name}\"?",
+                        fallbackReason = GroundingFallbackReason.INVALID_SOURCE_ID,
                     )
                 }
                 val candidate = ConfirmedHistorySearch.toCandidate(hit)
-                val g = grams ?: component.estimatedGrams ?: hit.entry.servingSizeGrams ?: 100.0
+                val portion = PortionResolver.resolve(
+                    component = component,
+                    gramOverride = grams,
+                    candidateServingGrams = hit.entry.servingSizeGrams,
+                )
+                if (!portion.isResolved) {
+                    return ComponentResolution(
+                        component = component,
+                        selected = candidate,
+                        candidates = listOf(candidate),
+                        analysis = null,
+                        needsUserChoice = true,
+                        question = "Confirm portion for \"${pick.name}\"",
+                        fallbackReason = GroundingFallbackReason.UNRESOLVED_PORTION,
+                        portionUnresolved = true,
+                    )
+                }
+                val g = PortionResolver.roundGrams(portion.grams!!)
                 ComponentResolution(
                     component = component,
                     selected = candidate,
@@ -372,6 +476,7 @@ class GroundedFoodEntryService(
                 historyPool = historyPool,
                 selectedSourceId = pick.sourceId,
                 gramOverride = grams,
+                allowedSourceIds = allowedSourceIds,
             )
         }
     }
@@ -397,13 +502,14 @@ class GroundedFoodEntryService(
         query: String,
         historyPool: List<org.codeberg.fitguy.nofud.models.FoodEntry>,
     ): List<GroundingCandidate> {
+        val normalized = QueryNormalizer.normalizeQuery(query)
         val candidates = mutableListOf<GroundingCandidate>()
-        candidates += ConfirmedHistorySearch.search(historyPool, query).map {
+        candidates += ConfirmedHistorySearch.search(historyPool, normalized).map {
             ConfirmedHistorySearch.toCandidate(it)
         }
-        candidates += usdaIndex.search(query, limit = 6)
+        candidates += usdaIndex.search(normalized, limit = 6)
         return candidates
-            .sortedByDescending { sourceAwareScore(it) }
+            .sortedByDescending { UsdaFoodIndex.sourceAwareScore(it, normalized) }
             .distinctBy { "${it.sourceKind}:${it.sourceId}" }
             .take(6)
     }
@@ -419,10 +525,11 @@ class GroundedFoodEntryService(
         historyPool: List<org.codeberg.fitguy.nofud.models.FoodEntry>,
         selectedSourceId: String?,
         gramOverride: Double?,
+        allowedSourceIds: Set<String>? = null,
+        identityConfirmed: Boolean = false,
+        portionConfirmed: Boolean = false,
     ): ComponentResolution {
-        val query = listOfNotNull(component.brand, component.name, component.preparation)
-            .joinToString(" ")
-            .trim()
+        val query = QueryNormalizer.searchQuery(component.brand, component.name, component.preparation)
         val candidates = mutableListOf<GroundingCandidate>()
 
         val barcode = component.barcode?.filter { it.isDigit() }?.takeIf { it.length >= 8 }
@@ -432,9 +539,33 @@ class GroundedFoodEntryService(
                     ?: OpenFoodFactsService.lookup(barcode, prefs)
             }.getOrNull()
             if (off != null) {
-                val grams = gramOverride
-                    ?: component.estimatedGrams
-                    ?: off.servingSizeGrams
+                val portion = PortionResolver.resolve(
+                    component = component,
+                    gramOverride = gramOverride,
+                    candidateServingGrams = off.servingSizeGrams.takeIf { it > 0 },
+                )
+                if (!portion.isResolved) {
+                    val candidate = GroundingCandidate(
+                        sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
+                        sourceId = barcode,
+                        displayName = off.name,
+                        score = 100.0,
+                        servingSizeGrams = off.servingSizeGrams,
+                        matchedBy = "barcode",
+                        datasetVersion = "openfoodfacts-live",
+                    )
+                    return ComponentResolution(
+                        component = component,
+                        selected = candidate,
+                        candidates = listOf(candidate),
+                        analysis = null,
+                        needsUserChoice = true,
+                        question = "Confirm portion for \"${component.name}\"",
+                        fallbackReason = GroundingFallbackReason.UNRESOLVED_PORTION,
+                        portionUnresolved = true,
+                    )
+                }
+                val grams = PortionResolver.roundGrams(portion.grams!!)
                 val scaled = if (grams != off.servingSizeGrams && off.servingSizeGrams > 0) {
                     val scale = grams / off.servingSizeGrams
                     off.copy(
@@ -445,7 +576,7 @@ class GroundedFoodEntryService(
                         servingSizeGrams = grams,
                     )
                 } else {
-                    off
+                    off.copy(servingSizeGrams = grams)
                 }
                 val candidate = GroundingCandidate(
                     sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
@@ -468,6 +599,9 @@ class GroundedFoodEntryService(
                     matchedBy = "barcode",
                     datasetVersion = "openfoodfacts-live",
                 )
+                if (identityConfirmed) {
+                    GroundingCorrectionStore.record(query, "openFoodFacts", barcode, off.name, grams)
+                }
                 return ComponentResolution(
                     component = component,
                     selected = candidate,
@@ -477,8 +611,10 @@ class GroundedFoodEntryService(
                             sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
                             sourceId = barcode,
                         )).copy(
-                            portionEvidence = component.portionHint
-                                ?: "estimated_grams=${component.estimatedGrams}",
+                            portionEvidence = PortionResolver.formatEvidence(portion),
+                            identityConfirmed = identityConfirmed || true,
+                            portionConfirmed = portionConfirmed ||
+                                portion.source == PortionResolver.Source.OVERRIDE,
                         ),
                     ),
                     needsUserChoice = false,
@@ -491,7 +627,7 @@ class GroundedFoodEntryService(
         candidates += usdaIndex.search(query, limit = 6)
 
         val ranked = candidates
-            .sortedByDescending { sourceAwareScore(it) }
+            .sortedByDescending { UsdaFoodIndex.sourceAwareScore(it, query) }
             .distinctBy { "${it.sourceKind}:${it.sourceId}" }
             .take(6)
 
@@ -503,13 +639,14 @@ class GroundedFoodEntryService(
                 analysis = null,
                 needsUserChoice = false,
                 question = "No database match for \"${component.name}\". Estimate nutrients?",
+                fallbackReason = GroundingFallbackReason.NO_MATCH,
             )
         }
 
         val selected = when {
             selectedSourceId != null ->
                 ranked.firstOrNull { it.sourceId == selectedSourceId } ?: ranked.first()
-            ranked.size >= 2 && sourceAwareScore(ranked[0]) - sourceAwareScore(ranked[1]) < 1.2 ->
+            UsdaFoodIndex.isAmbiguous(ranked[0], ranked.getOrNull(1), query) ->
                 null
             else -> ranked.first()
         }
@@ -525,10 +662,25 @@ class GroundedFoodEntryService(
             )
         }
 
-        val grams = gramOverride
-            ?: component.estimatedGrams
-            ?: selected.servingSizeGrams
-            ?: 100.0
+        val portion = PortionResolver.resolve(
+            component = component,
+            gramOverride = gramOverride,
+            candidateServingGrams = selected.servingSizeGrams,
+            candidateServingUnit = null,
+        )
+        if (!portion.isResolved) {
+            return ComponentResolution(
+                component = component,
+                selected = selected,
+                candidates = ranked,
+                analysis = null,
+                needsUserChoice = true,
+                question = "Confirm portion for \"${component.name}\"",
+                fallbackReason = GroundingFallbackReason.UNRESOLVED_PORTION,
+                portionUnresolved = true,
+            )
+        }
+        val grams = PortionResolver.roundGrams(portion.grams!!)
 
         val analysis = when (selected.sourceKind) {
             NutrientSourceKind.USDA -> {
@@ -542,6 +694,7 @@ class GroundedFoodEntryService(
                         analysis = null,
                         needsUserChoice = ranked.any { !it.incompleteEnergy },
                         question = "Which match is \"${component.name}\"?",
+                        fallbackReason = GroundingFallbackReason.INCOMPLETE_ENERGY,
                     )
                 }
                 record?.toFoodAnalysis(grams, usdaIndex.version())
@@ -558,25 +711,40 @@ class GroundedFoodEntryService(
             else -> analysisFromCandidate(selected, grams, component)
         }
 
+        if (identityConfirmed || selectedSourceId != null) {
+            GroundingCorrectionStore.record(
+                query = query,
+                sourceKind = when (selected.sourceKind) {
+                    NutrientSourceKind.USDA -> "usda"
+                    NutrientSourceKind.HISTORY -> "history"
+                    NutrientSourceKind.OPEN_FOOD_FACTS -> "openFoodFacts"
+                    else -> selected.sourceKind.name
+                },
+                sourceId = selected.sourceId,
+                displayName = selected.displayName,
+                grams = grams,
+            )
+        }
+
+        val withPortion = analysis.copy(
+            grounding = (analysis.grounding ?: FoodGroundingProvenance(
+                sourceKind = selected.sourceKind,
+                sourceId = selected.sourceId,
+            )).copy(
+                portionEvidence = PortionResolver.formatEvidence(portion),
+                identityConfirmed = identityConfirmed || selectedSourceId != null,
+                portionConfirmed = portionConfirmed ||
+                    portion.source == PortionResolver.Source.OVERRIDE,
+            ),
+        )
+
         return ComponentResolution(
             component = component,
             selected = selected,
             candidates = ranked,
-            analysis = analysis,
+            analysis = withPortion,
             needsUserChoice = false,
         )
-    }
-
-    private fun sourceAwareScore(c: GroundingCandidate): Double {
-        val base = c.score
-        val bonus = when (c.sourceKind) {
-            NutrientSourceKind.OPEN_FOOD_FACTS -> 50.0
-            NutrientSourceKind.USDA -> 8.0
-            NutrientSourceKind.HISTORY -> 4.0
-            NutrientSourceKind.NUTRITION_LABEL -> 40.0
-            NutrientSourceKind.MODEL_ESTIMATE -> 0.0
-        }
-        return base + bonus
     }
 
     private fun historyToAnalysis(
@@ -662,6 +830,7 @@ class GroundedFoodEntryService(
     private suspend fun fallbackEstimate(
         component: RecognizedFoodComponent,
         gramOverride: Double?,
+        reason: GroundingFallbackReason? = null,
     ): FoodAnalysis {
         val desc = buildString {
             append(component.name)
@@ -676,14 +845,16 @@ class GroundedFoodEntryService(
         } else {
             foodAnalysis.analyzeText(desc)
         }
+        val reasonNote = reason?.name?.lowercase() ?: "no_database_match"
         return estimated.copy(
             grounding = FoodGroundingProvenance(
                 sourceKind = NutrientSourceKind.MODEL_ESTIMATE,
                 sourceId = null,
                 sourceName = component.name,
                 nutrientBasis = NutrientBasis.ABSOLUTE,
-                identityEvidence = "no database match — model estimate",
+                identityEvidence = "model estimate ($reasonNote)",
                 portionEvidence = component.portionHint,
+                validationNotes = listOf("fallback:$reasonNote"),
             ),
         )
     }
@@ -693,8 +864,8 @@ class GroundedFoodEntryService(
         resolutions: List<ComponentResolution>,
         partial: Boolean,
     ): FoodAnalysis {
-        val components = resolutions.mapNotNull { r ->
-            val selected = r.selected ?: return@mapNotNull null
+        val components = resolutions.mapIndexedNotNull { index, r ->
+            val selected = r.selected ?: return@mapIndexedNotNull null
             GroundedComponentProvenance(
                 name = r.component.name,
                 grams = r.analysis?.servingSizeGrams
@@ -703,6 +874,9 @@ class GroundedFoodEntryService(
                 sourceKind = selected.sourceKind,
                 sourceId = selected.sourceId,
                 sourceName = selected.displayName,
+                candidateRank = r.candidates.indexOfFirst {
+                    it.sourceId == selected.sourceId && it.sourceKind == selected.sourceKind
+                }.takeIf { it >= 0 }?.plus(1) ?: (index + 1),
                 matchedBy = selected.matchedBy,
             )
         }

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "description": "Shared USDA retrieval golden vectors for Kotlin unit tests and the Python harness. Keep Kotlin UsdaFoodIndex.score / QueryNormalizer in sync with benchmarks/food_accuracy/query_normalize.py.",
+  "cases": [
+    {
+      "id": "rice_cooked_over_flour",
+      "query": "cooked white rice",
+      "candidates": [
+        {"id": "cooked", "description": "Rice, white, cooked", "data_type": "survey_fndds_food", "tokens": "rice white cooked", "calories": 130.0},
+        {"id": "flour", "description": "Rice flour, white", "data_type": "foundation_food", "tokens": "rice flour white", "calories": 366.0}
+      ],
+      "prefer_id": "cooked",
+      "avoid_ids": ["flour"]
+    },
+    {
+      "id": "oatmeal_over_pie",
+      "query": "oatmeal cooked",
+      "candidates": [
+        {"id": "oats", "description": "Oatmeal, cooked", "data_type": "survey_fndds_food", "tokens": "oatmeal cooked", "calories": 71.0},
+        {"id": "pie", "description": "Pie, oatmeal", "data_type": "foundation_food", "tokens": "pie oatmeal", "calories": 300.0}
+      ],
+      "prefer_id": "oats",
+      "avoid_ids": ["pie"]
+    },
+    {
+      "id": "beer_over_dip",
+      "query": "beer",
+      "candidates": [
+        {"id": "beer", "description": "Beer", "data_type": "survey_fndds_food", "tokens": "beer", "calories": 43.0},
+        {"id": "dip", "description": "Onion dip", "data_type": "survey_fndds_food", "tokens": "onion dip", "calories": 180.0}
+      ],
+      "prefer_id": "beer",
+      "avoid_ids": ["dip"]
+    },
+    {
+      "id": "strip_mass_tokens",
+      "query": "Chicken breast, roasted, 150 g",
+      "normalized_tokens": ["chicken", "breast", "roasted"],
+      "must_not_contain": ["150"]
+    },
+    {
+      "id": "yoghurt_synonym",
+      "query": "plain yoghurt",
+      "normalized_tokens": ["plain", "yogurt"],
+      "must_contain": ["yogurt"]
+    },
+    {
+      "id": "ambiguity_close_scores",
+      "query": "apple",
+      "score_delta_threshold": 1.2,
+      "close_pair": true,
+      "candidates": [
+        {"id": "a", "description": "Apple, raw, with skin", "data_type": "foundation_food", "tokens": "apple raw skin", "calories": 52.0},
+        {"id": "b", "description": "Apple, raw, without skin", "data_type": "foundation_food", "tokens": "apple raw", "calories": 48.0}
+      ]
+    }
+  ]
+}

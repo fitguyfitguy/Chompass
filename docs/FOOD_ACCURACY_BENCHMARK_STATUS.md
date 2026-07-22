@@ -5,6 +5,7 @@
 | **As of** | 2026-07-22 |
 | **Harness** | [`benchmarks/food_accuracy/`](../benchmarks/food_accuracy/) |
 | **How-to** | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) |
+| **Grounded WIP** | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) — **not production**; UI flag off |
 | **API** | OpenRouter via `OPENROUTER_TOKEN` in `.env.local` |
 
 This note records what we have measured so far, which defaults to use, and what is still open. It is a snapshot, not a permanent API.
@@ -252,3 +253,19 @@ uv run python benchmarks/food_accuracy/run_eval.py \
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | On-device smoke (latency/parse; no GT macros yet) |
 
 Failure modes / portion reasoning for hard vs easy samples: [§ Failure modes & portion reasoning](#failure-modes--portion-reasoning) above.
+
+## Grounded entry (WIP — not production)
+
+Canonical status and checklist: [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md). **`GroundedEntryFeature.ENABLED` remains false.**
+
+Text-42 tool-loop progress (Flash Lite, same split as single-shot benches):
+
+| Run | WMAPE | ±20% kcal | parse | vs ungrounded Flash Lite |
+|-----|------:|----------:|------:|--------------------------|
+| Prior grounded tool-loop | 17.7% | 76.3% | 90.5% | much worse |
+| Post-roadmap grounded (2026-07-22) | **12.8%** | **78.6%** | **100%** | still ~2.7× WMAPE of 4.8% single-shot |
+| Ungrounded Flash Lite `compact` | **4.8%** | **92.9%** | 100% | reference |
+| Ungrounded Gemma `compact` | **5.7%** | 90.5% | 100% | best free text |
+
+Ship targets (≤10% WMAPE, ≥85% ±20%) are **not** met. Remaining grounded errors are mostly portion, then identity. Local artifact: `results/grounded_tool_gemini35_flash_lite_text_post_roadmap/` (gitignored).
+

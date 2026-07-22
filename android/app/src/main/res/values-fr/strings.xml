@@ -682,4 +682,29 @@
     <string name="settings_keto_carb_mode">Keto carb mode</string>
     <string name="settings_keto_net_carbs">Keto net carbs</string>
     <string name="sheet_keto_carb_mode">Keto carb mode</string>
+
+    <string name="grounded_entry_title">Saisie ancrée</string>
+    <string name="grounded_entry_subtitle">Décrivez et/ou photographiez un repas. Les nutriments viennent d’USDA, Open Food Facts ou de votre historique confirmé — pas d’estimations libres.</string>
+    <string name="grounded_entry_placeholder">ex. 2 œufs brouillés et une banane</string>
+    <string name="grounded_entry_add_photo">Ajouter une photo</string>
+    <string name="grounded_entry_analyze">Ancrer les nutriments</string>
+    <string name="grounded_review_title">Confirmer les correspondances</string>
+    <string name="grounded_review_subtitle">Choisissez la meilleure correspondance et la portion pour chaque aliment avant d’enregistrer.</string>
+    <string name="grounded_review_grams">Grammes</string>
+    <string name="grounded_review_continue">Continuer vers la revue</string>
+    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounding_source_usda">USDA</string>
+    <string name="grounding_source_off">Open Food Facts</string>
+    <string name="grounding_source_history">Votre historique</string>
+    <string name="grounding_source_label">Étiquette nutritionnelle</string>
+    <string name="grounding_source_estimate">Estimation IA</string>
+    <string name="grounding_badge_usda">Ancré · USDA</string>
+    <string name="grounding_badge_off">Ancré · Open Food Facts</string>
+    <string name="grounding_badge_history">Ancré · Votre historique</string>
+    <string name="grounding_badge_label">Ancré · Étiquette</string>
+    <string name="grounding_badge_estimate">Estimation · non trouvé en base</string>
+    <string name="grounding_confidence_summary">Confiance — identité %1$d%% · portion %2$d%% · source %3$d%%</string>
+    <string name="grounding_validation_notes">Notes : %1$s</string>
+    <string name="grounded_on_device_unavailable">La saisie ancrée nécessite un fournisseur IA cloud. Les modèles on-device utilisent Photo/Note.</string>
+    <string name="grounded_review_unit">Unité</string>
 </resources>

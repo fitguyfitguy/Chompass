@@ -46,7 +46,16 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
 
 ## Grounded metrics (identity / source / portion)
 
-See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md) (experimental; **UI disabled** until readiness checklist).
+See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md) (**WIP — not production**; UI disabled until readiness checklist).
+
+Latest text-42 Flash Lite tool-loop (2026-07-22 post-roadmap): WMAPE **12.8%** / ±20% **78.6%** / parse **100%** — better than the prior ~18% grounded run, still far behind single-shot (~4.8–5.7% WMAPE). Keep treating as research only.
+
+**Smoke (no network):**
+
+```bash
+./scripts/check_food_accuracy_smoke.sh
+# or: devenv tasks run benchmark:food-accuracy-smoke
+```
 
 **Full grounded eval** (tool loop → USDA SQLite lookup → score):
 
@@ -58,6 +67,15 @@ uv run python benchmarks/food_accuracy/run_grounded_eval.py \
   --sleep 6 --retries 2 \
   --out benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
 ```
+
+Bad-case / history-OFF manifests:
+
+- `manifest/grounded_bad_cases.jsonl`
+- `manifest/grounded_history_off.jsonl`
+- `manifest/retrieval_golden.json` (+ `check_retrieval_golden.py`)
+- Thresholds: `baselines/grounded_text_thresholds.json`
+
+**Image grounded** (after `download_jfb.py`): pass a JFB manifest the same way; prefer paired compare against single-shot `run_eval.py` on the same IDs.
 
 Legacy recognize → lexical top-1: add `--legacy-top1`.
 

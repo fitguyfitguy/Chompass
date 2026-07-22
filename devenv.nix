@@ -52,4 +52,9 @@
     exec = "./scripts/manage_release_assets.sh list";
     description = "List Codeberg release attachments and estimated total size";
   };
+
+  tasks."benchmark:food-accuracy-smoke" = {
+    exec = "./scripts/check_food_accuracy_smoke.sh";
+    description = "Deterministic food-accuracy smoke (stub eval + grounded metrics + retrieval golden)";
+  };
 }

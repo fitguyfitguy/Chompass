@@ -83,30 +83,28 @@ class GroundedFoodEntryServiceTest {
     }
 
     @Test
-    fun sourcePrecedence_barcodeBeatsUsdaBeatsHistoryBeatsEstimate() {
-        // Mirror GroundedFoodEntryService.sourceAwareScore bonuses.
-        fun score(kind: NutrientSourceKind, base: Double): Double {
-            val bonus = when (kind) {
-                NutrientSourceKind.OPEN_FOOD_FACTS -> 50.0
-                NutrientSourceKind.USDA -> 8.0
-                NutrientSourceKind.HISTORY -> 4.0
-                NutrientSourceKind.NUTRITION_LABEL -> 40.0
-                NutrientSourceKind.MODEL_ESTIMATE -> 0.0
-            }
-            return base + bonus
-        }
-        assertTrue(score(NutrientSourceKind.OPEN_FOOD_FACTS, 1.0) > score(NutrientSourceKind.USDA, 10.0))
-        assertTrue(score(NutrientSourceKind.USDA, 5.0) > score(NutrientSourceKind.HISTORY, 5.0))
-        assertTrue(score(NutrientSourceKind.HISTORY, 2.0) > score(NutrientSourceKind.MODEL_ESTIMATE, 5.0))
+    fun ambiguousCandidates_needUserChoiceWhenScoresClose() {
+        val a = 5.0
+        val b = 4.0
+        val ambiguous = a - b < UsdaFoodIndex.AMBIGUITY_SCORE_DELTA
+        assertTrue(ambiguous)
+        assertFalse(10.0 - 5.0 < UsdaFoodIndex.AMBIGUITY_SCORE_DELTA)
     }
 
     @Test
-    fun ambiguousCandidates_needUserChoiceWhenScoresClose() {
-        val a = 5.0
-        val b = 4.5
-        val ambiguous = a - b < 1.2
-        assertTrue(ambiguous)
-        assertFalse(10.0 - 5.0 < 1.2)
+    fun sourcePrecedence_calibratedBonuses() {
+        fun score(kind: NutrientSourceKind, base: Double): Double {
+            val c = org.codeberg.fitguy.nofud.models.GroundingCandidate(
+                sourceKind = kind,
+                sourceId = "x",
+                displayName = "x",
+                score = base,
+            )
+            return UsdaFoodIndex.sourceAwareScore(c)
+        }
+        assertTrue(score(NutrientSourceKind.OPEN_FOOD_FACTS, 1.0) > score(NutrientSourceKind.USDA, 5.0))
+        assertTrue(score(NutrientSourceKind.USDA, 5.0) > score(NutrientSourceKind.HISTORY, 5.0))
+        assertTrue(score(NutrientSourceKind.HISTORY, 5.0) > score(NutrientSourceKind.MODEL_ESTIMATE, 5.0))
     }
 
     @Test

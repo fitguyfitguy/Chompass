@@ -1,7 +1,7 @@
 {
   "dataset_version": "fdc-2024-10-31-foundation-fndds",
-  "food_count": 5806,
-  "sha256": "cbd9fd0670dc56d8a21a26a9e4911dde942ce72fb29a5d3ac0762024ac69550a",
+  "food_count": 5808,
+  "sha256": "57f306d7da6e5227970397e3b4822b1ae0e8df95e19290edc55693a658a54a9b",
   "license": "CC0 / public domain (USDA FoodData Central)",
   "attribution": "U.S. Department of Agriculture, Agricultural Research Service, FoodData Central",
   "nutrients": [

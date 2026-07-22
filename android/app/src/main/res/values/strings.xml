@@ -406,6 +406,10 @@
     <string name="grounding_badge_history">Grounded · Your history</string>
     <string name="grounding_badge_label">Grounded · Label</string>
     <string name="grounding_badge_estimate">Estimate · not database-matched</string>
+    <string name="grounding_confidence_summary">Confidence — identity %1$d%% · portion %2$d%% · source %3$d%%</string>
+    <string name="grounding_validation_notes">Notes: %1$s</string>
+    <string name="grounded_on_device_unavailable">Grounded entry needs a cloud AI provider. On-device models use Photo/Note instead.</string>
+    <string name="grounded_review_unit">Unit</string>
     <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">Fiber: %1$.1fg</string>
     <string name="home_sugar_format">Sugar: %1$.1fg</string>

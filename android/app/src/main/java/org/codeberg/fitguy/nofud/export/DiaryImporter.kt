@@ -5,13 +5,17 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 import org.codeberg.fitguy.nofud.models.FoodEntry
+import org.codeberg.fitguy.nofud.models.FoodGroundingProvenance
 import org.codeberg.fitguy.nofud.models.FoodSource
+import org.codeberg.fitguy.nofud.models.GroundedComponentProvenance
 import org.codeberg.fitguy.nofud.models.MealType
+import org.codeberg.fitguy.nofud.models.NutrientSourceKind
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -107,6 +111,7 @@ object DiaryImporter {
                         omega3 = item["omega3_g"]?.asDouble(),
                         servingSizeGrams = item["quantity_g"]?.asDouble(),
                         customNote = item["note"]?.asString()?.takeIf { it.isNotBlank() },
+                        grounding = parseGrounding(item["grounding"]?.asObjectOrNull()),
                     )
                 }
             }
@@ -140,6 +145,47 @@ object DiaryImporter {
             "grounded" -> FoodSource.GROUNDED
             else -> FoodSource.TEXT_INPUT
         }
+
+    private fun parseSourceKind(raw: String?): NutrientSourceKind =
+        when (raw?.trim()) {
+            "usda" -> NutrientSourceKind.USDA
+            "openFoodFacts" -> NutrientSourceKind.OPEN_FOOD_FACTS
+            "history" -> NutrientSourceKind.HISTORY
+            "nutritionLabel" -> NutrientSourceKind.NUTRITION_LABEL
+            else -> NutrientSourceKind.MODEL_ESTIMATE
+        }
+
+    private fun parseGrounding(obj: JsonObject?): FoodGroundingProvenance? {
+        if (obj == null) return null
+        val components = obj["components"]?.asArrayOrNull()?.mapNotNull { el ->
+            val c = el.asObjectOrNull() ?: return@mapNotNull null
+            val name = c["name"]?.asString()?.trim().orEmpty()
+            if (name.isEmpty()) return@mapNotNull null
+            GroundedComponentProvenance(
+                name = name,
+                grams = c["grams"]?.asDouble() ?: 0.0,
+                sourceKind = parseSourceKind(c["source_kind"]?.asString()),
+                sourceId = c["source_id"]?.asString(),
+                sourceName = c["source_name"]?.asString(),
+                matchedBy = c["matched_by"]?.asString(),
+            )
+        }.orEmpty()
+        return FoodGroundingProvenance(
+            sourceKind = parseSourceKind(obj["source_kind"]?.asString()),
+            sourceId = obj["source_id"]?.asString(),
+            sourceName = obj["source_name"]?.asString(),
+            datasetVersion = obj["dataset_version"]?.asString(),
+            identityEvidence = obj["identity_evidence"]?.asString(),
+            portionEvidence = obj["portion_evidence"]?.asString(),
+            identityConfirmed = obj["identity_confirmed"]?.let { (it as? JsonPrimitive)?.booleanOrNull } ?: false,
+            portionConfirmed = obj["portion_confirmed"]?.let { (it as? JsonPrimitive)?.booleanOrNull } ?: false,
+            userCorrected = obj["user_corrected"]?.let { (it as? JsonPrimitive)?.booleanOrNull } ?: false,
+            components = components,
+            validationNotes = obj["validation_notes"]?.asArrayOrNull()
+                ?.mapNotNull { it.asString() }
+                .orEmpty(),
+        )
+    }
 
     private fun JsonElement.asObjectOrNull(): JsonObject? = this as? JsonObject
     private fun JsonElement.asArrayOrNull(): JsonArray? = this as? JsonArray

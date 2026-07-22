@@ -147,6 +147,42 @@ object DiaryExporter {
         folate_mcg = e.folate?.let { r1(it) }, omega3_g = e.omega3?.let { r1(it) },
         time = time(e), source = sourceLabel(e.source),
         note = e.customNote?.takeIf { it.isNotBlank() },
+        grounding = e.grounding?.let { g ->
+            GroundingDto(
+                source_kind = when (g.sourceKind) {
+                    org.codeberg.fitguy.nofud.models.NutrientSourceKind.USDA -> "usda"
+                    org.codeberg.fitguy.nofud.models.NutrientSourceKind.OPEN_FOOD_FACTS -> "openFoodFacts"
+                    org.codeberg.fitguy.nofud.models.NutrientSourceKind.HISTORY -> "history"
+                    org.codeberg.fitguy.nofud.models.NutrientSourceKind.NUTRITION_LABEL -> "nutritionLabel"
+                    org.codeberg.fitguy.nofud.models.NutrientSourceKind.MODEL_ESTIMATE -> "modelEstimate"
+                },
+                source_id = g.sourceId,
+                source_name = g.sourceName,
+                dataset_version = g.datasetVersion,
+                identity_confirmed = g.identityConfirmed,
+                portion_confirmed = g.portionConfirmed,
+                user_corrected = g.userCorrected,
+                identity_evidence = g.identityEvidence,
+                portion_evidence = g.portionEvidence,
+                validation_notes = g.validationNotes.takeIf { it.isNotEmpty() },
+                components = g.components.takeIf { it.isNotEmpty() }?.map { c ->
+                    GroundingComponentDto(
+                        name = c.name,
+                        grams = r1(c.grams),
+                        source_kind = when (c.sourceKind) {
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.USDA -> "usda"
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.OPEN_FOOD_FACTS -> "openFoodFacts"
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.HISTORY -> "history"
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.NUTRITION_LABEL -> "nutritionLabel"
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.MODEL_ESTIMATE -> "modelEstimate"
+                        },
+                        source_id = c.sourceId,
+                        source_name = c.sourceName,
+                        matched_by = c.matchedBy,
+                    )
+                },
+            )
+        },
     )
 
     private fun nutrientCells(e: FoodEntry): List<String> = listOf(
@@ -177,6 +213,28 @@ object DiaryExporter {
         val vitamin_e_mg: Double? = null, val vitamin_k_mcg: Double? = null,
         val folate_mcg: Double? = null, val omega3_g: Double? = null,
         val time: String, val source: String, val note: String? = null,
+        val grounding: GroundingDto? = null,
+    )
+    @Serializable private data class GroundingComponentDto(
+        val name: String,
+        val grams: Double,
+        val source_kind: String,
+        val source_id: String? = null,
+        val source_name: String? = null,
+        val matched_by: String? = null,
+    )
+    @Serializable private data class GroundingDto(
+        val source_kind: String,
+        val source_id: String? = null,
+        val source_name: String? = null,
+        val dataset_version: String? = null,
+        val identity_confirmed: Boolean = false,
+        val portion_confirmed: Boolean = false,
+        val user_corrected: Boolean = false,
+        val identity_evidence: String? = null,
+        val portion_evidence: String? = null,
+        val validation_notes: List<String>? = null,
+        val components: List<GroundingComponentDto>? = null,
     )
     @Serializable private data class MealDto(val type: String, val items: List<ItemDto>)
     @Serializable private data class DayDto(val date: String, val totals: Macro, val targets: Macro, val remaining: Macro, val meals: List<MealDto>)

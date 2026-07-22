@@ -31,10 +31,11 @@ object GroundedToolLoop {
         2. Prefer survey_fndds_food / FNDDS rows for cooked or generic meals; avoid flour, powder, dry, pie, or dessert false friends unless the user text says so.
         3. Split multi-item meals into separate components; each needs its own source_id or reject_to_estimate.
         4. Never invent calories, protein, carbs, or fat — only choose among tool results.
-        5. Set grams to the edible amount when reasonably clear; otherwise omit grams.
+        5. Set grams to the edible amount when reasonably clear; otherwise omit grams and set quantity/unit when known.
         6. If no good match exists, set reject_to_estimate=true (model estimate later) or needs_user_choice=true.
         7. When done, you MUST call finalize_grounding with meal_name and components.
         8. Do not answer with plain text only — finish via finalize_grounding.
+        9. Only use source_id values returned by tools in this conversation.
     """.trimIndent()
 
     data class LoopResult(
