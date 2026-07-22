@@ -64,6 +64,7 @@ import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.services.MealShare
+import org.codeberg.fitguy.nofud.services.grounding.GroundedEntryFeature
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialog
 import org.codeberg.fitguy.nofud.ui.components.FudGlassDialogActions
 import org.codeberg.fitguy.nofud.ui.components.InAppCameraCaptureDialog
@@ -466,14 +467,18 @@ fun HomeScreen(container: AppContainer) {
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
             onCopyFromDay = { showCopyFromDay = true },
-            onGrounded = { showGroundedEntry = true },
+            onGrounded = {
+                if (GroundedEntryFeature.ENABLED) {
+                    showGroundedEntry = true
+                }
+            },
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
             onDismiss = { showAddFoodSheet = false }
         )
     }
 
-    if (showGroundedEntry) {
+    if (GroundedEntryFeature.ENABLED && showGroundedEntry) {
         GroundedEntrySheet(
             onDismiss = { showGroundedEntry = false },
             isSubmitting = ui.isEntryAnalysisBusy,
@@ -486,15 +491,17 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    ui.pendingGroundedReview?.let { review ->
-        GroundedCandidateSheet(
-            review = review,
-            onDismiss = vm::dismissGroundedReview,
-            isSubmitting = ui.isEntryAnalysisBusy,
-            onConfirm = { selected, grams ->
-                vm.resolveGroundedChoices(selected, grams)
-            },
-        )
+    if (GroundedEntryFeature.ENABLED) {
+        ui.pendingGroundedReview?.let { review ->
+            GroundedCandidateSheet(
+                review = review,
+                onDismiss = vm::dismissGroundedReview,
+                isSubmitting = ui.isEntryAnalysisBusy,
+                onConfirm = { selected, grams ->
+                    vm.resolveGroundedChoices(selected, grams)
+                },
+            )
+        }
     }
 
     if (showCustomWaterLog) {

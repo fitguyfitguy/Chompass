@@ -338,7 +338,6 @@ class FoodAnalysisService(
             Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated total weight in grams. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
             unit_options is required when the text names an obvious non-gram serving unit, and optional otherwise. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. Do not copy any sample number; use the quantity stated or clearly implied by the meal. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
-            Quantity rules: Honor explicit amounts (g, ml, tbsp, tsp, scoop, slice, piece, cup). Do not inflate "2 tbsp hummus" or "1 scoop whey" into a large bowl/shake. For branded or packaged product names, prefer that product's labeled nutrition when known. If amount is unspecified, use one typical labeled serving (not a large restaurant portion) and set serving_size_grams accordingly.
             For "emoji" pick the single most specific food emoji that depicts this dish — e.g. 🥚 for eggs, 🍕 for pizza, 🍎 for an apple, 🥗 for a salad, 🍔 for a burger, 🍜 for ramen, 🍰 for cake, 🥑 for avocado, ☕ for coffee, 🍣 for sushi. Only fall back to 🍽️ when the food truly cannot be represented by any specific emoji. Use null for any nutrient you cannot estimate.
         """.trimIndent()
         val raw = callAi(prompt, null, op = "analyzeText", onProgress = onProgress)
@@ -355,7 +354,6 @@ class FoodAnalysisService(
             Analyze this image. It could be either a photo of food OR a nutrition facts label.
 
             If it's a food photo: identify the food and estimate nutritional content for the serving shown.
-            Portion rules for food photos: Estimate only food clearly visible. Do not invent typical sides, drinks, bread, or garnishes that are not visible. Size from what you see (plate fill, piece count, height) rather than a generic restaurant "full plate" prior when they disagree. Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin. For whole cakes/pies/pizzas estimate the whole visible item; for a single slice estimate only that slice.
             If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
 
             Respond ONLY with JSON:
@@ -383,10 +381,10 @@ class FoodAnalysisService(
             Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated weight in grams of the serving shown. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
             unit_options is required for obvious non-gram units visible in the food — almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
-            Portion rules: Estimate only food clearly visible or named by the user. Do not invent typical sides, drinks, bread, or garnishes that are not visible. Size from what you see (plate fill, piece count, height); prefer the visible amount over a generic restaurant "full plate" prior when they disagree. Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin. For whole/mostly-whole cakes, pizzas, pies, loaves, or similar foods, estimate the total visible item/remaining item weight rather than defaulting to one slice; for a single slice estimate only that slice. Use null for any nutrient you cannot estimate.
+            Give your best estimate for the visible food amount shown in the image. For whole/mostly-whole cakes, pizzas, pies, loaves, or similar foods, estimate the total visible item/remaining item weight rather than defaulting to one slice. Use null for any nutrient you cannot estimate.
         """.trimIndent()
         if (!description.isNullOrBlank()) {
-            prompt += "\n\nAdditional context from the user about this meal: $description\nPrefer the user's stated amounts and ingredients over visual defaults when they conflict. Use this context to improve accuracy of identification, portion size, and nutrition estimates."
+            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
         val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
@@ -408,10 +406,10 @@ class FoodAnalysisService(
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
             unit_options is required for obvious non-gram units visible in the food, almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
             Do not double-count the meal across images. Treat the photos as multiple views of the same item unless there are clearly separate foods.
-            Portion rules: Estimate only food clearly visible or named by the user. Do not invent typical sides, drinks, bread, or garnishes that are not visible. Size from what you see rather than a generic restaurant "full plate" prior when they disagree. Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin. Use null for any nutrient you cannot estimate.
+            Use null for any nutrient you cannot estimate.
         """.trimIndent()
         if (!description.isNullOrBlank()) {
-            prompt += "\n\nAdditional context from the user about this meal: $description\nPrefer the user's stated amounts and ingredients over visual defaults when they conflict. Use this context to improve accuracy of identification, portion size, and nutrition estimates."
+            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
@@ -462,6 +460,77 @@ class FoodAnalysisService(
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         return PerfLog.measure("recognizeFood", "parse", "chars=${raw.length}") {
             FoodJsonParser.parseRecognition(raw)
+        }
+    }
+
+    /**
+     * True when the selected primary provider can run the grounded tool loop
+     * (cloud BYOK). On-device falls back to deterministic retrieve/rank.
+     */
+    suspend fun supportsGroundedToolLoop(): Boolean {
+        if (callAiDelegate != null) return false
+        val primary = prefs!!.selectedAIProvider.first()
+        return primary.apiFormat != AIProvider.ApiFormat.ON_DEVICE
+    }
+
+    /**
+     * Bounded tool-use grounding: model searches USDA/history/barcode then
+     * calls finalize_grounding. Nutrients are not invented in the loop.
+     */
+    suspend fun runGroundedToolLoop(
+        tools: org.codeberg.fitguy.nofud.services.grounding.GroundingTools,
+        userMessage: String,
+        imageBytesList: List<ByteArray> = emptyList(),
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): GroundedToolLoop.LoopResult {
+        if (callAiDelegate != null) {
+            throw AiError.Api("Grounded tool loop requires a live AI provider.")
+        }
+        val primary = prefs!!.selectedAIProvider.first()
+        if (primary.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
+            throw AiError.Api("Grounded tool loop is not available for on-device models.")
+        }
+        val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
+        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() } ?: primary.baseUrl
+        val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
+        if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
+        val maxTokens = prefs.maxResponseTokens.first()
+        val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
+        val httpClient = AiHttp.clientForProvider(okHttp, primary, readTimeoutSeconds)
+        val context = prefs.userContext.first()
+        val languageLine = nonEnglishResponseLanguage()?.let {
+            "Write human-readable meal/component names in $it when natural. Keep tool JSON keys and source_id values unchanged.\n\n"
+        } ?: ""
+        val contextLine = if (context.isNotBlank()) "User context: $context\n\n" else ""
+        val message = languageLine + contextLine + userMessage
+        return try {
+            GroundedToolLoop.run(
+                client = httpClient,
+                provider = primary,
+                model = primaryModel,
+                baseUrl = primaryBaseUrl,
+                apiKey = primaryKey,
+                maxTokens = maxTokens,
+                tools = tools,
+                userMessage = message,
+                imageBytesList = imageBytesList,
+                onProgress = onProgress,
+            )
+        } catch (primaryError: Throwable) {
+            val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
+            val fallbackClient = AiHttp.clientForProvider(okHttp, fallback.provider, readTimeoutSeconds)
+            GroundedToolLoop.run(
+                client = fallbackClient,
+                provider = fallback.provider,
+                model = fallback.model,
+                baseUrl = fallback.baseUrl,
+                apiKey = fallback.apiKey,
+                maxTokens = maxTokens,
+                tools = tools,
+                userMessage = message,
+                imageBytesList = imageBytesList,
+                onProgress = onProgress,
+            )
         }
     }
 

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.WaterDrop
+import org.codeberg.fitguy.nofud.services.grounding.GroundedEntryFeature
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -235,18 +236,20 @@ internal fun AddFoodSheetContent(
                     onClick = onCopyFromDay,
                 )
             }
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                AddFoodActionTile(
-                    label = stringResource(R.string.home_menu_grounded),
-                    icon = Icons.Filled.Science,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onGrounded,
-                )
-                Spacer(Modifier.weight(1f))
+            if (GroundedEntryFeature.ENABLED) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_grounded),
+                        icon = Icons.Filled.Science,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onGrounded,
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
             }
         }
         if (waterTrackingEnabled) {

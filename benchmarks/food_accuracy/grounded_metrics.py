@@ -31,6 +31,8 @@ def score_trace(rows: list[dict]) -> dict:
     fallbacks = sum(1 for r in rows if r.get("source_kind") == "modelEstimate")
     corrections = sum(1 for r in rows if r.get("user_corrected"))
     latencies = [r["latency_ms"] for r in rows if r.get("latency_ms") is not None]
+    tool_rounds = [r["tool_rounds"] for r in rows if r.get("tool_rounds") is not None]
+    search_counts = [r["search_usda_count"] for r in rows if r.get("search_usda_count") is not None]
     return {
         "n": len(rows),
         "identity_top1_rate": identity_hits / len(rows),
@@ -43,6 +45,8 @@ def score_trace(rows: list[dict]) -> dict:
         "fallback_rate": fallbacks / len(rows),
         "correction_rate": corrections / len(rows),
         "mean_latency_ms": statistics.mean(latencies) if latencies else None,
+        "mean_tool_rounds": statistics.mean(tool_rounds) if tool_rounds else None,
+        "mean_search_usda_count": statistics.mean(search_counts) if search_counts else None,
         "asset_bytes": rows[0].get("asset_bytes"),
     }
 

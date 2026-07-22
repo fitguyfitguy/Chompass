@@ -46,7 +46,22 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
 
 ## Grounded metrics (identity / source / portion)
 
-See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md). Score a JSONL recognition+lookup trace:
+See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md) (experimental; **UI disabled** until readiness checklist).
+
+**Full grounded eval** (tool loop → USDA SQLite lookup → score):
+
+```bash
+uv run python benchmarks/food_accuracy/run_grounded_eval.py \
+  --provider openrouter --model google/gemini-3.5-flash-lite \
+  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+  --usda-db android/app/src/main/assets/usda/usda_foods.sqlite \
+  --sleep 6 --retries 2 \
+  --out benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
+```
+
+Legacy recognize → lexical top-1: add `--legacy-top1`.
+
+Score a pre-made JSONL recognition+lookup trace:
 
 ```bash
 uv run python benchmarks/food_accuracy/grounded_metrics.py \
