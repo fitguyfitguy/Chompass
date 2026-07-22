@@ -53,8 +53,9 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 7. **Lab overhead (Nutrition5k) is only mildly easier than phone meals.** Cursory n=15 overhead RGB + Gemma compact: WMAPE **34.7%**, ±20% **40%**, mae kcal **80**, parse **100%**. Better than JFB (~40% WMAPE) but still far from text (~6%). Error is not “messy phone photo” alone — portion/macro estimation stays hard even with clean top-down plates.
 8. **Simple JFB descriptions do not help Gemma compact macros.** Paired L0/L1/L2 on JFB 50 (pinned Gemma 26B, `compact`): L0 image-only WMAPE **41.8%** / ±20% **28%** beats L1 meal title (**44.9%**) and L2 ingredient names (**45.8%** / ±20% **22%**). All 100% parse.
 9. **`production_image` + L1 meal title still loses.** Same Gemma pin: WMAPE **47.3%**, parse **96%**, ±20% **23%**, ~15 s — worse than L1 compact (44.9%) and L0 compact (41.8%). App-parity prompt does not rescue short-note context on free Gemma.
-10. **Paid VL ceiling is better but still hard.** `openai/gpt-4o-mini` + compact on L0: WMAPE **34.5%**, ±20% **50%**, mae kcal **130**, parse **100%**, ~3.5 s. Beats free Gemma by ~7 pp WMAPE / +22 pp within-20%, but remains far from text (~6%). Plate estimation is not only a free-model limit.
+10. **Paid VL ceiling is better but still hard.** Best so far: `google/gemini-3.6-flash` L0 compact — WMAPE **32.3%**, ±20% **50%**, mae kcal **123**, ~5 s. Then `openai/gpt-4o-mini` **34.5%** / 50% / ~3.5 s, then `google/gemini-3.5-flash-lite` **35.9%** / 40% / **~1.6 s**. All beat free Gemma (~42%) by ~6–10 pp WMAPE; still far from text (~6%). Plate estimation is not only a free-model limit.
 11. **Cold `nofud/free` image baseline is solid.** Fresh L0 run: parse **100%**, WMAPE **41.1%**, ±20% **32%** — matches pinned Gemma (~41.8%) within noise; no content-safety fails.
+12. **No OpenRouter `gemini-3.6-flash-lite`.** Lite sibling is `google/gemini-3.5-flash-lite`; full Flash is `google/gemini-3.6-flash`.
 
 ---
 
@@ -107,10 +108,12 @@ Same 50 IDs; only user `text` differs. L1 = meal title; L2 = ingredient names (n
 | Run | Model | prompt | parse_ok | WMAPE | mae kcal | within 20% | mean latency | Notes |
 |-----|-------|--------|----------|-------|----------|------------|--------------|-------|
 | `image_text_ab/l1_meal_name_production_image` | Gemma 4 26B :free | production_image | 96% | 47.3% | 184 | 23% | ~15 s | L1 + app prompt; worse than L1 compact |
-| `image_text_ab/l0_gpt4o_mini` | `openai/gpt-4o-mini` | compact | **100%** | **34.5%** | **130** | **50%** | **~3.5 s** | **Best plate so far**; still ≫ text |
+| `image_text_ab/l0_gemini36_flash` | `google/gemini-3.6-flash` | compact | **100%** | **32.3%** | **123** | **50%** | ~5.1 s | **Best plate so far** |
+| `image_text_ab/l0_gpt4o_mini` | `openai/gpt-4o-mini` | compact | 100% | 34.5% | 130 | 50% | ~3.5 s | Strong paid baseline |
+| `image_text_ab/l0_gemini35_flash_lite` | `google/gemini-3.5-flash-lite` | compact | 100% | 35.9% | 137 | 40% | **~1.6 s** | Cheapest/fastest paid; close to mini |
 | `baseline_image_nofud_free_compact_cold` | `nofud/free` | compact | **100%** | **41.1%** | **152** | **32%** | ~16 s | Cold free-router L0; ≈ Gemma pin |
 
-**Follow-up ranking:** gpt-4o-mini ≫ nofud/free ≈ Gemma L0 ≫ L1 compact ≫ L1 production_image.
+**Paid L0 ranking:** Gemini 3.6 Flash ≥ gpt-4o-mini ≥ Gemini 3.5 Flash-Lite ≫ nofud/free ≈ Gemma free.
 
 ### Image (Nutrition5k overhead RGB, cursory)
 
@@ -145,9 +148,9 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 - [x] Nutrition5k overhead RGB **cursory** (n=15, Gemma compact) — WMAPE ~35%; lab plates still hard
 - [x] Image+text with **`production_image`** on L1 — worse than L1 compact (47.3% vs 44.9% WMAPE)
 - [x] Paid VL ceiling (`gpt-4o-mini` L0) — WMAPE **34.5%** / ±20% **50%**; better than free, still hard
+- [x] Gemini paid L0 (`3.5-flash-lite` **35.9%**, `3.6-flash` **32.3%**) — 3.6 Flash is current plate leader
 - [ ] Nutrition5k larger slice (n≥50) if model A/B needs a second image distribution
-- [ ] gpt-4o-mini on L1 meal title (does paid VL use short notes better than Gemma?)
-- [ ] Stronger paid VL (e.g. gpt-4o / Gemini Flash) vs gpt-4o-mini ceiling
+- [ ] Best paid pin on L1 meal title (does short note help Gemini 3.6 / gpt-4o-mini?)
 - [ ] Nutrition-label OCR track (Open Food Facts)
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
 - [ ] Port compact text path into [`FoodAnalysisService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt) only after a deliberate product decision
@@ -158,27 +161,20 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 ## Suggested next runs
 
 ```bash
-# 1) Does paid VL benefit from a short meal title?
+# 1) Does the plate leader benefit from a short meal title?
 uv run python benchmarks/food_accuracy/run_eval.py \
-  --provider openrouter --model openai/gpt-4o-mini \
-  --prompt compact --sleep 5 --retries 2 \
+  --provider openrouter --model google/gemini-3.6-flash \
+  --prompt compact --sleep 3 --retries 2 \
   --manifest benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
-  --out benchmarks/food_accuracy/results/image_text_ab/l1_gpt4o_mini
+  --out benchmarks/food_accuracy/results/image_text_ab/l1_gemini36_flash
 
-# 2) Higher paid ceiling (optional)
-uv run python benchmarks/food_accuracy/run_eval.py \
-  --provider openrouter --model openai/gpt-4o \
-  --prompt compact --sleep 5 --retries 2 \
-  --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
-  --out benchmarks/food_accuracy/results/image_text_ab/l0_gpt4o
-
-# 3) Nutrition5k n≥50 with best pin so far (gpt-4o-mini or Gemma)
+# 2) Nutrition5k n≥50 with current best pin
 uv run python benchmarks/food_accuracy/download_nutrition5k.py --limit 50
 uv run python benchmarks/food_accuracy/run_eval.py \
-  --provider openrouter --model openai/gpt-4o-mini \
-  --prompt compact --sleep 5 --retries 2 \
+  --provider openrouter --model google/gemini-3.6-flash \
+  --prompt compact --sleep 3 --retries 2 \
   --manifest benchmarks/food_accuracy/data/manifests/n5k.jsonl \
-  --out benchmarks/food_accuracy/results/n5k_gpt4o_mini_compact
+  --out benchmarks/food_accuracy/results/n5k_gemini36_flash_compact
 ```
 
 ---
