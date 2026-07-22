@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">你的计划会根据记录每周自动调整 - 想保持不变，可在设置中关闭 Adaptive Goals。</string>
     <string name="onboarding_feature_snap">拍张照片 - AI 帮你记录</string>
     <string name="onboarding_feature_coach">了解你数据的教练</string>
-    <string name="onboarding_feature_library">870+ 动作练习库</string>
+    <string name="onboarding_feature_library">通过 Health Connect 连接体脂秤与可穿戴设备</string>
     <string name="onboarding_feature_widgets">主屏幕小组件</string>
-    <string name="whats_new_v30_workouts">全新“锻炼”标签页 - 浏览 873 个动作，配照片、肌群和器械筛选、搜索及详情页。</string>
+    <string name="whats_new_v30_workouts">“锻炼”标签页已移除。</string>
     <string name="whats_new_v30_home">主页焕新：仪表盘式卡路里表、竖向宏量条、四张营养卡片和悬浮添加按钮。</string>
     <string name="whats_new_v30_coach_voice">用新的内置录音条向教练语音提问。</string>
     <string name="whats_new_v30_share">把任意一餐分享为链接，在 iPhone 或 Android 上直接打开 NoFUD。</string>

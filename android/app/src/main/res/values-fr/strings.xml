@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">Votre plan s\'ajuste automatiquement chaque semaine selon vos repas - désactivez Adaptive Goals dans Réglages pour le garder fixe.</string>
     <string name="onboarding_feature_snap">Prenez une photo - l\'IA l\'enregistre</string>
     <string name="onboarding_feature_coach">Un coach qui connaît vos données</string>
-    <string name="onboarding_feature_library">Bibliothèque de 870+ exercices</string>
+    <string name="onboarding_feature_library">Health Connect pour balances et wearables</string>
     <string name="onboarding_feature_widgets">Widgets d\'écran d\'accueil</string>
-    <string name="whats_new_v30_workouts">Nouvel onglet Entraînements - parcourez 873 exercices avec photos, filtres par muscle et équipement, recherche et pages de détail.</string>
+    <string name="whats_new_v30_workouts">L\'onglet Entraînements a été retiré.</string>
     <string name="whats_new_v30_home">Refonte de l\'accueil : compteur de calories façon tachymètre, barres de macros verticales, quatre cartes de nutriments et un bouton d\'ajout flottant.</string>
     <string name="whats_new_v30_coach_voice">Interrogez le Coach à la voix avec le nouvel enregistreur intégré.</string>
     <string name="whats_new_v30_share">Partagez un repas sous forme de lien qui s\'ouvre directement dans NoFUD, sur iPhone ou Android.</string>

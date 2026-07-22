@@ -4,15 +4,7 @@ import kotlinx.serialization.Serializable
 import java.time.Instant
 import java.util.UUID
 
-/**
- * Single body-fat reading at a point in time. Mirrors WeightEntry — stored in
- * BodyFatRepository, persisted via PreferencesStore as a JSON list, and (when
- * Health Connect is wired up later) bidirectionally synced to HC.
- *
- * The latest entry's value also becomes the user's "current" body fat %, kept
- * in sync with UserProfile.bodyFatPercentage so Katch-McArdle BMR re-evaluates
- * after every new reading.
- */
+/** Single body-fat reading (fraction 0–1). Latest value syncs to UserProfile.bodyFatPercentage. */
 @Serializable
 data class BodyFatEntry(
     @Serializable(with = UuidSerializer::class)

@@ -16,9 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Man
+import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material.icons.outlined.Woman
@@ -93,7 +93,7 @@ internal fun WelcomeStep() {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             WelcomeFeatureRow(Icons.Outlined.PhotoCamera, stringResource(R.string.onboarding_feature_snap))
             WelcomeFeatureRow(Icons.Outlined.Forum, stringResource(R.string.onboarding_feature_coach))
-            WelcomeFeatureRow(Icons.Outlined.FitnessCenter, stringResource(R.string.onboarding_feature_library))
+            WelcomeFeatureRow(Icons.Outlined.MonitorHeart, stringResource(R.string.onboarding_feature_library))
             WelcomeFeatureRow(Icons.Outlined.Widgets, stringResource(R.string.onboarding_feature_widgets))
         }
     }

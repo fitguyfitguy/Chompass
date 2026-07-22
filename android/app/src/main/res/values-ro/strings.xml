@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">Planul tău se ajustează automat săptămânal pe măsură ce înregistrezi - dezactivează Adaptive Goals din Setări pentru a-l păstra fix.</string>
     <string name="onboarding_feature_snap">Fă o poză - IA o înregistrează</string>
     <string name="onboarding_feature_coach">Antrenor care îți cunoaște datele</string>
-    <string name="onboarding_feature_library">Bibliotecă cu 870+ exerciții</string>
+    <string name="onboarding_feature_library">Health Connect pentru cântare și wearables</string>
     <string name="onboarding_feature_widgets">Widgeturi pe ecranul principal</string>
-    <string name="whats_new_v30_workouts">Filă nouă Antrenamente - răsfoiește 873 de exerciții cu fotografii, filtre după mușchi și echipament, căutare și pagini de detalii.</string>
+    <string name="whats_new_v30_workouts">Fila Antrenamente a fost eliminată.</string>
     <string name="whats_new_v30_home">Ecran principal reproiectat: vitezometru pentru calorii, bare verticale de macronutrienți, patru carduri de nutrienți și un buton plutitor de adăugare.</string>
     <string name="whats_new_v30_coach_voice">Întreabă Coach-ul cu vocea, cu noul recorder integrat.</string>
     <string name="whats_new_v30_share">Trimite orice masă ca link care se deschide direct în NoFUD - pe iPhone sau Android.</string>

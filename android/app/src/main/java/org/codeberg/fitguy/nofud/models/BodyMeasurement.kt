@@ -7,15 +7,7 @@ import java.util.Locale
 import java.util.UUID
 import kotlin.math.log10
 
-/**
- * One set of tape-measure circumferences logged at a point in time. Every site is optional — the
- * user logs only what they want. Stored internally in centimetres (display converts to inches when
- * the app is in imperial mode), mirroring how WeightEntry stores kg regardless of display unit.
- *
- * The derived metrics (waist-to-hip, waist-to-height, US-Navy body-fat %, wrist frame size) are
- * computed on the fly from this entry plus the profile's height + gender. Nothing here is written
- * back to UserProfile — these are purely extra signal for the AI goal calc and the Coach.
- */
+/** Tape circumferences at one timestamp; stored in cm. Derived ratios are computed, not persisted. */
 @Serializable
 data class BodyMeasurement(
     @Serializable(with = UuidSerializer::class)
@@ -31,7 +23,7 @@ data class BodyMeasurement(
     val calfCm: Double? = null,
     val wristCm: Double? = null
 ) {
-    /** True when at least one circumference is present — an empty entry is meaningless. */
+    /** True when at least one circumference is set. */
     val hasAnyValue: Boolean
         get() = listOf(neckCm, waistCm, hipsCm, chestCm, upperArmCm, thighCm, calfCm, wristCm)
             .any { it != null }

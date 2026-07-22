@@ -22,7 +22,7 @@ cp keystore.properties.template keystore.properties
 
 ## Build and package
 
-One command runs tests, checks bundled exercise images, builds release APKs, copies 4 APKs to the repo root, and writes `SHA256SUMS`:
+One command runs tests, builds release APKs, copies 4 APKs to the repo root, and writes `SHA256SUMS`:
 
 ```bash
 devenv tasks run release:package

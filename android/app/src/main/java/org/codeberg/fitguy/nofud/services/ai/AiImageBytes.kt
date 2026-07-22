@@ -4,16 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.io.ByteArrayOutputStream
 
-/**
- * Downscale oversized camera/gallery JPEGs before vision-model API calls so
- * uploads stay smaller (faster TTFB, less mobile data). Images already within
- * [UPLOAD_MAX_DIMENSION] are sent unchanged — no extra JPEG generation loss.
- * Full-resolution bytes are still stored locally via [org.codeberg.fitguy.nofud.services.FoodImageStore].
- *
- * Note: Gemini vision token cost is driven by [media resolution / pixel budget on
- * the API side](https://ai.google.dev/gemini-api/docs/media-resolution), not raw
- * file size. This helper does not change RPM/RPD rate limits.
- */
+/** Downscale oversized JPEGs before vision API upload; local full-res storage is unchanged. */
 object AiImageBytes {
     const val UPLOAD_MAX_DIMENSION = 1600
     const val UPLOAD_JPEG_QUALITY = 78
