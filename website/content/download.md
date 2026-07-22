@@ -1,10 +1,10 @@
 ---
 title: Download
-description: Install NoFUD from Obtainium or Codeberg Releases. Android only — not on Play Store or F-Droid yet.
+description: Install NoFUD from Obtainium or Codeberg Releases. Android only — not on the Play Store. F-Droid metadata submitted.
 layout: single
 ---
 
-Not on the Play Store or F-Droid yet. Pick one of these install paths.
+Not on the Play Store. F-Droid metadata is submitted; until the package appears in the F-Droid client, install from Obtainium or Codeberg Releases.
 
 ## Obtainium (recommended)
 
@@ -14,16 +14,22 @@ Or paste `https://codeberg.org/fitguy/nofud` into Obtainium’s **Add App** scre
 
 ## Direct APK
 
-Download from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases).
+Latest **arm64** (most phones): [NoFUD-fdroid-{{< site_version >}}-arm64-v8a.apk]({{< arm64_apk_url >}}) ({{< apk_arm64_note >}}).
 
-| APK | Use when | Size (v1.14.8) |
+All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases) (v{{< site_version >}}).
+
+| APK | Use when | Size (v{{< site_version >}}) |
 |-----|----------|----------------|
-| **arm64-v8a** | Most modern phones | ~15 MiB |
+| **arm64-v8a** | Most modern phones | {{< apk_arm64_note >}} |
 | **armeabi-v7a** | Older 32-bit devices | ~6 MiB |
 | **x86_64** | Emulators or Chromebooks | ~16 MiB |
-| **universal** | Only when unsure | ~27 MiB |
+| **universal** | Only when unsure | {{< apk_universal_note >}} |
 
 Package ID: `org.codeberg.fitguy.nofud`
+
+## F-Droid
+
+Package `org.codeberg.fitguy.nofud` — [expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed.
 
 ## After install
 

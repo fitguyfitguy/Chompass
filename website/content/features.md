@@ -46,7 +46,7 @@ NoFUD started when upstream [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-a
 
 - **No ads, no analytics** — never shipped AdMob; no tracking SDKs
 - **FOSS barcode** — on-device scanning via zxing-cpp, not proprietary ML Kit
-- **Lean APK** — no workouts tab or bundled exercise library (~15 MiB arm64 / ~27 MiB universal in v1.14.8, vs ~120 MB upstream with workouts)
+- **Lean APK** — no workouts tab or bundled exercise library ({{< apk_arm64_note >}} arm64 / {{< apk_universal_note >}} universal in v{{< site_version >}}, vs ~120 MB upstream with workouts)
 - **Open data** — export diary and body metrics; import JSON, CSV, openScale, Health Connect
 - **Android-first** — Material 3 UI, widgets, customizable home nutrients and meal times
 

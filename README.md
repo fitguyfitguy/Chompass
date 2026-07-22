@@ -4,11 +4,7 @@
 
 **Ad-free AI calorie tracker for Android.** Cloud BYOK or opt-in on-device Gemma 4 inference. Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai). Lean app, open exports, Health Connect for scales and wearables.
 
-NoFUD started in July 2026 when upstream Fud AI [added banner ads (AdMob)](https://github.com/apoorvdarshan/fud-ai/releases). Upstream removed ads again in 3.0.3. This fork keeps its own roadmap: Android-first UX, smaller APK (no workout library or ad SDKs), snappier UI, open export/import, and [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for live data from scales, phones, and wearables.
-
-Snap, speak, scan, share, or type your food with cloud AI (your own provider key) or opt-in on-device inference with Gemma 4 Edge models. Food text and photos stay on your phone.
-
-**Cloud (BYOK):** same model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). **On-Device (Private):** Settings → AI Provider → download Gemma 4 once (~2.4–3.4 GB); no API key, no server upload for food analysis. No account, no cloud sync. No banner ads in NoFUD.
+**[Website](https://fitguy.codeberg.page/NoFUD/)** · **[Install](https://fitguy.codeberg.page/NoFUD/download/)** (Obtainium / APK) · **[Privacy](PRIVACY.md)**
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
 [![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
@@ -21,9 +17,15 @@ Snap, speak, scan, share, or type your food with cloud AI (your own provider key
 > **Project home:** [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD)  
 > **Website:** [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/)
 
+NoFUD started in July 2026 when upstream Fud AI [added banner ads (AdMob)](https://github.com/apoorvdarshan/fud-ai/releases). Upstream removed ads again in 3.0.3. This fork keeps its own roadmap: Android-first UX, smaller APK (no workout library or ad SDKs), snappier UI, open export/import, and [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for live data from scales, phones, and wearables.
+
+Snap, speak, scan, share, or type your food with cloud AI (your own provider key) or opt-in on-device inference with Gemma 4 Edge models. Food text and photos stay on your phone.
+
+**Cloud (BYOK):** same model as Fud AI: the app is free, you supply a provider key (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use). **On-Device (Private):** Settings → AI Provider → download Gemma 4 once (~2.4–3.4 GB); no API key, no server upload for food analysis. No account, no cloud sync. No banner ads in NoFUD.
+
 ## Get started
 
-Not on Play Store or F-Droid yet. Install from one of these:
+Not on the Play Store. F-Droid metadata is submitted; until the package appears in the F-Droid client, install from Obtainium or Codeberg Releases.
 
 [![Get it on Obtainium](https://img.shields.io/badge/Get%20it%20on-Obtainium-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud)
 
@@ -32,6 +34,7 @@ Not on Play Store or F-Droid yet. Install from one of these:
 | **Obtainium** *(recommended)* | Tap the banner above, then confirm in Obtainium |
 | **Direct APK** | Download from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases) |
 | **Manual Obtainium add** | Paste `https://codeberg.org/fitguy/nofud` into Obtainium's **Add App** screen |
+| **F-Droid** | Package `org.codeberg.fitguy.nofud` — [expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed |
 
 > **Which APK?** Use `arm64-v8a` on most modern phones, `armeabi-v7a` on older 32-bit devices, and `x86_64` on emulators or Chromebooks. Use the universal APK only when unsure.
 
@@ -49,6 +52,10 @@ Material 3 **dark theme** (light theme is also available). Images in [`docs/scre
     <td align="center">
       <img src="docs/screenshots/home.png" width="200" alt="Home screen in dark theme" /><br />
       <sub><b>Home</b>: calorie ring, macro bars, today's meal log</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/home-light.png" width="200" alt="Home screen in light theme" /><br />
+      <sub><b>Home (light)</b>: same dashboard in light theme</sub>
     </td>
     <td align="center">
       <img src="docs/screenshots/progress.png" width="200" alt="Progress screen in dark theme" /><br />
@@ -102,7 +109,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 
 **UX, size, speed**
 
-- **APK:** ~15 MiB arm64 / ~27 MiB universal (v1.14.8) vs ~120 MB upstream with workouts ([releases](https://codeberg.org/fitguy/NoFUD/releases))
+- **APK:** ~15 MiB arm64 / ~27 MiB universal (v1.14.9) vs ~120 MB upstream with workouts ([releases](https://codeberg.org/fitguy/NoFUD/releases))
 - **Responsiveness:** monthly diary buckets, off-main-thread thumbnails, phased AI progress UI
 - **UI:** Material 3, `AddFoodSheet`, customizable home nutrients and meal times, macro remaining/over, multi-photo flow
 - **Extras:** keto/diet modes, fallback AI provider, audited nutrition math

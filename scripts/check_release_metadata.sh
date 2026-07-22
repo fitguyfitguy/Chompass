@@ -6,6 +6,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GRADLE_FILE="$ROOT/android/app/build.gradle.kts"
 CHANGELOG="$ROOT/CHANGELOG.md"
 FDROID_YML="$ROOT/fdroid/org.codeberg.fitguy.nofud.yml"
+HUGO_TOML="$ROOT/website/hugo.toml"
 
 read_gradle_value() {
   local key="$1"
@@ -35,6 +36,16 @@ fi
 
 if [[ "$FDROID_CODE" != "$VERSION_CODE" ]]; then
   echo "fdroid metadata CurrentVersionCode (${FDROID_CODE:-<missing>}) != build.gradle versionCode (${VERSION_CODE})" >&2
+  exit 1
+fi
+
+HUGO_VERSION="$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*'\''\(.*\)'\''/\1/p' "$HUGO_TOML" | head -1)"
+if [[ -z "$HUGO_VERSION" ]]; then
+  HUGO_VERSION="$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' "$HUGO_TOML" | head -1)"
+fi
+
+if [[ "$HUGO_VERSION" != "$VERSION_NAME" ]]; then
+  echo "website/hugo.toml version (${HUGO_VERSION:-<missing>}) != build.gradle versionName (${VERSION_NAME})" >&2
   exit 1
 fi
 

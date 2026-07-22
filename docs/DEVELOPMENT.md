@@ -72,7 +72,14 @@ First launch walks through onboarding. A free Gemini key is available at https:/
 
 Hugo site sources live in [`website/`](../website/). Screenshots are mounted from [`screenshots/`](screenshots/) at build time. Live URL: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
 
-**No Forgejo Actions runner required.** Deploy is local Hugo build + force-push to an orphan `pages` branch; Codeberg Pages picks it up via a repo webhook ([docs](https://docs.codeberg.org/codeberg-pages/)).
+Outreach checklist (AlternativeTo, Lemmy, etc.): [`WEB_PRESENCE.md`](WEB_PRESENCE.md).
+
+### Codeberg repo settings (manual)
+
+In the Codeberg UI under **Settings**:
+
+1. **Website** (or project description link): `https://fitguy.codeberg.page/NoFUD/`
+2. **Topics** (suggested): `android`, `calorie-tracker`, `privacy`, `foss`, `health-connect`, `keto`
 
 ### Preview / build
 
@@ -83,6 +90,8 @@ site-build   # writes website/public/
 devenv tasks run site:serve
 devenv tasks run site:build
 ```
+
+Keep `website/hugo.toml` `params.version` in sync with `versionName` in `android/app/build.gradle.kts` (`devenv tasks run release:check-metadata` verifies this).
 
 ### One-time webhook (Codeberg UI)
 
@@ -111,6 +120,12 @@ git remote set-url origin ssh://git@codeberg-fitguy/fitguy/nofud.git
 ```
 
 Update product copy in `website/content/` when messaging changes, then run `deploy_pages.sh` again.
+
+Regenerate the social card after logo changes:
+
+```bash
+uv run --with pillow python scripts/generate_og_image.py
+```
 
 ## App icon
 

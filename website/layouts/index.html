@@ -27,7 +27,7 @@
     <li><strong>No ads</strong><span>Never shipped AdMob</span></li>
     <li><strong>On-device AI</strong><span>Opt-in Gemma&nbsp;4 Edge</span></li>
     <li><strong>Health Connect</strong><span>Scales &amp; wearables</span></li>
-    <li><strong>~15&nbsp;MiB</strong><span>arm64 APK (v1.14.8)</span></li>
+    <li><strong>{{ .Site.Params.apkArm64Note }}</strong><span>arm64 APK (v{{ .Site.Params.version }})</span></li>
   </ul>
 </section>
 
@@ -39,6 +39,7 @@
   <div class="shots__grid">
     {{ range slice
       (dict "src" "screenshots/home.png" "alt" "Home: calorie ring and meal log" "label" "Home")
+      (dict "src" "screenshots/home-light.png" "alt" "Home in light theme" "label" "Home (light)")
       (dict "src" "screenshots/add-food.png" "alt" "Add food sheet with photo and AI options" "label" "Add food")
       (dict "src" "screenshots/progress.png" "alt" "Progress charts for weight and body fat" "label" "Progress")
       (dict "src" "screenshots/coach.png" "alt" "AI Coach chat" "label" "Coach")
