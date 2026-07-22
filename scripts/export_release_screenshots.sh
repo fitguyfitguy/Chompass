@@ -79,9 +79,10 @@ declare -a RELEASE_EXPORTS=(
   "AddFoodDarkScreenshot_10-add-food-dark|10-add-food-dark.png"
 )
 
-# Dark-mode previews only — embedded in README.md
+# Dark-mode previews plus one light home shot — embedded in README / site gallery
 declare -a README_EXPORTS=(
   "HomeDarkScreenshot_05-home-dark|home.png"
+  "HomeLightScreenshot_01-home-light|home-light.png"
   "ProgressDarkScreenshot_06-progress-dark|progress.png"
   "AddFoodDarkScreenshot_10-add-food-dark|add-food.png"
   "CoachDarkScreenshot_08-coach-dark|coach.png"

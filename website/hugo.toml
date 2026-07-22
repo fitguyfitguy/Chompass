@@ -2,11 +2,14 @@ baseURL = 'https://fitguy.codeberg.page/NoFUD/'
 locale = 'en-US'
 title = 'NoFUD'
 disableKinds = ['taxonomy', 'term', 'RSS']
-enableRobotsTXT = true
+enableRobotsTXT = false
 summaryLength = 20
 
 [params]
   description = 'Ad-free AI calorie tracker for Android. Cloud BYOK or opt-in on-device Gemma 4. Privacy-focused, no analytics.'
+  version = '1.14.9'
+  apkArm64Note = '~15 MiB'
+  apkUniversalNote = '~27 MiB'
   repo = 'https://codeberg.org/fitguy/NoFUD'
   releases = 'https://codeberg.org/fitguy/nofud/releases'
   obtainium = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud'
