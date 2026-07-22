@@ -25,7 +25,19 @@ def main() -> None:
     base = load_summary(args.baseline)
     cand = load_summary(args.candidate)
 
-    keys = ["wmape", "parse_ok_rate", "mae_calories", "within_20pct_calories_rate"]
+    keys = [
+        "wmape",
+        "parse_ok_rate",
+        "mae_calories",
+        "within_20pct_calories_rate",
+        "sum_prompt_tokens",
+        "sum_completion_tokens",
+        "sum_cached_tokens",
+        "mean_prompt_tokens",
+        "mean_completion_tokens",
+        "cache_hit_rate",
+        "sum_cost",
+    ]
     print(f"baseline:  {args.baseline}")
     print(f"candidate: {args.candidate}\n")
     for key in keys:
