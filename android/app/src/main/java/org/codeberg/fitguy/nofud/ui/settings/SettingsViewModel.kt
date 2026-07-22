@@ -91,7 +91,7 @@ data class SettingsUiState(
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val userContext: String = "",
-    val fallbackEnabled: Boolean = false,
+    val fallbackEnabled: Boolean = true,
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
     val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
     val fallbackApiKeyMasked: String = "",

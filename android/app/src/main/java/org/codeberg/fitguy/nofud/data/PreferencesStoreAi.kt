@@ -97,7 +97,7 @@ internal suspend fun PreferencesStore.setUserContextImpl(value: String) {
     }
 
     // -- Fallback AI Provider --------------------------------------------
-internal val PreferencesStore.fallbackEnabledImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FALLBACK_ENABLED] ?: false }
+internal val PreferencesStore.fallbackEnabledImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FALLBACK_ENABLED] ?: true }
 internal suspend fun PreferencesStore.setFallbackEnabledImpl(v: Boolean) { dataStore.edit { it[Keys.FALLBACK_ENABLED] = v } }
 
 internal val PreferencesStore.selectedFallbackProviderImpl: Flow<AIProvider> get() = dataStore.data.map {
