@@ -1,6 +1,9 @@
 package org.codeberg.fitguy.nofud.services
 
 import org.codeberg.fitguy.nofud.data.PreferencesStore
+import org.codeberg.fitguy.nofud.models.FoodGroundingProvenance
+import org.codeberg.fitguy.nofud.models.NutrientBasis
+import org.codeberg.fitguy.nofud.models.NutrientSourceKind
 import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
@@ -96,9 +99,24 @@ object OpenFoodFactsService {
         }
 
         val servingOption = ServingUnitOption(unit = "serving", gramsPerUnit = servingGrams, quantity = 1.0)
-        return FoodAnalysis(
-            name = productName(product, barcode),
+        val name = productName(product, barcode)
+        val validation = org.codeberg.fitguy.nofud.models.GroundingValidator.validateServing(
+            analysisName = name,
             calories = (calories ?: 0.0).roundToInt(),
+            protein = protein ?: 0.0,
+            carbs = carbs ?: 0.0,
+            fat = fat ?: 0.0,
+            servingGrams = servingGrams,
+            sodiumMg = milligrams(servingValue("sodium")),
+            caloriesPer100g = nutriments.flexibleDouble("energy-kcal_100g")
+                ?: nutriments.flexibleDouble("energy_100g")?.let { it * 0.23900573614 },
+            proteinPer100g = nutriments.flexibleDouble("proteins_100g"),
+            carbsPer100g = nutriments.flexibleDouble("carbohydrates_100g"),
+            fatPer100g = nutriments.flexibleDouble("fat_100g"),
+        )
+        return FoodAnalysis(
+            name = name,
+            calories = validation.correctedCalories ?: (calories ?: 0.0).roundToInt(),
             protein = protein ?: 0.0,
             carbs = carbs ?: 0.0,
             fat = fat ?: 0.0,
@@ -111,7 +129,7 @@ object OpenFoodFactsService {
             monounsaturatedFat = rounded(servingValue("monounsaturated-fat")),
             polyunsaturatedFat = rounded(servingValue("polyunsaturated-fat")),
             cholesterol = milligrams(servingValue("cholesterol")),
-            sodium = milligrams(servingValue("sodium")),
+            sodium = validation.correctedSodiumMg ?: milligrams(servingValue("sodium")),
             potassium = milligrams(servingValue("potassium")),
             transFat = rounded(servingValue("trans-fat")),
             calcium = milligrams(servingValue("calcium")),
@@ -128,7 +146,19 @@ object OpenFoodFactsService {
             omega3 = rounded(servingValue("omega-3-fat")),
             servingUnitOptions = listOf(servingOption),
             selectedServingUnit = servingOption.unit,
-            selectedServingQuantity = 1.0
+            selectedServingQuantity = 1.0,
+            grounding = FoodGroundingProvenance(
+                sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
+                sourceId = barcode,
+                sourceName = name,
+                nutrientBasis = NutrientBasis.PER_SERVING,
+                datasetVersion = "openfoodfacts-live",
+                retrievedAtEpochMs = System.currentTimeMillis(),
+                identityEvidence = "barcode:$barcode",
+                portionEvidence = "serving_quantity=${servingGrams}g",
+                identityConfirmed = true,
+                validationNotes = validation.notes,
+            ),
         )
     }
 

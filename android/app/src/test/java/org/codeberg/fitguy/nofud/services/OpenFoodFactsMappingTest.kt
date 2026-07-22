@@ -2,6 +2,7 @@ package org.codeberg.fitguy.nofud.services
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -41,6 +42,12 @@ class OpenFoodFactsMappingTest {
         assertEquals("serving", food.selectedServingUnit)
         assertEquals(1.0, food.selectedServingQuantity!!, 0.001)
         assertEquals("🏷️", food.emoji)
+        assertNotNull(food.grounding)
+        assertEquals(
+            org.codeberg.fitguy.nofud.models.NutrientSourceKind.OPEN_FOOD_FACTS,
+            food.grounding!!.sourceKind,
+        )
+        assertEquals("3017620422003", food.grounding!!.sourceId)
     }
 
     @Test

@@ -1,5 +1,7 @@
 package org.codeberg.fitguy.nofud.services.ai
 
+import org.codeberg.fitguy.nofud.models.FoodGroundingProvenance
+import org.codeberg.fitguy.nofud.models.GroundingConfidence
 import org.codeberg.fitguy.nofud.models.ServingUnitOption
 import org.codeberg.fitguy.nofud.models.OptionalNutrientGoals
 import kotlinx.serialization.Serializable
@@ -43,7 +45,10 @@ data class FoodAnalysis(
     val servingUnitOptions: List<ServingUnitOption> = emptyList(),
     val selectedServingUnit: String? = null,
     val selectedServingQuantity: Double? = null,
-    val customNote: String? = null
+    val customNote: String? = null,
+    /** Present when nutrients were grounded (USDA / OFF / history) rather than free-form estimated. */
+    val grounding: FoodGroundingProvenance? = null,
+    val groundingConfidence: GroundingConfidence? = null,
 )
 
 /**
@@ -92,6 +97,7 @@ fun FoodAnalysis.toFoodEntry(
         selectedServingUnit = selectedServingUnit,
         selectedServingQuantity = selectedServingQuantity,
         customNote = customNote,
+        grounding = grounding,
     )
 
 /** Per-100g nutrition-label reading. Scaled to a real serving via [scaled]. */
@@ -259,6 +265,39 @@ internal object FoodJsonParser {
             servingUnitOptions = unitOptions,
             selectedServingUnit = selectedOption?.unit,
             selectedServingQuantity = selectedOption?.quantityFor(servingSizeGrams)
+        )
+    }
+
+    fun parseRecognition(text: String): org.codeberg.fitguy.nofud.models.FoodRecognitionResult {
+        val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
+            ?: throw AiError.InvalidResponse
+        val mealName = json.optString("meal_name").ifBlank {
+            json.optString("name")
+        }.takeIf { it.isNotBlank() } ?: throw AiError.InvalidResponse
+        val componentsArr = json.optJSONArray("components") ?: JSONArray()
+        val components = mutableListOf<org.codeberg.fitguy.nofud.models.RecognizedFoodComponent>()
+        for (i in 0 until componentsArr.length()) {
+            val raw = componentsArr.optJSONObject(i) ?: continue
+            val name = raw.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue
+            components += org.codeberg.fitguy.nofud.models.RecognizedFoodComponent(
+                name = name,
+                brand = raw.optString("brand").takeIf { it.isNotBlank() },
+                preparation = raw.optString("preparation").takeIf { it.isNotBlank() },
+                estimatedGrams = optDouble(raw, "estimated_grams"),
+                portionHint = raw.optString("portion_hint").takeIf { it.isNotBlank() },
+                barcode = raw.optString("barcode").filter { it.isDigit() }.takeIf { it.length >= 8 },
+                quantity = optDouble(raw, "quantity"),
+                unit = raw.optString("unit").takeIf { it.isNotBlank() },
+            )
+        }
+        if (components.isEmpty()) {
+            components += org.codeberg.fitguy.nofud.models.RecognizedFoodComponent(name = mealName)
+        }
+        return org.codeberg.fitguy.nofud.models.FoodRecognitionResult(
+            mealName = mealName,
+            emoji = json.optString("emoji").takeIf { it.isNotBlank() && it != "null" },
+            components = components,
+            notes = json.optString("notes").takeIf { it.isNotBlank() && it != "null" },
         )
     }
 

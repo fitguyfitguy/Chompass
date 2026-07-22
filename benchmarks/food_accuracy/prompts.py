@@ -35,6 +35,24 @@ Examples of unit_options (adapt quantities to the actual meal):
 - "grilled chicken breast 150g with 200g white rice and 150g steamed broccoli" → [] (grams stated)
 """.strip()
 
+# Short portion/quantity grounding from real-entry failure modes (not JFB-specific):
+# inventing sides, restaurant-size priors, missing oil/dip denseness, ignoring stated tbsp/scoop.
+IMAGE_PORTION_RULES = """
+Portion rules:
+- Estimate only food clearly visible or named by the user. Do not invent typical sides, drinks, bread, or garnishes that are not visible.
+- Size from what you see (plate fill, piece count, height). Prefer the visible amount over a generic restaurant "full plate" prior when they disagree.
+- Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin.
+- For whole cakes/pies/pizzas estimate the whole visible item; for a single slice estimate only that slice.
+- If the user states amounts (g, tbsp, slices, brand/product), those override visual guesses.
+""".strip()
+
+TEXT_QUANTITY_RULES = """
+Quantity rules:
+- Honor explicit amounts (g, ml, tbsp, tsp, scoop, slice, piece, cup). Do not inflate "2 tbsp hummus" or "1 scoop whey" into a large bowl/shake.
+- For branded or packaged product names, prefer that product's labeled nutrition when known.
+- If amount is unspecified, use one typical labeled serving (not a large restaurant portion) and set serving_size_grams accordingly.
+""".strip()
+
 NUTRIENT_UNITS = (
     "Calories are integers. Protein/carbs/fat are decimal gram values when needed. "
     "serving_size_grams is the estimated total weight in grams. "
@@ -44,14 +62,15 @@ NUTRIENT_UNITS = (
 )
 
 
-def production_text_prompt(description: str) -> str:
+def production_text_prompt(description: str, *, portion_aware: bool = True) -> str:
+    portion = f"\n{TEXT_QUANTITY_RULES}" if portion_aware else ""
     return f"""
 Estimate the nutritional content for: {description}
 Parse any quantities, brands, and multiple items from the text. If a brand is mentioned, use that brand's known nutritional data. If multiple items are described, sum up the total nutrition.
 Respond ONLY with JSON:
 {FULL_JSON_SCHEMA}
 {NUTRIENT_UNITS}
-{UNIT_RULES}
+{UNIT_RULES}{portion}
 For "emoji" pick the single most specific food emoji that depicts this dish. Use null for any nutrient you cannot estimate.
 """.strip()
 
@@ -67,38 +86,46 @@ def append_user_context(prompt: str, description: str | None) -> str:
     if description:
         prompt += (
             f"\n\nAdditional context from the user about this meal: {description}\n"
-            "Use this context to improve accuracy of identification, portion size, and nutrition estimates."
+            "Prefer the user's stated amounts and ingredients over visual defaults when they conflict. "
+            "Use this context to improve identification, portion size, and nutrition estimates."
         )
     return prompt
 
 
-def production_image_prompt(*, description: str | None = None) -> str:
+def production_image_prompt(
+    *, description: str | None = None, portion_aware: bool = True
+) -> str:
+    portion = f"\n{IMAGE_PORTION_RULES}" if portion_aware else ""
     prompt = f"""
 Analyze this food image. Identify the food and estimate its nutritional content.
 Respond ONLY with JSON:
 {FULL_JSON_SCHEMA}
 {NUTRIENT_UNITS}
-{IMAGE_UNIT_RULES}
+{IMAGE_UNIT_RULES}{portion}
 Give your best estimate for the visible food amount shown in the image. Use null for any nutrient you cannot estimate.
 """.strip()
     return append_user_context(prompt, description)
 
 
-def compact_text_prompt(description: str) -> str:
+def compact_text_prompt(description: str, *, portion_aware: bool = False) -> str:
+    portion = f"\n{TEXT_QUANTITY_RULES}" if portion_aware else ""
     return f"""
 Estimate macronutrients for: {description}
 Respond ONLY with JSON:
 {COMPACT_JSON_SCHEMA}
-Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.
+Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.{portion}
 """.strip()
 
 
-def compact_image_prompt(*, description: str | None = None) -> str:
+def compact_image_prompt(
+    *, description: str | None = None, portion_aware: bool = False
+) -> str:
+    portion = f"\n{IMAGE_PORTION_RULES}" if portion_aware else ""
     prompt = f"""
 Analyze this food image. Estimate macronutrients for the visible serving.
 Respond ONLY with JSON:
 {COMPACT_JSON_SCHEMA}
-Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.
+Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.{portion}
 """.strip()
     return append_user_context(prompt, description)
 
@@ -116,12 +143,28 @@ def _build_image_prompt(sample, builder):
 
 
 PROMPT_BUILDERS = {
+    # production_* include portion/quantity grounding (mirrors app after portion-aware update)
     "production_text": lambda sample: production_text_prompt(sample.text or ""),
     "production_image": lambda sample: _build_image_prompt(sample, production_image_prompt),
+    # legacy production without portion rules (A/B baseline)
+    "production_text_legacy": lambda sample: production_text_prompt(
+        sample.text or "", portion_aware=False
+    ),
+    "production_image_legacy": lambda sample: production_image_prompt(
+        description=user_description(sample), portion_aware=False
+    ),
     "compact": lambda sample: (
         compact_text_prompt(sample.text or "")
         if sample.modality == "text"
         else _build_image_prompt(sample, compact_image_prompt)
+    ),
+    # compact + short portion/quantity rules (candidate easy win)
+    "compact_portion": lambda sample: (
+        compact_text_prompt(sample.text or "", portion_aware=True)
+        if sample.modality == "text"
+        else compact_image_prompt(
+            description=user_description(sample), portion_aware=True
+        )
     ),
     "fewshot_units": lambda sample: (
         fewshot_text_prompt(sample.text or "")

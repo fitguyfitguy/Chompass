@@ -302,6 +302,7 @@ class CoachTools(
         FoodSource.BARCODE -> "barcode"
         FoodSource.TEXT_INPUT -> "textInput"
         FoodSource.MANUAL -> "manual"
+        FoodSource.GROUNDED -> "grounded"
     }
 
     private fun mealTypeName(mealType: MealType): String = when (mealType) {

@@ -49,7 +49,12 @@ data class FoodEntry(
     val customNote: String? = null,
     /** Shared id across all diary rows produced by one Recipe log; null for non-recipe entries. */
     @Serializable(with = UuidSerializer::class)
-    val recipeLogId: UUID? = null
+    val recipeLogId: UUID? = null,
+    /**
+     * Optional grounding provenance. Null for legacy / ungrounded entries.
+     * Defaults keep older DataStore JSON and diary exports decodable.
+     */
+    val grounding: FoodGroundingProvenance? = null,
 ) {
     /**
      * Stable identity for Favorites / Frequent / Recents dedup.
@@ -104,6 +109,7 @@ data class FoodEntry(
         servingUnitOptions = servingUnitOptions,
         selectedServingUnit = selectedServingUnit,
         selectedServingQuantity = selectedServingQuantity,
-        customNote = customNote
+        customNote = customNote,
+        grounding = grounding,
     )
 }

@@ -91,12 +91,14 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 
 | Name | Matches | Notes |
 |------|---------|-------|
-| `production_text` | NoFUD `analyzeText` | Full JSON schema + unit_options |
-| `production_image` | NoFUD `analyzeFood` | Vision + same schema |
+| `production_text` | NoFUD `analyzeText` | Full JSON + unit_options + quantity grounding |
+| `production_image` | NoFUD `analyzeFood` | Vision + schema + portion grounding |
+| `production_text_legacy` / `production_image_legacy` | Pre-portion-rules production | A/B baseline |
 | `compact` | Research ablation | Macros + serving_size_grams only |
+| `compact_portion` | compact + short portion/quantity rules | Candidate easy win for real entry |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
 
-Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only.
+Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only. User context prefers stated amounts over visual defaults when they conflict.
 
 ### Image + description eval (JFB)
 

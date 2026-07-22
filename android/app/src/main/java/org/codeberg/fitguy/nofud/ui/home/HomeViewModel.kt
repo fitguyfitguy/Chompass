@@ -81,6 +81,8 @@ data class HomeUiState(
     val pendingInputImageBytes: ByteArray? = null,
     val pendingInputNote: String? = null,
     val pendingInputDraftImageFilename: String? = null,
+    /** Intermediate grounded-entry review (candidate / portion picks). */
+    val pendingGroundedReview: PendingGroundedReview? = null,
     val analyzing: Boolean = false,
     val analysisPhase: EntryAnalysisPhase? = null,
     val analysisPreview: FoodAnalysis? = null,
@@ -474,6 +476,115 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /**
+     * Optional grounded entry: recognize components with the selected model provider,
+     * then ground nutrients against history / USDA / Open Food Facts.
+     */
+    fun analyzeGrounded(description: String?, imageBytes: ByteArray?) {
+        viewModelScope.launch {
+            val images = listOfNotNull(imageBytes?.takeIf { it.isNotEmpty() })
+            val start = beginAnalysis(phased = true) { state ->
+                state.copy(
+                    pendingImageBytes = imageBytes,
+                    pendingFoodSource = FoodSource.GROUNDED,
+                    pendingDraftImageFilename = null,
+                    pendingGroundedReview = null,
+                )
+            } ?: return@launch
+            discardPendingDraft(start.previousDraftImage)
+            try {
+                val result = container.groundedFoodEntry.analyze(
+                    description = description,
+                    imageBytesList = images,
+                    onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
+                )
+                val needsReview = result.resolutions.any { it.needsUserChoice }
+                if (needsReview) {
+                    if (start.generation != analysisGeneration) return@launch
+                    synchronized(this@HomeViewModel) {
+                        analysisInFlight = false
+                    }
+                    container.analyzingFood.value = false
+                    _ui.value = _ui.value.copy(
+                        pendingGroundedReview = PendingGroundedReview(
+                            result = result,
+                            description = description,
+                            imageBytes = imageBytes,
+                        ),
+                        pendingAnalysis = null,
+                        analyzing = false,
+                        analysisPhase = null,
+                        inferringUnits = false,
+                        analysisPreview = null,
+                    )
+                } else {
+                    savePendingDraft(
+                        result.analysis,
+                        imageBytes = imageBytes,
+                        source = FoodSource.GROUNDED,
+                        generation = start.generation,
+                    )
+                }
+            } catch (e: AiError) {
+                failAnalysis(start.generation, e.message)
+            } catch (e: Throwable) {
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed),
+                )
+            } finally {
+                if (_ui.value.pendingGroundedReview == null) {
+                    endAnalysis(start.generation)
+                }
+            }
+        }
+    }
+
+    fun resolveGroundedChoices(
+        selectedSourceIds: Map<Int, String>,
+        gramOverrides: Map<Int, Double>,
+    ) {
+        val pending = _ui.value.pendingGroundedReview ?: return
+        viewModelScope.launch {
+            val start = beginAnalysis(phased = true) { state ->
+                state.copy(
+                    pendingGroundedReview = null,
+                    pendingImageBytes = pending.imageBytes,
+                    pendingFoodSource = FoodSource.GROUNDED,
+                    pendingDraftImageFilename = null,
+                )
+            } ?: return@launch
+            try {
+                val result = container.groundedFoodEntry.analyze(
+                    description = pending.description,
+                    imageBytesList = listOfNotNull(pending.imageBytes),
+                    onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
+                    selectedSourceIds = selectedSourceIds,
+                    gramOverrides = gramOverrides,
+                )
+                savePendingDraft(
+                    result.analysis,
+                    imageBytes = pending.imageBytes,
+                    source = FoodSource.GROUNDED,
+                    generation = start.generation,
+                )
+            } catch (e: AiError) {
+                failAnalysis(start.generation, e.message)
+            } catch (e: Throwable) {
+                failAnalysis(
+                    start.generation,
+                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed),
+                )
+            } finally {
+                endAnalysis(start.generation)
+            }
+        }
+    }
+
+    fun dismissGroundedReview() {
+        _ui.value = _ui.value.copy(pendingGroundedReview = null)
+    }
+
     fun saveAnalysis(
         name: String? = null,
         servingGrams: Double? = null,
@@ -553,7 +664,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     servingUnitOptions = analysis.servingUnitOptions,
                     selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
                     selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                    customNote = analysis.customNote
+                    customNote = analysis.customNote,
+                    grounding = analysis.grounding,
                 )
                 container.prefs.setPendingFoodAnalysisDraft(
                     PendingFoodAnalysisDraft(
@@ -600,6 +712,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingFoodSource = null,
             pendingDraftImageFilename = null,
             pendingReviewSource = null,
+            pendingGroundedReview = null,
             analysisPhase = null,
             analysisPreview = null,
             inferringUnits = false,
@@ -1011,5 +1124,6 @@ private fun FoodEntry.toAnalysis(): FoodAnalysis = FoodAnalysis(
     servingUnitOptions = servingUnitOptions,
     selectedServingUnit = selectedServingUnit,
     selectedServingQuantity = selectedServingQuantity,
-    customNote = customNote
+    customNote = customNote,
+    grounding = grounding,
 )

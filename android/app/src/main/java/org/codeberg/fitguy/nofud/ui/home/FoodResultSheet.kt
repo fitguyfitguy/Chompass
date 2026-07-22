@@ -221,7 +221,8 @@ fun FoodResultSheet(
         vitaminE = editableVitaminE,
         vitaminK = editableVitaminK,
         folate = editableFolate,
-        omega3 = editableOmega3
+        omega3 = editableOmega3,
+        grounding = analysis.grounding?.copy(userCorrected = true),
     )
     fun previewEntry() = FoodEntry(
         name = name.trim().ifEmpty { analysis.name },
@@ -327,6 +328,27 @@ fun FoodResultSheet(
             }
 
             item { SheetSectionHeader(stringResource(R.string.sheet_food_details)) }
+            analysis.grounding?.let { grounding ->
+                item {
+                    Text(
+                        text = when (grounding.sourceKind) {
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.USDA ->
+                                stringResource(R.string.grounding_badge_usda)
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.OPEN_FOOD_FACTS ->
+                                stringResource(R.string.grounding_badge_off)
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.HISTORY ->
+                                stringResource(R.string.grounding_badge_history)
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.NUTRITION_LABEL ->
+                                stringResource(R.string.grounding_badge_label)
+                            org.codeberg.fitguy.nofud.models.NutrientSourceKind.MODEL_ESTIMATE ->
+                                stringResource(R.string.grounding_badge_estimate)
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = AppColors.Calorie,
+                        modifier = Modifier.padding(bottom = 4.dp),
+                    )
+                }
+            }
             item {
                 SheetPillRow {
                     Text(stringResource(R.string.sheet_name), fontSize = 17.sp, modifier = Modifier.padding(end = 8.dp))

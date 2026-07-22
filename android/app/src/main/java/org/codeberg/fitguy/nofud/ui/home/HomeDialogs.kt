@@ -106,6 +106,10 @@ internal fun EntryAnalysisOverlay(
                     EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
                     EntryAnalysisPhase.CallingAi -> stringResource(R.string.entry_analysis_phase_calling_ai)
                     EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
+                    EntryAnalysisPhase.Recognizing -> stringResource(R.string.entry_analysis_phase_recognizing)
+                    EntryAnalysisPhase.SearchingHistory -> stringResource(R.string.entry_analysis_phase_searching_history)
+                    EntryAnalysisPhase.SearchingUsda -> stringResource(R.string.entry_analysis_phase_searching_usda)
+                    EntryAnalysisPhase.Resolving -> stringResource(R.string.entry_analysis_phase_resolving)
                 },
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -128,8 +132,8 @@ internal fun EntryAnalysisOverlay(
 
 @Composable
 private fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
-    val phases = EntryAnalysisPhase.entries
-    val currentIndex = phases.indexOf(currentPhase)
+    val phases = phasesForOverlay(currentPhase)
+    val currentIndex = phases.indexOf(currentPhase).coerceAtLeast(0)
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -168,10 +172,9 @@ private fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
             if (index < phases.lastIndex) {
                 Box(
                     Modifier
-                        .width(24.dp)
-                        .height(2.dp)
+                        .size(width = 12.dp, height = 2.dp)
                         .background(
-                            if (done) AppColors.Calorie.copy(alpha = 0.5f)
+                            if (index < currentIndex) AppColors.Calorie.copy(alpha = 0.6f)
                             else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                         )
                 )
@@ -179,6 +182,24 @@ private fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
         }
     }
 }
+
+private fun phasesForOverlay(current: EntryAnalysisPhase): List<EntryAnalysisPhase> =
+    when (current) {
+        EntryAnalysisPhase.Recognizing,
+        EntryAnalysisPhase.SearchingHistory,
+        EntryAnalysisPhase.SearchingUsda,
+        EntryAnalysisPhase.Resolving -> listOf(
+            EntryAnalysisPhase.Recognizing,
+            EntryAnalysisPhase.SearchingHistory,
+            EntryAnalysisPhase.SearchingUsda,
+            EntryAnalysisPhase.Resolving,
+        )
+        else -> listOf(
+            EntryAnalysisPhase.Preparing,
+            EntryAnalysisPhase.CallingAi,
+            EntryAnalysisPhase.Parsing,
+        )
+    }
 
 @Composable
 internal fun AnalysisPreviewCard(analysis: FoodAnalysis) {

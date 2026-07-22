@@ -101,6 +101,7 @@ fun HomeScreen(container: AppContainer) {
     var showCopyFromDay by remember { mutableStateOf(false) }
     var showAddFoodSheet by remember { mutableStateOf(false) }
     var showCustomWaterLog by remember { mutableStateOf(false) }
+    var showGroundedEntry by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<org.codeberg.fitguy.nofud.models.Recipe?>(null) }
     var showNutritionDetail by remember { mutableStateOf(false) }
@@ -465,9 +466,34 @@ fun HomeScreen(container: AppContainer) {
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
             onCopyFromDay = { showCopyFromDay = true },
+            onGrounded = { showGroundedEntry = true },
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
             onDismiss = { showAddFoodSheet = false }
+        )
+    }
+
+    if (showGroundedEntry) {
+        GroundedEntrySheet(
+            onDismiss = { showGroundedEntry = false },
+            isSubmitting = ui.isEntryAnalysisBusy,
+            onSubmit = { description, imageBytes ->
+                if (!ui.isEntryAnalysisBusy) {
+                    showGroundedEntry = false
+                    vm.analyzeGrounded(description, imageBytes)
+                }
+            },
+        )
+    }
+
+    ui.pendingGroundedReview?.let { review ->
+        GroundedCandidateSheet(
+            review = review,
+            onDismiss = vm::dismissGroundedReview,
+            isSubmitting = ui.isEntryAnalysisBusy,
+            onConfirm = { selected, grams ->
+                vm.resolveGroundedChoices(selected, grams)
+            },
         )
     }
 

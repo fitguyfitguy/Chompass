@@ -22,6 +22,8 @@ import org.codeberg.fitguy.nofud.services.WeightAnalysisService
 import org.codeberg.fitguy.nofud.services.WidgetSnapshotWriter
 import org.codeberg.fitguy.nofud.services.ai.ChatService
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
+import org.codeberg.fitguy.nofud.services.grounding.GroundedFoodEntryService
+import org.codeberg.fitguy.nofud.services.grounding.UsdaFoodIndex
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
 import org.codeberg.fitguy.nofud.services.health.HealthSyncWorker
 import org.codeberg.fitguy.nofud.services.health.HomeActivityReader
@@ -163,6 +165,17 @@ class AppContainer(app: NoFUDApp) {
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
     val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
+    val usdaFoodIndex: UsdaFoodIndex by lazy(LazyThreadSafetyMode.NONE) {
+        UsdaFoodIndex(appContext)
+    }
+    val groundedFoodEntry: GroundedFoodEntryService by lazy(LazyThreadSafetyMode.NONE) {
+        GroundedFoodEntryService(
+            foodAnalysis = foodAnalysis,
+            foodRepository = foodRepository,
+            prefs = prefs,
+            usdaIndex = usdaFoodIndex,
+        )
+    }
     val chatService = ChatService(prefs, keyStore, foodAnalysis)
     val speechService = SpeechService(prefs, keyStore)
 

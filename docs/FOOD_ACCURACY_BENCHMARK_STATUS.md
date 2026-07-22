@@ -155,12 +155,24 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
 - [ ] Port compact text path into [`FoodAnalysisService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt) only after a deliberate product decision
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
+- [ ] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on JFB L0 (and smoke on real photos). Hypothesis: short “visible-only / no invented sides / oil denseness / honor stated qty” rules help real entry without the latency hit of full production prompts. Production `analyzeText` / `analyzeFood` / `analyzeAuto` already include these rules; harness names `production_*_legacy` keep the old baseline.
 
 ---
 
 ## Suggested next runs
 
 ```bash
+# 0) Portion-aware compact vs baseline compact (does short grounding help without bloating?)
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model google/gemini-3.6-flash \
+  --prompt compact_portion --sleep 3 --retries 2 \
+  --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
+  --out benchmarks/food_accuracy/results/image_text_ab/l0_gemini36_compact_portion
+
+uv run python benchmarks/food_accuracy/compare_runs.py \
+  benchmarks/food_accuracy/results/image_text_ab/l0_gemini36_flash/summary.csv \
+  benchmarks/food_accuracy/results/image_text_ab/l0_gemini36_compact_portion/summary.csv
+
 # 1) Does the plate leader benefit from a short meal title?
 uv run python benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model google/gemini-3.6-flash \

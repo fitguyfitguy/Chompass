@@ -44,6 +44,15 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
   benchmarks/food_accuracy/results/ab/fewshot_units/summary.csv
 ```
 
+## Grounded metrics (identity / source / portion)
+
+See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md). Score a JSONL recognition+lookup trace:
+
+```bash
+uv run python benchmarks/food_accuracy/grounded_metrics.py \
+  --trace benchmarks/food_accuracy/manifest/grounded_trace_example.jsonl
+```
+
 ### Resume failed/missing only
 
 ```bash
