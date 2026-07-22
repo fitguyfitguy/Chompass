@@ -60,10 +60,12 @@ enum class AIProvider {
 
     /**
      * Only models that are currently in service AND accept image input + return structured text.
-     * Lineups verified against provider docs on 2026-07-02. Mirrors iOS AIProvider.swift.
+     * Lineups verified against provider docs on 2026-07-22. Mirrors iOS AIProvider.swift.
      */
     val models: List<String> get() = when (this) {
         GEMINI -> listOf(
+            "gemini-3.6-flash",
+            "gemini-3.5-flash-lite",
             "gemini-3.5-flash",
             "gemini-3.1-flash-lite",
             "gemini-3.1-pro-preview",
@@ -140,7 +142,7 @@ enum class AIProvider {
 
     /** Separate from [defaultModel] so Gemini fallback can use a higher-quota lite model. */
     val defaultFallbackModel: String get() = when (this) {
-        GEMINI -> "gemini-3.1-flash-lite"
+        GEMINI -> "gemini-3.5-flash-lite"
         else -> models.getOrNull(1) ?: defaultModel
     }
 

@@ -38,7 +38,7 @@ enum class SpeechProvider {
 
     val defaultModel: String get() = when (this) {
         NATIVE -> ""
-        GEMINI -> "gemini-3.5-flash"           // 2.5-flash deprecated, shutdown Oct 2026
+        GEMINI -> "gemini-3.6-flash"           // matches AI food-analysis default
         OPENAI -> "gpt-4o-mini-transcribe"     // same $/min as whisper-1, better accuracy
         GROQ -> "whisper-large-v3"
         DEEPGRAM -> "nova-3"

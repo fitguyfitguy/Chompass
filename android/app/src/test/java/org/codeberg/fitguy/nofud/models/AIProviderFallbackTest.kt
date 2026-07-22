@@ -5,18 +5,23 @@ import org.junit.Test
 
 class AIProviderFallbackTest {
     @Test
+    fun geminiDefaultModelIsFlash36() {
+        assertEquals("gemini-3.6-flash", AIProvider.GEMINI.defaultModel)
+    }
+
+    @Test
     fun geminiDefaultFallbackIsFlashLite() {
-        assertEquals("gemini-3.1-flash-lite", AIProvider.GEMINI.defaultFallbackModel)
+        assertEquals("gemini-3.5-flash-lite", AIProvider.GEMINI.defaultFallbackModel)
     }
 
     @Test
     fun geminiUnsetFallbackResolvesToFlashLite() {
         assertEquals(
-            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
             AIProvider.GEMINI.supportedFallbackModelOrDefault(null),
         )
         assertEquals(
-            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
             AIProvider.GEMINI.supportedFallbackModelOrDefault(""),
         )
     }
@@ -32,7 +37,7 @@ class AIProviderFallbackTest {
     @Test
     fun geminiUnknownFallbackFallsBackToFlashLite() {
         assertEquals(
-            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
             AIProvider.GEMINI.supportedFallbackModelOrDefault("gemini-does-not-exist"),
         )
     }
