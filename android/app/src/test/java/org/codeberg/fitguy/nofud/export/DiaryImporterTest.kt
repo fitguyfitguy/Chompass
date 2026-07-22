@@ -136,7 +136,7 @@ class DiaryImporterTest {
     }
 
     @Test
-    fun mapsBarcodeAndGroundedSources() {
+    fun mapsBarcodeSource() {
         val json = """
             {
               "export": {
@@ -155,10 +155,6 @@ class DiaryImporterTest {
                     {
                       "name": "Bar", "calories": 1, "protein_g": 0.0, "carbs_g": 0.0, "fat_g": 0.0,
                       "time": "10:00", "source": "barcode", "note": null
-                    },
-                    {
-                      "name": "Grounded", "calories": 1, "protein_g": 0.0, "carbs_g": 0.0, "fat_g": 0.0,
-                      "time": "11:00", "source": "grounded", "note": null
                     }
                   ]
                 }]
@@ -167,8 +163,7 @@ class DiaryImporterTest {
         """.trimIndent()
 
         val entries = (DiaryImporter.parse(json, zone) as DiaryImportResult.Success).entries
-        assertEquals(FoodSource.BARCODE, entries[0].source)
-        assertEquals(FoodSource.GROUNDED, entries[1].source)
+        assertEquals(FoodSource.BARCODE, entries.single().source)
     }
 
     @Test

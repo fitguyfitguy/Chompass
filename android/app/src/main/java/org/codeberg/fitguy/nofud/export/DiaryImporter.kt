@@ -137,7 +137,6 @@ object DiaryImporter {
         when (raw?.trim()?.lowercase()) {
             "manually_edited" -> FoodSource.MANUAL
             "barcode" -> FoodSource.BARCODE
-            "grounded" -> FoodSource.GROUNDED
             else -> FoodSource.TEXT_INPUT
         }
 
