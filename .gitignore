@@ -22,8 +22,10 @@ ios/Local.xcconfig
 .DS_Store
 
 
-# Claude Code runtime
+# Claude Code / Cursor agent runtime
 .claude/
+.cursor/
+.cursorrules
 ios/build-sim/
 .vercel
 
