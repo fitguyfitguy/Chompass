@@ -1,1 +1,1 @@
-Saved Meals: same food at different servings no longer duplicates; new name collisions get Name (2). Fix double-scaled calories when changing portion on log.
+Saved Meals: same food at different servings no longer duplicates; new name collisions get Name (2). Fix double-scaled calories when changing portion on log. Diary export includes micronutrients (v1.1). Add-food opens Recents/Frequent/Favorites directly. Activity level step guides. AI fallback on by default; Gemini models refreshed. Ollama LAN HTTP, Anthropic/OpenAI parsing fixes. Smaller APK (exercise assets removed).
