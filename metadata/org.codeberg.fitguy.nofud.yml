@@ -24,13 +24,6 @@ Builds:
     gradleprops:
       - releaseAbi=arm64-v8a
 
-MaintainerNotes: |-
-  New app: single Builds entry (latest only). Older tags used a removed fdroidRelease flavor.
-  Barcode scanning uses FOSS zxing-cpp (Apache-2.0); same scanner in Codeberg and F-Droid builds.
-  subdir=android/app (app module). Gradle finds parent android/settings.gradle.kts;
-  APK lands in subdir/build/outputs so no output: needed.
-  releaseAbi=arm64-v8a: ndk.abiFilters + splits disabled → plain app-release-unsigned.apk.
-
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
 CurrentVersion: 1.14.6
