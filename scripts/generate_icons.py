@@ -65,14 +65,27 @@ def make_gradient(size: int, start: tuple[int, int, int], end: tuple[int, int, i
 
 
 def fill_mask_holes(mask: Image.Image) -> Image.Image:
-    """Fill enclosed zero regions in a binary L mask (keeps exterior transparent)."""
+    """Fill enclosed zero regions in a binary L mask (keeps exterior transparent).
+
+    Seed flood-fill from every border zero. Seeding only (0, 0) misses white
+    padding pockets sealed against other edges when the squircle touches the
+    canvas — those were treated as holes and became white edge fringe.
+    """
     temp = mask.point(lambda v: 255 if v > 127 else 0)
-    # Mark exterior zeros reachable from the top-left corner.
-    ImageDraw.floodfill(temp, (0, 0), 128)
+    w, h = mask.size
+    border: list[tuple[int, int]] = []
+    for x in range(w):
+        border.append((x, 0))
+        border.append((x, h - 1))
+    for y in range(1, h - 1):
+        border.append((0, y))
+        border.append((w - 1, y))
+    for point in border:
+        if temp.getpixel(point) == 0:
+            ImageDraw.floodfill(temp, point, 128)
     out = Image.new("L", mask.size, 0)
     src = temp.load()
     dst = out.load()
-    w, h = mask.size
     for y in range(h):
         for x in range(w):
             v = src[x, y]
