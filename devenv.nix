@@ -24,6 +24,7 @@
   scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
   scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
   scripts.site-build.exec = "hugo --minify -s website";
+  scripts.site-deploy.exec = "./scripts/deploy_pages.sh";
 
   tasks."build:debug" = {
     exec = "cd android && ./gradlew :app:assembleDebug";
@@ -63,5 +64,10 @@
   tasks."site:build" = {
     exec = "hugo --minify -s website";
     description = "Build the static Codeberg Pages site into website/public";
+  };
+
+  tasks."site:deploy" = {
+    exec = "./scripts/deploy_pages.sh";
+    description = "Build site and force-push the orphan pages branch for Codeberg Pages webhook deploy";
   };
 }
