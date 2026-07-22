@@ -83,7 +83,7 @@ private data class LauncherIconAccent(
 
 /** Representative launcher-icon gradient colors from [scripts/generate_icons.py]. */
 private val LauncherIconAccents: List<LauncherIconAccent> = listOf(
-    LauncherIconAccent(AppThemeColor.TEAL, Color(0xFF30B0C7)),
+    LauncherIconAccent(AppThemeColor.TEAL, Color(0xFF006B5E)),
     LauncherIconAccent(AppThemeColor.BLUE, Color(0xFF0A84FF)),
     LauncherIconAccent(AppThemeColor.GREEN, Color(0xFF34C759)),
     LauncherIconAccent(AppThemeColor.PURPLE, Color(0xFFAF52DE)),
