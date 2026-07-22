@@ -8,13 +8,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.models.FoodSource
 import org.codeberg.fitguy.nofud.models.MealType
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -27,10 +24,11 @@ sealed class DiaryImportResult {
 }
 
 /**
- * Parses the JSON structure emitted by [DiaryExporter] and converts it into [FoodEntry] rows.
+ * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI) into [FoodEntry] rows.
+ * Requires format version 1.1 (macros + micronutrients).
  */
 object DiaryImporter {
-    private const val SUPPORTED_VERSION = "1.0"
+    private const val SUPPORTED_VERSION = "1.1"
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -76,28 +74,39 @@ object DiaryImporter {
                     val time = parseTime(item["time"]?.asString()) ?: LocalTime.NOON
                     val timestamp = date.atTime(time).atZone(zone).toInstant()
 
-                    val calories = item["calories"]?.asInt() ?: 0
-                    val protein = item["protein_g"]?.asDouble() ?: 0.0
-                    val carbs = item["carbs_g"]?.asDouble() ?: 0.0
-                    val fat = item["fat_g"]?.asDouble() ?: 0.0
-                    val serving = item["quantity_g"]?.asDouble()
-                    val note = item["note"]?.asString()?.takeIf { it.isNotBlank() }
-                    val source = when (item["source"]?.asString()?.trim()?.lowercase()) {
-                        "manually_edited" -> FoodSource.MANUAL
-                        else -> FoodSource.TEXT_INPUT
-                    }
-
                     collected += FoodEntry(
                         name = name,
-                        calories = calories,
-                        protein = protein,
-                        carbs = carbs,
-                        fat = fat,
+                        calories = item["calories"]?.asInt() ?: 0,
+                        protein = item["protein_g"]?.asDouble() ?: 0.0,
+                        carbs = item["carbs_g"]?.asDouble() ?: 0.0,
+                        fat = item["fat_g"]?.asDouble() ?: 0.0,
                         timestamp = timestamp,
-                        source = source,
+                        source = parseSource(item["source"]?.asString()),
                         mealType = mealType,
-                        servingSizeGrams = serving,
-                        customNote = note
+                        sugar = item["sugar_g"]?.asDouble(),
+                        addedSugar = item["added_sugar_g"]?.asDouble(),
+                        fiber = item["fiber_g"]?.asDouble(),
+                        saturatedFat = item["saturated_fat_g"]?.asDouble(),
+                        monounsaturatedFat = item["monounsaturated_fat_g"]?.asDouble(),
+                        polyunsaturatedFat = item["polyunsaturated_fat_g"]?.asDouble(),
+                        cholesterol = item["cholesterol_mg"]?.asDouble(),
+                        sodium = item["sodium_mg"]?.asDouble(),
+                        potassium = item["potassium_mg"]?.asDouble(),
+                        transFat = item["trans_fat_g"]?.asDouble(),
+                        calcium = item["calcium_mg"]?.asDouble(),
+                        iron = item["iron_mg"]?.asDouble(),
+                        magnesium = item["magnesium_mg"]?.asDouble(),
+                        zinc = item["zinc_mg"]?.asDouble(),
+                        vitaminA = item["vitamin_a_mcg"]?.asDouble(),
+                        vitaminC = item["vitamin_c_mg"]?.asDouble(),
+                        vitaminD = item["vitamin_d_mcg"]?.asDouble(),
+                        vitaminB12 = item["vitamin_b12_mcg"]?.asDouble(),
+                        vitaminE = item["vitamin_e_mg"]?.asDouble(),
+                        vitaminK = item["vitamin_k_mcg"]?.asDouble(),
+                        folate = item["folate_mcg"]?.asDouble(),
+                        omega3 = item["omega3_g"]?.asDouble(),
+                        servingSizeGrams = item["quantity_g"]?.asDouble(),
+                        customNote = item["note"]?.asString()?.takeIf { it.isNotBlank() },
                     )
                 }
             }
@@ -122,6 +131,14 @@ object DiaryImporter {
             "dinner" -> MealType.DINNER
             "snack" -> MealType.SNACK
             else -> MealType.OTHER
+        }
+
+    private fun parseSource(raw: String?): FoodSource =
+        when (raw?.trim()?.lowercase()) {
+            "manually_edited" -> FoodSource.MANUAL
+            "barcode" -> FoodSource.BARCODE
+            "grounded" -> FoodSource.GROUNDED
+            else -> FoodSource.TEXT_INPUT
         }
 
     private fun JsonElement.asObjectOrNull(): JsonObject? = this as? JsonObject
