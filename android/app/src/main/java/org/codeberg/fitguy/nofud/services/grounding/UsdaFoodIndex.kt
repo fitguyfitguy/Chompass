@@ -16,8 +16,9 @@ import kotlin.math.roundToInt
 
 /**
  * Read-only lookup over the compact USDA Foundation + FNDDS SQLite asset
- * (`assets/usda/usda_foods.sqlite`). No Room — opens a copied file with
- * [SQLiteDatabase.openDatabase].
+ * (`assets/usda/usda_foods.sqlite`). Packaged in **debug** builds only while
+ * grounded entry is gated; release APKs omit it. No Room — opens a copied file
+ * with [SQLiteDatabase.openDatabase].
  */
 class UsdaFoodIndex(
     context: Context,
@@ -190,6 +191,13 @@ class UsdaFoodIndex(
 
     companion object {
         const val ASSET_PATH = "usda/usda_foods.sqlite"
+
+        /** True when the APK includes the offline index (debug source set today). */
+        fun assetAvailable(context: Context, assetPath: String = ASSET_PATH): Boolean =
+            runCatching {
+                context.applicationContext.assets.open(assetPath).use { }
+                true
+            }.getOrDefault(false)
 
         internal fun tokenize(text: String): List<String> =
             text.lowercase(Locale.US)

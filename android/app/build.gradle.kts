@@ -107,6 +107,11 @@ android {
             versionNameSuffix = "-debug2"
         }
     }
+    // Grounded USDA SQLite lives under src/debug/assets (not main) so release/F-Droid
+    // APKs stay lean while the feature is gated. debug2 reuses the same assets.
+    sourceSets {
+        getByName("debug2").assets.srcDir("src/debug/assets")
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
