@@ -8,6 +8,10 @@
 #   Branch filter: pages
 # Do not use "Test delivery" (it fails by design). Push this branch instead.
 #
+# SSH: uses Host alias codeberg-fitguy from ~/.ssh/config so the agent does not
+# pick the KewLE key for bare codeberg.org. Override with PAGES_SSH_HOST or
+# PAGES_PUSH_URL if needed.
+#
 # Usage (from repo root, with hugo on PATH — e.g. devenv shell):
 #   ./scripts/deploy_pages.sh
 #   ./scripts/deploy_pages.sh --dry-run
@@ -19,13 +23,15 @@ cd "$ROOT"
 BASE_URL="${PAGES_BASE_URL:-https://fitguy.codeberg.page/NoFUD/}"
 REMOTE="${PAGES_REMOTE:-origin}"
 BRANCH="${PAGES_BRANCH:-pages}"
+# Prefer fitguy SSH host alias (see ~/.ssh/config Host codeberg-fitguy).
+SSH_HOST="${PAGES_SSH_HOST:-codeberg-fitguy}"
 DRY_RUN=0
 
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     -h|--help)
-      sed -n '2,16p' "$0"
+      sed -n '2,20p' "$0"
       exit 0
       ;;
     *)
@@ -51,6 +57,17 @@ if [[ ! -f "$PUBLIC/index.html" ]]; then
 fi
 
 REMOTE_URL="$(git remote get-url "$REMOTE")"
+# Rewrite bare codeberg.org → fitguy host alias so ssh-agent does not auth as KewLE.
+if [[ -n "${PAGES_PUSH_URL:-}" ]]; then
+  PUSH_URL="$PAGES_PUSH_URL"
+elif [[ "$REMOTE_URL" =~ ^(ssh://git@|git@)codeberg\.org[/:] ]]; then
+  PUSH_URL="$(printf '%s\n' "$REMOTE_URL" | sed -E "s#(ssh://git@|git@)codeberg\\.org#\\1${SSH_HOST}#")"
+elif [[ "$REMOTE_URL" =~ codeberg-(kewl|alge) ]]; then
+  PUSH_URL="$(printf '%s\n' "$REMOTE_URL" | sed -E "s#codeberg-(kewl|alge)#${SSH_HOST}#")"
+else
+  PUSH_URL="$REMOTE_URL"
+fi
+
 COMMIT_MSG="Deploy site $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 WORKDIR="$(mktemp -d)"
@@ -60,7 +77,6 @@ trap cleanup EXIT
 echo "==> Preparing orphan $BRANCH branch"
 git init -q -b "$BRANCH" "$WORKDIR"
 cp -a "$PUBLIC"/. "$WORKDIR"/
-# Avoid shipping Hugo build metadata if present
 rm -f "$WORKDIR/.hugo_build.lock" 2>/dev/null || true
 
 git -C "$WORKDIR" config user.name "$(git config user.name || echo 'NoFUD Pages')"
@@ -71,16 +87,16 @@ if git -C "$WORKDIR" diff --cached --quiet; then
   exit 1
 fi
 git -C "$WORKDIR" commit -q -m "$COMMIT_MSG"
-git -C "$WORKDIR" remote add origin "$REMOTE_URL"
+git -C "$WORKDIR" remote add origin "$PUSH_URL"
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
-  echo "==> Dry run: would force-push $BRANCH to $REMOTE ($REMOTE_URL)"
+  echo "==> Dry run: would force-push $BRANCH via $PUSH_URL"
   git -C "$WORKDIR" log -1 --oneline
   find "$WORKDIR" -maxdepth 2 -type f ! -path '*/.git/*' | head -30
   exit 0
 fi
 
-echo "==> Force-pushing $BRANCH to $REMOTE"
+echo "==> Force-pushing $BRANCH as fitguy via $PUSH_URL"
 git -C "$WORKDIR" push -f origin "HEAD:refs/heads/$BRANCH"
 
 echo "Done. Site: $BASE_URL"
