@@ -18,7 +18,8 @@ Snap, speak, scan, share, or type your food with cloud AI (your own provider key
 [![On-device AI](https://img.shields.io/badge/On--device%20AI-Opt--in%20(Gemma%204)-9C27B0?style=flat-square)](#on-device-ai-private)
 
 > **Android only.** iOS is not supported yet.  
-> **Project home:** [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD)
+> **Project home:** [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD)  
+> **Website:** [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/)
 
 ## Get started
 
@@ -101,7 +102,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 
 **UX, size, speed**
 
-- **APK:** ~34 MB universal (v1.11.0) vs ~120 MB upstream with workouts ([releases](https://codeberg.org/fitguy/NoFUD/releases))
+- **APK:** ~15 MiB arm64 / ~27 MiB universal (v1.14.8) vs ~120 MB upstream with workouts ([releases](https://codeberg.org/fitguy/NoFUD/releases))
 - **Responsiveness:** monthly diary buckets, off-main-thread thumbnails, phased AI progress UI
 - **UI:** Material 3, `AddFoodSheet`, customizable home nutrients and meal times, macro remaining/over, multi-photo flow
 - **Extras:** keto/diet modes, fallback AI provider, audited nutrition math
@@ -184,7 +185,7 @@ Weight and body data now import from a file too: **Settings → Import Weight & 
 | Live Health Connect meal import | Yes | **Yes** |
 | Bulk diary / body-metrics import | Limited | **Yes** (JSON, CSV, openScale) |
 | Fallback AI provider | No | **Yes** |
-| APK size (universal, approx.) | ~120 MB (with workouts) | **~34 MB** (v1.11.0) |
+| APK size (approx.) | ~120 MB universal (with workouts) | **~15 MiB arm64 / ~27 MiB universal** (v1.14.8) |
 | UX / UI polish | Baseline | **Android-optimized** (`AddFoodSheet`, widgets, themes) |
 | F-Droid / direct APK releases | Play-focused | **Codeberg** |
 
@@ -194,7 +195,7 @@ Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [N
 
 We are focused on a fast Android app rather than matching upstream feature:
 
-- **Install size:** no workouts bundle or ad SDK; universal APK ~34 MB (v1.11.0)
+- **Install size:** no workouts bundle or ad SDK; arm64 APK ~15 MiB, universal ~27 MiB (v1.14.8)
 - **Food log I/O:** monthly diary buckets for large histories
 - **UI:** off-main-thread entry thumbnails; Progress screen frame-time improvements in our perf baseline
 - **AI uploads:** image downscaling before provider requests

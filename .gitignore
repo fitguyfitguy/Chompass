@@ -65,3 +65,8 @@ build/usda-fdc/
 __pycache__/
 *.pyc
 Fud-Food-Diary-2026-04-27_to_2026-07-22.json
+
+# Hugo project site (Codeberg Pages)
+website/public/
+website/resources/
+website/.hugo_build.lock

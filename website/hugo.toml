@@ -1,0 +1,38 @@
+baseURL = 'https://fitguy.codeberg.page/NoFUD/'
+languageCode = 'en-us'
+title = 'NoFUD'
+disableKinds = ['taxonomy', 'term', 'RSS']
+enableRobotsTXT = true
+summaryLength = 20
+
+[params]
+  description = 'Ad-free AI calorie tracker for Android. Cloud BYOK or opt-in on-device Gemma 4. Privacy-focused, no analytics.'
+  repo = 'https://codeberg.org/fitguy/NoFUD'
+  releases = 'https://codeberg.org/fitguy/nofud/releases'
+  obtainium = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud'
+  privacyRepo = 'https://codeberg.org/fitguy/NoFUD/src/branch/main/PRIVACY.md'
+  upstream = 'https://github.com/apoorvdarshan/fud-ai'
+  upstreamReleases = 'https://github.com/apoorvdarshan/fud-ai/releases'
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[module]
+  [[module.mounts]]
+    source = 'content'
+    target = 'content'
+  [[module.mounts]]
+    source = 'layouts'
+    target = 'layouts'
+  [[module.mounts]]
+    source = 'static'
+    target = 'static'
+  [[module.mounts]]
+    source = 'assets'
+    target = 'assets'
+  [[module.mounts]]
+    source = 'archetypes'
+    target = 'archetypes'
+  [[module.mounts]]
+    source = '../docs/screenshots'
+    target = 'static/screenshots'
