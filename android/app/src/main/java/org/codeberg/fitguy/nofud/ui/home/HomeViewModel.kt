@@ -827,12 +827,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             if (_ui.value.saving) return@launch
             _ui.value = _ui.value.copy(saving = true)
             try {
+                // Upstream #149 / Android 6.0: reused copies log at now + current meal
+                // (not the source entry's clock time / meal bucket).
                 entries.forEach { entry ->
                     container.foodRepository.addEntry(
-                        entry.duplicatedForLogging(
-                            logDate = timestampForSelectedDayPreservingTime(entry.timestamp),
-                            mealType = entry.mealType
-                        )
+                        entry.duplicatedForLogging(timestampForSelectedDay())
                     )
                 }
             } finally {
@@ -890,12 +889,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val zone = ZoneId.systemDefault()
         val nowTime = java.time.LocalTime.now()
         return day.atTime(nowTime).atZone(zone).toInstant()
-    }
-
-    private fun timestampForSelectedDayPreservingTime(sourceTimestamp: Instant): Instant {
-        val zone = ZoneId.systemDefault()
-        val sourceTime = sourceTimestamp.atZone(zone).toLocalTime()
-        return _selectedDate.value.atTime(sourceTime).atZone(zone).toInstant()
     }
 
     private suspend fun savePendingDraft(
