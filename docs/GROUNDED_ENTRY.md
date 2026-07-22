@@ -18,7 +18,7 @@ sources only (never from invented macros).
 5. **Retrieval ranking** — Shared [`QueryNormalizer`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/QueryNormalizer.kt) (Kotlin + Python); prefer FNDDS; soft-penalize flour/powder/dry/pie and beverage mismatches; calibrated source-aware scores + ambiguity margin `1.5`; local [`GroundingCorrectionStore`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingCorrectionStore.kt) priors.
 6. **Portion resolver** — [`PortionResolver`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/PortionResolver.kt): override → estimated grams → quantity×unit → candidate serving → heuristic; **never silent 100 g**.
 7. **UI (gated)** — Add-food tile, entry sheet, candidate sheet, provenance + confidence badges — hidden while `GroundedEntryFeature.ENABLED == false`. On-device policy: `ALLOW_ON_DEVICE = false`.
-8. **Harness** — [`benchmarks/food_accuracy/run_grounded_eval.py`](../benchmarks/food_accuracy/run_grounded_eval.py), failure-class metrics, bad-case + history/OFF manifests, retrieval golden vectors, `devenv tasks run benchmark:food-accuracy-smoke`.
+8. **Harness** — [`docs/benchmarks/food_accuracy/run_grounded_eval.py`](benchmarks/food_accuracy/run_grounded_eval.py), failure-class metrics, bad-case + history/OFF manifests, retrieval golden vectors, `devenv tasks run benchmark:food-accuracy-smoke`.
 
 ### Benchmark snapshot (Flash Lite, FNDDS text-42)
 
@@ -34,9 +34,9 @@ Same-model apples-to-apples unless noted. **Grounded is still WIP** — improved
 
 **Vs ungrounded:** still ~2–2.5× worse on WMAPE and ~14 pp behind on ±20% kcal — users would still notice vs Photo/Note on this text set.
 
-**Vs readiness targets** ([`baselines/grounded_text_thresholds.json`](../benchmarks/food_accuracy/baselines/grounded_text_thresholds.json)): WMAPE ≤10% ✗ · ±20% ≥85% ✗ · parse ≥95% ✓ · silent-zero 0% ✓ · identity top-3 ≥80% ✓.
+**Vs readiness targets** ([`baselines/grounded_text_thresholds.json`](benchmarks/food_accuracy/baselines/grounded_text_thresholds.json)): WMAPE ≤10% ✗ · ±20% ≥85% ✗ · parse ≥95% ✓ · silent-zero 0% ✓ · identity top-3 ≥80% ✓.
 
-Artifacts: `benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text_post_roadmap/` (gitignored local results).
+Artifacts: `docs/benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text_post_roadmap/` (gitignored local results).
 
 ### Known gaps that keep this WIP
 
@@ -165,16 +165,16 @@ Key types: [`FoodGrounding.kt`](../android/app/src/main/java/org/codeberg/fitguy
 ## Benchmarks
 
 ```bash
-uv run python benchmarks/food_accuracy/run_grounded_eval.py \
+uv run python docs/benchmarks/food_accuracy/run_grounded_eval.py \
   --provider openrouter --model google/gemini-3.5-flash-lite \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
-  --out benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
+  --out docs/benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text \
   --sleep 6
 
 # Compare to single-shot baseline:
-uv run python benchmarks/food_accuracy/compare_runs.py \
-  benchmarks/food_accuracy/results/quick_gemini35_flash_lite_text/summary.csv \
-  benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text/summary.csv
+uv run python docs/benchmarks/food_accuracy/compare_runs.py \
+  docs/benchmarks/food_accuracy/results/quick_gemini35_flash_lite_text/summary.csv \
+  docs/benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text/summary.csv
 ```
 
 Asset integrity:

@@ -191,7 +191,7 @@ EOF
   exit 1
 fi
 
-NOTES="$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$ROOT/CHANGELOG.md")"
+NOTES="$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$ROOT/docs/CHANGELOG.md")"
 
 if [[ "$ASSETS_ONLY" -eq 0 ]]; then
   if release_exists; then

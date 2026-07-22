@@ -12,7 +12,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-METADATA_SRC="$ROOT/fdroid/org.codeberg.fitguy.nofud.yml"
+METADATA_SRC="$ROOT/docs/fdroid/org.codeberg.fitguy.nofud.yml"
 BRANCH="org.codeberg.fitguy.nofud"
 WORKDIR="${TMPDIR:-/tmp}/fdroiddata-nofud-$$"
 

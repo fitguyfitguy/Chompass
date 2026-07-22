@@ -7,12 +7,12 @@ for the older recognize-JSON → lexical USDA top-1 path.
 
 Example:
 
-  uv run python benchmarks/food_accuracy/run_grounded_eval.py \\
+  uv run python docs/benchmarks/food_accuracy/run_grounded_eval.py \\
     --provider openrouter --model google/gemini-3.5-flash-lite \\
-    --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \\
+    --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \\
     --usda-db android/app/src/debug/assets/usda/usda_foods.sqlite \\
     --sleep 6 --retries 2 \\
-    --out benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
+    --out docs/benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
 """
 
 from __future__ import annotations

@@ -171,7 +171,7 @@ All notable changes to NoFUD are documented here.
 - Wellness card on the Progress tab: sleep, resting heart rate and hydration read from Health Connect (new Sleep, Resting Heart Rate and Hydration read permissions)
 - Height now syncs to Health Connect (new Height write permission), so scales and other apps can use it
 - Optional background sync (Settings → Health &amp; Data, **off by default**): checks Health Connect for new data every few hours even when NoFUD is closed
-- Nutrition calculation audit documentation ([`CALCULATION_METHODS.md`](docs/CALCULATION_METHODS.md)) with formula register, scientific policy decisions, and release checklist
+- Nutrition calculation audit documentation ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md)) with formula register, scientific policy decisions, and release checklist
 - Unit tests for BMR/TDEE, macro goals, keto carb heuristics, weight forecast, adaptive goals, and body-composition estimates
 - Calculation Methods UI sections for weight forecast, adaptive goals, and tape-measure body metrics
 - Golden scenario tests (`CalculationGoldenScenariosTest`) and shared `GoalFormulaReference` for AI prompt parity
@@ -305,11 +305,11 @@ Initial public release of NoFUD - an ad-free, privacy-focused Android fork of [F
 ### Added
 
 - NoFUD branding, Codeberg home, and `nofud://` meal-share deep links
-- Upstream MIT attribution (`NOTICE`, `docs/ASSET_CREDITS.md`, About screen, README)
-- Original NoFUD launcher icon and splash logo (see [ASSET_CREDITS.md](docs/ASSET_CREDITS.md))
+- Upstream MIT attribution (`NOTICE`, `ASSET_CREDITS.md`, About screen, README)
+- Original NoFUD launcher icon and splash logo (see [ASSET_CREDITS.md](ASSET_CREDITS.md))
 - [PRIVACY.md](PRIVACY.md) documents local-first, no-ads data practices
 - `scripts/optimize_exercise_images.py` and `assets/exercises/IMAGE_MANIFEST.json` for bundled exercise photos
-- About screen link to [ASSET_CREDITS.md](docs/ASSET_CREDITS.md); `assets/muscle/LICENSE` (MIT)
+- About screen link to [ASSET_CREDITS.md](ASSET_CREDITS.md); `assets/muscle/LICENSE` (MIT)
 
 ### Removed
 

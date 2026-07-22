@@ -25,6 +25,6 @@ class HealthPermissionsRationaleActivity : Activity() {
     }
 
     private companion object {
-        const val PRIVACY_POLICY_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/PRIVACY.md"
+        const val PRIVACY_POLICY_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/docs/PRIVACY.md"
     }
 }

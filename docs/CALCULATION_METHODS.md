@@ -254,7 +254,7 @@ When changing any formula, constant, or guardrail:
 2. Update this file (formula register + policy table).
 3. Update `strings.xml` `settings_calc_*` if user-visible.
 4. Add/adjust unit tests with golden vectors.
-5. Note change in `CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
+5. Note change in `docs/CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
 6. Run `devenv shell bash -lc 'cd android && ./gradlew test'`.
 
 ---

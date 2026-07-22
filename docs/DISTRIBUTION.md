@@ -40,7 +40,7 @@ Release packaging still uses the **`NoFUD-fdroid-*` filename prefix** so existin
 
 ## F-Droid metadata
 
-Draft metadata lives in [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml).
+Draft metadata lives in [`fdroid/org.codeberg.fitguy.nofud.yml`](fdroid/org.codeberg.fitguy.nofud.yml).
 
 - **Tags ≤ v1.14.1:** Gradle task `fdroidRelease` (historical product flavor).
 - **Tags after the flavor removal:** Gradle metadata `yes` (runs `assembleRelease`; not a flavor name)

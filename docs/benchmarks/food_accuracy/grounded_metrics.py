@@ -4,8 +4,8 @@ Records identity / source / portion metrics that the single-shot MAE harness
 does not cover. Classifies per-sample failure modes for attribution.
 
 Example (stub):
-  uv run python benchmarks/food_accuracy/grounded_metrics.py \
-    --trace benchmarks/food_accuracy/manifest/grounded_trace_example.jsonl
+  uv run python docs/benchmarks/food_accuracy/grounded_metrics.py \
+    --trace docs/benchmarks/food_accuracy/manifest/grounded_trace_example.jsonl
 """
 
 from __future__ import annotations

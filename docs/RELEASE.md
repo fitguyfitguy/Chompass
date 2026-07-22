@@ -51,8 +51,8 @@ devenv shell bash -lc 'cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assem
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
-3. Optional: sync `fdroid/org.codeberg.fitguy.nofud.yml` and run `devenv tasks run release:check-metadata`
+2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
+3. Optional: sync `docs/fdroid/org.codeberg.fitguy.nofud.yml` and run `devenv tasks run release:check-metadata`
 4. Commit, tag, push:
 
 ```bash
@@ -166,7 +166,7 @@ Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 - Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`DISTRIBUTION.md`](DISTRIBUTION.md)
 - Add store metadata under `metadata/en-US/`
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
-- Keep `fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
+- Keep `docs/fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 
 See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the full checklist and fdroiddata MR body.
 
@@ -178,7 +178,7 @@ Before shipping formula, constant, or guardrail changes:
 2. Update [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md) (formula register + policy table)
 3. Update in-app strings (`settings_calc_*` in `strings.xml`) if user-visible
 4. Add or adjust unit tests under `android/app/src/test/`
-5. Document user impact in `CHANGELOG.md`
+5. Document user impact in `docs/CHANGELOG.md`
 6. Run `devenv shell bash -lc 'cd android && ./gradlew test'`
 
 ## APK size baselines (1.4.0)

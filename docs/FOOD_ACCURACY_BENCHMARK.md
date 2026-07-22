@@ -10,8 +10,8 @@ Offline research harness for comparing **prompts** and **models** on food text a
 
 ```bash
 # Text eval (no download; uses checked-in FNDDS seed manifest)
-uv run --with httpx python benchmarks/food_accuracy/run_eval.py \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+uv run --with httpx python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --prompt production_text \
   --provider stub \
   --limit 5
@@ -19,26 +19,26 @@ uv run --with httpx python benchmarks/food_accuracy/run_eval.py \
 # Real API (OpenAI-compatible: Ollama, OpenRouter, Gemini proxy, etc.)
 export OPENAI_API_KEY=...
 export OPENAI_BASE_URL=http://127.0.0.1:11434/v1   # Ollama example
-uv run --with httpx python benchmarks/food_accuracy/run_eval.py \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+uv run --with httpx python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --prompt production_text \
   --model llama3.2-vision \
   --limit 10
 
-# Download image datasets (cached under benchmarks/food_accuracy/data/, gitignored)
-uv run --with httpx --with pandas python benchmarks/food_accuracy/download_jfb.py --limit 50
-uv run python benchmarks/food_accuracy/download_nutrition5k.py --metadata-only   # metadata only, no gsutil
-uv run python benchmarks/food_accuracy/download_nutrition5k.py --limit 20          # needs gsutil + GCS access
+# Download image datasets (cached under docs/benchmarks/food_accuracy/data/, gitignored)
+uv run --with httpx --with pandas python docs/benchmarks/food_accuracy/download_jfb.py --limit 50
+uv run python docs/benchmarks/food_accuracy/download_nutrition5k.py --metadata-only   # metadata only, no gsutil
+uv run python docs/benchmarks/food_accuracy/download_nutrition5k.py --limit 20          # needs gsutil + GCS access
 
 # Image eval after JFB download
-uv run --with httpx python benchmarks/food_accuracy/run_eval.py \
-  --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
+uv run --with httpx python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb.jsonl \
   --prompt production_image \
   --model gpt-4o-mini \
   --limit 20
 ```
 
-Results land in `benchmarks/food_accuracy/results/<run_id>/` (summary CSV + per-sample JSONL).
+Results land in `docs/benchmarks/food_accuracy/results/<run_id>/` (summary CSV + per-sample JSONL).
 
 ## Dataset catalog
 
@@ -72,7 +72,7 @@ Each line is JSON (JSONL). Required fields:
 | `mass_g` | number? | Portion mass when known |
 | `meal_name` | string? | Reference name (image sets) |
 
-See [`benchmarks/food_accuracy/manifest/schema.md`](../benchmarks/food_accuracy/manifest/schema.md).
+See [`docs/benchmarks/food_accuracy/manifest/schema.md`](benchmarks/food_accuracy/manifest/schema.md).
 
 ## Metrics
 
@@ -115,13 +115,13 @@ Image prompts append optional user context when `text` is set on an image sample
 | L2 | `data/manifests/jfb_image_text_l2.jsonl` | ingredient names only |
 
 ```bash
-uv run python benchmarks/food_accuracy/download_jfb.py --limit 50
+uv run python docs/benchmarks/food_accuracy/download_jfb.py --limit 50
 
-uv run python benchmarks/food_accuracy/run_eval.py \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model google/gemma-4-26b-a4b-it:free \
   --prompt compact --sleep 15 --retries 3 \
-  --manifest benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
-  --out benchmarks/food_accuracy/results/image_text_ab/l1_meal_name
+  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
+  --out docs/benchmarks/food_accuracy/results/image_text_ab/l1_meal_name
 ```
 
 Compare L0 vs L1 vs L2 with `compare_runs.py`.
@@ -136,7 +136,7 @@ Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatica
 
 - Fetches the live OpenRouter `/api/v1/models` catalog
 - Keeps price-zero / `:free` chat models that accept text (and image, when the sample has a photo)
-- **Excludes** content-safety / moderation / embeddings / TTS / image-gen style IDs via [`openrouter_models.py`](../benchmarks/food_accuracy/openrouter_models.py)
+- **Excludes** content-safety / moderation / embeddings / TTS / image-gen style IDs via [`openrouter_models.py`](benchmarks/food_accuracy/openrouter_models.py)
 - Randomly picks from the pool; on 429/502/ResourceExhausted fails over to another pool member (up to 3 attempts)
 
 ### Does the pool stay up to date?
@@ -151,19 +151,19 @@ So: **yes, it finds newly added free models and drops cancelled ones across runs
 
 ```bash
 # Inspect the pool (and what we exclude)
-uv run python benchmarks/food_accuracy/list_nofud_free_pool.py
-uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
+uv run python docs/benchmarks/food_accuracy/list_nofud_free_pool.py
+uv run python docs/benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
 
 # Eval with NoFUD free router (preferred / default)
-uv run python benchmarks/food_accuracy/run_eval.py \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter \
   --model nofud/free \
   --prompt compact \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --limit 10
 
 # Stock OpenRouter free router — not for accuracy benches
-uv run python benchmarks/food_accuracy/run_eval.py \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model openrouter/free ...
 ```
 
@@ -181,22 +181,22 @@ Vision models: image samples are sent as base64 JPEG in the chat completion requ
 ### Prompt A/B example
 
 ```bash
-uv run python benchmarks/food_accuracy/run_eval.py \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --prompt production_text --provider stub \
-  --out benchmarks/food_accuracy/results/ab/production_text
+  --out docs/benchmarks/food_accuracy/results/ab/production_text
 
-uv run python benchmarks/food_accuracy/run_eval.py \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --prompt fewshot_units --provider stub \
-  --out benchmarks/food_accuracy/results/ab/fewshot_units
+  --out docs/benchmarks/food_accuracy/results/ab/fewshot_units
 
-uv run python benchmarks/food_accuracy/compare_runs.py \
-  benchmarks/food_accuracy/results/ab/production_text/summary.csv \
-  benchmarks/food_accuracy/results/ab/fewshot_units/summary.csv
+uv run python docs/benchmarks/food_accuracy/compare_runs.py \
+  docs/benchmarks/food_accuracy/results/ab/production_text/summary.csv \
+  docs/benchmarks/food_accuracy/results/ab/fewshot_units/summary.csv
 ```
 
-See also [`benchmarks/food_accuracy/README.md`](../benchmarks/food_accuracy/README.md).
+See also [`docs/benchmarks/food_accuracy/README.md`](benchmarks/food_accuracy/README.md).
 
 ## Download details
 
@@ -213,8 +213,8 @@ Full Nutrition5k archive is ~181 GB; do not commit images.
 ### FNDDS text (expand seed set)
 
 ```bash
-uv run python benchmarks/food_accuracy/build_fndds_manifest.py \
-  --out benchmarks/food_accuracy/manifest/fndds_full.jsonl \
+uv run python docs/benchmarks/food_accuracy/build_fndds_manifest.py \
+  --out docs/benchmarks/food_accuracy/manifest/fndds_full.jsonl \
   --limit 200
 ```
 
