@@ -71,6 +71,10 @@ data class GroundingCandidate(
     val score: Double,
     val brand: String? = null,
     val foodCategory: String? = null,
+    /** USDA `data_type` (`survey_fndds_food` / `foundation_food`) when from the offline index. */
+    val dataType: String? = null,
+    /** True when energy (kcal) is missing in the source row — do not auto-scale as 0 kcal. */
+    val incompleteEnergy: Boolean = false,
     /** Per-100g macros when available (USDA / OFF). */
     val caloriesPer100g: Double? = null,
     val proteinPer100g: Double? = null,

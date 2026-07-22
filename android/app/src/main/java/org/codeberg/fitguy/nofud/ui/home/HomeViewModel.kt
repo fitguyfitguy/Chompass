@@ -24,6 +24,7 @@ import org.codeberg.fitguy.nofud.models.WaterEntry
 import org.codeberg.fitguy.nofud.services.FoodImageComposer
 import org.codeberg.fitguy.nofud.services.OpenFoodFactsService
 import org.codeberg.fitguy.nofud.services.PerfLog
+import org.codeberg.fitguy.nofud.services.grounding.GroundedEntryFeature
 import org.codeberg.fitguy.nofud.services.ai.AiError
 import org.codeberg.fitguy.nofud.services.health.HomeActivitySnapshot
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
@@ -481,6 +482,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * then ground nutrients against history / USDA / Open Food Facts.
      */
     fun analyzeGrounded(description: String?, imageBytes: ByteArray?) {
+        if (!GroundedEntryFeature.ENABLED) return
         viewModelScope.launch {
             val images = listOfNotNull(imageBytes?.takeIf { it.isNotEmpty() })
             val start = beginAnalysis(phased = true) { state ->

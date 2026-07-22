@@ -136,4 +136,105 @@ class NutrientScalingAndHistoryTest {
         val q = UsdaFoodIndex.tokenize("chicken breast raw")
         assertTrue(UsdaFoodIndex.score(q, exact) > UsdaFoodIndex.score(q, other))
     }
+
+    @Test
+    fun usdaScore_prefersFnddsCookedOverFlour() {
+        fun record(
+            id: Long,
+            desc: String,
+            dataType: String,
+            tokens: String,
+        ) = UsdaFoodRecord(
+            fdcId = id,
+            description = desc,
+            dataType = dataType,
+            foodCategory = null,
+            tokens = tokens,
+            servingUnit = null,
+            servingGrams = null,
+            calories = 130.0,
+            protein = 2.0,
+            carbs = 28.0,
+            fat = 0.3,
+            fiber = null,
+            sugar = null,
+            addedSugar = null,
+            saturatedFat = null,
+            monounsaturatedFat = null,
+            polyunsaturatedFat = null,
+            cholesterol = null,
+            sodium = null,
+            potassium = null,
+            transFat = null,
+            calcium = null,
+            iron = null,
+            magnesium = null,
+            zinc = null,
+            vitaminA = null,
+            vitaminC = null,
+            vitaminD = null,
+            vitaminB12 = null,
+            vitaminE = null,
+            vitaminK = null,
+            folate = null,
+            omega3 = null,
+        )
+        val cooked = record(
+            1,
+            "Rice, white, cooked",
+            "survey_fndds_food",
+            "rice white cooked",
+        )
+        val flour = record(
+            2,
+            "Rice flour, white",
+            "foundation_food",
+            "rice flour white",
+        )
+        val q = UsdaFoodIndex.tokenize("cooked white rice")
+        assertTrue(UsdaFoodIndex.score(q, cooked) > UsdaFoodIndex.score(q, flour))
+    }
+
+    @Test
+    fun usdaScore_penalizesBeverageMismatch() {
+        fun record(id: Long, desc: String, tokens: String) = UsdaFoodRecord(
+            fdcId = id,
+            description = desc,
+            dataType = "survey_fndds_food",
+            foodCategory = null,
+            tokens = tokens,
+            servingUnit = null,
+            servingGrams = null,
+            calories = 40.0,
+            protein = 1.0,
+            carbs = 4.0,
+            fat = 1.0,
+            fiber = null,
+            sugar = null,
+            addedSugar = null,
+            saturatedFat = null,
+            monounsaturatedFat = null,
+            polyunsaturatedFat = null,
+            cholesterol = null,
+            sodium = null,
+            potassium = null,
+            transFat = null,
+            calcium = null,
+            iron = null,
+            magnesium = null,
+            zinc = null,
+            vitaminA = null,
+            vitaminC = null,
+            vitaminD = null,
+            vitaminB12 = null,
+            vitaminE = null,
+            vitaminK = null,
+            folate = null,
+            omega3 = null,
+        )
+        val beer = record(1, "Beer", "beer")
+        val dip = record(2, "Onion dip", "onion dip")
+        val q = UsdaFoodIndex.tokenize("beer")
+        assertTrue(UsdaFoodIndex.score(q, beer) > UsdaFoodIndex.score(q, dip))
+    }
 }

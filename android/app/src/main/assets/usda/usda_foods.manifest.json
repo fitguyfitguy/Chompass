@@ -1,7 +1,7 @@
 {
-  "dataset_version": "fdc-2024-10-31-foundation-fndds-fixture",
-  "food_count": 12,
-  "sha256": "f815b6ecf65d19a24f460f77b1b2e2e6388f774ac8989566e2ca0cc193058d1d",
+  "dataset_version": "fdc-2024-10-31-foundation-fndds",
+  "food_count": 5806,
+  "sha256": "cbd9fd0670dc56d8a21a26a9e4911dde942ce72fb29a5d3ac0762024ac69550a",
   "license": "CC0 / public domain (USDA FoodData Central)",
   "attribution": "U.S. Department of Agriculture, Agricultural Research Service, FoodData Central",
   "nutrients": [
@@ -32,5 +32,5 @@
     "folate",
     "omega_3"
   ],
-  "fixture": true
+  "fixture": false
 }

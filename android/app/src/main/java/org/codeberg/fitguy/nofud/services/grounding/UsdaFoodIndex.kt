@@ -60,8 +60,15 @@ class UsdaFoodIndex(
     /**
      * Exact / prefix / token search. Scores exact description matches highest,
      * then token overlap. Cap [limit] results.
+     *
+     * @param includeIncompleteEnergy when false (default), rows with null calories
+     *   are omitted so callers never silently scale 0 kcal from Foundation gaps.
      */
-    fun search(query: String, limit: Int = 8): List<GroundingCandidate> {
+    fun search(
+        query: String,
+        limit: Int = 8,
+        includeIncompleteEnergy: Boolean = false,
+    ): List<GroundingCandidate> {
         val q = query.trim()
         if (q.isEmpty()) return emptyList()
         val tokens = tokenize(q)
@@ -97,11 +104,14 @@ class UsdaFoodIndex(
         }
 
         return rows
+            .asSequence()
+            .filter { includeIncompleteEnergy || it.calories != null }
             .map { it to score(tokens, it) }
             .filter { it.second > 0 }
             .sortedByDescending { it.second }
             .take(limit)
             .map { (food, score) -> food.toCandidate(score, datasetVersion) }
+            .toList()
     }
 
     fun close() {
@@ -188,6 +198,22 @@ class UsdaFoodIndex(
                 .split(Regex("\\s+"))
                 .filter { it.length >= 2 }
 
+        private val COOKED_OR_GENERIC = setOf(
+            "cooked", "grilled", "steamed", "boiled", "baked", "roasted", "fried",
+            "sauteed", "braised", "meal", "plate", "bowl", "lunch", "dinner",
+            "breakfast", "snack",
+        )
+        private val DRY_FORM = setOf("flour", "powder", "dry", "dried", "mix")
+        private val DESSERT_FORM = setOf("pie", "cake", "cookie", "candy")
+        private val BEVERAGE_QUERY = setOf(
+            "beer", "wine", "milk", "juice", "soda", "coffee", "tea", "water",
+            "shake", "smoothie", "drink", "beverage", "cola",
+        )
+        private val BEVERAGE_DESC = setOf(
+            "beer", "wine", "milk", "juice", "soda", "coffee", "tea", "drink",
+            "beverage", "cola", "ale", "lager",
+        )
+
         internal fun score(queryTokens: List<String>, food: UsdaFoodRecord): Double {
             if (queryTokens.isEmpty()) return 0.0
             val desc = food.description.lowercase(Locale.US)
@@ -199,10 +225,52 @@ class UsdaFoodIndex(
             else if (desc.contains(joined)) score += 3.5
             val overlap = queryTokens.count { it in foodTokens }
             score += overlap * 1.5
-            // Prefer shorter / more specific Foundation names slightly.
+            // Prefer shorter / more specific names slightly.
             score += max(0.0, 2.0 - food.description.length / 80.0)
-            if (food.dataType.contains("foundation")) score += 0.3
+
+            val isFndds = food.dataType.contains("fndds", ignoreCase = true) ||
+                food.dataType.contains("survey", ignoreCase = true)
+            val queryImpliesCookedOrGeneric =
+                queryTokens.any { it in COOKED_OR_GENERIC } ||
+                    queryTokens.none { it in setOf("raw", "dry", "dried", "flour", "powder") }
+            if (isFndds) {
+                score += if (queryImpliesCookedOrGeneric) 1.0 else 0.35
+            }
+
+            score += formAdjustment(queryTokens, desc, foodTokens)
+            if (food.calories == null) score -= 2.0
             return score
+        }
+
+        /**
+         * Soft penalties for form mismatches (cooked rice vs rice flour, beer vs dip, etc.).
+         */
+        internal fun formAdjustment(
+            queryTokens: List<String>,
+            descriptionLower: String,
+            foodTokens: Set<String> = emptySet(),
+        ): Double {
+            var adj = 0.0
+            val q = queryTokens.toSet()
+            val impliesCookedSolid = q.any { it in COOKED_OR_GENERIC } ||
+                (q.intersect(BEVERAGE_QUERY).isEmpty() && q.none { it in DRY_FORM })
+            val descDry = DRY_FORM.any { it in foodTokens || descriptionLower.contains(it) }
+            val descDessert = DESSERT_FORM.any { it in foodTokens || descriptionLower.contains(" $it") || descriptionLower.startsWith("$it,") || descriptionLower.contains(", $it") }
+            val queryBeverage = q.any { it in BEVERAGE_QUERY }
+            val descBeverage = BEVERAGE_DESC.any { it in foodTokens || descriptionLower.contains(it) }
+
+            if (impliesCookedSolid && descDry && q.none { it in DRY_FORM }) adj -= 2.5
+            if (q.none { it in DESSERT_FORM } && descDessert && impliesCookedSolid) adj -= 2.0
+            if (queryBeverage && !descBeverage) adj -= 3.0
+            if (!queryBeverage && descBeverage && q.intersect(BEVERAGE_QUERY).isEmpty()) {
+                // Don't penalize milk/yogurt-adjacent solids hard; only clear drinks.
+                if (listOf("beer", "wine", "soda", "cola", "ale", "lager").any { descriptionLower.contains(it) }) {
+                    adj -= 2.0
+                }
+            }
+            if (q.any { it in setOf("raw", "fresh") } && descriptionLower.contains("cooked")) adj -= 1.0
+            if (q.any { it == "cooked" } && (descriptionLower.contains("raw") || descDry)) adj -= 1.5
+            return adj
         }
     }
 }
@@ -249,6 +317,8 @@ data class UsdaFoodRecord(
             displayName = description,
             score = score,
             foodCategory = foodCategory,
+            dataType = dataType,
+            incompleteEnergy = calories == null,
             caloriesPer100g = calories,
             proteinPer100g = protein,
             carbsPer100g = carbs,
