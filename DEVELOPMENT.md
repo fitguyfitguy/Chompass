@@ -94,10 +94,20 @@ devenv tasks run site:build
 
 ### Deploy
 
+Pushes use the SSH Host alias **`codeberg-fitguy`** (see `~/.ssh/config`) so Codeberg authenticates as **fitguy**, not KewLE (the agent often offers the KewLE key first for bare `codeberg.org`).
+
 ```bash
 ./scripts/deploy_pages.sh          # build + force-push pages
 ./scripts/deploy_pages.sh --dry-run
 # or: site-deploy / devenv tasks run site:deploy
+```
+
+Optional overrides: `PAGES_SSH_HOST`, `PAGES_PUSH_URL`, `PAGES_REMOTE`, `PAGES_BRANCH`.
+
+For day-to-day git on this repo, prefer the same host in `origin`:
+
+```bash
+git remote set-url origin ssh://git@codeberg-fitguy/fitguy/nofud.git
 ```
 
 Update product copy in `website/content/` when messaging changes, then run `deploy_pages.sh` again.
