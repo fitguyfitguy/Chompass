@@ -1,5 +1,5 @@
 :root {
-  --teal: #4db6ac;
+  --teal: #5cc48f;
   --teal-deep: #006b5e;
   --teal-ink: #003731;
   --bg: #121116;
@@ -8,7 +8,7 @@
   --text: #e6e1e5;
   --muted: #a9a4ad;
   --line: rgba(230, 225, 229, 0.12);
-  --focus: #99f6e4;
+  --focus: #a7f0c8;
   --radius: 1rem;
   --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
@@ -53,7 +53,7 @@ a {
 }
 
 a:hover {
-  color: #7fd4cb;
+  color: #8fd9a8;
 }
 
 :focus-visible {
