@@ -11,7 +11,7 @@
     googleTVAddOns.enable = false;
   };
 
-  packages = [ pkgs.android-tools ];
+  packages = [ pkgs.android-tools pkgs.hugo ];
 
   enterShell = ''
     mkdir -p android
@@ -22,6 +22,8 @@
 
   scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
   scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
+  scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
+  scripts.site-build.exec = "hugo --minify -s website";
 
   tasks."build:debug" = {
     exec = "cd android && ./gradlew :app:assembleDebug";
@@ -51,5 +53,15 @@
   tasks."release:assets-list" = {
     exec = "./scripts/manage_release_assets.sh list";
     description = "List Codeberg release attachments and estimated total size";
+  };
+
+  tasks."site:serve" = {
+    exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
+    description = "Preview the Codeberg Pages Hugo site locally";
+  };
+
+  tasks."site:build" = {
+    exec = "hugo --minify -s website";
+    description = "Build the static Codeberg Pages site into website/public";
   };
 }

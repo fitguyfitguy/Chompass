@@ -68,6 +68,20 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
 
+## Project website (Codeberg Pages)
+
+Hugo site sources live in [`website/`](website/). Screenshots are mounted from [`docs/screenshots/`](docs/screenshots/) at build time. Live URL after deploy: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
+
+```bash
+site-serve   # http://localhost:1313/NoFUD/
+site-build   # writes website/public/
+# or:
+devenv tasks run site:serve
+devenv tasks run site:build
+```
+
+Deploy is automatic on pushes to `main` that touch `website/**`, `docs/screenshots/**`, or [`.forgejo/workflows/pages.yml`](.forgejo/workflows/pages.yml), via the `git-pages` Forgejo Action. Enable **Actions** once under Codeberg repo Settings → Units. Update product copy in `website/content/` when messaging changes.
+
 ## App icon
 
 NoFUD uses original launcher and splash artwork (distinct from Fud AI). Regenerate themed variants with:
