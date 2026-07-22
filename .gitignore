@@ -58,7 +58,7 @@ docs/UPSTREAM_IDEAS.md
 benchmarks/food_accuracy/data/
 benchmarks/food_accuracy/results/
 
-# USDA FoodData Central raw downloads (built assets are committed under assets/usda/)
+# USDA FoodData Central raw downloads (built assets live under src/debug/assets/usda/)
 build/usda-fdc/
 
 # Python

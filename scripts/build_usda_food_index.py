@@ -3,10 +3,10 @@
 
 Downloads a pinned FoodData Central bulk CSV release (or uses --fixture to emit a
 tiny committed seed without network), normalizes NoFUD-supported nutrients to
-per-100g, and writes:
+per-100g, and writes (debug APK assets only while grounded entry is gated):
 
-  android/app/src/main/assets/usda/usda_foods.sqlite
-  android/app/src/main/assets/usda/usda_foods.manifest.json
+  android/app/src/debug/assets/usda/usda_foods.sqlite
+  android/app/src/debug/assets/usda/usda_foods.manifest.json
 
 Usage (from repo root):
   uv run python scripts/build_usda_food_index.py --fixture
@@ -29,7 +29,7 @@ from pathlib import Path
 from urllib.request import urlretrieve
 
 REPO = Path(__file__).resolve().parents[1]
-OUT_DIR = REPO / "android" / "app" / "src" / "main" / "assets" / "usda"
+OUT_DIR = REPO / "android" / "app" / "src" / "debug" / "assets" / "usda"
 CACHE_DIR = REPO / "build" / "usda-fdc"
 
 # Pin a known public FDC bulk dump. Override with --zip-url if USDA moves the file.

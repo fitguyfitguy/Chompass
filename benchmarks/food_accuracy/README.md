@@ -54,7 +54,7 @@ See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md) (experimental; **UI
 uv run python benchmarks/food_accuracy/run_grounded_eval.py \
   --provider openrouter --model google/gemini-3.5-flash-lite \
   --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
-  --usda-db android/app/src/main/assets/usda/usda_foods.sqlite \
+  --usda-db android/app/src/debug/assets/usda/usda_foods.sqlite \
   --sleep 6 --retries 2 \
   --out benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
 ```

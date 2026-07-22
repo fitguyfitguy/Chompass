@@ -1,7 +1,7 @@
 # Grounded food entry
 
 **Status: experimental / disabled in UI.**  
-Flip [`GroundedEntryFeature.ENABLED`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedEntryFeature.kt) to `true` only after the [readiness checklist](#readiness-checklist) below. Code, USDA assets, and the food-accuracy harness remain in-tree for continued work.
+Flip [`GroundedEntryFeature.ENABLED`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedEntryFeature.kt) to `true` only after the [readiness checklist](#readiness-checklist) below. Code and the food-accuracy harness remain in-tree. The offline USDA SQLite (~2.1 MB) is under **`src/debug/assets` only** — release / F-Droid APKs do not package it while the feature is gated.
 
 Optional entry method that uses the selected AI provider to **search local
 databases and pick identities**, then resolves nutrient values from those
@@ -11,7 +11,7 @@ sources only (never from invented macros).
 
 ### Built
 
-1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~2.1 MB`), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py), Android [`UsdaFoodIndex`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/UsdaFoodIndex.kt).
+1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~2.1 MB`), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py), Android [`UsdaFoodIndex`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/UsdaFoodIndex.kt). Packaged in **debug** builds only (`src/debug/assets/usda/`), not release.
 2. **Provenance model** — `FoodGroundingProvenance` / `GroundingCandidate` / validation helpers; `FoodSource.GROUNDED` for diary export/import.
 3. **Orchestrator** — [`GroundedFoodEntryService`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedFoodEntryService.kt): barcode → OFF, history, USDA, then model-estimate fallback. Deterministic **scale from DB rows** (model must not invent macros).
 4. **Cloud tool loop** — [`GroundingTools`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingTools.kt) + [`GroundedToolLoop`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/GroundedToolLoop.kt) (max 4 rounds): `search_usda` / `search_history` / `lookup_barcode` → `finalize_grounding`. Last OpenAI-compatible round can force finalize.
@@ -50,8 +50,9 @@ Enable `GroundedEntryFeature.ENABLED` only when **all** of the following hold:
 5. **On-device policy** — Either disable grounded when provider is on-device, or ship a tested deterministic path with the same provenance rules.
 6. **Strings** — Localized grounded UI strings for shipped locales.
 7. **Release note** — Short CHANGELOG blurb + privacy line (BYOK recognition + local USDA/OFF/history).
+8. **USDA packaging** — Move `src/debug/assets/usda/` back to `src/main/assets/usda/` (or ship a downloadable index) so release/F-Droid APKs include the offline DB before flipping the flag.
 
-Until then: keep the flag **false**; develop via unit tests + `run_grounded_eval.py`.
+Until then: keep the flag **false**; USDA stays out of release APKs; develop via unit tests + `run_grounded_eval.py` against the debug asset.
 
 ### Local re-enable for development
 
@@ -64,7 +65,7 @@ const val ENABLED: Boolean = true
 
 1. Exact barcode → live [Open Food Facts](https://world.openfoodfacts.org/) (cached)
 2. Explicitly selected confirmed history / favorites (identity only; portion not auto-copied)
-3. Compact offline USDA Foundation + FNDDS index (`assets/usda/usda_foods.sqlite`)
+3. Compact offline USDA Foundation + FNDDS index (`src/debug/assets/usda/usda_foods.sqlite` until productized)
 4. Clearly marked model estimate when no database match exists
 
 ## UX (when enabled)
@@ -89,8 +90,8 @@ If a cloud provider fails to tool-call or finalize, the orchestrator falls back 
 
 | Item | Path |
 |------|------|
-| SQLite asset | [`android/app/src/main/assets/usda/usda_foods.sqlite`](../android/app/src/main/assets/usda/usda_foods.sqlite) |
-| Manifest (sha256, version) | [`android/app/src/main/assets/usda/usda_foods.manifest.json`](../android/app/src/main/assets/usda/usda_foods.manifest.json) |
+| SQLite asset (debug APK only) | [`android/app/src/debug/assets/usda/usda_foods.sqlite`](../android/app/src/debug/assets/usda/usda_foods.sqlite) |
+| Manifest (sha256, version) | [`android/app/src/debug/assets/usda/usda_foods.manifest.json`](../android/app/src/debug/assets/usda/usda_foods.manifest.json) |
 | Build script | [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) |
 
 Ranking prefers **FNDDS / `survey_fndds_food`** for cooked or generic meals and soft-penalizes form mismatches (flour / powder / dry / pie vs cooked solids; wrong beverage hits). Search omits rows with null calories by default so Foundation energy gaps cannot scale as 0 kcal.
@@ -108,8 +109,9 @@ uv run python scripts/build_usda_food_index.py
 # or: uv run python scripts/build_usda_food_index.py --zip-path /path/to/FoodData_Central_csv_*.zip
 ```
 
-Raw downloads land in `build/usda-fdc/` (gitignored). The APK ships whatever
-SQLite is currently under `assets/usda/`.
+Raw downloads land in `build/usda-fdc/` (gitignored). Debug APKs ship whatever
+SQLite is currently under `src/debug/assets/usda/`. Release APKs omit it until
+grounded entry is productized (then move back under `src/main/assets`).
 
 ### Licensing
 
@@ -171,7 +173,7 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
 Asset integrity:
 
 ```bash
-uv run python -c "import json,hashlib,pathlib; m=json.load(open('android/app/src/main/assets/usda/usda_foods.manifest.json')); b=pathlib.Path('android/app/src/main/assets/usda/usda_foods.sqlite').read_bytes(); assert hashlib.sha256(b).hexdigest()==m['sha256']; print(m['food_count'], 'foods ok')"
+uv run python -c "import json,hashlib,pathlib; m=json.load(open('android/app/src/debug/assets/usda/usda_foods.manifest.json')); b=pathlib.Path('android/app/src/debug/assets/usda/usda_foods.sqlite').read_bytes(); assert hashlib.sha256(b).hexdigest()==m['sha256']; print(m['food_count'], 'foods ok')"
 ```
 
 Metrics: top-k identity hit rate, source coverage, gram error, nutrient WMAPE, tool rounds, search count, fallback/correction rate, latency, asset size.

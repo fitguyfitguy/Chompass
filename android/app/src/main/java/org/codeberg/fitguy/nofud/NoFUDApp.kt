@@ -23,6 +23,7 @@ import org.codeberg.fitguy.nofud.services.WidgetSnapshotWriter
 import org.codeberg.fitguy.nofud.services.ai.ChatService
 import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
 import org.codeberg.fitguy.nofud.services.grounding.GroundedFoodEntryService
+import org.codeberg.fitguy.nofud.services.grounding.GroundedEntryFeature
 import org.codeberg.fitguy.nofud.services.grounding.UsdaFoodIndex
 import org.codeberg.fitguy.nofud.services.health.HealthConnectManager
 import org.codeberg.fitguy.nofud.services.health.HealthSyncWorker
@@ -165,10 +166,24 @@ class AppContainer(app: NoFUDApp) {
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
     val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
+    /**
+     * Offline USDA index + grounded orchestrator. Asset is debug-only (~2.1 MB) and
+     * [GroundedEntryFeature.ENABLED] is false in shipping builds — do not touch these
+     * from release UI paths.
+     */
     val usdaFoodIndex: UsdaFoodIndex by lazy(LazyThreadSafetyMode.NONE) {
+        check(GroundedEntryFeature.ENABLED) {
+            "UsdaFoodIndex is only for grounded entry (currently disabled)"
+        }
+        check(UsdaFoodIndex.assetAvailable(appContext)) {
+            "USDA SQLite missing from APK assets (debug builds only until grounded ships)"
+        }
         UsdaFoodIndex(appContext)
     }
     val groundedFoodEntry: GroundedFoodEntryService by lazy(LazyThreadSafetyMode.NONE) {
+        check(GroundedEntryFeature.ENABLED) {
+            "GroundedFoodEntryService is disabled (GroundedEntryFeature.ENABLED=false)"
+        }
         GroundedFoodEntryService(
             foodAnalysis = foodAnalysis,
             foodRepository = foodRepository,
