@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 private const val CODEBERG_REPO = "https://codeberg.org/fitguy/NoFUD"
 private const val UPSTREAM_REPO = "https://github.com/apoorvdarshan/fud-ai"
 private const val PRIVACY_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/PRIVACY.md"
-private const val ASSET_CREDITS_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/ASSET_CREDITS.md"
+private const val ASSET_CREDITS_URL = "https://codeberg.org/fitguy/NoFUD/src/branch/main/docs/ASSET_CREDITS.md"
 
 @Composable
 fun AboutSettingsRows(container: AppContainer) {

@@ -202,6 +202,10 @@ We are focused on a fast Android app rather than matching upstream feature:
 
 On our Android debug perf baseline, recent Progress-screen work cut worst-frame latency from ~1.1s to ~0.5s.
 
+## Docs
+
+Maintainer guides live under [`docs/`](docs/) — [development](docs/DEVELOPMENT.md), [releasing](docs/RELEASE.md), [performance](docs/PERFORMANCE.md), [calculations](docs/CALCULATION_METHODS.md), [asset credits](docs/ASSET_CREDITS.md), and more. Privacy and changelog stay at the repo root.
+
 ## Privacy
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go to the provider you configure (BYOK). **On-Device (Private)** keeps food text and photo analysis on the device; nothing is uploaded to a server. See [PRIVACY.md](PRIVACY.md).
@@ -213,6 +217,6 @@ NoFUD is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License
 
-See also [NOTICE](NOTICE) and [ASSET_CREDITS.md](ASSET_CREDITS.md).
+See also [NOTICE](NOTICE) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md).
 
 MIT License. See [LICENSE](LICENSE).
