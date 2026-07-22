@@ -1,43 +1,50 @@
 # Grounded food entry
 
-**Status: experimental / disabled in UI.**  
-Flip [`GroundedEntryFeature.ENABLED`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedEntryFeature.kt) to `true` only after the [readiness checklist](#readiness-checklist) below. Code and the food-accuracy harness remain in-tree. The offline USDA SQLite (~2.1 MB) is under **`src/debug/assets` only** — release / F-Droid APKs do not package it while the feature is gated.
+**Status: WIP — not production, not ready to ship.**  
+[`GroundedEntryFeature.ENABLED`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedEntryFeature.kt) stays **`false`**. Do not package USDA into release/F-Droid APKs, do not advertise the entry method, and do not flip the flag until the [readiness checklist](#readiness-checklist) is fully green. Code + harness remain in-tree for continued research.
 
 Optional entry method that uses the selected AI provider to **search local
 databases and pick identities**, then resolves nutrient values from those
 sources only (never from invented macros).
 
-## Progress so far (2026-07)
+## Progress so far (2026-07-22)
 
-### Built
+### Built (research / debug only)
 
-1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~2.1 MB`), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py), Android [`UsdaFoodIndex`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/UsdaFoodIndex.kt). Packaged in **debug** builds only (`src/debug/assets/usda/`), not release.
-2. **Provenance model** — `FoodGroundingProvenance` / `GroundingCandidate` / validation helpers; `FoodSource.GROUNDED` for diary export/import.
-3. **Orchestrator** — [`GroundedFoodEntryService`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedFoodEntryService.kt): barcode → OFF, history, USDA, then model-estimate fallback. Deterministic **scale from DB rows** (model must not invent macros).
-4. **Cloud tool loop** — [`GroundingTools`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingTools.kt) + [`GroundedToolLoop`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/GroundedToolLoop.kt) (max 4 rounds): `search_usda` / `search_history` / `lookup_barcode` → `finalize_grounding`. Last OpenAI-compatible round can force finalize.
-5. **Retrieval ranking** — Prefer FNDDS/`survey_fndds_food` for cooked/generic meals; soft-penalize flour/powder/dry/pie and beverage mismatches; omit null-calorie Foundation rows from default search.
-6. **UI (gated)** — Add-food tile, entry sheet, candidate sheet, provenance badges — hidden while `GroundedEntryFeature.ENABLED == false`.
-7. **Harness** — [`benchmarks/food_accuracy/run_grounded_eval.py`](../benchmarks/food_accuracy/run_grounded_eval.py) mirrors the tool loop against shipped SQLite.
+1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~3.8 MB` with FTS), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) with **FTS5**, multi-portion table, Atwater energy fill, WWEIA categories when present, omega-3 merge. Android [`UsdaFoodIndex`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/UsdaFoodIndex.kt). Packaged in **debug** builds only (`src/debug/assets/usda/`), not release.
+2. **Provenance model** — `FoodGroundingProvenance` / `GroundingCandidate` / validation helpers; `FoodSource.GROUNDED` for diary export/import (**provenance round-trips in JSON export**).
+3. **Orchestrator** — [`GroundedFoodEntryService`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedFoodEntryService.kt): barcode → OFF, history, USDA, then model-estimate fallback. Deterministic **scale from DB rows** (model must not invent macros). Preserves first-pass recognition on candidate review.
+4. **Cloud tool loop** — [`GroundingTools`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingTools.kt) + [`GroundedToolLoop`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/GroundedToolLoop.kt) (max 4 rounds): `search_usda` / `search_history` / `lookup_barcode` → `finalize_grounding`. Finalize only accepts `source_id`s seen in this run.
+5. **Retrieval ranking** — Shared [`QueryNormalizer`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/QueryNormalizer.kt) (Kotlin + Python); prefer FNDDS; soft-penalize flour/powder/dry/pie and beverage mismatches; calibrated source-aware scores + ambiguity margin `1.5`; local [`GroundingCorrectionStore`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingCorrectionStore.kt) priors.
+6. **Portion resolver** — [`PortionResolver`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/PortionResolver.kt): override → estimated grams → quantity×unit → candidate serving → heuristic; **never silent 100 g**.
+7. **UI (gated)** — Add-food tile, entry sheet, candidate sheet, provenance + confidence badges — hidden while `GroundedEntryFeature.ENABLED == false`. On-device policy: `ALLOW_ON_DEVICE = false`.
+8. **Harness** — [`benchmarks/food_accuracy/run_grounded_eval.py`](../benchmarks/food_accuracy/run_grounded_eval.py), failure-class metrics, bad-case + history/OFF manifests, retrieval golden vectors, `devenv tasks run benchmark:food-accuracy-smoke`.
 
 ### Benchmark snapshot (Flash Lite, FNDDS text-42)
 
-| Path | WMAPE | ±20% kcal | MAE kcal | Notes |
-|------|-------|-----------|----------|-------|
-| Single-shot baseline (`quick_gemini35_flash_lite_text`) | **~4.8%** | **~93%** | **~7** | Model invents macros |
-| Lexical USDA top-1 (pre–tool-loop) | **~90%** | **~48%** | **~150** | Wrong forms (rice→flour, oatmeal→pie); null kcal→0 |
-| Tool-loop grounded (`grounded_tool_gemini35_flash_lite_text`) | **~18%** | **~76%** | **~29** | Much better; still behind single-shot; ~17% estimate fallback |
+Same-model apples-to-apples unless noted. **Grounded is still WIP** — improved, not shippable.
 
-Artifacts: `benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text/`.
+| Path | WMAPE | ±20% kcal | MAE kcal | parse | Notes |
+|------|-------|-----------|----------|-------|-------|
+| Single-shot Flash Lite (`quick_gemini35_flash_lite_text`) | **4.8%** | **92.9%** | **7.1** | 100% | Best same-model ungrounded |
+| Single-shot Gemma compact (best free text) | **5.7%** | 90.5% | 8.2 | 100% | Best overall ungrounded text |
+| Lexical USDA top-1 (pre–tool-loop) | ~90% | ~48% | ~150 | — | Form mismatches; null kcal→0 |
+| Tool-loop grounded **prior** (`grounded_tool_gemini35_flash_lite_text`) | 17.7% | 76.3% | 28.9 | 90.5% | ~17% estimate fallback |
+| Tool-loop grounded **post-roadmap** (`…_post_roadmap`, 2026-07-22) | **12.8%** | **78.6%** | **19.9** | **100%** | 0% fallback; identity top-1 88%; remaining errors mostly **portion** (7) then identity (5) |
 
-### Known gaps that block shipping
+**Vs ungrounded:** still ~2–2.5× worse on WMAPE and ~14 pp behind on ±20% kcal — users would still notice vs Photo/Note on this text set.
 
-- Still **worse than single-shot** on this text set for nutrient error (users would notice bad kcal vs Photo/Note).
-- Multi-item meals and beverage/powder edge cases still under-matched; forced finalize sometimes picks `reject_to_estimate` with empty macros in the harness.
-- On-device path is **lexical only** (no tool loop); not productized.
-- Foundation null-energy rows exist in the DB (builder keeps protein-only foods); search filters them, but builder Atwater fill is unfinished.
-- FNDDS WWEIA categories are **not** in SQLite yet (all survey `food_category` empty).
-- Locale strings for grounded UI are English-defaults only.
-- No silent auto-accept UX polish for low-confidence picks on device photos (bench is text-only so far).
+**Vs readiness targets** ([`baselines/grounded_text_thresholds.json`](../benchmarks/food_accuracy/baselines/grounded_text_thresholds.json)): WMAPE ≤10% ✗ · ±20% ≥85% ✗ · parse ≥95% ✓ · silent-zero 0% ✓ · identity top-3 ≥80% ✓.
+
+Artifacts: `benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text_post_roadmap/` (gitignored local results).
+
+### Known gaps that keep this WIP
+
+- Nutrient accuracy still **behind single-shot** on `eval_text.jsonl` (ship blocker #1).
+- Remaining failure mix is mostly **portion**, not retrieval/fallback — next accuracy work should target gram/unit resolution and multi-item portions.
+- Photo grounded eval (JFB / Nutrition5k) not run to readiness.
+- On-device path is lexical only; gated off via `ALLOW_ON_DEVICE`.
+- Release packaging must not run until checklist is green (`./scripts/package_usda_for_release.sh --confirm` is intentionally confirm-gated).
 
 ## Readiness checklist
 
@@ -47,12 +54,12 @@ Enable `GroundedEntryFeature.ENABLED` only when **all** of the following hold:
 2. **Accuracy (image)** — At least one photo split (e.g. JFB / Nutrition5k subset) where grounded does not regress badly vs single-shot Photo flow; document numbers in this file.
 3. **Identity** — Clear drop in form-mismatch failures (flour/powder/pie/dry vs cooked; beer vs solids) on a recorded bad-case list.
 4. **Fallback UX** — `reject_to_estimate` / missing match always surfaces a clear estimate badge or candidate sheet; never silent 0 kcal.
-5. **On-device policy** — Either disable grounded when provider is on-device, or ship a tested deterministic path with the same provenance rules.
-6. **Strings** — Localized grounded UI strings for shipped locales.
+5. **On-device policy** — `GroundedEntryFeature.ALLOW_ON_DEVICE == false` (grounded disabled for LiteRT) **or** ship a tested deterministic path with the same provenance rules.
+6. **Strings** — Localized grounded UI strings for shipped locales (EN + DE/ES/FR done; remaining locales fall back to EN until translated).
 7. **Release note** — Short CHANGELOG blurb + privacy line (BYOK recognition + local USDA/OFF/history).
-8. **USDA packaging** — Move `src/debug/assets/usda/` back to `src/main/assets/usda/` (or ship a downloadable index) so release/F-Droid APKs include the offline DB before flipping the flag.
+8. **USDA packaging** — Run [`scripts/package_usda_for_release.sh --confirm`](../scripts/package_usda_for_release.sh) to copy `src/debug/assets/usda/` → `src/main/assets/usda/` (or ship a downloadable index) so release/F-Droid APKs include the offline DB before flipping the flag.
 
-Until then: keep the flag **false**; USDA stays out of release APKs; develop via unit tests + `run_grounded_eval.py` against the debug asset.
+Until then: keep the flag **false**; treat grounded as **WIP research only**; USDA stays out of release APKs; develop via unit tests + `run_grounded_eval.py` against the debug asset.
 
 ### Local re-enable for development
 

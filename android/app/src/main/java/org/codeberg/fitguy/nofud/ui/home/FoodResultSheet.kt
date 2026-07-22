@@ -348,6 +348,34 @@ fun FoodResultSheet(
                         modifier = Modifier.padding(bottom = 4.dp),
                     )
                 }
+                analysis.groundingConfidence?.let { conf ->
+                    item {
+                        Text(
+                            text = stringResource(
+                                R.string.grounding_confidence_summary,
+                                (conf.identity * 100).toInt(),
+                                (conf.portion * 100).toInt(),
+                                (conf.nutrientSource * 100).toInt(),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                        )
+                    }
+                }
+                if (grounding.validationNotes.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(
+                                R.string.grounding_validation_notes,
+                                grounding.validationNotes.joinToString(" · "),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                }
             }
             item {
                 SheetPillRow {

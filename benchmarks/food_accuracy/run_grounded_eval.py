@@ -20,7 +20,6 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import re
 import sqlite3
 import sys
 import time
@@ -32,9 +31,10 @@ if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
 from env_local import load_env_local
-from grounded_metrics import score_trace
+from grounded_metrics import classify_failure, score_trace
 from parse import extract_json_text
 from providers import aggregate_usage, build_provider, normalize_usage
+from query_normalize import normalize_query, normalize_tokens
 from schema import RESULTS_DIR, load_manifest
 from score import SampleScore, aggregate_scores, score_sample
 from parse import ParsedPrediction
@@ -67,10 +67,6 @@ Rules:
 
 User description: {description}
 """.strip()
-
-
-def tokenize(text: str) -> list[str]:
-    return [t for t in re.sub(r"[^a-z0-9]+", " ", text.lower()).split() if len(t) >= 2]
 
 
 def parse_recognition(text: str) -> dict:
@@ -130,20 +126,35 @@ class UsdaIndex:
         return None if row is None else row[0]
 
     def search(self, query: str, limit: int = 6, include_incomplete_energy: bool = False) -> list[dict]:
-        tokens = tokenize(query)
+        tokens = normalize_tokens(query)
         if not tokens:
             return []
-        like = f"%{tokens[0]}%"
-        rows = self.conn.execute(
-            """
-            SELECT * FROM foods
-            WHERE tokens LIKE ? OR description LIKE ?
-            LIMIT 80
-            """,
-            (like, like),
-        ).fetchall()
+        # Prefer FTS when available; fall back to multi-token LIKE.
+        rows: list[sqlite3.Row] = []
+        try:
+            fts_q = " ".join(tokens)
+            rows = self.conn.execute(
+                """
+                SELECT foods.* FROM foods_fts
+                JOIN foods ON foods.fdc_id = foods_fts.rowid
+                WHERE foods_fts MATCH ?
+                LIMIT 80
+                """,
+                (fts_q,),
+            ).fetchall()
+        except sqlite3.OperationalError:
+            rows = []
         if not rows:
-            loose = f"%{query.lower()}%"
+            clauses = []
+            params: list[str] = []
+            for tok in tokens[:4]:
+                like = f"%{tok}%"
+                clauses.append("(tokens LIKE ? OR description LIKE ?)")
+                params.extend([like, like])
+            sql = f"SELECT * FROM foods WHERE {' OR '.join(clauses)} LIMIT 120"
+            rows = self.conn.execute(sql, params).fetchall()
+        if not rows:
+            loose = f"%{normalize_query(query)}%"
             rows = self.conn.execute(
                 """
                 SELECT * FROM foods
@@ -506,12 +517,8 @@ def scale_macros(candidate: dict, grams: float) -> dict[str, float]:
 def identity_hit(gt_text: str, candidate_name: str | None) -> bool:
     if not candidate_name:
         return False
-    gt_toks = set(tokenize(gt_text))
-    cand_toks = set(tokenize(candidate_name))
-    # Drop mass/unit noise tokens.
-    noise = {"cup", "large", "medium", "small", "cooked", "raw", "gram", "grams"}
-    gt_toks -= noise
-    cand_toks -= noise
+    gt_toks = set(normalize_tokens(gt_text))
+    cand_toks = set(normalize_tokens(candidate_name, strip_units=False))
     if not gt_toks or not cand_toks:
         return False
     overlap = len(gt_toks & cand_toks) / len(gt_toks)
@@ -773,6 +780,11 @@ def main() -> None:
                     if scored.parse_ok and scored.abs_error_sum is not None and scored.gt_sum:
                         nutrient_wmape = scored.abs_error_sum / scored.gt_sum
 
+                    silent_zero = bool(
+                        parse_ok
+                        and pred.calories == 0
+                        and (sample.ground_truth().get("calories") or 0) > 0
+                    )
                     grounded_row = {
                         "id": sample.id,
                         "identity_top1": identity_top1,
@@ -785,7 +797,12 @@ def main() -> None:
                         "asset_bytes": usda_asset_bytes,
                         "tool_rounds": tool_stats.get("rounds"),
                         "search_usda_count": tool_stats.get("search_usda_count"),
+                        "parse_ok": parse_ok,
+                        "error": scored.error,
+                        "silent_zero": silent_zero,
+                        "fallback": resolved["primary_source"] == "modelEstimate",
                     }
+                    grounded_row["failure_class"] = classify_failure(grounded_row)
 
                     record = {
                         "id": sample.id,

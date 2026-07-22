@@ -49,6 +49,30 @@ class GroundingToolsTest {
     }
 
     @Test
+    fun finalizeGrounding_marksUnseenSourceIdAsNeedsChoice() = runBlocking {
+        val tools = GroundingTools(
+            usdaIndex = null,
+            historyPool = emptyList(),
+            prefs = null,
+        )
+        tools.rememberSourceId("111")
+        val args = JSONObject(
+            """
+            {
+              "meal_name": "Banana",
+              "components": [
+                {"name":"Banana","source_id":"999","source_kind":"usda","grams":118}
+              ]
+            }
+            """.trimIndent(),
+        )
+        val result = JSONObject(tools.execute("finalize_grounding", args))
+        assertTrue(result.optBoolean("ok"))
+        assertTrue(tools.lastFinalize!!.components[0].needsUserChoice)
+        assertTrue(result.has("invalid_source_ids"))
+    }
+
+    @Test
     fun toolSchemas_coverAllNames() {
         for (name in GroundingTools.TOOL_NAMES) {
             val schema = GroundingTools.parametersSchema(name)

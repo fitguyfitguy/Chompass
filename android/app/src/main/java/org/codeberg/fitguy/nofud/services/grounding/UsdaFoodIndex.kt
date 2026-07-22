@@ -70,36 +70,61 @@ class UsdaFoodIndex(
         limit: Int = 8,
         includeIncompleteEnergy: Boolean = false,
     ): List<GroundingCandidate> {
-        val q = query.trim()
-        if (q.isEmpty()) return emptyList()
-        val tokens = tokenize(q)
+        val tokens = QueryNormalizer.normalizeTokens(query)
         if (tokens.isEmpty()) return emptyList()
 
-        // Broad LIKE filter, then rank in Kotlin (asset is compact).
-        val like = "%${tokens.first()}%"
         val rows = mutableListOf<UsdaFoodRecord>()
-        db.rawQuery(
-            """
-            SELECT * FROM foods
-            WHERE tokens LIKE ? OR description LIKE ?
-            LIMIT 80
-            """.trimIndent(),
-            arrayOf(like, like),
-        ).use { c ->
-            while (c.moveToNext()) {
-                rows += readRecord(c)
+        val seen = mutableSetOf<Long>()
+
+        // Prefer FTS multi-token when the packaged DB includes foods_fts.
+        runCatching {
+            val ftsQ = tokens.joinToString(" ")
+            db.rawQuery(
+                """
+                SELECT foods.* FROM foods_fts
+                JOIN foods ON foods.fdc_id = foods_fts.rowid
+                WHERE foods_fts MATCH ?
+                LIMIT 80
+                """.trimIndent(),
+                arrayOf(ftsQ),
+            ).use { c ->
+                while (c.moveToNext()) {
+                    val rec = readRecord(c)
+                    if (seen.add(rec.fdcId)) rows += rec
+                }
             }
         }
 
-        // If the first-token filter was too narrow, try full-string LIKE.
         if (rows.isEmpty()) {
-            val loose = "%${q.lowercase(Locale.US)}%"
+            // Multi-token LIKE: OR across first few tokens (compact asset).
+            val clauses = mutableListOf<String>()
+            val args = mutableListOf<String>()
+            for (tok in tokens.take(4)) {
+                val like = "%$tok%"
+                clauses += "(tokens LIKE ? OR description LIKE ?)"
+                args += like
+                args += like
+            }
+            db.rawQuery(
+                "SELECT * FROM foods WHERE ${clauses.joinToString(" OR ")} LIMIT 120",
+                args.toTypedArray(),
+            ).use { c ->
+                while (c.moveToNext()) {
+                    val rec = readRecord(c)
+                    if (seen.add(rec.fdcId)) rows += rec
+                }
+            }
+        }
+
+        if (rows.isEmpty()) {
+            val loose = "%${QueryNormalizer.normalizeQuery(query)}%"
             db.rawQuery(
                 "SELECT * FROM foods WHERE description LIKE ? OR tokens LIKE ? LIMIT 80",
                 arrayOf(loose, loose),
             ).use { c ->
                 while (c.moveToNext()) {
-                    rows += readRecord(c)
+                    val rec = readRecord(c)
+                    if (seen.add(rec.fdcId)) rows += rec
                 }
             }
         }
@@ -121,9 +146,11 @@ class UsdaFoodIndex(
 
     private fun copyAssetIfNeeded(assetPath: String) {
         val am = appContext.assets
-        val needCopy = !dbFile.exists() || dbFile.length() == 0L
+        val packagedSha = readPackagedSha256()
+        val needCopy = !dbFile.exists() || dbFile.length() == 0L ||
+            (packagedSha != null && readInstalledSha256() != packagedSha)
         if (!needCopy) {
-            // Refresh when the packaged asset checksum changes (compare sizes as a cheap signal).
+            // Fallback: refresh when the packaged asset size changes.
             val assetSize = am.openFd(assetPath).use { it.length }
             if (dbFile.length() == assetSize) return
         }
@@ -131,6 +158,23 @@ class UsdaFoodIndex(
         am.open(assetPath).use { input ->
             dbFile.outputStream().use { output -> input.copyTo(output) }
         }
+        packagedSha?.let { writeInstalledSha256(it) }
+    }
+
+    private fun readPackagedSha256(): String? = runCatching {
+        appContext.assets.open(MANIFEST_ASSET_PATH).bufferedReader().use { reader ->
+            val text = reader.readText()
+            Regex(""""sha256"\s*:\s*"([a-fA-F0-9]+)"""").find(text)?.groupValues?.get(1)
+        }
+    }.getOrNull()
+
+    private fun shaFile(): File = File(appContext.filesDir, "usda_foods.sha256")
+
+    private fun readInstalledSha256(): String? =
+        runCatching { shaFile().takeIf { it.exists() }?.readText()?.trim() }.getOrNull()
+
+    private fun writeInstalledSha256(sha: String) {
+        runCatching { shaFile().writeText(sha) }
     }
 
     private fun readMeta(key: String): String? {
@@ -191,6 +235,9 @@ class UsdaFoodIndex(
 
     companion object {
         const val ASSET_PATH = "usda/usda_foods.sqlite"
+        const val MANIFEST_ASSET_PATH = "usda/usda_foods.manifest.json"
+        /** Score margin below which top-2 candidates are treated as ambiguous. */
+        const val AMBIGUITY_SCORE_DELTA = 1.5
 
         /** True when the APK includes the offline index (debug source set today). */
         fun assetAvailable(context: Context, assetPath: String = ASSET_PATH): Boolean =
@@ -199,12 +246,7 @@ class UsdaFoodIndex(
                 true
             }.getOrDefault(false)
 
-        internal fun tokenize(text: String): List<String> =
-            text.lowercase(Locale.US)
-                .map { if (it.isLetterOrDigit()) it else ' ' }
-                .joinToString("")
-                .split(Regex("\\s+"))
-                .filter { it.length >= 2 }
+        internal fun tokenize(text: String): List<String> = QueryNormalizer.normalizeTokens(text)
 
         private val COOKED_OR_GENERIC = setOf(
             "cooked", "grilled", "steamed", "boiled", "baked", "roasted", "fried",
@@ -245,6 +287,13 @@ class UsdaFoodIndex(
                 score += if (queryImpliesCookedOrGeneric) 1.0 else 0.35
             }
 
+            // Category token overlap when WWEIA / food_category is present.
+            food.foodCategory?.let { cat ->
+                val catTokens = QueryNormalizer.tokenize(cat).toSet()
+                val catOverlap = queryTokens.count { it in catTokens }
+                score += catOverlap * 0.4
+            }
+
             score += formAdjustment(queryTokens, desc, foodTokens)
             if (food.calories == null) score -= 2.0
             return score
@@ -279,6 +328,30 @@ class UsdaFoodIndex(
             if (q.any { it in setOf("raw", "fresh") } && descriptionLower.contains("cooked")) adj -= 1.0
             if (q.any { it == "cooked" } && (descriptionLower.contains("raw") || descDry)) adj -= 1.5
             return adj
+        }
+
+        /** Calibrated source-aware ranking used by the orchestrator. */
+        fun sourceAwareScore(c: GroundingCandidate, query: String = ""): Double {
+            val base = c.score
+            val bonus = when (c.sourceKind) {
+                NutrientSourceKind.OPEN_FOOD_FACTS -> 12.0
+                NutrientSourceKind.NUTRITION_LABEL -> 10.0
+                NutrientSourceKind.USDA -> 4.0
+                NutrientSourceKind.HISTORY -> 2.5
+                NutrientSourceKind.MODEL_ESTIMATE -> 0.0
+            }
+            val correction = if (query.isNotBlank()) {
+                GroundingCorrectionStore.boostFor(query, c.sourceId)
+            } else {
+                0.0
+            }
+            val incompletePenalty = if (c.incompleteEnergy) 5.0 else 0.0
+            return base + bonus + correction - incompletePenalty
+        }
+
+        fun isAmbiguous(top: GroundingCandidate, second: GroundingCandidate?, query: String = ""): Boolean {
+            if (second == null) return false
+            return sourceAwareScore(top, query) - sourceAwareScore(second, query) < AMBIGUITY_SCORE_DELTA
         }
     }
 }

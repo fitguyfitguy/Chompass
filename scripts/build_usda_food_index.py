@@ -66,6 +66,10 @@ NUTRIENT_MAP = {
     "1109": "vitamin_e",  # mg
     "1185": "vitamin_k",  # mcg
     "1177": "folate",  # mcg DFE
+    # Omega-3 fatty acids (g) — EPA + DHA when present; ALA as fallback.
+    "1278": "omega_3",  # EPA
+    "1280": "omega_3_dha",  # DHA (merged below)
+    "1404": "omega_3_ala",  # ALA (merged below)
 }
 
 NUTRIENT_COLUMNS = [
@@ -291,10 +295,28 @@ def tokenize(text: str) -> str:
     )
 
 
+def atwater_kcal(protein: float | None, carbs: float | None, fat: float | None) -> float | None:
+    """Fill missing energy from macros using classic Atwater factors (4/4/9)."""
+    if protein is None and carbs is None and fat is None:
+        return None
+    return 4.0 * (protein or 0.0) + 4.0 * (carbs or 0.0) + 9.0 * (fat or 0.0)
+
+
+def merge_omega3(nuts: dict[str, float]) -> None:
+    epa = nuts.pop("omega_3", None)
+    dha = nuts.pop("omega_3_dha", None)
+    ala = nuts.pop("omega_3_ala", None)
+    total = sum(v for v in (epa, dha, ala) if v is not None)
+    if total > 0:
+        nuts["omega_3"] = total
+
+
 def create_schema(conn: sqlite3.Connection) -> None:
     nutrient_cols = ",\n  ".join(f"{c} REAL" for c in NUTRIENT_COLUMNS)
     conn.executescript(
         f"""
+        DROP TABLE IF EXISTS foods_fts;
+        DROP TABLE IF EXISTS food_portions;
         DROP TABLE IF EXISTS foods;
         DROP TABLE IF EXISTS meta;
         CREATE TABLE meta (
@@ -311,10 +333,29 @@ def create_schema(conn: sqlite3.Connection) -> None:
           serving_grams REAL,
           {nutrient_cols}
         );
+        CREATE TABLE food_portions (
+          fdc_id INTEGER NOT NULL,
+          unit TEXT NOT NULL,
+          grams REAL NOT NULL,
+          PRIMARY KEY (fdc_id, unit),
+          FOREIGN KEY (fdc_id) REFERENCES foods(fdc_id)
+        );
         CREATE INDEX foods_tokens_idx ON foods(tokens);
         CREATE INDEX foods_desc_idx ON foods(description);
+        CREATE INDEX foods_category_idx ON foods(food_category);
+        CREATE VIRTUAL TABLE foods_fts USING fts5(
+          description,
+          tokens,
+          food_category,
+          content='foods',
+          content_rowid='fdc_id'
+        );
         """
     )
+
+
+def rebuild_fts(conn: sqlite3.Connection) -> None:
+    conn.execute("INSERT INTO foods_fts(foods_fts) VALUES('rebuild')")
 
 
 def insert_food(conn: sqlite3.Connection, row: dict) -> None:
@@ -341,6 +382,16 @@ def insert_food(conn: sqlite3.Connection, row: dict) -> None:
     )
 
 
+def insert_portions(conn: sqlite3.Connection, fdc_id: int, portions: list[tuple[str, float]]) -> None:
+    for unit, grams in portions:
+        if not unit or grams <= 0:
+            continue
+        conn.execute(
+            "INSERT OR REPLACE INTO food_portions(fdc_id, unit, grams) VALUES (?,?,?)",
+            (fdc_id, unit[:48], grams),
+        )
+
+
 def write_fixture(db_path: Path) -> int:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     if db_path.exists():
@@ -350,6 +401,13 @@ def write_fixture(db_path: Path) -> int:
         create_schema(conn)
         for food in FIXTURE_FOODS:
             insert_food(conn, food)
+            if food.get("serving_unit") and food.get("serving_grams"):
+                insert_portions(
+                    conn,
+                    int(food["fdc_id"]),
+                    [(str(food["serving_unit"]), float(food["serving_grams"]))],
+                )
+        rebuild_fts(conn)
         conn.execute(
             "INSERT INTO meta(key,value) VALUES (?,?)",
             ("dataset_version", DATASET_VERSION + "-fixture"),
@@ -361,6 +419,10 @@ def write_fixture(db_path: Path) -> int:
         conn.execute(
             "INSERT INTO meta(key,value) VALUES (?,?)",
             ("license", "CC0 / public domain"),
+        )
+        conn.execute(
+            "INSERT INTO meta(key,value) VALUES (?,?)",
+            ("features", "fts5,portions,atwater_fill,wweia_category"),
         )
         conn.commit()
         return len(FIXTURE_FOODS)
@@ -389,6 +451,7 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
     nutrient_def = csv_root / "nutrient.csv"
     category_path = csv_root / "food_category.csv"
     portion_path = csv_root / "food_portion.csv"
+    wweia_path = csv_root / "wweia_food_category.csv"
 
     if not food_path.exists() or not nutrient_path.exists():
         raise SystemExit(f"Unexpected FDC CSV layout under {csv_root}")
@@ -403,6 +466,14 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
         r["id"]: r.get("description") or r.get("code") or ""
         for r in (read_csv_dict(category_path) if category_path.exists() else [])
     }
+    # WWEIA category code → description for survey foods when present.
+    wweia_cats: dict[str, str] = {}
+    if wweia_path.exists():
+        for r in read_csv_dict(wweia_path):
+            code = r.get("wweia_food_category") or r.get("wweia_food_category_code") or r.get("code")
+            desc = r.get("wweia_food_category_description") or r.get("description") or ""
+            if code:
+                wweia_cats[str(code)] = desc
 
     # nutrient_id in food_nutrient may be the row id in nutrient.csv — map to nutrient_nbr.
     nutrient_id_to_nbr: dict[str, str] = {}
@@ -433,9 +504,13 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
                 amount = float(r["amount"])
             except (KeyError, ValueError, TypeError):
                 continue
-            nutrients[fid][col] = amount
+            # Accumulate EPA/DHA/ALA into temporary keys; merge later.
+            if col in nutrients[fid] and col.startswith("omega_3"):
+                nutrients[fid][col] = nutrients[fid][col] + amount
+            else:
+                nutrients[fid][col] = amount
 
-    portions: dict[int, tuple[str, float]] = {}
+    portions: dict[int, list[tuple[str, float]]] = {}
     if portion_path.exists():
         for r in read_csv_dict(portion_path):
             try:
@@ -445,11 +520,21 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
                 continue
             if fid not in foods or grams <= 0:
                 continue
-            # Keep the first reasonable household measure.
-            if fid in portions:
-                continue
             unit = (r.get("portion_description") or r.get("modifier") or "serving").strip()
-            portions[fid] = (unit[:48], grams)
+            portions.setdefault(fid, [])
+            # Keep up to 6 distinct household measures per food.
+            if len(portions[fid]) >= 6:
+                continue
+            if any(u == unit[:48] for u, _ in portions[fid]):
+                continue
+            portions[fid].append((unit[:48], grams))
+
+    # Optional survey food → WWEIA category via food.csv wweia_category_code when present.
+    survey_wweia: dict[int, str] = {}
+    for fid, meta in foods.items():
+        code = meta.get("wweia_category_code") or meta.get("wweia_food_category_code") or ""
+        if code and str(code) in wweia_cats:
+            survey_wweia[fid] = wweia_cats[str(code)]
 
     if db_path.exists():
         db_path.unlink()
@@ -459,16 +544,27 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
         create_schema(conn)
         count = 0
         for fid, meta in foods.items():
-            nuts = nutrients.get(fid) or {}
+            nuts = dict(nutrients.get(fid) or {})
+            merge_omega3(nuts)
+            if "calories" not in nuts:
+                filled = atwater_kcal(nuts.get("protein"), nuts.get("carbs"), nuts.get("fat"))
+                if filled is not None and filled > 0:
+                    nuts["calories"] = round(filled, 1)
             if "calories" not in nuts and "protein" not in nuts:
                 continue
             cat_id = meta.get("food_category_id") or ""
-            unit, grams = portions.get(fid, (None, None))
+            food_category = (
+                survey_wweia.get(fid)
+                or categories.get(cat_id)
+                or None
+            )
+            food_portions = portions.get(fid) or []
+            unit, grams = (food_portions[0] if food_portions else (None, None))
             row = {
                 "fdc_id": fid,
                 "description": meta.get("description") or f"FDC {fid}",
                 "data_type": meta.get("data_type") or "",
-                "food_category": categories.get(cat_id) or None,
+                "food_category": food_category,
                 "tokens": tokenize(meta.get("description") or ""),
                 "serving_unit": unit,
                 "serving_grams": grams,
@@ -476,7 +572,9 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
             for col in NUTRIENT_COLUMNS:
                 row[col] = nuts.get(col)
             insert_food(conn, row)
+            insert_portions(conn, fid, food_portions)
             count += 1
+        rebuild_fts(conn)
         conn.execute(
             "INSERT INTO meta(key,value) VALUES (?,?)",
             ("dataset_version", DATASET_VERSION),
@@ -488,6 +586,10 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
         conn.execute(
             "INSERT INTO meta(key,value) VALUES (?,?)",
             ("license", "CC0 / public domain"),
+        )
+        conn.execute(
+            "INSERT INTO meta(key,value) VALUES (?,?)",
+            ("features", "fts5,portions,atwater_fill,wweia_category,omega3"),
         )
         conn.commit()
         return count

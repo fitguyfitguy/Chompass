@@ -1,0 +1,61 @@
+{
+  "as_of": "2026-07-22",
+  "manifest": "benchmarks/food_accuracy/manifest/eval_text.jsonl",
+  "status": "wip_not_production",
+  "pin": {
+    "provider": "openrouter",
+    "model": "google/gemini-3.5-flash-lite",
+    "mode": "grounded_tool"
+  },
+  "current_baseline": {
+    "run_dir": "results/grounded_tool_gemini35_flash_lite_text_post_roadmap",
+    "wmape": 0.128,
+    "within_20pct_calories_rate": 0.786,
+    "parse_ok_rate": 1.0,
+    "fallback_rate": 0.0,
+    "identity_top1_rate": 0.881,
+    "silent_zero_rate": 0.0,
+    "mae_calories": 19.9,
+    "notes": "Post-roadmap tool-loop (2026-07-22). Improved vs prior ~17.7% WMAPE but still WIP — not shippable."
+  },
+  "prior_baseline": {
+    "run_dir": "results/grounded_tool_gemini35_flash_lite_text",
+    "wmape": 0.177,
+    "within_20pct_calories_rate": 0.763,
+    "parse_ok_rate": 0.905,
+    "fallback_rate": 0.17,
+    "notes": "Pre-roadmap tool-loop baseline"
+  },
+  "ungrounded_reference": {
+    "flash_lite_compact": {
+      "run_dir": "results/quick_gemini35_flash_lite_text",
+      "wmape": 0.048,
+      "within_20pct_calories_rate": 0.929,
+      "parse_ok_rate": 1.0
+    },
+    "gemma_compact_best_free_text": {
+      "run_dir": "results/prompt_ab_gemma/compact",
+      "wmape": 0.057,
+      "within_20pct_calories_rate": 0.905,
+      "parse_ok_rate": 1.0
+    }
+  },
+  "readiness_targets": {
+    "wmape_max": 0.10,
+    "within_20pct_calories_rate_min": 0.85,
+    "parse_ok_rate_min": 0.95,
+    "finalize_rate_min": 0.95,
+    "silent_zero_rate_max": 0.0,
+    "identity_top3_rate_min": 0.80
+  },
+  "regression_floors": {
+    "comment": "Fail a pinned re-run if worse than post-roadmap baseline + slack (do not use for shipping).",
+    "wmape_max": 0.16,
+    "within_20pct_calories_rate_min": 0.72,
+    "parse_ok_rate_min": 0.95
+  },
+  "single_shot_reference": {
+    "wmape": 0.048,
+    "within_20pct_calories_rate": 0.93
+  }
+}

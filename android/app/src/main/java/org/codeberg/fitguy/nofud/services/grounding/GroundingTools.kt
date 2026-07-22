@@ -34,6 +34,15 @@ class GroundingTools(
     var barcodeLookupCount: Int = 0
         private set
 
+    /** Source IDs returned by search/lookup tools in this turn (finalize allow-list). */
+    private val _seenSourceIds = linkedSetOf<String>()
+    val seenSourceIds: Set<String> get() = _seenSourceIds.toSet()
+
+    fun rememberSourceId(sourceId: String?) {
+        val id = sourceId?.trim().orEmpty()
+        if (id.isNotEmpty()) _seenSourceIds += id
+    }
+
     data class FinalizeComponent(
         val name: String,
         val brand: String? = null,
@@ -43,6 +52,8 @@ class GroundingTools(
         val grams: Double? = null,
         val portionHint: String? = null,
         val barcode: String? = null,
+        val quantity: Double? = null,
+        val unit: String? = null,
         val rejectToEstimate: Boolean = false,
         val needsUserChoice: Boolean = false,
     )
@@ -68,10 +79,12 @@ class GroundingTools(
     private fun searchUsda(args: JSONObject): String {
         searchUsdaCount++
         val index = usdaIndex ?: return jsonError("usda index unavailable")
-        val query = args.optString("query").trim()
-        if (query.isEmpty()) return jsonError("query is required")
+        val rawQuery = args.optString("query").trim()
+        if (rawQuery.isEmpty()) return jsonError("query is required")
+        val query = QueryNormalizer.normalizeQuery(rawQuery).ifEmpty { rawQuery }
         val limit = args.optInt("limit", 6).coerceIn(1, 8)
         val hits = index.search(query, limit = limit, includeIncompleteEnergy = false)
+        hits.forEach { rememberSourceId(it.sourceId) }
         return JSONObject().apply {
             put("query", query)
             put("results", candidatesToJson(hits))
@@ -85,11 +98,13 @@ class GroundingTools(
 
     private fun searchHistory(args: JSONObject): String {
         searchHistoryCount++
-        val query = args.optString("query").trim()
-        if (query.isEmpty()) return jsonError("query is required")
+        val rawQuery = args.optString("query").trim()
+        if (rawQuery.isEmpty()) return jsonError("query is required")
+        val query = QueryNormalizer.normalizeQuery(rawQuery).ifEmpty { rawQuery }
         val limit = args.optInt("limit", 5).coerceIn(1, 8)
         val hits = ConfirmedHistorySearch.search(historyPool, query, limit = limit)
         val candidates = hits.map { ConfirmedHistorySearch.toCandidate(it) }
+        candidates.forEach { rememberSourceId(it.sourceId) }
         return JSONObject().apply {
             put("query", query)
             put("results", candidatesToJson(candidates))
@@ -114,6 +129,7 @@ class GroundingTools(
                 put("barcode", raw)
             }.toString()
         }
+        rememberSourceId(raw)
         val grams = off.servingSizeGrams.takeIf { it > 0 } ?: 100.0
         val scale = 100.0 / grams
         return JSONObject().apply {
@@ -144,30 +160,48 @@ class GroundingTools(
         val arr = args.optJSONArray("components") ?: JSONArray()
         if (arr.length() == 0) return jsonError("components must be a non-empty array")
         val components = mutableListOf<FinalizeComponent>()
+        val invalidIds = mutableListOf<String>()
         for (i in 0 until arr.length()) {
             val raw = arr.optJSONObject(i) ?: continue
             val name = raw.optString("name").trim()
             if (name.isEmpty()) continue
             val grams = raw.optDouble("grams", Double.NaN).takeIf { !it.isNaN() && it > 0 }
                 ?: raw.optDouble("estimated_grams", Double.NaN).takeIf { !it.isNaN() && it > 0 }
+            val quantity = raw.optDouble("quantity", Double.NaN).takeIf { !it.isNaN() && it > 0 }
+            val sourceId = raw.optString("source_id").takeIf { it.isNotBlank() && it != "null" }
+                ?: raw.optString("sourceId").takeIf { it.isNotBlank() && it != "null" }
+            var reject = raw.optBoolean("reject_to_estimate", false) ||
+                raw.optBoolean("rejectToEstimate", false)
+            var needsChoice = raw.optBoolean("needs_user_choice", false) ||
+                raw.optBoolean("needsUserChoice", false)
+            // Harden: unknown source_id cannot be finalized as a DB hit.
+            if (!sourceId.isNullOrBlank() &&
+                _seenSourceIds.isNotEmpty() &&
+                sourceId !in _seenSourceIds &&
+                !reject
+            ) {
+                invalidIds += sourceId
+                needsChoice = true
+            }
             components += FinalizeComponent(
                 name = name,
                 brand = raw.optString("brand").takeIf { it.isNotBlank() && it != "null" },
                 preparation = raw.optString("preparation").takeIf { it.isNotBlank() && it != "null" },
-                sourceId = raw.optString("source_id").takeIf { it.isNotBlank() && it != "null" }
-                    ?: raw.optString("sourceId").takeIf { it.isNotBlank() && it != "null" },
+                sourceId = sourceId,
                 sourceKind = raw.optString("source_kind").takeIf { it.isNotBlank() && it != "null" }
                     ?: raw.optString("sourceKind").takeIf { it.isNotBlank() && it != "null" },
                 grams = grams,
                 portionHint = raw.optString("portion_hint").takeIf { it.isNotBlank() && it != "null" },
                 barcode = raw.optString("barcode").filter { it.isDigit() }.takeIf { it.length >= 8 },
-                rejectToEstimate = raw.optBoolean("reject_to_estimate", false) ||
-                    raw.optBoolean("rejectToEstimate", false),
-                needsUserChoice = raw.optBoolean("needs_user_choice", false) ||
-                    raw.optBoolean("needsUserChoice", false),
+                quantity = quantity,
+                unit = raw.optString("unit").takeIf { it.isNotBlank() && it != "null" },
+                rejectToEstimate = reject,
+                needsUserChoice = needsChoice,
             )
         }
         if (components.isEmpty()) return jsonError("components must include at least one named food")
+        // If every component rejected/needs choice with no viable source, still accept finalize
+        // so the orchestrator can estimate — never leave a silent empty path.
         lastFinalize = FinalizePayload(
             mealName = mealName,
             emoji = emoji,
@@ -177,6 +211,13 @@ class GroundingTools(
         return JSONObject().apply {
             put("ok", true)
             put("component_count", components.size)
+            if (invalidIds.isNotEmpty()) {
+                put("invalid_source_ids", JSONArray(invalidIds))
+                put(
+                    "warning",
+                    "Some source_id values were not returned by tools; marked needs_user_choice.",
+                )
+            }
             put("message", "Grounding finalized. Do not invent nutrients; the app will scale from selected sources.")
         }.toString()
     }
@@ -280,6 +321,8 @@ class GroundingTools(
                                                 put("source_id", JSONObject().put("type", "string").put("description", "fdc_id, history key, or barcode from a tool result"))
                                                 put("source_kind", JSONObject().put("type", "string").put("description", "usda | history | openFoodFacts"))
                                                 put("grams", JSONObject().put("type", "number"))
+                                                put("quantity", JSONObject().put("type", "number"))
+                                                put("unit", JSONObject().put("type", "string"))
                                                 put("portion_hint", JSONObject().put("type", "string"))
                                                 put("barcode", JSONObject().put("type", "string"))
                                                 put("reject_to_estimate", JSONObject().put("type", "boolean"))

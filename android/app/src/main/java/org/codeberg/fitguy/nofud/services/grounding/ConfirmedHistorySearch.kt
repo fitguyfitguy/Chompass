@@ -5,7 +5,6 @@ import org.codeberg.fitguy.nofud.models.GroundingCandidate
 import org.codeberg.fitguy.nofud.models.NutrientSourceKind
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.Locale
 import kotlin.math.exp
 import kotlin.math.ln
 
@@ -39,10 +38,10 @@ object ConfirmedHistorySearch {
         minHistory: Int = 2,
         maxBoost: Double = 1.5,
     ): List<HistoryHit> {
-        val q = query.trim().lowercase(Locale.US)
-        if (q.isEmpty() || entries.isEmpty()) return emptyList()
-        val qTokens = UsdaFoodIndex.tokenize(q)
+        if (query.trim().isEmpty() || entries.isEmpty()) return emptyList()
+        val qTokens = QueryNormalizer.normalizeTokens(query)
         if (qTokens.isEmpty()) return emptyList()
+        val q = QueryNormalizer.normalizeQuery(query)
 
         // Collapse by favoriteKey → newest template + count.
         val groups = linkedMapOf<String, Pair<FoodEntry, Int>>()
@@ -60,7 +59,7 @@ object ConfirmedHistorySearch {
         val hits = mutableListOf<HistoryHit>()
         for ((_, pair) in groups) {
             val (template, count) = pair
-            val name = template.name.lowercase(Locale.US)
+            val name = QueryNormalizer.normalizeQuery(template.name)
             val lexical = lexicalScore(q, qTokens, name)
             if (lexical <= 0) continue
             val days = ChronoUnit.DAYS.between(template.timestamp, now).coerceAtLeast(0)
@@ -71,7 +70,8 @@ object ConfirmedHistorySearch {
             } else {
                 0.0
             }
-            val score = lexical + recency + freqBoost
+            val correctionBoost = GroundingCorrectionStore.boostFor(query, template.favoriteKey)
+            val score = lexical + recency + freqBoost + correctionBoost
             hits += HistoryHit(
                 entry = template,
                 score = score,
@@ -106,7 +106,7 @@ object ConfirmedHistorySearch {
         if (name == query) return 8.0
         if (name.startsWith(query)) return 5.0
         if (name.contains(query)) return 3.0
-        val nameTokens = UsdaFoodIndex.tokenize(name).toSet()
+        val nameTokens = QueryNormalizer.normalizeTokens(name).toSet()
         val overlap = tokens.count { it in nameTokens }
         if (overlap == 0) return 0.0
         return overlap * 1.2

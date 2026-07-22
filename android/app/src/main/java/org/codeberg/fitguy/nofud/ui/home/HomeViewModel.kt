@@ -563,6 +563,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
                     selectedSourceIds = selectedSourceIds,
                     gramOverrides = gramOverrides,
+                    priorRecognition = pending.result.recognition,
                 )
                 savePendingDraft(
                     result.analysis,
