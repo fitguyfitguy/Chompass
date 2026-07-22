@@ -4,6 +4,16 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [1.14.10] - 2026-07-22
+
+### Changed
+
+- Regenerated launcher icons and in-app logos; default teal accent uses a deeper green-teal (`#006B5E`).
+
+### Fixed
+
+- About and Health Connect privacy / asset-credit links point at `docs/` paths after the maintainer-docs move.
+
 ## [1.14.9] - 2026-07-22
 
 ### Fixed

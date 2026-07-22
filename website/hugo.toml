@@ -7,7 +7,7 @@ summaryLength = 20
 
 [params]
   description = 'Ad-free AI calorie tracker for Android. Cloud BYOK or opt-in on-device Gemma 4. Privacy-focused, no analytics.'
-  version = '1.14.9'
+  version = '1.14.10'
   apkArm64Note = '~15 MiB'
   apkUniversalNote = '~27 MiB'
   repo = 'https://codeberg.org/fitguy/NoFUD'
