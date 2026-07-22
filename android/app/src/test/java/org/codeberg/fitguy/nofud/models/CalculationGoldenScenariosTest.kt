@@ -9,7 +9,7 @@ import java.time.ZoneId
 
 /**
  * Golden vectors for end-to-end deterministic goal math. Values are hand-computed from the
- * formulas documented in CALCULATION_METHODS.md — update both when formulas change.
+ * formulas documented in docs/CALCULATION_METHODS.md — update both when formulas change.
  */
 class CalculationGoldenScenariosTest {
 

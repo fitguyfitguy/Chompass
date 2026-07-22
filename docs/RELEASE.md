@@ -65,7 +65,7 @@ git push origin v1.0.0
    - Paste changelog notes
    - Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
 
-   The former **`play` flavor is disabled**; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+   The former **`play` flavor is disabled**; see [`DISTRIBUTION.md`](DISTRIBUTION.md).
 
    Or with [tea](https://codeberg.org/tea/tea):
 
@@ -103,7 +103,7 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 ./scripts/manage_release_assets.sh prune-play-assets -y
 ```
 
-See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+See [`DISTRIBUTION.md`](DISTRIBUTION.md).
 
 **Publish** uploads in batches (release APKs → checksums). If a run stops mid-way, resume without recreating the release:
 
@@ -126,7 +126,7 @@ devenv tasks run release:screenshots
 This runs `./scripts/export_release_screenshots.sh`, which:
 
 1. Renders `@PreviewTest` composables via `./gradlew :app:updateDebugScreenshotTest`
-2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and dark-theme copies to `docs/screenshots/` for [README.md](README.md)
+2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and dark-theme copies to `docs/screenshots/` for [README.md](../README.md)
 
 `release:package` runs this export automatically after unit tests (commit `docs/screenshots/` with your release).
 
@@ -136,7 +136,7 @@ Validate without updating reference images:
 ./scripts/export_release_screenshots.sh --validate
 ```
 
-Attach screenshots when publishing (only if release quota has room; see [Codeberg storage quota](RELEASE.md#codeberg-storage-quota)):
+Attach screenshots when publishing (only if release quota has room; see [Codeberg storage quota](#codeberg-storage-quota)):
 
 ```bash
 devenv tasks run release:screenshots
@@ -150,7 +150,7 @@ Reference images for regression live under `android/app/src/screenshotTestDebug/
 
 **Tier 2: headless Android emulator (no phone):** enable `emulator.enable` and a system image in `devenv.nix`, then capture from a running emulator with `adb exec-out screencap`. A dedicated `scripts/capture_release_screenshots_emulator.sh` can be added when needed.
 
-**Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](scripts/capture_android_perf_baseline.sh):
+**Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](../scripts/capture_android_perf_baseline.sh):
 
 ```powershell
 adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_test_data true
@@ -163,18 +163,18 @@ Prefer the emulator over coordinate-based phone taps when automating; screen siz
 
 Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 
-- Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)
+- Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`DISTRIBUTION.md`](DISTRIBUTION.md)
 - Add store metadata under `metadata/en-US/`
 - Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
 - Keep `fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 
-See [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md) for the full checklist and fdroiddata MR body.
+See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the full checklist and fdroiddata MR body.
 
 ## Calculation changes
 
 Before shipping formula, constant, or guardrail changes:
 
-1. Update implementation and [`NutritionConstants.kt`](android/app/src/main/java/org/codeberg/fitguy/nofud/models/NutritionConstants.kt) when applicable
+1. Update implementation and [`NutritionConstants.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/NutritionConstants.kt) when applicable
 2. Update [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md) (formula register + policy table)
 3. Update in-app strings (`settings_calc_*` in `strings.xml`) if user-visible
 4. Add or adjust unit tests under `android/app/src/test/`

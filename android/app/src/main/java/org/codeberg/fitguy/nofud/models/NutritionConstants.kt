@@ -2,7 +2,7 @@ package org.codeberg.fitguy.nofud.models
 
 /**
  * Shared nutrition and energy-balance constants used across goal setting, forecasting,
- * and adaptive adjustments. Single source of truth — see [CALCULATION_METHODS.md] at repo root.
+ * and adaptive adjustments. Single source of truth — see [docs/CALCULATION_METHODS.md].
  */
 object NutritionConstants {
     /**

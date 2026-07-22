@@ -2,7 +2,7 @@
 
 Requirements: JDK 17+, Android SDK 36.
 
-Distribution: single F-Droid / Codeberg build. The former **`play` flavor is disabled**. See [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
+Distribution: single F-Droid / Codeberg build. The former **`play` flavor is disabled**. See [`DISTRIBUTION.md`](DISTRIBUTION.md).
 
 ## WSL / Nix (devenv)
 
@@ -70,7 +70,7 @@ First launch walks through onboarding. A free Gemini key is available at https:/
 
 ## Project website (Codeberg Pages)
 
-Hugo site sources live in [`website/`](website/). Screenshots are mounted from [`docs/screenshots/`](docs/screenshots/) at build time. Live URL: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
+Hugo site sources live in [`website/`](../website/). Screenshots are mounted from [`screenshots/`](screenshots/) at build time. Live URL: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
 
 **No Forgejo Actions runner required.** Deploy is local Hugo build + force-push to an orphan `pages` branch; Codeberg Pages picks it up via a repo webhook ([docs](https://docs.codeberg.org/codeberg-pages/)).
 
@@ -128,4 +128,4 @@ Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validate
 
 Full workflow: model push, intent extras, GPU/CPU backends, latency results, known issues:
 
-**[docs/ON_DEVICE_LLM.md](docs/ON_DEVICE_LLM.md)**
+**[ON_DEVICE_LLM.md](ON_DEVICE_LLM.md)**
