@@ -43,7 +43,21 @@
 
   tasks."release:check-metadata" = {
     exec = "./scripts/check_release_metadata.sh";
-    description = "Verify version consistency across build.gradle.kts, docs/CHANGELOG.md, and docs/fdroid metadata";
+    description = "Verify version consistency across build.gradle.kts, docs/CHANGELOG.md, website/hugo.toml, and docs/fdroid metadata";
+  };
+
+  tasks."release:publish" = {
+    exec = ''
+      set -euo pipefail
+      if [[ -z "''${RELEASE_VERSION:-}" ]]; then
+        echo "Usage: RELEASE_VERSION=1.14.10 devenv tasks run release:publish" >&2
+        echo "Optional flags via PUBLISH_FLAGS, e.g. PUBLISH_FLAGS='--skip-pages'" >&2
+        exit 1
+      fi
+      # shellcheck disable=SC2086
+      ./scripts/publish_release.sh "$RELEASE_VERSION" ''${PUBLISH_FLAGS:-}
+    '';
+    description = "Upload release APKs to Codeberg and redeploy Pages (RELEASE_VERSION=x.y.z)";
   };
 
   tasks."release:screenshots" = {

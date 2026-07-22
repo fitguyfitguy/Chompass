@@ -151,11 +151,12 @@ Next steps:
   3. Commit (include docs/screenshots/ if UI changed), tag, and push:
        git tag -a v${VERSION} -m "NoFUD ${VERSION}"
        git push origin v${VERSION}
-  4. Publish to Codeberg:
+  4. Publish to Codeberg (also redeploys Codeberg Pages):
        export CODEBERG_TOKEN='...'
        ./scripts/manage_release_assets.sh list    # check quota headroom
        ./scripts/publish_release.sh ${VERSION}
        # if quota exceeded: prune old ABI splits, then --assets-only
+       # skip site redeploy: ./scripts/publish_release.sh ${VERSION} --skip-pages
 
 Optional metadata guard before tagging:
   devenv tasks run release:check-metadata
