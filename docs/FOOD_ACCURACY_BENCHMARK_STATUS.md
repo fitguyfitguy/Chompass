@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **As of** | 2026-07-21 |
+| **As of** | 2026-07-22 |
 | **Harness** | [`benchmarks/food_accuracy/`](../benchmarks/food_accuracy/) |
 | **How-to** | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) |
 | **API** | OpenRouter via `OPENROUTER_TOKEN` in `.env.local` |
@@ -19,7 +19,9 @@ This note records what we have measured so far, which defaults to use, and what 
 | `nofud/free` | Client-side free router (preferred); excludes content-safety |
 | `openrouter/free` | Stock OpenRouter router — **not for accuracy benches** |
 | `manifest/eval_text.jsonl` | 42 FNDDS-derived text items (checked in) |
-| `data/manifests/jfb.jsonl` | 50 JFB meal images (downloaded, gitignored) |
+| `data/manifests/jfb.jsonl` | 50 JFB meal images L0 — image only (downloaded, gitignored) |
+| `data/manifests/jfb_image_text_l1.jsonl` | 50 JFB — image + meal title as user note |
+| `data/manifests/jfb_image_text_l2.jsonl` | 50 JFB — image + ingredient names as user note |
 | Metrics | `parse_ok`, WMAPE on {kcal, protein, carbs, fat}, ±20% kcal rate |
 
 **Default free-tier command shape:**
@@ -49,6 +51,7 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 5. **Plate image estimation is still hard.** Even with 98% parse_ok, image WMAPE ≈ **43%**, within ±20% kcal ≈ **33%**. Reliability ≠ calorie accuracy for vision.
 6. **Image prompt shape does not fix plate WMAPE.** On pinned Gemma 26B :free (JFB 50), `compact` wins: WMAPE **39.8%** / ±20% **32%** / parse **100%** / ~9 s. `production_image` and `fewshot_units` are worse (~47% / ~46% WMAPE), slower (~17 s / ~14 s), and 96% parse. Stop prompt-chasing for cloud vision accuracy; next bets are models/datasets/priors.
 7. **Lab overhead (Nutrition5k) is only mildly easier than phone meals.** Cursory n=15 overhead RGB + Gemma compact: WMAPE **34.7%**, ±20% **40%**, mae kcal **80**, parse **100%**. Better than JFB (~40% WMAPE) but still far from text (~6%). Error is not “messy phone photo” alone — portion/macro estimation stays hard even with clean top-down plates.
+8. **Simple JFB descriptions do not help Gemma compact macros (yet).** Paired L0/L1/L2 on JFB 50 (pinned Gemma 26B, `compact`): L0 image-only WMAPE **41.8%** / ±20% **28%** beats L1 meal title (**44.9%**) and L2 ingredient names (**45.8%** / ±20% **22%**). All 100% parse. Harness now supports image+text like the app; on this model/prompt, extra context did not improve calorie accuracy — try `production_image` parity and paid VLs next.
 
 ---
 
@@ -84,6 +87,18 @@ Filled backend mix (nofud baseline): Gemma 26B 27/27, Nemotron nano-VL 14/15, Ne
 
 **Image prompt ranking (pinned Gemma):** compact ≫ fewshot_units ≥ production_image.
 
+### Image + description (JFB 50, Gemma 4 26B :free, prompt `compact`)
+
+Same 50 IDs; only user `text` differs. L1 = meal title; L2 = ingredient names (no qty/macros). Prompt uses `sample.text` only (not `meal_name` metadata).
+
+| Run | User text | parse_ok | WMAPE | mae kcal | within 20% | mean latency | Notes |
+|-----|-----------|----------|-------|----------|------------|--------------|-------|
+| `image_text_ab/l0_image_only` | none (L0) | **100%** | **41.8%** | **161** | **28%** | ~8.7 s | **Best of L0/L1/L2** |
+| `image_text_ab/l1_meal_name` | meal title (L1) | 100% | 44.9% | 173 | 28% | ~9.0 s | +3.1 pp WMAPE vs L0 |
+| `image_text_ab/l2_ingredient_names` | ingredient names (L2) | 100% | 45.8% | 178 | 22% | ~8.7 s | +4.0 pp WMAPE vs L0 |
+
+**Image+text ranking (Gemma compact):** L0 ≥ L1 > L2. Product “add a short note” may still help identification/UX; on this pin it did not improve macro WMAPE.
+
 ### Image (Nutrition5k overhead RGB, cursory)
 
 | Run | Model | prompt | n | parse_ok | WMAPE | mae kcal | within 20% | Notes |
@@ -105,15 +120,18 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 | App-parity prompt | `production_text` / `production_image` | Only when testing schema/units transfer |
 | Text / image pin (stable A/B) | `google/gemma-4-26b-a4b-it:free` | Fast, accurate, vision-capable |
 | Image pacing | `--sleep 15`+ and `--retries 3`+ | Free-tier per-minute limits (image) |
+| Image+text eval | L0/L1/L2 JFB manifests via `download_jfb.py` | Paired A/B; `text` field = user note |
 
 ---
 
 ## Gaps / not done yet
 
 - [x] Image **prompt A/B** on pinned Gemma (`compact` vs `production_image` vs `fewshot_units`) — compact wins; longer prompts hurt
+- [x] Image + **description A/B** on JFB 50 (L0/L1/L2, Gemma compact) — L0 image-only wins; L1/L2 do not improve WMAPE
 - [ ] Full **fresh** 50-image run with `nofud/free` from cold start (current image set is openrouter/free survivors + nofud fill — fine for reliability proof, slightly mixed for pure router A/B)
 - [x] Nutrition5k overhead RGB **cursory** (n=15, Gemma compact) — WMAPE ~35%; lab plates still hard
 - [ ] Nutrition5k larger slice (n≥50) if model A/B needs a second image distribution
+- [ ] Image+text with **`production_image`** (app-parity prompt) on L0/L1/L2 — compact may not use context well
 - [ ] Stronger vision pins / paid VL vs Gemma free (prompt A/B saturated)
 - [ ] Nutrition-label OCR track (Open Food Facts)
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
@@ -125,21 +143,27 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 ## Suggested next runs
 
 ```bash
-# 1) Cold nofud/free image baseline with winning prompt (clean router mix)
+# 1) Image+text with app-parity prompt (does production_image use context better?)
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model google/gemma-4-26b-a4b-it:free \
+  --prompt production_image --sleep 15 --retries 3 \
+  --manifest benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
+  --out benchmarks/food_accuracy/results/image_text_ab/l1_meal_name_production_image
+
+# 2) Paid VL ceiling on L0 image-only (is ~42% WMAPE a free-model limit?)
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model openai/gpt-4o-mini \
+  --prompt compact --sleep 5 --retries 2 \
+  --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
+  --out benchmarks/food_accuracy/results/image_text_ab/l0_gpt4o_mini
+
+# 3) Cold nofud/free image baseline (router reliability, image-only)
 uv run python benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model nofud/free \
   --prompt compact \
   --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
   --sleep 8 --retries 2 \
   --out benchmarks/food_accuracy/results/baseline_image_nofud_free_compact_cold
-
-# 2) Optional: pin another free VL (e.g. Gemma 31B or Nemotron nano-VL) with compact
-uv run python benchmarks/food_accuracy/run_eval.py \
-  --provider openrouter --model google/gemma-4-31b-it:free \
-  --prompt compact \
-  --manifest benchmarks/food_accuracy/data/manifests/jfb.jsonl \
-  --sleep 15 --retries 3 \
-  --out benchmarks/food_accuracy/results/image_model_ab/gemma31b_compact
 ```
 
 ---

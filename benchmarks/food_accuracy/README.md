@@ -104,6 +104,8 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
   benchmarks/food_accuracy/results/image_text_ab/l1_meal_name/summary.csv
 ```
 
+**Latest image+text result (2026-07-22):** L0 image-only WMAPE **41.8%** beats L1 meal title **44.9%** and L2 ingredient names **45.8%** on pinned Gemma 26B + `compact`. See [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md).
+
 ## Image baseline
 
 Wide free-router image run on JFB (prefer **`nofud/free`** — no content-safety):
