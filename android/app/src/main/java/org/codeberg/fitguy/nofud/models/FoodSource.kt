@@ -9,5 +9,7 @@ enum class FoodSource {
     @SerialName("nutritionLabel") NUTRITION_LABEL,
     @SerialName("barcode") BARCODE,
     @SerialName("textInput") TEXT_INPUT,
-    @SerialName("manual") MANUAL
+    @SerialName("manual") MANUAL,
+    /** Optional grounded entry: model recognition + local USDA/OFF/history nutrients. */
+    @SerialName("grounded") GROUNDED,
 }

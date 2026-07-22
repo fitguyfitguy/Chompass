@@ -338,6 +338,7 @@ class FoodAnalysisService(
             Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated total weight in grams. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
             unit_options is required when the text names an obvious non-gram serving unit, and optional otherwise. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. Do not copy any sample number; use the quantity stated or clearly implied by the meal. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
+            Quantity rules: Honor explicit amounts (g, ml, tbsp, tsp, scoop, slice, piece, cup). Do not inflate "2 tbsp hummus" or "1 scoop whey" into a large bowl/shake. For branded or packaged product names, prefer that product's labeled nutrition when known. If amount is unspecified, use one typical labeled serving (not a large restaurant portion) and set serving_size_grams accordingly.
             For "emoji" pick the single most specific food emoji that depicts this dish — e.g. 🥚 for eggs, 🍕 for pizza, 🍎 for an apple, 🥗 for a salad, 🍔 for a burger, 🍜 for ramen, 🍰 for cake, 🥑 for avocado, ☕ for coffee, 🍣 for sushi. Only fall back to 🍽️ when the food truly cannot be represented by any specific emoji. Use null for any nutrient you cannot estimate.
         """.trimIndent()
         val raw = callAi(prompt, null, op = "analyzeText", onProgress = onProgress)
@@ -354,6 +355,7 @@ class FoodAnalysisService(
             Analyze this image. It could be either a photo of food OR a nutrition facts label.
 
             If it's a food photo: identify the food and estimate nutritional content for the serving shown.
+            Portion rules for food photos: Estimate only food clearly visible. Do not invent typical sides, drinks, bread, or garnishes that are not visible. Size from what you see (plate fill, piece count, height) rather than a generic restaurant "full plate" prior when they disagree. Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin. For whole cakes/pies/pizzas estimate the whole visible item; for a single slice estimate only that slice.
             If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
 
             Respond ONLY with JSON:
@@ -381,10 +383,10 @@ class FoodAnalysisService(
             Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated weight in grams of the serving shown. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
             unit_options is required for obvious non-gram units visible in the food — almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
-            Give your best estimate for the visible food amount shown in the image. For whole/mostly-whole cakes, pizzas, pies, loaves, or similar foods, estimate the total visible item/remaining item weight rather than defaulting to one slice. Use null for any nutrient you cannot estimate.
+            Portion rules: Estimate only food clearly visible or named by the user. Do not invent typical sides, drinks, bread, or garnishes that are not visible. Size from what you see (plate fill, piece count, height); prefer the visible amount over a generic restaurant "full plate" prior when they disagree. Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin. For whole/mostly-whole cakes, pizzas, pies, loaves, or similar foods, estimate the total visible item/remaining item weight rather than defaulting to one slice; for a single slice estimate only that slice. Use null for any nutrient you cannot estimate.
         """.trimIndent()
         if (!description.isNullOrBlank()) {
-            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
+            prompt += "\n\nAdditional context from the user about this meal: $description\nPrefer the user's stated amounts and ingredients over visual defaults when they conflict. Use this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
         val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
@@ -406,10 +408,10 @@ class FoodAnalysisService(
             The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
             unit_options is required for obvious non-gram units visible in the food, almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
             Do not double-count the meal across images. Treat the photos as multiple views of the same item unless there are clearly separate foods.
-            Use null for any nutrient you cannot estimate.
+            Portion rules: Estimate only food clearly visible or named by the user. Do not invent typical sides, drinks, bread, or garnishes that are not visible. Size from what you see rather than a generic restaurant "full plate" prior when they disagree. Include calories from oils, dressings, dips, sauces, nut butters, cheese, and fried coatings even when the layer looks thin. Use null for any nutrient you cannot estimate.
         """.trimIndent()
         if (!description.isNullOrBlank()) {
-            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
+            prompt += "\n\nAdditional context from the user about this meal: $description\nPrefer the user's stated amounts and ingredients over visual defaults when they conflict. Use this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
@@ -417,6 +419,50 @@ class FoodAnalysisService(
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = images.first(), description = description, onProgress = onProgress)
+    }
+
+    /**
+     * Recognition-only pass for grounded entry. Identifies meal components and
+     * portion hints; must NOT invent nutrient totals (those come from USDA/OFF/history).
+     */
+    suspend fun recognizeFoodComponents(
+        description: String? = null,
+        imageBytesList: List<ByteArray> = emptyList(),
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): org.codeberg.fitguy.nofud.models.FoodRecognitionResult {
+        val hasImages = imageBytesList.any { it.isNotEmpty() }
+        val text = description?.trim().orEmpty()
+        if (!hasImages && text.isEmpty()) throw AiError.InvalidResponse
+        val prompt = buildString {
+            appendLine("Identify the food(s) in this meal for a nutrition database lookup.")
+            appendLine("Do NOT estimate calories, protein, carbs, fat, or micronutrients.")
+            appendLine("Focus on identity, brands, preparation, barcodes if visible, and portion hints.")
+            appendLine("Respond ONLY with JSON:")
+            appendLine(
+                """{"meal_name":"...","emoji":"<single food emoji or null>","notes":null,"components":[{"name":"...","brand":null,"preparation":null,"estimated_grams":null,"portion_hint":null,"barcode":null,"quantity":null,"unit":null}]}"""
+            )
+            appendLine("Rules:")
+            appendLine("- Split distinct foods into separate components (e.g. eggs + toast + butter).")
+            appendLine("- estimated_grams is the edible amount in grams when reasonably guessable; else null.")
+            appendLine("- portion_hint is a short phrase like \"1 large egg\" or \"2 slices\".")
+            appendLine("- unit should be a non-gram household unit when clear (slice, cup, tbsp, piece, ml).")
+            appendLine("- barcode is digits only when a package barcode is readable; else null.")
+            appendLine("- Use null for unknown optional fields. Keep meal_name short and human-readable.")
+            if (text.isNotEmpty()) {
+                appendLine()
+                appendLine("User description: $text")
+            }
+            if (hasImages) {
+                appendLine()
+                appendLine("Use the attached image(s) as the primary visual evidence.")
+            }
+        }
+        val images = imageBytesList.filter { it.isNotEmpty() }
+        val raw = callAi(prompt, images, op = "recognizeFood", onProgress = onProgress)
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+        return PerfLog.measure("recognizeFood", "parse", "chars=${raw.length}") {
+            FoodJsonParser.parseRecognition(raw)
+        }
     }
 
     suspend fun analyzeNutritionLabel(imageBytes: ByteArray, servingGrams: Double): FoodAnalysis {

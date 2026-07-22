@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
@@ -78,6 +79,7 @@ fun AddFoodSheet(
     onBarcode: () -> Unit,
     onManual: () -> Unit,
     onCopyFromDay: () -> Unit,
+    onGrounded: () -> Unit = {},
     onDismiss: () -> Unit,
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
@@ -97,6 +99,7 @@ fun AddFoodSheet(
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
             onCopyFromDay = { onDismiss(); onCopyFromDay() },
+            onGrounded = { onDismiss(); onGrounded() },
             barcodeEnabled = barcodeEnabled,
             waterTrackingEnabled = waterTrackingEnabled,
             waterQuickPresetsMl = waterQuickPresetsMl,
@@ -119,6 +122,7 @@ internal fun AddFoodSheetContent(
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
     onCopyFromDay: () -> Unit = {},
+    onGrounded: () -> Unit = {},
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
     waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
@@ -230,6 +234,19 @@ internal fun AddFoodSheetContent(
                     modifier = Modifier.weight(1f),
                     onClick = onCopyFromDay,
                 )
+            }
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                AddFoodActionTile(
+                    label = stringResource(R.string.home_menu_grounded),
+                    icon = Icons.Filled.Science,
+                    size = AddFoodTileSize.Compact,
+                    modifier = Modifier.weight(1f),
+                    onClick = onGrounded,
+                )
+                Spacer(Modifier.weight(1f))
             }
         }
         if (waterTrackingEnabled) {

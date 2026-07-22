@@ -1,0 +1,3 @@
+{"id":"ex1","identity_top1":true,"identity_topk":1,"source_kind":"usda","gram_error":5.0,"nutrient_wmape":0.08,"user_corrected":false,"latency_ms":1200,"asset_bytes":24576}
+{"id":"ex2","identity_top1":false,"identity_topk":2,"source_kind":"history","gram_error":12.0,"nutrient_wmape":0.15,"user_corrected":true,"latency_ms":900,"asset_bytes":24576}
+{"id":"ex3","identity_top1":false,"identity_topk":null,"source_kind":"modelEstimate","gram_error":40.0,"nutrient_wmape":0.35,"user_corrected":false,"latency_ms":2100,"asset_bytes":24576}

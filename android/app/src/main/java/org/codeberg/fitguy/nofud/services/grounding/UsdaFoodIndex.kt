@@ -1,0 +1,402 @@
+package org.codeberg.fitguy.nofud.services.grounding
+
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import org.codeberg.fitguy.nofud.models.GroundingCandidate
+import org.codeberg.fitguy.nofud.models.NutrientBasis
+import org.codeberg.fitguy.nofud.models.NutrientSourceKind
+import org.codeberg.fitguy.nofud.services.ai.FoodAnalysis
+import org.codeberg.fitguy.nofud.models.ServingUnitOption
+import java.io.File
+import java.util.Locale
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.round
+import kotlin.math.roundToInt
+
+/**
+ * Read-only lookup over the compact USDA Foundation + FNDDS SQLite asset
+ * (`assets/usda/usda_foods.sqlite`). No Room — opens a copied file with
+ * [SQLiteDatabase.openDatabase].
+ */
+class UsdaFoodIndex(
+    context: Context,
+    assetPath: String = ASSET_PATH,
+) {
+    private val appContext = context.applicationContext
+    private val dbFile: File = File(appContext.filesDir, "usda_foods.sqlite")
+    private val datasetVersion: String
+    private val db: SQLiteDatabase
+
+    init {
+        copyAssetIfNeeded(assetPath)
+        db = SQLiteDatabase.openDatabase(
+            dbFile.absolutePath,
+            null,
+            SQLiteDatabase.OPEN_READONLY or SQLiteDatabase.NO_LOCALIZED_COLLATORS,
+        )
+        datasetVersion = readMeta("dataset_version")
+            ?: "unknown"
+    }
+
+    fun version(): String = datasetVersion
+
+    fun foodCount(): Int {
+        db.rawQuery("SELECT COUNT(*) FROM foods", null).use { c ->
+            return if (c.moveToFirst()) c.getInt(0) else 0
+        }
+    }
+
+    fun getByFdcId(fdcId: Long): UsdaFoodRecord? {
+        db.rawQuery(
+            "SELECT * FROM foods WHERE fdc_id = ? LIMIT 1",
+            arrayOf(fdcId.toString()),
+        ).use { c ->
+            if (!c.moveToFirst()) return null
+            return readRecord(c)
+        }
+    }
+
+    /**
+     * Exact / prefix / token search. Scores exact description matches highest,
+     * then token overlap. Cap [limit] results.
+     */
+    fun search(query: String, limit: Int = 8): List<GroundingCandidate> {
+        val q = query.trim()
+        if (q.isEmpty()) return emptyList()
+        val tokens = tokenize(q)
+        if (tokens.isEmpty()) return emptyList()
+
+        // Broad LIKE filter, then rank in Kotlin (asset is compact).
+        val like = "%${tokens.first()}%"
+        val rows = mutableListOf<UsdaFoodRecord>()
+        db.rawQuery(
+            """
+            SELECT * FROM foods
+            WHERE tokens LIKE ? OR description LIKE ?
+            LIMIT 80
+            """.trimIndent(),
+            arrayOf(like, like),
+        ).use { c ->
+            while (c.moveToNext()) {
+                rows += readRecord(c)
+            }
+        }
+
+        // If the first-token filter was too narrow, try full-string LIKE.
+        if (rows.isEmpty()) {
+            val loose = "%${q.lowercase(Locale.US)}%"
+            db.rawQuery(
+                "SELECT * FROM foods WHERE description LIKE ? OR tokens LIKE ? LIMIT 80",
+                arrayOf(loose, loose),
+            ).use { c ->
+                while (c.moveToNext()) {
+                    rows += readRecord(c)
+                }
+            }
+        }
+
+        return rows
+            .map { it to score(tokens, it) }
+            .filter { it.second > 0 }
+            .sortedByDescending { it.second }
+            .take(limit)
+            .map { (food, score) -> food.toCandidate(score, datasetVersion) }
+    }
+
+    fun close() {
+        db.close()
+    }
+
+    private fun copyAssetIfNeeded(assetPath: String) {
+        val am = appContext.assets
+        val needCopy = !dbFile.exists() || dbFile.length() == 0L
+        if (!needCopy) {
+            // Refresh when the packaged asset checksum changes (compare sizes as a cheap signal).
+            val assetSize = am.openFd(assetPath).use { it.length }
+            if (dbFile.length() == assetSize) return
+        }
+        dbFile.parentFile?.mkdirs()
+        am.open(assetPath).use { input ->
+            dbFile.outputStream().use { output -> input.copyTo(output) }
+        }
+    }
+
+    private fun readMeta(key: String): String? {
+        return runCatching {
+            db.rawQuery("SELECT value FROM meta WHERE key = ? LIMIT 1", arrayOf(key)).use { c ->
+                if (c.moveToFirst()) c.getString(0) else null
+            }
+        }.getOrNull()
+    }
+
+    private fun readRecord(c: android.database.Cursor): UsdaFoodRecord {
+        fun d(col: String): Double? {
+            val idx = c.getColumnIndex(col)
+            if (idx < 0 || c.isNull(idx)) return null
+            return c.getDouble(idx)
+        }
+        fun s(col: String): String? {
+            val idx = c.getColumnIndex(col)
+            if (idx < 0 || c.isNull(idx)) return null
+            return c.getString(idx)
+        }
+        return UsdaFoodRecord(
+            fdcId = c.getLong(c.getColumnIndexOrThrow("fdc_id")),
+            description = c.getString(c.getColumnIndexOrThrow("description")),
+            dataType = s("data_type") ?: "",
+            foodCategory = s("food_category"),
+            tokens = s("tokens") ?: "",
+            servingUnit = s("serving_unit"),
+            servingGrams = d("serving_grams"),
+            calories = d("calories"),
+            protein = d("protein"),
+            carbs = d("carbs"),
+            fat = d("fat"),
+            fiber = d("fiber"),
+            sugar = d("sugar"),
+            addedSugar = d("added_sugar"),
+            saturatedFat = d("saturated_fat"),
+            monounsaturatedFat = d("monounsaturated_fat"),
+            polyunsaturatedFat = d("polyunsaturated_fat"),
+            cholesterol = d("cholesterol"),
+            sodium = d("sodium"),
+            potassium = d("potassium"),
+            transFat = d("trans_fat"),
+            calcium = d("calcium"),
+            iron = d("iron"),
+            magnesium = d("magnesium"),
+            zinc = d("zinc"),
+            vitaminA = d("vitamin_a"),
+            vitaminC = d("vitamin_c"),
+            vitaminD = d("vitamin_d"),
+            vitaminB12 = d("vitamin_b12"),
+            vitaminE = d("vitamin_e"),
+            vitaminK = d("vitamin_k"),
+            folate = d("folate"),
+            omega3 = d("omega_3"),
+        )
+    }
+
+    companion object {
+        const val ASSET_PATH = "usda/usda_foods.sqlite"
+
+        internal fun tokenize(text: String): List<String> =
+            text.lowercase(Locale.US)
+                .map { if (it.isLetterOrDigit()) it else ' ' }
+                .joinToString("")
+                .split(Regex("\\s+"))
+                .filter { it.length >= 2 }
+
+        internal fun score(queryTokens: List<String>, food: UsdaFoodRecord): Double {
+            if (queryTokens.isEmpty()) return 0.0
+            val desc = food.description.lowercase(Locale.US)
+            val foodTokens = food.tokens.split(" ").filter { it.isNotEmpty() }.toSet()
+            val joined = queryTokens.joinToString(" ")
+            var score = 0.0
+            if (desc == joined) score += 10.0
+            else if (desc.startsWith(joined)) score += 6.0
+            else if (desc.contains(joined)) score += 3.5
+            val overlap = queryTokens.count { it in foodTokens }
+            score += overlap * 1.5
+            // Prefer shorter / more specific Foundation names slightly.
+            score += max(0.0, 2.0 - food.description.length / 80.0)
+            if (food.dataType.contains("foundation")) score += 0.3
+            return score
+        }
+    }
+}
+
+data class UsdaFoodRecord(
+    val fdcId: Long,
+    val description: String,
+    val dataType: String,
+    val foodCategory: String?,
+    val tokens: String,
+    val servingUnit: String?,
+    val servingGrams: Double?,
+    val calories: Double?,
+    val protein: Double?,
+    val carbs: Double?,
+    val fat: Double?,
+    val fiber: Double?,
+    val sugar: Double?,
+    val addedSugar: Double?,
+    val saturatedFat: Double?,
+    val monounsaturatedFat: Double?,
+    val polyunsaturatedFat: Double?,
+    val cholesterol: Double?,
+    val sodium: Double?,
+    val potassium: Double?,
+    val transFat: Double?,
+    val calcium: Double?,
+    val iron: Double?,
+    val magnesium: Double?,
+    val zinc: Double?,
+    val vitaminA: Double?,
+    val vitaminC: Double?,
+    val vitaminD: Double?,
+    val vitaminB12: Double?,
+    val vitaminE: Double?,
+    val vitaminK: Double?,
+    val folate: Double?,
+    val omega3: Double?,
+) {
+    fun toCandidate(score: Double, datasetVersion: String): GroundingCandidate =
+        GroundingCandidate(
+            sourceKind = NutrientSourceKind.USDA,
+            sourceId = fdcId.toString(),
+            displayName = description,
+            score = score,
+            foodCategory = foodCategory,
+            caloriesPer100g = calories,
+            proteinPer100g = protein,
+            carbsPer100g = carbs,
+            fatPer100g = fat,
+            servingSizeGrams = servingGrams,
+            matchedBy = "usda_search",
+            datasetVersion = datasetVersion,
+        )
+
+    /** Scale per-100g nutrients to [grams]. */
+    fun toFoodAnalysis(grams: Double, datasetVersion: String): FoodAnalysis {
+        val scale = grams / 100.0
+        fun s(v: Double?) = v?.let { round(it * scale * 10.0) / 10.0 }
+        val unitOptions = if (!servingUnit.isNullOrBlank() && servingGrams != null && servingGrams > 0) {
+            listOf(
+                ServingUnitOption(
+                    unit = servingUnit,
+                    gramsPerUnit = servingGrams,
+                    quantity = grams / servingGrams,
+                )
+            )
+        } else {
+            emptyList()
+        }
+        val selected = unitOptions.firstOrNull()
+        return FoodAnalysis(
+            name = description,
+            calories = ((calories ?: 0.0) * scale).roundToInt(),
+            protein = (protein ?: 0.0) * scale,
+            carbs = (carbs ?: 0.0) * scale,
+            fat = (fat ?: 0.0) * scale,
+            servingSizeGrams = grams,
+            sugar = s(sugar),
+            addedSugar = s(addedSugar),
+            fiber = s(fiber),
+            saturatedFat = s(saturatedFat),
+            monounsaturatedFat = s(monounsaturatedFat),
+            polyunsaturatedFat = s(polyunsaturatedFat),
+            cholesterol = s(cholesterol),
+            sodium = s(sodium),
+            potassium = s(potassium),
+            transFat = s(transFat),
+            calcium = s(calcium),
+            iron = s(iron),
+            magnesium = s(magnesium),
+            zinc = s(zinc),
+            vitaminA = s(vitaminA),
+            vitaminC = s(vitaminC),
+            vitaminD = s(vitaminD),
+            vitaminB12 = s(vitaminB12),
+            vitaminE = s(vitaminE),
+            vitaminK = s(vitaminK),
+            folate = s(folate),
+            omega3 = s(omega3),
+            servingUnitOptions = unitOptions,
+            selectedServingUnit = selected?.unit,
+            selectedServingQuantity = selected?.quantityFor(grams),
+            grounding = org.codeberg.fitguy.nofud.models.FoodGroundingProvenance(
+                sourceKind = NutrientSourceKind.USDA,
+                sourceId = fdcId.toString(),
+                sourceName = description,
+                nutrientBasis = NutrientBasis.PER_100G,
+                datasetVersion = datasetVersion,
+                retrievedAtEpochMs = System.currentTimeMillis(),
+                identityEvidence = "USDA FDC $fdcId",
+            ),
+        )
+    }
+}
+
+/**
+ * Pure helpers for combining / scaling grounded nutrient snapshots.
+ * Kept separate from Android DB code for JVM unit tests.
+ */
+object NutrientScaling {
+    fun scaleAnalysis(basePer100g: FoodAnalysis, grams: Double): FoodAnalysis {
+        val scale = grams / 100.0
+        fun s(v: Double?) = v?.let { round(it * scale * 10.0) / 10.0 }
+        return basePer100g.copy(
+            calories = (basePer100g.calories * scale).roundToInt(),
+            protein = basePer100g.protein * scale,
+            carbs = basePer100g.carbs * scale,
+            fat = basePer100g.fat * scale,
+            servingSizeGrams = grams,
+            sugar = s(basePer100g.sugar),
+            addedSugar = s(basePer100g.addedSugar),
+            fiber = s(basePer100g.fiber),
+            saturatedFat = s(basePer100g.saturatedFat),
+            monounsaturatedFat = s(basePer100g.monounsaturatedFat),
+            polyunsaturatedFat = s(basePer100g.polyunsaturatedFat),
+            cholesterol = s(basePer100g.cholesterol),
+            sodium = s(basePer100g.sodium),
+            potassium = s(basePer100g.potassium),
+            transFat = s(basePer100g.transFat),
+            calcium = s(basePer100g.calcium),
+            iron = s(basePer100g.iron),
+            magnesium = s(basePer100g.magnesium),
+            zinc = s(basePer100g.zinc),
+            vitaminA = s(basePer100g.vitaminA),
+            vitaminC = s(basePer100g.vitaminC),
+            vitaminD = s(basePer100g.vitaminD),
+            vitaminB12 = s(basePer100g.vitaminB12),
+            vitaminE = s(basePer100g.vitaminE),
+            vitaminK = s(basePer100g.vitaminK),
+            folate = s(basePer100g.folate),
+            omega3 = s(basePer100g.omega3),
+        )
+    }
+
+    /** Sum absolute-amount analyses into one meal total. */
+    fun sumAnalyses(name: String, emoji: String?, parts: List<FoodAnalysis>): FoodAnalysis {
+        require(parts.isNotEmpty())
+        fun sumD(sel: (FoodAnalysis) -> Double?) =
+            parts.mapNotNull(sel).takeIf { it.isNotEmpty() }?.sum()?.let { round(it * 10.0) / 10.0 }
+        return FoodAnalysis(
+            name = name,
+            calories = parts.sumOf { it.calories },
+            protein = parts.sumOf { it.protein },
+            carbs = parts.sumOf { it.carbs },
+            fat = parts.sumOf { it.fat },
+            servingSizeGrams = parts.sumOf { it.servingSizeGrams },
+            emoji = emoji,
+            sugar = sumD { it.sugar },
+            addedSugar = sumD { it.addedSugar },
+            fiber = sumD { it.fiber },
+            saturatedFat = sumD { it.saturatedFat },
+            monounsaturatedFat = sumD { it.monounsaturatedFat },
+            polyunsaturatedFat = sumD { it.polyunsaturatedFat },
+            cholesterol = sumD { it.cholesterol },
+            sodium = sumD { it.sodium },
+            potassium = sumD { it.potassium },
+            transFat = sumD { it.transFat },
+            calcium = sumD { it.calcium },
+            iron = sumD { it.iron },
+            magnesium = sumD { it.magnesium },
+            zinc = sumD { it.zinc },
+            vitaminA = sumD { it.vitaminA },
+            vitaminC = sumD { it.vitaminC },
+            vitaminD = sumD { it.vitaminD },
+            vitaminB12 = sumD { it.vitaminB12 },
+            vitaminE = sumD { it.vitaminE },
+            vitaminK = sumD { it.vitaminK },
+            folate = sumD { it.folate },
+            omega3 = sumD { it.omega3 },
+        )
+    }
+
+    /** Cap a history prior boost so it cannot dominate contradictory evidence. */
+    fun cappedHistoryBoost(rawBoost: Double, maxBoost: Double = 1.5): Double =
+        min(max(rawBoost, 0.0), maxBoost)
+}

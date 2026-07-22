@@ -117,7 +117,12 @@ object DiaryExporter {
     }
 
     fun sourceLabel(source: FoodSource): String =
-        if (source == FoodSource.MANUAL) "manually_edited" else "ai_estimated"
+        when (source) {
+            FoodSource.MANUAL -> "manually_edited"
+            FoodSource.GROUNDED -> "grounded"
+            FoodSource.BARCODE -> "barcode"
+            else -> "ai_estimated"
+        }
 
     private fun r1(x: Double): Double = (x * 10).roundToInt() / 10.0
     private fun optionalNumber(x: Double?, missing: String = ""): String = x?.let { r1(it).toString() } ?: missing
