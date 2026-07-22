@@ -44,7 +44,7 @@ Regenerate screenshots when UI changes: `devenv tasks run release:screenshots` (
 ### fdroiddata MR
 
 - [ ] Fork https://gitlab.com/fdroid/fdroiddata
-- [x] Copy [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml) → `metadata/org.codeberg.fitguy.nofud.yml` (prepared locally)
+- [x] Copy [`fdroid/org.codeberg.fitguy.nofud.yml`](fdroid/org.codeberg.fitguy.nofud.yml) → `metadata/org.codeberg.fitguy.nofud.yml` (prepared locally)
 - [ ] Push branch `org.codeberg.fitguy.nofud` and open MR (needs GitLab auth; see below)
 - [ ] Respond to reviewer questions in the MR
 
@@ -111,7 +111,7 @@ Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
 
 ## Privacy & network use
 
-Full policy: https://codeberg.org/fitguy/nofud/src/branch/main/PRIVACY.md
+Full policy: https://codeberg.org/fitguy/nofud/src/branch/main/docs/PRIVACY.md
 
 | Feature | Network? | Notes |
 |---------|----------|-------|
@@ -165,7 +165,7 @@ devenv tasks run release:check-metadata
 git clone https://gitlab.com/<your-gitlab-user>/fdroiddata.git
 cd fdroiddata
 git checkout -b org.codeberg.fitguy.nofud
-cp /path/to/NoFUD/fdroid/org.codeberg.fitguy.nofud.yml metadata/org.codeberg.fitguy.nofud.yml
+cp /path/to/NoFUD/docs/fdroid/org.codeberg.fitguy.nofud.yml metadata/org.codeberg.fitguy.nofud.yml
 git add metadata/org.codeberg.fitguy.nofud.yml
 git commit -m "New App: NoFUD (org.codeberg.fitguy.nofud)"
 git push -u origin org.codeberg.fitguy.nofud
@@ -180,8 +180,8 @@ Open MR: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/new (paste the MR
 For each release:
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `CHANGELOG.md` and `metadata/en-US/changelogs/<versionCode>.txt`
-3. Sync [`fdroid/org.codeberg.fitguy.nofud.yml`](../fdroid/org.codeberg.fitguy.nofud.yml) (`CurrentVersion`, `CurrentVersionCode`, `Builds:` entry with commit hash)
+2. Update `docs/CHANGELOG.md` and `metadata/en-US/changelogs/<versionCode>.txt`
+3. Sync [`fdroid/org.codeberg.fitguy.nofud.yml`](fdroid/org.codeberg.fitguy.nofud.yml) (`CurrentVersion`, `CurrentVersionCode`, `Builds:` entry with commit hash)
 4. Run `./scripts/package_release.sh --check-metadata`, tag `v<version>` on Codeberg, publish APKs
 5. Push upstream metadata to Codeberg `main` before fdroiddata picks up the tag
 6. F-Droid `checkupdates` may open a follow-up MR automatically; otherwise refresh with `./scripts/submit_fdroiddata_mr.sh`

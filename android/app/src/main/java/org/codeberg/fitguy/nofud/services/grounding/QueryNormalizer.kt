@@ -4,7 +4,7 @@ import java.util.Locale
 
 /**
  * Shared pre-retrieval query normalization for USDA / history search.
- * Keep in sync with `benchmarks/food_accuracy/query_normalize.py`.
+ * Keep in sync with `docs/benchmarks/food_accuracy/query_normalize.py`.
  */
 object QueryNormalizer {
 

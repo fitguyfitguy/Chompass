@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Shared USDA retrieval golden vectors for Kotlin unit tests and the Python harness. Keep Kotlin UsdaFoodIndex.score / QueryNormalizer in sync with benchmarks/food_accuracy/query_normalize.py.",
+  "description": "Shared USDA retrieval golden vectors for Kotlin unit tests and the Python harness. Keep Kotlin UsdaFoodIndex.score / QueryNormalizer in sync with docs/benchmarks/food_accuracy/query_normalize.py.",
   "cases": [
     {
       "id": "rice_cooked_over_flour",

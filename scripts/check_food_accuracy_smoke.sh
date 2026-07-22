@@ -5,20 +5,20 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 echo "== stub single-shot smoke =="
-uv run python benchmarks/food_accuracy/run_eval.py \
-  --manifest benchmarks/food_accuracy/manifest/eval_text.jsonl \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --prompt compact \
   --provider stub \
   --limit 5 \
   --out /tmp/nofud_food_acc_smoke
 
 echo "== grounded metrics on example trace =="
-uv run python benchmarks/food_accuracy/grounded_metrics.py \
-  --trace benchmarks/food_accuracy/manifest/grounded_trace_example.jsonl \
+uv run python docs/benchmarks/food_accuracy/grounded_metrics.py \
+  --trace docs/benchmarks/food_accuracy/manifest/grounded_trace_example.jsonl \
   --out /tmp/nofud_grounded_metrics_smoke.json
 
 echo "== retrieval golden vectors =="
-uv run python benchmarks/food_accuracy/check_retrieval_golden.py
+uv run python docs/benchmarks/food_accuracy/check_retrieval_golden.py
 
 echo "== query normalize unit checks =="
 uv run python -c "

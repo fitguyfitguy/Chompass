@@ -4,11 +4,11 @@
 
 **Ad-free AI calorie tracker for Android.** Cloud BYOK or opt-in on-device Gemma 4 inference. Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai). Lean app, open exports, Health Connect for scales and wearables.
 
-**[Website](https://fitguy.codeberg.page/NoFUD/)** · **[Install](https://fitguy.codeberg.page/NoFUD/download/)** (Obtainium / APK) · **[Privacy](PRIVACY.md)**
+**[Website](https://fitguy.codeberg.page/NoFUD/)** · **[Install](https://fitguy.codeberg.page/NoFUD/download/)** (Obtainium / APK) · **[Privacy](docs/PRIVACY.md)**
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
-[![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](CHANGELOG.md)
-[![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](PRIVACY.md)
+[![No ads](https://img.shields.io/badge/Ads-None-success?style=flat-square)](docs/CHANGELOG.md)
+[![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](docs/PRIVACY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![Health Connect](https://img.shields.io/badge/Health-Connect-4285F4?style=flat-square)](https://developer.android.com/health-and-fitness/guides/health-connect)
 [![On-device AI](https://img.shields.io/badge/On--device%20AI-Opt--in%20(Gemma%204)-9C27B0?style=flat-square)](#on-device-ai-private)
@@ -101,7 +101,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 
 **Priorities**
 
-- **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK cloud AI or opt-in on-device Gemma 4 inference ([PRIVACY.md](PRIVACY.md))
+- **Privacy:** no ads, no analytics SDKs, local-first storage, BYOK cloud AI or opt-in on-device Gemma 4 inference ([PRIVACY.md](docs/PRIVACY.md))
 - **FOSS barcode:** on-device scanning via [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) (Apache-2.0), not proprietary ML Kit.
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect; `nofud://` meal share links
 - **Wearables:** Health Connect in/out for steps, exercise, weight, meals, sleep, hydration, energy burn (Gadgetbridge, openScale, Samsung Health, etc.)
@@ -114,7 +114,7 @@ Android-optimized calorie and macro tracking. Core Fud AI logging plus fork-spec
 - **UI:** Material 3, `AddFoodSheet`, customizable home nutrients and meal times, macro remaining/over, multi-photo flow
 - **Extras:** keto/diet modes, fallback AI provider, audited nutrition math
 
-See [CHANGELOG.md](CHANGELOG.md) for release notes.
+See [CHANGELOG.md](docs/CHANGELOG.md) for release notes.
 
 ## On-device AI (private)
 
@@ -128,7 +128,7 @@ See [CHANGELOG.md](CHANGELOG.md) for release notes.
 | **Accuracy** | On-device models are much smaller than cloud AI (Gemini, GPT, Claude, etc.) and often misread portions, brands, and photos. Cloud AI remains the recommended default |
 | **Fallback** | Enable **Fallback Provider** so a cloud model retries when on-device inference fails |
 
-Coach chat still requires a cloud provider. New in [v1.14.0](CHANGELOG.md#1140---2026-07-15).
+Coach chat still requires a cloud provider. New in [v1.14.0](docs/CHANGELOG.md#1140---2026-07-15).
 
 ## Health Connect
 
@@ -211,11 +211,11 @@ On our Android debug perf baseline, recent Progress-screen work cut worst-frame 
 
 ## Docs
 
-Maintainer guides live under [`docs/`](docs/) — [development](docs/DEVELOPMENT.md), [releasing](docs/RELEASE.md), [performance](docs/PERFORMANCE.md), [calculations](docs/CALCULATION_METHODS.md), [asset credits](docs/ASSET_CREDITS.md), and more. Privacy and changelog stay at the repo root.
+Guides, changelog, privacy policy, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/).
 
 ## Privacy
 
-No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go to the provider you configure (BYOK). **On-Device (Private)** keeps food text and photo analysis on the device; nothing is uploaded to a server. See [PRIVACY.md](PRIVACY.md).
+No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go to the provider you configure (BYOK). **On-Device (Private)** keeps food text and photo analysis on the device; nothing is uploaded to a server. See [PRIVACY.md](docs/PRIVACY.md).
 
 ## Attribution & license
 
@@ -224,6 +224,6 @@ NoFUD is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License
 
-See also [NOTICE](NOTICE) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md).
+See also [NOTICE](docs/NOTICE.md) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md).
 
 MIT License. See [LICENSE](LICENSE).

@@ -1,6 +1,6 @@
 {
   "as_of": "2026-07-22",
-  "manifest": "benchmarks/food_accuracy/manifest/eval_text.jsonl",
+  "manifest": "docs/benchmarks/food_accuracy/manifest/eval_text.jsonl",
   "status": "wip_not_production",
   "pin": {
     "provider": "openrouter",

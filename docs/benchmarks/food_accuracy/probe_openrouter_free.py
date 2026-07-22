@@ -50,7 +50,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Probe OpenRouter free models for food text accuracy")
     parser.add_argument(
         "--manifest",
-        default="benchmarks/food_accuracy/manifest/eval_text.jsonl",
+        default="docs/benchmarks/food_accuracy/manifest/eval_text.jsonl",
         help="Text manifest (relative to repo root)",
     )
     parser.add_argument(

@@ -44,4 +44,4 @@ Shared meals use a `nofud://` deep link with base64-encoded nutrition JSON. Link
 
 Source and issues: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
 
-Canonical copy also lives in the repository as [PRIVACY.md](https://codeberg.org/fitguy/NoFUD/src/branch/main/PRIVACY.md).
+Canonical copy also lives in the repository as [PRIVACY.md](https://codeberg.org/fitguy/NoFUD/src/branch/main/docs/PRIVACY.md).

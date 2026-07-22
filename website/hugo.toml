@@ -13,7 +13,7 @@ summaryLength = 20
   repo = 'https://codeberg.org/fitguy/NoFUD'
   releases = 'https://codeberg.org/fitguy/nofud/releases'
   obtainium = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud'
-  privacyRepo = 'https://codeberg.org/fitguy/NoFUD/src/branch/main/PRIVACY.md'
+  privacyRepo = 'https://codeberg.org/fitguy/NoFUD/src/branch/main/docs/PRIVACY.md'
   upstream = 'https://github.com/apoorvdarshan/fud-ai'
   upstreamReleases = 'https://github.com/apoorvdarshan/fud-ai/releases'
 

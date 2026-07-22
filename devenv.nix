@@ -43,7 +43,7 @@
 
   tasks."release:check-metadata" = {
     exec = "./scripts/check_release_metadata.sh";
-    description = "Verify version consistency across build.gradle.kts, CHANGELOG.md, and fdroid metadata";
+    description = "Verify version consistency across build.gradle.kts, docs/CHANGELOG.md, and docs/fdroid metadata";
   };
 
   tasks."release:screenshots" = {

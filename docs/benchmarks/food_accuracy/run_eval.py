@@ -140,7 +140,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Food accuracy benchmark runner")
     parser.add_argument(
         "--manifest",
-        default="benchmarks/food_accuracy/manifest/eval_text.jsonl",
+        default="docs/benchmarks/food_accuracy/manifest/eval_text.jsonl",
         help="JSONL manifest path (relative to repo root)",
     )
     parser.add_argument(

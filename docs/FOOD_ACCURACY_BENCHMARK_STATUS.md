@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **As of** | 2026-07-22 |
-| **Harness** | [`benchmarks/food_accuracy/`](../benchmarks/food_accuracy/) |
+| **Harness** | [`docs/benchmarks/food_accuracy/`](benchmarks/food_accuracy/) |
 | **How-to** | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) |
 | **Grounded WIP** | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) — **not production**; UI flag off |
 | **API** | OpenRouter via `OPENROUTER_TOKEN` in `.env.local` |
@@ -28,7 +28,7 @@ This note records what we have measured so far, which defaults to use, and what 
 **Default free-tier command shape:**
 
 ```bash
-uv run python benchmarks/food_accuracy/run_eval.py \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model nofud/free \
   --prompt compact --sleep 8 --retries 2
 ```
@@ -36,7 +36,7 @@ uv run python benchmarks/food_accuracy/run_eval.py \
 `nofud/free` rebuilds its pool from the live OpenRouter `/models` catalog **once per process** (new free models appear; cancelled ones drop). Mid-run the pool is cached. Inspect with:
 
 ```bash
-uv run python benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded
+uv run python docs/benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded
 ```
 
 Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma-4-31b-it:free`, `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`, `nvidia/nemotron-nano-12b-v2-vl:free`.
@@ -184,7 +184,7 @@ Same 50 IDs; only user `text` differs. L1 = meal title; L2 = ingredient names (n
 |-----|-------|--------|---|----------|-------|----------|------------|-------|
 | `n5k_cursory_gemma_compact` | Gemma 4 26B :free | compact | 15 | **100%** | **34.7%** | **80** | **40%** | HTTPS overhead subset; ~7.5 s mean; small-kcal dishes inflate MAPE |
 
-Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
+Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 
 ---
 
@@ -227,19 +227,19 @@ Artifacts under `benchmarks/food_accuracy/results/` (gitignored).
 
 ```bash
 # 1) Does the plate leader benefit from a short meal title?
-uv run python benchmarks/food_accuracy/run_eval.py \
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model google/gemini-3.6-flash \
   --prompt compact --sleep 3 --retries 2 \
-  --manifest benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
-  --out benchmarks/food_accuracy/results/image_text_ab/l1_gemini36_flash
+  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
+  --out docs/benchmarks/food_accuracy/results/image_text_ab/l1_gemini36_flash
 
 # 2) Nutrition5k n≥50 with current best pin
-uv run python benchmarks/food_accuracy/download_nutrition5k.py --limit 50
-uv run python benchmarks/food_accuracy/run_eval.py \
+uv run python docs/benchmarks/food_accuracy/download_nutrition5k.py --limit 50
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model google/gemini-3.6-flash \
   --prompt compact --sleep 3 --retries 2 \
-  --manifest benchmarks/food_accuracy/data/manifests/n5k.jsonl \
-  --out benchmarks/food_accuracy/results/n5k_gemini36_flash_compact
+  --manifest docs/benchmarks/food_accuracy/data/manifests/n5k.jsonl \
+  --out docs/benchmarks/food_accuracy/results/n5k_gemini36_flash_compact
 ```
 
 ---
@@ -249,7 +249,7 @@ uv run python benchmarks/food_accuracy/run_eval.py \
 | Doc | Contents |
 |-----|----------|
 | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) | Datasets, metrics, CLI, `nofud/free` behavior |
-| [`benchmarks/food_accuracy/README.md`](../benchmarks/food_accuracy/README.md) | Quick commands |
+| [`docs/benchmarks/food_accuracy/README.md`](benchmarks/food_accuracy/README.md) | Quick commands |
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | On-device smoke (latency/parse; no GT macros yet) |
 
 Failure modes / portion reasoning for hard vs easy samples: [§ Failure modes & portion reasoning](#failure-modes--portion-reasoning) above.

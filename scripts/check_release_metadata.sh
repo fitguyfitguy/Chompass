@@ -4,8 +4,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GRADLE_FILE="$ROOT/android/app/build.gradle.kts"
-CHANGELOG="$ROOT/CHANGELOG.md"
-FDROID_YML="$ROOT/fdroid/org.codeberg.fitguy.nofud.yml"
+CHANGELOG="$ROOT/docs/CHANGELOG.md"
+FDROID_YML="$ROOT/docs/fdroid/org.codeberg.fitguy.nofud.yml"
 HUGO_TOML="$ROOT/website/hugo.toml"
 
 read_gradle_value() {
@@ -22,7 +22,7 @@ if [[ -z "$VERSION_NAME" || -z "$VERSION_CODE" ]]; then
 fi
 
 if ! grep -q "^## \\[${VERSION_NAME}\\]" "$CHANGELOG"; then
-  echo "CHANGELOG.md is missing a section: ## [${VERSION_NAME}]" >&2
+  echo "docs/CHANGELOG.md is missing a section: ## [${VERSION_NAME}]" >&2
   exit 1
 fi
 

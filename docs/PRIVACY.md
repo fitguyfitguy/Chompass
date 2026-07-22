@@ -44,7 +44,7 @@ Shared meals use a `nofud://` deep link with base64-encoded nutrition JSON. Link
 
 ## Upstream
 
-NoFUD is based on open-source software by Apoorv Darshan under the MIT License. See [NOTICE](NOTICE) and [LICENSE](LICENSE).
+NoFUD is based on open-source software by Apoorv Darshan under the MIT License. See [NOTICE](NOTICE.md) and [LICENSE](../LICENSE).
 
 ## Contact
 
