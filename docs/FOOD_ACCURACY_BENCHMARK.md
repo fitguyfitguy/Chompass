@@ -67,7 +67,7 @@ Each line is JSON (JSONL). Required fields:
 | `protein_g` | number | Ground-truth protein (g) |
 | `carbs_g` | number | Ground-truth carbs (g) |
 | `fat_g` | number | Ground-truth fat (g) |
-| `text` | string? | Food description (text modality) |
+| `text` | string? | Food description (text modality, or user note on image+text entry) |
 | `image_path` | string? | Path to image relative to repo root or absolute |
 | `mass_g` | number? | Portion mass when known |
 | `meal_name` | string? | Reference name (image sets) |
@@ -96,7 +96,29 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 | `compact` | Research ablation | Macros + serving_size_grams only |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
 
-## OpenRouter / NoFUD free router
+Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only.
+
+### Image + description eval (JFB)
+
+`download_jfb.py` writes three paired manifests (same 50 IDs):
+
+| Level | File | User `text` |
+|-------|------|-------------|
+| L0 | `data/manifests/jfb.jsonl` | absent (image only) |
+| L1 | `data/manifests/jfb_image_text_l1.jsonl` | meal title |
+| L2 | `data/manifests/jfb_image_text_l2.jsonl` | ingredient names only |
+
+```bash
+uv run python benchmarks/food_accuracy/download_jfb.py --limit 50
+
+uv run python benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model google/gemma-4-26b-a4b-it:free \
+  --prompt compact --sleep 15 --retries 3 \
+  --manifest benchmarks/food_accuracy/data/manifests/jfb_image_text_l1.jsonl \
+  --out benchmarks/food_accuracy/results/image_text_ab/l1_meal_name
+```
+
+Compare L0 vs L1 vs L2 with `compare_runs.py`.
 
 Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatically.
 

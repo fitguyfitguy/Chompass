@@ -42,14 +42,76 @@ def extract_archive(archive: Path, root: Path) -> None:
     print("Extraction complete.")
 
 
-def parse_ingredients(raw: str) -> list:
+def parse_ingredients(raw: str | list) -> list:
+    if isinstance(raw, list):
+        return raw
     try:
-        return ast.literal_eval(raw)
+        parsed = ast.literal_eval(raw)
+        if isinstance(parsed, str):
+            parsed = ast.literal_eval(parsed)
+        if isinstance(parsed, list):
+            return parsed
     except (ValueError, SyntaxError):
-        return []
+        pass
+    return []
 
 
-def build_manifest(root: Path, out_path: Path, limit: int | None) -> int:
+def ingredient_names_text(ingredients: list) -> str | None:
+    names = [item.get("name", "").strip() for item in ingredients if isinstance(item, dict)]
+    names = [name for name in names if name]
+    if not names:
+        return None
+    return ", ".join(names)
+
+
+def write_image_text_variants(samples: list[Sample], manifests_dir: Path) -> None:
+    """Write L0 (base), L1 (meal_name as text), L2 (ingredient names as text)."""
+    l1: list[Sample] = []
+    l2: list[Sample] = []
+    for sample in samples:
+        l1_text = sample.meal_name
+        l2_text = ingredient_names_text(sample.extra.get("ingredients", []))
+        l1.append(
+            Sample(
+                id=sample.id,
+                modality=sample.modality,
+                source=sample.source,
+                calories=sample.calories,
+                protein_g=sample.protein_g,
+                carbs_g=sample.carbs_g,
+                fat_g=sample.fat_g,
+                text=l1_text,
+                image_path=sample.image_path,
+                mass_g=sample.mass_g,
+                meal_name=sample.meal_name,
+                notes=sample.notes,
+                extra=dict(sample.extra),
+            )
+        )
+        l2.append(
+            Sample(
+                id=sample.id,
+                modality=sample.modality,
+                source=sample.source,
+                calories=sample.calories,
+                protein_g=sample.protein_g,
+                carbs_g=sample.carbs_g,
+                fat_g=sample.fat_g,
+                text=l2_text,
+                image_path=sample.image_path,
+                mass_g=sample.mass_g,
+                meal_name=sample.meal_name,
+                notes=sample.notes,
+                extra=dict(sample.extra),
+            )
+        )
+    write_manifest(manifests_dir / "jfb_image_text_l1.jsonl", l1)
+    write_manifest(manifests_dir / "jfb_image_text_l2.jsonl", l2)
+    print(f"Wrote {len(l1)} samples to {manifests_dir / 'jfb_image_text_l1.jsonl'}")
+    print(f"Wrote {len(l2)} samples to {manifests_dir / 'jfb_image_text_l2.jsonl'}")
+
+
+def build_manifest(root: Path, out_path: Path, limit: int | None) -> list[Sample]:
     import csv
 
     csv_path = root / "food-scan-benchmark-dataset" / "food_scan_bench_v1.csv"
@@ -82,7 +144,8 @@ def build_manifest(root: Path, out_path: Path, limit: int | None) -> int:
             )
 
     write_manifest(out_path, samples)
-    return len(samples)
+    write_image_text_variants(samples, out_path.parent)
+    return samples
 
 
 def main() -> None:
@@ -105,7 +168,7 @@ def main() -> None:
     download_archive(archive)
     extract_archive(archive, root)
 
-    count = build_manifest(root, Path(args.out), args.limit)
+    count = len(build_manifest(root, Path(args.out), args.limit))
     print(f"Wrote {count} samples to {args.out}")
 
 

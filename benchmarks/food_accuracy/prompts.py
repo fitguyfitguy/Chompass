@@ -56,6 +56,22 @@ For "emoji" pick the single most specific food emoji that depicts this dish. Use
 """.strip()
 
 
+def user_description(sample) -> str | None:
+    """User-typed note for image+text entry. Only sample.text counts (not meal_name metadata)."""
+    if sample.text and sample.text.strip():
+        return sample.text.strip()
+    return None
+
+
+def append_user_context(prompt: str, description: str | None) -> str:
+    if description:
+        prompt += (
+            f"\n\nAdditional context from the user about this meal: {description}\n"
+            "Use this context to improve accuracy of identification, portion size, and nutrition estimates."
+        )
+    return prompt
+
+
 def production_image_prompt(*, description: str | None = None) -> str:
     prompt = f"""
 Analyze this food image. Identify the food and estimate its nutritional content.
@@ -65,12 +81,7 @@ Respond ONLY with JSON:
 {IMAGE_UNIT_RULES}
 Give your best estimate for the visible food amount shown in the image. Use null for any nutrient you cannot estimate.
 """.strip()
-    if description:
-        prompt += (
-            f"\n\nAdditional context from the user about this meal: {description}\n"
-            "Use this context to improve accuracy of identification, portion size, and nutrition estimates."
-        )
-    return prompt
+    return append_user_context(prompt, description)
 
 
 def compact_text_prompt(description: str) -> str:
@@ -82,13 +93,14 @@ Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total 
 """.strip()
 
 
-def compact_image_prompt() -> str:
-    return f"""
+def compact_image_prompt(*, description: str | None = None) -> str:
+    prompt = f"""
 Analyze this food image. Estimate macronutrients for the visible serving.
 Respond ONLY with JSON:
 {COMPACT_JSON_SCHEMA}
 Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.
 """.strip()
+    return append_user_context(prompt, description)
 
 
 def fewshot_text_prompt(description: str) -> str:
@@ -99,18 +111,22 @@ def fewshot_image_prompt(*, description: str | None = None) -> str:
     return production_image_prompt(description=description) + "\n\n" + FEWSHOT_UNITS
 
 
+def _build_image_prompt(sample, builder):
+    return builder(description=user_description(sample))
+
+
 PROMPT_BUILDERS = {
     "production_text": lambda sample: production_text_prompt(sample.text or ""),
-    "production_image": lambda sample: production_image_prompt(description=sample.meal_name),
+    "production_image": lambda sample: _build_image_prompt(sample, production_image_prompt),
     "compact": lambda sample: (
         compact_text_prompt(sample.text or "")
         if sample.modality == "text"
-        else compact_image_prompt()
+        else _build_image_prompt(sample, compact_image_prompt)
     ),
     "fewshot_units": lambda sample: (
         fewshot_text_prompt(sample.text or "")
         if sample.modality == "text"
-        else fewshot_image_prompt(description=sample.meal_name)
+        else _build_image_prompt(sample, fewshot_image_prompt)
     ),
 }
 
