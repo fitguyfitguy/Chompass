@@ -17,7 +17,7 @@ Repo: https://codeberg.org/fitguy/nofud.git
 Builds:
   - versionName: 1.14.8
     versionCode: 24
-    commit: RELEASE_COMMIT
+    commit: 205e325e490dfebc474310308df16f8e10079c71
     subdir: android/app
     gradle:
       - yes
