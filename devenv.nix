@@ -11,7 +11,7 @@
     googleTVAddOns.enable = false;
   };
 
-  packages = [ pkgs.android-tools ];
+  packages = [ pkgs.android-tools pkgs.hugo ];
 
   enterShell = ''
     mkdir -p android
@@ -22,6 +22,9 @@
 
   scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
   scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
+  scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
+  scripts.site-build.exec = "hugo --minify -s website";
+  scripts.site-deploy.exec = "./scripts/deploy_pages.sh";
 
   tasks."build:debug" = {
     exec = "cd android && ./gradlew :app:assembleDebug";
@@ -56,5 +59,20 @@
   tasks."benchmark:food-accuracy-smoke" = {
     exec = "./scripts/check_food_accuracy_smoke.sh";
     description = "Deterministic food-accuracy smoke (stub eval + grounded metrics + retrieval golden)";
+  };
+
+  tasks."site:serve" = {
+    exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
+    description = "Preview the Codeberg Pages Hugo site locally";
+  };
+
+  tasks."site:build" = {
+    exec = "hugo --minify -s website";
+    description = "Build the static Codeberg Pages site into website/public";
+  };
+
+  tasks."site:deploy" = {
+    exec = "./scripts/deploy_pages.sh";
+    description = "Build site and force-push the orphan pages branch for Codeberg Pages webhook deploy";
   };
 }
