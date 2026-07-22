@@ -104,7 +104,7 @@ uv run python benchmarks/food_accuracy/compare_runs.py \
   benchmarks/food_accuracy/results/image_text_ab/l1_meal_name/summary.csv
 ```
 
-**Latest results (2026-07-22):** Gemma L0/L1/L2 — L0 **41.8%** WMAPE best among free image+text; L1 `production_image` worse (**47.3%**). Paid `gpt-4o-mini` L0: **34.5%** WMAPE / **50%** within ±20%. Cold `nofud/free`: **41.1%**. See [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md).
+**Latest results (2026-07-22):** Best plate so far — `google/gemini-3.6-flash` L0 **32.3%** WMAPE / **50%** ±20%. Then gpt-4o-mini **34.5%**, Gemini 3.5 Flash-Lite **35.9%**, free Gemma/nofud ~**41–42%**. No `3.6-flash-lite` on OpenRouter (Lite = 3.5). See [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md).
 
 ## Image baseline
 
