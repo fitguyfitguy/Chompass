@@ -86,19 +86,23 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 | `wmape` | Weighted MAPE across all four macros: `sum(|pred-gt|) / sum(|gt|)` (JFB-style) |
 | `within_20pct_calories` | Fraction of samples with calorie error ≤ 20% |
 | `latency_ms` | Wall time per sample (when provider reports it) |
+| `prompt_tokens` / `completion_tokens` / `total_tokens` | From provider `usage` (OpenRouter always returns these) |
+| `cached_tokens` / `cache_write_tokens` | From `usage.prompt_tokens_details` when the upstream reports cache hits/writes |
+| `reasoning_tokens` | From `usage.completion_tokens_details` when present |
+| `cost` | OpenRouter credit cost for the request (when present) |
+| `sum_*` / `mean_*` / `cache_hit_rate` | Aggregated into `summary.csv` / `summary.json` (`cache_hit_rate` = sum cached / sum prompt) |
 
 ## Prompt variants
 
 | Name | Matches | Notes |
 |------|---------|-------|
-| `production_text` | NoFUD `analyzeText` | Full JSON + unit_options + quantity grounding |
-| `production_image` | NoFUD `analyzeFood` | Vision + schema + portion grounding |
-| `production_text_legacy` / `production_image_legacy` | Pre-portion-rules production | A/B baseline |
+| `production_text` | NoFUD `analyzeText` | Full JSON schema + unit_options |
+| `production_image` | NoFUD `analyzeFood` | Vision + same schema |
 | `compact` | Research ablation | Macros + serving_size_grams only |
-| `compact_portion` | compact + short portion/quantity rules | Candidate easy win for real entry |
+| `compact_portion` | Research only | compact + portion/quantity rules; Flash-Lite JFB did not beat compact (see [STATUS § Failure modes](FOOD_ACCURACY_BENCHMARK_STATUS.md#failure-modes--portion-reasoning)) |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
 
-Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only. User context prefers stated amounts over visual defaults when they conflict.
+Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only.
 
 ### Image + description eval (JFB)
 

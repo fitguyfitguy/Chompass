@@ -35,8 +35,11 @@ Examples of unit_options (adapt quantities to the actual meal):
 - "grilled chicken breast 150g with 200g white rice and 150g steamed broccoli" → [] (grams stated)
 """.strip()
 
-# Short portion/quantity grounding from real-entry failure modes (not JFB-specific):
-# inventing sides, restaurant-size priors, missing oil/dip denseness, ignoring stated tbsp/scoop.
+# Short portion/quantity grounding for research ablation `compact_portion` only.
+# Derived from JFB hard/easy failure modes (restaurant overestimate, hidden oil/dip
+# denseness, ignoring stated tbsp/scoop). Flash-Lite JFB A/B did not beat plain
+# compact — do not default these into production prompts. See
+# docs/FOOD_ACCURACY_BENCHMARK_STATUS.md § Failure modes & portion reasoning.
 IMAGE_PORTION_RULES = """
 Portion rules:
 - Estimate only food clearly visible or named by the user. Do not invent typical sides, drinks, bread, or garnishes that are not visible.
@@ -62,7 +65,7 @@ NUTRIENT_UNITS = (
 )
 
 
-def production_text_prompt(description: str, *, portion_aware: bool = True) -> str:
+def production_text_prompt(description: str, *, portion_aware: bool = False) -> str:
     portion = f"\n{TEXT_QUANTITY_RULES}" if portion_aware else ""
     return f"""
 Estimate the nutritional content for: {description}
@@ -86,14 +89,13 @@ def append_user_context(prompt: str, description: str | None) -> str:
     if description:
         prompt += (
             f"\n\nAdditional context from the user about this meal: {description}\n"
-            "Prefer the user's stated amounts and ingredients over visual defaults when they conflict. "
-            "Use this context to improve identification, portion size, and nutrition estimates."
+            "Use this context to improve accuracy of identification, portion size, and nutrition estimates."
         )
     return prompt
 
 
 def production_image_prompt(
-    *, description: str | None = None, portion_aware: bool = True
+    *, description: str | None = None, portion_aware: bool = False
 ) -> str:
     portion = f"\n{IMAGE_PORTION_RULES}" if portion_aware else ""
     prompt = f"""
@@ -143,22 +145,15 @@ def _build_image_prompt(sample, builder):
 
 
 PROMPT_BUILDERS = {
-    # production_* include portion/quantity grounding (mirrors app after portion-aware update)
     "production_text": lambda sample: production_text_prompt(sample.text or ""),
     "production_image": lambda sample: _build_image_prompt(sample, production_image_prompt),
-    # legacy production without portion rules (A/B baseline)
-    "production_text_legacy": lambda sample: production_text_prompt(
-        sample.text or "", portion_aware=False
-    ),
-    "production_image_legacy": lambda sample: production_image_prompt(
-        description=user_description(sample), portion_aware=False
-    ),
     "compact": lambda sample: (
         compact_text_prompt(sample.text or "")
         if sample.modality == "text"
         else _build_image_prompt(sample, compact_image_prompt)
     ),
-    # compact + short portion/quantity rules (candidate easy win)
+    # Research-only: compact + portion/quantity rules. Flash-Lite JFB A/B did not beat compact
+    # (WMAPE 37.2% vs 35.9%); kept for future experiments, not production default.
     "compact_portion": lambda sample: (
         compact_text_prompt(sample.text or "", portion_aware=True)
         if sample.modality == "text"

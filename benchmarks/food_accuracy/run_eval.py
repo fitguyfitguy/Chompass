@@ -18,7 +18,7 @@ if str(_HERE) not in sys.path:
 from env_local import load_env_local
 from parse import parse_food_json
 from prompts import build_prompt, list_prompts
-from providers import build_provider
+from providers import aggregate_usage, build_provider, normalize_usage
 from schema import RESULTS_DIR, Sample, load_manifest, validate_sample
 from score import SampleScore, aggregate_scores, score_sample
 
@@ -117,6 +117,7 @@ def _evaluate_one(
 
     parsed = parse_food_json(response.text)
     scored = score_sample(sample.id, sample.ground_truth(), parsed)
+    usage_fields = normalize_usage(response.usage)
     record = {
         "id": sample.id,
         "modality": sample.modality,
@@ -129,6 +130,8 @@ def _evaluate_one(
         "ground_truth": sample.ground_truth().as_dict(),
         "score": scored.to_dict(),
         "raw_response": response.text[:4000],
+        "usage": response.usage,
+        **usage_fields,
     }
     return record, scored
 
@@ -260,10 +263,19 @@ def main() -> None:
             records[sample.id] = record
             _write_results(per_sample_path, ordered_ids, records)
             if scored.parse_ok:
+                tok = ""
+                if record.get("prompt_tokens") is not None:
+                    cached = record.get("cached_tokens")
+                    cached_s = f" cached={cached}" if cached is not None else ""
+                    tok = (
+                        f" tok={record.get('prompt_tokens')}→{record.get('completion_tokens')}"
+                        f"{cached_s}"
+                    )
                 print(
                     f" ok abs={scored.abs_error_sum:.1f} "
                     f"cal_mape={scored.mape_calories:.2%} "
-                    f"latency={record.get('latency_ms', 0):.0f}ms",
+                    f"latency={record.get('latency_ms', 0):.0f}ms"
+                    f"{tok}",
                     flush=True,
                 )
             else:
@@ -275,6 +287,16 @@ def main() -> None:
     sample_scores = [_score_from_record(records[i]) for i in ordered_ids if i in records]
 
     agg = aggregate_scores(sample_scores)
+    ordered_records = [records[i] for i in ordered_ids if i in records]
+    usage_agg = aggregate_usage(ordered_records)
+
+    def _fmt(value: int | float | None, *, digits: int = 4) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, int) or (isinstance(value, float) and value.is_integer() and digits == 0):
+            return str(int(value))
+        return f"{value:.{digits}f}"
+
     summary = {
         "run_id": run_id,
         "manifest": args.manifest,
@@ -292,14 +314,31 @@ def main() -> None:
         "within_20pct_calories_rate": ""
         if agg.within_20pct_calories_rate is None
         else f"{agg.within_20pct_calories_rate:.4f}",
+        "sum_prompt_tokens": _fmt(usage_agg.get("sum_prompt_tokens"), digits=0),
+        "sum_completion_tokens": _fmt(usage_agg.get("sum_completion_tokens"), digits=0),
+        "sum_cached_tokens": _fmt(usage_agg.get("sum_cached_tokens"), digits=0),
+        "sum_total_tokens": _fmt(usage_agg.get("sum_total_tokens"), digits=0),
+        "mean_prompt_tokens": _fmt(usage_agg.get("mean_prompt_tokens"), digits=1),
+        "mean_completion_tokens": _fmt(usage_agg.get("mean_completion_tokens"), digits=1),
+        "mean_cached_tokens": _fmt(usage_agg.get("mean_cached_tokens"), digits=1),
+        "cache_hit_rate": _fmt(usage_agg.get("cache_hit_rate")),
+        "sum_cost": _fmt(usage_agg.get("sum_cost"), digits=6),
+        "usage_n": usage_agg.get("usage_n") or 0,
     }
 
     summary_path = out_dir / "summary.csv"
     _write_summary_csv(summary_path, summary)
-    (out_dir / "summary.json").write_text(json.dumps({**summary, "aggregate": agg.to_dict()}, indent=2))
+    (out_dir / "summary.json").write_text(
+        json.dumps(
+            {**summary, "aggregate": agg.to_dict(), "usage": usage_agg},
+            indent=2,
+        )
+    )
 
     print("\n--- aggregate ---")
     print(json.dumps(agg.to_dict(), indent=2))
+    print("\n--- usage ---")
+    print(json.dumps(usage_agg, indent=2))
     print(f"\nWrote {per_sample_path}")
     print(f"Wrote {summary_path}")
 
