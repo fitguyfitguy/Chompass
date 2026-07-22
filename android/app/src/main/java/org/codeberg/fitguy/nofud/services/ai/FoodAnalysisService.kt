@@ -601,20 +601,7 @@ class FoodAnalysisService(
         settings: HeuristicServingUnitSettings
     ): List<ServingUnitOption>? {
         if (servingSizeGrams <= 0) return null
-        // Word-boundary matching (not raw substring) so short keywords like "egg" or
-        // "cake" don't false-positive inside unrelated words ("eggplant", "cheesecake",
-        // "chicken pieces" vs. the "piece" unit). A simple trailing-"s" strip handles
-        // most plurals; "-es" plurals (e.g. "sandwiches") are listed as their own keyword.
-        val words = name.lowercase(Locale.US).split(Regex("[^a-z]+")).filter { it.isNotEmpty() }
-        if (words.isEmpty()) return null
-        val wordForms = words.toHashSet()
-        for (word in words) {
-            if (word.length > 3 && word.endsWith("s") && !word.endsWith("ss")) wordForms.add(word.dropLast(1))
-        }
-        val normalized = words.joinToString(" ")
-        val rule = ServingUnitHeuristics.RULES.firstOrNull { rule ->
-            rule.keywords.any { keyword -> if (' ' in keyword) normalized.contains(keyword) else keyword in wordForms }
-        } ?: return null
+        val rule = ServingUnitHeuristics.matchingRule(name) ?: return null
         val override = settings.overrides[rule.id]
         if (override?.enabled == false) return null
         val gramsPerUnit = override?.gramsPerUnit?.takeIf { it > 0 } ?: rule.defaultGramsPerUnit

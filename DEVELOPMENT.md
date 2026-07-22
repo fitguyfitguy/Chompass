@@ -78,22 +78,6 @@ uv run --with pillow python scripts/generate_icons.py
 
 Edit `scripts/nofud_icon_master.png` before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
-## Exercise data
-
-The Workouts tab bundles the [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) dataset under `android/app/src/main/assets/exercises/` (~20 MB of optimized WebP photos plus `exercises.json`). License: see `exercises/LICENSE.md` in that folder.
-
-Regenerate optimized exercise photos after updating source JPEGs:
-
-```bash
-uv run --with pillow python scripts/optimize_exercise_images.py
-```
-
-Validate the bundled image budget (fails if total WebP size exceeds 25 MB or any image is wider/taller than 800 px):
-
-```bash
-uv run --with pillow python scripts/optimize_exercise_images.py --check-only
-```
-
 ## On-device LLM smoke test (debug only)
 
 Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validated on Pixel 9a / GrapheneOS). Not integrated into production AI dispatch.

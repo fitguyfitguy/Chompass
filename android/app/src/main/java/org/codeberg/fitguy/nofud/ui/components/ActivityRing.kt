@@ -89,7 +89,7 @@ fun ActivityRing(
             val centerY = this.size.height / 2f
             val radius = diameter / 2f
 
-            // Background track — Circle().stroke(gradientColors.first?.opacity(0.15) ?? Color.gray.opacity(0.15))
+            // Background track
             drawArc(
                 color = trackColor,
                 startAngle = -90f,
@@ -100,7 +100,7 @@ fun ActivityRing(
                 style = stroke
             )
 
-            // Foreground arc with gradient — AngularGradient + .rotationEffect(.degrees(-90))
+            // Foreground arc with gradient
             val sweepDegrees = 360f * animated.value.coerceAtMost(1f)
             if (animated.value > 0f) {
                 drawArc(

@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">プランは記録に合わせて週1回自動調整されます。固定したい場合は設定でAdaptive Goalsをオフにしてください。</string>
     <string name="onboarding_feature_snap">写真を撮るだけ - AIが記録</string>
     <string name="onboarding_feature_coach">あなたのデータを知るコーチ</string>
-    <string name="onboarding_feature_library">870以上のエクササイズライブラリ</string>
+    <string name="onboarding_feature_library">体重計・ウェアラブル向け Health Connect</string>
     <string name="onboarding_feature_widgets">ホーム画面ウィジェット</string>
-    <string name="whats_new_v30_workouts">新しいワークアウトタブ - 写真、筋肉・器具フィルター、検索、詳細ページ付きの873種目をブラウズ。</string>
+    <string name="whats_new_v30_workouts">ワークアウトタブは削除されました。</string>
     <string name="whats_new_v30_home">ホームを刷新：スピードメーター型カロリーゲージ、縦型マクロバー、4枚の栄養素カード、フローティング追加ボタン。</string>
     <string name="whats_new_v30_coach_voice">新しいインラインレコーダーで、コーチに音声で質問できます。</string>
     <string name="whats_new_v30_share">食事をリンクとして共有 - iPhoneでもAndroidでもNoFUDが直接開きます。</string>

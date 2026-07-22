@@ -856,36 +856,11 @@
     <string name="widget_water_description">See today\'s water progress at a glance.</string>
     <string name="widget_water_disabled">Enable Water Tracking in NoFUD</string>
 
-    <!-- Workouts tab (exercise library ported from Delts) -->
-    <string name="back">Back</string>
-    <string name="clear_search">Clear search</string>
-    <string name="empty_subtitle">Try a different muscle, equipment, or search - or reset the filters above.</string>
-    <string name="empty_title">No exercises match</string>
-    <string name="filter_all">All</string>
-    <string name="filter_all_count">All %d</string>
-    <string name="hide_details">Hide details</string>
-    <string name="instructions">Instructions</string>
-    <string name="label_category">Category</string>
-    <string name="label_equipment">Equipment</string>
-    <string name="label_force">Force</string>
-    <string name="label_level">Level</string>
-    <string name="label_mechanic">Mechanic</string>
-    <string name="label_name">Name</string>
-    <string name="label_primary">Primary</string>
-    <string name="label_secondary">Secondary</string>
-    <string name="reset">Reset</string>
-    <string name="search">Search</string>
-    <string name="show_details">Show details</string>
-    <string name="sort">Sort</string>
-    <plurals name="exercises_count">
-        <item quantity="one">%d exercise</item>
-        <item quantity="other">%d exercises</item>
-    </plurals>
     <string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string>
     <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log - turn off Adaptive Goals in Settings to keep it fixed.</string>
     <string name="onboarding_feature_snap">Snap a photo - AI logs it</string>
     <string name="onboarding_feature_coach">Coach that knows your data</string>
-    <string name="onboarding_feature_library">870+ exercise library</string>
+    <string name="onboarding_feature_library">Health Connect for scales and wearables</string>
     <string name="onboarding_feature_widgets">Home screen widgets</string>
     <string name="whats_new_v30_home">Home redesign: speedometer calorie gauge, vertical macro bars, four nutrient cards, and a floating add button.</string>
     <string name="whats_new_v30_coach_voice">Ask Coach by voice with the new inline recorder.</string>

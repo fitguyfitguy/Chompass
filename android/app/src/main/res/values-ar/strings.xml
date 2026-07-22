@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">تتعدّل خطتك تلقائيًا كل أسبوع حسب تسجيلاتك - أوقف Adaptive Goals من الإعدادات لإبقائها ثابتة.</string>
     <string name="onboarding_feature_snap">التقط صورة - والذكاء الاصطناعي يسجّلها</string>
     <string name="onboarding_feature_coach">مدرّب يعرف بياناتك</string>
-    <string name="onboarding_feature_library">مكتبة تضم أكثر من 870 تمرينًا</string>
+    <string name="onboarding_feature_library">Health Connect للموازين والأجهزة القابلة للارتداء</string>
     <string name="onboarding_feature_widgets">أدوات الشاشة الرئيسية</string>
-    <string name="whats_new_v30_workouts">علامة تبويب تمارين جديدة - تصفّح 873 تمرينًا مع الصور وفلاتر العضلات والمعدات والبحث وصفحات التفاصيل.</string>
+    <string name="whats_new_v30_workouts">تمت إزالة علامة تبويب التمارين.</string>
     <string name="whats_new_v30_home">تصميم جديد للرئيسية: عدّاد سرعة للسعرات، وأشرطة ماكرو عمودية، وأربع بطاقات مغذّيات، وزر إضافة عائم.</string>
     <string name="whats_new_v30_coach_voice">اسأل المدرب صوتيًا عبر المسجّل المدمج الجديد.</string>
     <string name="whats_new_v30_share">شارك أي وجبة كرابط يفتح مباشرة في NoFUD - على iPhone أو Android.</string>

@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">Dein Plan passt sich wöchentlich an, während du loggst - deaktiviere Adaptive Goals in den Einstellungen, um ihn fest zu lassen.</string>
     <string name="onboarding_feature_snap">Foto knipsen - die KI loggt es</string>
     <string name="onboarding_feature_coach">Coach, der deine Daten kennt</string>
-    <string name="onboarding_feature_library">Bibliothek mit 870+ Übungen</string>
+    <string name="onboarding_feature_library">Health Connect für Waagen und Wearables</string>
     <string name="onboarding_feature_widgets">Startbildschirm-Widgets</string>
-    <string name="whats_new_v30_workouts">Neuer Workouts-Tab - durchsuche 873 Übungen mit Fotos, Muskel- und Equipment-Filtern, Suche und Detailseiten.</string>
+    <string name="whats_new_v30_workouts">Der Workouts-Tab wurde entfernt.</string>
     <string name="whats_new_v30_home">Home-Redesign: Tacho-Kalorienanzeige, vertikale Makro-Balken, vier Nährstoffkarten und ein schwebender Hinzufügen-Button.</string>
     <string name="whats_new_v30_coach_voice">Frag den Coach per Sprache mit dem neuen Inline-Rekorder.</string>
     <string name="whats_new_v30_share">Teile jede Mahlzeit als Link, der direkt in NoFUD öffnet - auf iPhone oder Android.</string>

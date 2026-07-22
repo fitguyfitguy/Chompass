@@ -67,7 +67,8 @@ object OpenFoodFactsService {
         analysis(product, code)
     }
 
-    private fun analysis(product: JSONObject, barcode: String): FoodAnalysis {
+    /** Maps an Open Food Facts `product` object to [FoodAnalysis] (serving-scaled). */
+    internal fun analysis(product: JSONObject, barcode: String): FoodAnalysis {
         val nutriments = product.optJSONObject("nutriments")
             ?: throw LookupException("This barcode was found, but nutrition data is incomplete. Scan the nutrition label instead.")
 

@@ -87,9 +87,6 @@ echo "==> NoFUD release packaging for version ${VERSION}"
 echo "==> Running unit tests"
 run_in_devenv 'cd android && ./gradlew test'
 
-echo "==> Checking exercise image budget"
-run_in_devenv 'uv run --with pillow python scripts/optimize_exercise_images.py --check-only'
-
 if [[ "$CHECK_ONLY" -eq 0 ]]; then
   echo "==> Updating README and release screenshots"
   "$ROOT/scripts/export_release_screenshots.sh"

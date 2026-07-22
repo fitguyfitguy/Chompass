@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Ollama commonly runs over HTTP on a user-supplied private-LAN address.
-         All built-in cloud provider endpoints remain hard-coded HTTPS URLs. -->
-    <base-config cleartextTrafficPermitted="true" />
+    <!-- Default: HTTPS only. Cloud provider base URLs are hard-coded HTTPS. -->
+    <base-config cleartextTrafficPermitted="false" />
+    <!-- Emulator / loopback Ollama defaults (http://localhost:11434). LAN HTTP is
+         allowed in debug builds via src/debug/res/xml/network_security_config.xml. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
 </network-security-config>

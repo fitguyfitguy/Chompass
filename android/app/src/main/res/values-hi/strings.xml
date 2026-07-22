@@ -651,9 +651,9 @@
     <string name="onboarding_plan_adaptive_note">आपका प्लान आपकी लॉगिंग के अनुसार हर हफ़्ते अपने आप एडजस्ट होता है - इसे स्थिर रखने के लिए सेटिंग्स में Adaptive Goals बंद करें।</string>
     <string name="onboarding_feature_snap">फोटो खींचें - AI लॉग कर देगा</string>
     <string name="onboarding_feature_coach">कोच जो आपका डेटा जानता है</string>
-    <string name="onboarding_feature_library">870+ एक्सरसाइज़ लाइब्रेरी</string>
+    <string name="onboarding_feature_library">स्केल और वियरेबल्स के लिए Health Connect</string>
     <string name="onboarding_feature_widgets">होम स्क्रीन विजेट</string>
-    <string name="whats_new_v30_workouts">नया Workouts टैब - फ़ोटो, मांसपेशी और उपकरण फ़िल्टर, खोज और विवरण पेजों के साथ 873 व्यायाम ब्राउज़ करें।</string>
+    <string name="whats_new_v30_workouts">Workouts टैब हटा दिया गया।</string>
     <string name="whats_new_v30_home">नया होम: स्पीडोमीटर कैलोरी गेज, खड़ी मैक्रो बार, चार पोषक कार्ड और फ़्लोटिंग जोड़ें बटन।</string>
     <string name="whats_new_v30_coach_voice">नए इनलाइन रिकॉर्डर से कोच से आवाज़ में पूछें।</string>
     <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें - iPhone या Android पर सीधे NoFUD में खुलता है।</string>

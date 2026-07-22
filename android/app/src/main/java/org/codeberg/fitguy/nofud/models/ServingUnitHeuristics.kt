@@ -75,4 +75,27 @@ object ServingUnitHeuristics {
             "Candy / protein / granola bar → bar"
         )
     )
+
+    /**
+     * First matching rule for [foodName], using word-boundary matching so short
+     * keywords (e.g. "egg") do not fire inside unrelated words ("eggplant").
+     */
+    fun matchingRule(foodName: String): ServingUnitHeuristicRule? {
+        val words = foodName.lowercase(java.util.Locale.US)
+            .split(Regex("[^a-z]+"))
+            .filter { it.isNotEmpty() }
+        if (words.isEmpty()) return null
+        val wordForms = words.toHashSet()
+        for (word in words) {
+            if (word.length > 3 && word.endsWith("s") && !word.endsWith("ss")) {
+                wordForms.add(word.dropLast(1))
+            }
+        }
+        val normalized = words.joinToString(" ")
+        return RULES.firstOrNull { rule ->
+            rule.keywords.any { keyword ->
+                if (' ' in keyword) normalized.contains(keyword) else keyword in wordForms
+            }
+        }
+    }
 }
