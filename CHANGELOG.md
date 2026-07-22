@@ -4,6 +4,10 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Diary JSON import requires format version 1.1 and restores micronutrients (Fud AI / NoFUD exports after 1.14.7).
+
 ## [1.14.7] - 2026-07-22
 
 ### Added
