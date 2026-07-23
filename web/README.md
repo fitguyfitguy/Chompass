@@ -48,11 +48,12 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 | Area | Notes |
 |------|--------|
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
-| Home | Week strip, calorie ring, macro bars, water row, FAB menu |
-| Entry | Manual, barcode, photo/text AI → review form; fiber; recents |
-| Progress | Ranges, log weight/BF, bars, history, forecast, measurements |
-| Settings | Sectioned prefs, units/theme, onboarding gate, import/export/clear |
-| Coach | Broader read tools, persistent chat |
+| Home | Week strip, glass calorie hero, day swipe, macro fills, water bar, Add Food sheet |
+| Entry | Manual, barcode, photo/text AI → review form; fiber; recents; subpage chrome |
+| Progress | Ranges, log weight/BF dialogs, bars, history, forecast, measurements |
+| Settings | Sectioned prefs, units/theme, onboarding gate, import/export/clear dialog |
+| Coach | Broader read tools, persistent chat, glass proposals, SVG camera |
+| UI polish | Bottom sheets + glass dialogs (no native prompt/confirm); Manrope; reduced-motion |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
@@ -60,7 +61,7 @@ notifications, widgets, full i18n pack.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v3`.
+Service worker cache: `nofud-shell-v4`.
 
 ### Manual PWA audit checklist
 

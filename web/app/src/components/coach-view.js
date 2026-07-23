@@ -3,6 +3,9 @@ import { runCoachTurn, applyProposal } from "../lib/ai/coach.js";
 import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import { chat } from "../lib/db.js";
+import { openConfirm } from "../lib/ui/dialog.js";
+
+const CAMERA_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM4 5h3.2l1.4-1.8c.2-.3.5-.4.8-.4h5.2c.3 0 .6.1.8.4L16.8 5H20c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2zm8 13c2.8 0 5-2.2 5-5s-2.2-5-5-5-5 2.2-5 5 2.2 5 5 5z"/></svg>`;
 
 export class CoachView extends HTMLElement {
   async connectedCallback() {
@@ -57,8 +60,8 @@ export class CoachView extends HTMLElement {
         ${this.pendingProposals.map((p, i) => renderProposalCard(p, i)).join("")}
       </div>
       <form class="coach-input" id="coach-form">
-        <label class="btn btn--ghost coach-photo-btn" title="Attach a photo">
-          📷<input type="file" accept="image/*" id="coach-photo" style="display:none;" />
+        <label class="btn btn--ghost coach-photo-btn" title="Attach a photo" aria-label="Attach a photo">
+          ${CAMERA_ICON}<input type="file" accept="image/*" id="coach-photo" style="display:none;" />
         </label>
         <input type="text" id="coach-text" placeholder="Ask the coach…" autocomplete="off" />
         <button type="submit" class="btn btn--primary">Send</button>
@@ -68,6 +71,13 @@ export class CoachView extends HTMLElement {
 
     this.querySelector("#coach-form").addEventListener("submit", (ev) => this.onSend(ev));
     this.querySelector("[data-clear-chat]")?.addEventListener("click", async () => {
+      const ok = await openConfirm({
+        title: "Clear chat",
+        message: "Delete the conversation history on this device?",
+        confirmLabel: "Clear",
+        danger: true,
+      });
+      if (!ok) return;
       this.history = [];
       this.pendingProposals = [];
       await chat.clear();
@@ -151,7 +161,7 @@ function renderProposalCard(tc, index) {
       propose_log_water: `Log water — ${tc.input.amountMl} ml`,
     }[tc.name] ?? tc.name;
   return `
-    <div class="card proposal-card">
+    <div class="card card--glass proposal-card">
       <p>${escapeHtml(label)}</p>
       <div class="btn-row">
         <button class="btn btn--primary" data-confirm="${index}">${tc.name === "propose_log_food" ? "Review & save" : "Confirm"}</button>

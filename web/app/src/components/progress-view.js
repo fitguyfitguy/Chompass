@@ -3,6 +3,7 @@ import { weights, foodEntries, profile as profileStore, bodyFat, prefs } from ".
 import { dailyTargets } from "../lib/nofud-core/formulas.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/nofud-core/forecast.js";
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
+import { openInput } from "../lib/ui/dialog.js";
 
 const RANGES = [
   { id: "1W", label: "1W", days: 7 },
@@ -100,7 +101,7 @@ export class ProgressView extends HTMLElement {
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <h2 class="chart-title" style="margin:0;">Weight (${weightUnit})</h2>
-          <button type="button" class="chip" data-log-weight>Log weight</button>
+          <button type="button" class="chip progress-log-btn" data-log-weight>Log weight</button>
         </div>
         <div class="stat-badges">
           <div class="stat-badge"><strong>${fmt(currentW)}</strong>Current</div>
@@ -139,7 +140,7 @@ export class ProgressView extends HTMLElement {
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <h2 class="chart-title" style="margin:0;">Body fat %</h2>
-          <button type="button" class="chip" data-log-bf>Log body fat</button>
+          <button type="button" class="chip progress-log-btn" data-log-bf>Log body fat</button>
         </div>
         ${lineChartSvg(
           bfPoints.map(({ label, value }) => ({ label, value })),
@@ -221,16 +222,32 @@ export class ProgressView extends HTMLElement {
       });
     });
     this.querySelector("[data-log-weight]")?.addEventListener("click", async () => {
-      const raw = prompt(`Weight (${weightUnit})`, currentW != null ? String(Number(currentW.toFixed(1))) : "");
-      if (!raw) return;
+      const raw = await openInput({
+        title: "Log weight",
+        label: "Weight",
+        value: currentW != null ? String(Number(currentW.toFixed(1))) : "",
+        unit: weightUnit,
+        inputMode: "decimal",
+        type: "number",
+        confirmLabel: "Save",
+      });
+      if (raw == null) return;
       const v = Number(raw);
       if (!(v > 0)) return;
       await weights.put({ id: crypto.randomUUID(), date: new Date().toISOString(), weightKg: fromDisplay(v) });
       this.render();
     });
     this.querySelector("[data-log-bf]")?.addEventListener("click", async () => {
-      const raw = prompt("Body fat %", "");
-      if (!raw) return;
+      const raw = await openInput({
+        title: "Log body fat",
+        label: "Body fat",
+        value: "",
+        unit: "%",
+        inputMode: "decimal",
+        type: "number",
+        confirmLabel: "Save",
+      });
+      if (raw == null) return;
       const v = Number(raw);
       if (!(v > 0) || v > 100) return;
       await bodyFat.put({

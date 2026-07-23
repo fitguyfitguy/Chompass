@@ -1,5 +1,7 @@
 // @ts-check
 import { foodEntries } from "../lib/db.js";
+import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { openConfirm } from "../lib/ui/dialog.js";
 
 /** Manual food entry review/edit form. Also the landing spot for AI/barcode
  * prefill — those flows populate the same fields; the user always confirms
@@ -28,11 +30,10 @@ export class EntryForm extends HTMLElement {
       this.existing = all.find((e) => e.id === this.entryId) ?? null;
     }
     const e = this.existing ?? this.prefill ?? {};
+    const title = this.existing ? "Edit entry" : this.prefill ? "Review & confirm" : "Log food";
 
     this.innerHTML = `
-      <h1 class="screen-title">
-        ${this.existing ? "Edit entry" : this.prefill ? "Review & confirm" : "Log food"}
-      </h1>
+      ${subpageBar(title, { backHref: "#/home" })}
       <form class="entry-form">
         <div class="field">
           <label for="name">Name</label>
@@ -82,16 +83,17 @@ export class EntryForm extends HTMLElement {
           <label for="note">Note (optional)</label>
           <textarea id="note" name="note" rows="2">${e.note ?? ""}</textarea>
         </div>
-        <div class="btn-row">
+        ${this.existing ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
+        <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary">Save</button>
           <button type="button" class="btn btn--ghost" data-action="cancel">Cancel</button>
-          ${this.existing ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
         </div>
       </form>
     `;
 
-    this.querySelector("form").addEventListener("submit", (ev) => this.onSubmit(ev));
-    this.querySelector('[data-action="cancel"]').addEventListener("click", () => {
+    bindSubpageBack(this, "#/home");
+    this.querySelector("form")?.addEventListener("submit", (ev) => this.onSubmit(ev));
+    this.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
       location.hash = "#/home";
     });
     this.querySelector('[data-action="delete"]')?.addEventListener("click", () => this.onDelete());
@@ -99,7 +101,7 @@ export class EntryForm extends HTMLElement {
 
   async onSubmit(ev) {
     ev.preventDefault();
-    const fd = new FormData(ev.target);
+    const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
     const fiberRaw = fd.get("fiberG");
     /** @type {import('../lib/nofud-core/models.js').FoodEntry} */
     const entry = {
@@ -124,6 +126,13 @@ export class EntryForm extends HTMLElement {
 
   async onDelete() {
     if (!this.existing) return;
+    const ok = await openConfirm({
+      title: "Delete entry",
+      message: `Delete “${this.existing.name}”?`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     await foodEntries.delete(this.existing.id);
     location.hash = "#/home";
   }

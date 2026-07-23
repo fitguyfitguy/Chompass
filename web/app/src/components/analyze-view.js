@@ -3,6 +3,7 @@ import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import { analyzeFoodEntry } from "../lib/ai/food-analyze.js";
 import { foodEntries } from "../lib/db.js";
+import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 
 export class AnalyzeView extends HTMLElement {
   async connectedCallback() {
@@ -26,20 +27,17 @@ export class AnalyzeView extends HTMLElement {
 
     if (!this.activeProvider) {
       this.innerHTML = `
-        <h1 class="screen-title">Photo / text AI</h1>
+        ${subpageBar("Photo / text AI", { backHref: "#/home" })}
         <div class="card">
           <p style="color:var(--muted);margin:0 0 0.8rem;">Add a BYOK API key in Settings to analyze food.</p>
           <a class="btn btn--primary" href="#/settings">Go to settings</a>
-          <button type="button" class="btn btn--ghost" data-back style="margin-left:0.5rem;">Cancel</button>
         </div>`;
-      this.querySelector("[data-back]")?.addEventListener("click", () => {
-        location.hash = `#/home`;
-      });
+      bindSubpageBack(this, "#/home");
       return;
     }
 
     this.innerHTML = `
-      <h1 class="screen-title">Log with AI</h1>
+      ${subpageBar("Log with AI", { backHref: "#/home" })}
       ${this.previewUrl ? `<img class="analyze-preview" src="${this.previewUrl}" alt="Selected food photo" />` : ""}
       <form class="entry-form card" id="analyze-form">
         <div class="field">
@@ -53,9 +51,8 @@ export class AnalyzeView extends HTMLElement {
         <p id="analyze-status" style="color:var(--muted);font-size:0.85rem;margin:0;">
           ${this.error ? escapeHtml(this.error) : "Estimates are reviewed before saving — nothing is auto-logged."}
         </p>
-        <div class="btn-row">
+        <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary" ${this.busy ? "disabled" : ""}>${this.busy ? "Analyzing…" : "Analyze"}</button>
-          <button type="button" class="btn btn--ghost" data-back>Cancel</button>
         </div>
       </form>
       ${
@@ -76,6 +73,7 @@ export class AnalyzeView extends HTMLElement {
       }
     `;
 
+    bindSubpageBack(this, "#/home");
     this.querySelector("#photo")?.addEventListener("change", (ev) => {
       const input = /** @type {HTMLInputElement} */ (ev.target);
       const file = input.files?.[0];
@@ -85,9 +83,6 @@ export class AnalyzeView extends HTMLElement {
       this.render();
     });
     this.querySelector("#analyze-form")?.addEventListener("submit", (ev) => this.onAnalyze(ev));
-    this.querySelector("[data-back]")?.addEventListener("click", () => {
-      location.hash = `#/home`;
-    });
     this.querySelectorAll("[data-recent]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const raw = btn.getAttribute("data-recent");

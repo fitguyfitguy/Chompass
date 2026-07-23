@@ -1,5 +1,6 @@
 // @ts-check
 import { lookupBarcode } from "../lib/off-client.js";
+import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 
 /**
  * Live scanning uses the BarcodeDetector API (Chrome/Edge/Android WebView).
@@ -25,7 +26,7 @@ export class BarcodeScanner extends HTMLElement {
 
   render() {
     this.innerHTML = `
-      <h1 style="font-family:var(--font-display);font-size:1.3rem;margin:0 0 1rem;">Scan barcode</h1>
+      ${subpageBar("Scan barcode", { backHref: "#/home" })}
       ${
         this.supported
           ? `
@@ -45,16 +46,15 @@ export class BarcodeScanner extends HTMLElement {
           <label for="barcode">Barcode number</label>
           <input id="barcode" name="barcode" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 0049000028911" />
         </div>
-        <div class="btn-row">
+        <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary">Look up</button>
-          <button type="button" class="btn btn--ghost" data-action="cancel">Cancel</button>
         </div>
       </form>
       <p id="lookup-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
     `;
 
-    this.querySelector("#manual-barcode-form").addEventListener("submit", (ev) => this.onManualLookup(ev));
-    this.querySelector('[data-action="cancel"]').addEventListener("click", () => history.back());
+    bindSubpageBack(this, "#/home");
+    this.querySelector("#manual-barcode-form")?.addEventListener("submit", (ev) => this.onManualLookup(ev));
   }
 
   async startCamera() {
