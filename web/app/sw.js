@@ -2,7 +2,7 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "nofud-shell-v12";
+const CACHE_NAME = "nofud-shell-v13";
 
 const SHELL_ASSETS = [
   "./",
@@ -27,6 +27,7 @@ const SHELL_ASSETS = [
   "./src/components/add-meal-view.js",
   "./src/lib/db.js",
   "./src/lib/off-client.js",
+  "./src/lib/barcode-detect.js",
   "./src/lib/charts.js",
   "./src/lib/dev-seed.js",
   "./src/lib/recent-foods.js",
@@ -58,6 +59,8 @@ const SHELL_ASSETS = [
   "./src/lib/ai/image.js",
   "./src/lib/ai/food-analyze.js",
   "./vendor/idb.js",
+  "./vendor/zxing/zxing-reader.js",
+  "./vendor/zxing/zxing_reader.wasm",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",

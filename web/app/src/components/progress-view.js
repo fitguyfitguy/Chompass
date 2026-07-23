@@ -100,17 +100,17 @@ export class ProgressView extends HTMLElement {
     const macroAvg = (key) =>
       macroDays.length ? macroDays.reduce((s, d) => s + d[key], 0) / macroDays.length : 0;
 
-    // Mirror Android ProgressScreen.bodyFatAvailable — hide BF chart/history until
-    // the user has logged entries or set body fat on their profile.
+    // Chart + history only when logged BF entries exist (Android never draws an
+    // empty BF plot). Profile body-fat alone is not enough to show this card.
+    const hasBodyFatLogs = allBf.length > 0;
+    if (!hasBodyFatLogs) this.showBodyFatHistory = false;
+
     const profileBfPct =
       prof?.bodyFatPercentage != null
         ? prof.bodyFatPercentage > 1
           ? prof.bodyFatPercentage
           : prof.bodyFatPercentage * 100
         : null;
-    const bodyFatAvailable = allBf.length > 0 || profileBfPct != null;
-    if (!allBf.length) this.showBodyFatHistory = false;
-
     const currentBf = bfPoints.length
       ? bfPoints[bfPoints.length - 1].value
       : profileBfPct;
@@ -169,7 +169,7 @@ export class ProgressView extends HTMLElement {
       </div>
 
       ${
-        bodyFatAvailable
+        hasBodyFatLogs
           ? `<div class="card card--glass">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <h2 class="chart-title" style="margin:0;">Body fat %</h2>
@@ -177,10 +177,7 @@ export class ProgressView extends HTMLElement {
         </div>
         ${
           bfPoints.length === 0
-            ? `<div class="stat-badges">
-          <div class="stat-badge"><strong>${fmt(currentBf)}</strong>Current</div>
-        </div>
-        <p style="margin:0.8rem 0 0;text-align:center;color:var(--muted);font-size:0.9rem;">Log your first body fat reading to start a chart</p>`
+            ? `<p style="margin:0.6rem 0 0;text-align:center;color:var(--muted);font-size:0.9rem;">No body fat readings in this range</p>`
             : `<div class="stat-badges">
           <div class="stat-badge"><strong>${fmt(currentBf)}</strong>Current</div>
           <div class="stat-badge"><strong>${fmt(netBf, true)}</strong>Net</div>
@@ -191,13 +188,9 @@ export class ProgressView extends HTMLElement {
           { color: "var(--fat)", unit: "%" }
         )}`
         }
+        <button type="button" class="btn btn--ghost" style="margin-top:0.6rem;" data-toggle-bfh>${this.showBodyFatHistory ? "Hide" : "Show"} history (${allBf.length})</button>
         ${
-          allBf.length
-            ? `<button type="button" class="btn btn--ghost" style="margin-top:0.6rem;" data-toggle-bfh>${this.showBodyFatHistory ? "Hide" : "Show"} history (${allBf.length})</button>`
-            : ""
-        }
-        ${
-          this.showBodyFatHistory && allBf.length
+          this.showBodyFatHistory
             ? `<div class="history-list" style="margin-top:0.6rem;">
                 ${allBf
                   .slice()
@@ -215,7 +208,9 @@ export class ProgressView extends HTMLElement {
             : ""
         }
       </div>`
-          : ""
+          : `<div class="btn-row" style="margin:0.25rem 0 0.5rem;">
+        <button type="button" class="btn btn--ghost" data-log-bf>Log body fat</button>
+      </div>`
       }
 
       <div class="card card--glass">

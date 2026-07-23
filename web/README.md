@@ -47,7 +47,8 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 - `app/src/lib/ai/` — BYOK AI coach + diary food analysis (`food-analyze.js`),
   encrypted key storage, providers, tools.
 - `app/src/lib/off-client.js` + `barcode-scanner.js` — Open Food Facts + camera
-  (`BarcodeDetector`) with manual digit fallback.
+  (`BarcodeDetector`, zxing-wasm fallback via `lib/barcode-detect.js`) with
+  manual digit fallback.
 - `serve.mjs` — zero-dependency static file server for local testing.
 
 ## Status (Android parity track)
@@ -99,8 +100,12 @@ the browser menu → **Add to Home screen** / **Install app**. After redeploy,
 confirm live `Content-Type` for `/app/manifest.json` is `application/json`.
 
 Known trade-offs:
-- Barcode fallback for non-Chromium is manual entry (no vendored JS decoder —
-  keeps the no-bundler / no-runtime-deps architecture).
+- Barcode scanning is tiered: native `BarcodeDetector` when a startup canvas
+  probe confirms it works; otherwise the vendored zxing-wasm reader
+  (`app/vendor/zxing/`, ~1 MB wasm, lazy-loaded only on the fallback path —
+  covers Firefox/Safari and Brave/degoogled Android where the API exists but
+  detection is broken); manual digit entry as last resort. See
+  `app/src/lib/barcode-detect.js`.
 - Diary/body exports prefer Web Share (`files`) when available (Safari/iOS
   Save to Files), then fall back to `<a download>`.
 - Web Crypto master key prefers a non-extractable CryptoKey in IndexedDB;
