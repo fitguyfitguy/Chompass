@@ -19,10 +19,11 @@ Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome
 #### iPhone / iPad (Safari)
 
 1. Open NoFUD in **Safari** (required for a true home-screen app).
-2. Tap **Share**.
+2. Tap **Share** (square with an upward arrow).
 3. Choose **Add to Home Screen**, then Add.
+4. Open from the **home-screen icon** (not a Safari tab) for the full-screen app.
 
-Chrome or Firefox on iOS still use Safari’s share sheet for home-screen install.
+Chrome or Firefox on iOS still use Safari’s share sheet for home-screen install. Diary and body-metrics exports use the system Share sheet when available (Save to Files / AirDrop).
 
 #### Android (Chrome, Edge, Brave)
 

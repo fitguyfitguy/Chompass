@@ -50,7 +50,7 @@ function platformTip() {
     return "Install NoFUD for quicker access and a full-screen app.";
   }
   if (isIos()) {
-    return 'Add NoFUD to your Home Screen: tap Share, then "Add to Home Screen".';
+    return 'Add NoFUD to your Home Screen: tap Share → "Add to Home Screen", then open from the icon (not a Safari tab).';
   }
   return "Install NoFUD to your home screen or dock for easier access.";
 }
@@ -137,7 +137,8 @@ export function maybeShowPostOnboardingInstallSheet() {
 
     let tip = "Add NoFUD to your home screen or dock so it opens like an app.";
     if (isIos()) {
-      tip = 'On iPhone or iPad: tap Share, then "Add to Home Screen".';
+      tip =
+        'On iPhone or iPad: open in Safari → tap Share → "Add to Home Screen" → Add. Then launch from the home-screen icon (not a Safari tab). Chrome or Firefox on iOS still use Safari’s share sheet.';
     } else if (deferredPrompt) {
       tip = "Install NoFUD for a full-screen icon on your home screen or dock.";
     } else {
@@ -146,6 +147,16 @@ export function maybeShowPostOnboardingInstallSheet() {
 
     body.innerHTML = `
       <p style="margin:0;">${tip}</p>
+      ${
+        isIos()
+          ? `<ol class="install-steps" style="margin:0.75rem 0 0;">
+              <li>Open NoFUD in <strong>Safari</strong>.</li>
+              <li>Tap <strong>Share</strong>.</li>
+              <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
+              <li>Open from the home-screen icon for the full-screen app.</li>
+            </ol>`
+          : ""
+      }
       <div class="btn-row" style="margin-top:0.4rem;">
         ${
           deferredPrompt
