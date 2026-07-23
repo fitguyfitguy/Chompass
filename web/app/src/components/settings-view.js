@@ -370,27 +370,32 @@ export class SettingsView extends HTMLElement {
           <label for="homeNutrientCardCount">Home nutrient tubes (1–4)</label>
           <input id="homeNutrientCardCount" name="homeNutrientCardCount" type="number" min="1" max="4" value="${p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT}" />
         </div>
-        <fieldset class="field nutrient-picker">
-          <legend>Home tube nutrients (order = check order; first N shown)</legend>
-          ${HOME_TOP_NUTRIENTS.map(
-            (n) => `
-            <label class="nutrient-picker__row">
-              <input type="checkbox" name="homeTopNutrients" value="${n.key}" ${selectedTubes.has(n.key) ? "checked" : ""} />
-              ${n.label}
-            </label>`
-          ).join("")}
-        </fieldset>
-        <fieldset class="field nutrient-picker">
-          <legend>Food-row chips</legend>
-          ${chipDefs
-            .map(
+        <fieldset class="nutrient-picker">
+          <legend>Home tube nutrients</legend>
+          <p class="nutrient-picker__hint">Order = check order; first N tubes are shown.</p>
+          <div class="nutrient-picker__list">
+            ${HOME_TOP_NUTRIENTS.map(
               (n) => `
-            <label class="nutrient-picker__row">
-              <input type="checkbox" name="foodLogMacroChips" value="${n.key}" ${selectedChips.has(n.key) ? "checked" : ""} />
-              ${n.label} (${n.chipGlyph})
-            </label>`
-            )
-            .join("")}
+              <label class="nutrient-picker__row">
+                <input type="checkbox" name="homeTopNutrients" value="${n.key}" ${selectedTubes.has(n.key) ? "checked" : ""} />
+                <span>${n.label}</span>
+              </label>`
+            ).join("")}
+          </div>
+        </fieldset>
+        <fieldset class="nutrient-picker">
+          <legend>Food-row chips</legend>
+          <div class="nutrient-picker__list">
+            ${chipDefs
+              .map(
+                (n) => `
+              <label class="nutrient-picker__row">
+                <input type="checkbox" name="foodLogMacroChips" value="${n.key}" ${selectedChips.has(n.key) ? "checked" : ""} />
+                <span>${n.label} (${n.chipGlyph})</span>
+              </label>`
+              )
+              .join("")}
+          </div>
         </fieldset>
         <p style="color:var(--muted);font-size:0.8rem;margin:0;">Steps / Health Connect active calories are Android-only. Optional nutrient goals power non-macro tubes.</p>
         <button type="submit" class="btn btn--primary">Save</button>
