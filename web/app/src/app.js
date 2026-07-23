@@ -4,6 +4,7 @@ import "./components/entry-form.js";
 import "./components/settings-view.js";
 import "./components/coach-view.js";
 import "./components/barcode-scanner.js";
+import "./components/progress-view.js";
 
 const view = document.getElementById("view");
 const navLinks = () => document.querySelectorAll(".bottom-nav a");
@@ -13,6 +14,7 @@ const ROUTES = {
   entry: () => "<entry-form></entry-form>",
   coach: () => "<coach-view></coach-view>",
   scan: () => "<barcode-scanner></barcode-scanner>",
+  progress: () => "<progress-view></progress-view>",
   settings: () => "<settings-view></settings-view>",
 };
 
