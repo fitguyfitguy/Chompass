@@ -39,7 +39,7 @@
  */
 export async function anthropicSend(config, req) {
   const body = {
-    model: config.model || "claude-sonnet-5",
+    model: config.model || PROVIDERS.anthropic.defaultModel,
     max_tokens: 1024,
     system: req.systemPrompt,
     messages: req.messages.map(anthropicMessage),
@@ -81,7 +81,7 @@ function anthropicMessage(m) {
  * @returns {Promise<AiResponse>}
  */
 export async function geminiSend(config, req) {
-  const model = config.model || "gemini-2.5-flash";
+  const model = config.model || PROVIDERS.gemini.defaultModel;
   const body = {
     systemInstruction: { parts: [{ text: req.systemPrompt }] },
     contents: req.messages.map(geminiContent),
@@ -117,7 +117,7 @@ export async function openAiCompatibleSend(config, req) {
   const base = (config.baseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
   const messages = [{ role: "system", content: req.systemPrompt }, ...req.messages.flatMap(openAiMessages)];
   const body = {
-    model: config.model || "gpt-4o-mini",
+    model: config.model || PROVIDERS.openai_compatible.defaultModel,
     messages,
     tools: req.tools.length ? req.tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.inputSchema } })) : undefined,
   };
@@ -164,8 +164,93 @@ async function safeText(res) {
   }
 }
 
+/**
+ * @typedef {Object} ProviderMeta
+ * @property {string} label
+ * @property {(config: any, req: any) => Promise<AiResponse>} send
+ * @property {string} defaultModel
+ * @property {string} [defaultFallbackModel]
+ * @property {string[]} models
+ * @property {boolean} [supportsCustomModel]
+ */
+
+/** @type {Record<string, ProviderMeta>} */
 export const PROVIDERS = {
-  anthropic: { label: "Anthropic (Claude)", send: anthropicSend, defaultModel: "claude-sonnet-5" },
-  gemini: { label: "Google (Gemini)", send: geminiSend, defaultModel: "gemini-2.5-flash" },
-  openai_compatible: { label: "OpenAI-compatible", send: openAiCompatibleSend, defaultModel: "gpt-4o-mini" },
+  anthropic: {
+    label: "Anthropic (Claude)",
+    send: anthropicSend,
+    defaultModel: "claude-sonnet-5",
+    defaultFallbackModel: "claude-haiku-4-5",
+    models: ["claude-sonnet-5", "claude-opus-4-8", "claude-haiku-4-5", "claude-sonnet-4-6", "claude-opus-4-7"],
+  },
+  gemini: {
+    label: "Google (Gemini)",
+    send: geminiSend,
+    defaultModel: "gemini-3.6-flash",
+    defaultFallbackModel: "gemini-3.5-flash-lite",
+    models: [
+      "gemini-3.6-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-3.5-flash",
+      "gemini-3.1-flash-lite",
+      "gemini-3.1-pro-preview",
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+    ],
+  },
+  openai_compatible: {
+    label: "OpenAI-compatible",
+    send: openAiCompatibleSend,
+    defaultModel: "gpt-4o-mini",
+    defaultFallbackModel: "gpt-4.1-mini",
+    supportsCustomModel: true,
+    models: ["gpt-5.4-mini", "gpt-5.5", "gpt-5.4-nano", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini"],
+  },
 };
+
+/**
+ * Resolve a model id against a provider's curated list (Android-style).
+ * @param {keyof typeof PROVIDERS|string} providerId
+ * @param {string|null|undefined} model
+ * @param {"primary"|"fallback"} [role]
+ */
+export function resolveProviderModel(providerId, model, role = "primary") {
+  const meta = PROVIDERS[providerId];
+  if (!meta) return model || "";
+  const fallbackDefault = meta.defaultFallbackModel || meta.models[1] || meta.defaultModel;
+  const preferred = role === "fallback" ? fallbackDefault : meta.defaultModel;
+  const trimmed = (model || "").trim();
+  if (!trimmed) return preferred;
+  if (meta.supportsCustomModel) return trimmed;
+  if (meta.models.includes(trimmed)) return trimmed;
+  return preferred;
+}
+
+/**
+ * @param {keyof typeof PROVIDERS|string} providerId
+ * @param {string|null|undefined} selected
+ * @param {"primary"|"fallback"} [role]
+ */
+export function modelSelectOptionsHtml(providerId, selected, role = "primary") {
+  const meta = PROVIDERS[providerId];
+  if (!meta) return "";
+  const current = resolveProviderModel(providerId, selected, role);
+  const opts = meta.models.map(
+    (id) => `<option value="${id}" ${id === current ? "selected" : ""}>${id}</option>`
+  );
+  if (meta.supportsCustomModel && selected && !meta.models.includes(selected)) {
+    opts.push(`<option value="${escapeAttr(selected)}" selected>${escapeAttr(selected)} (custom)</option>`);
+  }
+  if (meta.supportsCustomModel) {
+    opts.push(`<option value="__custom__">Custom…</option>`);
+  }
+  return opts.join("");
+}
+
+function escapeAttr(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}

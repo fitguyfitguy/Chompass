@@ -17,8 +17,8 @@ import {
   exportBodyMetricsCsv,
   filterDiaryRange,
 } from "../lib/nofud-core/export-text.js";
-import { PROVIDERS } from "../lib/ai/providers.js";
-import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../lib/ai/key-storage.js";
+import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
+import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
@@ -517,6 +517,15 @@ export class SettingsView extends HTMLElement {
   async renderAi() {
     const configuredProviders = await listConfiguredProviders();
     const p = await prefs.load();
+    const initialProvider =
+      (p.primaryAiProvider && PROVIDERS[p.primaryAiProvider] ? p.primaryAiProvider : null) ||
+      configuredProviders[0] ||
+      "gemini";
+    const saved = await loadProviderKey(/** @type {any} */ (initialProvider)).catch(() => null);
+    const fallbackProvider = p.fallbackAiProvider && PROVIDERS[p.fallbackAiProvider] ? p.fallbackAiProvider : "gemini";
+    const primaryModel = resolveProviderModel(initialProvider, saved?.model, "primary");
+    const fallbackModel = resolveProviderModel(fallbackProvider, p.fallbackAiModel, "fallback");
+
     this.innerHTML = `
       ${subpageBar("AI", { backHref: "#/settings" })}
       <div class="card">
@@ -527,21 +536,29 @@ export class SettingsView extends HTMLElement {
           <div class="field">
             <label for="ai-provider">Provider</label>
             <select id="ai-provider" name="provider">
-              ${Object.entries(PROVIDERS).map(([id, meta]) => `<option value="${id}" ${p.primaryAiProvider === id ? "selected" : ""}>${meta.label}</option>`).join("")}
+              ${Object.entries(PROVIDERS)
+                .map(
+                  ([id, meta]) =>
+                    `<option value="${id}" ${initialProvider === id ? "selected" : ""}>${meta.label}</option>`
+                )
+                .join("")}
             </select>
           </div>
           <div class="field">
             <label for="ai-key">API key</label>
-            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="sk-…" />
+            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="${saved ? "•••••••• (leave blank to keep)" : "sk-…"}" />
           </div>
           <div class="field-row field-row--2">
             <div class="field">
-              <label for="ai-model">Model (optional)</label>
-              <input id="ai-model" name="model" type="text" placeholder="provider default" />
+              <label for="ai-model">Model</label>
+              <select id="ai-model" name="model">
+                ${modelSelectOptionsHtml(initialProvider, primaryModel, "primary")}
+              </select>
+              <input id="ai-model-custom" name="modelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
             </div>
             <div class="field">
               <label for="ai-base-url">Base URL (openai-compatible)</label>
-              <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" />
+              <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" value="${escapeAttr(saved?.baseUrl || "")}" />
             </div>
           </div>
           <div class="btn-row">
@@ -569,32 +586,77 @@ export class SettingsView extends HTMLElement {
           <div class="field">
             <label for="fallbackAiProvider">Fallback provider</label>
             <select id="fallbackAiProvider" name="fallbackAiProvider">
-              <option value="">—</option>
               ${Object.entries(PROVIDERS)
                 .map(
                   ([id, meta]) =>
-                    `<option value="${id}" ${p.fallbackAiProvider === id ? "selected" : ""}>${meta.label}</option>`
+                    `<option value="${id}" ${fallbackProvider === id ? "selected" : ""}>${meta.label}</option>`
                 )
                 .join("")}
             </select>
           </div>
           <div class="field">
             <label for="fallbackAiModel">Fallback model</label>
-            <input id="fallbackAiModel" name="fallbackAiModel" type="text" value="${escapeAttr(p.fallbackAiModel || "")}" />
+            <select id="fallbackAiModel" name="fallbackAiModel">
+              ${modelSelectOptionsHtml(fallbackProvider, fallbackModel, "fallback")}
+            </select>
+            <input id="fallbackAiModel-custom" name="fallbackAiModelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
           </div>
         </div>
         <button type="submit" class="btn btn--primary">Save AI prefs</button>
       </form>`;
+
+    const providerSel = /** @type {HTMLSelectElement} */ (this.querySelector("#ai-provider"));
+    const modelSel = /** @type {HTMLSelectElement} */ (this.querySelector("#ai-model"));
+    const modelCustom = /** @type {HTMLInputElement} */ (this.querySelector("#ai-model-custom"));
+    const fallbackProviderSel = /** @type {HTMLSelectElement} */ (this.querySelector("#fallbackAiProvider"));
+    const fallbackModelSel = /** @type {HTMLSelectElement} */ (this.querySelector("#fallbackAiModel"));
+    const fallbackModelCustom = /** @type {HTMLInputElement} */ (this.querySelector("#fallbackAiModel-custom"));
+
+    const syncCustomVisibility = (sel, customInput) => {
+      const show = sel.value === "__custom__";
+      customInput.style.display = show ? "block" : "none";
+      if (show) customInput.focus();
+    };
+
+    const refreshPrimaryModels = async () => {
+      const id = providerSel.value;
+      const cfg = await loadProviderKey(/** @type {any} */ (id)).catch(() => null);
+      const resolved = resolveProviderModel(id, cfg?.model, "primary");
+      modelSel.innerHTML = modelSelectOptionsHtml(id, resolved, "primary");
+      modelCustom.value = "";
+      modelCustom.style.display = "none";
+      const baseUrl = /** @type {HTMLInputElement|null} */ (this.querySelector("#ai-base-url"));
+      if (baseUrl && cfg?.baseUrl) baseUrl.value = cfg.baseUrl;
+    };
+
+    const refreshFallbackModels = () => {
+      const id = fallbackProviderSel.value;
+      const resolved = resolveProviderModel(id, p.fallbackAiModel, "fallback");
+      fallbackModelSel.innerHTML = modelSelectOptionsHtml(id, resolved, "fallback");
+      fallbackModelCustom.value = "";
+      fallbackModelCustom.style.display = "none";
+    };
+
+    providerSel.addEventListener("change", () => {
+      void refreshPrimaryModels();
+    });
+    modelSel.addEventListener("change", () => syncCustomVisibility(modelSel, modelCustom));
+    fallbackProviderSel.addEventListener("change", () => refreshFallbackModels());
+    fallbackModelSel.addEventListener("change", () => syncCustomVisibility(fallbackModelSel, fallbackModelCustom));
+
     this.querySelector("#ai-key-form")?.addEventListener("submit", (ev) => this.onSaveAiKey(ev));
     this.querySelector("#ai-key-remove")?.addEventListener("click", () => this.onRemoveAiKey());
     this.querySelector("#ai-extra-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      let fbModel = String(fd.get("fallbackAiModel") || "");
+      if (fbModel === "__custom__") fbModel = String(fd.get("fallbackAiModelCustom") || "").trim();
+      const fbProvider = String(fd.get("fallbackAiProvider") || "gemini");
       await prefs.save({
         userContext: String(fd.get("userContext") || ""),
         aiFallbackEnabled: fd.get("aiFallbackEnabled") === "true",
-        fallbackAiProvider: String(fd.get("fallbackAiProvider") || ""),
-        fallbackAiModel: String(fd.get("fallbackAiModel") || ""),
+        fallbackAiProvider: fbProvider,
+        fallbackAiModel: resolveProviderModel(fbProvider, fbModel, "fallback"),
       });
       location.hash = "#/settings";
     });
@@ -626,11 +688,14 @@ export class SettingsView extends HTMLElement {
 
   async onSaveAiKey(ev) {
     ev.preventDefault();
-    const fd = new FormData(ev.target);
+    const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
     const provider = /** @type {any} */ (fd.get("provider"));
-    const apiKey = String(fd.get("apiKey") || "").trim();
+    const existing = await loadProviderKey(provider).catch(() => null);
+    const apiKey = String(fd.get("apiKey") || "").trim() || existing?.apiKey || "";
     if (!apiKey) return;
-    const model = String(fd.get("model") || "").trim();
+    let model = String(fd.get("model") || "").trim();
+    if (model === "__custom__") model = String(fd.get("modelCustom") || "").trim();
+    model = resolveProviderModel(provider, model || existing?.model, "primary");
     const baseUrl = String(fd.get("baseUrl") || "").trim();
     await saveProviderKey(provider, apiKey, { model: model || undefined, baseUrl: baseUrl || undefined });
     await prefs.save({ primaryAiProvider: provider });

@@ -84,6 +84,8 @@ export const ANDROID_PREF_DEFAULTS = {
   showWater: false,
   waterGoalMl: 2000,
   aiFallbackEnabled: true,
+  fallbackAiProvider: "gemini",
+  fallbackAiModel: "gemini-3.5-flash-lite",
 };
 
 /** @type {Map<string, NutrientDef>} */
@@ -220,20 +222,55 @@ export function chipGlyph(key) {
   return nutrientDef(key)?.chipGlyph ?? key.slice(0, 1).toUpperCase();
 }
 
+/** CSS modifier for colored macro chip glyphs. */
+const CHIP_CSS = {
+  proteinG: "protein",
+  carbsG: "carbs",
+  fatG: "fat",
+  fiberG: "fiber",
+  sugarG: "sugar",
+};
+
 /**
- * Format food-row chip line from prefs.
+ * Food-row / meal-header chips temporarily omit fiber to reduce clutter.
+ * Home tubes still show fiber by default.
+ * @param {string[]} chipKeys
+ * @returns {string[]}
+ */
+export function chipsForFoodLogDisplay(chipKeys) {
+  return normalizeFoodLogChips(chipKeys).filter((k) => k !== "fiberG");
+}
+
+/**
+ * Colored macro chip HTML: value + colored glyph (Android-style inline).
+ * @param {string} key
+ * @param {number} value
+ */
+export function formatMacroChip(key, value) {
+  const g = chipGlyph(key);
+  const css = CHIP_CSS[key] || "protein";
+  return `${Math.round(value)}<span class="macro-chip macro-chip--${css}">${g}</span>`;
+}
+
+/**
+ * Join colored macro chips with muted separators.
+ * @param {{[key: string]: number}|FoodEntry} values
+ * @param {string[]} chipKeys
+ */
+export function formatMacroChipLine(values, chipKeys) {
+  const keys = chipsForFoodLogDisplay(chipKeys);
+  return keys
+    .map((k) => formatMacroChip(k, entryNutrientValue(/** @type {FoodEntry} */ (values), k)))
+    .join('<span class="food-item__meta-sep"> · </span>');
+}
+
+/**
+ * Format food-row chip line from prefs (HTML; fiber excluded for now).
  * @param {FoodEntry} entry
  * @param {string[]} chipKeys
  */
 export function formatFoodChips(entry, chipKeys) {
-  const keys = normalizeFoodLogChips(chipKeys);
-  return keys
-    .map((k) => {
-      const g = chipGlyph(k);
-      const v = Math.round(entryNutrientValue(entry, k));
-      return `${v}${g}`;
-    })
-    .join(" · ");
+  return formatMacroChipLine(entry, chipKeys);
 }
 
 /** All FoodEntry micro field keys (for OFF / AI / share carry-through). */

@@ -54,19 +54,20 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 | Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites/recipes/share carry full micros |
 | Copy / share | Copy-from-day multi-select; meal share encode + `#/add-meal?d=` import (https/hash bridge) |
 | Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements (incl. calf/wrist); P/C/F/**fiber** averages |
-| Settings | Profile/goals/optional nutrients (Android defaults)/units+meal times/home tube+chip pickers/data/AI/about; CSV+Markdown diary + body CSV; custom AI instructions + fallback |
-| Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice; propose_log_food micros |
-| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; form field overflow fixed |
+| Settings | Profile/goals/optional nutrients (Android defaults)/units+meal times/home tube+chip pickers/data/AI (curated Gemini models; default `gemini-3.6-flash` + fallback `gemini-3.5-flash-lite`)/about; CSV+Markdown diary + body CSV; custom AI instructions + fallback |
+| Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice; propose_log_food micros; uses `primaryAiProvider` |
+| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; form field overflow fixed; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber omitted on rows) |
+| Onboarding | Branded welcome, selection cards, optional body fat + AI key step, building-plan animation, plan-ready targets |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
-**Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
+**Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`, Gemini fallback `gemini-3.5-flash-lite`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
 notifications, widgets, full i18n pack, 53-week pager.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v6`.
+Service worker cache: `nofud-shell-v7`.
 
 ### Manual PWA audit checklist
 
