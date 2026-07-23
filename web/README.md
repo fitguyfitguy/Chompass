@@ -82,9 +82,11 @@ Service worker cache: `nofud-shell-v8`.
 
 - Manifest: use `manifest.json` (not `.webmanifest`) so Codeberg
   git-pages serves `application/json` — Go/`mime.TypeByExtension` does not
-  know `.webmanifest`, so it was `text/plain` + `nosniff` and Chromium could
-  reject installability. Fields: `name` / `short_name` / `start_url`+`scope`
-  under `/NoFUD/app/`, `display: standalone`, icons (any + maskable).
+  know `.webmanifest` (falls back to sniff → `text/plain` + `nosniff`).
+  After a rename, also change file bytes (e.g. add `"id"`) so git-pages does
+  not reuse the old blob’s stored Content-Type by hash. Fields: `id` /
+  `name` / `short_name` / `start_url`+`scope` under `/NoFUD/app/`,
+  `display: standalone`, icons (any + maskable).
 - Theme color, viewport-fit, apple-touch meta tags.
 - Nav links have visible text; FABs have `aria-label`.
 - SW precaches shell assets; purges other `CACHE_NAME`s; never caches
