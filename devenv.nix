@@ -11,7 +11,7 @@
     googleTVAddOns.enable = false;
   };
 
-  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.nodePackages.typescript ];
+  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.typescript ];
 
   enterShell = ''
     mkdir -p android
