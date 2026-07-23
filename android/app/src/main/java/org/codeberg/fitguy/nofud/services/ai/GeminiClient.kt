@@ -131,6 +131,27 @@ object GeminiClient {
         return parseText(bodyStr)
     }
 
+    /**
+     * Lightweight BYOK probe: GET /models with the key header.
+     * Success means the key is accepted; does not run generateContent.
+     */
+    suspend fun validateApiKey(
+        client: OkHttpClient,
+        baseUrl: String = "https://generativelanguage.googleapis.com/v1beta",
+        apiKey: String,
+    ) {
+        val url = "${baseUrl.trimEnd('/')}/models"
+        RetryPolicy.execute {
+            client.newCall(
+                Request.Builder()
+                    .url(url)
+                    .addHeader("X-goog-api-key", apiKey)
+                    .get()
+                    .build()
+            )
+        }
+    }
+
     private fun parseText(body: String): String {
         val json = runCatching { JSONObject(body) }.getOrNull() ?: throw AiError.InvalidResponse
         val candidates = json.optJSONArray("candidates") ?: throw AiError.InvalidResponse

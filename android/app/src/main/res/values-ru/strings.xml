@@ -257,9 +257,10 @@
     <string name="onboarding_provider_subtitle">NoFUD нужен ключ ИИ-провайдера для\nанализа вашей еды. Вы используете свой.</string>
     <string name="onboarding_provider_recommended_title">Рекомендуется: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Доступен бесплатный тариф, быстро и точно</string>
-    <string name="onboarding_provider_step_1">Получите бесплатный ключ на aistudio.google.com/apikey</string>
-    <string name="onboarding_provider_step_2">Откройте Настройки → ИИ-провайдер</string>
-    <string name="onboarding_provider_step_3">Вставьте ключ - готово</string>
+    <string name="onboarding_provider_howto_title">Как получить бесплатный ключ Google AI Studio</string>
+    <string name="onboarding_provider_step_1">Откройте aistudio.google.com/apikey (нажмите, чтобы открыть)</string>
+    <string name="onboarding_provider_step_2">Войдите через Google и создайте API-ключ</string>
+    <string name="onboarding_provider_step_3">Вставьте ниже и нажмите «Проверить ключ»</string>
     <string name="onboarding_provider_footer">Поддерживается 13 провайдеров. Ваш ключ остаётся\nна устройстве в зашифрованном виде.</string>
 
     <string name="onboarding_building_calories">Калории</string>

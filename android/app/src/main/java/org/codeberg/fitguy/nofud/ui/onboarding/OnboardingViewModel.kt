@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import org.codeberg.fitguy.nofud.AppContainer
+import org.codeberg.fitguy.nofud.R
 import org.codeberg.fitguy.nofud.models.ActivityLevel
 import org.codeberg.fitguy.nofud.models.AIProvider
 import org.codeberg.fitguy.nofud.models.DietMode
@@ -12,6 +13,9 @@ import org.codeberg.fitguy.nofud.models.KetoCarbMode
 import org.codeberg.fitguy.nofud.models.UserProfile
 import org.codeberg.fitguy.nofud.models.WeightGoal
 import org.codeberg.fitguy.nofud.services.KetoCarbRecommendationService
+import org.codeberg.fitguy.nofud.services.ai.AiError
+import org.codeberg.fitguy.nofud.services.ai.FoodAnalysisService
+import org.codeberg.fitguy.nofud.services.ai.GeminiClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,6 +60,11 @@ data class OnboardingState(
     val aiProvider: AIProvider = AIProvider.GEMINI,
     val aiModel: String = AIProvider.GEMINI.defaultModel,
     val apiKey: String = "",
+    /** Last Gemini key string that passed the lightweight models-list probe. */
+    val validatedApiKey: String = "",
+    val apiKeyTesting: Boolean = false,
+    val apiKeyTestMessage: String = "",
+    val apiKeyTestOk: Boolean? = null,
     val submitting: Boolean = false,
     /** Manual overrides applied on the Plan Ready step. Null = use formula default. */
     val customCalories: Int? = null,
@@ -67,9 +76,15 @@ data class OnboardingState(
     val isLastStep: Boolean get() = step == OnboardingStep.PLAN_READY
 
     /** AI is required for goal calculation, so BYOK users must enter an API key before leaving
-     *  the provider step (Ollama needs none). All other steps advance freely. */
+     *  the provider step (Ollama needs none). Gemini keys must pass a quick probe first. */
     val canAdvance: Boolean get() = when (step) {
-        OnboardingStep.PROVIDER -> !aiProvider.requiresApiKey || apiKey.trim().isNotEmpty()
+        OnboardingStep.PROVIDER -> when {
+            !aiProvider.requiresApiKey -> true
+            apiKey.trim().isEmpty() -> false
+            apiKeyTesting -> false
+            aiProvider == AIProvider.GEMINI -> true // next() runs/reuses probe
+            else -> true
+        }
         else -> true
     }
 
@@ -151,7 +166,15 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             container.prefs.setSelectedAIProvider(p)
             container.prefs.setSelectedAIModel(p.defaultModel)
             val existing = container.keyStore.apiKey(p) ?: ""
-            _ui.value = _ui.value.copy(aiProvider = p, aiModel = p.defaultModel, apiKey = existing)
+            _ui.value = _ui.value.copy(
+                aiProvider = p,
+                aiModel = p.defaultModel,
+                apiKey = existing,
+                validatedApiKey = "",
+                apiKeyTestMessage = "",
+                apiKeyTestOk = null,
+                apiKeyTesting = false,
+            )
         }
     }
     fun setAiModel(m: String) {
@@ -159,10 +182,80 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.prefs.setSelectedAIModel(m) }
     }
     fun setApiKey(key: String) {
-        _ui.value = _ui.value.copy(apiKey = key)
+        val prev = _ui.value
+        val clearedValidation = prev.validatedApiKey.isNotEmpty() && key.trim() != prev.validatedApiKey
+        _ui.value = prev.copy(
+            apiKey = key,
+            validatedApiKey = if (clearedValidation) "" else prev.validatedApiKey,
+            apiKeyTestMessage = if (clearedValidation) "" else prev.apiKeyTestMessage,
+            apiKeyTestOk = if (clearedValidation) null else prev.apiKeyTestOk,
+        )
         // Persist immediately so the in-onboarding AI plan calc can use it.
         viewModelScope.launch {
             container.keyStore.setApiKey(_ui.value.aiProvider, key.trim().takeIf { it.isNotBlank() })
+        }
+    }
+
+    /** Lightweight Gemini probe (or mark non-Gemini keys ready). Optionally advances on success. */
+    fun testApiKey(advanceOnSuccess: Boolean = false) {
+        val state = _ui.value
+        if (state.step != OnboardingStep.PROVIDER) return
+        val key = state.apiKey.trim()
+        if (key.isEmpty()) {
+            _ui.value = state.copy(
+                apiKeyTestOk = false,
+                apiKeyTestMessage = container.appContext.getString(R.string.onboarding_api_key_empty),
+            )
+            return
+        }
+        if (state.aiProvider != AIProvider.GEMINI) {
+            _ui.value = state.copy(
+                validatedApiKey = key,
+                apiKeyTestOk = true,
+                apiKeyTestMessage = container.appContext.getString(R.string.onboarding_api_key_non_gemini_ok),
+            )
+            if (advanceOnSuccess) advanceStep()
+            return
+        }
+        if (state.validatedApiKey == key) {
+            _ui.value = state.copy(
+                apiKeyTestOk = true,
+                apiKeyTestMessage = container.appContext.getString(R.string.onboarding_api_key_works),
+            )
+            if (advanceOnSuccess) advanceStep()
+            return
+        }
+        viewModelScope.launch {
+            _ui.value = _ui.value.copy(apiKeyTesting = true, apiKeyTestMessage = container.appContext.getString(R.string.onboarding_api_key_testing), apiKeyTestOk = null)
+            val result = runCatching {
+                GeminiClient.validateApiKey(
+                    client = FoodAnalysisService.defaultClient,
+                    baseUrl = AIProvider.GEMINI.baseUrl,
+                    apiKey = key,
+                )
+            }
+            if (result.isSuccess) {
+                _ui.value = _ui.value.copy(
+                    apiKeyTesting = false,
+                    validatedApiKey = key,
+                    apiKeyTestOk = true,
+                    apiKeyTestMessage = container.appContext.getString(R.string.onboarding_api_key_works),
+                )
+                if (advanceOnSuccess) advanceStep()
+            } else {
+                val err = result.exceptionOrNull()
+                val message = if (err is AiError.Network) {
+                    container.appContext.getString(R.string.onboarding_api_key_network)
+                } else {
+                    container.appContext.getString(R.string.onboarding_api_key_rejected)
+                }
+                _ui.value = _ui.value.copy(
+                    apiKeyTesting = false,
+                    validatedApiKey = "",
+                    apiKeyTestOk = false,
+                    apiKeyTestMessage = message,
+                )
+            }
         }
     }
     /** The single Imperial|Metric segmented control writes BOTH unit prefs coherently:
@@ -207,6 +300,30 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun next() {
+        if (_ui.value.step == OnboardingStep.PLAN_READY) return
+        val state = _ui.value
+        if (state.step == OnboardingStep.PROVIDER &&
+            state.aiProvider.requiresApiKey &&
+            state.aiProvider == AIProvider.GEMINI &&
+            state.apiKey.trim().isNotEmpty()
+        ) {
+            testApiKey(advanceOnSuccess = true)
+            return
+        }
+        if (state.step == OnboardingStep.PROVIDER &&
+            state.aiProvider.requiresApiKey &&
+            state.aiProvider != AIProvider.GEMINI &&
+            state.apiKey.trim().isNotEmpty() &&
+            state.validatedApiKey != state.apiKey.trim()
+        ) {
+            // Mark non-Gemini keys ready without a network probe.
+            testApiKey(advanceOnSuccess = true)
+            return
+        }
+        advanceStep()
+    }
+
+    private fun advanceStep() {
         if (_ui.value.step == OnboardingStep.PLAN_READY) return
         val nextStep = OnboardingStep.values().getOrNull(_ui.value.step.ordinal + 1) ?: return
         _ui.value = _ui.value.copy(step = nextStep)

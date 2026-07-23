@@ -256,9 +256,10 @@
     <string name="onboarding_provider_subtitle">NoFUD는 음식을 분석하기 위해 AI 제공자\n키가 필요합니다. 본인의 키를 사용하세요.</string>
     <string name="onboarding_provider_recommended_title">추천: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">무료 등급 제공, 빠르고 정확함</string>
-    <string name="onboarding_provider_step_1">aistudio.google.com/apikey 에서 무료 키 받기</string>
-    <string name="onboarding_provider_step_2">설정 → AI 제공자 열기</string>
-    <string name="onboarding_provider_step_3">키 붙여넣기 - 완료</string>
+    <string name="onboarding_provider_howto_title">무료 Google AI Studio 키 받는 방법</string>
+    <string name="onboarding_provider_step_1">aistudio.google.com/apikey 열기 (탭하여 열기)</string>
+    <string name="onboarding_provider_step_2">Google로 로그인하고 API 키 만들기</string>
+    <string name="onboarding_provider_step_3">아래에 붙여넣고 키 테스트 탭</string>
     <string name="onboarding_provider_footer">13개 제공자 지원. 키는 이 기기에\n암호화되어 저장됩니다.</string>
 
     <string name="onboarding_building_calories">칼로리</string>
