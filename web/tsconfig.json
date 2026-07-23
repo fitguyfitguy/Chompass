@@ -15,6 +15,7 @@
   "exclude": [
     "app/src/**/__tests__/**",
     "app/src/lib/parity-fixtures.js",
-    "app/sw.js"
+    "app/sw.js",
+    "app/vendor/**"
   ]
 }

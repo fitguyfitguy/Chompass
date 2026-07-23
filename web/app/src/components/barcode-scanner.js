@@ -1,19 +1,20 @@
 // @ts-check
 import { lookupBarcode } from "../lib/off-client.js";
+import { createDetector } from "../lib/barcode-detect.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 
 /**
- * Live scanning uses the BarcodeDetector API (Chrome/Edge/Android WebView).
- * Browsers without it (Firefox, Safari) fall back to manual digit entry
- * rather than vendoring a JS decoder like zxing-js — pulling in a ~200KB
- * decoder library would cut against the "no bundler, no runtime deps"
- * architecture for one degraded-browser path. See web/README.md.
+ * Live scanning uses the native BarcodeDetector API when it works, and falls
+ * back to the vendored zxing-wasm reader (lazy-loaded) when it is missing
+ * (Firefox, Safari) or present but broken (Brave/Android Shields, degoogled
+ * devices where Chromium's detector needs Google Play Services). Manual digit
+ * entry remains the last resort. See src/lib/barcode-detect.js.
  */
 export class BarcodeScanner extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
-    this.supported = "BarcodeDetector" in window;
+    this.supported = !!navigator.mediaDevices?.getUserMedia;
     this.stopped = false;
     this.busy = false;
     this.render();
@@ -59,17 +60,27 @@ export class BarcodeScanner extends HTMLElement {
   }
 
   async startCamera() {
+    const status = this.querySelector("#scanner-status");
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
       const video = /** @type {HTMLVideoElement} */ (this.querySelector("#scanner-video"));
       video.srcObject = this.stream;
-      // @ts-ignore BarcodeDetector isn't in the standard TS DOM lib yet
-      this.detector = new window.BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"] });
-      this.scanLoop();
     } catch (err) {
-      const status = this.querySelector("#scanner-status");
       if (status) status.textContent = `Camera unavailable (${err.message}). Enter the number manually below.`;
+      return;
     }
+    this.detector = await createDetector((msg) => {
+      if (status) status.textContent = msg;
+    });
+    if (this.stopped) return;
+    if (!this.detector) {
+      this.stopCamera();
+      this.supported = false;
+      this.render();
+      return;
+    }
+    if (status) status.textContent = "Point the camera at a barcode.";
+    this.scanLoop();
   }
 
   stopCamera() {
@@ -82,17 +93,28 @@ export class BarcodeScanner extends HTMLElement {
     const video = /** @type {HTMLVideoElement} */ (this.querySelector("#scanner-video"));
     if (video && video.readyState >= 2) {
       try {
-        const codes = await this.detector.detect(video);
-        if (codes.length > 0) {
+        const barcode = await this.detector.detect(video);
+        if (barcode) {
           this.busy = true;
-          await this.onDetected(codes[0].rawValue);
+          await this.onDetected(barcode);
           return;
         }
       } catch {
-        // transient mid-frame detection errors are expected — keep scanning
+        // detector gave up entirely (wasm demotion failed) — manual entry only
+        this.stopCamera();
+        this.supported = false;
+        this.render();
+        return;
       }
     }
-    if (!this.stopped) requestAnimationFrame(() => this.scanLoop());
+    if (this.stopped) return;
+    if (this.detector.kind === "wasm") {
+      // Full-frame wasm decoding every rAF frame is wasteful on phones — ~10 fps
+      // is plenty for handheld scanning.
+      setTimeout(() => requestAnimationFrame(() => this.scanLoop()), 100);
+    } else {
+      requestAnimationFrame(() => this.scanLoop());
+    }
   }
 
   async onDetected(barcode) {
