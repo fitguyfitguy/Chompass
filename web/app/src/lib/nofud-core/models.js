@@ -87,6 +87,31 @@
  * @property {FoodSource} source
  * @property {string|null} [note]
  * @property {Grounding|null} [grounding]
+ * @property {string|null} [recipeLogId]  shared id across rows from one Recipe log
+ */
+
+/**
+ * @typedef {Object} RecipeIngredient
+ * @property {string} id
+ * @property {string} name
+ * @property {number} baseCalories
+ * @property {number} baseProteinG
+ * @property {number} baseCarbsG
+ * @property {number} baseFatG
+ * @property {number} [quantityScale]
+ * @property {number|null} [baseFiberG]
+ * @property {number|null} [baseSugarG]
+ * @property {number|null} [baseSodiumMg]
+ * @property {number|null} [baseQuantityG]
+ */
+
+/**
+ * @typedef {Object} Recipe
+ * @property {string} id
+ * @property {string} name
+ * @property {"breakfast"|"lunch"|"dinner"|"snack"} mealType
+ * @property {RecipeIngredient[]} ingredients
+ * @property {string} createdAt
  */
 
 /**

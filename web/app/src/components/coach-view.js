@@ -4,8 +4,10 @@ import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import { chat } from "../lib/db.js";
 import { openConfirm } from "../lib/ui/dialog.js";
+import { createSpeechCapture } from "../lib/speech.js";
 
 const CAMERA_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM4 5h3.2l1.4-1.8c.2-.3.5-.4.8-.4h5.2c.3 0 .6.1.8.4L16.8 5H20c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2zm8 13c2.8 0 5-2.2 5-5s-2.2-5-5-5-5 2.2-5 5 2.2 5 5 5z"/></svg>`;
+const MIC_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
 
 export class CoachView extends HTMLElement {
   async connectedCallback() {
@@ -63,6 +65,11 @@ export class CoachView extends HTMLElement {
         <label class="btn btn--ghost coach-photo-btn" title="Attach a photo" aria-label="Attach a photo">
           ${CAMERA_ICON}<input type="file" accept="image/*" id="coach-photo" style="display:none;" />
         </label>
+        ${
+          createSpeechCapture().supported
+            ? `<button type="button" class="btn btn--ghost coach-photo-btn" data-voice title="Voice" aria-label="Voice input">${MIC_ICON}</button>`
+            : ""
+        }
         <input type="text" id="coach-text" placeholder="Ask the coach…" autocomplete="off" />
         <button type="submit" class="btn btn--primary">Send</button>
       </form>
@@ -70,6 +77,20 @@ export class CoachView extends HTMLElement {
     `;
 
     this.querySelector("#coach-form").addEventListener("submit", (ev) => this.onSend(ev));
+    this.querySelector("[data-voice]")?.addEventListener("click", () => {
+      const textInput = /** @type {HTMLInputElement} */ (this.querySelector("#coach-text"));
+      const status = this.querySelector("#coach-status");
+      if (status) status.textContent = "Listening…";
+      createSpeechCapture().start(
+        (text) => {
+          textInput.value = textInput.value ? `${textInput.value} ${text}` : text;
+          if (status) status.textContent = "";
+        },
+        (err) => {
+          if (status) status.textContent = `Voice: ${err}`;
+        }
+      );
+    });
     this.querySelector("[data-clear-chat]")?.addEventListener("click", async () => {
       const ok = await openConfirm({
         title: "Clear chat",

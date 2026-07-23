@@ -11,10 +11,17 @@ import {
 import { dailyTargets, bmr, tdee } from "../lib/nofud-core/formulas.js";
 import { exportDiary, importDiary } from "../lib/nofud-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-metrics-format.js";
+import {
+  exportDiaryMarkdown,
+  exportDiaryCsv,
+  exportBodyMetricsCsv,
+  filterDiaryRange,
+} from "../lib/nofud-core/export-text.js";
 import { PROVIDERS } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../lib/ai/key-storage.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
 
 const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
 const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
@@ -33,10 +40,11 @@ export class SettingsView extends HTMLElement {
         <nav class="settings-nav" aria-label="Settings sections">
           <a href="#/settings?section=profile">Profile <span>Body &amp; identity</span></a>
           <a href="#/settings?section=goals">Goals &amp; diet <span>Calories, keto</span></a>
-          <a href="#/settings?section=units">Units &amp; appearance <span>kg/lb, theme</span></a>
-          <a href="#/settings?section=home">Home display <span>Water, gauge</span></a>
+          <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
+          <a href="#/settings?section=units">Units &amp; schedule <span>Units, week, meals</span></a>
+          <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
           <a href="#/settings?section=data">Data <span>Import / export / clear</span></a>
-          <a href="#/settings?section=ai">AI keys <span>BYOK providers</span></a>
+          <a href="#/settings?section=ai">AI <span>Keys, instructions, fallback</span></a>
           <a href="#/settings?section=about">About &amp; methods <span>Formulas</span></a>
           <a href="#/measurements">Body measurements <span>Tape metrics</span></a>
         </nav>`;
@@ -49,6 +57,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "goals") {
       await this.renderGoals();
+      return;
+    }
+    if (this.section === "nutrients") {
+      await this.renderNutrients();
       return;
     }
     if (this.section === "units") {
@@ -68,16 +80,7 @@ export class SettingsView extends HTMLElement {
       return;
     }
     if (this.section === "about") {
-      this.innerHTML = `
-        ${subpageBar("About & methods", { backHref: "#/settings" })}
-        <div class="card">
-          <p style="margin:0 0 0.6rem;">NoFUD companion PWA — local-first, no analytics. Compatible with the Android app's diary and body-metrics JSON.</p>
-          <p style="margin:0;color:var(--muted);font-size:0.9rem;">
-            Deterministic formulas (BMR Mifflin / Katch-McArdle, TDEE, macros, keto carbs, US Navy BF%, FCAST / ADAPT)
-            mirror <code>docs/CALCULATION_METHODS.md</code>. AI estimates are reviewed before save.
-          </p>
-        </div>`;
-      bindSubpageBack(this, "#/settings");
+      await this.renderAbout();
       return;
     }
     this.section = "hub";
@@ -113,7 +116,7 @@ export class SettingsView extends HTMLElement {
     this.innerHTML = `
       ${subpageBar("Profile", { backHref: "#/settings" })}
       <form class="entry-form card" id="profile-form">
-        <div class="field-row">
+        <div class="field-row field-row--2">
           <div class="field">
             <label for="sex">Sex</label>
             <select id="sex" name="sex">
@@ -244,9 +247,9 @@ export class SettingsView extends HTMLElement {
   async renderUnits() {
     const p = await prefs.load();
     this.innerHTML = `
-      ${subpageBar("Units & appearance", { backHref: "#/settings" })}
+      ${subpageBar("Units & schedule", { backHref: "#/settings" })}
       <form class="entry-form card" id="units-form">
-        <div class="field-row">
+        <div class="field-row field-row--2">
           <div class="field">
             <label for="weightUnit">Weight</label>
             <select id="weightUnit" name="weightUnit">
@@ -274,6 +277,22 @@ export class SettingsView extends HTMLElement {
             ${ACCENTS.map((a) => `<option value="${a}" ${p.accent === a ? "selected" : ""}>${a}</option>`).join("")}
           </select>
         </div>
+        <div class="field">
+          <label for="weekStartsOnMonday">Week starts</label>
+          <select id="weekStartsOnMonday" name="weekStartsOnMonday">
+            <option value="true" ${p.weekStartsOnMonday !== false ? "selected" : ""}>Monday</option>
+            <option value="false" ${p.weekStartsOnMonday === false ? "selected" : ""}>Sunday</option>
+          </select>
+        </div>
+        <p class="section-label">Meal times</p>
+        <div class="field-row field-row--2">
+          <div class="field"><label for="mealBreakfastStart">Breakfast</label><input id="mealBreakfastStart" name="mealBreakfastStart" type="time" value="${minutesToTimeInput(p.mealBreakfastStart ?? 300)}" /></div>
+          <div class="field"><label for="mealLunchStart">Lunch</label><input id="mealLunchStart" name="mealLunchStart" type="time" value="${minutesToTimeInput(p.mealLunchStart ?? 660)}" /></div>
+        </div>
+        <div class="field-row field-row--2">
+          <div class="field"><label for="mealDinnerStart">Dinner</label><input id="mealDinnerStart" name="mealDinnerStart" type="time" value="${minutesToTimeInput(p.mealDinnerStart ?? 900)}" /></div>
+          <div class="field"><label for="mealSnackStart">Snack</label><input id="mealSnackStart" name="mealSnackStart" type="time" value="${minutesToTimeInput(p.mealSnackStart ?? 1260)}" /></div>
+        </div>
         <button type="submit" class="btn btn--primary">Save</button>
       </form>`;
     this.querySelector("#units-form")?.addEventListener("submit", async (ev) => {
@@ -284,6 +303,11 @@ export class SettingsView extends HTMLElement {
         heightUnit: /** @type {any} */ (fd.get("heightUnit")),
         theme: /** @type {any} */ (fd.get("theme")),
         accent: String(fd.get("accent") || "teal"),
+        weekStartsOnMonday: fd.get("weekStartsOnMonday") === "true",
+        mealBreakfastStart: timeInputToMinutes(String(fd.get("mealBreakfastStart"))),
+        mealLunchStart: timeInputToMinutes(String(fd.get("mealLunchStart"))),
+        mealDinnerStart: timeInputToMinutes(String(fd.get("mealDinnerStart"))),
+        mealSnackStart: timeInputToMinutes(String(fd.get("mealSnackStart"))),
       });
       window.dispatchEvent(new Event("nofud-prefs-changed"));
       location.hash = "#/settings";
@@ -293,6 +317,7 @@ export class SettingsView extends HTMLElement {
 
   async renderHome() {
     const p = await prefs.load();
+    const chips = (p.foodLogMacroChips || ["proteinG", "carbsG", "fatG"]).join(",");
     this.innerHTML = `
       ${subpageBar("Home display", { backHref: "#/settings" })}
       <form class="entry-form card" id="home-form">
@@ -321,17 +346,77 @@ export class SettingsView extends HTMLElement {
             <option value="true" ${p.adaptiveGoals ? "selected" : ""}>On</option>
           </select>
         </div>
+        <div class="field">
+          <label for="homeNutrientCardCount">Macro tubes count (1–4)</label>
+          <input id="homeNutrientCardCount" name="homeNutrientCardCount" type="number" min="1" max="4" value="${p.homeNutrientCardCount ?? 3}" />
+        </div>
+        <div class="field">
+          <label for="foodLogMacroChips">Food-row macro chips (comma keys)</label>
+          <input id="foodLogMacroChips" name="foodLogMacroChips" type="text" value="${escapeAttr(chips)}" placeholder="proteinG,carbsG,fatG" />
+        </div>
+        <p style="color:var(--muted);font-size:0.8rem;margin:0;">Steps / Health Connect active calories are Android-only.</p>
         <button type="submit" class="btn btn--primary">Save</button>
       </form>`;
     this.querySelector("#home-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      const chipRaw = String(fd.get("foodLogMacroChips") || "");
       await prefs.save({
         showWater: fd.get("showWater") === "true",
         waterGoalMl: Number(fd.get("waterGoalMl") || 2500),
         calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
+        homeNutrientCardCount: Math.min(4, Math.max(1, Number(fd.get("homeNutrientCardCount") || 3))),
+        foodLogMacroChips: chipRaw
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
       });
+      location.hash = "#/settings";
+    });
+    bindSubpageBack(this, "#/settings");
+  }
+
+  async renderNutrients() {
+    const p = await prefs.load();
+    const g = p.optionalNutrientGoals || {};
+    const fields = [
+      ["fiberG", "Fiber g"],
+      ["sugarG", "Sugar g"],
+      ["sodiumMg", "Sodium mg"],
+      ["potassiumMg", "Potassium mg"],
+      ["calciumMg", "Calcium mg"],
+      ["ironMg", "Iron mg"],
+      ["vitaminCMg", "Vitamin C mg"],
+      ["vitaminDMcg", "Vitamin D mcg"],
+    ];
+    this.innerHTML = `
+      ${subpageBar("Optional nutrients", { backHref: "#/settings" })}
+      <form class="entry-form card" id="nutrients-form">
+        <p style="color:var(--muted);font-size:0.85rem;margin:0;">Optional daily goals shown alongside macros when set.</p>
+        <div class="field-row field-row--2">
+          ${fields
+            .map(
+              ([k, label]) => `
+            <div class="field">
+              <label for="${k}">${label}</label>
+              <input id="${k}" name="${k}" type="number" min="0" step="0.1" value="${g[k] ?? ""}" />
+            </div>`
+            )
+            .join("")}
+        </div>
+        <button type="submit" class="btn btn--primary">Save</button>
+      </form>`;
+    this.querySelector("#nutrients-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      /** @type {Record<string, number|null>} */
+      const optionalNutrientGoals = {};
+      for (const [k] of fields) {
+        const raw = fd.get(k);
+        optionalNutrientGoals[k] = raw !== "" && raw != null ? Number(raw) : null;
+      }
+      await prefs.save({ optionalNutrientGoals });
       location.hash = "#/settings";
     });
     bindSubpageBack(this, "#/settings");
@@ -342,22 +427,48 @@ export class SettingsView extends HTMLElement {
       ${subpageBar("Data", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Same JSON format as the Android app — move data freely between the two.
+          Formats match the Android app — move data freely between the two.
         </p>
+        <div class="field-row field-row--2">
+          <div class="field">
+            <label for="export-range">Diary range</label>
+            <select id="export-range">
+              <option value="all">All</option>
+              <option value="month">Last 30 days</option>
+              <option value="week">Last 7 days</option>
+              <option value="today">Today</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="export-format">Diary format</label>
+            <select id="export-format">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+              <option value="md">Markdown</option>
+            </select>
+          </div>
+        </div>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-diary">Export diary</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">Import diary
+          <button class="btn btn--ghost" id="export-diary" type="button">Export diary</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">Import diary JSON
             <input type="file" accept="application/json" id="import-diary" style="display:none;" />
           </label>
         </div>
+        <div class="field" style="margin-top:0.8rem;">
+          <label for="body-format">Body metrics format</label>
+          <select id="body-format">
+            <option value="json">JSON</option>
+            <option value="csv">CSV</option>
+          </select>
+        </div>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-body">Export body metrics</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">Import body metrics
+          <button class="btn btn--ghost" id="export-body" type="button">Export body metrics</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">Import body JSON
             <input type="file" accept="application/json" id="import-body" style="display:none;" />
           </label>
         </div>
         <p id="import-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
-        <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;">Clear all local data</button>
+        <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;" type="button">Clear all local data</button>
       </div>`;
     this.querySelector("#export-diary")?.addEventListener("click", () => this.onExportDiary());
     this.querySelector("#export-body")?.addEventListener("click", () => this.onExportBodyMetrics());
@@ -379,8 +490,9 @@ export class SettingsView extends HTMLElement {
 
   async renderAi() {
     const configuredProviders = await listConfiguredProviders();
+    const p = await prefs.load();
     this.innerHTML = `
-      ${subpageBar("AI keys", { backHref: "#/settings" })}
+      ${subpageBar("AI", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Keys are encrypted at rest and only sent directly from your browser to the provider.
@@ -389,14 +501,14 @@ export class SettingsView extends HTMLElement {
           <div class="field">
             <label for="ai-provider">Provider</label>
             <select id="ai-provider" name="provider">
-              ${Object.entries(PROVIDERS).map(([id, meta]) => `<option value="${id}">${meta.label}</option>`).join("")}
+              ${Object.entries(PROVIDERS).map(([id, meta]) => `<option value="${id}" ${p.primaryAiProvider === id ? "selected" : ""}>${meta.label}</option>`).join("")}
             </select>
           </div>
           <div class="field">
             <label for="ai-key">API key</label>
             <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="sk-…" />
           </div>
-          <div class="field-row">
+          <div class="field-row field-row--2">
             <div class="field">
               <label for="ai-model">Model (optional)</label>
               <input id="ai-model" name="model" type="text" placeholder="provider default" />
@@ -414,9 +526,75 @@ export class SettingsView extends HTMLElement {
         <p style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
           Configured: ${configuredProviders.length ? configuredProviders.map((id) => PROVIDERS[id].label).join(", ") : "none"}
         </p>
-      </div>`;
+      </div>
+      <form class="entry-form card" id="ai-extra-form">
+        <div class="field">
+          <label for="userContext">Custom instructions</label>
+          <textarea id="userContext" name="userContext" rows="3" placeholder="Preferences the coach and food AI should follow…">${escapeAttr(p.userContext || "")}</textarea>
+        </div>
+        <div class="field">
+          <label for="aiFallbackEnabled">Fallback provider on failure</label>
+          <select id="aiFallbackEnabled" name="aiFallbackEnabled">
+            <option value="false" ${!p.aiFallbackEnabled ? "selected" : ""}>Off</option>
+            <option value="true" ${p.aiFallbackEnabled ? "selected" : ""}>On</option>
+          </select>
+        </div>
+        <div class="field-row field-row--2">
+          <div class="field">
+            <label for="fallbackAiProvider">Fallback provider</label>
+            <select id="fallbackAiProvider" name="fallbackAiProvider">
+              <option value="">—</option>
+              ${Object.entries(PROVIDERS)
+                .map(
+                  ([id, meta]) =>
+                    `<option value="${id}" ${p.fallbackAiProvider === id ? "selected" : ""}>${meta.label}</option>`
+                )
+                .join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="fallbackAiModel">Fallback model</label>
+            <input id="fallbackAiModel" name="fallbackAiModel" type="text" value="${escapeAttr(p.fallbackAiModel || "")}" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn--primary">Save AI prefs</button>
+      </form>`;
     this.querySelector("#ai-key-form")?.addEventListener("submit", (ev) => this.onSaveAiKey(ev));
     this.querySelector("#ai-key-remove")?.addEventListener("click", () => this.onRemoveAiKey());
+    this.querySelector("#ai-extra-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      await prefs.save({
+        userContext: String(fd.get("userContext") || ""),
+        aiFallbackEnabled: fd.get("aiFallbackEnabled") === "true",
+        fallbackAiProvider: String(fd.get("fallbackAiProvider") || ""),
+        fallbackAiModel: String(fd.get("fallbackAiModel") || ""),
+      });
+      location.hash = "#/settings";
+    });
+    bindSubpageBack(this, "#/settings");
+  }
+
+  async renderAbout() {
+    this.innerHTML = `
+      ${subpageBar("About & methods", { backHref: "#/settings" })}
+      <div class="card">
+        <p style="margin:0 0 0.6rem;">NoFUD companion PWA — local-first, no analytics. Compatible with the Android app's diary and body-metrics JSON.</p>
+      </div>
+      <div class="card methods-card">
+        <h2 class="chart-title">Calculation methods</h2>
+        <dl class="methods-list">
+          <dt>BMR-MSJ</dt><dd>Mifflin–St Jeor from sex, age, height, weight.</dd>
+          <dt>BMR-KM</dt><dd>Katch–McArdle when body-fat % is set (lean mass based).</dd>
+          <dt>TDEE</dt><dd>BMR × activity factor (PAL).</dd>
+          <dt>CAL-ADJ</dt><dd>Goal calories from weekly kg pace × 7700/7.</dd>
+          <dt>MACRO</dt><dd>Protein by activity (+ cut boost); fat 0.6×kg; carbs remainder. Keto clamps net carbs.</dd>
+          <dt>FCAST</dt><dd>Theil–Sen weight slope + sparse-logging intake average.</dd>
+          <dt>ADAPT</dt><dd>Weekly adaptive calorie nudge (±150) with floors/ceilings.</dd>
+          <dt>US Navy BF%</dt><dd>From neck / waist / hips tape measures.</dd>
+        </dl>
+        <p style="color:var(--muted);font-size:0.85rem;margin:0.8rem 0 0;">Canonical register: <code>docs/CALCULATION_METHODS.md</code>. AI estimates are always reviewed before save.</p>
+      </div>`;
     bindSubpageBack(this, "#/settings");
   }
 
@@ -429,6 +607,7 @@ export class SettingsView extends HTMLElement {
     const model = String(fd.get("model") || "").trim();
     const baseUrl = String(fd.get("baseUrl") || "").trim();
     await saveProviderKey(provider, apiKey, { model: model || undefined, baseUrl: baseUrl || undefined });
+    await prefs.save({ primaryAiProvider: provider });
     this.render();
   }
 
@@ -441,22 +620,42 @@ export class SettingsView extends HTMLElement {
   }
 
   async onExportDiary() {
-    const entries = await foodEntries.all();
+    const format = /** @type {HTMLSelectElement|null} */ (this.querySelector("#export-format"))?.value || "json";
+    const range = /** @type {HTMLSelectElement|null} */ (this.querySelector("#export-range"))?.value || "all";
+    const allEntries = await foodEntries.all();
+    const entries = filterDiaryRange(allEntries, /** @type {any} */ (range));
     const prof = await profileStore.load();
-    /** @type {Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>} */
-    const targets = {};
-    if (prof) {
-      const t = dailyTargets(prof);
-      for (const e of entries) targets[e.date] = t;
-    }
     const dates = entries.map((e) => e.date).sort();
     const dateRange = { start: dates[0] ?? "", end: dates[dates.length - 1] ?? "" };
-    const doc = exportDiary({ entries, targets, dateRange });
+    const targets = prof ? dailyTargets(prof) : null;
+    if (format === "csv") {
+      downloadText(exportDiaryCsv(entries), `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.csv`, "text/csv");
+      return;
+    }
+    if (format === "md") {
+      downloadText(
+        exportDiaryMarkdown(entries, dateRange, targets),
+        `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.md`,
+        "text/markdown"
+      );
+      return;
+    }
+    /** @type {Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>} */
+    const targetsByDay = {};
+    if (targets) {
+      for (const e of entries) targetsByDay[e.date] = targets;
+    }
+    const doc = exportDiary({ entries, targets: targetsByDay, dateRange });
     downloadJson(doc, `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
   }
 
   async onExportBodyMetrics() {
+    const format = /** @type {HTMLSelectElement|null} */ (this.querySelector("#body-format"))?.value || "json";
     const [w, bf, m] = await Promise.all([weights.all(), bodyFat.all(), measurements.all()]);
+    if (format === "csv") {
+      downloadText(exportBodyMetricsCsv({ weights: w, bodyFat: bf, measurements: m }), "NoFUD-Body-Metrics.csv", "text/csv");
+      return;
+    }
     const doc = exportBodyMetrics({ weights: w, bodyFat: bf, measurements: m });
     downloadJson(doc, `NoFUD-Weight-Import.json`);
   }
@@ -500,6 +699,21 @@ function downloadJson(doc, filename) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+/** @param {string} text @param {string} filename @param {string} mime */
+function downloadText(text, filename, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
 customElements.define("settings-view", SettingsView);

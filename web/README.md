@@ -49,20 +49,22 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 |------|--------|
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
 | Home | Semicircle gauge, vertical macro tubes, meal glass cards, week prev/next, day swipe, water, Add Food sheet |
-| Food rows | Overflow sheet (edit / meal / duplicate / delete), swipe-left delete + undo, swipe-right duplicate |
-| Entry | Manual, barcode, photo/text AI → review form; fiber; Recents nested sheet; subpage chrome |
-| Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements |
-| Settings | Sectioned prefs with shared subpageBar, units/theme, onboarding gate, import/export/clear dialog |
-| Coach | Broader read tools, persistent chat, glass proposals, SVG camera |
-| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs |
+| Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right duplicate |
+| Entry | Manual, barcode, photo/text AI → review form; expandable micros; Recents/Frequent/Favorites/Recipes; subpage chrome |
+| Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites survive diary delete |
+| Copy / share | Copy-from-day multi-select; meal share encode + `#/add-meal?d=` import (https/hash bridge) |
+| Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements (incl. calf/wrist) |
+| Settings | Profile/goals/nutrients/units+meal times/home/data/AI/about; CSV+Markdown diary + body CSV; custom AI instructions + fallback |
+| Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice |
+| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; form field overflow fixed |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
-notifications, widgets, full i18n pack, favorites store, 53-week pager, Saved Meals tabs.
+notifications, widgets, full i18n pack, 53-week pager.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v5`.
+Service worker cache: `nofud-shell-v6`.
 
 ### Manual PWA audit checklist
 
@@ -76,6 +78,9 @@ Service worker cache: `nofud-shell-v5`.
 **Run a real Lighthouse pass before treating installability as verified.**
 
 Known trade-offs:
-- Barcode fallback for non-Chromium is manual entry (no vendored JS decoder).
+- Barcode fallback for non-Chromium is manual entry (no vendored JS decoder —
+  keeps the no-bundler / no-runtime-deps architecture).
 - Web Crypto non-extractable-key fallback for older/incognito contexts is still
   not implemented.
+- Custom-scheme `nofud://add-meal` cold-start is native-only; PWA uses `#/add-meal?d=`.
+- Web Speech API availability varies (Safari/Firefox uneven).

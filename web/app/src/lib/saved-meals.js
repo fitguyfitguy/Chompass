@@ -1,0 +1,142 @@
+// @ts-check
+/**
+ * Saved Meals helpers — Recents / Frequent / Favorites, mirroring Android
+ * FoodRepository recentFoodTemplates / frequentFoodGroups / toggleFavorite.
+ */
+import { foodEntries, favorites as favoritesStore } from "./db.js";
+
+/** @param {import('./nofud-core/models.js').FoodEntry | {name?: string}} entry */
+export function favoriteKey(entry) {
+  return String(entry.name ?? "")
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * @param {import('./nofud-core/models.js').FoodEntry} entry
+ * @param {string} [date]
+ * @param {string} [time]
+ * @param {"breakfast"|"lunch"|"dinner"|"snack"} [mealType]
+ */
+export function duplicatedForLogging(entry, date, time, mealType) {
+  const now = new Date();
+  const hm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  return {
+    ...entry,
+    id: crypto.randomUUID(),
+    date: date ?? entry.date,
+    time: time ?? hm,
+    mealType: mealType ?? entry.mealType,
+    recipeLogId: null,
+  };
+}
+
+/**
+ * Newest-first templates, one per favoriteKey, within `days`.
+ * @param {number} [days]
+ * @param {number} [limit]
+ */
+export async function recentFoodTemplates(days = 30, limit = 50) {
+  const all = await foodEntries.all();
+  const cutoff = Date.now() - days * 86400000;
+  const filtered = all.filter((e) => {
+    const ts = Date.parse(`${e.date}T${e.time || "12:00"}`);
+    return !Number.isNaN(ts) && ts >= cutoff;
+  });
+  const seen = new Set();
+  /** @type {import('./nofud-core/models.js').FoodEntry[]} */
+  const out = [];
+  filtered
+    .slice()
+    .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`))
+    .forEach((e) => {
+      const key = favoriteKey(e);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      out.push(e);
+    });
+  return out.slice(0, limit);
+}
+
+/**
+ * @param {number} [days]
+ * @returns {Promise<{template: import('./nofud-core/models.js').FoodEntry, count: number}[]>}
+ */
+export async function frequentFoodGroups(days = 90) {
+  const all = await foodEntries.all();
+  const cutoff = Date.now() - days * 86400000;
+  /** @type {Map<string, {count: number, template: import('./nofud-core/models.js').FoodEntry}>} */
+  const aggregates = new Map();
+  for (const e of all) {
+    const ts = Date.parse(`${e.date}T${e.time || "12:00"}`);
+    if (Number.isNaN(ts) || ts < cutoff) continue;
+    const key = favoriteKey(e);
+    if (!key) continue;
+    const existing = aggregates.get(key);
+    if (!existing) {
+      aggregates.set(key, { count: 1, template: e });
+    } else {
+      const newer = `${e.date}T${e.time}`.localeCompare(`${existing.template.date}T${existing.template.time}`) > 0;
+      aggregates.set(key, {
+        count: existing.count + 1,
+        template: newer ? e : existing.template,
+      });
+    }
+  }
+  return [...aggregates.values()].sort(
+    (a, b) => b.count - a.count || a.template.name.localeCompare(b.template.name, undefined, { sensitivity: "base" })
+  );
+}
+
+export async function listFavorites() {
+  return favoritesStore.all();
+}
+
+/** @param {import('./nofud-core/models.js').FoodEntry} entry */
+export async function isFavorite(entry) {
+  const key = favoriteKey(entry);
+  const list = await favoritesStore.all();
+  return list.some((f) => favoriteKey(f) === key);
+}
+
+/**
+ * Toggle favorite by favoriteKey — stores a full FoodEntry copy.
+ * @param {import('./nofud-core/models.js').FoodEntry} entry
+ * @returns {Promise<boolean>} true if now favorited
+ */
+export async function toggleFavorite(entry) {
+  const key = favoriteKey(entry);
+  if (!key) return false;
+  const list = await favoritesStore.all();
+  const idx = list.findIndex((f) => favoriteKey(f) === key);
+  if (idx >= 0) {
+    await favoritesStore.delete(list[idx].id);
+    return false;
+  }
+  const copy = {
+    ...entry,
+    id: crypto.randomUUID(),
+    recipeLogId: null,
+  };
+  await favoritesStore.put(copy);
+  return true;
+}
+
+/** Prefill shape used by entry-form / analyze recents. */
+/** @param {import('./nofud-core/models.js').FoodEntry} e */
+export function toPrefill(e) {
+  return {
+    name: e.name,
+    calories: e.calories,
+    proteinG: e.proteinG,
+    carbsG: e.carbsG,
+    fatG: e.fatG,
+    fiberG: e.fiberG ?? null,
+    sugarG: e.sugarG ?? null,
+    sodiumMg: e.sodiumMg ?? null,
+    quantityG: e.quantityG ?? null,
+    mealType: e.mealType,
+    source: e.source ?? "manual",
+    note: e.note ?? null,
+  };
+}

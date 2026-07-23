@@ -2,7 +2,7 @@
 import { openDB, Store } from "../../vendor/idb.js";
 
 const DB_NAME = "nofud-pwa";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 /** @type {Promise<import('../../vendor/idb.js').Store[]>|null} */
 let dbPromise = null;
@@ -21,6 +21,10 @@ function openNoFudDb() {
     if (oldVersion < 2) {
       if (!db.objectStoreNames.contains("prefs")) db.createObjectStore("prefs", { keyPath: "id" });
       if (!db.objectStoreNames.contains("chat")) db.createObjectStore("chat", { keyPath: "id" });
+    }
+    if (oldVersion < 3) {
+      if (!db.objectStoreNames.contains("favorites")) db.createObjectStore("favorites", { keyPath: "id" });
+      if (!db.objectStoreNames.contains("recipes")) db.createObjectStore("recipes", { keyPath: "id" });
     }
   });
 }
@@ -53,6 +57,44 @@ export const foodEntries = {
   },
   async clear() {
     return (await store("foodEntries")).clear();
+  },
+};
+
+export const favorites = {
+  /** @param {import('./nofud-core/models.js').FoodEntry} entry */
+  async put(entry) {
+    return (await store("favorites")).put(entry);
+  },
+  /** @param {string} id */
+  async delete(id) {
+    return (await store("favorites")).delete(id);
+  },
+  async all() {
+    return (await store("favorites")).getAll();
+  },
+  async clear() {
+    return (await store("favorites")).clear();
+  },
+};
+
+export const recipes = {
+  /** @param {import('./nofud-core/models.js').Recipe} recipe */
+  async put(recipe) {
+    return (await store("recipes")).put(recipe);
+  },
+  /** @param {string} id */
+  async delete(id) {
+    return (await store("recipes")).delete(id);
+  },
+  async all() {
+    return (await store("recipes")).getAll();
+  },
+  /** @param {string} id */
+  async get(id) {
+    return (await store("recipes")).get(id);
+  },
+  async clear() {
+    return (await store("recipes")).clear();
   },
 };
 
@@ -135,6 +177,18 @@ export const profile = {
   },
 };
 
+/**
+ * @typedef {Object} OptionalNutrientGoals
+ * @property {number|null} [fiberG]
+ * @property {number|null} [sugarG]
+ * @property {number|null} [sodiumMg]
+ * @property {number|null} [potassiumMg]
+ * @property {number|null} [calciumMg]
+ * @property {number|null} [ironMg]
+ * @property {number|null} [vitaminCMg]
+ * @property {number|null} [vitaminDMcg]
+ */
+
 /** @typedef {Object} AppPrefs
  * @property {boolean} [onboardingComplete]
  * @property {"system"|"light"|"dark"} [theme]
@@ -145,38 +199,57 @@ export const profile = {
  * @property {"static"|"add_active"} [calorieGaugeMode]
  * @property {number} [waterGoalMl]
  * @property {boolean} [adaptiveGoals]
+ * @property {"RECENTS"|"FREQUENT"|"FAVORITES"|"RECIPES"} [lastSavedMealsSegment]
+ * @property {boolean} [weekStartsOnMonday]
+ * @property {number} [mealBreakfastStart]
+ * @property {number} [mealLunchStart]
+ * @property {number} [mealDinnerStart]
+ * @property {number} [mealSnackStart]
+ * @property {number} [homeNutrientCardCount]
+ * @property {string[]} [homeTopNutrients]
+ * @property {string[]} [foodLogMacroChips]
+ * @property {OptionalNutrientGoals} [optionalNutrientGoals]
+ * @property {string} [userContext]
+ * @property {boolean} [aiFallbackEnabled]
+ * @property {string} [fallbackAiProvider]
+ * @property {string} [fallbackAiModel]
+ * @property {string} [primaryAiProvider]
  */
+
+const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
+  onboardingComplete: false,
+  theme: "system",
+  accent: "teal",
+  weightUnit: "kg",
+  heightUnit: "cm",
+  showWater: true,
+  calorieGaugeMode: "static",
+  waterGoalMl: 2500,
+  adaptiveGoals: false,
+  lastSavedMealsSegment: "RECENTS",
+  weekStartsOnMonday: true,
+  mealBreakfastStart: 5 * 60,
+  mealLunchStart: 11 * 60,
+  mealDinnerStart: 15 * 60,
+  mealSnackStart: 21 * 60,
+  homeNutrientCardCount: 3,
+  homeTopNutrients: ["proteinG", "carbsG", "fatG"],
+  foodLogMacroChips: ["proteinG", "carbsG", "fatG"],
+  optionalNutrientGoals: {},
+  userContext: "",
+  aiFallbackEnabled: false,
+  fallbackAiProvider: "",
+  fallbackAiModel: "",
+  primaryAiProvider: "",
+});
 
 export const prefs = {
   /** @returns {Promise<AppPrefs>} */
   async load() {
     const row = await (await store("prefs")).get(PREFS_ID);
-    if (!row) {
-      return {
-        onboardingComplete: false,
-        theme: "system",
-        accent: "teal",
-        weightUnit: "kg",
-        heightUnit: "cm",
-        showWater: true,
-        calorieGaugeMode: "static",
-        waterGoalMl: 2500,
-        adaptiveGoals: false,
-      };
-    }
+    if (!row) return { ...DEFAULT_PREFS };
     const { id: _id, ...rest } = row;
-    return {
-      onboardingComplete: false,
-      theme: "system",
-      accent: "teal",
-      weightUnit: "kg",
-      heightUnit: "cm",
-      showWater: true,
-      calorieGaugeMode: "static",
-      waterGoalMl: 2500,
-      adaptiveGoals: false,
-      ...rest,
-    };
+    return { ...DEFAULT_PREFS, ...rest };
   },
   /** @param {Partial<AppPrefs>} patch */
   async save(patch) {
@@ -218,6 +291,8 @@ export const keys = {
 export async function clearAllUserData() {
   await Promise.all([
     foodEntries.clear(),
+    favorites.clear(),
+    recipes.clear(),
     weights.clear(),
     bodyFat.clear(),
     measurements.clear(),

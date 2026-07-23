@@ -2,7 +2,7 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "nofud-shell-v5";
+const CACHE_NAME = "nofud-shell-v6";
 
 const SHELL_ASSETS = [
   "./",
@@ -24,11 +24,17 @@ const SHELL_ASSETS = [
   "./src/components/analyze-view.js",
   "./src/components/onboarding-view.js",
   "./src/components/measurements-view.js",
+  "./src/components/add-meal-view.js",
   "./src/lib/db.js",
   "./src/lib/off-client.js",
   "./src/lib/charts.js",
   "./src/lib/dev-seed.js",
   "./src/lib/recent-foods.js",
+  "./src/lib/saved-meals.js",
+  "./src/lib/recipes.js",
+  "./src/lib/meal-schedule.js",
+  "./src/lib/meal-share.js",
+  "./src/lib/speech.js",
   "./src/lib/ui/sheet.js",
   "./src/lib/ui/dialog.js",
   "./src/lib/ui/focus-trap.js",
@@ -38,6 +44,7 @@ const SHELL_ASSETS = [
   "./src/lib/nofud-core/forecast.js",
   "./src/lib/nofud-core/diary-format.js",
   "./src/lib/nofud-core/body-metrics-format.js",
+  "./src/lib/nofud-core/export-text.js",
   "./src/lib/ai/providers.js",
   "./src/lib/ai/key-storage.js",
   "./src/lib/ai/tools.js",

@@ -42,6 +42,10 @@ export class MeasurementsView extends HTMLElement {
           <div class="field"><label for="upperArmCm">Upper arm</label><input id="upperArmCm" name="upperArmCm" type="number" step="0.1" min="0" /></div>
           <div class="field"><label for="thighCm">Thigh</label><input id="thighCm" name="thighCm" type="number" step="0.1" min="0" /></div>
         </div>
+        <div class="field-row field-row--2">
+          <div class="field"><label for="calfCm">Calf cm</label><input id="calfCm" name="calfCm" type="number" step="0.1" min="0" /></div>
+          <div class="field"><label for="wristCm">Wrist cm</label><input id="wristCm" name="wristCm" type="number" step="0.1" min="0" /></div>
+        </div>
         <button type="submit" class="btn btn--primary">Save measurement</button>
       </form>
       ${
@@ -92,8 +96,8 @@ export class MeasurementsView extends HTMLElement {
         chestCm: num("chestCm"),
         upperArmCm: num("upperArmCm"),
         thighCm: num("thighCm"),
-        calfCm: null,
-        wristCm: null,
+        calfCm: num("calfCm"),
+        wristCm: num("wristCm"),
       });
       this.render();
     });
