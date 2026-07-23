@@ -3,6 +3,35 @@
  * Meal share encode/decode — Android MealShare.kt compatible payload.
  * Web bridge uses hash route `#/add-meal?d=…` (custom scheme is native-only).
  */
+import { ALL_MICRO_KEYS } from "./home-nutrients.js";
+
+/** Share wire key → FoodEntry field */
+const SHARE_TO_ENTRY = {
+  sugar: "sugarG",
+  addedSugar: "addedSugarG",
+  fiber: "fiberG",
+  saturatedFat: "saturatedFatG",
+  monounsaturatedFat: "monounsaturatedFatG",
+  polyunsaturatedFat: "polyunsaturatedFatG",
+  cholesterol: "cholesterolMg",
+  sodium: "sodiumMg",
+  potassium: "potassiumMg",
+  transFat: "transFatG",
+  calcium: "calciumMg",
+  iron: "ironMg",
+  magnesium: "magnesiumMg",
+  zinc: "zincMg",
+  vitaminA: "vitaminAMcg",
+  vitaminC: "vitaminCMg",
+  vitaminD: "vitaminDMcg",
+  vitaminB12: "vitaminB12Mcg",
+  vitaminE: "vitaminEMg",
+  vitaminK: "vitaminKMcg",
+  folate: "folateMcg",
+  omega3: "omega3G",
+};
+
+const ENTRY_TO_SHARE = Object.fromEntries(Object.entries(SHARE_TO_ENTRY).map(([a, b]) => [b, a]));
 
 /**
  * @param {Array<Partial<import('./nofud-core/models.js').FoodEntry>>} entries
@@ -21,9 +50,10 @@ export function encodeMealShare(entries) {
     const put = (key, v) => {
       if (v != null) d[key] = v;
     };
-    put("fiber", e.fiberG);
-    put("sugar", e.sugarG);
-    put("sodium", e.sodiumMg);
+    for (const key of ALL_MICRO_KEYS) {
+      const shareKey = ENTRY_TO_SHARE[key];
+      if (shareKey) put(shareKey, /** @type {Record<string, unknown>} */ (e)[key]);
+    }
     put("servingSizeGrams", e.quantityG);
     if (e.note) d.customNote = e.note;
     return d;
@@ -64,20 +94,22 @@ export function decodeMealShare(linkOrHash) {
         const mealType = ["breakfast", "lunch", "dinner", "snack"].includes(String(d.mealType).toLowerCase())
           ? String(d.mealType).toLowerCase()
           : "snack";
-        return {
+        /** @type {Record<string, unknown>} */
+        const entry = {
           name: String(d.name),
           calories: Math.round(Number(d.calories) || 0),
           proteinG: Number(d.protein) || 0,
           carbsG: Number(d.carbs) || 0,
           fatG: Number(d.fat) || 0,
-          fiberG: d.fiber != null ? Number(d.fiber) : null,
-          sugarG: d.sugar != null ? Number(d.sugar) : null,
-          sodiumMg: d.sodium != null ? Number(d.sodium) : null,
           quantityG: d.servingSizeGrams != null ? Number(d.servingSizeGrams) : null,
           mealType,
           note: d.customNote ? String(d.customNote) : null,
           source: "manual",
         };
+        for (const [shareKey, entryKey] of Object.entries(SHARE_TO_ENTRY)) {
+          entry[entryKey] = d[shareKey] != null ? Number(d[shareKey]) : null;
+        }
+        return entry;
       })
       .filter(Boolean);
   } catch {

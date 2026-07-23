@@ -18,7 +18,7 @@ Inside `devenv shell` (adds `node`/`tsc` to PATH):
 
 ```bash
 pwa-serve       # serve web/app/ at http://localhost:8787/
-pwa-test        # node --test over nofud-core golden + fixture-parity tests
+pwa-test        # node --test over nofud-core golden + home-nutrients / OFF parity tests
 pwa-typecheck   # tsc --checkJs --noEmit
 ```
 
@@ -26,7 +26,7 @@ Or directly:
 
 ```bash
 node web/serve.mjs
-node --test web/app/src/lib/nofud-core/__tests__/*.test.js
+node --test web/app/src/lib/nofud-core/__tests__/*.test.js web/app/src/lib/__tests__/*.test.js
 cd web && tsc --checkJs --noEmit -p tsconfig.json
 ```
 
@@ -48,16 +48,18 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 | Area | Notes |
 |------|--------|
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
-| Home | Semicircle gauge, vertical macro tubes, meal glass cards, week prev/next, day swipe, water, Add Food sheet |
-| Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right duplicate |
-| Entry | Manual, barcode, photo/text AI → review form; expandable micros; Recents/Frequent/Favorites/Recipes; subpage chrome |
-| Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites survive diary delete |
+| Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, week prev/next, day swipe, water **off by default** (goal 2000 ml), Add Food sheet, tap gauge → nutrition detail |
+| Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right duplicate; pref-driven macro chips |
+| Entry | Manual, barcode (OFF fiber + micros), photo/text AI → review form; expandable micros; Recents/Frequent/Favorites/Recipes; subpage chrome |
+| Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites/recipes/share carry full micros |
 | Copy / share | Copy-from-day multi-select; meal share encode + `#/add-meal?d=` import (https/hash bridge) |
-| Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements (incl. calf/wrist) |
-| Settings | Profile/goals/nutrients/units+meal times/home/data/AI/about; CSV+Markdown diary + body CSV; custom AI instructions + fallback |
-| Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice |
+| Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements (incl. calf/wrist); P/C/F/**fiber** averages |
+| Settings | Profile/goals/optional nutrients (Android defaults)/units+meal times/home tube+chip pickers/data/AI/about; CSV+Markdown diary + body CSV; custom AI instructions + fallback |
+| Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice; propose_log_food micros |
 | UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; form field overflow fixed |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
+
+**Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
 notifications, widgets, full i18n pack, 53-week pager.

@@ -1,5 +1,12 @@
 // @ts-check
 import { openDB, Store } from "../../vendor/idb.js";
+import {
+  DEFAULT_OPTIONAL_NUTRIENT_GOALS,
+  DEFAULT_HOME_TOP,
+  DEFAULT_FOOD_CHIPS,
+  DEFAULT_NUTRIENT_CARD_COUNT,
+  ANDROID_PREF_DEFAULTS,
+} from "./home-nutrients.js";
 
 const DB_NAME = "nofud-pwa";
 const DB_VERSION = 3;
@@ -179,14 +186,26 @@ export const profile = {
 
 /**
  * @typedef {Object} OptionalNutrientGoals
- * @property {number|null} [fiberG]
  * @property {number|null} [sugarG]
+ * @property {number|null} [addedSugarG]
+ * @property {number|null} [fiberG]
+ * @property {number|null} [saturatedFatG]
+ * @property {number|null} [cholesterolMg]
  * @property {number|null} [sodiumMg]
  * @property {number|null} [potassiumMg]
+ * @property {number|null} [transFatG]
  * @property {number|null} [calciumMg]
  * @property {number|null} [ironMg]
+ * @property {number|null} [magnesiumMg]
+ * @property {number|null} [zincMg]
+ * @property {number|null} [vitaminAMcg]
  * @property {number|null} [vitaminCMg]
  * @property {number|null} [vitaminDMcg]
+ * @property {number|null} [vitaminB12Mcg]
+ * @property {number|null} [vitaminEMg]
+ * @property {number|null} [vitaminKMcg]
+ * @property {number|null} [folateMcg]
+ * @property {number|null} [omega3G]
  */
 
 /** @typedef {Object} AppPrefs
@@ -216,15 +235,15 @@ export const profile = {
  * @property {string} [primaryAiProvider]
  */
 
-const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
+export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   onboardingComplete: false,
   theme: "system",
   accent: "teal",
   weightUnit: "kg",
   heightUnit: "cm",
-  showWater: true,
+  showWater: ANDROID_PREF_DEFAULTS.showWater,
   calorieGaugeMode: "static",
-  waterGoalMl: 2500,
+  waterGoalMl: ANDROID_PREF_DEFAULTS.waterGoalMl,
   adaptiveGoals: false,
   lastSavedMealsSegment: "RECENTS",
   weekStartsOnMonday: true,
@@ -232,12 +251,12 @@ const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   mealLunchStart: 11 * 60,
   mealDinnerStart: 15 * 60,
   mealSnackStart: 21 * 60,
-  homeNutrientCardCount: 3,
-  homeTopNutrients: ["proteinG", "carbsG", "fatG"],
-  foodLogMacroChips: ["proteinG", "carbsG", "fatG"],
-  optionalNutrientGoals: {},
+  homeNutrientCardCount: DEFAULT_NUTRIENT_CARD_COUNT,
+  homeTopNutrients: [...DEFAULT_HOME_TOP],
+  foodLogMacroChips: [...DEFAULT_FOOD_CHIPS],
+  optionalNutrientGoals: { ...DEFAULT_OPTIONAL_NUTRIENT_GOALS },
   userContext: "",
-  aiFallbackEnabled: false,
+  aiFallbackEnabled: ANDROID_PREF_DEFAULTS.aiFallbackEnabled,
   fallbackAiProvider: "",
   fallbackAiModel: "",
   primaryAiProvider: "",
@@ -247,14 +266,27 @@ export const prefs = {
   /** @returns {Promise<AppPrefs>} */
   async load() {
     const row = await (await store("prefs")).get(PREFS_ID);
-    if (!row) return { ...DEFAULT_PREFS };
+    if (!row) return { ...DEFAULT_PREFS, optionalNutrientGoals: { ...DEFAULT_OPTIONAL_NUTRIENT_GOALS } };
     const { id: _id, ...rest } = row;
-    return { ...DEFAULT_PREFS, ...rest };
+    const merged = { ...DEFAULT_PREFS, ...rest };
+    merged.optionalNutrientGoals = {
+      ...DEFAULT_OPTIONAL_NUTRIENT_GOALS,
+      ...(rest.optionalNutrientGoals || {}),
+    };
+    return merged;
   },
   /** @param {Partial<AppPrefs>} patch */
   async save(patch) {
     const current = await this.load();
-    return (await store("prefs")).put({ id: PREFS_ID, ...current, ...patch });
+    const next = { ...current, ...patch };
+    if (patch.optionalNutrientGoals) {
+      next.optionalNutrientGoals = {
+        ...DEFAULT_OPTIONAL_NUTRIENT_GOALS,
+        ...current.optionalNutrientGoals,
+        ...patch.optionalNutrientGoals,
+      };
+    }
+    return (await store("prefs")).put({ id: PREFS_ID, ...next });
   },
 };
 

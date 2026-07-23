@@ -272,6 +272,11 @@ main.view {
   padding: 0.25rem 0.35rem 0.15rem;
 }
 
+.macro-tubes--1 { grid-template-columns: 1fr; }
+.macro-tubes--2 { grid-template-columns: repeat(2, 1fr); }
+.macro-tubes--3 { grid-template-columns: repeat(3, 1fr); }
+.macro-tubes--4 { grid-template-columns: repeat(4, 1fr); gap: 0.45rem; }
+
 .macro-tube {
   display: flex;
   flex-direction: column;
@@ -287,6 +292,8 @@ main.view {
   color: var(--tube-color, var(--teal));
   line-height: 1;
 }
+
+.macro-tubes--4 .macro-tube__value { font-size: 1rem; }
 
 .macro-tube__track {
   width: 1rem;
@@ -314,6 +321,8 @@ main.view {
   line-height: 1.1;
 }
 
+.macro-tubes--4 .macro-tube__label { font-size: 0.68rem; }
+
 .macro-tube__status {
   font-size: 0.68rem;
   color: var(--muted);
@@ -324,6 +333,104 @@ main.view {
 .macro-tube--protein { --tube-color: var(--protein); }
 .macro-tube--carbs { --tube-color: var(--carbs); }
 .macro-tube--fat { --tube-color: var(--fat); }
+.macro-tube--fiber { --tube-color: var(--teal); }
+.macro-tube--sugar,
+.macro-tube--added-sugar { --tube-color: #c47a3a; }
+.macro-tube--sat-fat,
+.macro-tube--trans-fat,
+.macro-tube--cholesterol { --tube-color: var(--fat); }
+.macro-tube--sodium,
+.macro-tube--potassium { --tube-color: var(--water); }
+.macro-tube--calcium,
+.macro-tube--iron,
+.macro-tube--magnesium,
+.macro-tube--zinc { --tube-color: #8a7a5a; }
+.macro-tube--vit-a,
+.macro-tube--vit-c,
+.macro-tube--vit-d,
+.macro-tube--b12,
+.macro-tube--vit-e,
+.macro-tube--vit-k,
+.macro-tube--folate,
+.macro-tube--omega { --tube-color: #5a8a6a; }
+
+.calorie-hero--tap {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}
+
+.chip--ghost {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent);
+  color: var(--muted);
+}
+
+.nutrition-detail {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.nutrition-detail__heading {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.nutrition-detail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.nutrition-detail__row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.9rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--muted) 18%, transparent);
+}
+
+.nutrition-detail__label { color: var(--text); }
+.nutrition-detail__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.nutrition-detail__goal {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.nutrient-picker {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.nutrient-picker__row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+}
+
+.nutrient-picker__row input { width: auto; }
 
 /* —— Water —— */
 .water-row {
