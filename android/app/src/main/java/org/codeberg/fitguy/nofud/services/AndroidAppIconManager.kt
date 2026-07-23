@@ -12,6 +12,11 @@ object AndroidAppIconManager {
     fun apply(context: Context, themeColor: AppThemeColor) {
         val resolved = themeColor.resolveLauncherIconTheme(context)
         val pm = context.packageManager
+        val currentlyEnabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
+            isAliasEnabled(pm, context, color)
+        }
+        if (currentlyEnabled == resolved) return
+
         AppThemeColor.iconSelectableColors().forEach { color ->
             val component = ComponentName(
                 context.packageName,
@@ -27,6 +32,23 @@ object AndroidAppIconManager {
                 state,
                 PackageManager.DONT_KILL_APP,
             )
+        }
+    }
+
+    private fun isAliasEnabled(
+        pm: PackageManager,
+        context: Context,
+        color: AppThemeColor,
+    ): Boolean {
+        val component = ComponentName(
+            context.packageName,
+            "$MANIFEST_NAMESPACE.${color.launcherAliasSimpleName}",
+        )
+        return when (pm.getComponentEnabledSetting(component)) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED -> false
+            // Manifest default: only Teal starts enabled.
+            else -> color == AppThemeColor.TEAL
         }
     }
 

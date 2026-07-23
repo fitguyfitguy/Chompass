@@ -28,4 +28,45 @@ class AppThemeColorLauncherTest {
             nearestLauncherIconTheme(Color(0xFF8E8E93)),
         )
     }
+
+    @Test
+    fun nearestLauncherIconTheme_mapsTealMaterialYouPrimaryToTeal() {
+        // Typical Material You teal/cyan primary — must not collapse onto pink.
+        assertEquals(
+            AppThemeColor.TEAL,
+            nearestLauncherIconTheme(Color(0xFF006A60)),
+        )
+    }
+
+    @Test
+    fun nearestLauncherIconTheme_mapsGreenMaterialYouPrimaryToGreen() {
+        assertEquals(
+            AppThemeColor.GREEN,
+            nearestLauncherIconTheme(Color(0xFF386A20)),
+        )
+    }
+
+    @Test
+    fun nearestLauncherIconTheme_mapsPurpleMaterialYouPrimaryToPurple() {
+        assertEquals(
+            AppThemeColor.PURPLE,
+            nearestLauncherIconTheme(Color(0xFFAF52DE)),
+        )
+    }
+
+    @Test
+    fun nearestLauncherIconTheme_mapsIndigoMaterialYouPrimaryToIndigo() {
+        assertEquals(
+            AppThemeColor.INDIGO,
+            nearestLauncherIconTheme(Color(0xFF5856D6)),
+        )
+    }
+
+    @Test
+    fun nearestLauncherIconTheme_mapsOrangeMaterialYouPrimaryToOrange() {
+        assertEquals(
+            AppThemeColor.ORANGE,
+            nearestLauncherIconTheme(Color(0xFF8B5000)),
+        )
+    }
 }
