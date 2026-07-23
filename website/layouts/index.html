@@ -1,12 +1,13 @@
 {{ define "main" }}
 <section class="hero" aria-labelledby="hero-brand">
   <div class="hero__copy">
-    <p class="hero__eyebrow">Android · ad-free · local-first</p>
+    <p class="hero__eyebrow">PWA · Android · ad-free</p>
     <h1 id="hero-brand" class="hero__brand">NoFUD</h1>
-    <p class="hero__tagline">Ad-free AI calorie tracker for Android.</p>
-    <p class="hero__support">Cloud BYOK or opt-in on-device Gemma&nbsp;4. No ads, no analytics, no account.</p>
+    <p class="hero__tagline">Ad-free AI calorie tracker — Android app and browser PWA.</p>
+    <p class="hero__support">Cloud BYOK on both clients; opt-in on-device Gemma&nbsp;4 on Android. No ads, no analytics, no account. The web app runs in any modern browser; Chromium-based browsers work best.</p>
     <div class="hero__actions">
-      <a class="btn btn--primary" href="{{ .Site.Params.obtainium }}">Get on Obtainium</a>
+      <a class="btn btn--primary" href="{{ "app/" | relURL }}">Try web app</a>
+      <a class="btn btn--ghost" href="{{ .Site.Params.obtainium }}">Get on Obtainium</a>
       <a class="btn btn--ghost" href="{{ .Site.Params.releases }}">Download APK</a>
     </div>
   </div>
@@ -25,8 +26,8 @@
 <section class="strip" aria-label="Product highlights">
   <ul class="strip__list">
     <li><strong>No ads</strong><span>Never shipped AdMob</span></li>
-    <li><strong>On-device AI</strong><span>Opt-in Gemma&nbsp;4 Edge</span></li>
-    <li><strong>Health Connect</strong><span>Scales &amp; wearables</span></li>
+    <li><strong>Browser PWA</strong><span>Any modern browser</span></li>
+    <li><strong>On-device AI</strong><span>Opt-in Gemma&nbsp;4 (Android app)</span></li>
     <li><strong>{{ .Site.Params.apkArm64Note }}</strong><span>arm64 APK (v{{ .Site.Params.version }})</span></li>
   </ul>
 </section>
@@ -59,13 +60,13 @@
     <p class="shoutout__body">
       NoFUD is a privacy-focused fork of
       <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer"><strong>Fud&nbsp;AI</strong></a>
-      by Apoorv Darshan — same BYOK AI food logging, our own lean Android roadmap on Codeberg.
+      by Apoorv Darshan — same BYOK AI food logging, our own lean Android app + browser PWA roadmap on Codeberg.
       If you want workouts and the upstream feature set, check out
       <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI on GitHub</a>.
     </p>
   </div>
   <div class="section-head">
-    <h2 id="compare-heading">NoFUD vs Fud&nbsp;AI</h2>
+    <h2 id="compare-heading">Fud&nbsp;AI vs NoFUD Android vs NoFUD&nbsp;PWA</h2>
     <p>Compact differences. Full table lives in the <a href="{{ .Site.Params.repo }}">project README</a>.</p>
   </div>
   <div class="compare__scroll">
@@ -74,44 +75,70 @@
         <tr>
           <th scope="col">Feature</th>
           <th scope="col"><a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI</a></th>
-          <th scope="col">NoFUD</th>
+          <th scope="col">NoFUD Android</th>
+          <th scope="col"><a href="{{ "app/" | relURL }}">NoFUD&nbsp;PWA</a></th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <th scope="row">Banner ads</th>
-          <td>Shipped briefly; removed in 3.0.3</td>
+          <td>Brief AdMob; removed in 3.0.3</td>
+          <td><strong>Never shipped</strong></td>
           <td><strong>Never shipped</strong></td>
         </tr>
         <tr>
           <th scope="row">On-device AI (Gemma&nbsp;4)</th>
           <td>No</td>
           <td><strong>Yes</strong> (opt-in)</td>
+          <td>No (BYOK cloud)</td>
         </tr>
         <tr>
-          <th scope="row">Barcode scanner</th>
+          <th scope="row">Barcode</th>
           <td>ML Kit</td>
           <td><strong>FOSS zxing-cpp</strong></td>
+          <td>Browser / OFF</td>
         </tr>
         <tr>
           <th scope="row">Workouts library</th>
           <td>Yes (~120&nbsp;MB APK)</td>
           <td><strong>Omitted</strong> (~15&nbsp;MiB arm64)</td>
+          <td>Omitted</td>
         </tr>
         <tr>
           <th scope="row">Keto / diet modes</th>
           <td>No</td>
           <td><strong>Yes</strong></td>
+          <td><strong>Yes</strong></td>
         </tr>
         <tr>
-          <th scope="row">Health Connect wellness</th>
+          <th scope="row">Health Connect</th>
           <td>Partial</td>
           <td><strong>Steps, exercise, sleep, HR, hydration</strong></td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <th scope="row">Widgets / notifications</th>
+          <td>Upstream set</td>
+          <td><strong>Yes</strong></td>
+          <td>No (installable PWA)</td>
+        </tr>
+        <tr>
+          <th scope="row">Languages</th>
+          <td>Upstream</td>
+          <td><strong>15</strong></td>
+          <td>EN-first</td>
         </tr>
         <tr>
           <th scope="row">Distribution</th>
           <td>Play-focused</td>
-          <td><strong>Codeberg</strong> / Obtainium</td>
+          <td><strong>Codeberg</strong> / Obtainium / F-Droid</td>
+          <td><strong>PWA</strong> in any modern browser</td>
+        </tr>
+        <tr>
+          <th scope="row">Open diary / body JSON</th>
+          <td>Upstream formats</td>
+          <td><strong>Yes</strong></td>
+          <td><strong>Same contracts as Android</strong></td>
         </tr>
       </tbody>
     </table>
@@ -126,20 +153,20 @@
 <section class="pitch" aria-labelledby="pitch-heading">
   <div class="section-head">
     <h2 id="pitch-heading">Privacy-focused food tracking</h2>
-    <p>Forked from <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI</a> to stay ad-free on Codeberg. Snap, speak, scan, share, or type — food text and photos stay on your phone unless you choose cloud AI.</p>
+    <p>Forked from <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI</a> to stay ad-free on Codeberg. Snap, speak, scan, share, or type — food text and photos stay on your device unless you choose cloud AI.</p>
   </div>
   <div class="pitch__grid">
     <a class="pitch-card" href="{{ "features/" | relURL }}">
       <h3>Features</h3>
-      <p>Multi-photo logging, keto modes, widgets, open export, and FOSS barcode scanning.</p>
+      <p>Multi-photo logging, keto modes, open export, FOSS barcode, and a peer web app.</p>
     </a>
     <a class="pitch-card" href="{{ "download/" | relURL }}">
       <h3>Install</h3>
-      <p>Obtainium or direct APK from Codeberg Releases. Android only.</p>
+      <p>Obtainium or APK, or the installable browser PWA.</p>
     </a>
     <a class="pitch-card" href="{{ "privacy/" | relURL }}">
       <h3>Privacy</h3>
-      <p>No accounts, no analytics SDKs. BYOK cloud or on-device inference.</p>
+      <p>No accounts, no analytics SDKs. BYOK cloud or on-device inference (Android).</p>
     </a>
   </div>
 </section>
