@@ -53,8 +53,8 @@ android {
         applicationId = "org.codeberg.fitguy.nofud"
         minSdk = 26
         targetSdk = 36
-        versionCode = 26
-        versionName = "1.14.10"
+        versionCode = 27
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         if (releaseAbi != null) {
