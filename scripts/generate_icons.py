@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Generate NoFUD launcher icons and splash logos from the master artwork."""
+"""Generate NoFUD launcher, PWA, and splash logos from the master artwork."""
 
 from __future__ import annotations
 
-import math
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -11,6 +10,8 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 MASTER = ROOT / "scripts" / "nofud_icon_master.png"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
+PWA_ICONS = ROOT / "web" / "app" / "icons"
+METADATA_ICON = ROOT / "metadata" / "en-US" / "images" / "icon.png"
 
 DENSITIES = {
     "mipmap-mdpi": 48,
@@ -160,6 +161,58 @@ def make_round(square: Image.Image) -> Image.Image:
     return out
 
 
+def compose_maskable(
+    size: int,
+    rounded_mask: Image.Image,
+    logo_mask: Image.Image,
+    icon_start: tuple[int, int, int],
+    icon_end: tuple[int, int, int],
+    bleed: tuple[int, int, int],
+    content_ratio: float = 0.70,
+) -> Image.Image:
+    """Full-bleed maskable icon: solid bleed + inset squircle (safe zone)."""
+    out = Image.new("RGBA", (size, size), (*bleed, 255))
+    inset = compose_icon(size, rounded_mask, logo_mask, icon_start, icon_end)
+    content = max(1, int(round(size * content_ratio)))
+    scaled = inset.resize((content, content), Image.Resampling.LANCZOS)
+    offset = (size - content) // 2
+    out.alpha_composite(scaled, (offset, offset))
+    return out
+
+
+def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
+    """Write PWA / store icons with transparent corners (no white canvas padding)."""
+    PWA_ICONS.mkdir(parents=True, exist_ok=True)
+    default_start, default_end = THEMES[0][1], THEMES[0][2]
+    teal = next(t for t in THEMES if t[0] == "_teal")
+    teal_start, teal_end = teal[1], teal[2]
+    bleed = teal_start  # matches manifest theme_color / existing maskable
+
+    for name, px in (
+        ("icon-192.png", 192),
+        ("icon-512.png", 512),
+        ("apple-touch-icon.png", 180),
+    ):
+        compose_icon(px, rounded_mask, logo_mask, default_start, default_end).save(
+            PWA_ICONS / name, optimize=True
+        )
+
+    compose_maskable(
+        512,
+        rounded_mask,
+        logo_mask,
+        default_start,
+        default_end,
+        bleed,
+    ).save(PWA_ICONS / "icon-maskable-512.png", optimize=True)
+
+    # F-Droid / store listing: teal brand squircle, transparent corners.
+    METADATA_ICON.parent.mkdir(parents=True, exist_ok=True)
+    compose_icon(512, rounded_mask, logo_mask, teal_start, teal_end).save(
+        METADATA_ICON, optimize=True
+    )
+
+
 def main() -> None:
     if not MASTER.exists():
         raise SystemExit(f"Master icon missing: {MASTER}")
@@ -184,7 +237,11 @@ def main() -> None:
             square.save(out_dir / f"{base}.png", optimize=True)
             round_icon.save(out_dir / f"{base}_round.png", optimize=True)
 
-    print(f"Generated icons for {len(THEMES)} themes across {len(DENSITIES)} densities.")
+    write_pwa_icons(rounded_mask, logo_mask)
+    print(
+        f"Generated icons for {len(THEMES)} themes across {len(DENSITIES)} densities "
+        f"+ PWA icons in {PWA_ICONS.relative_to(ROOT)}."
+    )
 
 
 if __name__ == "__main__":
