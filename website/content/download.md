@@ -4,7 +4,7 @@ description: Open the NoFUD browser PWA in any modern browser, or install the An
 layout: single
 ---
 
-Two peer ways to use NoFUD: the **installable browser PWA**, or the **Android app**. Same diary and body-metrics JSON contracts; no cloud sync between clients.
+Two ways to use NoFUD: the **installable browser PWA**, or the **Android app**. Same diary and body-metrics JSON contracts; no cloud sync between clients.
 
 ## Web app (PWA)
 
@@ -14,13 +14,13 @@ Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome
 
 **Android-app features not on the PWA:** Health Connect, home-screen widgets, notifications, on-device Gemma 4, and the full 15-language pack.
 
-## Android — Obtainium (recommended)
+## Android: Obtainium (recommended)
 
-[Get it on Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud) — confirms the Codeberg app source, then keeps you updated from releases.
+[Get it on Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud). That confirms the Codeberg app source, then keeps you updated from releases.
 
 Or paste `https://codeberg.org/fitguy/nofud` into Obtainium’s **Add App** screen.
 
-## Android — Direct APK
+## Android: Direct APK
 
 Latest **arm64** (most phones): [NoFUD-fdroid-{{< site_version >}}-arm64-v8a.apk]({{< arm64_apk_url >}}) ({{< apk_arm64_note >}}).
 
@@ -37,7 +37,7 @@ Package ID: `org.codeberg.fitguy.nofud`
 
 ## F-Droid
 
-Package `org.codeberg.fitguy.nofud` — [expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed. Not on the Play Store.
+Package `org.codeberg.fitguy.nofud` ([expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed). Not on the Play Store.
 
 ## After install
 

@@ -1,7 +1,7 @@
 {
   "name": "NoFUD",
   "short_name": "NoFUD",
-  "description": "Privacy-first, ad-free, BYOK AI calorie tracker — companion web app.",
+  "description": "Ad-free calorie tracker. Installable PWA for any modern browser (Chromium works best).",
   "start_url": "/NoFUD/app/",
   "scope": "/NoFUD/app/",
   "display": "standalone",

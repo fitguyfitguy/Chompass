@@ -459,7 +459,7 @@ export class SettingsView extends HTMLElement {
       ${subpageBar("Data", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Formats match the Android app — move data freely between the two.
+          Formats match the Android app. Move data freely between the two.
         </p>
         <div class="field-row field-row--2">
           <div class="field">
@@ -705,7 +705,7 @@ export class SettingsView extends HTMLElement {
     this.innerHTML = `
       ${subpageBar("About & methods", { backHref: "#/settings" })}
       <div class="card">
-        <p style="margin:0 0 0.6rem;">NoFUD companion PWA — local-first, no analytics. Compatible with the Android app's diary and body-metrics JSON.</p>
+        <p style="margin:0 0 0.6rem;">NoFUD browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
       </div>
       <div class="card methods-card">
         <h2 class="chart-title">Calculation methods</h2>

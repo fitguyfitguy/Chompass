@@ -292,10 +292,10 @@ export class OnboardingView extends HTMLElement {
         <div class="onboarding-welcome">
           <img class="onboarding-welcome__logo" src="icons/icon-192.png" alt="" width="88" height="88" />
           <h1 class="onboarding-welcome__title">Track food.<span class="onboarding-welcome__title-accent">Keep control.</span></h1>
-          <p class="onboarding-welcome__sub">Privacy-first calorie tracking in your browser. Data stays on this device and exports to the Android app.</p>
+          <p class="onboarding-welcome__sub">Ad-free calorie tracking in your browser. Data stays on this device and exports to the Android app.</p>
           <ul class="onboarding-features">
             <li><span class="onboarding-features__icon">1</span><div><strong>Local-first diary</strong><span>Meals, macros, and progress without accounts.</span></div></li>
-            <li><span class="onboarding-features__icon">2</span><div><strong>Bring your own AI</strong><span>Optional Gemini / Claude keys — never leaves your device except to the provider.</span></div></li>
+            <li><span class="onboarding-features__icon">2</span><div><strong>Bring your own AI</strong><span>Optional Gemini / Claude keys. Keys leave this device only for the provider you choose.</span></div></li>
             <li><span class="onboarding-features__icon">3</span><div><strong>Android parity</strong><span>Same formulas and export format as the native app.</span></div></li>
           </ul>
         </div>`;
@@ -317,7 +317,7 @@ export class OnboardingView extends HTMLElement {
       </div>`;
     }
     if (id === "bodyFat") {
-      return `<p style="color:var(--muted);margin:0;">Optional — enables Katch–McArdle BMR when set.</p>
+      return `<p style="color:var(--muted);margin:0;">Optional. Enables Katch-McArdle BMR when set.</p>
         <div class="field"><label for="bodyFatPercentage">Body fat %</label>
           <input id="bodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${d.bodyFatPercentage ?? ""}" placeholder="e.g. 18" /></div>`;
     }

@@ -4,9 +4,9 @@
 
 # NoFUD
 
-**Ad-free AI calorie tracker — Android app and browser PWA**
+**Ad-free AI calorie tracker: Android app and browser PWA**
 
-Cloud BYOK wherever you run it; opt-in on-device Gemma 4 on the Android app. Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Bring your own cloud AI key on either client. On the Android app you can also run Gemma 4 on-device. Fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with no ads and no analytics.
 
 [Website](https://fitguy.codeberg.page/NoFUD/) · [Download](https://fitguy.codeberg.page/NoFUD/download/) · [Web app](https://fitguy.codeberg.page/NoFUD/app/) · [Privacy](docs/PRIVACY.md)
 
@@ -20,13 +20,13 @@ Cloud BYOK wherever you run it; opt-in on-device Gemma 4 on the Android app. Pri
 
 Log food with a photo, voice, barcode, share intent, or typed note. Use your own cloud AI key, or download Gemma 4 once for on-device analysis in the Android app. No ads, no account, no analytics. Open diary and body-metrics exports on both clients; [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for scales and wearables in the Android app.
 
-Use the [installable PWA](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech) or the Android APK — same diary and body-metrics JSON contracts, no cloud sync between clients. Health Connect, widgets, notifications, on-device AI, and full i18n are Android-app features. Project home: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
+Use the [installable PWA](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech) or the Android APK. Both use the same diary and body-metrics JSON contracts; there is no cloud sync between clients. Health Connect, widgets, notifications, on-device AI, and full i18n are Android-app features. Project home: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
 
 ## Install
 
 ### Web app (PWA)
 
-Open [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser — phone, tablet, or desktop. It is a progressive web app you can install to the home screen or dock. Diary logging, progress, BYOK AI entry and Coach, and shared JSON export/import with the Android app.
+Open [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser (phone, tablet, or desktop). It is a progressive web app you can install to the home screen or dock. Diary logging, progress, BYOK AI entry and Coach, and shared JSON export/import with the Android app.
 
 Works in Firefox, Safari, and other engines; **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, etc.) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
@@ -96,7 +96,7 @@ Shared on the [PWA](https://fitguy.codeberg.page/NoFUD/app/) and Android app unl
 
 ## Why NoFUD
 
-NoFUD forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork keeps its own roadmap: ad-free, Android app + browser PWA, smaller APK, open export/import, and Health Connect. It does not try to match upstream feature for feature.
+NoFUD forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds open export/import plus Health Connect. It does not try to match upstream feature for feature.
 
 Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)), and a data-compatible [PWA](https://fitguy.codeberg.page/NoFUD/app/) for any modern browser.
 

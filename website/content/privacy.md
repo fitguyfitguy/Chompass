@@ -1,29 +1,29 @@
 ---
 title: Privacy
-description: No ads, no analytics, no accounts. Local-first food logs with BYOK cloud AI or opt-in on-device inference (Android).
+description: No ads, no analytics, no accounts. Food logs stay on your device. BYOK cloud AI or on-device inference on Android.
 layout: single
 ---
 
-NoFUD is a privacy-first, ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Use it as an [installable browser PWA](https://fitguy.codeberg.page/NoFUD/app/) or as an Android app.
+NoFUD is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Use it as an [installable browser PWA](https://fitguy.codeberg.page/NoFUD/app/) or as an Android app.
 
 ## Summary
 
-- **No ads** — No AdMob or other advertising SDKs.
-- **No analytics** — No usage tracking, crash analytics, or telemetry SDKs.
-- **No accounts** — No sign-in, cloud sync, or central user database.
-- **Local-first** — Food logs, weight history, profile, and Coach chat stay on your device.
-- **Bring your own AI key** — Keys are encrypted on-device. Cloud requests go directly from your device to the provider you choose.
-- **On-Device (Private)** — On Android, opt-in Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
+- **No ads:** No AdMob or other advertising SDKs.
+- **No analytics:** No usage tracking, crash analytics, or telemetry SDKs.
+- **No accounts:** No sign-in, cloud sync, or central user database.
+- **Local storage:** Food logs, weight history, profile, and Coach chat stay on your device.
+- **Bring your own AI key:** Keys are encrypted on-device. Cloud requests go directly from your device to the provider you choose.
+- **On-Device (Private):** On Android, optional Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
 
 ## Web app (PWA)
 
-The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser and stores data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients — move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
+The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser and stores data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients. Move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
 
 ## Data on your device
 
 The Android app stores locally: food entries and photos, weight and body-fat history, optional water log, profile and goals, Coach history, and widget snapshots. The web app stores the equivalent diary, metrics, and settings in the browser.
 
-**Delete All Data** (Settings) wipes app storage only. On Android it does not remove records previously synced to Health Connect — manage those in the Health Connect app.
+**Delete All Data** (Settings) wipes app storage only. On Android it does not remove records previously synced to Health Connect. Manage those in the Health Connect app.
 
 ## Network requests
 
@@ -34,7 +34,7 @@ NoFUD contacts external services only when you use a feature that needs them:
 | AI food analysis / Coach | Meal text, images, or chat context you submit | Your configured AI provider |
 | Barcode scan | Scanned barcode | Open Food Facts public API |
 | Health Connect | Nutrition, weight, body fat, height (write); sleep, HR, hydration, steps, energy (read) if enabled | Google Health Connect on-device |
-| App updates | — | Manual via Codeberg releases |
+| App updates | (none) | Manual via Codeberg releases |
 
 Optional **background sync** (off by default) only reads Health Connect on-device; it sends nothing off the device.
 

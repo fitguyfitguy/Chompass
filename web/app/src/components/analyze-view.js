@@ -76,7 +76,7 @@ export class AnalyzeView extends HTMLElement {
           }
         </div>
         <p id="analyze-status" style="color:var(--muted);font-size:0.85rem;margin:0;">
-          ${this.error ? escapeHtml(this.error) : "Estimates are reviewed before saving — nothing is auto-logged."}
+          ${this.error ? escapeHtml(this.error) : "Estimates are reviewed before saving. Nothing is auto-logged."}
         </p>
         <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary" ${this.busy ? "disabled" : ""}>${this.busy ? "Analyzing…" : "Analyze"}</button>
@@ -150,7 +150,7 @@ export class AnalyzeView extends HTMLElement {
     this.render();
     try {
       const config = await loadProviderKey(/** @type {import('../lib/ai/key-storage.js').ProviderId} */ (this.activeProvider));
-      if (!config) throw new Error("Provider key missing — re-add it in Settings.");
+      if (!config) throw new Error("Provider key missing. Re-add it in Settings.");
       const images = [];
       for (const file of this.files) {
         images.push(await fileToJpegBase64(file));

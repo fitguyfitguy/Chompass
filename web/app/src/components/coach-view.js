@@ -43,8 +43,8 @@ export class CoachView extends HTMLElement {
         <div class="card">
           <h1 class="screen-title">AI Coach</h1>
           <p style="color:var(--muted);font-size:0.9rem;">
-            No AI provider is configured yet. Add a bring-your-own API key in Settings to start chatting —
-            your key stays on this device and is only ever sent directly to the provider you choose.
+            No AI provider is configured yet. Add a bring-your-own API key in Settings to start chatting.
+            Your key stays on this device and is only ever sent directly to the provider you choose.
           </p>
           <a class="btn btn--primary" href="#/settings?section=ai">Go to settings</a>
         </div>`;
@@ -137,7 +137,7 @@ export class CoachView extends HTMLElement {
 
     try {
       const config = await loadProviderKey(this.activeProvider);
-      if (!config) throw new Error("Provider key missing — re-add it in Settings.");
+      if (!config) throw new Error("Provider key missing. Re-add it in Settings.");
       config.model = resolveProviderModel(this.activeProvider, config.model, "primary");
       const image = file ? await fileToJpegBase64(file) : undefined;
       const result = await runCoachTurn({
@@ -184,9 +184,9 @@ function renderBubble(m) {
 function renderProposalCard(tc, index) {
   const label =
     {
-      propose_log_food: `Log "${tc.input.name}" — ${tc.input.calories} kcal (${tc.input.mealType})`,
-      propose_log_weight: `Log weight — ${tc.input.weightKg} kg`,
-      propose_log_water: `Log water — ${tc.input.amountMl} ml`,
+      propose_log_food: `Log "${tc.input.name}": ${tc.input.calories} kcal (${tc.input.mealType})`,
+      propose_log_weight: `Log weight: ${tc.input.weightKg} kg`,
+      propose_log_water: `Log water: ${tc.input.amountMl} ml`,
     }[tc.name] ?? tc.name;
   return `
     <div class="card card--glass proposal-card">
