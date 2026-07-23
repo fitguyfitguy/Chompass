@@ -1,4 +1,5 @@
 {
+  "id": "/NoFUD/app/",
   "name": "NoFUD",
   "short_name": "NoFUD",
   "description": "Ad-free calorie tracker. Installable PWA for any modern browser (Chromium works best).",

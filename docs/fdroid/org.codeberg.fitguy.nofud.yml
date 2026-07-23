@@ -23,6 +23,10 @@ Builds:
       - yes
     gradleprops:
       - releaseAbi=arm64-v8a
+    # PWA lives under web/; Android APK does not use it. Remove before scan —
+    # web/package.json has no lockfile and F-Droid treats that as a hard error.
+    scandelete:
+      - web
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
