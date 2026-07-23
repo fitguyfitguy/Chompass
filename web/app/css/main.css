@@ -1191,6 +1191,123 @@ form.entry-form > button.btn--primary,
   border: 1px solid var(--line);
 }
 
+/* Full-bleed AI analysis wait overlay (Android EntryAnalysisOverlay parity). */
+.analyze-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 2rem 2rem calc(2rem + env(safe-area-inset-bottom));
+  background: var(--bg);
+  text-align: center;
+}
+
+.analyze-overlay__preview {
+  width: min(14rem, 70vw);
+  height: min(14rem, 70vw);
+  object-fit: cover;
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+}
+
+.analyze-overlay__icon {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--kcal);
+  opacity: 0.9;
+}
+
+.analyze-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.analyze-step {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.analyze-step--active {
+  background: color-mix(in srgb, var(--kcal) 22%, transparent);
+}
+
+.analyze-step--done {
+  background: color-mix(in srgb, var(--kcal) 85%, transparent);
+  color: #fff;
+}
+
+.analyze-step__check {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.analyze-step__spin,
+.analyze-overlay__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid color-mix(in srgb, var(--kcal) 35%, transparent);
+  border-top-color: var(--kcal);
+  border-radius: 50%;
+  animation: analyze-spin 0.75s linear infinite;
+}
+
+.analyze-overlay__spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-width: 3px;
+}
+
+.analyze-step__rail {
+  width: 0.75rem;
+  height: 2px;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+  flex-shrink: 0;
+}
+
+.analyze-step__rail--done {
+  background: color-mix(in srgb, var(--kcal) 60%, transparent);
+}
+
+.analyze-overlay__phase {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--kcal);
+}
+
+.analyze-error-actions {
+  margin-top: 0.75rem;
+}
+
+@keyframes analyze-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .analyze-step__spin,
+  .analyze-overlay__spinner {
+    animation: none;
+    border-top-color: var(--kcal);
+    opacity: 0.85;
+  }
+}
+
 .install-banner {
   position: fixed;
   left: 0.75rem;
@@ -1632,6 +1749,12 @@ form.entry-form > button.btn--primary,
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
+}
+
+/* Keep Back tappable above the fixed analyze overlay (abort on leave). */
+.subpage-bar--above-overlay {
+  z-index: 45;
+  background: var(--bg);
 }
 
 .subpage-bar__back {
