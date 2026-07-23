@@ -1,8 +1,12 @@
 package org.codeberg.fitguy.nofud
 
+import android.app.WallpaperManager
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import androidx.core.content.IntentCompat
 import androidx.activity.ComponentActivity
@@ -16,9 +20,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.lifecycleScope
 import org.codeberg.fitguy.nofud.models.FoodEntry
 import org.codeberg.fitguy.nofud.services.AndroidAppIconManager
@@ -32,6 +39,7 @@ import org.codeberg.fitguy.nofud.ui.home.ImportSharedMealSheet
 import org.codeberg.fitguy.nofud.ui.navigation.NoFUDNavHost
 import org.codeberg.fitguy.nofud.ui.theme.AppThemeColor
 import org.codeberg.fitguy.nofud.ui.theme.NoFUDTheme
+import org.codeberg.fitguy.nofud.ui.theme.widgetAccentColors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -42,6 +50,11 @@ open class MainActivity : ComponentActivity() {
     private var pendingSharedMeals by mutableStateOf<List<FoodEntry>>(emptyList())
     private var foregroundSyncJob: Job? = null
     private var lastForegroundSyncAtMs: Long = 0L
+    /** Bumped when Theme Color is System so Compose re-reads Material You schemes. */
+    private var systemPaletteEpoch by mutableIntStateOf(0)
+    private var lastSystemPrimaryArgb: Int? = null
+    private var wallpaperColorsListener: WallpaperManager.OnColorsChangedListener? = null
+    private var systemPaletteRefreshJob: Job? = null
 
     /**
      * Route whatever launched (or re-launched) us: a `fudai://add-meal` link into
@@ -94,6 +107,7 @@ open class MainActivity : ComponentActivity() {
     }
     override fun onStart() {
         super.onStart()
+        registerWallpaperColorsListener()
         val now = SystemClock.elapsedRealtime()
         if (foregroundSyncJob?.isActive == true) return
         if (now - lastForegroundSyncAtMs < FOREGROUND_SYNC_MIN_INTERVAL_MS) return
@@ -110,14 +124,60 @@ open class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStop() {
+        unregisterWallpaperColorsListener()
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
-        val container = (application as NoFUDApp).container
-        lifecycleScope.launch {
-            val themeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
-            if (themeColor.usesSystemPalette) {
+        refreshSystemPalette()
+    }
+
+    /**
+     * When Theme Color is System, re-read Material You primary, refresh the Compose
+     * theme (via [systemPaletteEpoch]), re-map the launcher icon, and rewrite widgets
+     * if the primary hex changed.
+     */
+    private fun refreshSystemPalette() {
+        if (systemPaletteRefreshJob?.isActive == true) return
+        systemPaletteRefreshJob = lifecycleScope.launch {
+            try {
+                val container = (application as NoFUDApp).container
+                val themeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
+                if (!themeColor.usesSystemPalette) return@launch
+                val primaryArgb = themeColor.widgetAccentColors(this@MainActivity).first.toArgb()
+                val primaryChanged = lastSystemPrimaryArgb != null && lastSystemPrimaryArgb != primaryArgb
+                lastSystemPrimaryArgb = primaryArgb
+                systemPaletteEpoch++
                 AndroidAppIconManager.apply(this@MainActivity, themeColor)
+                if (primaryChanged) {
+                    container.widgetSnapshotWriter.refresh()
+                }
+            } finally {
+                systemPaletteRefreshJob = null
             }
+        }
+    }
+
+    private fun registerWallpaperColorsListener() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        if (wallpaperColorsListener != null) return
+        val listener = WallpaperManager.OnColorsChangedListener { _, _ ->
+            refreshSystemPalette()
+        }
+        wallpaperColorsListener = listener
+        WallpaperManager.getInstance(this).addOnColorsChangedListener(
+            listener,
+            Handler(Looper.getMainLooper()),
+        )
+    }
+
+    private fun unregisterWallpaperColorsListener() {
+        val listener = wallpaperColorsListener ?: return
+        wallpaperColorsListener = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            WallpaperManager.getInstance(this).removeOnColorsChangedListener(listener)
         }
     }
 
@@ -181,28 +241,31 @@ open class MainActivity : ComponentActivity() {
             LaunchedEffect(themeColorKey) {
                 AndroidAppIconManager.apply(this@MainActivity, themeColor)
             }
-            NoFUDTheme(
-                darkTheme = darkTheme,
-                themeColor = themeColor,
-                glassBlurEnabled = glassBlurEnabled
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+            val paletteEpoch = systemPaletteEpoch
+            key(themeColorKey, paletteEpoch) {
+                NoFUDTheme(
+                    darkTheme = darkTheme,
+                    themeColor = themeColor,
+                    glassBlurEnabled = glassBlurEnabled
                 ) {
-                    NoFUDNavHost(container = container, startOnboarding = resolvedStartOnboarding)
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        NoFUDNavHost(container = container, startOnboarding = resolvedStartOnboarding)
 
-                    if (pendingSharedMeals.isNotEmpty()) {
-                        ImportSharedMealSheet(
-                            meals = pendingSharedMeals,
-                            onAdd = { meals ->
-                                lifecycleScope.launch {
-                                    meals.forEach { container.foodRepository.addEntry(it) }
-                                }
-                                pendingSharedMeals = emptyList()
-                            },
-                            onDismiss = { pendingSharedMeals = emptyList() }
-                        )
+                        if (pendingSharedMeals.isNotEmpty()) {
+                            ImportSharedMealSheet(
+                                meals = pendingSharedMeals,
+                                onAdd = { meals ->
+                                    lifecycleScope.launch {
+                                        meals.forEach { container.foodRepository.addEntry(it) }
+                                    }
+                                    pendingSharedMeals = emptyList()
+                                },
+                                onDismiss = { pendingSharedMeals = emptyList() }
+                            )
+                        }
                     }
                 }
             }

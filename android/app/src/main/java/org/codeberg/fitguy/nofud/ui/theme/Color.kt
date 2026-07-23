@@ -93,13 +93,55 @@ private val LauncherIconAccents: List<LauncherIconAccent> = listOf(
     LauncherIconAccent(AppThemeColor.NEUTRAL, Color(0xFF8E8E93)),
 )
 
-/** Maps a Material You / wallpaper accent to the closest pre-rendered launcher icon. */
-fun nearestLauncherIconTheme(accent: Color): AppThemeColor =
-    LauncherIconAccents.minBy { (accent.red - it.accent.red) * (accent.red - it.accent.red) +
-        (accent.green - it.accent.green) * (accent.green - it.accent.green) +
-        (accent.blue - it.accent.blue) * (accent.blue - it.accent.blue)
-    }.theme
+private data class Hsl(val h: Float, val s: Float, val l: Float)
 
+private fun Color.toHsl(): Hsl {
+    val r = red
+    val g = green
+    val b = blue
+    val max = maxOf(r, g, b)
+    val min = minOf(r, g, b)
+    val l = (max + min) / 2f
+    if (max == min) return Hsl(0f, 0f, l)
+    val d = max - min
+    val s = if (l > 0.5f) d / (2f - max - min) else d / (max + min)
+    val h = when (max) {
+        r -> ((g - b) / d + if (g < b) 6f else 0f) * 60f
+        g -> ((b - r) / d + 2f) * 60f
+        else -> ((r - g) / d + 4f) * 60f
+    }
+    return Hsl(h, s, l)
+}
+
+private fun hueDistanceDegrees(a: Float, b: Float): Float {
+    val d = kotlin.math.abs(a - b) % 360f
+    return minOf(d, 360f - d)
+}
+
+/**
+ * Maps a Material You / wallpaper accent to the closest pre-rendered launcher icon.
+ * Uses hue/chroma-aware distance so warm Material You primaries do not collapse onto pink.
+ */
+fun nearestLauncherIconTheme(accent: Color): AppThemeColor {
+    val target = accent.toHsl()
+    return LauncherIconAccents.minBy { candidate ->
+        val c = candidate.accent.toHsl()
+        // Near-gray accents: match on saturation + lightness (and RGB), not hue.
+        if (target.s < 0.12f) {
+            val ds = target.s - c.s
+            val dl = target.l - c.l
+            val dr = accent.red - candidate.accent.red
+            val dg = accent.green - candidate.accent.green
+            val db = accent.blue - candidate.accent.blue
+            return@minBy ds * ds * 4f + dl * dl + (dr * dr + dg * dg + db * db) * 0.25f
+        }
+        val dh = hueDistanceDegrees(target.h, c.h) / 180f
+        val ds = target.s - c.s
+        val dl = target.l - c.l
+        // Hue dominates; lightness is secondary so pastel Material You tones still track hue.
+        dh * dh * 5f + ds * ds + dl * dl * 0.35f
+    }.theme
+}
 /** Theme color used for the home-screen launcher icon. */
 fun AppThemeColor.resolveLauncherIconTheme(context: Context): AppThemeColor {
     if (!usesSystemPalette) return this

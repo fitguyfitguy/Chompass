@@ -71,6 +71,22 @@ class WidgetSnapshotWriter(
         .distinctUntilChanged()
         .onEach { (entries, profile, water) -> publish(entries, profile, water) }
 
+    /**
+     * Recompute and publish from current repos/prefs. Used when Theme Color is
+     * System and the Material You primary changes without any pref/diary change
+     * (wallpaper / palette refresh on resume).
+     */
+    suspend fun refresh() {
+        val entries = foodRepository.entries.first()
+        val profile = profileRepository.profile.first()
+        val water = Triple(
+            prefs.waterTrackingEnabled.first(),
+            prefs.waterDailyGoalMl.first(),
+            waterRepository.entries.first(),
+        )
+        publish(entries, profile, water)
+    }
+
     private suspend fun publish(
         entries: List<FoodEntry>,
         profile: UserProfile?,
