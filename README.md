@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="android/app/src/main/res/drawable-nodpi/ic_logo_teal.png" alt="NoFUD icon" width="96" />
+<img src="metadata/en-US/images/icon.png" alt="NoFUD icon" width="96" />
 
 # NoFUD
 
