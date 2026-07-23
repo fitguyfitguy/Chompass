@@ -21,8 +21,6 @@ Builds:
     subdir: android/app
     gradle:
       - yes
-    # PWA lives under web/; Android APK does not use it. Remove before scan —
-    # web/package.json has no lockfile and F-Droid treats that as a hard error.
     scandelete:
       - web
     gradleprops:
