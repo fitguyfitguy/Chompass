@@ -10,7 +10,8 @@ const PORT = Number(process.env.PORT ?? 8787);
 
 const MIME = {
   ".html": "text/html", ".js": "application/javascript", ".css": "text/css",
-  ".json": "application/json", ".webmanifest": "application/manifest+json",
+  ".json": "application/json",
+  ".webmanifest": "application/manifest+json",
   ".png": "image/png", ".svg": "image/svg+xml",
 };
 

@@ -2,12 +2,12 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "nofud-shell-v7";
+const CACHE_NAME = "nofud-shell-v8";
 
 const SHELL_ASSETS = [
   "./",
   "./index.html",
-  "./manifest.webmanifest",
+  "./manifest.json",
   "./css/main.css",
   "./fonts/fonts.css",
   "./fonts/manrope-400.woff2",

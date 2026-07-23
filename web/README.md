@@ -76,18 +76,25 @@ notifications, widgets, full i18n pack, 53-week pager.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v7`.
+Service worker cache: `nofud-shell-v8`.
 
 ### Manual PWA audit checklist
 
-- Manifest: `name` / `short_name` / `start_url`+`scope` under `/NoFUD/app/`,
-  `display: standalone`, icons (any + maskable).
+- Manifest: use `manifest.json` (not `.webmanifest`) so Codeberg
+  git-pages serves `application/json` — Go/`mime.TypeByExtension` does not
+  know `.webmanifest`, so it was `text/plain` + `nosniff` and Chromium could
+  reject installability. Fields: `name` / `short_name` / `start_url`+`scope`
+  under `/NoFUD/app/`, `display: standalone`, icons (any + maskable).
 - Theme color, viewport-fit, apple-touch meta tags.
 - Nav links have visible text; FABs have `aria-label`.
 - SW precaches shell assets; purges other `CACHE_NAME`s; never caches
   cross-origin AI / OFF requests.
 
 **Run a real Lighthouse pass before treating installability as verified.**
+
+**Brave / Chrome Android:** there is usually **no auto install popup**. Use
+the browser menu → **Add to Home screen** / **Install app**. After redeploy,
+confirm live `Content-Type` for `/app/manifest.json` is `application/json`.
 
 Known trade-offs:
 - Barcode fallback for non-Chromium is manual entry (no vendored JS decoder —
