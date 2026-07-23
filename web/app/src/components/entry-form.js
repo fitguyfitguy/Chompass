@@ -10,6 +10,15 @@ export class EntryForm extends HTMLElement {
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
     this.entryId = location.hash.match(/#\/entry\/([^?]+)/)?.[1];
     this.existing = null;
+    this.prefill = null;
+    const prefillRaw = params.get("prefill");
+    if (prefillRaw && (!this.entryId || this.entryId === "new")) {
+      try {
+        this.prefill = JSON.parse(decodeURIComponent(prefillRaw));
+      } catch {
+        this.prefill = null;
+      }
+    }
     this.render();
   }
 
@@ -18,11 +27,11 @@ export class EntryForm extends HTMLElement {
       const all = await foodEntries.byDate(this.date);
       this.existing = all.find((e) => e.id === this.entryId) ?? null;
     }
-    const e = this.existing ?? {};
+    const e = this.existing ?? this.prefill ?? {};
 
     this.innerHTML = `
       <h1 style="font-family:var(--font-display);font-size:1.4rem;margin:0 0 1rem;">
-        ${this.existing ? "Edit entry" : "Log food"}
+        ${this.existing ? "Edit entry" : this.prefill ? "Review & confirm" : "Log food"}
       </h1>
       <form class="entry-form">
         <div class="field">
@@ -97,7 +106,7 @@ export class EntryForm extends HTMLElement {
       proteinG: Number(fd.get("proteinG") || 0),
       carbsG: Number(fd.get("carbsG") || 0),
       fatG: Number(fd.get("fatG") || 0),
-      source: this.existing ? "manual" : "manual",
+      source: this.existing?.source ?? this.prefill?.source ?? "manual",
       note: fd.get("note") ? String(fd.get("note")) : null,
       grounding: this.existing?.grounding ?? null,
     };

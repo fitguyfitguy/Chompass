@@ -120,4 +120,7 @@ export const keys = {
   async delete(id) {
     return (await store("keys")).delete(id);
   },
+  async all() {
+    return (await store("keys")).getAll();
+  },
 };

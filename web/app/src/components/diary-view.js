@@ -87,12 +87,16 @@ export class DiaryView extends HTMLElement {
               )
               .join("")
       }
+      <button class="fab fab--secondary" aria-label="Scan barcode" data-action="scan">▤</button>
       <button class="fab" aria-label="Add food entry" data-action="add">+</button>
     `;
 
     this.querySelector('[data-action="prev"]').addEventListener("click", () => this.go(-1));
     this.querySelector('[data-action="next"]').addEventListener("click", () => this.go(1));
     this.querySelector('[data-action="add"]').addEventListener("click", () => this.openEntryForm());
+    this.querySelector('[data-action="scan"]').addEventListener("click", () => {
+      location.hash = `#/scan?date=${this.date}`;
+    });
     this.querySelectorAll("[data-entry-id]").forEach((el) => {
       el.addEventListener("click", () => {
         const entry = entries.find((e) => e.id === el.getAttribute("data-entry-id"));
