@@ -14,6 +14,7 @@ import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-met
 import { PROVIDERS } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../lib/ai/key-storage.js";
 import { openConfirm } from "../lib/ui/dialog.js";
+import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 
 const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
 const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
@@ -42,35 +43,33 @@ export class SettingsView extends HTMLElement {
       return;
     }
 
-    const back = `<p style="margin:0 0 0.8rem;"><a href="#/settings">← Settings</a></p>`;
     if (this.section === "profile") {
-      await this.renderProfile(back);
+      await this.renderProfile();
       return;
     }
     if (this.section === "goals") {
-      await this.renderGoals(back);
+      await this.renderGoals();
       return;
     }
     if (this.section === "units") {
-      await this.renderUnits(back);
+      await this.renderUnits();
       return;
     }
     if (this.section === "home") {
-      await this.renderHome(back);
+      await this.renderHome();
       return;
     }
     if (this.section === "data") {
-      await this.renderData(back);
+      await this.renderData();
       return;
     }
     if (this.section === "ai") {
-      await this.renderAi(back);
+      await this.renderAi();
       return;
     }
     if (this.section === "about") {
       this.innerHTML = `
-        ${back}
-        <h1 class="screen-title">About &amp; methods</h1>
+        ${subpageBar("About & methods", { backHref: "#/settings" })}
         <div class="card">
           <p style="margin:0 0 0.6rem;">NoFUD companion PWA — local-first, no analytics. Compatible with the Android app's diary and body-metrics JSON.</p>
           <p style="margin:0;color:var(--muted);font-size:0.9rem;">
@@ -78,6 +77,7 @@ export class SettingsView extends HTMLElement {
             mirror <code>docs/CALCULATION_METHODS.md</code>. AI estimates are reviewed before save.
           </p>
         </div>`;
+      bindSubpageBack(this, "#/settings");
       return;
     }
     this.section = "hub";
@@ -102,7 +102,7 @@ export class SettingsView extends HTMLElement {
     );
   }
 
-  async renderProfile(back) {
+  async renderProfile() {
     const p = await this.loadProfile();
     const appPrefs = await prefs.load();
     const heightLabel = appPrefs.heightUnit === "in" ? "Height in" : "Height cm";
@@ -111,8 +111,7 @@ export class SettingsView extends HTMLElement {
     const weightVal = appPrefs.weightUnit === "lb" ? (p.weightKg * 2.20462).toFixed(1) : p.weightKg;
 
     this.innerHTML = `
-      ${back}
-      <h1 class="screen-title">Profile</h1>
+      ${subpageBar("Profile", { backHref: "#/settings" })}
       <form class="entry-form card" id="profile-form">
         <div class="field-row">
           <div class="field">
@@ -166,14 +165,14 @@ export class SettingsView extends HTMLElement {
       });
       location.hash = "#/settings";
     });
+    bindSubpageBack(this, "#/settings");
   }
 
-  async renderGoals(back) {
+  async renderGoals() {
     const p = await this.loadProfile();
     const targets = dailyTargets(p);
     this.innerHTML = `
-      ${back}
-      <h1 class="screen-title">Goals &amp; diet</h1>
+      ${subpageBar("Goals & diet", { backHref: "#/settings" })}
       <form class="entry-form card" id="goals-form">
         <div class="field-row">
           <div class="field">
@@ -239,13 +238,13 @@ export class SettingsView extends HTMLElement {
       await profileStore.save({ ...p, customCalories: null });
       this.render();
     });
+    bindSubpageBack(this, "#/settings");
   }
 
-  async renderUnits(back) {
+  async renderUnits() {
     const p = await prefs.load();
     this.innerHTML = `
-      ${back}
-      <h1 class="screen-title">Units &amp; appearance</h1>
+      ${subpageBar("Units & appearance", { backHref: "#/settings" })}
       <form class="entry-form card" id="units-form">
         <div class="field-row">
           <div class="field">
@@ -289,13 +288,13 @@ export class SettingsView extends HTMLElement {
       window.dispatchEvent(new Event("nofud-prefs-changed"));
       location.hash = "#/settings";
     });
+    bindSubpageBack(this, "#/settings");
   }
 
-  async renderHome(back) {
+  async renderHome() {
     const p = await prefs.load();
     this.innerHTML = `
-      ${back}
-      <h1 class="screen-title">Home display</h1>
+      ${subpageBar("Home display", { backHref: "#/settings" })}
       <form class="entry-form card" id="home-form">
         <div class="field">
           <label for="showWater">Show water row</label>
@@ -335,12 +334,12 @@ export class SettingsView extends HTMLElement {
       });
       location.hash = "#/settings";
     });
+    bindSubpageBack(this, "#/settings");
   }
 
-  async renderData(back) {
+  async renderData() {
     this.innerHTML = `
-      ${back}
-      <h1 class="screen-title">Data</h1>
+      ${subpageBar("Data", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Same JSON format as the Android app — move data freely between the two.
@@ -375,13 +374,13 @@ export class SettingsView extends HTMLElement {
       await clearAllUserData();
       location.hash = "#/onboarding";
     });
+    bindSubpageBack(this, "#/settings");
   }
 
-  async renderAi(back) {
+  async renderAi() {
     const configuredProviders = await listConfiguredProviders();
     this.innerHTML = `
-      ${back}
-      <h1 class="screen-title">AI keys</h1>
+      ${subpageBar("AI keys", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Keys are encrypted at rest and only sent directly from your browser to the provider.
@@ -418,6 +417,7 @@ export class SettingsView extends HTMLElement {
       </div>`;
     this.querySelector("#ai-key-form")?.addEventListener("submit", (ev) => this.onSaveAiKey(ev));
     this.querySelector("#ai-key-remove")?.addEventListener("click", () => this.onRemoveAiKey());
+    bindSubpageBack(this, "#/settings");
   }
 
   async onSaveAiKey(ev) {

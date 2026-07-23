@@ -12,6 +12,7 @@ import { trapFocus } from "./focus-trap.js";
 
 /**
  * Open a bottom sheet with scrim. Returns a controller.
+ * Supports Escape, scrim click, and vertical drag-to-dismiss (~80px).
  * @param {SheetOptions} opts
  */
 export function openSheet(opts) {
@@ -84,6 +85,8 @@ export function openSheet(opts) {
     }
   };
 
+  bindDragDismiss(panel, handle, dismiss);
+
   scrim.addEventListener("click", dismiss);
   document.addEventListener("keydown", onKey);
   requestAnimationFrame(() => host.classList.add("is-open"));
@@ -95,4 +98,77 @@ export function openSheet(opts) {
     body: bodyWrap,
     close: dismiss,
   };
+}
+
+/**
+ * @param {HTMLElement} panel
+ * @param {HTMLElement} handle
+ * @param {() => void} dismiss
+ */
+function bindDragDismiss(panel, handle, dismiss) {
+  let startY = 0;
+  let dy = 0;
+  let dragging = false;
+  /** @type {number | null} */
+  let pointerId = null;
+
+  const setOffset = (y) => {
+    panel.style.transition = "none";
+    panel.style.transform = `translateY(${Math.max(0, y)}px)`;
+  };
+
+  const clearOffset = () => {
+    panel.style.transition = "";
+    panel.style.transform = "";
+  };
+
+  /** @param {PointerEvent} ev */
+  const onDown = (ev) => {
+    if (ev.pointerType === "mouse" && ev.button !== 0) return;
+    const fromHandle = handle.contains(/** @type {Node} */ (ev.target));
+    if (!fromHandle && panel.scrollTop > 0) return;
+    // Ignore interactive controls inside the body unless dragging the handle.
+    if (!fromHandle && /** @type {Element} */ (ev.target).closest("button, a, input, textarea, select, label")) {
+      return;
+    }
+    dragging = true;
+    pointerId = ev.pointerId;
+    startY = ev.clientY;
+    dy = 0;
+    try {
+      panel.setPointerCapture(ev.pointerId);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  /** @param {PointerEvent} ev */
+  const onMove = (ev) => {
+    if (!dragging || ev.pointerId !== pointerId) return;
+    dy = ev.clientY - startY;
+    if (dy > 8) {
+      ev.preventDefault();
+      setOffset(dy);
+    }
+  };
+
+  /** @param {PointerEvent} ev */
+  const onUp = (ev) => {
+    if (!dragging || ev.pointerId !== pointerId) return;
+    dragging = false;
+    pointerId = null;
+    if (dy > 80) {
+      dismiss();
+      return;
+    }
+    clearOffset();
+  };
+
+  handle.style.touchAction = "none";
+  handle.style.cursor = "grab";
+  handle.addEventListener("pointerdown", onDown);
+  panel.addEventListener("pointerdown", onDown);
+  panel.addEventListener("pointermove", onMove);
+  panel.addEventListener("pointerup", onUp);
+  panel.addEventListener("pointercancel", onUp);
 }

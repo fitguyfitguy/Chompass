@@ -2,13 +2,14 @@
 import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import { analyzeFoodEntry } from "../lib/ai/food-analyze.js";
-import { foodEntries } from "../lib/db.js";
+import { recentFoods } from "../lib/recent-foods.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 
 export class AnalyzeView extends HTMLElement {
   async connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
+    this.mode = params.get("mode") === "note" ? "note" : "photo";
     this.providers = await listConfiguredProviders();
     this.activeProvider = this.providers[0] ?? null;
     this.previewUrl = null;
@@ -24,10 +25,11 @@ export class AnalyzeView extends HTMLElement {
 
   async render() {
     const recents = await recentFoods(12);
+    const title = this.mode === "note" ? "Describe food" : "Photo AI";
 
     if (!this.activeProvider) {
       this.innerHTML = `
-        ${subpageBar("Photo / text AI", { backHref: "#/home" })}
+        ${subpageBar(title, { backHref: "#/home" })}
         <div class="card">
           <p style="color:var(--muted);margin:0 0 0.8rem;">Add a BYOK API key in Settings to analyze food.</p>
           <a class="btn btn--primary" href="#/settings">Go to settings</a>
@@ -37,15 +39,15 @@ export class AnalyzeView extends HTMLElement {
     }
 
     this.innerHTML = `
-      ${subpageBar("Log with AI", { backHref: "#/home" })}
+      ${subpageBar(title, { backHref: "#/home" })}
       ${this.previewUrl ? `<img class="analyze-preview" src="${this.previewUrl}" alt="Selected food photo" />` : ""}
-      <form class="entry-form card" id="analyze-form">
-        <div class="field">
-          <label for="photo">Photo (optional)</label>
+      <form class="entry-form card analyze-mode--${this.mode}" id="analyze-form">
+        <div class="field analyze-photo-field">
+          <label for="photo">${this.mode === "photo" ? "Photo" : "Photo (optional)"}</label>
           <input id="photo" name="photo" type="file" accept="image/*" capture="environment" />
         </div>
-        <div class="field">
-          <label for="note">Describe the food</label>
+        <div class="field analyze-note-field">
+          <label for="note">${this.mode === "note" ? "Describe the food" : "Note (optional)"}</label>
           <textarea id="note" name="note" rows="3" placeholder="e.g. bowl of oatmeal with banana and peanut butter"></textarea>
         </div>
         <p id="analyze-status" style="color:var(--muted);font-size:0.85rem;margin:0;">
@@ -64,7 +66,7 @@ export class AnalyzeView extends HTMLElement {
                    (r) => `
                  <button type="button" data-recent='${escapeAttr(JSON.stringify(r))}'>
                    <strong>${escapeHtml(r.name)}</strong><br/>
-                   <span style="color:var(--muted);font-size:0.82rem;">${Math.round(r.calories)} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
+                   <span class="recents-meta">${Math.round(r.calories)} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
                  </button>`
                  )
                  .join("")}
@@ -74,6 +76,15 @@ export class AnalyzeView extends HTMLElement {
     `;
 
     bindSubpageBack(this, "#/home");
+
+    if (this.mode === "note") {
+      requestAnimationFrame(() => {
+        /** @type {HTMLTextAreaElement | null} */
+        const note = this.querySelector("#note");
+        note?.focus();
+      });
+    }
+
     this.querySelector("#photo")?.addEventListener("change", (ev) => {
       const input = /** @type {HTMLInputElement} */ (ev.target);
       const file = input.files?.[0];
@@ -99,7 +110,7 @@ export class AnalyzeView extends HTMLElement {
     const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
     const text = String(fd.get("note") || "").trim();
     if (!text && !this.file) {
-      this.error = "Add a photo or a short description.";
+      this.error = this.mode === "note" ? "Add a short description." : "Add a photo or a short description.";
       this.render();
       return;
     }
@@ -123,32 +134,6 @@ export class AnalyzeView extends HTMLElement {
       this.render();
     }
   }
-}
-
-/** @param {number} limit */
-async function recentFoods(limit) {
-  const all = await foodEntries.all();
-  /** @type {Map<string, any>} */
-  const byName = new Map();
-  const sorted = all.slice().sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`));
-  for (const e of sorted) {
-    const key = e.name.trim().toLowerCase();
-    if (!key || byName.has(key)) continue;
-    byName.set(key, {
-      name: e.name,
-      calories: e.calories,
-      proteinG: e.proteinG,
-      carbsG: e.carbsG,
-      fatG: e.fatG,
-      fiberG: e.fiberG ?? null,
-      quantityG: e.quantityG ?? null,
-      mealType: e.mealType,
-      source: "manual",
-      note: null,
-    });
-    if (byName.size >= limit) break;
-  }
-  return [...byName.values()];
 }
 
 function escapeHtml(s) {

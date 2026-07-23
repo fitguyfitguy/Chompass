@@ -3,7 +3,7 @@ import { weights, foodEntries, profile as profileStore, bodyFat, prefs } from ".
 import { dailyTargets } from "../lib/nofud-core/formulas.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/nofud-core/forecast.js";
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
-import { openInput } from "../lib/ui/dialog.js";
+import { openInput, openConfirm } from "../lib/ui/dialog.js";
 
 const RANGES = [
   { id: "1W", label: "1W", days: 7 },
@@ -98,7 +98,7 @@ export class ProgressView extends HTMLElement {
         ).join("")}
       </div>
 
-      <div class="card">
+      <div class="card card--glass">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <h2 class="chart-title" style="margin:0;">Weight (${weightUnit})</h2>
           <button type="button" class="chip progress-log-btn" data-log-weight>Log weight</button>
@@ -137,7 +137,7 @@ export class ProgressView extends HTMLElement {
         }
       </div>
 
-      <div class="card">
+      <div class="card card--glass">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <h2 class="chart-title" style="margin:0;">Body fat %</h2>
           <button type="button" class="chip progress-log-btn" data-log-bf>Log body fat</button>
@@ -171,12 +171,12 @@ export class ProgressView extends HTMLElement {
         }
       </div>
 
-      <div class="card">
+      <div class="card card--glass">
         <h2 class="chart-title">Calories${targets ? ` · target ${targets.calories}` : ""}</h2>
         ${barChartSvg(calorieBars, { target: targets?.calories ?? null })}
       </div>
 
-      <div class="card">
+      <div class="card card--glass">
         <h2 class="chart-title">Macro averages (range)</h2>
         <div class="stat-badges">
           <div class="stat-badge" style="color:var(--protein)"><strong>${macroAvg("proteinG").toFixed(0)} g</strong>Protein</div>
@@ -187,7 +187,7 @@ export class ProgressView extends HTMLElement {
 
       ${
         forecast
-          ? `<div class="card">
+          ? `<div class="card card--glass">
               <h2 class="chart-title">Weight forecast</h2>
               <p style="margin:0 0 0.4rem;font-size:0.9rem;">
                 Predicted ${forecast.predictedWeeklyChangeKg >= 0 ? "+" : ""}${forecast.predictedWeeklyChangeKg.toFixed(2)} kg/wk
@@ -267,12 +267,26 @@ export class ProgressView extends HTMLElement {
     });
     this.querySelectorAll("[data-del-weight]").forEach((btn) => {
       btn.addEventListener("click", async () => {
+        const ok = await openConfirm({
+          title: "Delete weight",
+          message: "Remove this weight entry?",
+          confirmLabel: "Delete",
+          danger: true,
+        });
+        if (!ok) return;
         await weights.delete(btn.getAttribute("data-del-weight"));
         this.render();
       });
     });
     this.querySelectorAll("[data-del-bf]").forEach((btn) => {
       btn.addEventListener("click", async () => {
+        const ok = await openConfirm({
+          title: "Delete body fat",
+          message: "Remove this body fat entry?",
+          confirmLabel: "Delete",
+          danger: true,
+        });
+        if (!ok) return;
         await bodyFat.delete(btn.getAttribute("data-del-bf"));
         this.render();
       });

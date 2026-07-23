@@ -48,20 +48,21 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 | Area | Notes |
 |------|--------|
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
-| Home | Week strip, glass calorie hero, day swipe, macro fills, water bar, Add Food sheet |
-| Entry | Manual, barcode, photo/text AI → review form; fiber; recents; subpage chrome |
-| Progress | Ranges, log weight/BF dialogs, bars, history, forecast, measurements |
-| Settings | Sectioned prefs, units/theme, onboarding gate, import/export/clear dialog |
+| Home | Semicircle gauge, vertical macro tubes, meal glass cards, week prev/next, day swipe, water, Add Food sheet |
+| Food rows | Overflow sheet (edit / meal / duplicate / delete), swipe-left delete + undo, swipe-right duplicate |
+| Entry | Manual, barcode, photo/text AI → review form; fiber; Recents nested sheet; subpage chrome |
+| Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements |
+| Settings | Sectioned prefs with shared subpageBar, units/theme, onboarding gate, import/export/clear dialog |
 | Coach | Broader read tools, persistent chat, glass proposals, SVG camera |
-| UI polish | Bottom sheets + glass dialogs (no native prompt/confirm); Manrope; reduced-motion |
+| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
-notifications, widgets, full i18n pack.
+notifications, widgets, full i18n pack, favorites store, 53-week pager, Saved Meals tabs.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v4`.
+Service worker cache: `nofud-shell-v5`.
 
 ### Manual PWA audit checklist
 
