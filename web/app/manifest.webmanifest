@@ -1,0 +1,16 @@
+{
+  "name": "NoFUD",
+  "short_name": "NoFUD",
+  "description": "Privacy-first, ad-free, BYOK AI calorie tracker — companion web app.",
+  "start_url": "/NoFUD/app/",
+  "scope": "/NoFUD/app/",
+  "display": "standalone",
+  "background_color": "#121116",
+  "theme_color": "#006b5e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,309 @@
+/* Shares design tokens with website/assets/css/main.css (Hugo marketing
+   site) for visual continuity — same palette/fonts, app-specific layout. */
+:root {
+  --teal: #5cc48f;
+  --teal-deep: #006b5e;
+  --teal-ink: #003731;
+  --bg: #121116;
+  --bg-elevated: #1c1b1f;
+  --surface: #24232a;
+  --text: #e6e1e5;
+  --muted: #a9a4ad;
+  --line: rgba(230, 225, 229, 0.12);
+  --focus: #a7f0c8;
+  --danger: #e08585;
+  --radius: 1rem;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --nav-h: 4.25rem;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #faf9f7;
+    --bg-elevated: #ffffff;
+    --surface: #f1efec;
+    --text: #1c1b1f;
+    --muted: #5c5964;
+    --line: rgba(28, 27, 31, 0.12);
+    --teal-ink: #eafff3;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg);
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--teal); }
+
+button, input, select {
+  font-family: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  padding-top: calc(0.9rem + env(safe-area-inset-top));
+  background: rgba(18, 17, 22, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (prefers-color-scheme: light) {
+  .app-header { background: rgba(250, 249, 247, 0.85); }
+}
+
+.app-header h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+main.view {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.9rem;
+}
+
+.day-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.day-nav button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.day-nav__label {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.totals-ring {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.totals-ring strong {
+  display: block;
+  font-size: 1.3rem;
+  font-family: var(--font-display);
+}
+
+.totals-ring span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.meal-group h2 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 1.3rem 0 0.5rem;
+}
+
+.food-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+  text-align: left;
+}
+
+.food-item:last-child { border-bottom: none; }
+
+.food-item__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.food-item__meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.food-item__cals {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.empty-state {
+  color: var(--muted);
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.95rem;
+}
+
+.fab {
+  position: fixed;
+  right: 1.1rem;
+  bottom: calc(var(--nav-h) + 1rem + env(safe-area-inset-bottom));
+  z-index: 25;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--teal);
+  color: var(--teal-ink);
+  font-size: 1.6rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: grid;
+  grid-auto-flow: column;
+  height: var(--nav-h);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--line);
+}
+
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.bottom-nav a[aria-current="page"] { color: var(--teal); }
+
+.bottom-nav .icon { font-size: 1.3rem; }
+
+form.entry-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.field { display: grid; gap: 0.3rem; }
+
+.field label {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  font-size: 1rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.7rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--primary { background: var(--teal); color: var(--teal-ink); }
+.btn--ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+.btn--danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+
+.btn-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.install-banner {
+  position: fixed;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: calc(var(--nav-h) + 0.75rem + env(safe-area-inset-bottom));
+  z-index: 35;
+  background: var(--bg-elevated);
+  border: 1px solid color-mix(in srgb, var(--teal) 40%, var(--line));
+  border-radius: var(--radius);
+  padding: 0.8rem 0.9rem;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: space-between;
+}
+
+.install-banner button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+}

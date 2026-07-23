@@ -11,7 +11,7 @@
     googleTVAddOns.enable = false;
   };
 
-  packages = [ pkgs.android-tools pkgs.hugo ];
+  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.nodePackages.typescript ];
 
   enterShell = ''
     mkdir -p android
@@ -25,6 +25,9 @@
   scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
   scripts.site-build.exec = "hugo --minify -s website";
   scripts.site-deploy.exec = "./scripts/deploy_pages.sh";
+  scripts.pwa-test.exec = "cd web && node --test app/src/lib/nofud-core/__tests__/*.test.js";
+  scripts.pwa-typecheck.exec = "cd web && tsc --checkJs --noEmit -p tsconfig.json";
+  scripts.pwa-serve.exec = "node web/serve.mjs";
 
   tasks."build:debug" = {
     exec = "cd android && ./gradlew :app:assembleDebug";
