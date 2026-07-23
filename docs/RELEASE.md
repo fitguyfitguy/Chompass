@@ -22,7 +22,7 @@ cp keystore.properties.template keystore.properties
 
 ## Build and package
 
-One command runs tests, builds release APKs, copies 4 APKs to the repo root, and writes `SHA256SUMS`:
+One command runs tests, builds release APKs, copies the **universal** APK to the repo root, and writes `SHA256SUMS`:
 
 ```bash
 devenv tasks run release:package
@@ -42,12 +42,7 @@ Useful flags:
 ./scripts/package_release.sh --check-metadata    # also verify CHANGELOG + fdroid metadata
 ```
 
-For a local single-ABI smoke-test release (not for publishing):
-
-```bash
-devenv shell bash -lc 'cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assembleRelease'
-```
-
+Codeberg uploads **universal only** (`NoFUD-fdroid-<version>.apk` + `SHA256SUMS`). Per-ABI splits may still be built locally but are not published.
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
@@ -81,41 +76,35 @@ Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/downloa
 
 ### Codeberg storage quota
 
-Codeberg applies a combined quota for **releases, packages, LFS, and attachments** (default **1.5 GiB** per user/org, separate from the 750 MiB git-repo limit). Eight signed APKs per release are ~250 MB, so accumulated release history can hit the cap.
+Codeberg applies a combined quota for **releases, packages, LFS, and attachments** (default **1.5 GiB** per user/org, separate from the 750 MiB git-repo limit).
+
+**Policy:** keep **only the latest** Codeberg release, and attach **universal APK + `SHA256SUMS` only** (no per-ABI splits, no release screenshots by default).
 
 **Symptoms:** `quota exceeded` from `tea`, or a release page with only some APKs attached.
 
-**Before publishing**, check attachment usage:
+**Before publishing**, check attachment usage and drop older releases:
 
 ```bash
 ./scripts/manage_release_assets.sh list
+./scripts/manage_release_assets.sh keep-latest -y
 ```
 
-**Free space** by removing old per-ABI split APKs (universal APKs and `SHA256SUMS` stay; enough for direct installs and F-Droid):
+**On the kept release**, drop leftover ABI splits / play-flavor APKs if any:
 
 ```bash
-./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0   # dry-run first with --dry-run
-```
-
-**Free more space** by removing disabled **play-flavor** APKs (`NoFUD-play-*`). F-Droid and legacy universal APKs are kept:
-
-```bash
-./scripts/manage_release_assets.sh prune-play-assets --dry-run
+./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y
 ./scripts/manage_release_assets.sh prune-play-assets -y
 ```
 
-See [`DISTRIBUTION.md`](DISTRIBUTION.md).
-
-**Publish** uploads in batches (release APKs → checksums). If a run stops mid-way, resume without recreating the release:
+**Publish** uploads universal APK → checksums. If a run stops mid-way, resume without recreating the release:
 
 ```bash
 ./scripts/publish_release.sh 1.10.0 --assets-only
 ```
 
-**Screenshots:** `--with-screenshots` adds ~10 PNGs on top of the APK set. Prefer committing `docs/screenshots/` for the README and skip attaching screenshots to Codeberg unless you have headroom.
+**Screenshots:** `--with-screenshots` adds ~10 PNGs. Prefer committing `docs/screenshots/` for the README and skip attaching screenshots to Codeberg.
 
 **Need more quota?** Libre projects can request an increase (no payment): [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests). Check current usage under user/org settings on Codeberg.
-
 ## Release screenshots (optional)
 
 JVM-based Compose screenshot previews render on the maintainer machine inside devenv. No phone or adb required.

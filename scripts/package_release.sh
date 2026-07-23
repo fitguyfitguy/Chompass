@@ -102,11 +102,10 @@ if [[ "$SKIP_BUILD" -eq 0 ]]; then
   run_in_devenv 'cd android && ./gradlew :app:assembleRelease'
 fi
 
+# Codeberg quota policy: ship only the universal APK (+ SHA256SUMS).
+# Per-ABI splits may still be produced by Gradle; they are not packaged/uploaded.
 declare -a ASSETS=(
   "universal|android/app/build/outputs/apk/release/app-universal-release.apk|NoFUD-fdroid-${VERSION}.apk"
-  "arm64-v8a|android/app/build/outputs/apk/release/app-arm64-v8a-release.apk|NoFUD-fdroid-${VERSION}-arm64-v8a.apk"
-  "armeabi-v7a|android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk|NoFUD-fdroid-${VERSION}-armeabi-v7a.apk"
-  "x86_64|android/app/build/outputs/apk/release/app-x86_64-release.apk|NoFUD-fdroid-${VERSION}-x86_64.apk"
 )
 
 declare -a DEST_FILES=()
@@ -126,8 +125,9 @@ for entry in "${ASSETS[@]}"; do
   echo "  $rel"
 done
 if [[ "$MISSING" -ne 0 ]]; then
-  echo "One or more APK outputs are missing. For a single-ABI smoke test, rebuild with:" >&2
-  echo "  cd android && ./gradlew -PreleaseAbi=arm64-v8a :app:assembleRelease" >&2
+  echo "Universal release APK missing. Rebuild with:" >&2
+  echo "  cd android && ./gradlew :app:assembleRelease" >&2
+  echo "  # local single-ABI smoke test only: -PreleaseAbi=arm64-v8a" >&2
   exit 1
 fi
 
@@ -153,9 +153,9 @@ Next steps:
        git push origin v${VERSION}
   4. Publish to Codeberg (also redeploys Codeberg Pages):
        export CODEBERG_TOKEN='...'
-       ./scripts/manage_release_assets.sh list    # check quota headroom
+       ./scripts/manage_release_assets.sh list
+       ./scripts/manage_release_assets.sh keep-latest -y   # delete older releases
        ./scripts/publish_release.sh ${VERSION}
-       # if quota exceeded: prune old ABI splits, then --assets-only
        # skip site redeploy: ./scripts/publish_release.sh ${VERSION} --skip-pages
 
 Optional metadata guard before tagging:

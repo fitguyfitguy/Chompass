@@ -21,7 +21,7 @@ The former **`play` product flavor** (Google Play Core in-app review, in-app upd
 | Goal | Gradle task | Release artifact (packaged name) |
 |------|-------------|----------------------------------|
 | Debug | `:app:assembleDebug` | - |
-| Release | `:app:assembleRelease` | `NoFUD-fdroid-<version>.apk` (+ ABI splits) |
+| Release | `:app:assembleRelease` | `NoFUD-fdroid-<version>.apk` (universal only on Codeberg) |
 
 Inside devenv:
 
@@ -55,12 +55,13 @@ On-device LLM (`litertlm-android`) is bundled in this build; whether F-Droid acc
 
 ## Reclaim Codeberg quota
 
-Historical releases may still attach **`NoFUD-play-*` APKs** from when both flavors were published. Remove them to free attachment quota (typically ~30–50 MB per release, more when ABI splits were attached):
+**Policy:** one latest release; universal APK + `SHA256SUMS` only.
 
 ```bash
 ./scripts/manage_release_assets.sh list
-./scripts/manage_release_assets.sh prune-play-assets --dry-run
-./scripts/manage_release_assets.sh prune-play-assets -y
+./scripts/manage_release_assets.sh keep-latest -y
+./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y   # if splits linger on the kept release
+./scripts/manage_release_assets.sh prune-play-assets -y           # leftover NoFUD-play-* if any
 ```
 
-Keeps `NoFUD-fdroid-*`, legacy `NoFUD-<version>.apk`, and `SHA256SUMS`. Old `SHA256SUMS` files may still list play APK hashes until the next release repackages checksums.
+See [`RELEASE.md`](RELEASE.md#codeberg-storage-quota).
