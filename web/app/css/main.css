@@ -278,6 +278,31 @@ main.view {
   object-fit: cover;
 }
 
+.chart-title {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-label {
+  font-size: 8px;
+  fill: var(--muted);
+  font-family: var(--font-body);
+}
+
+.chart-empty {
+  font-size: 11px;
+  fill: var(--muted);
+}
+
 .bottom-nav {
   position: fixed;
   left: 0;

@@ -51,6 +51,9 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
   and camera scanning via the `BarcodeDetector` API, with a manual
   digit-entry fallback for browsers that lack it (Firefox, Safari) instead
   of vendoring a JS decoder — see the scope note in `barcode-scanner.js`.
+- `app/src/lib/charts.js` + `progress-view.js` — hand-rolled inline-SVG line
+  charts (no canvas/chart library) for weight and 30-day calorie/macro
+  trends, reading straight from IndexedDB.
 - `serve.mjs` — zero-dependency static file server for local testing.
 
 ## Status
@@ -59,13 +62,37 @@ Implemented: app shell + manifest + service worker (Phase 0), diary CRUD over
 IndexedDB (Phase 1), the nofud-core data-compatibility layer with golden/
 parity tests plus Settings import/export and TDEE display (Phase 2), BYOK AI
 coach with encrypted key storage, tool-calling loop, and photo attachment
-(Phase 3), and barcode scanning with Open Food Facts lookup (Phase 4) — all
-routing proposed/scanned data through the existing entry-form review screen
-so nothing is ever auto-committed.
+(Phase 3), barcode scanning with Open Food Facts lookup (Phase 4), and
+Phase 5 polish: progress charts, service worker precache list extended to
+cover every Phase 3-5 module (bumped to `nofud-shell-v2` so returning
+installs purge the stale v1 cache), and a manual PWA/accessibility audit
+(below) — all proposed/scanned data still routes through the existing
+entry-form review screen so nothing is ever auto-committed.
 
-Not yet implemented: PWA polish/Lighthouse pass (Phase 5) — icon/offline
-audit is done but no formal Lighthouse run yet, and there are no progress
-charts — and deploy wiring into `scripts/deploy_pages.sh` (Phase 6).
+Not yet implemented: deploy wiring into `scripts/deploy_pages.sh` (Phase 6).
+
+### Manual PWA audit (Phase 5, in lieu of a real Lighthouse run)
+
+No browser was available in this session to run an actual Lighthouse audit;
+instead I checked `manifest.webmanifest`, `index.html`, and `sw.js` by hand
+against Lighthouse's PWA/installability/best-practices criteria:
+
+- Manifest has `name`/`short_name`/`description`, `start_url`+`scope` under
+  `/NoFUD/app/`, `display: "standalone"`, `background_color`, `theme_color`,
+  and both an "any" 192/512 icon pair and a dedicated maskable 512 icon —
+  all present, all pass.
+- `<meta name="theme-color">`, `viewport-fit=cover`, `apple-touch-icon`,
+  `apple-mobile-web-app-*` tags, and `<html lang="en">` are all present.
+- Every nav-reachable button/link has visible text or an `aria-label`
+  (checked the FABs and bottom-nav icons specifically).
+- Service worker precaches the full current asset list and purges any
+  `CACHE_NAME` other than the active one on `activate`; cross-origin
+  requests (AI providers, Open Food Facts) are explicitly never cached.
+
+**Run a real Lighthouse pass before shipping** — this manual check catches
+missing/malformed manifest fields and obvious a11y gaps, not runtime issues
+like actual color-contrast ratios, real installability prompts, or true
+offline behavior across routes.
 
 Known scope trade-offs (deliberate, not oversights):
 - Barcode fallback for non-Chromium browsers is manual entry, not a full
@@ -75,10 +102,13 @@ Known scope trade-offs (deliberate, not oversights):
   REST shapes directly; they haven't been exercised against live API keys
   in this session (no network credentials available here) — verify with a
   real key before relying on them.
+- The Web Crypto non-extractable-key fallback for older/incognito contexts
+  (noted as an open item in the original plan) isn't implemented — key
+  storage currently assumes non-extractable `CryptoKey` persistence works.
 - `tsc --checkJs` has been configured (`pwa-typecheck` / `web/package.json`)
   but not actually run — needs a `devenv shell` reload to pick up the newly
   added `pkgs.nodePackages.typescript`.
 - No browser-automation tool was available in this session, so installability,
-  camera permission flow, and the coach/scanner UI have only been verified via
-  `node --check` (syntax) and a static dev-server smoke test (asset 200s), not
-  by actually driving them in a browser.
+  camera permission flow, chart rendering, and the coach/scanner UI have only
+  been verified via `node --check` (syntax) and a static dev-server smoke test
+  (asset 200s), not by actually driving them in a browser.
