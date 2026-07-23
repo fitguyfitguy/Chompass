@@ -30,6 +30,8 @@ Open [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/) 
 
 Works in Firefox, Safari, and other engines; **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, etc.) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
+Step-by-step install for iOS, Android, and desktop browsers: [Download → How to install](https://fitguy.codeberg.page/NoFUD/download/#how-to-install) (also **Settings → Install app** inside the PWA).
+
 ### Android app
 
 Not on the Play Store. F-Droid metadata is submitted; until the package shows up in the F-Droid client, install from Obtainium or Codeberg Releases.

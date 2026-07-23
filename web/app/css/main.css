@@ -1204,16 +1204,81 @@ form.entry-form > button.btn--primary,
   font-size: 0.88rem;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
   justify-content: space-between;
 }
 
-.install-banner button {
+.install-banner__text {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.install-banner__how {
+  color: var(--teal);
+  font-weight: 600;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.install-banner__how:hover {
+  text-decoration: underline;
+}
+
+.install-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.install-banner__install {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+  border-radius: 999px;
+}
+
+.install-banner__dismiss {
   background: none;
   border: none;
   color: var(--muted);
   font-size: 1rem;
   cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.install-steps {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.install-note {
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.install-sheet-body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.install-sheet-body .btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.install-sheet-body a.btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .onboarding-step {

@@ -2,7 +2,7 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "nofud-shell-v8";
+const CACHE_NAME = "nofud-shell-v9";
 
 const SHELL_ASSETS = [
   "./",
@@ -36,6 +36,7 @@ const SHELL_ASSETS = [
   "./src/lib/meal-share.js",
   "./src/lib/speech.js",
   "./src/lib/home-nutrients.js",
+  "./src/lib/install-prompt.js",
   "./src/lib/ui/sheet.js",
   "./src/lib/ui/dialog.js",
   "./src/lib/ui/focus-trap.js",
