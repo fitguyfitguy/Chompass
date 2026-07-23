@@ -3,6 +3,8 @@ import { profile as profileStore, foodEntries, weights, bodyFat, measurements } 
 import { dailyTargets, bmr, tdee } from "../lib/nofud-core/formulas.js";
 import { exportDiary, importDiary } from "../lib/nofud-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-metrics-format.js";
+import { PROVIDERS } from "../lib/ai/providers.js";
+import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../lib/ai/key-storage.js";
 
 const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
 
@@ -19,6 +21,7 @@ export class SettingsView extends HTMLElement {
     };
 
     const targets = dailyTargets(p);
+    const configuredProviders = await listConfiguredProviders();
 
     this.innerHTML = `
       <h1 style="font-family:var(--font-display);font-size:1.4rem;margin:0.2rem 0 1rem;">Profile & settings</h1>
@@ -113,6 +116,43 @@ export class SettingsView extends HTMLElement {
         </div>
         <p id="import-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
       </div>
+
+      <div class="card">
+        <h2 style="margin:0 0 0.6rem;font-size:1rem;">AI Coach (bring your own key)</h2>
+        <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
+          Your key is encrypted at rest with a non-extractable device key and is only ever sent directly
+          from your browser to the provider you choose below — never through a NoFUD server.
+        </p>
+        <form class="entry-form" id="ai-key-form">
+          <div class="field">
+            <label for="ai-provider">Provider</label>
+            <select id="ai-provider" name="provider">
+              ${Object.entries(PROVIDERS).map(([id, meta]) => `<option value="${id}">${meta.label}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="ai-key">API key</label>
+            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="sk-…" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="ai-model">Model (optional)</label>
+              <input id="ai-model" name="model" type="text" placeholder="provider default" />
+            </div>
+            <div class="field">
+              <label for="ai-base-url">Base URL (openai-compatible only)</label>
+              <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn--primary">Save key</button>
+            <button type="button" class="btn btn--danger" id="ai-key-remove">Remove</button>
+          </div>
+        </form>
+        <p style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
+          Configured: ${configuredProviders.length ? configuredProviders.map((id) => PROVIDERS[id].label).join(", ") : "none"}
+        </p>
+      </div>
     `;
 
     this.querySelector("#profile-form").addEventListener("submit", (ev) => this.onSaveProfile(ev));
@@ -120,6 +160,26 @@ export class SettingsView extends HTMLElement {
     this.querySelector("#export-body").addEventListener("click", () => this.onExportBodyMetrics());
     this.querySelector("#import-diary").addEventListener("change", (ev) => this.onImportDiary(ev));
     this.querySelector("#import-body").addEventListener("change", (ev) => this.onImportBodyMetrics(ev));
+    this.querySelector("#ai-key-form").addEventListener("submit", (ev) => this.onSaveAiKey(ev));
+    this.querySelector("#ai-key-remove").addEventListener("click", () => this.onRemoveAiKey());
+  }
+
+  async onSaveAiKey(ev) {
+    ev.preventDefault();
+    const fd = new FormData(ev.target);
+    const provider = /** @type {any} */ (fd.get("provider"));
+    const apiKey = String(fd.get("apiKey") || "").trim();
+    if (!apiKey) return;
+    const model = String(fd.get("model") || "").trim();
+    const baseUrl = String(fd.get("baseUrl") || "").trim();
+    await saveProviderKey(provider, apiKey, { model: model || undefined, baseUrl: baseUrl || undefined });
+    this.render();
+  }
+
+  async onRemoveAiKey() {
+    const provider = /** @type {any} */ (this.querySelector("#ai-provider").value);
+    await deleteProviderKey(provider);
+    this.render();
   }
 
   async onSaveProfile(ev) {

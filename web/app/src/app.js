@@ -2,6 +2,8 @@
 import "./components/diary-view.js";
 import "./components/entry-form.js";
 import "./components/settings-view.js";
+import "./components/coach-view.js";
+import "./components/barcode-scanner.js";
 
 const view = document.getElementById("view");
 const navLinks = () => document.querySelectorAll(".bottom-nav a");
@@ -9,6 +11,8 @@ const navLinks = () => document.querySelectorAll(".bottom-nav a");
 const ROUTES = {
   diary: () => "<diary-view></diary-view>",
   entry: () => "<entry-form></entry-form>",
+  coach: () => "<coach-view></coach-view>",
+  scan: () => "<barcode-scanner></barcode-scanner>",
   settings: () => "<settings-view></settings-view>",
 };
 
