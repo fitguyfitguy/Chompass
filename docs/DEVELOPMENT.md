@@ -79,8 +79,10 @@ Outreach checklist (AlternativeTo, Lemmy, etc.): [`WEB_PRESENCE.md`](WEB_PRESENC
 In the Codeberg UI under **Settings**:
 
 1. **Website** (or project description link): `https://fitguy.codeberg.page/NoFUD/`
-2. **Description** (About; paste): `Ad-free AI calorie tracker — Android app and browser PWA (any modern browser; Chromium works best). BYOK cloud AI; opt-in on-device Gemma 4 on Android. Privacy-focused fork of Fud AI.`
+2. **Description** (About; paste): `Free, open-source calorie tracker. No ads, no trackers. Android app and installable browser PWA (any modern browser; Chromium works best). Community fork of Fud AI — same BYOK food logging, plus keto modes and a leaner privacy-first roadmap.`
 3. **Topics** (suggested): `pwa`, `web`, `android`, `calorie-tracker`, `privacy`, `foss`, `health-connect`, `keto`
+
+Leave the site URL in the **Website** field only (do not repeat it in the description).
 
 ### Preview / build
 
