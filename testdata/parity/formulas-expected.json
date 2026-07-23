@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "source": "docs/CALCULATION_METHODS.md + CalculationGoldenScenariosTest",
+  "scenarios": [
+    {
+      "id": "golden_maleModerateMaintain_mifflinPath",
+      "profile": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 180,
+        "weightKg": 80,
+        "bodyFatPercentage": null,
+        "activityLevel": "moderate",
+        "goal": "maintain",
+        "weeklyChangeKg": null,
+        "ketoMode": false
+      },
+      "expect": {
+        "bmr": 1780.0,
+        "bmrTol": 0.5,
+        "tdee": 2607.7,
+        "tdeeTol": 0.5,
+        "calorieAdjustment": 0,
+        "dailyCalories": 2607,
+        "estimatedDailyActiveCalories": 828,
+        "sedentaryCalorieBudget": 1779,
+        "proteinGoal": 128,
+        "fatGoal": 48
+      }
+    },
+    {
+      "id": "golden_femaleCut_katchPath",
+      "profile": {
+        "sex": "female",
+        "age": 35,
+        "heightCm": 165,
+        "weightKg": 70,
+        "bodyFatPercentage": 0.28,
+        "activityLevel": "light",
+        "goal": "lose",
+        "weeklyChangeKg": 0.5,
+        "ketoMode": false
+      },
+      "expect": {
+        "bmr": 1458.64,
+        "bmrTol": 1.0,
+        "calorieAdjustment": -550,
+        "proteinGoal": 98
+      }
+    },
+    {
+      "id": "golden_ketoLose_sedentaryCarbsClamped",
+      "profile": {
+        "sex": "male",
+        "age": 40,
+        "heightCm": 178,
+        "weightKg": 95,
+        "bodyFatPercentage": 0.32,
+        "activityLevel": "sedentary",
+        "goal": "lose",
+        "weeklyChangeKg": 0.8,
+        "ketoMode": true
+      },
+      "expect": {
+        "carbsGoal": 20,
+        "fatGoalMin": 45
+      }
+    },
+    {
+      "id": "golden_gainExtraActive_proteinAndCalories",
+      "profile": {
+        "sex": "male",
+        "age": 25,
+        "heightCm": 185,
+        "weightKg": 75,
+        "bodyFatPercentage": null,
+        "activityLevel": "extra_active",
+        "goal": "gain",
+        "weeklyChangeKg": 0.25,
+        "ketoMode": false
+      },
+      "expect": {
+        "calorieAdjustment": 275,
+        "proteinGoal": 165
+      }
+    },
+    {
+      "id": "golden_sparseLogging_calendarDayAverage",
+      "kind": "averageDailyIntake",
+      "input": {
+        "totalCalories": 6000,
+        "loggedDays": 3,
+        "calendarDaysInWindow": 90
+      },
+      "expect": {
+        "avgDailyCalories": 66,
+        "usesCalendarDayAverage": true
+      }
+    },
+    {
+      "id": "golden_denseLogging_loggedDayAverage",
+      "kind": "averageDailyIntake",
+      "input": {
+        "totalCalories": 45000,
+        "loggedDays": 45,
+        "calendarDaysInWindow": 90
+      },
+      "expect": {
+        "avgDailyCalories": 1000,
+        "usesCalendarDayAverage": false
+      }
+    }
+  ]
+}

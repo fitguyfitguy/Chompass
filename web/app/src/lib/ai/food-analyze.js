@@ -30,7 +30,7 @@ export async function analyzeFoodEntry({ providerId, config, text, image, images
     if (!appPrefs.aiFallbackEnabled || !appPrefs.fallbackAiProvider) throw primaryErr;
     const fbId = /** @type {keyof typeof PROVIDERS} */ (appPrefs.fallbackAiProvider);
     if (fbId === providerId || !PROVIDERS[fbId]) throw primaryErr;
-    const fbConfig = await loadProviderKey(fbId);
+    const fbConfig = await loadProviderKey(/** @type {import('./key-storage.js').ProviderId} */ (fbId));
     if (!fbConfig) throw primaryErr;
     if (appPrefs.fallbackAiModel) fbConfig.model = appPrefs.fallbackAiModel;
     fbConfig.model = resolveProviderModel(fbId, fbConfig.model, "fallback");

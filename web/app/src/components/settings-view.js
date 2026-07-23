@@ -768,7 +768,7 @@ export class SettingsView extends HTMLElement {
     this.setAiKeyFeedback("Testing…");
     const result = await validateGeminiApiKey(apiKey);
     if (btn) btn.disabled = false;
-    this.setAiKeyFeedback(result.ok ? "Key works." : result.message, result.ok ? "ok" : "err");
+    this.setAiKeyFeedback(result.ok ? "Key works." : /** @type {{ok:false, message:string}} */ (result).message, result.ok ? "ok" : "err");
   }
 
   async onRemoveAiKey() {

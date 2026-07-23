@@ -1,0 +1,26 @@
+{
+  "v": 1,
+  "meals": [
+    {
+      "name": "Shared Oatmeal",
+      "calories": 350,
+      "protein": 12,
+      "carbs": 54,
+      "fat": 8,
+      "fiber": 6,
+      "mealType": "breakfast",
+      "servingSizeGrams": 200
+    },
+    {
+      "name": "Shared Chicken Bowl",
+      "calories": 520,
+      "protein": 42,
+      "carbs": 40,
+      "fat": 18,
+      "sodium": 480,
+      "mealType": "lunch",
+      "servingSizeGrams": 350,
+      "customNote": "parity fixture"
+    }
+  ]
+}

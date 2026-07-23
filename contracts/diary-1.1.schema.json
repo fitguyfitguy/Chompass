@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fitguy.codeberg.page/NoFUD/contracts/diary-1.1.schema.json",
+  "title": "NoFUD diary export format 1.1",
+  "type": "object",
+  "required": ["export", "days"],
+  "additionalProperties": true,
+  "properties": {
+    "export": {
+      "type": "object",
+      "required": ["app", "format_version", "date_range"],
+      "properties": {
+        "app": { "type": "string", "minLength": 1 },
+        "format_version": { "const": "1.1" },
+        "date_range": {
+          "type": "object",
+          "required": ["start", "end"],
+          "properties": {
+            "start": { "type": "string" },
+            "end": { "type": "string" }
+          }
+        }
+      }
+    },
+    "days": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "totals", "targets", "remaining", "meals"],
+        "properties": {
+          "date": { "type": "string" },
+          "totals": { "$ref": "#/$defs/macroBlock" },
+          "targets": { "$ref": "#/$defs/macroBlock" },
+          "remaining": { "$ref": "#/$defs/macroBlock" },
+          "meals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "items"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["breakfast", "lunch", "dinner", "snack"]
+                },
+                "items": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/item" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "macroBlock": {
+      "type": "object",
+      "required": ["calories", "protein_g", "carbs_g", "fat_g"],
+      "properties": {
+        "calories": { "type": "number" },
+        "protein_g": { "type": "number" },
+        "carbs_g": { "type": "number" },
+        "fat_g": { "type": "number" }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["name", "calories", "protein_g", "carbs_g", "fat_g"],
+      "properties": {
+        "name": { "type": "string" },
+        "quantity_g": { "type": ["number", "null"] },
+        "calories": { "type": "integer" },
+        "protein_g": { "type": "number" },
+        "carbs_g": { "type": "number" },
+        "fat_g": { "type": "number" },
+        "sugar_g": { "type": ["number", "null"] },
+        "added_sugar_g": { "type": ["number", "null"] },
+        "fiber_g": { "type": ["number", "null"] },
+        "saturated_fat_g": { "type": ["number", "null"] },
+        "monounsaturated_fat_g": { "type": ["number", "null"] },
+        "polyunsaturated_fat_g": { "type": ["number", "null"] },
+        "cholesterol_mg": { "type": ["number", "null"] },
+        "sodium_mg": { "type": ["number", "null"] },
+        "potassium_mg": { "type": ["number", "null"] },
+        "trans_fat_g": { "type": ["number", "null"] },
+        "calcium_mg": { "type": ["number", "null"] },
+        "iron_mg": { "type": ["number", "null"] },
+        "magnesium_mg": { "type": ["number", "null"] },
+        "zinc_mg": { "type": ["number", "null"] },
+        "vitamin_a_mcg": { "type": ["number", "null"] },
+        "vitamin_c_mg": { "type": ["number", "null"] },
+        "vitamin_d_mcg": { "type": ["number", "null"] },
+        "vitamin_b12_mcg": { "type": ["number", "null"] },
+        "vitamin_e_mg": { "type": ["number", "null"] },
+        "vitamin_k_mcg": { "type": ["number", "null"] },
+        "folate_mcg": { "type": ["number", "null"] },
+        "omega3_g": { "type": ["number", "null"] },
+        "time": { "type": ["string", "null"] },
+        "source": { "type": ["string", "null"] },
+        "note": { "type": ["string", "null"] },
+        "grounding": { "type": ["object", "null"] }
+      }
+    }
+  }
+}

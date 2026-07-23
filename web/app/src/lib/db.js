@@ -11,7 +11,7 @@ import {
 const DB_NAME = "nofud-pwa";
 const DB_VERSION = 3;
 
-/** @type {Promise<import('../../vendor/idb.js').Store[]>|null} */
+/** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
 
 function openNoFudDb() {

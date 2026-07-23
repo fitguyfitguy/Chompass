@@ -149,7 +149,7 @@ export class AnalyzeView extends HTMLElement {
     this.error = "";
     this.render();
     try {
-      const config = await loadProviderKey(this.activeProvider);
+      const config = await loadProviderKey(/** @type {import('../lib/ai/key-storage.js').ProviderId} */ (this.activeProvider));
       if (!config) throw new Error("Provider key missing — re-add it in Settings.");
       const images = [];
       for (const file of this.files) {

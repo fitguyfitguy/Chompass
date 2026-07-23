@@ -253,10 +253,12 @@ When changing any formula, constant, or guardrail:
 1. Update implementation and `NutritionConstants` if applicable.
 2. Update this file (formula register + policy table).
 3. Update `strings.xml` `settings_calc_*` if user-visible.
-4. Add/adjust unit tests with golden vectors.
-5. Mirror any change in `web/app/src/lib/nofud-core/` (`formulas.js`, `forecast.js`) and run `node --test web/app/src/lib/nofud-core/__tests__/*.test.js`.
+4. Update shared golden scenarios in [`testdata/parity/formulas-expected.json`](../testdata/parity/formulas-expected.json) (Android `CalculationGoldenScenariosTest` and PWA `formulas.test.js` both read this file).
+5. Mirror any change in `web/app/src/lib/nofud-core/` (`formulas.js`, `forecast.js`).
 6. Note change in `docs/CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
-7. Run `devenv shell bash -lc 'cd android && ./gradlew test'`.
+7. Run `devenv shell bash -lc 'cd android && ./gradlew test'` and `devenv tasks run release:check-parity` (or `./scripts/check_parity.sh`).
+
+When changing **diary / body-metrics / meal-share** wire formats: bump `format_version` / `v`, update both exporters/importers, extend [`contracts/`](../contracts/), refresh [`testdata/parity/`](../testdata/parity/) samples, then re-run `release:check-parity`. Feature imparity: [`docs/PARITY.md`](PARITY.md).
 
 ---
 
@@ -271,6 +273,9 @@ When changing any formula, constant, or guardrail:
 | Forecast & adaptive | `android/app/src/main/java/.../services/WeightAnalysisService.kt` |
 | Forecast math (pure) | `android/app/src/main/java/.../services/WeightForecastMath.kt` |
 | PWA formula / forecast mirror | `web/app/src/lib/nofud-core/{formulas,forecast}.js` |
+| Shared formula goldens | `testdata/parity/formulas-expected.json` |
+| Wire-format contracts | `contracts/*.schema.json` |
+| Feature parity matrix | `docs/PARITY.md` |
 | AI formula reference | `android/app/src/main/java/.../models/GoalFormulaReference.kt` |
 | Keto carbs | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt` |
 | Body metrics | `android/app/src/main/java/.../models/BodyMeasurement.kt` |

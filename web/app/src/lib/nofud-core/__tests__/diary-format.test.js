@@ -1,21 +1,14 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { importDiary, exportDiary, DIARY_FORMAT_VERSION } from "../diary-format.js";
-
-const REPO_ROOT = fileURLToPath(new URL("../../../../../../", import.meta.url));
-
-function loadFixture(name) {
-  return JSON.parse(readFileSync(`${REPO_ROOT}${name}`, "utf8"));
-}
+import { loadParityFixture } from "../../parity-fixtures.js";
 
 let seq = 0;
 const idGen = () => `test-id-${seq++}`;
 
-test("imports the real repo diary fixture without throwing", () => {
-  const doc = loadFixture("Fud-Food-Diary-2026-04-27_to_2026-07-22.json");
+test("imports the parity diary fixture without throwing", () => {
+  const doc = loadParityFixture("diary-sample.json");
   assert.equal(doc.export.format_version, DIARY_FORMAT_VERSION);
   const entries = importDiary(doc, idGen);
   assert.ok(entries.length > 0);
@@ -26,8 +19,8 @@ test("imports the real repo diary fixture without throwing", () => {
   }
 });
 
-test("round-trips totals for one real fixture day", () => {
-  const doc = loadFixture("Fud-Food-Diary-2026-04-27_to_2026-07-22.json");
+test("round-trips totals for parity diary fixture days", () => {
+  const doc = loadParityFixture("diary-sample.json");
   const entries = importDiary(doc, idGen);
   const targets = {};
   for (const day of doc.days) {
@@ -45,10 +38,7 @@ test("round-trips totals for one real fixture day", () => {
   assert.equal(reExported.export.format_version, DIARY_FORMAT_VERSION);
   assert.equal(reExported.days.length, doc.days.length);
 
-  // Totals are re-derived by summing item macros, same as the source app;
-  // floating-point summation of already-1dp-rounded values can drift by a
-  // single 0.1 step on rare days depending on addition order (observed on
-  // 2/87 days in this fixture) — tolerate that, don't chase bit-exactness.
+  // Totals are re-derived by summing item macros; tolerate a single 0.1 step.
   const close = (a, b, tol = 0.11) => Math.abs(a - b) <= tol;
 
   for (let i = 0; i < doc.days.length; i++) {
