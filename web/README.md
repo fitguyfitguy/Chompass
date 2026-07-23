@@ -69,7 +69,15 @@ installs purge the stale v1 cache), and a manual PWA/accessibility audit
 (below) — all proposed/scanned data still routes through the existing
 entry-form review screen so nothing is ever auto-committed.
 
-Not yet implemented: deploy wiring into `scripts/deploy_pages.sh` (Phase 6).
+Phase 6 (deploy): `scripts/deploy_pages.sh` now copies `web/app/` into
+`website/public/app/` (`rsync -a --delete`) before the existing orphan-branch
+push, so the PWA rides along with the marketing site deploy — no separate
+step. Verified with `./scripts/deploy_pages.sh --dry-run` (`app/index.html`,
+`manifest.webmanifest`, `sw.js` all present in the resulting tree). Landing
+URL: `fitguy.codeberg.page/NoFUD/app/`. Soft-launched only — not yet linked
+from the marketing site nav/`download.md`; see `docs/WEB_PRESENCE.md`.
+
+All 7 phases from the original plan are now implemented.
 
 ### Manual PWA audit (Phase 5, in lieu of a real Lighthouse run)
 

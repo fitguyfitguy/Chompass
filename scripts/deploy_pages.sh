@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Build the Hugo project site and force-push website/public to the orphan
-# `pages` branch for Codeberg Pages (git-pages webhook deploy — no Actions runner).
+# Build the Hugo project site, copy the web/app/ PWA into public/app/, and
+# force-push website/public to the orphan `pages` branch for Codeberg Pages
+# (git-pages webhook deploy — no Actions runner). Lands the PWA at
+# fitguy.codeberg.page/NoFUD/app/ alongside the marketing site.
 #
 # One-time Codeberg setup (repo Settings → Webhooks → Add webhook):
 #   Type: Forgejo
@@ -46,6 +48,11 @@ if ! command -v hugo >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v rsync >/dev/null 2>&1; then
+  echo "rsync not found (needed to copy web/app/ into the pages tree). Run inside devenv shell, or: nix-shell -p rsync --run './scripts/deploy_pages.sh'" >&2
+  exit 1
+fi
+
 echo "==> Building site (baseURL=$BASE_URL)"
 rm -rf website/public website/resources
 hugo --minify -s website --baseURL "$BASE_URL"
@@ -55,6 +62,15 @@ if [[ ! -f "$PUBLIC/index.html" ]]; then
   echo "Build missing $PUBLIC/index.html" >&2
   exit 1
 fi
+
+if [[ ! -f "$ROOT/web/app/index.html" ]]; then
+  echo "Missing $ROOT/web/app/index.html — refusing to deploy without the PWA app shell" >&2
+  exit 1
+fi
+
+echo "==> Copying PWA (web/app/) into $PUBLIC/app/"
+mkdir -p "$PUBLIC/app"
+rsync -a --delete "$ROOT/web/app/" "$PUBLIC/app/"
 
 REMOTE_URL="$(git remote get-url "$REMOTE")"
 # Rewrite bare codeberg.org → fitguy host alias so ssh-agent does not auth as KewLE.
