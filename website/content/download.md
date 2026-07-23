@@ -31,6 +31,10 @@ Package ID: `org.codeberg.fitguy.nofud`
 
 Package `org.codeberg.fitguy.nofud` — [expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed.
 
+## Web companion (PWA)
+
+Try the [browser companion](https://fitguy.codeberg.page/NoFUD/app/) for diary logging, progress, and BYOK AI on the go. Data uses the same JSON export/import as the Android app. Android remains the full-featured client.
+
 ## After install
 
 1. Complete onboarding (profile and goals).

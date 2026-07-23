@@ -1,20 +1,14 @@
 // @ts-check
-// Tool-calling orchestration for the AI coach. Read-only tool calls
-// (get_diary_context) are executed locally and fed back to the model in a
-// loop; write-tool calls (propose_log_*) are never executed here — they're
-// returned as proposals for coach-view.js to render as confirm cards, and
-// only committed if the user explicitly confirms (see applyProposal below,
-// and entry-form.js for the food-proposal review path).
-import { foodEntries, weights, water, profile as profileStore } from "../db.js";
-import { dailyTargets } from "../nofud-core/formulas.js";
+import { foodEntries, weights, water, bodyFat, profile as profileStore } from "../db.js";
+import { dailyTargets, bmr, tdee } from "../nofud-core/formulas.js";
 import { PROVIDERS } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 
 const SYSTEM_PROMPT = `You are the NoFUD coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
 
-Use get_diary_context to see what the user has already logged today before estimating anything new — don't guess totals you can look up.
+Use read tools (get_diary_context, get_weight_history, get_data_summary, etc.) before estimating anything new — don't guess totals you can look up.
 
-When the user describes food they ate (by text or photo), estimate calories and macros as best you can and call propose_log_food. When they mention a body weight or water intake, call propose_log_weight / propose_log_water. These tools never save automatically — the user always reviews and confirms in the UI, so it's fine (expected, even) to propose your best estimate rather than asking clarifying questions first, as long as you say what you're unsure about in your reply.
+When the user describes food they ate (by text or photo), estimate calories and macros and call propose_log_food. When they mention a body weight or water intake, call propose_log_weight / propose_log_water. These tools never save automatically — the user always reviews and confirms.
 
 Keep replies short — a sentence or two plus the tool call, not an essay.`;
 
@@ -32,7 +26,10 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
 
-  const messages = [...history, { role: "user", text: userText, image }];
+  const messages = /** @type {import('./providers.js').AiMessage[]} */ ([
+    ...history,
+    { role: "user", text: userText, image },
+  ]);
 
   for (let iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
     const response = await provider.send(config, { systemPrompt: SYSTEM_PROMPT, messages, tools: AI_TOOLS });
@@ -54,10 +51,87 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
 }
 
 async function executeReadTool(tc) {
-  if (tc.name !== "get_diary_context") throw new Error(`Unknown read-only tool "${tc.name}"`);
-  const date = tc.input?.date || new Date().toISOString().slice(0, 10);
-  const [entries, prof] = await Promise.all([foodEntries.byDate(date), profileStore.load()]);
-  const totals = entries.reduce(
+  const today = new Date().toISOString().slice(0, 10);
+  if (tc.name === "get_diary_context") {
+    const date = tc.input?.date || today;
+    const [entries, prof] = await Promise.all([foodEntries.byDate(date), profileStore.load()]);
+    const totals = sumMacros(entries);
+    return {
+      date,
+      entries: entries.map(({ id, name, mealType, calories, proteinG, carbsG, fatG }) => ({
+        id,
+        name,
+        mealType,
+        calories,
+        proteinG,
+        carbsG,
+        fatG,
+      })),
+      totals,
+      targets: prof ? dailyTargets(prof) : null,
+    };
+  }
+  if (tc.name === "get_food_entries") {
+    const date = tc.input?.date || today;
+    const entries = await foodEntries.byDate(date);
+    return { date, entries };
+  }
+  if (tc.name === "get_weight_history") {
+    const limit = Math.min(100, Math.max(1, Number(tc.input?.limit) || 30));
+    const all = (await weights.all()).slice().sort((a, b) => b.date.localeCompare(a.date));
+    return all.slice(0, limit);
+  }
+  if (tc.name === "get_body_fat_history") {
+    const limit = Math.min(100, Math.max(1, Number(tc.input?.limit) || 30));
+    const all = (await bodyFat.all()).slice().sort((a, b) => b.date.localeCompare(a.date));
+    return all.slice(0, limit).map((e) => ({
+      ...e,
+      bodyFatPercent: e.bodyFatPercent > 1 ? e.bodyFatPercent : e.bodyFatPercent * 100,
+    }));
+  }
+  if (tc.name === "get_calorie_totals") {
+    const end = tc.input?.endDate || today;
+    const start = tc.input?.startDate || end;
+    const all = await foodEntries.all();
+    /** @type {Record<string, number>} */
+    const byDate = {};
+    for (const e of all) {
+      if (e.date < start || e.date > end) continue;
+      byDate[e.date] = (byDate[e.date] || 0) + e.calories;
+    }
+    return byDate;
+  }
+  if (tc.name === "get_data_summary") {
+    const [prof, allFood, allW, allBf] = await Promise.all([
+      profileStore.load(),
+      foodEntries.all(),
+      weights.all(),
+      bodyFat.all(),
+    ]);
+    const days = new Set(allFood.map((e) => e.date));
+    return {
+      profile: prof
+        ? {
+            goal: prof.goal,
+            ketoMode: !!prof.ketoMode,
+            weightKg: prof.weightKg,
+            targets: dailyTargets(prof),
+            bmr: Math.round(bmr(prof)),
+            tdee: Math.round(tdee(prof)),
+          }
+        : null,
+      diaryDays: days.size,
+      foodEntries: allFood.length,
+      weightEntries: allW.length,
+      bodyFatEntries: allBf.length,
+      latestWeightKg: allW.slice().sort((a, b) => b.date.localeCompare(a.date))[0]?.weightKg ?? null,
+    };
+  }
+  throw new Error(`Unknown read-only tool "${tc.name}"`);
+}
+
+function sumMacros(entries) {
+  return entries.reduce(
     (acc, e) => ({
       calories: acc.calories + e.calories,
       proteinG: acc.proteinG + e.proteinG,
@@ -66,22 +140,20 @@ async function executeReadTool(tc) {
     }),
     { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 }
   );
-  return {
-    date,
-    entries: entries.map(({ id, name, mealType, calories, proteinG, carbsG, fatG }) => ({ id, name, mealType, calories, proteinG, carbsG, fatG })),
-    totals,
-    targets: prof ? dailyTargets(prof) : null,
-  };
 }
 
-/** Commit a confirmed weight/water proposal. Food proposals route through entry-form.js instead (see coach-view.js). */
+/** Commit a confirmed weight/water proposal. Food proposals route through entry-form.js. */
 export async function applyProposal(tc) {
   if (tc.name === "propose_log_weight") {
     await weights.put({ id: crypto.randomUUID(), date: new Date().toISOString(), weightKg: tc.input.weightKg });
     return;
   }
   if (tc.name === "propose_log_water") {
-    await water.put({ id: crypto.randomUUID(), date: tc.input.date || new Date().toISOString().slice(0, 10), amountMl: tc.input.amountMl });
+    await water.put({
+      id: crypto.randomUUID(),
+      date: tc.input.date || new Date().toISOString().slice(0, 10),
+      amountMl: tc.input.amountMl,
+    });
     return;
   }
   throw new Error(`applyProposal does not handle "${tc.name}" — route it through entry-form.js instead`);

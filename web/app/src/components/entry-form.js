@@ -2,8 +2,8 @@
 import { foodEntries } from "../lib/db.js";
 
 /** Manual food entry review/edit form. Also the landing spot for AI/barcode
- * prefill in later phases — those flows populate the same fields, the user
- * always confirms/edits here before save (never auto-committed). */
+ * prefill — those flows populate the same fields; the user always confirms
+ * before save (never auto-committed). */
 export class EntryForm extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
@@ -30,7 +30,7 @@ export class EntryForm extends HTMLElement {
     const e = this.existing ?? this.prefill ?? {};
 
     this.innerHTML = `
-      <h1 style="font-family:var(--font-display);font-size:1.4rem;margin:0 0 1rem;">
+      <h1 class="screen-title">
         ${this.existing ? "Edit entry" : this.prefill ? "Review & confirm" : "Log food"}
       </h1>
       <form class="entry-form">
@@ -75,6 +75,10 @@ export class EntryForm extends HTMLElement {
           </div>
         </div>
         <div class="field">
+          <label for="fiberG">Fiber g (optional)</label>
+          <input id="fiberG" name="fiberG" type="number" min="0" step="0.1" value="${e.fiberG ?? ""}" />
+        </div>
+        <div class="field">
           <label for="note">Note (optional)</label>
           <textarea id="note" name="note" rows="2">${e.note ?? ""}</textarea>
         </div>
@@ -87,13 +91,16 @@ export class EntryForm extends HTMLElement {
     `;
 
     this.querySelector("form").addEventListener("submit", (ev) => this.onSubmit(ev));
-    this.querySelector('[data-action="cancel"]').addEventListener("click", () => history.back());
+    this.querySelector('[data-action="cancel"]').addEventListener("click", () => {
+      location.hash = "#/home";
+    });
     this.querySelector('[data-action="delete"]')?.addEventListener("click", () => this.onDelete());
   }
 
   async onSubmit(ev) {
     ev.preventDefault();
     const fd = new FormData(ev.target);
+    const fiberRaw = fd.get("fiberG");
     /** @type {import('../lib/nofud-core/models.js').FoodEntry} */
     const entry = {
       id: this.existing?.id ?? crypto.randomUUID(),
@@ -106,18 +113,19 @@ export class EntryForm extends HTMLElement {
       proteinG: Number(fd.get("proteinG") || 0),
       carbsG: Number(fd.get("carbsG") || 0),
       fatG: Number(fd.get("fatG") || 0),
+      fiberG: fiberRaw !== "" && fiberRaw != null ? Number(fiberRaw) : null,
       source: this.existing?.source ?? this.prefill?.source ?? "manual",
       note: fd.get("note") ? String(fd.get("note")) : null,
       grounding: this.existing?.grounding ?? null,
     };
     await foodEntries.put(entry);
-    location.hash = "#/diary";
+    location.hash = "#/home";
   }
 
   async onDelete() {
     if (!this.existing) return;
     await foodEntries.delete(this.existing.id);
-    location.hash = "#/diary";
+    location.hash = "#/home";
   }
 }
 

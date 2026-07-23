@@ -1,23 +1,59 @@
 // @ts-check
-// Tool schema register for the coach's tool-calling loop. `get_diary_context`
-// is read-only and auto-executed by coach.js. The propose_* tools never
-// write anything themselves — they only ever produce a card in coach-view.js
-// that the user must explicitly confirm (food proposals route through the
-// same entry-form review screen manual entries use).
+// Tool schema register for the coach's tool-calling loop.
 
 /** @type {import('./providers.js').AiTool[]} */
 export const AI_TOOLS = [
   {
     name: "get_diary_context",
-    description: "Read the user's logged food entries, running totals, and calorie/macro targets for a given date. Read-only — use this before proposing anything so estimates account for what's already logged.",
+    description: "Read logged food entries, running totals, and calorie/macro targets for a date. Read-only.",
     inputSchema: {
       type: "object",
       properties: { date: { type: "string", description: "ISO date YYYY-MM-DD, defaults to today" } },
     },
   },
   {
+    name: "get_data_summary",
+    description: "High-level summary: profile targets, recent weight, body-fat count, diary day count. Read-only.",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "get_weight_history",
+    description: "List recent weight entries (newest first). Read-only.",
+    inputSchema: {
+      type: "object",
+      properties: { limit: { type: "number", description: "Max entries, default 30" } },
+    },
+  },
+  {
+    name: "get_body_fat_history",
+    description: "List recent body-fat entries (newest first). Read-only.",
+    inputSchema: {
+      type: "object",
+      properties: { limit: { type: "number", description: "Max entries, default 30" } },
+    },
+  },
+  {
+    name: "get_calorie_totals",
+    description: "Daily calorie totals for a date range. Read-only.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        startDate: { type: "string", description: "ISO YYYY-MM-DD" },
+        endDate: { type: "string", description: "ISO YYYY-MM-DD" },
+      },
+    },
+  },
+  {
+    name: "get_food_entries",
+    description: "Food entries for a specific date. Read-only.",
+    inputSchema: {
+      type: "object",
+      properties: { date: { type: "string", description: "ISO YYYY-MM-DD" } },
+    },
+  },
+  {
     name: "propose_log_food",
-    description: "Propose logging a food entry with estimated calories/macros. This does NOT save anything — it opens a review card the user must confirm (and can edit) before it's written to their diary.",
+    description: "Propose logging a food entry. Does NOT save — opens a review card the user must confirm.",
     inputSchema: {
       type: "object",
       required: ["name", "mealType", "date", "calories"],
@@ -31,6 +67,7 @@ export const AI_TOOLS = [
         proteinG: { type: "number" },
         carbsG: { type: "number" },
         fatG: { type: "number" },
+        fiberG: { type: "number" },
         note: { type: "string" },
       },
     },
@@ -51,5 +88,12 @@ export const AI_TOOLS = [
   },
 ];
 
-export const READ_ONLY_TOOLS = new Set(["get_diary_context"]);
+export const READ_ONLY_TOOLS = new Set([
+  "get_diary_context",
+  "get_data_summary",
+  "get_weight_history",
+  "get_body_fat_history",
+  "get_calorie_totals",
+  "get_food_entries",
+]);
 export const WRITE_TOOLS = new Set(["propose_log_food", "propose_log_weight", "propose_log_water"]);

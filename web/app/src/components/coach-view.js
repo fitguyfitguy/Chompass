@@ -2,36 +2,57 @@
 import { runCoachTurn, applyProposal } from "../lib/ai/coach.js";
 import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { fileToJpegBase64 } from "../lib/ai/image.js";
+import { chat } from "../lib/db.js";
 
 export class CoachView extends HTMLElement {
   async connectedCallback() {
-    this.history = [];
+    this.history = await chat.load();
     this.pendingProposals = [];
     this.providers = await listConfiguredProviders();
     this.activeProvider = this.providers[0] ?? null;
     this.render();
   }
 
+  async persist() {
+    const slim = this.history
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m) => ({
+        role: m.role,
+        text: m.text || "",
+        toolCalls: m.toolCalls,
+        toolResults: m.toolResults,
+      }))
+      .slice(-40);
+    await chat.save(slim);
+  }
+
   render() {
     if (!this.activeProvider) {
       this.innerHTML = `
         <div class="card">
-          <h1 style="font-family:var(--font-display);font-size:1.3rem;margin:0 0 0.5rem;">AI Coach</h1>
+          <h1 class="screen-title">AI Coach</h1>
           <p style="color:var(--muted);font-size:0.9rem;">
             No AI provider is configured yet. Add a bring-your-own API key in Settings to start chatting —
             your key stays on this device and is only ever sent directly to the provider you choose.
           </p>
-          <a class="btn btn--primary" href="#/settings">Go to settings</a>
+          <a class="btn btn--primary" href="#/settings?section=ai">Go to settings</a>
         </div>`;
       return;
     }
 
     this.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <h1 class="screen-title" style="margin:0;">AI Coach</h1>
+        <button type="button" class="chip" data-clear-chat>Clear chat</button>
+      </div>
       <div class="coach-log" id="coach-log">
         ${
-          this.history.length === 0
+          this.history.filter((m) => (m.role === "assistant" || m.role === "user") && m.text).length === 0
             ? `<p class="empty-state">Ask about your day, or attach a food photo.</p>`
-            : this.history.filter((m) => m.role !== "user" || m.text).map(renderBubble).join("")
+            : this.history
+                .filter((m) => (m.role === "assistant" || m.role === "user") && m.text)
+                .map(renderBubble)
+                .join("")
         }
         ${this.pendingProposals.map((p, i) => renderProposalCard(p, i)).join("")}
       </div>
@@ -46,6 +67,12 @@ export class CoachView extends HTMLElement {
     `;
 
     this.querySelector("#coach-form").addEventListener("submit", (ev) => this.onSend(ev));
+    this.querySelector("[data-clear-chat]")?.addEventListener("click", async () => {
+      this.history = [];
+      this.pendingProposals = [];
+      await chat.clear();
+      this.render();
+    });
     this.querySelectorAll("[data-confirm]").forEach((btn) =>
       btn.addEventListener("click", () => this.onConfirm(Number(btn.getAttribute("data-confirm"))))
     );
@@ -84,6 +111,7 @@ export class CoachView extends HTMLElement {
       });
       this.history = result.messages;
       this.pendingProposals = result.proposals;
+      await this.persist();
       this.render();
     } catch (err) {
       this.render();
