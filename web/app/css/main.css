@@ -136,7 +136,30 @@ main.view {
   margin: 0 0 0.55rem;
 }
 
-/* —— Week strip —— */
+/* —— Week pager (53 weeks, Android WeekStrip parity) —— */
+.week-pager {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -0.15rem 1rem;
+  padding-bottom: 0.15rem;
+  scrollbar-width: none;
+}
+
+.week-pager::-webkit-scrollbar {
+  display: none;
+}
+
+.week-page {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  padding: 0 0.15rem;
+  box-sizing: border-box;
+}
+
 .week-nav {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -677,8 +700,16 @@ main.view {
   color: var(--teal);
 }
 
+.food-swipe__behind--fav {
+  justify-content: flex-start;
+  padding-left: 1rem;
+  background: color-mix(in srgb, var(--kcal) 28%, var(--surface));
+  color: var(--kcal);
+}
+
 .food-swipe.is-swiping-left .food-swipe__behind--del,
-.food-swipe.is-swiping-right .food-swipe__behind--dup { opacity: 1; }
+.food-swipe.is-swiping-right .food-swipe__behind--dup,
+.food-swipe.is-swiping-right .food-swipe__behind--fav { opacity: 1; }
 
 .food-item {
   position: relative;
@@ -920,6 +951,7 @@ body:has(coach-view) .toast {
 .coach-input input[type="text"]:focus-visible { outline: none; }
 
 .scanner-frame {
+  position: relative;
   aspect-ratio: 3/4;
   border-radius: var(--radius);
   overflow: hidden;
@@ -931,6 +963,34 @@ body:has(coach-view) .toast {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.scanner-frame__reticle {
+  position: absolute;
+  inset: 18% 12%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.scanner-frame__reticle::before,
+.scanner-frame__reticle::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: color-mix(in srgb, var(--kcal) 80%, #fff);
+  top: 50%;
+  opacity: 0.9;
+}
+
+.scanner-status {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.6rem;
+  text-align: center;
 }
 
 .chart-title {
@@ -998,6 +1058,41 @@ body:has(coach-view) .toast {
   background: color-mix(in srgb, var(--teal) 22%, var(--bg-elevated));
   color: var(--teal);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.range-pills--equal .chip {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+}
+
+.chart-tip {
+  position: fixed;
+  z-index: 50;
+  max-width: 12rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.chart-hit {
+  cursor: pointer;
+}
+
+.settings-android-note {
+  margin: 0.85rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .progress-log-btn {
@@ -1212,6 +1307,23 @@ form.entry-form > button.btn--primary,
   object-fit: cover;
   border-radius: 1rem;
   border: 1px solid var(--line);
+}
+
+.analyze-overlay__thumbs {
+  display: flex;
+  gap: 0.5rem;
+  max-width: min(22rem, 90vw);
+  overflow-x: auto;
+  padding: 0.25rem;
+}
+
+.analyze-overlay__thumb {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: 0.65rem;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 .analyze-overlay__icon {
@@ -1686,11 +1798,22 @@ form.entry-form > button.btn--primary,
   width: 100%;
 }
 
+.onboarding-plan-ready__cals-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
 .onboarding-plan-macro {
   padding: 0.75rem 0.5rem;
   border-radius: 0.9rem;
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   border: 1px solid var(--line);
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
 }
 
 .onboarding-plan-macro__value {
@@ -2266,6 +2389,314 @@ body.dialog-open {
   margin: 0.15rem 0 0;
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+/* —— In-app camera (Android InAppCameraCaptureDialog) —— */
+body.camera-open {
+  overflow: hidden;
+}
+
+.camera-capture {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #fff;
+}
+
+.camera-capture__stage {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  position: relative;
+  min-height: 0;
+  padding: 3.5rem 1rem 6.5rem;
+}
+
+.camera-capture__video {
+  width: min(100%, calc((100vh - 12rem) * 0.75));
+  max-height: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: #111;
+}
+
+.camera-capture__frame {
+  pointer-events: none;
+}
+
+.camera-capture__error {
+  position: absolute;
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.7);
+  font-size: 0.85rem;
+  max-width: 90%;
+  text-align: center;
+}
+
+.camera-capture__btn {
+  position: absolute;
+  z-index: 2;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.camera-capture__btn--close {
+  top: calc(0.75rem + env(safe-area-inset-top));
+  left: 0.75rem;
+}
+
+.camera-capture__btn--flash {
+  top: calc(0.75rem + env(safe-area-inset-top));
+  right: 0.75rem;
+  width: auto;
+  padding: 0 0.85rem;
+  font-size: 0.8rem;
+}
+
+.camera-capture__btn--flash.is-on {
+  background: color-mix(in srgb, var(--kcal) 75%, #000);
+}
+
+.camera-capture__controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 1.25rem;
+}
+
+.camera-capture__btn--gallery {
+  justify-self: start;
+  font-size: 1.25rem;
+}
+
+.camera-capture__shutter {
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 999px;
+  border: 4px solid color-mix(in srgb, var(--kcal) 80%, #fff);
+  background: #fff;
+  cursor: pointer;
+  justify-self: center;
+}
+
+.camera-capture__shutter.is-busy {
+  opacity: 0.55;
+}
+
+/* —— Multi-photo review sheet —— */
+.sheet--multi-photo .sheet__panel {
+  max-height: min(92vh, 40rem);
+}
+
+.multi-photo-review__toolbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.multi-photo-review__title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.multi-photo-review__count {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.multi-photo-review__row {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.multi-photo-review__thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 7.5rem;
+  height: 8.1rem;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.multi-photo-review__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.multi-photo-review__remove {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.multi-photo-review__add {
+  flex: 0 0 auto;
+  width: 5rem;
+  height: 8.1rem;
+  border-radius: 0.85rem;
+  border: 1px dashed var(--line);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--teal);
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+
+.multi-photo-review__add--gallery {
+  font-size: 1.25rem;
+}
+
+.analyze-overlay--flow {
+  z-index: 85;
+}
+
+.analyze-overlay__cancel {
+  margin-top: 0.5rem;
+}
+
+.add-food-tile--spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.voice-capture {
+  text-align: center;
+  padding-bottom: 0.5rem;
+}
+
+.voice-capture__status {
+  font-weight: 600;
+  color: var(--kcal);
+  margin-bottom: 0.75rem;
+}
+
+.voice-capture__transcript {
+  min-height: 4rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  text-align: left;
+}
+
+.voice-capture__placeholder {
+  color: var(--muted);
+}
+
+.voice-capture__actions {
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.voice-capture__mic {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 999px;
+  border: none;
+  background: color-mix(in srgb, var(--teal) 22%, var(--surface));
+  color: var(--teal);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.voice-capture__mic.is-listening {
+  background: color-mix(in srgb, var(--kcal) 85%, #000);
+  color: #fff;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--kcal) 50%, transparent);
+  animation: voice-pulse 1.2s ease-out infinite;
+}
+
+@keyframes voice-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--kcal) 45%, transparent); }
+  70% { box-shadow: 0 0 0 14px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.voice-capture__hint {
+  margin: 0.85rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.entry-section {
+  margin-bottom: 1.1rem;
+}
+
+.entry-section__title {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.entry-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.entry-section__head .entry-section__title {
+  margin: 0;
+}
+
+.entry-section.is-locked input {
+  opacity: 0.85;
+}
+
+.entry-ai-note {
+  margin: 0.35rem 0 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--teal) 10%, var(--surface));
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.btn--sm {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
 }
 
 /* —— Reduced motion —— */

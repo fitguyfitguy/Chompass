@@ -109,18 +109,19 @@ async function runAnalyze(providerId, config, text, imageList, appPrefs, signal,
       : "Estimate calories and macros for the food in this photo. Return JSON only.");
 
   onPhase?.(ANALYSIS_PHASE.CALLING_AI);
+  /** @type {import('./providers.js').AiMessage} */
+  const userMessage = {
+    role: "user",
+    text: userText,
+  };
+  if (imageList.length === 1) {
+    userMessage.image = imageList[0];
+  } else if (imageList.length > 1) {
+    userMessage.images = imageList;
+  }
   const response = await provider.send(config, {
     systemPrompt,
-    messages: [
-      {
-        role: "user",
-        text:
-          imageList.length > 1
-            ? `${userText}\n(${imageList.length} photos attached; first image included in request.)`
-            : userText,
-        image: imageList[0],
-      },
-    ],
+    messages: [userMessage],
     tools: [],
     signal,
   });

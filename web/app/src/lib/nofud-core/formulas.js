@@ -216,16 +216,24 @@ export function ketoNetCarbGoal(profile) {
  */
 export function dailyTargets(profile) {
   const calories = dailyCalories(profile);
-  const proteinG = proteinGoal(profile);
+  const proteinG =
+    profile.customProtein != null ? Math.trunc(profile.customProtein) : proteinGoal(profile);
 
   if (profile.ketoMode) {
-    const carbsG = ketoNetCarbGoal(profile);
-    const fatG = fatGoalKeto(profile, calories, proteinG, carbsG);
+    const carbsG =
+      profile.customCarbs != null ? Math.trunc(profile.customCarbs) : ketoNetCarbGoal(profile);
+    const fatG =
+      profile.customFat != null
+        ? Math.trunc(profile.customFat)
+        : fatGoalKeto(profile, calories, proteinG, carbsG);
     return { calories, proteinG, fatG, carbsG };
   }
 
-  const fatG = fatGoalStandard(profile);
-  const carbsG = carbGoalStandard(calories, proteinG, fatG);
+  const fatG = profile.customFat != null ? Math.trunc(profile.customFat) : fatGoalStandard(profile);
+  const carbsG =
+    profile.customCarbs != null
+      ? Math.trunc(profile.customCarbs)
+      : carbGoalStandard(calories, proteinG, fatG);
   return { calories, proteinG, fatG, carbsG };
 }
 

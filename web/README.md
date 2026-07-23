@@ -57,26 +57,26 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 | Area | Notes |
 |------|--------|
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
-| Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, week prev/next, day swipe, water **off by default** (goal 2000 ml), Add Food sheet, tap gauge → nutrition detail |
-| Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right duplicate; pref-driven macro chips |
-| Entry | Manual, barcode (OFF fiber + micros), photo/text AI with phased wait overlay (Preparing → Calling AI → Reading result) + single-flight lock → review form; expandable micros; Recents/Frequent/Favorites/Recipes; subpage chrome |
+| Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, **53-week snap pager**, day swipe, water **off by default** (goal 2000 ml), Add Food sheet (Photo/Note/Recents heroes), tap gauge → nutrition detail |
+| Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right **favorite**; pref-driven macro chips |
+| Entry | Manual, barcode (OFF + live reticle on Chromium), **in-app camera** + multi-photo review (≤10, all images to model), text/voice AI with phased wait overlay + single-flight lock → Review food / **Log**; expandable micros; Recents/Frequent/Favorites/Recipes |
 | Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites/recipes/share carry full micros |
 | Copy / share | Copy-from-day multi-select; meal share encode + `#/add-meal?d=` import (https/hash bridge) |
-| Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements (incl. calf/wrist); P/C/F/**fiber** averages |
-| Settings | Profile/goals/optional nutrients (Android defaults)/units+meal times/home tube+chip pickers/data/AI (curated Gemini models; default `gemini-3.6-flash` + fallback `gemini-3.5-flash-lite`)/about; CSV+Markdown diary + body CSV; custom AI instructions + fallback |
+| Progress | Glass chart cards, equal range chips (default 1W), tap tips, log weight/BF dialogs, history delete confirm, forecast, measurements; P/C/F/**fiber** averages |
+| Settings | Profile/goals (custom kcal + P/C/F)/optional nutrients/units+meal times/home tubes/speech language/data/AI/about; Install (pwa-only); Android-only note for HC/notifications/widgets/on-device LLM |
 | Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice; propose_log_food micros; uses `primaryAiProvider` |
-| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; form field overflow fixed; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber omitted on rows) |
-| Onboarding | Branded welcome, selection cards, optional body fat + AI key step, building-plan animation, plan-ready targets |
+| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber omitted on rows) |
+| Onboarding | Branded welcome, birthday/age, selection cards, optional body fat + goal BF, AI key step, building-plan animation, **editable** plan-ready targets |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
 **Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`, Gemini fallback `gemini-3.5-flash-lite`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
-notifications, widgets, full i18n pack, 53-week pager.
+notifications, widgets, full i18n pack.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v11`.
+Service worker cache: `nofud-shell-v12`.
 
 ### Manual PWA audit checklist
 

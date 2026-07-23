@@ -15,7 +15,6 @@ import {
 import { weekDates as weekDatesForPrefs, guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
 import { listRecipes, logRecipe, recipeFromEntries, saveRecipe, deleteRecipe } from "../lib/recipes.js";
 import { mealShareText } from "../lib/meal-share.js";
-import { createSpeechCapture } from "../lib/speech.js";
 import {
   normalizeHomeTopNutrients,
   normalizeFoodLogChips,
@@ -28,6 +27,9 @@ import {
   NUTRITION_DETAIL_MICROS,
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
+import { createSpeechCapture } from "../lib/speech.js";
+import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
+import { openVoiceCaptureSheet } from "../lib/ui/voice-capture.js";
 
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
@@ -40,6 +42,8 @@ const ICONS = {
   manual: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`,
   barcode: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5h2v14H3V5zm3 0h1v14H6V5zm2 0h3v14H8V5zm4 0h1v14h-1V5zm2 0h3v14h-3V5zm4 0h1v14h-1V5zm2 0h2v14h-2V5z"/></svg>`,
   recents: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 3a9 9 0 1 0 8.94 10h-2.02A7 7 0 1 1 13 5v5.59l3.3 3.3 1.4-1.42L15 10.17V3h-2z"/></svg>`,
+  frequent: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h7v2H7v-2zM5 3h14c1.1 0 2 .9 2 2v14l-4-2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2z"/></svg>`,
+  favorites: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`,
   copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`,
   recipe: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 4h8v2H8V4zm0 4h8v2H8V8zm0 4h5v2H8v-2zm-4 8h16v2H4v-2zM6 2v20h2V2H6zm10 0v20h2V2h-2z"/></svg>`,
   voice: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`,
@@ -202,7 +206,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
           .map(
             (e) => `
           <div class="food-swipe" data-entry-id="${e.id}">
-            <div class="food-swipe__behind food-swipe__behind--dup" aria-hidden="true">Duplicate</div>
+            <div class="food-swipe__behind food-swipe__behind--fav" aria-hidden="true">Favorite</div>
             <div class="food-swipe__behind food-swipe__behind--del" aria-hidden="true">Delete</div>
             <div class="food-item">
               <button type="button" class="food-item__main" data-edit>
@@ -281,37 +285,53 @@ export class DiaryView extends HTMLElement {
     const tubeKeys = normalizeHomeTopNutrients(appPrefs.homeTopNutrients, appPrefs.homeNutrientCardCount);
     const chipKeys = normalizeFoodLogChips(appPrefs.foodLogMacroChips);
     const optionalGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
-    const days = weekDates(this.date, appPrefs.weekStartsOnMonday !== false);
+    const mondayStart = appPrefs.weekStartsOnMonday !== false;
     const today = todayIso();
-    const nextWeekStart = shiftDate(days[0], 7);
-    const canNextWeek = nextWeekStart <= today;
+    const currentWeekStart = weekDates(today, mondayStart)[0];
+    const TOTAL_WEEKS = 53;
+    const selectedWeekStart = weekDates(this.date, mondayStart)[0];
+    let selectedWeekIndex = Math.round(
+      (new Date(`${selectedWeekStart}T00:00:00`).getTime() - new Date(`${currentWeekStart}T00:00:00`).getTime()) /
+        (7 * 86400000)
+    ) + (TOTAL_WEEKS - 1);
+    selectedWeekIndex = Math.max(0, Math.min(TOTAL_WEEKS - 1, selectedWeekIndex));
+
+    /** @type {string[][]} */
+    const weekPages = [];
+    for (let i = 0; i < TOTAL_WEEKS; i++) {
+      const start = shiftDate(currentWeekStart, (i - (TOTAL_WEEKS - 1)) * 7);
+      weekPages.push(
+        Array.from({ length: 7 }, (_, d) => shiftDate(start, d))
+      );
+    }
 
     this.innerHTML = `
-      <div class="week-nav">
-        <button type="button" class="week-nav__btn" data-week="-1" aria-label="Previous week">
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-        </button>
-        <div class="week-strip" role="tablist" aria-label="Week">
-          ${days
-            .map((iso) => {
-              const d = new Date(`${iso}T00:00:00`);
-              const selected = iso === this.date ? " is-selected" : "";
-              const isToday = iso === today ? " is-today" : "";
-              const has = weekEntryFlags.has(iso) ? " has-entries" : "";
-              const future = iso > today;
-              return `
-                <button type="button" class="week-day${selected}${isToday}${has}" data-date="${iso}" role="tab"
-                  aria-selected="${iso === this.date}" ${future ? "disabled" : ""}>
-                  <span class="week-day__dow">${d.toLocaleDateString(undefined, { weekday: "narrow" })}</span>
-                  <span class="week-day__num">${d.getDate()}</span>
-                  <span class="week-day__dot" aria-hidden="true"></span>
-                </button>`;
-            })
-            .join("")}
-        </div>
-        <button type="button" class="week-nav__btn" data-week="1" aria-label="Next week" ${canNextWeek ? "" : "disabled"}>
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
-        </button>
+      <div class="week-pager" data-week-pager aria-label="Week calendar">
+        ${weekPages
+          .map(
+            (days, pageIdx) => `
+          <div class="week-page" data-week-page="${pageIdx}">
+            <div class="week-strip" role="tablist" aria-label="Week ${pageIdx + 1}">
+              ${days
+                .map((iso) => {
+                  const d = new Date(`${iso}T00:00:00`);
+                  const selected = iso === this.date ? " is-selected" : "";
+                  const isToday = iso === today ? " is-today" : "";
+                  const has = weekEntryFlags.has(iso) ? " has-entries" : "";
+                  const future = iso > today;
+                  return `
+                    <button type="button" class="week-day${selected}${isToday}${has}" data-date="${iso}" role="tab"
+                      aria-selected="${iso === this.date}" ${future ? "disabled" : ""}>
+                      <span class="week-day__dow">${d.toLocaleDateString(undefined, { weekday: "narrow" })}</span>
+                      <span class="week-day__num">${d.getDate()}</span>
+                      <span class="week-day__dot" aria-hidden="true"></span>
+                    </button>`;
+                })
+                .join("")}
+            </div>
+          </div>`
+          )
+          .join("")}
       </div>
 
       <div class="card card--glass home-hero" data-day-swipe>
@@ -358,6 +378,15 @@ export class DiaryView extends HTMLElement {
 
     this.bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs);
     this.animateFills();
+    requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
+  }
+
+  /** @param {number} pageIndex */
+  scrollWeekPagerTo(pageIndex) {
+    const pager = /** @type {HTMLElement | null} */ (this.querySelector("[data-week-pager]"));
+    const page = /** @type {HTMLElement | null} */ (this.querySelector(`[data-week-page="${pageIndex}"]`));
+    if (!pager || !page) return;
+    pager.scrollLeft = page.offsetLeft;
   }
 
   /**
@@ -373,14 +402,6 @@ export class DiaryView extends HTMLElement {
         const iso = el.getAttribute("data-date") || this.date;
         if (iso > todayIso()) return;
         this.setDate(iso);
-        this.render();
-      });
-    });
-    this.querySelectorAll("[data-week]").forEach((el) => {
-      el.addEventListener("click", () => {
-        const dir = Number(el.getAttribute("data-week"));
-        if (!dir || el.hasAttribute("disabled")) return;
-        this.setDate(shiftDate(this.date, dir * 7));
         this.render();
       });
     });
@@ -464,7 +485,7 @@ export class DiaryView extends HTMLElement {
   }
 
   /**
-   * Swipe-left → delete; swipe-right → duplicate. Pointer Events for desktop parity.
+   * Swipe-left → delete; swipe-right → favorite (Android parity). Duplicate stays in overflow.
    * @param {Element} row
    * @param {HTMLElement} item
    * @param {import('../lib/nofud-core/models.js').FoodEntry} entry
@@ -524,7 +545,7 @@ export class DiaryView extends HTMLElement {
       row.classList.toggle("is-swiping-right", dx > 0);
     });
 
-    const end = (ev) => {
+    const end = async (ev) => {
       const pev = /** @type {PointerEvent} */ (ev);
       if (pev.pointerId !== pointerId && pointerId != null) return;
       if (!active && !horizontal) {
@@ -533,8 +554,11 @@ export class DiaryView extends HTMLElement {
       }
       item.style.transition = "";
       if (dx < -88) this.deleteEntry(entry);
-      else if (dx > 88) this.duplicateEntry(entry);
-      else reset();
+      else if (dx > 88) {
+        const nowFav = await toggleFavorite(entry);
+        this.showToast(nowFav ? "Added to favorites" : "Removed from favorites");
+        reset();
+      } else reset();
     };
 
     row.addEventListener("pointerup", end);
@@ -637,18 +661,21 @@ export class DiaryView extends HTMLElement {
     const body = `
       <div class="add-food-heroes">
         ${tile("photo", "Photo", "Snap a meal", ICONS.photo)}
-        ${tile("note", "Text / note", "Describe food", ICONS.note)}
-        ${tile("manual", "Manual", "Enter macros", ICONS.manual)}
+        ${tile("note", "Note", "Describe food", ICONS.note)}
+        ${tile("recents", "Recents", "Quick re-log", ICONS.recents)}
       </div>
       <p class="add-food-section">More</p>
       <div class="add-food-row">
-        ${tile("scan", "Barcode", "", ICONS.barcode)}
-        ${tile("saved", "Saved meals", "", ICONS.recents)}
+        ${speech.supported ? tile("voice", "Voice", "", ICONS.voice) : tile("scan", "Barcode", "", ICONS.barcode)}
+        ${speech.supported ? tile("scan", "Barcode", "", ICONS.barcode) : `<span class="add-food-tile add-food-tile--spacer" aria-hidden="true"></span>`}
       </div>
       <div class="add-food-row">
-        ${tile("copy", "Copy day", "", ICONS.copy)}
-        ${tile("recipe", "Recipe", "", ICONS.recipe)}
-        ${speech.supported ? tile("voice", "Voice", "", ICONS.voice) : ""}
+        ${tile("frequent", "Frequent", "", ICONS.frequent || ICONS.recents)}
+        ${tile("favorites", "Favorites", "", ICONS.favorites || ICONS.recents)}
+      </div>
+      <div class="add-food-row">
+        ${tile("manual", "Manual", "", ICONS.manual)}
+        ${tile("copy", "Copy from day", "", ICONS.copy)}
       </div>
       ${
         showWater
@@ -682,18 +709,22 @@ export class DiaryView extends HTMLElement {
       location.hash = hash;
     };
 
-    sheet.body.querySelector('[data-add="photo"]')?.addEventListener("click", () => go(`#/analyze?date=${this.date}&mode=photo`));
+    const openSaved = (segment) => {
+      this.openSavedMealsSheet(sheet, appPrefs, segment);
+    };
+
+    sheet.body.querySelector('[data-add="photo"]')?.addEventListener("click", () => {
+      sheet.close();
+      startPhotoAiFlow({ date: this.date });
+    });
     sheet.body.querySelector('[data-add="note"]')?.addEventListener("click", () => go(`#/analyze?date=${this.date}&mode=note`));
+    sheet.body.querySelector('[data-add="recents"]')?.addEventListener("click", () => openSaved("RECENTS"));
+    sheet.body.querySelector('[data-add="frequent"]')?.addEventListener("click", () => openSaved("FREQUENT"));
+    sheet.body.querySelector('[data-add="favorites"]')?.addEventListener("click", () => openSaved("FAVORITES"));
     sheet.body.querySelector('[data-add="manual"]')?.addEventListener("click", () => go(`#/entry/new?date=${this.date}`));
     sheet.body.querySelector('[data-add="scan"]')?.addEventListener("click", () => go(`#/scan?date=${this.date}`));
-    sheet.body.querySelector('[data-add="saved"]')?.addEventListener("click", () => {
-      this.openSavedMealsSheet(sheet, appPrefs);
-    });
     sheet.body.querySelector('[data-add="copy"]')?.addEventListener("click", () => {
       this.openCopyFromDaySheet(sheet);
-    });
-    sheet.body.querySelector('[data-add="recipe"]')?.addEventListener("click", () => {
-      this.openRecipeSheet(sheet, appPrefs);
     });
     sheet.body.querySelector('[data-add="voice"]')?.addEventListener("click", () => {
       sheet.close();
@@ -721,27 +752,25 @@ export class DiaryView extends HTMLElement {
     });
   }
 
-  startVoiceNote() {
-    const speech = createSpeechCapture();
-    if (!speech.supported) {
-      this.showToast("Voice input is not supported in this browser");
-      return;
-    }
-    this.showToast("Listening…");
-    speech.start(
-      (text) => {
+  async startVoiceNote() {
+    const sheet = await openVoiceCaptureSheet({
+      onResult: (text) => {
         location.hash = `#/analyze?date=${this.date}&mode=note&prefill=${encodeURIComponent(text)}`;
       },
-      (err) => this.showToast(`Voice: ${err}`)
-    );
+      onCancel: () => {},
+    });
+    if (!sheet) {
+      this.showToast("Voice input is not supported in this browser");
+    }
   }
 
   /**
    * @param {ReturnType<typeof openSheet>} parentSheet
    * @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs
+   * @param {"RECENTS"|"FREQUENT"|"FAVORITES"|"RECIPES"} [initialSegment]
    */
-  async openSavedMealsSheet(parentSheet, appPrefs) {
-    let segment = appPrefs.lastSavedMealsSegment || "RECENTS";
+  async openSavedMealsSheet(parentSheet, appPrefs, initialSegment) {
+    let segment = initialSegment || appPrefs.lastSavedMealsSegment || "RECENTS";
     const sheet = openSheet({
       title: "Saved meals",
       body: `<div class="saved-meals" data-saved-root><p class="empty-state">Loading…</p></div>`,

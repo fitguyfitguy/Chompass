@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * Web Speech API helper for Add Food / Coach voice capture.
- * @returns {{supported: boolean, start: (onResult: (text: string) => void, onError?: (msg: string) => void) => () => void}}
+ * @returns {{supported: boolean, start: (onResult: (text: string) => void, onError?: (msg: string) => void, opts?: { lang?: string }) => () => void}}
  */
 export function createSpeechCapture() {
   const SR = /** @type {any} */ (window).SpeechRecognition || /** @type {any} */ (window).webkitSpeechRecognition;
@@ -16,11 +16,11 @@ export function createSpeechCapture() {
 
   return {
     supported: true,
-    start(onResult, onError) {
+    start(onResult, onError, opts) {
       const rec = new SR();
       rec.continuous = false;
       rec.interimResults = false;
-      rec.lang = navigator.language || "en-US";
+      rec.lang = opts?.lang || navigator.language || "en-US";
       rec.onresult = (ev) => {
         const text = ev.results?.[0]?.[0]?.transcript;
         if (text) onResult(String(text));

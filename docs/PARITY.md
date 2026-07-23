@@ -12,23 +12,22 @@ For formula / wire-format correctness (not feature lists), see:
 
 | Surface | Status | Android | PWA | Notes |
 |---------|--------|---------|-----|-------|
-| Home diary (meals, gauge, tubes/chips) | shared | `ui/home/` | `components/home-*` | Pref-driven tubes; fiber in default set |
-| Progress (weight, BF, measurements, forecast) | shared | `ui/progress/` | `components/progress-*` | FCAST/ADAPT mirrored in `nofud-core/forecast.js` |
-| Settings (profile, goals, units, AI, data) | shared | `ui/settings/` | `components/settings-*` | Defaults aligned; prefs not exported between apps |
-| Onboarding | shared | `ui/onboarding/` | `components/onboarding-*` | |
-| Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry components | Wait UX: phased overlay + single-flight lock (PWA mirrors Android Preparing → Calling AI → Reading result); OFF field mapping has web parity tests |
-| Saved meals / recipes / favorites | shared | models + UI | recipes / saved | |
+| Home diary (meals, gauge, tubes/chips) | shared | `ui/home/` | `components/home-*` | Pref-driven tubes; fiber in default set; **53-week snap pager** |
+| Progress (weight, BF, measurements, forecast) | shared | `ui/progress/` | `components/progress-*` | FCAST/ADAPT mirrored; interactive chart tips; equal range chips |
+| Settings (profile, goals, units, AI, data) | shared | `ui/settings/` | `components/settings-*` | Custom P/C/F pins; browser speech language; Android-only called out |
+| Onboarding | shared | `ui/onboarding/` | `components/onboarding-*` | Birthday + editable plan-ready macros; BF stored as fraction |
+| Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry + `photo-ai-flow` | In-app camera + multi-photo review; **all images** sent to BYOK providers; FoodResult-like review/Log; voice sheet; barcode reticle |
+| Saved meals / recipes / favorites | shared | models + UI | recipes / saved | Add Food heroes: Photo / Note / Recents; Frequent & Favorites in More |
 | Copy day / meal share | shared | `MealShare.kt` | `meal-share.js` | Native `nofud://`; PWA `#/add-meal?d=` |
 | Diary JSON export/import 1.1 | shared | `export/Diary*` | `diary-format.js` | Contract: `contracts/diary-1.1.schema.json` |
 | Body-metrics JSON 1.0 | shared | `export/BodyMetrics*` | `body-metrics-format.js` | Contract: `contracts/body-metrics-1.0.schema.json` |
-| Deterministic goal formulas | shared | `UserProfile` + services | `nofud-core/formulas.js` | Goldens: `testdata/parity/formulas-expected.json` |
+| Deterministic goal formulas | shared | `UserProfile` + services | `nofud-core/formulas.js` | Goldens: `testdata/parity/formulas-expected.json`; custom macro pins honored |
 | AI Coach (BYOK cloud) | shared | coach + AI services | `lib/ai/` | Provider/model defaults must stay aligned |
 | Health Connect | android-only | HC services | — | Measured TDEE path not on web |
 | Widgets / notifications | android-only | glance / NotificationService | — | |
 | On-device LLM (Gemma / LiteRT) | android-only | debug + production flag | — | See `ON_DEVICE_LLM.md` |
 | Grounded entry | wip / android | grounding services | — | Feature flag; see `GROUNDED_ENTRY.md` |
 | Full i18n pack | android-only | `res/values*` | EN-first copy | |
-| 53-week pager | android-only | progress UI | — | |
 | Service worker / installability | pwa-only | — | `sw.js`, manifest | |
 | IndexedDB local store | pwa-only | DataStore | `db.js` | No cloud sync between clients |
 

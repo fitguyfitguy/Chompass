@@ -22,10 +22,22 @@
  * @typedef {Object} AiMessage
  * @property {"user"|"assistant"} role
  * @property {string} [text]
- * @property {{mimeType: string, base64: string}} [image]
+ * @property {{mimeType: string, base64: string}} [image] single image (coach / legacy)
+ * @property {{mimeType: string, base64: string}[]} [images] multi-angle meal photos
  * @property {AiToolCall[]} [toolCalls]           assistant turn requesting tool use
  * @property {{id: string, output: any}[]} [toolResults]  user turn answering tool calls
  */
+
+/**
+ * Resolve image list from a message (`images` wins; else singular `image`).
+ * @param {AiMessage} m
+ * @returns {{mimeType: string, base64: string}[]}
+ */
+export function messageImages(m) {
+  if (m.images?.length) return m.images;
+  if (m.image) return [m.image];
+  return [];
+}
 
 /** @typedef {Object} AiResponse
  * @property {string} text
@@ -75,9 +87,12 @@ export async function anthropicSend(config, req) {
   return { text, toolCalls };
 }
 
-function anthropicMessage(m) {
+/** @param {AiMessage} m */
+export function anthropicMessage(m) {
   const content = [];
-  if (m.image) content.push({ type: "image", source: { type: "base64", media_type: m.image.mimeType, data: m.image.base64 } });
+  for (const img of messageImages(m)) {
+    content.push({ type: "image", source: { type: "base64", media_type: img.mimeType, data: img.base64 } });
+  }
   if (m.text) content.push({ type: "text", text: m.text });
   if (m.toolCalls) for (const tc of m.toolCalls) content.push({ type: "tool_use", id: tc.id, name: tc.name, input: tc.input });
   if (m.toolResults) for (const tr of m.toolResults) content.push({ type: "tool_result", tool_use_id: tr.id, content: JSON.stringify(tr.output) });
@@ -113,9 +128,12 @@ export async function geminiSend(config, req) {
   return { text, toolCalls };
 }
 
-function geminiContent(m) {
+/** @param {AiMessage} m */
+export function geminiContent(m) {
   const parts = [];
-  if (m.image) parts.push({ inline_data: { mime_type: m.image.mimeType, data: m.image.base64 } });
+  for (const img of messageImages(m)) {
+    parts.push({ inline_data: { mime_type: img.mimeType, data: img.base64 } });
+  }
   if (m.text) parts.push({ text: m.text });
   if (m.toolCalls) for (const tc of m.toolCalls) parts.push({ functionCall: { name: tc.name, args: tc.input } });
   if (m.toolResults) for (const tr of m.toolResults) parts.push({ functionResponse: { name: tr.id.split("-")[0], response: tr.output } });
@@ -148,7 +166,11 @@ export async function openAiCompatibleSend(config, req) {
   return { text: msg.content ?? "", toolCalls };
 }
 
-function openAiMessages(m) {
+/**
+ * @param {AiMessage} m
+ * @returns {any[]}
+ */
+export function openAiMessages(m) {
   if (m.role === "assistant" && m.toolCalls?.length) {
     return [{
       role: "assistant",
@@ -159,12 +181,16 @@ function openAiMessages(m) {
   if (m.role === "user" && m.toolResults?.length) {
     return m.toolResults.map((tr) => ({ role: "tool", tool_call_id: tr.id, content: JSON.stringify(tr.output) }));
   }
-  if (m.image) {
+  const imgs = messageImages(m);
+  if (imgs.length) {
     return [{
       role: m.role,
       content: [
         { type: "text", text: m.text || "" },
-        { type: "image_url", image_url: { url: `data:${m.image.mimeType};base64,${m.image.base64}` } },
+        ...imgs.map((img) => ({
+          type: "image_url",
+          image_url: { url: `data:${img.mimeType};base64,${img.base64}` },
+        })),
       ],
     }];
   }
