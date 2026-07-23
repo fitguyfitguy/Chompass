@@ -1,10 +1,10 @@
 ---
 title: Privacy
-description: No ads, no analytics, no accounts. Local-first food logs with BYOK cloud AI or opt-in on-device inference.
+description: No ads, no analytics, no accounts. Local-first food logs with BYOK cloud AI or opt-in on-device inference (Android).
 layout: single
 ---
 
-NoFUD is a privacy-first, ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+NoFUD is a privacy-first, ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Use it as an [installable browser PWA](https://fitguy.codeberg.page/NoFUD/app/) or as an Android app.
 
 ## Summary
 
@@ -12,14 +12,18 @@ NoFUD is a privacy-first, ad-free calorie tracker forked from [Fud AI](https://g
 - **No analytics** — No usage tracking, crash analytics, or telemetry SDKs.
 - **No accounts** — No sign-in, cloud sync, or central user database.
 - **Local-first** — Food logs, weight history, profile, and Coach chat stay on your device.
-- **Bring your own AI key** — Keys are encrypted on-device. Cloud requests go directly from your phone to the provider you choose.
-- **On-Device (Private)** — Opt-in Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
+- **Bring your own AI key** — Keys are encrypted on-device. Cloud requests go directly from your device to the provider you choose.
+- **On-Device (Private)** — On Android, opt-in Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
+
+## Web app (PWA)
+
+The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser and stores data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients — move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
 
 ## Data on your device
 
-The app stores locally: food entries and photos, weight and body-fat history, optional water log, profile and goals, Coach history, and widget snapshots.
+The Android app stores locally: food entries and photos, weight and body-fat history, optional water log, profile and goals, Coach history, and widget snapshots. The web app stores the equivalent diary, metrics, and settings in the browser.
 
-**Delete All Data** (Settings) wipes app storage only. It does not remove records previously synced to Health Connect — manage those in the Health Connect app.
+**Delete All Data** (Settings) wipes app storage only. On Android it does not remove records previously synced to Health Connect — manage those in the Health Connect app.
 
 ## Network requests
 
@@ -38,7 +42,7 @@ NoFUD does not sell or share your health data for advertising.
 
 ## Meal sharing
 
-Shared meals use a `nofud://` deep link with base64-encoded nutrition JSON. Links leave your device through the app or messenger you choose.
+Shared meals use a `nofud://` deep link (Android) or a hash URL on the web app, with base64-encoded nutrition JSON. Links leave your device through the app or messenger you choose.
 
 ## Contact
 

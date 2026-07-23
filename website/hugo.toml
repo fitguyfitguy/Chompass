@@ -6,13 +6,14 @@ enableRobotsTXT = false
 summaryLength = 20
 
 [params]
-  description = 'Ad-free AI calorie tracker for Android. Cloud BYOK or opt-in on-device Gemma 4. Privacy-focused, no analytics.'
+  description = 'Ad-free AI calorie tracker — Android app and browser PWA. Cloud BYOK on both; opt-in on-device Gemma 4 on Android. Privacy-focused, no analytics.'
   version = '2.0.0'
   apkArm64Note = '~15 MiB'
   apkUniversalNote = '~27 MiB'
   repo = 'https://codeberg.org/fitguy/NoFUD'
   releases = 'https://codeberg.org/fitguy/nofud/releases'
   obtainium = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud'
+  pwa = 'https://fitguy.codeberg.page/NoFUD/app/'
   privacyRepo = 'https://codeberg.org/fitguy/NoFUD/src/branch/main/docs/PRIVACY.md'
   upstream = 'https://github.com/apoorvdarshan/fud-ai'
   upstreamReleases = 'https://github.com/apoorvdarshan/fud-ai/releases'

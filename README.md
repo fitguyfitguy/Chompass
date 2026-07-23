@@ -4,24 +4,33 @@
 
 # NoFUD
 
-**Ad-free AI calorie tracker for Android**
+**Ad-free AI calorie tracker — Android app and browser PWA**
 
-Cloud BYOK or opt-in on-device Gemma 4. Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Cloud BYOK wherever you run it; opt-in on-device Gemma 4 on the Android app. Privacy-focused fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-[Website](https://fitguy.codeberg.page/NoFUD/) · [Download](https://fitguy.codeberg.page/NoFUD/download/) · [Privacy](docs/PRIVACY.md)
+[Website](https://fitguy.codeberg.page/NoFUD/) · [Download](https://fitguy.codeberg.page/NoFUD/download/) · [Web app](https://fitguy.codeberg.page/NoFUD/app/) · [Privacy](docs/PRIVACY.md)
 
 [![Latest release](https://img.shields.io/gitea/v/release/fitguy/NoFUD?gitea_url=https://codeberg.org&style=flat-square&label=release&color=127059)](https://codeberg.org/fitguy/NoFUD/releases)
+[![PWA](https://img.shields.io/badge/Platform-PWA-127059?style=flat-square&logo=pwa&logoColor=white)](https://fitguy.codeberg.page/NoFUD/app/)
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](docs/PRIVACY.md)
 
 </div>
 
-Log food with a photo, voice, barcode, share intent, or typed note. Use your own cloud AI key, or download Gemma 4 once for on-device analysis. No ads, no account, no analytics. Open exports and [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for scales and wearables.
+Log food with a photo, voice, barcode, share intent, or typed note. Use your own cloud AI key, or download Gemma 4 once for on-device analysis in the Android app. No ads, no account, no analytics. Open diary and body-metrics exports on both clients; [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for scales and wearables in the Android app.
 
-Android only. Project home: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
+Use the [installable PWA](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech) or the Android APK — same diary and body-metrics JSON contracts, no cloud sync between clients. Health Connect, widgets, notifications, on-device AI, and full i18n are Android-app features. Project home: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
 
 ## Install
+
+### Web app (PWA)
+
+Open [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser — phone, tablet, or desktop. It is a progressive web app you can install to the home screen or dock. Diary logging, progress, BYOK AI entry and Coach, and shared JSON export/import with the Android app.
+
+Works in Firefox, Safari, and other engines; **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, etc.) generally have the smoothest install prompt, camera barcode, and Web Speech support.
+
+### Android app
 
 Not on the Play Store. F-Droid metadata is submitted; until the package shows up in the F-Droid client, install from Obtainium or Codeberg Releases.
 
@@ -64,7 +73,7 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
       <sub><b>Coach</b>: chat with your provider key</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/settings.png" width="180" alt="Settings in dark theme" /><br />
+      <img src="docs/screenshots/settings.png" width="180" alt="Settings screen in dark theme" /><br />
       <sub><b>Settings</b>: diet modes, Health Connect</sub>
     </td>
     <td align="center" width="33%">
@@ -76,24 +85,26 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
 
 ## Features
 
-- **Food logging**: multi-photo (up to 10), share into the app, voice, barcode (FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp)), text, manual entry, saved meals, draft recovery
-- **AI**: cloud BYOK (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use) or opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android). Optional fallback provider. AI Coach chat.
-- **Progress & Health Connect**: weight, body fat, steps, exercise, wellness; two-way sync with Gadgetbridge, openScale, and other Health Connect apps
-- **Diet & extras**: keto and other diet modes, water tracking, home-screen widgets, 15 languages
-- **Open data**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, `nofud://` meal share links
-- **Size**: ~15 MiB arm64 / ~27 MiB universal; no ads, analytics, or workout library ([releases](https://codeberg.org/fitguy/NoFUD/releases))
+Shared on the [PWA](https://fitguy.codeberg.page/NoFUD/app/) and Android app unless noted:
+
+- **Food logging**: multi-photo (up to 10), share into the app (Android), voice, barcode (FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser / Open Food Facts on web), text, manual entry, saved meals, draft recovery
+- **AI**: cloud BYOK (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use). On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
+- **Progress**: weight, body fat, measurements, forecast. **Health Connect** (Android): steps, exercise, wellness; two-way sync with Gadgetbridge, openScale, and other Health Connect apps
+- **Diet & extras**: keto and other diet modes, water tracking. Android: home-screen widgets, 15 languages (web is EN-first)
+- **Open data**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links (`nofud://` on Android; hash URL on web)
+- **Size (Android)**: ~15 MiB arm64 / ~27 MiB universal; no ads, analytics, or workout library ([releases](https://codeberg.org/fitguy/NoFUD/releases))
 
 ## Why NoFUD
 
-NoFUD forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork keeps its own roadmap: ad-free, Android-first UX, smaller APK, open export/import, and Health Connect. It does not try to match upstream feature for feature.
+NoFUD forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork keeps its own roadmap: ad-free, Android app + browser PWA, smaller APK, open export/import, and Health Connect. It does not try to match upstream feature for feature.
 
-Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, and lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)).
+Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)), and a data-compatible [PWA](https://fitguy.codeberg.page/NoFUD/app/) for any modern browser.
 
 See [CHANGELOG.md](docs/CHANGELOG.md) for release notes.
 
 ## On-device AI (private)
 
-**Settings → AI Provider → On-Device (Private)** runs food logging AI on your phone. No API key, no account, and nothing sent to a cloud provider for text or photo analysis.
+**Android app.** **Settings → AI Provider → On-Device (Private)** runs food logging AI on your phone. No API key, no account, and nothing sent to a cloud provider for text or photo analysis.
 
 | | |
 |---|---|
@@ -107,7 +118,7 @@ Coach chat still needs a cloud provider. Added in [v1.14.0](docs/CHANGELOG.md#11
 
 ## Health Connect
 
-NoFUD uses **Android Health Connect**. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with NoFUD:
+**Android app.** NoFUD uses **Android Health Connect**. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with NoFUD:
 
 | Companion | What it brings | Notes |
 |-----------|----------------|-------|
@@ -128,23 +139,27 @@ Optional **background sync** (Settings → Health & Data, off by default) checks
 
 | Path | Steps |
 |------|-------|
-| **A: File export** | In Fud AI, export your food diary as JSON. In NoFUD, open **Settings → Import Food Diary JSON** |
-| **B: Health Connect** | Enable Health Connect in both apps and grant read permissions |
+| **A: File export** | In Fud AI, export your food diary as JSON. In NoFUD (Android or web), open **Settings → Import Food Diary JSON** |
+| **B: Health Connect** | Enable Health Connect in both apps and grant read permissions (Android) |
 
 **Settings → Import Weight & Body Data** also accepts NoFUD JSON/CSV, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and common weight CSVs. Body-circumference sites have no Health Connect record type, so use file transfer for those.
 
-### NoFUD vs Fud AI
+### Fud AI vs NoFUD Android vs NoFUD PWA
 
-| Area | Fud AI (upstream) | NoFUD |
-|------|-------------------|-------|
-| Banner ads (AdMob) | Added Jul 2026, removed in 3.0.3 | **Never shipped** |
-| On-device private AI (Gemma 4 Edge) | No | **Yes** (opt-in) |
-| Barcode scanner | Proprietary ML Kit | **FOSS zxing-cpp** |
-| Workouts tab + exercise library | Yes (~120 MB APK) | **Omitted** (~15 MiB arm64) |
-| Diet / keto mode, fallback AI provider | No | **Yes** |
-| Distribution | Play-focused | **Codeberg** / F-Droid |
+| Feature | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | NoFUD Android | [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) |
+|---------|--------|---------------|-----------|
+| Banner ads | Brief AdMob; removed in 3.0.3 | **Never shipped** | **Never shipped** |
+| On-device AI (Gemma 4) | No | **Yes** (opt-in) | No (BYOK cloud) |
+| Barcode | ML Kit | **FOSS zxing-cpp** | Browser / OFF |
+| Workouts library | Yes (~120 MB APK) | **Omitted** (~15 MiB arm64) | Omitted |
+| Keto / diet modes | No | **Yes** | **Yes** |
+| Health Connect | Partial | **Steps, exercise, sleep, HR, hydration** | No |
+| Widgets / notifications | Upstream set | **Yes** | No (installable PWA) |
+| Languages | Upstream | **15** | EN-first |
+| Distribution | Play-focused | **Codeberg** / Obtainium / F-Droid | **PWA** in any modern browser (`/app/`) |
+| Open diary / body JSON | Upstream formats | **Yes** | **Same contracts as Android** |
 
-Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases)
+Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases). Capability matrix for maintainers: [`docs/PARITY.md`](docs/PARITY.md).
 
 ## Performance
 
