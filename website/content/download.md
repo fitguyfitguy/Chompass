@@ -8,11 +8,42 @@ Two ways to use NoFUD: the **installable browser PWA**, or the **Android app**. 
 
 ## Web app (PWA)
 
-Open the [NoFUD web app](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser on phone, tablet, or desktop. Install it to the home screen or dock when your browser offers that. Diary logging, progress charts, BYOK AI food entry and Coach, and shared JSON export/import with the Android app.
+Open the [NoFUD web app](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser on phone, tablet, or desktop. Install it to the home screen or dock for quicker access. Diary logging, progress charts, BYOK AI food entry and Coach, and shared JSON export/import with the Android app.
 
 Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, and similar) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
 **Android-app features not on the PWA:** Health Connect, home-screen widgets, notifications, on-device Gemma 4, and the full 15-language pack.
+
+### How to install
+
+#### iPhone / iPad (Safari)
+
+1. Open NoFUD in **Safari** (required for a true home-screen app).
+2. Tap **Share**.
+3. Choose **Add to Home Screen**, then Add.
+
+Chrome or Firefox on iOS still use Safari’s share sheet for home-screen install.
+
+#### Android (Chrome, Edge, Brave)
+
+1. Open the browser menu (⋮).
+2. Tap **Install app** or **Add to Home screen**.
+3. Confirm, then open NoFUD from the new icon.
+
+Many Chromium browsers do not show an automatic install popup — use the menu. In the PWA itself you may also see an Install banner when the browser allows it.
+
+#### Desktop (Chrome / Edge)
+
+1. Look for the install icon in the address bar, or open the browser menu.
+2. Choose **Install NoFUD** (or Install app).
+3. Launch from your dock, taskbar, or app launcher.
+
+#### Firefox
+
+- **Android:** menu → **Add to Home screen**.
+- **Desktop:** bookmark the page; full PWA install is limited compared with Chromium.
+
+Already installed? Open NoFUD from the home-screen or dock icon (not a normal browser tab) for the full-screen shell. In the app: **Settings → Install app**.
 
 ## Android: Obtainium (recommended)
 

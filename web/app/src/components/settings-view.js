@@ -61,6 +61,7 @@ export class SettingsView extends HTMLElement {
           <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
           <a href="#/settings?section=data">Data <span>Import / export / clear</span></a>
           <a href="#/settings?section=ai">AI <span>Keys, instructions, fallback</span></a>
+          <a href="#/settings?section=install">Install app <span>Home screen &amp; browsers</span></a>
           <a href="#/settings?section=about">About &amp; methods <span>Formulas</span></a>
           <a href="#/measurements">Body measurements <span>Tape metrics</span></a>
         </nav>`;
@@ -93,6 +94,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "ai") {
       await this.renderAi();
+      return;
+    }
+    if (this.section === "install") {
+      await this.renderInstall();
       return;
     }
     if (this.section === "about") {
@@ -701,11 +706,59 @@ export class SettingsView extends HTMLElement {
     bindSubpageBack(this, "#/settings");
   }
 
+  async renderInstall() {
+    this.innerHTML = `
+      ${subpageBar("Install app", { backHref: "#/settings" })}
+      <div class="card">
+        <p style="margin:0;">Install NoFUD to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">iPhone / iPad (Safari)</h2>
+        <ol class="install-steps">
+          <li>Open NoFUD in <strong>Safari</strong> (required for a true home-screen app).</li>
+          <li>Tap the <strong>Share</strong> button.</li>
+          <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
+        </ol>
+        <p class="install-note">Chrome or Firefox on iOS still use Safari&rsquo;s share sheet for home-screen install.</p>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">Android (Chrome, Edge, Brave)</h2>
+        <ol class="install-steps">
+          <li>Open the browser menu (⋮).</li>
+          <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+          <li>Confirm. Open NoFUD from the new icon afterward.</li>
+        </ol>
+        <p class="install-note">Many Chromium browsers do not show an automatic install popup — use the menu.</p>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">Desktop (Chrome / Edge)</h2>
+        <ol class="install-steps">
+          <li>Look for the install icon in the address bar, or open the browser menu.</li>
+          <li>Choose <strong>Install NoFUD</strong> (or Install app).</li>
+          <li>Launch from your dock, taskbar, or app launcher.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">Firefox</h2>
+        <ol class="install-steps">
+          <li><strong>Android:</strong> menu → <strong>Add to Home screen</strong>.</li>
+          <li><strong>Desktop:</strong> bookmark the page; full PWA install is limited compared with Chromium.</li>
+        </ol>
+        <p class="install-note">Chromium-based browsers work best for install, camera barcode, and speech.</p>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">Already installed?</h2>
+        <p style="margin:0;">Open NoFUD from the home-screen or dock icon (not a normal browser tab) for the full-screen shell and offline app assets.</p>
+      </div>`;
+    bindSubpageBack(this, "#/settings");
+  }
+
   async renderAbout() {
     this.innerHTML = `
       ${subpageBar("About & methods", { backHref: "#/settings" })}
       <div class="card">
         <p style="margin:0 0 0.6rem;">NoFUD browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
+        <p style="margin:0;"><a href="#/settings?section=install">How to install</a> this app on your phone or computer.</p>
       </div>
       <div class="card methods-card">
         <h2 class="chart-title">Calculation methods</h2>

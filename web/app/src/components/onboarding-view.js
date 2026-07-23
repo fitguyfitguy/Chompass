@@ -4,6 +4,7 @@ import { dailyTargets } from "../lib/nofud-core/formulas.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
+import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
 
 /** @typedef {{ id: string, title: string, hideChrome?: boolean, hideCta?: boolean }} OnboardingStepDef */
 
@@ -541,6 +542,7 @@ export class OnboardingView extends HTMLElement {
     }
     await prefs.save(prefPatch);
     location.hash = "#/home";
+    maybeShowPostOnboardingInstallSheet();
   }
 }
 

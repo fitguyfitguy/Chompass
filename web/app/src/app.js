@@ -11,6 +11,7 @@ import "./components/measurements-view.js";
 import "./components/add-meal-view.js";
 import { maybeSeedFromUrl } from "./lib/dev-seed.js";
 import { prefs, profile } from "./lib/db.js";
+import { initInstallPrompt, maybeShowInstallBanner } from "./lib/install-prompt.js";
 
 const view = document.getElementById("view");
 const nav = document.getElementById("bottom-nav");
@@ -86,6 +87,11 @@ async function render() {
     else a.removeAttribute("aria-current");
   });
   if (nav) nav.hidden = HIDE_NAV.has(route);
+  if (route === "onboarding") {
+    document.querySelector(".install-banner")?.remove();
+  } else {
+    maybeShowInstallBanner();
+  }
 }
 
 window.addEventListener("hashchange", () => {
@@ -104,23 +110,4 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-maybeShowIosInstallBanner();
-
-function maybeShowIosInstallBanner() {
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = "standalone" in navigator && navigator.standalone === true;
-  const dismissed = localStorage.getItem("nofud-install-banner-dismissed") === "1";
-  if (!isIos || isStandalone || dismissed) return;
-
-  const banner = document.createElement("div");
-  banner.className = "install-banner";
-  banner.innerHTML = `
-    <span>Add NoFUD to your Home Screen: tap Share, then "Add to Home Screen".</span>
-    <button aria-label="Dismiss">✕</button>
-  `;
-  banner.querySelector("button").addEventListener("click", () => {
-    localStorage.setItem("nofud-install-banner-dismissed", "1");
-    banner.remove();
-  });
-  document.body.appendChild(banner);
-}
+initInstallPrompt();
