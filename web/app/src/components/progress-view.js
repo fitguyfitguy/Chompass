@@ -62,11 +62,18 @@ export class ProgressView extends HTMLElement {
     const totalsByDate = new Map();
     for (const e of allEntries) {
       if (e.date < startIso) continue;
-      const acc = totalsByDate.get(e.date) ?? { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 };
+      const acc = totalsByDate.get(e.date) ?? {
+        calories: 0,
+        proteinG: 0,
+        carbsG: 0,
+        fatG: 0,
+        fiberG: 0,
+      };
       acc.calories += e.calories;
       acc.proteinG += e.proteinG;
       acc.carbsG += e.carbsG;
       acc.fatG += e.fatG;
+      acc.fiberG += e.fiberG ?? 0;
       totalsByDate.set(e.date, acc);
     }
     const calorieBars = days.map((d) => ({ label: shortDate(d), value: totalsByDate.get(d)?.calories ?? 0 }));
@@ -182,6 +189,7 @@ export class ProgressView extends HTMLElement {
           <div class="stat-badge" style="color:var(--protein)"><strong>${macroAvg("proteinG").toFixed(0)} g</strong>Protein</div>
           <div class="stat-badge" style="color:var(--carbs)"><strong>${macroAvg("carbsG").toFixed(0)} g</strong>Carbs</div>
           <div class="stat-badge" style="color:var(--fat)"><strong>${macroAvg("fatG").toFixed(0)} g</strong>Fat</div>
+          <div class="stat-badge" style="color:var(--teal)"><strong>${macroAvg("fiberG").toFixed(0)} g</strong>Fiber</div>
         </div>
       </div>
 

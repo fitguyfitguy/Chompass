@@ -4,6 +4,7 @@
  */
 import { foodEntries, recipes as recipesStore } from "./db.js";
 import { guessMealTypeFromPrefs } from "./meal-schedule.js";
+import { ALL_MICRO_KEYS } from "./home-nutrients.js";
 
 /**
  * @typedef {Object} RecipeIngredient
@@ -14,10 +15,8 @@ import { guessMealTypeFromPrefs } from "./meal-schedule.js";
  * @property {number} baseCarbsG
  * @property {number} baseFatG
  * @property {number} [quantityScale]
- * @property {number|null} [baseFiberG]
- * @property {number|null} [baseSugarG]
- * @property {number|null} [baseSodiumMg]
  * @property {number|null} [baseQuantityG]
+ * @property {Record<string, number|null|undefined>} [baseMicros]
  */
 
 /**
@@ -31,6 +30,13 @@ import { guessMealTypeFromPrefs } from "./meal-schedule.js";
 
 /** @param {import('./nofud-core/models.js').FoodEntry} entry */
 export function ingredientFromFoodEntry(entry) {
+  /** @type {Record<string, number|null>} */
+  const baseMicros = {};
+  for (const key of ALL_MICRO_KEYS) {
+    const v = /** @type {Record<string, unknown>} */ (entry)[key];
+    baseMicros[key] = v == null ? null : Number(v);
+  }
+  // Legacy single-field names kept for older recipe rows
   return {
     id: crypto.randomUUID(),
     name: entry.name,
@@ -43,22 +49,31 @@ export function ingredientFromFoodEntry(entry) {
     baseSugarG: entry.sugarG ?? null,
     baseSodiumMg: entry.sodiumMg ?? null,
     baseQuantityG: entry.quantityG ?? null,
+    baseMicros,
   };
 }
 
-/** @param {RecipeIngredient} ing */
+/** @param {RecipeIngredient & {baseFiberG?: number|null, baseSugarG?: number|null, baseSodiumMg?: number|null}} ing */
 function scaled(ing) {
   const s = ing.quantityScale ?? 1;
   const scaleOpt = (v) => (v == null ? null : v * s);
+  /** @type {Record<string, number|null>} */
+  const micros = {};
+  const source = ing.baseMicros || {
+    fiberG: ing.baseFiberG ?? null,
+    sugarG: ing.baseSugarG ?? null,
+    sodiumMg: ing.baseSodiumMg ?? null,
+  };
+  for (const key of ALL_MICRO_KEYS) {
+    micros[key] = scaleOpt(source[key] ?? null);
+  }
   return {
     calories: Math.round(ing.baseCalories * s),
     proteinG: ing.baseProteinG * s,
     carbsG: ing.baseCarbsG * s,
     fatG: ing.baseFatG * s,
-    fiberG: scaleOpt(ing.baseFiberG),
-    sugarG: scaleOpt(ing.baseSugarG),
-    sodiumMg: scaleOpt(ing.baseSodiumMg),
     quantityG: scaleOpt(ing.baseQuantityG),
+    micros,
   };
 }
 
@@ -86,15 +101,15 @@ export async function logRecipe(recipe, date, appPrefs) {
       proteinG: n.proteinG,
       carbsG: n.carbsG,
       fatG: n.fatG,
-      fiberG: n.fiberG,
-      sugarG: n.sugarG,
-      sodiumMg: n.sodiumMg,
       quantityG: n.quantityG,
       source: "manual",
       note: null,
       grounding: null,
       recipeLogId,
     };
+    for (const key of ALL_MICRO_KEYS) {
+      entry[key] = n.micros[key];
+    }
     await foodEntries.put(entry);
   }
   return recipeLogId;

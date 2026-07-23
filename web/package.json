@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --checkJs --noEmit -p tsconfig.json",
-    "test": "node --test app/src/lib/nofud-core/__tests__/*.test.js"
+    "test": "node --test app/src/lib/nofud-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js"
   },
   "devDependencies": {
     "typescript": "^5.6.0"

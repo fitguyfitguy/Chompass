@@ -16,6 +16,17 @@ import { weekDates as weekDatesForPrefs, guessMealTypeFromPrefs } from "../lib/m
 import { listRecipes, logRecipe, recipeFromEntries, saveRecipe, deleteRecipe } from "../lib/recipes.js";
 import { mealShareText } from "../lib/meal-share.js";
 import { createSpeechCapture } from "../lib/speech.js";
+import {
+  normalizeHomeTopNutrients,
+  normalizeFoodLogChips,
+  sumNutrient,
+  nutrientGoal,
+  nutrientDef,
+  tubeStatus,
+  formatFoodChips,
+  NUTRITION_DETAIL_MICROS,
+  mergeOptionalGoals,
+} from "../lib/home-nutrients.js";
 
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
@@ -105,13 +116,9 @@ function ringSvg(eaten, target) {
 }
 
 /** Vertical macro tube — Android MacroCard. */
-function macroTube(key, label, value, target) {
+function macroTube(key, label, value, target, unit = "g") {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
-  let status;
-  if (target <= 0) status = "—";
-  else if (Math.round(value) === Math.round(target)) status = "goal";
-  else if (value < target) status = `${Math.round(target - value)} g left`;
-  else status = `+${Math.round(value - target)} g`;
+  const status = tubeStatus(value, target, unit);
   return `
     <div class="macro-tube macro-tube--${key}">
       <span class="macro-tube__value">${Math.round(value)}</span>
@@ -121,6 +128,24 @@ function macroTube(key, label, value, target) {
       <span class="macro-tube__label">${label}</span>
       <span class="macro-tube__status">${status}</span>
     </div>`;
+}
+
+/**
+ * @param {string[]} tubeKeys
+ * @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries
+ * @param {ReturnType<typeof dailyTargets>|null} targets
+ * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
+ */
+function renderMacroTubes(tubeKeys, entries, targets, optionalGoals) {
+  return tubeKeys
+    .map((key) => {
+      const def = nutrientDef(key);
+      if (!def) return "";
+      const value = sumNutrient(entries, key);
+      const goal = nutrientGoal(key, targets, optionalGoals);
+      return macroTube(def.tubeCss, def.label, value, goal, def.unit);
+    })
+    .join("");
 }
 
 function tile(action, label, sub, icon) {
@@ -135,8 +160,9 @@ function tile(action, label, sub, icon) {
 /**
  * @param {import('../lib/nofud-core/models.js').FoodEntry[]} mealEntries
  * @param {string} mealType
+ * @param {string[]} chipKeys
  */
-function mealCard(mealType, mealEntries) {
+function mealCard(mealType, mealEntries, chipKeys) {
   const totals = mealEntries.reduce(
     (acc, e) => {
       acc.calories += e.calories;
@@ -171,7 +197,7 @@ function mealCard(mealType, mealEntries) {
               <button type="button" class="food-item__main" data-edit>
                 <span class="food-item__text">
                   <span class="food-item__name">${escapeHtml(e.name)}</span>
-                  <span class="food-item__meta">${Math.round(e.proteinG)}P · ${Math.round(e.carbsG)}C · ${Math.round(e.fatG)}F${e.quantityG != null ? ` · ${e.quantityG}g` : ""} · ${e.time}</span>
+                  <span class="food-item__meta">${formatFoodChips(e, chipKeys)}${e.quantityG != null ? ` · ${e.quantityG}g` : ""} · ${e.time}</span>
                 </span>
                 <span class="food-item__cals">${Math.round(e.calories)}</span>
               </button>
@@ -238,8 +264,12 @@ export class DiaryView extends HTMLElement {
     }
 
     const waterMl = waterLogs.reduce((s, w) => s + w.amountMl, 0);
-    const waterGoal = appPrefs.waterGoalMl ?? 2500;
+    const waterGoal = appPrefs.waterGoalMl ?? 2000;
     const waterPct = waterGoal > 0 ? Math.min(100, (waterMl / waterGoal) * 100) : 0;
+    const showWater = appPrefs.showWater === true;
+    const tubeKeys = normalizeHomeTopNutrients(appPrefs.homeTopNutrients, appPrefs.homeNutrientCardCount);
+    const chipKeys = normalizeFoodLogChips(appPrefs.foodLogMacroChips);
+    const optionalGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
     const days = weekDates(this.date, appPrefs.weekStartsOnMonday !== false);
     const today = todayIso();
     const nextWeekStart = shiftDate(days[0], 7);
@@ -274,28 +304,27 @@ export class DiaryView extends HTMLElement {
       </div>
 
       <div class="card card--glass home-hero" data-day-swipe>
-        <div class="calorie-hero">
+        <button type="button" class="calorie-hero calorie-hero--tap" data-nutrition-detail aria-label="Open nutrition detail">
           ${targets ? ringSvg(totals.calories, calorieTarget) : `<p class="empty-state">Set up your profile in Settings to see calorie targets.</p>`}
-        </div>
+        </button>
         ${
           targets
-            ? `<div class="macro-tubes">
-                ${macroTube("protein", "Protein", totals.proteinG, targets.proteinG)}
-                ${macroTube("carbs", "Carbs", totals.carbsG, targets.carbsG)}
-                ${macroTube("fat", "Fat", totals.fatG, targets.fatG)}
+            ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
+                ${renderMacroTubes(tubeKeys, entries, targets, optionalGoals)}
               </div>`
             : ""
         }
       </div>
 
       ${
-        appPrefs.showWater !== false
+        showWater
           ? `<div class="card card--glass water-row">
               <div class="water-row__top">
                 <div class="water-row__meta"><strong>${waterMl} ml</strong> / ${waterGoal} ml water</div>
                 <div class="water-presets">
                   ${WATER_PRESETS.map((ml) => `<button type="button" class="chip" data-water="${ml}">+${ml}</button>`).join("")}
                   <button type="button" class="chip" data-water-custom>Custom</button>
+                  ${waterLogs.length ? `<button type="button" class="chip chip--ghost" data-water-undo title="Remove last log">Undo</button>` : ""}
                 </div>
               </div>
               <div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${waterGoal}" aria-valuenow="${waterMl}" aria-label="Water intake">
@@ -309,22 +338,25 @@ export class DiaryView extends HTMLElement {
         entries.length === 0
           ? `<p class="empty-state">No entries yet for this day. Tap + to log food.</p>`
           : MEAL_ORDER.filter((m) => entries.some((e) => e.mealType === m))
-              .map((mealType) => mealCard(mealType, entries.filter((e) => e.mealType === mealType)))
+              .map((mealType) => mealCard(mealType, entries.filter((e) => e.mealType === mealType), chipKeys))
               .join("")
       }
 
       <button class="fab" aria-label="Add food" aria-expanded="${this.fabOpen}" data-action="fab">+</button>
     `;
 
-    this.bindInteractions(entries, appPrefs);
+    this.bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs);
     this.animateFills();
   }
 
   /**
    * @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries
    * @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs
+   * @param {ReturnType<typeof dailyTargets>|null} targets
+   * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
+   * @param {{id: string, date: string, amountMl: number}[]} waterLogs
    */
-  bindInteractions(entries, appPrefs) {
+  bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs) {
     this.querySelectorAll("[data-date]").forEach((el) => {
       el.addEventListener("click", () => {
         const iso = el.getAttribute("data-date") || this.date;
@@ -345,6 +377,10 @@ export class DiaryView extends HTMLElement {
       el.addEventListener("click", () => this.addWater(Number(el.getAttribute("data-water"))));
     });
     this.querySelector("[data-water-custom]")?.addEventListener("click", () => this.customWater());
+    this.querySelector("[data-water-undo]")?.addEventListener("click", () => this.undoLastWater(waterLogs));
+    this.querySelector("[data-nutrition-detail]")?.addEventListener("click", () => {
+      this.openNutritionDetail(entries, targets, optionalGoals);
+    });
     this.querySelector('[data-action="fab"]')?.addEventListener("click", () => this.openAddFoodSheet(appPrefs));
 
     this.querySelectorAll(".food-swipe").forEach((row) => {
@@ -585,7 +621,7 @@ export class DiaryView extends HTMLElement {
     this.fabOpen = true;
     this.querySelector(".fab")?.setAttribute("aria-expanded", "true");
 
-    const showWater = appPrefs.showWater !== false;
+    const showWater = appPrefs.showWater === true;
     const speech = createSpeechCapture();
     const body = `
       <div class="add-food-heroes">
@@ -1002,6 +1038,73 @@ export class DiaryView extends HTMLElement {
     if (raw == null) return;
     const ml = Number(raw);
     if (ml > 0) await this.addWater(ml);
+  }
+
+  /**
+   * @param {{id: string, date: string, amountMl: number}[]} waterLogs
+   */
+  async undoLastWater(waterLogs) {
+    if (!waterLogs.length) return;
+    const last = waterLogs[waterLogs.length - 1];
+    await water.delete(last.id);
+    this.showToast(`Removed ${last.amountMl} ml`);
+    this.render();
+  }
+
+  /**
+   * Day nutrition detail — Android NutritionDetailSheet parity.
+   * @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries
+   * @param {ReturnType<typeof dailyTargets>|null} targets
+   * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
+   */
+  openNutritionDetail(entries, targets, optionalGoals) {
+    const fmt = (v) => (v === 0 ? "—" : v.toFixed(1));
+    const cal = entries.reduce((s, e) => s + e.calories, 0);
+    const macroRows = [
+      ["Calories", cal, targets?.calories ?? 0, "kcal"],
+      ["Protein", sumNutrient(entries, "proteinG"), targets?.proteinG ?? 0, "g"],
+      ["Carbs", sumNutrient(entries, "carbsG"), targets?.carbsG ?? 0, "g"],
+      ["Fat", sumNutrient(entries, "fatG"), targets?.fatG ?? 0, "g"],
+    ];
+    const microRows = NUTRITION_DETAIL_MICROS.map((def) => {
+      const value = sumNutrient(entries, def.key);
+      const goal = def.displayOnly ? null : nutrientGoal(def.key, targets, optionalGoals);
+      return { def, value, goal };
+    });
+
+    const sheet = openSheet({
+      title: "Nutrition detail",
+      body: `
+        <section class="nutrition-detail">
+          <h3 class="nutrition-detail__heading">Macros</h3>
+          <ul class="nutrition-detail__list">
+            ${macroRows
+              .map(
+                ([label, value, goal, unit]) => `
+              <li class="nutrition-detail__row">
+                <span class="nutrition-detail__label">${label}</span>
+                <span class="nutrition-detail__value">${Math.round(/** @type {number} */ (value))} ${unit}</span>
+                <span class="nutrition-detail__goal">/ ${goal || "—"}</span>
+              </li>`
+              )
+              .join("")}
+          </ul>
+          <h3 class="nutrition-detail__heading">Detailed nutrition</h3>
+          <ul class="nutrition-detail__list">
+            ${microRows
+              .map(
+                ({ def, value, goal }) => `
+              <li class="nutrition-detail__row">
+                <span class="nutrition-detail__label">${def.label}</span>
+                <span class="nutrition-detail__value">${fmt(value)} ${def.unit}</span>
+                <span class="nutrition-detail__goal">${goal != null && goal > 0 ? `/ ${goal}` : ""}</span>
+              </li>`
+              )
+              .join("")}
+          </ul>
+        </section>`,
+    });
+    void sheet;
   }
 
   async weekHasEntries() {

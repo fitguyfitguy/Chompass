@@ -123,20 +123,53 @@ export async function toggleFavorite(entry) {
 }
 
 /** Prefill shape used by entry-form / analyze recents. */
-/** @param {import('./nofud-core/models.js').FoodEntry} e */
+/**
+ * @param {import('./nofud-core/models.js').FoodEntry} e
+ * @returns {import('./nofud-core/models.js').FoodEntry}
+ */
 export function toPrefill(e) {
-  return {
+  /** @type {import('./nofud-core/models.js').FoodEntry} */
+  const out = {
+    id: e.id,
     name: e.name,
     calories: e.calories,
     proteinG: e.proteinG,
     carbsG: e.carbsG,
     fatG: e.fatG,
-    fiberG: e.fiberG ?? null,
-    sugarG: e.sugarG ?? null,
-    sodiumMg: e.sodiumMg ?? null,
     quantityG: e.quantityG ?? null,
     mealType: e.mealType,
+    date: e.date,
+    time: e.time,
     source: e.source ?? "manual",
     note: e.note ?? null,
+    grounding: e.grounding ?? null,
+    recipeLogId: null,
   };
+  for (const key of [
+    "sugarG",
+    "addedSugarG",
+    "fiberG",
+    "saturatedFatG",
+    "monounsaturatedFatG",
+    "polyunsaturatedFatG",
+    "cholesterolMg",
+    "sodiumMg",
+    "potassiumMg",
+    "transFatG",
+    "calciumMg",
+    "ironMg",
+    "magnesiumMg",
+    "zincMg",
+    "vitaminAMcg",
+    "vitaminCMg",
+    "vitaminDMcg",
+    "vitaminB12Mcg",
+    "vitaminEMg",
+    "vitaminKMcg",
+    "folateMcg",
+    "omega3G",
+  ]) {
+    out[key] = e[key] ?? null;
+  }
+  return out;
 }

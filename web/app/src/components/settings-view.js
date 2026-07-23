@@ -22,9 +22,24 @@ import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
+import {
+  HOME_TOP_NUTRIENTS,
+  FOOD_LOG_CHIP_KEYS,
+  DEFAULT_OPTIONAL_NUTRIENT_GOALS,
+  DEFAULT_NUTRIENT_CARD_COUNT,
+  normalizeHomeTopNutrients,
+  normalizeFoodLogChips,
+  nutrientDef,
+  mergeOptionalGoals,
+} from "../lib/home-nutrients.js";
 
 const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
 const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
+
+const OPTIONAL_GOAL_FIELDS = Object.keys(DEFAULT_OPTIONAL_NUTRIENT_GOALS).map((key) => {
+  const def = nutrientDef(key);
+  return /** @type {[string, string]} */ ([key, def ? `${def.label} (${def.unit})` : key]);
+});
 
 export class SettingsView extends HTMLElement {
   connectedCallback() {
@@ -317,20 +332,24 @@ export class SettingsView extends HTMLElement {
 
   async renderHome() {
     const p = await prefs.load();
-    const chips = (p.foodLogMacroChips || ["proteinG", "carbsG", "fatG"]).join(",");
+    const selectedTubes = new Set(
+      normalizeHomeTopNutrients(p.homeTopNutrients, p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT)
+    );
+    const selectedChips = new Set(normalizeFoodLogChips(p.foodLogMacroChips));
+    const chipDefs = HOME_TOP_NUTRIENTS.filter((n) => FOOD_LOG_CHIP_KEYS.includes(n.key));
     this.innerHTML = `
       ${subpageBar("Home display", { backHref: "#/settings" })}
       <form class="entry-form card" id="home-form">
         <div class="field">
-          <label for="showWater">Show water row</label>
+          <label for="showWater">Water tracking</label>
           <select id="showWater" name="showWater">
-            <option value="true" ${p.showWater !== false ? "selected" : ""}>On</option>
-            <option value="false" ${p.showWater === false ? "selected" : ""}>Off</option>
+            <option value="false" ${p.showWater !== true ? "selected" : ""}>Off</option>
+            <option value="true" ${p.showWater === true ? "selected" : ""}>On</option>
           </select>
         </div>
         <div class="field">
           <label for="waterGoalMl">Water goal (ml)</label>
-          <input id="waterGoalMl" name="waterGoalMl" type="number" min="0" value="${p.waterGoalMl ?? 2500}" />
+          <input id="waterGoalMl" name="waterGoalMl" type="number" min="0" value="${p.waterGoalMl ?? 2000}" />
         </div>
         <div class="field">
           <label for="calorieGaugeMode">Calorie gauge</label>
@@ -347,30 +366,48 @@ export class SettingsView extends HTMLElement {
           </select>
         </div>
         <div class="field">
-          <label for="homeNutrientCardCount">Macro tubes count (1–4)</label>
-          <input id="homeNutrientCardCount" name="homeNutrientCardCount" type="number" min="1" max="4" value="${p.homeNutrientCardCount ?? 3}" />
+          <label for="homeNutrientCardCount">Home nutrient tubes (1–4)</label>
+          <input id="homeNutrientCardCount" name="homeNutrientCardCount" type="number" min="1" max="4" value="${p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT}" />
         </div>
-        <div class="field">
-          <label for="foodLogMacroChips">Food-row macro chips (comma keys)</label>
-          <input id="foodLogMacroChips" name="foodLogMacroChips" type="text" value="${escapeAttr(chips)}" placeholder="proteinG,carbsG,fatG" />
-        </div>
-        <p style="color:var(--muted);font-size:0.8rem;margin:0;">Steps / Health Connect active calories are Android-only.</p>
+        <fieldset class="field nutrient-picker">
+          <legend>Home tube nutrients (order = check order; first N shown)</legend>
+          ${HOME_TOP_NUTRIENTS.map(
+            (n) => `
+            <label class="nutrient-picker__row">
+              <input type="checkbox" name="homeTopNutrients" value="${n.key}" ${selectedTubes.has(n.key) ? "checked" : ""} />
+              ${n.label}
+            </label>`
+          ).join("")}
+        </fieldset>
+        <fieldset class="field nutrient-picker">
+          <legend>Food-row chips</legend>
+          ${chipDefs
+            .map(
+              (n) => `
+            <label class="nutrient-picker__row">
+              <input type="checkbox" name="foodLogMacroChips" value="${n.key}" ${selectedChips.has(n.key) ? "checked" : ""} />
+              ${n.label} (${n.chipGlyph})
+            </label>`
+            )
+            .join("")}
+        </fieldset>
+        <p style="color:var(--muted);font-size:0.8rem;margin:0;">Steps / Health Connect active calories are Android-only. Optional nutrient goals power non-macro tubes.</p>
         <button type="submit" class="btn btn--primary">Save</button>
       </form>`;
     this.querySelector("#home-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
-      const chipRaw = String(fd.get("foodLogMacroChips") || "");
+      const cardCount = Math.min(4, Math.max(1, Number(fd.get("homeNutrientCardCount") || DEFAULT_NUTRIENT_CARD_COUNT)));
+      const tubeRaw = fd.getAll("homeTopNutrients").map(String);
+      const chipRaw = fd.getAll("foodLogMacroChips").map(String);
       await prefs.save({
         showWater: fd.get("showWater") === "true",
-        waterGoalMl: Number(fd.get("waterGoalMl") || 2500),
+        waterGoalMl: Number(fd.get("waterGoalMl") || 2000),
         calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
-        homeNutrientCardCount: Math.min(4, Math.max(1, Number(fd.get("homeNutrientCardCount") || 3))),
-        foodLogMacroChips: chipRaw
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        homeNutrientCardCount: cardCount,
+        homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),
+        foodLogMacroChips: normalizeFoodLogChips(chipRaw),
       });
       location.hash = "#/settings";
     });
@@ -379,42 +416,31 @@ export class SettingsView extends HTMLElement {
 
   async renderNutrients() {
     const p = await prefs.load();
-    const g = p.optionalNutrientGoals || {};
-    const fields = [
-      ["fiberG", "Fiber g"],
-      ["sugarG", "Sugar g"],
-      ["sodiumMg", "Sodium mg"],
-      ["potassiumMg", "Potassium mg"],
-      ["calciumMg", "Calcium mg"],
-      ["ironMg", "Iron mg"],
-      ["vitaminCMg", "Vitamin C mg"],
-      ["vitaminDMcg", "Vitamin D mcg"],
-    ];
+    const g = mergeOptionalGoals(p.optionalNutrientGoals);
     this.innerHTML = `
       ${subpageBar("Optional nutrients", { backHref: "#/settings" })}
       <form class="entry-form card" id="nutrients-form">
-        <p style="color:var(--muted);font-size:0.85rem;margin:0;">Optional daily goals shown alongside macros when set.</p>
+        <p style="color:var(--muted);font-size:0.85rem;margin:0;">Daily goals for fiber and micros. Used by Home tubes when those nutrients are selected.</p>
         <div class="field-row field-row--2">
-          ${fields
-            .map(
-              ([k, label]) => `
+          ${OPTIONAL_GOAL_FIELDS.map(
+            ([k, label]) => `
             <div class="field">
               <label for="${k}">${label}</label>
-              <input id="${k}" name="${k}" type="number" min="0" step="0.1" value="${g[k] ?? ""}" />
+              <input id="${k}" name="${k}" type="number" min="0" step="1" value="${g[k] ?? ""}" />
             </div>`
-            )
-            .join("")}
+          ).join("")}
         </div>
         <button type="submit" class="btn btn--primary">Save</button>
       </form>`;
     this.querySelector("#nutrients-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
-      /** @type {Record<string, number|null>} */
+      /** @type {Record<string, number>} */
       const optionalNutrientGoals = {};
-      for (const [k] of fields) {
+      for (const [k] of OPTIONAL_GOAL_FIELDS) {
         const raw = fd.get(k);
-        optionalNutrientGoals[k] = raw !== "" && raw != null ? Number(raw) : null;
+        const n = raw !== "" && raw != null ? Number(raw) : DEFAULT_OPTIONAL_NUTRIENT_GOALS[k];
+        optionalNutrientGoals[k] = Number.isFinite(n) ? Math.max(0, n) : DEFAULT_OPTIONAL_NUTRIENT_GOALS[k];
       }
       await prefs.save({ optionalNutrientGoals });
       location.hash = "#/settings";

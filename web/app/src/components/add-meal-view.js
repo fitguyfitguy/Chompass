@@ -3,6 +3,7 @@ import { foodEntries, prefs } from "../lib/db.js";
 import { decodeMealShare } from "../lib/meal-share.js";
 import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 
 /** Import shared meals from `#/add-meal?d=` (Android MealShare bridge). */
 export class AddMealView extends HTMLElement {
@@ -62,9 +63,6 @@ export class AddMealView extends HTMLElement {
         proteinG: m.proteinG,
         carbsG: m.carbsG,
         fatG: m.fatG,
-        fiberG: m.fiberG ?? null,
-        sugarG: m.sugarG ?? null,
-        sodiumMg: m.sodiumMg ?? null,
         quantityG: m.quantityG ?? null,
         mealType: m.mealType || guessMealTypeFromPrefs(appPrefs),
         date,
@@ -73,6 +71,7 @@ export class AddMealView extends HTMLElement {
         note: m.note ?? null,
         grounding: null,
         recipeLogId: null,
+        ...Object.fromEntries(ALL_MICRO_KEYS.map((k) => [k, m[k] ?? null])),
       });
     }
     location.hash = "#/home";
