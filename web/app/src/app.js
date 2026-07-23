@@ -5,6 +5,7 @@ import "./components/settings-view.js";
 import "./components/coach-view.js";
 import "./components/barcode-scanner.js";
 import "./components/progress-view.js";
+import { maybeSeedFromUrl } from "./lib/dev-seed.js";
 
 const view = document.getElementById("view");
 const navLinks = () => document.querySelectorAll(".bottom-nav a");
@@ -36,7 +37,7 @@ function render() {
 
 window.addEventListener("hashchange", render);
 if (!location.hash) location.hash = "#/diary";
-render();
+maybeSeedFromUrl().then(render);
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

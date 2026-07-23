@@ -19,6 +19,7 @@ const SHELL_ASSETS = [
   "./src/lib/db.js",
   "./src/lib/off-client.js",
   "./src/lib/charts.js",
+  "./src/lib/dev-seed.js",
   "./src/lib/nofud-core/models.js",
   "./src/lib/nofud-core/formulas.js",
   "./src/lib/nofud-core/diary-format.js",
