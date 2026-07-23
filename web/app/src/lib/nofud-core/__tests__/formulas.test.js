@@ -2,54 +2,62 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { bmr, tdee, dailyCalories, proteinGoal, fatGoalStandard, dailyTargets } from "../formulas.js";
+import { averageDailyIntake } from "../forecast.js";
+import { loadParityFixture } from "../../parity-fixtures.js";
 
 /**
- * Golden vectors ported from
- * android/app/src/test/java/org/codeberg/fitguy/nofud/models/CalculationGoldenScenariosTest.kt
- * Keep in sync per docs/CALCULATION_METHODS.md's change checklist.
+ * Golden vectors from testdata/parity/formulas-expected.json — keep in sync with
+ * Android CalculationGoldenScenariosTest / docs/CALCULATION_METHODS.md.
  */
 
-test("golden_maleModerateMaintain_mifflinPath", () => {
-  const profile = {
-    sex: "male", age: 30, heightCm: 180, weightKg: 80,
-    bodyFatPercentage: null, activityLevel: "moderate", goal: "maintain",
-    weeklyChangeKg: null, ketoMode: false,
-  };
-  assert.ok(Math.abs(bmr(profile) - 1780.0) < 1e-6);
-  assert.ok(Math.abs(tdee(profile) - 2607.7) < 1e-6);
-  assert.equal(dailyCalories(profile), 2607);
-  assert.equal(proteinGoal(profile), 128);
-  assert.equal(fatGoalStandard(profile), 48);
-});
+const { scenarios } = loadParityFixture("formulas-expected.json");
 
-test("golden_femaleCut_katchPath", () => {
-  const profile = {
-    sex: "female", age: 35, heightCm: 165, weightKg: 70,
-    bodyFatPercentage: 0.28, activityLevel: "light", goal: "lose",
-    weeklyChangeKg: 0.5, ketoMode: false,
-  };
-  assert.ok(Math.abs(bmr(profile) - 1458.64) < 1e-6);
-  assert.equal(dailyCalories(profile) - Math.trunc(tdee(profile)), -550);
-  assert.equal(proteinGoal(profile), 98);
-});
+for (const scenario of scenarios) {
+  test(scenario.id, () => {
+    if (scenario.kind === "averageDailyIntake") {
+      const r = averageDailyIntake(
+        scenario.input.totalCalories,
+        scenario.input.loggedDays,
+        scenario.input.calendarDaysInWindow,
+      );
+      assert.equal(r.avgDailyCalories, scenario.expect.avgDailyCalories);
+      assert.equal(r.usesCalendarDayAverage, scenario.expect.usesCalendarDayAverage);
+      return;
+    }
 
-test("golden_ketoLose_sedentaryCarbsClamped", () => {
-  const profile = {
-    sex: "male", age: 40, heightCm: 178, weightKg: 95,
-    bodyFatPercentage: 0.32, activityLevel: "sedentary", goal: "lose",
-    weeklyChangeKg: 0.8, ketoMode: true,
-  };
-  const targets = dailyTargets(profile);
-  assert.equal(targets.carbsG, 20);
-  assert.ok(targets.fatG >= 45);
-});
+    const profile = scenario.profile;
+    const expect = scenario.expect;
 
-test("golden_gainExtraActive_proteinAndCalories", () => {
-  const profile = {
-    sex: "male", age: 25, heightCm: 185, weightKg: 75,
-    bodyFatPercentage: null, activityLevel: "extra_active", goal: "gain",
-    weeklyChangeKg: 0.25, ketoMode: false,
-  };
-  assert.equal(dailyCalories(profile) - Math.trunc(tdee(profile)), 275);
-  assert.equal(proteinGoal(profile), 165);
-});
+    if (expect.bmr != null) {
+      assert.ok(Math.abs(bmr(profile) - expect.bmr) <= (expect.bmrTol ?? 1e-6));
+    }
+    if (expect.tdee != null) {
+      assert.ok(Math.abs(tdee(profile) - expect.tdee) <= (expect.tdeeTol ?? 1e-6));
+    }
+    if (expect.dailyCalories != null) {
+      assert.equal(dailyCalories(profile), expect.dailyCalories);
+    }
+    if (expect.calorieAdjustment != null) {
+      assert.equal(dailyCalories(profile) - Math.trunc(tdee(profile)), expect.calorieAdjustment);
+    }
+    if (expect.proteinGoal != null) {
+      assert.equal(proteinGoal(profile), expect.proteinGoal);
+    }
+    if (expect.fatGoal != null) {
+      assert.equal(fatGoalStandard(profile), expect.fatGoal);
+    }
+    if (expect.carbsGoal != null || expect.fatGoalMin != null) {
+      const targets = dailyTargets(profile);
+      if (expect.carbsGoal != null) assert.equal(targets.carbsG, expect.carbsGoal);
+      if (expect.fatGoalMin != null) assert.ok(targets.fatG >= expect.fatGoalMin);
+    }
+    if (expect.estimatedDailyActiveCalories != null) {
+      const active = Math.round(tdee(profile) - bmr(profile));
+      assert.equal(active, expect.estimatedDailyActiveCalories);
+    }
+    if (expect.sedentaryCalorieBudget != null) {
+      const active = Math.round(tdee(profile) - bmr(profile));
+      assert.equal(dailyCalories(profile) - active, expect.sedentaryCalorieBudget);
+    }
+  });
+}

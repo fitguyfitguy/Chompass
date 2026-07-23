@@ -1,24 +1,20 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { importBodyMetrics, exportBodyMetrics, deterministicFileId, BODY_METRICS_FORMAT_VERSION } from "../body-metrics-format.js";
+import { loadParityFixture } from "../../parity-fixtures.js";
 
-const REPO_ROOT = fileURLToPath(new URL("../../../../../../", import.meta.url));
-
-function loadFixture(name) {
-  return JSON.parse(readFileSync(`${REPO_ROOT}${name}`, "utf8"));
-}
-
-test("imports the real repo body-metrics fixture without throwing", async () => {
-  const doc = loadFixture("FudAI-Weight-Import.json");
+test("imports the parity body-metrics fixture without throwing", async () => {
+  const doc = loadParityFixture("body-metrics-sample.json");
   assert.equal(doc.export.kind, "body_metrics");
   assert.equal(doc.export.format_version, BODY_METRICS_FORMAT_VERSION);
   const { weights, bodyFat, measurements } = await importBodyMetrics(doc);
   assert.ok(Array.isArray(weights));
   assert.ok(Array.isArray(bodyFat));
   assert.ok(Array.isArray(measurements));
+  assert.ok(weights.length > 0);
+  assert.ok(bodyFat.length > 0);
+  assert.ok(measurements.length > 0);
   for (const w of weights) {
     assert.equal(typeof w.id, "string");
     assert.equal(typeof w.weightKg, "number");
@@ -26,7 +22,7 @@ test("imports the real repo body-metrics fixture without throwing", async () => 
 });
 
 test("round-trips weights/bodyFat/measurements through export->import", async () => {
-  const doc = loadFixture("FudAI-Weight-Import.json");
+  const doc = loadParityFixture("body-metrics-sample.json");
   const parsed = await importBodyMetrics(doc);
   const reExported = exportBodyMetrics(parsed);
   assert.equal(reExported.export.kind, "body_metrics");

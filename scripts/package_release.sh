@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Build, package, and checksum release APKs for Codeberg publishing.
+# Always runs Android unit tests and cross-app parity (./scripts/check_parity.sh).
 #
 # Usage:
 #   ./scripts/package_release.sh
@@ -86,6 +87,9 @@ echo "==> NoFUD release packaging for version ${VERSION}"
 
 echo "==> Running unit tests"
 run_in_devenv 'cd android && ./gradlew test'
+
+echo "==> Cross-app parity (PWA tests, typecheck, contract schemas)"
+"$ROOT/scripts/check_parity.sh"
 
 if [[ "$CHECK_ONLY" -eq 0 ]]; then
   echo "==> Updating README and release screenshots"

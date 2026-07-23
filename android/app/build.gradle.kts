@@ -153,6 +153,12 @@ android {
     }
 }
 
+// Cross-app parity fixtures live at repo-root testdata/parity/ (shared with the PWA).
+tasks.withType<Test>().configureEach {
+    val parityDir = rootProject.projectDir.resolve("../testdata/parity").normalize()
+    systemProperty("nofud.parity.dir", parityDir.absolutePath)
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

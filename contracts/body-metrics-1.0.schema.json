@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fitguy.codeberg.page/NoFUD/contracts/body-metrics-1.0.schema.json",
+  "title": "NoFUD body-metrics export format 1.0",
+  "type": "object",
+  "required": ["export", "weights", "body_fat", "measurements"],
+  "additionalProperties": true,
+  "properties": {
+    "export": {
+      "type": "object",
+      "required": ["app", "kind", "format_version"],
+      "properties": {
+        "app": { "type": "string", "minLength": 1 },
+        "kind": { "const": "body_metrics" },
+        "format_version": { "const": "1.0" }
+      }
+    },
+    "weights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "weight_kg"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "weight_kg": { "type": "number" }
+        }
+      }
+    },
+    "body_fat": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "body_fat_percent"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "body_fat_percent": { "type": "number" }
+        }
+      }
+    },
+    "measurements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string" },
+          "neck_cm": { "type": ["number", "null"] },
+          "waist_cm": { "type": ["number", "null"] },
+          "hips_cm": { "type": ["number", "null"] },
+          "chest_cm": { "type": ["number", "null"] },
+          "upper_arm_cm": { "type": ["number", "null"] },
+          "thigh_cm": { "type": ["number", "null"] },
+          "calf_cm": { "type": ["number", "null"] },
+          "wrist_cm": { "type": ["number", "null"] }
+        }
+      }
+    }
+  }
+}

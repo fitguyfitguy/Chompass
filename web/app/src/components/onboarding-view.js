@@ -275,7 +275,7 @@ export class OnboardingView extends HTMLElement {
 
     if (!result.ok) {
       this.aiDraft.validatedKey = "";
-      setStatus(result.message, "err");
+      setStatus(/** @type {{ok:false, message:string}} */ (result).message, "err");
       return false;
     }
     this.aiDraft.validatedKey = key;

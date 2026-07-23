@@ -5,6 +5,10 @@ AI coach, progress, onboarding, settings. Data-interoperable with the Android
 app's JSON diary/body-metrics export format. Parity work targets daily-driver
 UX (Home / Progress / Settings) while staying a no-bundler Web Components app.
 
+**Feature matrix:** [`docs/PARITY.md`](../docs/PARITY.md).  
+**Shared fixtures / schemas:** [`testdata/parity/`](../testdata/parity/), [`contracts/`](../contracts/).  
+**Gate:** `devenv tasks run release:check-parity` (also part of `release:package`).
+
 ## Stack
 
 No SPA framework, no bundler — native Web Components + a hash router, served
@@ -18,8 +22,10 @@ Inside `devenv shell` (adds `node`/`tsc` to PATH):
 
 ```bash
 pwa-serve       # serve web/app/ at http://localhost:8787/
-pwa-test        # node --test over nofud-core golden + home-nutrients / OFF parity tests
+pwa-test        # node --test over nofud-core golden + home-nutrients / OFF / meal-share parity tests
 pwa-typecheck   # tsc --checkJs --noEmit
+# or full gate (tests + typecheck + JSON Schema validation):
+devenv tasks run release:check-parity
 ```
 
 Or directly:
@@ -34,9 +40,10 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 
 - `app/` — the deployed PWA (index.html, manifest, sw.js, css/, src/, vendor/, icons/)
 - `app/src/lib/nofud-core/` — data-compatibility layer (formulas, FCAST/ADAPT forecast,
-  diary/body-metrics export format, shared models), golden-tested against fixture
-  files at repo root. If Android's formula register changes, mirror here — see
-  `docs/CALCULATION_METHODS.md`'s change checklist.
+  diary/body-metrics export format, shared models), golden-tested against
+  [`testdata/parity/`](../testdata/parity/) (and schemas in [`contracts/`](../contracts/)).
+  If Android's formula register changes, mirror here — see
+  `docs/CALCULATION_METHODS.md`'s change checklist and `docs/PARITY.md`.
 - `app/src/lib/ai/` — BYOK AI coach + diary food analysis (`food-analyze.js`),
   encrypted key storage, providers, tools.
 - `app/src/lib/off-client.js` + `barcode-scanner.js` — Open Food Facts + camera
@@ -44,6 +51,8 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 - `serve.mjs` — zero-dependency static file server for local testing.
 
 ## Status (Android parity track)
+
+Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick scanning.
 
 | Area | Notes |
 |------|--------|

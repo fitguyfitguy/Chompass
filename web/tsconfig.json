@@ -8,7 +8,13 @@
     "allowJs": true,
     "noEmit": true,
     "strict": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": []
   },
-  "include": ["app/src/**/*.js", "app/vendor/**/*.js", "app/sw.js"]
+  "include": ["app/src/**/*.js"],
+  "exclude": [
+    "app/src/**/__tests__/**",
+    "app/src/lib/parity-fixtures.js",
+    "app/sw.js"
+  ]
 }

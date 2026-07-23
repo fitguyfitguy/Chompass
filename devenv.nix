@@ -41,7 +41,12 @@
 
   tasks."release:package" = {
     exec = "./scripts/package_release.sh";
-    description = "Run pre-release checks, build release APKs, package, and write SHA256SUMS";
+    description = "Run pre-release checks (Android tests + parity), build release APKs, package, and write SHA256SUMS";
+  };
+
+  tasks."release:check-parity" = {
+    exec = "./scripts/check_parity.sh";
+    description = "PWA tests + typecheck + validate testdata/parity fixtures against contracts/ schemas";
   };
 
   tasks."release:check-metadata" = {

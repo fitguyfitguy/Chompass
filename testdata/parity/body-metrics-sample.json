@@ -1,0 +1,30 @@
+{
+  "export": {
+    "app": "NoFUD",
+    "kind": "body_metrics",
+    "format_version": "1.0"
+  },
+  "weights": [
+    { "date": "2026-01-01T12:00:00Z", "weight_kg": 80.0 },
+    { "date": "2026-01-08T12:00:00Z", "weight_kg": 79.5 },
+    { "date": "2026-01-15T12:00:00Z", "weight_kg": 79.2 },
+    { "date": "2026-01-22T12:00:00Z", "weight_kg": 78.8 }
+  ],
+  "body_fat": [
+    { "date": "2026-01-01T12:00:00Z", "body_fat_percent": 18.5 },
+    { "date": "2026-01-15T12:00:00Z", "body_fat_percent": 18.2 }
+  ],
+  "measurements": [
+    {
+      "date": "2026-01-01T12:00:00Z",
+      "neck_cm": 38.0,
+      "waist_cm": 85.0,
+      "hips_cm": 98.0,
+      "chest_cm": 102.0,
+      "upper_arm_cm": 34.0,
+      "thigh_cm": 56.0,
+      "calf_cm": 38.0,
+      "wrist_cm": 17.0
+    }
+  ]
+}
