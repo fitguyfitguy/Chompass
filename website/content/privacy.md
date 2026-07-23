@@ -1,6 +1,6 @@
 ---
 title: Privacy
-description: No ads, no analytics, no accounts. Food logs stay on your device. BYOK cloud AI or on-device inference on Android.
+description: No ads, no analytics, no accounts. Food logs stay on your device. API keys are encrypted at rest. BYOK cloud AI or on-device inference on Android.
 layout: single
 ---
 
@@ -12,12 +12,21 @@ NoFUD is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoo
 - **No analytics:** No usage tracking, crash analytics, or telemetry SDKs.
 - **No accounts:** No sign-in, cloud sync, or central user database.
 - **Local storage:** Food logs, weight history, profile, and Coach chat stay on your device.
-- **Bring your own AI key:** Keys are encrypted on-device. Cloud requests go directly from your device to the provider you choose.
+- **Bring your own AI key:** Keys are encrypted at rest on your device, then sent only to the provider you choose (not through a NoFUD server).
 - **On-Device (Private):** On Android, optional Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
+
+## API keys
+
+| Client | How keys are stored |
+|--------|---------------------|
+| **Android** | EncryptedSharedPreferences with an AES-256 master key in the Android Keystore. The keychain file is excluded from cloud backup and device transfer. |
+| **PWA** | Web Crypto AES-GCM with a non-extractable wrapping key; ciphertext in IndexedDB. |
+
+Encryption protects keys sitting on disk. It does not protect against malware, a rooted device, or a compromised browser page that can run as the app. Clearing app or site data removes stored keys.
 
 ## Web app (PWA)
 
-The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser and stores data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients. Move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
+The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser and stores diary data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients. Move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
 
 ## Data on your device
 

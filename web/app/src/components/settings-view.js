@@ -542,7 +542,7 @@ export class SettingsView extends HTMLElement {
       ${subpageBar("AI", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Keys are encrypted at rest and only sent directly from your browser to the provider.
+          Keys are encrypted at rest with Web Crypto (AES-GCM) in IndexedDB, then sent only from your browser to the provider you choose. Not a NoFUD server.
         </p>
         <form class="entry-form" id="ai-key-form">
           <div class="field">
