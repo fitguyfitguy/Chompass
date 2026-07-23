@@ -49,10 +49,10 @@ Options:
 After uploading assets, redeploys the Hugo site (scripts/deploy_pages.sh) unless
 --skip-pages is set. Keep website/hugo.toml params.version in sync with the release.
 
-Uploads APKs in batches (fdroid, checksums) so a quota error mid-run can be
-resumed with --assets-only after freeing space:
+Uploads the universal APK + SHA256SUMS. Resume with --assets-only after freeing
+space:
   ./scripts/manage_release_assets.sh list
-  ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0
+  ./scripts/manage_release_assets.sh keep-latest -y
 EOF
       exit 0
       ;;
@@ -68,11 +68,9 @@ CHECKSUMS="$ROOT/SHA256SUMS"
 SCREENSHOT_DIR="$ROOT/release-screenshots"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 
+# Quota policy: universal APK only (no per-ABI splits).
 FDROID_ASSETS=(
   "$ROOT/NoFUD-fdroid-${VERSION}.apk"
-  "$ROOT/NoFUD-fdroid-${VERSION}-arm64-v8a.apk"
-  "$ROOT/NoFUD-fdroid-${VERSION}-armeabi-v7a.apk"
-  "$ROOT/NoFUD-fdroid-${VERSION}-x86_64.apk"
 )
 CHECKSUM_ASSETS=("$CHECKSUMS")
 SCREENSHOT_ASSETS=()
@@ -117,8 +115,9 @@ Codeberg release attachment quota exceeded.
 1. Inspect current attachments:
      ./scripts/manage_release_assets.sh list
 
-2. Free space by removing old per-ABI splits (universal APKs + SHA256SUMS stay):
-     ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0
+2. Free space (keep only the latest release, or prune ABI/play leftovers):
+     ./scripts/manage_release_assets.sh keep-latest -y
+     ./scripts/manage_release_assets.sh prune-abi-splits --before vX.Y.Z -y
 
 3. Resume this publish (uploads only missing assets):
      ./scripts/publish_release.sh VERSION --assets-only
@@ -187,7 +186,7 @@ upload_assets() {
 }
 
 MISSING=0
-for ASSET in "${PLAY_ASSETS[@]}" "${FDROID_ASSETS[@]}" "${CHECKSUM_ASSETS[@]}" "${SCREENSHOT_ASSETS[@]}"; do
+for ASSET in "${FDROID_ASSETS[@]}" "${CHECKSUM_ASSETS[@]}" "${SCREENSHOT_ASSETS[@]}"; do
   if [[ ! -f "$ASSET" ]]; then
     echo "Missing $ASSET — build/package release artifacts first." >&2
     MISSING=1
