@@ -9,6 +9,14 @@ Maintainer checklist for discovering NoFUD outside Codeberg. Canonical end-user 
 - F-Droid metadata submitted (package `org.codeberg.fitguy.nofud`)
 - Social preview card (`website/static/img/og.png`) and sitemap
 
+## Companion PWA
+
+Scoped-down companion web app at [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/) — diary logging, manual/photo/barcode food entry, BYOK AI coach, progress charts, and JSON export/import compatible with the Android app. Source in [`web/`](../web/README.md); no SPA framework/bundler, hand-rolled service worker, dev-only TypeScript.
+
+Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/` (via `rsync --delete`) before the same orphan-branch push used for the marketing site — no separate deploy step to remember.
+
+**Soft-launched**: not yet linked from `website/content/` or the site nav — reachable only by direct URL. Link it from the marketing site (e.g. `download.md` or a nav item) once you're ready to promote it as more than a preview.
+
 ## Do not pursue
 
 - **IzzyOnDroid** — rejected because of AI features; do not re-submit without a policy change
