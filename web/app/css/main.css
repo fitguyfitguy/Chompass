@@ -136,11 +136,41 @@ main.view {
 }
 
 /* —— Week strip —— */
+.week-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 1rem;
+}
+
+.week-nav__btn {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.week-nav__btn:hover:not(:disabled) {
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.week-nav__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .week-strip {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.35rem;
-  margin-bottom: 1rem;
+  gap: 0.3rem;
 }
 
 .week-day {
@@ -148,8 +178,8 @@ main.view {
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.45rem 0.2rem;
-  border: 1px solid transparent;
+  padding: 0.45rem 0.15rem;
+  border: 1.5px solid transparent;
   border-radius: 0.75rem;
   background: transparent;
   cursor: pointer;
@@ -169,11 +199,21 @@ main.view {
 }
 
 .week-day.is-selected {
-  background: color-mix(in srgb, var(--teal) 18%, var(--surface));
-  border-color: color-mix(in srgb, var(--teal) 45%, transparent);
+  background: color-mix(in srgb, var(--teal) 22%, var(--surface));
+  border-color: transparent;
+  color: var(--text);
 }
 
-.week-day.is-today .week-day__num { color: var(--teal); }
+.week-day.is-selected .week-day__dow,
+.week-day.is-selected .week-day__num { color: inherit; }
+
+/* Today when not selected: hollow teal ring */
+.week-day.is-today:not(.is-selected) {
+  border-color: var(--teal);
+  background: transparent;
+}
+
+.week-day.is-today:not(.is-selected) .week-day__num { color: var(--teal); }
 
 .week-day__dot {
   width: 0.35rem;
@@ -190,16 +230,22 @@ main.view {
   cursor: not-allowed;
 }
 
-/* —— Calorie ring —— */
+/* —— Semicircle calorie gauge + vertical macro tubes —— */
 .calorie-hero {
   display: grid;
   place-items: center;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.35rem;
 }
 
 .calorie-ring {
   width: 11rem;
   height: 11rem;
+}
+
+.calorie-ring--semi {
+  width: min(100%, 14rem);
+  height: auto;
+  display: block;
 }
 
 .calorie-ring__label {
@@ -215,52 +261,69 @@ main.view {
   letter-spacing: 0.04em;
 }
 
-.macro-rows {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.macro-row {
-  display: grid;
-  grid-template-columns: 4.5rem 1fr auto;
-  align-items: center;
-  gap: 0.55rem;
-  font-size: 0.88rem;
-}
-
-.macro-row__name { font-weight: 600; }
-.macro-row__vals { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.82rem; }
-
-.macro-bar {
-  height: 0.45rem;
-  border-radius: 999px;
-  background: var(--surface);
-  overflow: hidden;
-}
-
-.macro-bar > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--bar-color, var(--teal));
-  max-width: 100%;
-  width: 0;
-  transition: width 280ms ease-out;
-}
-
 .calorie-ring__progress {
   transition: stroke-dasharray 280ms ease-out;
 }
 
-.macro-row--protein { --bar-color: var(--protein); color: var(--protein); }
-.macro-row--carbs { --bar-color: var(--carbs); color: var(--carbs); }
-.macro-row--fat { --bar-color: var(--fat); color: var(--fat); }
-.macro-row--protein .macro-row__name,
-.macro-row--carbs .macro-row__name,
-.macro-row--fat .macro-row__name { color: inherit; }
-.macro-row--protein .macro-row__vals,
-.macro-row--carbs .macro-row__vals,
-.macro-row--fat .macro-row__vals { color: var(--muted); }
+.macro-tubes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.25rem 0.35rem 0.15rem;
+}
+
+.macro-tube {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.macro-tube__value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--tube-color, var(--teal));
+  line-height: 1;
+}
+
+.macro-tube__track {
+  width: 1rem;
+  height: 4.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tube-color, var(--teal)) 16%, var(--surface));
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.macro-tube__fill {
+  display: block;
+  width: 100%;
+  height: 0;
+  min-height: 0;
+  border-radius: inherit;
+  background: var(--tube-color, var(--teal));
+  transition: height 280ms ease-out;
+}
+
+.macro-tube__label {
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+.macro-tube__status {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.macro-tube--protein { --tube-color: var(--protein); }
+.macro-tube--carbs { --tube-color: var(--carbs); }
+.macro-tube--fat { --tube-color: var(--fat); }
 
 /* —— Water —— */
 .water-row {
@@ -314,37 +377,93 @@ main.view {
 
 .chip:hover { border-color: color-mix(in srgb, var(--teal) 50%, var(--line)); }
 
-/* —— Meals —— */
-.meal-group h2 {
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  margin: 1.3rem 0 0.5rem;
+/* —— Meal cards —— */
+.meal-card {
+  padding: 0.85rem 0.9rem 0.35rem;
+  margin-bottom: 0.75rem;
 }
+
+.meal-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.meal-card__icon {
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 0.7rem;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--teal) 16%, var(--surface));
+  color: var(--teal);
+}
+
+.meal-card__icon svg { width: 1.15rem; height: 1.15rem; }
+.meal-card__icon--breakfast { background: color-mix(in srgb, #e8b86d 22%, var(--surface)); color: #d49a3c; }
+.meal-card__icon--lunch { background: color-mix(in srgb, var(--teal) 18%, var(--surface)); color: var(--teal); }
+.meal-card__icon--dinner { background: color-mix(in srgb, var(--protein) 18%, var(--surface)); color: var(--protein); }
+.meal-card__icon--snack { background: color-mix(in srgb, var(--carbs) 18%, var(--surface)); color: var(--carbs); }
+
+.meal-card__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.meal-card__summary {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meal-card__kcal {
+  color: var(--kcal, #e891a8);
+  font-weight: 650;
+}
+
+.meal-card__list { margin: 0 -0.25rem; }
 
 .food-swipe {
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
   touch-action: pan-y;
 }
 
-.food-swipe:last-child { border-bottom: none; }
+.meal-card__list .food-swipe:last-child { border-bottom: none; }
 
 .food-swipe__behind {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.food-swipe__behind--del {
   justify-content: flex-end;
   padding-right: 1rem;
   background: color-mix(in srgb, var(--danger) 28%, var(--surface));
   color: var(--danger);
-  font-weight: 700;
-  font-size: 0.85rem;
-  pointer-events: none;
 }
+
+.food-swipe__behind--dup {
+  justify-content: flex-start;
+  padding-left: 1rem;
+  background: color-mix(in srgb, var(--teal) 24%, var(--surface));
+  color: var(--teal);
+}
+
+.food-swipe.is-swiping-left .food-swipe__behind--del,
+.food-swipe.is-swiping-right .food-swipe__behind--dup { opacity: 1; }
 
 .food-item {
   position: relative;
@@ -352,10 +471,10 @@ main.view {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.65rem 0;
+  gap: 0.35rem;
+  padding: 0.55rem 0.25rem;
   cursor: pointer;
-  background: var(--bg);
+  background: var(--bg-elevated);
   border: none;
   width: 100%;
   text-align: left;
@@ -366,7 +485,7 @@ main.view {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.65rem;
   flex: 1;
   min-width: 0;
   background: none;
@@ -378,19 +497,38 @@ main.view {
   padding: 0;
 }
 
+.food-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
 .food-item__name {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  line-height: 1.25;
 }
 
 .food-item__meta {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
 }
 
 .food-item__cals {
   font-weight: 700;
   white-space: nowrap;
+  color: var(--kcal, #e891a8);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+}
+
+.food-item__cals::after {
+  content: " kcal";
+  font-size: 0.68rem;
+  font-weight: 600;
+  opacity: 0.85;
 }
 
 .food-item__menu {
@@ -405,6 +543,53 @@ main.view {
   font-size: 1.15rem;
   line-height: 1;
 }
+
+.food-item__menu:hover { color: var(--text); background: color-mix(in srgb, var(--surface) 80%, transparent); }
+
+.sheet-actions {
+  display: grid;
+  gap: 0;
+}
+
+.sheet-actions button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.9rem 0.35rem;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sheet-actions button:last-child { border-bottom: none; }
+.sheet-actions button.is-danger { color: var(--danger); }
+.sheet-actions button[aria-selected="true"] { color: var(--teal); }
+
+.sheet-recents .recents-meta,
+.recents-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.add-food-water-slider {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.add-food-water-slider input[type="range"] { width: 100%; accent-color: var(--water, var(--teal)); }
+
+.analyze-mode--note .analyze-photo-field { opacity: 0.72; }
+.analyze-mode--photo .analyze-note-field label::after { content: none; }
 
 .empty-state {
   color: var(--muted);
@@ -898,6 +1083,11 @@ body.dialog-open {
   background: var(--muted);
   opacity: 0.45;
   margin: 0.35rem auto 0.85rem;
+  padding: 0.55rem 0;
+  background-clip: content-box;
+  box-sizing: content-box;
+  touch-action: none;
+  cursor: grab;
 }
 
 .sheet__title {
@@ -1145,6 +1335,7 @@ body.dialog-open {
   }
 
   .macro-bar > span,
+  .macro-tube__fill,
   .water-bar > span,
   .calorie-ring__progress {
     transition: none !important;
