@@ -8,6 +8,7 @@ import "./components/progress-view.js";
 import "./components/analyze-view.js";
 import "./components/onboarding-view.js";
 import "./components/measurements-view.js";
+import "./components/add-meal-view.js";
 import { maybeSeedFromUrl } from "./lib/dev-seed.js";
 import { prefs, profile } from "./lib/db.js";
 
@@ -26,14 +27,16 @@ const ROUTES = {
   settings: () => "<settings-view></settings-view>",
   onboarding: () => "<onboarding-view></onboarding-view>",
   measurements: () => "<measurements-view></measurements-view>",
+  "add-meal": () => "<add-meal-view></add-meal-view>",
 };
 
-const HIDE_NAV = new Set(["entry", "analyze", "scan", "onboarding", "measurements"]);
+const HIDE_NAV = new Set(["entry", "analyze", "scan", "onboarding", "measurements", "add-meal"]);
 
 function currentRoute() {
   const hash = location.hash.replace(/^#\//, "");
   const [segment] = hash.split(/[/?]/);
   if (segment === "entry" || hash.startsWith("entry/")) return "entry";
+  if (segment === "add-meal") return "add-meal";
   return segment in ROUTES ? segment : "home";
 }
 

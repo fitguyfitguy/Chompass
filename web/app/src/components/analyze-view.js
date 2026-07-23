@@ -3,7 +3,11 @@ import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import { analyzeFoodEntry } from "../lib/ai/food-analyze.js";
 import { recentFoods } from "../lib/recent-foods.js";
+import { prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { createSpeechCapture } from "../lib/speech.js";
+
+const MAX_PHOTOS = 10;
 
 export class AnalyzeView extends HTMLElement {
   async connectedCallback() {
@@ -11,28 +15,38 @@ export class AnalyzeView extends HTMLElement {
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
     this.mode = params.get("mode") === "note" ? "note" : "photo";
     this.providers = await listConfiguredProviders();
-    this.activeProvider = this.providers[0] ?? null;
-    this.previewUrl = null;
-    this.file = null;
+    const appPrefs = await prefs.load();
+    /** @type {keyof typeof import('../lib/ai/providers.js').PROVIDERS | null} */
+    this.activeProvider = null;
+    if (appPrefs.primaryAiProvider && this.providers.includes(/** @type {any} */ (appPrefs.primaryAiProvider))) {
+      this.activeProvider = /** @type {any} */ (appPrefs.primaryAiProvider);
+    } else {
+      this.activeProvider = this.providers[0] ?? null;
+    }
+    this.previewUrls = /** @type {string[]} */ ([]);
+    /** @type {File[]} */
+    this.files = [];
     this.busy = false;
     this.error = "";
+    this.notePrefill = params.get("prefill") ? decodeURIComponent(params.get("prefill") || "") : "";
     this.render();
   }
 
   disconnectedCallback() {
-    if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+    this.previewUrls.forEach((u) => URL.revokeObjectURL(u));
   }
 
   async render() {
     const recents = await recentFoods(12);
     const title = this.mode === "note" ? "Describe food" : "Photo AI";
+    const speech = createSpeechCapture();
 
     if (!this.activeProvider) {
       this.innerHTML = `
         ${subpageBar(title, { backHref: "#/home" })}
         <div class="card">
           <p style="color:var(--muted);margin:0 0 0.8rem;">Add a BYOK API key in Settings to analyze food.</p>
-          <a class="btn btn--primary" href="#/settings">Go to settings</a>
+          <a class="btn btn--primary" href="#/settings?section=ai">Go to settings</a>
         </div>`;
       bindSubpageBack(this, "#/home");
       return;
@@ -40,15 +54,26 @@ export class AnalyzeView extends HTMLElement {
 
     this.innerHTML = `
       ${subpageBar(title, { backHref: "#/home" })}
-      ${this.previewUrl ? `<img class="analyze-preview" src="${this.previewUrl}" alt="Selected food photo" />` : ""}
+      ${
+        this.previewUrls.length
+          ? `<div class="analyze-thumbs">${this.previewUrls
+              .map((u) => `<img class="analyze-preview" src="${u}" alt="Selected food photo" />`)
+              .join("")}</div>`
+          : ""
+      }
       <form class="entry-form card analyze-mode--${this.mode}" id="analyze-form">
         <div class="field analyze-photo-field">
-          <label for="photo">${this.mode === "photo" ? "Photo" : "Photo (optional)"}</label>
-          <input id="photo" name="photo" type="file" accept="image/*" capture="environment" />
+          <label for="photo">${this.mode === "photo" ? `Photos (up to ${MAX_PHOTOS})` : "Photo (optional)"}</label>
+          <input id="photo" name="photo" type="file" accept="image/*" ${this.mode === "photo" ? "multiple" : ""} capture="environment" />
         </div>
         <div class="field analyze-note-field">
           <label for="note">${this.mode === "note" ? "Describe the food" : "Note (optional)"}</label>
-          <textarea id="note" name="note" rows="3" placeholder="e.g. bowl of oatmeal with banana and peanut butter"></textarea>
+          <textarea id="note" name="note" rows="3" placeholder="e.g. bowl of oatmeal with banana and peanut butter">${escapeAttr(this.notePrefill)}</textarea>
+          ${
+            speech.supported
+              ? `<button type="button" class="btn btn--ghost" data-voice style="margin-top:0.4rem;">Voice dictation</button>`
+              : ""
+          }
         </div>
         <p id="analyze-status" style="color:var(--muted);font-size:0.85rem;margin:0;">
           ${this.error ? escapeHtml(this.error) : "Estimates are reviewed before saving — nothing is auto-logged."}
@@ -87,11 +112,17 @@ export class AnalyzeView extends HTMLElement {
 
     this.querySelector("#photo")?.addEventListener("change", (ev) => {
       const input = /** @type {HTMLInputElement} */ (ev.target);
-      const file = input.files?.[0];
-      if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
-      this.file = file ?? null;
-      this.previewUrl = file ? URL.createObjectURL(file) : null;
+      this.previewUrls.forEach((u) => URL.revokeObjectURL(u));
+      const list = [...(input.files || [])].slice(0, MAX_PHOTOS);
+      this.files = list;
+      this.previewUrls = list.map((f) => URL.createObjectURL(f));
       this.render();
+    });
+    this.querySelector("[data-voice]")?.addEventListener("click", () => {
+      const note = /** @type {HTMLTextAreaElement | null} */ (this.querySelector("#note"));
+      speech.start((text) => {
+        if (note) note.value = note.value ? `${note.value} ${text}` : text;
+      });
     });
     this.querySelector("#analyze-form")?.addEventListener("submit", (ev) => this.onAnalyze(ev));
     this.querySelectorAll("[data-recent]").forEach((btn) => {
@@ -109,7 +140,7 @@ export class AnalyzeView extends HTMLElement {
     if (this.busy) return;
     const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
     const text = String(fd.get("note") || "").trim();
-    if (!text && !this.file) {
+    if (!text && !this.files.length) {
       this.error = this.mode === "note" ? "Add a short description." : "Add a photo or a short description.";
       this.render();
       return;
@@ -120,12 +151,15 @@ export class AnalyzeView extends HTMLElement {
     try {
       const config = await loadProviderKey(this.activeProvider);
       if (!config) throw new Error("Provider key missing — re-add it in Settings.");
-      const image = this.file ? await fileToJpegBase64(this.file) : undefined;
+      const images = [];
+      for (const file of this.files) {
+        images.push(await fileToJpegBase64(file));
+      }
       const estimate = await analyzeFoodEntry({
         providerId: this.activeProvider,
         config,
         text,
-        image,
+        images,
       });
       location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(estimate))}`;
     } catch (err) {
@@ -141,7 +175,7 @@ function escapeHtml(s) {
 }
 
 function escapeAttr(s) {
-  return String(s).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+  return String(s).replace(/&/g, "&amp;").replace(/'/g, "&#39;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
 customElements.define("analyze-view", AnalyzeView);

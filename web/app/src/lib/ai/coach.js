@@ -1,10 +1,10 @@
 // @ts-check
-import { foodEntries, weights, water, bodyFat, profile as profileStore } from "../db.js";
+import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs } from "../db.js";
 import { dailyTargets, bmr, tdee } from "../nofud-core/formulas.js";
 import { PROVIDERS } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 
-const SYSTEM_PROMPT = `You are the NoFUD coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
+const BASE_SYSTEM = `You are the NoFUD coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
 
 Use read tools (get_diary_context, get_weight_history, get_data_summary, etc.) before estimating anything new — don't guess totals you can look up.
 
@@ -26,13 +26,19 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
 
+  const appPrefs = await prefs.load();
+  let systemPrompt = BASE_SYSTEM;
+  if (appPrefs.userContext?.trim()) {
+    systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
+  }
+
   const messages = /** @type {import('./providers.js').AiMessage[]} */ ([
     ...history,
     { role: "user", text: userText, image },
   ]);
 
   for (let iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
-    const response = await provider.send(config, { systemPrompt: SYSTEM_PROMPT, messages, tools: AI_TOOLS });
+    const response = await provider.send(config, { systemPrompt, messages, tools: AI_TOOLS });
     const readCalls = response.toolCalls.filter((tc) => READ_ONLY_TOOLS.has(tc.name));
     const writeCalls = response.toolCalls.filter((tc) => WRITE_TOOLS.has(tc.name));
 

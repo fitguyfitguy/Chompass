@@ -3,7 +3,19 @@ import { foodEntries, profile as profileStore, water, prefs } from "../lib/db.js
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/nofud-core/formulas.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInput } from "../lib/ui/dialog.js";
-import { recentFoods } from "../lib/recent-foods.js";
+import {
+  recentFoodTemplates,
+  frequentFoodGroups,
+  listFavorites,
+  toggleFavorite,
+  isFavorite,
+  duplicatedForLogging,
+  toPrefill,
+} from "../lib/saved-meals.js";
+import { weekDates as weekDatesForPrefs, guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
+import { listRecipes, logRecipe, recipeFromEntries, saveRecipe, deleteRecipe } from "../lib/recipes.js";
+import { mealShareText } from "../lib/meal-share.js";
+import { createSpeechCapture } from "../lib/speech.js";
 
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
@@ -16,6 +28,9 @@ const ICONS = {
   manual: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`,
   barcode: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5h2v14H3V5zm3 0h1v14H6V5zm2 0h3v14H8V5zm4 0h1v14h-1V5zm2 0h3v14h-3V5zm4 0h1v14h-1V5zm2 0h2v14h-2V5z"/></svg>`,
   recents: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 3a9 9 0 1 0 8.94 10h-2.02A7 7 0 1 1 13 5v5.59l3.3 3.3 1.4-1.42L15 10.17V3h-2z"/></svg>`,
+  copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`,
+  recipe: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 4h8v2H8V4zm0 4h8v2H8V8zm0 4h5v2H8v-2zm-4 8h16v2H4v-2zM6 2v20h2V2H6zm10 0v20h2V2h-2z"/></svg>`,
+  voice: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`,
   breakfast: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18 2H6v6h12V2zm0 8H6c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zM8 16H6v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>`,
   lunch: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>`,
   dinner: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.1 13.34 3.91 9.16a4.008 4.008 0 0 1 0-5.66l7.05 7.05-2.86 2.79zm6.78-.02c1.58.92 3.68.55 5.05-.81s1.74-3.46.81-5.05l-3.14 3.14L14.2 8.2l3.14-3.14c-1.58-.92-3.68-.55-5.05.81s-1.74 3.46-.81 5.05l-7.06 7.05 1.41 1.41 5.05-5.05L15 18.95l1.41-1.41-1.53-4.22z"/></svg>`,
@@ -32,17 +47,8 @@ function shiftDate(iso, days) {
   return d.toISOString().slice(0, 10);
 }
 
-function weekDates(selectedIso) {
-  const selected = new Date(`${selectedIso}T00:00:00`);
-  const dow = selected.getDay();
-  const mondayOffset = dow === 0 ? -6 : 1 - dow;
-  const monday = new Date(selected);
-  monday.setDate(selected.getDate() + mondayOffset);
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d.toISOString().slice(0, 10);
-  });
+function weekDates(selectedIso, weekStartsOnMonday = true) {
+  return weekDatesForPrefs(selectedIso, weekStartsOnMonday);
 }
 
 function clampDate(iso) {
@@ -234,7 +240,7 @@ export class DiaryView extends HTMLElement {
     const waterMl = waterLogs.reduce((s, w) => s + w.amountMl, 0);
     const waterGoal = appPrefs.waterGoalMl ?? 2500;
     const waterPct = waterGoal > 0 ? Math.min(100, (waterMl / waterGoal) * 100) : 0;
-    const days = weekDates(this.date);
+    const days = weekDates(this.date, appPrefs.weekStartsOnMonday !== false);
     const today = todayIso();
     const nextWeekStart = shiftDate(days[0], 7);
     const canNextWeek = nextWeekStart <= today;
@@ -496,6 +502,8 @@ export class DiaryView extends HTMLElement {
         <div class="sheet-actions" role="menu">
           <button type="button" role="menuitem" data-act="edit">Edit</button>
           <button type="button" role="menuitem" data-act="meal">Change meal</button>
+          <button type="button" role="menuitem" data-act="fav">Favorite</button>
+          <button type="button" role="menuitem" data-act="share">Share</button>
           <button type="button" role="menuitem" data-act="dup">Duplicate</button>
           <button type="button" role="menuitem" data-act="del" class="is-danger">Delete</button>
         </div>`,
@@ -504,6 +512,15 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-act="edit"]')?.addEventListener("click", () => {
       sheet.close();
       this.openEntryForm(entry);
+    });
+    sheet.body.querySelector('[data-act="fav"]')?.addEventListener("click", async () => {
+      sheet.close();
+      const nowFav = await toggleFavorite(entry);
+      this.showToast(nowFav ? "Added to favorites" : "Removed from favorites");
+    });
+    sheet.body.querySelector('[data-act="share"]')?.addEventListener("click", async () => {
+      sheet.close();
+      await this.shareEntries([entry]);
     });
     sheet.body.querySelector('[data-act="dup"]')?.addEventListener("click", () => {
       sheet.close();
@@ -522,6 +539,11 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-act="meal"]')?.addEventListener("click", () => {
       sheet.close();
       this.openChangeMealSheet(entry);
+    });
+    // Refresh favorite label
+    isFavorite(entry).then((fav) => {
+      const btn = sheet.body.querySelector('[data-act="fav"]');
+      if (btn) btn.textContent = fav ? "Unfavorite" : "Favorite";
     });
   }
 
@@ -564,6 +586,7 @@ export class DiaryView extends HTMLElement {
     this.querySelector(".fab")?.setAttribute("aria-expanded", "true");
 
     const showWater = appPrefs.showWater !== false;
+    const speech = createSpeechCapture();
     const body = `
       <div class="add-food-heroes">
         ${tile("photo", "Photo", "Snap a meal", ICONS.photo)}
@@ -573,7 +596,12 @@ export class DiaryView extends HTMLElement {
       <p class="add-food-section">More</p>
       <div class="add-food-row">
         ${tile("scan", "Barcode", "", ICONS.barcode)}
-        ${tile("recents", "Recents", "", ICONS.recents)}
+        ${tile("saved", "Saved meals", "", ICONS.recents)}
+      </div>
+      <div class="add-food-row">
+        ${tile("copy", "Copy day", "", ICONS.copy)}
+        ${tile("recipe", "Recipe", "", ICONS.recipe)}
+        ${speech.supported ? tile("voice", "Voice", "", ICONS.voice) : ""}
       </div>
       ${
         showWater
@@ -611,8 +639,18 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-add="note"]')?.addEventListener("click", () => go(`#/analyze?date=${this.date}&mode=note`));
     sheet.body.querySelector('[data-add="manual"]')?.addEventListener("click", () => go(`#/entry/new?date=${this.date}`));
     sheet.body.querySelector('[data-add="scan"]')?.addEventListener("click", () => go(`#/scan?date=${this.date}`));
-    sheet.body.querySelector('[data-add="recents"]')?.addEventListener("click", () => {
-      this.openRecentsSheet(sheet);
+    sheet.body.querySelector('[data-add="saved"]')?.addEventListener("click", () => {
+      this.openSavedMealsSheet(sheet, appPrefs);
+    });
+    sheet.body.querySelector('[data-add="copy"]')?.addEventListener("click", () => {
+      this.openCopyFromDaySheet(sheet);
+    });
+    sheet.body.querySelector('[data-add="recipe"]')?.addEventListener("click", () => {
+      this.openRecipeSheet(sheet, appPrefs);
+    });
+    sheet.body.querySelector('[data-add="voice"]')?.addEventListener("click", () => {
+      sheet.close();
+      this.startVoiceNote();
     });
 
     sheet.body.querySelectorAll("[data-sheet-water]").forEach((el) => {
@@ -636,41 +674,319 @@ export class DiaryView extends HTMLElement {
     });
   }
 
+  startVoiceNote() {
+    const speech = createSpeechCapture();
+    if (!speech.supported) {
+      this.showToast("Voice input is not supported in this browser");
+      return;
+    }
+    this.showToast("Listening…");
+    speech.start(
+      (text) => {
+        location.hash = `#/analyze?date=${this.date}&mode=note&prefill=${encodeURIComponent(text)}`;
+      },
+      (err) => this.showToast(`Voice: ${err}`)
+    );
+  }
+
   /**
-   * Nested Recents chooser — dismiss then navigate to review form (Android pattern).
    * @param {ReturnType<typeof openSheet>} parentSheet
+   * @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs
    */
-  async openRecentsSheet(parentSheet) {
-    const foods = await recentFoods(20);
-    const body = foods.length
-      ? `<div class="recents-list sheet-recents">
-          ${foods
+  async openSavedMealsSheet(parentSheet, appPrefs) {
+    let segment = appPrefs.lastSavedMealsSegment || "RECENTS";
+    const sheet = openSheet({
+      title: "Saved meals",
+      body: `<div class="saved-meals" data-saved-root><p class="empty-state">Loading…</p></div>`,
+    });
+
+    const renderTab = async () => {
+      const root = sheet.body.querySelector("[data-saved-root]");
+      if (!root) return;
+      /** @type {Array<{label: string, meta: string, entry: import('../lib/nofud-core/models.js').FoodEntry, count?: number}>} */
+      let rows = [];
+      if (segment === "RECENTS") {
+        rows = (await recentFoodTemplates(30, 40)).map((e) => ({
+          label: e.name,
+          meta: `${Math.round(e.calories)} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+          entry: e,
+        }));
+      } else if (segment === "FREQUENT") {
+        rows = (await frequentFoodGroups(90)).map((g) => ({
+          label: g.template.name,
+          meta: `${g.count}× · ${Math.round(g.template.calories)} kcal`,
+          entry: g.template,
+          count: g.count,
+        }));
+      } else if (segment === "FAVORITES") {
+        rows = (await listFavorites()).map((e) => ({
+          label: e.name,
+          meta: `${Math.round(e.calories)} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+          entry: e,
+        }));
+      } else {
+        const recipeList = await listRecipes();
+        root.innerHTML = `
+          <div class="saved-tabs" role="tablist">
+            ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
+              .map(
+                (s) =>
+                  `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${s[0] + s.slice(1).toLowerCase()}</button>`
+              )
+              .join("")}
+          </div>
+          ${
+            recipeList.length
+              ? `<div class="recents-list sheet-recents">
+                  ${recipeList
+                    .map(
+                      (r) => `
+                    <button type="button" data-recipe-id="${r.id}">
+                      <strong>${escapeHtml(r.name)}</strong><br/>
+                      <span class="recents-meta">${r.ingredients.length} ingredients · ${r.ingredients.reduce((s, i) => s + Math.round(i.baseCalories * (i.quantityScale ?? 1)), 0)} kcal</span>
+                    </button>`
+                    )
+                    .join("")}
+                </div>`
+              : `<p class="empty-state" style="padding:1rem 0;">No recipes yet. Build one from Favorites.</p>`
+          }`;
+        root.querySelectorAll("[data-seg]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            segment = /** @type {any} */ (btn.getAttribute("data-seg"));
+            await prefs.save({ lastSavedMealsSegment: segment });
+            renderTab();
+          });
+        });
+        root.querySelectorAll("[data-recipe-id]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-recipe-id");
+            const all = await listRecipes();
+            const recipe = all.find((r) => r.id === id);
+            if (!recipe) return;
+            sheet.close();
+            parentSheet.close();
+            await logRecipe(recipe, this.date, appPrefs);
+            this.render();
+          });
+        });
+        return;
+      }
+
+      root.innerHTML = `
+        <div class="saved-tabs" role="tablist">
+          ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
             .map(
-              (r) => `
-            <button type="button" data-recent='${escapeAttr(JSON.stringify(r))}'>
-              <strong>${escapeHtml(r.name)}</strong><br/>
-              <span class="recents-meta">${Math.round(r.calories)} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
-            </button>`
+              (s) =>
+                `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${s[0] + s.slice(1).toLowerCase()}</button>`
             )
             .join("")}
-        </div>`
-      : `<p class="empty-state" style="padding:1rem 0;">No recent foods yet. Log something first.</p>`;
+        </div>
+        ${
+          rows.length
+            ? `<div class="recents-list sheet-recents">
+                ${rows
+                  .map(
+                    (r) => `
+                  <button type="button" data-prefill='${escapeAttr(JSON.stringify(toPrefill(r.entry)))}'>
+                    <strong>${escapeHtml(r.label)}</strong><br/>
+                    <span class="recents-meta">${escapeHtml(r.meta)}</span>
+                  </button>`
+                  )
+                  .join("")}
+              </div>`
+            : `<p class="empty-state" style="padding:1rem 0;">Nothing here yet.</p>`
+        }`;
 
+      root.querySelectorAll("[data-seg]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          segment = /** @type {any} */ (btn.getAttribute("data-seg"));
+          await prefs.save({ lastSavedMealsSegment: segment });
+          renderTab();
+        });
+      });
+      root.querySelectorAll("[data-prefill]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const raw = btn.getAttribute("data-prefill");
+          if (!raw) return;
+          const prefill = JSON.parse(raw);
+          sheet.close();
+          parentSheet.close();
+          location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
+        });
+      });
+    };
+
+    await renderTab();
+  }
+
+  /** @param {ReturnType<typeof openSheet>} parentSheet */
+  async openCopyFromDaySheet(parentSheet) {
+    const all = await foodEntries.all();
+    const dates = [...new Set(all.map((e) => e.date))].filter((d) => d !== this.date).sort().reverse().slice(0, 60);
     const sheet = openSheet({
-      title: "Recents",
-      body,
+      title: "Copy from day",
+      body: dates.length
+        ? `<div class="recents-list sheet-recents">
+            ${dates
+              .map(
+                (d) =>
+                  `<button type="button" data-copy-date="${d}"><strong>${escapeHtml(d)}</strong><br/><span class="recents-meta">Tap to choose foods</span></button>`
+              )
+              .join("")}
+          </div>`
+        : `<p class="empty-state" style="padding:1rem 0;">No other days with food yet.</p>`,
     });
-
-    sheet.body.querySelectorAll("[data-recent]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const raw = btn.getAttribute("data-recent");
-        if (!raw) return;
-        const prefill = JSON.parse(raw);
+    sheet.body.querySelectorAll("[data-copy-date]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const date = btn.getAttribute("data-copy-date");
+        if (!date) return;
+        const dayEntries = await foodEntries.byDate(date);
         sheet.close();
-        parentSheet.close();
-        location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
+        this.openCopySelectSheet(parentSheet, dayEntries);
       });
     });
+  }
+
+  /**
+   * @param {ReturnType<typeof openSheet>} parentSheet
+   * @param {import('../lib/nofud-core/models.js').FoodEntry[]} dayEntries
+   */
+  openCopySelectSheet(parentSheet, dayEntries) {
+    const sheet = openSheet({
+      title: "Select foods to copy",
+      body: `
+        <div class="copy-select">
+          ${dayEntries
+            .map(
+              (e) => `
+            <label class="copy-select__row">
+              <input type="checkbox" data-copy-id="${e.id}" checked />
+              <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${Math.round(e.calories)} kcal · ${e.mealType}</span></span>
+            </label>`
+            )
+            .join("")}
+        </div>
+        <button type="button" class="btn btn--primary" data-copy-confirm>Copy to today</button>`,
+    });
+    sheet.body.querySelector("[data-copy-confirm]")?.addEventListener("click", async () => {
+      const ids = [...sheet.body.querySelectorAll("[data-copy-id]:checked")].map((el) => el.getAttribute("data-copy-id"));
+      const meal = guessMealTypeFromPrefs(await prefs.load());
+      for (const e of dayEntries.filter((x) => ids.includes(x.id))) {
+        await foodEntries.put(duplicatedForLogging(e, this.date, undefined, meal));
+      }
+      sheet.close();
+      parentSheet.close();
+      this.render();
+    });
+  }
+
+  /**
+   * @param {ReturnType<typeof openSheet>} parentSheet
+   * @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs
+   */
+  async openRecipeSheet(parentSheet, appPrefs) {
+    const favs = await listFavorites();
+    const existing = await listRecipes();
+    const sheet = openSheet({
+      title: "Recipes",
+      body: `
+        <p class="add-food-section">Log a recipe</p>
+        ${
+          existing.length
+            ? `<div class="recents-list sheet-recents">
+                ${existing
+                  .map(
+                    (r) => `
+                  <div class="recipe-row">
+                    <button type="button" data-log-recipe="${r.id}"><strong>${escapeHtml(r.name)}</strong><br/>
+                    <span class="recents-meta">${r.ingredients.length} ingredients</span></button>
+                    <button type="button" class="chip" data-del-recipe="${r.id}">Delete</button>
+                  </div>`
+                  )
+                  .join("")}
+              </div>`
+            : `<p class="empty-state" style="padding:0.5rem 0;">No saved recipes yet.</p>`
+        }
+        <p class="add-food-section">Build from favorites</p>
+        ${
+          favs.length
+            ? `<div class="copy-select">
+                ${favs
+                  .map(
+                    (e) => `
+                  <label class="copy-select__row">
+                    <input type="checkbox" data-ing-id="${e.id}" />
+                    <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${Math.round(e.calories)} kcal</span></span>
+                  </label>`
+                  )
+                  .join("")}
+              </div>
+              <div class="field"><label for="recipe-name">Recipe name</label><input id="recipe-name" type="text" placeholder="My meal" /></div>
+              <button type="button" class="btn btn--primary" data-save-recipe>Save recipe</button>`
+            : `<p class="empty-state" style="padding:0.5rem 0;">Favorite some foods first, then build a recipe.</p>`
+        }`,
+    });
+
+    sheet.body.querySelectorAll("[data-log-recipe]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-log-recipe");
+        const recipe = existing.find((r) => r.id === id);
+        if (!recipe) return;
+        sheet.close();
+        parentSheet.close();
+        await logRecipe(recipe, this.date, appPrefs);
+        this.render();
+      });
+    });
+    sheet.body.querySelectorAll("[data-del-recipe]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-del-recipe");
+        if (id) await deleteRecipe(id);
+        sheet.close();
+        this.openRecipeSheet(parentSheet, appPrefs);
+      });
+    });
+    sheet.body.querySelector("[data-save-recipe]")?.addEventListener("click", async () => {
+      const ids = [...sheet.body.querySelectorAll("[data-ing-id]:checked")].map((el) => el.getAttribute("data-ing-id"));
+      const picked = favs.filter((f) => ids.includes(f.id));
+      if (!picked.length) return;
+      const nameEl = /** @type {HTMLInputElement | null} */ (sheet.body.querySelector("#recipe-name"));
+      const name = (nameEl?.value || "Recipe").trim() || "Recipe";
+      const recipe = recipeFromEntries(name, picked, guessMealTypeFromPrefs(appPrefs));
+      await saveRecipe(recipe);
+      sheet.close();
+      parentSheet.close();
+      this.showToast(`Saved recipe “${name}”`);
+    });
+  }
+
+  /** @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries */
+  async shareEntries(entries) {
+    const text = mealShareText(entries);
+    try {
+      if (navigator.share) {
+        await navigator.share({ text, title: "NoFUD meal" });
+        return;
+      }
+    } catch {
+      /* fall through */
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      this.showToast("Share link copied");
+    } catch {
+      this.showToast("Could not share");
+    }
+  }
+
+  /** @param {string} message */
+  showToast(message) {
+    document.querySelector(".toast")?.remove();
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
   }
 
   async customWater() {
@@ -689,7 +1005,8 @@ export class DiaryView extends HTMLElement {
   }
 
   async weekHasEntries() {
-    const days = weekDates(this.date);
+    const appPrefs = await prefs.load();
+    const days = weekDates(this.date, appPrefs.weekStartsOnMonday !== false);
     const flags = new Set();
     await Promise.all(
       days.map(async (d) => {
@@ -707,11 +1024,7 @@ export class DiaryView extends HTMLElement {
 
   /** @param {import('../lib/nofud-core/models.js').FoodEntry} entry */
   async duplicateEntry(entry) {
-    const copy = {
-      ...entry,
-      id: crypto.randomUUID(),
-    };
-    await foodEntries.put(copy);
+    await foodEntries.put(duplicatedForLogging(entry, this.date));
     this.render();
   }
 
