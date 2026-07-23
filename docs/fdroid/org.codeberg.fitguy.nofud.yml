@@ -17,7 +17,7 @@ Repo: https://codeberg.org/fitguy/nofud.git
 Builds:
   - versionName: 2.0.0
     versionCode: 27
-    commit: PLACEHOLDER_PIN_AFTER_COMMIT
+    commit: 4e6bd1e2966c627024e635ba3ce0935d0c789fcb
     subdir: android/app
     gradle:
       - yes
