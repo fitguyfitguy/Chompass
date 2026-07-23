@@ -22,6 +22,7 @@ import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProvid
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { downloadJson, downloadText } from "../lib/download.js";
 import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
 import {
   HOME_TOP_NUTRIENTS,
@@ -716,8 +717,9 @@ export class SettingsView extends HTMLElement {
         <h2 class="chart-title">iPhone / iPad (Safari)</h2>
         <ol class="install-steps">
           <li>Open NoFUD in <strong>Safari</strong> (required for a true home-screen app).</li>
-          <li>Tap the <strong>Share</strong> button.</li>
+          <li>Tap the <strong>Share</strong> button (square with an upward arrow).</li>
           <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
+          <li>Open NoFUD from the <strong>home-screen icon</strong> — not a Safari tab — for the full-screen app.</li>
         </ol>
         <p class="install-note">Chrome or Firefox on iOS still use Safari&rsquo;s share sheet for home-screen install.</p>
       </div>
@@ -848,11 +850,11 @@ export class SettingsView extends HTMLElement {
     const dateRange = { start: dates[0] ?? "", end: dates[dates.length - 1] ?? "" };
     const targets = prof ? dailyTargets(prof) : null;
     if (format === "csv") {
-      downloadText(exportDiaryCsv(entries), `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.csv`, "text/csv");
+      await downloadText(exportDiaryCsv(entries), `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.csv`, "text/csv");
       return;
     }
     if (format === "md") {
-      downloadText(
+      await downloadText(
         exportDiaryMarkdown(entries, dateRange, targets),
         `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.md`,
         "text/markdown"
@@ -865,18 +867,18 @@ export class SettingsView extends HTMLElement {
       for (const e of entries) targetsByDay[e.date] = targets;
     }
     const doc = exportDiary({ entries, targets: targetsByDay, dateRange });
-    downloadJson(doc, `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
+    await downloadJson(doc, `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
   }
 
   async onExportBodyMetrics() {
     const format = /** @type {HTMLSelectElement|null} */ (this.querySelector("#body-format"))?.value || "json";
     const [w, bf, m] = await Promise.all([weights.all(), bodyFat.all(), measurements.all()]);
     if (format === "csv") {
-      downloadText(exportBodyMetricsCsv({ weights: w, bodyFat: bf, measurements: m }), "NoFUD-Body-Metrics.csv", "text/csv");
+      await downloadText(exportBodyMetricsCsv({ weights: w, bodyFat: bf, measurements: m }), "NoFUD-Body-Metrics.csv", "text/csv");
       return;
     }
     const doc = exportBodyMetrics({ weights: w, bodyFat: bf, measurements: m });
-    downloadJson(doc, `NoFUD-Weight-Import.json`);
+    await downloadJson(doc, `NoFUD-Weight-Import.json`);
   }
 
   async onImportDiary(ev) {
@@ -908,27 +910,6 @@ export class SettingsView extends HTMLElement {
     }
     ev.target.value = "";
   }
-}
-
-function downloadJson(doc, filename) {
-  const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/** @param {string} text @param {string} filename @param {string} mime */
-function downloadText(text, filename, mime) {
-  const blob = new Blob([text], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 function escapeAttr(s) {

@@ -76,7 +76,7 @@ notifications, widgets, full i18n pack, 53-week pager.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v8`.
+Service worker cache: `nofud-shell-v11`.
 
 ### Manual PWA audit checklist
 
@@ -101,7 +101,11 @@ confirm live `Content-Type` for `/app/manifest.json` is `application/json`.
 Known trade-offs:
 - Barcode fallback for non-Chromium is manual entry (no vendored JS decoder —
   keeps the no-bundler / no-runtime-deps architecture).
-- Web Crypto non-extractable-key fallback for older/incognito contexts is still
-  not implemented.
+- Diary/body exports prefer Web Share (`files`) when available (Safari/iOS
+  Save to Files), then fall back to `<a download>`.
+- Web Crypto master key prefers a non-extractable CryptoKey in IndexedDB;
+  Safari Private / restricted storage falls back to an extractable CryptoKey
+  or JWK record (AES-GCM wrapping of provider keys is unchanged; JWK is weaker
+  against XSS).
 - Custom-scheme `nofud://add-meal` cold-start is native-only; PWA uses `#/add-meal?d=`.
 - Web Speech API availability varies (Safari/Firefox uneven).
