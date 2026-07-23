@@ -22,8 +22,9 @@ DENSITIES = {
 }
 
 # Matches AppThemeColor in Color.kt: (suffix, start_rgb, end_rgb, ic_logo_name or None)
+# Unsuffixed theme is the default brand (teal), same as AppThemeColor.TEAL / PWA / website.
 THEMES: list[tuple[str, tuple[int, int, int], tuple[int, int, int], str | None]] = [
-    ("", (0xFF, 0x37, 0x5F), (0xFF, 0x6B, 0x8A), "ic_logo.png"),
+    ("", (0x00, 0x6B, 0x5E), (0x5C, 0xC4, 0x8F), "ic_logo.png"),
     ("_red", (0xFF, 0x3B, 0x30), (0xFF, 0x69, 0x61), "ic_logo_red.png"),
     ("_orange", (0xFF, 0x95, 0x00), (0xFF, 0xB3, 0x40), "ic_logo_orange.png"),
     ("_green", (0x34, 0xC7, 0x59), (0x62, 0xD4, 0x6F), "ic_logo_green.png"),
@@ -181,19 +182,22 @@ def compose_maskable(
 
 
 def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
-    """Write PWA / store icons with transparent corners (no white canvas padding)."""
+    """Write PWA / store icons with transparent corners (no white canvas padding).
+
+    Default brand matches Android teal (#006B5E → #5CC48F), same as AppThemeColor.TEAL
+    and the website / F-Droid listing icons.
+    """
     PWA_ICONS.mkdir(parents=True, exist_ok=True)
-    default_start, default_end = THEMES[0][1], THEMES[0][2]
     teal = next(t for t in THEMES if t[0] == "_teal")
     teal_start, teal_end = teal[1], teal[2]
-    bleed = teal_start  # matches manifest theme_color / existing maskable
+    bleed = teal_start  # matches manifest theme_color
 
     for name, px in (
         ("icon-192.png", 192),
         ("icon-512.png", 512),
         ("apple-touch-icon.png", 180),
     ):
-        compose_icon(px, rounded_mask, logo_mask, default_start, default_end).save(
+        compose_icon(px, rounded_mask, logo_mask, teal_start, teal_end).save(
             PWA_ICONS / name, optimize=True
         )
 
@@ -201,8 +205,8 @@ def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
         512,
         rounded_mask,
         logo_mask,
-        default_start,
-        default_end,
+        teal_start,
+        teal_end,
         bleed,
     ).save(PWA_ICONS / "icon-maskable-512.png", optimize=True)
 
@@ -210,6 +214,13 @@ def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
     METADATA_ICON.parent.mkdir(parents=True, exist_ok=True)
     compose_icon(512, rounded_mask, logo_mask, teal_start, teal_end).save(
         METADATA_ICON, optimize=True
+    )
+
+    # Hugo / Codeberg Pages favicon + header logo (same teal brand mark).
+    website_logo = ROOT / "website" / "static" / "img" / "logo.png"
+    website_logo.parent.mkdir(parents=True, exist_ok=True)
+    compose_icon(512, rounded_mask, logo_mask, teal_start, teal_end).save(
+        website_logo, optimize=True
     )
 
 
