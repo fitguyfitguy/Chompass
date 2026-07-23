@@ -1,7 +1,7 @@
 // @ts-check
 // Diary-oriented food analysis (photo or text) — separate from Coach chat.
 // Always returns a proposal object for entry-form review; never writes.
-import { PROVIDERS } from "./providers.js";
+import { PROVIDERS, resolveProviderModel } from "./providers.js";
 import { prefs } from "../db.js";
 import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
@@ -33,6 +33,7 @@ export async function analyzeFoodEntry({ providerId, config, text, image, images
     const fbConfig = await loadProviderKey(fbId);
     if (!fbConfig) throw primaryErr;
     if (appPrefs.fallbackAiModel) fbConfig.model = appPrefs.fallbackAiModel;
+    fbConfig.model = resolveProviderModel(fbId, fbConfig.model, "fallback");
     return runAnalyze(fbId, fbConfig, text, imageList, appPrefs);
   }
 }
@@ -47,7 +48,7 @@ export async function analyzeFoodEntry({ providerId, config, text, image, images
 async function runAnalyze(providerId, config, text, imageList, appPrefs) {
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
-
+  config = { ...config, model: resolveProviderModel(providerId, config.model, "primary") };
   let systemPrompt = SYSTEM;
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;

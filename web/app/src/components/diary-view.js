@@ -24,6 +24,7 @@ import {
   nutrientDef,
   tubeStatus,
   formatFoodChips,
+  formatMacroChipLine,
   NUTRITION_DETAIL_MICROS,
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
@@ -88,30 +89,36 @@ function saveHomeDate(iso) {
 
 /** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape. */
 function ringSvg(eaten, target) {
-  const width = 220;
-  const height = 118;
-  const stroke = 14;
+  const width = 260;
+  const stroke = 16;
+  // Height must fit the semicircle plus full stroke at the apex (Android insets by stroke/2).
   const r = (width - stroke) / 2;
+  const topPad = 3; // breathing room so AA / round caps aren't clipped
+  const height = Math.ceil(r + stroke + topPad);
   const cx = width / 2;
   const cy = height - stroke / 2;
   const halfC = Math.PI * r;
   const pct = target > 0 ? Math.min(1, eaten / target) : 0;
-  const remaining = Math.max(0, Math.round(target - eaten));
+  const remaining = Math.round(target - eaten);
   const over = eaten > target;
   const x1 = (cx - r).toFixed(1);
   const x2 = (cx + r).toFixed(1);
   const y = cy.toFixed(1);
   const arc = `M ${x1} ${y} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y}`;
+  const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
+  // Label Y positions are absolute so they sit inside the bowl after the taller viewBox.
   return `
     <svg class="calorie-ring calorie-ring--semi" viewBox="0 0 ${width} ${height}" role="img"
-      aria-label="${Math.round(eaten)} of ${target} calories">
+      aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}">
       <path d="${arc}" fill="none" stroke="var(--surface)" stroke-width="${stroke}" stroke-linecap="round" />
       <path class="calorie-ring__progress" d="${arc}" fill="none"
         stroke="${over ? "var(--over)" : "var(--teal)"}" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="0 ${halfC.toFixed(1)}"
         data-dash="${(pct * halfC).toFixed(1)} ${halfC.toFixed(1)}" />
-      <text x="50%" y="62%" text-anchor="middle" class="calorie-ring__label">${over ? `+${Math.round(eaten - target)}` : remaining}</text>
-      <text x="50%" y="82%" text-anchor="middle" class="calorie-ring__sub">${over ? "over" : "remaining"}</text>
+      <text x="50%" y="58" text-anchor="middle" class="calorie-ring__caption">Calories</text>
+      <text x="50%" y="88" text-anchor="middle" class="calorie-ring__label">${Math.round(eaten)}</text>
+      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">of ${Math.round(target)} kcal</text>
+      <text x="50%" y="128" text-anchor="middle" class="calorie-ring__left">🔥 ${leftLabel}</text>
     </svg>`;
 }
 
@@ -182,7 +189,11 @@ function mealCard(mealType, mealEntries, chipKeys) {
           <h2 class="meal-card__title">${MEAL_LABELS[mealType]}</h2>
           <p class="meal-card__summary">
             <span class="meal-card__kcal">${Math.round(totals.calories)} kcal</span>
-            · ${Math.round(totals.proteinG)}P · ${Math.round(totals.carbsG)}C · ${Math.round(totals.fatG)}F
+            <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine({
+              proteinG: totals.proteinG,
+              carbsG: totals.carbsG,
+              fatG: totals.fatG,
+            }, ["proteinG", "carbsG", "fatG"])}
           </p>
         </div>
       </header>
@@ -197,7 +208,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
               <button type="button" class="food-item__main" data-edit>
                 <span class="food-item__text">
                   <span class="food-item__name">${escapeHtml(e.name)}</span>
-                  <span class="food-item__meta">${formatFoodChips(e, chipKeys)}${e.quantityG != null ? ` · ${e.quantityG}g` : ""} · ${e.time}</span>
+                  <span class="food-item__meta">${formatFoodChips(e, chipKeys)}${e.quantityG != null ? `<span class="food-item__meta-sep"> · </span>${e.quantityG}g` : ""}<span class="food-item__meta-sep"> · </span><span class="food-item__meta-time">${escapeHtml(e.time)}</span></span>
                 </span>
                 <span class="food-item__cals">${Math.round(e.calories)}</span>
               </button>

@@ -27,6 +27,8 @@ test("androidAlignedDefaultConstants", () => {
   assert.equal(ANDROID_PREF_DEFAULTS.showWater, false);
   assert.equal(ANDROID_PREF_DEFAULTS.waterGoalMl, 2000);
   assert.equal(ANDROID_PREF_DEFAULTS.aiFallbackEnabled, true);
+  assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiProvider, "gemini");
+  assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiModel, "gemini-3.5-flash-lite");
 });
 
 test("normalizeHomeTopNutrients_padsAndTruncates", () => {
@@ -70,8 +72,12 @@ test("mergeOptionalGoals_fillsDefaults", () => {
 
 test("formatFoodChips", () => {
   const entry = { calories: 1, proteinG: 12.4, carbsG: 30, fatG: 8, fiberG: 5.6 };
-  assert.equal(formatFoodChips(entry, ["proteinG", "carbsG", "fatG"]), "12P · 30C · 8F");
-  assert.match(formatFoodChips(entry, ["proteinG", "fiberG"]), /Fi/);
+  const html = formatFoodChips(entry, ["proteinG", "carbsG", "fatG"]);
+  assert.match(html, /12<span class="macro-chip macro-chip--protein">P<\/span>/);
+  assert.match(html, /30<span class="macro-chip macro-chip--carbs">C<\/span>/);
+  assert.match(html, /8<span class="macro-chip macro-chip--fat">F<\/span>/);
+  // Fiber is omitted from row display even when requested.
+  assert.doesNotMatch(formatFoodChips(entry, ["proteinG", "fiberG"]), /Fi/);
 });
 
 test("ALL_MICRO_KEYS_count", () => {

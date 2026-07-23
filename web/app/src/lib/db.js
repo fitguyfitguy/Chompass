@@ -257,8 +257,8 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   optionalNutrientGoals: { ...DEFAULT_OPTIONAL_NUTRIENT_GOALS },
   userContext: "",
   aiFallbackEnabled: ANDROID_PREF_DEFAULTS.aiFallbackEnabled,
-  fallbackAiProvider: "",
-  fallbackAiModel: "",
+  fallbackAiProvider: ANDROID_PREF_DEFAULTS.fallbackAiProvider,
+  fallbackAiModel: ANDROID_PREF_DEFAULTS.fallbackAiModel,
   primaryAiProvider: "",
 });
 
