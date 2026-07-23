@@ -48,12 +48,14 @@ is_play_asset() {
 }
 
 list_release_tags() {
+  # tea -o simple prints two lines per release (tar.gz row + bare zip URL).
+  # Only keep real semver tags like v1.14.10.
   run_tea releases list \
     --login "$LOGIN" \
     --repo "$CODEBERG_REPO" \
     -o simple 2>/dev/null \
-    | sed -n 's/^[[:space:]]*//;s/[[:space:]].*//;s/^v//;s/^/v/p' \
-    | sort -V
+    | awk '/^[[:space:]]*v[0-9]/{print $1}' \
+    | sort -uV
 }
 
 list_assets_for_tag() {
