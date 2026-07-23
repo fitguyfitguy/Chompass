@@ -256,9 +256,10 @@
     <string name="onboarding_provider_subtitle">O NoFUD precisa de uma chave de provedor\nde IA para analisar sua comida. Você usa a sua.</string>
     <string name="onboarding_provider_recommended_title">Recomendado: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Versão gratuita disponível, rápida e precisa</string>
-    <string name="onboarding_provider_step_1">Obtenha uma chave grátis em aistudio.google.com/apikey</string>
-    <string name="onboarding_provider_step_2">Abra Ajustes → Provedor de IA</string>
-    <string name="onboarding_provider_step_3">Cole sua chave - pronto</string>
+    <string name="onboarding_provider_howto_title">Como obter uma chave gratuita do Google AI Studio</string>
+    <string name="onboarding_provider_step_1">Abra aistudio.google.com/apikey (toque para abrir)</string>
+    <string name="onboarding_provider_step_2">Entre com o Google e crie uma chave de API</string>
+    <string name="onboarding_provider_step_3">Cole abaixo e toque em Testar chave</string>
     <string name="onboarding_provider_footer">13 provedores compatíveis. Sua chave fica\nneste dispositivo, criptografada.</string>
 
     <string name="onboarding_building_calories">Calorias</string>

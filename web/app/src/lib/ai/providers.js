@@ -87,8 +87,12 @@ export async function geminiSend(config, req) {
     contents: req.messages.map(geminiContent),
     tools: req.tools.length ? [{ functionDeclarations: req.tools.map((t) => ({ name: t.name, description: t.description, parameters: t.inputSchema })) }] : undefined,
   };
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(config.apiKey)}`;
-  const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": config.apiKey },
+    body: JSON.stringify(body),
+  });
   if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await safeText(res)}`);
   const data = await res.json();
   const parts = data.candidates?.[0]?.content?.parts ?? [];

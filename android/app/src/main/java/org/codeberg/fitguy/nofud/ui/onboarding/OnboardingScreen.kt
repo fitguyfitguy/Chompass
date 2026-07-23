@@ -157,9 +157,13 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     provider = ui.aiProvider,
                     model = ui.aiModel,
                     apiKey = ui.apiKey,
+                    apiKeyTesting = ui.apiKeyTesting,
+                    apiKeyTestMessage = ui.apiKeyTestMessage,
+                    apiKeyTestOk = ui.apiKeyTestOk,
                     onProviderChange = vm::setAiProvider,
                     onModelChange = vm::setAiModel,
-                    onKeyChange = vm::setApiKey
+                    onKeyChange = vm::setApiKey,
+                    onTestKey = { vm.testApiKey(advanceOnSuccess = false) },
                 )
                 OnboardingStep.BUILDING_PLAN -> BuildingPlanStep(vm = vm, onComplete = vm::next)
                 OnboardingStep.PLAN_READY -> PlanReadyStep(state = ui, vm = vm)

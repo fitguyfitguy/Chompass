@@ -1909,6 +1909,76 @@ body.dialog-open {
   font-size: 0.9rem;
 }
 
+.ai-key-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ai-key-status {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ai-key-status--ok {
+  color: var(--ok, #1a7f4b);
+}
+
+.ai-key-feedback {
+  margin: 0.55rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+.ai-key-feedback--ok {
+  color: var(--ok, #1a7f4b);
+}
+
+.ai-key-feedback--err {
+  color: var(--danger, #b42318);
+}
+
+.onboarding-ai-howto {
+  margin: 0.4rem 0 0.85rem;
+}
+
+.onboarding-ai-howto ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.onboarding-ai-howto a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.onboarding-ai-test-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.35rem;
+}
+
+.onboarding-ai-test-status {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.onboarding-ai-test-status--ok {
+  color: var(--ok, #1a7f4b);
+}
+
+.onboarding-ai-test-status--err {
+  color: var(--danger, #b42318);
+}
+
 .field-row--micros {
   margin-top: 0.7rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));

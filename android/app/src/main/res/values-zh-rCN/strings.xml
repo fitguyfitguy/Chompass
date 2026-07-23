@@ -256,9 +256,10 @@
     <string name="onboarding_provider_subtitle">NoFUD 需要 AI 提供商密钥来\n分析你的食物。请使用你自己的密钥。</string>
     <string name="onboarding_provider_recommended_title">推荐：Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">提供免费套餐，快速且准确</string>
-    <string name="onboarding_provider_step_1">在 aistudio.google.com/apikey 获取免费密钥</string>
-    <string name="onboarding_provider_step_2">打开“设置”→ AI 提供商</string>
-    <string name="onboarding_provider_step_3">粘贴你的密钥--完成</string>
+    <string name="onboarding_provider_howto_title">如何获取免费的 Google AI Studio 密钥</string>
+    <string name="onboarding_provider_step_1">打开 aistudio.google.com/apikey（点按打开）</string>
+    <string name="onboarding_provider_step_2">使用 Google 登录并创建 API 密钥</string>
+    <string name="onboarding_provider_step_3">粘贴到下方并点按“测试密钥”</string>
     <string name="onboarding_provider_footer">支持 13 个提供商。你的密钥仅保留在\n本设备上，并经过加密。</string>
 
     <string name="onboarding_building_calories">卡路里</string>

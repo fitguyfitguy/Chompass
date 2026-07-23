@@ -71,14 +71,20 @@ internal fun ProviderStep(
     provider: AIProvider,
     model: String,
     apiKey: String,
+    apiKeyTesting: Boolean,
+    apiKeyTestMessage: String,
+    apiKeyTestOk: Boolean?,
     onProviderChange: (AIProvider) -> Unit,
     onModelChange: (String) -> Unit,
-    onKeyChange: (String) -> Unit
+    onKeyChange: (String) -> Unit,
+    onTestKey: () -> Unit,
 ) {
     // iOS aiProviderStep: sparkles icon in circle, "Bring Your Own AI" title,
-    // recommended-provider Gemini card with star icon, 3-step setup guide, footer.
+    // recommended-provider Gemini card with star icon, expandable setup guide, footer.
     // Scrollable — the BYOK card (provider + model + key) can overflow shorter screens.
     var selectorSheet by remember { mutableStateOf<ProviderSelectorSheet?>(null) }
+    var howtoExpanded by remember { mutableStateOf(false) }
+    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
     Column(
         Modifier
             .fillMaxSize()
@@ -158,16 +164,41 @@ internal fun ProviderStep(
             }
         }
         Spacer(Modifier.height(10.dp))
-        // Steps card
+        // Collapsible how-to (collapsed by default)
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                AiSetupRow("1", stringResource(R.string.onboarding_provider_step_1))
-                AiSetupRow("2", stringResource(R.string.onboarding_provider_step_2))
-                AiSetupRow("3", stringResource(R.string.onboarding_provider_step_3))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { howtoExpanded = !howtoExpanded }
+                ) {
+                    Text(
+                        stringResource(R.string.onboarding_provider_howto_title),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                    )
+                }
+                if (howtoExpanded) {
+                    AiSetupRow(
+                        number = "1",
+                        text = stringResource(R.string.onboarding_provider_step_1),
+                        onClick = { uriHandler.openUri("https://aistudio.google.com/apikey") }
+                    )
+                    AiSetupRow("2", stringResource(R.string.onboarding_provider_step_2))
+                    AiSetupRow("3", stringResource(R.string.onboarding_provider_step_3))
+                }
             }
         }
         Spacer(Modifier.height(10.dp))
@@ -204,6 +235,33 @@ internal fun ProviderStep(
                             .fillMaxWidth()
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     )
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp)
+                            .padding(bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        TextButton(
+                            onClick = onTestKey,
+                            enabled = !apiKeyTesting && apiKey.isNotBlank()
+                        ) {
+                            Text(stringResource(R.string.onboarding_api_key_test))
+                        }
+                        if (apiKeyTestMessage.isNotEmpty()) {
+                            Text(
+                                apiKeyTestMessage,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = when (apiKeyTestOk) {
+                                    true -> AppColors.SuccessLight
+                                    false -> MaterialTheme.colorScheme.error
+                                    null -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -254,8 +312,11 @@ internal fun ProviderStep(
 private enum class ProviderSelectorSheet { PROVIDER, MODEL }
 
 @Composable
-private fun AiSetupRow(number: String, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun AiSetupRow(number: String, text: String, onClick: (() -> Unit)? = null) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    ) {
         Box(
             Modifier
                 .size(22.dp)
@@ -273,7 +334,8 @@ private fun AiSetupRow(number: String, text: String) {
         Spacer(Modifier.width(12.dp))
         Text(
             text,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (onClick != null) AppColors.Calorie else MaterialTheme.colorScheme.onBackground
         )
     }
 }

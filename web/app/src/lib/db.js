@@ -318,6 +318,9 @@ export const keys = {
   async all() {
     return (await store("keys")).getAll();
   },
+  async clear() {
+    return (await store("keys")).clear();
+  },
 };
 
 export async function clearAllUserData() {
@@ -331,6 +334,7 @@ export async function clearAllUserData() {
     water.clear(),
     profile.clear(),
     chat.clear(),
+    keys.clear(),
   ]);
   await prefs.save({ onboardingComplete: false });
 }

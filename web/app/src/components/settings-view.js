@@ -19,6 +19,7 @@ import {
 } from "../lib/nofud-core/export-text.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
+import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
@@ -526,6 +527,12 @@ export class SettingsView extends HTMLElement {
     const primaryModel = resolveProviderModel(initialProvider, saved?.model, "primary");
     const fallbackModel = resolveProviderModel(fallbackProvider, p.fallbackAiModel, "fallback");
 
+    const keyStatusLabel = saved ? "Key configured" : "No key saved";
+    const keyStatusClass = saved ? "ai-key-status ai-key-status--ok" : "ai-key-status";
+    const configuredList = configuredProviders.length
+      ? configuredProviders.map((id) => PROVIDERS[id].label).join(", ")
+      : "none";
+
     this.innerHTML = `
       ${subpageBar("AI", { backHref: "#/settings" })}
       <div class="card">
@@ -545,8 +552,11 @@ export class SettingsView extends HTMLElement {
             </select>
           </div>
           <div class="field">
-            <label for="ai-key">API key</label>
-            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="${saved ? "•••••••• (leave blank to keep)" : "sk-…"}" />
+            <div class="ai-key-label-row">
+              <label for="ai-key">API key</label>
+              <span id="ai-key-status" class="${keyStatusClass}" data-has-key="${saved ? "1" : "0"}">${keyStatusLabel}</span>
+            </div>
+            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="${saved ? "•••••••• (leave blank to keep)" : "AIza… or sk-…"}" />
           </div>
           <div class="field-row field-row--2">
             <div class="field">
@@ -563,11 +573,13 @@ export class SettingsView extends HTMLElement {
           </div>
           <div class="btn-row">
             <button type="submit" class="btn btn--primary">Save key</button>
+            <button type="button" class="btn" id="ai-key-test">Test key</button>
             <button type="button" class="btn btn--danger" id="ai-key-remove">Remove</button>
           </div>
+          <p id="ai-key-feedback" class="ai-key-feedback" role="status" aria-live="polite"></p>
         </form>
         <p style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
-          Configured: ${configuredProviders.length ? configuredProviders.map((id) => PROVIDERS[id].label).join(", ") : "none"}
+          Providers with a saved key: ${configuredList}
         </p>
       </div>
       <form class="entry-form card" id="ai-extra-form">
@@ -618,6 +630,20 @@ export class SettingsView extends HTMLElement {
       if (show) customInput.focus();
     };
 
+    const setKeyStatus = (hasKey) => {
+      const statusEl = /** @type {HTMLElement|null} */ (this.querySelector("#ai-key-status"));
+      const keyInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#ai-key"));
+      if (statusEl) {
+        statusEl.textContent = hasKey ? "Key configured" : "No key saved";
+        statusEl.className = hasKey ? "ai-key-status ai-key-status--ok" : "ai-key-status";
+        statusEl.dataset.hasKey = hasKey ? "1" : "0";
+      }
+      if (keyInput) {
+        keyInput.placeholder = hasKey ? "•••••••• (leave blank to keep)" : "AIza… or sk-…";
+        keyInput.value = "";
+      }
+    };
+
     const refreshPrimaryModels = async () => {
       const id = providerSel.value;
       const cfg = await loadProviderKey(/** @type {any} */ (id)).catch(() => null);
@@ -626,7 +652,9 @@ export class SettingsView extends HTMLElement {
       modelCustom.value = "";
       modelCustom.style.display = "none";
       const baseUrl = /** @type {HTMLInputElement|null} */ (this.querySelector("#ai-base-url"));
-      if (baseUrl && cfg?.baseUrl) baseUrl.value = cfg.baseUrl;
+      if (baseUrl) baseUrl.value = cfg?.baseUrl || "";
+      setKeyStatus(Boolean(cfg?.apiKey));
+      this.setAiKeyFeedback("");
     };
 
     const refreshFallbackModels = () => {
@@ -645,7 +673,12 @@ export class SettingsView extends HTMLElement {
     fallbackModelSel.addEventListener("change", () => syncCustomVisibility(fallbackModelSel, fallbackModelCustom));
 
     this.querySelector("#ai-key-form")?.addEventListener("submit", (ev) => this.onSaveAiKey(ev));
+    this.querySelector("#ai-key-test")?.addEventListener("click", () => this.onTestAiKey());
     this.querySelector("#ai-key-remove")?.addEventListener("click", () => this.onRemoveAiKey());
+    if (this._aiFlash) {
+      this.setAiKeyFeedback(this._aiFlash, "ok");
+      this._aiFlash = "";
+    }
     this.querySelector("#ai-extra-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
@@ -686,20 +719,56 @@ export class SettingsView extends HTMLElement {
     bindSubpageBack(this, "#/settings");
   }
 
+  /** @param {string} message @param {"ok"|"err"|""} [kind] */
+  setAiKeyFeedback(message, kind = "") {
+    const el = /** @type {HTMLElement|null} */ (this.querySelector("#ai-key-feedback"));
+    if (!el) return;
+    el.textContent = message;
+    el.className = kind ? `ai-key-feedback ai-key-feedback--${kind}` : "ai-key-feedback";
+  }
+
   async onSaveAiKey(ev) {
     ev.preventDefault();
     const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
     const provider = /** @type {any} */ (fd.get("provider"));
     const existing = await loadProviderKey(provider).catch(() => null);
-    const apiKey = String(fd.get("apiKey") || "").trim() || existing?.apiKey || "";
-    if (!apiKey) return;
+    const typed = String(fd.get("apiKey") || "").trim();
+    const apiKey = typed || existing?.apiKey || "";
+    if (!apiKey) {
+      this.setAiKeyFeedback("Enter an API key to save, or leave blank only when a key is already configured.", "err");
+      return;
+    }
     let model = String(fd.get("model") || "").trim();
     if (model === "__custom__") model = String(fd.get("modelCustom") || "").trim();
     model = resolveProviderModel(provider, model || existing?.model, "primary");
     const baseUrl = String(fd.get("baseUrl") || "").trim();
     await saveProviderKey(provider, apiKey, { model: model || undefined, baseUrl: baseUrl || undefined });
     await prefs.save({ primaryAiProvider: provider });
+    this._aiFlash = typed ? "API key saved." : "Provider settings updated (existing key kept).";
     this.render();
+  }
+
+  async onTestAiKey() {
+    const form = /** @type {HTMLFormElement|null} */ (this.querySelector("#ai-key-form"));
+    if (!form) return;
+    const fd = new FormData(form);
+    const provider = String(fd.get("provider") || "");
+    const existing = await loadProviderKey(/** @type {any} */ (provider)).catch(() => null);
+    const apiKey = String(fd.get("apiKey") || "").trim() || existing?.apiKey || "";
+    if (!apiKey) {
+      this.setAiKeyFeedback("Paste a key (or save one first) before testing.", "err");
+      return;
+    }
+    if (provider !== "gemini") {
+      this.setAiKeyFeedback("Quick test is available for Google (Gemini) keys. Save the key and try Analyze or Coach to verify other providers.", "err");
+      return;
+    }
+    const btn = /** @type {HTMLButtonElement|null} */ (this.querySelector("#ai-key-test"));
+    if (btn) btn.disabled = true;
+    this.setAiKeyFeedback("Testing…");
+    const result = await validateGeminiApiKey(apiKey);
+    if (btn) btn.disabled = false;
+    this.setAiKeyFeedback(result.ok ? "Key works." : result.message, result.ok ? "ok" : "err");
   }
 
   async onRemoveAiKey() {
@@ -707,6 +776,7 @@ export class SettingsView extends HTMLElement {
     const provider = /** @type {any} */ (el?.value);
     if (!provider) return;
     await deleteProviderKey(provider);
+    this._aiFlash = "API key removed.";
     this.render();
   }
 

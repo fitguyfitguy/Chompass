@@ -3,6 +3,7 @@ import { profile as profileStore, prefs } from "../lib/db.js";
 import { dailyTargets } from "../lib/nofud-core/formulas.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey } from "../lib/ai/key-storage.js";
+import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 
 /** @typedef {{ id: string, title: string, hideChrome?: boolean, hideCta?: boolean }} OnboardingStepDef */
 
@@ -65,6 +66,12 @@ export class OnboardingView extends HTMLElement {
       model: PROVIDERS.gemini.defaultModel,
       apiKey: "",
       skip: false,
+      /** @type {string} last key string that passed validation */
+      validatedKey: "",
+      /** @type {""|"ok"|"err"} */
+      testKind: "",
+      testMessage: "",
+      howtoOpen: false,
     };
     this.draft = /** @type {import('../lib/nofud-core/models.js').UserProfile} */ ({
       sex: "other",
@@ -138,6 +145,9 @@ export class OnboardingView extends HTMLElement {
     this.querySelector("[data-skip-ai]")?.addEventListener("click", () => {
       this.aiDraft.skip = true;
       this.aiDraft.apiKey = "";
+      this.aiDraft.validatedKey = "";
+      this.aiDraft.testKind = "";
+      this.aiDraft.testMessage = "";
       this.goNext();
     });
     this.querySelector("[data-skip-bf]")?.addEventListener("click", () => {
@@ -170,15 +180,108 @@ export class OnboardingView extends HTMLElement {
     if (id === "ai") {
       const providerSel = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-provider"));
       const modelSel = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-model"));
+      const keyInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#ob-ai-key"));
+      const howto = /** @type {HTMLDetailsElement|null} */ (this.querySelector("#ob-ai-howto"));
       providerSel?.addEventListener("change", () => {
+        this.collectAiDraft();
         this.aiDraft.provider = providerSel.value;
         this.aiDraft.model = resolveProviderModel(providerSel.value, null, "primary");
+        this.aiDraft.validatedKey = "";
+        this.aiDraft.testKind = "";
+        this.aiDraft.testMessage = "";
         if (modelSel) modelSel.innerHTML = modelSelectOptionsHtml(providerSel.value, this.aiDraft.model, "primary");
+        this.render();
       });
       modelSel?.addEventListener("change", () => {
         this.aiDraft.model = modelSel.value === "__custom__" ? PROVIDERS[this.aiDraft.provider]?.defaultModel || "" : modelSel.value;
       });
+      keyInput?.addEventListener("input", () => {
+        this.aiDraft.apiKey = keyInput.value;
+        if (this.aiDraft.validatedKey && keyInput.value.trim() !== this.aiDraft.validatedKey) {
+          this.aiDraft.validatedKey = "";
+          this.aiDraft.testKind = "";
+          this.aiDraft.testMessage = "";
+          const status = this.querySelector("#ob-ai-test-status");
+          if (status) {
+            status.textContent = "";
+            status.className = "onboarding-ai-test-status";
+          }
+        }
+      });
+      howto?.addEventListener("toggle", () => {
+        this.aiDraft.howtoOpen = howto.open;
+      });
+      this.querySelector("[data-test-ai-key]")?.addEventListener("click", () => {
+        void this.testAiKey({ advanceOnSuccess: false });
+      });
     }
+  }
+
+  collectAiDraft() {
+    if (!this.querySelector("#ob-ai-key")) return;
+    const val = (id) => /** @type {HTMLInputElement|HTMLSelectElement|null} */ (this.querySelector(`#${id}`))?.value;
+    this.aiDraft.apiKey = String(val("ob-ai-key") || "");
+    const providerEl = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-provider"));
+    const modelEl = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-model"));
+    if (providerEl) this.aiDraft.provider = providerEl.value;
+    if (modelEl && modelEl.value !== "__custom__") this.aiDraft.model = modelEl.value;
+    this.aiDraft.skip = !this.aiDraft.apiKey.trim();
+  }
+
+  /**
+   * @param {{advanceOnSuccess?: boolean}} [opts]
+   * @returns {Promise<boolean>}
+   */
+  async testAiKey(opts = {}) {
+    const { advanceOnSuccess = false } = opts;
+    this.collectAiDraft();
+    const key = this.aiDraft.apiKey.trim();
+    const status = /** @type {HTMLElement|null} */ (this.querySelector("#ob-ai-test-status"));
+    const btn = /** @type {HTMLButtonElement|null} */ (this.querySelector("[data-test-ai-key]"));
+    const nextBtn = /** @type {HTMLButtonElement|null} */ (this.querySelector("[data-next]"));
+
+    const setStatus = (message, kind) => {
+      this.aiDraft.testMessage = message;
+      this.aiDraft.testKind = kind;
+      if (status) {
+        status.textContent = message;
+        status.className = kind ? `onboarding-ai-test-status onboarding-ai-test-status--${kind}` : "onboarding-ai-test-status";
+      }
+    };
+
+    if (!key) {
+      setStatus("Paste an API key first.", "err");
+      return false;
+    }
+    if (this.aiDraft.provider !== "gemini") {
+      // Non-Gemini: no probe in this pass — treat as ready to continue.
+      this.aiDraft.validatedKey = key;
+      setStatus("Key saved for continue (quick test is Gemini-only).", "ok");
+      if (advanceOnSuccess) this.goNext();
+      return true;
+    }
+    if (this.aiDraft.validatedKey === key) {
+      setStatus("Key works.", "ok");
+      if (advanceOnSuccess) this.goNext();
+      return true;
+    }
+
+    if (btn) btn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+    setStatus("Testing…", "");
+    const result = await validateGeminiApiKey(key);
+    if (btn) btn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
+
+    if (!result.ok) {
+      this.aiDraft.validatedKey = "";
+      setStatus(result.message, "err");
+      return false;
+    }
+    this.aiDraft.validatedKey = key;
+    setStatus("Key works.", "ok");
+    if (advanceOnSuccess) this.goNext();
+    return true;
   }
 
   /** @param {string} id */
@@ -255,8 +358,19 @@ export class OnboardingView extends HTMLElement {
     }
     if (id === "ai") {
       const provider = this.aiDraft.provider;
+      const testClass = this.aiDraft.testKind
+        ? `onboarding-ai-test-status onboarding-ai-test-status--${this.aiDraft.testKind}`
+        : "onboarding-ai-test-status";
       return `
         <p style="color:var(--muted);margin:0;">Optional bring-your-own key for food photo estimates and the coach. Defaults match Android: Gemini Flash 3.6 with 3.5 Flash Lite fallback.</p>
+        <details class="micros-details onboarding-ai-howto" id="ob-ai-howto" ${this.aiDraft.howtoOpen ? "open" : ""}>
+          <summary>How to get a free Google AI Studio key</summary>
+          <ol>
+            <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey</a></li>
+            <li>Sign in with Google and create an API key</li>
+            <li>Copy it and paste below, then tap Test key</li>
+          </ol>
+        </details>
         <div class="field">
           <label for="ob-ai-provider">Provider</label>
           <select id="ob-ai-provider">
@@ -272,6 +386,10 @@ export class OnboardingView extends HTMLElement {
         <div class="field">
           <label for="ob-ai-key">API key</label>
           <input id="ob-ai-key" type="password" autocomplete="off" placeholder="Paste key to enable AI" value="${escapeAttr(this.aiDraft.apiKey)}" />
+          <div class="onboarding-ai-test-row">
+            <button type="button" class="btn" data-test-ai-key>Test key</button>
+            <span id="ob-ai-test-status" class="${testClass}" role="status" aria-live="polite">${escapeAttr(this.aiDraft.testMessage)}</span>
+          </div>
         </div>`;
     }
     if (id === "building") {
@@ -333,12 +451,7 @@ export class OnboardingView extends HTMLElement {
       this.draft.goalWeightKg = v ? Number(v) : null;
     }
     if (this.querySelector("#ob-ai-key")) {
-      this.aiDraft.apiKey = String(val("ob-ai-key") || "");
-      const providerEl = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-provider"));
-      const modelEl = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-model"));
-      if (providerEl) this.aiDraft.provider = providerEl.value;
-      if (modelEl && modelEl.value !== "__custom__") this.aiDraft.model = modelEl.value;
-      this.aiDraft.skip = !this.aiDraft.apiKey.trim();
+      this.collectAiDraft();
     }
   }
 
@@ -403,8 +516,10 @@ export class OnboardingView extends HTMLElement {
       await this.finish();
       return;
     }
-    if (id === "ai") {
-      // proceed into building
+    if (id === "ai" && this.aiDraft.apiKey.trim()) {
+      const ok = await this.testAiKey({ advanceOnSuccess: true });
+      if (!ok) return;
+      return;
     }
     this.goNext();
   }

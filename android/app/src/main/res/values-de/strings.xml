@@ -256,9 +256,10 @@
     <string name="onboarding_provider_subtitle">NoFUD braucht einen KI-Anbieter-Schlüssel,\num dein Essen zu analysieren. Du bringst ihn mit.</string>
     <string name="onboarding_provider_recommended_title">Empfohlen: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Kostenlose Stufe, schnell &amp; genau</string>
-    <string name="onboarding_provider_step_1">Hol dir einen kostenlosen Schlüssel auf aistudio.google.com/apikey</string>
-    <string name="onboarding_provider_step_2">Öffne Einstellungen → KI-Anbieter</string>
-    <string name="onboarding_provider_step_3">Schlüssel einfügen - fertig</string>
+    <string name="onboarding_provider_howto_title">So bekommst du einen kostenlosen Google-AI-Studio-Schlüssel</string>
+    <string name="onboarding_provider_step_1">Öffne aistudio.google.com/apikey (tippen zum Öffnen)</string>
+    <string name="onboarding_provider_step_2">Melde dich mit Google an und erstelle einen API-Schlüssel</string>
+    <string name="onboarding_provider_step_3">Unten einfügen und auf Schlüssel testen tippen</string>
     <string name="onboarding_provider_footer">13 Anbieter unterstützt. Dein Schlüssel bleibt\nverschlüsselt auf diesem Gerät.</string>
 
     <string name="onboarding_building_calories">Kalorien</string>
