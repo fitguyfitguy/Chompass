@@ -13,6 +13,7 @@ import { exportDiary, importDiary } from "../lib/nofud-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-metrics-format.js";
 import { PROVIDERS } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../lib/ai/key-storage.js";
+import { openConfirm } from "../lib/ui/dialog.js";
 
 const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
 const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
@@ -364,7 +365,13 @@ export class SettingsView extends HTMLElement {
     this.querySelector("#import-diary")?.addEventListener("change", (ev) => this.onImportDiary(ev));
     this.querySelector("#import-body")?.addEventListener("change", (ev) => this.onImportBodyMetrics(ev));
     this.querySelector("#clear-all")?.addEventListener("click", async () => {
-      if (!confirm("Delete all diary, metrics, profile, and chat on this device?")) return;
+      const ok = await openConfirm({
+        title: "Clear all data",
+        message: "Delete all diary, metrics, profile, and chat on this device?",
+        confirmLabel: "Delete everything",
+        danger: true,
+      });
+      if (!ok) return;
       await clearAllUserData();
       location.hash = "#/onboarding";
     });
