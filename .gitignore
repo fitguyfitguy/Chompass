@@ -73,3 +73,7 @@ website/public/
 website/resources/
 website/.hugo_build.lock
 Fud-Food-Diary-2026-04-27_to_2026-07-22.cleaned.json
+
+# Chrome/Lighthouse under WSL may create Windows-style user-data paths as
+# literal cwd-relative directories (e.g. C:\Users\...\lighthouse.*)
+/C\:\\*/
