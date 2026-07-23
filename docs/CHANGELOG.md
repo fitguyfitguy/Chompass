@@ -4,6 +4,21 @@ All notable changes to NoFUD are documented here.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-07-23
+
+Major release: ships the **companion PWA** alongside Android, with shared export/formula contracts gated in release packaging. Android daily-driver UX is largely continuous with 1.14.x; Health Connect, widgets, notifications, on-device LLM, and full i18n remain Android-only. Grounded food entry stays WIP and disabled.
+
+### Added
+
+- Companion PWA at `fitguy.codeberg.page/NoFUD/app/` — diary, progress charts, manual/barcode/AI food entry, saved meals/recipes, copy-from-day / meal share, BYOK AI Coach, settings, and onboarding (data-compatible JSON with Android).
+- Cross-app parity fixtures and JSON Schemas (`testdata/parity/`, `contracts/`) plus `release:check-parity` (PWA tests, typecheck, schema validation), also run inside `release:package`.
+- AI API key validation during onboarding (Android and PWA).
+
+### Changed
+
+- Codeberg Pages deploy rsyncs the PWA into `/NoFUD/app/` with the marketing site (`deploy_pages.sh` / `publish_release.sh`).
+- Release asset management and distribution docs aligned with Codeberg quota policy (latest release, universal APK only).
+
 ## [1.14.10] - 2026-07-22
 
 ### Changed
