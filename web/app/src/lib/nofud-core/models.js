@@ -168,6 +168,11 @@
  * @property {boolean} [ketoMode]
  * @property {number|null} [goalWeightKg]
  * @property {number|null} [customCalories]      when set, overrides formula dailyCalories (adaptive / manual pin)
+ * @property {number|null} [customProtein]       g/day pin (Android effectiveProtein)
+ * @property {number|null} [customCarbs]         g/day pin
+ * @property {number|null} [customFat]           g/day pin
+ * @property {string|null} [birthday]            ISO date YYYY-MM-DD; when set, age is derived at save time
+ * @property {number|null} [goalBodyFatPercentage] fraction 0-1 optional goal
  */
 
 export {};

@@ -5,6 +5,7 @@ import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/
 import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
+import { openInput } from "../lib/ui/dialog.js";
 
 /** @typedef {{ id: string, title: string, hideChrome?: boolean, hideCta?: boolean }} OnboardingStepDef */
 
@@ -12,7 +13,7 @@ import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
 const STEPS = [
   { id: "welcome", title: "Welcome to NoFUD", hideChrome: true },
   { id: "sex", title: "About you" },
-  { id: "age", title: "Age" },
+  { id: "age", title: "Birthday & age" },
   { id: "body", title: "Height & weight" },
   { id: "bodyFat", title: "Body fat (optional)" },
   { id: "activity", title: "Activity level" },
@@ -86,6 +87,11 @@ export class OnboardingView extends HTMLElement {
       ketoMode: false,
       goalWeightKg: null,
       customCalories: null,
+      customProtein: null,
+      customCarbs: null,
+      customFat: null,
+      birthday: null,
+      goalBodyFatPercentage: null,
     });
   }
 
@@ -153,10 +159,17 @@ export class OnboardingView extends HTMLElement {
     });
     this.querySelector("[data-skip-bf]")?.addEventListener("click", () => {
       this.draft.bodyFatPercentage = null;
+      this.draft.goalBodyFatPercentage = null;
       this.goNext();
     });
 
     this.bindStepInteractions(s.id);
+
+    if (s.id === "done") {
+      this.querySelectorAll("[data-edit-plan]").forEach((btn) => {
+        btn.addEventListener("click", () => this.editPlanField(btn.getAttribute("data-edit-plan")));
+      });
+    }
 
     if (s.id === "building") {
       this.startBuilding();
@@ -309,7 +322,12 @@ export class OnboardingView extends HTMLElement {
       );
     }
     if (id === "age") {
-      return `<div class="field"><label for="age">Age</label><input id="age" type="number" min="1" max="120" value="${d.age}" /></div>`;
+      return `
+        <p style="color:var(--muted);margin:0 0 0.75rem;">Birthday is preferred (matches Android). Age is used when birthday is blank.</p>
+        <div class="field"><label for="birthday">Birthday</label>
+          <input id="birthday" type="date" max="${todayIso()}" value="${d.birthday ?? ""}" /></div>
+        <div class="field"><label for="age">Age (years)</label>
+          <input id="age" type="number" min="1" max="120" value="${d.age}" /></div>`;
     }
     if (id === "body") {
       return `<div class="field-row">
@@ -318,9 +336,21 @@ export class OnboardingView extends HTMLElement {
       </div>`;
     }
     if (id === "bodyFat") {
+      const bfPct =
+        d.bodyFatPercentage != null
+          ? d.bodyFatPercentage > 1
+            ? d.bodyFatPercentage
+            : Math.round(d.bodyFatPercentage * 1000) / 10
+          : "";
+      const goalBf =
+        d.goalBodyFatPercentage != null
+          ? Math.round(d.goalBodyFatPercentage * 1000) / 10
+          : "";
       return `<p style="color:var(--muted);margin:0;">Optional. Enables Katch-McArdle BMR when set.</p>
         <div class="field"><label for="bodyFatPercentage">Body fat %</label>
-          <input id="bodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${d.bodyFatPercentage ?? ""}" placeholder="e.g. 18" /></div>`;
+          <input id="bodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${bfPct}" placeholder="e.g. 18" /></div>
+        <div class="field"><label for="goalBodyFatPercentage">Goal body fat % (optional)</label>
+          <input id="goalBodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${goalBf}" placeholder="e.g. 15" /></div>`;
     }
     if (id === "activity") {
       return choiceGrid(
@@ -410,25 +440,28 @@ export class OnboardingView extends HTMLElement {
     }
     if (id === "done") {
       const targets = dailyTargets(this.draft);
+      const pinned = (key) => this.draft[key] != null;
       return `
         <div class="onboarding-plan-ready">
-          <div class="onboarding-plan-ready__cals">${Math.round(targets.calories)}</div>
-          <p class="onboarding-plan-ready__unit">kcal / day</p>
+          <button type="button" class="onboarding-plan-ready__cals-btn" data-edit-plan="customCalories" aria-label="Edit calorie target">
+            <div class="onboarding-plan-ready__cals">${Math.round(targets.calories)}</div>
+            <p class="onboarding-plan-ready__unit">kcal / day${pinned("customCalories") ? " · custom" : ""}</p>
+          </button>
           <div class="onboarding-plan-macros">
-            <div class="onboarding-plan-macro onboarding-plan-macro--protein">
+            <button type="button" class="onboarding-plan-macro onboarding-plan-macro--protein" data-edit-plan="customProtein">
               <span class="onboarding-plan-macro__value">${Math.round(targets.proteinG)}g</span>
-              <span class="onboarding-plan-macro__label">Protein</span>
-            </div>
-            <div class="onboarding-plan-macro onboarding-plan-macro--carbs">
+              <span class="onboarding-plan-macro__label">Protein${pinned("customProtein") ? " ·" : ""}</span>
+            </button>
+            <button type="button" class="onboarding-plan-macro onboarding-plan-macro--carbs" data-edit-plan="customCarbs">
               <span class="onboarding-plan-macro__value">${Math.round(targets.carbsG)}g</span>
-              <span class="onboarding-plan-macro__label">Carbs</span>
-            </div>
-            <div class="onboarding-plan-macro onboarding-plan-macro--fat">
+              <span class="onboarding-plan-macro__label">Carbs${pinned("customCarbs") ? " ·" : ""}</span>
+            </button>
+            <button type="button" class="onboarding-plan-macro onboarding-plan-macro--fat" data-edit-plan="customFat">
               <span class="onboarding-plan-macro__value">${Math.round(targets.fatG)}g</span>
-              <span class="onboarding-plan-macro__label">Fat</span>
-            </div>
+              <span class="onboarding-plan-macro__label">Fat${pinned("customFat") ? " ·" : ""}</span>
+            </button>
           </div>
-          <p style="color:var(--muted);margin:0;font-size:0.85rem;">You can fine-tune targets anytime in Settings. Estimates aren’t medical advice.</p>
+          <p style="color:var(--muted);margin:0;font-size:0.85rem;">Tap a target to customize. You can fine-tune anytime in Settings. Estimates aren’t medical advice.</p>
         </div>`;
     }
     return "";
@@ -436,12 +469,30 @@ export class OnboardingView extends HTMLElement {
 
   collect() {
     const val = (id) => /** @type {HTMLInputElement|HTMLSelectElement|null} */ (this.querySelector(`#${id}`))?.value;
-    if (this.querySelector("#age")) this.draft.age = Number(val("age")) || this.draft.age;
+    if (this.querySelector("#birthday")) {
+      const b = val("birthday");
+      this.draft.birthday = b || null;
+      if (b) {
+        const derived = ageFromBirthday(b);
+        if (derived != null) this.draft.age = derived;
+      }
+    }
+    if (this.querySelector("#age") && !this.draft.birthday) {
+      this.draft.age = Number(val("age")) || this.draft.age;
+    } else if (this.querySelector("#age") && this.draft.birthday) {
+      // Keep age field in sync if user edits age after clearing birthday later
+      const ageVal = Number(val("age"));
+      if (ageVal && !this.draft.birthday) this.draft.age = ageVal;
+    }
     if (this.querySelector("#heightCm")) this.draft.heightCm = Number(val("heightCm")) || this.draft.heightCm;
     if (this.querySelector("#weightKg")) this.draft.weightKg = Number(val("weightKg")) || this.draft.weightKg;
     if (this.querySelector("#bodyFatPercentage")) {
       const v = val("bodyFatPercentage");
-      this.draft.bodyFatPercentage = v ? Number(v) : null;
+      this.draft.bodyFatPercentage = v ? Number(v) / 100 : null;
+    }
+    if (this.querySelector("#goalBodyFatPercentage")) {
+      const v = val("goalBodyFatPercentage");
+      this.draft.goalBodyFatPercentage = v ? Number(v) / 100 : null;
     }
     if (this.querySelector("#weeklyChangeKg")) {
       const v = val("weeklyChangeKg");
@@ -525,7 +576,48 @@ export class OnboardingView extends HTMLElement {
     this.goNext();
   }
 
+  /**
+   * @param {string | null} field
+   */
+  async editPlanField(field) {
+    if (!field) return;
+    const targets = dailyTargets(this.draft);
+    /** @type {Record<string, {label: string, unit: string, current: number}>} */
+    const meta = {
+      customCalories: { label: "Daily calories", unit: "kcal", current: targets.calories },
+      customProtein: { label: "Protein", unit: "g", current: targets.proteinG },
+      customCarbs: { label: "Carbs", unit: "g", current: targets.carbsG },
+      customFat: { label: "Fat", unit: "g", current: targets.fatG },
+    };
+    const m = meta[field];
+    if (!m) return;
+    const raw = await openInput({
+      title: `Edit ${m.label.toLowerCase()}`,
+      label: m.label,
+      value: String(Math.round(m.current)),
+      type: "number",
+      inputMode: "decimal",
+      unit: m.unit,
+      confirmLabel: "Save",
+      placeholder: "Leave blank to reset",
+    });
+    if (raw == null) return;
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      this.draft[field] = null;
+    } else {
+      const n = Number(trimmed);
+      if (!Number.isFinite(n) || n < 0) return;
+      this.draft[field] = Math.round(n);
+    }
+    this.render();
+  }
+
   async finish() {
+    if (this.draft.birthday) {
+      const derived = ageFromBirthday(this.draft.birthday);
+      if (derived != null) this.draft.age = derived;
+    }
     await profileStore.save(this.draft);
     /** @type {Partial<import('../lib/db.js').AppPrefs>} */
     const prefPatch = {
@@ -575,6 +667,22 @@ function escapeAttr(s) {
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+function todayIso() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** @param {string} iso */
+function ageFromBirthday(iso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+  const birth = new Date(`${iso}T00:00:00`);
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const m = now.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age -= 1;
+  if (age < 1 || age > 120) return null;
+  return age;
 }
 
 customElements.define("onboarding-view", OnboardingView);

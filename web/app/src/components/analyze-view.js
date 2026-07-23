@@ -12,6 +12,7 @@ import { recentFoods } from "../lib/recent-foods.js";
 import { prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { createSpeechCapture } from "../lib/speech.js";
+import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 
 const MAX_PHOTOS = 10;
 
@@ -48,6 +49,20 @@ export class AnalyzeView extends HTMLElement {
     this.phase = null;
     this.pendingNote = params.get("prefill") ? decodeURIComponent(params.get("prefill") || "") : "";
     this.notePrefill = this.pendingNote;
+
+    // Photo deep-link: hand off to in-app camera / multi-photo flow (Android parity).
+    if (this.mode === "photo" && this.activeProvider) {
+      this.innerHTML = `${subpageBar("Photo AI", { backHref: "#/home" })}<p class="empty-state" style="padding:1.5rem;">Opening camera…</p>`;
+      bindSubpageBack(this, "#/home");
+      startPhotoAiFlow({
+        date: this.date,
+        onCancel: () => {
+          location.hash = "#/home";
+        },
+      });
+      return;
+    }
+
     this.render();
   }
 
@@ -207,7 +222,6 @@ export class AnalyzeView extends HTMLElement {
     const phase = this.phase || ANALYSIS_PHASE.PREPARING;
     const currentIndex = ANALYSIS_PHASE_STEPS.indexOf(/** @type {any} */ (phase));
     const stepIndex = currentIndex >= 0 ? currentIndex : 0;
-    const previewSrc = this.previewUrls[0];
     const stepsHtml = ANALYSIS_PHASE_STEPS.map((step, index) => {
       const done = index < stepIndex;
       const active = index === stepIndex;
@@ -219,13 +233,18 @@ export class AnalyzeView extends HTMLElement {
       `;
     }).join("");
 
+    const previewHtml =
+      this.previewUrls.length > 1
+        ? `<div class="analyze-overlay__thumbs">${this.previewUrls
+            .map((u) => `<img class="analyze-overlay__thumb" src="${escapeAttr(u)}" alt="" />`)
+            .join("")}</div>`
+        : this.previewUrls[0]
+          ? `<img class="analyze-overlay__preview" src="${escapeAttr(this.previewUrls[0])}" alt="" />`
+          : `<div class="analyze-overlay__icon" aria-hidden="true">⌕</div>`;
+
     return `
       <div class="analyze-overlay" role="status" aria-live="polite" aria-busy="true">
-        ${
-          previewSrc
-            ? `<img class="analyze-overlay__preview" src="${escapeAttr(previewSrc)}" alt="" />`
-            : `<div class="analyze-overlay__icon" aria-hidden="true">⌕</div>`
-        }
+        ${previewHtml}
         <div class="analyze-steps">${stepsHtml}</div>
         <p class="analyze-overlay__phase">${escapeHtml(ANALYSIS_PHASE_LABEL[phase] || ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PREPARING])}</p>
         <div class="analyze-overlay__spinner" aria-hidden="true"></div>

@@ -9,6 +9,7 @@ import {
   clearAllUserData,
 } from "../lib/db.js";
 import { dailyTargets, bmr, tdee } from "../lib/nofud-core/formulas.js";
+import { computeWeightForecast } from "../lib/nofud-core/forecast.js";
 import { exportDiary, importDiary } from "../lib/nofud-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-metrics-format.js";
 import {
@@ -20,6 +21,11 @@ import {
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
+import {
+  calculateGoalsWithAi,
+  recalculatedFromFormulas,
+  resolveGoalsAiClient,
+} from "../lib/ai/calculate-goals.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { downloadJson, downloadText } from "../lib/download.js";
@@ -35,8 +41,28 @@ import {
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
 
-const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
+const ACTIVITY_LEVELS = [
+  { id: "sedentary", label: "Sedentary" },
+  { id: "light", label: "Light" },
+  { id: "moderate", label: "Moderate" },
+  { id: "active", label: "Active" },
+  { id: "very_active", label: "Very active" },
+  { id: "extra_active", label: "Extra active" },
+];
 const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
+
+const SPEECH_LANGS = [
+  { id: "", label: "Browser default" },
+  { id: "en-US", label: "English (US)" },
+  { id: "en-GB", label: "English (UK)" },
+  { id: "de-DE", label: "Deutsch" },
+  { id: "fr-FR", label: "Français" },
+  { id: "es-ES", label: "Español" },
+  { id: "it-IT", label: "Italiano" },
+  { id: "nl-NL", label: "Nederlands" },
+  { id: "pt-BR", label: "Português (BR)" },
+  { id: "sv-SE", label: "Svenska" },
+];
 
 const OPTIONAL_GOAL_FIELDS = Object.keys(DEFAULT_OPTIONAL_NUTRIENT_GOALS).map((key) => {
   const def = nutrientDef(key);
@@ -60,12 +86,14 @@ export class SettingsView extends HTMLElement {
           <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
           <a href="#/settings?section=units">Units &amp; schedule <span>Units, week, meals</span></a>
           <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
+          <a href="#/settings?section=speech">Speech <span>Voice language (browser)</span></a>
           <a href="#/settings?section=data">Data <span>Import / export / clear</span></a>
           <a href="#/settings?section=ai">AI <span>Keys, instructions, fallback</span></a>
           <a href="#/settings?section=install">Install app <span>Home screen &amp; browsers</span></a>
           <a href="#/settings?section=about">About &amp; methods <span>Formulas</span></a>
           <a href="#/measurements">Body measurements <span>Tape metrics</span></a>
-        </nav>`;
+        </nav>
+        <p class="settings-android-note">Health Connect, notifications, widgets, and on-device LLM are Android-only.</p>`;
       return;
     }
 
@@ -87,6 +115,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "home") {
       await this.renderHome();
+      return;
+    }
+    if (this.section === "speech") {
+      await this.renderSpeech();
       return;
     }
     if (this.section === "data") {
@@ -168,7 +200,7 @@ export class SettingsView extends HTMLElement {
         <div class="field">
           <label for="activityLevel">Activity</label>
           <select id="activityLevel" name="activityLevel">
-            ${ACTIVITY_LEVELS.map((a) => `<option value="${a}" ${p.activityLevel === a ? "selected" : ""}>${a.replace("_", " ")}</option>`).join("")}
+            ${ACTIVITY_LEVELS.map((a) => `<option value="${a.id}" ${p.activityLevel === a.id ? "selected" : ""}>${a.label}</option>`).join("")}
           </select>
         </div>
         <button type="submit" class="btn btn--primary">Save</button>
@@ -225,11 +257,26 @@ export class SettingsView extends HTMLElement {
           </div>
           <div class="field">
             <label for="customCalories">Custom calories</label>
-            <input id="customCalories" name="customCalories" type="number" min="0" value="${p.customCalories ?? ""}" placeholder="formula" />
+            <input id="customCalories" name="customCalories" type="number" min="0" value="${p.customCalories ?? ""}" placeholder="${targets.calories}" />
+          </div>
+        </div>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">Formula targets: ${targets.calories} kcal · ${Math.round(targets.proteinG)}P / ${Math.round(targets.carbsG)}C / ${Math.round(targets.fatG)}F. Leave blank to use formula.</p>
+        <div class="field-row">
+          <div class="field">
+            <label for="customProtein">Custom protein g</label>
+            <input id="customProtein" name="customProtein" type="number" min="0" value="${p.customProtein ?? ""}" placeholder="${Math.round(targets.proteinG)}" />
+          </div>
+          <div class="field">
+            <label for="customCarbs">Custom carbs g</label>
+            <input id="customCarbs" name="customCarbs" type="number" min="0" value="${p.customCarbs ?? ""}" placeholder="${Math.round(targets.carbsG)}" />
+          </div>
+          <div class="field">
+            <label for="customFat">Custom fat g</label>
+            <input id="customFat" name="customFat" type="number" min="0" value="${p.customFat ?? ""}" placeholder="${Math.round(targets.fatG)}" />
           </div>
         </div>
         <button type="submit" class="btn btn--primary">Save goals</button>
-        <button type="button" class="btn btn--ghost" id="clear-custom">Clear custom calories</button>
+        <button type="button" class="btn btn--ghost" id="clear-custom">Clear custom targets</button>
       </form>
       <div class="card">
         <h2 class="chart-title">Calculated targets</h2>
@@ -242,6 +289,10 @@ export class SettingsView extends HTMLElement {
           <div class="stat-badge" style="color:var(--carbs)"><strong>${Math.round(targets.carbsG)} g</strong>Carbs</div>
           <div class="stat-badge" style="color:var(--fat)"><strong>${Math.round(targets.fatG)} g</strong>Fat</div>
         </div>
+        <div class="btn-row" style="margin-top:0.9rem;">
+          <button type="button" class="btn btn--primary" id="recalculate-goals">Recalculate Goals</button>
+        </div>
+        <p id="recalc-status" style="color:var(--muted);font-size:0.85rem;margin:0.55rem 0 0;" hidden></p>
       </div>`;
     this.querySelector("#goals-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -249,6 +300,9 @@ export class SettingsView extends HTMLElement {
       const paceRaw = fd.get("weeklyChangeKg");
       const goalW = fd.get("goalWeightKg");
       const custom = fd.get("customCalories");
+      const customProtein = fd.get("customProtein");
+      const customCarbs = fd.get("customCarbs");
+      const customFat = fd.get("customFat");
       await profileStore.save({
         ...p,
         goal: /** @type {any} */ (fd.get("goal")),
@@ -256,14 +310,89 @@ export class SettingsView extends HTMLElement {
         goalWeightKg: goalW ? Number(goalW) : null,
         ketoMode: fd.get("ketoMode") === "true",
         customCalories: custom ? Number(custom) : null,
+        customProtein: customProtein ? Number(customProtein) : null,
+        customCarbs: customCarbs ? Number(customCarbs) : null,
+        customFat: customFat ? Number(customFat) : null,
       });
       location.hash = "#/settings";
     });
     this.querySelector("#clear-custom")?.addEventListener("click", async () => {
-      await profileStore.save({ ...p, customCalories: null });
+      await profileStore.save({
+        ...p,
+        customCalories: null,
+        customProtein: null,
+        customCarbs: null,
+        customFat: null,
+      });
       this.render();
     });
+    this.querySelector("#recalculate-goals")?.addEventListener("click", () => this.onRecalculateGoals(p));
     bindSubpageBack(this, "#/settings");
+  }
+
+  /**
+   * Mirrors Android Settings Recalculate Goals: AI when a key is configured,
+   * otherwise clear custom calories so formula targets apply.
+   * @param {import('../lib/nofud-core/models.js').UserProfile} profile
+   */
+  async onRecalculateGoals(profile) {
+    const aiClient = await resolveGoalsAiClient();
+    const ok = await openConfirm({
+      title: "Recalculate goals?",
+      message: aiClient
+        ? "Uses your AI provider with your profile and recent food/weight logs to refresh calorie targets. Macros stay formula-based on the web app."
+        : "No AI key configured — resets calories to formula defaults from your height/weight/activity/goal. Add an AI key in Settings for the same AI recalculation as Android.",
+      confirmLabel: "Recalculate",
+    });
+    if (!ok) return;
+
+    const btn = /** @type {HTMLButtonElement | null} */ (this.querySelector("#recalculate-goals"));
+    const status = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
+    if (btn) btn.disabled = true;
+    if (status) {
+      status.hidden = false;
+      status.textContent = aiClient ? "Recalculating with AI…" : "Resetting to formula…";
+    }
+
+    try {
+      if (!aiClient) {
+        await profileStore.save(recalculatedFromFormulas(profile));
+        this.render();
+        const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
+        if (after) {
+          after.hidden = false;
+          after.textContent = "Goals reset to formula defaults.";
+        }
+        return;
+      }
+
+      const appPrefs = await prefs.load();
+      const [foods, weightEntries] = await Promise.all([foodEntries.all(), weights.all()]);
+      const forecast = computeWeightForecast({ weights: weightEntries, foods, profile });
+      const result = await calculateGoalsWithAi({
+        providerId: aiClient.providerId,
+        config: aiClient.config,
+        profile,
+        forecast,
+        heightMetric: appPrefs.heightUnit !== "in",
+        weightMetric: appPrefs.weightUnit !== "lb",
+      });
+      await profileStore.save({ ...profile, customCalories: result.calories });
+      const reason = result.reason ? ` ${result.reason}` : "";
+      this.render();
+      const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
+      if (after) {
+        after.hidden = false;
+        after.textContent = `Updated to ${result.calories} kcal.${reason}`;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (status) {
+        status.hidden = false;
+        status.textContent = `Couldn't recalculate — goals unchanged. Check your AI key in Settings. (${msg})`;
+      }
+      if (btn) btn.disabled = false;
+    }
   }
 
   async renderUnits() {
@@ -332,6 +461,32 @@ export class SettingsView extends HTMLElement {
         mealSnackStart: timeInputToMinutes(String(fd.get("mealSnackStart"))),
       });
       window.dispatchEvent(new Event("nofud-prefs-changed"));
+      location.hash = "#/settings";
+    });
+    bindSubpageBack(this, "#/settings");
+  }
+
+  async renderSpeech() {
+    const p = await prefs.load();
+    const current = p.speechLang || "";
+    this.innerHTML = `
+      ${subpageBar("Speech", { backHref: "#/settings" })}
+      <form class="entry-form card" id="speech-form">
+        <p style="color:var(--muted);margin:0 0 0.75rem;font-size:0.88rem;">
+          Voice dictation uses the browser’s on-device speech recognition (Chrome/Edge best). Cloud speech engines are Android-only.
+        </p>
+        <div class="field">
+          <label for="speechLang">Language</label>
+          <select id="speechLang" name="speechLang">
+            ${SPEECH_LANGS.map((l) => `<option value="${l.id}" ${l.id === current ? "selected" : ""}>${l.label}</option>`).join("")}
+          </select>
+        </div>
+        <button type="submit" class="btn btn--primary">Save</button>
+      </form>`;
+    this.querySelector("#speech-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      await prefs.save({ speechLang: String(fd.get("speechLang") || "") });
       location.hash = "#/settings";
     });
     bindSubpageBack(this, "#/settings");

@@ -99,6 +99,80 @@ test("analyzeFoodEntry_abortSkipsFallback", async () => {
   }
 });
 
+test("analyzeFoodEntry_sendsAllImagesOnMessage", async () => {
+  const original = PROVIDERS.gemini.send;
+  /** @type {any} */
+  let capturedReq = null;
+  PROVIDERS.gemini.send = async (_config, req) => {
+    capturedReq = req;
+    return {
+      text: JSON.stringify({
+        name: "Salad",
+        mealType: "lunch",
+        calories: 250,
+        proteinG: 12,
+        carbsG: 20,
+        fatG: 10,
+      }),
+      toolCalls: [],
+    };
+  };
+  const imgA = { mimeType: "image/jpeg", base64: "aaa" };
+  const imgB = { mimeType: "image/jpeg", base64: "bbb" };
+  const imgC = { mimeType: "image/jpeg", base64: "ccc" };
+  try {
+    await analyzeFoodEntry({
+      providerId: "gemini",
+      config: { apiKey: "test-key" },
+      images: [imgA, imgB, imgC],
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.ok(capturedReq);
+    const msg = capturedReq.messages[0];
+    assert.deepEqual(msg.images, [imgA, imgB, imgC]);
+    assert.equal(msg.image, undefined);
+    assert.match(msg.text, /3 photos/);
+    assert.doesNotMatch(msg.text, /first image included/);
+  } finally {
+    PROVIDERS.gemini.send = original;
+  }
+});
+
+test("analyzeFoodEntry_singleImageUsesSingularField", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {any} */
+  let capturedReq = null;
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    capturedReq = req;
+    return {
+      text: JSON.stringify({
+        name: "Apple",
+        mealType: "snack",
+        calories: 95,
+        proteinG: 0,
+        carbsG: 25,
+        fatG: 0,
+      }),
+      toolCalls: [],
+    };
+  };
+  const img = { mimeType: "image/jpeg", base64: "xyz" };
+  try {
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      image: img,
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.ok(capturedReq);
+    const msg = capturedReq.messages[0];
+    assert.deepEqual(msg.image, img);
+    assert.equal(msg.images, undefined);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
 test("analyzeFoodEntry_abortErrorFromSendSkipsFallback", async () => {
   const originalAnthropic = PROVIDERS.anthropic.send;
   const originalGemini = PROVIDERS.gemini.send;

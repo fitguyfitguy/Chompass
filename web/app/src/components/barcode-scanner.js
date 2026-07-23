@@ -32,8 +32,9 @@ export class BarcodeScanner extends HTMLElement {
           ? `
         <div class="scanner-frame">
           <video id="scanner-video" autoplay playsinline muted></video>
+          <div class="scanner-frame__reticle" aria-hidden="true"></div>
         </div>
-        <p id="scanner-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.6rem;">Point the camera at a barcode.</p>
+        <p id="scanner-status" class="scanner-status">Point the camera at a barcode.</p>
       `
           : `
         <p style="color:var(--muted);font-size:0.9rem;">

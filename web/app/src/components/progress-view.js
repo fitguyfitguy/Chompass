@@ -17,9 +17,11 @@ const RANGES = [
 export class ProgressView extends HTMLElement {
   constructor() {
     super();
-    this.rangeId = "1M";
+    this.rangeId = "1W";
     this.showWeightHistory = false;
     this.showBodyFatHistory = false;
+    /** @type {HTMLElement | null} */
+    this._tipEl = null;
   }
 
   connectedCallback() {
@@ -27,7 +29,6 @@ export class ProgressView extends HTMLElement {
   }
 
   async render() {
-    const range = RANGES.find((r) => r.id === this.rangeId) ?? RANGES[1];
     const [allWeights, allEntries, allBf, prof, appPrefs] = await Promise.all([
       weights.all(),
       foodEntries.all(),
@@ -35,8 +36,11 @@ export class ProgressView extends HTMLElement {
       profileStore.load(),
       prefs.load(),
     ]);
-
-    const startIso = shiftDate(todayIso(), -(range.days - 1));
+    if (appPrefs.progressRangeId && RANGES.some((r) => r.id === appPrefs.progressRangeId)) {
+      this.rangeId = appPrefs.progressRangeId;
+    }
+    const activeRange = RANGES.find((r) => r.id === this.rangeId) ?? RANGES[0];
+    const startIso = shiftDate(todayIso(), -(activeRange.days - 1));
     const weightUnit = appPrefs.weightUnit === "lb" ? "lb" : "kg";
     const toDisplay = (kg) => (weightUnit === "lb" ? kg * 2.20462 : kg);
     const fromDisplay = (v) => (weightUnit === "lb" ? v / 2.20462 : v);
@@ -58,7 +62,7 @@ export class ProgressView extends HTMLElement {
         raw: w,
       }));
 
-    const days = lastNDays(Math.min(range.days, 90));
+    const days = lastNDays(activeRange.days);
     const totalsByDate = new Map();
     for (const e of allEntries) {
       if (e.date < startIso) continue;
@@ -96,14 +100,34 @@ export class ProgressView extends HTMLElement {
     const macroAvg = (key) =>
       macroDays.length ? macroDays.reduce((s, d) => s + d[key], 0) / macroDays.length : 0;
 
+    // Mirror Android ProgressScreen.bodyFatAvailable — hide BF chart/history until
+    // the user has logged entries or set body fat on their profile.
+    const profileBfPct =
+      prof?.bodyFatPercentage != null
+        ? prof.bodyFatPercentage > 1
+          ? prof.bodyFatPercentage
+          : prof.bodyFatPercentage * 100
+        : null;
+    const bodyFatAvailable = allBf.length > 0 || profileBfPct != null;
+    if (!allBf.length) this.showBodyFatHistory = false;
+
+    const currentBf = bfPoints.length
+      ? bfPoints[bfPoints.length - 1].value
+      : profileBfPct;
+    const firstBf = bfPoints.length ? bfPoints[0].value : null;
+    const avgBf =
+      bfPoints.length > 0 ? bfPoints.reduce((s, p) => s + p.value, 0) / bfPoints.length : null;
+    const netBf = currentBf != null && firstBf != null ? currentBf - firstBf : null;
+
     this.innerHTML = `
       <h1 class="screen-title">Progress</h1>
-      <div class="range-pills" role="tablist" aria-label="Time range">
+      <div class="range-pills range-pills--equal" role="tablist" aria-label="Time range">
         ${RANGES.map(
           (r) =>
             `<button type="button" class="chip${r.id === this.rangeId ? " is-active" : ""}" data-range="${r.id}">${r.label}</button>`
         ).join("")}
       </div>
+      <div class="chart-tip" hidden data-chart-tip></div>
 
       <div class="card card--glass">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
@@ -144,22 +168,36 @@ export class ProgressView extends HTMLElement {
         }
       </div>
 
-      <div class="card card--glass">
+      ${
+        bodyFatAvailable
+          ? `<div class="card card--glass">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <h2 class="chart-title" style="margin:0;">Body fat %</h2>
           <button type="button" class="chip progress-log-btn" data-log-bf>Log body fat</button>
         </div>
+        ${
+          bfPoints.length === 0
+            ? `<div class="stat-badges">
+          <div class="stat-badge"><strong>${fmt(currentBf)}</strong>Current</div>
+        </div>
+        <p style="margin:0.8rem 0 0;text-align:center;color:var(--muted);font-size:0.9rem;">Log your first body fat reading to start a chart</p>`
+            : `<div class="stat-badges">
+          <div class="stat-badge"><strong>${fmt(currentBf)}</strong>Current</div>
+          <div class="stat-badge"><strong>${fmt(netBf, true)}</strong>Net</div>
+          <div class="stat-badge"><strong>${fmt(avgBf)}</strong>Average</div>
+        </div>
         ${lineChartSvg(
           bfPoints.map(({ label, value }) => ({ label, value })),
           { color: "var(--fat)", unit: "%" }
-        )}
+        )}`
+        }
         ${
           allBf.length
             ? `<button type="button" class="btn btn--ghost" style="margin-top:0.6rem;" data-toggle-bfh>${this.showBodyFatHistory ? "Hide" : "Show"} history (${allBf.length})</button>`
             : ""
         }
         ${
-          this.showBodyFatHistory
+          this.showBodyFatHistory && allBf.length
             ? `<div class="history-list" style="margin-top:0.6rem;">
                 ${allBf
                   .slice()
@@ -176,10 +214,16 @@ export class ProgressView extends HTMLElement {
               </div>`
             : ""
         }
-      </div>
+      </div>`
+          : ""
+      }
 
       <div class="card card--glass">
-        <h2 class="chart-title">Calories${targets ? ` · target ${targets.calories}` : ""}</h2>
+        <h2 class="chart-title">Calories${targets ? ` · target ${targets.calories}` : ""}${
+          calorieBars.length
+            ? ` · avg ${Math.round(calorieBars.reduce((s, b) => s + b.value, 0) / calorieBars.length)}`
+            : ""
+        }</h2>
         ${barChartSvg(calorieBars, { target: targets?.calories ?? null })}
       </div>
 
@@ -224,11 +268,13 @@ export class ProgressView extends HTMLElement {
     `;
 
     this.querySelectorAll("[data-range]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        this.rangeId = btn.getAttribute("data-range") || "1M";
+      btn.addEventListener("click", async () => {
+        this.rangeId = btn.getAttribute("data-range") || "1W";
+        await prefs.save({ progressRangeId: this.rangeId });
         this.render();
       });
     });
+    this.bindChartTips();
     this.querySelector("[data-log-weight]")?.addEventListener("click", async () => {
       const raw = await openInput({
         title: "Log weight",
@@ -305,6 +351,31 @@ export class ProgressView extends HTMLElement {
       await profileStore.save({ ...prof, customCalories: kcal });
       this.render();
     });
+  }
+
+  bindChartTips() {
+    const tip = /** @type {HTMLElement | null} */ (this.querySelector("[data-chart-tip]"));
+    if (!tip) return;
+    this.querySelectorAll(".chart-hit").forEach((el) => {
+      const show = (ev) => {
+        const text = el.getAttribute("data-tip");
+        if (!text) return;
+        tip.hidden = false;
+        tip.textContent = text;
+        const pev = /** @type {PointerEvent} */ (ev);
+        tip.style.left = `${Math.min(window.innerWidth - 160, Math.max(8, pev.clientX - 40))}px`;
+        tip.style.top = `${Math.max(8, pev.clientY - 44)}px`;
+      };
+      el.addEventListener("pointerdown", show);
+      el.addEventListener("click", show);
+    });
+    this.addEventListener(
+      "pointerdown",
+      (ev) => {
+        if (!(/** @type {Element} */ (ev.target).closest(".chart-hit"))) tip.hidden = true;
+      },
+      true
+    );
   }
 }
 
