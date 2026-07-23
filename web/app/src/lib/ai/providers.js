@@ -33,8 +33,16 @@
  */
 
 /**
+ * @typedef {Object} AiRequest
+ * @property {string} systemPrompt
+ * @property {AiMessage[]} messages
+ * @property {AiTool[]} tools
+ * @property {AbortSignal} [signal]
+ */
+
+/**
  * @param {{apiKey: string, model?: string}} config
- * @param {{systemPrompt: string, messages: AiMessage[], tools: AiTool[]}} req
+ * @param {AiRequest} req
  * @returns {Promise<AiResponse>}
  */
 export async function anthropicSend(config, req) {
@@ -56,6 +64,7 @@ export async function anthropicSend(config, req) {
       "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify(body),
+    signal: req.signal,
   });
   if (!res.ok) throw new Error(`Anthropic API error ${res.status}: ${await safeText(res)}`);
   const data = await res.json();
@@ -77,7 +86,7 @@ function anthropicMessage(m) {
 
 /**
  * @param {{apiKey: string, model?: string}} config
- * @param {{systemPrompt: string, messages: AiMessage[], tools: AiTool[]}} req
+ * @param {AiRequest} req
  * @returns {Promise<AiResponse>}
  */
 export async function geminiSend(config, req) {
@@ -92,6 +101,7 @@ export async function geminiSend(config, req) {
     method: "POST",
     headers: { "content-type": "application/json", "x-goog-api-key": config.apiKey },
     body: JSON.stringify(body),
+    signal: req.signal,
   });
   if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await safeText(res)}`);
   const data = await res.json();
@@ -114,7 +124,7 @@ function geminiContent(m) {
 
 /**
  * @param {{apiKey: string, model?: string, baseUrl?: string}} config
- * @param {{systemPrompt: string, messages: AiMessage[], tools: AiTool[]}} req
+ * @param {AiRequest} req
  * @returns {Promise<AiResponse>}
  */
 export async function openAiCompatibleSend(config, req) {
@@ -129,6 +139,7 @@ export async function openAiCompatibleSend(config, req) {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${config.apiKey}` },
     body: JSON.stringify(body),
+    signal: req.signal,
   });
   if (!res.ok) throw new Error(`OpenAI-compatible API error ${res.status}: ${await safeText(res)}`);
   const data = await res.json();

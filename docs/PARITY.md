@@ -16,7 +16,7 @@ For formula / wire-format correctness (not feature lists), see:
 | Progress (weight, BF, measurements, forecast) | shared | `ui/progress/` | `components/progress-*` | FCAST/ADAPT mirrored in `nofud-core/forecast.js` |
 | Settings (profile, goals, units, AI, data) | shared | `ui/settings/` | `components/settings-*` | Defaults aligned; prefs not exported between apps |
 | Onboarding | shared | `ui/onboarding/` | `components/onboarding-*` | |
-| Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry components | OFF field mapping has web parity tests |
+| Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry components | Wait UX: phased overlay + single-flight lock (PWA mirrors Android Preparing → Calling AI → Reading result); OFF field mapping has web parity tests |
 | Saved meals / recipes / favorites | shared | models + UI | recipes / saved | |
 | Copy day / meal share | shared | `MealShare.kt` | `meal-share.js` | Native `nofud://`; PWA `#/add-meal?d=` |
 | Diary JSON export/import 1.1 | shared | `export/Diary*` | `diary-format.js` | Contract: `contracts/diary-1.1.schema.json` |

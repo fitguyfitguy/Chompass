@@ -59,7 +59,7 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
 | Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, week prev/next, day swipe, water **off by default** (goal 2000 ml), Add Food sheet, tap gauge → nutrition detail |
 | Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right duplicate; pref-driven macro chips |
-| Entry | Manual, barcode (OFF fiber + micros), photo/text AI → review form; expandable micros; Recents/Frequent/Favorites/Recipes; subpage chrome |
+| Entry | Manual, barcode (OFF fiber + micros), photo/text AI with phased wait overlay (Preparing → Calling AI → Reading result) + single-flight lock → review form; expandable micros; Recents/Frequent/Favorites/Recipes; subpage chrome |
 | Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites/recipes/share carry full micros |
 | Copy / share | Copy-from-day multi-select; meal share encode + `#/add-meal?d=` import (https/hash bridge) |
 | Progress | Glass chart cards, ranges, log weight/BF dialogs, history delete confirm, forecast, measurements (incl. calf/wrist); P/C/F/**fiber** averages |
