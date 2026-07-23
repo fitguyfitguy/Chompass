@@ -6,7 +6,7 @@ enableRobotsTXT = false
 summaryLength = 20
 
 [params]
-  description = 'Ad-free AI calorie tracker — Android app and browser PWA. Cloud BYOK on both; opt-in on-device Gemma 4 on Android. Privacy-focused, no analytics.'
+  description = 'Ad-free AI calorie tracker: Android app and browser PWA. Bring your own cloud AI key on either client; optional on-device Gemma 4 on Android. No ads, no analytics.'
   version = '2.0.0'
   apkArm64Note = '~15 MiB'
   apkUniversalNote = '~27 MiB'
