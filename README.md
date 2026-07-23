@@ -172,7 +172,7 @@ Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [N
 
 Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/).
 
-No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
+No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a NoFUD server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 
 ## Attribution & license
 
