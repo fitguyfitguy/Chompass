@@ -43,8 +43,10 @@ export async function anthropicSend(config, req) {
     max_tokens: 1024,
     system: req.systemPrompt,
     messages: req.messages.map(anthropicMessage),
-    tools: req.tools.map((t) => ({ name: t.name, description: t.description, input_schema: t.inputSchema })),
   };
+  if (req.tools.length) {
+    body.tools = req.tools.map((t) => ({ name: t.name, description: t.description, input_schema: t.inputSchema }));
+  }
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {

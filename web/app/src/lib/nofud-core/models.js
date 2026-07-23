@@ -141,6 +141,8 @@
  * @property {Goal} goal
  * @property {number|null} [weeklyChangeKg]      unsigned magnitude; sign derived from `goal` at calc time; default 0.5 when unset
  * @property {boolean} [ketoMode]
+ * @property {number|null} [goalWeightKg]
+ * @property {number|null} [customCalories]      when set, overrides formula dailyCalories (adaptive / manual pin)
  */
 
 export {};

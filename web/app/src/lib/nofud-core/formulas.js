@@ -105,6 +105,7 @@ function signedWeeklyChangeKg(profile) {
  * @param {UserProfile} profile
  */
 export function dailyCalories(profile) {
+  if (profile.customCalories != null) return Math.trunc(profile.customCalories);
   const adjustment = Math.trunc((signedWeeklyChangeKg(profile) * KCAL_PER_KG_BODY_MASS) / 7);
   return Math.trunc(tdee(profile)) + adjustment;
 }

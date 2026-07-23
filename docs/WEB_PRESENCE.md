@@ -15,7 +15,7 @@ Scoped-down companion web app at [fitguy.codeberg.page/NoFUD/app/](https://fitgu
 
 Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/` (via `rsync --delete`) before the same orphan-branch push used for the marketing site — no separate deploy step to remember.
 
-**Soft-launched**: not yet linked from `website/content/` or the site nav — reachable only by direct URL. Link it from the marketing site (e.g. `download.md` or a nav item) once you're ready to promote it as more than a preview.
+**Soft-launched**: linked from the marketing site nav (“Web app”) and Download page. Canonical URL: `fitguy.codeberg.page/NoFUD/app/`.
 
 ## Do not pursue
 

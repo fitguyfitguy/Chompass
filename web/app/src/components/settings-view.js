@@ -1,5 +1,13 @@
 // @ts-check
-import { profile as profileStore, foodEntries, weights, bodyFat, measurements } from "../lib/db.js";
+import {
+  profile as profileStore,
+  foodEntries,
+  weights,
+  bodyFat,
+  measurements,
+  prefs,
+  clearAllUserData,
+} from "../lib/db.js";
 import { dailyTargets, bmr, tdee } from "../lib/nofud-core/formulas.js";
 import { exportDiary, importDiary } from "../lib/nofud-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-metrics-format.js";
@@ -7,24 +15,103 @@ import { PROVIDERS } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders } from "../lib/ai/key-storage.js";
 
 const ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active", "extra_active"];
+const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
 
 export class SettingsView extends HTMLElement {
   connectedCallback() {
+    const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
+    this.section = params.get("section") || "hub";
     this.render();
   }
 
   async render() {
-    const p = (await profileStore.load()) ?? {
-      sex: "other", age: 30, heightCm: 170, weightKg: 70,
-      bodyFatPercentage: null, activityLevel: "moderate", goal: "maintain",
-      weeklyChangeKg: null, ketoMode: false,
-    };
+    if (this.section === "hub") {
+      this.innerHTML = `
+        <h1 class="screen-title">Settings</h1>
+        <nav class="settings-nav" aria-label="Settings sections">
+          <a href="#/settings?section=profile">Profile <span>Body &amp; identity</span></a>
+          <a href="#/settings?section=goals">Goals &amp; diet <span>Calories, keto</span></a>
+          <a href="#/settings?section=units">Units &amp; appearance <span>kg/lb, theme</span></a>
+          <a href="#/settings?section=home">Home display <span>Water, gauge</span></a>
+          <a href="#/settings?section=data">Data <span>Import / export / clear</span></a>
+          <a href="#/settings?section=ai">AI keys <span>BYOK providers</span></a>
+          <a href="#/settings?section=about">About &amp; methods <span>Formulas</span></a>
+          <a href="#/measurements">Body measurements <span>Tape metrics</span></a>
+        </nav>`;
+      return;
+    }
 
-    const targets = dailyTargets(p);
-    const configuredProviders = await listConfiguredProviders();
+    const back = `<p style="margin:0 0 0.8rem;"><a href="#/settings">← Settings</a></p>`;
+    if (this.section === "profile") {
+      await this.renderProfile(back);
+      return;
+    }
+    if (this.section === "goals") {
+      await this.renderGoals(back);
+      return;
+    }
+    if (this.section === "units") {
+      await this.renderUnits(back);
+      return;
+    }
+    if (this.section === "home") {
+      await this.renderHome(back);
+      return;
+    }
+    if (this.section === "data") {
+      await this.renderData(back);
+      return;
+    }
+    if (this.section === "ai") {
+      await this.renderAi(back);
+      return;
+    }
+    if (this.section === "about") {
+      this.innerHTML = `
+        ${back}
+        <h1 class="screen-title">About &amp; methods</h1>
+        <div class="card">
+          <p style="margin:0 0 0.6rem;">NoFUD companion PWA — local-first, no analytics. Compatible with the Android app's diary and body-metrics JSON.</p>
+          <p style="margin:0;color:var(--muted);font-size:0.9rem;">
+            Deterministic formulas (BMR Mifflin / Katch-McArdle, TDEE, macros, keto carbs, US Navy BF%, FCAST / ADAPT)
+            mirror <code>docs/CALCULATION_METHODS.md</code>. AI estimates are reviewed before save.
+          </p>
+        </div>`;
+      return;
+    }
+    this.section = "hub";
+    this.render();
+  }
+
+  async loadProfile() {
+    return (
+      (await profileStore.load()) ?? {
+        sex: "other",
+        age: 30,
+        heightCm: 170,
+        weightKg: 70,
+        bodyFatPercentage: null,
+        activityLevel: "moderate",
+        goal: "maintain",
+        weeklyChangeKg: null,
+        ketoMode: false,
+        goalWeightKg: null,
+        customCalories: null,
+      }
+    );
+  }
+
+  async renderProfile(back) {
+    const p = await this.loadProfile();
+    const appPrefs = await prefs.load();
+    const heightLabel = appPrefs.heightUnit === "in" ? "Height in" : "Height cm";
+    const weightLabel = appPrefs.weightUnit === "lb" ? "Weight lb" : "Weight kg";
+    const heightVal = appPrefs.heightUnit === "in" ? (p.heightCm / 2.54).toFixed(1) : p.heightCm;
+    const weightVal = appPrefs.weightUnit === "lb" ? (p.weightKg * 2.20462).toFixed(1) : p.weightKg;
 
     this.innerHTML = `
-      <h1 style="font-family:var(--font-display);font-size:1.4rem;margin:0.2rem 0 1rem;">Profile & settings</h1>
+      ${back}
+      <h1 class="screen-title">Profile</h1>
       <form class="entry-form card" id="profile-form">
         <div class="field-row">
           <div class="field">
@@ -37,34 +124,57 @@ export class SettingsView extends HTMLElement {
             <label for="age">Age</label>
             <input id="age" name="age" type="number" min="1" value="${p.age}" />
           </div>
-          <div class="field">
-            <label for="heightCm">Height cm</label>
-            <input id="heightCm" name="heightCm" type="number" min="1" value="${p.heightCm}" />
-          </div>
         </div>
         <div class="field-row">
           <div class="field">
-            <label for="weightKg">Weight kg</label>
-            <input id="weightKg" name="weightKg" type="number" step="0.1" min="1" value="${p.weightKg}" />
+            <label for="height">${heightLabel}</label>
+            <input id="height" name="height" type="number" step="0.1" min="1" value="${heightVal}" />
+          </div>
+          <div class="field">
+            <label for="weight">${weightLabel}</label>
+            <input id="weight" name="weight" type="number" step="0.1" min="1" value="${weightVal}" />
           </div>
           <div class="field">
             <label for="bodyFatPercentage">Body fat %</label>
             <input id="bodyFatPercentage" name="bodyFatPercentage" type="number" step="0.1" min="0" max="100"
               value="${p.bodyFatPercentage != null ? p.bodyFatPercentage * 100 : ""}" />
           </div>
-          <div class="field">
-            <label for="weeklyChangeKg">Pace kg/wk</label>
-            <input id="weeklyChangeKg" name="weeklyChangeKg" type="number" step="0.05" min="0"
-              value="${p.weeklyChangeKg ?? ""}" placeholder="0.5" />
-          </div>
         </div>
+        <div class="field">
+          <label for="activityLevel">Activity</label>
+          <select id="activityLevel" name="activityLevel">
+            ${ACTIVITY_LEVELS.map((a) => `<option value="${a}" ${p.activityLevel === a ? "selected" : ""}>${a.replace("_", " ")}</option>`).join("")}
+          </select>
+        </div>
+        <button type="submit" class="btn btn--primary">Save</button>
+      </form>`;
+    this.querySelector("#profile-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      const height = Number(fd.get("height"));
+      const weight = Number(fd.get("weight"));
+      const bfRaw = fd.get("bodyFatPercentage");
+      await profileStore.save({
+        ...p,
+        sex: /** @type {any} */ (fd.get("sex")),
+        age: Number(fd.get("age")),
+        heightCm: appPrefs.heightUnit === "in" ? height * 2.54 : height,
+        weightKg: appPrefs.weightUnit === "lb" ? weight / 2.20462 : weight,
+        bodyFatPercentage: bfRaw ? Number(bfRaw) / 100 : null,
+        activityLevel: /** @type {any} */ (fd.get("activityLevel")),
+      });
+      location.hash = "#/settings";
+    });
+  }
+
+  async renderGoals(back) {
+    const p = await this.loadProfile();
+    const targets = dailyTargets(p);
+    this.innerHTML = `
+      ${back}
+      <h1 class="screen-title">Goals &amp; diet</h1>
+      <form class="entry-form card" id="goals-form">
         <div class="field-row">
-          <div class="field">
-            <label for="activityLevel">Activity</label>
-            <select id="activityLevel" name="activityLevel">
-              ${ACTIVITY_LEVELS.map((a) => `<option value="${a}" ${p.activityLevel === a ? "selected" : ""}>${a.replace("_", " ")}</option>`).join("")}
-            </select>
-          </div>
           <div class="field">
             <label for="goal">Goal</label>
             <select id="goal" name="goal">
@@ -72,56 +182,202 @@ export class SettingsView extends HTMLElement {
             </select>
           </div>
           <div class="field">
+            <label for="weeklyChangeKg">Pace kg/wk</label>
+            <input id="weeklyChangeKg" name="weeklyChangeKg" type="number" step="0.05" min="0" value="${p.weeklyChangeKg ?? ""}" placeholder="0.5" />
+          </div>
+          <div class="field">
+            <label for="goalWeightKg">Goal weight kg</label>
+            <input id="goalWeightKg" name="goalWeightKg" type="number" step="0.1" min="0" value="${p.goalWeightKg ?? ""}" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
             <label for="ketoMode">Diet mode</label>
             <select id="ketoMode" name="ketoMode">
               <option value="false" ${!p.ketoMode ? "selected" : ""}>Standard</option>
               <option value="true" ${p.ketoMode ? "selected" : ""}>Keto</option>
             </select>
           </div>
+          <div class="field">
+            <label for="customCalories">Custom calories</label>
+            <input id="customCalories" name="customCalories" type="number" min="0" value="${p.customCalories ?? ""}" placeholder="formula" />
+          </div>
         </div>
-        <button type="submit" class="btn btn--primary">Save profile</button>
+        <button type="submit" class="btn btn--primary">Save goals</button>
+        <button type="button" class="btn btn--ghost" id="clear-custom">Clear custom calories</button>
       </form>
-
       <div class="card">
-        <h2 style="margin:0 0 0.6rem;font-size:1rem;">Calculated targets</h2>
+        <h2 class="chart-title">Calculated targets</h2>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          BMR ${Math.round(bmr(p))} kcal · TDEE ${Math.round(tdee(p))} kcal
+          BMR ${Math.round(bmr(p))} · TDEE ${Math.round(tdee(p))} kcal
         </p>
-        <div class="totals-ring">
-          <div><strong>${targets.calories}</strong><span>Calories</span></div>
-          <div><strong>${Math.round(targets.proteinG)}</strong><span>Protein g</span></div>
-          <div><strong>${Math.round(targets.carbsG)}</strong><span>Carbs g</span></div>
-          <div><strong>${Math.round(targets.fatG)}</strong><span>Fat g</span></div>
+        <div class="stat-badges">
+          <div class="stat-badge"><strong>${targets.calories}</strong>Calories</div>
+          <div class="stat-badge" style="color:var(--protein)"><strong>${Math.round(targets.proteinG)} g</strong>Protein</div>
+          <div class="stat-badge" style="color:var(--carbs)"><strong>${Math.round(targets.carbsG)} g</strong>Carbs</div>
+          <div class="stat-badge" style="color:var(--fat)"><strong>${Math.round(targets.fatG)} g</strong>Fat</div>
         </div>
-      </div>
+      </div>`;
+    this.querySelector("#goals-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      const paceRaw = fd.get("weeklyChangeKg");
+      const goalW = fd.get("goalWeightKg");
+      const custom = fd.get("customCalories");
+      await profileStore.save({
+        ...p,
+        goal: /** @type {any} */ (fd.get("goal")),
+        weeklyChangeKg: paceRaw ? Number(paceRaw) : null,
+        goalWeightKg: goalW ? Number(goalW) : null,
+        ketoMode: fd.get("ketoMode") === "true",
+        customCalories: custom ? Number(custom) : null,
+      });
+      location.hash = "#/settings";
+    });
+    this.querySelector("#clear-custom")?.addEventListener("click", async () => {
+      await profileStore.save({ ...p, customCalories: null });
+      this.render();
+    });
+  }
 
+  async renderUnits(back) {
+    const p = await prefs.load();
+    this.innerHTML = `
+      ${back}
+      <h1 class="screen-title">Units &amp; appearance</h1>
+      <form class="entry-form card" id="units-form">
+        <div class="field-row">
+          <div class="field">
+            <label for="weightUnit">Weight</label>
+            <select id="weightUnit" name="weightUnit">
+              <option value="kg" ${p.weightUnit === "kg" ? "selected" : ""}>kg</option>
+              <option value="lb" ${p.weightUnit === "lb" ? "selected" : ""}>lb</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="heightUnit">Height</label>
+            <select id="heightUnit" name="heightUnit">
+              <option value="cm" ${p.heightUnit === "cm" ? "selected" : ""}>cm</option>
+              <option value="in" ${p.heightUnit === "in" ? "selected" : ""}>in</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="theme">Theme</label>
+          <select id="theme" name="theme">
+            ${["system", "light", "dark"].map((t) => `<option value="${t}" ${p.theme === t ? "selected" : ""}>${t}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label for="accent">Accent</label>
+          <select id="accent" name="accent">
+            ${ACCENTS.map((a) => `<option value="${a}" ${p.accent === a ? "selected" : ""}>${a}</option>`).join("")}
+          </select>
+        </div>
+        <button type="submit" class="btn btn--primary">Save</button>
+      </form>`;
+    this.querySelector("#units-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      await prefs.save({
+        weightUnit: /** @type {any} */ (fd.get("weightUnit")),
+        heightUnit: /** @type {any} */ (fd.get("heightUnit")),
+        theme: /** @type {any} */ (fd.get("theme")),
+        accent: String(fd.get("accent") || "teal"),
+      });
+      window.dispatchEvent(new Event("nofud-prefs-changed"));
+      location.hash = "#/settings";
+    });
+  }
+
+  async renderHome(back) {
+    const p = await prefs.load();
+    this.innerHTML = `
+      ${back}
+      <h1 class="screen-title">Home display</h1>
+      <form class="entry-form card" id="home-form">
+        <div class="field">
+          <label for="showWater">Show water row</label>
+          <select id="showWater" name="showWater">
+            <option value="true" ${p.showWater !== false ? "selected" : ""}>On</option>
+            <option value="false" ${p.showWater === false ? "selected" : ""}>Off</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="waterGoalMl">Water goal (ml)</label>
+          <input id="waterGoalMl" name="waterGoalMl" type="number" min="0" value="${p.waterGoalMl ?? 2500}" />
+        </div>
+        <div class="field">
+          <label for="calorieGaugeMode">Calorie gauge</label>
+          <select id="calorieGaugeMode" name="calorieGaugeMode">
+            <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
+            <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>Add active (sedentary budget)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="adaptiveGoals">Adaptive goals (Progress)</label>
+          <select id="adaptiveGoals" name="adaptiveGoals">
+            <option value="false" ${!p.adaptiveGoals ? "selected" : ""}>Off</option>
+            <option value="true" ${p.adaptiveGoals ? "selected" : ""}>On</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn--primary">Save</button>
+      </form>`;
+    this.querySelector("#home-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      await prefs.save({
+        showWater: fd.get("showWater") === "true",
+        waterGoalMl: Number(fd.get("waterGoalMl") || 2500),
+        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
+        adaptiveGoals: fd.get("adaptiveGoals") === "true",
+      });
+      location.hash = "#/settings";
+    });
+  }
+
+  async renderData(back) {
+    this.innerHTML = `
+      ${back}
+      <h1 class="screen-title">Data</h1>
       <div class="card">
-        <h2 style="margin:0 0 0.6rem;font-size:1rem;">Diary export / import</h2>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Same JSON format as the Android app — move your data freely between the two.
+          Same JSON format as the Android app — move data freely between the two.
         </p>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-diary">Export diary JSON</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">
-            Import diary JSON
+          <button class="btn btn--ghost" id="export-diary">Export diary</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">Import diary
             <input type="file" accept="application/json" id="import-diary" style="display:none;" />
           </label>
         </div>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-body">Export body-metrics JSON</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">
-            Import body-metrics JSON
+          <button class="btn btn--ghost" id="export-body">Export body metrics</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">Import body metrics
             <input type="file" accept="application/json" id="import-body" style="display:none;" />
           </label>
         </div>
         <p id="import-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
-      </div>
+        <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;">Clear all local data</button>
+      </div>`;
+    this.querySelector("#export-diary")?.addEventListener("click", () => this.onExportDiary());
+    this.querySelector("#export-body")?.addEventListener("click", () => this.onExportBodyMetrics());
+    this.querySelector("#import-diary")?.addEventListener("change", (ev) => this.onImportDiary(ev));
+    this.querySelector("#import-body")?.addEventListener("change", (ev) => this.onImportBodyMetrics(ev));
+    this.querySelector("#clear-all")?.addEventListener("click", async () => {
+      if (!confirm("Delete all diary, metrics, profile, and chat on this device?")) return;
+      await clearAllUserData();
+      location.hash = "#/onboarding";
+    });
+  }
 
+  async renderAi(back) {
+    const configuredProviders = await listConfiguredProviders();
+    this.innerHTML = `
+      ${back}
+      <h1 class="screen-title">AI keys</h1>
       <div class="card">
-        <h2 style="margin:0 0 0.6rem;font-size:1rem;">AI Coach (bring your own key)</h2>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Your key is encrypted at rest with a non-extractable device key and is only ever sent directly
-          from your browser to the provider you choose below — never through a NoFUD server.
+          Keys are encrypted at rest and only sent directly from your browser to the provider.
         </p>
         <form class="entry-form" id="ai-key-form">
           <div class="field">
@@ -140,7 +396,7 @@ export class SettingsView extends HTMLElement {
               <input id="ai-model" name="model" type="text" placeholder="provider default" />
             </div>
             <div class="field">
-              <label for="ai-base-url">Base URL (openai-compatible only)</label>
+              <label for="ai-base-url">Base URL (openai-compatible)</label>
               <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" />
             </div>
           </div>
@@ -152,16 +408,9 @@ export class SettingsView extends HTMLElement {
         <p style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
           Configured: ${configuredProviders.length ? configuredProviders.map((id) => PROVIDERS[id].label).join(", ") : "none"}
         </p>
-      </div>
-    `;
-
-    this.querySelector("#profile-form").addEventListener("submit", (ev) => this.onSaveProfile(ev));
-    this.querySelector("#export-diary").addEventListener("click", () => this.onExportDiary());
-    this.querySelector("#export-body").addEventListener("click", () => this.onExportBodyMetrics());
-    this.querySelector("#import-diary").addEventListener("change", (ev) => this.onImportDiary(ev));
-    this.querySelector("#import-body").addEventListener("change", (ev) => this.onImportBodyMetrics(ev));
-    this.querySelector("#ai-key-form").addEventListener("submit", (ev) => this.onSaveAiKey(ev));
-    this.querySelector("#ai-key-remove").addEventListener("click", () => this.onRemoveAiKey());
+      </div>`;
+    this.querySelector("#ai-key-form")?.addEventListener("submit", (ev) => this.onSaveAiKey(ev));
+    this.querySelector("#ai-key-remove")?.addEventListener("click", () => this.onRemoveAiKey());
   }
 
   async onSaveAiKey(ev) {
@@ -177,35 +426,17 @@ export class SettingsView extends HTMLElement {
   }
 
   async onRemoveAiKey() {
-    const provider = /** @type {any} */ (this.querySelector("#ai-provider").value);
+    const el = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ai-provider"));
+    const provider = /** @type {any} */ (el?.value);
+    if (!provider) return;
     await deleteProviderKey(provider);
-    this.render();
-  }
-
-  async onSaveProfile(ev) {
-    ev.preventDefault();
-    const fd = new FormData(ev.target);
-    const bfRaw = fd.get("bodyFatPercentage");
-    const paceRaw = fd.get("weeklyChangeKg");
-    /** @type {import('../lib/nofud-core/models.js').UserProfile} */
-    const p = {
-      sex: /** @type {any} */ (fd.get("sex")),
-      age: Number(fd.get("age")),
-      heightCm: Number(fd.get("heightCm")),
-      weightKg: Number(fd.get("weightKg")),
-      bodyFatPercentage: bfRaw ? Number(bfRaw) / 100 : null,
-      activityLevel: /** @type {any} */ (fd.get("activityLevel")),
-      goal: /** @type {any} */ (fd.get("goal")),
-      weeklyChangeKg: paceRaw ? Number(paceRaw) : null,
-      ketoMode: fd.get("ketoMode") === "true",
-    };
-    await profileStore.save(p);
     this.render();
   }
 
   async onExportDiary() {
     const entries = await foodEntries.all();
     const prof = await profileStore.load();
+    /** @type {Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>} */
     const targets = {};
     if (prof) {
       const t = dailyTargets(prof);
@@ -231,9 +462,9 @@ export class SettingsView extends HTMLElement {
       const doc = JSON.parse(await file.text());
       const entries = importDiary(doc);
       await Promise.all(entries.map((e) => foodEntries.put(e)));
-      status.textContent = `Imported ${entries.length} food entries.`;
+      if (status) status.textContent = `Imported ${entries.length} food entries.`;
     } catch (err) {
-      status.textContent = `Import failed: ${err.message}`;
+      if (status) status.textContent = `Import failed: ${err.message}`;
     }
     ev.target.value = "";
   }
@@ -245,14 +476,10 @@ export class SettingsView extends HTMLElement {
     try {
       const doc = JSON.parse(await file.text());
       const { weights: w, bodyFat: bf, measurements: m } = await importBodyMetrics(doc);
-      await Promise.all([
-        ...w.map((r) => weights.put(r)),
-        ...bf.map((r) => bodyFat.put(r)),
-        ...m.map((r) => measurements.put(r)),
-      ]);
-      status.textContent = `Imported ${w.length} weights, ${bf.length} body-fat, ${m.length} measurements.`;
+      await Promise.all([...w.map((r) => weights.put(r)), ...bf.map((r) => bodyFat.put(r)), ...m.map((r) => measurements.put(r))]);
+      if (status) status.textContent = `Imported ${w.length} weights, ${bf.length} body-fat, ${m.length} measurements.`;
     } catch (err) {
-      status.textContent = `Import failed: ${err.message}`;
+      if (status) status.textContent = `Import failed: ${err.message}`;
     }
     ev.target.value = "";
   }

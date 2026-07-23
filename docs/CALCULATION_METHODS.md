@@ -254,8 +254,9 @@ When changing any formula, constant, or guardrail:
 2. Update this file (formula register + policy table).
 3. Update `strings.xml` `settings_calc_*` if user-visible.
 4. Add/adjust unit tests with golden vectors.
-5. Note change in `docs/CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
-6. Run `devenv shell bash -lc 'cd android && ./gradlew test'`.
+5. Mirror any change in `web/app/src/lib/nofud-core/` (`formulas.js`, `forecast.js`) and run `node --test web/app/src/lib/nofud-core/__tests__/*.test.js`.
+6. Note change in `docs/CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
+7. Run `devenv shell bash -lc 'cd android && ./gradlew test'`.
 
 ---
 
@@ -269,6 +270,7 @@ When changing any formula, constant, or guardrail:
 | Activity / protein | `android/app/src/main/java/.../models/ActivityLevel.kt` |
 | Forecast & adaptive | `android/app/src/main/java/.../services/WeightAnalysisService.kt` |
 | Forecast math (pure) | `android/app/src/main/java/.../services/WeightForecastMath.kt` |
+| PWA formula / forecast mirror | `web/app/src/lib/nofud-core/{formulas,forecast}.js` |
 | AI formula reference | `android/app/src/main/java/.../models/GoalFormulaReference.kt` |
 | Keto carbs | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt` |
 | Body metrics | `android/app/src/main/java/.../models/BodyMeasurement.kt` |
