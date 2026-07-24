@@ -8,7 +8,6 @@ import { PROVIDERS, resolveProviderModel } from "./providers.js";
 import { prefs } from "../db.js";
 import { loadProviderKey, listConfiguredProviders } from "./key-storage.js";
 import {
-  PAL_MULTIPLIERS,
   KCAL_PER_KG_BODY_MASS,
   bmr,
   tdee,
@@ -16,6 +15,11 @@ import {
   dailyTargets,
   proteinGoal,
 } from "../nofud-core/formulas.js";
+import {
+  activityMultipliersLine,
+  proteinPerKgLine,
+  calorieAdjustmentLine,
+} from "../nofud-core/goal-formula-reference.js";
 
 /** @typedef {import('../nofud-core/models.js').UserProfile} UserProfile */
 /** @typedef {ReturnType<import('../nofud-core/forecast.js').computeWeightForecast>} WeightForecast */
@@ -155,12 +159,9 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
 
   const formulaProfile = { ...profile, customCalories: null };
   const targets = dailyTargets(formulaProfile);
-  const activityLine = Object.entries(PAL_MULTIPLIERS)
-    .map(([k, v]) => `${k} ${formatMultiplier(v)}`)
-    .join(", ");
-  const proteinLine = activityProteinPerKgLine();
-  const kcalPerKg = Math.trunc(KCAL_PER_KG_BODY_MASS);
-  const calorieAdjLine = `lose: -(weeklyChangeKg*${kcalPerKg}/7); gain: +(weeklyChangeKg*${kcalPerKg}/7)`;
+  const activityLine = activityMultipliersLine();
+  const proteinLine = proteinPerKgLine();
+  const calorieAdjLine = calorieAdjustmentLine();
   const proteinBasis = profile.bodyFatPercentage != null ? "lean body mass" : "full bodyweight";
 
   const observedSection = buildObservedSection(forecast, weightMetric);
@@ -249,26 +250,6 @@ function buildObservedSection(forecast, weightMetric) {
     "HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. Keep calories within 800-6000."
   );
   return lines.join("\n");
-}
-
-function activityProteinPerKgLine() {
-  /** @type {Record<string, number>} */
-  const rates = {
-    sedentary: 0.8,
-    light: 1.2,
-    moderate: 1.6,
-    active: 1.8,
-    very_active: 2.0,
-    extra_active: 2.2,
-  };
-  return Object.entries(rates)
-    .map(([k, v]) => `${k} ${formatMultiplier(v)}`)
-    .join(", ");
-}
-
-/** @param {number} value */
-function formatMultiplier(value) {
-  return value % 1 === 0 ? String(value) : String(value);
 }
 
 /** @param {unknown} v */

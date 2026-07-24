@@ -220,9 +220,15 @@ export const PROVIDERS = {
   anthropic: {
     label: "Anthropic (Claude)",
     send: anthropicSend,
-    defaultModel: "claude-sonnet-5",
-    defaultFallbackModel: "claude-haiku-4-5",
-    models: ["claude-sonnet-5", "claude-opus-4-8", "claude-haiku-4-5", "claude-sonnet-4-6", "claude-opus-4-7"],
+    defaultModel: "claude-haiku-4-5",
+    defaultFallbackModel: "claude-sonnet-5",
+    models: [
+      "claude-haiku-4-5",
+      "claude-sonnet-5",
+      "claude-opus-4-8",
+      "claude-sonnet-4-6",
+      "claude-opus-4-7",
+    ],
   },
   gemini: {
     label: "Google (Gemini)",
@@ -242,10 +248,10 @@ export const PROVIDERS = {
   openai_compatible: {
     label: "OpenAI-compatible",
     send: openAiCompatibleSend,
-    defaultModel: "gpt-4o-mini",
-    defaultFallbackModel: "gpt-4.1-mini",
+    defaultModel: "gpt-5.4-mini",
+    defaultFallbackModel: "gpt-5.4-nano",
     supportsCustomModel: true,
-    models: ["gpt-5.4-mini", "gpt-5.5", "gpt-5.4-nano", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini"],
+    models: ["gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.5", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini"],
   },
 };
 

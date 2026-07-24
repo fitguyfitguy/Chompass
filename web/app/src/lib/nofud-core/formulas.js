@@ -27,7 +27,7 @@ export const PAL_MULTIPLIERS = {
 };
 
 /** @type {Record<import('./models.js').ActivityLevel, number>} */
-const PROTEIN_G_PER_KG = {
+export const PROTEIN_G_PER_KG = {
   sedentary: 0.8,
   light: 1.2,
   moderate: 1.6,

@@ -46,6 +46,29 @@ class GoalFormulaReferenceTest {
     assertEquals(1.465, ActivityLevel.MODERATE.multiplier, 0.0)
   }
 
+  @Test
+  fun promptFragments_matchParityFixture() {
+    val fixture = org.codeberg.fitguy.nofud.parity.ParityFixtures.readJson(
+      "goal-formula-prompt-fragments.json",
+    )
+    assertEquals(
+      fixture.getString("activityMultipliersLine"),
+      GoalFormulaReference.activityMultipliersLine(),
+    )
+    assertEquals(
+      fixture.getString("proteinPerKgLine"),
+      GoalFormulaReference.proteinPerKgLine(),
+    )
+    assertEquals(
+      fixture.getString("calorieAdjustmentLine"),
+      GoalFormulaReference.calorieAdjustmentLine(),
+    )
+    assertEquals(
+      fixture.getString("moderateActivityMultiplierRationale"),
+      GoalFormulaReference.moderateActivityMultiplierRationale(),
+    )
+  }
+
   private fun format(value: Double): String =
     if (value % 1.0 == 0.0) value.toInt().toString() else value.toString()
 }
