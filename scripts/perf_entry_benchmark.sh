@@ -15,7 +15,7 @@ set -euo pipefail
 #   TIMEOUT    seconds to wait for the batch before giving up (default: 240)
 #
 # Prereq: the debug APK is installed and secrets.properties carries a Gemini key
-# (so the app can actually issue requests). Build+install per CLAUDE.md.
+# (so the app can actually issue requests). Build+install per docs/DEVELOPMENT.md.
 
 COUNT="${1:-3}"
 PACKAGE="${PACKAGE:-org.codeberg.fitguy.nofud.debug}"
