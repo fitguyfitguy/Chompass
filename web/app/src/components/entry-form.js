@@ -141,7 +141,7 @@ export class EntryForm extends HTMLElement {
     const fav = this.existing ? await isFavorite(this.existing) : false;
     const scale = this.currentScale();
     const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
-    const hasExtraMicros = MICRO_FIELDS.some(([k]) => scaled[k] != null && scaled[k] !== "");
+    const hasExtraMicros = MICRO_FIELDS.some(([k]) => scaled[k] != null);
     const lockAttr = this.nutritionLocked ? "readonly" : "";
     const lockClass = this.nutritionLocked ? "is-locked" : "";
     const picker = pickerOptions(this.servingUnitOptions);
