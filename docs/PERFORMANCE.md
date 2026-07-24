@@ -28,7 +28,7 @@ Artifacts are written under:
 
 ## Current Baseline Status
 
-- Capture attempted in agent environment.
+- Capture attempted in an environment without `adb` on PATH.
 - Blocker: `adb` is not installed/available in this runtime.
 - Next step: run the script on a machine with Android platform tools and a connected device/emulator.
 
@@ -72,7 +72,7 @@ failure (`status=-1`).
 ### Capture
 
 The USB device is reachable from Windows adb, not WSL adb. Build + install the
-debug APK (see CLAUDE.md), then:
+debug APK (see [DEVELOPMENT.md](DEVELOPMENT.md)), then:
 
 ```bash
 # From WSL: the script auto-detects a Windows adb.exe (Downloads/platform-tools,

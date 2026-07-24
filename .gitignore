@@ -22,7 +22,7 @@ ios/Local.xcconfig
 .DS_Store
 
 
-# Claude Code / Cursor agent runtime
+# Local IDE tooling
 .claude/
 .cursor/
 .cursorrules
@@ -37,6 +37,11 @@ ios/**/xcuserdata/
 .devenv.flake.nix
 .android/
 
+# Local maintainer notes (not published)
+docs/local/
+AGENTS.md
+CLAUDE.md
+
 # Release artifacts (published on Codeberg Releases)
 NoFUD-*.apk
 SHA256SUMS
@@ -44,18 +49,12 @@ release-screenshots/
 .env.local
 scripts/capture_android_perf_baseline.sh
 Fud-Food-Diary-2026-04-27_to_2026-07-08.json
-AGENTS.md
-CLAUDE.md
 FudAI-Weight-Import.csv
 FudAI-Weight-Import.json
 android/app/src/debug/assets/ondevice_llm/fast_food_combo.jpg
 android/app/src/debug/assets/ondevice_llm/food_plate.jpg
 android/app/src/debug/assets/ondevice_llm/nutrition_label.jpg
 android/app/src/debug/assets/ondevice_llm/pizza_slices.jpg
-docs/UPSTREAM_IDEAS.md
-docs/UPSTREAM_TRIAGE.md
-docs/upstream-triage-state.json
-scripts/fetch_upstream_delta.sh
 
 # Food accuracy benchmark caches and results
 docs/benchmarks/food_accuracy/data/
