@@ -22,7 +22,9 @@ uv run python docs/benchmarks/food_accuracy/check_retrieval_golden.py
 
 echo "== query normalize unit checks =="
 uv run python -c "
-from benchmarks.food_accuracy.query_normalize import normalize_tokens, normalize_query
+import sys
+sys.path.insert(0, 'docs/benchmarks/food_accuracy')
+from query_normalize import normalize_tokens, normalize_query
 assert '150' not in normalize_tokens('Chicken breast, roasted, 150 g')
 assert 'yogurt' in normalize_tokens('plain yoghurt')
 assert normalize_query('2 tbsp peanut butter') == 'peanut butter'
