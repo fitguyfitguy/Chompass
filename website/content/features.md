@@ -20,6 +20,12 @@ The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phon
 
 **On-Device (Private)** in Settings → AI Provider runs Gemma 4 Edge (E2B or E4B) via LiteRT-LM. One-time download (~2.4–3.4 GB). No API key and no server upload for food text or photo analysis. Cloud AI remains more accurate; optional fallback retries in the cloud when on-device fails. The PWA uses BYOK cloud AI only.
 
+## Accuracy, honestly
+
+Chompass is BYOK, so accuracy comes down to the model you pick, not a Chompass secret. We test against labeled datasets and publish the results instead of quoting a single accuracy number.
+
+Typed entry is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. Full numbers and methodology: [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md) on Codeberg.
+
 ## AI Coach
 
 Chat with your own provider key on both clients. Optional fallback provider. Replies follow the app language on Android (PWA is EN-first).
