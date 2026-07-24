@@ -876,7 +876,7 @@ export class SettingsView extends HTMLElement {
           <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
           <li>Open NoFUD from the <strong>home-screen icon</strong> — not a Safari tab — for the full-screen app.</li>
         </ol>
-        <p class="install-note">Chrome or Firefox on iOS still use Safari&rsquo;s share sheet for home-screen install.</p>
+        <p class="install-note">Brave, Chrome, and Firefox on iOS cannot install home-screen web apps — Apple only allows Safari to. If you use one of those, copy the address into Safari and follow the steps above.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">Android (Chrome, Edge, Brave)</h2>
