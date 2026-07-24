@@ -959,10 +959,20 @@ body:has(coach-view) .toast {
   border: 1px solid var(--line);
 }
 
+.scanner-frame--desktop {
+  aspect-ratio: 16 / 9;
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
 .scanner-frame video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.scanner-frame--desktop video {
+  object-fit: contain;
 }
 
 .scanner-frame__reticle {
@@ -972,6 +982,24 @@ body:has(coach-view) .toast {
   border-radius: 0.75rem;
   box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
   pointer-events: none;
+}
+
+.scanner-frame--desktop .scanner-frame__reticle {
+  inset: 22% 16%;
+}
+
+.scanner-switch {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
 }
 
 .scanner-frame__reticle::before,
@@ -2425,6 +2453,14 @@ body.camera-open {
   background: #111;
 }
 
+.camera-capture--desktop .camera-capture__video {
+  width: min(100%, 56rem);
+  max-height: calc(100vh - 12rem);
+  aspect-ratio: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 .camera-capture__frame {
   pointer-events: none;
 }
@@ -2471,6 +2507,19 @@ body.camera-open {
 
 .camera-capture__btn--flash.is-on {
   background: color-mix(in srgb, var(--kcal) 75%, #000);
+}
+
+.camera-capture__btn--switch {
+  top: calc(0.75rem + env(safe-area-inset-top));
+  right: 0.75rem;
+  width: auto;
+  min-width: 2.75rem;
+  padding: 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.camera-capture__btn--flash:not([hidden]) ~ .camera-capture__btn--switch {
+  right: 5.5rem;
 }
 
 .camera-capture__controls {

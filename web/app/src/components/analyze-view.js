@@ -13,6 +13,7 @@ import { prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { createSpeechCapture } from "../lib/speech.js";
 import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
+import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 
 const MAX_PHOTOS = 10;
 
@@ -128,7 +129,7 @@ export class AnalyzeView extends HTMLElement {
       <form class="entry-form card analyze-mode--${this.mode}" id="analyze-form" aria-busy="${this.busy ? "true" : "false"}">
         <div class="field analyze-photo-field">
           <label for="photo">${this.mode === "photo" ? `Photos (up to ${MAX_PHOTOS})` : "Photo (optional)"}</label>
-          <input id="photo" name="photo" type="file" accept="image/*" ${this.mode === "photo" ? "multiple" : ""} capture="environment" ${inputsDisabled} />
+          <input id="photo" name="photo" type="file" accept="image/*" ${this.mode === "photo" ? "multiple" : ""} ${shouldUseNativeCaptureHint() ? 'capture="environment"' : ""} ${inputsDisabled} />
         </div>
         <div class="field analyze-note-field">
           <label for="note">${this.mode === "note" ? "Describe the food" : "Note (optional)"}</label>

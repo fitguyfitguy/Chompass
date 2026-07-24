@@ -3,6 +3,7 @@
 // (Android MultiPhotoCaptureSheet parity).
 import { openSheet } from "./sheet.js";
 import { openCameraCapture, pickFromGallery, isLiveCameraSupported } from "./camera-capture.js";
+import { shouldUseNativeCaptureHint } from "../media-devices.js";
 import { fileToJpegBase64 } from "../ai/image.js";
 import {
   ANALYSIS_PHASE,
@@ -94,7 +95,7 @@ export async function startPhotoAiFlow(opts) {
   }
 
   if (!isLiveCameraSupported()) {
-    const picked = await pickFromGallery({ multiple: true, capture: true });
+    const picked = await pickFromGallery({ multiple: true, capture: shouldUseNativeCaptureHint() });
     if (!picked.length) {
       opts.onCancel?.();
       return;

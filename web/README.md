@@ -77,7 +77,7 @@ notifications, widgets, full i18n pack.
 
 Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v12`.
+Service worker cache: `nofud-shell-v14`.
 
 ### Manual PWA audit checklist
 
@@ -100,6 +100,11 @@ the browser menu → **Add to Home screen** / **Install app**. After redeploy,
 confirm live `Content-Type` for `/app/manifest.json` is `application/json`.
 
 Known trade-offs:
+- Live meal camera and barcode preview work on phone cameras and desktop
+  webcams (HTTPS / localhost). Desktop uses landscape-friendly constraints,
+  full-frame meal capture (no forced 3:4 crop), and a switch-camera control
+  when multiple devices exist. File-picker fallbacks omit `capture=` on
+  desktop so the OS dialog stays a normal file chooser.
 - Barcode scanning is tiered: native `BarcodeDetector` when a startup canvas
   probe confirms it works; otherwise the vendored zxing-wasm reader
   (`app/vendor/zxing/`, ~1 MB wasm, lazy-loaded only on the fallback path —
