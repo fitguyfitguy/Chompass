@@ -77,10 +77,21 @@
  */
 
 /**
+ * Local-only serving unit (not in diary 1.1 wire format).
+ * @typedef {Object} ServingUnitOption
+ * @property {string} unit
+ * @property {number} gramsPerUnit
+ * @property {number|null} [quantity]
+ */
+
+/**
  * @typedef {Macro & Micronutrients & Object} FoodEntry
  * @property {string} id
  * @property {string} name
  * @property {number|null} [quantityG]
+ * @property {ServingUnitOption[]} [servingUnitOptions]  IndexedDB-only; not exported
+ * @property {string|null} [selectedServingUnit]         IndexedDB-only; not exported
+ * @property {number|null} [selectedServingQuantity]     IndexedDB-only; not exported
  * @property {"breakfast"|"lunch"|"dinner"|"snack"} mealType
  * @property {string} date        ISO date "YYYY-MM-DD"
  * @property {string} time        "HH:mm"
