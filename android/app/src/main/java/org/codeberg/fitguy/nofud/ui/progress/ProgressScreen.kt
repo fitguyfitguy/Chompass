@@ -45,8 +45,7 @@ import org.codeberg.fitguy.nofud.ui.navigation.BottomNavScrollPadding
  *      count + chevron, opens AllWeightHistorySheet. BodyFatHistoryLink
  *      mirrors it for body-fat entries, opening AllBodyFatHistorySheet
  *   4. CalorieChartSection — Calories title + Avg badge + bar chart of
- *      per-day calories with calorieGradient bars (dimmed below goal,
- *      pink above goal — same as iOS)
+ *      per-day calories (accent gradient at/under goal, theme error above)
  *   5. MacroAveragesSection — averages over the selected time range,
  *      one MacroProgressRow per macro
  */

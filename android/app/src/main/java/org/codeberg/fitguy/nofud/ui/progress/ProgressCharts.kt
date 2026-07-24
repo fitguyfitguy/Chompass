@@ -481,6 +481,8 @@ internal fun CalorieBarChart(dailyCalories: List<Pair<LocalDate, Int>>, goal: In
     val maxValue = dailyCalories.maxOf { it.second }.coerceAtLeast(goal).toDouble()
     val gradientStart = AppColors.CalorieStart
     val gradientEnd = AppColors.CalorieEnd
+    val overColor = MaterialTheme.colorScheme.error
+    val overColorSoft = overColor.copy(alpha = 0.75f)
     val goalColor = AppColors.Calorie.copy(alpha = 0.4f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
@@ -527,11 +529,19 @@ internal fun CalorieBarChart(dailyCalories: List<Pair<LocalDate, Int>>, goal: In
                         val barH = ((cals / yTop).toFloat() * pxH)
                         val x = startX + i * (barWidth + gap)
                         val y = pxH - barH
-                        drawRoundRect(
-                            brush = Brush.verticalGradient(
+                        val brush = if (cals > goal) {
+                            Brush.verticalGradient(
+                                colors = listOf(overColorSoft, overColor),
+                                startY = y, endY = pxH
+                            )
+                        } else {
+                            Brush.verticalGradient(
                                 colors = listOf(gradientEnd, gradientStart),
                                 startY = y, endY = pxH
-                            ),
+                            )
+                        }
+                        drawRoundRect(
+                            brush = brush,
                             topLeft = Offset(x, y),
                             size = Size(barWidth, barH),
                             cornerRadius = CornerRadius(4f, 4f)

@@ -94,7 +94,8 @@ export function barChartSvg(points, opts = {}) {
   const padding = 24;
   const target = opts.target;
   const interactive = opts.interactive !== false;
-  const series = downsamplePoints(points);
+  // No downsample — match Android (all logged days; bars get thinner).
+  const series = points;
 
   if (series.length === 0) {
     return `<svg viewBox="0 0 ${width} ${height}" class="chart-svg"><text x="${width / 2}" y="${height / 2}" text-anchor="middle" class="chart-empty">No data yet</text></svg>`;

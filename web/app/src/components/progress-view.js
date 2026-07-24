@@ -62,7 +62,6 @@ export class ProgressView extends HTMLElement {
         raw: w,
       }));
 
-    const days = lastNDays(activeRange.days);
     const totalsByDate = new Map();
     for (const e of allEntries) {
       if (e.date < startIso) continue;
@@ -80,7 +79,11 @@ export class ProgressView extends HTMLElement {
       acc.fiberG += e.fiberG ?? 0;
       totalsByDate.set(e.date, acc);
     }
-    const calorieBars = days.map((d) => ({ label: shortDate(d), value: totalsByDate.get(d)?.calories ?? 0 }));
+    // Match Android: one bar per logged non-zero day (no calendar zero-padding).
+    const calorieBars = [...totalsByDate.entries()]
+      .filter(([, t]) => t.calories !== 0)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([d, t]) => ({ label: shortDate(d), value: t.calories }));
     const targets = prof ? dailyTargets(prof) : null;
     const goalWeight = prof?.goalWeightKg != null ? toDisplay(prof.goalWeightKg) : null;
 
@@ -387,17 +390,6 @@ function shiftDate(iso, days) {
 function shortDate(iso) {
   const d = iso.includes("T") ? new Date(iso) : new Date(`${iso}T00:00:00`);
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
-
-function lastNDays(n) {
-  const out = [];
-  const today = new Date();
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    out.push(d.toISOString().slice(0, 10));
-  }
-  return out;
 }
 
 function fmt(n, signed = false) {
