@@ -6,6 +6,7 @@ import { prefs } from "../db.js";
 import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
 import { ALL_MICRO_KEYS } from "../home-nutrients.js";
+import { ensureServingUnits } from "../nofud-core/serving-units.js";
 
 /** Shared entry analysis phases (Android EntryAnalysisPhase subset for cloud AI). */
 export const ANALYSIS_PHASE = Object.freeze({
@@ -138,14 +139,21 @@ async function runAnalyze(providerId, config, text, imageList, appPrefs, signal,
   /** @param {unknown} v */
   const optNum = (v) => (v == null || v === "" ? null : Math.max(0, Number(v)));
 
+  const name = String(parsed.name || "Food");
+  const quantityG = optNum(parsed.quantityG);
+  const units = ensureServingUnits({ name, quantityG });
+
   return {
-    name: String(parsed.name || "Food"),
+    name,
     mealType,
     calories: Math.max(0, Math.round(Number(parsed.calories) || 0)),
     proteinG: Math.max(0, Number(parsed.proteinG) || 0),
     carbsG: Math.max(0, Number(parsed.carbsG) || 0),
     fatG: Math.max(0, Number(parsed.fatG) || 0),
-    quantityG: optNum(parsed.quantityG),
+    quantityG: units.quantityG,
+    servingUnitOptions: units.servingUnitOptions,
+    selectedServingUnit: units.selectedServingUnit,
+    selectedServingQuantity: units.selectedServingQuantity,
     note: parsed.note ? String(parsed.note) : null,
     source: "ai_estimated",
     ...Object.fromEntries(ALL_MICRO_KEYS.map((key) => [key, optNum(parsed[key])])),

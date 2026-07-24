@@ -3,6 +3,8 @@
 // Prefers per-serving nutriments when present, else scales per-100g by serving
 // size — mirrors Android OpenFoodFactsService.
 
+import { ensureServingUnits, normalizedOptions, heuristicOptions } from "./nofud-core/serving-units.js";
+
 /**
  * @param {string} barcode
  * @returns {Promise<Record<string, unknown>|null>}
@@ -58,9 +60,36 @@ export function mapProduct(product, barcode) {
   /** @param {number|null|undefined} v */
   const micrograms = (v) => (v == null ? null : round1(v * 1e6));
 
+  const name = productName(product, barcode);
+  const quantityG = round1(servingGrams) ?? 100;
+  /** Prefer a "serving" unit when OFF gave a real serving size; merge heuristics. */
+  const servingOpt =
+    servingGrams > 1
+      ? [{ unit: "serving", gramsPerUnit: servingGrams, quantity: 1 }]
+      : [];
+  const units = ensureServingUnits({
+    name,
+    quantityG,
+    servingUnitOptions: servingOpt,
+    selectedServingUnit: servingGrams > 1 ? "serving" : null,
+    selectedServingQuantity: servingGrams > 1 ? 1 : null,
+  });
+  // Merge OFF serving with name heuristics (slice/ml/etc.)
+  units.servingUnitOptions = normalizedOptions(
+    [...servingOpt, ...heuristicOptions(name, quantityG), ...units.servingUnitOptions],
+    quantityG
+  );
+  if (servingGrams > 1) {
+    units.selectedServingUnit = "serving";
+    units.selectedServingQuantity = 1;
+  }
+
   return {
-    name: productName(product, barcode),
-    quantityG: round1(servingGrams) ?? 100,
+    name,
+    quantityG,
+    servingUnitOptions: units.servingUnitOptions,
+    selectedServingUnit: units.selectedServingUnit,
+    selectedServingQuantity: units.selectedServingQuantity,
     calories: Math.round(calories ?? 0),
     proteinG: round1(protein) ?? 0,
     carbsG: round1(carbs) ?? 0,

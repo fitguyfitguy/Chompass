@@ -16,7 +16,7 @@ For formula / wire-format correctness (not feature lists), see:
 | Progress (weight, BF, measurements, forecast) | shared | `ui/progress/` | `components/progress-*` | FCAST/ADAPT mirrored; interactive chart tips; equal range chips |
 | Settings (profile, goals, units, AI, data) | shared | `ui/settings/` | `components/settings-*` | Custom P/C/F pins; browser speech language; Android-only called out |
 | Onboarding | shared | `ui/onboarding/` | `components/onboarding-*` | Birthday + editable plan-ready macros; BF stored as fraction |
-| Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry + `photo-ai-flow` | In-app camera + multi-photo review; **all images** sent to BYOK providers; FoodResult-like review/Log; voice sheet; barcode reticle |
+| Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry + `photo-ai-flow` | In-app camera + multi-photo review; **all images** sent to BYOK providers; FoodResult-like review/Log with **quantity + unit picker + live macro scale** (`serving-units.js` / Android `ServingQuantityCard`); voice sheet; barcode reticle. Android-only: serving-unit inference mode settings, AI_CALL unit inference, heuristic customization sheet |
 | Saved meals / recipes / favorites | shared | models + UI | recipes / saved | Add Food heroes: Photo / Note / Recents; Frequent & Favorites in More |
 | Copy day / meal share | shared | `MealShare.kt` | `meal-share.js` | Native `nofud://`; PWA `#/add-meal?d=` |
 | Diary JSON export/import 1.1 | shared | `export/Diary*` | `diary-format.js` | Contract: `contracts/diary-1.1.schema.json` |
