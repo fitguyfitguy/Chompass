@@ -87,6 +87,8 @@ Copy into the GitLab MR description:
 
 **New app:** Chompass — ad-free, privacy-focused Android calorie and macro tracker.
 
+> **Note:** this MR originally proposed the app as *NoFUD* (`org.codeberg.fitguy.nofud`). The app was renamed to **Chompass** with application ID `app.chompass` before first inclusion; the metadata file in this MR has been renamed accordingly. The old ID never shipped on F-Droid.
+
 - **Application ID:** `app.chompass`
 - **License:** MIT
 - **Upstream:** https://codeberg.org/fitguy/chompass
@@ -94,17 +96,17 @@ Copy into the GitLab MR description:
 
 Chompass is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds — no ML Kit / proprietary scanner split.
 
-**v1.14.6** (2026-07-20): bug fixes for imperial water display, AI key trim / read timeout / token clamp, camera preview framing, delete undo, widget loading timeout, save durability, and swipe thresholds.
+**v3.0.0** (2026-07-24): project renamed NoFUD → Chompass (new app ID, new logo); ships the companion PWA contracts and all 1.x/2.x fixes.
 
 ## Build
 
 - **Repo:** `https://codeberg.org/fitguy/chompass.git`
 - **Subdir:** `android/app` (app module; parent `android/settings.gradle.kts` is found automatically)
 - **Gradle:** `yes` (`assembleRelease`)
-- **Commit:** `e836f9e737d70be8dbdc48308bddb0f4eceb8e22` (tag `v1.14.6`, versionCode 22)
+- **Commit:** `e5fb72e60cbc0729ebaf6e0b0891613e8f8225ec` (tag `v3.0.0`, versionCode 28)
 - **Props:** `-PreleaseAbi=arm64-v8a` (via `gradleprops:`)
 - **Output:** `build/outputs/apk/release/app-release-unsigned.apk` under `subdir` (no `output:` needed)
-- **Codeberg release:** https://codeberg.org/fitguy/chompass/releases/tag/v1.14.6 (same FOSS build as F-Droid; barcode via zxing-cpp)
+- **Codeberg release:** https://codeberg.org/fitguy/chompass/releases/tag/v3.0.0 (same FOSS build as F-Droid; barcode via zxing-cpp)
 - **Reproducible builds:** not enabled yet
 
 Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
