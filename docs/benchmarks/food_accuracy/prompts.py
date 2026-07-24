@@ -132,6 +132,64 @@ Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total 
     return append_user_context(prompt, description)
 
 
+# Research: full production schema with compact-style wording. Isolates schema
+# size from rule verbosity (production loses to compact on macros; see
+# docs/FOOD_ACCURACY_BENCHMARK_STATUS.md). `lean_units` adds a single-sentence
+# unit_options rule; `lean_units2` carries the option object shape inline
+# (grams_per_unit is required by the app parser; options without it are dropped).
+LEAN_NUTRIENT_UNITS = (
+    "Calories are integers; other nutrients are numbers "
+    "(grams for protein/carbs/fat/sugars/fiber/fats/omega-3; "
+    "mg for cholesterol, sodium, potassium, calcium, iron, magnesium, zinc, vitamin C, vitamin E; "
+    "mcg for vitamins A, D, B12, K and folate). "
+    "serving_size_grams is the estimated total weight in grams."
+)
+
+LEAN_UNIT_RULE = (
+    "Fill unit_options with the natural serving unit (slice, piece, cup, ml, tbsp, can) "
+    "and the quantity covering the whole analyzed amount when one is obvious; "
+    "use [] only when no non-gram unit fits."
+)
+
+LEAN_UNIT_RULE2 = (
+    'unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}: '
+    "the natural non-gram unit (slice, piece, cup, ml, tbsp, can) with quantity covering "
+    "the whole analyzed amount and its weight per unit. Use [] only when no non-gram unit "
+    "fits; never use g/grams as a unit."
+)
+
+
+def _lean_unit_line(unit_rule: bool | str) -> str:
+    if unit_rule == "v2":
+        return f"\n{LEAN_UNIT_RULE2}"
+    if unit_rule:
+        return f"\n{LEAN_UNIT_RULE}"
+    return ""
+
+
+def lean_text_prompt(description: str, *, unit_rule: bool | str = False) -> str:
+    units = _lean_unit_line(unit_rule)
+    return f"""
+Estimate the nutritional content for: {description}
+Respond ONLY with JSON:
+{FULL_JSON_SCHEMA}
+{LEAN_NUTRIENT_UNITS}{units}
+For "emoji" pick the single most specific food emoji for this dish. Use null for any nutrient you cannot estimate.
+""".strip()
+
+
+def lean_image_prompt(*, description: str | None = None, unit_rule: bool | str = False) -> str:
+    units = _lean_unit_line(unit_rule)
+    prompt = f"""
+Analyze this food image. Estimate the nutritional content of the visible food.
+Respond ONLY with JSON:
+{FULL_JSON_SCHEMA}
+{LEAN_NUTRIENT_UNITS}{units}
+For "emoji" pick the single most specific food emoji for this dish. Use null for any nutrient you cannot estimate.
+""".strip()
+    return append_user_context(prompt, description)
+
+
 def fewshot_text_prompt(description: str) -> str:
     return production_text_prompt(description) + "\n\n" + FEWSHOT_UNITS
 
@@ -160,6 +218,21 @@ PROMPT_BUILDERS = {
         else compact_image_prompt(
             description=user_description(sample), portion_aware=True
         )
+    ),
+    "lean_full": lambda sample: (
+        lean_text_prompt(sample.text or "")
+        if sample.modality == "text"
+        else lean_image_prompt(description=user_description(sample))
+    ),
+    "lean_units": lambda sample: (
+        lean_text_prompt(sample.text or "", unit_rule=True)
+        if sample.modality == "text"
+        else lean_image_prompt(description=user_description(sample), unit_rule=True)
+    ),
+    "lean_units2": lambda sample: (
+        lean_text_prompt(sample.text or "", unit_rule="v2")
+        if sample.modality == "text"
+        else lean_image_prompt(description=user_description(sample), unit_rule="v2")
     ),
     "fewshot_units": lambda sample: (
         fewshot_text_prompt(sample.text or "")

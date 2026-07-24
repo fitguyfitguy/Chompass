@@ -8,8 +8,10 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Iterator
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 BENCHMARK_ROOT = Path(__file__).resolve().parent
+# Downloaded manifests store image_path relative to docs/ (pre-move layout).
+DOCS_ROOT = ROOT / "docs"
 DATA_DIR = BENCHMARK_ROOT / "data"
 RESULTS_DIR = BENCHMARK_ROOT / "results"
 
@@ -123,7 +125,10 @@ class Sample:
         path = Path(self.image_path)
         if path.is_absolute():
             return path
-        return ROOT / path
+        repo_relative = ROOT / path
+        if repo_relative.exists():
+            return repo_relative
+        return DOCS_ROOT / path
 
 
 def load_manifest(path: Path | str, *, limit: int | None = None) -> list[Sample]:
