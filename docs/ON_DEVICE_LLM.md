@@ -535,6 +535,5 @@ See **Final assessment** under Decision gate above. Run Tier B + daily matrix be
 
 ## Related docs
 
-- [`AGENTS.md`](../AGENTS.md); debug intent extras, WSL/Windows adb split
 - [`DEVELOPMENT.md`](DEVELOPMENT.md); devenv build workflow
-- [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md); unrelated to LLM; listed for agent navigation only
+- [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md); formula register (unrelated to LLM)

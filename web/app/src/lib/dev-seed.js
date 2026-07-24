@@ -1,6 +1,6 @@
 // @ts-check
 // Local-only test-data seeder, mirroring the Android debug app's
-// seed_test_data / seed_body_metrics intent extras (see AGENTS.md). Never
+// seed_test_data / seed_body_metrics intent extras (see MainActivity). Never
 // linked from the UI — triggered by ?seed=1 on any route while developing
 // locally (see app.js's maybeSeedFromUrl call). Writes only to IndexedDB;
 // touches no network, no BYOK key storage.

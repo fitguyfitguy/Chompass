@@ -32,7 +32,7 @@ devenv tasks run build:release
 devenv shell -- build-debug
 ```
 
-In Cursor/agent shells where direnv does not load, run builds explicitly:
+In shells where direnv does not load, run builds explicitly:
 
 ```bash
 devenv shell bash -lc 'cd android && ./gradlew :app:assembleDebug'
@@ -106,7 +106,7 @@ Keep `website/hugo.toml` `params.version` in sync with `versionName` in `android
 
 ### Deploy
 
-Pushes use the SSH Host alias **`codeberg-fitguy`** (see `~/.ssh/config`) so Codeberg authenticates as **fitguy**, not KewLE (the agent often offers the KewLE key first for bare `codeberg.org`).
+Pushes use the SSH Host alias **`codeberg-fitguy`** (see `~/.ssh/config`) so Codeberg authenticates as **fitguy**, not KewLE (bare `codeberg.org` may pick the KewLE key first).
 
 **On release:** [`publish_release.sh`](../scripts/publish_release.sh) redeploys Pages automatically after uploading APKs (pass `--skip-pages` to skip).
 
