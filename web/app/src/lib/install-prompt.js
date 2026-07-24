@@ -26,6 +26,18 @@ export function isIos() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+/**
+ * iOS browsers other than Safari (Brave, Chrome, Firefox, Edge, Opera). Only
+ * Safari can install a true home-screen web app on iOS. Brave mimics Safari's
+ * user agent, so it is detected via `navigator.brave` instead.
+ * @returns {boolean}
+ */
+export function isIosNonSafari() {
+  if (!isIos()) return false;
+  if ("brave" in navigator) return true;
+  return /crios|fxios|edgios|opt\//i.test(navigator.userAgent);
+}
+
 /** Capture Chromium install events and show a soft banner when useful. */
 export function initInstallPrompt() {
   if (isStandalone()) return;
@@ -48,6 +60,9 @@ export function initInstallPrompt() {
 function platformTip() {
   if (deferredPrompt) {
     return "Install NoFUD for quicker access and a full-screen app.";
+  }
+  if (isIosNonSafari()) {
+    return 'This browser cannot install apps on iOS. Open this page in Safari, then tap Share → "Add to Home Screen".';
   }
   if (isIos()) {
     return 'Add NoFUD to your Home Screen: tap Share → "Add to Home Screen", then open from the icon (not a Safari tab).';
@@ -136,7 +151,10 @@ export function maybeShowPostOnboardingInstallSheet() {
     body.className = "install-sheet-body";
 
     let tip = "Add NoFUD to your home screen or dock so it opens like an app.";
-    if (isIos()) {
+    if (isIosNonSafari()) {
+      tip =
+        "On iOS, only Safari can install home-screen web apps — this browser cannot, so no install option appears here. Open NoFUD in Safari to install it:";
+    } else if (isIos()) {
       tip =
         'On iPhone or iPad: open in Safari → tap Share → "Add to Home Screen" → Add. Then launch from the home-screen icon (not a Safari tab). Chrome or Firefox on iOS still use Safari’s share sheet.';
     } else if (deferredPrompt) {
