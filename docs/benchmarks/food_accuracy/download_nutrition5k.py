@@ -60,13 +60,33 @@ def load_test_ids(meta_dir: Path) -> list[str]:
     return [line.strip() for line in test_path.read_text().splitlines() if line.strip()]
 
 
-def parse_dish_row(row_text: str) -> dict[str, str | float]:
+def parse_dish_row(row_text: str) -> dict[str, str | float | list]:
     # Nutrition5k dish CSV rows are comma-separated but ingredient names may contain commas.
-    # Format: dish_id, total_calories, total_mass, total_fat, total_carb, total_protein, num_ingrs, ...
+    # Format: dish_id, total_calories, total_mass, total_fat, total_carb, total_protein,
+    # then repeating 7-field groups: ingr_id, name, grams, calories, fat, carbs, protein.
     reader = csv.reader(StringIO(row_text))
     fields = next(reader)
     if len(fields) < 7:
         raise ValueError(f"Unexpected dish row: {row_text[:120]}...")
+    ingredients: list[dict[str, str | float]] = []
+    for i in range(6, len(fields) - 6, 7):
+        group = fields[i : i + 7]
+        if len(group) < 7:
+            break
+        try:
+            ingredients.append(
+                {
+                    "name": group[1],
+                    "grams": float(group[2]),
+                    "calories": float(group[3]),
+                    "fat": float(group[4]),
+                    "carbs": float(group[5]),
+                    "protein": float(group[6]),
+                }
+            )
+        except ValueError:
+            # Occasional malformed group (e.g. stray comma in a name); skip it.
+            continue
     return {
         "dish_id": fields[0],
         "calories": float(fields[1]),
@@ -74,6 +94,7 @@ def parse_dish_row(row_text: str) -> dict[str, str | float]:
         "fat_g": float(fields[3]),
         "carbs_g": float(fields[4]),
         "protein_g": float(fields[5]),
+        "ingredients": ingredients,
     }
 
 
@@ -196,6 +217,7 @@ def build_manifest(
                 fat_g=float(meta["fat_g"]),
                 mass_g=float(meta["mass_g"]),
                 notes="Nutrition5k overhead RGB when available",
+                extra={"ingredients": meta.get("ingredients") or []},
             )
         )
 

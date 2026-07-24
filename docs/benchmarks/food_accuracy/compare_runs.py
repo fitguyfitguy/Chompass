@@ -19,11 +19,11 @@ def load_summary(path: Path) -> dict[str, str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compare food accuracy eval summaries")
     parser.add_argument("baseline", type=Path, help="Baseline summary.csv")
-    parser.add_argument("candidate", type=Path, help="Candidate summary.csv")
+    parser.add_argument("candidates", type=Path, nargs="+", help="Candidate summary.csv file(s)")
     args = parser.parse_args()
 
     base = load_summary(args.baseline)
-    cand = load_summary(args.candidate)
+    cands = [(path, load_summary(path)) for path in args.candidates]
 
     keys = [
         "wmape",
@@ -39,21 +39,32 @@ def main() -> None:
         "sum_cost",
     ]
     print(f"baseline:  {args.baseline}")
-    print(f"candidate: {args.candidate}\n")
+    for idx, (path, _) in enumerate(cands, start=1):
+        print(f"cand[{idx}]:   {path}")
+    print()
     for key in keys:
-        b = base.get(key, "")
-        c = cand.get(key, "")
-        print(f"{key:28}  baseline={b!s:>10}  candidate={c!s:>10}")
+        row = f"{key:28}  baseline={base.get(key, '')!s:>10}"
+        for _, cand in cands:
+            row += f"  {cand.get(key, '')!s:>10}"
+        print(row)
 
     try:
         bw = float(base.get("wmape") or "nan")
-        cw = float(cand.get("wmape") or "nan")
-        if bw == bw and cw == cw:  # not NaN
-            delta = cw - bw
-            winner = "candidate" if delta < 0 else "baseline" if delta > 0 else "tie"
-            print(f"\nwmape delta (candidate - baseline): {delta:+.4f}  → lower is better ({winner})")
     except ValueError:
-        pass
+        return
+    if bw != bw:  # NaN
+        return
+    print()
+    for idx, (path, cand) in enumerate(cands, start=1):
+        try:
+            cw = float(cand.get("wmape") or "nan")
+        except ValueError:
+            continue
+        if cw != cw:
+            continue
+        delta = cw - bw
+        winner = "candidate" if delta < 0 else "baseline" if delta > 0 else "tie"
+        print(f"wmape delta cand[{idx}] - baseline: {delta:+.4f}  → lower is better ({winner})")
 
 
 if __name__ == "__main__":
