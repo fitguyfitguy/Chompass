@@ -2,8 +2,10 @@ package app.chompass.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +25,8 @@ import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +71,17 @@ import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
 import java.time.Instant
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+/** JFB/Nutrition5k-validated portion clarification eval; see docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1.
+ *  Above this weight (or with no natural serving unit), photo estimates are most likely to be
+ *  wrong on portion, so the beta chip offers to confirm it. */
+private const val PORTION_CLARIFY_LARGE_GRAMS_THRESHOLD = 450.0
+
+private fun shouldOfferPortionClarify(analysis: FoodAnalysis, source: FoodSource): Boolean =
+    source == FoodSource.SNAP_FOOD &&
+        (analysis.servingUnitOptions.isEmpty() || analysis.servingSizeGrams > PORTION_CLARIFY_LARGE_GRAMS_THRESHOLD)
 
 /**
  * First-time review sheet shown after photo / text / voice analysis returns
@@ -83,6 +98,8 @@ fun FoodResultSheet(
     profile: UserProfile? = null,
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
+    portionClarifyEnabled: Boolean = false,
+    onReprocessPortion: (suspend (portionAnswer: String) -> Unit)? = null,
     onWhatIfSuggestion: (suspend (FoodEntry) -> String)? = null,
     onSave: (
         name: String,
@@ -102,6 +119,16 @@ fun FoodResultSheet(
         skipPartiallyExpanded = true,
         confirmValueChange = { target -> target != SheetValue.Hidden || !isSaving },
     )
+    val scope = rememberCoroutineScope()
+    val portionClarifyFailedMessage = stringResource(R.string.sheet_portion_clarify_failed)
+    // Keyed on imageBytes (stable across a reprocess call for the same photo), not analysis
+    // (a new FoodAnalysis instance arrives after reprocessing) — so answering or skipping stays
+    // sticky for this entry instead of re-showing once the refined estimate lands.
+    var portionChipDismissed by remember(imageBytes) { mutableStateOf(false) }
+    var isReprocessingPortion by remember(imageBytes) { mutableStateOf(false) }
+    var portionClarifyError by remember(imageBytes) { mutableStateOf<String?>(null) }
+    val showPortionClarify = portionClarifyEnabled && onReprocessPortion != null &&
+        !portionChipDismissed && shouldOfferPortionClarify(analysis, source)
     var name by remember { mutableStateOf(analysis.name) }
     val servingUnitOptions = remember(analysis.servingUnitOptions, analysis.servingSizeGrams) {
         ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
@@ -420,6 +447,30 @@ fun FoodResultSheet(
                     gramUnit = stringResource(R.string.unit_g),
                     isLoadingUnits = inferringUnits,
                 )
+            }
+
+            if (showPortionClarify) {
+                item {
+                    PortionClarifyRow(
+                        isLoading = isReprocessingPortion,
+                        error = portionClarifyError,
+                        onSelect = { answer ->
+                            scope.launch {
+                                isReprocessingPortion = true
+                                portionClarifyError = null
+                                try {
+                                    onReprocessPortion?.invoke(answer)
+                                    portionChipDismissed = true
+                                } catch (e: Exception) {
+                                    portionClarifyError = e.localizedMessage ?: portionClarifyFailedMessage
+                                } finally {
+                                    isReprocessingPortion = false
+                                }
+                            }
+                        },
+                        onDismiss = { portionChipDismissed = true },
+                    )
+                }
             }
 
             item {
@@ -907,6 +958,71 @@ private fun WhatIfImpactRow(
 }
 
 private fun whatIfGrams(value: Double): String = "${MacroValueFormatter.string(value)}g"
+
+/** Beta portion-size clarification chip row (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1).
+ *  Shown only for photo entries the heuristic flags as portion-uncertain; picking an
+ *  option re-analyzes with the answer injected as extra context. */
+@Composable
+private fun PortionClarifyRow(
+    isLoading: Boolean,
+    error: String?,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                stringResource(R.string.sheet_portion_clarify_prompt),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+            )
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+            } else {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.sheet_portion_clarify_dismiss), fontSize = 13.sp)
+                }
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(
+                R.string.sheet_portion_clarify_small,
+                R.string.sheet_portion_clarify_regular,
+                R.string.sheet_portion_clarify_large,
+                R.string.sheet_portion_clarify_restaurant,
+            ).forEach { labelRes ->
+                val label = stringResource(labelRes)
+                FilterChip(
+                    selected = false,
+                    enabled = !isLoading,
+                    onClick = { onSelect(label) },
+                    label = { Text(label) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                        selectedLabelColor = AppColors.Calorie,
+                    ),
+                )
+            }
+        }
+        if (isLoading) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.sheet_portion_clarify_updating),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            )
+        }
+        error?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
+        }
+    }
+}
 
 @Composable
 private fun rememberDecodedBitmap(bytes: ByteArray?): android.graphics.Bitmap? {

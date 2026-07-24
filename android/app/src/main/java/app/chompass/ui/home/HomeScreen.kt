@@ -731,6 +731,8 @@ fun HomeScreen(container: AppContainer) {
             source = ui.pendingReviewSource?.source
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
+            portionClarifyEnabled = ui.portionClarifyEnabled,
+            onReprocessPortion = { answer -> vm.reprocessPendingAnalysis(answer) },
             onWhatIfSuggestion = vm::suggestMealWhatIf,
             onSave = { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis ->
                 vm.saveAnalysis(

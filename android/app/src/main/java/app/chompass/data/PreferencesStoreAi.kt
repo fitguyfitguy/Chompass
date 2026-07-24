@@ -121,6 +121,16 @@ internal suspend fun PreferencesStore.setGeminiGoogleSearchEnabledImpl(v: Boolea
         dataStore.edit { it[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] = v }
     }
 
+    /** Beta: after a photo entry, offer a portion-size chip (small/regular/large/restaurant)
+     *  and re-analyze with the answer when the estimate looks portion-uncertain. Default off;
+     *  see docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1. */
+internal val PreferencesStore.portionClarifyEnabledImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.PORTION_CLARIFY_ENABLED] ?: false
+    }
+internal suspend fun PreferencesStore.setPortionClarifyEnabledImpl(v: Boolean) {
+        dataStore.edit { it[Keys.PORTION_CLARIFY_ENABLED] = v }
+    }
+
     // -- Speech Provider selection ---------------------------------------
 internal val PreferencesStore.selectedSpeechProviderImpl: Flow<SpeechProvider> get() = dataStore.data.map {
         val raw = it[Keys.SELECTED_SPEECH_PROVIDER]
