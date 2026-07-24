@@ -211,6 +211,18 @@ PROMPT_BUILDERS = {
             description=user_description(sample), portion_aware=True
         )
     ),
+    # Pre-2026-07-24 production image wording (verbose rules); kept for baselines.
+    "legacy_production_image": lambda sample: append_user_context(
+        f"""
+Analyze this food image. Identify the food and estimate its nutritional content.
+Respond ONLY with JSON:
+{FULL_JSON_SCHEMA}
+{NUTRIENT_UNITS}
+{IMAGE_UNIT_RULES}
+Give your best estimate for the visible food amount shown in the image. Use null for any nutrient you cannot estimate.
+""".strip(),
+        user_description(sample),
+    ),
     "lean_full": lambda sample: (
         lean_text_prompt(sample.text or "")
         if sample.modality == "text"
