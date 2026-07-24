@@ -5,7 +5,8 @@
  *      delegates detection to Google Play Services — Brave (Shields) and
  *      degoogled devices expose the API but detect() throws forever or always
  *      returns empty. A one-time canvas probe (render a known EAN-13, try to
- *      detect it) catches both failure modes.
+ *      detect it) catches both failure modes. Live video that keeps returning
+ *      empty (without throwing) is demoted to wasm after a short grace period.
  *   2. Vendored zxing-wasm reader (vendor/zxing/, lazy-loaded via <script>
  *      tag) when native is missing or probed broken.
  *   3. null — caller falls back to manual digit entry.
@@ -23,12 +24,15 @@ export const ZXING_FORMAT_MAP = {
 };
 
 // Bump when the probe logic changes to invalidate cached verdicts.
-const PROBE_CACHE_KEY = "nofud.barcodeDetectorProbe.v1";
+const PROBE_CACHE_KEY = "nofud.barcodeDetectorProbe.v2";
 const PROBE_TIMEOUT_MS = 2000;
 const PROBE_VALUE = "4006381333931";
-// Consecutive live detect() failures before demoting a probe-passing native
+// Consecutive live detect() throws before demoting a probe-passing native
 // detector (canvas probe can pass while video-frame detection is broken).
-const NATIVE_FAILURE_LIMIT = 30;
+export const NATIVE_FAILURE_LIMIT = 30;
+// Sustained empty native results on ready video frames (Brave often never
+// throws — detect() just returns []). Grace period so users can aim first.
+export const NATIVE_EMPTY_DEMOTE_MS = 3500;
 
 // EAN-13 module encoding (ISO/IEC 15420). L-codes for odd-parity left digits;
 // G-codes for even-parity left digits; right digits use the complement of L.
@@ -84,6 +88,25 @@ export function drawTestBarcode(canvas) {
  */
 export function chooseStrategy({ hasNative, probeResult }) {
   return hasNative && probeResult === "ok" ? "native" : "wasm";
+}
+
+/**
+ * Whether a live native detector should fall back to wasm.
+ * @param {{
+ *   emptyMs: number,
+ *   throwCount: number,
+ *   emptyLimitMs?: number,
+ *   throwLimit?: number,
+ * }} args
+ * @returns {boolean}
+ */
+export function shouldDemoteNative({
+  emptyMs,
+  throwCount,
+  emptyLimitMs = NATIVE_EMPTY_DEMOTE_MS,
+  throwLimit = NATIVE_FAILURE_LIMIT,
+}) {
+  return throwCount >= throwLimit || emptyMs >= emptyLimitMs;
 }
 
 /** Probe whether the native detector can read a known barcode off a canvas. */
@@ -188,27 +211,52 @@ export async function createDetector(onStatus = () => {}) {
   // @ts-ignore BarcodeDetector isn't in the standard TS DOM lib yet
   const native = new window.BarcodeDetector({ formats: FORMATS });
   let failures = 0;
+  /** @type {number | null} */
+  let emptySince = null;
   /** @type {Awaited<ReturnType<typeof createWasmDetector>> | null} */
   let demoted = null;
-  return {
-    kind: /** @type {const} */ ("native"),
+
+  /** @returns {Promise<string | null>} */
+  const demoteToWasm = async (/** @type {HTMLVideoElement} */ video) => {
+    cacheProbeResult("broken");
+    demoted = await loadWasm();
+    if (!demoted) throw new Error("barcode detection unavailable");
+    out.kind = "wasm";
+    return demoted.detect(video);
+  };
+
+  const out = {
+    kind: /** @type {"native" | "wasm"} */ ("native"),
     /** @param {HTMLVideoElement} video @returns {Promise<string | null>} */
     async detect(video) {
       if (demoted) return demoted.detect(video);
       try {
         const codes = await native.detect(video);
         failures = 0;
-        return codes.length > 0 ? codes[0].rawValue : null;
+        if (codes.length > 0) {
+          emptySince = null;
+          return codes[0].rawValue;
+        }
+        // Empty (no throw): Brave/Shields often stays here forever. Demote after
+        // a grace period of ready video frames so aiming time isn't punished.
+        if (video.videoWidth > 0 && video.videoHeight > 0) {
+          const now = performance.now();
+          if (emptySince === null) emptySince = now;
+          if (shouldDemoteNative({ emptyMs: now - emptySince, throwCount: failures })) {
+            return demoteToWasm(video);
+          }
+        }
+        return null;
       } catch {
         // Transient mid-frame errors are normal; a long unbroken streak means
         // video-frame detection is broken even though the canvas probe passed.
-        if (++failures >= NATIVE_FAILURE_LIMIT) {
-          cacheProbeResult("broken");
-          demoted = await loadWasm();
-          if (!demoted) throw new Error("barcode detection unavailable");
+        emptySince = null;
+        if (shouldDemoteNative({ emptyMs: 0, throwCount: ++failures })) {
+          return demoteToWasm(video);
         }
         return null;
       }
     },
   };
+  return out;
 }

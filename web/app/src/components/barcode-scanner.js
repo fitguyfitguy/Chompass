@@ -62,7 +62,14 @@ export class BarcodeScanner extends HTMLElement {
   async startCamera() {
     const status = this.querySelector("#scanner-status");
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
+      });
       const video = /** @type {HTMLVideoElement} */ (this.querySelector("#scanner-video"));
       video.srcObject = this.stream;
     } catch (err) {
