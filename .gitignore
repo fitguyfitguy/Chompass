@@ -53,6 +53,9 @@ android/app/src/debug/assets/ondevice_llm/food_plate.jpg
 android/app/src/debug/assets/ondevice_llm/nutrition_label.jpg
 android/app/src/debug/assets/ondevice_llm/pizza_slices.jpg
 docs/UPSTREAM_IDEAS.md
+docs/UPSTREAM_TRIAGE.md
+docs/upstream-triage-state.json
+scripts/fetch_upstream_delta.sh
 
 # Food accuracy benchmark caches and results
 docs/benchmarks/food_accuracy/data/
