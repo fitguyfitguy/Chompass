@@ -165,12 +165,12 @@ Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [C
 
 ## How accurate is the AI?
 
-Chompass is BYOK, so accuracy depends on the model you pick — the app doesn't
-claim a single number. Instead we benchmark against labeled datasets and publish
-the results: typed entry is close to solved (**5.7% WMAPE, 90% within ±20%** of
-true calories), photo estimation is genuinely hard for every vision model tested
-(best paid model: **32.3% WMAPE, 50% within ±20%**), and that gap is why a
-data-backed portion-clarification feature is in progress. Full numbers and
+Chompass is BYOK, so accuracy depends on the model you pick. The app does not
+claim a single number. We benchmark against labeled datasets and publish the
+results. Typed entry is close to solved (**5.7% WMAPE, 90% within ±20%** of
+true calories). Photo estimation is hard for every vision model tested
+(best paid model: **32.3% WMAPE, 50% within ±20%**), which is why a
+portion-clarification feature is in progress. Full numbers and
 methodology: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
 ## Performance
