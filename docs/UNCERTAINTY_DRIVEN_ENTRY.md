@@ -15,17 +15,19 @@ The limit is information-theoretic: a single RGB photo does not contain the food
 
 ## The bets, in order
 
-### Bet 1 — Clarification chips (in validation)
+### Bet 1 — Portion clarification chip (validated 2026-07-24, proceed to design)
 
-After photo analysis, when uncertain, `FoodResultSheet` shows one tap-row instead of silently accepting a point guess:
+The simulated-clarification eval (JFB-50, Gemini 3.5 Flash-Lite) confirmed the oracle ceiling: a correct portion answer cuts WMAPE 38.0%→22.8% (−15.2pp) and lifts ±20%-kcal accuracy 38%→50% (+12pp) — clears both pre-registered thresholds by a wide margin. Full results: `FOOD_ACCURACY_BENCHMARK_STATUS.md` § Simulated clarification eval.
+
+After photo analysis, `FoodResultSheet` should show one tap-row instead of silently accepting a point guess:
 
 - **Portion**: `Small · Regular · Large · Restaurant-size` (attacks the +100–200% restaurant-portion mode)
-- **Hidden fat**: `Cooked with oil / dressing? Yes · No` (attacks the −65 to −80% oil/tahini mode)
 
-**Gate**: the simulated-clarification eval must pass its pre-registered thresholds first (see the status doc § Simulated clarification eval). Two distinct quantities:
+**Hidden-fat chip: parked, not shipping.** Oracle ceiling only −5.2pp WMAPE and it *hurt* ±20% accuracy slightly — below threshold, consistent with the pre-registered caveat that the fat lexicon/oracle is weak. `compact_clarify_both` gained nothing over portion alone, so there's no reason to bundle a fat question with the portion chip.
 
-- **Oracle ceiling** (`compact_clarify_portion/fat/both` vs `compact`): how much a *correct* answer helps. If even this is small, the UX is dead regardless of design.
-- **Ask precision** (`run_clarify_eval.py` two-stage): can the model tell *when* to ask (`clarify_request`), so chips appear only when useful. If not, triggers become heuristic (e.g. photo source + no stated grams).
+**Trigger: must be heuristic, not model self-report.** The two-stage ask-then-answer eval showed the model cannot reliably tell the app when to show a chip: it asked 92% of the time (should discriminate, not near-always-ask) and, when it did ask, preferred the *weaker* fat question over the stronger portion question by 34:12. Any `FoodResultSheet` implementation should trigger the portion chip via a simple rule (e.g. always show it for photo entries, or only when the model didn't return a confident `serving_size_grams`) — not via a `clarify_request` field asked of the model.
+
+**Confirmed on Nutrition5k** (2026-07-24, loose, n=15, true-mass oracle): WMAPE 34.4%→15.6% (−18.7pp), ±20% kcal 13.3%→66.7% (+53.4pp) — stronger than JFB, since N5k's oracle is true mass rather than JFB's stated-ingredient-amount proxy. Two independent datasets now agree: **proceed to Android UX design for the portion chip.**
 
 ### Bet 2 — Ranges instead of points when uncertain
 
@@ -40,6 +42,45 @@ Anchor portions to the user's past corrected values for similar meals (favoriteK
 - **Depth/AR volume estimation** — revisit only if bets 1–3 plateau above target.
 - **Un-gating the grounded DB tool loop** — stays off until it beats single-shot (`GroundedEntryFeature.ENABLED=false`).
 - **More vision prompt/model A/B** — measured as exhausted; only re-open on a new model generation.
+
+## SOTA literature triage (2026-07-24)
+
+Peer-reviewed / benchmark SOTA food-plate stacks (RGB-D volume, RAG, segmentation, GPS/wearables, fine-tuning) are a **clinical/research blueprint**. Chompass takes the **diagnosis** (portion ≈ 60–70% of energy error; DB grounding for identity; context helps) and rejects most of the **machinery**. Privacy-first, single-photo casual logging, F-Droid/on-device constraints.
+
+### Explore now (product-shaped)
+
+| Literature priority | Chompass shape | Notes |
+|---------------------|----------------|-------|
+| P1 Volume | **Bet 1** — portion clarification chip (not LiDAR) | Validated on JFB + Nutrition5k; proceed to UX |
+| P5 Uncertainty / structured reasoning | **Bet 2** — calorie bands when uncertain | Skip “expert persona” theater; keep existing CoT/few-shot |
+| P4 Personal history | **Bet 3** — local correction / portion priors | Offline; better than GPS for “my large coffee”; see UPSTREAM_IDEAS P1 |
+| P3 Mixed dishes (lite) | Per-ingredient edit list on `FoodResultSheet` | Not Mask R-CNN; high value for on-device Gemma portion misses |
+| P2 RAG | Keep grounded WIP; ship only if it beats single-shot | Remaining grounded errors are mostly **portion**, not identity |
+
+### Explore later (cheap or if 1–3 plateau)
+
+- **Reference-object / body scale** — prompt or UX that uses a visible spoon, fork, chopsticks, credit card, hand, or known body measures (hand span, fist) for scale normalization. One JFB A/B first; unlikely to beat the portion chip for casual users, but worth measuring when photos already include utensils.
+- **Second-view benchmark (later)** — same plate from a second angle (or overhead + 45°) vs single RGB; measure portion/kcal lift. Tests whether multi-view geometry helps without full depth/AR. Keep optional UX (“add another angle”) until the eval shows a clear win.
+- **Meal-time priors** (breakfast vs dinner) — soft local constraint; small lift vs portion UX.
+- **True depth / ARCore / stereo volume** — literature-correct for labs; hardware-gated; published photo apps still ~±20% MAPE.
+- **Monocular image→depth (or depth-aware food models)** — revisit if on-device (or cheap cloud) depth estimators become small/fast enough to sit in front of recognition. Likely diminishing returns for BYOK frontier VLMs: they already perform implicit geometric / portion reasoning from RGB, so an explicit depth map may add little unless we feed **metric** scale (reference object, known plate diameter, or phone LiDAR) into the calorie path. More interesting as a future on-device assist when Gemma-class models still miss portions.
+
+### Skip / misaligned
+
+| Idea | Why |
+|------|-----|
+| GPS / restaurant locale | Privacy conflict; weak vs personal history |
+| Wearable chew / ingestion fusion | Out of scope; sensors we don’t own |
+| Full instance segmentation + 3D reconstruction | Research stack, not F-Droid consumer app |
+| Food-specific fine-tuning of Gemma | Huge training cost; user correction memory is the practical continuous learning |
+| Chasing clinical MAPE &lt;10% from a single RGB photo | Information-theoretic limit; prefer consistent logging + adaptive goals |
+
+### Ordered next steps
+
+1. Ship **portion clarification chip** (Bet 1 → Android design)
+2. **Calorie bands** for photo uncertainty (Bet 2)
+3. **Personal portion priors** from corrections (Bet 3)
+4. Optional **ingredient split** for mixed plates / on-device
 
 ## Where things live
 
