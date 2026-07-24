@@ -177,7 +177,27 @@ uv run python docs/benchmarks/food_accuracy/run_clarify_eval.py \
   --out docs/benchmarks/food_accuracy/results/clarify_ab/jfb_two_stage
 ```
 
-Results: _pending first run._
+### Results (2026-07-24, JFB-50, `google/gemini-3.5-flash-lite`)
+
+Baseline `compact`: WMAPE 38.0%, ±20% kcal 38%.
+
+| Condition | WMAPE | Δ vs baseline | ±20% kcal | Δ vs baseline |
+|-----------|------:|---------------:|----------:|---------------:|
+| `compact_clarify_portion` | **22.8%** | **−15.2 pp** | **50%** | **+12 pp** |
+| `compact_clarify_fat` | 32.8% | −5.2 pp | 36% | −2 pp |
+| `compact_clarify_both` | 24.0% | −14.0 pp | 48% | +10 pp |
+
+Two-stage ask-then-answer (`run_clarify_eval.py`, same manifest/pin): ask_rate **92%** (near-universal, poor discrimination), asked-type split **portion 12 / added_fat 34 / none 4** — the model preferred asking the *weaker* question 3× more often than the stronger one. Final WMAPE 31.3% (worse than the portion-oracle ceiling, because most asks were fat). answered_rate 100%, parse_ok 98%.
+
+**Decision:**
+
+- **Portion clarification: SHIP-INVESTIGATE.** Clears both pre-registered thresholds on its own; `compact_clarify_both`'s gain is essentially all portion — fat adds no measurable synergy on top. Proceed to an Android portion-chip design (`docs/UNCERTAINTY_DRIVEN_ENTRY.md` bet 1).
+- **Hidden-fat clarification: park.** −5.2pp WMAPE misses the ship-investigate bar and it slightly *hurt* ±20% accuracy — consistent with the pre-registered caveat that JFB's fat lexicon is thin and the answer stays qualitative. Not worth a dedicated chip on this evidence; revisit only with a stronger fat-oracle dataset.
+- **Model self-selects which question to ask: not usable as a trigger.** Ask rate and question choice are both poor (over-asks, and prefers the weaker lever). The portion chip's trigger should be a **heuristic** (e.g. always offer it on photo entries where the model didn't return `serving_size_grams` with high implied confidence, or simply on every photo entry) rather than model self-reported uncertainty.
+
+**N5k confirmation** (2026-07-24, loose — n=15, true-mass oracle, no lexicon dependency): baseline `compact` WMAPE 34.4% / ±20% 13.3% → `compact_clarify_portion` WMAPE **15.6%** (**−18.7pp**) / ±20% **66.7%** (**+53.4pp**). Direction and magnitude confirm JFB, if anything stronger since the oracle is true mass rather than JFB's stated-ingredient-amount proxy. Small n — treat as confirmatory, not a replacement for a larger N5k run.
+
+Artifacts: `results/clarify_ab/jfb_{compact,compact_clarify_portion,compact_clarify_fat,compact_clarify_both,two_stage}/` (gitignored).
 
 ---
 
@@ -282,7 +302,8 @@ Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
 - [x] Port a compact-style prompt into [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) — done 2026-07-24 as the **lean** wording (full schema kept; see § Lean production prompt). Follow-up: paired re-run of lean vs `legacy_production_image` on Gemini 3.6 Flash (±20% dip, n=50 single run)
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
-- [ ] **Simulated clarification eval** — run the pre-registered 4-condition matrix + two-stage ask eval (see § Simulated clarification eval); decide chips ship/park/kill against the registered thresholds
+- [x] **Simulated clarification eval** (2026-07-24, JFB-50, Flash-Lite) — portion clarification **ships** (−15.2pp WMAPE, +12pp ±20%); fat clarification **parked** (−5.2pp, hurts ±20%); model self-selecting which question to ask is **not usable** (92% ask rate, prefers the weaker fat question 34/50 vs portion 12/50) — trigger must be heuristic, not model self-report. See § Simulated clarification eval.
+- [x] Confirm portion-clarification result on Nutrition5k (true-mass oracle, no lexicon dependency) — confirmed, n=15: −18.7pp WMAPE, +53.4pp ±20% (stronger than JFB)
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 
 ---
