@@ -163,6 +163,16 @@ Optional **background sync** (Settings → Health & Data, off by default) checks
 
 Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Capability matrix for maintainers: [`docs/PARITY.md`](docs/PARITY.md).
 
+## How accurate is the AI?
+
+Chompass is BYOK, so accuracy depends on the model you pick — the app doesn't
+claim a single number. Instead we benchmark against labeled datasets and publish
+the results: typed entry is close to solved (**5.7% WMAPE, 90% within ±20%** of
+true calories), photo estimation is genuinely hard for every vision model tested
+(best paid model: **32.3% WMAPE, 50% within ±20%**), and that gap is why a
+data-backed portion-clarification feature is in progress. Full numbers and
+methodology: [`docs/ACCURACY.md`](docs/ACCURACY.md).
+
 ## Performance
 
 - **Install size:** no workouts bundle or ad SDK; arm64 ~15 MiB, universal ~27 MiB
@@ -172,7 +182,7 @@ Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [C
 
 ## Docs & privacy
 
-Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/).
+Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 
