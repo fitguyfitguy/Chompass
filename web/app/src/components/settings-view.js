@@ -901,7 +901,7 @@ export class SettingsView extends HTMLElement {
           <li><strong>Android:</strong> menu → <strong>Add to Home screen</strong>.</li>
           <li><strong>Desktop:</strong> bookmark the page; full PWA install is limited compared with Chromium.</li>
         </ol>
-        <p class="install-note">Chromium-based browsers work best for install, camera barcode, and speech.</p>
+        <p class="install-note">Chromium-based browsers work best for install, camera barcode, and speech. Meal photo and barcode also work with desktop webcams over HTTPS.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">Already installed?</h2>

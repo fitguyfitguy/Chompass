@@ -12,7 +12,7 @@ Multi-photo capture (up to 10), share into the Android app, voice, barcode, text
 
 ## Browser PWA
 
-The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser on phone, tablet, or desktop. Install to the home screen or dock when offered. Covers diary, progress, BYOK AI entry and Coach, settings, and onboarding. Diary and body-metrics JSON match the Android app. Chromium-based browsers work best for install, camera barcode, and speech; Firefox and Safari work with some feature gaps.
+The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser on phone, tablet, or desktop (including desktop webcams for meal photos and barcode). Install to the home screen or dock when offered. Covers diary, progress, BYOK AI entry and Coach, settings, and onboarding. Diary and body-metrics JSON match the Android app. Chromium-based browsers work best for install, camera barcode, and speech; Firefox and Safari work with some feature gaps.
 
 **Android-app extras:** Health Connect, widgets, notifications, on-device Gemma 4, and the full 15-language pack.
 

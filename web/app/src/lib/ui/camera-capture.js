@@ -1,15 +1,25 @@
 // @ts-check
 // In-app meal camera (Android InAppCameraCaptureDialog parity).
 // Falls back to a hidden file input when getUserMedia is unavailable.
+// Desktop webcams use landscape-friendly constraints + full-frame capture.
+
+import {
+  buildMediaStreamConstraints,
+  cameraErrorMessage,
+  frameCropRect,
+  isLiveCameraSupported,
+  listVideoInputDevices,
+  loadPreferredVideoDeviceId,
+  mealCaptureCropRatio,
+  nextVideoDeviceId,
+  prefersMobileCameraUx,
+  savePreferredVideoDeviceId,
+  shouldUseNativeCaptureHint,
+} from "../media-devices.js";
+
+export { isLiveCameraSupported } from "../media-devices.js";
 
 const MAX_EDGE = 1600;
-
-/**
- * @returns {boolean}
- */
-export function isLiveCameraSupported() {
-  return Boolean(window.isSecureContext && navigator.mediaDevices?.getUserMedia);
-}
 
 /**
  * @typedef {{
@@ -25,8 +35,11 @@ export function isLiveCameraSupported() {
  * @param {CameraCaptureOptions} opts
  */
 export function openCameraCapture(opts) {
+  const mobileUx = prefersMobileCameraUx();
+  const useCaptureHint = shouldUseNativeCaptureHint();
+
   if (!isLiveCameraSupported()) {
-    pickFromGallery({ multiple: false, capture: true })
+    pickFromGallery({ multiple: false, capture: useCaptureHint })
       .then((files) => {
         if (files[0]) opts.onCapture(files[0]);
         else opts.onCancel?.();
@@ -36,7 +49,7 @@ export function openCameraCapture(opts) {
   }
 
   const host = document.createElement("div");
-  host.className = "camera-capture";
+  host.className = mobileUx ? "camera-capture" : "camera-capture camera-capture--desktop";
   host.setAttribute("role", "dialog");
   host.setAttribute("aria-modal", "true");
   host.setAttribute("aria-label", "Take meal photo");
@@ -49,6 +62,7 @@ export function openCameraCapture(opts) {
     </div>
     <button type="button" class="camera-capture__btn camera-capture__btn--close" data-close aria-label="Close">✕</button>
     <button type="button" class="camera-capture__btn camera-capture__btn--flash" data-flash hidden aria-label="Flash">Flash</button>
+    <button type="button" class="camera-capture__btn camera-capture__btn--switch" data-switch hidden aria-label="Switch camera">⇄</button>
     <div class="camera-capture__controls">
       ${
         opts.allowGallery !== false
@@ -67,13 +81,19 @@ export function openCameraCapture(opts) {
   let stream = null;
   /** @type {MediaStreamTrack | null} */
   let videoTrack = null;
+  /** @type {string | null} */
+  let activeDeviceId = null;
+  /** @type {MediaDeviceInfo[]} */
+  let videoDevices = [];
   let torchOn = false;
   let capturing = false;
   let closed = false;
+  let starting = false;
 
   const video = /** @type {HTMLVideoElement} */ (host.querySelector(".camera-capture__video"));
   const errorEl = /** @type {HTMLElement} */ (host.querySelector(".camera-capture__error"));
   const flashBtn = /** @type {HTMLButtonElement} */ (host.querySelector("[data-flash]"));
+  const switchBtn = /** @type {HTMLButtonElement} */ (host.querySelector("[data-switch]"));
   const shutterBtn = /** @type {HTMLButtonElement} */ (host.querySelector("[data-shutter]"));
 
   const showError = (msg) => {
@@ -81,11 +101,22 @@ export function openCameraCapture(opts) {
     errorEl.textContent = msg;
   };
 
+  const hideError = () => {
+    errorEl.hidden = true;
+    errorEl.textContent = "";
+  };
+
+  const stopStream = () => {
+    stream?.getTracks().forEach((t) => t.stop());
+    stream = null;
+    videoTrack = null;
+    video.srcObject = null;
+  };
+
   const close = () => {
     if (closed) return;
     closed = true;
-    stream?.getTracks().forEach((t) => t.stop());
-    stream = null;
+    stopStream();
     host.remove();
     document.body.classList.remove("camera-open");
     document.removeEventListener("keydown", onKey);
@@ -138,13 +169,20 @@ export function openCameraCapture(opts) {
     }
   });
 
+  switchBtn.addEventListener("click", async () => {
+    if (capturing || starting) return;
+    const nextId = nextVideoDeviceId(videoDevices, activeDeviceId);
+    if (!nextId || nextId === activeDeviceId) return;
+    await startStream({ deviceId: nextId, fallbackWithoutDevice: true });
+  });
+
   shutterBtn.addEventListener("click", async () => {
     if (capturing || !video.srcObject) return;
     capturing = true;
     shutterBtn.classList.add("is-busy");
     shutterBtn.disabled = true;
     try {
-      const file = await captureVideoFrame(video);
+      const file = await captureVideoFrame(video, { mobileUx });
       close();
       opts.onCapture(file);
     } catch (err) {
@@ -155,40 +193,75 @@ export function openCameraCapture(opts) {
     }
   });
 
-  (async () => {
+  /**
+   * @param {{ deviceId?: string | null, fallbackWithoutDevice?: boolean }} [startOpts]
+   */
+  async function startStream(startOpts = {}) {
+    if (closed || starting) return;
+    starting = true;
+    hideError();
+    flashBtn.hidden = true;
+    torchOn = false;
+    flashBtn.classList.remove("is-on");
+    flashBtn.textContent = "Flash";
+
+    const preferred = startOpts.deviceId ?? loadPreferredVideoDeviceId();
+
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 1720 },
-        },
-        audio: false,
-      });
+      stopStream();
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(
+          buildMediaStreamConstraints({
+            purpose: "meal",
+            mobileUx,
+            deviceId: preferred,
+          })
+        );
+      } catch (firstErr) {
+        if (preferred && startOpts.fallbackWithoutDevice !== false) {
+          // Stale deviceId or OverconstrainedError — retry with defaults.
+          stream = await navigator.mediaDevices.getUserMedia(
+            buildMediaStreamConstraints({ purpose: "meal", mobileUx, deviceId: null })
+          );
+        } else {
+          throw firstErr;
+        }
+      }
+
       videoTrack = stream.getVideoTracks()[0] || null;
+      activeDeviceId = videoTrack?.getSettings?.().deviceId || preferred || null;
+      if (activeDeviceId) savePreferredVideoDeviceId(activeDeviceId);
       video.srcObject = stream;
       await video.play().catch(() => {});
+
       const caps = videoTrack?.getCapabilities?.();
       // @ts-ignore torch capability
       if (caps && "torch" in caps && caps.torch) {
         flashBtn.hidden = false;
       }
+
+      videoDevices = await listVideoInputDevices();
+      switchBtn.hidden = videoDevices.length < 2;
     } catch (err) {
-      showError(err instanceof Error ? err.message : "Camera unavailable");
+      showError(cameraErrorMessage(err));
       // Fall back to file picker after a short beat so the error is visible.
       setTimeout(async () => {
         if (closed) return;
         close();
         try {
-          const files = await pickFromGallery({ multiple: false, capture: true });
+          const files = await pickFromGallery({ multiple: false, capture: useCaptureHint });
           if (files[0]) opts.onCapture(files[0]);
           else opts.onCancel?.();
         } catch {
           opts.onCancel?.();
         }
-      }, 600);
+      }, 900);
+    } finally {
+      starting = false;
     }
-  })();
+  }
+
+  void startStream({ deviceId: loadPreferredVideoDeviceId(), fallbackWithoutDevice: true });
 
   return { close };
 }
@@ -233,25 +306,13 @@ export function pickFromGallery(opts = {}) {
 
 /**
  * @param {HTMLVideoElement} video
+ * @param {{ mobileUx?: boolean }} [opts]
  * @returns {Promise<File>}
  */
-async function captureVideoFrame(video) {
+async function captureVideoFrame(video, opts = {}) {
   const vw = video.videoWidth || 720;
   const vh = video.videoHeight || 960;
-  // Crop to 3:4 portrait centered in the frame (Android preview aspect).
-  const targetRatio = 3 / 4;
-  let sw = vw;
-  let sh = vh;
-  let sx = 0;
-  let sy = 0;
-  const videoRatio = vw / vh;
-  if (videoRatio > targetRatio) {
-    sw = Math.round(vh * targetRatio);
-    sx = Math.round((vw - sw) / 2);
-  } else if (videoRatio < targetRatio) {
-    sh = Math.round(vw / targetRatio);
-    sy = Math.round((vh - sh) / 2);
-  }
+  const { sx, sy, sw, sh } = frameCropRect(vw, vh, mealCaptureCropRatio(opts));
   const scale = Math.min(1, MAX_EDGE / Math.max(sw, sh));
   const dw = Math.max(1, Math.round(sw * scale));
   const dh = Math.max(1, Math.round(sh * scale));
