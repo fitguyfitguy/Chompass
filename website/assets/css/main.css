@@ -588,6 +588,44 @@ a:hover {
   }
 }
 
+.site-toast {
+  position: fixed;
+  z-index: 200;
+  left: 50%;
+  bottom: 1.5rem;
+  display: grid;
+  gap: 0.15rem;
+  width: min(22rem, calc(100% - 2rem));
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(28, 27, 31, 0.96);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  transform: translate(-50%, 1rem);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.site-toast strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.site-toast span {
+  color: var(--muted);
+}
+
+.site-toast--in {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -606,5 +644,9 @@ a:hover {
   .btn:hover,
   .pitch-card:hover {
     transform: none;
+  }
+
+  .site-toast {
+    transition: none;
   }
 }
