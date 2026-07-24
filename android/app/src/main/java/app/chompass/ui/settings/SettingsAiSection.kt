@@ -159,6 +159,20 @@ internal fun SettingsAiSection(
                     )
                 }
                 HorizontalDivider()
+                ToggleRow(
+                    stringResource(R.string.settings_portion_clarify),
+                    ui.portionClarifyEnabled,
+                    icon = Icons.Outlined.Straighten,
+                    onChange = { vm.setPortionClarifyEnabled(it) }
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.settings_portion_clarify_footer),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_serving_unit_mode),
                     stringResource(ui.servingUnitInferenceMode.displayNameRes),

@@ -96,6 +96,7 @@ data class SettingsUiState(
     val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
     val fallbackApiKeyMasked: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
+    val portionClarifyEnabled: Boolean = false,
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val mealSchedule: app.chompass.models.MealSchedule = app.chompass.models.MealSchedule.Default,
@@ -173,6 +174,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbModel = fbProvider.supportedFallbackModelOrDefault(container.prefs.selectedFallbackModel.first())
             val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
             val geminiGoogleSearch = container.prefs.geminiGoogleSearchEnabled.first()
+            val portionClarify = container.prefs.portionClarifyEnabled.first()
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
             val homeDisplay = container.prefs.homeDisplayPreferences.first()
             val mealSchedule = container.prefs.mealSchedule.first()
@@ -224,6 +226,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 fallbackModel = fbModel,
                 fallbackApiKeyMasked = fbMasked,
                 geminiGoogleSearchEnabled = geminiGoogleSearch,
+                portionClarifyEnabled = portionClarify,
                 optionalNutrientGoals = optionalGoals,
                 homeDisplay = homeDisplay,
                 mealSchedule = mealSchedule,
@@ -307,6 +310,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.prefs.setGeminiGoogleSearchEnabled(v)
             _ui.value = _ui.value.copy(geminiGoogleSearchEnabled = v)
+        }
+    }
+
+    fun setPortionClarifyEnabled(v: Boolean) {
+        viewModelScope.launch {
+            container.prefs.setPortionClarifyEnabled(v)
+            _ui.value = _ui.value.copy(portionClarifyEnabled = v)
         }
     }
 

@@ -79,6 +79,7 @@ internal object Keys {
         val FALLBACK_PROVIDER = stringPreferencesKey("selectedFallbackAIProvider")
         val FALLBACK_MODEL = stringPreferencesKey("selectedFallbackAIModel")
         val GEMINI_GOOGLE_SEARCH_ENABLED = booleanPreferencesKey("geminiGoogleSearchEnabled")
+        val PORTION_CLARIFY_ENABLED = booleanPreferencesKey("portionClarifyEnabled")
         val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")
         fun selectedSpeechLanguage(provider: SpeechProvider) =
             stringPreferencesKey("selectedSpeechLanguage_${provider.name}")

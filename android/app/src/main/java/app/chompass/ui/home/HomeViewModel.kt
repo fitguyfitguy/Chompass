@@ -66,6 +66,7 @@ data class HomeUiState(
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val preferGramsByDefault: Boolean = false,
+    val portionClarifyEnabled: Boolean = false,
     val weightMetric: Boolean = true,
     val favoriteKeys: Set<String> = emptySet(),
     val pendingAnalysis: FoodAnalysis? = null,
@@ -253,6 +254,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         container.prefs.preferGramsByDefault
             .onEach { preferGrams ->
                 _ui.value = _ui.value.copy(preferGramsByDefault = preferGrams)
+            }
+            .launchIn(viewModelScope)
+
+        container.prefs.portionClarifyEnabled
+            .onEach { enabled ->
+                _ui.value = _ui.value.copy(portionClarifyEnabled = enabled)
             }
             .launchIn(viewModelScope)
 
@@ -1042,6 +1049,22 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
             HomeViewModel(container) as T
+    }
+
+    /** Beta portion-clarify chip (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1): re-analyzes the
+     *  still-pending (not yet saved) photo analysis with the user's portion answer injected
+     *  as extra context, then replaces pendingAnalysis so FoodResultSheet recomposes with the
+     *  refined estimate. */
+    suspend fun reprocessPendingAnalysis(portionAnswer: String) {
+        val bytes = _ui.value.pendingImageBytes ?: return
+        val current = _ui.value.pendingAnalysis
+        val description = buildString {
+            current?.name?.trim()?.takeIf { it.isNotEmpty() }?.let { append(it); append(". ") }
+            append("Portion size: $portionAnswer")
+        }
+        val result = container.foodAnalysis.analyzeFood(bytes, description)
+            .copy(customNote = current?.customNote)
+        _ui.value = _ui.value.copy(pendingAnalysis = result)
     }
 
     suspend fun reprocessFoodEntry(entry: FoodEntry, updatedNote: String): FoodAnalysis {
