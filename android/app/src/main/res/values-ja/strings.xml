@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD カロリー</string>
+    <string name="widget_calorie_label">Chompass カロリー</string>
     <string name="widget_calorie_description">今日のカロリーとマクロをひと目で確認。</string>
-    <string name="widget_protein_label">NoFUD タンパク質</string>
+    <string name="widget_protein_label">Chompass タンパク質</string>
     <string name="widget_protein_description">今日のタンパク質の進捗をひと目で確認。</string>
     <string name="widget_today">今日</string>
     <string name="widget_protein">タンパク質</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">戻る</string>
-    <string name="onboarding_logo_description">NoFUD ロゴ</string>
+    <string name="onboarding_logo_description">Chompass ロゴ</string>
     <string name="onboarding_welcome_line1">賢く食べよう、</string>
     <string name="onboarding_welcome_line2">より良く生きる</string>
     <string name="onboarding_welcome_subtitle">撮って、記録して、健康に。\nあなたの栄養管理を、シンプルに。</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">接続</string>
 
     <string name="onboarding_provider_title">自分のAIを使う</string>
-    <string name="onboarding_provider_subtitle">NoFUDは食事を分析するために\nAIプロバイダのキーが必要です。自分のキーを使います。</string>
+    <string name="onboarding_provider_subtitle">Chompassは食事を分析するために\nAIプロバイダのキーが必要です。自分のキーを使います。</string>
     <string name="onboarding_provider_recommended_title">おすすめ：Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">無料プランあり、高速で正確</string>
     <string name="onboarding_provider_howto_title">無料の Google AI Studio キーの取得方法</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">日曜日</string>
     <string name="settings_notifications">通知</string>
     <string name="settings_battery_opt">バッテリー最適化</string>
-    <string name="settings_battery_opt_value">NoFUD を除外</string>
+    <string name="settings_battery_opt_value">Chompass を除外</string>
 
     <string name="settings_ai_provider">プロバイダ</string>
     <string name="settings_ai_model">モデル</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">増量の目標には現在の体重より高い目標値が必要です。</string>
     <string name="settings_permission_title">権限が必要です</string>
 
-    <string name="settings_notifications_denied">通知の権限が拒否されています。システム設定 → アプリ → NoFUD → 通知 で有効にしてリマインダーを受け取ってください。</string>
+    <string name="settings_notifications_denied">通知の権限が拒否されています。システム設定 → アプリ → Chompass → 通知 で有効にしてリマインダーを受け取ってください。</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">計量の時間です</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">問題を報告</string>
     <string name="about_request_feature">機能をリクエスト</string>
     <string name="about_privacy">プライバシーポリシー</string>
-    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Apoorv Darshan 作の Fud AI をベースに</string>
-    <string name="about_share_message">食事の記録は NoFUD で。写真を撮るか話すか入力するだけで、AI がカロリーを記録します。無料・オープンソースで、データは端末内に残ります。\n\nダウンロード: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">NoFUD を共有</string>
+    <string name="about_share_message">食事の記録は Chompass で。写真を撮るか話すか入力するだけで、AI がカロリーを記録します。無料・オープンソースで、データは端末内に残ります。\n\nダウンロード: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Chompass を共有</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">連続記録リマインダー</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">フォールバックプロバイダー</string>
     <string name="settings_enable_fallback">フォールバックを有効にする</string>
     <string name="settings_fallback_footer">プライマリプロバイダーが失敗した場合（過負荷、レート制限、ネットワークエラー）、アプリはこのフォールバックで自動的に再試行します。プライマリと同じプロバイダーも使用できます - 別のモデルを選んでください。</string>
-    <string name="widget_all_metrics_label">NoFUD 今日</string>
+    <string name="widget_all_metrics_label">Chompass 今日</string>
     <string name="widget_all_metrics_description">今日のカロリー・タンパク質・炭水化物・脂質を1つのウィジェットで確認。</string>
     <string name="settings_needs_health_connect">Health Connectが必要</string>
-    <string name="settings_energy_goals_info">オンにすると、NoFUDはHealth Connectから取得した実測の消費カロリー（アクティブ＋基礎代謝の14日間平均）を、数式による推定の代わりに維持カロリー（TDEE）の基準として目標計算に使います。消費カロリーの読み取りにAIは使いません。Health Connectが必要です。「再計算」ボタンおよびAdaptive Goalsと連動します。</string>
-    <string name="settings_adaptive_goals_info">週に1回ほど、アプリを開いたときに、NoFUDがプロフィール・最近の食事記録・体重トレンドをもとに、「再計算」ボタンと同じ目標計算全体を自動で再実行します。Energy Burnがオンの場合は、実測の消費カロリーを維持カロリーの基準として使います。AIが利用できないときは何もせずスキップします。オフにすると、この機能が最初に変更する前の目標に戻ります。これは医療アドバイスではありません。</string>
+    <string name="settings_energy_goals_info">オンにすると、ChompassはHealth Connectから取得した実測の消費カロリー（アクティブ＋基礎代謝の14日間平均）を、数式による推定の代わりに維持カロリー（TDEE）の基準として目標計算に使います。消費カロリーの読み取りにAIは使いません。Health Connectが必要です。「再計算」ボタンおよびAdaptive Goalsと連動します。</string>
+    <string name="settings_adaptive_goals_info">週に1回ほど、アプリを開いたときに、Chompassがプロフィール・最近の食事記録・体重トレンドをもとに、「再計算」ボタンと同じ目標計算全体を自動で再実行します。Energy Burnがオンの場合は、実測の消費カロリーを維持カロリーの基準として使います。AIが利用できないときは何もせずスキップします。オフにすると、この機能が最初に変更する前の目標に戻ります。これは医療アドバイスではありません。</string>
     <string name="onboarding_plan_adaptive_note">プランは記録に合わせて週1回自動調整されます。固定したい場合は設定でAdaptive Goalsをオフにしてください。</string>
     <string name="onboarding_feature_snap">写真を撮るだけ - AIが記録</string>
     <string name="onboarding_feature_coach">あなたのデータを知るコーチ</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">ワークアウトタブは削除されました。</string>
     <string name="whats_new_v30_home">ホームを刷新：スピードメーター型カロリーゲージ、縦型マクロバー、4枚の栄養素カード、フローティング追加ボタン。</string>
     <string name="whats_new_v30_coach_voice">新しいインラインレコーダーで、コーチに音声で質問できます。</string>
-    <string name="whats_new_v30_share">食事をリンクとして共有 - iPhoneでもAndroidでもNoFUDが直接開きます。</string>
+    <string name="whats_new_v30_share">食事をリンクとして共有 - iPhoneでもAndroidでもChompassが直接開きます。</string>
     <string name="whats_new_v30_export">設定から食事日記をJSON・Markdown・CSVでエクスポート。</string>
     <string name="whats_new_v30_reprocess">記録済みの食事をAIで再解析 - 名前・分量・メモを調整して再分析できます。</string>
     <string name="whats_new_v30_camera">カメラ＋カメラは2枚の写真を並べて保存します。</string>

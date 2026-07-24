@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate NoFUD launcher, PWA, and splash logos from the master artwork."""
+"""Generate Chompass launcher, PWA, and splash logos from the master artwork."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-MASTER = ROOT / "scripts" / "nofud_icon_master.png"
+MASTER = ROOT / "scripts" / "chompass_icon_master.png"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
 PWA_ICONS = ROOT / "web" / "app" / "icons"
 METADATA_ICON = ROOT / "metadata" / "en-US" / "images" / "icon.png"

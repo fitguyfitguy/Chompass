@@ -1,7 +1,7 @@
 # Grounded food entry
 
 **Status: WIP — not production, not ready to ship.**  
-[`GroundedEntryFeature.ENABLED`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedEntryFeature.kt) stays **`false`**. Do not package USDA into release/F-Droid APKs, do not advertise the entry method, and do not flip the flag until the [readiness checklist](#readiness-checklist) is fully green. Code + harness remain in-tree for continued research.
+[`GroundedEntryFeature.ENABLED`](../android/app/src/main/java/app/chompass/services/grounding/GroundedEntryFeature.kt) stays **`false`**. Do not package USDA into release/F-Droid APKs, do not advertise the entry method, and do not flip the flag until the [readiness checklist](#readiness-checklist) is fully green. Code + harness remain in-tree for continued research.
 
 Optional entry method that uses the selected AI provider to **search local
 databases and pick identities**, then resolves nutrient values from those
@@ -11,12 +11,12 @@ sources only (never from invented macros).
 
 ### Built (research / debug only)
 
-1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~3.8 MB` with FTS), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) with **FTS5**, multi-portion table, Atwater energy fill, WWEIA categories when present, omega-3 merge. Android [`UsdaFoodIndex`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/UsdaFoodIndex.kt). Packaged in **debug** builds only (`src/debug/assets/usda/`), not release.
+1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~3.8 MB` with FTS), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) with **FTS5**, multi-portion table, Atwater energy fill, WWEIA categories when present, omega-3 merge. Android [`UsdaFoodIndex`](../android/app/src/main/java/app/chompass/services/grounding/UsdaFoodIndex.kt). Packaged in **debug** builds only (`src/debug/assets/usda/`), not release.
 2. **Provenance model** — `FoodGroundingProvenance` / `GroundingCandidate` / validation helpers; `FoodSource.GROUNDED` for diary export/import (**provenance round-trips in JSON export**).
-3. **Orchestrator** — [`GroundedFoodEntryService`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedFoodEntryService.kt): barcode → OFF, history, USDA, then model-estimate fallback. Deterministic **scale from DB rows** (model must not invent macros). Preserves first-pass recognition on candidate review.
-4. **Cloud tool loop** — [`GroundingTools`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingTools.kt) + [`GroundedToolLoop`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/GroundedToolLoop.kt) (max 4 rounds): `search_usda` / `search_history` / `lookup_barcode` → `finalize_grounding`. Finalize only accepts `source_id`s seen in this run.
-5. **Retrieval ranking** — Shared [`QueryNormalizer`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/QueryNormalizer.kt) (Kotlin + Python); prefer FNDDS; soft-penalize flour/powder/dry/pie and beverage mismatches; calibrated source-aware scores + ambiguity margin `1.5`; local [`GroundingCorrectionStore`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingCorrectionStore.kt) priors.
-6. **Portion resolver** — [`PortionResolver`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/PortionResolver.kt): override → estimated grams → quantity×unit → candidate serving → heuristic; **never silent 100 g**.
+3. **Orchestrator** — [`GroundedFoodEntryService`](../android/app/src/main/java/app/chompass/services/grounding/GroundedFoodEntryService.kt): barcode → OFF, history, USDA, then model-estimate fallback. Deterministic **scale from DB rows** (model must not invent macros). Preserves first-pass recognition on candidate review.
+4. **Cloud tool loop** — [`GroundingTools`](../android/app/src/main/java/app/chompass/services/grounding/GroundingTools.kt) + [`GroundedToolLoop`](../android/app/src/main/java/app/chompass/services/ai/GroundedToolLoop.kt) (max 4 rounds): `search_usda` / `search_history` / `lookup_barcode` → `finalize_grounding`. Finalize only accepts `source_id`s seen in this run.
+5. **Retrieval ranking** — Shared [`QueryNormalizer`](../android/app/src/main/java/app/chompass/services/grounding/QueryNormalizer.kt) (Kotlin + Python); prefer FNDDS; soft-penalize flour/powder/dry/pie and beverage mismatches; calibrated source-aware scores + ambiguity margin `1.5`; local [`GroundingCorrectionStore`](../android/app/src/main/java/app/chompass/services/grounding/GroundingCorrectionStore.kt) priors.
+6. **Portion resolver** — [`PortionResolver`](../android/app/src/main/java/app/chompass/services/grounding/PortionResolver.kt): override → estimated grams → quantity×unit → candidate serving → heuristic; **never silent 100 g**.
 7. **UI (gated)** — Add-food tile, entry sheet, candidate sheet, provenance + confidence badges — hidden while `GroundedEntryFeature.ENABLED == false`. On-device policy: `ALLOW_ON_DEVICE = false`.
 8. **Harness** — [`docs/benchmarks/food_accuracy/run_grounded_eval.py`](benchmarks/food_accuracy/run_grounded_eval.py), failure-class metrics, bad-case + history/OFF manifests, retrieval golden vectors, `devenv tasks run benchmark:food-accuracy-smoke`.
 
@@ -155,12 +155,12 @@ flowchart TD
   GFE -.->|on-device fallback| Det[Recognize then lexical rank]
 ```
 
-Key types: [`FoodGrounding.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/FoodGrounding.kt),
-[`GroundedFoodEntryService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedFoodEntryService.kt),
-[`GroundingTools.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundingTools.kt),
-[`GroundedToolLoop.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/GroundedToolLoop.kt),
-[`UsdaFoodIndex.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/UsdaFoodIndex.kt),
-[`GroundedEntryFeature.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/grounding/GroundedEntryFeature.kt).
+Key types: [`FoodGrounding.kt`](../android/app/src/main/java/app/chompass/models/FoodGrounding.kt),
+[`GroundedFoodEntryService.kt`](../android/app/src/main/java/app/chompass/services/grounding/GroundedFoodEntryService.kt),
+[`GroundingTools.kt`](../android/app/src/main/java/app/chompass/services/grounding/GroundingTools.kt),
+[`GroundedToolLoop.kt`](../android/app/src/main/java/app/chompass/services/ai/GroundedToolLoop.kt),
+[`UsdaFoodIndex.kt`](../android/app/src/main/java/app/chompass/services/grounding/UsdaFoodIndex.kt),
+[`GroundedEntryFeature.kt`](../android/app/src/main/java/app/chompass/services/grounding/GroundedEntryFeature.kt).
 
 ## Benchmarks
 

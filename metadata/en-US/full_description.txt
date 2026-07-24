@@ -1,4 +1,4 @@
-NoFUD is an ad-free, privacy-focused calorie tracker forked from Fud AI. Log meals with photos, voice, barcode scans, or text. Bring your own cloud AI key (Google AI Studio, OpenRouter, etc.) or use optional on-device Gemma 4 inference. Nothing is sent to a server unless you choose a cloud provider.
+Chompass is an ad-free, privacy-focused calorie tracker forked from Fud AI. Log meals with photos, voice, barcode scans, or text. Bring your own cloud AI key (Google AI Studio, OpenRouter, etc.) or use optional on-device Gemma 4 inference. Nothing is sent to a server unless you choose a cloud provider.
 
 <b>Food logging</b>
 • Multi-photo capture, share-into-app, voice, barcode, manual entry, saved meals and recipes
@@ -15,4 +15,4 @@ NoFUD is an ad-free, privacy-focused calorie tracker forked from Fud AI. Log mea
 • Local-first storage; encrypted API keys on device
 • Diary and body-metrics export (JSON, Markdown, CSV)
 
-MIT licensed. Source: https://codeberg.org/fitguy/nofud
+MIT licensed. Source: https://codeberg.org/fitguy/chompass

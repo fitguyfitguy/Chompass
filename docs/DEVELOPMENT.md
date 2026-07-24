@@ -9,7 +9,7 @@ Distribution: single F-Droid / Codeberg build. The former **`play` flavor is dis
 If you use home-manager with devenv and direnv (as on WSL2 Arch + Nix), the repo provides a project environment with JDK 17 and Android SDK 36:
 
 ```bash
-cd NoFUD
+cd Chompass
 direnv allow          # first time only
 devenv update         # first time only; downloads SDK (~1-2 GB without emulator)
 devenv shell          # or rely on direnv auto-load after allow
@@ -22,7 +22,7 @@ build-debug
 build-release
 ```
 
-Debug APK package: `org.codeberg.fitguy.nofud.debug` (`assembleDebug`).
+Debug APK package: `app.chompass.debug` (`assembleDebug`).
 
 Or from outside the shell:
 
@@ -60,7 +60,7 @@ cd android
 ./gradlew :app:assembleDebug
 ```
 
-Install the debug APK (side-by-side package `org.codeberg.fitguy.nofud.debug`):
+Install the debug APK (side-by-side package `app.chompass.debug`):
 
 ```bash
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk
@@ -70,7 +70,7 @@ First launch walks through onboarding. A free Gemini key is available at https:/
 
 ## Project website (Codeberg Pages)
 
-Hugo site sources live in [`website/`](../website/). Screenshots are mounted from [`screenshots/`](screenshots/) at build time. Live URL: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
+Hugo site sources live in [`website/`](../website/). Screenshots are mounted from [`screenshots/`](screenshots/) at build time. Live URL: [chompass.app](https://chompass.app/).
 
 Outreach checklist (AlternativeTo, Lemmy, etc.): [`WEB_PRESENCE.md`](WEB_PRESENCE.md).
 
@@ -78,7 +78,7 @@ Outreach checklist (AlternativeTo, Lemmy, etc.): [`WEB_PRESENCE.md`](WEB_PRESENC
 
 In the Codeberg UI under **Settings**:
 
-1. **Website** (or project description link): `https://fitguy.codeberg.page/NoFUD/`
+1. **Website** (or project description link): `https://chompass.app/`
 2. **Description** (About; paste): `Free, open-source calorie tracker. No ads, no trackers. Android app and installable browser PWA (any modern browser; Chromium works best). Community fork of Fud AI with BYOK food logging, keto modes, and open exports.`
 3. **Topics** (suggested): `pwa`, `web`, `android`, `calorie-tracker`, `privacy`, `foss`, `health-connect`, `keto`
 
@@ -87,7 +87,7 @@ Leave the site URL in the **Website** field only (do not repeat it in the descri
 ### Preview / build
 
 ```bash
-site-serve   # http://localhost:1313/NoFUD/
+site-serve   # http://localhost:1313/Chompass/
 site-build   # writes website/public/
 # or:
 devenv tasks run site:serve
@@ -100,7 +100,7 @@ Keep `website/hugo.toml` `params.version` in sync with `versionName` in `android
 
 1. Repo **Settings → Webhooks → Add webhook**
 2. Type: **Forgejo**
-3. Target URL: `https://fitguy.codeberg.page/NoFUD/`
+3. Target URL: `https://chompass.app/`
 4. Branch filter: `pages`
 5. Save (do **not** use “Test delivery”; it fails by design)
 
@@ -136,13 +136,13 @@ uv run --with pillow python scripts/generate_og_image.py
 
 ## App icon
 
-NoFUD uses original launcher and splash artwork (distinct from Fud AI). Regenerate themed variants with:
+Chompass uses original launcher and splash artwork (distinct from Fud AI). Regenerate themed variants with:
 
 ```bash
 uv run --with pillow python scripts/generate_icons.py
 ```
 
-Edit `scripts/nofud_icon_master.png` before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
+Edit `scripts/chompass_icon_master.png` before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
 ## On-device LLM smoke test (debug only)
 

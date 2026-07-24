@@ -1,7 +1,7 @@
 // @ts-check
 import { weights, foodEntries, profile as profileStore, bodyFat, prefs } from "../lib/db.js";
-import { dailyTargets } from "../lib/nofud-core/formulas.js";
-import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/nofud-core/forecast.js";
+import { dailyTargets } from "../lib/chompass-core/formulas.js";
+import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 

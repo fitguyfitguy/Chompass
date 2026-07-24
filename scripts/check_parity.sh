@@ -18,8 +18,8 @@ run_in_devenv() {
   fi
 }
 
-echo "==> PWA unit tests (nofud-core + lib parity)"
-run_in_devenv 'cd web && node --test app/src/lib/nofud-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js'
+echo "==> PWA unit tests (chompass-core + lib parity)"
+run_in_devenv 'cd web && node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js'
 
 echo "==> PWA typecheck"
 run_in_devenv 'cd web && tsc --checkJs --noEmit -p tsconfig.json'

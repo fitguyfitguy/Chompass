@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fitguy.codeberg.page/NoFUD/contracts/meal-share-v1.schema.json",
-  "title": "NoFUD meal-share payload v1",
+  "$id": "https://chompass.app/contracts/meal-share-v1.schema.json",
+  "title": "Chompass meal-share payload v1",
   "type": "object",
   "required": ["v", "meals"],
   "additionalProperties": true,

@@ -1,6 +1,6 @@
-# NoFUD Calculation Methods: Formula Register & Audit
+# Chompass Calculation Methods: Formula Register & Audit
 
-Canonical reference for nutrition and sports-science math in NoFUD. In-app copy lives under **Settings → Calculation Methods**; this document is the maintainer audit trail.
+Canonical reference for nutrition and sports-science math in Chompass. In-app copy lives under **Settings → Calculation Methods**; this document is the maintainer audit trail.
 
 **Last audited:** 2026-07-09
 
@@ -254,7 +254,7 @@ When changing any formula, constant, or guardrail:
 2. Update this file (formula register + policy table).
 3. Update `strings.xml` `settings_calc_*` if user-visible.
 4. Update shared golden scenarios in [`testdata/parity/formulas-expected.json`](../testdata/parity/formulas-expected.json) (Android `CalculationGoldenScenariosTest` and PWA `formulas.test.js` both read this file).
-5. Mirror any change in `web/app/src/lib/nofud-core/` (`formulas.js`, `forecast.js`, `goal-formula-reference.js`).
+5. Mirror any change in `web/app/src/lib/chompass-core/` (`formulas.js`, `forecast.js`, `goal-formula-reference.js`).
 6. If PAL / protein g/kg / `KCAL_PER_KG_BODY_MASS` change, refresh [`testdata/parity/goal-formula-prompt-fragments.json`](../testdata/parity/goal-formula-prompt-fragments.json).
 7. Note change in `docs/CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
 8. Run `devenv shell bash -lc 'cd android && ./gradlew test'` and `devenv tasks run release:check-parity` (or `./scripts/check_parity.sh`).
@@ -273,11 +273,11 @@ When changing **diary / body-metrics / meal-share** wire formats: bump `format_v
 | Activity / protein | `android/app/src/main/java/.../models/ActivityLevel.kt` |
 | Forecast & adaptive | `android/app/src/main/java/.../services/WeightAnalysisService.kt` |
 | Forecast math (pure) | `android/app/src/main/java/.../services/WeightForecastMath.kt` |
-| PWA formula / forecast mirror | `web/app/src/lib/nofud-core/{formulas,forecast}.js` |
+| PWA formula / forecast mirror | `web/app/src/lib/chompass-core/{formulas,forecast}.js` |
 | Shared formula goldens | `testdata/parity/formulas-expected.json` |
 | Wire-format contracts | `contracts/*.schema.json` |
 | Feature parity matrix | `docs/PARITY.md` |
-| AI formula reference | `android/.../GoalFormulaReference.kt`, `web/.../nofud-core/goal-formula-reference.js`, `testdata/parity/goal-formula-prompt-fragments.json` |
+| AI formula reference | `android/.../GoalFormulaReference.kt`, `web/.../chompass-core/goal-formula-reference.js`, `testdata/parity/goal-formula-prompt-fragments.json` |
 | Keto carbs | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt` |
 | Body metrics | `android/app/src/main/java/.../models/BodyMeasurement.kt` |
 | In-app docs | `SettingsScreen.kt` + `res/values/strings.xml` |

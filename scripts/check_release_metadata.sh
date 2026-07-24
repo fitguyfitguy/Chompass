@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GRADLE_FILE="$ROOT/android/app/build.gradle.kts"
 CHANGELOG="$ROOT/docs/CHANGELOG.md"
-FDROID_YML="$ROOT/docs/fdroid/org.codeberg.fitguy.nofud.yml"
+FDROID_YML="$ROOT/docs/fdroid/app.chompass.yml"
 HUGO_TOML="$ROOT/website/hugo.toml"
 
 read_gradle_value() {

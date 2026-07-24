@@ -6,7 +6,7 @@ import {
   proteinPerKgLine,
   calorieAdjustmentLine,
   moderateActivityMultiplierRationale,
-} from "../nofud-core/goal-formula-reference.js";
+} from "../chompass-core/goal-formula-reference.js";
 import { loadParityFixture } from "../parity-fixtures.js";
 
 const fixture = loadParityFixture("goal-formula-prompt-fragments.json");

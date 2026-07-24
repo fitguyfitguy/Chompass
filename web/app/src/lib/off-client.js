@@ -3,7 +3,7 @@
 // Prefers per-serving nutriments when present, else scales per-100g by serving
 // size — mirrors Android OpenFoodFactsService.
 
-import { ensureServingUnits, normalizedOptions, heuristicOptions } from "./nofud-core/serving-units.js";
+import { ensureServingUnits, normalizedOptions, heuristicOptions } from "./chompass-core/serving-units.js";
 
 /**
  * @param {string} barcode

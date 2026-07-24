@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NoFUD"
+rootProject.name = "Chompass"
 include(":app")

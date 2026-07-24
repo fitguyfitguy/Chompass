@@ -1,24 +1,24 @@
 # Web presence
 
-Maintainer checklist for discovering NoFUD outside Codeberg. Canonical end-user URL: [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/).
+Maintainer checklist for discovering Chompass outside Codeberg. Canonical end-user URL: [chompass.app](https://chompass.app/).
 
 ## Already covered
 
 - Hugo project site on Codeberg Pages
 - README install CTAs (Obtainium, Codeberg Releases, web app)
-- F-Droid metadata submitted (package `org.codeberg.fitguy.nofud`)
+- F-Droid metadata submitted (package `app.chompass`)
 - Social preview card (`website/static/img/og.png`) and sitemap
 - Browser PWA promoted from site hero (primary CTA), Download (PWA first), Features, footer, and README (3-column Fud AI / Android / PWA table). Any modern browser; Chromium works best.
 
 ## Companion PWA
 
-PWA at [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/). Runs in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech). Diary logging, manual/photo/barcode food entry, BYOK AI coach, progress charts, and JSON export/import compatible with the Android app. Source in [`web/`](../web/README.md); no SPA framework/bundler, hand-rolled service worker, dev-only TypeScript.
+PWA at [chompass.app/app/](https://chompass.app/app/). Runs in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech). Diary logging, manual/photo/barcode food entry, BYOK AI coach, progress charts, and JSON export/import compatible with the Android app. Source in [`web/`](../web/README.md); no SPA framework/bundler, hand-rolled service worker, dev-only TypeScript.
 
 Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/` (via `rsync --delete`) before the same orphan-branch push used for the marketing site. No separate deploy step.
 
 **Parity:** feature matrix in [`PARITY.md`](PARITY.md); `devenv tasks run release:check-parity` before treating export/formula changes as done.
 
-**Public promotion:** hero primary CTA is “Try web app”; Download leads with PWA then Android; README / Features / Codeberg About (see [`DEVELOPMENT.md`](DEVELOPMENT.md) § Codeberg repo settings). Canonical URL: `fitguy.codeberg.page/NoFUD/app/`.
+**Public promotion:** hero primary CTA is “Try web app”; Download leads with PWA then Android; README / Features / Codeberg About (see [`DEVELOPMENT.md`](DEVELOPMENT.md) § Codeberg repo settings). Canonical URL: `chompass.app/app/`.
 
 ## Do not pursue
 
@@ -26,11 +26,11 @@ Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/`
 
 ## Outreach (manual)
 
-Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **try the PWA in any browser** or Android install; the site comparison table covers Fud AI vs NoFUD Android vs NoFUD PWA. Mention Chromium works best without claiming Chromium-only.
+Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **try the PWA in any browser** or Android install; the site comparison table covers Fud AI vs Chompass Android vs Chompass PWA. Mention Chromium works best without claiming Chromium-only.
 
 | Channel | Notes |
 |---------|--------|
-| [AlternativeTo](https://alternativeto.net/) | Add/claim NoFUD as alternative to MyFitnessPal / Cronometer / Fud AI |
+| [AlternativeTo](https://alternativeto.net/) | Add/claim Chompass as alternative to MyFitnessPal / Cronometer / Fud AI |
 | Lemmy (e.g. `!opensource`, Android / FOSS communities) | Short post: ad-free fork, browser PWA or Obtainium, privacy stance |
 | Reddit `r/opensource`, `r/androidapps`, `r/fossdroid`, `r/PWA` | Same pitch; respect self-promo rules; PWA works cross-platform |
 | Mastodon / Fediverse | Link site + `/app/` or Obtainium; boost FOSS / PWA hashtags |

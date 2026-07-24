@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD 卡路里</string>
+    <string name="widget_calorie_label">Chompass 卡路里</string>
     <string name="widget_calorie_description">一目了然查看今日的卡路里和宏量营养素。</string>
-    <string name="widget_protein_label">NoFUD 蛋白质</string>
+    <string name="widget_protein_label">Chompass 蛋白质</string>
     <string name="widget_protein_description">一目了然查看今日的蛋白质进度。</string>
     <string name="widget_today">今日</string>
     <string name="widget_protein">蛋白质</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">返回</string>
-    <string name="onboarding_logo_description">NoFUD 标志</string>
+    <string name="onboarding_logo_description">Chompass 标志</string>
     <string name="onboarding_welcome_line1">聪明饮食，</string>
     <string name="onboarding_welcome_line2">活得更好</string>
     <string name="onboarding_welcome_subtitle">只需拍照、记录、享受。\n让你的营养更简单。</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">连接</string>
 
     <string name="onboarding_provider_title">使用你自己的 AI</string>
-    <string name="onboarding_provider_subtitle">NoFUD 需要 AI 提供商密钥来\n分析你的食物。请使用你自己的密钥。</string>
+    <string name="onboarding_provider_subtitle">Chompass 需要 AI 提供商密钥来\n分析你的食物。请使用你自己的密钥。</string>
     <string name="onboarding_provider_recommended_title">推荐：Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">提供免费套餐，快速且准确</string>
     <string name="onboarding_provider_howto_title">如何获取免费的 Google AI Studio 密钥</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">星期日</string>
     <string name="settings_notifications">通知</string>
     <string name="settings_battery_opt">电池优化</string>
-    <string name="settings_battery_opt_value">将 NoFUD 加入白名单</string>
+    <string name="settings_battery_opt_value">将 Chompass 加入白名单</string>
 
     <string name="settings_ai_provider">提供商</string>
     <string name="settings_ai_model">模型</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">增重目标的目标体重需高于当前体重。</string>
     <string name="settings_permission_title">需要权限</string>
 
-    <string name="settings_notifications_denied">通知权限被拒绝。请在“系统设置 → 应用 → NoFUD → 通知”中启用以接收提醒。</string>
+    <string name="settings_notifications_denied">通知权限被拒绝。请在“系统设置 → 应用 → Chompass → 通知”中启用以接收提醒。</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">称重时间到了</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">报告问题</string>
     <string name="about_request_feature">请求功能</string>
     <string name="about_privacy">隐私政策</string>
-    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">基于 Apoorv Darshan 的 Fud AI</string>
-    <string name="about_share_message">我用 NoFUD 记录每一餐--拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">分享 NoFUD</string>
+    <string name="about_share_message">我用 Chompass 记录每一餐--拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">分享 Chompass</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">连续记录提醒</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">备用提供商</string>
     <string name="settings_enable_fallback">启用备用</string>
     <string name="settings_fallback_footer">如果主提供商失败（过载、速率限制、网络错误），应用会自动使用此备用提供商重试。允许与主提供商相同--只需选择不同的模型即可。</string>
-    <string name="widget_all_metrics_label">NoFUD 今天</string>
+    <string name="widget_all_metrics_label">Chompass 今天</string>
     <string name="widget_all_metrics_description">在一个小部件中查看今天的卡路里、蛋白质、碳水和脂肪。</string>
     <string name="settings_needs_health_connect">需要 Health Connect</string>
-    <string name="settings_energy_goals_info">开启后，NoFUD 会使用来自 Health Connect 的实测消耗热量（活动 + 基础能量的 14 天平均值）作为计算目标时的维持热量（TDEE）基准，而不是公式估算。读取消耗数据不使用 AI。需要 Health Connect。与“重新计算”按钮及 Adaptive Goals 配合使用。</string>
-    <string name="settings_adaptive_goals_info">大约每周一次，当你打开应用时，NoFUD 会根据你的资料、最近记录的饮食和体重趋势，自动重新运行完整的目标计算（与“重新计算”按钮相同）。如果已开启 Energy Burn，则会以实测消耗作为维持热量的基准。若 AI 不可用则静默跳过。关闭后会恢复到该功能首次更改前的目标。这不是医疗建议。</string>
+    <string name="settings_energy_goals_info">开启后，Chompass 会使用来自 Health Connect 的实测消耗热量（活动 + 基础能量的 14 天平均值）作为计算目标时的维持热量（TDEE）基准，而不是公式估算。读取消耗数据不使用 AI。需要 Health Connect。与“重新计算”按钮及 Adaptive Goals 配合使用。</string>
+    <string name="settings_adaptive_goals_info">大约每周一次，当你打开应用时，Chompass 会根据你的资料、最近记录的饮食和体重趋势，自动重新运行完整的目标计算（与“重新计算”按钮相同）。如果已开启 Energy Burn，则会以实测消耗作为维持热量的基准。若 AI 不可用则静默跳过。关闭后会恢复到该功能首次更改前的目标。这不是医疗建议。</string>
     <string name="onboarding_plan_adaptive_note">你的计划会根据记录每周自动调整 - 想保持不变，可在设置中关闭 Adaptive Goals。</string>
     <string name="onboarding_feature_snap">拍张照片 - AI 帮你记录</string>
     <string name="onboarding_feature_coach">了解你数据的教练</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">“锻炼”标签页已移除。</string>
     <string name="whats_new_v30_home">主页焕新：仪表盘式卡路里表、竖向宏量条、四张营养卡片和悬浮添加按钮。</string>
     <string name="whats_new_v30_coach_voice">用新的内置录音条向教练语音提问。</string>
-    <string name="whats_new_v30_share">把任意一餐分享为链接，在 iPhone 或 Android 上直接打开 NoFUD。</string>
+    <string name="whats_new_v30_share">把任意一餐分享为链接，在 iPhone 或 Android 上直接打开 Chompass。</string>
     <string name="whats_new_v30_export">在设置中将饮食日记导出为 JSON、Markdown 或 CSV。</string>
     <string name="whats_new_v30_reprocess">用 AI 重新处理已记录的餐食 - 调整名称、份量或备注后重新分析。</string>
     <string name="whats_new_v30_camera">相机 + 相机会保留两张照片，并排拼接。</string>

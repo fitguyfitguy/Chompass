@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD Calorieën</string>
+    <string name="widget_calorie_label">Chompass Calorieën</string>
     <string name="widget_calorie_description">Bekijk in één oogopslag de calorieën en macro\'s van vandaag.</string>
-    <string name="widget_protein_label">NoFUD Eiwit</string>
+    <string name="widget_protein_label">Chompass Eiwit</string>
     <string name="widget_protein_description">Bekijk in één oogopslag je eiwitvoortgang van vandaag.</string>
     <string name="widget_today">Vandaag</string>
     <string name="widget_protein">Eiwit</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Terug</string>
-    <string name="onboarding_logo_description">NoFUD-logo</string>
+    <string name="onboarding_logo_description">Chompass-logo</string>
     <string name="onboarding_welcome_line1">Eet slim,</string>
     <string name="onboarding_welcome_line2">Leef beter</string>
     <string name="onboarding_welcome_subtitle">Snap, registreer en bloei op.\nJouw voeding, vereenvoudigd.</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">Verbinden</string>
 
     <string name="onboarding_provider_title">Breng je eigen AI mee</string>
-    <string name="onboarding_provider_subtitle">NoFUD heeft een AI-providersleutel nodig om\nje eten te analyseren. Je gebruikt je eigen sleutel.</string>
+    <string name="onboarding_provider_subtitle">Chompass heeft een AI-providersleutel nodig om\nje eten te analyseren. Je gebruikt je eigen sleutel.</string>
     <string name="onboarding_provider_recommended_title">Aanbevolen: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Gratis abonnement beschikbaar, snel &amp; nauwkeurig</string>
     <string name="onboarding_provider_howto_title">Zo krijg je een gratis Google AI Studio-sleutel</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">Zondag</string>
     <string name="settings_notifications">Meldingen</string>
     <string name="settings_battery_opt">Batterijoptimalisatie</string>
-    <string name="settings_battery_opt_value">NoFUD op witte lijst</string>
+    <string name="settings_battery_opt_value">Chompass op witte lijst</string>
 
     <string name="settings_ai_provider">Provider</string>
     <string name="settings_ai_model">Model</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">Een doel om aan te komen vereist een streefgewicht boven je huidige gewicht.</string>
     <string name="settings_permission_title">Permissie nodig</string>
 
-    <string name="settings_notifications_denied">Meldingenpermissie geweigerd. Schakel deze in via Systeeminstellingen → Apps → NoFUD → Meldingen om herinneringen te ontvangen.</string>
+    <string name="settings_notifications_denied">Meldingenpermissie geweigerd. Schakel deze in via Systeeminstellingen → Apps → Chompass → Meldingen om herinneringen te ontvangen.</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Tijd om te wegen</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">Probleem melden</string>
     <string name="about_request_feature">Functie aanvragen</string>
     <string name="about_privacy">Privacybeleid</string>
-    <string name="about_made_by">NoFUD door fitguy</string>
+    <string name="about_made_by">Chompass door fitguy</string>
     <string name="about_with_care">Gebaseerd op Fud AI door Apoorv Darshan</string>
-    <string name="about_share_message">Ik houd mijn maaltijden bij met NoFUD - maak een foto, spreek het in of typ het, en de AI logt de calorieën. Het is gratis, open source, en je gegevens blijven op je apparaat.\n\nDownload: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">NoFUD delen</string>
+    <string name="about_share_message">Ik houd mijn maaltijden bij met Chompass - maak een foto, spreek het in of typ het, en de AI logt de calorieën. Het is gratis, open source, en je gegevens blijven op je apparaat.\n\nDownload: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Chompass delen</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">Streak-herinnering</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">Reserveprovider</string>
     <string name="settings_enable_fallback">Reserve inschakelen</string>
     <string name="settings_fallback_footer">Als je primaire provider faalt (overbelasting, snelheidslimiet, netwerkfout), probeert de app automatisch opnieuw met deze reserve. Dezelfde provider als de primaire is toegestaan - kies gewoon een ander model.</string>
-    <string name="widget_all_metrics_label">NoFUD Vandaag</string>
+    <string name="widget_all_metrics_label">Chompass Vandaag</string>
     <string name="widget_all_metrics_description">Bekijk de calorieën, eiwitten, koolhydraten en vetten van vandaag in één widget.</string>
     <string name="settings_needs_health_connect">Vereist Health Connect</string>
-    <string name="settings_energy_goals_info">Indien ingeschakeld gebruikt NoFUD je gemeten verbrande calorieën uit Health Connect - een 14-daags gemiddelde van actieve + basale energie - als onderhoudsanker (TDEE) bij het berekenen van doelen, in plaats van de formuleschatting. Er wordt geen AI gebruikt om je verbruik te lezen. Vereist Health Connect. Werkt met de knop Opnieuw berekenen en met Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Ongeveer één keer per week, wanneer je de app opent, voert NoFUD automatisch de volledige doelberekening opnieuw uit - dezelfde als de knop Opnieuw berekenen - op basis van je profiel, recent gelogde voeding en je gewichtstrend. Als Energy Burn aanstaat, wordt je gemeten verbruik gebruikt als onderhoudsanker. Als de AI niet beschikbaar is, wordt de run stilletjes overgeslagen. Bij uitschakelen worden de doelen hersteld van vóór de eerste wijziging door deze functie. Dit is geen medisch advies.</string>
+    <string name="settings_energy_goals_info">Indien ingeschakeld gebruikt Chompass je gemeten verbrande calorieën uit Health Connect - een 14-daags gemiddelde van actieve + basale energie - als onderhoudsanker (TDEE) bij het berekenen van doelen, in plaats van de formuleschatting. Er wordt geen AI gebruikt om je verbruik te lezen. Vereist Health Connect. Werkt met de knop Opnieuw berekenen en met Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">Ongeveer één keer per week, wanneer je de app opent, voert Chompass automatisch de volledige doelberekening opnieuw uit - dezelfde als de knop Opnieuw berekenen - op basis van je profiel, recent gelogde voeding en je gewichtstrend. Als Energy Burn aanstaat, wordt je gemeten verbruik gebruikt als onderhoudsanker. Als de AI niet beschikbaar is, wordt de run stilletjes overgeslagen. Bij uitschakelen worden de doelen hersteld van vóór de eerste wijziging door deze functie. Dit is geen medisch advies.</string>
     <string name="onboarding_plan_adaptive_note">Je plan past zich wekelijks aan op basis van je logs - zet Adaptive Goals uit in Instellingen om het vast te houden.</string>
     <string name="onboarding_feature_snap">Maak een foto - de AI logt het</string>
     <string name="onboarding_feature_coach">Coach die je gegevens kent</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">Het Workouts-tabblad is verwijderd.</string>
     <string name="whats_new_v30_home">Home vernieuwd: snelheidsmeter voor calorieën, verticale macrobalken, vier voedingskaarten en een zwevende toevoegknop.</string>
     <string name="whats_new_v30_coach_voice">Stel de Coach een vraag met je stem via de nieuwe ingebouwde recorder.</string>
-    <string name="whats_new_v30_share">Deel elke maaltijd als een link die direct in NoFUD opent - op iPhone of Android.</string>
+    <string name="whats_new_v30_share">Deel elke maaltijd als een link die direct in Chompass opent - op iPhone of Android.</string>
     <string name="whats_new_v30_export">Exporteer je eetdagboek als JSON, Markdown of CSV via Instellingen.</string>
     <string name="whats_new_v30_reprocess">Verwerk een gelogde maaltijd opnieuw met AI - pas naam, portie of notitie aan en analyseer opnieuw.</string>
     <string name="whats_new_v30_camera">Camera + Camera bewaart beide foto\'s, zij aan zij samengevoegd.</string>

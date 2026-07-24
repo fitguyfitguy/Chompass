@@ -15,7 +15,7 @@
 # Env:
 #   ADB_BIN   adb binary (see scripts/_adb_resolve.sh)
 #   APK       debug APK path (default: android/app/build/outputs/apk/debug/app-debug.apk)
-#   PACKAGE   default org.codeberg.fitguy.nofud.debug
+#   PACKAGE   default app.chompass.debug
 
 set -euo pipefail
 
@@ -23,8 +23,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=scripts/_adb_resolve.sh
 . "${ROOT}/scripts/_adb_resolve.sh"
 
-PACKAGE="${PACKAGE:-org.codeberg.fitguy.nofud.debug}"
-ACTIVITY="${PACKAGE}/org.codeberg.fitguy.nofud.MainActivity"
+PACKAGE="${PACKAGE:-app.chompass.debug}"
+ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
 APK="${APK:-${ROOT}/android/app/build/outputs/apk/debug/app-debug.apk}"
 DO_INSTALL=0
 DO_SMOKE=1
@@ -72,7 +72,7 @@ fi
 
 if ! "${ADB_BIN}" shell pm path "${PACKAGE}" >/dev/null 2>&1; then
   echo "ERROR: ${PACKAGE} not installed. Re-run with --install or install from PowerShell:" >&2
-  echo '  adb install -r \\wsl$\archlinux\home\archliNix\NoFUD\android\app\build\outputs\apk\debug\app-debug.apk' >&2
+  echo '  adb install -r \\wsl$\archlinux\home\archliNix\Chompass\android\app\build\outputs\apk\debug\app-debug.apk' >&2
   exit 1
 fi
 
@@ -149,7 +149,7 @@ Force-stop + cold start:
 
 Clear logcat before a test:
   ${ADB_BIN} logcat -c
-  ${ADB_BIN} logcat -s AndroidRuntime NoFUD FudAI
+  ${ADB_BIN} logcat -s AndroidRuntime Chompass FudAI
 
 Seed progress tab data (optional):
   ${ADB_BIN} shell am start -n ${ACTIVITY} --ez seed_test_data true
@@ -164,10 +164,10 @@ EOF
 section "PowerShell equivalents (Windows host adb)"
 cat <<'EOF'
 Install debug APK from WSL path:
-  adb install -r \\wsl$\archlinux\home\archliNix\NoFUD\android\app\build\outputs\apk\debug\app-debug.apk
+  adb install -r \\wsl$\archlinux\home\archliNix\Chompass\android\app\build\outputs\apk\debug\app-debug.apk
 
 Launch:
-  adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity
+  adb shell am start -n app.chompass.debug/app.chompass.MainActivity
 
 Logcat:
   adb logcat -c

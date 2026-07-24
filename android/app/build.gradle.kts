@@ -42,7 +42,7 @@ val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "
 val releaseAbi: String? = providers.gradleProperty("releaseAbi").orNull
 
 android {
-    namespace = "org.codeberg.fitguy.nofud"
+    namespace = "app.chompass"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -50,11 +50,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = "org.codeberg.fitguy.nofud"
+        applicationId = "app.chompass"
         minSdk = 26
         targetSdk = 36
-        versionCode = 27
-        versionName = "2.0.0"
+        versionCode = 28
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         if (releaseAbi != null) {
@@ -98,7 +98,7 @@ android {
             // with a release build on the same device.
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
-            // Seeded into the encrypted KeyStore on first launch (see NoFUDApp).
+            // Seeded into the encrypted KeyStore on first launch (see ChompassApp).
             buildConfigField("String", "GEMINI_API_KEY", bcString(geminiDebugApiKey))
         }
         create("debug2") {
@@ -156,7 +156,7 @@ android {
 // Cross-app parity fixtures live at repo-root testdata/parity/ (shared with the PWA).
 tasks.withType<Test>().configureEach {
     val parityDir = rootProject.projectDir.resolve("../testdata/parity").normalize()
-    systemProperty("nofud.parity.dir", parityDir.absolutePath)
+    systemProperty("chompass.parity.dir", parityDir.absolutePath)
 }
 
 dependencies {

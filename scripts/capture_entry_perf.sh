@@ -18,8 +18,8 @@ set -euo pipefail
 # While it records, exercise the add-entry flows on the device (text, photo +
 # Save, manual add, barcode). Artifacts land in android/build/perf-entry/<stamp>/.
 
-PACKAGE="${1:-org.codeberg.fitguy.nofud.debug}"
-ACTIVITY="${PACKAGE}/org.codeberg.fitguy.nofud.MainActivity"
+PACKAGE="${1:-app.chompass.debug}"
+ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
 
 # shellcheck source=scripts/_adb_resolve.sh
 . "$(dirname "$0")/_adb_resolve.sh"

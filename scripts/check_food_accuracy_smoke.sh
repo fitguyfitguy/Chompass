@@ -10,12 +10,12 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --prompt compact \
   --provider stub \
   --limit 5 \
-  --out /tmp/nofud_food_acc_smoke
+  --out /tmp/chompass_food_acc_smoke
 
 echo "== grounded metrics on example trace =="
 uv run python docs/benchmarks/food_accuracy/grounded_metrics.py \
   --trace docs/benchmarks/food_accuracy/manifest/grounded_trace_example.jsonl \
-  --out /tmp/nofud_grounded_metrics_smoke.json
+  --out /tmp/chompass_grounded_metrics_smoke.json
 
 echo "== retrieval golden vectors =="
 uv run python docs/benchmarks/food_accuracy/check_retrieval_golden.py

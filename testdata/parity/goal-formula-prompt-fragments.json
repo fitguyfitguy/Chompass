@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "Canonical AI goal-prompt formula lines. Android GoalFormulaReference and PWA nofud-core/goal-formula-reference.js must match. Refresh when PAL / protein g/kg / KCAL_PER_KG_BODY_MASS change.",
+  "notes": "Canonical AI goal-prompt formula lines. Android GoalFormulaReference and PWA chompass-core/goal-formula-reference.js must match. Refresh when PAL / protein g/kg / KCAL_PER_KG_BODY_MASS change.",
   "activityMultipliersLine": "sedentary 1.2, light 1.375, moderate 1.465, active 1.55, very_active 1.725, extra_active 1.9",
   "proteinPerKgLine": "sedentary 0.8, light 1.2, moderate 1.6, active 1.8, very_active 2, extra_active 2.2",
   "calorieAdjustmentLine": "lose: -(weeklyChangeKg*7700/7); gain: +(weeklyChangeKg*7700/7)",

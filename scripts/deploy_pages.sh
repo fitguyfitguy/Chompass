@@ -2,11 +2,11 @@
 # Build the Hugo project site, copy the web/app/ PWA into public/app/, and
 # force-push website/public to the orphan `pages` branch for Codeberg Pages
 # (git-pages webhook deploy — no Actions runner). Lands the PWA at
-# fitguy.codeberg.page/NoFUD/app/ alongside the marketing site.
+# chompass.app/app/ (custom domain via .domains) alongside the marketing site.
 #
 # One-time Codeberg setup (repo Settings → Webhooks → Add webhook):
 #   Type: Forgejo
-#   Target URL: https://fitguy.codeberg.page/NoFUD/
+#   Target URL: https://chompass.app/
 #   Branch filter: pages
 # Do not use "Test delivery" (it fails by design). Push this branch instead.
 #
@@ -22,7 +22,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-BASE_URL="${PAGES_BASE_URL:-https://fitguy.codeberg.page/NoFUD/}"
+BASE_URL="${PAGES_BASE_URL:-https://chompass.app/}"
 REMOTE="${PAGES_REMOTE:-origin}"
 BRANCH="${PAGES_BRANCH:-pages}"
 # Prefer fitguy SSH host alias (see ~/.ssh/config Host codeberg-fitguy).
@@ -95,7 +95,10 @@ git init -q -b "$BRANCH" "$WORKDIR"
 cp -a "$PUBLIC"/. "$WORKDIR"/
 rm -f "$WORKDIR/.hugo_build.lock" 2>/dev/null || true
 
-git -C "$WORKDIR" config user.name "$(git config user.name || echo 'NoFUD Pages')"
+# Custom domain for Codeberg Pages: first line is canonical.
+printf 'chompass.app\nwww.chompass.app\nfitguy.codeberg.page\n' > "$WORKDIR/.domains"
+
+git -C "$WORKDIR" config user.name "$(git config user.name || echo 'Chompass Pages')"
 git -C "$WORKDIR" config user.email "$(git config user.email || echo 'pages@localhost')"
 git -C "$WORKDIR" add -A
 if git -C "$WORKDIR" diff --cached --quiet; then

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build a compact USDA Foundation + FNDDS SQLite index for NoFUD grounded entry.
+"""Build a compact USDA Foundation + FNDDS SQLite index for Chompass grounded entry.
 
 Downloads a pinned FoodData Central bulk CSV release (or uses --fixture to emit a
-tiny committed seed without network), normalizes NoFUD-supported nutrients to
+tiny committed seed without network), normalizes Chompass-supported nutrients to
 per-100g, and writes (debug APK assets only while grounded entry is gated):
 
   android/app/src/debug/assets/usda/usda_foods.sqlite
@@ -39,7 +39,7 @@ DEFAULT_ZIP_URL = (
 )
 DATASET_VERSION = "fdc-2024-10-31-foundation-fndds"
 
-# FoodData Central nutrient IDs → NoFUD column names (per 100 g).
+# FoodData Central nutrient IDs → Chompass column names (per 100 g).
 NUTRIENT_MAP = {
     "1008": "calories",  # Energy (kcal)
     "1003": "protein",

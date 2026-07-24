@@ -4,7 +4,7 @@ description: Food logging, BYOK AI, keto modes, open export, browser PWA, and An
 layout: single
 ---
 
-Calorie and macro tracking as an [installable PWA](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser and as an Android app. Core logging from Fud AI plus fork-specific additions.
+Calorie and macro tracking as an [installable PWA](https://chompass.app/app/) in any modern browser and as an Android app. Core logging from Fud AI plus fork-specific additions.
 
 ## Food logging
 
@@ -12,7 +12,7 @@ Multi-photo capture (up to 10), share into the Android app, voice, barcode, text
 
 ## Browser PWA
 
-The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser on phone, tablet, or desktop (including desktop webcams for meal photos and barcode). Install to the home screen or dock when offered. Covers diary, progress, BYOK AI entry and Coach, settings, and onboarding. Diary and body-metrics JSON match the Android app. Chromium-based browsers work best for install, camera barcode, and speech; Firefox and Safari work with some feature gaps.
+The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phone, tablet, or desktop (including desktop webcams for meal photos and barcode). Install to the home screen or dock when offered. Covers diary, progress, BYOK AI entry and Coach, settings, and onboarding. Diary and body-metrics JSON match the Android app. Chromium-based browsers work best for install, camera barcode, and speech; Firefox and Safari work with some feature gaps.
 
 **Android-app extras:** Health Connect, widgets, notifications, on-device Gemma 4, and the full 15-language pack.
 
@@ -38,9 +38,9 @@ Optional local water log. Android app: reminders and home-screen calorie, protei
 
 ## Why this fork
 
-NoFUD started when upstream [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) briefly shipped AdMob. Huge thanks to **Apoorv Darshan** and Fud&nbsp;AI. This fork keeps that core BYOK food logger and adds an Android app plus browser PWA on Codeberg. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
+Chompass started when upstream [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) briefly shipped AdMob. Huge thanks to **Apoorv Darshan** and Fud&nbsp;AI. This fork keeps that core BYOK food logger and adds an Android app plus browser PWA on Codeberg. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
 
-| Feature | [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) | NoFUD Android | [NoFUD&nbsp;PWA](https://fitguy.codeberg.page/NoFUD/app/) |
+| Feature | [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android | [Chompass&nbsp;PWA](https://chompass.app/app/) |
 |---------|--------|---------------|-----------|
 | Banner ads | Brief AdMob; removed in 3.0.3 | **Never shipped** | **Never shipped** |
 | On-device AI (Gemma&nbsp;4) | No | **Yes** (opt-in) | No (BYOK cloud) |
@@ -59,4 +59,4 @@ NoFUD started when upstream [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-a
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect (Android app)
 - **PWA + Android:** installable PWA in any modern browser; Material 3 Android app; shared JSON contracts
 
-Full comparison also lives in the [project README](https://codeberg.org/fitguy/NoFUD). Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).
+Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).

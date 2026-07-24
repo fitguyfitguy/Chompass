@@ -1,18 +1,18 @@
 <div align="center">
 
-<img src="metadata/en-US/images/icon.png" alt="NoFUD icon" width="96" />
+<img src="metadata/en-US/images/icon.png" alt="Chompass icon" width="96" />
 
-# NoFUD
+# Chompass
 
 **Ad-free AI calorie tracker: Android app and browser PWA**
 
 Bring your own cloud AI key on either client. On the Android app you can also run Gemma 4 on-device. Fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with no ads and no analytics.
 
-[Website](https://fitguy.codeberg.page/NoFUD/) · [Download](https://fitguy.codeberg.page/NoFUD/download/) · [Web app](https://fitguy.codeberg.page/NoFUD/app/) · [Privacy](docs/PRIVACY.md)
+[Website](https://chompass.app/) · [Download](https://chompass.app/download/) · [Web app](https://chompass.app/app/) · [Privacy](docs/PRIVACY.md)
 
-[![Latest release](https://img.shields.io/gitea/v/release/fitguy/NoFUD?gitea_url=https://codeberg.org&style=flat-square&label=release&color=127059)](https://codeberg.org/fitguy/NoFUD/releases)
-[![PWA](https://img.shields.io/badge/Platform-PWA-127059?style=flat-square&logo=pwa&logoColor=white)](https://fitguy.codeberg.page/NoFUD/app/)
-[![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/NoFUD)
+[![Latest release](https://img.shields.io/gitea/v/release/fitguy/Chompass?gitea_url=https://codeberg.org&style=flat-square&label=release&color=127059)](https://codeberg.org/fitguy/chompass/releases)
+[![PWA](https://img.shields.io/badge/Platform-PWA-127059?style=flat-square&logo=pwa&logoColor=white)](https://chompass.app/app/)
+[![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/chompass)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](docs/PRIVACY.md)
 
@@ -20,17 +20,17 @@ Bring your own cloud AI key on either client. On the Android app you can also ru
 
 Log food with a photo, voice, barcode, share intent, or typed note. Use your own cloud AI key, or download Gemma 4 once for on-device analysis in the Android app. No ads, no account, no analytics. Open diary and body-metrics exports on both clients; [Health Connect](https://developer.android.com/health-and-fitness/guides/health-connect) for scales and wearables in the Android app.
 
-Use the [installable PWA](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech) or the Android APK. Both use the same diary and body-metrics JSON contracts; there is no cloud sync between clients. Health Connect, widgets, notifications, on-device AI, and full i18n are Android-app features. Project home: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
+Use the [installable PWA](https://chompass.app/app/) in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech) or the Android APK. Both use the same diary and body-metrics JSON contracts; there is no cloud sync between clients. Health Connect, widgets, notifications, on-device AI, and full i18n are Android-app features. Project home: [codeberg.org/fitguy/chompass](https://codeberg.org/fitguy/chompass).
 
 ## Install
 
 ### Web app (PWA)
 
-Open [fitguy.codeberg.page/NoFUD/app/](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser (phone, tablet, or desktop). It is a progressive web app you can install to the home screen or dock. Diary logging, progress, BYOK AI entry and Coach, and shared JSON export/import with the Android app.
+Open [chompass.app/app/](https://chompass.app/app/) in any modern browser (phone, tablet, or desktop). It is a progressive web app you can install to the home screen or dock. Diary logging, progress, BYOK AI entry and Coach, and shared JSON export/import with the Android app.
 
 Works in Firefox, Safari, and other engines; **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, etc.) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
-Step-by-step install for iOS, Android, and desktop browsers: [Download → How to install](https://fitguy.codeberg.page/NoFUD/download/#how-to-install) (also **Settings → Install app** inside the PWA).
+Step-by-step install for iOS, Android, and desktop browsers: [Download → How to install](https://chompass.app/download/#how-to-install) (also **Settings → Install app** inside the PWA).
 
 ### Android app
 
@@ -38,17 +38,17 @@ Not on the Play Store. F-Droid metadata is submitted; until the package shows up
 
 <div align="center">
 
-[![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://codeberg.org/fitguy/nofud)
+[![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://codeberg.org/fitguy/chompass)
 
-[![Codeberg Releases](https://img.shields.io/badge/Download-APK%20on%20Codeberg-127059?style=for-the-badge&logo=android&logoColor=white)](https://codeberg.org/fitguy/nofud/releases)
+[![Codeberg Releases](https://img.shields.io/badge/Download-APK%20on%20Codeberg-127059?style=for-the-badge&logo=android&logoColor=white)](https://codeberg.org/fitguy/chompass/releases)
 
 </div>
 
-- **Obtainium** *(recommended)*: tap the badge above, then confirm in Obtainium. Or paste `https://codeberg.org/fitguy/nofud` into **Add App**.
-- **Direct APK**: download from [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases). Prefer `arm64-v8a` on modern phones; use `armeabi-v7a` for older 32-bit devices, `x86_64` for emulators/Chromebooks, or universal only when unsure.
-- **F-Droid**: package `org.codeberg.fitguy.nofud` ([expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed).
+- **Obtainium** *(recommended)*: tap the badge above, then confirm in Obtainium. Or paste `https://codeberg.org/fitguy/chompass` into **Add App**.
+- **Direct APK**: download from [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases). Prefer `arm64-v8a` on modern phones; use `armeabi-v7a` for older 32-bit devices, `x86_64` for emulators/Chromebooks, or universal only when unsure.
+- **F-Droid**: package `app.chompass` ([expected listing](https://f-droid.org/packages/app.chompass/) once indexed).
 
-Release package ID: `org.codeberg.fitguy.nofud`. Debug (from source): `org.codeberg.fitguy.nofud.debug`.
+Release package ID: `app.chompass`. Debug (from source): `app.chompass.debug`.
 
 ## Screenshots
 
@@ -87,20 +87,20 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
 
 ## Features
 
-Shared on the [PWA](https://fitguy.codeberg.page/NoFUD/app/) and Android app unless noted:
+Shared on the [PWA](https://chompass.app/app/) and Android app unless noted:
 
 - **Food logging**: multi-photo (up to 10), share into the app (Android), voice, barcode (FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser / Open Food Facts on web), text, manual entry, saved meals, draft recovery
 - **AI**: cloud BYOK (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use). On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
 - **Progress**: weight, body fat, measurements, forecast. **Health Connect** (Android): steps, exercise, wellness; two-way sync with Gadgetbridge, openScale, and other Health Connect apps
 - **Diet & extras**: keto and other diet modes, water tracking. Android: home-screen widgets, 15 languages (web is EN-first)
-- **Open data**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links (`nofud://` on Android; hash URL on web)
-- **Size (Android)**: ~15 MiB arm64 / ~27 MiB universal; no ads, analytics, or workout library ([releases](https://codeberg.org/fitguy/NoFUD/releases))
+- **Open data**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links (`chompass://` on Android; hash URL on web)
+- **Size (Android)**: ~15 MiB arm64 / ~27 MiB universal; no ads, analytics, or workout library ([releases](https://codeberg.org/fitguy/chompass/releases))
 
-## Why NoFUD
+## Why Chompass
 
-NoFUD forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds open export/import plus Health Connect. It does not try to match upstream feature for feature.
+Chompass forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds open export/import plus Health Connect. It does not try to match upstream feature for feature.
 
-Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)), and a data-compatible [PWA](https://fitguy.codeberg.page/NoFUD/app/) for any modern browser.
+Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)), and a data-compatible [PWA](https://chompass.app/app/) for any modern browser.
 
 See [CHANGELOG.md](docs/CHANGELOG.md) for release notes.
 
@@ -120,7 +120,7 @@ Coach chat still needs a cloud provider. Added in [v1.14.0](docs/CHANGELOG.md#11
 
 ## Health Connect
 
-**Android app.** NoFUD uses **Android Health Connect**. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with NoFUD:
+**Android app.** Chompass uses **Android Health Connect**. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with Chompass:
 
 | Companion | What it brings | Notes |
 |-----------|----------------|-------|
@@ -133,7 +133,7 @@ Coach chat still needs a cloud provider. Added in [v1.14.0](docs/CHANGELOG.md#11
 | **In** | Weight and body fat (live), meals from other apps, steps and exercise, sleep / resting HR / hydration, active/total energy burn |
 | **Out** | Every meal as a full `NutritionRecord`, plus weight, body fat, and height |
 
-Optional **background sync** (Settings → Health & Data, off by default) checks Health Connect every few hours when NoFUD is closed.
+Optional **background sync** (Settings → Health & Data, off by default) checks Health Connect every few hours when Chompass is closed.
 
 > **Huawei Health users:** pair your wearable with [Gadgetbridge](https://gadgetbridge.org/) instead. Huawei Health Kit requires an HMS account and is not supported.
 
@@ -141,14 +141,14 @@ Optional **background sync** (Settings → Health & Data, off by default) checks
 
 | Path | Steps |
 |------|-------|
-| **A: File export** | In Fud AI, export your food diary as JSON. In NoFUD (Android or web), open **Settings → Import Food Diary JSON** |
+| **A: File export** | In Fud AI, export your food diary as JSON. In Chompass (Android or web), open **Settings → Import Food Diary JSON** |
 | **B: Health Connect** | Enable Health Connect in both apps and grant read permissions (Android) |
 
-**Settings → Import Weight & Body Data** also accepts NoFUD JSON/CSV, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and common weight CSVs. Body-circumference sites have no Health Connect record type, so use file transfer for those.
+**Settings → Import Weight & Body Data** also accepts Chompass JSON/CSV, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and common weight CSVs. Body-circumference sites have no Health Connect record type, so use file transfer for those.
 
-### Fud AI vs NoFUD Android vs NoFUD PWA
+### Fud AI vs Chompass Android vs Chompass PWA
 
-| Feature | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | NoFUD Android | [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) |
+| Feature | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android | [Chompass PWA](https://chompass.app/app/) |
 |---------|--------|---------------|-----------|
 | Banner ads | Brief AdMob; removed in 3.0.3 | **Never shipped** | **Never shipped** |
 | On-device AI (Gemma 4) | No | **Yes** (opt-in) | No (BYOK cloud) |
@@ -161,7 +161,7 @@ Optional **background sync** (Settings → Health & Data, off by default) checks
 | Distribution | Play-focused | **Codeberg** / Obtainium / F-Droid | **PWA** in any modern browser (`/app/`) |
 | Open diary / body JSON | Upstream formats | **Yes** | **Same contracts as Android** |
 
-Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [NoFUD releases](https://codeberg.org/fitguy/NoFUD/releases). Capability matrix for maintainers: [`docs/PARITY.md`](docs/PARITY.md).
+Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Capability matrix for maintainers: [`docs/PARITY.md`](docs/PARITY.md).
 
 ## Performance
 
@@ -174,11 +174,11 @@ Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [N
 
 Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/).
 
-No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a NoFUD server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
+No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 
 ## Attribution & license
 
-NoFUD is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License

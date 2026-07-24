@@ -2,7 +2,7 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "nofud-shell-v14";
+const CACHE_NAME = "chompass-shell-v1";
 
 const SHELL_ASSETS = [
   "./",
@@ -47,12 +47,12 @@ const SHELL_ASSETS = [
   "./src/lib/ui/camera-capture.js",
   "./src/lib/ui/photo-ai-flow.js",
   "./src/lib/ui/voice-capture.js",
-  "./src/lib/nofud-core/models.js",
-  "./src/lib/nofud-core/formulas.js",
-  "./src/lib/nofud-core/forecast.js",
-  "./src/lib/nofud-core/diary-format.js",
-  "./src/lib/nofud-core/body-metrics-format.js",
-  "./src/lib/nofud-core/export-text.js",
+  "./src/lib/chompass-core/models.js",
+  "./src/lib/chompass-core/formulas.js",
+  "./src/lib/chompass-core/forecast.js",
+  "./src/lib/chompass-core/diary-format.js",
+  "./src/lib/chompass-core/body-metrics-format.js",
+  "./src/lib/chompass-core/export-text.js",
   "./src/lib/ai/providers.js",
   "./src/lib/ai/key-storage.js",
   "./src/lib/ai/tools.js",

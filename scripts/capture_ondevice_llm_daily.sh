@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Captures on-device LLM daily benchmark logcat for NoFUD debug builds.
+# Captures on-device LLM daily benchmark logcat for Chompass debug builds.
 # Usage:
 #   scripts/capture_ondevice_llm_daily.sh [matrix_run]
 #   ADB_BIN=/path/to/adb.exe scripts/capture_ondevice_llm_daily.sh 4
 #
 # matrix_run: 1–4 (see docs/ON_DEVICE_LLM.md). Default: 4 (daily-driver preset).
 
-PACKAGE="${PACKAGE:-org.codeberg.fitguy.nofud.debug}"
-ACTIVITY="${PACKAGE}/org.codeberg.fitguy.nofud.MainActivity"
+PACKAGE="${PACKAGE:-app.chompass.debug}"
+ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
 ADB_BIN="${ADB_BIN:-adb}"
 RUN="${1:-4}"
 STAMP="$(date +%Y%m%d_%H%M%S)"

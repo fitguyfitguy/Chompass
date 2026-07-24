@@ -3,7 +3,7 @@
 // Prefer capability detection over UA sniffing so desktop webcams and
 // tablets both get sensible constraints.
 
-const PREFERRED_DEVICE_KEY = "nofud.preferredVideoDeviceId.v1";
+const PREFERRED_DEVICE_KEY = "chompass.preferredVideoDeviceId.v1";
 
 /**
  * Secure context + MediaDevices.getUserMedia (required for live preview).

@@ -1,6 +1,6 @@
 // @ts-check
 import { profile as profileStore, prefs } from "../lib/db.js";
-import { dailyTargets } from "../lib/nofud-core/formulas.js";
+import { dailyTargets } from "../lib/chompass-core/formulas.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
@@ -11,7 +11,7 @@ import { openInput } from "../lib/ui/dialog.js";
 
 /** @type {OnboardingStepDef[]} */
 const STEPS = [
-  { id: "welcome", title: "Welcome to NoFUD", hideChrome: true },
+  { id: "welcome", title: "Welcome to Chompass", hideChrome: true },
   { id: "sex", title: "About you" },
   { id: "age", title: "Birthday & age" },
   { id: "body", title: "Height & weight" },
@@ -75,7 +75,7 @@ export class OnboardingView extends HTMLElement {
       testMessage: "",
       howtoOpen: false,
     };
-    this.draft = /** @type {import('../lib/nofud-core/models.js').UserProfile} */ ({
+    this.draft = /** @type {import('../lib/chompass-core/models.js').UserProfile} */ ({
       sex: "other",
       age: 30,
       heightCm: 170,

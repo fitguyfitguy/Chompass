@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">Calorie NoFUD</string>
+    <string name="widget_calorie_label">Calorie Chompass</string>
     <string name="widget_calorie_description">Vedi le calorie e i macro di oggi a colpo d\'occhio.</string>
-    <string name="widget_protein_label">Proteine NoFUD</string>
+    <string name="widget_protein_label">Proteine Chompass</string>
     <string name="widget_protein_description">Vedi i progressi delle proteine di oggi a colpo d\'occhio.</string>
     <string name="widget_today">Oggi</string>
     <string name="widget_protein">Proteine</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Indietro</string>
-    <string name="onboarding_logo_description">Logo NoFUD</string>
+    <string name="onboarding_logo_description">Logo Chompass</string>
     <string name="onboarding_welcome_line1">Mangia in modo intelligente,</string>
     <string name="onboarding_welcome_line2">vivi meglio</string>
     <string name="onboarding_welcome_subtitle">Scatta, traccia e prospera.\nLa tua nutrizione, semplificata.</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">Connetti</string>
 
     <string name="onboarding_provider_title">Usa la tua IA</string>
-    <string name="onboarding_provider_subtitle">NoFUD ha bisogno di una chiave per il fornitore\ndi IA per analizzare il cibo. La porti tu.</string>
+    <string name="onboarding_provider_subtitle">Chompass ha bisogno di una chiave per il fornitore\ndi IA per analizzare il cibo. La porti tu.</string>
     <string name="onboarding_provider_recommended_title">Consigliato: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Piano gratuito disponibile, veloce e preciso</string>
     <string name="onboarding_provider_howto_title">Come ottenere una chiave gratuita di Google AI Studio</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">Domenica</string>
     <string name="settings_notifications">Notifiche</string>
     <string name="settings_battery_opt">Ottimizzazione batteria</string>
-    <string name="settings_battery_opt_value">Aggiungi NoFUD alla whitelist</string>
+    <string name="settings_battery_opt_value">Aggiungi Chompass alla whitelist</string>
 
     <string name="settings_ai_provider">Fornitore</string>
     <string name="settings_ai_model">Modello</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">Un obiettivo Aumentare richiede un target superiore al tuo peso attuale.</string>
     <string name="settings_permission_title">Autorizzazione necessaria</string>
 
-    <string name="settings_notifications_denied">Autorizzazione alle notifiche negata. Attivala in Impostazioni di sistema → App → NoFUD → Notifiche per ricevere i promemoria.</string>
+    <string name="settings_notifications_denied">Autorizzazione alle notifiche negata. Attivala in Impostazioni di sistema → App → Chompass → Notifiche per ricevere i promemoria.</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">È ora di pesarti</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">Segnala un problema</string>
     <string name="about_request_feature">Richiedi una funzione</string>
     <string name="about_privacy">Informativa sulla privacy</string>
-    <string name="about_made_by">NoFUD di fitguy</string>
+    <string name="about_made_by">Chompass di fitguy</string>
     <string name="about_with_care">Basato su Fud AI di Apoorv Darshan</string>
-    <string name="about_share_message">Sto monitorando i miei pasti con NoFUD - scatta una foto, parla o digita, e l\'IA registra le calorie. È gratis, open source e i tuoi dati restano sul tuo dispositivo.\n\nScarica: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">Condividi NoFUD</string>
+    <string name="about_share_message">Sto monitorando i miei pasti con Chompass - scatta una foto, parla o digita, e l\'IA registra le calorie. È gratis, open source e i tuoi dati restano sul tuo dispositivo.\n\nScarica: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Condividi Chompass</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">Promemoria serie</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">Provider di riserva</string>
     <string name="settings_enable_fallback">Attiva provider di riserva</string>
     <string name="settings_fallback_footer">Se il tuo provider principale fallisce (sovraccarico, limite di velocità, errore di rete), l\'app riprova automaticamente con questo provider di riserva. È consentito lo stesso provider del principale - basta scegliere un modello diverso.</string>
-    <string name="widget_all_metrics_label">NoFUD Oggi</string>
+    <string name="widget_all_metrics_label">Chompass Oggi</string>
     <string name="widget_all_metrics_description">Vedi calorie, proteine, carboidrati e grassi di oggi in un solo widget.</string>
     <string name="settings_needs_health_connect">Richiede Health Connect</string>
-    <string name="settings_energy_goals_info">Quando è attivo, NoFUD usa le tue calorie bruciate misurate da Health Connect - una media di 14 giorni di energia attiva + basale - come àncora di mantenimento (TDEE) nel calcolo degli obiettivi, invece della stima con formula. Nessuna IA viene usata per leggere il tuo consumo. Richiede Health Connect. Funziona con il pulsante Ricalcola e con Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Circa una volta a settimana, all\'apertura dell\'app, NoFUD riesegue automaticamente il calcolo completo degli obiettivi - lo stesso del pulsante Ricalcola - in base al tuo profilo, ai pasti registrati di recente e al trend del peso. Se Energy Burn è attivo, usa il tuo consumo misurato come àncora di mantenimento. Se l\'IA non è disponibile, l\'esecuzione viene saltata in silenzio. Disattivandolo vengono ripristinati gli obiettivi precedenti alla prima modifica fatta da questa funzione. Questo non è un consiglio medico.</string>
+    <string name="settings_energy_goals_info">Quando è attivo, Chompass usa le tue calorie bruciate misurate da Health Connect - una media di 14 giorni di energia attiva + basale - come àncora di mantenimento (TDEE) nel calcolo degli obiettivi, invece della stima con formula. Nessuna IA viene usata per leggere il tuo consumo. Richiede Health Connect. Funziona con il pulsante Ricalcola e con Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">Circa una volta a settimana, all\'apertura dell\'app, Chompass riesegue automaticamente il calcolo completo degli obiettivi - lo stesso del pulsante Ricalcola - in base al tuo profilo, ai pasti registrati di recente e al trend del peso. Se Energy Burn è attivo, usa il tuo consumo misurato come àncora di mantenimento. Se l\'IA non è disponibile, l\'esecuzione viene saltata in silenzio. Disattivandolo vengono ripristinati gli obiettivi precedenti alla prima modifica fatta da questa funzione. Questo non è un consiglio medico.</string>
     <string name="onboarding_plan_adaptive_note">Il tuo piano si adatta automaticamente ogni settimana in base ai log - disattiva Adaptive Goals nelle Impostazioni per mantenerlo fisso.</string>
     <string name="onboarding_feature_snap">Scatta una foto - l\'IA la registra</string>
     <string name="onboarding_feature_coach">Un coach che conosce i tuoi dati</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">La scheda Allenamenti è stata rimossa.</string>
     <string name="whats_new_v30_home">Nuova Home: tachimetro delle calorie, barre verticali dei macro, quattro schede nutrienti e un pulsante di aggiunta flottante.</string>
     <string name="whats_new_v30_coach_voice">Chiedi al Coach a voce con il nuovo registratore integrato.</string>
-    <string name="whats_new_v30_share">Condividi qualsiasi pasto come link che si apre direttamente in NoFUD, su iPhone o Android.</string>
+    <string name="whats_new_v30_share">Condividi qualsiasi pasto come link che si apre direttamente in Chompass, su iPhone o Android.</string>
     <string name="whats_new_v30_export">Esporta il diario alimentare in JSON, Markdown o CSV dalle Impostazioni.</string>
     <string name="whats_new_v30_reprocess">Rielabora un pasto registrato con l\'AI - modifica nome, porzione o nota e rianalizza.</string>
     <string name="whats_new_v30_camera">Fotocamera + Fotocamera conserva entrambi gli scatti, uniti fianco a fianco.</string>

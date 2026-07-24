@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Full-history secret / PII scan for NoFUD (gitleaks + trufflehog + path checks).
+# Full-history secret / PII scan for Chompass (gitleaks + trufflehog + path checks).
 #
 # Usage:
 #   ./scripts/scan_git_secrets.sh
-#   ./scripts/scan_git_secrets.sh --outdir /tmp/nofud-secret-scan
+#   ./scripts/scan_git_secrets.sh --outdir /tmp/chompass-secret-scan
 #   ./scripts/scan_git_secrets.sh --deep   # also run slow all-history content greps
 #
 # Requires: nix (ephemeral nixpkgs#gitleaks / #trufflehog), uv (for JSON count).
@@ -79,7 +79,7 @@ echo "==> sensitive filename history"
   for p in \
     'keystore.properties' 'secrets.properties' '.env.local' '.env' \
     '*.jks' '*.keystore' 'Fud-Food-Diary*' 'FudAI-Weight*' \
-    'SHA256SUMS' 'NoFUD-*.apk' 'diary-surrogate*'
+    'SHA256SUMS' 'Chompass-*.apk' 'diary-surrogate*'
   do
     hits="$(git log --all --full-history --oneline -- "$p" 2>/dev/null || true)"
     if [[ -n "$hits" ]]; then
@@ -139,7 +139,7 @@ fi
 
 SUMMARY="$OUTDIR/SUMMARY.txt"
 {
-  echo "NoFUD secret scan summary"
+  echo "Chompass secret scan summary"
   echo "outdir: $OUTDIR"
   echo "gitleaks_findings: $GITLEAKS_COUNT"
   echo "trufflehog_verified: $TRUFFLE_VERIFIED"

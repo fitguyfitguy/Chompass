@@ -97,7 +97,7 @@ async function render() {
 window.addEventListener("hashchange", () => {
   render();
 });
-window.addEventListener("nofud-prefs-changed", () => applyTheme());
+window.addEventListener("chompass-prefs-changed", () => applyTheme());
 
 if (!location.hash || location.hash === "#/") location.hash = "#/home";
 maybeSeedFromUrl().then(render);

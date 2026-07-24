@@ -1,8 +1,8 @@
 # F-Droid submission pack
 
-Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
+Checklist and merge-request text for adding Chompass to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
-**Application ID:** `org.codeberg.fitguy.nofud`  
+**Application ID:** `app.chompass`  
 **Current version:** 1.14.6 (versionCode 22)  
 **Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
@@ -13,7 +13,7 @@ Checklist and merge-request text for adding NoFUD to [fdroiddata](https://gitlab
 
 ### Source & releases
 
-- [x] Public git repo: https://codeberg.org/fitguy/nofud
+- [x] Public git repo: https://codeberg.org/fitguy/chompass
 - [x] MIT license in repo root
 - [x] Version tags matching `versionName` (`v1.14.2`, etc.)
 - [x] Single FOSS build; Play Core / ad SDKs removed ([`docs/DISTRIBUTION.md`](DISTRIBUTION.md))
@@ -44,8 +44,8 @@ Regenerate screenshots when UI changes: `devenv tasks run release:screenshots` (
 ### fdroiddata MR
 
 - [ ] Fork https://gitlab.com/fdroid/fdroiddata
-- [x] Copy [`fdroid/org.codeberg.fitguy.nofud.yml`](fdroid/org.codeberg.fitguy.nofud.yml) → `metadata/org.codeberg.fitguy.nofud.yml` (prepared locally)
-- [ ] Push branch `org.codeberg.fitguy.nofud` and open MR (needs GitLab auth; see below)
+- [x] Copy [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) → `metadata/app.chompass.yml` (prepared locally)
+- [ ] Push branch `app.chompass` and open MR (needs GitLab auth; see below)
 - [ ] Respond to reviewer questions in the MR
 
 ### Optional (faster path)
@@ -85,33 +85,33 @@ Copy into the GitLab MR description:
 
 ## Summary
 
-**New app:** NoFUD — ad-free, privacy-focused Android calorie and macro tracker.
+**New app:** Chompass — ad-free, privacy-focused Android calorie and macro tracker.
 
-- **Application ID:** `org.codeberg.fitguy.nofud`
+- **Application ID:** `app.chompass`
 - **License:** MIT
-- **Upstream:** https://codeberg.org/fitguy/nofud
+- **Upstream:** https://codeberg.org/fitguy/chompass
 - **Category:** Sports & Health, Diet
 
-NoFUD is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds — no ML Kit / proprietary scanner split.
+Chompass is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds — no ML Kit / proprietary scanner split.
 
 **v1.14.6** (2026-07-20): bug fixes for imperial water display, AI key trim / read timeout / token clamp, camera preview framing, delete undo, widget loading timeout, save durability, and swipe thresholds.
 
 ## Build
 
-- **Repo:** `https://codeberg.org/fitguy/nofud.git`
+- **Repo:** `https://codeberg.org/fitguy/chompass.git`
 - **Subdir:** `android/app` (app module; parent `android/settings.gradle.kts` is found automatically)
 - **Gradle:** `yes` (`assembleRelease`)
 - **Commit:** `e836f9e737d70be8dbdc48308bddb0f4eceb8e22` (tag `v1.14.6`, versionCode 22)
 - **Props:** `-PreleaseAbi=arm64-v8a` (via `gradleprops:`)
 - **Output:** `build/outputs/apk/release/app-release-unsigned.apk` under `subdir` (no `output:` needed)
-- **Codeberg release:** https://codeberg.org/fitguy/NoFUD/releases/tag/v1.14.6 (same FOSS build as F-Droid; barcode via zxing-cpp)
+- **Codeberg release:** https://codeberg.org/fitguy/chompass/releases/tag/v1.14.6 (same FOSS build as F-Droid; barcode via zxing-cpp)
 - **Reproducible builds:** not enabled yet
 
 Store metadata is in upstream `metadata/en-US/` (Fastlane/Triple-T).
 
 ## Privacy & network use
 
-Full policy: https://codeberg.org/fitguy/nofud/src/branch/main/docs/PRIVACY.md
+Full policy: https://codeberg.org/fitguy/chompass/src/branch/main/docs/PRIVACY.md
 
 | Feature | Network? | Notes |
 |---------|----------|-------|
@@ -143,7 +143,7 @@ Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, 
 
 ## Fork note
 
-Forked from Fud AI with a distinct package ID `org.codeberg.fitguy.nofud` vs upstream. I am the NoFUD maintainer.
+Forked from Fud AI with a distinct package ID `app.chompass` vs upstream. I am the Chompass maintainer.
 ```
 
 ---
@@ -164,11 +164,11 @@ devenv tasks run release:check-metadata
 
 git clone https://gitlab.com/<your-gitlab-user>/fdroiddata.git
 cd fdroiddata
-git checkout -b org.codeberg.fitguy.nofud
-cp /path/to/NoFUD/docs/fdroid/org.codeberg.fitguy.nofud.yml metadata/org.codeberg.fitguy.nofud.yml
-git add metadata/org.codeberg.fitguy.nofud.yml
-git commit -m "New App: NoFUD (org.codeberg.fitguy.nofud)"
-git push -u origin org.codeberg.fitguy.nofud
+git checkout -b app.chompass
+cp /path/to/Chompass/docs/fdroid/app.chompass.yml metadata/app.chompass.yml
+git add metadata/app.chompass.yml
+git commit -m "New App: Chompass (app.chompass)"
+git push -u origin app.chompass
 ```
 
 Open MR: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/new (paste the MR body block above)
@@ -181,9 +181,9 @@ For each release:
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
 2. Update `docs/CHANGELOG.md` and `metadata/en-US/changelogs/<versionCode>.txt`
-3. Sync [`fdroid/org.codeberg.fitguy.nofud.yml`](fdroid/org.codeberg.fitguy.nofud.yml) (`CurrentVersion`, `CurrentVersionCode`, `Builds:` entry with commit hash)
+3. Sync [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) (`CurrentVersion`, `CurrentVersionCode`, `Builds:` entry with commit hash)
 4. Run `./scripts/package_release.sh --check-metadata`, tag `v<version>` on Codeberg, publish APKs
 5. Push upstream metadata to Codeberg `main` before fdroiddata picks up the tag
 6. F-Droid `checkupdates` may open a follow-up MR automatically; otherwise refresh with `./scripts/submit_fdroiddata_mr.sh`
 
-**Latest release (2026-07-20):** v1.14.6 — upstream bug fixes (water fl oz, AI settings, widgets, swipe UX). Published at https://codeberg.org/fitguy/NoFUD/releases/tag/v1.14.6
+**Latest release (2026-07-20):** v1.14.6 — upstream bug fixes (water fl oz, AI settings, widgets, swipe UX). Published at https://codeberg.org/fitguy/chompass/releases/tag/v1.14.6

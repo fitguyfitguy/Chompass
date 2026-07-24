@@ -325,5 +325,5 @@ async function captureVideoFrame(video, opts = {}) {
   const blob = await new Promise((resolve, reject) => {
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("JPEG encode failed"))), "image/jpeg", 0.88);
   });
-  return new File([blob], `nofud-meal-${Date.now()}.jpg`, { type: "image/jpeg" });
+  return new File([blob], `chompass-meal-${Date.now()}.jpg`, { type: "image/jpeg" });
 }

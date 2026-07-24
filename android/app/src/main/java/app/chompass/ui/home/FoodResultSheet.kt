@@ -1,0 +1,923 @@
+package app.chompass.ui.home
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.UnfoldMore
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import app.chompass.R
+import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
+import app.chompass.models.MacroValueFormatter
+import app.chompass.models.MealType
+import app.chompass.models.ServingUnitOption
+import app.chompass.models.UserProfile
+import app.chompass.services.ai.FoodAnalysis
+import app.chompass.ui.theme.AppColors
+import kotlin.math.roundToInt
+import java.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+/**
+ * First-time review sheet shown after photo / text / voice analysis returns
+ * a [FoodAnalysis]. Visually identical to [EditFoodEntrySheet] — only the
+ * top-right action differs ("Log" vs "Save"). Shared visual primitives live
+ * in FoodSheetPrimitives.kt.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FoodResultSheet(
+    analysis: FoodAnalysis,
+    imageBytes: ByteArray? = null,
+    preferGramsByDefault: Boolean = false,
+    profile: UserProfile? = null,
+    dayEntries: List<FoodEntry> = emptyList(),
+    source: FoodSource = FoodSource.TEXT_INPUT,
+    onWhatIfSuggestion: (suspend (FoodEntry) -> String)? = null,
+    onSave: (
+        name: String,
+        servingGrams: Double,
+        scale: Double,
+        mealType: MealType,
+        selectedServingUnit: String?,
+        selectedServingQuantity: Double?,
+        editedAnalysis: FoodAnalysis
+    ) -> Unit,
+    onDismiss: () -> Unit,
+    isSaving: Boolean = false,
+    inferringUnits: Boolean = false,
+) {
+    val bitmap = rememberDecodedBitmap(imageBytes)
+    val state = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { target -> target != SheetValue.Hidden || !isSaving },
+    )
+    var name by remember { mutableStateOf(analysis.name) }
+    val servingUnitOptions = remember(analysis.servingUnitOptions, analysis.servingSizeGrams) {
+        ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
+    }
+    val initialServingUnit = if (preferGramsByDefault) {
+        ServingUnitOption.grams.unit
+    } else {
+        analysis.selectedServingUnit
+    }
+    var selectedServingUnitId by remember(analysis, servingUnitOptions, preferGramsByDefault) {
+        mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
+    }
+    var servingGrams by remember(analysis) { mutableStateOf(analysis.servingSizeGrams) }
+    var servingQuantityText by remember(analysis, servingUnitOptions, preferGramsByDefault) {
+        mutableStateOf(
+            ServingUnitOption.initialQuantityText(
+                totalGrams = analysis.servingSizeGrams,
+                selectedUnitId = selectedServingUnitId,
+                selectedQuantity = analysis.selectedServingQuantity,
+                options = servingUnitOptions
+            )
+        )
+    }
+    val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
+    val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+    val scale = if (analysis.servingSizeGrams > 0) servingGrams / analysis.servingSizeGrams else 1.0
+    var mealType by remember { mutableStateOf(MealType.currentMeal) }
+    var moreNutritionExpanded by remember { mutableStateOf(false) }
+    var nutritionUnlocked by remember { mutableStateOf(false) }
+    var editableCalories by remember(analysis) { mutableStateOf(analysis.calories) }
+    var editableProtein by remember(analysis) { mutableStateOf(analysis.protein) }
+    var editableCarbs by remember(analysis) { mutableStateOf(analysis.carbs) }
+    var editableFat by remember(analysis) { mutableStateOf(analysis.fat) }
+    var editableSugar by remember(analysis) { mutableStateOf(analysis.sugar) }
+    var editableAddedSugar by remember(analysis) { mutableStateOf(analysis.addedSugar) }
+    var editableFiber by remember(analysis) { mutableStateOf(analysis.fiber) }
+    var editableSaturatedFat by remember(analysis) { mutableStateOf(analysis.saturatedFat) }
+    var editableMonounsaturatedFat by remember(analysis) { mutableStateOf(analysis.monounsaturatedFat) }
+    var editablePolyunsaturatedFat by remember(analysis) { mutableStateOf(analysis.polyunsaturatedFat) }
+    var editableCholesterol by remember(analysis) { mutableStateOf(analysis.cholesterol) }
+    var editableSodium by remember(analysis) { mutableStateOf(analysis.sodium) }
+    var editablePotassium by remember(analysis) { mutableStateOf(analysis.potassium) }
+    var editableTransFat by remember(analysis) { mutableStateOf(analysis.transFat) }
+    var editableCalcium by remember(analysis) { mutableStateOf(analysis.calcium) }
+    var editableIron by remember(analysis) { mutableStateOf(analysis.iron) }
+    var editableMagnesium by remember(analysis) { mutableStateOf(analysis.magnesium) }
+    var editableZinc by remember(analysis) { mutableStateOf(analysis.zinc) }
+    var editableVitaminA by remember(analysis) { mutableStateOf(analysis.vitaminA) }
+    var editableVitaminC by remember(analysis) { mutableStateOf(analysis.vitaminC) }
+    var editableVitaminD by remember(analysis) { mutableStateOf(analysis.vitaminD) }
+    var editableVitaminB12 by remember(analysis) { mutableStateOf(analysis.vitaminB12) }
+    var editableVitaminE by remember(analysis) { mutableStateOf(analysis.vitaminE) }
+    var editableVitaminK by remember(analysis) { mutableStateOf(analysis.vitaminK) }
+    var editableFolate by remember(analysis) { mutableStateOf(analysis.folate) }
+    var editableOmega3 by remember(analysis) { mutableStateOf(analysis.omega3) }
+    var mealMenuExpanded by remember { mutableStateOf(false) }
+    var servingMenuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(analysis.servingUnitOptions, inferringUnits) {
+        if (!inferringUnits && analysis.servingUnitOptions.isNotEmpty()) {
+            val options = ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
+            if (selectedServingUnitId !in options.map { it.id }) {
+                selectedServingUnitId = ServingUnitOption.initialUnitId(analysis.selectedServingUnit, options)
+                servingQuantityText = ServingUnitOption.initialQuantityText(
+                    totalGrams = servingGrams,
+                    selectedUnitId = selectedServingUnitId,
+                    selectedQuantity = analysis.selectedServingQuantity,
+                    options = options,
+                )
+            }
+        }
+    }
+
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val dismissKeyboard = {
+        focusManager.clearFocus(force = true)
+        keyboardController?.hide()
+    }
+    val emDashText = stringResource(R.string.nutrition_em_dash)
+
+    fun scaledInt(v: Int) = (v * scale).roundToInt()
+    fun scaledMacro(v: Double) = v * scale
+    fun scaledD(v: Double?) = v?.let { ((it * scale) * 10).roundToInt() / 10.0 }
+    fun displayD(v: Double?) = v?.let { String.format("%.1f", it) } ?: emDashText
+    fun editD(v: Double?) = v?.let { String.format("%.1f", it) }.orEmpty()
+    fun decimalValue(text: String): Double? =
+        text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
+    fun baseDoubleFromText(text: String): Double = (decimalValue(text) ?: 0.0) / scale.coerceAtLeast(0.0001)
+    fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
+    fun editedAnalysis() = analysis.copy(
+        name = name.trim().ifEmpty { analysis.name },
+        calories = editableCalories,
+        protein = editableProtein,
+        carbs = editableCarbs,
+        fat = editableFat,
+        sugar = editableSugar,
+        addedSugar = editableAddedSugar,
+        fiber = editableFiber,
+        saturatedFat = editableSaturatedFat,
+        monounsaturatedFat = editableMonounsaturatedFat,
+        polyunsaturatedFat = editablePolyunsaturatedFat,
+        cholesterol = editableCholesterol,
+        sodium = editableSodium,
+        potassium = editablePotassium,
+        transFat = editableTransFat,
+        calcium = editableCalcium,
+        iron = editableIron,
+        magnesium = editableMagnesium,
+        zinc = editableZinc,
+        vitaminA = editableVitaminA,
+        vitaminC = editableVitaminC,
+        vitaminD = editableVitaminD,
+        vitaminB12 = editableVitaminB12,
+        vitaminE = editableVitaminE,
+        vitaminK = editableVitaminK,
+        folate = editableFolate,
+        omega3 = editableOmega3,
+        grounding = analysis.grounding?.copy(userCorrected = true),
+    )
+    fun previewEntry() = FoodEntry(
+        name = name.trim().ifEmpty { analysis.name },
+        calories = scaledInt(editableCalories),
+        protein = scaledMacro(editableProtein),
+        carbs = scaledMacro(editableCarbs),
+        fat = scaledMacro(editableFat),
+        timestamp = Instant.now(),
+        imageFilename = null,
+        emoji = analysis.emoji,
+        source = source,
+        mealType = mealType,
+        sugar = scaledD(editableSugar),
+        addedSugar = scaledD(editableAddedSugar),
+        fiber = scaledD(editableFiber),
+        saturatedFat = scaledD(editableSaturatedFat),
+        monounsaturatedFat = scaledD(editableMonounsaturatedFat),
+        polyunsaturatedFat = scaledD(editablePolyunsaturatedFat),
+        cholesterol = scaledD(editableCholesterol),
+        sodium = scaledD(editableSodium),
+        potassium = scaledD(editablePotassium),
+        transFat = scaledD(editableTransFat),
+        calcium = scaledD(editableCalcium),
+        iron = scaledD(editableIron),
+        magnesium = scaledD(editableMagnesium),
+        zinc = scaledD(editableZinc),
+        vitaminA = scaledD(editableVitaminA),
+        vitaminC = scaledD(editableVitaminC),
+        vitaminD = scaledD(editableVitaminD),
+        vitaminB12 = scaledD(editableVitaminB12),
+        vitaminE = scaledD(editableVitaminE),
+        vitaminK = scaledD(editableVitaminK),
+        folate = scaledD(editableFolate),
+        omega3 = scaledD(editableOmega3),
+        servingSizeGrams = servingGrams,
+        servingUnitOptions = analysis.servingUnitOptions,
+        selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+        selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity
+    )
+    var whatIfEntry by remember { mutableStateOf<FoodEntry?>(null) }
+
+    ModalBottomSheet(
+        onDismissRequest = { if (!isSaving) onDismiss() },
+        sheetState = state,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        containerColor = sheetSurface
+    ) {
+        SheetReviewToolbar(
+            title = stringResource(R.string.sheet_review_food),
+            primaryLabel = if (isSaving) {
+                stringResource(R.string.action_logging)
+            } else {
+                stringResource(R.string.action_log)
+            },
+            secondaryLabel = stringResource(R.string.action_what_if),
+            primaryEnabled = !isSaving,
+            onCancel = { if (!isSaving) onDismiss() },
+            onPrimary = {
+                if (!isSaving) {
+                    onSave(
+                        name.trim().ifEmpty { analysis.name },
+                        servingGrams,
+                        scale,
+                        mealType,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        editedAnalysis()
+                    )
+                }
+            },
+            onSecondary = { whatIfEntry = previewEntry() }
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { dismissKeyboard() })
+                }
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
+            // Square hero (captured photo) OR 80sp emoji fallback — centered.
+            item {
+                Box(
+                    Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (bitmap != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                            modifier = Modifier
+                                .size(240.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                        )
+                    } else {
+                        Text(analysis.emoji ?: "🍽", fontSize = 80.sp)
+                    }
+                }
+            }
+
+            item { SheetSectionHeader(stringResource(R.string.sheet_food_details)) }
+            analysis.grounding?.let { grounding ->
+                item {
+                    Text(
+                        text = when (grounding.sourceKind) {
+                            app.chompass.models.NutrientSourceKind.USDA ->
+                                stringResource(R.string.grounding_badge_usda)
+                            app.chompass.models.NutrientSourceKind.OPEN_FOOD_FACTS ->
+                                stringResource(R.string.grounding_badge_off)
+                            app.chompass.models.NutrientSourceKind.HISTORY ->
+                                stringResource(R.string.grounding_badge_history)
+                            app.chompass.models.NutrientSourceKind.NUTRITION_LABEL ->
+                                stringResource(R.string.grounding_badge_label)
+                            app.chompass.models.NutrientSourceKind.MODEL_ESTIMATE ->
+                                stringResource(R.string.grounding_badge_estimate)
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = AppColors.Calorie,
+                        modifier = Modifier.padding(bottom = 4.dp),
+                    )
+                }
+                analysis.groundingConfidence?.let { conf ->
+                    item {
+                        Text(
+                            text = stringResource(
+                                R.string.grounding_confidence_summary,
+                                (conf.identity * 100).toInt(),
+                                (conf.portion * 100).toInt(),
+                                (conf.nutrientSource * 100).toInt(),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                        )
+                    }
+                }
+                if (grounding.validationNotes.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(
+                                R.string.grounding_validation_notes,
+                                grounding.validationNotes.joinToString(" · "),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                }
+            }
+            item {
+                SheetPillRow {
+                    Text(stringResource(R.string.sheet_name), fontSize = 17.sp, modifier = Modifier.padding(end = 8.dp))
+                    Spacer(Modifier.weight(1f))
+                    androidx.compose.foundation.text.BasicTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        singleLine = true,
+                        textStyle = androidx.compose.ui.text.TextStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 17.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.End
+                        ),
+                        cursorBrush = androidx.compose.ui.graphics.SolidColor(AppColors.Calorie),
+                        modifier = Modifier.weight(2f)
+                    )
+                }
+            }
+
+            item { SheetSectionHeader(stringResource(R.string.sheet_serving)) }
+            item {
+                ServingQuantityCard(
+                    quantityText = servingQuantityText,
+                    onQuantityChange = { newValue ->
+                        servingQuantityText = newValue
+                        ServingUnitOption.parseQuantity(newValue)?.takeIf { it > 0 }?.let {
+                            servingGrams = it * selectedServingOption.gramsPerUnit
+                        }
+                    },
+                    selectedUnitId = selectedServingUnitId,
+                    onSelectedUnitChange = { optionId ->
+                        selectedServingUnitId = optionId
+                        val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
+                        val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
+                        servingQuantityText = ServingUnitOption.formatQuantity(quantity)
+                    },
+                    servingSizeGrams = servingGrams,
+                    unitOptions = servingUnitOptions,
+                    menuExpanded = servingMenuExpanded,
+                    onMenuExpandedChange = { servingMenuExpanded = it },
+                    gramUnit = stringResource(R.string.unit_g),
+                    isLoadingUnits = inferringUnits,
+                )
+            }
+
+            item {
+                SheetSectionHeaderWithLock(
+                    title = stringResource(R.string.sheet_nutrition),
+                    unlocked = nutritionUnlocked,
+                    onToggle = {
+                        nutritionUnlocked = !nutritionUnlocked
+                        if (!nutritionUnlocked) dismissKeyboard()
+                    }
+                )
+            }
+            item {
+                SheetPillCard {
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_calories),
+                        displayValue = "${scaledInt(editableCalories)}",
+                        editValue = "${scaledInt(editableCalories)}",
+                        unit = stringResource(R.string.unit_kcal),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Calorie,
+                        onEdit = { editableCalories = baseDoubleFromText(it).roundToInt() }
+                    )
+                    SheetHairline()
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_protein),
+                        displayValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
+                        editValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Protein,
+                        onEdit = { editableProtein = baseDoubleFromText(it) }
+                    )
+                    SheetHairline()
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_carbs),
+                        displayValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
+                        editValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Carbs,
+                        onEdit = { editableCarbs = baseDoubleFromText(it) }
+                    )
+                    SheetHairline()
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_fat),
+                        displayValue = MacroValueFormatter.string(scaledMacro(editableFat)),
+                        editValue = MacroValueFormatter.string(scaledMacro(editableFat)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Fat,
+                        onEdit = { editableFat = baseDoubleFromText(it) }
+                    )
+                    SheetHairline()
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_fiber),
+                        displayValue = displayD(scaledD(editableFiber)),
+                        editValue = editD(scaledD(editableFiber)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Fiber,
+                        onEdit = { editableFiber = baseOptionalFromText(it) }
+                    )
+                }
+            }
+
+            // "More Nutrition" — own pill row with chevron-right that flips to
+            // chevron-down when expanded; matches iOS DisclosureGroup.
+            item {
+                SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
+                    Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    Icon(
+                        if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
+                        else Icons.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
+            }
+            if (moreNutritionExpanded) {
+                item {
+                    SheetPillCard {
+                        val gUnit = stringResource(R.string.unit_g)
+                        val mgUnit = stringResource(R.string.unit_mg)
+                        val mcgUnit = stringResource(R.string.unit_mcg)
+                        val micros = listOf(
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_sugar), scaledD(editableSugar), gUnit, { editableSugar = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_added_sugar), scaledD(editableAddedSugar), gUnit, { editableAddedSugar = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_saturated_fat), scaledD(editableSaturatedFat), gUnit, { editableSaturatedFat = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_mono_fat), scaledD(editableMonounsaturatedFat), gUnit, { editableMonounsaturatedFat = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_poly_fat), scaledD(editablePolyunsaturatedFat), gUnit, { editablePolyunsaturatedFat = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_cholesterol), scaledD(editableCholesterol), mgUnit, { editableCholesterol = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_sodium), scaledD(editableSodium), mgUnit, { editableSodium = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_potassium), scaledD(editablePotassium), mgUnit, { editablePotassium = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_trans_fat), scaledD(editableTransFat), gUnit, { editableTransFat = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_calcium), scaledD(editableCalcium), mgUnit, { editableCalcium = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_iron), scaledD(editableIron), mgUnit, { editableIron = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_magnesium), scaledD(editableMagnesium), mgUnit, { editableMagnesium = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_zinc), scaledD(editableZinc), mgUnit, { editableZinc = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_a), scaledD(editableVitaminA), mcgUnit, { editableVitaminA = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_c), scaledD(editableVitaminC), mgUnit, { editableVitaminC = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_d), scaledD(editableVitaminD), mcgUnit, { editableVitaminD = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_b12), scaledD(editableVitaminB12), mcgUnit, { editableVitaminB12 = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_e), scaledD(editableVitaminE), mgUnit, { editableVitaminE = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_k), scaledD(editableVitaminK), mcgUnit, { editableVitaminK = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_folate), scaledD(editableFolate), mcgUnit, { editableFolate = baseOptionalFromText(it) }),
+                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_omega3), scaledD(editableOmega3), gUnit, { editableOmega3 = baseOptionalFromText(it) })
+                        )
+                        micros.forEachIndexed { idx, spec ->
+                            if (idx > 0) SheetHairline()
+                            ReviewNutritionValueRow(
+                                label = spec.label,
+                                displayValue = displayD(spec.value),
+                                editValue = editD(spec.value),
+                                unit = spec.unit,
+                                unlocked = nutritionUnlocked,
+                                dim = true,
+                                accentColor = spec.accentColor,
+                                onEdit = spec.onEdit
+                            )
+                        }
+                    }
+                }
+            }
+
+            item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
+            item {
+                SheetPillRow(onClick = { mealMenuExpanded = true }) {
+                    Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    // Anchor the DropdownMenu inside the right-side cluster so
+                    // it pops open under the value, not the row's left edge.
+                    Box {
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                sheetMealIcon(mealType),
+                                contentDescription = null,
+                                tint = AppColors.Calorie,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                stringResource(mealType.displayNameRes),
+                                fontSize = 17.sp,
+                                color = AppColors.Calorie,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Icon(
+                                Icons.Filled.UnfoldMore,
+                                contentDescription = null,
+                                tint = AppColors.Calorie
+                            )
+                        }
+                        SheetGlassDropdownMenu(
+                            expanded = mealMenuExpanded,
+                            onDismissRequest = { mealMenuExpanded = false },
+                            menuWidth = 184.dp
+                        ) {
+                            for (m in MealType.values()) {
+                                SheetGlassDropdownMenuItem(
+                                    label = stringResource(m.displayNameRes),
+                                    leadingIcon = sheetMealIcon(m),
+                                    selected = m == mealType,
+                                    onClick = {
+                                        mealType = m
+                                        mealMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    whatIfEntry?.let { entry ->
+        WhatIfMealImpactDialog(
+            entry = entry,
+            dayEntries = dayEntries,
+            profile = profile,
+            onDismiss = { whatIfEntry = null },
+            onSuggest = onWhatIfSuggestion
+        )
+    }
+}
+
+private data class ReviewNutrientEditSpec(
+    val label: String,
+    val value: Double?,
+    val unit: String,
+    val onEdit: (String) -> Unit,
+    val accentColor: Color? = null,
+)
+
+@Composable
+internal fun SheetSectionHeaderWithLock(
+    title: String,
+    unlocked: Boolean,
+    onToggle: () -> Unit
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 18.dp, end = 8.dp, top = 8.dp, bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            title,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            modifier = Modifier.weight(1f)
+        )
+        IconButton(
+            onClick = onToggle,
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                if (unlocked) Icons.Filled.LockOpen else Icons.Filled.Lock,
+                contentDescription = stringResource(
+                    if (unlocked) R.string.nutrition_lock_editing
+                    else R.string.nutrition_unlock_editing
+                ),
+                tint = if (unlocked) AppColors.Calorie
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
+}
+
+@Composable
+internal fun ReviewNutritionValueRow(
+    label: String,
+    displayValue: String,
+    editValue: String,
+    unit: String,
+    unlocked: Boolean,
+    dim: Boolean = false,
+    accentColor: Color? = null,
+    onEdit: (String) -> Unit
+) {
+    var draft by remember { mutableStateOf(editValue) }
+    LaunchedEffect(unlocked) {
+        if (unlocked) draft = editValue
+    }
+    val labelColor = accentColor?.let {
+        if (dim) it.copy(alpha = 0.72f) else it
+    } ?: if (dim) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val valueColor = accentColor ?: MaterialTheme.colorScheme.onSurface
+    val cursorColor = accentColor ?: AppColors.Calorie
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            label,
+            fontSize = 16.sp,
+            color = labelColor,
+            modifier = Modifier.weight(1f)
+        )
+        if (unlocked) {
+            BasicTextField(
+                value = draft,
+                onValueChange = {
+                    draft = it
+                    onEdit(it)
+                },
+                singleLine = true,
+                textStyle = TextStyle(
+                    color = valueColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.End
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                cursorBrush = androidx.compose.ui.graphics.SolidColor(cursorColor),
+                modifier = Modifier.width(92.dp)
+            )
+        } else {
+            Text(
+                displayValue,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = valueColor
+            )
+        }
+        Spacer(Modifier.width(6.dp))
+        Text(
+            unit,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            modifier = Modifier.width(36.dp)
+        )
+    }
+}
+
+private data class WhatIfTotals(
+    val calories: Int,
+    val protein: Double,
+    val carbs: Double,
+    val fat: Double
+) {
+    operator fun plus(other: WhatIfTotals) = WhatIfTotals(
+        calories = calories + other.calories,
+        protein = protein + other.protein,
+        carbs = carbs + other.carbs,
+        fat = fat + other.fat
+    )
+}
+
+private fun List<FoodEntry>.whatIfTotals() = WhatIfTotals(
+    calories = sumOf { it.calories },
+    protein = sumOf { it.protein },
+    carbs = sumOf { it.carbs },
+    fat = sumOf { it.fat }
+)
+
+private fun FoodEntry.whatIfTotals() = WhatIfTotals(
+    calories = calories,
+    protein = protein,
+    carbs = carbs,
+    fat = fat
+)
+
+@Composable
+private fun WhatIfMealImpactDialog(
+    entry: FoodEntry,
+    dayEntries: List<FoodEntry>,
+    profile: UserProfile?,
+    onDismiss: () -> Unit,
+    onSuggest: (suspend (FoodEntry) -> String)?
+) {
+    val before = remember(dayEntries) { dayEntries.whatIfTotals() }
+    val after = remember(before, entry) { before + entry.whatIfTotals() }
+    var loading by remember(entry.id) { mutableStateOf(true) }
+    var suggestion by remember(entry.id) { mutableStateOf<String?>(null) }
+    var error by remember(entry.id) { mutableStateOf<String?>(null) }
+
+    val onboardingFallback = stringResource(R.string.finish_onboarding_hint)
+    val suggestionError = stringResource(R.string.error_ai_suggestion)
+    LaunchedEffect(entry.id) {
+        loading = true
+        suggestion = null
+        error = null
+        runCatching { onSuggest?.invoke(entry) ?: onboardingFallback }
+            .onSuccess { suggestion = it.ifBlank { null } }
+            .onFailure { error = it.localizedMessage ?: suggestionError }
+        loading = false
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(28.dp),
+        title = {
+            Text(
+                stringResource(R.string.what_if_title),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(
+                    stringResource(R.string.what_if_subtitle),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                    lineHeight = 19.sp
+                )
+                SheetPillCard {
+                    WhatIfImpactRow(
+                        label = stringResource(R.string.nutrition_label_calories),
+                        added = "+${entry.calories} kcal",
+                        total = profile?.let { "${after.calories} / ${it.effectiveCalories} kcal" }
+                            ?: "${after.calories} kcal",
+                        accentColor = AppColors.Calorie
+                    )
+                    SheetHairline()
+                    WhatIfImpactRow(
+                        label = stringResource(R.string.nutrition_label_protein),
+                        added = "+${whatIfGrams(entry.protein)}",
+                        total = profile?.let { "${whatIfGrams(after.protein)} / ${it.effectiveProtein}g" }
+                            ?: whatIfGrams(after.protein),
+                        accentColor = AppColors.Protein
+                    )
+                    SheetHairline()
+                    WhatIfImpactRow(
+                        label = stringResource(R.string.nutrition_label_carbs),
+                        added = "+${whatIfGrams(entry.carbs)}",
+                        total = profile?.let { "${whatIfGrams(after.carbs)} / ${it.effectiveCarbs}g" }
+                            ?: whatIfGrams(after.carbs),
+                        accentColor = AppColors.Carbs
+                    )
+                    SheetHairline()
+                    WhatIfImpactRow(
+                        label = stringResource(R.string.nutrition_label_fat),
+                        added = "+${whatIfGrams(entry.fat)}",
+                        total = profile?.let { "${whatIfGrams(after.fat)} / ${it.effectiveFat}g" }
+                            ?: whatIfGrams(after.fat),
+                        accentColor = AppColors.Fat
+                    )
+                }
+
+                SheetPillCard {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.what_if_ai_suggestion),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+                        )
+                        if (loading) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = AppColors.Calorie
+                                )
+                                Text(
+                                    stringResource(R.string.what_if_loading),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                                )
+                            }
+                        } else {
+                            Text(
+                                suggestion ?: error ?: stringResource(R.string.what_if_no_suggestion),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+                                lineHeight = 19.sp
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_done), color = AppColors.Calorie)
+            }
+        }
+    )
+}
+
+@Composable
+private fun WhatIfImpactRow(
+    label: String,
+    added: String,
+    total: String,
+    accentColor: Color = AppColors.Calorie,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
+            Text(
+                added,
+                fontSize = 13.sp,
+                color = accentColor.copy(alpha = 0.85f),
+                fontWeight = FontWeight.Medium
+            )
+        }
+        Text(
+            total,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
+        )
+    }
+}
+
+private fun whatIfGrams(value: Double): String = "${MacroValueFormatter.string(value)}g"
+
+@Composable
+private fun rememberDecodedBitmap(bytes: ByteArray?): android.graphics.Bitmap? {
+    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = bytes) {
+        value = if (bytes == null) {
+            null
+        } else {
+            withContext(Dispatchers.Default) {
+                android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }
+        }
+    }
+    return state.value
+}

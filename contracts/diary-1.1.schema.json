@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fitguy.codeberg.page/NoFUD/contracts/diary-1.1.schema.json",
-  "title": "NoFUD diary export format 1.1",
+  "$id": "https://chompass.app/contracts/diary-1.1.schema.json",
+  "title": "Chompass diary export format 1.1",
   "type": "object",
   "required": ["export", "days"],
   "additionalProperties": true,

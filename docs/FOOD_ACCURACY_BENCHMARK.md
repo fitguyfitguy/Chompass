@@ -1,10 +1,10 @@
 # Food accuracy benchmark
 
-Offline research harness for comparing **prompts** and **models** on food text and image entry. Measures macronutrient error (calories, protein, carbs, fat) against labeled datasets. Usable for NoFUD prompt tuning and general food-AI research.
+Offline research harness for comparing **prompts** and **models** on food text and image entry. Measures macronutrient error (calories, protein, carbs, fat) against labeled datasets. Usable for Chompass prompt tuning and general food-AI research.
 
 **Status snapshot (results + defaults):** [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md)
 
-**Related:** production prompts in [`FoodAnalysisService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt); on-device smoke tests in [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) (latency/parse only, no GT scoring).
+**Related:** production prompts in [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt); on-device smoke tests in [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) (latency/parse only, no GT scoring).
 
 ## Quick start
 
@@ -96,8 +96,8 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 
 | Name | Matches | Notes |
 |------|---------|-------|
-| `production_text` | NoFUD `analyzeText` | Full JSON schema + unit_options |
-| `production_image` | NoFUD `analyzeFood` | Vision + same schema |
+| `production_text` | Chompass `analyzeText` | Full JSON schema + unit_options |
+| `production_image` | Chompass `analyzeFood` | Vision + same schema |
 | `compact` | Research ablation | Macros + serving_size_grams only |
 | `compact_portion` | Research only | compact + portion/quantity rules; Flash-Lite JFB did not beat compact (see [STATUS § Failure modes](FOOD_ACCURACY_BENCHMARK_STATUS.md#failure-modes--portion-reasoning)) |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
@@ -154,7 +154,7 @@ So: **yes, it finds newly added free models and drops cancelled ones across runs
 uv run python docs/benchmarks/food_accuracy/list_nofud_free_pool.py
 uv run python docs/benchmarks/food_accuracy/list_nofud_free_pool.py --vision --show-excluded --smoke
 
-# Eval with NoFUD free router (preferred / default)
+# Eval with Chompass free router (preferred / default)
 uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter \
   --model nofud/free \
@@ -167,7 +167,7 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model openrouter/free ...
 ```
 
-The app still lists `openrouter/free` in [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt); this harness router is benchmark-side only for now.
+The app still lists `openrouter/free` in [`AIProvider.kt`](../android/app/src/main/java/app/chompass/models/AIProvider.kt); this harness router is benchmark-side only for now.
 
 Vision models: image samples are sent as base64 JPEG in the chat completion request.
 
@@ -176,7 +176,7 @@ Vision models: image samples are sent as base64 JPEG in the chat completion requ
 1. Pick a fixed manifest (`eval_text.jsonl` or downloaded `jfb.jsonl`).
 2. Run the same manifest with different `--prompt` and `--model` values.
 3. Compare `summary.csv` columns (`wmape`, `parse_ok_rate`, `within_20pct_calories`).
-4. When a prompt wins offline, port wording to [`FoodAnalysisService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt) and re-check on-device smoke tests.
+4. When a prompt wins offline, port wording to [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) and re-check on-device smoke tests.
 
 ### Prompt A/B example
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fitguy.codeberg.page/NoFUD/contracts/body-metrics-1.0.schema.json",
-  "title": "NoFUD body-metrics export format 1.0",
+  "$id": "https://chompass.app/contracts/body-metrics-1.0.schema.json",
+  "title": "Chompass body-metrics export format 1.0",
   "type": "object",
   "required": ["export", "weights", "body_fat", "measurements"],
   "additionalProperties": true,

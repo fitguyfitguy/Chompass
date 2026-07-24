@@ -1,6 +1,6 @@
 // @ts-check
 import { measurements, profile as profileStore } from "../lib/db.js";
-import { usNavyBodyFatPercent, waistToHipRatio, waistToHeightRatio } from "../lib/nofud-core/formulas.js";
+import { usNavyBodyFatPercent, waistToHipRatio, waistToHeightRatio } from "../lib/chompass-core/formulas.js";
 
 export class MeasurementsView extends HTMLElement {
   connectedCallback() {

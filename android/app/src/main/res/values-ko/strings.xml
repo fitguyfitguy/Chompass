@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD 칼로리</string>
+    <string name="widget_calorie_label">Chompass 칼로리</string>
     <string name="widget_calorie_description">오늘의 칼로리와 매크로를 한눈에 확인하세요.</string>
-    <string name="widget_protein_label">NoFUD 단백질</string>
+    <string name="widget_protein_label">Chompass 단백질</string>
     <string name="widget_protein_description">오늘의 단백질 진행 상황을 한눈에 확인하세요.</string>
     <string name="widget_today">오늘</string>
     <string name="widget_protein">단백질</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">뒤로</string>
-    <string name="onboarding_logo_description">NoFUD 로고</string>
+    <string name="onboarding_logo_description">Chompass 로고</string>
     <string name="onboarding_welcome_line1">똑똑하게 먹고,</string>
     <string name="onboarding_welcome_line2">더 나은 삶을</string>
     <string name="onboarding_welcome_subtitle">사진을 찍고, 기록하고, 활기차게.\n간편해진 영양 관리.</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">연결</string>
 
     <string name="onboarding_provider_title">자신의 AI 사용</string>
-    <string name="onboarding_provider_subtitle">NoFUD는 음식을 분석하기 위해 AI 제공자\n키가 필요합니다. 본인의 키를 사용하세요.</string>
+    <string name="onboarding_provider_subtitle">Chompass는 음식을 분석하기 위해 AI 제공자\n키가 필요합니다. 본인의 키를 사용하세요.</string>
     <string name="onboarding_provider_recommended_title">추천: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">무료 등급 제공, 빠르고 정확함</string>
     <string name="onboarding_provider_howto_title">무료 Google AI Studio 키 받는 방법</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">일요일</string>
     <string name="settings_notifications">알림</string>
     <string name="settings_battery_opt">배터리 최적화</string>
-    <string name="settings_battery_opt_value">NoFUD 화이트리스트 추가</string>
+    <string name="settings_battery_opt_value">Chompass 화이트리스트 추가</string>
 
     <string name="settings_ai_provider">제공자</string>
     <string name="settings_ai_model">모델</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">증량 목표는 현재 체중보다 높은 목표가 필요합니다.</string>
     <string name="settings_permission_title">권한 필요</string>
 
-    <string name="settings_notifications_denied">알림 권한이 거부되었습니다. 시스템 설정 → 앱 → NoFUD → 알림에서 활성화하여 알림을 받으세요.</string>
+    <string name="settings_notifications_denied">알림 권한이 거부되었습니다. 시스템 설정 → 앱 → Chompass → 알림에서 활성화하여 알림을 받으세요.</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">체중 측정 시간</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">문제 신고</string>
     <string name="about_request_feature">기능 요청</string>
     <string name="about_privacy">개인정보 처리방침</string>
-    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Apoorv Darshan의 Fud AI 기반</string>
-    <string name="about_share_message">NoFUD로 식단을 기록하고 있어요 - 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">NoFUD 공유</string>
+    <string name="about_share_message">Chompass로 식단을 기록하고 있어요 - 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Chompass 공유</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">연속 기록 알림</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">폴백 제공자</string>
     <string name="settings_enable_fallback">폴백 사용</string>
     <string name="settings_fallback_footer">기본 제공자가 실패할 경우(과부하, 속도 제한, 네트워크 오류) 앱이 이 폴백으로 자동 재시도합니다. 기본과 동일한 제공자도 허용됩니다 - 다른 모델을 선택하세요.</string>
-    <string name="widget_all_metrics_label">NoFUD 오늘</string>
+    <string name="widget_all_metrics_label">Chompass 오늘</string>
     <string name="widget_all_metrics_description">오늘의 칼로리, 단백질, 탄수화물, 지방을 위젯 하나로 확인하세요.</string>
     <string name="settings_needs_health_connect">Health Connect 필요</string>
-    <string name="settings_energy_goals_info">켜면 NoFUD가 Health Connect에서 측정된 소모 칼로리(활동 + 기초 에너지의 14일 평균)를 공식 추정치 대신 유지 칼로리(TDEE) 기준으로 사용해 목표를 계산합니다. 소모 칼로리를 읽는 데 AI는 사용되지 않습니다. Health Connect가 필요합니다. 다시 계산 버튼 및 Adaptive Goals와 함께 작동합니다.</string>
-    <string name="settings_adaptive_goals_info">일주일에 한 번 정도 앱을 열 때 NoFUD가 프로필, 최근 기록한 음식, 체중 추세를 바탕으로 전체 목표 계산을 자동으로 다시 실행합니다 - 다시 계산 버튼과 동일한 계산입니다. Energy Burn이 켜져 있으면 측정된 소모 칼로리를 유지 기준으로 사용합니다. AI를 사용할 수 없으면 조용히 건너뜁니다. 끄면 이 기능이 처음 변경하기 전의 목표로 복원됩니다. 이는 의학적 조언이 아닙니다.</string>
+    <string name="settings_energy_goals_info">켜면 Chompass가 Health Connect에서 측정된 소모 칼로리(활동 + 기초 에너지의 14일 평균)를 공식 추정치 대신 유지 칼로리(TDEE) 기준으로 사용해 목표를 계산합니다. 소모 칼로리를 읽는 데 AI는 사용되지 않습니다. Health Connect가 필요합니다. 다시 계산 버튼 및 Adaptive Goals와 함께 작동합니다.</string>
+    <string name="settings_adaptive_goals_info">일주일에 한 번 정도 앱을 열 때 Chompass가 프로필, 최근 기록한 음식, 체중 추세를 바탕으로 전체 목표 계산을 자동으로 다시 실행합니다 - 다시 계산 버튼과 동일한 계산입니다. Energy Burn이 켜져 있으면 측정된 소모 칼로리를 유지 기준으로 사용합니다. AI를 사용할 수 없으면 조용히 건너뜁니다. 끄면 이 기능이 처음 변경하기 전의 목표로 복원됩니다. 이는 의학적 조언이 아닙니다.</string>
     <string name="onboarding_plan_adaptive_note">플랜은 기록에 따라 매주 자동 조정됩니다 - 고정하려면 설정에서 Adaptive Goals를 끄세요.</string>
     <string name="onboarding_feature_snap">사진만 찍으면 AI가 기록</string>
     <string name="onboarding_feature_coach">내 데이터를 아는 코치</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">운동 탭이 제거되었습니다.</string>
     <string name="whats_new_v30_home">홈 화면 개편: 속도계형 칼로리 게이지, 세로 매크로 바, 영양소 카드 4개, 플로팅 추가 버튼.</string>
     <string name="whats_new_v30_coach_voice">새 인라인 녹음기로 코치에게 음성으로 질문하세요.</string>
-    <string name="whats_new_v30_share">식사를 링크로 공유 - iPhone과 Android 모두에서 NoFUD가 바로 열립니다.</string>
+    <string name="whats_new_v30_share">식사를 링크로 공유 - iPhone과 Android 모두에서 Chompass가 바로 열립니다.</string>
     <string name="whats_new_v30_export">설정에서 음식 일기를 JSON, Markdown, CSV로 내보내세요.</string>
     <string name="whats_new_v30_reprocess">기록된 식사를 AI로 다시 분석 - 이름, 양, 메모를 조정한 뒤 재분석할 수 있습니다.</string>
     <string name="whats_new_v30_camera">카메라 + 카메라가 두 장의 사진을 나란히 이어 붙여 보관합니다.</string>

@@ -10,7 +10,7 @@
     then press Ctrl-C to stop. Runs the Python summarizer if python is available.
 
 .PARAMETER Package
-    App package. Default: org.codeberg.fitguy.nofud.debug
+    App package. Default: app.chompass.debug
 
 .PARAMETER Launch
     Force-stop and launch MainActivity before recording.
@@ -20,13 +20,13 @@
     scripts\capture_entry_perf.ps1 -Launch
 #>
 param(
-    [string]$Package = "org.codeberg.fitguy.nofud.debug",
+    [string]$Package = "app.chompass.debug",
     [switch]$Launch
 )
 
 $ErrorActionPreference = "Stop"
 $adb = if ($env:ADB_BIN) { $env:ADB_BIN } else { "adb" }
-$activity = "$Package/org.codeberg.fitguy.nofud.MainActivity"
+$activity = "$Package/app.chompass.MainActivity"
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 
 # Resolve repo-root\android\build\perf-entry\<stamp> regardless of CWD.

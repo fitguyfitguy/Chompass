@@ -1,10 +1,10 @@
 // @ts-check
 import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs } from "../db.js";
-import { dailyTargets, bmr, tdee } from "../nofud-core/formulas.js";
+import { dailyTargets, bmr, tdee } from "../chompass-core/formulas.js";
 import { PROVIDERS } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 
-const BASE_SYSTEM = `You are the NoFUD coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
+const BASE_SYSTEM = `You are the Chompass coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
 
 Use read tools (get_diary_context, get_weight_history, get_data_summary, etc.) before estimating anything new — don't guess totals you can look up.
 

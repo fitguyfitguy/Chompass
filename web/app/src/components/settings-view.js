@@ -8,16 +8,16 @@ import {
   prefs,
   clearAllUserData,
 } from "../lib/db.js";
-import { dailyTargets, bmr, tdee } from "../lib/nofud-core/formulas.js";
-import { computeWeightForecast } from "../lib/nofud-core/forecast.js";
-import { exportDiary, importDiary } from "../lib/nofud-core/diary-format.js";
-import { exportBodyMetrics, importBodyMetrics } from "../lib/nofud-core/body-metrics-format.js";
+import { dailyTargets, bmr, tdee } from "../lib/chompass-core/formulas.js";
+import { computeWeightForecast } from "../lib/chompass-core/forecast.js";
+import { exportDiary, importDiary } from "../lib/chompass-core/diary-format.js";
+import { exportBodyMetrics, importBodyMetrics } from "../lib/chompass-core/body-metrics-format.js";
 import {
   exportDiaryMarkdown,
   exportDiaryCsv,
   exportBodyMetricsCsv,
   filterDiaryRange,
-} from "../lib/nofud-core/export-text.js";
+} from "../lib/chompass-core/export-text.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
@@ -333,7 +333,7 @@ export class SettingsView extends HTMLElement {
   /**
    * Mirrors Android Settings Recalculate Goals: AI when a key is configured,
    * otherwise clear custom calories so formula targets apply.
-   * @param {import('../lib/nofud-core/models.js').UserProfile} profile
+   * @param {import('../lib/chompass-core/models.js').UserProfile} profile
    */
   async onRecalculateGoals(profile) {
     const aiClient = await resolveGoalsAiClient();
@@ -460,7 +460,7 @@ export class SettingsView extends HTMLElement {
         mealDinnerStart: timeInputToMinutes(String(fd.get("mealDinnerStart"))),
         mealSnackStart: timeInputToMinutes(String(fd.get("mealSnackStart"))),
       });
-      window.dispatchEvent(new Event("nofud-prefs-changed"));
+      window.dispatchEvent(new Event("chompass-prefs-changed"));
       location.hash = "#/settings";
     });
     bindSubpageBack(this, "#/settings");
@@ -703,7 +703,7 @@ export class SettingsView extends HTMLElement {
       ${subpageBar("AI", { backHref: "#/settings" })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Keys are encrypted at rest with Web Crypto (AES-GCM) in IndexedDB, then sent only from your browser to the provider you choose. Not a NoFUD server.
+          Keys are encrypted at rest with Web Crypto (AES-GCM) in IndexedDB, then sent only from your browser to the provider you choose. Not a Chompass server.
         </p>
         <form class="entry-form" id="ai-key-form">
           <div class="field">
@@ -866,15 +866,15 @@ export class SettingsView extends HTMLElement {
     this.innerHTML = `
       ${subpageBar("Install app", { backHref: "#/settings" })}
       <div class="card">
-        <p style="margin:0;">Install NoFUD to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
+        <p style="margin:0;">Install Chompass to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">iPhone / iPad (Safari)</h2>
         <ol class="install-steps">
-          <li>Open NoFUD in <strong>Safari</strong> (required for a true home-screen app).</li>
+          <li>Open Chompass in <strong>Safari</strong> (required for a true home-screen app).</li>
           <li>Tap the <strong>Share</strong> button (square with an upward arrow).</li>
           <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
-          <li>Open NoFUD from the <strong>home-screen icon</strong> — not a Safari tab — for the full-screen app.</li>
+          <li>Open Chompass from the <strong>home-screen icon</strong> — not a Safari tab — for the full-screen app.</li>
         </ol>
         <p class="install-note">Brave, Chrome, and Firefox on iOS cannot install home-screen web apps — Apple only allows Safari to. If you use one of those, copy the address into Safari and follow the steps above.</p>
       </div>
@@ -883,7 +883,7 @@ export class SettingsView extends HTMLElement {
         <ol class="install-steps">
           <li>Open the browser menu (⋮).</li>
           <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
-          <li>Confirm. Open NoFUD from the new icon afterward.</li>
+          <li>Confirm. Open Chompass from the new icon afterward.</li>
         </ol>
         <p class="install-note">Many Chromium browsers do not show an automatic install popup — use the menu.</p>
       </div>
@@ -891,7 +891,7 @@ export class SettingsView extends HTMLElement {
         <h2 class="chart-title">Desktop (Chrome / Edge)</h2>
         <ol class="install-steps">
           <li>Look for the install icon in the address bar, or open the browser menu.</li>
-          <li>Choose <strong>Install NoFUD</strong> (or Install app).</li>
+          <li>Choose <strong>Install Chompass</strong> (or Install app).</li>
           <li>Launch from your dock, taskbar, or app launcher.</li>
         </ol>
       </div>
@@ -905,7 +905,7 @@ export class SettingsView extends HTMLElement {
       </div>
       <div class="card">
         <h2 class="chart-title">Already installed?</h2>
-        <p style="margin:0;">Open NoFUD from the home-screen or dock icon (not a normal browser tab) for the full-screen shell and offline app assets.</p>
+        <p style="margin:0;">Open Chompass from the home-screen or dock icon (not a normal browser tab) for the full-screen shell and offline app assets.</p>
       </div>`;
     bindSubpageBack(this, "#/settings");
   }
@@ -914,7 +914,7 @@ export class SettingsView extends HTMLElement {
     this.innerHTML = `
       ${subpageBar("About & methods", { backHref: "#/settings" })}
       <div class="card">
-        <p style="margin:0 0 0.6rem;">NoFUD browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
+        <p style="margin:0 0 0.6rem;">Chompass browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
         <p style="margin:0;"><a href="#/settings?section=install">How to install</a> this app on your phone or computer.</p>
       </div>
       <div class="card methods-card">
@@ -1005,13 +1005,13 @@ export class SettingsView extends HTMLElement {
     const dateRange = { start: dates[0] ?? "", end: dates[dates.length - 1] ?? "" };
     const targets = prof ? dailyTargets(prof) : null;
     if (format === "csv") {
-      await downloadText(exportDiaryCsv(entries), `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.csv`, "text/csv");
+      await downloadText(exportDiaryCsv(entries), `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.csv`, "text/csv");
       return;
     }
     if (format === "md") {
       await downloadText(
         exportDiaryMarkdown(entries, dateRange, targets),
-        `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.md`,
+        `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.md`,
         "text/markdown"
       );
       return;
@@ -1022,18 +1022,18 @@ export class SettingsView extends HTMLElement {
       for (const e of entries) targetsByDay[e.date] = targets;
     }
     const doc = exportDiary({ entries, targets: targetsByDay, dateRange });
-    await downloadJson(doc, `NoFUD-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
+    await downloadJson(doc, `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
   }
 
   async onExportBodyMetrics() {
     const format = /** @type {HTMLSelectElement|null} */ (this.querySelector("#body-format"))?.value || "json";
     const [w, bf, m] = await Promise.all([weights.all(), bodyFat.all(), measurements.all()]);
     if (format === "csv") {
-      await downloadText(exportBodyMetricsCsv({ weights: w, bodyFat: bf, measurements: m }), "NoFUD-Body-Metrics.csv", "text/csv");
+      await downloadText(exportBodyMetricsCsv({ weights: w, bodyFat: bf, measurements: m }), "Chompass-Body-Metrics.csv", "text/csv");
       return;
     }
     const doc = exportBodyMetrics({ weights: w, bodyFat: bf, measurements: m });
-    await downloadJson(doc, `NoFUD-Weight-Import.json`);
+    await downloadJson(doc, `Chompass-Weight-Import.json`);
   }
 
   async onImportDiary(ev) {

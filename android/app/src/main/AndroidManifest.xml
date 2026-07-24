@@ -40,7 +40,7 @@
     </queries>
 
     <application
-        android:name=".NoFUDApp"
+        android:name=".ChompassApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -49,7 +49,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_teal_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NoFUD">
+        android:theme="@style/Theme.Chompass">
         <!-- LiteRT-LM GPU (OpenCL) — required on Android 12+ to dlopen vendor drivers. -->
         <uses-native-library android:name="libvndksupport.so" android:required="false" />
         <uses-native-library android:name="libOpenCL.so" android:required="false" />
@@ -59,8 +59,14 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.NoFUD.Splash">
-            <!-- Shared-meal deep link: nofud://add-meal?d=… (also accepts fudai:// for import) -->
+            android:theme="@style/Theme.Chompass.Splash">
+            <!-- Shared-meal deep link: chompass://add-meal?d=… (also accepts nofud:// and fudai:// for import) -->
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="chompass" android:host="add-meal" />
+            </intent-filter>
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -194,7 +200,7 @@
         </activity-alias>
 
         <!-- Health Connect opens this privacy-policy entry point on Android 13 and below.
-             Without it, the standalone Health Connect app cannot reliably discover NoFUD
+             Without it, the standalone Health Connect app cannot reliably discover Chompass
              as a permission-capable app. -->
         <activity
             android:name=".HealthPermissionsRationaleActivity"

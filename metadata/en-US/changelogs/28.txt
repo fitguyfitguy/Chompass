@@ -1,0 +1,5 @@
+NoFUD is now Chompass — new name, new fork-compass logo, same app.
+
+• New application ID (app.chompass): installs as a new app. Export your diary and body metrics from NoFUD, import them in Chompass, then uninstall NoFUD.
+• Web app moved to https://chompass.app/app/
+• Old nofud:// and fudai:// share links still open in Chompass

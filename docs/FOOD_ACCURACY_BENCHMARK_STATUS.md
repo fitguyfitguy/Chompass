@@ -217,7 +217,7 @@ Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 - [ ] Best paid pin on L1 meal title (does short note help Gemini 3.6 / gpt-4o-mini?)
 - [ ] Nutrition-label OCR track (Open Food Facts)
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
-- [ ] Port compact text path into [`FoodAnalysisService.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt) only after a deliberate product decision
+- [ ] Port compact text path into [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) only after a deliberate product decision
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 

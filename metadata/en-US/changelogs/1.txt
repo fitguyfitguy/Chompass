@@ -1,7 +1,7 @@
-Initial public release of NoFUD - an ad-free, privacy-focused Android fork of Fud AI.
+Initial public release of Chompass - an ad-free, privacy-focused Android fork of Fud AI.
 
 • No ads or analytics SDKs
-• Original NoFUD branding and launcher icon
+• Original Chompass branding and launcher icon
 • AI food logging, Coach, workouts, Health Connect, widgets, diary export
 • Meal sharing via nofud:// deep links; imports upstream fudai:// links
 • Exercise photos converted to WebP (~19 MB bundle)

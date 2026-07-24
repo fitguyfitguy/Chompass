@@ -1,0 +1,392 @@
+package app.chompass
+
+import android.app.Application
+import app.chompass.data.BodyFatRepository
+import app.chompass.data.BodyMeasurementRepository
+import app.chompass.data.ChatRepository
+import app.chompass.data.FoodRepository
+import app.chompass.data.KeyStore
+import app.chompass.data.PreferencesStore
+import app.chompass.data.ProfileRepository
+import app.chompass.data.RecipeRepository
+import app.chompass.data.WaterRepository
+import app.chompass.data.WeightRepository
+import app.chompass.models.AIProvider
+import app.chompass.models.CurrentMealSchedule
+import app.chompass.models.UserProfile
+import app.chompass.services.AdaptiveGoalResult
+import app.chompass.services.FoodImageStore
+import app.chompass.services.NotificationService
+import app.chompass.services.TestDataSeeder
+import app.chompass.services.WeightAnalysisService
+import app.chompass.services.WidgetSnapshotWriter
+import app.chompass.services.ai.ChatService
+import app.chompass.services.ai.FoodAnalysisService
+import app.chompass.services.grounding.GroundedFoodEntryService
+import app.chompass.services.grounding.GroundedEntryFeature
+import app.chompass.services.grounding.UsdaFoodIndex
+import app.chompass.services.health.HealthConnectManager
+import app.chompass.services.health.HealthSyncWorker
+import app.chompass.services.health.HomeActivityReader
+import app.chompass.services.ondevice.ModelDownloadManager
+import app.chompass.services.ondevice.OnDeviceLlmGateway
+import app.chompass.services.speech.SpeechService
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDate
+
+/**
+ * Application-scoped singleton wiring. Manual DI (no Hilt) — repositories and
+ * services are instantiated once and handed to ViewModels via [container].
+ */
+class ChompassApp : Application() {
+
+    lateinit var container: AppContainer
+        private set
+
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppContainer(this)
+        seedDebugGeminiKeyIfNeeded()
+        container.notifications.createChannels()
+        appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
+        container.prefs.mealSchedule
+            .onEach { CurrentMealSchedule.value = it }
+            .launchIn(appScope)
+        container.widgetSnapshotWriter.observe().launchIn(appScope)
+        // Older builds removed food rows without removing their JPEGs.
+        appScope.launch { container.foodRepository.pruneOrphanedImages() }
+        // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
+        // this a no-op when the periodic work is already enqueued.
+        appScope.launch {
+            if (container.prefs.healthBackgroundSyncEnabled.first()) {
+                HealthSyncWorker.schedule(this@ChompassApp)
+            }
+        }
+        // Re-arm the daily weight-log alarm on every cold start. AlarmManager
+        // drops scheduled alarms on device reboot and (sometimes) on app
+        // updates — without this, a user who enabled Notifications once would
+        // silently stop receiving the reminder after the next reboot.
+        appScope.launch {
+            if (container.prefs.notificationsEnabled.first() &&
+                container.notifications.canPostNotifications()
+            ) {
+                if (container.prefs.streakReminderEnabled.first()) {
+                    container.notifications.scheduleStreakReminder(
+                        container.prefs.streakReminderHour.first(),
+                        container.prefs.streakReminderMinute.first()
+                    )
+                } else {
+                    container.notifications.cancelStreakReminder()
+                }
+                if (container.prefs.dailySummaryEnabled.first()) {
+                    container.notifications.scheduleDailySummary(
+                        container.prefs.dailySummaryHour.first(),
+                        container.prefs.dailySummaryMinute.first()
+                    )
+                } else {
+                    container.notifications.cancelDailySummary()
+                }
+                if (container.prefs.weightReminderEnabled.first()) {
+                    container.notifications.scheduleWeightReminder()
+                } else {
+                    container.notifications.cancelWeightReminder()
+                }
+                // Body-fat reminder only fires for users who've actually opted
+                // into body-fat tracking and left that notification type on.
+                val profile = container.profileRepository.current()
+                if (container.prefs.bodyFatReminderEnabled.first() && profile?.bodyFatPercentage != null) {
+                    container.notifications.scheduleBodyFatReminder()
+                } else {
+                    container.notifications.cancelBodyFatReminder()
+                }
+                if (container.prefs.waterTrackingEnabled.first() && container.prefs.waterReminderEnabled.first()) {
+                    container.notifications.scheduleWaterReminder(
+                        container.prefs.waterReminderHour.first(),
+                        container.prefs.waterReminderMinute.first(),
+                    )
+                } else {
+                    container.notifications.cancelWaterReminder()
+                }
+            }
+        }
+    }
+
+    /**
+     * Debug-only: if android/local.properties carries a GEMINI_API_KEY, seed it
+     * into the encrypted KeyStore once so testing survives reinstalls without
+     * re-typing the key in Settings. Only fills an empty slot — a key you set or
+     * change in Settings always wins and is never overwritten on later launches.
+     * Release builds compile GEMINI_API_KEY to "" so this is a no-op there.
+     */
+    private fun seedDebugGeminiKeyIfNeeded() {
+        if (!BuildConfig.DEBUG) return
+        val key = BuildConfig.GEMINI_API_KEY
+        if (key.isBlank()) return
+        if (!container.keyStore.apiKey(AIProvider.GEMINI).isNullOrBlank()) return
+        container.keyStore.setApiKey(AIProvider.GEMINI, key)
+    }
+}
+
+/** Stable labels for the read types a Health Connect changes token was seeded for,
+ *  persisted alongside the token so we can detect a newly-granted read capability. */
+private const val HEALTH_READ_TYPE_WEIGHT = "weight"
+private const val HEALTH_READ_TYPE_BODY_FAT = "bodyfat"
+private const val HEALTH_READ_TYPE_NUTRITION = "nutrition"
+
+class AppContainer(app: ChompassApp) {
+    val appContext = app.applicationContext
+    val prefs = PreferencesStore(app)
+    val keyStore: KeyStore by lazy(LazyThreadSafetyMode.NONE) { KeyStore(app) }
+    val imageStore = FoodImageStore(app)
+    val notifications = NotificationService(app)
+    val health = HealthConnectManager(app)
+    val homeActivityReader = HomeActivityReader(health, prefs)
+
+    val profileRepository = ProfileRepository(prefs)
+    val foodRepository = FoodRepository(prefs, health, imageStore)
+    val recipeRepository = RecipeRepository(prefs, foodRepository)
+    val weightRepository = WeightRepository(prefs, profileRepository, health)
+    val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health)
+    val bodyMeasurementRepository = BodyMeasurementRepository(prefs)
+    val chatRepository = ChatRepository(prefs)
+    val waterRepository = WaterRepository(prefs)
+
+    val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
+    val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
+    val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
+    /**
+     * Offline USDA index + grounded orchestrator. Asset is debug-only (~2.1 MB) and
+     * [GroundedEntryFeature.ENABLED] is false in shipping builds — do not touch these
+     * from release UI paths.
+     */
+    val usdaFoodIndex: UsdaFoodIndex by lazy(LazyThreadSafetyMode.NONE) {
+        check(GroundedEntryFeature.ENABLED) {
+            "UsdaFoodIndex is only for grounded entry (currently disabled)"
+        }
+        check(UsdaFoodIndex.assetAvailable(appContext)) {
+            "USDA SQLite missing from APK assets (debug builds only until grounded ships)"
+        }
+        UsdaFoodIndex(appContext)
+    }
+    val groundedFoodEntry: GroundedFoodEntryService by lazy(LazyThreadSafetyMode.NONE) {
+        check(GroundedEntryFeature.ENABLED) {
+            "GroundedFoodEntryService is disabled (GroundedEntryFeature.ENABLED=false)"
+        }
+        GroundedFoodEntryService(
+            foodAnalysis = foodAnalysis,
+            foodRepository = foodRepository,
+            prefs = prefs,
+            usdaIndex = usdaFoodIndex,
+        )
+    }
+    val chatService = ChatService(prefs, keyStore, foodAnalysis)
+    val speechService = SpeechService(prefs, keyStore)
+
+    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository)
+    val testDataSeeder = TestDataSeeder(this)
+
+    /**
+     * App-scoped flag set by [HomeViewModel] while a food analysis request is
+     * in flight. The bottom nav reads this so the bar can hide during the
+     * AnalyzingOverlay (matches iOS, where the analyzing sheet covers the
+     * tab bar).
+     */
+    val analyzingFood: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * Photos shared into the app via the system share sheet (ACTION_SEND /
+     * ACTION_SEND_MULTIPLE). [MainActivity] fills it; the Home screen consumes
+     * it and starts the photo food-entry flow — one image goes through the
+     * context-note sheet, two are analyzed side-by-side like dual capture.
+     * Survives until Home is composed, so a share that lands during
+     * onboarding is picked up right after it completes.
+     */
+    val sharedImageInbox: MutableStateFlow<List<ByteArray>> = MutableStateFlow(emptyList())
+
+    private var adaptiveGoalsRefreshInFlight = false
+
+    @Volatile
+    private var healthReadSyncInFlight = false
+
+    /**
+     * Pull external weight + body-fat readings FROM Health Connect into the app (e.g. a
+     * Withings scale that writes weigh-ins to Health Connect). Runs on app foreground and
+     * right after the user connects/grants. Read-direction only — gated per metric on READ
+     * permission, so a user who granted read but not write still gets their data imported
+     * (issue #91). Incremental via a persisted changes token, with a one-time historical
+     * backfill when there's no token yet; imports are deduped, so re-runs are harmless.
+     */
+    suspend fun syncHealthConnectReads() {
+        if (healthReadSyncInFlight) return
+        if (!prefs.healthConnectEnabled.first()) return
+        if (!health.isAvailable()) return
+        val caps = health.capabilities()
+        if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
+
+        healthReadSyncInFlight = true
+        try {
+            // One-shot food-log restore: after a reinstall or new phone the local
+            // store is empty but our own NutritionRecords survive in Health Connect.
+            // Ids already in the log are skipped, so this is a no-op for intact users.
+            // A null read means a page failed mid-pagination — leave the flag unset
+            // so the restore retries on a later foreground instead of permanently
+            // accepting a partial history.
+            if (caps.nutritionRead && !prefs.healthFoodRestoreDone.first()) {
+                val now = Instant.now()
+                val records = health.readNutrition(now.minus(Duration.ofDays(730)), now)
+                if (records != null) {
+                    foodRepository.restoreFromHealthConnect(records)
+                    prefs.setHealthFoodRestoreDone(true)
+                }
+            }
+            if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
+
+            val desiredTypes = buildSet {
+                if (caps.weightRead) add(HEALTH_READ_TYPE_WEIGHT)
+                if (caps.bodyFatRead) add(HEALTH_READ_TYPE_BODY_FAT)
+                if (caps.nutritionRead) add(HEALTH_READ_TYPE_NUTRITION)
+            }
+            // If a read type was granted AFTER the token was seeded, the existing token never
+            // observes it. Drop the token so we re-enter the backfill branch and import that
+            // metric's history + re-seed a token covering everything now granted.
+            if (!prefs.healthChangesTokenTypes.first().containsAll(desiredTypes)) {
+                prefs.clearHealthChangesToken()
+            }
+
+            val token = prefs.healthChangesToken.first()
+            if (token == null) {
+                // First sync: backfill recent history (two years) so existing scale data shows up.
+                val now = Instant.now()
+                val from = now.minus(Duration.ofDays(730))
+                if (caps.weightRead) {
+                    weightRepository.importExternalWeights(health.readWeights(from, now))
+                }
+                if (caps.bodyFatRead) {
+                    bodyFatRepository.importExternalBodyFats(health.readBodyFats(from, now))
+                }
+                // Seed a token covering only the types we can actually read. Nutrition
+                // gets no external backfill on purpose — the one-shot restore above
+                // already brings back Fud AI's own history, and silently importing two
+                // years of another tracker's diary would be surprising; external meals
+                // flow in live from here on.
+                val recordTypes = buildSet {
+                    if (caps.weightRead) add(androidx.health.connect.client.records.WeightRecord::class)
+                    if (caps.bodyFatRead) add(androidx.health.connect.client.records.BodyFatRecord::class)
+                    if (caps.nutritionRead) add(androidx.health.connect.client.records.NutritionRecord::class)
+                }
+                health.getChangesToken(recordTypes)?.let {
+                    prefs.setHealthChangesToken(it)
+                    prefs.setHealthChangesTokenTypes(desiredTypes)
+                }
+            } else {
+                var next: String? = null
+                if (caps.weightRead) {
+                    val result = health.consumeWeightChanges(token)
+                    if (result == null) { prefs.clearHealthChangesToken(); return }
+                    weightRepository.importExternalWeights(result.first)
+                    next = result.second
+                }
+                if (caps.bodyFatRead) {
+                    val result = health.consumeBodyFatChanges(token)
+                    if (result == null) { prefs.clearHealthChangesToken(); return }
+                    bodyFatRepository.importExternalBodyFats(result.first)
+                    next = result.second ?: next
+                }
+                if (caps.nutritionRead) {
+                    val result = health.consumeNutritionChanges(token)
+                    if (result == null) { prefs.clearHealthChangesToken(); return }
+                    foodRepository.importExternalNutrition(result.first)
+                    next = result.second ?: next
+                }
+                next?.let { prefs.setHealthChangesToken(it) }
+            }
+        } finally {
+            healthReadSyncInFlight = false
+        }
+    }
+
+    /**
+     * Energy Burn toggle resolved to a number: the user's measured maintenance from Health Connect
+     * (14-day active + basal average), or null when Energy Burn is off, Health is unavailable, or
+     * there isn't enough data. Single source consulted by both manual Recalculate and Adaptive.
+     */
+    suspend fun measuredEnergyTdeeIfEnabled(profile: UserProfile): Int? {
+        if (!prefs.healthEnergyGoalsEnabled.first()) return null
+        if (!prefs.healthConnectEnabled.first()) return null
+        if (!health.isAvailable() || !health.hasEnergyRead()) return null
+        val summary = runCatching { health.readRecentEnergySummary(days = 14) }.getOrNull() ?: return null
+        return summary.totalAverageCalories ?: (profile.bmr.roundToInt() + summary.activeAverageCalories)
+    }
+
+    /**
+     * Adaptive Goals: automatically re-runs the FULL AI goal calculation (the same one the
+     * Recalculate button uses) about once a week, from the latest logged food + weight trend
+     * (hit-and-trial) and — when Energy Burn is on — the measured Health maintenance anchor.
+     * Silent and non-destructive on AI failure (keeps existing goals; marks checked so it does not
+     * retry on every app open). Protein is pinned to the activity multiplier, like manual recalc.
+     */
+    suspend fun refreshAdaptiveGoalsIfNeeded(force: Boolean = false): AdaptiveGoalResult? {
+        if (adaptiveGoalsRefreshInFlight) return null
+        adaptiveGoalsRefreshInFlight = true
+        try {
+            if (!prefs.adaptiveGoalsEnabled.first()) return null
+
+            val today = LocalDate.now()
+            if (!force && !shouldCheckAdaptiveGoals(prefs.adaptiveGoalsLastCheckDay.first(), today)) {
+                return null
+            }
+
+            val profile = profileRepository.current() ?: return null
+            val heightMetric = prefs.heightUnit.first() == "cm"
+            val weightMetric = prefs.weightUnit.first() == "kg"
+            val measuredTdee = measuredEnergyTdeeIfEnabled(profile)
+            val forecast = WeightAnalysisService.compute(
+                weights = weightRepository.entries.first(),
+                foods = foodRepository.entries.first(),
+                profile = profile
+            )
+            val result = runCatching {
+                foodAnalysis.calculateGoals(profile, forecast, heightMetric, weightMetric, measuredTdee, bodyMeasurementRepository.latestSnapshot())
+            }.getOrNull()
+            // Mark checked on success OR AI failure so a misconfigured provider isn't hit on every
+            // foreground; the weekly cadence simply resumes next week.
+            prefs.setAdaptiveGoalsLastCheckDay(today.toString())
+            if (result == null) return null
+
+            prefs.saveAdaptiveGoalPreviousTargetsIfNeeded(profile)
+            val next = profile.recalculatedFromFormulas().copy(
+                customCalories = result.calories,
+                customProtein = result.protein,
+                customCarbs = result.carbs,
+                customFat = result.fat
+            )
+            profileRepository.save(next)
+            return AdaptiveGoalResult(
+                profile = next,
+                changed = true,
+                updatedCalories = result.calories,
+                message = "Updated to ${result.calories} kcal from your latest data." + (result.reason?.let { " $it" } ?: "")
+            )
+        } finally {
+            adaptiveGoalsRefreshInFlight = false
+        }
+    }
+
+    private fun shouldCheckAdaptiveGoals(lastCheckDay: String?, today: LocalDate): Boolean {
+        val lastCheck = lastCheckDay?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+            ?: return true
+        return !lastCheck.plusDays(7).isAfter(today)
+    }
+}
