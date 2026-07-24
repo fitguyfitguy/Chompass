@@ -1,13 +1,38 @@
 // @ts-check
 import test from "node:test";
 import assert from "node:assert/strict";
-import { FORMATS, ZXING_FORMAT_MAP, chooseStrategy, ean13Modules } from "../barcode-detect.js";
+import {
+  FORMATS,
+  ZXING_FORMAT_MAP,
+  chooseStrategy,
+  ean13Modules,
+  shouldDemoteNative,
+  NATIVE_FAILURE_LIMIT,
+  NATIVE_EMPTY_DEMOTE_MS,
+} from "../barcode-detect.js";
 
 test("chooseStrategy_nativeOnlyWhenProbedOk", () => {
   assert.equal(chooseStrategy({ hasNative: true, probeResult: "ok" }), "native");
   assert.equal(chooseStrategy({ hasNative: true, probeResult: "broken" }), "wasm");
   assert.equal(chooseStrategy({ hasNative: false, probeResult: "ok" }), "wasm");
   assert.equal(chooseStrategy({ hasNative: false, probeResult: "broken" }), "wasm");
+});
+
+test("shouldDemoteNative_onThrowStreak", () => {
+  assert.equal(shouldDemoteNative({ emptyMs: 0, throwCount: NATIVE_FAILURE_LIMIT - 1 }), false);
+  assert.equal(shouldDemoteNative({ emptyMs: 0, throwCount: NATIVE_FAILURE_LIMIT }), true);
+});
+
+test("shouldDemoteNative_onSustainedEmpty", () => {
+  assert.equal(shouldDemoteNative({ emptyMs: NATIVE_EMPTY_DEMOTE_MS - 1, throwCount: 0 }), false);
+  assert.equal(shouldDemoteNative({ emptyMs: NATIVE_EMPTY_DEMOTE_MS, throwCount: 0 }), true);
+  assert.equal(shouldDemoteNative({ emptyMs: NATIVE_EMPTY_DEMOTE_MS + 500, throwCount: 0 }), true);
+});
+
+test("shouldDemoteNative_respectsCustomLimits", () => {
+  assert.equal(shouldDemoteNative({ emptyMs: 100, throwCount: 2, emptyLimitMs: 50, throwLimit: 10 }), true);
+  assert.equal(shouldDemoteNative({ emptyMs: 10, throwCount: 5, emptyLimitMs: 100, throwLimit: 5 }), true);
+  assert.equal(shouldDemoteNative({ emptyMs: 10, throwCount: 4, emptyLimitMs: 100, throwLimit: 5 }), false);
 });
 
 test("zxingFormatMap_coversAllScannerFormats", () => {
