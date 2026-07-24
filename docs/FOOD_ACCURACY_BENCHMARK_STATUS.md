@@ -143,6 +143,44 @@ Micros present ≥98%, emoji 100% on the shipped variant (both modalities). **Op
 
 Harness fixes landed alongside: `schema.py`/`env_local.py` ROOT was still `parents[2]` from the pre-`docs/` layout (broke `.env.local` key loading and repo-relative manifest paths; image paths in downloaded manifests resolve via a `docs/` fallback), and the smoke script's `query_normalize` import used the old package path.
 
+## Simulated clarification eval (pre-registered 2026-07-24, not yet run)
+
+Strategy doc: [`UNCERTAINTY_DRIVEN_ENTRY.md`](UNCERTAINTY_DRIVEN_ENTRY.md). Since prompt A/B is exhausted and the dominant image failure modes are portion (+100–200%) and hidden fat (−65–80%), this eval measures the **ceiling** of a one-tap clarification UX before building it: inject oracle answers (from GT) into the `compact` prompt as if the user tapped a chip.
+
+Harness: `clarify.py` (oracle derivation), `build_clarify_manifests.py` (enriched `*_clarify.jsonl` + covered-id lists), prompts `compact_clarify_{portion,fat,both,ask}`, `run_clarify_eval.py` (two-stage ask-then-answer: ask_rate / answered_rate / stage-1 vs final). Stage-0 smoke covers all paths with the stub provider. Oracle coverage on current local data: JFB 50/50 portion (stated ingredient amounts — no total mass in JFB), fat 50/50 (present 24/50); N5k 15/15 portion (true grams + bucket), fat 15/15 (present 6/15, lexicon likely misses cooking oil — treat N5k fat condition as weak).
+
+**Pre-registered decision thresholds** (set before any paid run; JFB-50 L0 covered ids, Gemini 3.5 Flash-Lite as the stable pin, baseline `compact` = 35.9% WMAPE / 40% ±20%):
+
+- **Ship-investigate**: `compact_clarify_both` improves WMAPE by **≥8 pp absolute** AND ±20% kcal by **≥10 pp** → clarification chips graduate to an Android UX design.
+- **Park**: 3–8 pp WMAPE gain → re-test on N5k grams-oracle (cleaner portion signal) before deciding.
+- **Kill**: <3 pp → the chips bet dies like `compact_portion`; remaining bets are ranges + correction memory.
+- Two-stage sanity: ask_rate in 20–80% and error reduction concentrated on asked items; otherwise the model can't self-detect uncertainty and any UI would need heuristic triggers instead.
+
+Caveats registered up front: JFB portion oracle (stated amounts) is a stronger hint than a grams chip — JFB and N5k results are reported per-dataset, never pooled; fat answers stay qualitative to avoid leaking the fat macro.
+
+```bash
+uv run python docs/benchmarks/food_accuracy/build_clarify_manifests.py
+for P in compact compact_clarify_portion compact_clarify_fat compact_clarify_both; do
+  uv run python docs/benchmarks/food_accuracy/run_eval.py \
+    --provider openrouter --model google/gemini-3.5-flash-lite \
+    --prompt "$P" --sleep 3 --retries 2 \
+    --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_clarify.jsonl \
+    --out docs/benchmarks/food_accuracy/results/clarify_ab/jfb_${P}
+done
+uv run python docs/benchmarks/food_accuracy/compare_runs.py \
+  docs/benchmarks/food_accuracy/results/clarify_ab/jfb_compact/summary.csv \
+  docs/benchmarks/food_accuracy/results/clarify_ab/jfb_compact_clarify_{portion,fat,both}/summary.csv
+
+uv run python docs/benchmarks/food_accuracy/run_clarify_eval.py \
+  --provider openrouter --model google/gemini-3.5-flash-lite --sleep 3 \
+  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_clarify.jsonl \
+  --out docs/benchmarks/food_accuracy/results/clarify_ab/jfb_two_stage
+```
+
+Results: _pending first run._
+
+---
+
 ## Results tables
 
 Lower WMAPE is better. `parse_ok` and within-20% are higher-is-better. Free-tier rate limits (429) and upstream 502s inflate “fail” rates on some pin runs — infra-adjusted notes below.
@@ -244,6 +282,7 @@ Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
 - [x] Port a compact-style prompt into [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) — done 2026-07-24 as the **lean** wording (full schema kept; see § Lean production prompt). Follow-up: paired re-run of lean vs `legacy_production_image` on Gemini 3.6 Flash (±20% dip, n=50 single run)
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
+- [ ] **Simulated clarification eval** — run the pre-registered 4-condition matrix + two-stage ask eval (see § Simulated clarification eval); decide chips ship/park/kill against the registered thresholds
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 
 ---

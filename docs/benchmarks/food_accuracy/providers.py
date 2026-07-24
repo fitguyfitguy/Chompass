@@ -148,6 +148,9 @@ class StubProvider(Provider):
             "serving_size_grams": 250.0,
             "unit_options": [],
         }
+        if "clarify_request" in prompt:
+            # Two-stage clarify eval: cover both ask and no-ask branches offline.
+            payload["clarify_request"] = ["portion", "added_fat", "none"][int(seed[16:18], 16) % 3]
         return ProviderResponse(
             text=json.dumps(payload),
             latency_ms=1.0,

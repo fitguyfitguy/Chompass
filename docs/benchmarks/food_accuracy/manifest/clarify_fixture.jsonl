@@ -1,0 +1,9 @@
+# Stage-0 smoke fixture for the simulated-clarification eval. Text modality so the
+# stub provider needs no images. clarify_* extras mirror build_clarify_manifests.py
+# output shapes: grams + stated-amounts portion oracles, fat present/absent, and
+# one item (clar-005) with no fat oracle to cover the exclusion path.
+{"id": "clar-001", "modality": "text", "source": "clarify_fixture", "text": "grilled chicken salad with olive oil dressing", "calories": 420, "protein_g": 35.0, "carbs_g": 12.0, "fat_g": 26.0, "mass_g": 350.0, "clarify_portion": {"kind": "grams", "grams": 350, "bucket": "large"}, "clarify_fat": {"present": true, "names": ["olive oil dressing"]}}
+{"id": "clar-002", "modality": "text", "source": "clarify_fixture", "text": "plain oatmeal with blueberries", "calories": 280, "protein_g": 8.0, "carbs_g": 54.0, "fat_g": 4.0, "mass_g": 300.0, "clarify_portion": {"kind": "grams", "grams": 300, "bucket": "regular"}, "clarify_fat": {"present": false, "names": []}}
+{"id": "clar-003", "modality": "text", "source": "clarify_fixture", "text": "pepperoni pizza slices", "calories": 570, "protein_g": 24.0, "carbs_g": 56.0, "fat_g": 28.0, "clarify_portion": {"kind": "stated_amounts", "amounts": ["2 slices pepperoni pizza"]}, "clarify_fat": {"present": false, "names": []}}
+{"id": "clar-004", "modality": "text", "source": "clarify_fixture", "text": "restaurant pad thai with peanut sauce", "calories": 940, "protein_g": 30.0, "carbs_g": 98.0, "fat_g": 44.0, "mass_g": 650.0, "clarify_portion": {"kind": "grams", "grams": 650, "bucket": "restaurant-size"}, "clarify_fat": {"present": true, "names": ["peanut oil", "peanut butter"]}}
+{"id": "clar-005", "modality": "text", "source": "clarify_fixture", "text": "fruit salad cup", "calories": 90, "protein_g": 1.0, "carbs_g": 22.0, "fat_g": 0.5, "mass_g": 120.0, "clarify_portion": {"kind": "grams", "grams": 120, "bucket": "small"}}

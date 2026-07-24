@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from clarify import clarify_answer_block
+
 FULL_JSON_SCHEMA = (
     '{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,'
     '"serving_size_grams":0.0,"emoji":"<single specific food emoji>",'
@@ -194,6 +196,53 @@ def _build_image_prompt(sample, builder):
     return builder(description=user_description(sample))
 
 
+# Simulated-clarification research variants: compact baseline plus oracle
+# answers injected as if the user tapped a clarification chip. Items without
+# the oracle extras fall back to plain compact — compare on covered ids only
+# (build_clarify_manifests.py emits the id lists). See
+# docs/UNCERTAINTY_DRIVEN_ENTRY.md.
+def _compact_base_prompt(sample) -> str:
+    if sample.modality == "text":
+        return compact_text_prompt(sample.text or "")
+    return compact_image_prompt(description=user_description(sample))
+
+
+def compact_clarify_prompt(sample, *, portion: bool = False, fat: bool = False) -> str:
+    return _compact_base_prompt(sample) + clarify_answer_block(
+        sample, portion=portion, fat=fat
+    )
+
+
+COMPACT_ASK_JSON_SCHEMA = (
+    '{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,'
+    '"serving_size_grams":0.0,"clarify_request":"portion|added_fat|none"}'
+)
+
+ASK_RULE = (
+    'Set clarify_request to "portion" if knowing the true portion weight would most '
+    'improve your estimate, "added_fat" if knowing about unseen oil, butter, or '
+    'dressing would, or "none" if neither answer would change your estimate much.'
+)
+
+
+def compact_ask_prompt(sample) -> str:
+    intro = (
+        f"Estimate macronutrients for: {sample.text}"
+        if sample.modality == "text"
+        else "Analyze this food image. Estimate macronutrients for the visible serving."
+    )
+    prompt = f"""
+{intro}
+Respond ONLY with JSON:
+{COMPACT_ASK_JSON_SCHEMA}
+Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.
+{ASK_RULE}
+""".strip()
+    if sample.modality == "image":
+        prompt = append_user_context(prompt, user_description(sample))
+    return prompt
+
+
 PROMPT_BUILDERS = {
     "production_text": lambda sample: production_text_prompt(sample.text or ""),
     "production_image": lambda sample: _build_image_prompt(sample, production_image_prompt),
@@ -238,6 +287,14 @@ Give your best estimate for the visible food amount shown in the image. Use null
         if sample.modality == "text"
         else lean_image_prompt(description=user_description(sample), unit_rule="v2")
     ),
+    # Simulated clarification (oracle chip answers); research-only.
+    "compact_clarify_portion": lambda sample: compact_clarify_prompt(sample, portion=True),
+    "compact_clarify_fat": lambda sample: compact_clarify_prompt(sample, fat=True),
+    "compact_clarify_both": lambda sample: compact_clarify_prompt(
+        sample, portion=True, fat=True
+    ),
+    # Stage 1 of the two-stage ask-then-answer eval (run_clarify_eval.py).
+    "compact_clarify_ask": compact_ask_prompt,
     "fewshot_units": lambda sample: (
         fewshot_text_prompt(sample.text or "")
         if sample.modality == "text"
