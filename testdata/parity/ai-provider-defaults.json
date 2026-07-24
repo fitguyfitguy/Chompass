@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "notes": "Shared BYOK defaults for Android GEMINI/ANTHROPIC/OPENAI ↔ PWA gemini/anthropic/openai_compatible. Android is product of record; change both clients + this file together. Other Android OpenAI-compatible hosts stay android-only.",
+  "providers": {
+    "gemini": {
+      "defaultModel": "gemini-3.6-flash",
+      "defaultFallbackModel": "gemini-3.5-flash-lite",
+      "models": [
+        "gemini-3.6-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-3.1-pro-preview",
+        "gemini-2.5-flash",
+        "gemini-2.5-pro"
+      ]
+    },
+    "anthropic": {
+      "defaultModel": "claude-haiku-4-5",
+      "defaultFallbackModel": "claude-sonnet-5",
+      "models": [
+        "claude-haiku-4-5",
+        "claude-sonnet-5",
+        "claude-opus-4-8",
+        "claude-sonnet-4-6",
+        "claude-opus-4-7"
+      ]
+    },
+    "openai": {
+      "defaultModel": "gpt-5.4-mini",
+      "defaultFallbackModel": "gpt-5.4-nano",
+      "models": [
+        "gpt-5.4-mini",
+        "gpt-5.4-nano",
+        "gpt-5.5",
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "gpt-4o-mini"
+      ]
+    }
+  }
+}

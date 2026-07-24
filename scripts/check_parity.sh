@@ -27,4 +27,7 @@ run_in_devenv 'cd web && tsc --checkJs --noEmit -p tsconfig.json'
 echo "==> Validate parity fixtures against contracts/ JSON Schemas"
 uv run --with jsonschema python "$ROOT/scripts/validate_parity_contracts.py"
 
+echo "==> Validate docs/PARITY.md feature matrix structure"
+uv run python "$ROOT/scripts/check_parity_matrix.py"
+
 echo "==> Parity checks passed"

@@ -74,16 +74,16 @@ enum class AIProvider {
         )
         OPENAI -> listOf(
             "gpt-5.4-mini",
-            "gpt-5.5",
             "gpt-5.4-nano",
+            "gpt-5.5",
             "gpt-4.1",
             "gpt-4.1-mini",
             "gpt-4o-mini"
         )
         ANTHROPIC -> listOf(
+            "claude-haiku-4-5",
             "claude-sonnet-5",
             "claude-opus-4-8",
-            "claude-haiku-4-5",
             "claude-sonnet-4-6",
             "claude-opus-4-7"
         )
