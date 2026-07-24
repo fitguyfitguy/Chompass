@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **As of** | 2026-07-22 |
+| **As of** | 2026-07-24 |
 | **Harness** | [`docs/benchmarks/food_accuracy/`](benchmarks/food_accuracy/) |
 | **How-to** | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) |
 | **Grounded WIP** | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) — **not production**; UI flag off |
@@ -59,6 +59,7 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 12. **No OpenRouter `gemini-3.6-flash-lite`.** Lite sibling is `google/gemini-3.5-flash-lite`; full Flash is `google/gemini-3.6-flash`.
 13. **Plate error is portion priors, not meal size.** Consensus hard vs easy JFB meals have nearly identical mean GT kcal (~395 vs ~391). Short “portion grounding” prompt rules did **not** beat compact (see [Failure modes](#failure-modes--portion-reasoning)).
 14. **DeepSeek Flash / GPT-5.6 Luna not useful for this plate slate.** DeepSeek models on OpenRouter are **text-only** (no vision). Luna is ~$1/$6 input/output — not in the cheap tier; skipped for cost.
+15. **The old production-prompt gap was rule verbosity, not schema size — lean production shipped (2026-07-24).** A "lean" prompt (full 28-field app schema, compact wording + one-line unit_options rule carrying the object shape, `lean_units2`) matches compact-level text macros while keeping micros/emoji/units: Flash-Lite text WMAPE **5.3%** (old production 6.9%, compact 4.8%) and image **31.25%** (old production 31.1%, compact 35.9%). The Gemma image "production is 8pp worse" finding was a Gemma artifact — on Flash-Lite the verbose image prompt was actually *better* than compact; lean keeps that win at half the prompt tokens. Bonus: the old text prompt never elicited `grams_per_unit`, so **every AI text serving unit was silently dropped by the app parser**; lean fixes this (40/41 usable vs 0). Shipped to `FoodAnalysisService` (all four entry prompts) and mirrored in `prompts.py` `production_*`. See § Lean production prompt (2026-07-24).
 
 ---
 
@@ -117,6 +118,30 @@ Prompt/model A/B alone will not move the 8 “never ±20%” meals much. Next be
 Artifacts: `results/image_text_ab/l0_*`, `l0_gemini35_flash_lite_compact_portion/`.
 
 ---
+
+## Lean production prompt (2026-07-24)
+
+The entry prompts in `FoodAnalysisService` (analyzeText / analyzeAuto / analyzeFood / analyzeFoodMulti) now use the **lean** wording: full 28-field JSON schema, a condensed one-line nutrient-units sentence, a one-line `unit_options` rule that embeds the option object shape (`{"unit":"slice","quantity":2,"grams_per_unit":180}`), and a short emoji/null line. ~995 chars vs ~1937 for the old wording. Harness `production_text` / `production_image` mirror it; `legacy_production_image` preserves the old image wording for baselines. The PWA `food-analyze.js` SYSTEM prompt was already lean-style and is unchanged.
+
+Ablations that picked it (`lean_full` = no unit rule; `lean_units` = rule without object shape; `lean_units2` = shipped):
+
+| Run (JFB-50 L0 / text-42) | Model | WMAPE | ±20% kcal | parse | units usable |
+|---|---|------:|----------:|------:|---|
+| text old production | Flash-Lite | 6.9% | 85.7% | 100% | 0/46 (no grams_per_unit → app drops all) |
+| text `lean_full` | Flash-Lite | 5.4% | 92.9% | 100% | no (83% presence, no gpu) |
+| text `lean_units2` **(shipped)** | Flash-Lite | **5.3%** | 87.8% | 97.6% | **40/41 sane with gpu** |
+| image old production | Flash-Lite | 31.1% | 48% | 100% | 47/53 sane |
+| image `lean_full` | Flash-Lite | 31.2% | 46% | 100% | no — bare strings |
+| image `lean_units` | Flash-Lite | 33.0% | 40% | 100% | partial (no gpu) |
+| image `lean_units2` **(shipped)** | Flash-Lite | **31.25%** | 46% | 100% | **51/51 sane with gpu** |
+| text `lean_full` | Gemma 26B :free | 5.3% | 92.7% | 97.6% | — |
+| image `lean_full` | Gemma 26B :free | 41.8% | 25% | 96% | — (old production: 47.8%) |
+| image `lean_units2` | Gemini 3.6 Flash | 33.2% | 42% | 100% | — |
+| image `legacy_production_image` | Gemini 3.6 Flash | 32.5% | **52%** | 100% | — |
+
+Micros present ≥98%, emoji 100% on the shipped variant (both modalities). **Open wrinkle:** on the app-primary Gemini 3.6 Flash, the legacy image wording beat lean on ±20% kcal (52% vs 42%, n=50 single run; WMAPE within 0.7pp) — worth a paired re-run before treating that delta as real. Artifacts: `results/lean_prompt_ab/` (gitignored).
+
+Harness fixes landed alongside: `schema.py`/`env_local.py` ROOT was still `parents[2]` from the pre-`docs/` layout (broke `.env.local` key loading and repo-relative manifest paths; image paths in downloaded manifests resolve via a `docs/` fallback), and the smoke script's `query_normalize` import used the old package path.
 
 ## Results tables
 
@@ -196,7 +221,7 @@ Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 | Avoid | `openrouter/free` | Food-JSON poison |
 | Text prompt for macro research | **`compact`** | Best WMAPE + latency on Gemma |
 | Image prompt for macro research | **`compact`** | Best WMAPE + parse + latency on Gemma JFB A/B |
-| App-parity prompt | `production_text` / `production_image` | Only when testing schema/units transfer |
+| App-parity prompt | `production_text` / `production_image` (= lean, 2026-07-24) | Only when testing schema/units transfer; `legacy_production_image` for the old wording |
 | Text / image pin (stable A/B) | `google/gemma-4-26b-a4b-it:free` | Fast, accurate, vision-capable |
 | Image pacing | `--sleep 15`+ and `--retries 3`+ | Free-tier per-minute limits (image) |
 | Image+text eval | L0/L1/L2 JFB manifests via `download_jfb.py` | Paired A/B; `text` field = user note |
@@ -217,7 +242,7 @@ Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 - [ ] Best paid pin on L1 meal title (does short note help Gemini 3.6 / gpt-4o-mini?)
 - [ ] Nutrition-label OCR track (Open Food Facts)
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
-- [ ] Port compact text path into [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) only after a deliberate product decision
+- [x] Port a compact-style prompt into [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) — done 2026-07-24 as the **lean** wording (full schema kept; see § Lean production prompt). Follow-up: paired re-run of lean vs `legacy_production_image` on Gemini 3.6 Flash (±20% dip, n=50 single run)
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 
