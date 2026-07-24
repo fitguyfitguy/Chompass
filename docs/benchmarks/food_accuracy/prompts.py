@@ -66,16 +66,12 @@ NUTRIENT_UNITS = (
 
 
 def production_text_prompt(description: str, *, portion_aware: bool = False) -> str:
-    portion = f"\n{TEXT_QUANTITY_RULES}" if portion_aware else ""
-    return f"""
-Estimate the nutritional content for: {description}
-Parse any quantities, brands, and multiple items from the text. If a brand is mentioned, use that brand's known nutritional data. If multiple items are described, sum up the total nutrition.
-Respond ONLY with JSON:
-{FULL_JSON_SCHEMA}
-{NUTRIENT_UNITS}
-{UNIT_RULES}{portion}
-For "emoji" pick the single most specific food emoji that depicts this dish. Use null for any nutrient you cannot estimate.
-""".strip()
+    # Production shipped the lean wording (lean_units2 A/B win, 2026-07-24);
+    # this builder mirrors FoodAnalysisService.analyzeText.
+    prompt = lean_text_prompt(description, unit_rule="v2")
+    if portion_aware:
+        prompt += f"\n{TEXT_QUANTITY_RULES}"
+    return prompt
 
 
 def user_description(sample) -> str | None:
@@ -97,15 +93,11 @@ def append_user_context(prompt: str, description: str | None) -> str:
 def production_image_prompt(
     *, description: str | None = None, portion_aware: bool = False
 ) -> str:
-    portion = f"\n{IMAGE_PORTION_RULES}" if portion_aware else ""
-    prompt = f"""
-Analyze this food image. Identify the food and estimate its nutritional content.
-Respond ONLY with JSON:
-{FULL_JSON_SCHEMA}
-{NUTRIENT_UNITS}
-{IMAGE_UNIT_RULES}{portion}
-Give your best estimate for the visible food amount shown in the image. Use null for any nutrient you cannot estimate.
-""".strip()
+    # Production shipped the lean wording (lean_units2 A/B win, 2026-07-24);
+    # this builder mirrors FoodAnalysisService.analyzeFood.
+    prompt = lean_image_prompt(unit_rule="v2")
+    if portion_aware:
+        prompt += f"\n{IMAGE_PORTION_RULES}"
     return append_user_context(prompt, description)
 
 

@@ -28,6 +28,27 @@ import kotlin.math.roundToInt
 import okhttp3.OkHttpClient
 import java.util.Locale
 
+// Shared lines of the entry-analysis prompts ("lean" wording, A/B-validated in
+// docs/benchmarks/food_accuracy — lean_units2 variant). Keep in sync with the
+// production_* builders in docs/benchmarks/food_accuracy/prompts.py.
+private const val ENTRY_JSON_SCHEMA =
+    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}"""
+
+private const val ENTRY_NUTRIENT_UNITS =
+    "Calories are integers; other nutrients are numbers (grams for protein/carbs/fat/sugars/fiber/fats/omega-3; " +
+        "mg for cholesterol, sodium, potassium, calcium, iron, magnesium, zinc, vitamin C, vitamin E; " +
+        "mcg for vitamins A, D, B12, K and folate). serving_size_grams is the estimated total weight in grams."
+
+private const val ENTRY_UNIT_OPTIONS_RULE =
+    """unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}: """ +
+        "the natural non-gram unit (slice, piece, cup, ml, tbsp, can) with quantity covering " +
+        "the whole analyzed amount and its weight per unit. Use [] only when no non-gram unit " +
+        "fits; never use g/grams as a unit."
+
+private const val ENTRY_EMOJI_NULL_RULE =
+    "For \"emoji\" pick the single most specific food emoji for this dish. " +
+        "Use null for any nutrient you cannot estimate."
+
 /**
  * Single-shot food / text / nutrition-label analysis. Port of iOS GeminiService.
  * Routes the call to the right per-format client based on the user's selected provider.
@@ -332,13 +353,11 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         val prompt = """
             Estimate the nutritional content for: $description
-            Parse any quantities, brands, and multiple items from the text. If a brand is mentioned, use that brand's known nutritional data. If multiple items are described, sum up the total nutrition.
             Respond ONLY with JSON:
-            {"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}
-            Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated total weight in grams. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
-            The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
-            unit_options is required when the text names an obvious non-gram serving unit, and optional otherwise. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. Do not copy any sample number; use the quantity stated or clearly implied by the meal. Use [] only when no non-gram unit is apparent. Do not include g/grams in unit_options.
-            For "emoji" pick the single most specific food emoji that depicts this dish — e.g. 🥚 for eggs, 🍕 for pizza, 🍎 for an apple, 🥗 for a salad, 🍔 for a burger, 🍜 for ramen, 🍰 for cake, 🥑 for avocado, ☕ for coffee, 🍣 for sushi. Only fall back to 🍽️ when the food truly cannot be represented by any specific emoji. Use null for any nutrient you cannot estimate.
+            $ENTRY_JSON_SCHEMA
+            $ENTRY_NUTRIENT_UNITS
+            $ENTRY_UNIT_OPTIONS_RULE
+            $ENTRY_EMOJI_NULL_RULE
         """.trimIndent()
         val raw = callAi(prompt, null, op = "analyzeText", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
@@ -352,16 +371,13 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         val prompt = """
             Analyze this image. It could be either a photo of food OR a nutrition facts label.
-
-            If it's a food photo: identify the food and estimate nutritional content for the serving shown.
+            If it's a food photo: estimate the nutritional content of the visible food.
             If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
-
             Respond ONLY with JSON:
-            {"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}
-            Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated weight in grams of the serving. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
-            The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
-            unit_options is required for obvious non-gram units visible in the image or label — almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
-            Use null for any nutrient you cannot estimate.
+            $ENTRY_JSON_SCHEMA
+            $ENTRY_NUTRIENT_UNITS
+            $ENTRY_UNIT_OPTIONS_RULE
+            $ENTRY_EMOJI_NULL_RULE
         """.trimIndent()
         val raw = callAi(prompt, imageBytes, op = "analyzeAuto", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
@@ -375,13 +391,12 @@ class FoodAnalysisService(
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         var prompt = """
-            Analyze this food image. Identify the food and estimate its nutritional content.
+            Analyze this food image. Estimate the nutritional content of the visible food.
             Respond ONLY with JSON:
-            {"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}
-            Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated weight in grams of the serving shown. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
-            The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
-            unit_options is required for obvious non-gram units visible in the food — almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml/cup/fl oz for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
-            Give your best estimate for the visible food amount shown in the image. For whole/mostly-whole cakes, pizzas, pies, loaves, or similar foods, estimate the total visible item/remaining item weight rather than defaulting to one slice. Use null for any nutrient you cannot estimate.
+            $ENTRY_JSON_SCHEMA
+            $ENTRY_NUTRIENT_UNITS
+            $ENTRY_UNIT_OPTIONS_RULE
+            $ENTRY_EMOJI_NULL_RULE
         """.trimIndent()
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
@@ -399,14 +414,12 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         var prompt = """
             Analyze these food images together. They are different angles or supporting photos of the same meal.
-            Use all images to identify the food and estimate the total nutritional content for the serving shown.
+            Use all images to estimate the total nutritional content for the serving shown. Do not double-count the meal across images.
             Respond ONLY with JSON:
-            {"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}
-            Calories are integers. Protein/carbs/fat are decimal gram values when needed. serving_size_grams is the estimated weight in grams of the serving shown. Nutrients are numbers: sugar/fiber/sat fat/mono fat/poly fat/trans fat/omega-3 in grams; cholesterol/sodium/potassium/calcium/iron/magnesium/zinc/vitamin C/vitamin E in milligrams; vitamin A/vitamin D/vitamin B12/vitamin K/folate in micrograms.
-            The [] in unit_options above is only a JSON shape placeholder; replace it with options when a non-gram unit is obvious.
-            unit_options is required for obvious non-gram units visible in the food, almost every solid or liquid food has one; treat [] as a last resort only for loose, uncountable food (e.g. plain scrambled eggs, mixed stir-fry) where no natural unit exists. Use slice/piece for pizza, cake, bread, cookies, fruit pieces, etc.; use ml for drinks, milk, soup, smoothies, sauces, etc.; use tbsp/tsp for spooned foods; use can/packet when packaged. Its quantity must describe the whole analyzed amount, not always 1. For a whole or mostly-whole divisible food like cake, pie, or pizza, count the visible pieces/slices and derive grams_per_unit from serving_size_grams / quantity. If N slices are visible, return quantity N. Use quantity 1 only when a single piece/slice is actually the analyzed portion. If you are uncertain, still give your single best-guess unit and quantity rather than returning []; a plausible guess is always more useful than none. Example: a plate showing 2 visible pizza slices with serving_size_grams 360 should return "unit_options":[{"unit":"slice","quantity":2,"grams_per_unit":180}]. Do not include g/grams in unit_options.
-            Do not double-count the meal across images. Treat the photos as multiple views of the same item unless there are clearly separate foods.
-            Use null for any nutrient you cannot estimate.
+            $ENTRY_JSON_SCHEMA
+            $ENTRY_NUTRIENT_UNITS
+            $ENTRY_UNIT_OPTIONS_RULE
+            $ENTRY_EMOJI_NULL_RULE
         """.trimIndent()
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
