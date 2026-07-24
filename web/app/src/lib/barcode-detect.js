@@ -24,7 +24,7 @@ export const ZXING_FORMAT_MAP = {
 };
 
 // Bump when the probe logic changes to invalidate cached verdicts.
-const PROBE_CACHE_KEY = "nofud.barcodeDetectorProbe.v2";
+const PROBE_CACHE_KEY = "chompass.barcodeDetectorProbe.v2";
 const PROBE_TIMEOUT_MS = 2000;
 const PROBE_VALUE = "4006381333931";
 // Consecutive live detect() throws before demoting a probe-passing native

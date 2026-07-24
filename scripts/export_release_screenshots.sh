@@ -8,7 +8,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ANDROID="$ROOT/android"
-REF_DIR="$ANDROID/app/src/screenshotTestDebug/reference/org/codeberg/fitguy/nofud/ReleaseScreenshotPreviewsKt"
+REF_DIR="$ANDROID/app/src/screenshotTestDebug/reference/app/chompass/ReleaseScreenshotPreviewsKt"
 OUT_DIR="$ROOT/release-screenshots"
 README_DIR="$ROOT/docs/screenshots"
 VALIDATE_ONLY=0

@@ -1,4 +1,4 @@
-Import/export weight, body-fat and body-measurement history (NoFUD JSON/CSV, openScale CSV, generic weight CSVs).
+Import/export weight, body-fat and body-measurement history (Chompass JSON/CSV, openScale CSV, generic weight CSVs).
 
 Health Connect: Wellness card (sleep, resting heart rate, hydration), height sync, optional background sync (off by default).
 

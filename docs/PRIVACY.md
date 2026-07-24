@@ -1,14 +1,14 @@
-# NoFUD Privacy Policy
+# Chompass Privacy Policy
 
-NoFUD is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Available as an Android app and a browser PWA.
+Chompass is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Available as an Android app and a browser PWA.
 
 ## Summary
 
-- **No ads** - NoFUD does not include AdMob or any other advertising SDK.
+- **No ads** - Chompass does not include AdMob or any other advertising SDK.
 - **No analytics** - No usage tracking, crash analytics, or telemetry SDKs are bundled.
 - **No accounts** - There is no sign-in, cloud sync, or central user database.
 - **Local storage** - Food logs, weight history, profile, and Coach chat are stored on your device (or in the browser for the PWA).
-- **Bring your own AI key** - API keys are encrypted at rest on your device before storage. Food analysis and Coach requests go from your device to the AI provider you choose, not through a NoFUD server.
+- **Bring your own AI key** - API keys are encrypted at rest on your device before storage. Food analysis and Coach requests go from your device to the AI provider you choose, not through a Chompass server.
 - **On-Device (Private)** - On Android, optional Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
 
 ## API keys
@@ -37,7 +37,7 @@ The app stores locally:
 
 ## Network requests
 
-NoFUD may contact external services only when you use a feature that requires it:
+Chompass may contact external services only when you use a feature that requires it:
 
 | Feature | What is sent | Where |
 |---------|----------------|-------|
@@ -48,16 +48,16 @@ NoFUD may contact external services only when you use a feature that requires it
 
 Optional **background sync** (off by default) only reads from Health Connect on-device on a periodic schedule; it sends nothing off the device.
 
-NoFUD does not sell or share your health data for advertising.
+Chompass does not sell or share your health data for advertising.
 
 ## Meal sharing
 
-Shared meals use a `nofud://` deep link with base64-encoded nutrition JSON. Links you send leave your device through the app or messenger you choose. NoFUD can **import** meals shared from upstream Fud AI (`fudai://` links) but does not link outbound shares to third-party websites.
+Shared meals use a `chompass://` deep link with base64-encoded nutrition JSON. Links you send leave your device through the app or messenger you choose. Chompass can **import** meals shared from upstream Fud AI (`fudai://` links) but does not link outbound shares to third-party websites.
 
 ## Upstream
 
-NoFUD is based on open-source software by Apoorv Darshan under the MIT License. See [NOTICE](NOTICE.md) and [LICENSE](../LICENSE).
+Chompass is based on open-source software by Apoorv Darshan under the MIT License. See [NOTICE](NOTICE.md) and [LICENSE](../LICENSE).
 
 ## Contact
 
-Source and issues: https://codeberg.org/fitguy/NoFUD
+Source and issues: https://codeberg.org/fitguy/chompass

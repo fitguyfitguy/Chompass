@@ -14,15 +14,15 @@ import {
   dailyCalories,
   dailyTargets,
   proteinGoal,
-} from "../nofud-core/formulas.js";
+} from "../chompass-core/formulas.js";
 import {
   activityMultipliersLine,
   proteinPerKgLine,
   calorieAdjustmentLine,
-} from "../nofud-core/goal-formula-reference.js";
+} from "../chompass-core/goal-formula-reference.js";
 
-/** @typedef {import('../nofud-core/models.js').UserProfile} UserProfile */
-/** @typedef {ReturnType<import('../nofud-core/forecast.js').computeWeightForecast>} WeightForecast */
+/** @typedef {import('../chompass-core/models.js').UserProfile} UserProfile */
+/** @typedef {ReturnType<import('../chompass-core/forecast.js').computeWeightForecast>} WeightForecast */
 
 /**
  * @typedef {Object} GoalCalculation

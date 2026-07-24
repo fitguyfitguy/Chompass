@@ -1,6 +1,6 @@
-# NoFUD PWA (dev notes)
+# Chompass PWA (dev notes)
 
-Companion web app for NoFUD — diary logging, manual/photo/barcode food entry,
+Companion web app for Chompass — diary logging, manual/photo/barcode food entry,
 AI coach, progress, onboarding, settings. Data-interoperable with the Android
 app's JSON diary/body-metrics export format. Parity work targets daily-driver
 UX (Home / Progress / Settings) while staying a no-bundler Web Components app.
@@ -22,7 +22,7 @@ Inside `devenv shell` (adds `node`/`tsc` to PATH):
 
 ```bash
 pwa-serve       # serve web/app/ at http://localhost:8787/
-pwa-test        # node --test over nofud-core golden + home-nutrients / OFF / meal-share parity tests
+pwa-test        # node --test over chompass-core golden + home-nutrients / OFF / meal-share parity tests
 pwa-typecheck   # tsc --checkJs --noEmit
 # or full gate (tests + typecheck + JSON Schema validation):
 devenv tasks run release:check-parity
@@ -32,14 +32,14 @@ Or directly:
 
 ```bash
 node web/serve.mjs
-node --test web/app/src/lib/nofud-core/__tests__/*.test.js web/app/src/lib/__tests__/*.test.js
+node --test web/app/src/lib/chompass-core/__tests__/*.test.js web/app/src/lib/__tests__/*.test.js
 cd web && tsc --checkJs --noEmit -p tsconfig.json
 ```
 
 ## Layout
 
 - `app/` — the deployed PWA (index.html, manifest, sw.js, css/, src/, vendor/, icons/)
-- `app/src/lib/nofud-core/` — data-compatibility layer (formulas, FCAST/ADAPT forecast,
+- `app/src/lib/chompass-core/` — data-compatibility layer (formulas, FCAST/ADAPT forecast,
   diary/body-metrics export format, shared models), golden-tested against
   [`testdata/parity/`](../testdata/parity/) (and schemas in [`contracts/`](../contracts/)).
   If Android's formula register changes, mirror here — see
@@ -75,9 +75,9 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
 notifications, widgets, full i18n pack.
 
-Landing URL: `fitguy.codeberg.page/NoFUD/app/` (linked from site nav + Download).
+Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 
-Service worker cache: `nofud-shell-v14`.
+Service worker cache: `chompass-shell-v1`.
 
 ### Manual PWA audit checklist
 
@@ -86,7 +86,7 @@ Service worker cache: `nofud-shell-v14`.
   know `.webmanifest` (falls back to sniff → `text/plain` + `nosniff`).
   After a rename, also change file bytes (e.g. add `"id"`) so git-pages does
   not reuse the old blob’s stored Content-Type by hash. Fields: `id` /
-  `name` / `short_name` / `start_url`+`scope` under `/NoFUD/app/`,
+  `name` / `short_name` / `start_url`+`scope` under `/Chompass/app/`,
   `display: standalone`, icons (any + maskable).
 - Theme color, viewport-fit, apple-touch meta tags.
 - Nav links have visible text; FABs have `aria-label`.
@@ -117,5 +117,5 @@ Known trade-offs:
   Safari Private / restricted storage falls back to an extractable CryptoKey
   or JWK record (AES-GCM wrapping of provider keys is unchanged; JWK is weaker
   against XSS).
-- Custom-scheme `nofud://add-meal` cold-start is native-only; PWA uses `#/add-meal?d=`.
+- Custom-scheme `chompass://add-meal` cold-start is native-only; PWA uses `#/add-meal?d=`.
 - Web Speech API availability varies (Safari/Firefox uneven).

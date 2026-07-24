@@ -14,7 +14,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CODEBERG_REPO="${CODEBERG_REPO:-fitguy/nofud}"
+CODEBERG_REPO="${CODEBERG_REPO:-fitguy/chompass}"
 LOGIN="${CODEBERG_LOGIN:-codeberg}"
 
 run_tea() {
@@ -44,7 +44,7 @@ is_abi_split() {
 
 is_play_asset() {
   local name="$1"
-  [[ "$name" == NoFUD-play-* ]]
+  [[ "$name" == Chompass-play-* ]]
 }
 
 list_release_tags() {
@@ -385,8 +385,8 @@ Options:
   --dry-run   Print deletions without applying them
   -y, --yes   Skip confirmation prompt
 
-Deletes NoFUD-play-*.apk attachments from Codeberg releases. Keeps fdroid APKs,
-legacy NoFUD-<version>.apk files, and SHA256SUMS. The play product flavor is
+Deletes Chompass-play-*.apk attachments from Codeberg releases. Keeps fdroid APKs,
+legacy Chompass-<version>.apk files, and SHA256SUMS. The play product flavor is
 disabled — see docs/DISTRIBUTION.md.
 
 With no tags, prunes play assets on every release that has them.
@@ -475,10 +475,10 @@ Commands:
   list                         List release attachments and estimated total size
   keep-latest [options]        Delete all releases except the latest (or --keep)
   prune-abi-splits [options]   Delete per-ABI APK splits; keep universal APKs + SHA256SUMS
-  prune-play-assets [options]  Delete NoFUD-play-*.apk attachments (disabled flavor)
+  prune-play-assets [options]  Delete Chompass-play-*.apk attachments (disabled flavor)
 
 Environment:
-  CODEBERG_REPO   Default: fitguy/nofud
+  CODEBERG_REPO   Default: fitguy/chompass
   CODEBERG_LOGIN  Default: codeberg
 EOF
 }

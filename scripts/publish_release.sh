@@ -20,7 +20,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CODEBERG_REPO="${CODEBERG_REPO:-fitguy/nofud}"
+CODEBERG_REPO="${CODEBERG_REPO:-fitguy/chompass}"
 LOGIN="${CODEBERG_LOGIN:-codeberg}"
 WITH_SCREENSHOTS=0
 ASSETS_ONLY=0
@@ -70,7 +70,7 @@ TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 
 # Quota policy: universal APK only (no per-ABI splits).
 FDROID_ASSETS=(
-  "$ROOT/NoFUD-fdroid-${VERSION}.apk"
+  "$ROOT/Chompass-fdroid-${VERSION}.apk"
 )
 CHECKSUM_ASSETS=("$CHECKSUMS")
 SCREENSHOT_ASSETS=()
@@ -229,7 +229,7 @@ if [[ "$ASSETS_ONLY" -eq 0 ]]; then
       --login "$LOGIN" \
       --repo "$CODEBERG_REPO" \
       --tag "$TAG" \
-      --title "NoFUD ${VERSION}" \
+      --title "Chompass ${VERSION}" \
       --note "$NOTES" 2>&1)"; then
       if echo "$err" | rg -qi 'already a release'; then
         echo "Release $TAG already exists — uploading any missing assets."
@@ -240,7 +240,7 @@ if [[ "$ASSETS_ONLY" -eq 0 ]]; then
         echo "$err" >&2
         echo >&2
         echo "If you see 'target couldn't be found', enable Releases in the repo:" >&2
-        echo "  https://codeberg.org/fitguy/NoFUD/settings  → Features → Releases" >&2
+        echo "  https://codeberg.org/fitguy/chompass/settings  → Features → Releases" >&2
         exit 1
       fi
     fi
@@ -261,4 +261,4 @@ fi
 
 deploy_pages
 
-echo "Published: https://codeberg.org/fitguy/NoFUD/releases/tag/${TAG}"
+echo "Published: https://codeberg.org/fitguy/chompass/releases/tag/${TAG}"

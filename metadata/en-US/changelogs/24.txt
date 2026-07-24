@@ -1,1 +1,1 @@
-Diary JSON import accepts format 1.1 and restores micronutrients from current Fud AI / NoFUD exports.
+Diary JSON import accepts format 1.1 and restores micronutrients from current Fud AI / Chompass exports.

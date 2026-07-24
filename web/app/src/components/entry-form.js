@@ -17,7 +17,7 @@ import {
   normalizedOptions,
   displayUnit,
   optionId,
-} from "../lib/nofud-core/serving-units.js";
+} from "../lib/chompass-core/serving-units.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 
 const MICRO_FIELDS = [
@@ -60,7 +60,7 @@ export class EntryForm extends HTMLElement {
     /** @type {Record<string, number|null>|null} */
     this.baseNutrition = null;
     this.baseGrams = 100;
-    /** @type {import('../lib/nofud-core/serving-units.js').ServingUnitOption[]} */
+    /** @type {import('../lib/chompass-core/serving-units.js').ServingUnitOption[]} */
     this.servingUnitOptions = [];
     this.selectedServingUnit = "g";
     this.quantityText = "100";
@@ -436,7 +436,7 @@ export class EntryForm extends HTMLElement {
     const servingGrams = this.currentServingGrams();
     const qty = parseQuantity(this.quantityText);
 
-    /** @type {import('../lib/nofud-core/models.js').FoodEntry} */
+    /** @type {import('../lib/chompass-core/models.js').FoodEntry} */
     const entry = {
       id: this.existing?.id ?? crypto.randomUUID(),
       name: String(fd.get("name")),

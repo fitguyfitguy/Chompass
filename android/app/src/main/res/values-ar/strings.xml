@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD السعرات الحرارية</string>
+    <string name="widget_calorie_label">Chompass السعرات الحرارية</string>
     <string name="widget_calorie_description">اطّلع على سعراتك الحرارية وعناصرك الكبرى لليوم في لمحة.</string>
-    <string name="widget_protein_label">NoFUD البروتين</string>
+    <string name="widget_protein_label">Chompass البروتين</string>
     <string name="widget_protein_description">اطّلع على تقدم البروتين اليوم في لمحة.</string>
     <string name="widget_today">اليوم</string>
     <string name="widget_protein">البروتين</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">رجوع</string>
-    <string name="onboarding_logo_description">شعار NoFUD</string>
+    <string name="onboarding_logo_description">شعار Chompass</string>
     <string name="onboarding_welcome_line1">تناول بذكاء،</string>
     <string name="onboarding_welcome_line2">عش أفضل</string>
     <string name="onboarding_welcome_subtitle">فقط التقط، تتبّع، وازدهر.\nتغذيتك، مبسطة.</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">ربط</string>
 
     <string name="onboarding_provider_title">استخدم الذكاء الاصطناعي الخاص بك</string>
-    <string name="onboarding_provider_subtitle">يحتاج NoFUD إلى مفتاح مزود ذكاء اصطناعي\nلتحليل طعامك. أنت توفّر مفتاحك الخاص.</string>
+    <string name="onboarding_provider_subtitle">يحتاج Chompass إلى مفتاح مزود ذكاء اصطناعي\nلتحليل طعامك. أنت توفّر مفتاحك الخاص.</string>
     <string name="onboarding_provider_recommended_title">موصى به: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">طبقة مجانية متاحة، سريعة ودقيقة</string>
     <string name="onboarding_provider_howto_title">كيفية الحصول على مفتاح Google AI Studio مجاني</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">الأحد</string>
     <string name="settings_notifications">الإشعارات</string>
     <string name="settings_battery_opt">تحسين البطارية</string>
-    <string name="settings_battery_opt_value">إضافة NoFUD للقائمة البيضاء</string>
+    <string name="settings_battery_opt_value">إضافة Chompass للقائمة البيضاء</string>
 
     <string name="settings_ai_provider">المزود</string>
     <string name="settings_ai_model">النموذج</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">يحتاج هدف الزيادة إلى وزن أعلى من وزنك الحالي.</string>
     <string name="settings_permission_title">الإذن مطلوب</string>
 
-    <string name="settings_notifications_denied">تم رفض إذن الإشعارات. فعّله من إعدادات النظام ← التطبيقات ← NoFUD ← الإشعارات لتلقي التذكيرات.</string>
+    <string name="settings_notifications_denied">تم رفض إذن الإشعارات. فعّله من إعدادات النظام ← التطبيقات ← Chompass ← الإشعارات لتلقي التذكيرات.</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">حان وقت الوزن</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">الإبلاغ عن مشكلة</string>
     <string name="about_request_feature">طلب ميزة</string>
     <string name="about_privacy">سياسة الخصوصية</string>
-    <string name="about_made_by">NoFUD بواسطة fitguy</string>
+    <string name="about_made_by">Chompass بواسطة fitguy</string>
     <string name="about_with_care">مبني على Fud AI بواسطة Apoorv Darshan</string>
-    <string name="about_share_message">أتتبّع وجباتي مع NoFUD - التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">شارك NoFUD</string>
+    <string name="about_share_message">أتتبّع وجباتي مع Chompass - التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">شارك Chompass</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">تذكير السلسلة</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">المزود الاحتياطي</string>
     <string name="settings_enable_fallback">تفعيل الاحتياطي</string>
     <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي - فقط اختر طرازاً مختلفاً.</string>
-    <string name="widget_all_metrics_label">NoFUD اليوم</string>
+    <string name="widget_all_metrics_label">Chompass اليوم</string>
     <string name="widget_all_metrics_description">شاهد سعرات اليوم والبروتين والكربوهيدرات والدهون في أداة واحدة.</string>
     <string name="settings_needs_health_connect">يتطلب Health Connect</string>
-    <string name="settings_energy_goals_info">عند التفعيل، يستخدم NoFUD السعرات المحروقة المقاسة من Health Connect - متوسط 14 يومًا للطاقة النشطة + الأساسية - كمرجع لسعرات الثبات (TDEE) عند حساب الأهداف، بدلًا من التقدير بالمعادلة. لا يُستخدم الذكاء الاصطناعي لقراءة الحرق. يتطلب Health Connect. يعمل مع زر إعادة الحساب ومع Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">مرة واحدة تقريبًا في الأسبوع عند فتح التطبيق، يعيد NoFUD تلقائيًا تشغيل حساب الأهداف الكامل - وهو نفس الحساب الذي يستخدمه زر إعادة الحساب - استنادًا إلى ملفك الشخصي والطعام المسجّل مؤخرًا واتجاه وزنك. إذا كان Energy Burn مفعّلًا، يُستخدم حرقك المقاس كمرجع لسعرات الثبات. إذا لم يكن الذكاء الاصطناعي متاحًا، يتم التخطي بصمت. عند إيقاف هذه الميزة تُستعاد الأهداف التي كانت قبل أول تغيير أجرته. هذه ليست نصيحة طبية.</string>
+    <string name="settings_energy_goals_info">عند التفعيل، يستخدم Chompass السعرات المحروقة المقاسة من Health Connect - متوسط 14 يومًا للطاقة النشطة + الأساسية - كمرجع لسعرات الثبات (TDEE) عند حساب الأهداف، بدلًا من التقدير بالمعادلة. لا يُستخدم الذكاء الاصطناعي لقراءة الحرق. يتطلب Health Connect. يعمل مع زر إعادة الحساب ومع Adaptive Goals.</string>
+    <string name="settings_adaptive_goals_info">مرة واحدة تقريبًا في الأسبوع عند فتح التطبيق، يعيد Chompass تلقائيًا تشغيل حساب الأهداف الكامل - وهو نفس الحساب الذي يستخدمه زر إعادة الحساب - استنادًا إلى ملفك الشخصي والطعام المسجّل مؤخرًا واتجاه وزنك. إذا كان Energy Burn مفعّلًا، يُستخدم حرقك المقاس كمرجع لسعرات الثبات. إذا لم يكن الذكاء الاصطناعي متاحًا، يتم التخطي بصمت. عند إيقاف هذه الميزة تُستعاد الأهداف التي كانت قبل أول تغيير أجرته. هذه ليست نصيحة طبية.</string>
     <string name="onboarding_plan_adaptive_note">تتعدّل خطتك تلقائيًا كل أسبوع حسب تسجيلاتك - أوقف Adaptive Goals من الإعدادات لإبقائها ثابتة.</string>
     <string name="onboarding_feature_snap">التقط صورة - والذكاء الاصطناعي يسجّلها</string>
     <string name="onboarding_feature_coach">مدرّب يعرف بياناتك</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">تمت إزالة علامة تبويب التمارين.</string>
     <string name="whats_new_v30_home">تصميم جديد للرئيسية: عدّاد سرعة للسعرات، وأشرطة ماكرو عمودية، وأربع بطاقات مغذّيات، وزر إضافة عائم.</string>
     <string name="whats_new_v30_coach_voice">اسأل المدرب صوتيًا عبر المسجّل المدمج الجديد.</string>
-    <string name="whats_new_v30_share">شارك أي وجبة كرابط يفتح مباشرة في NoFUD - على iPhone أو Android.</string>
+    <string name="whats_new_v30_share">شارك أي وجبة كرابط يفتح مباشرة في Chompass - على iPhone أو Android.</string>
     <string name="whats_new_v30_export">صدّر يوميات طعامك بصيغة JSON أو Markdown أو CSV من الإعدادات.</string>
     <string name="whats_new_v30_reprocess">أعد معالجة وجبة مسجلة بالذكاء الاصطناعي - عدّل الاسم أو الكمية أو الملاحظة ثم أعد التحليل.</string>
     <string name="whats_new_v30_camera">كاميرا + كاميرا تحتفظ باللقطتين معًا جنبًا إلى جنب.</string>

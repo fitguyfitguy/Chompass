@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD कैलोरी</string>
+    <string name="widget_calorie_label">Chompass कैलोरी</string>
     <string name="widget_calorie_description">आज की कैलोरी और मैक्रो एक नज़र में देखें।</string>
-    <string name="widget_protein_label">NoFUD प्रोटीन</string>
+    <string name="widget_protein_label">Chompass प्रोटीन</string>
     <string name="widget_protein_description">आज की प्रोटीन प्रगति एक नज़र में देखें।</string>
     <string name="widget_today">आज</string>
     <string name="widget_protein">प्रोटीन</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">वापस</string>
-    <string name="onboarding_logo_description">NoFUD लोगो</string>
+    <string name="onboarding_logo_description">Chompass लोगो</string>
     <string name="onboarding_welcome_line1">समझदारी से खाएँ,</string>
     <string name="onboarding_welcome_line2">बेहतर जिएँ</string>
     <string name="onboarding_welcome_subtitle">बस स्नैप करें, ट्रैक करें और फलें-फूलें।\nआपका पोषण, सरल बनाया गया।</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">कनेक्ट करें</string>
 
     <string name="onboarding_provider_title">अपनी खुद की AI लाएँ</string>
-    <string name="onboarding_provider_subtitle">आपके भोजन का विश्लेषण करने के लिए NoFUD को\nएक AI प्रदाता कुंजी चाहिए। आप अपनी कुंजी लाएँ।</string>
+    <string name="onboarding_provider_subtitle">आपके भोजन का विश्लेषण करने के लिए Chompass को\nएक AI प्रदाता कुंजी चाहिए। आप अपनी कुंजी लाएँ।</string>
     <string name="onboarding_provider_recommended_title">अनुशंसित: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">मुफ़्त टियर उपलब्ध, तेज़ और सटीक</string>
     <string name="onboarding_provider_howto_title">मुफ़्त Google AI Studio कुंजी कैसे पाएँ</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">रविवार</string>
     <string name="settings_notifications">सूचनाएँ</string>
     <string name="settings_battery_opt">बैटरी ऑप्टिमाइज़ेशन</string>
-    <string name="settings_battery_opt_value">NoFUD को व्हाइटलिस्ट करें</string>
+    <string name="settings_battery_opt_value">Chompass को व्हाइटलिस्ट करें</string>
 
     <string name="settings_ai_provider">प्रदाता</string>
     <string name="settings_ai_model">मॉडल</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">बढ़ाने के लक्ष्य के लिए आपके वर्तमान वज़न से अधिक टार्गेट चाहिए।</string>
     <string name="settings_permission_title">अनुमति आवश्यक</string>
 
-    <string name="settings_notifications_denied">सूचनाओं की अनुमति अस्वीकृत। रिमाइंडर पाने के लिए सिस्टम सेटिंग्स → ऐप्स → NoFUD → सूचनाएँ में सक्षम करें।</string>
+    <string name="settings_notifications_denied">सूचनाओं की अनुमति अस्वीकृत। रिमाइंडर पाने के लिए सिस्टम सेटिंग्स → ऐप्स → Chompass → सूचनाएँ में सक्षम करें।</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">वज़न मापने का समय</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">समस्या की रिपोर्ट करें</string>
     <string name="about_request_feature">फीचर का अनुरोध करें</string>
     <string name="about_privacy">गोपनीयता नीति</string>
-    <string name="about_made_by">fitguy द्वारा NoFUD</string>
+    <string name="about_made_by">fitguy द्वारा Chompass</string>
     <string name="about_with_care">Apoorv Darshan के Fud AI पर आधारित</string>
-    <string name="about_share_message">मैं NoFUD से अपने भोजन ट्रैक कर रहा हूँ - एक तस्वीर खींचें, बोलें, या टाइप करें, और AI कैलोरी लॉग कर देता है। यह मुफ़्त है, ओपन सोर्स है, और आपका डेटा आपके डिवाइस पर ही रहता है।\n\nडाउनलोड: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">NoFUD शेयर करें</string>
+    <string name="about_share_message">मैं Chompass से अपने भोजन ट्रैक कर रहा हूँ - एक तस्वीर खींचें, बोलें, या टाइप करें, और AI कैलोरी लॉग कर देता है। यह मुफ़्त है, ओपन सोर्स है, और आपका डेटा आपके डिवाइस पर ही रहता है।\n\nडाउनलोड: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Chompass शेयर करें</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">स्ट्रीक रिमाइंडर</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">फ़ॉलबैक प्रदाता</string>
     <string name="settings_enable_fallback">फ़ॉलबैक चालू करें</string>
     <string name="settings_fallback_footer">यदि आपका प्राथमिक प्रदाता विफल हो जाता है (ओवरलोड, रेट लिमिट, नेटवर्क त्रुटि), तो ऐप स्वचालित रूप से इस फ़ॉलबैक के साथ पुनः प्रयास करता है। प्राथमिक के समान प्रदाता की अनुमति है - बस एक अलग मॉडल चुनें।</string>
-    <string name="widget_all_metrics_label">NoFUD आज</string>
+    <string name="widget_all_metrics_label">Chompass आज</string>
     <string name="widget_all_metrics_description">आज की कैलोरी, प्रोटीन, कार्ब्स और फैट एक ही विजेट में देखें।</string>
     <string name="settings_needs_health_connect">Health Connect ज़रूरी है</string>
-    <string name="settings_energy_goals_info">चालू होने पर, NoFUD Health Connect से मापी गई आपकी बर्न हुई कैलोरी - सक्रिय + बेसल ऊर्जा का 14-दिन का औसत - को फ़ॉर्मूला अनुमान की जगह लक्ष्य कैलकुलेशन में मेंटेनेंस (TDEE) आधार के रूप में इस्तेमाल करता है। बर्न पढ़ने के लिए कोई AI इस्तेमाल नहीं होता। Health Connect ज़रूरी है। पुनः गणना करें बटन और Adaptive Goals के साथ काम करता है।</string>
-    <string name="settings_adaptive_goals_info">हफ़्ते में लगभग एक बार, ऐप खोलने पर NoFUD आपकी प्रोफ़ाइल, हाल में लॉग किए गए खाने और वज़न के ट्रेंड के आधार पर पूरा लक्ष्य कैलकुलेशन अपने आप दोबारा चलाता है - वही जो पुनः गणना करें बटन चलाता है। अगर Energy Burn चालू है, तो आपकी मापी गई बर्न को मेंटेनेंस का आधार बनाया जाता है। AI उपलब्ध न होने पर यह चुपचाप छूट जाता है। इसे बंद करने पर वे लक्ष्य वापस आ जाते हैं जो इस फ़ीचर के पहले बदलाव से पहले थे। यह चिकित्सा सलाह नहीं है।</string>
+    <string name="settings_energy_goals_info">चालू होने पर, Chompass Health Connect से मापी गई आपकी बर्न हुई कैलोरी - सक्रिय + बेसल ऊर्जा का 14-दिन का औसत - को फ़ॉर्मूला अनुमान की जगह लक्ष्य कैलकुलेशन में मेंटेनेंस (TDEE) आधार के रूप में इस्तेमाल करता है। बर्न पढ़ने के लिए कोई AI इस्तेमाल नहीं होता। Health Connect ज़रूरी है। पुनः गणना करें बटन और Adaptive Goals के साथ काम करता है।</string>
+    <string name="settings_adaptive_goals_info">हफ़्ते में लगभग एक बार, ऐप खोलने पर Chompass आपकी प्रोफ़ाइल, हाल में लॉग किए गए खाने और वज़न के ट्रेंड के आधार पर पूरा लक्ष्य कैलकुलेशन अपने आप दोबारा चलाता है - वही जो पुनः गणना करें बटन चलाता है। अगर Energy Burn चालू है, तो आपकी मापी गई बर्न को मेंटेनेंस का आधार बनाया जाता है। AI उपलब्ध न होने पर यह चुपचाप छूट जाता है। इसे बंद करने पर वे लक्ष्य वापस आ जाते हैं जो इस फ़ीचर के पहले बदलाव से पहले थे। यह चिकित्सा सलाह नहीं है।</string>
     <string name="onboarding_plan_adaptive_note">आपका प्लान आपकी लॉगिंग के अनुसार हर हफ़्ते अपने आप एडजस्ट होता है - इसे स्थिर रखने के लिए सेटिंग्स में Adaptive Goals बंद करें।</string>
     <string name="onboarding_feature_snap">फोटो खींचें - AI लॉग कर देगा</string>
     <string name="onboarding_feature_coach">कोच जो आपका डेटा जानता है</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">Workouts टैब हटा दिया गया।</string>
     <string name="whats_new_v30_home">नया होम: स्पीडोमीटर कैलोरी गेज, खड़ी मैक्रो बार, चार पोषक कार्ड और फ़्लोटिंग जोड़ें बटन।</string>
     <string name="whats_new_v30_coach_voice">नए इनलाइन रिकॉर्डर से कोच से आवाज़ में पूछें।</string>
-    <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें - iPhone या Android पर सीधे NoFUD में खुलता है।</string>
+    <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें - iPhone या Android पर सीधे Chompass में खुलता है।</string>
     <string name="whats_new_v30_export">सेटिंग्स से अपनी फ़ूड डायरी JSON, Markdown या CSV में निर्यात करें।</string>
     <string name="whats_new_v30_reprocess">लॉग किए भोजन को AI से दोबारा प्रोसेस करें - नाम, मात्रा या नोट बदलकर फिर से विश्लेषण करें।</string>
     <string name="whats_new_v30_camera">कैमरा + कैमरा दोनों फ़ोटो साथ-साथ जोड़कर रखता है।</string>

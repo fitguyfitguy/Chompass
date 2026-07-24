@@ -28,7 +28,7 @@ import { ALL_MICRO_KEYS } from "./home-nutrients.js";
  * @property {string} createdAt
  */
 
-/** @param {import('./nofud-core/models.js').FoodEntry} entry */
+/** @param {import('./chompass-core/models.js').FoodEntry} entry */
 export function ingredientFromFoodEntry(entry) {
   /** @type {Record<string, number|null>} */
   const baseMicros = {};
@@ -90,7 +90,7 @@ export async function logRecipe(recipe, date, appPrefs) {
   const mealType = recipe.mealType || guessMealTypeFromPrefs(appPrefs);
   for (const ing of recipe.ingredients) {
     const n = scaled(ing);
-    /** @type {import('./nofud-core/models.js').FoodEntry} */
+    /** @type {import('./chompass-core/models.js').FoodEntry} */
     const entry = {
       id: crypto.randomUUID(),
       name: ing.name,
@@ -132,7 +132,7 @@ export async function deleteRecipe(id) {
 
 /**
  * @param {string} name
- * @param {import('./nofud-core/models.js').FoodEntry[]} entries
+ * @param {import('./chompass-core/models.js').FoodEntry[]} entries
  * @param {"breakfast"|"lunch"|"dinner"|"snack"} [mealType]
  */
 export function recipeFromEntries(name, entries, mealType) {

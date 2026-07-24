@@ -1,6 +1,6 @@
 // @ts-check
 import { foodEntries, profile as profileStore, water, prefs } from "../lib/db.js";
-import { dailyTargets, estimatedDailyActiveCalories } from "../lib/nofud-core/formulas.js";
+import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInput } from "../lib/ui/dialog.js";
 import {
@@ -34,7 +34,7 @@ import { openVoiceCaptureSheet } from "../lib/ui/voice-capture.js";
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
 const WATER_PRESETS = [250, 500, 750];
-const HOME_DATE_KEY = "nofud-home-date";
+const HOME_DATE_KEY = "chompass-home-date";
 
 const ICONS = {
   photo: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM4 5h3.2l1.4-1.8c.2-.3.5-.4.8-.4h5.2c.3 0 .6.1.8.4L16.8 5H20c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2zm8 13c2.8 0 5-2.2 5-5s-2.2-5-5-5-5 2.2-5 5 2.2 5 5 5z"/></svg>`,
@@ -143,7 +143,7 @@ function macroTube(key, label, value, target, unit = "g") {
 
 /**
  * @param {string[]} tubeKeys
- * @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries
+ * @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries
  * @param {ReturnType<typeof dailyTargets>|null} targets
  * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
  */
@@ -169,7 +169,7 @@ function tile(action, label, sub, icon) {
 }
 
 /**
- * @param {import('../lib/nofud-core/models.js').FoodEntry[]} mealEntries
+ * @param {import('../lib/chompass-core/models.js').FoodEntry[]} mealEntries
  * @param {string} mealType
  * @param {string[]} chipKeys
  */
@@ -230,7 +230,7 @@ export class DiaryView extends HTMLElement {
     super();
     this.date = loadHomeDate();
     this.fabOpen = false;
-    /** @type {import('../lib/nofud-core/models.js').FoodEntry|null} */
+    /** @type {import('../lib/chompass-core/models.js').FoodEntry|null} */
     this._undoEntry = null;
     /** @type {ReturnType<typeof openSheet> | null} */
     this._sheet = null;
@@ -390,7 +390,7 @@ export class DiaryView extends HTMLElement {
   }
 
   /**
-   * @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries
+   * @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries
    * @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs
    * @param {ReturnType<typeof dailyTargets>|null} targets
    * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
@@ -488,7 +488,7 @@ export class DiaryView extends HTMLElement {
    * Swipe-left → delete; swipe-right → favorite (Android parity). Duplicate stays in overflow.
    * @param {Element} row
    * @param {HTMLElement} item
-   * @param {import('../lib/nofud-core/models.js').FoodEntry} entry
+   * @param {import('../lib/chompass-core/models.js').FoodEntry} entry
    */
   bindFoodSwipe(row, item, entry) {
     let startX = 0;
@@ -565,7 +565,7 @@ export class DiaryView extends HTMLElement {
     row.addEventListener("pointercancel", () => reset());
   }
 
-  /** @param {import('../lib/nofud-core/models.js').FoodEntry} entry */
+  /** @param {import('../lib/chompass-core/models.js').FoodEntry} entry */
   openFoodMenu(entry) {
     const sheet = openSheet({
       title: entry.name,
@@ -618,7 +618,7 @@ export class DiaryView extends HTMLElement {
     });
   }
 
-  /** @param {import('../lib/nofud-core/models.js').FoodEntry} entry */
+  /** @param {import('../lib/chompass-core/models.js').FoodEntry} entry */
   openChangeMealSheet(entry) {
     const sheet = openSheet({
       title: "Change meal",
@@ -779,7 +779,7 @@ export class DiaryView extends HTMLElement {
     const renderTab = async () => {
       const root = sheet.body.querySelector("[data-saved-root]");
       if (!root) return;
-      /** @type {Array<{label: string, meta: string, entry: import('../lib/nofud-core/models.js').FoodEntry, count?: number}>} */
+      /** @type {Array<{label: string, meta: string, entry: import('../lib/chompass-core/models.js').FoodEntry, count?: number}>} */
       let rows = [];
       if (segment === "RECENTS") {
         rows = (await recentFoodTemplates(30, 40)).map((e) => ({
@@ -925,7 +925,7 @@ export class DiaryView extends HTMLElement {
 
   /**
    * @param {ReturnType<typeof openSheet>} parentSheet
-   * @param {import('../lib/nofud-core/models.js').FoodEntry[]} dayEntries
+   * @param {import('../lib/chompass-core/models.js').FoodEntry[]} dayEntries
    */
   openCopySelectSheet(parentSheet, dayEntries) {
     const sheet = openSheet({
@@ -1036,12 +1036,12 @@ export class DiaryView extends HTMLElement {
     });
   }
 
-  /** @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries */
+  /** @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries */
   async shareEntries(entries) {
     const text = mealShareText(entries);
     try {
       if (navigator.share) {
-        await navigator.share({ text, title: "NoFUD meal" });
+        await navigator.share({ text, title: "Chompass meal" });
         return;
       }
     } catch {
@@ -1093,7 +1093,7 @@ export class DiaryView extends HTMLElement {
 
   /**
    * Day nutrition detail — Android NutritionDetailSheet parity.
-   * @param {import('../lib/nofud-core/models.js').FoodEntry[]} entries
+   * @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries
    * @param {ReturnType<typeof dailyTargets>|null} targets
    * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
    */
@@ -1165,7 +1165,7 @@ export class DiaryView extends HTMLElement {
     this.render();
   }
 
-  /** @param {import('../lib/nofud-core/models.js').FoodEntry} entry */
+  /** @param {import('../lib/chompass-core/models.js').FoodEntry} entry */
   async duplicateEntry(entry) {
     await foodEntries.put(duplicatedForLogging(entry, this.date));
     this.render();

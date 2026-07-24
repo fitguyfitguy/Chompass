@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD Calories</string>
+    <string name="widget_calorie_label">Chompass Calories</string>
     <string name="widget_calorie_description">See today\'s calories and macros at a glance.</string>
-    <string name="widget_protein_label">NoFUD Protein</string>
+    <string name="widget_protein_label">Chompass Protein</string>
     <string name="widget_protein_description">See today\'s protein progress at a glance.</string>
     <string name="widget_today">Today</string>
     <string name="widget_protein">Protein</string>
@@ -211,7 +211,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Back</string>
-    <string name="onboarding_logo_description">NoFUD logo</string>
+    <string name="onboarding_logo_description">Chompass logo</string>
     <string name="onboarding_welcome_line1">Eat Smart,</string>
     <string name="onboarding_welcome_line2">Live Better</string>
     <string name="onboarding_welcome_subtitle">Just snap, track, and thrive.\nYour nutrition, simplified.</string>
@@ -292,7 +292,7 @@
     <string name="onboarding_health_connect">Connect</string>
 
     <string name="onboarding_provider_title">Bring Your Own AI</string>
-    <string name="onboarding_provider_subtitle">NoFUD needs an AI provider key to\nanalyze your food. You bring your own.</string>
+    <string name="onboarding_provider_subtitle">Chompass needs an AI provider key to\nanalyze your food. You bring your own.</string>
     <string name="onboarding_provider_recommended_title">Recommended: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Free tier available, fast &amp; accurate</string>
     <string name="onboarding_provider_howto_title">How to get a free Google AI Studio key</string>
@@ -706,7 +706,7 @@
     <string name="settings_restore_default_times">Restore default times</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_battery_opt">Battery Optimization</string>
-    <string name="settings_battery_opt_value">Whitelist NoFUD</string>
+    <string name="settings_battery_opt_value">Whitelist Chompass</string>
 
     <string name="settings_ai_provider">Provider</string>
     <string name="settings_ai_model">Model</string>
@@ -758,9 +758,9 @@
     <string name="settings_permissions">Permissions</string>
     <string name="settings_energy_goals">Energy Burn Goals</string>
     <string name="settings_needs_health_connect">Needs Health Connect</string>
-    <string name="settings_energy_goals_info">When on, NoFUD uses your measured calories burned from Health Connect - a 14-day average of active + basal energy - as your maintenance anchor when calculating goals, instead of the formula estimate. No AI is used to read your burn. Requires Health Connect. Works with the Recalculate button and with Adaptive Goals.</string>
+    <string name="settings_energy_goals_info">When on, Chompass uses your measured calories burned from Health Connect - a 14-day average of active + basal energy - as your maintenance anchor when calculating goals, instead of the formula estimate. No AI is used to read your burn. Requires Health Connect. Works with the Recalculate button and with Adaptive Goals.</string>
     <string name="settings_adaptive_goals">Adaptive Goals</string>
-    <string name="settings_adaptive_goals_info">About once a week when you open the app, NoFUD automatically re-runs the full goal calculation - the same one the Recalculate button uses - from your profile, recent logged food, and weight trend. If Energy Burn is on, it uses your measured burn as the maintenance anchor. It skips silently if the AI is unavailable. Turning this off restores the targets from before Adaptive Goals first changed them. This is not medical advice.</string>
+    <string name="settings_adaptive_goals_info">About once a week when you open the app, Chompass automatically re-runs the full goal calculation - the same one the Recalculate button uses - from your profile, recent logged food, and weight trend. If Energy Burn is on, it uses your measured burn as the maintenance anchor. It skips silently if the AI is unavailable. Turning this off restores the targets from before Adaptive Goals first changed them. This is not medical advice.</string>
     <string name="settings_refresh_energy_goals">Refresh Energy Burn Goals</string>
     <string name="settings_clear_food_log">Clear Food Log</string>
     <string name="settings_delete_all_data">Delete All Data</string>
@@ -777,7 +777,7 @@
     <string name="settings_rebalance_blocked_title">Can\'t Rebalance</string>
     <string name="settings_rebalance_blocked_message">Calories is locked and both other macros are locked, so there\'s nothing left to absorb this change. Unlock calories or another macro, then try again.</string>
     <string name="settings_adaptive_locks_title">Adaptive Goals Is On</string>
-    <string name="settings_adaptive_locks_message">Turn off Adaptive Goals to lock or set your own calories and macros. While it\'s on, NoFUD recalculates them for you each week.</string>
+    <string name="settings_adaptive_locks_message">Turn off Adaptive Goals to lock or set your own calories and macros. While it\'s on, Chompass recalculates them for you each week.</string>
     <string name="settings_recalc_title">Recalculate goals?</string>
     <string name="settings_recalc_message">Resets calories and macros to formula defaults from your height/weight/activity/goal. Any pinned macros are cleared.</string>
     <string name="settings_recalc_confirm">Recalculate</string>
@@ -786,7 +786,7 @@
     <string name="settings_invalid_goal_gain">A Gain goal needs a target above your current weight.</string>
     <string name="settings_permission_title">Permission needed</string>
 
-    <string name="settings_notifications_denied">Notifications permission denied. Enable it in System Settings → Apps → NoFUD → Notifications to receive reminders.</string>
+    <string name="settings_notifications_denied">Notifications permission denied. Enable it in System Settings → Apps → Chompass → Notifications to receive reminders.</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Time to weigh in</string>
@@ -795,7 +795,7 @@
     <string name="notif_body_fat_log_text">Log today\'s body fat % to track your composition trend.</string>
     <string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string>
     <string name="settings_health_background_sync">Background sync</string>
-    <string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when NoFUD is closed. Off by default.</string>
+    <string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default.</string>
     <string name="settings_health_denied">Health Connect needs Weight, Body Fat, Active Calories, Total Calories, and permission to write Nutrition. Re-tap the toggle and grant all requested permissions to sync and estimate energy goals.</string>
     <string name="settings_health_unavailable">Health Connect isn\'t available on this device. Install it from the Play Store, then re-tap the toggle.</string>
 
@@ -870,10 +870,10 @@
     <string name="about_report_issue">Report an Issue</string>
     <string name="about_request_feature">Request a Feature</string>
     <string name="about_privacy">Privacy Policy</string>
-    <string name="about_made_by">NoFUD by fitguy</string>
+    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Based on Fud AI by Apoorv Darshan</string>
-    <string name="about_share_message">I\'ve been tracking my meals with NoFUD - an ad-free fork of Fud AI. Snap a photo, speak it, or type it, and the AI logs the calories. Open source, and your data stays on your device.\n\nSource: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">Share NoFUD</string>
+    <string name="about_share_message">I\'ve been tracking my meals with Chompass - an ad-free fork of Fud AI. Snap a photo, speak it, or type it, and the AI logs the calories. Open source, and your data stays on your device.\n\nSource: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Share Chompass</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">Streak Reminder</string>
@@ -887,11 +887,11 @@
     <string name="notif_summary_title">Today\'s summary is ready</string>
     <string name="notif_summary_text">Tap to see how today\'s macros lined up.</string>
 
-    <string name="widget_all_metrics_label">NoFUD Today</string>
+    <string name="widget_all_metrics_label">Chompass Today</string>
     <string name="widget_all_metrics_description">See today\'s calories, protein, carbs, and fat in one widget.</string>
-    <string name="widget_water_label">NoFUD Water</string>
+    <string name="widget_water_label">Chompass Water</string>
     <string name="widget_water_description">See today\'s water progress at a glance.</string>
-    <string name="widget_water_disabled">Enable Water Tracking in NoFUD</string>
+    <string name="widget_water_disabled">Enable Water Tracking in Chompass</string>
 
     <string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string>
     <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log - turn off Adaptive Goals in Settings to keep it fixed.</string>
@@ -901,7 +901,7 @@
     <string name="onboarding_feature_widgets">Home screen widgets</string>
     <string name="whats_new_v30_home">Home redesign: speedometer calorie gauge, vertical macro bars, four nutrient cards, and a floating add button.</string>
     <string name="whats_new_v30_coach_voice">Ask Coach by voice with the new inline recorder.</string>
-    <string name="whats_new_v30_share">Share any meal as a link that opens straight in NoFUD on iPhone or Android.</string>
+    <string name="whats_new_v30_share">Share any meal as a link that opens straight in Chompass on iPhone or Android.</string>
     <string name="whats_new_v30_export">Export your food diary as JSON, Markdown, or CSV from Settings.</string>
     <string name="whats_new_v30_reprocess">Reprocess a logged meal with AI - adjust its name, serving, or note and re-analyze.</string>
     <string name="whats_new_v30_camera">Camera + Camera keeps both shots, stitched side by side.</string>
@@ -919,12 +919,12 @@
     <string name="import_body_metrics_title">Import Weight &amp; Body Data</string>
     <string name="import_body_metrics_success">Imported %1$d weight, %2$d body-fat and %3$d measurement entries.</string>
     <string name="import_body_metrics_empty">This file has no weight or body-data entries to import.</string>
-    <string name="import_body_metrics_unsupported">Unsupported file. Supported: NoFUD JSON/CSV, openScale CSV, or a generic weight CSV.</string>
+    <string name="import_body_metrics_unsupported">Unsupported file. Supported: Chompass JSON/CSV, openScale CSV, or a generic weight CSV.</string>
     <string name="import_body_metrics_malformed">Could not read file: %1$s</string>
     <string name="import_diary_title">Import Food Diary JSON</string>
     <string name="import_diary_success_count">Imported %1$d food entries.</string>
     <string name="import_diary_empty">This file has no diary entries to import.</string>
-    <string name="import_diary_unsupported">Unsupported diary file. Export a JSON diary from FUD-AI or NoFUD first.</string>
+    <string name="import_diary_unsupported">Unsupported diary file. Export a JSON diary from FUD-AI or Chompass first.</string>
     <string name="import_diary_malformed">Invalid JSON: %1$s</string>
     <string name="import_diary_failed">Import failed: %1$s</string>
     <string name="export_range">Range</string>
@@ -1086,7 +1086,7 @@
     <string name="settings_macro_auto_label_format">%1$s (auto)</string>
     <string name="vm_health_connect_needed">Health Connect Needed</string>
     <string name="vm_not_enough_energy">Not Enough Energy Data</string>
-    <string name="vm_adaptive_on_message">Adaptive Goals is on. NoFUD will check once per week after enough food and weight data exists.</string>
+    <string name="vm_adaptive_on_message">Adaptive Goals is on. Chompass will check once per week after enough food and weight data exists.</string>
     <string name="vm_goals_recalculated">Goals Recalculated</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Add shared meal</item>
@@ -1122,14 +1122,14 @@
     <string name="notif_channel_body_fat">Body Fat Log Reminder</string>
     <string name="notif_channel_body_fat_desc">Daily reminder to log a body-fat reading.</string>
     <string name="notif_channel_updates">App Updates</string>
-    <string name="notif_channel_updates_desc">A new version of NoFUD is available on the Play Store.</string>
+    <string name="notif_channel_updates_desc">A new version of Chompass is available on the Play Store.</string>
     <string name="notif_channel_water">Water reminder</string>
     <string name="notif_channel_water_desc">Daily reminder to drink and log water.</string>
     <string name="notif_water_title">Time to hydrate</string>
-    <string name="notif_water_text">Have some water and log it in NoFUD.</string>
+    <string name="notif_water_text">Have some water and log it in Chompass.</string>
     <string name="notif_update_title">Update available</string>
-    <string name="notif_update_text">A new version of NoFUD is ready. Tap to update.</string>
-    <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals - or automatically about once a week if Adaptive Goals is on - NoFUD sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your real data to estimate your true maintenance and targets.</string>
+    <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
+    <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals - or automatically about once a week if Adaptive Goals is on - Chompass sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your real data to estimate your true maintenance and targets.</string>
     <string name="settings_calc_sec_bmr">Resting metabolism (BMR)</string>
     <string name="settings_calc_sec_tdee">Daily energy expenditure (TDEE)</string>
     <string name="settings_calc_mifflin_name">Mifflin-St Jeor equation</string>
@@ -1158,26 +1158,26 @@
     <string name="settings_calc_forecast_used">Progress charts and goal ETA use your recent food logs and weigh-ins (up to 90 days). When you log on fewer than half the days in the window, intake is averaged across calendar days so occasional big-log days do not inflate the forecast. Otherwise intake is averaged across logged days only. Observed weight trend uses a robust median-slope (Theil–Sen) fit on scale entries.</string>
     <string name="settings_calc_forecast_formula">predicted kg/week = (avgDailyCalories − TDEE) × 7 ÷ 7,700\nobserved kg/week = Theil–Sen slope × 7\nsparse logging: avg intake ÷ calendar days when logged days &lt; 50%% of window</string>
     <string name="settings_calc_adaptive_name">Adaptive Goals (weekly)</string>
-    <string name="settings_calc_adaptive_used">When enabled, NoFUD compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins — or Health Connect energy data.</string>
+    <string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins — or Health Connect energy data.</string>
     <string name="settings_calc_adaptive_formula">adjustment = (targetWeeklyChange − observedWeeklyChange) × 7,700 ÷ 7\nclamped to ±150 kcal/day</string>
     <string name="settings_calc_sec_body">Body composition estimates</string>
     <string name="settings_calc_body_name">Tape-measure derived metrics</string>
     <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are field estimates for coaching context — they do not override BMR unless you separately enter a body-fat percentage on your profile.</string>
     <string name="settings_calc_body_formula">Waist-to-hip = waist ÷ hips\nWaist-to-height = waist ÷ height\nUS Navy %BF: sex-specific log equations (neck, waist, hips, height)</string>
     <string name="settings_not_medical_title">Not medical advice</string>
-    <string name="settings_not_medical_body">NoFUD is an estimation tool, not a clinical instrument. Predictive equations carry inherent error (typically ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
+    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Predictive equations carry inherent error (typically ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
     <string name="settings_safety_medical">Safety &amp; Medical</string>
     <string name="settings_safety_summary">Friendly guidance before making major changes</string>
     <string name="settings_safety_open">View</string>
     <string name="settings_safety_hide">Hide</string>
     <string name="settings_safety_title">Safety first</string>
-    <string name="settings_safety_body">NoFUD can support awareness and habit building, but it is not a medical device and it is not a replacement for care from a doctor, therapist, or dietitian.</string>
+    <string name="settings_safety_body">Chompass can support awareness and habit building, but it is not a medical device and it is not a replacement for care from a doctor, therapist, or dietitian.</string>
     <string name="settings_safety_consult">If you are planning major diet or body-composition changes, check in with a qualified clinician first so your plan fits your health history.</string>
     <string name="settings_safety_ed">If you have a current or past eating disorder, or tracking starts increasing anxiety around food or body image, pause app use and speak with your care team.</string>
     <string name="settings_safety_low_bf">Low body-fat caution: staying very lean for long periods can carry risk. In women, very low body fat can affect hormonal and menstrual health. In men, very low body fat can affect hormones, mood, recovery, and performance.</string>
     <string name="settings_safety_escalate">If you notice fatigue, dizziness, sleep disruption, mood changes, menstrual changes, or reduced libido, get medical advice promptly.</string>
     <string name="onboarding_safety_title">Friendly safety notice</string>
-    <string name="onboarding_safety_body">NoFUD is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
+    <string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
     <string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string>
     <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
     <string name="settings_waist_cm_format">Waist %1$.0f cm</string>
@@ -1187,8 +1187,8 @@
     <string name="export_range_month">This month</string>
     <string name="export_range_all">All time</string>
     <string name="export_range_custom">Custom</string>
-    <string name="vm_health_connect_needed_msg">Allow NoFUD to read your Active and Total Calories in Health Connect, then turn Energy Burn on again.</string>
-    <string name="vm_not_enough_energy_msg">NoFUD needs at least 3 recent days of Health Connect energy data before it can use your measured burn.</string>
+    <string name="vm_health_connect_needed_msg">Allow Chompass to read your Active and Total Calories in Health Connect, then turn Energy Burn on again.</string>
+    <string name="vm_not_enough_energy_msg">Chompass needs at least 3 recent days of Health Connect energy data before it can use your measured burn.</string>
     <string name="nutrient_short_sat_fat">Sat Fat</string>
     <string name="nutrient_short_vit_a">Vit A</string>
     <string name="nutrient_short_vit_c">Vit C</string>

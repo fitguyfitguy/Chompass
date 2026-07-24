@@ -1,4 +1,4 @@
-# Releasing NoFUD
+# Releasing Chompass
 
 Maintainer steps for tagging and publishing an Android release on Codeberg.
 
@@ -50,17 +50,17 @@ Useful flags:
 ./scripts/package_release.sh --check-metadata    # also verify CHANGELOG + fdroid metadata
 ```
 
-Codeberg uploads **universal only** (`NoFUD-fdroid-<version>.apk` + `SHA256SUMS`). Per-ABI splits may still be built locally but are not published.
+Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SUMS`). Per-ABI splits may still be built locally but are not published.
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
 2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
 3. Bump `website/hugo.toml` `params.version` (same as `versionName`)
-4. Optional: sync `docs/fdroid/org.codeberg.fitguy.nofud.yml` and run `devenv tasks run release:check-metadata`
+4. Optional: sync `docs/fdroid/app.chompass.yml` and run `devenv tasks run release:check-metadata`
 5. Commit, tag, push:
 
 ```bash
-git tag -a v1.0.0 -m "NoFUD 1.0.0 - initial public release"
+git tag -a v1.0.0 -m "Chompass 1.0.0 - initial public release"
 git push origin v1.0.0
 ```
 
@@ -74,13 +74,13 @@ export CODEBERG_TOKEN='paste-token-here'
 # or: RELEASE_VERSION=1.0.0 devenv tasks run release:publish
 ```
 
-`publish_release.sh` uploads F-Droid APK assets + `SHA256SUMS`, pastes changelog notes, then runs [`deploy_pages.sh`](../scripts/deploy_pages.sh) so [fitguy.codeberg.page/NoFUD](https://fitguy.codeberg.page/NoFUD/) shows the new version. Use `--skip-pages` to skip the site step.
+`publish_release.sh` uploads F-Droid APK assets + `SHA256SUMS`, pastes changelog notes, then runs [`deploy_pages.sh`](../scripts/deploy_pages.sh) so [chompass.app](https://chompass.app/) shows the new version. Use `--skip-pages` to skip the site step.
 
 The former **`play` flavor is disabled**; see [`DISTRIBUTION.md`](DISTRIBUTION.md).
 
 The script auto-runs `nix shell nixpkgs#tea` / `nixpkgs#hugo` when those tools are not on PATH (e.g. outside devenv).
 
-Stable download URL pattern: `https://codeberg.org/fitguy/nofud/releases/download/v<version>/NoFUD-fdroid-<version>.apk`
+Stable download URL pattern: `https://codeberg.org/fitguy/chompass/releases/download/v<version>/Chompass-fdroid-<version>.apk`
 
 ### Codeberg storage quota
 
@@ -151,7 +151,7 @@ Reference images for regression live under `android/app/src/screenshotTestDebug/
 **Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](../scripts/capture_android_perf_baseline.sh):
 
 ```powershell
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_test_data true
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_test_data true
 adb exec-out screencap -p > 01-home.png
 ```
 
@@ -163,8 +163,8 @@ Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
 
 - Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`DISTRIBUTION.md`](DISTRIBUTION.md)
 - Add store metadata under `metadata/en-US/`
-- Open an MR with `metadata/org.codeberg.fitguy.nofud.yml` using the signing key fingerprint above
-- Keep `docs/fdroid/org.codeberg.fitguy.nofud.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
+- Open an MR with `metadata/app.chompass.yml` using the signing key fingerprint above
+- Keep `docs/fdroid/app.chompass.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 
 See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the full checklist and fdroiddata MR body.
 
@@ -172,7 +172,7 @@ See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the full checklist and fd
 
 Before shipping formula, constant, or guardrail changes:
 
-1. Update implementation and [`NutritionConstants.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/NutritionConstants.kt) when applicable
+1. Update implementation and [`NutritionConstants.kt`](../android/app/src/main/java/app/chompass/models/NutritionConstants.kt) when applicable
 2. Update [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md) (formula register + policy table)
 3. Update in-app strings (`settings_calc_*` in `strings.xml`) if user-visible
 4. Add or adjust unit tests under `android/app/src/test/`

@@ -19,7 +19,7 @@ scripts/capture_android_perf_baseline.sh
 Or for release package:
 
 ```bash
-scripts/capture_android_perf_baseline.sh org.codeberg.fitguy.nofud
+scripts/capture_android_perf_baseline.sh app.chompass
 ```
 
 Artifacts are written under:

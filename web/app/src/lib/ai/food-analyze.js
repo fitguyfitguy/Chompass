@@ -6,7 +6,7 @@ import { prefs } from "../db.js";
 import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
 import { ALL_MICRO_KEYS } from "../home-nutrients.js";
-import { ensureServingUnits } from "../nofud-core/serving-units.js";
+import { ensureServingUnits } from "../chompass-core/serving-units.js";
 
 /** Shared entry analysis phases (Android EntryAnalysisPhase subset for cloud AI). */
 export const ANALYSIS_PHASE = Object.freeze({

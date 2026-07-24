@@ -1,14 +1,14 @@
 ---
 title: Download
-description: Open the NoFUD browser PWA in any modern browser, or install the Android app from Obtainium or Codeberg Releases.
+description: Open the Chompass browser PWA in any modern browser, or install the Android app from Obtainium or Codeberg Releases.
 layout: single
 ---
 
-Two ways to use NoFUD: the **installable browser PWA**, or the **Android app**. Same diary and body-metrics JSON contracts; no cloud sync between clients.
+Two ways to use Chompass: the **installable browser PWA**, or the **Android app**. Same diary and body-metrics JSON contracts; no cloud sync between clients.
 
 ## Web app (PWA)
 
-Open the [NoFUD web app](https://fitguy.codeberg.page/NoFUD/app/) in any modern browser on phone, tablet, or desktop. Install it to the home screen or dock for quicker access. Diary logging, progress charts, BYOK AI food entry and Coach, and shared JSON export/import with the Android app.
+Open the [Chompass web app](https://chompass.app/app/) in any modern browser on phone, tablet, or desktop. Install it to the home screen or dock for quicker access. Diary logging, progress charts, BYOK AI food entry and Coach, and shared JSON export/import with the Android app.
 
 Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, and similar) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
@@ -18,7 +18,7 @@ Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome
 
 #### iPhone / iPad (Safari)
 
-1. Open NoFUD in **Safari** (required for a true home-screen app).
+1. Open Chompass in **Safari** (required for a true home-screen app).
 2. Tap **Share** (square with an upward arrow).
 3. Choose **Add to Home Screen**, then Add.
 4. Open from the **home-screen icon** (not a Safari tab) for the full-screen app.
@@ -29,14 +29,14 @@ Chrome or Firefox on iOS still use Safari’s share sheet for home-screen instal
 
 1. Open the browser menu (⋮).
 2. Tap **Install app** or **Add to Home screen**.
-3. Confirm, then open NoFUD from the new icon.
+3. Confirm, then open Chompass from the new icon.
 
 Many Chromium browsers do not show an automatic install popup — use the menu. In the PWA itself you may also see an Install banner when the browser allows it.
 
 #### Desktop (Chrome / Edge)
 
 1. Look for the install icon in the address bar, or open the browser menu.
-2. Choose **Install NoFUD** (or Install app).
+2. Choose **Install Chompass** (or Install app).
 3. Launch from your dock, taskbar, or app launcher.
 
 #### Firefox
@@ -44,19 +44,19 @@ Many Chromium browsers do not show an automatic install popup — use the menu. 
 - **Android:** menu → **Add to Home screen**.
 - **Desktop:** bookmark the page; full PWA install is limited compared with Chromium.
 
-Already installed? Open NoFUD from the home-screen or dock icon (not a normal browser tab) for the full-screen shell. In the app: **Settings → Install app**.
+Already installed? Open Chompass from the home-screen or dock icon (not a normal browser tab) for the full-screen shell. In the app: **Settings → Install app**.
 
 ## Android: Obtainium (recommended)
 
-[Get it on Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fnofud). That confirms the Codeberg app source, then keeps you updated from releases.
+[Get it on Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fchompass). That confirms the Codeberg app source, then keeps you updated from releases.
 
-Or paste `https://codeberg.org/fitguy/nofud` into Obtainium’s **Add App** screen.
+Or paste `https://codeberg.org/fitguy/chompass` into Obtainium’s **Add App** screen.
 
 ## Android: Direct APK
 
-Latest **arm64** (most phones): [NoFUD-fdroid-{{< site_version >}}-arm64-v8a.apk]({{< arm64_apk_url >}}) ({{< apk_arm64_note >}}).
+Latest **arm64** (most phones): [Chompass-fdroid-{{< site_version >}}-arm64-v8a.apk]({{< arm64_apk_url >}}) ({{< apk_arm64_note >}}).
 
-All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.org/fitguy/nofud/releases) (v{{< site_version >}}).
+All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases) (v{{< site_version >}}).
 
 | APK | Use when | Size (v{{< site_version >}}) |
 |-----|----------|----------------|
@@ -65,11 +65,11 @@ All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.o
 | **x86_64** | Emulators or Chromebooks | ~16 MiB |
 | **universal** | Only when unsure | {{< apk_universal_note >}} |
 
-Package ID: `org.codeberg.fitguy.nofud`
+Package ID: `org.codeberg.fitguy.chompass`
 
 ## F-Droid
 
-Package `org.codeberg.fitguy.nofud` ([expected listing](https://f-droid.org/packages/org.codeberg.fitguy.nofud/) once indexed). Not on the Play Store.
+Package `org.codeberg.fitguy.chompass` ([expected listing](https://f-droid.org/packages/org.codeberg.fitguy.chompass/) once indexed). Not on the Play Store.
 
 ## After install
 
@@ -79,9 +79,9 @@ Package `org.codeberg.fitguy.nofud` ([expected listing](https://f-droid.org/pack
 
 ## Migrate from Fud AI
 
-- **File export:** In Fud AI, export your food diary as JSON. In NoFUD (PWA or Android), open **Settings → Import Food Diary JSON**.
+- **File export:** In Fud AI, export your food diary as JSON. In Chompass (PWA or Android), open **Settings → Import Food Diary JSON**.
 - **Health Connect:** Enable Health Connect in both apps and grant read permissions (Android app).
 
-Weight and body data also import via **Settings → Import Weight & Body Data** (NoFUD JSON/CSV, openScale CSV, and common weight CSVs).
+Weight and body data also import via **Settings → Import Weight & Body Data** (Chompass JSON/CSV, openScale CSV, and common weight CSVs).
 
-Source and issues: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
+Source and issues: [codeberg.org/fitguy/chompass](https://codeberg.org/fitguy/chompass).

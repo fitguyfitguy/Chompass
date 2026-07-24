@@ -5,7 +5,7 @@
  */
 import { foodEntries, favorites as favoritesStore } from "./db.js";
 
-/** @param {import('./nofud-core/models.js').FoodEntry | {name?: string}} entry */
+/** @param {import('./chompass-core/models.js').FoodEntry | {name?: string}} entry */
 export function favoriteKey(entry) {
   return String(entry.name ?? "")
     .trim()
@@ -13,7 +13,7 @@ export function favoriteKey(entry) {
 }
 
 /**
- * @param {import('./nofud-core/models.js').FoodEntry} entry
+ * @param {import('./chompass-core/models.js').FoodEntry} entry
  * @param {string} [date]
  * @param {string} [time]
  * @param {"breakfast"|"lunch"|"dinner"|"snack"} [mealType]
@@ -44,7 +44,7 @@ export async function recentFoodTemplates(days = 30, limit = 50) {
     return !Number.isNaN(ts) && ts >= cutoff;
   });
   const seen = new Set();
-  /** @type {import('./nofud-core/models.js').FoodEntry[]} */
+  /** @type {import('./chompass-core/models.js').FoodEntry[]} */
   const out = [];
   filtered
     .slice()
@@ -60,12 +60,12 @@ export async function recentFoodTemplates(days = 30, limit = 50) {
 
 /**
  * @param {number} [days]
- * @returns {Promise<{template: import('./nofud-core/models.js').FoodEntry, count: number}[]>}
+ * @returns {Promise<{template: import('./chompass-core/models.js').FoodEntry, count: number}[]>}
  */
 export async function frequentFoodGroups(days = 90) {
   const all = await foodEntries.all();
   const cutoff = Date.now() - days * 86400000;
-  /** @type {Map<string, {count: number, template: import('./nofud-core/models.js').FoodEntry}>} */
+  /** @type {Map<string, {count: number, template: import('./chompass-core/models.js').FoodEntry}>} */
   const aggregates = new Map();
   for (const e of all) {
     const ts = Date.parse(`${e.date}T${e.time || "12:00"}`);
@@ -92,7 +92,7 @@ export async function listFavorites() {
   return favoritesStore.all();
 }
 
-/** @param {import('./nofud-core/models.js').FoodEntry} entry */
+/** @param {import('./chompass-core/models.js').FoodEntry} entry */
 export async function isFavorite(entry) {
   const key = favoriteKey(entry);
   const list = await favoritesStore.all();
@@ -101,7 +101,7 @@ export async function isFavorite(entry) {
 
 /**
  * Toggle favorite by favoriteKey — stores a full FoodEntry copy.
- * @param {import('./nofud-core/models.js').FoodEntry} entry
+ * @param {import('./chompass-core/models.js').FoodEntry} entry
  * @returns {Promise<boolean>} true if now favorited
  */
 export async function toggleFavorite(entry) {
@@ -124,11 +124,11 @@ export async function toggleFavorite(entry) {
 
 /** Prefill shape used by entry-form / analyze recents. */
 /**
- * @param {import('./nofud-core/models.js').FoodEntry} e
- * @returns {import('./nofud-core/models.js').FoodEntry}
+ * @param {import('./chompass-core/models.js').FoodEntry} e
+ * @returns {import('./chompass-core/models.js').FoodEntry}
  */
 export function toPrefill(e) {
-  /** @type {import('./nofud-core/models.js').FoodEntry} */
+  /** @type {import('./chompass-core/models.js').FoodEntry} */
   const out = {
     id: e.id,
     name: e.name,

@@ -74,7 +74,7 @@ export async function seedAll() {
   await seedProfile();
   await seedDiaryEntries(14);
   await seedWeightHistory(42);
-  console.info("[nofud-dev-seed] seeded profile, 14 days of diary entries, 42 days of weight history");
+  console.info("[chompass-dev-seed] seeded profile, 14 days of diary entries, 42 days of weight history");
 }
 
 /**

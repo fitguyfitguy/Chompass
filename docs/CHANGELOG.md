@@ -1,8 +1,27 @@
 # Changelog
 
-All notable changes to NoFUD are documented here.
+All notable changes to Chompass are documented here.
 
 ## [Unreleased]
+
+## [3.0.0] - 2026-07-24
+
+**NoFUD is now Chompass** (chompass.app). New name, new fork-compass logo, same app, same maintainer, same license.
+
+### Migration from NoFUD
+
+- **Android:** the application ID changed from `org.codeberg.fitguy.nofud` to `app.chompass`, so Chompass installs as a *new app*. In NoFUD: Settings → Export (diary JSON + body metrics JSON). Install Chompass, then Settings → Import both files. Old NoFUD export files import unchanged. Uninstall NoFUD when done.
+- **PWA:** the web app moved to `https://chompass.app/app/`. Browser storage does not carry across domains — export from the old PWA, import at the new address, then remove the old installation.
+- Old `nofud://add-meal` and upstream `fudai://` share links continue to open in Chompass.
+
+### Changed
+
+- Application ID / package: `app.chompass`; project, themes, and resources renamed accordingly.
+- New fork-compass launcher icon, PWA icons, and website logo (all 18 theme variants regenerated).
+- Website and PWA hosted at `https://chompass.app/` (Codeberg Pages custom domain); Codeberg repo renamed to `fitguy/chompass`.
+- Release APKs are now named `Chompass-fdroid-<version>*.apk`.
+- Diary / body-metrics exports stamp `"app": "Chompass"`; importers on both platforms accept `chompass`, `nofud`, and `fud ai`.
+- Primary meal-share deep link scheme is `chompass://` (`nofud://` and `fudai://` remain accepted for import).
 
 ## [2.0.0] - 2026-07-23
 
@@ -10,13 +29,13 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 
 ### Added
 
-- Companion PWA at `fitguy.codeberg.page/NoFUD/app/` — diary, progress charts, manual/barcode/AI food entry, saved meals/recipes, copy-from-day / meal share, BYOK AI Coach, settings, and onboarding (data-compatible JSON with Android).
+- Companion PWA at `chompass.app/app/` — diary, progress charts, manual/barcode/AI food entry, saved meals/recipes, copy-from-day / meal share, BYOK AI Coach, settings, and onboarding (data-compatible JSON with Android).
 - Cross-app parity fixtures and JSON Schemas (`testdata/parity/`, `contracts/`) plus `release:check-parity` (PWA tests, typecheck, schema validation), also run inside `release:package`.
 - AI API key validation during onboarding (Android and PWA).
 
 ### Changed
 
-- Codeberg Pages deploy rsyncs the PWA into `/NoFUD/app/` with the marketing site (`deploy_pages.sh` / `publish_release.sh`).
+- Codeberg Pages deploy rsyncs the PWA into `/Chompass/app/` with the marketing site (`deploy_pages.sh` / `publish_release.sh`).
 - Release asset management and distribution docs aligned with Codeberg quota policy (latest release, universal APK only).
 
 ## [1.14.10] - 2026-07-22
@@ -40,7 +59,7 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 
 ### Fixed
 
-- Diary JSON import accepts format version 1.1 and restores micronutrients (Fud AI / NoFUD exports after 1.14.7).
+- Diary JSON import accepts format version 1.1 and restores micronutrients (Fud AI / Chompass exports after 1.14.7).
 
 ## [1.14.7] - 2026-07-22
 
@@ -167,7 +186,7 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 ### Added
 
 - Live progress while AI analyzes a food entry (preparing request, calling AI, reading result, inferring serving units)
-- Fallback AI provider: when the primary provider fails (overload, rate limit, network), NoFUD retries automatically with a configured fallback model
+- Fallback AI provider: when the primary provider fails (overload, rate limit, network), Chompass retries automatically with a configured fallback model
 
 ### Changed
 
@@ -191,11 +210,11 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 
 ### Added
 
-- Import weight and body data from a file (Settings → Health &amp; Data): NoFUD JSON/CSV exports, [openScale](https://github.com/oliexdev/openScale) CSV, and generic weight CSVs (MyFitnessPal / SparkyFitness style, kg or lb). Re-importing the same file is idempotent and never duplicates manual entries
+- Import weight and body data from a file (Settings → Health &amp; Data): Chompass JSON/CSV exports, [openScale](https://github.com/oliexdev/openScale) CSV, and generic weight CSVs (MyFitnessPal / SparkyFitness style, kg or lb). Re-importing the same file is idempotent and never duplicates manual entries
 - Export now covers weight, body-fat **and** body-measurement history, in either CSV or JSON
 - Wellness card on the Progress tab: sleep, resting heart rate and hydration read from Health Connect (new Sleep, Resting Heart Rate and Hydration read permissions)
 - Height now syncs to Health Connect (new Height write permission), so scales and other apps can use it
-- Optional background sync (Settings → Health &amp; Data, **off by default**): checks Health Connect for new data every few hours even when NoFUD is closed
+- Optional background sync (Settings → Health &amp; Data, **off by default**): checks Health Connect for new data every few hours even when Chompass is closed
 - Nutrition calculation audit documentation ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md)) with formula register, scientific policy decisions, and release checklist
 - Unit tests for BMR/TDEE, macro goals, keto carb heuristics, weight forecast, adaptive goals, and body-composition estimates
 - Calculation Methods UI sections for weight forecast, adaptive goals, and tape-measure body metrics
@@ -212,13 +231,13 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 - AI goal prompts pull multiplier/protein constants from shared `GoalFormulaReference`
 - Home calorie gauge **Add Active** and **Dual** modes now use your activity-level estimate (TDEE minus BMR) when Health Connect is unavailable; **Add Active** no longer double-counts activity when Health Connect is on (goal is split into sedentary base + today's burn)
 - Home calorie gauge shows whether today's active burn is measured (Health Connect) or estimated, with breakdown labels and screen-reader text
-- About screen attribution updated to NoFUD by fitguy (fork of Fud AI)
+- About screen attribution updated to Chompass by fitguy (fork of Fud AI)
 
 ## [1.7.0] - 2026-07-09
 
 ### Added
 
-- Share photos into NoFUD from the camera or gallery (system share sheet) to start an image food entry: up to two images, composed side-by-side like dual capture
+- Share photos into Chompass from the camera or gallery (system share sheet) to start an image food entry: up to two images, composed side-by-side like dual capture
 - Activity card on the Progress tab: daily steps and exercise minutes from Health Connect (new Steps + Exercise read permissions; wearables via Gadgetbridge, Samsung Health, etc.)
 - Live import of meals other apps log to Health Connect (incremental, deduplicated; own records are never echoed back)
 - Health-ecosystem compatibility notes in README and Settings (Gadgetbridge, openScale, Samsung Health, Fitbit; all via Health Connect, no vendor SDKs)
@@ -245,7 +264,7 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 ## [1.5.1] - 2026-07-08
 
 ### Changed
-- Publish both `play` and `fdroid` flavor APK assets on Codeberg releases (with `NoFUD-play-*` and `NoFUD-fdroid-*` filenames).
+- Publish both `play` and `fdroid` flavor APK assets on Codeberg releases (with `Chompass-play-*` and `Chompass-fdroid-*` filenames).
 
 ## [1.5.0] - 2026-07-08
 
@@ -325,13 +344,13 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 
 ## [1.0.0] - 2026-07-07
 
-Initial public release of NoFUD - an ad-free, privacy-focused Android fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Initial public release of Chompass - an ad-free, privacy-focused Android fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 ### Added
 
-- NoFUD branding, Codeberg home, and `nofud://` meal-share deep links
+- Chompass branding, Codeberg home, and `chompass://` meal-share deep links
 - Upstream MIT attribution (`NOTICE`, `ASSET_CREDITS.md`, About screen, README)
-- Original NoFUD launcher icon and splash logo (see [ASSET_CREDITS.md](ASSET_CREDITS.md))
+- Original Chompass launcher icon and splash logo (see [ASSET_CREDITS.md](ASSET_CREDITS.md))
 - [PRIVACY.md](PRIVACY.md) documents local-first, no-ads data practices
 - `scripts/optimize_exercise_images.py` and `assets/exercises/IMAGE_MANIFEST.json` for bundled exercise photos
 - About screen link to [ASSET_CREDITS.md](ASSET_CREDITS.md); `assets/muscle/LICENSE` (MIT)
@@ -344,7 +363,7 @@ Initial public release of NoFUD - an ad-free, privacy-focused Android fork of [F
 
 ### Changed
 
-- Application ID -> `org.codeberg.fitguy.nofud`
+- Application ID -> `app.chompass`
 - App name, user-facing strings, privacy copy, and share text
 - Source home from GitHub to Codeberg
 - Exercise photos: single-frame WebP derivatives (max 800 px edge, ~19 MB total vs ~94 MB JPEG) via `scripts/optimize_exercise_images.py`

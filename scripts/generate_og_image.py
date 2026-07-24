@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a 1200x630 Open Graph card for the NoFUD project site."""
+"""Generate a 1200x630 Open Graph card for the Chompass project site."""
 
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def main() -> None:
     tag_font = load_font(36, bold=False)
     sub_font = load_font(28, bold=False)
 
-    draw.text((280, 200), "NoFUD", font=title_font, fill=TEXT)
+    draw.text((280, 200), "Chompass", font=title_font, fill=TEXT)
     draw.text((280, 320), "Ad-free AI calorie tracker for Android", font=tag_font, fill=TEAL)
     draw.text(
         (280, 390),
@@ -59,7 +59,7 @@ def main() -> None:
         font=sub_font,
         fill=MUTED,
     )
-    draw.text((80, 560), "fitguy.codeberg.page/NoFUD", font=sub_font, fill=MUTED)
+    draw.text((80, 560), "chompass.app", font=sub_font, fill=MUTED)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     img.save(OUT, format="PNG", optimize=True)

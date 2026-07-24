@@ -4,7 +4,7 @@ description: No ads, no analytics, no accounts. Food logs stay on your device. A
 layout: single
 ---
 
-NoFUD is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Use it as an [installable browser PWA](https://fitguy.codeberg.page/NoFUD/app/) or as an Android app.
+Chompass is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Use it as an [installable browser PWA](https://chompass.app/app/) or as an Android app.
 
 ## Summary
 
@@ -12,7 +12,7 @@ NoFUD is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoo
 - **No analytics:** No usage tracking, crash analytics, or telemetry SDKs.
 - **No accounts:** No sign-in, cloud sync, or central user database.
 - **Local storage:** Food logs, weight history, profile, and Coach chat stay on your device.
-- **Bring your own AI key:** Keys are encrypted at rest on your device, then sent only to the provider you choose (not through a NoFUD server).
+- **Bring your own AI key:** Keys are encrypted at rest on your device, then sent only to the provider you choose (not through a Chompass server).
 - **On-Device (Private):** On Android, optional Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
 
 ## API keys
@@ -26,7 +26,7 @@ Encryption protects keys sitting on disk. It does not protect against malware, a
 
 ## Web app (PWA)
 
-The [NoFUD PWA](https://fitguy.codeberg.page/NoFUD/app/) runs in any modern browser and stores diary data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients. Move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
+The [Chompass PWA](https://chompass.app/app/) runs in any modern browser and stores diary data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients. Move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
 
 ## Data on your device
 
@@ -36,7 +36,7 @@ The Android app stores locally: food entries and photos, weight and body-fat his
 
 ## Network requests
 
-NoFUD contacts external services only when you use a feature that needs them:
+Chompass contacts external services only when you use a feature that needs them:
 
 | Feature | What is sent | Where |
 |---------|----------------|-------|
@@ -47,14 +47,14 @@ NoFUD contacts external services only when you use a feature that needs them:
 
 Optional **background sync** (off by default) only reads Health Connect on-device; it sends nothing off the device.
 
-NoFUD does not sell or share your health data for advertising.
+Chompass does not sell or share your health data for advertising.
 
 ## Meal sharing
 
-Shared meals use a `nofud://` deep link (Android) or a hash URL on the web app, with base64-encoded nutrition JSON. Links leave your device through the app or messenger you choose.
+Shared meals use a `chompass://` deep link (Android) or a hash URL on the web app, with base64-encoded nutrition JSON. Links leave your device through the app or messenger you choose.
 
 ## Contact
 
-Source and issues: [codeberg.org/fitguy/NoFUD](https://codeberg.org/fitguy/NoFUD).
+Source and issues: [codeberg.org/fitguy/chompass](https://codeberg.org/fitguy/chompass).
 
-Canonical copy also lives in the repository as [PRIVACY.md](https://codeberg.org/fitguy/NoFUD/src/branch/main/docs/PRIVACY.md).
+Canonical copy also lives in the repository as [PRIVACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/PRIVACY.md).

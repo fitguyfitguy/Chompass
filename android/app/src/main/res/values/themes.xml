@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.NoFUD" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:colorPrimary">@color/nofud_primary</item>
-        <item name="android:colorPrimaryDark">@color/nofud_primary_dark</item>
-        <item name="android:colorAccent">@color/nofud_accent</item>
-        <item name="android:statusBarColor">@color/nofud_primary_dark</item>
-        <item name="android:navigationBarColor">@color/nofud_surface</item>
-        <item name="android:windowBackground">@color/nofud_background</item>
+    <style name="Theme.Chompass" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/chompass_primary</item>
+        <item name="android:colorPrimaryDark">@color/chompass_primary_dark</item>
+        <item name="android:colorAccent">@color/chompass_accent</item>
+        <item name="android:statusBarColor">@color/chompass_primary_dark</item>
+        <item name="android:navigationBarColor">@color/chompass_surface</item>
+        <item name="android:windowBackground">@color/chompass_background</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Base" parent="Theme.SplashScreen">
+    <style name="Theme.Chompass.Splash.Base" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/app_splash_background</item>
-        <item name="postSplashScreenTheme">@style/Theme.NoFUD</item>
+        <item name="postSplashScreenTheme">@style/Theme.Chompass</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash" parent="Theme.NoFUD.Splash.Teal" />
+    <style name="Theme.Chompass.Splash" parent="Theme.Chompass.Splash.Teal" />
 
-    <style name="Theme.NoFUD.Splash.Pink" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Pink" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Red" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Red" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_red</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Orange" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Orange" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_orange</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Green" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Green" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_green</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Mint" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Mint" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_mint</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Teal" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Teal" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_teal</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Blue" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Blue" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_blue</item>
     </style>
 
-    <style name="Theme.NoFUD.Splash.Purple" parent="Theme.NoFUD.Splash.Base">
+    <style name="Theme.Chompass.Splash.Purple" parent="Theme.Chompass.Splash.Base">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_purple</item>
     </style>
 </resources>

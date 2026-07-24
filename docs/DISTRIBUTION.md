@@ -1,6 +1,6 @@
 # Distribution builds
 
-NoFUD ships a **single Gradle build** aimed at F-Droid, IzzyOnDroid, and direct APK downloads from [Codeberg releases](https://codeberg.org/fitguy/nofud/releases).
+Chompass ships a **single Gradle build** aimed at F-Droid, IzzyOnDroid, and direct APK downloads from [Codeberg releases](https://codeberg.org/fitguy/chompass/releases).
 
 ## Google Play flavor (disabled)
 
@@ -21,7 +21,7 @@ The former **`play` product flavor** (Google Play Core in-app review, in-app upd
 | Goal | Gradle task | Release artifact (packaged name) |
 |------|-------------|----------------------------------|
 | Debug | `:app:assembleDebug` | - |
-| Release | `:app:assembleRelease` | `NoFUD-fdroid-<version>.apk` (universal only on Codeberg) |
+| Release | `:app:assembleRelease` | `Chompass-fdroid-<version>.apk` (universal only on Codeberg) |
 
 Inside devenv:
 
@@ -36,11 +36,11 @@ APK outputs (before packaging rename):
 - Debug: `android/app/build/outputs/apk/debug/app-debug.apk`
 - Release universal: `android/app/build/outputs/apk/release/app-universal-release.apk`
 
-Release packaging still uses the **`NoFUD-fdroid-*` filename prefix** so existing F-Droid metadata and download URLs stay stable.
+Release packaging still uses the **`Chompass-fdroid-*` filename prefix** so existing F-Droid metadata and download URLs stay stable.
 
 ## F-Droid metadata
 
-Draft metadata lives in [`fdroid/org.codeberg.fitguy.nofud.yml`](fdroid/org.codeberg.fitguy.nofud.yml).
+Draft metadata lives in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml).
 
 - **Tags ≤ v1.14.1:** Gradle task `fdroidRelease` (historical product flavor).
 - **Tags after the flavor removal:** Gradle metadata `yes` (runs `assembleRelease`; not a flavor name)
@@ -61,7 +61,7 @@ On-device LLM (`litertlm-android`) is bundled in this build; whether F-Droid acc
 ./scripts/manage_release_assets.sh list
 ./scripts/manage_release_assets.sh keep-latest -y
 ./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y   # if splits linger on the kept release
-./scripts/manage_release_assets.sh prune-play-assets -y           # leftover NoFUD-play-* if any
+./scripts/manage_release_assets.sh prune-play-assets -y           # leftover Chompass-play-* if any
 ```
 
 See [`RELEASE.md`](RELEASE.md#codeberg-storage-quota).

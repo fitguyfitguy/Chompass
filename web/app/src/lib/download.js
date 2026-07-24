@@ -25,7 +25,7 @@ function anchorDownload(blob, filename) {
  * @param {string} [title]
  * @returns {Promise<"shared"|"downloaded">}
  */
-export async function downloadOrShare(data, filename, mime, title = "NoFUD export") {
+export async function downloadOrShare(data, filename, mime, title = "Chompass export") {
   const blob = data instanceof Blob ? data : new Blob([data], { type: mime });
   const file = new File([blob], filename, { type: mime || blob.type || "application/octet-stream" });
 

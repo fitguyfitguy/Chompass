@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">NoFUD</string>
+    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
-    <string name="widget_calorie_label">NoFUD Kalorilər</string>
+    <string name="widget_calorie_label">Chompass Kalorilər</string>
     <string name="widget_calorie_description">Bu günkü kalorilər və makroları bir baxışda görün.</string>
-    <string name="widget_protein_label">NoFUD Protein</string>
+    <string name="widget_protein_label">Chompass Protein</string>
     <string name="widget_protein_description">Bu günkü protein irəliləyişini bir baxışda görün.</string>
     <string name="widget_today">Bu gün</string>
     <string name="widget_protein">Protein</string>
@@ -185,7 +185,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Geri</string>
-    <string name="onboarding_logo_description">NoFUD loqosu</string>
+    <string name="onboarding_logo_description">Chompass loqosu</string>
     <string name="onboarding_welcome_line1">Ağıllı Yeyin,</string>
     <string name="onboarding_welcome_line2">Daha Yaxşı Yaşa</string>
     <string name="onboarding_welcome_subtitle">Sadəcə şəkil çək, izlə və inkişaf et.\nQidalanmanız sadələşdirildi.</string>
@@ -253,7 +253,7 @@
     <string name="onboarding_health_connect">Qoşul</string>
 
     <string name="onboarding_provider_title">Öz AI-nizi Gətirin</string>
-    <string name="onboarding_provider_subtitle">NoFUD yeməyinizi təhlil etmək üçün AI\ntəminatçısı açarına ehtiyac duyur. Öz açarınızı gətirin.</string>
+    <string name="onboarding_provider_subtitle">Chompass yeməyinizi təhlil etmək üçün AI\ntəminatçısı açarına ehtiyac duyur. Öz açarınızı gətirin.</string>
     <string name="onboarding_provider_recommended_title">Tövsiyə olunur: Google Gemini</string>
     <string name="onboarding_provider_recommended_subtitle">Pulsuz paket mövcuddur, sürətli və dəqiq</string>
     <string name="onboarding_provider_howto_title">Pulsuz Google AI Studio açarını necə əldə etmək olar</string>
@@ -522,7 +522,7 @@
     <string name="settings_week_sunday">Bazar</string>
     <string name="settings_notifications">Bildirişlər</string>
     <string name="settings_battery_opt">Batareya Optimizasiyası</string>
-    <string name="settings_battery_opt_value">NoFUD-ı ağ siyahıya əlavə et</string>
+    <string name="settings_battery_opt_value">Chompass-ı ağ siyahıya əlavə et</string>
 
     <string name="settings_ai_provider">Təminatçı</string>
     <string name="settings_ai_model">Model</string>
@@ -554,7 +554,7 @@
     <string name="settings_invalid_goal_gain">Çəki artırma hədəfi cari çəkinizdən yuxarı bir hədəf tələb edir.</string>
     <string name="settings_permission_title">İcazə tələb olunur</string>
 
-    <string name="settings_notifications_denied">Bildiriş icazəsi rədd edildi. Xatırlatmalar almaq üçün Sistem Parametrləri → Tətbiqlər → NoFUD → Bildirişlər bölməsində aktivləşdirin.</string>
+    <string name="settings_notifications_denied">Bildiriş icazəsi rədd edildi. Xatırlatmalar almaq üçün Sistem Parametrləri → Tətbiqlər → Chompass → Bildirişlər bölməsində aktivləşdirin.</string>
 
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Çəkilmə vaxtıdır</string>
@@ -602,10 +602,10 @@
     <string name="about_report_issue">Problemi Bildir</string>
     <string name="about_request_feature">Funksiya Tələb Et</string>
     <string name="about_privacy">Məxfilik Siyasəti</string>
-    <string name="about_made_by">NoFUD — fitguy</string>
+    <string name="about_made_by">Chompass — fitguy</string>
     <string name="about_with_care">Apoorv Darshan tərəfindən hazırlanmış Fud AI əsasında</string>
-    <string name="about_share_message">Yeməklərimi NoFUD ilə izləyirəm - şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nEndir: https://codeberg.org/fitguy/NoFUD</string>
-    <string name="about_share_chooser">NoFUD-ı Paylaş</string>
+    <string name="about_share_message">Yeməklərimi Chompass ilə izləyirəm - şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nEndir: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_chooser">Chompass-ı Paylaş</string>
 
     <!-- Notifications -->
     <string name="notif_channel_streak">Silsilə Xatırlatması</string>
@@ -644,11 +644,11 @@
     <string name="settings_section_fallback">Ehtiyat Provayder</string>
     <string name="settings_enable_fallback">Ehtiyatı aktivləşdir</string>
     <string name="settings_fallback_footer">Əsas provayderin uğursuz olarsa (yüklənmə, sürət limiti, şəbəkə xətası), tətbiq avtomatik olaraq bu ehtiyat provayderlə yenidən cəhd edir. Əsas ilə eyni provayder seçilə bilər - sadəcə fərqli model seç.</string>
-    <string name="widget_all_metrics_label">NoFUD Bu gün</string>
+    <string name="widget_all_metrics_label">Chompass Bu gün</string>
     <string name="widget_all_metrics_description">Bu günün kalorilərini, zülalını, karbohidratını və yağını bir vidcetdə görün.</string>
     <string name="settings_needs_health_connect">Health Connect tələb olunur</string>
-    <string name="settings_energy_goals_info">Aktiv olduqda NoFUD Health Connect-dən ölçülmüş yandırılan kalorilərinizi - aktiv + bazal enerjinin 14 günlük ortalamasını - hədəfləri hesablayarkən düstur təxmini əvəzinə saxlanma (TDEE) istinadı kimi istifadə edir. Sərfiyyatınızı oxumaq üçün Sİ istifadə olunmur. Health Connect tələb olunur. Yenidən Hesabla düyməsi və Adaptive Goals ilə işləyir.</string>
-    <string name="settings_adaptive_goals_info">Təxminən həftədə bir dəfə, tətbiqi açanda NoFUD profilinizə, son qeyd olunmuş yeməklərə və çəki trendinizə əsasən tam hədəf hesablamasını - Yenidən Hesabla düyməsinin istifadə etdiyi eyni hesablamanı - avtomatik yenidən işə salır. Energy Burn aktivdirsə, ölçülmüş sərfiyyatınız saxlanma kalorisi üçün istinad kimi istifadə olunur. Sİ əlçatan olmadıqda addım səssizcə ötürülür. Bunu söndürdükdə bu funksiyanın ilk dəyişikliyindən əvvəlki hədəflər bərpa olunur. Bu, tibbi məsləhət deyil.</string>
+    <string name="settings_energy_goals_info">Aktiv olduqda Chompass Health Connect-dən ölçülmüş yandırılan kalorilərinizi - aktiv + bazal enerjinin 14 günlük ortalamasını - hədəfləri hesablayarkən düstur təxmini əvəzinə saxlanma (TDEE) istinadı kimi istifadə edir. Sərfiyyatınızı oxumaq üçün Sİ istifadə olunmur. Health Connect tələb olunur. Yenidən Hesabla düyməsi və Adaptive Goals ilə işləyir.</string>
+    <string name="settings_adaptive_goals_info">Təxminən həftədə bir dəfə, tətbiqi açanda Chompass profilinizə, son qeyd olunmuş yeməklərə və çəki trendinizə əsasən tam hədəf hesablamasını - Yenidən Hesabla düyməsinin istifadə etdiyi eyni hesablamanı - avtomatik yenidən işə salır. Energy Burn aktivdirsə, ölçülmüş sərfiyyatınız saxlanma kalorisi üçün istinad kimi istifadə olunur. Sİ əlçatan olmadıqda addım səssizcə ötürülür. Bunu söndürdükdə bu funksiyanın ilk dəyişikliyindən əvvəlki hədəflər bərpa olunur. Bu, tibbi məsləhət deyil.</string>
     <string name="onboarding_plan_adaptive_note">Planınız qeydlərinizə əsasən hər həftə avtomatik tənzimlənir - sabit saxlamaq üçün Parametrlərdə Adaptive Goals-u söndürün.</string>
     <string name="onboarding_feature_snap">Şəkil çəkin - Sİ qeyd edir</string>
     <string name="onboarding_feature_coach">Məlumatlarınızı bilən məşqçi</string>
@@ -657,7 +657,7 @@
     <string name="whats_new_v30_workouts">Məşqlər tabı silindi.</string>
     <string name="whats_new_v30_home">Yenilənmiş Ana səhifə: spidometr kalori göstəricisi, şaquli makro zolaqları, dörd qida kartı və üzən əlavə düyməsi.</string>
     <string name="whats_new_v30_coach_voice">Yeni daxili yazıcı ilə Koça səslə sual verin.</string>
-    <string name="whats_new_v30_share">İstənilən yeməyi birbaşa NoFUD-də açılan link kimi paylaşın - iPhone və ya Android-də.</string>
+    <string name="whats_new_v30_share">İstənilən yeməyi birbaşa Chompass-də açılan link kimi paylaşın - iPhone və ya Android-də.</string>
     <string name="whats_new_v30_export">Qida gündəliyinizi Parametrlərdən JSON, Markdown və ya CSV kimi ixrac edin.</string>
     <string name="whats_new_v30_reprocess">Qeyd olunmuş yeməyi Sİ ilə yenidən emal edin - adı, porsiyanı və ya qeydi dəyişib yenidən analiz edin.</string>
     <string name="whats_new_v30_camera">Kamera + Kamera hər iki kadrı yan-yana birləşdirilmiş saxlayır.</string>

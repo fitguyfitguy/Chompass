@@ -1,12 +1,12 @@
 {
-  "name": "nofud-pwa-dev",
+  "name": "chompass-pwa-dev",
   "private": true,
   "version": "0.0.0",
   "description": "Dev-only tooling for web/app — not a runtime dependency, the deployed app is plain ES modules.",
   "type": "module",
   "scripts": {
     "typecheck": "tsc --checkJs --noEmit -p tsconfig.json",
-    "test": "node --test app/src/lib/nofud-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js"
+    "test": "node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js"
   },
   "devDependencies": {
     "typescript": "^5.6.0"

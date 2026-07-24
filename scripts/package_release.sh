@@ -83,7 +83,7 @@ run_in_devenv() {
   fi
 }
 
-echo "==> NoFUD release packaging for version ${VERSION}"
+echo "==> Chompass release packaging for version ${VERSION}"
 
 echo "==> Running unit tests"
 run_in_devenv 'cd android && ./gradlew test'
@@ -109,7 +109,7 @@ fi
 # Codeberg quota policy: ship only the universal APK (+ SHA256SUMS).
 # Per-ABI splits may still be produced by Gradle; they are not packaged/uploaded.
 declare -a ASSETS=(
-  "universal|android/app/build/outputs/apk/release/app-universal-release.apk|NoFUD-fdroid-${VERSION}.apk"
+  "universal|android/app/build/outputs/apk/release/app-universal-release.apk|Chompass-fdroid-${VERSION}.apk"
 )
 
 declare -a DEST_FILES=()
@@ -147,13 +147,13 @@ fi
 
 cat <<EOF
 
-Packaging complete for NoFUD ${VERSION}.
+Packaging complete for Chompass ${VERSION}.
 
 Next steps:
   1. Bump versionCode / versionName in android/app/build.gradle.kts (if not done yet)
   2. Update docs/CHANGELOG.md
   3. Commit (include docs/screenshots/ if UI changed), tag, and push:
-       git tag -a v${VERSION} -m "NoFUD ${VERSION}"
+       git tag -a v${VERSION} -m "Chompass ${VERSION}"
        git push origin v${VERSION}
   4. Publish to Codeberg (also redeploys Codeberg Pages):
        export CODEBERG_TOKEN='...'

@@ -22,10 +22,10 @@
 
   scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
   scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
-  scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
+  scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/";
   scripts.site-build.exec = "hugo --minify -s website";
   scripts.site-deploy.exec = "./scripts/deploy_pages.sh";
-  scripts.pwa-test.exec = "cd web && node --test app/src/lib/nofud-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js";
+  scripts.pwa-test.exec = "cd web && node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js";
   scripts.pwa-typecheck.exec = "cd web && tsc --checkJs --noEmit -p tsconfig.json";
   scripts.pwa-serve.exec = "node web/serve.mjs";
 
@@ -84,7 +84,7 @@
   };
 
   tasks."site:serve" = {
-    exec = "hugo server -D -s website --baseURL http://localhost:1313/NoFUD/";
+    exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/";
     description = "Preview the Codeberg Pages Hugo site locally";
   };
 

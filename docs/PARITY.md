@@ -18,10 +18,10 @@ For formula / wire-format correctness (not feature lists), see:
 | Onboarding | shared | `ui/onboarding/` | `components/onboarding-*` | Birthday + editable plan-ready macros; BF stored as fraction |
 | Food entry (manual, barcode OFF, AI photo/text) | shared | entry flows | entry + `photo-ai-flow` | In-app camera + multi-photo review; **all images** sent to BYOK providers; FoodResult-like review/Log with **quantity + unit picker + live macro scale** (`serving-units.js` / Android `ServingQuantityCard`); voice sheet; barcode reticle. Android-only: serving-unit inference mode settings, AI_CALL unit inference, heuristic customization sheet |
 | Saved meals / recipes / favorites | shared | models + UI | recipes / saved | Add Food heroes: Photo / Note / Recents; Frequent & Favorites in More |
-| Copy day / meal share | shared | `MealShare.kt` | `meal-share.js` | Native `nofud://`; PWA `#/add-meal?d=` |
+| Copy day / meal share | shared | `MealShare.kt` | `meal-share.js` | Native `chompass://`; PWA `#/add-meal?d=` |
 | Diary JSON export/import 1.1 | shared | `export/Diary*` | `diary-format.js` | Contract: `contracts/diary-1.1.schema.json` |
 | Body-metrics JSON 1.0 | shared | `export/BodyMetrics*` | `body-metrics-format.js` | Contract: `contracts/body-metrics-1.0.schema.json` |
-| Deterministic goal formulas | shared | `UserProfile` + services | `nofud-core/formulas.js` | Goldens: `testdata/parity/formulas-expected.json`; custom macro pins honored |
+| Deterministic goal formulas | shared | `UserProfile` + services | `chompass-core/formulas.js` | Goldens: `testdata/parity/formulas-expected.json`; custom macro pins honored |
 | AI Coach (BYOK cloud) | shared | coach + AI services | `lib/ai/` | Overlapping provider/model defaults: `testdata/parity/ai-provider-defaults.json` (Gemini / Anthropic Haiku / OpenAI mini); goal-prompt formula lines: `goal-formula-prompt-fragments.json` |
 | Health Connect | android-only | HC services | — | Measured TDEE path not on web |
 | Widgets / notifications | android-only | glance / NotificationService | — | |

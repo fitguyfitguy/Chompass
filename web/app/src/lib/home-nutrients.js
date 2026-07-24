@@ -4,7 +4,7 @@
  * FoodLogMacroChip, and OptionalNutrientGoals defaults.
  */
 
-/** @typedef {import('./nofud-core/models.js').FoodEntry} FoodEntry */
+/** @typedef {import('./chompass-core/models.js').FoodEntry} FoodEntry */
 /** @typedef {{calories: number, proteinG: number, fatG: number, carbsG: number}} DailyTargets */
 /** @typedef {import('./db.js').OptionalNutrientGoals} OptionalNutrientGoals */
 

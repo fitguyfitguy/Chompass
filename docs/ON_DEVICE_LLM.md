@@ -4,19 +4,19 @@ Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developer
 
 **Status (2026-07-15):** Smoke test **passes end-to-end** on **Pixel 9a / GrapheneOS** with GPU backend (`litertlm-android` **0.14.0**). **Tier B vision + daily matrix complete** (runs 1 and 4 recorded). Recommended daily-driver: **`preset=daily`** (`gpu` + `fewshot_units` + MTP when cache warm).
 
-**Device coverage note:** all validation above, plus the production integration's device-capability gate ([`OnDeviceCapability.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceCapability.kt), 6GB RAM floor), is based on **Pixel 9a only**. The production plan's Phase 0 called for a second, lower/mid-tier non-Tensor device to validate the CPU-backend fallback path before shipping; that pass was explicitly skipped for this integration. The RAM floor and CPU-fallback latency are provisional until a second device is tested. Settings surfaces this via a note in the on-device model download sheet ("Tested on Pixel 9a (GrapheneOS)...").
+**Device coverage note:** all validation above, plus the production integration's device-capability gate ([`OnDeviceCapability.kt`](../android/app/src/main/java/app/chompass/services/ondevice/OnDeviceCapability.kt), 6GB RAM floor), is based on **Pixel 9a only**. The production plan's Phase 0 called for a second, lower/mid-tier non-Tensor device to validate the CPU-backend fallback path before shipping; that pass was explicitly skipped for this integration. The RAM floor and CPU-fallback latency are provisional until a second device is tested. Settings surfaces this via a note in the on-device model download sheet ("Tested on Pixel 9a (GrapheneOS)...").
 
 ## Production integration (Milestone 1: Tier A)
 
 | Piece | File |
 |-------|------|
-| Provider enum | [`AIProvider.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/models/AIProvider.kt): `ON_DEVICE` / `ApiFormat.ON_DEVICE` |
-| Model catalog | [`ModelCatalog.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/ModelCatalog.kt): HF repo, filename, sha256, size |
-| Download | [`ModelDownloadManager.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/ModelDownloadManager.kt) / [`ModelDownloadWorker.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/ModelDownloadWorker.kt): WorkManager, streamed OkHttp download, SHA-256 verify, atomic rename into `filesDir/models/` |
-| Capability gate | [`OnDeviceCapability.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceCapability.kt): ABI + RAM floor |
-| Engine lifecycle | [`OnDeviceLlmGateway.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceLlmGateway.kt): process-scoped lazy singleton, explicit unload |
-| Dispatch | [`FoodAnalysisService.dispatch()`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/FoodAnalysisService.kt) via [`OnDeviceLlmDispatchClient.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/OnDeviceLlmDispatchClient.kt) |
-| Settings UX | [`SettingsAiSection.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/ui/settings/SettingsAiSection.kt) / [`OnDeviceModelSheet.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/ui/settings/OnDeviceModelSheet.kt) |
+| Provider enum | [`AIProvider.kt`](../android/app/src/main/java/app/chompass/models/AIProvider.kt): `ON_DEVICE` / `ApiFormat.ON_DEVICE` |
+| Model catalog | [`ModelCatalog.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelCatalog.kt): HF repo, filename, sha256, size |
+| Download | [`ModelDownloadManager.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelDownloadManager.kt) / [`ModelDownloadWorker.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelDownloadWorker.kt): WorkManager, streamed OkHttp download, SHA-256 verify, atomic rename into `filesDir/models/` |
+| Capability gate | [`OnDeviceCapability.kt`](../android/app/src/main/java/app/chompass/services/ondevice/OnDeviceCapability.kt): ABI + RAM floor |
+| Engine lifecycle | [`OnDeviceLlmGateway.kt`](../android/app/src/main/java/app/chompass/services/ondevice/OnDeviceLlmGateway.kt): process-scoped lazy singleton, explicit unload |
+| Dispatch | [`FoodAnalysisService.dispatch()`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) via [`OnDeviceLlmDispatchClient.kt`](../android/app/src/main/java/app/chompass/services/ai/OnDeviceLlmDispatchClient.kt) |
+| Settings UX | [`SettingsAiSection.kt`](../android/app/src/main/java/app/chompass/ui/settings/SettingsAiSection.kt) / [`OnDeviceModelSheet.kt`](../android/app/src/main/java/app/chompass/ui/settings/OnDeviceModelSheet.kt) |
 
 `OnDeviceLlmDispatchClient` routes to `generateWithImage` whenever an image is attached, so Tier B (photo) flows through the same dispatch path as Tier A, but it hasn't been re-validated against this specific pipeline (only against the debug smoke test harness), and the vision-enabled engine is a separate, larger load than text-only. Treat Tier B as untested-in-production until it gets its own pass. Not yet done: Tier C (Coach tool-calling), the `onDeviceFeatureVisible` flag flipping to default-on, and F-Droid packaging (currently `implementation` for both flavors pending an F-Droid policy check; see `build.gradle.kts` comment).
 
@@ -43,7 +43,7 @@ Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developer
 | Quantization | int4 (filename convention: `gemma-e2b-int4.litertlm`) |
 | Source | [Hugging Face `litert-community`](https://huggingface.co/litert-community); use the **native/mobile** artifact for Gemma 4 E2B-it |
 | On-device path | `filesDir/models/gemma-e2b-int4.litertlm` |
-| Package path (debug) | `/data/user/0/org.codeberg.fitguy.nofud.debug/files/models/` |
+| Package path (debug) | `/data/user/0/app.chompass.debug/files/models/` |
 
 **Important:** Hugging Face listings can include both **web** and **native/mobile** builds of the same model. Web variants fail at load with errors like `TF_LITE_PREFILL_DECODE not found in the model`. Only the native `.litertlm` mobile build works with the Android API.
 
@@ -66,10 +66,10 @@ The model is **not bundled** in the APK (~1–2 GB). Delivery is manual via `adb
 
 | File | Role |
 |------|------|
-| [`OnDeviceLlmClient.kt`](../android/app/src/debug/java/org/codeberg/fitguy/nofud/services/ai/OnDeviceLlmClient.kt) | LiteRT-LM `Engine` wrapper (load, text/vision generate, tool conversations); **debug source set only** |
-| [`OnDeviceLlmSmokeTest.kt`](../android/app/src/debug/java/org/codeberg/fitguy/nofud/services/OnDeviceLlmSmokeTest.kt) | Tier A/B/C harness, `@Tool` bridge to real `CoachTools` |
-| [`OnDeviceLlmDebugLauncher.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/debug/OnDeviceLlmDebugLauncher.kt) | Release-safe launcher stub; debug runner in `src/debug/` |
-| [`MainActivity.kt`](../android/app/src/main/java/org/codeberg/fitguy/nofud/MainActivity.kt) | Intent-extra trigger (`run_ondevice_llm_test`); works from cold start and warm relaunch (`onNewIntent`) |
+| [`OnDeviceLlmClient.kt`](../android/app/src/debug/java/app/chompass/services/ai/OnDeviceLlmClient.kt) | LiteRT-LM `Engine` wrapper (load, text/vision generate, tool conversations); **debug source set only** |
+| [`OnDeviceLlmSmokeTest.kt`](../android/app/src/debug/java/app/chompass/services/OnDeviceLlmSmokeTest.kt) | Tier A/B/C harness, `@Tool` bridge to real `CoachTools` |
+| [`OnDeviceLlmDebugLauncher.kt`](../android/app/src/main/java/app/chompass/debug/OnDeviceLlmDebugLauncher.kt) | Release-safe launcher stub; debug runner in `src/debug/` |
+| [`MainActivity.kt`](../android/app/src/main/java/app/chompass/MainActivity.kt) | Intent-extra trigger (`run_ondevice_llm_test`); works from cold start and warm relaunch (`onNewIntent`) |
 
 Tool results must be returned as `com.google.gson.JsonElement` from `@Tool` functions; raw `String` JSON gets double-encoded by LiteRT-LM's `ToolManager.execute()` and the model ignores tool output. See `CoachToolsToolSet` in the smoke test file.
 
@@ -84,7 +84,7 @@ devenv shell bash -lc 'cd android && ./gradlew :app:assembleDebug'
 ```
 
 ```powershell
-adb install -r \\wsl$\archlinux\home\archliNix\NoFUD\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
+adb install -r \\wsl$\archlinux\home\archliNix\Chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
 ```
 
 Use the **arm64-v8a** split on Pixel 9a (or the universal debug APK).
@@ -100,15 +100,15 @@ From Windows PowerShell (adjust WSL distro name if needed):
 adb push gemma-e2b-int4.litertlm /data/local/tmp/gemma-e2b-int4.litertlm
 
 # 2. Copy into app-private storage (debuggable app, no root)
-adb shell run-as org.codeberg.fitguy.nofud.debug mkdir -p files/models
-adb shell run-as org.codeberg.fitguy.nofud.debug cp /data/local/tmp/gemma-e2b-int4.litertlm files/models/
+adb shell run-as app.chompass.debug mkdir -p files/models
+adb shell run-as app.chompass.debug cp /data/local/tmp/gemma-e2b-int4.litertlm files/models/
 adb shell rm /data/local/tmp/gemma-e2b-int4.litertlm
 ```
 
 Verify:
 
 ```powershell
-adb shell run-as org.codeberg.fitguy.nofud.debug ls -la files/models/
+adb shell run-as app.chompass.debug ls -la files/models/
 ```
 
 ---
@@ -134,9 +134,9 @@ If the app is already foreground, `adb shell am start` prints `Activity not star
 ### GPU (default)
 
 ```powershell
-adb shell am force-stop org.codeberg.fitguy.nofud.debug
+adb shell am force-stop app.chompass.debug
 adb logcat -c
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true
 adb logcat -s FudOnDeviceLlm
 ```
 
@@ -145,14 +145,14 @@ adb logcat -s FudOnDeviceLlm
 ### CPU (A/B comparison)
 
 ```powershell
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_backend cpu
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_backend cpu
 adb logcat -s FudOnDeviceLlm
 ```
 
 ### GPU with MTP (optional)
 
 ```powershell
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true
 ```
 
 Expect **multi-minute** first-time GPU init when MTP is enabled (extra `verify` subgraph). See **MTP caveats (GPU)** below before using `--ez ondevice_llm_mtp true`.
@@ -171,19 +171,19 @@ MTP (multi-token / speculative decoding) can deliver ~1.6×–2.2× faster decod
 For **Exp 2c** (MTP latency): use **one** `adb` invocation with `mtp=true` and `repeat=2` so cold MTP init happens once and pass=1 measures warm MTP decode. Allow **3–5 minutes** for first `engineInit` with MTP (heartbeats every 15 s). Compare pass=0 vs pass=1 Tier A ms and check for `status=parseFail` (token-budget truncation).
 
 ```powershell
-adb shell am force-stop org.codeberg.fitguy.nofud.debug
+adb shell am force-stop app.chompass.debug
 adb logcat -c
 # Exp 2c: MTP cold init + warm repeat (fewshot keeps unit_options; compact is faster but drops units)
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true --es ondevice_llm_tier a --es ondevice_llm_prompt fewshot_units --ei ondevice_llm_repeat 2
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true --es ondevice_llm_tier a --es ondevice_llm_prompt fewshot_units --ei ondevice_llm_repeat 2
 adb logcat -s FudOnDeviceLlm
 ```
 
 Optional A/B; MTP + compact (speed only, expect `unitOptions=0`):
 
 ```powershell
-adb shell am force-stop org.codeberg.fitguy.nofud.debug
+adb shell am force-stop app.chompass.debug
 adb logcat -c
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true --es ondevice_llm_tier a --es ondevice_llm_prompt compact --ei ondevice_llm_repeat 2
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true --es ondevice_llm_tier a --es ondevice_llm_prompt compact --ei ondevice_llm_repeat 2
 adb logcat -s FudOnDeviceLlm
 ```
 
@@ -191,12 +191,12 @@ MTP compile cache lands under `cache/litert-mtp/` (separate from non-MTP runs).
 
 ### Tier B: vision only (food photo smoke test)
 
-Requires `EngineConfig.visionBackend = Backend.GPU()`: without it, `Content.ImageBytes` causes a native SIGSEGV. Bundled JPEG fixtures live in `android/app/src/debug/assets/ondevice_llm/` and are preprocessed with [`AiImageBytes.jpegForUpload`](../android/app/src/main/java/org/codeberg/fitguy/nofud/services/ai/AiImageBytes.kt) (1600 px / q78) before inference.
+Requires `EngineConfig.visionBackend = Backend.GPU()`: without it, `Content.ImageBytes` causes a native SIGSEGV. Bundled JPEG fixtures live in `android/app/src/debug/assets/ondevice_llm/` and are preprocessed with [`AiImageBytes.jpegForUpload`](../android/app/src/main/java/app/chompass/services/ai/AiImageBytes.kt) (1600 px / q78) before inference.
 
 ```powershell
-adb shell am force-stop org.codeberg.fitguy.nofud.debug
+adb shell am force-stop app.chompass.debug
 adb logcat -c
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity `
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity `
   --ez run_ondevice_llm_test true --es ondevice_llm_tier b --es ondevice_llm_backend gpu
 adb logcat -s FudOnDeviceLlm
 ```
@@ -238,9 +238,9 @@ scripts/capture_ondevice_llm_daily.sh 4   # daily-driver preset (run 4)
 PowerShell (run 4; daily driver):
 
 ```powershell
-adb shell am force-stop org.codeberg.fitguy.nofud.debug
+adb shell am force-stop app.chompass.debug
 adb logcat -c
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity `
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity `
   --ez run_ondevice_llm_test true --es ondevice_llm_preset daily --ez ondevice_llm_clear_cache false
 adb logcat -s FudOnDeviceLlm
 ```
@@ -320,27 +320,27 @@ adb logcat -s FudOnDeviceLlm
 
 ```powershell
 # Exp 1a: few-shot unit_options (Tier A only)
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt fewshot_units
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt fewshot_units
 
 # Exp 1b: two-pass unit inference (Tier A only)
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt twopass
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt twopass
 
 # Exp 2a: compact prompt latency
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt compact
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt compact
 
 # Exp 2b: warm repeat (second pass uses GPU cache)
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt compact --ei ondevice_llm_repeat 2
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_tier a --es ondevice_llm_prompt compact --ei ondevice_llm_repeat 2
 
 # Exp 2c: MTP cold init + warm repeat (allow 3–5 min for first engineInit)
-adb shell am force-stop org.codeberg.fitguy.nofud.debug
+adb shell am force-stop app.chompass.debug
 adb logcat -c
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true --es ondevice_llm_tier a --es ondevice_llm_prompt fewshot_units --ei ondevice_llm_repeat 2
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --ez ondevice_llm_mtp true --es ondevice_llm_tier a --es ondevice_llm_prompt fewshot_units --ei ondevice_llm_repeat 2
 adb logcat -s FudOnDeviceLlm
 
 # Exp 3: FunctionGemma: SKIPPED (no suitable artifact for this app: see experiment log)
 
 # Exp 4: Gemma 4 E4B full run (optional quality comparison)
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_model gemma-e4b-int4.litertlm
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_model gemma-e4b-int4.litertlm
 ```
 
 ### Log format
@@ -438,8 +438,8 @@ GPU is roughly **3× faster** than CPU on Tier A for this harness. Target of 2�
 5. **LiteRT-LM maturity:** Library is beta; tool-calling and GPU paths have active upstream issues. Pin version deliberately when upgrading.
 6. **GrapheneOS:** No Play Services / AICore required; vendor GPU drivers + manifest `uses-native-library` entries are sufficient for OpenCL on Pixel 9a.
 7. **Not production:** No UI, no provider toggle, no model management; release APKs do not include LiteRT native libs.
-8. **FunctionGemma (skipped for NoFUD):** HF [functiongemma-270m-ft-mobile-actions](https://huggingface.co/litert-community/functiongemma-270m-ft-mobile-actions) is not a fit: `*_Google_Tensor_G5.litertlm` fails on OpenCL GPU (`Input tensor not found`); `mobile_actions_q8_ekv1024.litertlm` is fine-tuned for Google’s **Mobile Actions** demo intents, not NoFUD Coach tools. Tier C stays on **Gemma 4 E2B-it**.
-9. **Vision backend:** `visionBackend` must be **GPU** for image input. CPU vision crashes on the 2nd image turn ([#2056](https://github.com/google-ai-edge/LiteRT-LM/issues/2056)). GPU+GPU vision OOM-kills the process on E4B (observed on Pixel 9a, real-world food photo). Production now handles this: `OnDeviceCapability.preferredBackend` (`android/app/src/main/java/org/codeberg/fitguy/nofud/services/ondevice/OnDeviceCapability.kt`) forces `backend=cpu` (text) + GPU vision for E4B+vision specifically, and `OnDeviceCapability.hasEnoughAvailableMemoryForVision` runs a preflight `ActivityManager.MemoryInfo.availMem` check before every vision call, throwing a catchable `AiError.OnDeviceLowMemory` instead of risking a silent OS kill. Not yet device-validated beyond that one Pixel 9a repro.
+8. **FunctionGemma (skipped for Chompass):** HF [functiongemma-270m-ft-mobile-actions](https://huggingface.co/litert-community/functiongemma-270m-ft-mobile-actions) is not a fit: `*_Google_Tensor_G5.litertlm` fails on OpenCL GPU (`Input tensor not found`); `mobile_actions_q8_ekv1024.litertlm` is fine-tuned for Google’s **Mobile Actions** demo intents, not Chompass Coach tools. Tier C stays on **Gemma 4 E2B-it**.
+9. **Vision backend:** `visionBackend` must be **GPU** for image input. CPU vision crashes on the 2nd image turn ([#2056](https://github.com/google-ai-edge/LiteRT-LM/issues/2056)). GPU+GPU vision OOM-kills the process on E4B (observed on Pixel 9a, real-world food photo). Production now handles this: `OnDeviceCapability.preferredBackend` (`android/app/src/main/java/app/chompass/services/ondevice/OnDeviceCapability.kt`) forces `backend=cpu` (text) + GPU vision for E4B+vision specifically, and `OnDeviceCapability.hasEnoughAvailableMemoryForVision` runs a preflight `ActivityManager.MemoryInfo.availMem` check before every vision call, throwing a catchable `AiError.OnDeviceLowMemory` instead of risking a silent OS kill. Not yet device-validated beyond that one Pixel 9a repro.
 10. **Vision + MTP:** **Validated on Pixel 9a (2026-07-14 PM):** run 4 (`preset=daily`, MTP on) (Tier B 4/4 json ok with `unitOptions`; multi-turn ok; Tier B fixture median **~18 s** vs **~26 s** without MTP (tier=b standalone). No JSON truncation observed. If cold MTP init (~36 s) is unacceptable on first app open, use MTP only after warm cache or Tier-A-only MTP in production.
 
 ---
@@ -459,7 +459,7 @@ GPU is roughly **3× faster** than CPU on Tier A for this harness. Target of 2�
 Record results from `adb logcat -s FudOnDeviceLlm` after each run. Seed test data first if Tier C needs logged entries:
 
 ```powershell
-adb shell am start -n org.codeberg.fitguy.nofud.debug/org.codeberg.fitguy.nofud.MainActivity --ez seed_test_data true
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_test_data true
 ```
 
 | Experiment | Command flags | Sample 0 `unitOptions` | Tier A ms (GPU) | Tier C grounding | Notes |

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Open (or refresh) the fdroiddata merge request for NoFUD.
+# Open (or refresh) the fdroiddata merge request for Chompass.
 #
 # Requires:
 #   - glab authenticated for gitlab.com (glab auth login)
@@ -12,9 +12,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-METADATA_SRC="$ROOT/docs/fdroid/org.codeberg.fitguy.nofud.yml"
-BRANCH="org.codeberg.fitguy.nofud"
-WORKDIR="${TMPDIR:-/tmp}/fdroiddata-nofud-$$"
+METADATA_SRC="$ROOT/docs/fdroid/app.chompass.yml"
+BRANCH="app.chompass"
+WORKDIR="${TMPDIR:-/tmp}/fdroiddata-chompass-$$"
 
 if [[ ! -f "$METADATA_SRC" ]]; then
   echo "Missing $METADATA_SRC" >&2
@@ -54,14 +54,14 @@ git clone --depth=1 "https://gitlab.com/${FORK_PATH}/fdroiddata.git" "$WORKDIR"
 cd "$WORKDIR"
 
 git checkout -B "$BRANCH"
-cp "$METADATA_SRC" "metadata/org.codeberg.fitguy.nofud.yml"
-git add metadata/org.codeberg.fitguy.nofud.yml
+cp "$METADATA_SRC" "metadata/app.chompass.yml"
+git add metadata/app.chompass.yml
 
 if git diff --cached --quiet; then
-  echo "metadata/org.codeberg.fitguy.nofud.yml unchanged in fork."
+  echo "metadata/app.chompass.yml unchanged in fork."
 else
   git commit -m "$(cat <<'EOF'
-New App: NoFUD (org.codeberg.fitguy.nofud)
+New App: Chompass (app.chompass)
 
 Ad-free privacy-focused calorie tracker. MIT, Codeberg upstream.
 EOF
@@ -89,7 +89,7 @@ MR_JSON="$(glab api -X POST "projects/${SOURCE_PROJECT_ID}/merge_requests" \
   -f source_branch="$BRANCH" \
   -f target_branch=master \
   -f target_project_id="$TARGET_PROJECT_ID" \
-  -f title='New App: org.codeberg.fitguy.nofud' \
+  -f title='New App: app.chompass' \
   -f description="$MR_BODY")"
 
 MR_URL="$(printf '%s' "$MR_JSON" | sed -n 's/.*"web_url":"\([^"]*\/merge_requests\/[0-9]*\)".*/\1/p' | head -1)"

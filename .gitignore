@@ -44,6 +44,7 @@ CLAUDE.md
 
 # Release artifacts (published on Codeberg Releases)
 NoFUD-*.apk
+Chompass-*.apk
 SHA256SUMS
 release-screenshots/
 .env.local

@@ -1,8 +1,8 @@
 // @ts-check
 import { openSheet } from "./ui/sheet.js";
 
-const BANNER_DISMISSED_KEY = "nofud-install-banner-dismissed";
-const SHEET_SHOWN_KEY = "nofud-install-sheet-shown";
+const BANNER_DISMISSED_KEY = "chompass-install-banner-dismissed";
+const SHEET_SHOWN_KEY = "chompass-install-sheet-shown";
 
 /**
  * @typedef {{
@@ -59,15 +59,15 @@ export function initInstallPrompt() {
 
 function platformTip() {
   if (deferredPrompt) {
-    return "Install NoFUD for quicker access and a full-screen app.";
+    return "Install Chompass for quicker access and a full-screen app.";
   }
   if (isIosNonSafari()) {
     return 'This browser cannot install apps on iOS. Open this page in Safari, then tap Share → "Add to Home Screen".';
   }
   if (isIos()) {
-    return 'Add NoFUD to your Home Screen: tap Share → "Add to Home Screen", then open from the icon (not a Safari tab).';
+    return 'Add Chompass to your Home Screen: tap Share → "Add to Home Screen", then open from the icon (not a Safari tab).';
   }
-  return "Install NoFUD to your home screen or dock for easier access.";
+  return "Install Chompass to your home screen or dock for easier access.";
 }
 
 /**
@@ -150,15 +150,15 @@ export function maybeShowPostOnboardingInstallSheet() {
     const body = document.createElement("div");
     body.className = "install-sheet-body";
 
-    let tip = "Add NoFUD to your home screen or dock so it opens like an app.";
+    let tip = "Add Chompass to your home screen or dock so it opens like an app.";
     if (isIosNonSafari()) {
       tip =
-        "On iOS, only Safari can install home-screen web apps — this browser cannot, so no install option appears here. Open NoFUD in Safari to install it:";
+        "On iOS, only Safari can install home-screen web apps — this browser cannot, so no install option appears here. Open Chompass in Safari to install it:";
     } else if (isIos()) {
       tip =
         'On iPhone or iPad: open in Safari → tap Share → "Add to Home Screen" → Add. Then launch from the home-screen icon (not a Safari tab). Chrome or Firefox on iOS still use Safari’s share sheet.';
     } else if (deferredPrompt) {
-      tip = "Install NoFUD for a full-screen icon on your home screen or dock.";
+      tip = "Install Chompass for a full-screen icon on your home screen or dock.";
     } else {
       tip = "Use your browser menu → Install app / Add to Home screen. Steps differ by browser.";
     }
@@ -168,7 +168,7 @@ export function maybeShowPostOnboardingInstallSheet() {
       ${
         isIos()
           ? `<ol class="install-steps" style="margin:0.75rem 0 0;">
-              <li>Open NoFUD in <strong>Safari</strong>.</li>
+              <li>Open Chompass in <strong>Safari</strong>.</li>
               <li>Tap <strong>Share</strong>.</li>
               <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
               <li>Open from the home-screen icon for the full-screen app.</li>
@@ -186,7 +186,7 @@ export function maybeShowPostOnboardingInstallSheet() {
       </div>
     `;
 
-    const sheet = openSheet({ title: "Install NoFUD", body });
+    const sheet = openSheet({ title: "Install Chompass", body });
 
     body.querySelector("[data-install]")?.addEventListener("click", async () => {
       const ok = await promptInstall();

@@ -8,13 +8,13 @@ import {
   ANDROID_PREF_DEFAULTS,
 } from "./home-nutrients.js";
 
-const DB_NAME = "nofud-pwa";
+const DB_NAME = "chompass-pwa";
 const DB_VERSION = 3;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
 
-function openNoFudDb() {
+function openChompassDb() {
   return openDB(DB_NAME, DB_VERSION, (db, oldVersion) => {
     if (oldVersion < 1) {
       db.createObjectStore("foodEntries", { keyPath: "id" }).createIndex("date", "date");
@@ -37,7 +37,7 @@ function openNoFudDb() {
 }
 
 async function db() {
-  if (!dbPromise) dbPromise = openNoFudDb();
+  if (!dbPromise) dbPromise = openChompassDb();
   return dbPromise;
 }
 
@@ -47,7 +47,7 @@ async function store(storeName) {
 }
 
 export const foodEntries = {
-  /** @param {import('./nofud-core/models.js').FoodEntry} entry */
+  /** @param {import('./chompass-core/models.js').FoodEntry} entry */
   async put(entry) {
     return (await store("foodEntries")).put(entry);
   },
@@ -68,7 +68,7 @@ export const foodEntries = {
 };
 
 export const favorites = {
-  /** @param {import('./nofud-core/models.js').FoodEntry} entry */
+  /** @param {import('./chompass-core/models.js').FoodEntry} entry */
   async put(entry) {
     return (await store("favorites")).put(entry);
   },
@@ -85,7 +85,7 @@ export const favorites = {
 };
 
 export const recipes = {
-  /** @param {import('./nofud-core/models.js').Recipe} recipe */
+  /** @param {import('./chompass-core/models.js').Recipe} recipe */
   async put(recipe) {
     return (await store("recipes")).put(recipe);
   },
@@ -171,11 +171,11 @@ const PREFS_ID = "singleton";
 const CHAT_ID = "singleton";
 
 export const profile = {
-  /** @param {import('./nofud-core/models.js').UserProfile} p */
+  /** @param {import('./chompass-core/models.js').UserProfile} p */
   async save(p) {
     return (await store("profile")).put({ id: PROFILE_ID, ...p });
   },
-  /** @returns {Promise<import('./nofud-core/models.js').UserProfile|undefined>} */
+  /** @returns {Promise<import('./chompass-core/models.js').UserProfile|undefined>} */
   async load() {
     return (await store("profile")).get(PROFILE_ID);
   },

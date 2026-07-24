@@ -18,22 +18,22 @@
 }
 
 # All app-package serializable classes + their generated $$serializer.
--keep,includedescriptorclasses class org.codeberg.fitguy.nofud.**$$serializer { *; }
--keepclassmembers class org.codeberg.fitguy.nofud.** {
+-keep,includedescriptorclasses class app.chompass.**$$serializer { *; }
+-keepclassmembers class app.chompass.** {
     *** Companion;
 }
--keepclasseswithmembers class org.codeberg.fitguy.nofud.** {
+-keepclasseswithmembers class app.chompass.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 # Enum @Serializable lookups need their members preserved for KSerializer.
--keepclassmembers enum org.codeberg.fitguy.nofud.** { *; }
+-keepclassmembers enum app.chompass.** { *; }
 
 # ─── Glance widgets ───────────────────────────────────────────────────────────
 # CalorieAppWidget / ProteinAppWidget + their *Receiver classes are loaded by
 # the OS via reflection from AndroidManifest. Default Android rules cover the
 # Receiver subclasses, but Glance also reflects on the GlanceAppWidget subclass
 # itself.
--keep class org.codeberg.fitguy.nofud.widget.** { *; }
+-keep class app.chompass.widget.** { *; }
 -keep class * extends androidx.glance.appwidget.GlanceAppWidget { *; }
 -keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver { *; }
 

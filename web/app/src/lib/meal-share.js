@@ -34,7 +34,7 @@ const SHARE_TO_ENTRY = {
 const ENTRY_TO_SHARE = Object.fromEntries(Object.entries(SHARE_TO_ENTRY).map(([a, b]) => [b, a]));
 
 /**
- * @param {Array<Partial<import('./nofud-core/models.js').FoodEntry>>} entries
+ * @param {Array<Partial<import('./chompass-core/models.js').FoodEntry>>} entries
  */
 export function encodeMealShare(entries) {
   const meals = entries.map((e) => {
@@ -118,7 +118,7 @@ export function decodeMealShare(linkOrHash) {
 }
 
 /**
- * @param {Array<Partial<import('./nofud-core/models.js').FoodEntry>>} entries
+ * @param {Array<Partial<import('./chompass-core/models.js').FoodEntry>>} entries
  */
 export function mealShareText(entries) {
   const lines = entries.map((e) => {
@@ -127,6 +127,6 @@ export function mealShareText(entries) {
   });
   const origin = typeof location !== "undefined" ? `${location.origin}${location.pathname}` : "";
   const hash = encodeMealShare(entries);
-  lines.push("", "Open in NoFUD to add:", `${origin}${hash}`);
+  lines.push("", "Open in Chompass to add:", `${origin}${hash}`);
   return lines.join("\n");
 }

@@ -9,7 +9,7 @@ set -euo pipefail
 #   scripts/perf_entry_benchmark.sh [count]        # default count = 3
 # Env:
 #   ADB_BIN    adb binary (auto-detects a Windows adb.exe from WSL if unset)
-#   PACKAGE    app package (default: org.codeberg.fitguy.nofud.debug)
+#   PACKAGE    app package (default: app.chompass.debug)
 #   SEED       "1" (default) seeds test data + body metrics + keto settings first;
 #              "0" skips seeding and only benchmarks
 #   TIMEOUT    seconds to wait for the batch before giving up (default: 240)
@@ -18,8 +18,8 @@ set -euo pipefail
 # (so the app can actually issue requests). Build+install per docs/DEVELOPMENT.md.
 
 COUNT="${1:-3}"
-PACKAGE="${PACKAGE:-org.codeberg.fitguy.nofud.debug}"
-ACTIVITY="${PACKAGE}/org.codeberg.fitguy.nofud.MainActivity"
+PACKAGE="${PACKAGE:-app.chompass.debug}"
+ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
 SEED="${SEED:-1}"
 TIMEOUT="${TIMEOUT:-240}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
