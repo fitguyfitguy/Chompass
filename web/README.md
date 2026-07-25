@@ -77,7 +77,7 @@ notifications, widgets, full i18n pack.
 
 Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 
-Service worker cache: `chompass-shell-v1`.
+Service worker cache: `chompass-shell-v2`.
 
 ### Manual PWA audit checklist
 
@@ -98,6 +98,13 @@ Service worker cache: `chompass-shell-v1`.
 **Brave / Chrome Android:** there is usually **no auto install popup**. Use
 the browser menu → **Add to Home screen** / **Install app**. After redeploy,
 confirm live `Content-Type` for `/app/manifest.json` is `application/json`.
+
+**Firefox Android:** no `beforeinstallprompt` — use menu → **Add to Home
+screen**. If that does nothing, check Default apps → Home app is set.
+**DuckDuckGo Android:** no full PWA install; menu shortcut may be a bookmark
+only or a no-op on some launchers — prefer Chrome/Brave for install. The
+in-app Install / Add to Home Screen control opens browser-specific help when
+the Chromium install prompt is unavailable.
 
 Known trade-offs:
 - Live meal camera and barcode preview work on phone cameras and desktop

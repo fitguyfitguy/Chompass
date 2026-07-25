@@ -26,6 +26,29 @@ export function isIos() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+/** @returns {boolean} */
+export function isAndroid() {
+  return /android/i.test(navigator.userAgent);
+}
+
+/** @returns {boolean} */
+export function isFirefox() {
+  return /firefox|fxios/i.test(navigator.userAgent);
+}
+
+/** @returns {boolean} */
+export function isDuckDuckGo() {
+  return /duckduckgo/i.test(navigator.userAgent);
+}
+
+/**
+ * Chromium install prompt API. Firefox and DuckDuckGo never fire this.
+ * @returns {boolean}
+ */
+export function hasDeferredInstallPrompt() {
+  return !!deferredPrompt;
+}
+
 /**
  * iOS browsers other than Safari (Brave, Chrome, Firefox, Edge, Opera). Only
  * Safari can install a true home-screen web app on iOS. Brave mimics Safari's
@@ -57,6 +80,83 @@ export function initInstallPrompt() {
   maybeShowInstallBanner();
 }
 
+/**
+ * @returns {{ tip: string, stepsHtml: string, note: string }}
+ */
+export function installHelpContent() {
+  if (isIosNonSafari()) {
+    return {
+      tip: "On iOS, only Safari can install home-screen web apps. Open Chompass in Safari:",
+      stepsHtml: `
+        <ol class="install-steps">
+          <li>Copy this page’s address and open it in <strong>Safari</strong>.</li>
+          <li>Tap <strong>Share</strong> (square with an upward arrow).</li>
+          <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
+          <li>Open from the home-screen icon (not a browser tab).</li>
+        </ol>`,
+      note: "Chrome, Firefox, and Brave on iOS cannot install a true home-screen web app.",
+    };
+  }
+  if (isIos()) {
+    return {
+      tip: "Add Chompass to your Home Screen from Safari:",
+      stepsHtml: `
+        <ol class="install-steps">
+          <li>Tap <strong>Share</strong> (square with an upward arrow).</li>
+          <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
+          <li>Open from the home-screen icon (not a Safari tab).</li>
+        </ol>`,
+      note: "",
+    };
+  }
+  if (isDuckDuckGo() && isAndroid()) {
+    return {
+      tip: "DuckDuckGo on Android does not support full PWA install. Use the browser menu for a shortcut, or open Chompass in Chrome / Firefox for a better install:",
+      stepsHtml: `
+        <ol class="install-steps">
+          <li>Tap the browser menu (⋮).</li>
+          <li>Tap <strong>Add to Home</strong> / <strong>Add to Home Screen</strong>.</li>
+          <li>If nothing happens, your launcher may block shortcuts — try Chrome or Firefox, or set a Home app under Android Settings → Apps → Default apps.</li>
+        </ol>`,
+      note: "For a full-screen installed app, open https://chompass.app/app/ in Chrome, Edge, or Brave, then use Install app / Add to Home screen.",
+    };
+  }
+  if (isFirefox() && isAndroid()) {
+    return {
+      tip: "Firefox on Android installs from the browser menu (there is no in-page install popup):",
+      stepsHtml: `
+        <ol class="install-steps">
+          <li>Tap the Firefox menu (⋮).</li>
+          <li>Tap <strong>Add to Home screen</strong> or <strong>Add app to Home screen</strong>.</li>
+          <li>Confirm. Open Chompass from the new icon afterward.</li>
+        </ol>`,
+      note: "If the menu item does nothing, check Android Settings → Apps → Default apps → Home app (it must not be “None”). Chromium browsers (Chrome, Edge, Brave) usually install more reliably.",
+    };
+  }
+  if (isAndroid()) {
+    return {
+      tip: "Install from your browser menu:",
+      stepsHtml: `
+        <ol class="install-steps">
+          <li>Open the browser menu (⋮).</li>
+          <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+          <li>Confirm. Open Chompass from the new icon afterward.</li>
+        </ol>`,
+      note: "Many Chromium browsers do not show an automatic install popup — use the menu.",
+    };
+  }
+  return {
+    tip: "Install from the address bar or browser menu:",
+    stepsHtml: `
+      <ol class="install-steps">
+        <li>Look for the install icon in the address bar, or open the browser menu.</li>
+        <li>Choose <strong>Install Chompass</strong> (or Install app).</li>
+        <li>Launch from your dock, taskbar, or app launcher.</li>
+      </ol>`,
+    note: "Firefox desktop has limited PWA install; bookmarking still works.",
+  };
+}
+
 function platformTip() {
   if (deferredPrompt) {
     return "Install Chompass for quicker access and a full-screen app.";
@@ -67,7 +167,37 @@ function platformTip() {
   if (isIos()) {
     return 'Add Chompass to your Home Screen: tap Share → "Add to Home Screen", then open from the icon (not a Safari tab).';
   }
+  if (isDuckDuckGo() && isAndroid()) {
+    return "DuckDuckGo cannot fully install PWAs. Use the menu for a shortcut, or open in Chrome / Firefox to install.";
+  }
+  if (isFirefox() && isAndroid()) {
+    return "Firefox has no in-page install button — use the menu (⋮) → Add to Home screen.";
+  }
   return "Install Chompass to your home screen or dock for easier access.";
+}
+
+/**
+ * Open a sheet with browser-specific install steps. Always actionable —
+ * Firefox / DuckDuckGo never get beforeinstallprompt.
+ * @returns {ReturnType<typeof openSheet>}
+ */
+export function showInstallHelpSheet() {
+  const { tip, stepsHtml, note } = installHelpContent();
+  const body = document.createElement("div");
+  body.className = "install-sheet-body";
+  body.innerHTML = `
+    <p style="margin:0;">${tip}</p>
+    ${stepsHtml}
+    ${note ? `<p class="install-note">${note}</p>` : ""}
+    <div class="btn-row" style="margin-top:0.75rem;">
+      <a class="btn btn--ghost" href="#/settings?section=install" data-howto>Full install guide</a>
+      <button type="button" class="btn btn--ghost" data-close>Got it</button>
+    </div>
+  `;
+  const sheet = openSheet({ title: "Add to Home Screen", body });
+  body.querySelector("[data-howto]")?.addEventListener("click", () => sheet.close());
+  body.querySelector("[data-close]")?.addEventListener("click", () => sheet.close());
+  return sheet;
 }
 
 /**
@@ -75,13 +205,14 @@ function platformTip() {
  */
 function fillBanner(banner) {
   const hasPrompt = !!deferredPrompt;
+  const actionLabel = hasPrompt ? "Install" : "How to add";
   banner.innerHTML = `
     <div class="install-banner__text">
       <span>${platformTip()}</span>
-      <a class="install-banner__how" href="#/settings?section=install">How?</a>
+      <a class="install-banner__how" href="#/settings?section=install">Full guide</a>
     </div>
     <div class="install-banner__actions">
-      ${hasPrompt ? `<button type="button" class="btn btn--primary install-banner__install">Install</button>` : ""}
+      <button type="button" class="btn btn--primary install-banner__install">${actionLabel}</button>
       <button type="button" class="install-banner__dismiss" aria-label="Dismiss">✕</button>
     </div>
   `;
@@ -115,9 +246,16 @@ export function maybeShowInstallBanner() {
   document.body.appendChild(banner);
 }
 
-/** @returns {Promise<boolean>} */
+/**
+ * Try Chromium's deferred install prompt; otherwise open browser-specific help
+ * so the button never silently does nothing (Firefox / DuckDuckGo Android).
+ * @returns {Promise<boolean>} true if the OS install UI accepted
+ */
 export async function promptInstall() {
-  if (!deferredPrompt) return false;
+  if (!deferredPrompt) {
+    showInstallHelpSheet();
+    return false;
+  }
   const ev = deferredPrompt;
   deferredPrompt = null;
   try {
@@ -131,7 +269,9 @@ export async function promptInstall() {
     maybeShowInstallBanner();
     return false;
   } catch {
+    // Prompt can fail or be unavailable after capture; fall back to help.
     maybeShowInstallBanner();
+    showInstallHelpSheet();
     return false;
   }
 }
@@ -147,34 +287,19 @@ export function maybeShowPostOnboardingInstallSheet() {
   window.setTimeout(() => {
     if (isStandalone()) return;
 
+    const { tip, stepsHtml, note } = installHelpContent();
     const body = document.createElement("div");
     body.className = "install-sheet-body";
 
-    let tip = "Add Chompass to your home screen or dock so it opens like an app.";
-    if (isIosNonSafari()) {
-      tip =
-        "On iOS, only Safari can install home-screen web apps — this browser cannot, so no install option appears here. Open Chompass in Safari to install it:";
-    } else if (isIos()) {
-      tip =
-        'On iPhone or iPad: open in Safari → tap Share → "Add to Home Screen" → Add. Then launch from the home-screen icon (not a Safari tab). Chrome or Firefox on iOS still use Safari’s share sheet.';
-    } else if (deferredPrompt) {
-      tip = "Install Chompass for a full-screen icon on your home screen or dock.";
-    } else {
-      tip = "Use your browser menu → Install app / Add to Home screen. Steps differ by browser.";
+    let lead = tip;
+    if (deferredPrompt) {
+      lead = "Install Chompass for a full-screen icon on your home screen or dock.";
     }
 
     body.innerHTML = `
-      <p style="margin:0;">${tip}</p>
-      ${
-        isIos()
-          ? `<ol class="install-steps" style="margin:0.75rem 0 0;">
-              <li>Open Chompass in <strong>Safari</strong>.</li>
-              <li>Tap <strong>Share</strong>.</li>
-              <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
-              <li>Open from the home-screen icon for the full-screen app.</li>
-            </ol>`
-          : ""
-      }
+      <p style="margin:0;">${lead}</p>
+      ${deferredPrompt ? "" : stepsHtml}
+      ${!deferredPrompt && note ? `<p class="install-note">${note}</p>` : ""}
       <div class="btn-row" style="margin-top:0.4rem;">
         ${
           deferredPrompt
@@ -182,7 +307,7 @@ export function maybeShowPostOnboardingInstallSheet() {
             : ""
         }
         <a class="btn btn--ghost" href="#/settings?section=install" data-howto>How to install</a>
-        <button type="button" class="btn btn--ghost" data-skip>Not now</button>
+        <button type="button" class="btn btn--ghost" data-skip>${deferredPrompt ? "Not now" : "Got it"}</button>
       </div>
     `;
 

@@ -1863,6 +1863,91 @@ form.entry-form > button.btn--primary,
 .onboarding-plan-macro--carbs .onboarding-plan-macro__value { color: var(--carbs); }
 .onboarding-plan-macro--fat .onboarding-plan-macro__value { color: var(--fat); }
 
+.onboarding-pace {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.onboarding-pace__readout {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.onboarding-pace__value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.onboarding-pace__unit {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.onboarding-pace__icons {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.onboarding-pace__icon {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+}
+
+.onboarding-pace__icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.onboarding-pace__icon-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.onboarding-pace__icon.is-selected {
+  color: var(--teal);
+}
+
+.onboarding-pace__slider {
+  width: 100%;
+  accent-color: var(--teal);
+}
+
+.onboarding-pace__card {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.onboarding-pace__eta {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.onboarding-pace__eta strong {
+  color: var(--teal);
+}
+
+.onboarding-pace__caption {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
 .onboarding-skip {
   background: none;
   border: 0;

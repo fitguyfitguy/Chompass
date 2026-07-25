@@ -56,6 +56,26 @@ const BUILD_ITEMS = [
 
 const BACK_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
 
+const PACE_KG_BY_INDEX = [0.25, 0.5, 1.0];
+const PACE_ICONS = [
+  { label: "Slow", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5zM9.8 21l1-4.4-2.1-2 .6-3.4c1 1.2 2.6 2 4.3 2v-2c-1.5 0-2.7-.7-3.4-1.8l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L2 8.3V13h2V9.6l1.8-.7-1.6 8.1L8.3 21h1.5z"/></svg>` },
+  { label: "Recommended", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5zM9.9 19l-1.5 2H6l2.3-3.4-1-4.7-1.4 1.2L3 16.5 1.6 15l2.9-2.9 3.1-1 1.7-2.7c.3-.5.9-.8 1.5-.7l4.2.7v2l-3.6-.6-1 1.6 3.9 1.6-1 6h-2z"/></svg>` },
+  { label: "Fast", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 21 15 12H10.5L13.5 3 9 11.5h4.5L11 21z"/></svg>` },
+];
+
+/** @param {number} kg */
+function paceIndexFromKg(kg) {
+  if (Math.abs(kg - PACE_KG_BY_INDEX[0]) < 0.01) return 0;
+  if (Math.abs(kg - PACE_KG_BY_INDEX[2]) < 0.01) return 2;
+  return 1;
+}
+
+const PACE_CAPTIONS = [
+  "Slower and easier to sustain long-term.",
+  "A steady, well-rounded pace for most people.",
+  "Faster progress, but harder to stick with.",
+];
+
 export class OnboardingView extends HTMLElement {
   constructor() {
     super();
@@ -190,6 +210,20 @@ export class OnboardingView extends HTMLElement {
         this.render();
       });
     });
+
+    if (id === "goalDetails") {
+      const slider = /** @type {HTMLInputElement|null} */ (this.querySelector("#weeklyChangeKg"));
+      slider?.addEventListener("input", () => {
+        this.draft.weeklyChangeKg = PACE_KG_BY_INDEX[Number(slider.value)] ?? 0.5;
+        this.refreshPaceUI();
+      });
+      const goalWeight = /** @type {HTMLInputElement|null} */ (this.querySelector("#goalWeightKg"));
+      goalWeight?.addEventListener("input", () => {
+        const v = goalWeight.value;
+        this.draft.goalWeightKg = v ? Number(v) : null;
+        this.refreshPaceUI();
+      });
+    }
 
     if (id === "ai") {
       const providerSel = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ob-ai-provider"));
@@ -380,11 +414,10 @@ export class OnboardingView extends HTMLElement {
       if (d.goal === "maintain") {
         return `<p style="color:var(--muted);margin:0;">You'll maintain around your current weight. You can set a goal weight later in Settings.</p>`;
       }
-      return `<div class="field-row">
-        <div class="field"><label for="weeklyChangeKg">Pace (kg/week)</label>
-          <input id="weeklyChangeKg" type="number" step="0.05" min="0.05" max="1.5" value="${d.weeklyChangeKg}" /></div>
-        <div class="field"><label for="goalWeightKg">Goal weight (kg)</label>
-          <input id="goalWeightKg" type="number" step="0.1" min="0" value="${d.goalWeightKg ?? ""}" placeholder="optional" /></div>
+      return `${this.paceSelectorHtml()}
+      <div class="field" style="margin-top:1.1rem;">
+        <label for="goalWeightKg">Goal weight (kg)</label>
+        <input id="goalWeightKg" type="number" step="0.1" min="0" value="${d.goalWeightKg ?? ""}" placeholder="optional" />
       </div>`;
     }
     if (id === "ai") {
@@ -467,6 +500,53 @@ export class OnboardingView extends HTMLElement {
     return "";
   }
 
+  /** Estimated-days-to-goal + caption for the current draft pace. */
+  paceInfo() {
+    const d = this.draft;
+    const idx = paceIndexFromKg(d.weeklyChangeKg);
+    const kg = PACE_KG_BY_INDEX[idx];
+    const diffKg = Math.abs((d.goalWeightKg ?? d.weightKg) - d.weightKg);
+    const estimatedDays = kg > 0 ? Math.round((diffKg / kg) * 7) : 0;
+    return { idx, kg, estimatedDays, caption: PACE_CAPTIONS[idx] };
+  }
+
+  paceSelectorHtml() {
+    const { idx, kg, estimatedDays, caption } = this.paceInfo();
+    return `
+      <div class="onboarding-pace">
+        <div class="onboarding-pace__readout">
+          <span class="onboarding-pace__value" id="pace-value">${kg.toFixed(2)}</span>
+          <span class="onboarding-pace__unit">kg / week</span>
+        </div>
+        <div class="onboarding-pace__icons" id="pace-icons">
+          ${PACE_ICONS.map(
+            (p, i) => `<span class="onboarding-pace__icon ${i === idx ? "is-selected" : ""}" data-pace-icon="${i}">
+              ${p.svg}<span class="onboarding-pace__icon-label">${p.label}</span>
+            </span>`
+          ).join("")}
+        </div>
+        <input id="weeklyChangeKg" class="onboarding-pace__slider" type="range" min="0" max="2" step="1" value="${idx}" aria-label="Weekly pace" />
+        <div class="onboarding-pace__card" id="pace-card">
+          <p class="onboarding-pace__eta">Reach your goal in <strong id="pace-days">${estimatedDays}</strong> days</p>
+          <p class="onboarding-pace__caption" id="pace-caption">${caption}</p>
+        </div>
+      </div>`;
+  }
+
+  /** Update the pace readout/icons/card in place without a full re-render (keeps focus on inputs). */
+  refreshPaceUI() {
+    const { idx, kg, estimatedDays, caption } = this.paceInfo();
+    const value = this.querySelector("#pace-value");
+    if (value) value.textContent = kg.toFixed(2);
+    this.querySelectorAll("[data-pace-icon]").forEach((el) => {
+      el.classList.toggle("is-selected", Number(el.getAttribute("data-pace-icon")) === idx);
+    });
+    const days = this.querySelector("#pace-days");
+    if (days) days.textContent = String(estimatedDays);
+    const cap = this.querySelector("#pace-caption");
+    if (cap) cap.textContent = caption;
+  }
+
   collect() {
     const val = (id) => /** @type {HTMLInputElement|HTMLSelectElement|null} */ (this.querySelector(`#${id}`))?.value;
     if (this.querySelector("#birthday")) {
@@ -494,10 +574,7 @@ export class OnboardingView extends HTMLElement {
       const v = val("goalBodyFatPercentage");
       this.draft.goalBodyFatPercentage = v ? Number(v) / 100 : null;
     }
-    if (this.querySelector("#weeklyChangeKg")) {
-      const v = val("weeklyChangeKg");
-      this.draft.weeklyChangeKg = v ? Number(v) : 0.5;
-    }
+    // weeklyChangeKg is kept in sync live by the pace slider's `input` handler.
     if (this.querySelector("#goalWeightKg")) {
       const v = val("goalWeightKg");
       this.draft.goalWeightKg = v ? Number(v) : null;
