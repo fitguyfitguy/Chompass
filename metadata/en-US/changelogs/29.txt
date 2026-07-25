@@ -1,0 +1,4 @@
+• Opt-in Portion size check (Beta) for photo food entries — Small/Regular/Large/Restaurant chips when the estimate looks uncertain
+• Onboarding can resume after leaving mid-setup
+• Diary import accepts older format 1.0 (macros-only) exports from Fud AI / early NoFUD
+• Accuracy docs and PWA/site polish
