@@ -39,10 +39,17 @@ Many Chromium browsers do not show an automatic install popup — use the menu. 
 2. Choose **Install Chompass** (or Install app).
 3. Launch from your dock, taskbar, or app launcher.
 
-#### Firefox
+#### Firefox (Android)
 
-- **Android:** menu → **Add to Home screen**.
-- **Desktop:** bookmark the page; full PWA install is limited compared with Chromium.
+1. Tap the Firefox menu (⋮).
+2. Tap **Add to Home screen** or **Add app to Home screen**.
+3. Confirm, then open from the new icon.
+
+Firefox has no in-page install popup. If the menu item does nothing, set a Home app under Android Settings → Apps → Default apps (it must not be “None”). Desktop Firefox: bookmark the page; full PWA install is limited.
+
+#### DuckDuckGo (Android)
+
+DuckDuckGo does not fully support PWA install. Menu → **Add to Home** may create a shortcut only, and on some launchers it does nothing. For a full-screen installed app, open [the web app](https://chompass.app/app/) in Chrome, Edge, or Brave instead.
 
 Already installed? Open Chompass from the home-screen or dock icon (not a normal browser tab) for the full-screen shell. In the app: **Settings → Install app**.
 

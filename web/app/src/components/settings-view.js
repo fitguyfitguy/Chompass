@@ -863,10 +863,21 @@ export class SettingsView extends HTMLElement {
   }
 
   async renderInstall() {
+    const { promptInstall, hasDeferredInstallPrompt, isStandalone } = await import("../lib/install-prompt.js");
+    const already = isStandalone();
     this.innerHTML = `
       ${subpageBar("Install app", { backHref: "#/settings" })}
       <div class="card">
-        <p style="margin:0;">Install Chompass to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
+        <p style="margin:0 0 0.75rem;">Install Chompass to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
+        ${
+          already
+            ? `<p class="install-note" style="margin:0;">You are already running the installed app.</p>`
+            : `<div class="btn-row">
+                <button type="button" class="btn btn--primary" id="install-cta">${
+                  hasDeferredInstallPrompt() ? "Install" : "Add to Home Screen"
+                }</button>
+              </div>`
+        }
       </div>
       <div class="card">
         <h2 class="chart-title">iPhone / iPad (Safari)</h2>
@@ -885,7 +896,24 @@ export class SettingsView extends HTMLElement {
           <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
           <li>Confirm. Open Chompass from the new icon afterward.</li>
         </ol>
-        <p class="install-note">Many Chromium browsers do not show an automatic install popup — use the menu.</p>
+        <p class="install-note">Many Chromium browsers do not show an automatic install popup — use the menu. An Install banner may also appear when the browser allows it.</p>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">Firefox (Android)</h2>
+        <ol class="install-steps">
+          <li>Tap the Firefox menu (⋮).</li>
+          <li>Tap <strong>Add to Home screen</strong> or <strong>Add app to Home screen</strong>.</li>
+          <li>Confirm, then open from the new icon.</li>
+        </ol>
+        <p class="install-note">Firefox has no in-page install popup. If the menu item does nothing, set a Home app under Android Settings → Apps → Default apps (it must not be “None”). Desktop Firefox: bookmark the page; full PWA install is limited.</p>
+      </div>
+      <div class="card">
+        <h2 class="chart-title">DuckDuckGo (Android)</h2>
+        <ol class="install-steps">
+          <li>Menu → <strong>Add to Home</strong> creates a shortcut only (not a full PWA).</li>
+          <li>If that does nothing, your launcher may block shortcuts — try Chrome or Firefox instead.</li>
+        </ol>
+        <p class="install-note">For a full-screen installed app, open this page in Chrome, Edge, or Brave, then use Install app / Add to Home screen.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">Desktop (Chrome / Edge)</h2>
@@ -894,19 +922,15 @@ export class SettingsView extends HTMLElement {
           <li>Choose <strong>Install Chompass</strong> (or Install app).</li>
           <li>Launch from your dock, taskbar, or app launcher.</li>
         </ol>
-      </div>
-      <div class="card">
-        <h2 class="chart-title">Firefox</h2>
-        <ol class="install-steps">
-          <li><strong>Android:</strong> menu → <strong>Add to Home screen</strong>.</li>
-          <li><strong>Desktop:</strong> bookmark the page; full PWA install is limited compared with Chromium.</li>
-        </ol>
         <p class="install-note">Chromium-based browsers work best for install, camera barcode, and speech. Meal photo and barcode also work with desktop webcams over HTTPS.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">Already installed?</h2>
         <p style="margin:0;">Open Chompass from the home-screen or dock icon (not a normal browser tab) for the full-screen shell and offline app assets.</p>
       </div>`;
+    this.querySelector("#install-cta")?.addEventListener("click", () => {
+      void promptInstall();
+    });
     bindSubpageBack(this, "#/settings");
   }
 
