@@ -4,9 +4,21 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-07-25
+
+### Added
+
+- Opt-in **Portion size check (Beta)** for photo food entries: when the estimate looks uncertain, a Small / Regular / Large / Restaurant-size chip row appears; answering re-analyzes with that context (default off in Settings).
+- Onboarding draft persistence so leaving mid-setup can resume later (Android).
+- Accuracy documentation (`docs/ACCURACY.md`) and site copy explaining typed vs photo AI logging performance.
+
 ### Fixed
 
 - Diary JSON import accepts legacy format version `1.0` (macros-only) as well as `1.1`, so older Fud AI / early NoFUD exports restore in Chompass.
+
+### Changed
+
+- PWA onboarding pace UI and service-worker shell cache bump; marketing site header/nav responsiveness and lightweight site shell on pages.
 
 ## [3.0.0] - 2026-07-24
 
