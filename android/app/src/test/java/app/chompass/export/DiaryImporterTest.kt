@@ -90,7 +90,7 @@ class DiaryImporterTest {
     }
 
     @Test
-    fun rejectsLegacyFormat10() {
+    fun acceptsLegacyFormat10MacrosOnly() {
         val json = """
             {
               "export": {
@@ -120,7 +120,59 @@ class DiaryImporterTest {
               }]
             }
         """.trimIndent()
-        assertEquals(DiaryImportResult.UnsupportedFormat, DiaryImporter.parse(json, zone))
+        val result = DiaryImporter.parse(json, zone)
+        assertTrue(result is DiaryImportResult.Success)
+        val entry = (result as DiaryImportResult.Success).entries.single()
+        assertEquals("Oats", entry.name)
+        assertEquals(100, entry.calories)
+        assertEquals(10.0, entry.protein, 0.0)
+        assertEquals(5.0, entry.carbs, 0.0)
+        assertEquals(2.0, entry.fat, 0.0)
+        assertEquals(80.0, entry.servingSizeGrams)
+        assertEquals(MealType.BREAKFAST, entry.mealType)
+        assertEquals(FoodSource.MANUAL, entry.source)
+        assertEquals(null, entry.fiber)
+        assertEquals(null, entry.sodium)
+    }
+
+    @Test
+    fun acceptsNoFudAppStampFormat11() {
+        val json = """
+            {
+              "export": {
+                "app": "NoFUD",
+                "format_version": "1.1",
+                "date_range": { "start": "2026-07-20", "end": "2026-07-20" }
+              },
+              "days": [{
+                "date": "2026-07-20",
+                "totals": { "calories": 200, "protein_g": 22.0, "carbs_g": 0.0, "fat_g": 12.0 },
+                "targets": { "calories": 2000, "protein_g": 150.0, "carbs_g": 200.0, "fat_g": 60.0 },
+                "remaining": { "calories": 1800, "protein_g": 128.0, "carbs_g": 200.0, "fat_g": 48.0 },
+                "meals": [{
+                  "type": "lunch",
+                  "items": [{
+                    "name": "Salmon",
+                    "quantity_g": 150.0,
+                    "calories": 200,
+                    "protein_g": 22.0,
+                    "carbs_g": 0.0,
+                    "fat_g": 12.0,
+                    "fiber_g": 1.2,
+                    "time": "12:30",
+                    "source": "ai_estimated",
+                    "note": null
+                  }]
+                }]
+              }]
+            }
+        """.trimIndent()
+        val result = DiaryImporter.parse(json, zone)
+        assertTrue(result is DiaryImportResult.Success)
+        val entry = (result as DiaryImportResult.Success).entries.single()
+        assertEquals("Salmon", entry.name)
+        assertEquals(1.2, entry.fiber)
+        assertEquals(MealType.LUNCH, entry.mealType)
     }
 
     @Test
@@ -132,7 +184,11 @@ class DiaryImporterTest {
               "days": []
             }
         """.trimIndent()
-        assertEquals(DiaryImportResult.UnsupportedFormat, DiaryImporter.parse(json, zone))
+        val result = DiaryImporter.parse(json, zone)
+        assertTrue(result is DiaryImportResult.UnsupportedFormat)
+        assertTrue(
+            (result as DiaryImportResult.UnsupportedFormat).reason.contains("format_version"),
+        )
     }
 
     @Test
