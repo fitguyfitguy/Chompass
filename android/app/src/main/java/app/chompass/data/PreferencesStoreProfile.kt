@@ -7,6 +7,7 @@ import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.UserProfile
+import app.chompass.ui.onboarding.OnboardingDraft
 import app.chompass.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -26,6 +27,19 @@ internal suspend fun PreferencesStore.setUserProfileImpl(profile: UserProfile) {
 internal val PreferencesStore.hasCompletedOnboardingImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ONBOARDING_COMPLETED] ?: false }
 internal suspend fun PreferencesStore.setOnboardingCompletedImpl(value: Boolean) {
         dataStore.edit { it[Keys.ONBOARDING_COMPLETED] = value }
+    }
+
+internal val PreferencesStore.onboardingDraftImpl: Flow<OnboardingDraft?> get() = dataStore.data.map { prefs ->
+        prefs[Keys.ONBOARDING_DRAFT]?.let { runCatching { json.decodeFromString<OnboardingDraft>(it) }.getOrNull() }
+    }
+internal suspend fun PreferencesStore.setOnboardingDraftImpl(draft: OnboardingDraft?) {
+        dataStore.edit {
+            if (draft == null) {
+                it.remove(Keys.ONBOARDING_DRAFT)
+            } else {
+                it[Keys.ONBOARDING_DRAFT] = json.encodeToString(OnboardingDraft.serializer(), draft)
+            }
+        }
     }
 
     // -- Units ------------------------------------------------------------

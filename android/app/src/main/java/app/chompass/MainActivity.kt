@@ -360,6 +360,7 @@ open class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             if (actions.resetOnboarding) {
                 app.container.prefs.setOnboardingCompleted(false)
+                app.container.prefs.setOnboardingDraft(null)
             }
             if (actions.seedTestData) container.testDataSeeder.seedYear()
             if (actions.seedBodyMetrics) container.testDataSeeder.seedBodyMetrics()

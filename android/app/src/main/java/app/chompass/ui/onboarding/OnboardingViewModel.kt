@@ -10,6 +10,7 @@ import app.chompass.models.AIProvider
 import app.chompass.models.DietMode
 import app.chompass.models.Gender
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.LocalDateSerializer
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
 import app.chompass.services.KetoCarbRecommendationService
@@ -19,17 +20,76 @@ import app.chompass.services.ai.GeminiClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.ZoneId
 
+@Serializable
 enum class OnboardingStep {
     WELCOME, GENDER, BIRTHDAY, HEIGHT_WEIGHT, BODY_FAT,
     ACTIVITY, GOAL, DIET_MODE, GOAL_WEIGHT, GOAL_SPEED,
     NOTIFICATIONS, HEALTH_CONNECT, PROVIDER,
     BUILDING_PLAN, PLAN_READY
 }
+
+/** Snapshot of in-progress onboarding answers, persisted to DataStore so the flow can resume
+ *  after Android kills the backgrounded process (e.g. the user switches away to copy an API
+ *  key) instead of restarting from [OnboardingStep.WELCOME]. Excludes [OnboardingState.apiKey]
+ *  (already persisted separately via [AppContainer.keyStore]) and other transient UI-only
+ *  fields (validation/submitting flags). */
+@Serializable
+data class OnboardingDraft(
+    val step: OnboardingStep,
+    val gender: Gender,
+    @Serializable(with = LocalDateSerializer::class)
+    val birthday: LocalDate,
+    val heightCm: Int,
+    val weightKg: Double,
+    val bodyFatPercentage: Double? = null,
+    val goalBodyFatPercentage: Double? = null,
+    val activity: ActivityLevel,
+    val goal: WeightGoal,
+    val dietMode: DietMode,
+    val ketoCarbMode: KetoCarbMode,
+    val ketoCarbManualTarget: Int? = null,
+    val goalWeightKg: Double,
+    val weeklyChangeKg: Double,
+    val notificationsEnabled: Boolean,
+    val healthConnectEnabled: Boolean,
+    val aiProvider: AIProvider,
+    val aiModel: String,
+    val customCalories: Int? = null,
+    val customProtein: Int? = null,
+    val customCarbs: Int? = null,
+    val customFat: Int? = null,
+)
+
+private fun OnboardingState.toDraft() = OnboardingDraft(
+    step = step, gender = gender, birthday = birthday, heightCm = heightCm, weightKg = weightKg,
+    bodyFatPercentage = bodyFatPercentage, goalBodyFatPercentage = goalBodyFatPercentage,
+    activity = activity, goal = goal, dietMode = dietMode, ketoCarbMode = ketoCarbMode,
+    ketoCarbManualTarget = ketoCarbManualTarget, goalWeightKg = goalWeightKg, weeklyChangeKg = weeklyChangeKg,
+    notificationsEnabled = notificationsEnabled, healthConnectEnabled = healthConnectEnabled,
+    aiProvider = aiProvider, aiModel = aiModel,
+    customCalories = customCalories, customProtein = customProtein, customCarbs = customCarbs, customFat = customFat,
+)
+
+private fun OnboardingState.applyDraft(draft: OnboardingDraft) = copy(
+    step = draft.step, gender = draft.gender, birthday = draft.birthday, heightCm = draft.heightCm,
+    weightKg = draft.weightKg, bodyFatPercentage = draft.bodyFatPercentage,
+    goalBodyFatPercentage = draft.goalBodyFatPercentage,
+    activity = draft.activity, goal = draft.goal, dietMode = draft.dietMode, ketoCarbMode = draft.ketoCarbMode,
+    ketoCarbManualTarget = draft.ketoCarbManualTarget, goalWeightKg = draft.goalWeightKg,
+    weeklyChangeKg = draft.weeklyChangeKg,
+    notificationsEnabled = draft.notificationsEnabled, healthConnectEnabled = draft.healthConnectEnabled,
+    aiProvider = draft.aiProvider, aiModel = draft.aiModel,
+    customCalories = draft.customCalories, customProtein = draft.customProtein,
+    customCarbs = draft.customCarbs, customFat = draft.customFat,
+)
 
 data class OnboardingState(
     val step: OnboardingStep = OnboardingStep.WELCOME,
@@ -117,7 +177,24 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val heightMetric = container.prefs.heightUnit.first() == "cm"
             val weightMetric = container.prefs.weightUnit.first() == "kg"
-            _ui.value = _ui.value.copy(heightMetric = heightMetric, weightMetric = weightMetric)
+            val draft = container.prefs.onboardingDraft.first()
+            _ui.value = if (draft != null) {
+                // The API key itself isn't in the draft; reload it from the KeyStore so the
+                // user doesn't have to re-paste it after resuming.
+                val restoredKey = container.keyStore.apiKey(draft.aiProvider) ?: ""
+                _ui.value.applyDraft(draft).copy(
+                    heightMetric = heightMetric, weightMetric = weightMetric, apiKey = restoredKey,
+                )
+            } else {
+                _ui.value.copy(heightMetric = heightMetric, weightMetric = weightMetric)
+            }
+        }
+        // Persist the in-progress draft so onboarding can resume where the user left off if the
+        // OS reclaims memory and kills the process while the app is backgrounded.
+        viewModelScope.launch {
+            ui.drop(1).debounce(400).collect { state ->
+                container.prefs.setOnboardingDraft(state.toDraft())
+            }
         }
     }
 
@@ -363,6 +440,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             container.prefs.setHealthEnergyGoalsEnabled(true)
             container.prefs.setAdaptiveGoalsLastCheckDay(LocalDate.now().toString())
             container.prefs.setOnboardingCompleted(true)
+            container.prefs.setOnboardingDraft(null)
             onDone()
         }
     }
