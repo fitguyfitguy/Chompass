@@ -98,10 +98,12 @@ a:hover {
 
 .site-header__inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem 1rem;
   min-height: var(--header-h);
+  padding-block: 0.75rem;
 }
 
 .site-logo {
@@ -578,8 +580,10 @@ a:hover {
 }
 
 @media (max-width: 560px) {
-  .site-nav a:last-child {
-    display: none;
+  .site-nav {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.5rem 1.1rem;
   }
 
   .strip__list,
