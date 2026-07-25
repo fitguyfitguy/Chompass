@@ -98,7 +98,63 @@ test("grounding field passes through import->export untouched when present", () 
 
 test("rejects unsupported format_version", () => {
   const doc = { export: { app: "nofud", format_version: "0.9" }, days: [] };
-  assert.throws(() => importDiary(doc));
+  assert.throws(() => importDiary(doc), /format_version/);
+});
+
+test("accepts legacy format_version 1.0 macros-only", () => {
+  const doc = {
+    export: { app: "Fud AI", format_version: "1.0", date_range: { start: "2026-01-01", end: "2026-01-01" } },
+    days: [{
+      date: "2026-01-01",
+      totals: { calories: 100, protein_g: 10, carbs_g: 5, fat_g: 2 },
+      targets: { calories: 2000, protein_g: 150, carbs_g: 200, fat_g: 60 },
+      remaining: { calories: 1900, protein_g: 140, carbs_g: 195, fat_g: 58 },
+      meals: [{
+        type: "breakfast",
+        items: [{
+          name: "Oats", quantity_g: 80, calories: 100,
+          protein_g: 10, carbs_g: 5, fat_g: 2,
+          time: "08:00", source: "manually_edited", note: null,
+        }],
+      }],
+    }],
+  };
+  const entries = importDiary(doc, idGen);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].name, "Oats");
+  assert.equal(entries[0].calories, 100);
+  assert.equal(entries[0].proteinG, 10);
+  assert.equal(entries[0].mealType, "breakfast");
+});
+
+test("accepts NoFUD app stamp with format 1.1", () => {
+  const doc = {
+    export: { app: "NoFUD", format_version: DIARY_FORMAT_VERSION, date_range: { start: "2026-07-20", end: "2026-07-20" } },
+    days: [{
+      date: "2026-07-20",
+      totals: { calories: 200, protein_g: 22, carbs_g: 0, fat_g: 12 },
+      targets: { calories: 2000, protein_g: 150, carbs_g: 200, fat_g: 60 },
+      remaining: { calories: 1800, protein_g: 128, carbs_g: 200, fat_g: 48 },
+      meals: [{
+        type: "lunch",
+        items: [{
+          name: "Salmon", quantity_g: 150, calories: 200,
+          protein_g: 22, carbs_g: 0, fat_g: 12,
+          sugar_g: null, added_sugar_g: null, fiber_g: 1.2, saturated_fat_g: null,
+          monounsaturated_fat_g: null, polyunsaturated_fat_g: null, cholesterol_mg: null,
+          sodium_mg: null, potassium_mg: null, trans_fat_g: null, calcium_mg: null,
+          iron_mg: null, magnesium_mg: null, zinc_mg: null, vitamin_a_mcg: null,
+          vitamin_c_mg: null, vitamin_d_mcg: null, vitamin_b12_mcg: null, vitamin_e_mg: null,
+          vitamin_k_mcg: null, folate_mcg: null, omega3_g: null,
+          time: "12:30", source: "ai_estimated", note: null,
+        }],
+      }],
+    }],
+  };
+  const entries = importDiary(doc, idGen);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].name, "Salmon");
+  assert.equal(entries[0].fiberG, 1.2);
 });
 
 test("accepts app value case-insensitively", () => {

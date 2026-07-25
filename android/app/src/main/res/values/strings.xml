@@ -934,7 +934,7 @@
     <string name="import_diary_title">Import Food Diary JSON</string>
     <string name="import_diary_success_count">Imported %1$d food entries.</string>
     <string name="import_diary_empty">This file has no diary entries to import.</string>
-    <string name="import_diary_unsupported">Unsupported diary file. Export a JSON diary from FUD-AI or Chompass first.</string>
+    <string name="import_diary_unsupported">Unsupported diary file: %1$s. Use JSON format 1.0 or 1.1 from Fud AI, NoFUD, or Chompass.</string>
     <string name="import_diary_malformed">Invalid JSON: %1$s</string>
     <string name="import_diary_failed">Import failed: %1$s</string>
     <string name="export_range">Range</string>

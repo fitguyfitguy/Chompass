@@ -4,6 +4,10 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Diary JSON import accepts legacy format version `1.0` (macros-only) as well as `1.1`, so older Fud AI / early NoFUD exports restore in Chompass.
+
 ## [3.0.0] - 2026-07-24
 
 **NoFUD is now Chompass** (chompass.app). New name, new fork-compass logo, same app, same maintainer, same license.

@@ -134,8 +134,11 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     DiaryImportResult.EmptyPayload -> {
                         importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
                     }
-                    DiaryImportResult.UnsupportedFormat -> {
-                        importDiaryMessage = activityContext.getString(R.string.import_diary_unsupported)
+                    is DiaryImportResult.UnsupportedFormat -> {
+                        importDiaryMessage = activityContext.getString(
+                            R.string.import_diary_unsupported,
+                            result.reason,
+                        )
                     }
                     is DiaryImportResult.Malformed -> {
                         importDiaryMessage = activityContext.getString(

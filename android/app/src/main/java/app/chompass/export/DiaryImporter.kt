@@ -23,16 +23,17 @@ import java.time.ZoneId
 sealed class DiaryImportResult {
     data class Success(val entries: List<FoodEntry>) : DiaryImportResult()
     object EmptyPayload : DiaryImportResult()
-    object UnsupportedFormat : DiaryImportResult()
+    data class UnsupportedFormat(val reason: String) : DiaryImportResult()
     data class Malformed(val reason: String) : DiaryImportResult()
 }
 
 /**
- * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI) into [FoodEntry] rows.
- * Requires format version 1.1 (macros + micronutrients).
+ * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI / NoFUD) into [FoodEntry] rows.
+ * Accepts format 1.0 (macros only) and 1.1 (macros + micronutrients). Exports always use 1.1.
  */
 object DiaryImporter {
-    private const val SUPPORTED_VERSION = "1.1"
+    /** Versions accepted on import. New exports always stamp format 1.1. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1")
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -46,14 +47,25 @@ object DiaryImporter {
             return DiaryImportResult.Malformed(t.localizedMessage ?: "Invalid JSON")
         }
 
-        val export = root["export"]?.asObjectOrNull() ?: return DiaryImportResult.UnsupportedFormat
-        val app = export["app"]?.asString().orEmpty().trim().lowercase()
-        if (app != "chompass" && app != "fud ai" && app != "nofud") return DiaryImportResult.UnsupportedFormat
+        val export = root["export"]?.asObjectOrNull()
+            ?: return DiaryImportResult.UnsupportedFormat("missing export metadata")
+        val appRaw = export["app"]?.asString().orEmpty().trim()
+        val app = appRaw.lowercase()
+        if (app != "chompass" && app != "fud ai" && app != "nofud") {
+            return DiaryImportResult.UnsupportedFormat(
+                if (appRaw.isEmpty()) "missing app" else "unrecognized app \"$appRaw\"",
+            )
+        }
 
         val version = export["format_version"]?.asString()
-        if (version != SUPPORTED_VERSION) return DiaryImportResult.UnsupportedFormat
+        if (version == null || version !in SUPPORTED_IMPORT_VERSIONS) {
+            return DiaryImportResult.UnsupportedFormat(
+                "unsupported format_version \"${version ?: ""}\" (need 1.0 or 1.1)",
+            )
+        }
 
-        val days = root["days"]?.asArrayOrNull() ?: return DiaryImportResult.UnsupportedFormat
+        val days = root["days"]?.asArrayOrNull()
+            ?: return DiaryImportResult.UnsupportedFormat("missing days array")
         if (days.isEmpty()) return DiaryImportResult.EmptyPayload
 
         val collected = mutableListOf<FoodEntry>()

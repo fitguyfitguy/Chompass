@@ -7,6 +7,9 @@
 
 export const DIARY_FORMAT_VERSION = "1.1";
 
+/** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
+export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1"]);
+
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 const MICRO_FIELDS = [
   ["sugar_g", "sugarG"],
@@ -223,8 +226,8 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
   if (!exp || typeof exp.app !== "string") throw new UnsupportedFormatError("missing export.app");
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
-  if (exp.format_version !== DIARY_FORMAT_VERSION) {
-    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}"`);
+  if (!DIARY_IMPORT_VERSIONS.has(exp.format_version)) {
+    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0 or 1.1)`);
   }
 
   /** @type {import('./models.js').FoodEntry[]} */
