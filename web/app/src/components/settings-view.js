@@ -519,6 +519,7 @@ export class SettingsView extends HTMLElement {
             <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
             <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>Add active (sedentary budget)</option>
           </select>
+          <p class="nutrient-picker__hint">Add active: set Activity Level to everyday baseline (not peak training). Measured active burn is Android/Health Connect only; here the estimate is TDEE − BMR.</p>
         </div>
         <div class="field">
           <label for="adaptiveGoals">Adaptive goals (Progress)</label>

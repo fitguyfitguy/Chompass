@@ -107,7 +107,7 @@ sedentaryBudget = effectiveCalories − estimatedDailyActive
 | Net | Falls back to Static | Net intake (eaten − active) vs fixed goal |
 | Dual | Burn hint arc uses estimated active | Burn hint arc uses measured active |
 
-Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied.
+Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied. With Add Active, set **Activity Level** to everyday non-training life (not peak training days); measured Health Connect burn (or the PAL estimate when HC is off) covers workouts so they are not stacked on a high PAL.
 
 ### CAL-ADJ: Goal calorie adjustment
 
