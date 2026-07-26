@@ -13,7 +13,10 @@ cd Chompass
 direnv allow          # first time only
 devenv update         # first time only; downloads SDK (~1-2 GB without emulator)
 devenv shell          # or rely on direnv auto-load after allow
+# optional (also done on devenv enterShell): ./scripts/install_git_hooks.sh
 ```
+
+`devenv shell` / direnv sets `core.hooksPath` to `scripts/git-hooks` so commits cannot pick up Cursor `Co-authored-by` / `Made-with` trailers.
 
 Build (inside the devenv shell):
 
