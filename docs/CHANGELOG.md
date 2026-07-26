@@ -4,6 +4,16 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.1.2] - 2026-07-26
+
+### Fixed
+
+- Diary food-row swipe favorite and delete actions now use width-relative triggers, so they stay reachable on more screen sizes.
+
+### Changed
+
+- Maintainer tooling: ktlint in devenv, git commit-msg hooks, and F-Droid inclusion MR submit script targeting the existing fdroiddata MR.
+
 ## [3.1.1] - 2026-07-26
 
 ### Added
