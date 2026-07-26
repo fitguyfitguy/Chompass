@@ -978,7 +978,7 @@
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active calories to goal</string>
     <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed regardless of movement.</string>
-    <string name="home_calorie_mode_add_active_desc">Active burn extends the gauge and adds to your daily budget. Uses Health Connect when available; otherwise your activity-level estimate (TDEE minus BMR).</string>
+    <string name="home_calorie_mode_add_active_desc">Active burn extends the gauge and adds to your daily budget. Uses Health Connect when available; otherwise your activity-level estimate (TDEE minus BMR). Set Activity Level to your everyday baseline (not peak training days) so workouts aren\'t double-counted.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>
     <string name="home_steps_goal_format">Goal %1$s</string>
@@ -1153,7 +1153,7 @@
     <string name="settings_calc_tdee_formula">Sedentary: 1.2 · Light: 1.375 · Moderate: 1.465 · Active: 1.55 · Very Active: 1.725 · Extra Active: 1.9</string>
     <string name="settings_calc_sec_home_gauge">Home calorie gauge</string>
     <string name="settings_calc_home_gauge_name">Active burn on the home ring</string>
-    <string name="settings_calc_home_gauge_used">Home Display lets you add active burn to your goal, track net intake, or show a burn hint. Your activity-level estimate is TDEE minus BMR (the PAL multiplier portion). Add Active and Dual use that estimate when Health Connect is off; Net requires measured Health Connect burn. Add Active splits your stored goal into a sedentary base plus today\'s active layer so activity is not counted twice.</string>
+    <string name="settings_calc_home_gauge_used">Home Display lets you add active burn to your goal, track net intake, or show a burn hint. Your activity-level estimate is TDEE minus BMR (the PAL multiplier portion). Add Active and Dual use that estimate when Health Connect is off; Net requires measured Health Connect burn. Add Active splits your stored goal into a sedentary base plus today\'s active layer so activity is not counted twice. With Add Active, set Activity Level to everyday non-training life; measured or estimated active covers workouts so they are not stacked on a high PAL.</string>
     <string name="settings_calc_home_gauge_formula">estimated active = TDEE − BMR\nsedentary budget = calorie goal − estimated active\nAdd Active goal = sedentary budget + (measured or estimated active)</string>
     <string name="settings_calc_target_name">Maintenance &amp;amp; goal adjustment</string>
     <string name="settings_calc_target_used">Maintenance starts from your TDEE - or, when Energy Burn is on, your measured Health Connect burn (a 14-day Active + Basal average) instead of the formula estimate. The AI refines maintenance against your logged intake and weight trend, then applies your goal: a weekly weight-change rate becomes a daily calorie deficit (Lose) or surplus (Gain).</string>
