@@ -3,7 +3,7 @@
 Checklist and merge-request text for adding Chompass to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
 **Application ID:** `app.chompass`  
-**Current version:** 3.1.1 (versionCode 30)  
+**Current version:** 3.1.2 (versionCode 31)  
 **Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
 
