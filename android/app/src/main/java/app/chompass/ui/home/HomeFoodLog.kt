@@ -326,14 +326,18 @@ internal fun SwipeableFoodRow(
     onToggleFavorite: () -> Unit
 ) {
     val density = LocalDensity.current
-    val favoriteTriggerPx = with(density) { 150.dp.toPx() }
-    val deleteTriggerPx = with(density) { 280.dp.toPx() }
     var offsetPx by remember(entry.id) { mutableFloatStateOf(0f) }
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
     ) {
-        val maxSwipePx = with(density) { maxWidth.toPx() * 0.72f }
+        val rowWidthPx = with(density) { maxWidth.toPx() }
+        val maxSwipePx = rowWidthPx * 0.72f
+        // Triggers are fractions of the row width so they stay reachable inside
+        // maxSwipePx on every screen size (a fixed dp threshold can exceed the clamp
+        // on narrow phones and make the action impossible to fire).
+        val favoriteTriggerPx = rowWidthPx * 0.30f
+        val deleteTriggerPx = rowWidthPx * 0.55f
         Box(Modifier.fillMaxWidth()) {
             SwipeBackground(offsetPx = offsetPx, isFavorite = isFavorite)
             Box(
