@@ -4,6 +4,16 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-07-26
+
+### Added
+
+- Camera scale tip during food photo capture to help estimate portions more accurately (dismissible; remembered).
+
+### Changed
+
+- Clearer Active calorie / Activity Level copy (Health Connect, settings, PWA hint, calculation docs): Activity Level stays the everyday baseline when Add Active is on.
+
 ## [3.1.0] - 2026-07-25
 
 ### Added
