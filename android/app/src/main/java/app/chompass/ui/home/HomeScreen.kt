@@ -613,6 +613,8 @@ fun HomeScreen(container: AppContainer) {
 
     if (showCameraCapture) {
         InAppCameraCaptureDialog(
+            showScaleTip = !ui.hasSeenCameraScaleTip,
+            onScaleTipDismissed = vm::dismissCameraScaleTip,
             onCapture = { bytes ->
                 showCameraCapture = false
                 pendingCaptureImageBytes = (pendingCaptureImageBytes + bytes).take(10)

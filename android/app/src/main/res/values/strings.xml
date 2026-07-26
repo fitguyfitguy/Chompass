@@ -488,7 +488,12 @@
     <!-- Context note sheet -->
     <string name="context_note_title">Review photo</string>
     <string name="context_note_section">Add a note (optional)</string>
-    <string name="context_note_placeholder">e.g. no oil, extra cheese, large portion</string>
+    <string name="context_note_placeholder">e.g. 2 eggs scrambled in butter, grande oat milk latte, Chipotle chicken bowl no rice</string>
+    <string name="context_note_hint">Mention quantities, brands, or how it was cooked for a more accurate estimate.</string>
+
+    <!-- In-app camera scale tip -->
+    <string name="camera_scale_tip_message">Tip: include a fork, hand, or coin next to your food — it helps estimate portion size.</string>
+    <string name="camera_scale_tip_dismiss">Got it</string>
 
     <!-- Multi-photo capture sheet -->
     <string name="meal_photos_title">Meal photos</string>

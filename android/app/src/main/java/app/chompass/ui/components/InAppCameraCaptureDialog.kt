@@ -12,13 +12,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlashAuto
@@ -58,7 +63,9 @@ import java.io.File
 fun InAppCameraCaptureDialog(
     onCapture: (ByteArray) -> Unit,
     onDismiss: () -> Unit,
-    onOpenGallery: (() -> Unit)? = null
+    onOpenGallery: (() -> Unit)? = null,
+    showScaleTip: Boolean = false,
+    onScaleTipDismissed: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -73,6 +80,7 @@ fun InAppCameraCaptureDialog(
     var error by remember { mutableStateOf<String?>(null) }
     var flashMode by remember { mutableStateOf(ImageCapture.FLASH_MODE_OFF) }
     var hasFlashUnit by remember { mutableStateOf(false) }
+    var showScaleTipBanner by remember { mutableStateOf(showScaleTip) }
 
     DisposableEffect(lifecycleOwner) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -170,6 +178,35 @@ fun InAppCameraCaptureDialog(
                         flashIcon,
                         contentDescription = flashDesc,
                         tint = if (flashMode == ImageCapture.FLASH_MODE_OFF) Color.White else AppColors.Calorie
+                    )
+                }
+            }
+
+            if (showScaleTipBanner) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 74.dp, start = 24.dp, end = 24.dp)
+                        .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(16.dp))
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.camera_scale_tip_message),
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = stringResource(R.string.camera_scale_tip_dismiss),
+                        color = AppColors.Calorie,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.clickable {
+                            showScaleTipBanner = false
+                            onScaleTipDismissed()
+                        }
                     )
                 }
             }
