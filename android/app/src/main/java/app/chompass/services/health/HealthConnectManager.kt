@@ -36,7 +36,6 @@ import java.util.UUID
  *   users get a re-authorization prompt.
  */
 class HealthConnectManager(private val context: Context) {
-
     private val client: HealthConnectClient? by lazy {
         runCatching { HealthConnectClient.getOrCreate(context) }.getOrNull()
     }

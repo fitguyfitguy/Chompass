@@ -27,7 +27,6 @@ import java.util.Locale
  *   Body:   {model, messages: [{role, content: [{type, ...}]}], max_tokens/max_completion_tokens}
  */
 object OpenAICompatibleClient {
-
     private val jsonMedia = "application/json; charset=utf-8".toMediaType()
 
     suspend fun analyze(

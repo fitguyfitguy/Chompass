@@ -46,7 +46,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.components.isDarkTheme
 
 /**
  * Horizontal scrolling chips. Verbatim port of `promptChips`.
@@ -77,7 +77,7 @@ internal fun PromptChipRow(chips: List<String>, enabled: Boolean, onTap: (String
 @Composable
 private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) {
     val shape = RoundedCornerShape(20.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Box(
         Modifier

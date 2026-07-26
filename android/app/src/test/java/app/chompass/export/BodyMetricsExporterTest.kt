@@ -10,7 +10,6 @@ import org.junit.Test
 import java.time.Instant
 
 class BodyMetricsExporterTest {
-
     private val t0 = Instant.parse("2026-01-02T08:30:00Z")
     private val t1 = Instant.parse("2026-01-03T08:30:00Z")
 

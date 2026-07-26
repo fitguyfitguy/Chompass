@@ -3,7 +3,6 @@ package app.chompass.data
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.builtins.ListSerializer
 import app.chompass.models.WaterEntry
 import app.chompass.models.WaterQuickPresets
 
@@ -44,14 +43,8 @@ internal suspend fun PreferencesStore.setWaterQuickPresetsMlImpl(amountsMl: List
     }
 }
 
-internal val PreferencesStore.waterEntriesImpl: Flow<List<WaterEntry>> get() = dataStore.data.map { prefs ->
-    prefs[Keys.WATER_ENTRIES]?.let {
-        runCatching { json.decodeFromString(ListSerializer(WaterEntry.serializer()), it) }.getOrNull()
-    } ?: emptyList()
-}
+internal val PreferencesStore.waterEntriesImpl: Flow<List<WaterEntry>>
+    get() = listPref(Keys.WATER_ENTRIES, WaterEntry.serializer())
 
-internal suspend fun PreferencesStore.setWaterEntriesImpl(entries: List<WaterEntry>) {
-    dataStore.edit {
-        it[Keys.WATER_ENTRIES] = json.encodeToString(ListSerializer(WaterEntry.serializer()), entries)
-    }
-}
+internal suspend fun PreferencesStore.setWaterEntriesImpl(entries: List<WaterEntry>) =
+    setListPref(Keys.WATER_ENTRIES, WaterEntry.serializer(), entries)

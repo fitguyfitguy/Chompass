@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,14 +41,10 @@ import app.chompass.models.HomeTopNutrient
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.MacroKind
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.MacroChip
+import app.chompass.ui.components.isDarkTheme
 
 @Composable
 fun HomeTopNutrientPickerDialog(
@@ -166,7 +161,7 @@ private fun NutrientPickerRow(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(16.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     Row(
         Modifier
             .fillMaxWidth()

@@ -12,6 +12,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import app.chompass.models.UnitFormat
 
 /**
  * A write action the coach LLM proposed via a `propose_log_*` tool call, held
@@ -43,7 +44,6 @@ class CoachTools(
     private val foods: List<FoodEntry>,
     private val foodAnalysisService: FoodAnalysisService
 ) {
-
     /** Set by the most recent `propose_log_*` call in the current turn, if any.
      *  Capped at one pending proposal per turn — a later call simply replaces it. */
     var lastProposal: CoachProposal? = null
@@ -99,7 +99,7 @@ class CoachTools(
             arr.put(JSONObject().apply {
                 put("date", iso(e.date))
                 put("kg", round1(e.weightKg))
-                put("lbs", round1(e.weightKg * 2.20462))
+                put("lbs", round1(UnitFormat.kgToLbs(e.weightKg)))
             })
         }
         return JSONObject().apply {

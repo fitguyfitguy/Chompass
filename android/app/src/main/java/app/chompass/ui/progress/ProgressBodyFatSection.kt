@@ -25,19 +25,16 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.BodyFatEntry
 import app.chompass.ui.theme.AppColors
-import java.util.Locale
+import app.chompass.models.UnitFormat
 
 internal fun formatPercent(fraction: Double): String =
-    String.format(Locale.US, "%.1f%%", fraction * 100)
+    UnitFormat.percent(fraction * 100)
 
 internal fun formatPercentValue(percent: Double): String =
-    String.format(Locale.US, "%.1f%%", percent)
+    UnitFormat.percent(percent)
 
-internal fun formatPercentChange(deltaPercent: Double): String {
-    val roundedValue = if (Math.abs(deltaPercent) < 0.05) 0.0 else deltaPercent
-    val sign = if (roundedValue > 0) "+" else ""
-    return String.format(Locale.US, "%s%.1f%%", sign, roundedValue)
-}
+internal fun formatPercentChange(deltaPercent: Double): String =
+    "${UnitFormat.signedDelta(deltaPercent)}%"
 
 @Composable
 internal fun BodyFatSection(

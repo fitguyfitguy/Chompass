@@ -163,7 +163,6 @@ object AdaptiveGoalService {
 }
 
 object WeightAnalysisService {
-
     fun compute(
         weights: List<WeightEntry>,
         foods: List<FoodEntry>,

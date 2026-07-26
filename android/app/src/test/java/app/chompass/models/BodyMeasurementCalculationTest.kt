@@ -5,8 +5,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class BodyMeasurementCalculationTest {
-
-  @Test
+    @Test
   fun waistToHipRatio_requiresBothSites() {
     val m = BodyMeasurement(waistCm = 90.0, hipsCm = 100.0)
     assertEquals(0.9, m.waistToHipRatio!!, 0.001)

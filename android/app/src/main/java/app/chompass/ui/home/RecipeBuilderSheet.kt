@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,9 +50,9 @@ import app.chompass.models.MealType
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
 import app.chompass.ui.components.MacroChip
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
-import kotlin.math.roundToInt
 
 /**
  * Bottom sheet for building/editing a [Recipe]: a name, a meal type, and an
@@ -262,7 +261,7 @@ private fun IngredientRow(
     onScaleChange: (Double) -> Unit,
     onRemove: () -> Unit
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     Row(
         Modifier

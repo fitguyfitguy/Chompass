@@ -35,6 +35,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import app.chompass.models.UnitFormat
 
 @Composable
 internal fun AddWeightDialog(
@@ -63,10 +64,10 @@ internal fun AddWeightDialog(
                 unit = stringResource(R.string.unit_kg)
             )
         } else {
-            val lbs = (pickerKg * 2.20462).coerceIn(60.0, 500.0)
+            val lbs = (UnitFormat.kgToLbs(pickerKg)).coerceIn(60.0, 500.0)
             SplitDecimalWheelPicker(
                 value = lbs,
-                onValueChange = { newLbs -> pickerKg = newLbs / 2.20462 },
+                onValueChange = { newLbs -> pickerKg = UnitFormat.lbsToKg(newLbs) },
                 min = 60,
                 max = 500,
                 unit = stringResource(R.string.unit_lbs)

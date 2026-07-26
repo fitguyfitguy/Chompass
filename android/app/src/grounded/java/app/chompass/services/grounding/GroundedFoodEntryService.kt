@@ -41,7 +41,6 @@ class GroundedFoodEntryService(
     private val barcodeLookup: (suspend (String) -> FoodAnalysis)? = null,
     private val estimateFallback: (suspend (String) -> FoodAnalysis)? = null,
 ) {
-
     data class ComponentResolution(
         val component: RecognizedFoodComponent,
         val selected: GroundingCandidate?,

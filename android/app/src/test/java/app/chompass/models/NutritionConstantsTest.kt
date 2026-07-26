@@ -4,8 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class NutritionConstantsTest {
-
-  @Test
+    @Test
   fun kcalPerKg_matchesDocumented7700() {
     assertEquals(7700.0, NutritionConstants.KCAL_PER_KG_BODY_MASS, 0.0)
   }

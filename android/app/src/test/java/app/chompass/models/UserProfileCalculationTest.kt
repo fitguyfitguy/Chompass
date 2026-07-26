@@ -8,8 +8,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class UserProfileCalculationTest {
-
-  private fun profile(
+    private fun profile(
     gender: Gender = Gender.MALE,
     ageYears: Int = 30,
     heightCm: Double = 180.0,

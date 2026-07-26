@@ -8,7 +8,6 @@ import org.junit.Test
 import java.time.LocalDate
 
 class HomeCalorieDisplayTest {
-
     private val emptySnapshot = HomeActivitySnapshot(date = LocalDate.now())
 
     @Test

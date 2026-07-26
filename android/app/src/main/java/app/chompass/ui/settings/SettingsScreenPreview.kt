@@ -32,6 +32,7 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.theme.AppColors
 import java.util.Locale
 import androidx.compose.material.icons.outlined.Person
+import app.chompass.models.UnitFormat
 
 /** Static settings layout for release screenshot previews (top profile + goals sections). */
 @Composable
@@ -66,7 +67,7 @@ internal fun SettingsScreenPreviewContent(
                     SettingRow(
                         stringResource(R.string.settings_weight),
                         if (ui.weightMetric) String.format(Locale.US, "%.1f kg", p.weightKg)
-                        else String.format(Locale.US, "%.1f lbs", p.weightKg * 2.20462),
+                        else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(p.weightKg)),
                         icon = Icons.Outlined.MonitorWeight,
                     ) {}
                     HorizontalDivider()
@@ -88,7 +89,7 @@ internal fun SettingsScreenPreviewContent(
                         stringResource(R.string.body_measurements_title),
                         latestMeasurementWaistCm?.let { waist ->
                             if (ui.heightMetric) stringResource(R.string.settings_waist_cm_format, waist)
-                            else stringResource(R.string.settings_waist_in_format, waist / 2.54)
+                            else stringResource(R.string.settings_waist_in_format, UnitFormat.cmToInches(waist))
                         } ?: stringResource(R.string.settings_not_set),
                         icon = Icons.Outlined.Straighten,
                     ) {}
@@ -108,7 +109,7 @@ internal fun SettingsScreenPreviewContent(
                             stringResource(R.string.settings_weekly_change),
                             p.weeklyChangeKg?.let {
                                 if (ui.weightMetric) String.format(Locale.US, "%.2f kg/wk", it)
-                                else String.format(Locale.US, "%.2f lbs/wk", it * 2.20462)
+                                else String.format(Locale.US, "%.2f lbs/wk", UnitFormat.kgToLbs(it))
                             } ?: stringResource(R.string.settings_weekly_default),
                             icon = Icons.Outlined.Speed,
                         ) {}
@@ -117,7 +118,7 @@ internal fun SettingsScreenPreviewContent(
                             stringResource(R.string.settings_goal_weight),
                             p.goalWeightKg?.let {
                                 if (ui.weightMetric) String.format(Locale.US, "%.1f kg", it)
-                                else String.format(Locale.US, "%.1f lbs", it * 2.20462)
+                                else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(it))
                             } ?: stringResource(R.string.settings_not_set),
                             icon = Icons.AutoMirrored.Outlined.TrendingUp,
                         ) {}

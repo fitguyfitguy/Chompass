@@ -22,7 +22,6 @@ class CalculationGoldenScenariosTest(
     private val scenarioId: String,
     private val scenario: JSONObject,
 ) {
-
     @Test
     fun matchesSharedParityFixture() {
         if (scenario.optString("kind") == "averageDailyIntake") {

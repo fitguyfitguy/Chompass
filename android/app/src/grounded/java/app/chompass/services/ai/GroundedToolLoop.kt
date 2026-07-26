@@ -20,7 +20,6 @@ import java.util.Base64
  * [GroundingTools] and requires a successful [finalize_grounding] call.
  */
 object GroundedToolLoop {
-
     private val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
     const val MAX_TOOL_ROUNDS = 4
 

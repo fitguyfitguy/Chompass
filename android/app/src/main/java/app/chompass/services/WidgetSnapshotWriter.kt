@@ -1,13 +1,7 @@
 package app.chompass.services
 
 import android.content.Context
-import android.content.res.Configuration
-import android.os.Build
 import android.util.Log
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.glance.appwidget.updateAll
 import app.chompass.data.FoodRepository
@@ -15,7 +9,6 @@ import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.models.FoodEntry
 import app.chompass.models.HomeCalorieDisplay
-import app.chompass.models.HomeTopNutrient
 import app.chompass.models.UserProfile
 import app.chompass.models.WidgetNutrient
 import app.chompass.models.WidgetSnapshot

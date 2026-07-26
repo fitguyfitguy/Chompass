@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -61,13 +60,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -77,11 +74,11 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.data.FrequentFoodGroup
 import app.chompass.models.FoodEntry
-import app.chompass.models.MacroValueFormatter
 import app.chompass.models.Recipe
 import app.chompass.services.FoodImageStore
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.rememberFoodThumbnail
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import kotlinx.coroutines.launch
@@ -174,7 +171,7 @@ fun SavedMealsSheet(
             SavedTab.RECIPES -> Unit    // driven by `recipes` Flow above
         }
     }
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val searchSurface = if (isDark) Color.Transparent else Color(0xFFF2E9E3).copy(alpha = 0.78f)
 
@@ -345,7 +342,7 @@ fun SavedMealsSheet(
 
 @Composable
 private fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Row(
@@ -618,7 +615,7 @@ private fun SavedMealRow(
     onClick: () -> Unit,
     trailing: (@Composable () -> Unit)? = null
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Row(
@@ -707,7 +704,7 @@ private fun RecipeRow(
     onLog: () -> Unit,
     onEdit: () -> Unit
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Row(

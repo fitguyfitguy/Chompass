@@ -274,7 +274,6 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
         }
     }
 
-
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
             Modifier
@@ -353,7 +352,6 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
             Spacer(Modifier.height(BottomNavScrollPadding))
         }
     }
-
 
     if (showExportSheet) {
         ExportDiarySheet(

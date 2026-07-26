@@ -15,7 +15,6 @@ import java.util.Base64
  *   Body:   {systemInstruction?, contents: [{role?, parts: [...]}], tools?}
  */
 object GeminiClient {
-
     private val jsonMedia = "application/json; charset=utf-8".toMediaType()
 
     internal fun googleSearchTool(): JSONObject =

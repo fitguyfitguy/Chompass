@@ -74,17 +74,12 @@ internal suspend fun PreferencesStore.setServingUnitInferenceModeImpl(mode: Serv
         dataStore.edit { it[Keys.SERVING_UNIT_INFERENCE_MODE] = mode.storageKey }
     }
 
-internal val PreferencesStore.heuristicServingUnitSettingsImpl: Flow<HeuristicServingUnitSettings> get() = dataStore.data.map { prefs ->
-        prefs[Keys.HEURISTIC_SERVING_UNIT_SETTINGS]?.let {
-            runCatching { json.decodeFromString<HeuristicServingUnitSettings>(it) }.getOrNull()
-        } ?: HeuristicServingUnitSettings.Default
-    }
-internal suspend fun PreferencesStore.setHeuristicServingUnitSettingsImpl(settings: HeuristicServingUnitSettings) {
-        dataStore.edit {
-            it[Keys.HEURISTIC_SERVING_UNIT_SETTINGS] =
-                json.encodeToString(HeuristicServingUnitSettings.serializer(), settings)
-        }
-    }
+internal val PreferencesStore.heuristicServingUnitSettingsImpl: Flow<HeuristicServingUnitSettings>
+    get() = objectPref(Keys.HEURISTIC_SERVING_UNIT_SETTINGS, HeuristicServingUnitSettings.serializer())
+        .map { it ?: HeuristicServingUnitSettings.Default }
+
+internal suspend fun PreferencesStore.setHeuristicServingUnitSettingsImpl(settings: HeuristicServingUnitSettings) =
+    setObjectPref(Keys.HEURISTIC_SERVING_UNIT_SETTINGS, HeuristicServingUnitSettings.serializer(), settings)
 
     // -- Custom AI Instructions ------------------------------------------
     /** Free-form text appended to every AI request. Empty = disabled. */
@@ -165,5 +160,3 @@ internal suspend fun PreferencesStore.setOnDeviceDownloadOverWifiOnlyImpl(v: Boo
     /** Rollout gate: whether ON_DEVICE appears as a selectable provider. Default on since 1.14.0. */
 internal val PreferencesStore.onDeviceFeatureVisibleImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ON_DEVICE_FEATURE_VISIBLE] ?: true }
 internal suspend fun PreferencesStore.setOnDeviceFeatureVisibleImpl(v: Boolean) { dataStore.edit { it[Keys.ON_DEVICE_FEATURE_VISIBLE] = v } }
-
-

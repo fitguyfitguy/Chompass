@@ -41,7 +41,6 @@ import androidx.compose.material.icons.outlined.SelfImprovement
 import androidx.compose.material.icons.outlined.SettingsBrightness
 import androidx.compose.material.icons.outlined.SportsMartialArts
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -77,6 +76,7 @@ import app.chompass.ui.theme.AppThemeColor
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import app.chompass.models.UnitFormat
 
 internal enum class SettingsSheet {
     AI_PROVIDER, AI_MODEL, MAX_TOKENS, AI_READ_TIMEOUT, API_KEY, CUSTOM_BASE_URL, ON_DEVICE_MODEL, SPEECH_PROVIDER, SPEECH_LANGUAGE, SPEECH_KEY,
@@ -475,7 +475,7 @@ internal fun AdaptiveGoalsRow(
 
 internal fun feetInchesLabel(cm: Int): String {
     // Round to the nearest inch — truncating shows 5'6" for a 170 cm / 5'7" pick.
-    val totalInches = Math.round(cm / 2.54).toInt()
+    val totalInches = UnitFormat.cmToInchesRounded(cm)
     val feet = totalInches / 12
     val inches = totalInches % 12
     return "$feet' $inches\""

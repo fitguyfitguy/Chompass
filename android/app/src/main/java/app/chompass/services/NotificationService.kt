@@ -43,7 +43,6 @@ import java.util.Calendar
  * link to the battery-optimization exception screen.
  */
 class NotificationService(private val context: Context) {
-
     fun createChannels() {
         val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val streak = NotificationChannel(

@@ -24,9 +24,9 @@ import app.chompass.services.ondevice.OnDeviceLlmGateway
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
-import kotlin.math.roundToInt
 import okhttp3.OkHttpClient
 import java.util.Locale
+import app.chompass.models.UnitFormat
 
 // Shared lines of the entry-analysis prompts ("lean" wording, A/B-validated in
 // docs/benchmarks/food_accuracy — lean_units2 variant). Keep in sync with the
@@ -117,19 +117,19 @@ class FoodAnalysisService(
         val weight = if (weightMetric) {
             String.format(java.util.Locale.US, "%.1f kg", profile.weightKg)
         } else {
-            String.format(java.util.Locale.US, "%.1f lb", profile.weightKg * 2.20462)
+            String.format(java.util.Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
         }
         val height = if (heightMetric) {
             String.format(java.util.Locale.US, "%.0f cm", profile.heightCm)
         } else {
-            String.format(java.util.Locale.US, "%.1f in", profile.heightCm / 2.54)
+            String.format(java.util.Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
         }
         val bodyFat = profile.bodyFatPercentage
             ?.let { "${(it * 100).toInt()}%" }
             ?: "not set"
         val goalWeight = profile.goalWeightKg?.let { kg ->
             if (weightMetric) String.format(java.util.Locale.US, "%.1f kg", kg)
-            else String.format(java.util.Locale.US, "%.1f lb", kg * 2.20462)
+            else String.format(java.util.Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
         } ?: "not set"
         val healthTotalLine = energy.totalAverageCalories
             ?.let { "$it kcal/day from active + basal energy" }
@@ -187,12 +187,12 @@ class FoodAnalysisService(
         measurement: BodyMeasurement? = null
     ): GoalCalculation {
         val weight = if (weightMetric) String.format(Locale.US, "%.1f kg", profile.weightKg)
-            else String.format(Locale.US, "%.1f lb", profile.weightKg * 2.20462)
+            else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
         val height = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
-            else String.format(Locale.US, "%.1f in", profile.heightCm / 2.54)
+            else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
         val bodyFat = profile.bodyFatPercentage?.let { "${(it * 100).toInt()}%" } ?: "not set"
         val goalWeight = profile.goalWeightKg?.let { kg ->
-            if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", kg * 2.20462)
+            if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
         } ?: "not set"
         val weekly = profile.weeklyChangeKg?.let { String.format(Locale.US, "%.2f kg/week", it) } ?: "not set (maintain)"
         val bmrMethod = if (profile.usesBodyFatForBMR) "Katch-McArdle (body fat known and enabled)" else "Mifflin-St Jeor"
@@ -210,7 +210,7 @@ class FoodAnalysisService(
                 val obs = forecast.observedWeeklyChangeKg
                 if (obs != null) {
                     val obsStr = if (weightMetric) String.format(Locale.US, "%+.2f kg/week", obs)
-                        else String.format(Locale.US, "%+.2f lb/week", obs * 2.20462)
+                        else String.format(Locale.US, "%+.2f lb/week", UnitFormat.kgToLbs(obs))
                     val empiricalTdee = forecast.avgDailyCalories -
                         NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
                     appendLine("- Observed weight trend: $obsStr from ${forecast.weightEntriesUsed} weigh-ins")
@@ -297,7 +297,7 @@ class FoodAnalysisService(
         val weight = if (weightMetric) {
             String.format(Locale.US, "%.1f kg", profile.weightKg)
         } else {
-            String.format(Locale.US, "%.1f lb", profile.weightKg * 2.20462)
+            String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
         }
         val bodyFat = profile.bodyFatPercentage
             ?.let { "${(it * 100).toInt()}%" }

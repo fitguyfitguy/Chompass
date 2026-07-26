@@ -18,7 +18,6 @@ import app.chompass.services.ai.toFoodEntry
  * is a real end-to-end latency measurement, not a mock.
  */
 class EntryPerfBenchmark(private val container: AppContainer) {
-
     /**
      * Runs [count] analyses of the sample descriptions (cycled). When [persist]
      * is true each result is written via FoodRepository.addEntry so the save

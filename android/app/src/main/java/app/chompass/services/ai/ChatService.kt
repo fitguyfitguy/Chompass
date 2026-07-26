@@ -28,6 +28,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Base64
 import java.util.Locale
+import app.chompass.models.UnitFormat
 
 /**
  * Multi-turn coach chat with **tool calling** — Coach can fetch any slice of
@@ -45,7 +46,6 @@ class ChatService(
     private val foodAnalysisService: FoodAnalysisService,
     private val okHttp: OkHttpClient = FoodAnalysisService.defaultClient
 ) {
-
     /** Result of a coach turn: the assistant's reply text, plus at most one pending
      *  write action the model proposed (via a `propose_log_*` tool) awaiting user
      *  confirmation — see [CoachProposal]. Nothing is persisted at this point. */
@@ -123,11 +123,11 @@ class ChatService(
 
         fun wUnit(kg: Double): String =
             if (weightMetric) String.format(Locale.US, "%.1f kg", kg)
-            else String.format(Locale.US, "%.1f lbs", kg * 2.20462)
+            else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(kg))
 
         fun weekly(kg: Double): String =
             if (weightMetric) String.format(Locale.US, "%+.2f kg/week", kg)
-            else String.format(Locale.US, "%+.2f lbs/week", kg * 2.20462)
+            else String.format(Locale.US, "%+.2f lbs/week", UnitFormat.kgToLbs(kg))
 
         val bmrFormula = when {
             profile.usesBodyFatForBMR -> "Katch-McArdle (uses body fat %)"
@@ -156,7 +156,7 @@ class ChatService(
         lines.add("- Gender: ${profile.gender.name.lowercase()}")
         lines.add("- Age: ${profile.age}")
         val heightStr = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
-        else String.format(Locale.US, "%.1f in", profile.heightCm / 2.54)
+        else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
         lines.add("- Height: $heightStr")
         lines.add("- Current weight: ${wUnit(profile.weightKg)}")
         lines.add("- Activity: ${activityEnglish(profile.activityLevel)}")

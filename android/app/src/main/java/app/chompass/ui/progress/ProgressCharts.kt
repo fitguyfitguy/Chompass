@@ -46,6 +46,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import app.chompass.models.UnitFormat
 
 /** One plotted point on a trend chart — either a raw entry or the average of
  *  a date bucket when the range is too dense to draw every reading. Mirrors
@@ -184,7 +185,7 @@ internal fun pickXLabelIndices(n: Int, maxLabels: Int = 7): List<Int> {
 }
 
 internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, useMetric: Boolean): WeightChartModel {
-    val displayKg = { kg: Double -> if (useMetric) kg else kg * 2.20462 }
+    val displayKg = { kg: Double -> if (useMetric) kg else UnitFormat.kgToLbs(kg) }
     val displayWeights = entries.map { displayKg(it.weightKg) } + listOfNotNull(goalKg?.let(displayKg))
     val minW = displayWeights.min()
     val maxW = displayWeights.max()

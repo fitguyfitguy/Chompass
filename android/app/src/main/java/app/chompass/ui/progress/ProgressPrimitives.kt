@@ -1,6 +1,5 @@
 package app.chompass.ui.progress
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 
 enum class BodyMetric { WEIGHT, BODY_FAT }
@@ -112,7 +111,7 @@ internal fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Un
     val labelWeight = stringResource(R.string.progress_metric_weight)
     val labelBodyFat = stringResource(R.string.progress_metric_body_fat)
     val shape = RoundedCornerShape(18.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val trackFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     val shadowAlpha = if (isDark) 0.12f else 0.05f

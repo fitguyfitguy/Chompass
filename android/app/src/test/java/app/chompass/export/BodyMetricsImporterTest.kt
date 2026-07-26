@@ -7,7 +7,6 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 class BodyMetricsImporterTest {
-
     private val utc = ZoneId.from(ZoneOffset.UTC)
 
     private fun success(text: String, hint: String = "kg"): BodyMetricsImportResult.Success {

@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,8 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
@@ -60,6 +56,7 @@ import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.components.rememberDecodedBitmap
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
 
@@ -288,20 +285,6 @@ internal fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
             )
         }
     }
-}
-
-@Composable
-private fun rememberDecodedBitmap(bytes: ByteArray?): android.graphics.Bitmap? {
-    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = bytes) {
-        value = if (bytes == null) {
-            null
-        } else {
-            withContext(Dispatchers.Default) {
-                android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            }
-        }
-    }
-    return state.value
 }
 
 @Composable

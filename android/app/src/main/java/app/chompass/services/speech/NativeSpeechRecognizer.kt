@@ -27,7 +27,6 @@ sealed class SttEvent {
  * one-tap flow.
  */
 class NativeSpeechRecognizer(private val context: Context) {
-
     companion object {
         private const val ERROR_SERVER_DISCONNECTED = 11
         private const val ERROR_LANGUAGE_NOT_SUPPORTED = 12

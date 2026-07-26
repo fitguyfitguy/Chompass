@@ -7,7 +7,6 @@ import java.util.Locale
  * Keep in sync with `docs/benchmarks/food_accuracy/query_normalize.py`.
  */
 object QueryNormalizer {
-
     private val SYNONYMS = mapOf(
         "yoghurt" to "yogurt",
         "yoghourt" to "yogurt",

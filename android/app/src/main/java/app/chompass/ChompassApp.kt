@@ -49,7 +49,6 @@ import java.time.LocalDate
  * services are instantiated once and handed to ViewModels via [container].
  */
 class ChompassApp : Application() {
-
     lateinit var container: AppContainer
         private set
 

@@ -46,7 +46,6 @@ sealed class BodyMetricsImportResult {
  * corrected version of it — upserts in place instead of duplicating.
  */
 object BodyMetricsImporter {
-
     private const val MIN_WEIGHT_KG = 20.0
     private const val MAX_WEIGHT_KG = 500.0
     private const val MIN_BODY_FAT_PERCENT = 1.0

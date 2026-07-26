@@ -346,7 +346,6 @@ internal fun CalorieHero(
 // MacroCard moved to ui/components/MacroCard.kt as a verbatim port of
 // HomeComponents.swift's struct MacroCard. Imported above.
 
-
 @Composable
 internal fun ViewMoreButton() {
     Row(

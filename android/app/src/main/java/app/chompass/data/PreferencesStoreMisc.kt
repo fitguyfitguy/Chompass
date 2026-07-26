@@ -7,70 +7,46 @@ import app.chompass.services.health.DebugActivityDay
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.serialization.builtins.ListSerializer
 
 // -- Coach chat history ----------------------------------------------
-internal val PreferencesStore.chatHistoryImpl: Flow<List<ChatMessage>> get() = dataStore.data.map { prefs ->
-        prefs[Keys.CHAT_HISTORY]?.let {
-            runCatching { json.decodeFromString(ListSerializer(ChatMessage.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
+internal val PreferencesStore.chatHistoryImpl: Flow<List<ChatMessage>>
+    get() = listPref(Keys.CHAT_HISTORY, ChatMessage.serializer())
 
-internal suspend fun PreferencesStore.setChatHistoryImpl(history: List<ChatMessage>) {
-        dataStore.edit { it[Keys.CHAT_HISTORY] = json.encodeToString(ListSerializer(ChatMessage.serializer()), history) }
-    }
+internal suspend fun PreferencesStore.setChatHistoryImpl(history: List<ChatMessage>) =
+    setListPref(Keys.CHAT_HISTORY, ChatMessage.serializer(), history)
 
-    // -- Widget snapshot --------------------------------------------------
-internal val PreferencesStore.widgetSnapshotImpl: Flow<WidgetSnapshot?> get() = dataStore.data.map { prefs ->
-        prefs[Keys.WIDGET_SNAPSHOT]?.let {
-            runCatching { json.decodeFromString<WidgetSnapshot>(it) }.getOrNull()
-        }
-    }
+// -- Widget snapshot --------------------------------------------------
+internal val PreferencesStore.widgetSnapshotImpl: Flow<WidgetSnapshot?>
+    get() = objectPref(Keys.WIDGET_SNAPSHOT, WidgetSnapshot.serializer())
 
-internal suspend fun PreferencesStore.setWidgetSnapshotImpl(snapshot: WidgetSnapshot) {
-        dataStore.edit { it[Keys.WIDGET_SNAPSHOT] = json.encodeToString(WidgetSnapshot.serializer(), snapshot) }
-    }
+internal suspend fun PreferencesStore.setWidgetSnapshotImpl(snapshot: WidgetSnapshot) =
+    setObjectPref(Keys.WIDGET_SNAPSHOT, WidgetSnapshot.serializer(), snapshot)
 
-internal suspend fun PreferencesStore.clearWidgetSnapshotImpl() {
-        dataStore.edit { it.remove(Keys.WIDGET_SNAPSHOT) }
-    }
+internal suspend fun PreferencesStore.clearWidgetSnapshotImpl() = removePref(Keys.WIDGET_SNAPSHOT)
 
-    // -- Test data backup (used by TestDataSeeder during dev seeding) -------
-internal val PreferencesStore.testSeedBackupJsonImpl: Flow<String?> get() = dataStore.data.map { it[Keys.TEST_SEED_BACKUP] }
-internal suspend fun PreferencesStore.setTestSeedBackupJsonImpl(json: String) {
-        dataStore.edit { it[Keys.TEST_SEED_BACKUP] = json }
-    }
-internal suspend fun PreferencesStore.clearTestSeedBackupImpl() {
-        dataStore.edit { it.remove(Keys.TEST_SEED_BACKUP) }
-    }
+// -- Test data backup (used by TestDataSeeder during dev seeding) -------
+internal val PreferencesStore.testSeedBackupJsonImpl: Flow<String?>
+    get() = stringPref(Keys.TEST_SEED_BACKUP)
 
-  // -- Debug activity (TestDataSeeder synthetic steps / energy burn) --------
-internal suspend fun PreferencesStore.setDebugActivityDaysImpl(days: List<DebugActivityDay>) {
-        dataStore.edit {
-            it[Keys.DEBUG_ACTIVITY_DAYS] = json.encodeToString(
-                ListSerializer(DebugActivityDay.serializer()),
-                days
-            )
-        }
-    }
+internal suspend fun PreferencesStore.setTestSeedBackupJsonImpl(json: String) =
+    setStringPref(Keys.TEST_SEED_BACKUP, json)
 
-internal suspend fun PreferencesStore.clearDebugActivityDaysImpl() {
-        dataStore.edit { it.remove(Keys.DEBUG_ACTIVITY_DAYS) }
-    }
+internal suspend fun PreferencesStore.clearTestSeedBackupImpl() = removePref(Keys.TEST_SEED_BACKUP)
+
+// -- Debug activity (TestDataSeeder synthetic steps / energy burn) --------
+internal suspend fun PreferencesStore.setDebugActivityDaysImpl(days: List<DebugActivityDay>) =
+    setListPref(Keys.DEBUG_ACTIVITY_DAYS, DebugActivityDay.serializer(), days)
+
+internal suspend fun PreferencesStore.clearDebugActivityDaysImpl() = removePref(Keys.DEBUG_ACTIVITY_DAYS)
 
 internal suspend fun PreferencesStore.debugActivityDaysJsonImpl(): String? = dataStore.data.first()[Keys.DEBUG_ACTIVITY_DAYS]
 
-internal suspend fun PreferencesStore.debugActivityDayImpl(date: LocalDate): DebugActivityDay? {
-        val raw = dataStore.data.first()[Keys.DEBUG_ACTIVITY_DAYS] ?: return null
-        val days = runCatching {
-            json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), raw)
-        }.getOrNull() ?: return null
-        return days.firstOrNull { it.date == date.toString() }
-    }
+internal suspend fun PreferencesStore.debugActivityDayImpl(date: LocalDate): DebugActivityDay? =
+    dataStore.data.first()
+        .decodeList(Keys.DEBUG_ACTIVITY_DAYS, DebugActivityDay.serializer(), json)
+        .firstOrNull { it.date == date.toString() }
 
 // -- Wipe everything --------------------------------------------------
 internal suspend fun PreferencesStore.clearAllImpl() {
-        dataStore.edit { it.clear() }
-    }
-
+    dataStore.edit { it.clear() }
+}

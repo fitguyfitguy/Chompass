@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,13 +61,14 @@ import app.chompass.ui.theme.AppColors
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import app.chompass.models.UnitFormat
 
 private val measurementHistoryFmt: DateTimeFormatter =
     DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US).withZone(ZoneId.systemDefault())
 
 private fun displayLengthCm(context: android.content.Context, cm: Double, useMetric: Boolean): String =
     if (useMetric) String.format(Locale.US, "%.1f %s", cm, context.getString(R.string.unit_cm))
-    else String.format(Locale.US, "%.1f %s", cm / 2.54, context.getString(R.string.unit_in))
+    else String.format(Locale.US, "%.1f %s", UnitFormat.cmToInches(cm), context.getString(R.string.unit_in))
 
 /** Logged sites in display order, skipping any that weren't entered. */
 private fun measurementSiteList(context: android.content.Context, m: BodyMeasurement): List<Pair<String, Double>> = buildList {
@@ -180,7 +180,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
     val inUnit = stringResource(R.string.unit_in)
     fun displayValue(site: BodyMeasurement.Site): String {
         val cm = latest?.value(site) ?: return notSet
-        return if (heightMetric) String.format(Locale.US, "%.0f %s", cm, cmUnit) else String.format(Locale.US, "%.0f %s", cm / 2.54, inUnit)
+        return if (heightMetric) String.format(Locale.US, "%.0f %s", cm, cmUnit) else String.format(Locale.US, "%.0f %s", UnitFormat.cmToInches(cm), inUnit)
     }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
@@ -277,7 +277,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
         val current = latest?.value(site)
         var editorValue by remember(site) {
             mutableStateOf(
-                current?.let { if (heightMetric) Math.round(it).toInt() else Math.round(it / 2.54).toInt() }
+                current?.let { if (heightMetric) Math.round(it).toInt() else Math.round(UnitFormat.cmToInches(it)).toInt() }
                     ?: if (heightMetric) 80 else 32
             )
         }
@@ -289,9 +289,9 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 { metric ->
                     if (metric != heightMetric) {
                         editorValue = if (metric) {
-                            Math.round(editorValue * 2.54).toInt().coerceIn(10, 250)
+                            UnitFormat.inchesToCmRounded(editorValue).coerceIn(10, 250)
                         } else {
-                            Math.round(editorValue / 2.54).toInt().coerceIn(4, 100)
+                            UnitFormat.cmToInchesRounded(editorValue).coerceIn(4, 100)
                         }
                         scope.launch { container.prefs.setHeightUnit(if (metric) "cm" else "ftin") }
                     }
@@ -307,7 +307,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                     range = if (heightMetric) 10..250 else 4..100,
                     step = 1,
                     onSave = { v ->
-                        val cm = if (heightMetric) v.toDouble() else v * 2.54
+                        val cm = if (heightMetric) v.toDouble() else UnitFormat.inchesToCm(v.toDouble())
                         scope.launch { container.bodyMeasurementRepository.setValue(site, cm) }
                         editing = null
                     },

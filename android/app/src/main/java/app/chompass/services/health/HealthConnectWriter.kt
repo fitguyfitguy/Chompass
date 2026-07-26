@@ -20,7 +20,6 @@ import java.util.UUID
 internal class HealthConnectWriter(
     private val client: () -> HealthConnectClient?
 ) {
-
     suspend fun writeWeight(entry: WeightEntry): Boolean {
         val c = client() ?: return false
         val record = WeightRecord(

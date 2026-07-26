@@ -17,7 +17,6 @@ import java.util.UUID
  * [MealShare.link] with matching meal names/calories (no Android Uri / Robolectric).
  */
 class MealShareParityTest {
-
     @Test
     fun paritySampleRoundTripsThroughLinkPayload() {
         val sample = ParityFixtures.readJson("meal-share-sample.json")
