@@ -191,13 +191,16 @@ That push refreshes https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984 
 
 ## After inclusion
 
-For each release:
+For each release (and while the inclusion MR is still open):
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
 2. Update `docs/CHANGELOG.md` and `metadata/en-US/changelogs/<versionCode>.txt`
-3. Sync [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) (`CurrentVersion`, `CurrentVersionCode`, `Builds:` entry with commit hash)
+3. Sync [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml): replace the previous `Builds:` entry with the new version, set `commit:` to the **full** release commit hash (not the `vX.Y.Z` tag), update `CurrentVersion` / `CurrentVersionCode`
 4. Run `./scripts/package_release.sh --check-metadata`, tag `v<version>` on Codeberg, publish APKs
 5. Push upstream metadata to Codeberg `main` before fdroiddata picks up the tag
-6. F-Droid `checkupdates` may open a follow-up MR automatically; otherwise refresh with `./scripts/submit_fdroiddata_mr.sh`
+6. Refresh the **existing** fdroiddata MR — do not open a new one:
+   `GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh`
+   Canonical until merged: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984
+7. After inclusion is merged, F-Droid `checkupdates` may open follow-up update MRs automatically; use the submit script only to push metadata onto those update MRs or when checkupdates does not run
 
 **Latest release (2026-07-26):** v3.1.1 — camera scale tip, clearer Active calorie / Activity Level guidance. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.1.1
