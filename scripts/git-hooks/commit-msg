@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Reject AI / Cursor attribution trailers that Cursor may inject into commit messages.
+# Installed via scripts/install_git_hooks.sh (or devenv enterShell).
+set -euo pipefail
+
+MSG_FILE="${1:-}"
+if [[ -z "$MSG_FILE" || ! -f "$MSG_FILE" ]]; then
+  exit 0
+fi
+
+if grep -qiE \
+  -e '^[[:space:]]*Co-authored-by:[[:space:]].*(Cursor|Claude|ChatGPT|Copilot|OpenAI|Anthropic)' \
+  -e '^[[:space:]]*Made-with:[[:space:]]*Cursor' \
+  -e '^[[:space:]]*Made with Cursor' \
+  -e '^[[:space:]]*Generated-by:[[:space:]].*(Cursor|Claude|Copilot)' \
+  -e '^[[:space:]]*Generated with (Cursor|Claude|Copilot)' \
+  "$MSG_FILE"
+then
+  cat >&2 <<'EOF'
+commit-msg: refusing AI/Cursor attribution trailer in commit message.
+
+Chompass commits must be authored as the maintainer only — no
+Co-authored-by: Cursor, Made-with: Cursor, or similar trailers.
+
+Fix: remove the trailer from the commit message and retry.
+Also turn off Cursor Settings → Agents → Attribution (Commit + PR).
+EOF
+  exit 1
+fi
