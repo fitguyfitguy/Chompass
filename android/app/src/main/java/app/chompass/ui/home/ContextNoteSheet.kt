@@ -156,6 +156,12 @@ fun ContextNoteSheet(
 
                 SheetSectionHeader(stringResource(R.string.context_note_section))
 
+                Text(
+                    stringResource(R.string.context_note_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+
                 FudGlassTextField(
                     value = note,
                     onValueChange = { if (!busy) note = it },
@@ -339,6 +345,11 @@ fun MultiPhotoCaptureSheet(
                 Text(
                     stringResource(R.string.context_note_section),
                     fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    stringResource(R.string.context_note_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
                 FudGlassTextField(
                     value = note,

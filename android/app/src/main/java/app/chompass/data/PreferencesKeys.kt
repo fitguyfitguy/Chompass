@@ -14,6 +14,7 @@ internal object Keys {
         val LAST_RECALC_GOAL_SIGNATURE = stringPreferencesKey("lastRecalcGoalSignature")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")
+        val HAS_SEEN_CAMERA_SCALE_TIP = booleanPreferencesKey("hasSeenCameraScaleTip")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notificationsEnabled")
         val STREAK_ENABLED = booleanPreferencesKey("streakReminderEnabled")
         val STREAK_HOUR = intPreferencesKey("streakReminderHour")

@@ -44,6 +44,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setOnboardingCompleted(value: Boolean) = setOnboardingCompletedImpl(value)
     val onboardingDraft: Flow<app.chompass.ui.onboarding.OnboardingDraft?> get() = onboardingDraftImpl
     suspend fun setOnboardingDraft(draft: app.chompass.ui.onboarding.OnboardingDraft?) = setOnboardingDraftImpl(draft)
+    val hasSeenCameraScaleTip: Flow<Boolean> get() = hasSeenCameraScaleTipImpl
+    suspend fun setHasSeenCameraScaleTip(value: Boolean) = setHasSeenCameraScaleTipImpl(value)
     val notificationsEnabled: Flow<Boolean> get() = notificationsEnabledImpl
     suspend fun setNotificationsEnabled(v: Boolean) = setNotificationsEnabledImpl(v)
     val streakReminderEnabled: Flow<Boolean> get() = streakReminderEnabledImpl

@@ -372,6 +372,7 @@ class FoodAnalysisService(
         val prompt = """
             Analyze this image. It could be either a photo of food OR a nutrition facts label.
             If it's a food photo: estimate the nutritional content of the visible food.
+            If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
             If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
             Respond ONLY with JSON:
             $ENTRY_JSON_SCHEMA
@@ -392,6 +393,7 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         var prompt = """
             Analyze this food image. Estimate the nutritional content of the visible food.
+            If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
             Respond ONLY with JSON:
             $ENTRY_JSON_SCHEMA
             $ENTRY_NUTRIENT_UNITS
@@ -415,6 +417,7 @@ class FoodAnalysisService(
         var prompt = """
             Analyze these food images together. They are different angles or supporting photos of the same meal.
             Use all images to estimate the total nutritional content for the serving shown. Do not double-count the meal across images.
+            If a utensil, hand, coin, or common object is visible next to the food in any image, use it as a size reference to refine your portion estimate.
             Respond ONLY with JSON:
             $ENTRY_JSON_SCHEMA
             $ENTRY_NUTRIENT_UNITS

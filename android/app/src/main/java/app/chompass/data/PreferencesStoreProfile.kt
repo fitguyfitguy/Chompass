@@ -42,6 +42,11 @@ internal suspend fun PreferencesStore.setOnboardingDraftImpl(draft: OnboardingDr
         }
     }
 
+internal val PreferencesStore.hasSeenCameraScaleTipImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.HAS_SEEN_CAMERA_SCALE_TIP] ?: false }
+internal suspend fun PreferencesStore.setHasSeenCameraScaleTipImpl(value: Boolean) {
+        dataStore.edit { it[Keys.HAS_SEEN_CAMERA_SCALE_TIP] = value }
+    }
+
     // -- Units ------------------------------------------------------------
 internal val PreferencesStore.useMetricImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.USE_METRIC] ?: true }
 internal suspend fun PreferencesStore.setUseMetricImpl(v: Boolean) { dataStore.edit { it[Keys.USE_METRIC] = v } }

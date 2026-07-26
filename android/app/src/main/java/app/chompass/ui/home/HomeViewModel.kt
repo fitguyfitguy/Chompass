@@ -67,6 +67,7 @@ data class HomeUiState(
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val preferGramsByDefault: Boolean = false,
     val portionClarifyEnabled: Boolean = false,
+    val hasSeenCameraScaleTip: Boolean = true,
     val weightMetric: Boolean = true,
     val favoriteKeys: Set<String> = emptySet(),
     val pendingAnalysis: FoodAnalysis? = null,
@@ -263,6 +264,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.hasSeenCameraScaleTip
+            .onEach { seen ->
+                _ui.value = _ui.value.copy(hasSeenCameraScaleTip = seen)
+            }
+            .launchIn(viewModelScope)
+
         container.prefs.weightUnit
             .onEach { unit ->
                 _ui.value = _ui.value.copy(weightMetric = unit == "kg")
@@ -340,6 +347,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val cardCount = container.prefs.homeNutrientCardCount.first()
             container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+        }
+    }
+
+    fun dismissCameraScaleTip() {
+        viewModelScope.launch {
+            container.prefs.setHasSeenCameraScaleTip(true)
         }
     }
 
