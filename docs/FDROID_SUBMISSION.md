@@ -43,10 +43,16 @@ Regenerate screenshots when UI changes: `devenv tasks run release:screenshots` (
 
 ### fdroiddata MR
 
-- [ ] Fork https://gitlab.com/fdroid/fdroiddata
+**Canonical inclusion MR (do not open a second one):**
+[fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984)  
+Source branch: `org.codeberg.fitguy.nofud` (kept from the NoFUD-era submission; the metadata file is `metadata/app.chompass.yml`).
+
+- [x] Fork https://gitlab.com/fdroid/fdroiddata
 - [x] Copy [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) → `metadata/app.chompass.yml` (prepared locally)
-- [ ] Push branch `app.chompass` and open MR (needs GitLab auth; see below)
+- [x] Push updates to the **existing** MR source branch (not a new `app.chompass` branch while !42984 is open)
 - [ ] Respond to reviewer questions in the MR
+
+Opening a fresh branch/MR while !42984 is open duplicates review work (this happened with !43940). Always refresh !42984 via `./scripts/submit_fdroiddata_mr.sh`.
 
 ### Optional (faster path)
 
@@ -152,28 +158,34 @@ Forked from Fud AI with a distinct package ID `app.chompass` vs upstream. I am t
 
 ## Submit commands
 
-**One command** (after `glab auth login --hostname gitlab.com` or `GITLAB_TOKEN`):
+**One command** (after `glab auth login --hostname gitlab.com` or `GITLAB_TOKEN`). Prefer `GITLAB_HOST=gitlab.com` if other GitLab hosts are configured:
 
 ```bash
-chmod +x scripts/submit_fdroiddata_mr.sh
-./scripts/submit_fdroiddata_mr.sh
+GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh
 ```
 
-**Manual fallback:**
+The script **updates the open inclusion MR** ([!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984), branch `org.codeberg.fitguy.nofud`) and **refuses to open a second inclusion MR** while that one is open. Override only if GitLab replaced the MR:
+
+```bash
+CANONICAL_INCLUSION_MR_IID=<new> CANONICAL_INCLUSION_BRANCH=<branch> ./scripts/submit_fdroiddata_mr.sh
+```
+
+**Manual fallback** (same branch as !42984 — do **not** create `app.chompass` while that MR is open):
 
 ```bash
 devenv tasks run release:check-metadata
 
 git clone https://gitlab.com/<your-gitlab-user>/fdroiddata.git
 cd fdroiddata
-git checkout -b app.chompass
+git fetch origin org.codeberg.fitguy.nofud
+git checkout -B org.codeberg.fitguy.nofud origin/org.codeberg.fitguy.nofud
 cp /path/to/Chompass/docs/fdroid/app.chompass.yml metadata/app.chompass.yml
 git add metadata/app.chompass.yml
-git commit -m "New App: Chompass (app.chompass)"
-git push -u origin app.chompass
+git commit -m "Update app.chompass to <version>"
+git push -u origin org.codeberg.fitguy.nofud
 ```
 
-Open MR: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/new (paste the MR body block above)
+That push refreshes https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984 — no new MR.
 
 ---
 

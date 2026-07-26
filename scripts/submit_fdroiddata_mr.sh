@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
-# Open (or refresh) the fdroiddata merge request for Chompass.
+# Refresh (or open once) the fdroiddata merge request for Chompass.
 #
 # Requires:
 #   - glab authenticated for gitlab.com (glab auth login)
 #   - OR GITLAB_TOKEN with api scope
+#   - Prefer GITLAB_HOST=gitlab.com when other GitLab hosts are configured
 #
 # Usage:
 #   ./scripts/submit_fdroiddata_mr.sh
 #   BRANCH=org.codeberg.fitguy.nofud ./scripts/submit_fdroiddata_mr.sh
 #   GITLAB_TOKEN=glpat-... ./scripts/submit_fdroiddata_mr.sh
 #
-# BRANCH defaults to the source_branch of an existing open inclusion MR
-# (title/description mentions chompass, or changes touch metadata/app.chompass.yml).
-# Falls back to app.chompass only when no such MR exists.
+# NEVER open a second inclusion MR while one is already open. This script:
+#   1. Prefers the canonical pre-inclusion MR (!42984) while it is open
+#   2. Else discovers any open fork MR that touches Chompass / NoFUD metadata
+#   3. Pushes metadata onto that MR's source_branch and exits (no new MR)
+#   4. Creates a new MR only when no open inclusion MR exists
+#
+# Canonical inclusion MR (update IID/branch if GitLab replaces the MR):
+#   https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984
+#   source branch: org.codeberg.fitguy.nofud
 
 set -euo pipefail
 
@@ -24,6 +31,14 @@ WORKDIR="${TMPDIR:-/tmp}/fdroiddata-chompass-$$"
 APP_ID="app.chompass"
 METADATA_PATH="metadata/${APP_ID}.yml"
 
+# Pre-inclusion MR from the NoFUD → Chompass rename era. Do not invent a new
+# branch (e.g. app.chompass) while this MR is still open — that created !43940.
+CANONICAL_INCLUSION_MR_IID="${CANONICAL_INCLUSION_MR_IID:-42984}"
+CANONICAL_INCLUSION_BRANCH="${CANONICAL_INCLUSION_BRANCH:-org.codeberg.fitguy.nofud}"
+
+# Avoid glab multi-host auth failures (e.g. a second broken GitLab host).
+export GITLAB_HOST="${GITLAB_HOST:-gitlab.com}"
+
 if [[ ! -f "$METADATA_SRC" ]]; then
   echo "Missing $METADATA_SRC" >&2
   exit 1
@@ -31,6 +46,11 @@ fi
 
 if ! command -v glab >/dev/null 2>&1; then
   echo "glab not found. Install GitLab CLI or open the MR manually — see docs/FDROID_SUBMISSION.md" >&2
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required" >&2
   exit 1
 fi
 
@@ -53,6 +73,7 @@ if [[ -z "$FORK_PATH" ]]; then
   echo "gitlab.com authentication failed." >&2
   echo "Run: glab auth login --hostname gitlab.com" >&2
   echo "Or: GITLAB_TOKEN=glpat-... $0" >&2
+  echo "If multiple GitLab hosts are configured, ensure GITLAB_HOST=gitlab.com" >&2
   exit 1
 fi
 
@@ -66,18 +87,47 @@ if [[ -z "$SOURCE_PROJECT_ID" || -z "$TARGET_PROJECT_ID" ]]; then
   exit 1
 fi
 
-# Find an existing open MR from this fork into fdroid/fdroiddata for Chompass.
 EXISTING_MR_URL=""
 EXISTING_MR_IID=""
+
+use_mr() {
+  local iid="$1"
+  local src_branch="$2"
+  local web_url="$3"
+  EXISTING_MR_IID="$iid"
+  EXISTING_MR_URL="$web_url"
+  if [[ -z "$BRANCH" ]]; then
+    BRANCH="$src_branch"
+  fi
+  echo "Found open inclusion MR !${iid} (source_branch=${src_branch})"
+}
+
+# 1) Canonical pre-inclusion MR while still open.
+if [[ -n "$CANONICAL_INCLUSION_MR_IID" ]]; then
+  canonical_json="$(glab api "projects/${TARGET_PROJECT_ID}/merge_requests/${CANONICAL_INCLUSION_MR_IID}" 2>/dev/null || true)"
+  if [[ -n "$canonical_json" ]]; then
+    c_state="$(printf '%s' "$canonical_json" | jq -r '.state // empty')"
+    c_branch="$(printf '%s' "$canonical_json" | jq -r '.source_branch // empty')"
+    c_url="$(printf '%s' "$canonical_json" | jq -r '.web_url // empty')"
+    if [[ "$c_state" == "opened" && -n "$c_branch" ]]; then
+      use_mr "$CANONICAL_INCLUSION_MR_IID" "$c_branch" "$c_url"
+    fi
+  fi
+fi
+
+# 2) Any other open author MR that clearly targets Chompass inclusion.
 detect_existing_mr() {
-  local mrs candidate iid title desc src_branch changes
+  local mrs iid title desc src_branch web_url candidate changes
   mrs="$(glab api "projects/${TARGET_PROJECT_ID}/merge_requests?state=opened&author_username=${FORK_PATH}&per_page=50")"
-  while IFS=$'\t' read -r iid title desc src_branch; do
+  while IFS=$'\t' read -r iid title desc src_branch web_url; do
     [[ -z "$iid" || "$iid" == "null" ]] && continue
+    if [[ -n "$EXISTING_MR_IID" && "$iid" == "$EXISTING_MR_IID" ]]; then
+      continue
+    fi
     candidate=""
     if printf '%s\n%s' "$title" "$desc" | grep -qiE 'chompass|nofud|app\.chompass|org\.codeberg\.fitguy\.nofud'; then
       candidate=1
-    elif [[ "$src_branch" == "$APP_ID" || "$src_branch" == "org.codeberg.fitguy.nofud" ]]; then
+    elif [[ "$src_branch" == "$APP_ID" || "$src_branch" == "$CANONICAL_INCLUSION_BRANCH" ]]; then
       candidate=1
     else
       changes="$(glab api "projects/${TARGET_PROJECT_ID}/merge_requests/${iid}/changes" 2>/dev/null || true)"
@@ -88,20 +138,42 @@ detect_existing_mr() {
       fi
     fi
     if [[ -n "$candidate" ]]; then
-      EXISTING_MR_IID="$iid"
-      EXISTING_MR_URL="$(printf '%s' "$mrs" | jq -r --argjson iid "$iid" '.[] | select(.iid == $iid) | .web_url')"
-      if [[ -z "$BRANCH" ]]; then
-        BRANCH="$src_branch"
+      if [[ -n "$EXISTING_MR_IID" && "$iid" != "$EXISTING_MR_IID" ]]; then
+        echo "ERROR: another open Chompass inclusion MR !${iid} exists alongside !${EXISTING_MR_IID}." >&2
+        echo "  Keep only one MR. Close the duplicate, then re-run." >&2
+        echo "  Canonical: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/${CANONICAL_INCLUSION_MR_IID}" >&2
+        echo "  Extra:     ${web_url}" >&2
+        exit 1
       fi
-      echo "Found open inclusion MR !${iid} (source_branch=${src_branch})"
+      use_mr "$iid" "$src_branch" "$web_url"
       return 0
     fi
-  done < <(printf '%s' "$mrs" | jq -r '.[] | [.iid, .title, (.description // ""), .source_branch] | @tsv')
+  done < <(printf '%s' "$mrs" | jq -r '.[] | [.iid, .title, (.description // ""), .source_branch, .web_url] | @tsv')
   return 1
 }
 
-detect_existing_mr || true
-BRANCH="${BRANCH:-$APP_ID}"
+if [[ -z "$EXISTING_MR_IID" ]]; then
+  detect_existing_mr || true
+else
+  # Still scan so a duplicate open MR fails loudly instead of being ignored.
+  detect_existing_mr || true
+fi
+
+# While the app is not yet on fdroid master, default to the canonical branch
+# rather than inventing app.chompass (that spawned duplicate !43940).
+if [[ -z "$EXISTING_MR_IID" ]]; then
+  on_master="$(glab api "projects/${TARGET_PROJECT_ID}/repository/files/${METADATA_PATH//\//%2F}?ref=master" 2>/dev/null | jq -r '.file_name // empty' || true)"
+  if [[ -z "$on_master" ]]; then
+    BRANCH="${BRANCH:-$CANONICAL_INCLUSION_BRANCH}"
+    echo "App not on fdroid master yet; using pre-inclusion branch: $BRANCH"
+    echo "If MR !${CANONICAL_INCLUSION_MR_IID} is still the review vehicle, open/update that MR — do not create a second one."
+  else
+    BRANCH="${BRANCH:-$APP_ID}"
+  fi
+else
+  BRANCH="${BRANCH:-$CANONICAL_INCLUSION_BRANCH}"
+fi
+
 echo "Using branch: $BRANCH"
 
 rm -rf "$WORKDIR"
@@ -140,6 +212,17 @@ if [[ -n "$EXISTING_MR_URL" ]]; then
   echo "Updated existing merge request: $EXISTING_MR_URL"
   echo "Done."
   exit 0
+fi
+
+# Safety: never create a new MR if the canonical inclusion IID is still open
+# (detection should have caught it; this is a last-resort guard).
+if [[ -n "$CANONICAL_INCLUSION_MR_IID" ]]; then
+  c_state="$(glab api "projects/${TARGET_PROJECT_ID}/merge_requests/${CANONICAL_INCLUSION_MR_IID}" 2>/dev/null | jq -r '.state // empty' || true)"
+  if [[ "$c_state" == "opened" ]]; then
+    echo "ERROR: refusing to open a new MR while !${CANONICAL_INCLUSION_MR_IID} is still open." >&2
+    echo "  Push went to branch ${BRANCH}; update https://gitlab.com/fdroid/fdroiddata/-/merge_requests/${CANONICAL_INCLUSION_MR_IID}" >&2
+    exit 1
+  fi
 fi
 
 MR_BODY_FILE="$ROOT/docs/FDROID_SUBMISSION.md"
