@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import app.chompass.services.ai.FoodAnalysis
+import app.chompass.services.ai.toMicronutrients
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.IosShare
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -29,7 +31,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -62,6 +63,8 @@ import app.chompass.models.FoodEntry
 import app.chompass.services.MealShare
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
+import app.chompass.models.MicronutrientField
+import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.FudGlassDialog
@@ -167,42 +170,25 @@ fun EditFoodEntrySheet(
         text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
     fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
 
-    fun buildUpdated(): FoodEntry = currentBaseEntry.copy(
-        name = name.trim().ifEmpty { currentBaseEntry.name },
-        calories = scaledInt(currentBaseEntry.calories),
-        protein = scaledMacro(currentBaseEntry.protein),
-        carbs = scaledMacro(currentBaseEntry.carbs),
-        fat = scaledMacro(currentBaseEntry.fat),
-        timestamp = loggedDate.atTime(loggedTime).atZone(zone).toInstant(),
-        mealType = mealType,
-        customNote = noteText.trim().takeIf { it.isNotEmpty() },
-        sugar = scaledD(currentBaseEntry.sugar),
-        addedSugar = scaledD(currentBaseEntry.addedSugar),
-        fiber = scaledD(editableFiber),
-        saturatedFat = scaledD(currentBaseEntry.saturatedFat),
-        monounsaturatedFat = scaledD(currentBaseEntry.monounsaturatedFat),
-        polyunsaturatedFat = scaledD(currentBaseEntry.polyunsaturatedFat),
-        cholesterol = scaledD(currentBaseEntry.cholesterol),
-        sodium = scaledD(currentBaseEntry.sodium),
-        potassium = scaledD(currentBaseEntry.potassium),
-        transFat = scaledD(currentBaseEntry.transFat),
-        calcium = scaledD(currentBaseEntry.calcium),
-        iron = scaledD(currentBaseEntry.iron),
-        magnesium = scaledD(currentBaseEntry.magnesium),
-        zinc = scaledD(currentBaseEntry.zinc),
-        vitaminA = scaledD(currentBaseEntry.vitaminA),
-        vitaminC = scaledD(currentBaseEntry.vitaminC),
-        vitaminD = scaledD(currentBaseEntry.vitaminD),
-        vitaminB12 = scaledD(currentBaseEntry.vitaminB12),
-        vitaminE = scaledD(currentBaseEntry.vitaminE),
-        vitaminK = scaledD(currentBaseEntry.vitaminK),
-        folate = scaledD(currentBaseEntry.folate),
-        omega3 = scaledD(currentBaseEntry.omega3),
-        servingSizeGrams = servingGrams,
-        servingUnitOptions = servingUnitOptions,
-        selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-        selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity
-    )
+    fun buildUpdated(): FoodEntry = MicronutrientValues.from(currentBaseEntry)
+        .with(MicronutrientField.FIBER, editableFiber)
+        .scaled(scale)
+        .applyTo(
+            currentBaseEntry.copy(
+                name = name.trim().ifEmpty { currentBaseEntry.name },
+                calories = scaledInt(currentBaseEntry.calories),
+                protein = scaledMacro(currentBaseEntry.protein),
+                carbs = scaledMacro(currentBaseEntry.carbs),
+                fat = scaledMacro(currentBaseEntry.fat),
+                timestamp = loggedDate.atTime(loggedTime).atZone(zone).toInstant(),
+                mealType = mealType,
+                customNote = noteText.trim().takeIf { it.isNotEmpty() },
+                servingSizeGrams = servingGrams,
+                servingUnitOptions = servingUnitOptions,
+                selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity
+            )
+        )
 
     // Re-run the AI on this entry with the edited note and overwrite the fields in
     // place; marking customNote as the current note flips the primary button back to Save.
@@ -218,35 +204,13 @@ fun EditFoodEntrySheet(
                     protein = newAnalysis.protein,
                     carbs = newAnalysis.carbs,
                     fat = newAnalysis.fat,
-                    sugar = newAnalysis.sugar,
-                    addedSugar = newAnalysis.addedSugar,
-                    fiber = newAnalysis.fiber,
-                    saturatedFat = newAnalysis.saturatedFat,
-                    monounsaturatedFat = newAnalysis.monounsaturatedFat,
-                    polyunsaturatedFat = newAnalysis.polyunsaturatedFat,
-                    cholesterol = newAnalysis.cholesterol,
-                    sodium = newAnalysis.sodium,
-                    potassium = newAnalysis.potassium,
-                    transFat = newAnalysis.transFat,
-                    calcium = newAnalysis.calcium,
-                    iron = newAnalysis.iron,
-                    magnesium = newAnalysis.magnesium,
-                    zinc = newAnalysis.zinc,
-                    vitaminA = newAnalysis.vitaminA,
-                    vitaminC = newAnalysis.vitaminC,
-                    vitaminD = newAnalysis.vitaminD,
-                    vitaminB12 = newAnalysis.vitaminB12,
-                    vitaminE = newAnalysis.vitaminE,
-                    vitaminK = newAnalysis.vitaminK,
-                    folate = newAnalysis.folate,
-                    omega3 = newAnalysis.omega3,
                     servingSizeGrams = newAnalysis.servingSizeGrams,
                     servingUnitOptions = newAnalysis.servingUnitOptions,
                     selectedServingUnit = newAnalysis.selectedServingUnit,
                     selectedServingQuantity = newAnalysis.selectedServingQuantity,
                     customNote = noteText.trim().takeIf { it.isNotEmpty() },
                     emoji = newAnalysis.emoji
-                )
+                ).let { newAnalysis.toMicronutrients().applyTo(it) }
                 editableFiber = newAnalysis.fiber
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
@@ -256,11 +220,10 @@ fun EditFoodEntrySheet(
         }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
+    ChompassBottomSheet(
+        onDismiss = onDismiss,
         sheetState = state,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = sheetSurface
+        containerColor = sheetSurface,
     ) {
         // While the note differs from what's saved, the primary button becomes
         // "Reprocess"; once reprocessed (or unchanged) it reverts to "Save".
@@ -280,35 +243,16 @@ fun EditFoodEntrySheet(
             }
         )
 
-        // Hoist string + composition reads above LazyColumn — its lambda has
+        // Hoist composition reads above LazyColumn — its lambda has
         // LazyListScope (not @Composable), so stringResource can't be called
         // from inside.
-        val gUnit = stringResource(R.string.unit_g)
-        val mgUnit = stringResource(R.string.unit_mg)
-        val mcgUnit = stringResource(R.string.unit_mcg)
-        val micros = listOf(
-            EditMicroRow(stringResource(R.string.sheet_micro_sugar), scaledD(currentBaseEntry.sugar), gUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_added_sugar), scaledD(currentBaseEntry.addedSugar), gUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_saturated_fat), scaledD(currentBaseEntry.saturatedFat), gUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_mono_fat), scaledD(currentBaseEntry.monounsaturatedFat), gUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_poly_fat), scaledD(currentBaseEntry.polyunsaturatedFat), gUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_cholesterol), scaledD(currentBaseEntry.cholesterol), mgUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_sodium), scaledD(currentBaseEntry.sodium), mgUnit),
-            EditMicroRow(stringResource(R.string.sheet_micro_potassium), scaledD(currentBaseEntry.potassium), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_trans_fat), scaledD(currentBaseEntry.transFat), gUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_calcium), scaledD(currentBaseEntry.calcium), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_iron), scaledD(currentBaseEntry.iron), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_magnesium), scaledD(currentBaseEntry.magnesium), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_zinc), scaledD(currentBaseEntry.zinc), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_a), scaledD(currentBaseEntry.vitaminA), mcgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_c), scaledD(currentBaseEntry.vitaminC), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_d), scaledD(currentBaseEntry.vitaminD), mcgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_b12), scaledD(currentBaseEntry.vitaminB12), mcgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_e), scaledD(currentBaseEntry.vitaminE), mgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_vitamin_k), scaledD(currentBaseEntry.vitaminK), mcgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_folate), scaledD(currentBaseEntry.folate), mcgUnit),
-            EditMicroRow(stringResource(R.string.nutrition_label_omega3), scaledD(currentBaseEntry.omega3), gUnit)
-        )
+        val micros = MicronutrientField.MoreNutrition.map { field ->
+            EditMicroRow(
+                stringResource(field.labelRes),
+                scaledD(MicronutrientValues.from(currentBaseEntry)[field]),
+                stringResource(field.unitRes),
+            )
+        }
 
         Box(modifier = Modifier.fillMaxWidth()) {
             LazyColumn(

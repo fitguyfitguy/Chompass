@@ -7,40 +7,30 @@ import kotlinx.serialization.builtins.ListSerializer
 import app.chompass.models.WaterEntry
 import app.chompass.models.WaterQuickPresets
 
-internal val PreferencesStore.waterTrackingEnabledImpl: Flow<Boolean> get() =
-    dataStore.data.map { it[Keys.WATER_TRACKING_ENABLED] ?: false }
+internal val PreferencesStore.waterTrackingEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.WATER_TRACKING_ENABLED, false)
+internal suspend fun PreferencesStore.setWaterTrackingEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.WATER_TRACKING_ENABLED, v)
 
-internal suspend fun PreferencesStore.setWaterTrackingEnabledImpl(v: Boolean) {
-    dataStore.edit { it[Keys.WATER_TRACKING_ENABLED] = v }
-}
+internal val PreferencesStore.waterDailyGoalMlImpl: Flow<Int>
+    get() = intPref(Keys.WATER_DAILY_GOAL_ML, 2_000)
+internal suspend fun PreferencesStore.setWaterDailyGoalMlImpl(v: Int) =
+    setIntPref(Keys.WATER_DAILY_GOAL_ML, v.coerceAtLeast(1))
 
-internal val PreferencesStore.waterDailyGoalMlImpl: Flow<Int> get() =
-    dataStore.data.map { it[Keys.WATER_DAILY_GOAL_ML] ?: 2_000 }
+internal val PreferencesStore.waterReminderEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.WATER_REMINDER_ENABLED, false)
+internal suspend fun PreferencesStore.setWaterReminderEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.WATER_REMINDER_ENABLED, v)
 
-internal suspend fun PreferencesStore.setWaterDailyGoalMlImpl(v: Int) {
-    dataStore.edit { it[Keys.WATER_DAILY_GOAL_ML] = v.coerceAtLeast(1) }
-}
+internal val PreferencesStore.waterReminderHourImpl: Flow<Int>
+    get() = intPref(Keys.WATER_REMINDER_HOUR, 14)
+internal suspend fun PreferencesStore.setWaterReminderHourImpl(v: Int) =
+    setIntPref(Keys.WATER_REMINDER_HOUR, v)
 
-internal val PreferencesStore.waterReminderEnabledImpl: Flow<Boolean> get() =
-    dataStore.data.map { it[Keys.WATER_REMINDER_ENABLED] ?: false }
-
-internal suspend fun PreferencesStore.setWaterReminderEnabledImpl(v: Boolean) {
-    dataStore.edit { it[Keys.WATER_REMINDER_ENABLED] = v }
-}
-
-internal val PreferencesStore.waterReminderHourImpl: Flow<Int> get() =
-    dataStore.data.map { it[Keys.WATER_REMINDER_HOUR] ?: 14 }
-
-internal suspend fun PreferencesStore.setWaterReminderHourImpl(v: Int) {
-    dataStore.edit { it[Keys.WATER_REMINDER_HOUR] = v }
-}
-
-internal val PreferencesStore.waterReminderMinuteImpl: Flow<Int> get() =
-    dataStore.data.map { it[Keys.WATER_REMINDER_MINUTE] ?: 0 }
-
-internal suspend fun PreferencesStore.setWaterReminderMinuteImpl(v: Int) {
-    dataStore.edit { it[Keys.WATER_REMINDER_MINUTE] = v }
-}
+internal val PreferencesStore.waterReminderMinuteImpl: Flow<Int>
+    get() = intPref(Keys.WATER_REMINDER_MINUTE, 0)
+internal suspend fun PreferencesStore.setWaterReminderMinuteImpl(v: Int) =
+    setIntPref(Keys.WATER_REMINDER_MINUTE, v)
 
 internal val PreferencesStore.waterQuickPresetsMlImpl: Flow<List<Int>> get() =
     dataStore.data.map { prefs ->

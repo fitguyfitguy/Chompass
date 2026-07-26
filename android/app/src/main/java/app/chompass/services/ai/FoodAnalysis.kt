@@ -2,6 +2,7 @@ package app.chompass.services.ai
 
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.GroundingConfidence
+import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
 import kotlinx.serialization.Serializable
@@ -9,6 +10,56 @@ import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.round
 import kotlin.math.roundToInt
+
+fun MicronutrientValues.applyTo(analysis: FoodAnalysis): FoodAnalysis = analysis.copy(
+    sugar = sugar,
+    addedSugar = addedSugar,
+    fiber = fiber,
+    saturatedFat = saturatedFat,
+    monounsaturatedFat = monounsaturatedFat,
+    polyunsaturatedFat = polyunsaturatedFat,
+    cholesterol = cholesterol,
+    sodium = sodium,
+    potassium = potassium,
+    transFat = transFat,
+    calcium = calcium,
+    iron = iron,
+    magnesium = magnesium,
+    zinc = zinc,
+    vitaminA = vitaminA,
+    vitaminC = vitaminC,
+    vitaminD = vitaminD,
+    vitaminB12 = vitaminB12,
+    vitaminE = vitaminE,
+    vitaminK = vitaminK,
+    folate = folate,
+    omega3 = omega3,
+)
+
+fun FoodAnalysis.toMicronutrients() = MicronutrientValues(
+    sugar = sugar,
+    addedSugar = addedSugar,
+    fiber = fiber,
+    saturatedFat = saturatedFat,
+    monounsaturatedFat = monounsaturatedFat,
+    polyunsaturatedFat = polyunsaturatedFat,
+    cholesterol = cholesterol,
+    sodium = sodium,
+    potassium = potassium,
+    transFat = transFat,
+    calcium = calcium,
+    iron = iron,
+    magnesium = magnesium,
+    zinc = zinc,
+    vitaminA = vitaminA,
+    vitaminC = vitaminC,
+    vitaminD = vitaminD,
+    vitaminB12 = vitaminB12,
+    vitaminE = vitaminE,
+    vitaminK = vitaminK,
+    folate = folate,
+    omega3 = omega3,
+)
 
 /** Result of AI food-photo / text analysis. */
 @Serializable
@@ -61,43 +112,23 @@ fun FoodAnalysis.toFoodEntry(
     source: app.chompass.models.FoodSource,
     mealType: app.chompass.models.MealType,
 ): app.chompass.models.FoodEntry =
-    app.chompass.models.FoodEntry(
-        name = name,
-        calories = calories,
-        protein = protein,
-        carbs = carbs,
-        fat = fat,
-        emoji = emoji,
-        source = source,
-        mealType = mealType,
-        sugar = sugar,
-        addedSugar = addedSugar,
-        fiber = fiber,
-        saturatedFat = saturatedFat,
-        monounsaturatedFat = monounsaturatedFat,
-        polyunsaturatedFat = polyunsaturatedFat,
-        cholesterol = cholesterol,
-        sodium = sodium,
-        potassium = potassium,
-        transFat = transFat,
-        calcium = calcium,
-        iron = iron,
-        magnesium = magnesium,
-        zinc = zinc,
-        vitaminA = vitaminA,
-        vitaminC = vitaminC,
-        vitaminD = vitaminD,
-        vitaminB12 = vitaminB12,
-        vitaminE = vitaminE,
-        vitaminK = vitaminK,
-        folate = folate,
-        omega3 = omega3,
-        servingSizeGrams = servingSizeGrams,
-        servingUnitOptions = servingUnitOptions,
-        selectedServingUnit = selectedServingUnit,
-        selectedServingQuantity = selectedServingQuantity,
-        customNote = customNote,
-        grounding = grounding,
+    toMicronutrients().applyTo(
+        app.chompass.models.FoodEntry(
+            name = name,
+            calories = calories,
+            protein = protein,
+            carbs = carbs,
+            fat = fat,
+            emoji = emoji,
+            source = source,
+            mealType = mealType,
+            servingSizeGrams = servingSizeGrams,
+            servingUnitOptions = servingUnitOptions,
+            selectedServingUnit = selectedServingUnit,
+            selectedServingQuantity = selectedServingQuantity,
+            customNote = customNote,
+            grounding = grounding,
+        )
     )
 
 /** Per-100g nutrition-label reading. Scaled to a real serving via [scaled]. */
@@ -134,40 +165,43 @@ data class NutritionLabelAnalysis(
 ) {
     fun scaled(toGrams: Double): FoodAnalysis {
         val scale = toGrams / 100.0
-        fun s(v: Double?) = v?.let { round(it * scale * 10) / 10 }
         val selectedOption = servingUnitOptions.firstOrNull()
-        return FoodAnalysis(
-            name = name,
-            calories = (caloriesPer100g * scale).toInt(),
-            protein = proteinPer100g * scale,
-            carbs = carbsPer100g * scale,
-            fat = fatPer100g * scale,
-            servingSizeGrams = toGrams,
-            sugar = s(sugarPer100g),
-            addedSugar = s(addedSugarPer100g),
-            fiber = s(fiberPer100g),
-            saturatedFat = s(saturatedFatPer100g),
-            monounsaturatedFat = s(monounsaturatedFatPer100g),
-            polyunsaturatedFat = s(polyunsaturatedFatPer100g),
-            cholesterol = s(cholesterolPer100g),
-            sodium = s(sodiumPer100g),
-            potassium = s(potassiumPer100g),
-            transFat = s(transFatPer100g),
-            calcium = s(calciumPer100g),
-            iron = s(ironPer100g),
-            magnesium = s(magnesiumPer100g),
-            zinc = s(zincPer100g),
-            vitaminA = s(vitaminAPer100g),
-            vitaminC = s(vitaminCPer100g),
-            vitaminD = s(vitaminDPer100g),
-            vitaminB12 = s(vitaminB12Per100g),
-            vitaminE = s(vitaminEPer100g),
-            vitaminK = s(vitaminKPer100g),
-            folate = s(folatePer100g),
-            omega3 = s(omega3Per100g),
-            servingUnitOptions = servingUnitOptions,
-            selectedServingUnit = selectedOption?.unit,
-            selectedServingQuantity = selectedOption?.quantityFor(toGrams)
+        val micros = MicronutrientValues(
+            sugar = sugarPer100g,
+            addedSugar = addedSugarPer100g,
+            fiber = fiberPer100g,
+            saturatedFat = saturatedFatPer100g,
+            monounsaturatedFat = monounsaturatedFatPer100g,
+            polyunsaturatedFat = polyunsaturatedFatPer100g,
+            cholesterol = cholesterolPer100g,
+            sodium = sodiumPer100g,
+            potassium = potassiumPer100g,
+            transFat = transFatPer100g,
+            calcium = calciumPer100g,
+            iron = ironPer100g,
+            magnesium = magnesiumPer100g,
+            zinc = zincPer100g,
+            vitaminA = vitaminAPer100g,
+            vitaminC = vitaminCPer100g,
+            vitaminD = vitaminDPer100g,
+            vitaminB12 = vitaminB12Per100g,
+            vitaminE = vitaminEPer100g,
+            vitaminK = vitaminKPer100g,
+            folate = folatePer100g,
+            omega3 = omega3Per100g,
+        ).scaled(scale, round1 = true)
+        return micros.applyTo(
+            FoodAnalysis(
+                name = name,
+                calories = (caloriesPer100g * scale).toInt(),
+                protein = proteinPer100g * scale,
+                carbs = carbsPer100g * scale,
+                fat = fatPer100g * scale,
+                servingSizeGrams = toGrams,
+                servingUnitOptions = servingUnitOptions,
+                selectedServingUnit = selectedOption?.unit,
+                selectedServingQuantity = selectedOption?.quantityFor(toGrams)
+            )
         )
     }
 }
@@ -232,39 +266,19 @@ internal object FoodJsonParser {
         val selectedOption = unitOptions.firstOrNull()
         fun optDouble(key: String): Double? =
             optDouble(json, key)
-        return FoodAnalysis(
-            name = name,
-            calories = json.optInt("calories"),
-            protein = optDouble("protein") ?: 0.0,
-            carbs = optDouble("carbs") ?: 0.0,
-            fat = optDouble("fat") ?: 0.0,
-            servingSizeGrams = servingSizeGrams,
-            emoji = json.optString("emoji").takeIf { it.isNotEmpty() },
-            sugar = optDouble("sugar"),
-            addedSugar = optDouble("added_sugar"),
-            fiber = optDouble("fiber"),
-            saturatedFat = optDouble("saturated_fat"),
-            monounsaturatedFat = optDouble("monounsaturated_fat"),
-            polyunsaturatedFat = optDouble("polyunsaturated_fat"),
-            cholesterol = optDouble("cholesterol"),
-            sodium = optDouble("sodium"),
-            potassium = optDouble("potassium"),
-            transFat = optDouble("trans_fat"),
-            calcium = optDouble("calcium"),
-            iron = optDouble("iron"),
-            magnesium = optDouble("magnesium"),
-            zinc = optDouble("zinc"),
-            vitaminA = optDouble("vitamin_a"),
-            vitaminC = optDouble("vitamin_c"),
-            vitaminD = optDouble("vitamin_d"),
-            vitaminB12 = optDouble("vitamin_b12"),
-            vitaminE = optDouble("vitamin_e"),
-            vitaminK = optDouble("vitamin_k"),
-            folate = optDouble("folate"),
-            omega3 = optDouble("omega_3"),
-            servingUnitOptions = unitOptions,
-            selectedServingUnit = selectedOption?.unit,
-            selectedServingQuantity = selectedOption?.quantityFor(servingSizeGrams)
+        return MicronutrientValues.fromJson(::optDouble).applyTo(
+            FoodAnalysis(
+                name = name,
+                calories = json.optInt("calories"),
+                protein = optDouble("protein") ?: 0.0,
+                carbs = optDouble("carbs") ?: 0.0,
+                fat = optDouble("fat") ?: 0.0,
+                servingSizeGrams = servingSizeGrams,
+                emoji = json.optString("emoji").takeIf { it.isNotEmpty() },
+                servingUnitOptions = unitOptions,
+                selectedServingUnit = selectedOption?.unit,
+                selectedServingQuantity = selectedOption?.quantityFor(servingSizeGrams)
+            )
         )
     }
 
@@ -308,6 +322,7 @@ internal object FoodJsonParser {
         fun optDouble(key: String): Double? =
             optDouble(json, key)
         val servingSizeGrams = optDouble("serving_size_grams")
+        val micros = MicronutrientValues.fromLabelJson(::optDouble)
         return NutritionLabelAnalysis(
             name = name,
             caloriesPer100g = optDouble("calories_per_100g") ?: throw AiError.InvalidResponse,
@@ -315,28 +330,28 @@ internal object FoodJsonParser {
             carbsPer100g = optDouble("carbs_per_100g") ?: throw AiError.InvalidResponse,
             fatPer100g = optDouble("fat_per_100g") ?: throw AiError.InvalidResponse,
             servingSizeGrams = servingSizeGrams,
-            sugarPer100g = optDouble("sugar_per_100g"),
-            addedSugarPer100g = optDouble("added_sugar_per_100g"),
-            fiberPer100g = optDouble("fiber_per_100g"),
-            saturatedFatPer100g = optDouble("saturated_fat_per_100g"),
-            monounsaturatedFatPer100g = optDouble("monounsaturated_fat_per_100g"),
-            polyunsaturatedFatPer100g = optDouble("polyunsaturated_fat_per_100g"),
-            cholesterolPer100g = optDouble("cholesterol_per_100g"),
-            sodiumPer100g = optDouble("sodium_per_100g"),
-            potassiumPer100g = optDouble("potassium_per_100g"),
-            transFatPer100g = optDouble("trans_fat_per_100g"),
-            calciumPer100g = optDouble("calcium_per_100g"),
-            ironPer100g = optDouble("iron_per_100g"),
-            magnesiumPer100g = optDouble("magnesium_per_100g"),
-            zincPer100g = optDouble("zinc_per_100g"),
-            vitaminAPer100g = optDouble("vitamin_a_per_100g"),
-            vitaminCPer100g = optDouble("vitamin_c_per_100g"),
-            vitaminDPer100g = optDouble("vitamin_d_per_100g"),
-            vitaminB12Per100g = optDouble("vitamin_b12_per_100g"),
-            vitaminEPer100g = optDouble("vitamin_e_per_100g"),
-            vitaminKPer100g = optDouble("vitamin_k_per_100g"),
-            folatePer100g = optDouble("folate_per_100g"),
-            omega3Per100g = optDouble("omega_3_per_100g"),
+            sugarPer100g = micros.sugar,
+            addedSugarPer100g = micros.addedSugar,
+            fiberPer100g = micros.fiber,
+            saturatedFatPer100g = micros.saturatedFat,
+            monounsaturatedFatPer100g = micros.monounsaturatedFat,
+            polyunsaturatedFatPer100g = micros.polyunsaturatedFat,
+            cholesterolPer100g = micros.cholesterol,
+            sodiumPer100g = micros.sodium,
+            potassiumPer100g = micros.potassium,
+            transFatPer100g = micros.transFat,
+            calciumPer100g = micros.calcium,
+            ironPer100g = micros.iron,
+            magnesiumPer100g = micros.magnesium,
+            zincPer100g = micros.zinc,
+            vitaminAPer100g = micros.vitaminA,
+            vitaminCPer100g = micros.vitaminC,
+            vitaminDPer100g = micros.vitaminD,
+            vitaminB12Per100g = micros.vitaminB12,
+            vitaminEPer100g = micros.vitaminE,
+            vitaminKPer100g = micros.vitaminK,
+            folatePer100g = micros.folate,
+            omega3Per100g = micros.omega3,
             servingUnitOptions = parseServingUnitOptions(json, servingSizeGrams)
         )
     }

@@ -109,8 +109,22 @@ android {
     }
     // Grounded USDA SQLite lives under src/debug/assets (not main) so release/F-Droid
     // APKs stay lean while the feature is gated. debug2 reuses the same assets.
+    // Heavy grounded Kotlin (orchestrator, USDA index, tool loop, sheets) lives in
+    // src/grounded and is compiled for debug/test only; release gets thin stubs.
     sourceSets {
-        getByName("debug2").assets.srcDir("src/debug/assets")
+        getByName("debug") {
+            kotlin.srcDir("src/grounded/java")
+        }
+        getByName("debug2") {
+            assets.srcDir("src/debug/assets")
+            kotlin.srcDir("src/grounded/java")
+        }
+        getByName("release") {
+            kotlin.srcDir("src/groundedStubs/java")
+        }
+        getByName("test") {
+            kotlin.srcDir("src/grounded/java")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

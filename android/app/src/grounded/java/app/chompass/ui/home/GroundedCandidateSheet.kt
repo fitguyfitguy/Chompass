@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -80,8 +80,8 @@ fun GroundedCandidateSheet(
     var submitted by remember { mutableStateOf(false) }
     val busy = isSubmitting || submitted
 
-    ModalBottomSheet(
-        onDismissRequest = { if (!busy) onDismiss() },
+    ChompassBottomSheet(
+        onDismiss = { if (!busy) onDismiss() },
         sheetState = sheetState,
     ) {
         Column(

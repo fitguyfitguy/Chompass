@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,7 +43,6 @@ import app.chompass.R
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -178,11 +178,10 @@ fun SavedMealsSheet(
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val searchSurface = if (isDark) Color.Transparent else Color(0xFFF2E9E3).copy(alpha = 0.78f)
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
+    ChompassBottomSheet(
+        onDismiss = onDismiss,
         sheetState = state,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = sheetSurface
+        containerColor = sheetSurface,
     ) {
         Column(
             Modifier

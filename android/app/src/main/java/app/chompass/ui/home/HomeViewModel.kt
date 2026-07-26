@@ -28,6 +28,9 @@ import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.services.ai.AiError
 import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.services.ai.FoodAnalysis
+import app.chompass.services.ai.applyTo
+import app.chompass.services.ai.toMicronutrients
+import app.chompass.models.MicronutrientValues
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -212,6 +215,46 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /**
+     * Shared begin → discard draft → try/catch AiError → end envelope for food
+     * analysis entry points. Call from an existing coroutine via [withFoodAnalysis]
+     * when prep work must run before [beginAnalysis].
+     */
+    private fun runFoodAnalysis(
+        phased: Boolean = false,
+        defaultErrorRes: Int = R.string.error_analysis_failed,
+        shouldEnd: () -> Boolean = { true },
+        configure: (HomeUiState) -> HomeUiState,
+        block: suspend (AnalysisStart) -> Unit,
+    ) {
+        viewModelScope.launch {
+            withFoodAnalysis(phased, defaultErrorRes, shouldEnd, configure, block)
+        }
+    }
+
+    private suspend fun withFoodAnalysis(
+        phased: Boolean = false,
+        defaultErrorRes: Int = R.string.error_analysis_failed,
+        shouldEnd: () -> Boolean = { true },
+        configure: (HomeUiState) -> HomeUiState,
+        block: suspend (AnalysisStart) -> Unit,
+    ) {
+        val start = beginAnalysis(phased = phased, configure = configure) ?: return
+        discardPendingDraft(start.previousDraftImage)
+        try {
+            block(start)
+        } catch (e: AiError) {
+            failAnalysis(start.generation, e.message)
+        } catch (e: Throwable) {
+            failAnalysis(
+                start.generation,
+                e.localizedMessage ?: container.appContext.getString(defaultErrorRes),
+            )
+        } finally {
+            if (shouldEnd()) endAnalysis(start.generation)
+        }
+    }
+
     init {
         combine(
             container.profileRepository.profile,
@@ -357,58 +400,32 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun analyzeText(description: String) {
-        viewModelScope.launch {
-            val start = beginAnalysis(phased = true) { state ->
-                state.copy(
-                    pendingImageBytes = null,
-                    pendingFoodSource = FoodSource.TEXT_INPUT,
-                    pendingDraftImageFilename = null,
-                )
-            } ?: return@launch
-            discardPendingDraft(start.previousDraftImage)
-            try {
-                val analysis = container.foodAnalysis.analyzeText(description) { progress ->
-                    onFoodAnalysisProgress(start.generation, progress)
-                }
-                savePendingDraft(analysis, imageBytes = null, source = FoodSource.TEXT_INPUT, generation = start.generation)
-            } catch (e: AiError) {
-                failAnalysis(start.generation, e.message)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
-                )
-            } finally {
-                endAnalysis(start.generation)
+        runFoodAnalysis(phased = true, configure = { state ->
+            state.copy(
+                pendingImageBytes = null,
+                pendingFoodSource = FoodSource.TEXT_INPUT,
+                pendingDraftImageFilename = null,
+            )
+        }) { start ->
+            val analysis = container.foodAnalysis.analyzeText(description) { progress ->
+                onFoodAnalysisProgress(start.generation, progress)
             }
+            savePendingDraft(analysis, imageBytes = null, source = FoodSource.TEXT_INPUT, generation = start.generation)
         }
     }
 
     fun analyzePhoto(bytes: ByteArray) {
-        viewModelScope.launch {
-            val start = beginAnalysis(phased = true) { state ->
-                state.copy(
-                    pendingImageBytes = bytes,
-                    pendingFoodSource = FoodSource.SNAP_FOOD,
-                    pendingDraftImageFilename = null,
-                )
-            } ?: return@launch
-            discardPendingDraft(start.previousDraftImage)
-            try {
-                val analysis = container.foodAnalysis.analyzeAuto(bytes) { progress ->
-                    onFoodAnalysisProgress(start.generation, progress)
-                }
-                savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
-            } catch (e: AiError) {
-                failAnalysis(start.generation, e.message)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed)
-                )
-            } finally {
-                endAnalysis(start.generation)
+        runFoodAnalysis(phased = true, configure = { state ->
+            state.copy(
+                pendingImageBytes = bytes,
+                pendingFoodSource = FoodSource.SNAP_FOOD,
+                pendingDraftImageFilename = null,
+            )
+        }) { start ->
+            val analysis = container.foodAnalysis.analyzeAuto(bytes) { progress ->
+                onFoodAnalysisProgress(start.generation, progress)
             }
+            savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
         }
     }
 
@@ -422,18 +439,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 }
                 else -> images.first()
             }
-            val start = beginAnalysis(phased = true) { state ->
+            withFoodAnalysis(phased = true, configure = { state ->
                 state.copy(
                     pendingImageBytes = displayBytes,
                     pendingFoodSource = FoodSource.SNAP_FOOD,
                     pendingDraftImageFilename = null,
                 )
-            } ?: return@launch
-            if (!note.isNullOrBlank() && images.size == 1) {
-                savePendingInputDraft(images.first(), note, FoodSource.SNAP_FOOD)
-            }
-            discardPendingDraft(start.previousDraftImage)
-            try {
+            }) { start ->
+                if (!note.isNullOrBlank() && images.size == 1) {
+                    savePendingInputDraft(images.first(), note, FoodSource.SNAP_FOOD)
+                }
                 val analysis = container.foodAnalysis.analyzeFood(
                     images,
                     note?.takeIf { it.isNotBlank() },
@@ -447,15 +462,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     source = FoodSource.SNAP_FOOD,
                     generation = start.generation,
                 )
-            } catch (e: AiError) {
-                failAnalysis(start.generation, e.message)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed),
-                )
-            } finally {
-                endAnalysis(start.generation)
             }
         }
     }
@@ -474,26 +480,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun lookupBarcode(barcode: String) {
-        viewModelScope.launch {
-            val start = beginAnalysis { state ->
+        runFoodAnalysis(
+            defaultErrorRes = R.string.error_barcode_lookup_failed,
+            configure = { state ->
                 state.copy(
                     pendingImageBytes = null,
                     pendingFoodSource = FoodSource.BARCODE,
                     pendingDraftImageFilename = null,
                 )
-            } ?: return@launch
-            discardPendingDraft(start.previousDraftImage)
-            try {
-                val analysis = OpenFoodFactsService.lookup(barcode, container.prefs)
-                savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE, generation = start.generation)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_barcode_lookup_failed)
-                )
-            } finally {
-                endAnalysis(start.generation)
-            }
+            },
+        ) { start ->
+            val analysis = OpenFoodFactsService.lookup(barcode, container.prefs)
+            savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE, generation = start.generation)
         }
     }
 
@@ -503,61 +501,50 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      */
     fun analyzeGrounded(description: String?, imageBytes: ByteArray?) {
         if (!GroundedEntryFeature.ENABLED) return
-        viewModelScope.launch {
-            val images = listOfNotNull(imageBytes?.takeIf { it.isNotEmpty() })
-            val start = beginAnalysis(phased = true) { state ->
+        runFoodAnalysis(
+            phased = true,
+            shouldEnd = { _ui.value.pendingGroundedReview == null },
+            configure = { state ->
                 state.copy(
                     pendingImageBytes = imageBytes,
                     pendingFoodSource = FoodSource.GROUNDED,
                     pendingDraftImageFilename = null,
                     pendingGroundedReview = null,
                 )
-            } ?: return@launch
-            discardPendingDraft(start.previousDraftImage)
-            try {
-                val result = container.groundedFoodEntry.analyze(
-                    description = description,
-                    imageBytesList = images,
-                    onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
-                )
-                val needsReview = result.resolutions.any { it.needsUserChoice }
-                if (needsReview) {
-                    if (start.generation != analysisGeneration) return@launch
-                    synchronized(this@HomeViewModel) {
-                        analysisInFlight = false
-                    }
-                    container.analyzingFood.value = false
-                    _ui.value = _ui.value.copy(
-                        pendingGroundedReview = PendingGroundedReview(
-                            result = result,
-                            description = description,
-                            imageBytes = imageBytes,
-                        ),
-                        pendingAnalysis = null,
-                        analyzing = false,
-                        analysisPhase = null,
-                        inferringUnits = false,
-                        analysisPreview = null,
-                    )
-                } else {
-                    savePendingDraft(
-                        result.analysis,
+            },
+        ) { start ->
+            val images = listOfNotNull(imageBytes?.takeIf { it.isNotEmpty() })
+            val result = container.groundedFoodEntry.analyze(
+                description = description,
+                imageBytesList = images,
+                onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
+            )
+            val needsReview = result.resolutions.any { it.needsUserChoice }
+            if (needsReview) {
+                if (start.generation != analysisGeneration) return@runFoodAnalysis
+                synchronized(this@HomeViewModel) {
+                    analysisInFlight = false
+                }
+                container.analyzingFood.value = false
+                _ui.value = _ui.value.copy(
+                    pendingGroundedReview = PendingGroundedReview(
+                        result = result,
+                        description = description,
                         imageBytes = imageBytes,
-                        source = FoodSource.GROUNDED,
-                        generation = start.generation,
-                    )
-                }
-            } catch (e: AiError) {
-                failAnalysis(start.generation, e.message)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed),
+                    ),
+                    pendingAnalysis = null,
+                    analyzing = false,
+                    analysisPhase = null,
+                    inferringUnits = false,
+                    analysisPreview = null,
                 )
-            } finally {
-                if (_ui.value.pendingGroundedReview == null) {
-                    endAnalysis(start.generation)
-                }
+            } else {
+                savePendingDraft(
+                    result.analysis,
+                    imageBytes = imageBytes,
+                    source = FoodSource.GROUNDED,
+                    generation = start.generation,
+                )
             }
         }
     }
@@ -567,40 +554,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         gramOverrides: Map<Int, Double>,
     ) {
         val pending = _ui.value.pendingGroundedReview ?: return
-        viewModelScope.launch {
-            val start = beginAnalysis(phased = true) { state ->
-                state.copy(
-                    pendingGroundedReview = null,
-                    pendingImageBytes = pending.imageBytes,
-                    pendingFoodSource = FoodSource.GROUNDED,
-                    pendingDraftImageFilename = null,
-                )
-            } ?: return@launch
-            try {
-                val result = container.groundedFoodEntry.analyze(
-                    description = pending.description,
-                    imageBytesList = listOfNotNull(pending.imageBytes),
-                    onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
-                    selectedSourceIds = selectedSourceIds,
-                    gramOverrides = gramOverrides,
-                    priorRecognition = pending.result.recognition,
-                )
-                savePendingDraft(
-                    result.analysis,
-                    imageBytes = pending.imageBytes,
-                    source = FoodSource.GROUNDED,
-                    generation = start.generation,
-                )
-            } catch (e: AiError) {
-                failAnalysis(start.generation, e.message)
-            } catch (e: Throwable) {
-                failAnalysis(
-                    start.generation,
-                    e.localizedMessage ?: container.appContext.getString(R.string.error_analysis_failed),
-                )
-            } finally {
-                endAnalysis(start.generation)
-            }
+        runFoodAnalysis(phased = true, configure = { state ->
+            state.copy(
+                pendingGroundedReview = null,
+                pendingImageBytes = pending.imageBytes,
+                pendingFoodSource = FoodSource.GROUNDED,
+                pendingDraftImageFilename = null,
+            )
+        }) { start ->
+            val result = container.groundedFoodEntry.analyze(
+                description = pending.description,
+                imageBytesList = listOfNotNull(pending.imageBytes),
+                onProgress = { progress -> onFoodAnalysisProgress(start.generation, progress) },
+                selectedSourceIds = selectedSourceIds,
+                gramOverrides = gramOverrides,
+                priorRecognition = pending.result.recognition,
+            )
+            savePendingDraft(
+                result.analysis,
+                imageBytes = pending.imageBytes,
+                source = FoodSource.GROUNDED,
+                generation = start.generation,
+            )
         }
     }
 
@@ -640,7 +615,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 val effectiveScale = if (editedAnalysis != null) 1.0 else scale
                 fun s(v: Int) = (v * effectiveScale).roundToInt()
                 fun macro(v: Double) = v * effectiveScale
-                fun s(v: Double?) = v?.let { it * effectiveScale }
                 val entrySource = reviewSource?.source
                     ?: pendingFoodSource
                     ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT
@@ -649,46 +623,26 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // servings merge. Brand-new logs (or a rename that collides)
                 // get "Name (2)" etc.
                 val resolvedName = resolveNewFoodName(rawName, relogTemplate = reviewSource)
-                val entry = FoodEntry(
-                    id = id,
-                    name = resolvedName,
-                    calories = s(analysis.calories),
-                    protein = macro(analysis.protein),
-                    carbs = macro(analysis.carbs),
-                    fat = macro(analysis.fat),
-                    timestamp = timestampForSelectedDay(),
-                    imageFilename = filename,
-                    emoji = analysis.emoji,
-                    source = entrySource,
-                    mealType = mealType,
-                    sugar = s(analysis.sugar),
-                    addedSugar = s(analysis.addedSugar),
-                    fiber = s(analysis.fiber),
-                    saturatedFat = s(analysis.saturatedFat),
-                    monounsaturatedFat = s(analysis.monounsaturatedFat),
-                    polyunsaturatedFat = s(analysis.polyunsaturatedFat),
-                    cholesterol = s(analysis.cholesterol),
-                    sodium = s(analysis.sodium),
-                    potassium = s(analysis.potassium),
-                    transFat = s(analysis.transFat),
-                    calcium = s(analysis.calcium),
-                    iron = s(analysis.iron),
-                    magnesium = s(analysis.magnesium),
-                    zinc = s(analysis.zinc),
-                    vitaminA = s(analysis.vitaminA),
-                    vitaminC = s(analysis.vitaminC),
-                    vitaminD = s(analysis.vitaminD),
-                    vitaminB12 = s(analysis.vitaminB12),
-                    vitaminE = s(analysis.vitaminE),
-                    vitaminK = s(analysis.vitaminK),
-                    folate = s(analysis.folate),
-                    omega3 = s(analysis.omega3),
-                    servingSizeGrams = servingGrams ?: analysis.servingSizeGrams,
-                    servingUnitOptions = analysis.servingUnitOptions,
-                    selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
-                    selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                    customNote = analysis.customNote,
-                    grounding = analysis.grounding,
+                val entry = analysis.toMicronutrients().scaled(effectiveScale, round1 = false).applyTo(
+                    FoodEntry(
+                        id = id,
+                        name = resolvedName,
+                        calories = s(analysis.calories),
+                        protein = macro(analysis.protein),
+                        carbs = macro(analysis.carbs),
+                        fat = macro(analysis.fat),
+                        timestamp = timestampForSelectedDay(),
+                        imageFilename = filename,
+                        emoji = analysis.emoji,
+                        source = entrySource,
+                        mealType = mealType,
+                        servingSizeGrams = servingGrams ?: analysis.servingSizeGrams,
+                        servingUnitOptions = analysis.servingUnitOptions,
+                        selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
+                        selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        customNote = analysis.customNote,
+                        grounding = analysis.grounding,
+                    )
                 )
                 container.prefs.setPendingFoodAnalysisDraft(
                     PendingFoodAnalysisDraft(
@@ -1123,39 +1077,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
  * before re-logging. The serving size defaults to 100g if the original entry
  * didn't record one — same fallback as EditFoodEntrySheet.
  */
-private fun FoodEntry.toAnalysis(): FoodAnalysis = FoodAnalysis(
-    name = name,
-    calories = calories,
-    protein = protein,
-    carbs = carbs,
-    fat = fat,
-    servingSizeGrams = servingSizeGrams ?: 100.0,
-    emoji = emoji,
-    sugar = sugar,
-    addedSugar = addedSugar,
-    fiber = fiber,
-    saturatedFat = saturatedFat,
-    monounsaturatedFat = monounsaturatedFat,
-    polyunsaturatedFat = polyunsaturatedFat,
-    cholesterol = cholesterol,
-    sodium = sodium,
-    potassium = potassium,
-    transFat = transFat,
-    calcium = calcium,
-    iron = iron,
-    magnesium = magnesium,
-    zinc = zinc,
-    vitaminA = vitaminA,
-    vitaminC = vitaminC,
-    vitaminD = vitaminD,
-    vitaminB12 = vitaminB12,
-    vitaminE = vitaminE,
-    vitaminK = vitaminK,
-    folate = folate,
-    omega3 = omega3,
-    servingUnitOptions = servingUnitOptions,
-    selectedServingUnit = selectedServingUnit,
-    selectedServingQuantity = selectedServingQuantity,
-    customNote = customNote,
-    grounding = grounding,
+private fun FoodEntry.toAnalysis(): FoodAnalysis = MicronutrientValues.from(this).applyTo(
+    FoodAnalysis(
+        name = name,
+        calories = calories,
+        protein = protein,
+        carbs = carbs,
+        fat = fat,
+        servingSizeGrams = servingSizeGrams ?: 100.0,
+        emoji = emoji,
+        servingUnitOptions = servingUnitOptions,
+        selectedServingUnit = selectedServingUnit,
+        selectedServingQuantity = selectedServingQuantity,
+        customNote = customNote,
+        grounding = grounding,
+    )
 )
