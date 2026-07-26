@@ -44,8 +44,10 @@ Draft metadata lives in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml).
 
 - **Tags ≤ v1.14.1:** Gradle task `fdroidRelease` (historical product flavor).
 - **Tags after the flavor removal:** Gradle metadata `yes` (runs `assembleRelease`; not a flavor name)
+- **Inclusion MR:** refresh [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) via `./scripts/submit_fdroiddata_mr.sh` — do not open a duplicate MR/branch while that review is open.
+- **Builds entry:** replace the previous version with the new one; set `commit:` to the full release commit hash (not `vX.Y.Z`).
 
-Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gradle.kts` (`devenv tasks run release:check-metadata`).
+Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gradle.kts` (`devenv tasks run release:check-metadata`). Full workflow: [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md).
 
 ## Dependencies note
 

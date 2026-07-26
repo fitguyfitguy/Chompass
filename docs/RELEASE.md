@@ -159,14 +159,17 @@ Prefer the emulator over coordinate-based phone taps when automating; screen siz
 
 ## F-Droid follow-up
 
-Before submitting to [fdroiddata](https://gitlab.com/fdroid/fdroiddata):
+**Canonical inclusion MR:** [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) (branch `org.codeberg.fitguy.nofud`). Refresh that MR; never open a second inclusion MR while it is open.
+
+Before / during F-Droid review:
 
 - Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`DISTRIBUTION.md`](DISTRIBUTION.md)
-- Add store metadata under `metadata/en-US/`
-- Open an MR with `metadata/app.chompass.yml` using the signing key fingerprint above
+- Keep store metadata under `metadata/en-US/`
 - Keep `docs/fdroid/app.chompass.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
+- In the YAML `Builds:` block: **one** current version entry, `commit:` = **full git commit hash** of the release commit (not the tag name)
+- Push metadata with `GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh` (updates !42984)
 
-See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the full checklist and fdroiddata MR body.
+See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the checklist and fdroiddata MR body.
 
 ## Calculation changes
 
