@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -30,7 +31,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -64,9 +64,13 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
+import app.chompass.models.MicronutrientField
+import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.services.ai.FoodAnalysis
+import app.chompass.services.ai.applyTo
+import app.chompass.services.ai.toMicronutrients
 import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
 import java.time.Instant
@@ -162,28 +166,7 @@ fun FoodResultSheet(
     var editableProtein by remember(analysis) { mutableStateOf(analysis.protein) }
     var editableCarbs by remember(analysis) { mutableStateOf(analysis.carbs) }
     var editableFat by remember(analysis) { mutableStateOf(analysis.fat) }
-    var editableSugar by remember(analysis) { mutableStateOf(analysis.sugar) }
-    var editableAddedSugar by remember(analysis) { mutableStateOf(analysis.addedSugar) }
-    var editableFiber by remember(analysis) { mutableStateOf(analysis.fiber) }
-    var editableSaturatedFat by remember(analysis) { mutableStateOf(analysis.saturatedFat) }
-    var editableMonounsaturatedFat by remember(analysis) { mutableStateOf(analysis.monounsaturatedFat) }
-    var editablePolyunsaturatedFat by remember(analysis) { mutableStateOf(analysis.polyunsaturatedFat) }
-    var editableCholesterol by remember(analysis) { mutableStateOf(analysis.cholesterol) }
-    var editableSodium by remember(analysis) { mutableStateOf(analysis.sodium) }
-    var editablePotassium by remember(analysis) { mutableStateOf(analysis.potassium) }
-    var editableTransFat by remember(analysis) { mutableStateOf(analysis.transFat) }
-    var editableCalcium by remember(analysis) { mutableStateOf(analysis.calcium) }
-    var editableIron by remember(analysis) { mutableStateOf(analysis.iron) }
-    var editableMagnesium by remember(analysis) { mutableStateOf(analysis.magnesium) }
-    var editableZinc by remember(analysis) { mutableStateOf(analysis.zinc) }
-    var editableVitaminA by remember(analysis) { mutableStateOf(analysis.vitaminA) }
-    var editableVitaminC by remember(analysis) { mutableStateOf(analysis.vitaminC) }
-    var editableVitaminD by remember(analysis) { mutableStateOf(analysis.vitaminD) }
-    var editableVitaminB12 by remember(analysis) { mutableStateOf(analysis.vitaminB12) }
-    var editableVitaminE by remember(analysis) { mutableStateOf(analysis.vitaminE) }
-    var editableVitaminK by remember(analysis) { mutableStateOf(analysis.vitaminK) }
-    var editableFolate by remember(analysis) { mutableStateOf(analysis.folate) }
-    var editableOmega3 by remember(analysis) { mutableStateOf(analysis.omega3) }
+    var editableMicros by remember(analysis) { mutableStateOf(analysis.toMicronutrients()) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
 
@@ -221,81 +204,40 @@ fun FoodResultSheet(
         text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
     fun baseDoubleFromText(text: String): Double = (decimalValue(text) ?: 0.0) / scale.coerceAtLeast(0.0001)
     fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
-    fun editedAnalysis() = analysis.copy(
-        name = name.trim().ifEmpty { analysis.name },
-        calories = editableCalories,
-        protein = editableProtein,
-        carbs = editableCarbs,
-        fat = editableFat,
-        sugar = editableSugar,
-        addedSugar = editableAddedSugar,
-        fiber = editableFiber,
-        saturatedFat = editableSaturatedFat,
-        monounsaturatedFat = editableMonounsaturatedFat,
-        polyunsaturatedFat = editablePolyunsaturatedFat,
-        cholesterol = editableCholesterol,
-        sodium = editableSodium,
-        potassium = editablePotassium,
-        transFat = editableTransFat,
-        calcium = editableCalcium,
-        iron = editableIron,
-        magnesium = editableMagnesium,
-        zinc = editableZinc,
-        vitaminA = editableVitaminA,
-        vitaminC = editableVitaminC,
-        vitaminD = editableVitaminD,
-        vitaminB12 = editableVitaminB12,
-        vitaminE = editableVitaminE,
-        vitaminK = editableVitaminK,
-        folate = editableFolate,
-        omega3 = editableOmega3,
-        grounding = analysis.grounding?.copy(userCorrected = true),
+    fun editedAnalysis() = editableMicros.applyTo(
+        analysis.copy(
+            name = name.trim().ifEmpty { analysis.name },
+            calories = editableCalories,
+            protein = editableProtein,
+            carbs = editableCarbs,
+            fat = editableFat,
+            grounding = analysis.grounding?.copy(userCorrected = true),
+        )
     )
-    fun previewEntry() = FoodEntry(
-        name = name.trim().ifEmpty { analysis.name },
-        calories = scaledInt(editableCalories),
-        protein = scaledMacro(editableProtein),
-        carbs = scaledMacro(editableCarbs),
-        fat = scaledMacro(editableFat),
-        timestamp = Instant.now(),
-        imageFilename = null,
-        emoji = analysis.emoji,
-        source = source,
-        mealType = mealType,
-        sugar = scaledD(editableSugar),
-        addedSugar = scaledD(editableAddedSugar),
-        fiber = scaledD(editableFiber),
-        saturatedFat = scaledD(editableSaturatedFat),
-        monounsaturatedFat = scaledD(editableMonounsaturatedFat),
-        polyunsaturatedFat = scaledD(editablePolyunsaturatedFat),
-        cholesterol = scaledD(editableCholesterol),
-        sodium = scaledD(editableSodium),
-        potassium = scaledD(editablePotassium),
-        transFat = scaledD(editableTransFat),
-        calcium = scaledD(editableCalcium),
-        iron = scaledD(editableIron),
-        magnesium = scaledD(editableMagnesium),
-        zinc = scaledD(editableZinc),
-        vitaminA = scaledD(editableVitaminA),
-        vitaminC = scaledD(editableVitaminC),
-        vitaminD = scaledD(editableVitaminD),
-        vitaminB12 = scaledD(editableVitaminB12),
-        vitaminE = scaledD(editableVitaminE),
-        vitaminK = scaledD(editableVitaminK),
-        folate = scaledD(editableFolate),
-        omega3 = scaledD(editableOmega3),
-        servingSizeGrams = servingGrams,
-        servingUnitOptions = analysis.servingUnitOptions,
-        selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-        selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity
+    fun previewEntry() = editableMicros.scaled(scale).applyTo(
+        FoodEntry(
+            name = name.trim().ifEmpty { analysis.name },
+            calories = scaledInt(editableCalories),
+            protein = scaledMacro(editableProtein),
+            carbs = scaledMacro(editableCarbs),
+            fat = scaledMacro(editableFat),
+            timestamp = Instant.now(),
+            imageFilename = null,
+            emoji = analysis.emoji,
+            source = source,
+            mealType = mealType,
+            servingSizeGrams = servingGrams,
+            servingUnitOptions = analysis.servingUnitOptions,
+            selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+            selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity
+        )
     )
     var whatIfEntry by remember { mutableStateOf<FoodEntry?>(null) }
 
-    ModalBottomSheet(
-        onDismissRequest = { if (!isSaving) onDismiss() },
+    ChompassBottomSheet(
+        onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = sheetSurface
+        containerColor = sheetSurface,
     ) {
         SheetReviewToolbar(
             title = stringResource(R.string.sheet_review_food),
@@ -527,12 +469,17 @@ fun FoodResultSheet(
                     SheetHairline()
                     ReviewNutritionValueRow(
                         label = stringResource(R.string.nutrition_label_fiber),
-                        displayValue = displayD(scaledD(editableFiber)),
-                        editValue = editD(scaledD(editableFiber)),
+                        displayValue = displayD(scaledD(editableMicros.fiber)),
+                        editValue = editD(scaledD(editableMicros.fiber)),
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked,
                         accentColor = AppColors.Fiber,
-                        onEdit = { editableFiber = baseOptionalFromText(it) }
+                        onEdit = {
+                            editableMicros = editableMicros.with(
+                                MicronutrientField.FIBER,
+                                baseOptionalFromText(it),
+                            )
+                        }
                     )
                 }
             }
@@ -553,43 +500,19 @@ fun FoodResultSheet(
             if (moreNutritionExpanded) {
                 item {
                     SheetPillCard {
-                        val gUnit = stringResource(R.string.unit_g)
-                        val mgUnit = stringResource(R.string.unit_mg)
-                        val mcgUnit = stringResource(R.string.unit_mcg)
-                        val micros = listOf(
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_sugar), scaledD(editableSugar), gUnit, { editableSugar = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_added_sugar), scaledD(editableAddedSugar), gUnit, { editableAddedSugar = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_saturated_fat), scaledD(editableSaturatedFat), gUnit, { editableSaturatedFat = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_mono_fat), scaledD(editableMonounsaturatedFat), gUnit, { editableMonounsaturatedFat = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_poly_fat), scaledD(editablePolyunsaturatedFat), gUnit, { editablePolyunsaturatedFat = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_cholesterol), scaledD(editableCholesterol), mgUnit, { editableCholesterol = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_sodium), scaledD(editableSodium), mgUnit, { editableSodium = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.sheet_micro_potassium), scaledD(editablePotassium), mgUnit, { editablePotassium = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_trans_fat), scaledD(editableTransFat), gUnit, { editableTransFat = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_calcium), scaledD(editableCalcium), mgUnit, { editableCalcium = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_iron), scaledD(editableIron), mgUnit, { editableIron = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_magnesium), scaledD(editableMagnesium), mgUnit, { editableMagnesium = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_zinc), scaledD(editableZinc), mgUnit, { editableZinc = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_a), scaledD(editableVitaminA), mcgUnit, { editableVitaminA = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_c), scaledD(editableVitaminC), mgUnit, { editableVitaminC = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_d), scaledD(editableVitaminD), mcgUnit, { editableVitaminD = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_b12), scaledD(editableVitaminB12), mcgUnit, { editableVitaminB12 = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_e), scaledD(editableVitaminE), mgUnit, { editableVitaminE = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_vitamin_k), scaledD(editableVitaminK), mcgUnit, { editableVitaminK = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_folate), scaledD(editableFolate), mcgUnit, { editableFolate = baseOptionalFromText(it) }),
-                            ReviewNutrientEditSpec(stringResource(R.string.nutrition_label_omega3), scaledD(editableOmega3), gUnit, { editableOmega3 = baseOptionalFromText(it) })
-                        )
-                        micros.forEachIndexed { idx, spec ->
+                        MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
                             if (idx > 0) SheetHairline()
+                            val value = scaledD(editableMicros[field])
                             ReviewNutritionValueRow(
-                                label = spec.label,
-                                displayValue = displayD(spec.value),
-                                editValue = editD(spec.value),
-                                unit = spec.unit,
+                                label = stringResource(field.labelRes),
+                                displayValue = displayD(value),
+                                editValue = editD(value),
+                                unit = stringResource(field.unitRes),
                                 unlocked = nutritionUnlocked,
                                 dim = true,
-                                accentColor = spec.accentColor,
-                                onEdit = spec.onEdit
+                                onEdit = {
+                                    editableMicros = editableMicros.with(field, baseOptionalFromText(it))
+                                }
                             )
                         }
                     }
@@ -659,14 +582,6 @@ fun FoodResultSheet(
         )
     }
 }
-
-private data class ReviewNutrientEditSpec(
-    val label: String,
-    val value: Double?,
-    val unit: String,
-    val onEdit: (String) -> Unit,
-    val accentColor: Color? = null,
-)
 
 @Composable
 internal fun SheetSectionHeaderWithLock(

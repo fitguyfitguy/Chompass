@@ -6,8 +6,10 @@ package app.chompass.services.grounding
  * **WIP — not production.** Keep [ENABLED] **false** until every readiness item in
  * `docs/GROUNDED_ENTRY.md` is met (text grounded still trails single-shot on
  * WMAPE / ±20% kcal as of 2026-07-22). The offline USDA SQLite ships in **debug**
- * APKs only (`src/debug/assets`); release builds omit it. Entry UI stays hidden
- * while this flag is false.
+ * APKs only (`src/debug/assets`); release builds omit it. Heavy grounded Kotlin
+ * (orchestrator, USDA index, tool loop, sheets) is compiled from `src/grounded`
+ * for debug/test and replaced by `src/groundedStubs` in release. Entry UI stays
+ * hidden while this flag is false.
  */
 object GroundedEntryFeature {
     /** Do not set true for release until docs/GROUNDED_ENTRY.md checklist is green. */

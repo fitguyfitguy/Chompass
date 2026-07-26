@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassBottomSheet
 import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -27,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -78,8 +78,8 @@ fun GroundedEntrySheet(
 
     val canSubmit = !busy && (note.isNotBlank() || imageBytes != null)
 
-    ModalBottomSheet(
-        onDismissRequest = { if (!busy) onDismiss() },
+    ChompassBottomSheet(
+        onDismiss = { if (!busy) onDismiss() },
         sheetState = sheetState,
     ) {
         Column(

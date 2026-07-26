@@ -256,76 +256,66 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun setHomeShowSteps(enabled: Boolean) {
-        viewModelScope.launch { container.prefs.setHomeShowSteps(enabled) }
+    fun setHomeShowSteps(enabled: Boolean) = launchPref {
+        container.prefs.setHomeShowSteps(enabled)
     }
 
-    fun setHomeShowActiveCalories(enabled: Boolean) {
-        viewModelScope.launch { container.prefs.setHomeShowActiveCalories(enabled) }
+    fun setHomeShowActiveCalories(enabled: Boolean) = launchPref {
+        container.prefs.setHomeShowActiveCalories(enabled)
     }
 
-    fun setHomeStepGoal(goal: Int) {
-        viewModelScope.launch { container.prefs.setHomeStepGoal(goal) }
+    fun setHomeStepGoal(goal: Int) = launchPref {
+        container.prefs.setHomeStepGoal(goal)
     }
 
-    fun setHomeCalorieDisplayMode(mode: HomeCalorieDisplayMode) {
-        viewModelScope.launch { container.prefs.setHomeCalorieDisplayMode(mode.storageKey) }
+    fun setHomeCalorieDisplayMode(mode: HomeCalorieDisplayMode) = launchPref {
+        container.prefs.setHomeCalorieDisplayMode(mode.storageKey)
     }
 
-    fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) {
-        viewModelScope.launch { container.prefs.setFoodLogMacroChips(FoodLogMacroChip.toStorage(chips)) }
+    fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) = launchPref {
+        container.prefs.setFoodLogMacroChips(FoodLogMacroChip.toStorage(chips))
     }
 
-    fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) {
-        viewModelScope.launch {
-            container.prefs.setOptionalNutrientGoals(goals)
-            _ui.value = _ui.value.copy(optionalNutrientGoals = goals)
-        }
-    }
+    fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) = updateUiPref(
+        { container.prefs.setOptionalNutrientGoals(goals) },
+        { copy(optionalNutrientGoals = goals) },
+    )
 
-    fun setUserContext(value: String) {
-        viewModelScope.launch {
-            container.prefs.setUserContext(value)
-            _ui.value = _ui.value.copy(userContext = value.trim())
-        }
-    }
+    fun setUserContext(value: String) = updateUiPref(
+        { container.prefs.setUserContext(value) },
+        { copy(userContext = value.trim()) },
+    )
 
     fun setMaxResponseTokens(v: Int) {
         val clamped = app.chompass.data.clampMaxResponseTokens(v)
-        viewModelScope.launch {
-            container.prefs.setMaxResponseTokens(clamped)
-            _ui.value = _ui.value.copy(maxResponseTokens = clamped)
-        }
+        updateUiPref(
+            { container.prefs.setMaxResponseTokens(clamped) },
+            { copy(maxResponseTokens = clamped) },
+        )
     }
 
     fun setAiReadTimeoutSeconds(v: Int) {
         val clamped = app.chompass.data.clampAiReadTimeoutSeconds(v)
-        viewModelScope.launch {
-            container.prefs.setAiReadTimeoutSeconds(clamped)
-            _ui.value = _ui.value.copy(aiReadTimeoutSeconds = clamped)
-        }
+        updateUiPref(
+            { container.prefs.setAiReadTimeoutSeconds(clamped) },
+            { copy(aiReadTimeoutSeconds = clamped) },
+        )
     }
 
-    fun setGeminiGoogleSearchEnabled(v: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setGeminiGoogleSearchEnabled(v)
-            _ui.value = _ui.value.copy(geminiGoogleSearchEnabled = v)
-        }
-    }
+    fun setGeminiGoogleSearchEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setGeminiGoogleSearchEnabled(v) },
+        { copy(geminiGoogleSearchEnabled = v) },
+    )
 
-    fun setPortionClarifyEnabled(v: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setPortionClarifyEnabled(v)
-            _ui.value = _ui.value.copy(portionClarifyEnabled = v)
-        }
-    }
+    fun setPortionClarifyEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setPortionClarifyEnabled(v) },
+        { copy(portionClarifyEnabled = v) },
+    )
 
-    fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) {
-        viewModelScope.launch {
-            container.prefs.setServingUnitInferenceMode(mode)
-            _ui.value = _ui.value.copy(servingUnitInferenceMode = mode)
-        }
-    }
+    fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) = updateUiPref(
+        { container.prefs.setServingUnitInferenceMode(mode) },
+        { copy(servingUnitInferenceMode = mode) },
+    )
 
     fun setHeuristicRuleEnabled(ruleId: String, enabled: Boolean) {
         viewModelScope.launch {
@@ -391,49 +381,41 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun setAppearanceMode(mode: String) {
-        viewModelScope.launch {
-            container.prefs.setAppearanceMode(mode)
-            _ui.value = _ui.value.copy(appearanceMode = mode)
-        }
-    }
+    fun setAppearanceMode(mode: String) = updateUiPref(
+        { container.prefs.setAppearanceMode(mode) },
+        { copy(appearanceMode = mode) },
+    )
 
-    fun setAppThemeColor(themeColor: AppThemeColor) {
-        viewModelScope.launch {
+    fun setAppThemeColor(themeColor: AppThemeColor) = updateUiPref(
+        {
             container.prefs.setAppThemeColor(themeColor.key)
             AndroidAppIconManager.apply(container.appContext, themeColor)
-            _ui.value = _ui.value.copy(appThemeColor = themeColor)
-        }
-    }
+        },
+        { copy(appThemeColor = themeColor) },
+    )
 
-    fun setGlassBlurEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setGlassBlurEnabled(enabled)
-            _ui.value = _ui.value.copy(glassBlurEnabled = enabled)
-        }
-    }
+    fun setGlassBlurEnabled(enabled: Boolean) = updateUiPref(
+        { container.prefs.setGlassBlurEnabled(enabled) },
+        { copy(glassBlurEnabled = enabled) },
+    )
 
-    fun setWeekStartsOnMonday(monday: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setWeekStartsOnMonday(monday)
-            _ui.value = _ui.value.copy(weekStartsOnMonday = monday)
-        }
-    }
+    fun setWeekStartsOnMonday(monday: Boolean) = updateUiPref(
+        { container.prefs.setWeekStartsOnMonday(monday) },
+        { copy(weekStartsOnMonday = monday) },
+    )
 
     fun setMealSchedule(schedule: app.chompass.models.MealSchedule) {
-        viewModelScope.launch {
-            val validated = schedule.validatedOrDefault()
-            container.prefs.setMealSchedule(validated)
-            _ui.value = _ui.value.copy(mealSchedule = validated)
-        }
+        val validated = schedule.validatedOrDefault()
+        updateUiPref(
+            { container.prefs.setMealSchedule(validated) },
+            { copy(mealSchedule = validated) },
+        )
     }
 
-    fun setFoodLogSortOrder(order: FoodLogSortOrder) {
-        viewModelScope.launch {
-            container.prefs.setFoodLogSortOrder(order.storageValue)
-            _ui.value = _ui.value.copy(foodLogSortOrder = order)
-        }
-    }
+    fun setFoodLogSortOrder(order: FoodLogSortOrder) = updateUiPref(
+        { container.prefs.setFoodLogSortOrder(order.storageValue) },
+        { copy(foodLogSortOrder = order) },
+    )
 
     fun selectProvider(p: AIProvider) {
         viewModelScope.launch {
@@ -530,19 +512,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun setHeightUnit(v: String) {
-        viewModelScope.launch {
-            container.prefs.setHeightUnit(v)
-            _ui.value = _ui.value.copy(heightUnit = v)
-        }
-    }
+    fun setHeightUnit(v: String) = updateUiPref(
+        { container.prefs.setHeightUnit(v) },
+        { copy(heightUnit = v) },
+    )
 
-    fun setWeightUnit(v: String) {
-        viewModelScope.launch {
-            container.prefs.setWeightUnit(v)
-            _ui.value = _ui.value.copy(weightUnit = v)
-        }
-    }
+    fun setWeightUnit(v: String) = updateUiPref(
+        { container.prefs.setWeightUnit(v) },
+        { copy(weightUnit = v) },
+    )
 
     fun setDietMode(mode: DietMode) {
         updateProfile { it.copy(dietMode = mode) }
@@ -558,66 +536,60 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun setPreferGramsByDefault(v: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setPreferGramsByDefault(v)
-            _ui.value = _ui.value.copy(preferGramsByDefault = v)
-        }
-    }
+    fun setPreferGramsByDefault(v: Boolean) = updateUiPref(
+        { container.prefs.setPreferGramsByDefault(v) },
+        { copy(preferGramsByDefault = v) },
+    )
 
-    fun setNotificationsEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setNotificationsEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setNotificationsEnabled(v)
             syncNotificationSchedules()
-            _ui.value = _ui.value.copy(notificationsEnabled = v)
-        }
-    }
+        },
+        { copy(notificationsEnabled = v) },
+    )
 
-    fun setStreakReminderEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setStreakReminderEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setStreakReminderEnabled(v)
             syncNotificationSchedules()
-            _ui.value = _ui.value.copy(streakReminderEnabled = v)
-        }
-    }
+        },
+        { copy(streakReminderEnabled = v) },
+    )
 
-    fun setDailySummaryEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setDailySummaryEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setDailySummaryEnabled(v)
             syncNotificationSchedules()
-            _ui.value = _ui.value.copy(dailySummaryEnabled = v)
-        }
-    }
+        },
+        { copy(dailySummaryEnabled = v) },
+    )
 
-    fun setWeightReminderEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setWeightReminderEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setWeightReminderEnabled(v)
             syncNotificationSchedules()
-            _ui.value = _ui.value.copy(weightReminderEnabled = v)
-        }
-    }
+        },
+        { copy(weightReminderEnabled = v) },
+    )
 
-    fun setBodyFatReminderEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setBodyFatReminderEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setBodyFatReminderEnabled(v)
             syncNotificationSchedules()
-            _ui.value = _ui.value.copy(bodyFatReminderEnabled = v)
-        }
-    }
+        },
+        { copy(bodyFatReminderEnabled = v) },
+    )
 
-    fun setGoalReachedNotificationsEnabled(v: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setGoalReachedNotificationsEnabled(v)
-            _ui.value = _ui.value.copy(goalReachedNotificationsEnabled = v)
-        }
-    }
+    fun setGoalReachedNotificationsEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setGoalReachedNotificationsEnabled(v) },
+        { copy(goalReachedNotificationsEnabled = v) },
+    )
 
-    fun setAppUpdateNotificationsEnabled(v: Boolean) {
-        viewModelScope.launch {
-            container.prefs.setAppUpdateNotificationsEnabled(v)
-            _ui.value = _ui.value.copy(appUpdateNotificationsEnabled = v)
-        }
-    }
+    fun setAppUpdateNotificationsEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setAppUpdateNotificationsEnabled(v) },
+        { copy(appUpdateNotificationsEnabled = v) },
+    )
 
     private suspend fun syncNotificationSchedules() {
         val enabled = container.prefs.notificationsEnabled.first()
@@ -684,28 +656,26 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun setWaterDailyGoalMl(v: Int) {
-        viewModelScope.launch {
-            container.prefs.setWaterDailyGoalMl(v)
-            _ui.value = _ui.value.copy(waterDailyGoalMl = v)
-        }
-    }
+    fun setWaterDailyGoalMl(v: Int) = updateUiPref(
+        { container.prefs.setWaterDailyGoalMl(v) },
+        { copy(waterDailyGoalMl = v) },
+    )
 
     fun setWaterQuickPresetsMl(amountsMl: List<Int>) {
-        viewModelScope.launch {
-            val validated = WaterQuickPresets(amountsMl).validatedOrDefault().amountsMl
-            container.prefs.setWaterQuickPresetsMl(validated)
-            _ui.value = _ui.value.copy(waterQuickPresetsMl = validated)
-        }
+        val validated = WaterQuickPresets(amountsMl).validatedOrDefault().amountsMl
+        updateUiPref(
+            { container.prefs.setWaterQuickPresetsMl(validated) },
+            { copy(waterQuickPresetsMl = validated) },
+        )
     }
 
-    fun setWaterReminderEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setWaterReminderEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setWaterReminderEnabled(v)
-            _ui.value = _ui.value.copy(waterReminderEnabled = v)
             syncNotificationSchedules()
-        }
-    }
+        },
+        { copy(waterReminderEnabled = v) },
+    )
 
     fun setHealthConnectEnabled(v: Boolean) {
         viewModelScope.launch {
@@ -1043,6 +1013,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.profileRepository.save(next)
             _ui.value = _ui.value.copy(profile = next, goalsNeedRecalc = needsRecalc(next))
         }
+    }
+
+    /** Persist a preference then mirror it into [SettingsUiState]. */
+    private inline fun updateUiPref(
+        crossinline persist: suspend () -> Unit,
+        crossinline reduce: SettingsUiState.() -> SettingsUiState,
+    ) {
+        viewModelScope.launch {
+            persist()
+            _ui.value = _ui.value.reduce()
+        }
+    }
+
+    private inline fun launchPref(crossinline block: suspend () -> Unit) {
+        viewModelScope.launch { block() }
     }
 
     /** Applies a calorie-goal edit: locked macros stay, unlocked macros rescale to the new total.
