@@ -3,7 +3,7 @@
 Checklist and merge-request text for adding Chompass to [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
 
 **Application ID:** `app.chompass`  
-**Current version:** 3.1.0 (versionCode 29)  
+**Current version:** 3.1.1 (versionCode 30)  
 **Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256:** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf`
 
@@ -188,4 +188,4 @@ For each release:
 5. Push upstream metadata to Codeberg `main` before fdroiddata picks up the tag
 6. F-Droid `checkupdates` may open a follow-up MR automatically; otherwise refresh with `./scripts/submit_fdroiddata_mr.sh`
 
-**Latest release (2026-07-25):** v3.1.0 — portion check beta, onboarding drafts, legacy diary import. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.1.0
+**Latest release (2026-07-26):** v3.1.1 — camera scale tip, clearer Active calorie / Activity Level guidance. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.1.1

@@ -1,0 +1,2 @@
+• Camera scale tip during food photo capture for better portion estimates
+• Clearer Active calorie / Activity Level guidance when Health Connect Add Active is on
