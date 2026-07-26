@@ -23,7 +23,6 @@ enum class BodyMetricsFormat(val label: String, val ext: String, val mime: Strin
  * JSON carries entry ids so a round-trip re-import upserts in place.
  */
 object BodyMetricsExporter {
-
     const val APP_NAME = "Chompass"
     const val KIND = "body_metrics"
     const val FORMAT_VERSION = "1.0"

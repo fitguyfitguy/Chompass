@@ -15,7 +15,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import app.chompass.services.ai.FoodAnalysis
@@ -25,22 +24,16 @@ import androidx.compose.material.icons.filled.IosShare
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.UnfoldMore
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import app.chompass.ui.util.clockTimePattern
@@ -70,17 +62,15 @@ import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import app.chompass.ui.components.rememberFoodImage
 
 /**
  * Edit page for an existing FoodEntry. Visually identical to [FoodResultSheet]
@@ -148,7 +138,7 @@ fun EditFoodEntrySheet(
     var loggedTime by remember(entry.id, entry.timestamp) { mutableStateOf(initialLoggedAt.toLocalTime().withSecond(0).withNano(0)) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val context = LocalContext.current
     val dateFormatter = remember { DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US) }
@@ -269,9 +259,7 @@ fun EditFoodEntrySheet(
             item {
                 val ctx = LocalContext.current
                 val container = (ctx.applicationContext as app.chompass.ChompassApp).container
-                val bitmap = rememberDecodedBitmap(currentBaseEntry.imageFilename) { filename ->
-                    filename?.let { container.imageStore.load(it) }
-                }
+                val bitmap = rememberFoodImage(currentBaseEntry.imageFilename, container.imageStore)
                 Box(
                     Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
@@ -588,14 +576,6 @@ fun EditFoodEntrySheet(
             onDismiss = { showTimePicker = false }
         )
     }
-}
-
-@Composable
-private fun <K> rememberDecodedBitmap(key: K, decode: (K) -> android.graphics.Bitmap?): android.graphics.Bitmap? {
-    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = key) {
-        value = withContext(Dispatchers.Default) { decode(key) }
-    }
-    return state.value
 }
 
 @Composable

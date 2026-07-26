@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -39,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -48,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -65,7 +64,6 @@ import app.chompass.models.FoodSource
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
 import app.chompass.models.MicronutrientField
-import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.services.ai.FoodAnalysis
@@ -74,9 +72,8 @@ import app.chompass.services.ai.toMicronutrients
 import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
 import java.time.Instant
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import app.chompass.ui.components.rememberDecodedBitmap
 
 /** JFB/Nutrition5k-validated portion clarification eval; see docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1.
  *  Above this weight (or with no natural serving unit), photo estimates are most likely to be
@@ -185,7 +182,7 @@ fun FoodResultSheet(
         }
     }
 
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -771,25 +768,25 @@ private fun WhatIfMealImpactDialog(
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_protein),
-                        added = "+${whatIfGrams(entry.protein)}",
-                        total = profile?.let { "${whatIfGrams(after.protein)} / ${it.effectiveProtein}g" }
-                            ?: whatIfGrams(after.protein),
+                        added = "+${MacroValueFormatter.withUnit(entry.protein)}",
+                        total = profile?.let { "${MacroValueFormatter.withUnit(after.protein)} / ${it.effectiveProtein}g" }
+                            ?: MacroValueFormatter.withUnit(after.protein),
                         accentColor = AppColors.Protein
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_carbs),
-                        added = "+${whatIfGrams(entry.carbs)}",
-                        total = profile?.let { "${whatIfGrams(after.carbs)} / ${it.effectiveCarbs}g" }
-                            ?: whatIfGrams(after.carbs),
+                        added = "+${MacroValueFormatter.withUnit(entry.carbs)}",
+                        total = profile?.let { "${MacroValueFormatter.withUnit(after.carbs)} / ${it.effectiveCarbs}g" }
+                            ?: MacroValueFormatter.withUnit(after.carbs),
                         accentColor = AppColors.Carbs
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_fat),
-                        added = "+${whatIfGrams(entry.fat)}",
-                        total = profile?.let { "${whatIfGrams(after.fat)} / ${it.effectiveFat}g" }
-                            ?: whatIfGrams(after.fat),
+                        added = "+${MacroValueFormatter.withUnit(entry.fat)}",
+                        total = profile?.let { "${MacroValueFormatter.withUnit(after.fat)} / ${it.effectiveFat}g" }
+                            ?: MacroValueFormatter.withUnit(after.fat),
                         accentColor = AppColors.Fat
                     )
                 }
@@ -872,8 +869,6 @@ private fun WhatIfImpactRow(
     }
 }
 
-private fun whatIfGrams(value: Double): String = "${MacroValueFormatter.string(value)}g"
-
 /** Beta portion-size clarification chip row (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1).
  *  Shown only for photo entries the heuristic flags as portion-uncertain; picking an
  *  option re-analyzes with the answer injected as extra context. */
@@ -937,18 +932,4 @@ private fun PortionClarifyRow(
             Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
         }
     }
-}
-
-@Composable
-private fun rememberDecodedBitmap(bytes: ByteArray?): android.graphics.Bitmap? {
-    val state = produceState<android.graphics.Bitmap?>(initialValue = null, key1 = bytes) {
-        value = if (bytes == null) {
-            null
-        } else {
-            withContext(Dispatchers.Default) {
-                android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            }
-        }
-    }
-    return state.value
 }

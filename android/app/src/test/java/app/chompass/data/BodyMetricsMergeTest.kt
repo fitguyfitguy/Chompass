@@ -9,7 +9,6 @@ import java.time.Instant
 import java.util.UUID
 
 class BodyMetricsMergeTest {
-
     private val t0 = Instant.parse("2026-01-02T08:30:00Z")
 
     @Test

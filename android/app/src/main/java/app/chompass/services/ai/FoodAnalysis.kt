@@ -8,7 +8,6 @@ import app.chompass.models.OptionalNutrientGoals
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 fun MicronutrientValues.applyTo(analysis: FoodAnalysis): FoodAnalysis = analysis.copy(
@@ -221,7 +220,6 @@ data class GoalCalculation(
 )
 
 internal object FoodJsonParser {
-
     fun extractJson(text: String): String {
         var cleaned = text.trim()
 

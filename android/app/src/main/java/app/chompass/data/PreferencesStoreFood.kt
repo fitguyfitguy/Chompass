@@ -136,49 +136,25 @@ internal suspend fun PreferencesStore.setFavoriteKeysImpl(keys: Set<String>) {
      * into [foodEntries]) so a favorite survives deletion of the original
      * log entry, AND so user-defined order is preserved across restarts.
      */
-internal val PreferencesStore.favoriteFoodEntriesImpl: Flow<List<FoodEntry>> get() = dataStore.data.map { prefs ->
-        prefs[Keys.FAVORITE_ENTRIES]?.let {
-            runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull()
-        } ?: emptyList()
-    }
+internal val PreferencesStore.favoriteFoodEntriesImpl: Flow<List<FoodEntry>>
+    get() = listPref(Keys.FAVORITE_ENTRIES, FoodEntry.serializer())
 
-internal suspend fun PreferencesStore.setFavoriteFoodEntriesImpl(entries: List<FoodEntry>) {
-        dataStore.edit { it[Keys.FAVORITE_ENTRIES] = json.encodeToString(ListSerializer(FoodEntry.serializer()), entries) }
-    }
+internal suspend fun PreferencesStore.setFavoriteFoodEntriesImpl(entries: List<FoodEntry>) =
+    setListPref(Keys.FAVORITE_ENTRIES, FoodEntry.serializer(), entries)
 
-    // -- Pending food analysis draft --------------------------------------
-internal val PreferencesStore.pendingFoodAnalysisDraftImpl: Flow<PendingFoodAnalysisDraft?> get() = dataStore.data.map { prefs ->
-        prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT]?.let {
-            runCatching { json.decodeFromString<PendingFoodAnalysisDraft>(it) }.getOrNull()
-        }
-    }
+// -- Pending food analysis draft --------------------------------------
+internal val PreferencesStore.pendingFoodAnalysisDraftImpl: Flow<PendingFoodAnalysisDraft?>
+    get() = objectPref(Keys.PENDING_FOOD_ANALYSIS_DRAFT, PendingFoodAnalysisDraft.serializer())
 
-internal suspend fun PreferencesStore.setPendingFoodAnalysisDraftImpl(draft: PendingFoodAnalysisDraft?) {
-        dataStore.edit {
-            if (draft == null) {
-                it.remove(Keys.PENDING_FOOD_ANALYSIS_DRAFT)
-            } else {
-                it[Keys.PENDING_FOOD_ANALYSIS_DRAFT] = json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
-            }
-        }
-    }
+internal suspend fun PreferencesStore.setPendingFoodAnalysisDraftImpl(draft: PendingFoodAnalysisDraft?) =
+    setObjectPrefOrRemove(Keys.PENDING_FOOD_ANALYSIS_DRAFT, PendingFoodAnalysisDraft.serializer(), draft)
 
-    // -- Pending food input draft (failed camera+note input) --------------
-internal val PreferencesStore.pendingFoodInputDraftImpl: Flow<PendingFoodInputDraft?> get() = dataStore.data.map { prefs ->
-        prefs[Keys.PENDING_FOOD_INPUT_DRAFT]?.let {
-            runCatching { json.decodeFromString<PendingFoodInputDraft>(it) }.getOrNull()
-        }
-    }
+// -- Pending food input draft (failed camera+note input) --------------
+internal val PreferencesStore.pendingFoodInputDraftImpl: Flow<PendingFoodInputDraft?>
+    get() = objectPref(Keys.PENDING_FOOD_INPUT_DRAFT, PendingFoodInputDraft.serializer())
 
-internal suspend fun PreferencesStore.setPendingFoodInputDraftImpl(draft: PendingFoodInputDraft?) {
-        dataStore.edit {
-            if (draft == null) {
-                it.remove(Keys.PENDING_FOOD_INPUT_DRAFT)
-            } else {
-                it[Keys.PENDING_FOOD_INPUT_DRAFT] = json.encodeToString(PendingFoodInputDraft.serializer(), draft)
-            }
-        }
-    }
+internal suspend fun PreferencesStore.setPendingFoodInputDraftImpl(draft: PendingFoodInputDraft?) =
+    setObjectPrefOrRemove(Keys.PENDING_FOOD_INPUT_DRAFT, PendingFoodInputDraft.serializer(), draft)
 
 /**
  * Returns an atomic snapshot of every persisted food-image reference. A decode
@@ -211,5 +187,3 @@ internal suspend fun PreferencesStore.foodImageReferenceFilenamesImpl(): Set<Str
         inputDraft?.imageFilename?.let { add(it) }
     }
 }
-
-    

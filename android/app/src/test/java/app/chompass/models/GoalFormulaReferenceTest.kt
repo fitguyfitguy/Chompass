@@ -5,8 +5,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GoalFormulaReferenceTest {
-
-  @Test
+    @Test
   fun activityMultipliersLine_matchesActivityLevelEnum() {
     val line = GoalFormulaReference.activityMultipliersLine()
     ActivityLevel.entries.forEach { level ->

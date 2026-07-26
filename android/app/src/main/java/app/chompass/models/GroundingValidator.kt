@@ -8,7 +8,6 @@ import kotlin.math.roundToInt
  * These never invent numbers — they only flag or lightly correct unit mistakes.
  */
 object GroundingValidator {
-
     data class ValidationResult(
         val notes: List<String> = emptyList(),
         /** Corrected calories when an obvious kcal/kJ mix-up is detected. */

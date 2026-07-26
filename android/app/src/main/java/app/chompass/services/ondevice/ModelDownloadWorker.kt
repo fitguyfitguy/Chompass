@@ -26,7 +26,6 @@ class ModelDownloadWorker(
     context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
-
     override suspend fun doWork(): Result {
         val container = (applicationContext as? ChompassApp)?.container
         val entry = ModelCatalog.forVersion(inputData.getString(MODEL_VERSION)) ?: ModelCatalog.default

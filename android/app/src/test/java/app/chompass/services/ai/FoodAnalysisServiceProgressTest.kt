@@ -9,8 +9,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FoodAnalysisServiceProgressTest {
-
-  private val foodJsonNoUnits = """
+    private val foodJsonNoUnits = """
     {
       "name": "Pizza",
       "calories": 800,

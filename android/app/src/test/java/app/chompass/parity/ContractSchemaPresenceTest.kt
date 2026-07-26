@@ -13,7 +13,6 @@ import java.io.File
  * `release:check-parity`.
  */
 class ContractSchemaPresenceTest {
-
     @Test
     fun contractSchemasExistAndMatchFixtureVersions() {
         val contracts = repoFile("contracts")

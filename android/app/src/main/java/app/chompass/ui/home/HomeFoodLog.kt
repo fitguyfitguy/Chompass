@@ -2,7 +2,6 @@ package app.chompass.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +46,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -66,8 +64,8 @@ import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.MealType
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.rememberFoodThumbnail
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.util.clockTimePattern
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -422,7 +420,7 @@ internal fun FoodRow(
     isSelected: Boolean = false,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val ctx = LocalContext.current
     val timeFmt = DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.US).withZone(ZoneId.systemDefault())
     val container = (ctx.applicationContext as? app.chompass.ChompassApp)?.container

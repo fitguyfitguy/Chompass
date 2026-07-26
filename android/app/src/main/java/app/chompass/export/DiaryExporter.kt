@@ -35,7 +35,6 @@ enum class DiaryRange(val label: String, val labelRes: Int) {
  * display-name resolver (so string resources stay in the UI layer).
  */
 object DiaryExporter {
-
     private val zone: ZoneId get() = ZoneId.systemDefault()
     private val dayFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val timeFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")

@@ -11,7 +11,11 @@
     googleTVAddOns.enable = false;
   };
 
-  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.typescript ];
+  # ktlint is the CLI, not the Gradle plugin: the plugin hooks the standalone
+  # Kotlin Android plugin, which AGP 9 replaced with built-in Kotlin support, so
+  # it never sees app/src. Running the CLI also keeps the linter out of the
+  # F-Droid release build graph.
+  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.typescript pkgs.ktlint ];
 
   enterShell = ''
     mkdir -p android
@@ -33,6 +37,9 @@
   scripts.pwa-test.exec = "cd web && node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js";
   scripts.pwa-typecheck.exec = "cd web && tsc --checkJs --noEmit -p tsconfig.json";
   scripts.pwa-serve.exec = "node web/serve.mjs";
+  # Rule scope lives in android/.editorconfig. `kotlin-lint-fix` autocorrects.
+  scripts.kotlin-lint.exec = "cd android && ktlint --relative 'app/src/**/*.kt'";
+  scripts.kotlin-lint-fix.exec = "cd android && ktlint --format --relative 'app/src/**/*.kt'";
 
   tasks."build:debug" = {
     exec = "cd android && ./gradlew :app:assembleDebug";
@@ -47,6 +54,11 @@
   tasks."release:package" = {
     exec = "./scripts/package_release.sh";
     description = "Run pre-release checks (Android tests + parity), build release APKs, package, and write SHA256SUMS";
+  };
+
+  tasks."lint:kotlin" = {
+    exec = "cd android && ktlint --relative 'app/src/**/*.kt'";
+    description = "ktlint over the Android sources (scope: android/.editorconfig)";
   };
 
   tasks."release:check-parity" = {

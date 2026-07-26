@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,7 +45,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -69,10 +66,11 @@ import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ChatMessage
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.components.isDarkTheme
 
 @Composable
 internal fun EmptyState(modifier: Modifier = Modifier) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,7 +122,7 @@ internal fun MessageList(
     listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth(),
@@ -234,7 +232,7 @@ internal fun MessageBubble(msg: ChatMessage) {
 /** 26dp translucent disc with gradient sparkles icon. Verbatim port of `assistantBadge`. */
 @Composable
 private fun AssistantBadge() {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     Box(
         Modifier
             .padding(top = 8.dp)

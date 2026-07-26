@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
@@ -39,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,6 +63,7 @@ import app.chompass.models.SpeechProvider
 import app.chompass.models.WeightGoal
 import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.macroAccentColor
@@ -83,7 +82,7 @@ internal fun SettingsSheets(
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val invalidLoseMsg = stringResource(R.string.settings_invalid_goal_lose)
     val invalidGainMsg = stringResource(R.string.settings_invalid_goal_gain)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = state,
@@ -647,8 +646,8 @@ internal fun OptionalNutrientGoalsSheet(
             label = stringResource(nutrient.displayNameRes),
             unit = stringResource(nutrient.unitRes),
             currentValue = goals.valueFor(nutrient),
-            range = nutrient.pickerRange(),
-            step = nutrient.pickerStep(),
+            range = nutrient.goalRange,
+            step = nutrient.goalStep,
             accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
             onSave = { value ->
                 onChange(goals.withValue(nutrient, value))

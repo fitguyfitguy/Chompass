@@ -41,7 +41,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
@@ -69,6 +68,8 @@ import app.chompass.R
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.components.isDarkTheme
+import app.chompass.models.MacroValueFormatter
 
 // Shared visual primitives for the food review/edit sheets. Names are
 // `Sheet*`-prefixed so they don't collide with the look-alike privates in
@@ -120,7 +121,7 @@ private fun SheetToolbarPill(
     onClick: () -> Unit
 ) {
     val shape = CircleShape
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val horizontalPadding = when {
         compact && bold -> 12.dp
         compact -> 10.dp
@@ -167,7 +168,7 @@ internal fun SheetPillRow(
     content: @Composable RowScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(24.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val rowFill = if (isDark) {
         AppColors.TranslucentSurfaceDark
     } else {
@@ -190,7 +191,7 @@ internal fun SheetPillRow(
 @Composable
 internal fun SheetPillCard(content: @Composable ColumnScope.() -> Unit) {
     val shape = RoundedCornerShape(24.dp)
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val cardFill = if (isDark) {
         AppColors.TranslucentSurfaceDark
     } else {
@@ -389,7 +390,7 @@ internal fun ServingQuantityCard(
             ) {
                 Text(stringResource(R.string.label_total), fontSize = 17.sp, modifier = Modifier.weight(1f))
                 Text(
-                    "~${sheetFormatGrams(servingSizeGrams)} $gramUnit",
+                    "~${MacroValueFormatter.string(servingSizeGrams)} $gramUnit",
                     fontSize = 17.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                 )
@@ -461,7 +462,7 @@ internal fun SheetGlassDropdownMenu(
 ) {
     val shape = RoundedCornerShape(18.dp)
     val sizedModifier = if (menuWidth != null) modifier.width(menuWidth) else modifier
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val menuContainer = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
 
@@ -487,7 +488,7 @@ internal fun SheetGlassDropdownMenuItem(
     reserveSelectionSlot: Boolean = false,
     onClick: () -> Unit
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val checkTint = if (isDark) Color.White else AppColors.Calorie
     Row(
         modifier = Modifier
@@ -555,7 +556,3 @@ internal fun sheetMealIcon(meal: MealType): ImageVector = when (meal) {
     MealType.SNACK -> Icons.Filled.LocalCafe
     MealType.OTHER -> Icons.Filled.Restaurant
 }
-
-internal fun sheetFormatGrams(value: Double): String =
-    if (value == value.toInt().toDouble()) value.toInt().toString()
-    else String.format("%.1f", value)

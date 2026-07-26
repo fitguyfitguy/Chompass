@@ -10,7 +10,6 @@ import org.json.JSONObject
 import java.io.InputStreamReader
 
 class QueryNormalizerAndPortionTest {
-
     @Test
     fun normalize_stripsMassAndUnits() {
         val tokens = QueryNormalizer.normalizeTokens("Chicken breast, roasted, 150 g")

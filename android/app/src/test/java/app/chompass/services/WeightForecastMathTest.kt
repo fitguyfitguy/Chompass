@@ -11,8 +11,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 class WeightForecastMathTest {
-
-  private val zone = ZoneId.of("UTC")
+    private val zone = ZoneId.of("UTC")
 
   @Test
   fun averageDailyIntake_usesLoggedDaysWhenConsistent() {

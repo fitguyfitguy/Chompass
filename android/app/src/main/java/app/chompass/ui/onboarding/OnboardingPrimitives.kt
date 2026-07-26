@@ -39,6 +39,7 @@ import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.theme.AppColors
 import androidx.compose.material3.Icon
+import app.chompass.models.UnitFormat
 
 @Composable
 internal fun StepHeader(title: String, subtitle: String? = null) {
@@ -230,10 +231,10 @@ internal fun OnboardingWeightWheel(kg: Double, weightMetric: Boolean, onWeightCh
             unit = stringResource(R.string.unit_kg)
         )
     } else {
-        val lbs = (kg * 2.20462).coerceIn(60.0, 500.0)
+        val lbs = (UnitFormat.kgToLbs(kg)).coerceIn(60.0, 500.0)
         SplitDecimalWheelPicker(
             value = lbs,
-            onValueChange = { newLbs -> onWeightChange(newLbs / 2.20462) },
+            onValueChange = { newLbs -> onWeightChange(UnitFormat.lbsToKg(newLbs)) },
             min = 60,
             max = 500,
             unit = stringResource(R.string.unit_lbs)
@@ -273,7 +274,7 @@ internal fun HeightWeightImperialWheels(
     onWeightChange: (Double) -> Unit
 ) {
     // Round to nearest inch both ways, or 5'7" (170 cm) snaps back to 5'6".
-    val totalInches = Math.round(cm / 2.54).toInt().coerceIn(36, 96)
+    val totalInches = UnitFormat.cmToInchesRounded(cm).coerceIn(36, 96)
     val feet = (totalInches / 12).coerceIn(3, 8)
     val inches = (totalInches % 12).coerceIn(0, 11)
 
@@ -282,7 +283,7 @@ internal fun HeightWeightImperialWheels(
             NumericWheelPicker(
                 value = feet,
                 onValueChange = { newFt ->
-                    val newCm = Math.round((newFt * 12 + inches) * 2.54).toInt()
+                    val newCm = UnitFormat.inchesToCmRounded(newFt * 12 + inches)
                     onHeightChange(newCm)
                 },
                 min = 3,
@@ -294,7 +295,7 @@ internal fun HeightWeightImperialWheels(
             NumericWheelPicker(
                 value = inches,
                 onValueChange = { newIn ->
-                    val newCm = Math.round((feet * 12 + newIn) * 2.54).toInt()
+                    val newCm = UnitFormat.inchesToCmRounded(feet * 12 + newIn)
                     onHeightChange(newCm)
                 },
                 min = 0,

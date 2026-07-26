@@ -1,6 +1,5 @@
 package app.chompass.services.grounding
 
-import android.content.Context
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.models.FoodRecognitionResult

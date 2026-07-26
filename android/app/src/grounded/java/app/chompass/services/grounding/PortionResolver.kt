@@ -16,7 +16,6 @@ import kotlin.math.roundToInt
  * 5. Unresolved (null) — never silently invent 100 g
  */
 object PortionResolver {
-
     enum class Source {
         OVERRIDE,
         ESTIMATED_GRAMS,

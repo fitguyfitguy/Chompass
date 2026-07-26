@@ -8,7 +8,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GeminiClientToolsTest {
-
     @Test
     fun buildToolsArray_disabledWithoutFunctions_returnsNull() {
         assertNull(GeminiClient.buildToolsArray(enableGoogleSearch = false, functionDeclarations = null))

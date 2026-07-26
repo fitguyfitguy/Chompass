@@ -18,6 +18,13 @@ run_in_devenv() {
   fi
 }
 
+echo "==> Kotlin lint (ktlint; scope in android/.editorconfig)"
+if command -v ktlint >/dev/null 2>&1 || [[ -n "${DEVENV_IN_SHELL:-}" ]] || command -v devenv >/dev/null 2>&1; then
+  run_in_devenv "cd '$ROOT/android' && ktlint --relative 'app/src/**/*.kt'"
+else
+  echo "    ktlint not available — skipping (run inside devenv shell to enforce)"
+fi
+
 echo "==> PWA unit tests (chompass-core + lib parity)"
 run_in_devenv 'cd web && node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js'
 

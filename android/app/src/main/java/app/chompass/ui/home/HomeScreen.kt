@@ -2,7 +2,6 @@ package app.chompass.ui.home
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +43,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -71,10 +69,10 @@ import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
 import app.chompass.ui.components.WeekEnergyStrip
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,7 +177,7 @@ fun HomeScreen(container: AppContainer) {
     val today = LocalDate.now()
     val selectedDate = ui.date
     val isToday = selectedDate == today
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val mealGroups = remember(ui.todayEntries, ui.foodLogSortOrder) {
         foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
     }

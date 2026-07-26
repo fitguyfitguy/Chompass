@@ -11,7 +11,6 @@ import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HeuristicRuleOverride
 import app.chompass.models.HeuristicServingUnitSettings
-import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
@@ -34,15 +33,12 @@ import app.chompass.services.health.HealthSyncWorker
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
@@ -239,21 +235,17 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             .launchIn(viewModelScope)
     }
 
-    fun setHomeNutrientCardCount(count: Int) {
-        viewModelScope.launch {
-            container.prefs.setHomeNutrientCardCount(count)
-            val nutrients = container.prefs.homeTopNutrients.first()
-            container.prefs.setHomeTopNutrients(
-                HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(nutrients, count), count)
-            )
-        }
+    fun setHomeNutrientCardCount(count: Int) = launchPref {
+        container.prefs.setHomeNutrientCardCount(count)
+        val nutrients = container.prefs.homeTopNutrients.first()
+        container.prefs.setHomeTopNutrients(
+            HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(nutrients, count), count)
+        )
     }
 
-    fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
-        viewModelScope.launch {
-            val cardCount = container.prefs.homeNutrientCardCount.first()
-            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
-        }
+    fun setHomeTopNutrients(selection: List<HomeTopNutrient>) = launchPref {
+        val cardCount = container.prefs.homeNutrientCardCount.first()
+        container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
     }
 
     fun setHomeShowSteps(enabled: Boolean) = launchPref {
@@ -642,19 +634,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun setWaterTrackingEnabled(v: Boolean) {
-        viewModelScope.launch {
+    fun setWaterTrackingEnabled(v: Boolean) = updateUiPref(
+        {
             container.prefs.setWaterTrackingEnabled(v)
             if (!v) {
                 container.prefs.setWaterReminderEnabled(false)
                 container.notifications.cancelWaterReminder()
             }
-            _ui.value = _ui.value.copy(
-                waterTrackingEnabled = v,
-                waterReminderEnabled = if (v) _ui.value.waterReminderEnabled else false,
-            )
-        }
-    }
+        },
+        { copy(waterTrackingEnabled = v, waterReminderEnabled = if (v) waterReminderEnabled else false) },
+    )
 
     fun setWaterDailyGoalMl(v: Int) = updateUiPref(
         { container.prefs.setWaterDailyGoalMl(v) },
@@ -1002,7 +991,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 goalWeightKg = if (mismatch) null else refreshed.goalWeightKg
             )
             container.profileRepository.save(next)
-            _ui.value = _ui.value.copy(profile = next, goalsNeedRecalc = needsRecalc(next))
+            applyProfile(next)
         }
     }
 
@@ -1011,8 +1000,17 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val current = container.profileRepository.current() ?: return@launch
             val next = update(current)
             container.profileRepository.save(next)
-            _ui.value = _ui.value.copy(profile = next, goalsNeedRecalc = needsRecalc(next))
+            applyProfile(next)
         }
+    }
+
+    /**
+     * Mirrors a just-saved profile into [SettingsUiState], re-deriving the
+     * recalculate nudge. Every path that persists a profile ends here, so the
+     * nudge can never fall out of sync with what was written.
+     */
+    private fun applyProfile(next: app.chompass.models.UserProfile) {
+        _ui.value = _ui.value.copy(profile = next, goalsNeedRecalc = needsRecalc(next))
     }
 
     /** Persist a preference then mirror it into [SettingsUiState]. */
@@ -1050,7 +1048,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             val next = if (rebalanced.isMacroLocked(macro)) rebalanced else rebalanced.toggledMacroLock(macro)
             container.profileRepository.save(next)
-            _ui.value = _ui.value.copy(profile = next, goalsNeedRecalc = needsRecalc(next))
+            applyProfile(next)
         }
     }
 
@@ -1066,10 +1064,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         updateProfile { it.resetCaloriesToBalance() }
     }
 
-    fun setCustomBaseUrl(provider: AIProvider, url: String) {
-        viewModelScope.launch {
-            container.prefs.setCustomBaseUrl(provider, url.takeIf { it.isNotBlank() })
-        }
+    fun setCustomBaseUrl(provider: AIProvider, url: String) = launchPref {
+        container.prefs.setCustomBaseUrl(provider, url.takeIf { it.isNotBlank() })
     }
 
     private fun maskKey(key: String?): String =

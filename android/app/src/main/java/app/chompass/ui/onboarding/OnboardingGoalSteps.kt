@@ -49,6 +49,7 @@ import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
 import java.util.Locale
+import app.chompass.models.UnitFormat
 
 @Composable
 internal fun ActivityStep(selected: ActivityLevel, onSelect: (ActivityLevel) -> Unit) {
@@ -199,10 +200,10 @@ internal fun GoalWeightStep(current: Double, goal: WeightGoal, heightMetric: Boo
                 unit = stringResource(R.string.unit_kg)
             )
         } else {
-            val lbs = (current * 2.20462).coerceIn(60.0, 500.0)
+            val lbs = (UnitFormat.kgToLbs(current)).coerceIn(60.0, 500.0)
             SplitDecimalWheelPicker(
                 value = lbs,
-                onValueChange = { newLbs -> onChange(newLbs / 2.20462) },
+                onValueChange = { newLbs -> onChange(UnitFormat.lbsToKg(newLbs)) },
                 min = 60,
                 max = 500,
                 unit = stringResource(R.string.unit_lbs)
@@ -266,7 +267,7 @@ internal fun GoalSpeedStep(
             }
             val unit = if (useMetric) stringResource(R.string.unit_kg) else stringResource(R.string.unit_lbs)
             val display = if (useMetric) String.format(Locale.US, "%.1f", weeklyKg)
-                          else String.format(Locale.US, "%.1f", weeklyKg * 2.20462)
+                          else String.format(Locale.US, "%.1f", UnitFormat.kgToLbs(weeklyKg))
             val diffKg = kotlin.math.abs(targetKg - currentKg)
             val estimatedDays = if (weeklyKg > 0) (diffKg / weeklyKg * 7).toInt() else 0
             Spacer(Modifier.weight(1f))

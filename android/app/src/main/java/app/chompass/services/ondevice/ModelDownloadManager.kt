@@ -22,7 +22,6 @@ sealed class OnDeviceDownloadState {
  * WorkManager-facing handle used by Settings UI.
  */
 class ModelDownloadManager(private val context: Context) {
-
     fun modelFile(entry: OnDeviceModelEntry = ModelCatalog.default): File =
         File(modelsDir(), entry.filename)
 

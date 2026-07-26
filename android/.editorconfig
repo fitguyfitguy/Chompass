@@ -1,0 +1,14 @@
+# ktlint configuration. Deliberately narrow: the full standard ruleset would
+# flag thousands of pre-existing formatting choices, so only the rules that
+# catch genuine rot are enabled. The unused-import rule is here because ~500
+# dead import lines had accumulated across the module unnoticed.
+#
+# Widen this list when you are willing to reformat the affected files in the
+# same commit — never leave `ktlintCheck` red on main.
+[*.{kt,kts}]
+ktlint_standard = disabled
+ktlint_standard_no-unused-imports = enabled
+ktlint_standard_no-trailing-spaces = enabled
+ktlint_standard_no-consecutive-blank-lines = enabled
+ktlint_standard_no-empty-first-line-in-class-body = enabled
+ktlint_standard_final-newline = enabled

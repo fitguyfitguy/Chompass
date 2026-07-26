@@ -9,7 +9,6 @@ import org.junit.Test
 import java.time.Instant
 
 class FoodHistoryGroupingTest {
-
     @Test
     fun favoriteKey_ignoresCaloriesAndServing() {
         val a = entry("Chicken Breast", calories = 250, grams = 150.0, at = 1)

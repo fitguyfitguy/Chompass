@@ -15,32 +15,24 @@ import kotlinx.coroutines.flow.map
 private const val HOME_DISPLAY_LAYOUT_VERSION = 2
 
 // -- User profile -----------------------------------------------------
-internal val PreferencesStore.userProfileImpl: Flow<UserProfile?> get() = dataStore.data.map { prefs ->
-        prefs[Keys.USER_PROFILE]?.let { runCatching { json.decodeFromString<UserProfile>(it) }.getOrNull() }
-    }
+internal val PreferencesStore.userProfileImpl: Flow<UserProfile?>
+    get() = objectPref(Keys.USER_PROFILE, UserProfile.serializer())
 
-internal suspend fun PreferencesStore.setUserProfileImpl(profile: UserProfile) {
-        dataStore.edit { it[Keys.USER_PROFILE] = json.encodeToString(UserProfile.serializer(), profile) }
-    }
+internal suspend fun PreferencesStore.setUserProfileImpl(profile: UserProfile) =
+    setObjectPref(Keys.USER_PROFILE, UserProfile.serializer(), profile)
 
-    // -- Onboarding -------------------------------------------------------
-internal val PreferencesStore.hasCompletedOnboardingImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ONBOARDING_COMPLETED] ?: false }
-internal suspend fun PreferencesStore.setOnboardingCompletedImpl(value: Boolean) {
-        dataStore.edit { it[Keys.ONBOARDING_COMPLETED] = value }
-    }
+// -- Onboarding -------------------------------------------------------
+internal val PreferencesStore.hasCompletedOnboardingImpl: Flow<Boolean>
+    get() = boolPref(Keys.ONBOARDING_COMPLETED, false)
 
-internal val PreferencesStore.onboardingDraftImpl: Flow<OnboardingDraft?> get() = dataStore.data.map { prefs ->
-        prefs[Keys.ONBOARDING_DRAFT]?.let { runCatching { json.decodeFromString<OnboardingDraft>(it) }.getOrNull() }
-    }
-internal suspend fun PreferencesStore.setOnboardingDraftImpl(draft: OnboardingDraft?) {
-        dataStore.edit {
-            if (draft == null) {
-                it.remove(Keys.ONBOARDING_DRAFT)
-            } else {
-                it[Keys.ONBOARDING_DRAFT] = json.encodeToString(OnboardingDraft.serializer(), draft)
-            }
-        }
-    }
+internal suspend fun PreferencesStore.setOnboardingCompletedImpl(value: Boolean) =
+    setBoolPref(Keys.ONBOARDING_COMPLETED, value)
+
+internal val PreferencesStore.onboardingDraftImpl: Flow<OnboardingDraft?>
+    get() = objectPref(Keys.ONBOARDING_DRAFT, OnboardingDraft.serializer())
+
+internal suspend fun PreferencesStore.setOnboardingDraftImpl(draft: OnboardingDraft?) =
+    setObjectPrefOrRemove(Keys.ONBOARDING_DRAFT, OnboardingDraft.serializer(), draft)
 
 internal val PreferencesStore.hasSeenCameraScaleTipImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.HAS_SEEN_CAMERA_SCALE_TIP] ?: false }
 internal suspend fun PreferencesStore.setHasSeenCameraScaleTipImpl(value: Boolean) {
@@ -171,17 +163,12 @@ internal val PreferencesStore.homeDisplayPreferencesImpl: Flow<HomeDisplayPrefer
     }
 
     /** Goals for nutrients outside the calorie/protein/carb/fat calculator. */
-internal val PreferencesStore.optionalNutrientGoalsImpl: Flow<OptionalNutrientGoals> get() = dataStore.data.map { prefs ->
-        prefs[Keys.OPTIONAL_NUTRIENT_GOALS]?.let {
-            runCatching { json.decodeFromString<OptionalNutrientGoals>(it) }.getOrNull()
-        } ?: OptionalNutrientGoals.Default
-    }
-internal suspend fun PreferencesStore.setOptionalNutrientGoalsImpl(goals: OptionalNutrientGoals) {
-        dataStore.edit {
-            it[Keys.OPTIONAL_NUTRIENT_GOALS] =
-                json.encodeToString(OptionalNutrientGoals.serializer(), goals)
-        }
-    }
+internal val PreferencesStore.optionalNutrientGoalsImpl: Flow<OptionalNutrientGoals>
+    get() = objectPref(Keys.OPTIONAL_NUTRIENT_GOALS, OptionalNutrientGoals.serializer())
+        .map { it ?: OptionalNutrientGoals.Default }
+
+internal suspend fun PreferencesStore.setOptionalNutrientGoalsImpl(goals: OptionalNutrientGoals) =
+    setObjectPref(Keys.OPTIONAL_NUTRIENT_GOALS, OptionalNutrientGoals.serializer(), goals)
 
 // -- Recalculate nudge -----------------------------------------------
 // Fingerprint of the goal inputs at the last Recalculate. When it differs from the current
@@ -190,4 +177,3 @@ internal val PreferencesStore.lastRecalcGoalSignatureImpl: Flow<String?> get() =
 internal suspend fun PreferencesStore.setLastRecalcGoalSignatureImpl(value: String) {
     dataStore.edit { it[Keys.LAST_RECALC_GOAL_SIGNATURE] = value }
 }
-

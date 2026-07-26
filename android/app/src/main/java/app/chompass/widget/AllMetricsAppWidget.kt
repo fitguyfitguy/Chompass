@@ -22,7 +22,6 @@ import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
-import androidx.glance.layout.fillMaxHeight
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
@@ -34,7 +33,6 @@ import androidx.glance.text.TextStyle
 import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.WidgetSnapshot
-import kotlinx.coroutines.flow.first
 
 /**
  * Single "all today's metrics" widget — calories ring + protein / carbs / fat together, so users
@@ -42,7 +40,6 @@ import kotlinx.coroutines.flow.first
  * widgets. Reuses the shared building blocks (RingWithCenter, CapsuleMacroRow, WidgetHeader).
  */
 class AllMetricsAppWidget : GlanceAppWidget() {
-
     // Exact so LocalSize reports the real widget dimensions (see CalorieAppWidget).
     override val sizeMode: SizeMode = SizeMode.Exact
 

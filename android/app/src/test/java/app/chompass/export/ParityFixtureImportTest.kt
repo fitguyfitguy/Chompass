@@ -10,7 +10,6 @@ import java.time.ZoneOffset
  * Android importers must accept the committed cross-app samples in testdata/parity/.
  */
 class ParityFixtureImportTest {
-
     @Test
     fun diarySampleImports() {
         val json = ParityFixtures.readText("diary-sample.json")

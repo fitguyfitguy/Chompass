@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
@@ -39,10 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
-import app.chompass.models.HomeTopNutrient
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog

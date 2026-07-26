@@ -120,28 +120,31 @@ enum class OptionalNutrient(
     val unit: String,
     val defaultGoal: Int,
     val displayNameRes: Int,
-    val unitRes: Int
+    val unitRes: Int,
+    /** Bounds and increment for the goal wheel picker in Settings. */
+    val goalRange: IntRange,
+    val goalStep: Int
 ) {
-    SUGAR("Sugar", "g", 50, R.string.nutrition_label_sugar, R.string.unit_g),
-    ADDED_SUGAR("Added Sugar", "g", 25, R.string.nutrition_label_added_sugar, R.string.unit_g),
-    FIBER("Fiber", "g", 30, R.string.nutrition_label_fiber, R.string.unit_g),
-    SATURATED_FAT("Saturated Fat", "g", 20, R.string.nutrition_label_saturated_fat, R.string.unit_g),
-    CHOLESTEROL("Cholesterol", "mg", 300, R.string.nutrition_label_cholesterol, R.string.unit_mg),
-    SODIUM("Sodium", "mg", 2300, R.string.nutrition_label_sodium, R.string.unit_mg),
-    POTASSIUM("Potassium", "mg", 3500, R.string.nutrition_label_potassium, R.string.unit_mg),
-    TRANS_FAT("Trans Fat", "g", 0, R.string.nutrition_label_trans_fat, R.string.unit_g),
-    CALCIUM("Calcium", "mg", 1000, R.string.nutrition_label_calcium, R.string.unit_mg),
-    IRON("Iron", "mg", 18, R.string.nutrition_label_iron, R.string.unit_mg),
-    MAGNESIUM("Magnesium", "mg", 400, R.string.nutrition_label_magnesium, R.string.unit_mg),
-    ZINC("Zinc", "mg", 11, R.string.nutrition_label_zinc, R.string.unit_mg),
-    VITAMIN_A("Vitamin A", "mcg", 900, R.string.nutrition_label_vitamin_a, R.string.unit_mcg),
-    VITAMIN_C("Vitamin C", "mg", 90, R.string.nutrition_label_vitamin_c, R.string.unit_mg),
-    VITAMIN_D("Vitamin D", "mcg", 20, R.string.nutrition_label_vitamin_d, R.string.unit_mcg),
-    VITAMIN_B12("Vitamin B12", "mcg", 3, R.string.nutrition_label_vitamin_b12, R.string.unit_mcg),
-    VITAMIN_E("Vitamin E", "mg", 15, R.string.nutrition_label_vitamin_e, R.string.unit_mg),
-    VITAMIN_K("Vitamin K", "mcg", 120, R.string.nutrition_label_vitamin_k, R.string.unit_mcg),
-    FOLATE("Folate", "mcg", 400, R.string.nutrition_label_folate, R.string.unit_mcg),
-    OMEGA3("Omega-3", "g", 2, R.string.nutrition_label_omega3, R.string.unit_g)
+    SUGAR("Sugar", "g", 50, R.string.nutrition_label_sugar, R.string.unit_g, 0..200, 5),
+    ADDED_SUGAR("Added Sugar", "g", 25, R.string.nutrition_label_added_sugar, R.string.unit_g, 0..100, 5),
+    FIBER("Fiber", "g", 30, R.string.nutrition_label_fiber, R.string.unit_g, 0..100, 1),
+    SATURATED_FAT("Saturated Fat", "g", 20, R.string.nutrition_label_saturated_fat, R.string.unit_g, 0..80, 1),
+    CHOLESTEROL("Cholesterol", "mg", 300, R.string.nutrition_label_cholesterol, R.string.unit_mg, 0..1000, 25),
+    SODIUM("Sodium", "mg", 2300, R.string.nutrition_label_sodium, R.string.unit_mg, 0..5000, 50),
+    POTASSIUM("Potassium", "mg", 3500, R.string.nutrition_label_potassium, R.string.unit_mg, 0..7000, 50),
+    TRANS_FAT("Trans Fat", "g", 0, R.string.nutrition_label_trans_fat, R.string.unit_g, 0..10, 1),
+    CALCIUM("Calcium", "mg", 1000, R.string.nutrition_label_calcium, R.string.unit_mg, 300..2000, 50),
+    IRON("Iron", "mg", 18, R.string.nutrition_label_iron, R.string.unit_mg, 5..45, 1),
+    MAGNESIUM("Magnesium", "mg", 400, R.string.nutrition_label_magnesium, R.string.unit_mg, 100..800, 25),
+    ZINC("Zinc", "mg", 11, R.string.nutrition_label_zinc, R.string.unit_mg, 3..40, 1),
+    VITAMIN_A("Vitamin A", "mcg", 900, R.string.nutrition_label_vitamin_a, R.string.unit_mcg, 300..3000, 50),
+    VITAMIN_C("Vitamin C", "mg", 90, R.string.nutrition_label_vitamin_c, R.string.unit_mg, 20..500, 10),
+    VITAMIN_D("Vitamin D", "mcg", 20, R.string.nutrition_label_vitamin_d, R.string.unit_mcg, 5..100, 1),
+    VITAMIN_B12("Vitamin B12", "mcg", 3, R.string.nutrition_label_vitamin_b12, R.string.unit_mcg, 1..20, 1),
+    VITAMIN_E("Vitamin E", "mg", 15, R.string.nutrition_label_vitamin_e, R.string.unit_mg, 5..100, 1),
+    VITAMIN_K("Vitamin K", "mcg", 120, R.string.nutrition_label_vitamin_k, R.string.unit_mcg, 30..300, 10),
+    FOLATE("Folate", "mcg", 400, R.string.nutrition_label_folate, R.string.unit_mcg, 100..1000, 50),
+    OMEGA3("Omega-3", "g", 2, R.string.nutrition_label_omega3, R.string.unit_g, 0..10, 1)
 }
 
 @Serializable

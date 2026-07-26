@@ -21,7 +21,6 @@ class HealthSyncWorker(
     context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
-
     override suspend fun doWork(): Result {
         val container = (applicationContext as? ChompassApp)?.container ?: return Result.failure()
         if (!container.prefs.healthBackgroundSyncEnabled.first()) return Result.success()

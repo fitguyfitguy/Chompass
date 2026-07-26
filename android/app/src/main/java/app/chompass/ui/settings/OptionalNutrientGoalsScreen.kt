@@ -139,8 +139,8 @@ fun OptionalNutrientGoalsScreen(
                 label = stringResource(nutrient.displayNameRes),
                 unit = stringResource(nutrient.unitRes),
                 currentValue = ui.optionalNutrientGoals.valueFor(nutrient),
-                range = nutrient.pickerRange(),
-                step = nutrient.pickerStep(),
+                range = nutrient.goalRange,
+                step = nutrient.goalStep,
                 accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
                 onSave = { value ->
                     vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(nutrient, value))

@@ -38,7 +38,6 @@ class OnDeviceLlmSmokeTest(
     private val container: AppContainer,
     private val config: OnDeviceLlmDebugConfig,
 ) {
-
     constructor(
         container: AppContainer,
         backendName: String = "gpu",
@@ -481,7 +480,6 @@ class OnDeviceLlmSmokeTest(
         private val tools: CoachTools,
         private val corruptToolName: String? = null
     ) : ToolSet {
-
         private fun call(name: String, args: JSONObject): JsonElement {
             val start = System.nanoTime()
             var result = runBlocking { tools.execute(name, args) }

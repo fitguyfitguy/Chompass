@@ -1,7 +1,6 @@
 package app.chompass.services
 
 import app.chompass.models.ActivityLevel
-import app.chompass.models.Gender
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
 import org.junit.Assert.assertEquals
@@ -10,8 +9,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class KetoCarbRecommendationServiceTest {
-
-  private fun profile(
+    private fun profile(
     goal: WeightGoal = WeightGoal.MAINTAIN,
     activityLevel: ActivityLevel = ActivityLevel.MODERATE,
     weeklyChangeKg: Double? = null,

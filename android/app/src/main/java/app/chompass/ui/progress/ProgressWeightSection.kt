@@ -29,18 +29,15 @@ import app.chompass.models.WeightEntry
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
-import java.util.Locale
+import app.chompass.models.UnitFormat
 
 internal fun formatWeight(kg: Double, useMetric: Boolean): String =
-    if (useMetric) String.format(Locale.US, "%.1f kg", kg)
-    else String.format(Locale.US, "%.1f lbs", kg * 2.20462)
+    UnitFormat.weight(kg, useMetric)
 
 internal fun formatWeightChange(deltaKg: Double, useMetric: Boolean): String {
-    val displayValue = if (useMetric) deltaKg else deltaKg * 2.20462
-    val roundedValue = if (Math.abs(displayValue) < 0.05) 0.0 else displayValue
-    val sign = if (roundedValue > 0) "+" else ""
+    val displayValue = if (useMetric) deltaKg else UnitFormat.kgToLbs(deltaKg)
     val unit = if (useMetric) "kg" else "lbs"
-    return String.format(Locale.US, "%s%.1f %s", sign, roundedValue, unit)
+    return "${UnitFormat.signedDelta(displayValue)} $unit"
 }
 
 @Composable

@@ -9,7 +9,6 @@ import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,8 +17,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class WeightAnalysisServiceTest {
-
-  private val zone = ZoneId.systemDefault()
+    private val zone = ZoneId.systemDefault()
 
   private fun profile(tdeeBasisBmr: Double = 1780.0): UserProfile {
     val birthday = LocalDate.now().minusYears(30).atStartOfDay(zone).toInstant()

@@ -13,7 +13,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -33,8 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +44,7 @@ import kotlinx.coroutines.delay
 import app.chompass.R
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 
 /**
@@ -60,7 +58,7 @@ fun TextInputSheet(
     onSubmit: (String) -> Unit,
     isSubmitting: Boolean = false,
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current

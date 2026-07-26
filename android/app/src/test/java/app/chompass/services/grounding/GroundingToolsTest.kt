@@ -9,7 +9,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GroundingToolsTest {
-
     @Test
     fun finalizeGrounding_parsesComponentsAndSourceIds() = runBlocking {
         val tools = GroundingTools(

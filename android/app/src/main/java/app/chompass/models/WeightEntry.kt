@@ -12,5 +12,5 @@ data class WeightEntry(
     val date: Instant = Instant.now(),
     val weightKg: Double
 ) {
-    val weightLbs: Double get() = weightKg * 2.20462
+    val weightLbs: Double get() = UnitFormat.kgToLbs(weightKg)
 }

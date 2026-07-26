@@ -17,7 +17,6 @@ import org.junit.Test
  * Asserts Kotlin default sources (not live DataStore).
  */
 class PrefDefaultsParityTest {
-
     @Test
     fun sharedPrefDefaultsMatchParityFixture() {
         val f = ParityFixtures.readJson("pref-defaults.json")

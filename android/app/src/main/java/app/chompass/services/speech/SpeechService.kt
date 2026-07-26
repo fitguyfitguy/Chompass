@@ -18,7 +18,6 @@ class SpeechService(
     private val keyStore: KeyStore,
     private val okHttp: OkHttpClient = FoodAnalysisService.defaultClient
 ) {
-
     /** Returns the transcript text. Throws [SttApiError] on any failure. */
     suspend fun transcribeRemote(audio: File): String {
         val provider = prefs.selectedSpeechProvider.first()

@@ -10,7 +10,6 @@ import org.junit.Test
  * `testdata/parity/ai-provider-defaults.json`.
  */
 class AiProviderDefaultsParityTest {
-
     @Test
     fun geminiAnthropicOpenaiMatchParityFixture() {
         val root = ParityFixtures.readJson("ai-provider-defaults.json")

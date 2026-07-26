@@ -20,7 +20,6 @@ import java.util.Base64
  *   Body:    {model, max_tokens, system?, messages: [{role, content: [...]}]}
  */
 object AnthropicClient {
-
     private const val API_VERSION = "2023-06-01"
     private val jsonMedia = "application/json; charset=utf-8".toMediaType()
 

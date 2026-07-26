@@ -14,7 +14,6 @@ import kotlin.math.ln
  * brand-new food, and portion is never auto-copied — only offered as evidence.
  */
 object ConfirmedHistorySearch {
-
     data class HistoryHit(
         val entry: FoodEntry,
         val score: Double,

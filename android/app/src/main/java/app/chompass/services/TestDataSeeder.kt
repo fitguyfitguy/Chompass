@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import java.time.LocalDate
 
 /**
  * Dev-only helper that swaps the user's real data for a year of synthetic food + weight

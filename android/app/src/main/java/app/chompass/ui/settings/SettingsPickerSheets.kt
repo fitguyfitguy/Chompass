@@ -3,7 +3,6 @@ package app.chompass.ui.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,8 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,7 +38,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.models.OptionalNutrient
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
@@ -55,60 +51,16 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.material3.Icon
+import app.chompass.models.UnitFormat
 
 internal fun optionalNutrientSummary(goals: OptionalNutrientGoals): String =
     "Fiber ${goals.fiber}g, Sodium ${goals.sodium}mg"
-
-internal fun OptionalNutrient.pickerRange(): IntRange = when (this) {
-    OptionalNutrient.SUGAR -> 0..200
-    OptionalNutrient.ADDED_SUGAR -> 0..100
-    OptionalNutrient.FIBER -> 0..100
-    OptionalNutrient.SATURATED_FAT -> 0..80
-    OptionalNutrient.CHOLESTEROL -> 0..1000
-    OptionalNutrient.SODIUM -> 0..5000
-    OptionalNutrient.POTASSIUM -> 0..7000
-    OptionalNutrient.TRANS_FAT -> 0..10
-    OptionalNutrient.CALCIUM -> 300..2000
-    OptionalNutrient.IRON -> 5..45
-    OptionalNutrient.MAGNESIUM -> 100..800
-    OptionalNutrient.ZINC -> 3..40
-    OptionalNutrient.VITAMIN_A -> 300..3000
-    OptionalNutrient.VITAMIN_C -> 20..500
-    OptionalNutrient.VITAMIN_D -> 5..100
-    OptionalNutrient.VITAMIN_B12 -> 1..20
-    OptionalNutrient.VITAMIN_E -> 5..100
-    OptionalNutrient.VITAMIN_K -> 30..300
-    OptionalNutrient.FOLATE -> 100..1000
-    OptionalNutrient.OMEGA3 -> 0..10
-}
-
-internal fun OptionalNutrient.pickerStep(): Int = when (this) {
-    OptionalNutrient.FIBER,
-    OptionalNutrient.SATURATED_FAT,
-    OptionalNutrient.TRANS_FAT,
-    OptionalNutrient.IRON,
-    OptionalNutrient.ZINC,
-    OptionalNutrient.VITAMIN_D,
-    OptionalNutrient.VITAMIN_B12,
-    OptionalNutrient.VITAMIN_E,
-    OptionalNutrient.OMEGA3 -> 1
-    OptionalNutrient.CHOLESTEROL -> 25
-    OptionalNutrient.SODIUM,
-    OptionalNutrient.POTASSIUM,
-    OptionalNutrient.CALCIUM,
-    OptionalNutrient.VITAMIN_A,
-    OptionalNutrient.FOLATE -> 50
-    OptionalNutrient.MAGNESIUM -> 25
-    OptionalNutrient.VITAMIN_C,
-    OptionalNutrient.VITAMIN_K -> 10
-    OptionalNutrient.SUGAR,
-    OptionalNutrient.ADDED_SUGAR -> 5
-}
 
 @Composable
 internal fun <T> ListSheet(
@@ -122,7 +74,7 @@ internal fun <T> ListSheet(
     footer: String? = null,
     customField: ((String) -> Unit)? = null
 ) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -272,7 +224,7 @@ internal fun WeightSheet(titleText: String, current: Double, useMetric: Boolean,
     if (metric) {
         SplitDecimalWheelPicker(kg, { kg = it }, 30, 250, stringResource(R.string.unit_kg))
     } else {
-        SplitDecimalWheelPicker(kg * 2.20462, { lbs -> kg = lbs / 2.20462 }, 66, 551, stringResource(R.string.unit_lbs))
+        SplitDecimalWheelPicker(UnitFormat.kgToLbs(kg), { lbs -> kg = UnitFormat.lbsToKg(lbs) }, 66, 551, stringResource(R.string.unit_lbs))
     }
     Spacer(Modifier.height(16.dp))
     GradientSaveButton { onSave(kg) }
@@ -452,7 +404,7 @@ internal fun WaterQuickPresetsSheet(
 
 @Composable
 internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolean, onSave: (Double) -> Unit) {
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDark = isDarkTheme()
     Text(stringResource(R.string.sheet_weekly_change), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     val wUnit = if (useMetric) stringResource(R.string.unit_kg) else stringResource(R.string.unit_lbs)
@@ -467,7 +419,7 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
             val displayAmount = if (useMetric) {
                 String.format(java.util.Locale.US, "%.1f", displayKg)
             } else {
-                String.format(java.util.Locale.US, "%.1f", displayKg * 2.20462)
+                String.format(java.util.Locale.US, "%.1f", UnitFormat.kgToLbs(displayKg))
             }
             val subtitle = stringResource(paceRes, "$displayAmount $wUnit")
             val isSel = kotlin.math.abs(kg - current) < 0.01

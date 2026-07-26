@@ -20,7 +20,6 @@ class OnDeviceLlmGateway(
     private val context: Context,
     private val prefs: PreferencesStore,
 ) {
-
     private val lock = Mutex()
     private var client: OnDeviceLlmClient? = null
     private var loadedModelId: String? = null

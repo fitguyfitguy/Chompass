@@ -31,7 +31,6 @@ internal class HealthConnectReader(
     private val hydrationRead: String,
     private val hasEnergyRead: suspend () -> Boolean,
 ) {
-
     suspend fun readWeights(from: Instant, to: Instant): List<ExternalWeight> {
         val c = client() ?: return emptyList()
         val out = mutableListOf<ExternalWeight>()

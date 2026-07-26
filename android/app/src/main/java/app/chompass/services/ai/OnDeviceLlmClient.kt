@@ -42,7 +42,6 @@ class OnDeviceLlmClient(
     private val enableMtp: Boolean = false,
     private val enableVision: Boolean = false,
 ) : Closeable {
-
     val backendName: String get() = backend.name
     val visionEnabled: Boolean get() = enableVision
 

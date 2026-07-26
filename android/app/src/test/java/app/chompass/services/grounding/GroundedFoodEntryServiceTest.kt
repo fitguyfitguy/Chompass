@@ -1,11 +1,8 @@
 package app.chompass.services.grounding
 
-import app.chompass.models.FoodRecognitionResult
 import app.chompass.models.NutrientSourceKind
-import app.chompass.models.RecognizedFoodComponent
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.FoodAnalysisService
-import app.chompass.ui.home.FoodAnalysisProgress
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -24,7 +21,6 @@ import org.junit.Test
  * via barcode + estimate + pre-seeded USDA candidates through recognition barcodes.
  */
 class GroundedFoodEntryServiceTest {
-
     @Test
     fun parseRecognition_extractsComponents() {
         val raw = """
