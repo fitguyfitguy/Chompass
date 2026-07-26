@@ -1,0 +1,1 @@
+• Diary food-row swipe favorite/delete actions scale with row width for more screen sizes
