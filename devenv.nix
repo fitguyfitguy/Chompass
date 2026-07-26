@@ -18,6 +18,11 @@
     printf 'sdk.dir=%s\n' "$ANDROID_HOME" > android/local.properties
     # Avoid hanging adb commands when Windows also runs adb on the shared WSL localhost.
     export ANDROID_ADB_SERVER_PORT=5038
+    # Reject Cursor/AI commit trailers (Co-authored-by: Cursor, Made-with: Cursor, …).
+    if [[ -d .git ]]; then
+      chmod +x scripts/git-hooks/* 2>/dev/null || true
+      git config core.hooksPath scripts/git-hooks
+    fi
   '';
 
   scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
