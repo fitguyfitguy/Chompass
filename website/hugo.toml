@@ -7,7 +7,7 @@ summaryLength = 20
 
 [params]
   description = 'Ad-free AI calorie tracker: Android app and browser PWA. Bring your own cloud AI key on either client; optional on-device Gemma 4 on Android. No ads, no analytics.'
-  version = '3.1.2'
+  version = '3.1.3'
   apkArm64Note = '~15 MiB'
   apkUniversalNote = '~27 MiB'
   repo = 'https://codeberg.org/fitguy/chompass'

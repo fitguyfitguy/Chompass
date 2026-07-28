@@ -201,13 +201,14 @@ fun FoodResultSheet(
         text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
     fun baseDoubleFromText(text: String): Double = (decimalValue(text) ?: 0.0) / scale.coerceAtLeast(0.0001)
     fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
-    fun editedAnalysis() = editableMicros.applyTo(
+    fun editedAnalysis() = editableMicros.scaled(scale).applyTo(
         analysis.copy(
             name = name.trim().ifEmpty { analysis.name },
-            calories = editableCalories,
-            protein = editableProtein,
-            carbs = editableCarbs,
-            fat = editableFat,
+            calories = scaledInt(editableCalories),
+            protein = scaledMacro(editableProtein),
+            carbs = scaledMacro(editableCarbs),
+            fat = scaledMacro(editableFat),
+            servingSizeGrams = servingGrams,
             grounding = analysis.grounding?.copy(userCorrected = true),
         )
     )

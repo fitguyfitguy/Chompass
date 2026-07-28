@@ -129,7 +129,11 @@ fun EditFoodEntrySheet(
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
-    var editableFiber by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.fiber) }
+    var editableCalories by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.calories) }
+    var editableProtein by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.protein) }
+    var editableCarbs by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.carbs) }
+    var editableFat by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.fat) }
+    var editableMicros by remember(currentBaseEntry) { mutableStateOf(MicronutrientValues.from(currentBaseEntry)) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
     val zone = remember { ZoneId.systemDefault() }
@@ -158,18 +162,18 @@ fun EditFoodEntrySheet(
     fun editD(v: Double?) = v?.let { String.format("%.1f", it) }.orEmpty()
     fun decimalValue(text: String): Double? =
         text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
+    fun baseDoubleFromText(text: String): Double = (decimalValue(text) ?: 0.0) / scale.coerceAtLeast(0.0001)
     fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
 
-    fun buildUpdated(): FoodEntry = MicronutrientValues.from(currentBaseEntry)
-        .with(MicronutrientField.FIBER, editableFiber)
+    fun buildUpdated(): FoodEntry = editableMicros
         .scaled(scale)
         .applyTo(
             currentBaseEntry.copy(
                 name = name.trim().ifEmpty { currentBaseEntry.name },
-                calories = scaledInt(currentBaseEntry.calories),
-                protein = scaledMacro(currentBaseEntry.protein),
-                carbs = scaledMacro(currentBaseEntry.carbs),
-                fat = scaledMacro(currentBaseEntry.fat),
+                calories = scaledInt(editableCalories),
+                protein = scaledMacro(editableProtein),
+                carbs = scaledMacro(editableCarbs),
+                fat = scaledMacro(editableFat),
                 timestamp = loggedDate.atTime(loggedTime).atZone(zone).toInstant(),
                 mealType = mealType,
                 customNote = noteText.trim().takeIf { it.isNotEmpty() },
@@ -201,7 +205,11 @@ fun EditFoodEntrySheet(
                     customNote = noteText.trim().takeIf { it.isNotEmpty() },
                     emoji = newAnalysis.emoji
                 ).let { newAnalysis.toMicronutrients().applyTo(it) }
-                editableFiber = newAnalysis.fiber
+                editableCalories = newAnalysis.calories
+                editableProtein = newAnalysis.protein
+                editableCarbs = newAnalysis.carbs
+                editableFat = newAnalysis.fat
+                editableMicros = newAnalysis.toMicronutrients()
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
@@ -232,17 +240,6 @@ fun EditFoodEntrySheet(
                 }
             }
         )
-
-        // Hoist composition reads above LazyColumn — its lambda has
-        // LazyListScope (not @Composable), so stringResource can't be called
-        // from inside.
-        val micros = MicronutrientField.MoreNutrition.map { field ->
-            EditMicroRow(
-                stringResource(field.labelRes),
-                scaledD(MicronutrientValues.from(currentBaseEntry)[field]),
-                stringResource(field.unitRes),
-            )
-        }
 
         Box(modifier = Modifier.fillMaxWidth()) {
             LazyColumn(
@@ -336,31 +333,66 @@ fun EditFoodEntrySheet(
             }
             item {
                 SheetPillCard {
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_calories), "${scaledInt(currentBaseEntry.calories)}", stringResource(R.string.unit_kcal), accentColor = AppColors.Calorie)
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_calories),
+                        displayValue = "${scaledInt(editableCalories)}",
+                        editValue = "${scaledInt(editableCalories)}",
+                        unit = stringResource(R.string.unit_kcal),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Calorie,
+                        onEdit = { editableCalories = baseDoubleFromText(it).roundToInt() }
+                    )
                     SheetHairline()
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(scaledMacro(currentBaseEntry.protein)), stringResource(R.string.unit_g), accentColor = AppColors.Protein)
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_protein),
+                        displayValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
+                        editValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Protein,
+                        onEdit = { editableProtein = baseDoubleFromText(it) }
+                    )
                     SheetHairline()
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(scaledMacro(currentBaseEntry.carbs)), stringResource(R.string.unit_g), accentColor = AppColors.Carbs)
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_carbs),
+                        displayValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
+                        editValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Carbs,
+                        onEdit = { editableCarbs = baseDoubleFromText(it) }
+                    )
                     SheetHairline()
-                    SheetNutritionRow(stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(scaledMacro(currentBaseEntry.fat)), stringResource(R.string.unit_g), accentColor = AppColors.Fat)
+                    ReviewNutritionValueRow(
+                        label = stringResource(R.string.nutrition_label_fat),
+                        displayValue = MacroValueFormatter.string(scaledMacro(editableFat)),
+                        editValue = MacroValueFormatter.string(scaledMacro(editableFat)),
+                        unit = stringResource(R.string.unit_g),
+                        unlocked = nutritionUnlocked,
+                        accentColor = AppColors.Fat,
+                        onEdit = { editableFat = baseDoubleFromText(it) }
+                    )
                     SheetHairline()
                     ReviewNutritionValueRow(
                         label = stringResource(R.string.nutrition_label_fiber),
-                        displayValue = displayD(scaledD(editableFiber)),
-                        editValue = editD(scaledD(editableFiber)),
+                        displayValue = displayD(scaledD(editableMicros.fiber)),
+                        editValue = editD(scaledD(editableMicros.fiber)),
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked,
                         accentColor = AppColors.Fiber,
-                        onEdit = { editableFiber = baseOptionalFromText(it) }
+                        onEdit = {
+                            editableMicros = editableMicros.with(
+                                MicronutrientField.FIBER,
+                                baseOptionalFromText(it),
+                            )
+                        }
                     )
                 }
             }
 
             // "More Nutrition" — own pill row with chevron-right that flips to
             // chevron-down when expanded; matches iOS DisclosureGroup behavior.
-            // (gUnit / mgUnit / micros hoisted above the LazyColumn so the
-            // composable reads happen in @Composable scope.)
-            if (micros.any { it.value != null }) {
+            if (MicronutrientField.MoreNutrition.any { editableMicros[it] != null }) {
                 item {
                     SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
                         Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
@@ -375,15 +407,19 @@ fun EditFoodEntrySheet(
                 if (moreNutritionExpanded) {
                     item {
                         SheetPillCard {
-                            val present = micros.filter { it.value != null }
-                            present.forEachIndexed { idx, row ->
+                            MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
                                 if (idx > 0) SheetHairline()
-                                SheetNutritionRow(
-                                    row.label,
-                                    String.format("%.1f", row.value),
-                                    row.unit,
+                                val value = scaledD(editableMicros[field])
+                                ReviewNutritionValueRow(
+                                    label = stringResource(field.labelRes),
+                                    displayValue = displayD(value),
+                                    editValue = editD(value),
+                                    unit = stringResource(field.unitRes),
+                                    unlocked = nutritionUnlocked,
                                     dim = true,
-                                    accentColor = row.accentColor,
+                                    onEdit = {
+                                        editableMicros = editableMicros.with(field, baseOptionalFromText(it))
+                                    }
                                 )
                             }
                         }
@@ -617,10 +653,3 @@ private fun EditFoodTimeDialog(
         )
     }
 }
-
-private data class EditMicroRow(
-    val label: String,
-    val value: Double?,
-    val unit: String,
-    val accentColor: androidx.compose.ui.graphics.Color? = null,
-)
