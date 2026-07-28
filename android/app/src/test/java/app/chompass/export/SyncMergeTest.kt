@@ -6,7 +6,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SyncMergeTest {
-
     data class Row(val id: String, val updatedAt: String, val deletedAt: String? = null, val v: Int = 0)
 
     @Test
