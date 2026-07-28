@@ -101,6 +101,7 @@ internal fun EntryAnalysisOverlay(
             Text(
                 text = when (phase) {
                     EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
+                    EntryAnalysisPhase.LookingUpBarcode -> stringResource(R.string.entry_analysis_phase_looking_up_barcode)
                     EntryAnalysisPhase.CallingAi -> stringResource(R.string.entry_analysis_phase_calling_ai)
                     EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
                     EntryAnalysisPhase.Recognizing -> stringResource(R.string.entry_analysis_phase_recognizing)
@@ -193,6 +194,7 @@ private fun phasesForOverlay(current: EntryAnalysisPhase): List<EntryAnalysisPha
         )
         else -> listOf(
             EntryAnalysisPhase.Preparing,
+            EntryAnalysisPhase.LookingUpBarcode,
             EntryAnalysisPhase.CallingAi,
             EntryAnalysisPhase.Parsing,
         )

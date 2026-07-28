@@ -388,6 +388,7 @@
     <string name="home_analyzing_food">Analyzing your food...</string>
     <string name="home_looking_up_nutrition">Looking up nutrition...</string>
     <string name="entry_analysis_phase_preparing">Preparing request…</string>
+    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
     <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
     <string name="entry_analysis_phase_parsing">Reading result…</string>
     <string name="entry_analysis_phase_recognizing">Recognizing foods…</string>

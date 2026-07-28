@@ -11,8 +11,12 @@ import {
 import { PROVIDERS } from "../ai/providers.js";
 
 test("analysisPhases_matchAndroidCloudEntry", () => {
-  assert.deepEqual([...ANALYSIS_PHASE_STEPS], ["preparing", "calling_ai", "parsing"]);
+  assert.deepEqual(
+    [...ANALYSIS_PHASE_STEPS],
+    ["preparing", "looking_up_barcode", "calling_ai", "parsing"]
+  );
   assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PREPARING], "Preparing request…");
+  assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.LOOKING_UP_BARCODE], "Checking barcodes…");
   assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.CALLING_AI], "Calling AI…");
   assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PARSING], "Reading result…");
 });

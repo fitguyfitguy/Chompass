@@ -8,6 +8,7 @@ import {
   analyzeFoodEntry,
   isAbortError,
 } from "../lib/ai/food-analyze.js";
+import { collectOffPromptContext } from "../lib/ai/off-prompt-context.js";
 import { recentFoods } from "../lib/recent-foods.js";
 import { prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
@@ -300,16 +301,25 @@ export class AnalyzeView extends HTMLElement {
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
       if (!config) throw new Error("Provider key missing. Re-add it in Settings.");
 
-      const images = [];
-      for (const file of this.files) {
-        if (generation !== this.analysisGeneration || ac.signal.aborted) return;
-        images.push(await fileToJpegBase64(file));
-      }
+      const offPromise = this.files.length
+        ? (this.setPhase(ANALYSIS_PHASE.LOOKING_UP_BARCODE, generation), collectOffPromptContext(this.files))
+        : Promise.resolve("");
+      const imagesPromise = (async () => {
+        const images = [];
+        for (const file of this.files) {
+          if (generation !== this.analysisGeneration || ac.signal.aborted) return images;
+          images.push(await fileToJpegBase64(file));
+        }
+        return images;
+      })();
+      const [productContext, images] = await Promise.all([offPromise, imagesPromise]);
+      if (generation !== this.analysisGeneration || ac.signal.aborted) return;
 
       const estimate = await analyzeFoodEntry({
         providerId: /** @type {any} */ (this.activeProvider),
         config,
         text,
+        productContext: productContext || undefined,
         images,
         signal: ac.signal,
         onPhase: (phase) => this.setPhase(phase, generation),

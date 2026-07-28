@@ -15,6 +15,7 @@ import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.BuildConfig
+import app.chompass.services.OffPromptContext
 import app.chompass.services.PerfLog
 import app.chompass.services.WeightForecast
 import app.chompass.ui.home.EntryAnalysisPhase
@@ -369,7 +370,7 @@ class FoodAnalysisService(
         imageBytes: ByteArray,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        val prompt = """
+        var prompt = """
             Analyze this image. It could be either a photo of food OR a nutrition facts label.
             If it's a food photo: estimate the nutritional content of the visible food.
             If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
@@ -380,6 +381,7 @@ class FoodAnalysisService(
             $ENTRY_UNIT_OPTIONS_RULE
             $ENTRY_EMOJI_NULL_RULE
         """.trimIndent()
+        prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
         val raw = callAi(prompt, imageBytes, op = "analyzeAuto", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
@@ -403,6 +405,7 @@ class FoodAnalysisService(
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
+        prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
         val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
@@ -429,10 +432,25 @@ class FoodAnalysisService(
         }
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
+        prompt = appendOffBarcodeContext(prompt, images, onProgress)
         val raw = callAi(prompt, images, op = "analyzeFoodMulti", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = images.first(), description = description, onProgress = onProgress)
+    }
+
+    /**
+     * Best-effort still-image barcode → Open Food Facts → soft prompt context.
+     * Never blocks analysis on miss/timeout; images are still sent to the model.
+     */
+    private suspend fun appendOffBarcodeContext(
+        prompt: String,
+        imageBytesList: List<ByteArray>,
+        onProgress: (FoodAnalysisProgress) -> Unit,
+    ): String {
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.LookingUpBarcode))
+        val offContext = OffPromptContext.collectFromImages(imageBytesList, prefs) ?: return prompt
+        return "$prompt\n\n$offContext"
     }
 
     /**

@@ -12,6 +12,7 @@ import {
   analyzeFoodEntry,
   isAbortError,
 } from "../ai/food-analyze.js";
+import { collectOffPromptContext } from "../ai/off-prompt-context.js";
 import { listConfiguredProviders, loadProviderKey } from "../ai/key-storage.js";
 import { prefs } from "../db.js";
 
@@ -309,17 +310,27 @@ async function runPhotoAnalysis(args) {
     const config = await loadProviderKey(/** @type {any} */ (activeProvider));
     if (!config) throw new Error("Provider key missing. Re-add it in Settings.");
 
-    /** @type {{mimeType: string, base64: string}[]} */
-    const images = [];
-    for (const file of args.files) {
-      if (ac.signal.aborted) return;
-      images.push(await fileToJpegBase64(file));
-    }
+    // Barcode/OFF scan in parallel with JPEG encode — both use original files.
+    setPhase(ANALYSIS_PHASE.LOOKING_UP_BARCODE);
+    const offPromise = collectOffPromptContext(args.files);
+    /** @type {Promise<{mimeType: string, base64: string}[]>} */
+    const imagesPromise = (async () => {
+      /** @type {{mimeType: string, base64: string}[]} */
+      const images = [];
+      for (const file of args.files) {
+        if (ac.signal.aborted) return images;
+        images.push(await fileToJpegBase64(file));
+      }
+      return images;
+    })();
+    const [productContext, images] = await Promise.all([offPromise, imagesPromise]);
+    if (ac.signal.aborted) return;
 
     const estimate = await analyzeFoodEntry({
       providerId: /** @type {any} */ (activeProvider),
       config,
       text: args.note.trim() || undefined,
+      productContext: productContext || undefined,
       images,
       signal: ac.signal,
       onPhase: (phase) => {
