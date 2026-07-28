@@ -8,6 +8,7 @@ if [ -z "${ADB_BIN:-}" ]; then
   for cand in \
     /mnt/c/Users/*/Downloads/platform-tools*/platform-tools/adb.exe \
     /mnt/c/Users/*/AppData/Local/Android/Sdk/platform-tools/adb.exe \
+    /mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/Google.PlatformTools_*/platform-tools/adb.exe \
     /mnt/c/Android/platform-tools/adb.exe \
     /mnt/c/platform-tools/adb.exe; do
     if [ -f "$cand" ]; then ADB_BIN="$cand"; break; fi

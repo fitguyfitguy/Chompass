@@ -4,6 +4,13 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.1.3] - 2026-07-28
+
+### Fixed
+
+- Editing grams on a newly logged food (photo/text/voice review) now correctly rescales calories/protein/carbs/fat when saved — previously the on-screen preview updated live but the persisted diary entry kept the macros from the original serving size.
+- The nutrition lock/unlock toggle on an already-saved diary entry now covers all macros and micronutrients (calories, protein, carbs, fat, fiber, and the "More Nutrition" fields), matching the new-entry review sheet. Previously only fiber was editable there.
+
 ## [3.1.2] - 2026-07-26
 
 ### Fixed
