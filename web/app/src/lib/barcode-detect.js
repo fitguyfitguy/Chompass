@@ -145,27 +145,7 @@ function cacheProbeResult(result) {
 
 /** Lazy-load the vendored zxing-wasm IIFE build and return a wasm detector. */
 async function createWasmDetector() {
-  const vendorDir = new URL("../../vendor/zxing/", import.meta.url);
-  // @ts-ignore ZXingWASM global is installed by the vendored script
-  if (!window.ZXingWASM) {
-    await new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = new URL("zxing-reader.js", vendorDir).href;
-      script.onload = () => resolve(undefined);
-      script.onerror = () => reject(new Error("failed to load zxing-reader.js"));
-      document.head.append(script);
-    });
-  }
-  // @ts-ignore
-  const zxing = window.ZXingWASM;
-  zxing.prepareZXingModule({
-    overrides: { locateFile: (/** @type {string} */ path) => new URL(path, vendorDir).href },
-  });
-  const formats = FORMATS.map((f) => ZXING_FORMAT_MAP[f]);
-  // Instantiate the wasm module now so failures surface here, not mid-scan.
-  const warmup = new ImageData(2, 2);
-  await zxing.readBarcodes(warmup, { formats });
-
+  const { readBarcodes, formats } = await ensureWasmReader();
   const canvas = document.createElement("canvas");
   const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { willReadFrequently: true }));
   return {
@@ -177,7 +157,7 @@ async function createWasmDetector() {
       canvas.height = video.videoHeight;
       ctx.drawImage(video, 0, 0);
       const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const results = await zxing.readBarcodes(image, { formats });
+      const results = await readBarcodes(image, { formats });
       return results.length > 0 ? results[0].text : null;
     },
   };
@@ -259,4 +239,156 @@ export async function createDetector(onStatus = () => {}) {
     },
   };
   return out;
+}
+
+/**
+ * Decode barcodes from ImageData via vendored zxing-wasm (still-image path).
+ * @param {ImageData} imageData
+ * @returns {Promise<string | null>}
+ */
+export async function detectFromImageData(imageData) {
+  if (!imageData?.width || !imageData?.height) return null;
+  try {
+    const engine = await ensureWasmReader();
+    const results = await engine.readBarcodes(imageData, { formats: engine.formats });
+    return results.length > 0 ? results[0].text : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Decode a barcode from an ImageBitmap / canvas / HTMLImageElement.
+ * Prefers native BarcodeDetector when the probe says it works; else zxing-wasm.
+ * @param {ImageBitmap | HTMLCanvasElement | HTMLImageElement} source
+ * @returns {Promise<string | null>}
+ */
+export async function detectFromStill(source) {
+  try {
+    const hasNative = "BarcodeDetector" in window;
+    let probeResult = /** @type {"ok" | "broken"} */ ("broken");
+    if (hasNative) {
+      const cached = cachedProbeResult();
+      probeResult = cached ?? (await probeNativeDetector());
+      if (!cached) cacheProbeResult(probeResult);
+    }
+    if (chooseStrategy({ hasNative, probeResult }) === "native") {
+      try {
+        // @ts-ignore
+        const native = new window.BarcodeDetector({ formats: FORMATS });
+        const codes = await native.detect(source);
+        if (codes.length > 0 && codes[0].rawValue) return codes[0].rawValue;
+      } catch {
+        // fall through to wasm
+      }
+    }
+    const imageData = stillSourceToImageData(source);
+    if (!imageData) return null;
+    return detectFromImageData(imageData);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Decode a barcode from a Blob / File (original bytes preferred over AI-resized JPEG).
+ * @param {Blob} blob
+ * @returns {Promise<string | null>}
+ */
+export async function detectFromBlob(blob) {
+  if (!blob || blob.size === 0) return null;
+  try {
+    const bitmap = await createImageBitmap(blob);
+    try {
+      return await detectFromStill(bitmap);
+    } finally {
+      bitmap.close();
+    }
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Distinct barcodes found across still images (fail-soft).
+ * @param {Blob[]} blobs
+ * @param {number} [maxImages=10]
+ * @returns {Promise<string[]>}
+ */
+export async function detectBarcodesFromBlobs(blobs, maxImages = 10) {
+  const list = (blobs || []).slice(0, maxImages);
+  if (!list.length) return [];
+  const results = await Promise.all(list.map((blob) => detectFromBlob(blob)));
+  const found = new Set();
+  /** @type {string[]} */
+  const ordered = [];
+  for (const code of results) {
+    if (code && !found.has(code)) {
+      found.add(code);
+      ordered.push(code);
+    }
+  }
+  return ordered;
+}
+
+/** Lazy wasm reader shared by live + still paths. */
+/** @type {Promise<{ readBarcodes: Function, formats: string[] }> | null} */
+let wasmReaderPromise = null;
+
+async function ensureWasmReader() {
+  if (!wasmReaderPromise) {
+    wasmReaderPromise = (async () => {
+      const vendorDir = new URL("../../vendor/zxing/", import.meta.url);
+      // @ts-ignore
+      if (!window.ZXingWASM) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = new URL("zxing-reader.js", vendorDir).href;
+          script.onload = () => resolve(undefined);
+          script.onerror = () => reject(new Error("failed to load zxing-reader.js"));
+          document.head.append(script);
+        });
+      }
+      // @ts-ignore
+      const zxing = window.ZXingWASM;
+      zxing.prepareZXingModule({
+        overrides: { locateFile: (/** @type {string} */ path) => new URL(path, vendorDir).href },
+      });
+      const formats = FORMATS.map((f) => ZXING_FORMAT_MAP[f]);
+      const warmup = new ImageData(2, 2);
+      await zxing.readBarcodes(warmup, { formats });
+      return { readBarcodes: zxing.readBarcodes.bind(zxing), formats };
+    })();
+  }
+  try {
+    return await wasmReaderPromise;
+  } catch (err) {
+    wasmReaderPromise = null;
+    throw err;
+  }
+}
+
+/**
+ * @param {ImageBitmap | HTMLCanvasElement | HTMLImageElement} source
+ * @returns {ImageData | null}
+ */
+function stillSourceToImageData(source) {
+  const canvas = document.createElement("canvas");
+  const ctx = /** @type {CanvasRenderingContext2D | null} */ (
+    canvas.getContext("2d", { willReadFrequently: true })
+  );
+  if (!ctx) return null;
+  if (source instanceof HTMLCanvasElement) {
+    canvas.width = source.width;
+    canvas.height = source.height;
+    ctx.drawImage(source, 0, 0);
+  } else {
+    const w = "width" in source ? Number(source.width) : 0;
+    const h = "height" in source ? Number(source.height) : 0;
+    if (!w || !h) return null;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(source, 0, 0);
+  }
+  return ctx.getImageData(0, 0, canvas.width, canvas.height);
 }

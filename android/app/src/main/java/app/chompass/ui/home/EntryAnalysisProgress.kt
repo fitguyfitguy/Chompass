@@ -5,6 +5,8 @@ import app.chompass.services.grounding.GroundedFoodEntryService
 
 enum class EntryAnalysisPhase {
     Preparing,
+    /** Still-image barcode decode + Open Food Facts soft context (photo AI). */
+    LookingUpBarcode,
     CallingAi,
     Parsing,
     /** Grounded entry: model recognition of components (no nutrients yet). */

@@ -59,6 +59,7 @@ const SHELL_ASSETS = [
   "./src/lib/ai/coach.js",
   "./src/lib/ai/image.js",
   "./src/lib/ai/food-analyze.js",
+  "./src/lib/ai/off-prompt-context.js",
   "./vendor/idb.js",
   "./vendor/zxing/zxing-reader.js",
   "./vendor/zxing/zxing_reader.wasm",

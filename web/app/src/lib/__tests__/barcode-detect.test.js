@@ -71,3 +71,8 @@ test("ean13Modules_rejectsInvalidInput", () => {
   assert.throws(() => ean13Modules("123"));
   assert.throws(() => ean13Modules("abcdefghijklm"));
 });
+
+test("detectFromBlob_emptyReturnsNull", async () => {
+  const { detectFromBlob } = await import("../barcode-detect.js");
+  assert.equal(await detectFromBlob(new Blob([])), null);
+});

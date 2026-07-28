@@ -11,6 +11,7 @@ import { ensureServingUnits } from "../chompass-core/serving-units.js";
 /** Shared entry analysis phases (Android EntryAnalysisPhase subset for cloud AI). */
 export const ANALYSIS_PHASE = Object.freeze({
   PREPARING: "preparing",
+  LOOKING_UP_BARCODE: "looking_up_barcode",
   CALLING_AI: "calling_ai",
   PARSING: "parsing",
 });
@@ -18,6 +19,7 @@ export const ANALYSIS_PHASE = Object.freeze({
 /** @type {Record<string, string>} */
 export const ANALYSIS_PHASE_LABEL = Object.freeze({
   [ANALYSIS_PHASE.PREPARING]: "Preparing request…",
+  [ANALYSIS_PHASE.LOOKING_UP_BARCODE]: "Checking barcodes…",
   [ANALYSIS_PHASE.CALLING_AI]: "Calling AI…",
   [ANALYSIS_PHASE.PARSING]: "Reading result…",
 });
@@ -25,6 +27,7 @@ export const ANALYSIS_PHASE_LABEL = Object.freeze({
 /** Ordered steps for the analyze overlay (non-grounded). */
 export const ANALYSIS_PHASE_STEPS = Object.freeze([
   ANALYSIS_PHASE.PREPARING,
+  ANALYSIS_PHASE.LOOKING_UP_BARCODE,
   ANALYSIS_PHASE.CALLING_AI,
   ANALYSIS_PHASE.PARSING,
 ]);
@@ -48,6 +51,7 @@ Include micronutrients when you can estimate them confidently; use null when uns
  * @param {keyof typeof PROVIDERS} args.providerId
  * @param {{apiKey: string, model?: string, baseUrl?: string}} args.config
  * @param {string} [args.text]
+ * @param {string} [args.productContext] OFF barcode soft context for the user message
  * @param {{mimeType: string, base64: string}} [args.image]
  * @param {{mimeType: string, base64: string}[]} [args.images]
  * @param {AbortSignal} [args.signal]
@@ -58,6 +62,7 @@ export async function analyzeFoodEntry({
   providerId,
   config,
   text,
+  productContext,
   image,
   images,
   signal,
@@ -69,7 +74,7 @@ export async function analyzeFoodEntry({
   if (!text && !imageList.length) throw new Error("Provide a photo or a text description.");
 
   try {
-    return await runAnalyze(providerId, config, text, imageList, appPrefs, signal, onPhase);
+    return await runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase);
   } catch (primaryErr) {
     // Do not burn a fallback provider after the user cancelled / navigated away.
     if (isAbortError(primaryErr) || signal?.aborted) throw primaryErr;
@@ -80,7 +85,7 @@ export async function analyzeFoodEntry({
     if (!fbConfig) throw primaryErr;
     if (appPrefs.fallbackAiModel) fbConfig.model = appPrefs.fallbackAiModel;
     fbConfig.model = resolveProviderModel(fbId, fbConfig.model, "fallback");
-    return runAnalyze(fbId, fbConfig, text, imageList, appPrefs, signal, onPhase);
+    return runAnalyze(fbId, fbConfig, text, productContext, imageList, appPrefs, signal, onPhase);
   }
 }
 
@@ -88,12 +93,13 @@ export async function analyzeFoodEntry({
  * @param {keyof typeof PROVIDERS} providerId
  * @param {{apiKey: string, model?: string, baseUrl?: string}} config
  * @param {string|undefined} text
+ * @param {string|undefined} productContext
  * @param {{mimeType: string, base64: string}[]} imageList
  * @param {import('../db.js').AppPrefs} appPrefs
  * @param {AbortSignal} [signal]
  * @param {(phase: string) => void} [onPhase]
  */
-async function runAnalyze(providerId, config, text, imageList, appPrefs, signal, onPhase) {
+async function runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase) {
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
   if (signal?.aborted) throw abortError();
@@ -103,11 +109,14 @@ async function runAnalyze(providerId, config, text, imageList, appPrefs, signal,
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
   }
 
-  const userText =
+  let userText =
     text?.trim() ||
     (imageList.length > 1
       ? `Estimate calories and macros for the food across these ${imageList.length} photos of the same meal. Return JSON only.`
       : "Estimate calories and macros for the food in this photo. Return JSON only.");
+  if (productContext?.trim()) {
+    userText += `\n\n${productContext.trim()}`;
+  }
 
   onPhase?.(ANALYSIS_PHASE.CALLING_AI);
   /** @type {import('./providers.js').AiMessage} */
