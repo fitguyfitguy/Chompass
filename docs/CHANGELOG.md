@@ -4,9 +4,12 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-07-28
+
 ### Added
 
-- Optional user-hosted WebDAV / sync JSON sync between Android and the PWA (manual Sync now; API keys and food photos excluded).
+- Optional user-hosted WebDAV sync between Android and the PWA (manual **Sync now**; API keys and food photos excluded).
+- Photo food entry can decode a visible barcode and enrich AI analysis with Open Food Facts product context (Android and PWA).
 
 ## [3.1.3] - 2026-07-28
 

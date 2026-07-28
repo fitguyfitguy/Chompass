@@ -5,7 +5,6 @@ package app.chompass.export
  * web/app/src/lib/nofud-core/sync-merge.js.
  */
 object SyncMerge {
-
     fun compareUpdatedAt(a: String, b: String): Int = a.compareTo(b)
 
     /**

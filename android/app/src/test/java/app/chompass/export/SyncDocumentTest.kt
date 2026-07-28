@@ -8,7 +8,6 @@ import org.junit.Test
 import java.time.ZoneOffset
 
 class SyncDocumentTest {
-
     @Test
     fun paritySampleParses() {
         val json = ParityFixtures.readText("sync-sample.json")
