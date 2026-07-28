@@ -4,6 +4,10 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Optional user-hosted WebDAV / sync JSON sync between Android and the PWA (manual Sync now; API keys and food photos excluded).
+
 ## [3.1.3] - 2026-07-28
 
 ### Fixed

@@ -105,4 +105,10 @@ internal object Keys {
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")
         val ON_DEVICE_FEATURE_VISIBLE = booleanPreferencesKey("onDeviceFeatureVisible")
+        val SYNC_REVISIONS = stringPreferencesKey("syncRevisions")
+        val WEBDAV_URL = stringPreferencesKey("webDavUrl")
+        val WEBDAV_USERNAME = stringPreferencesKey("webDavUsername")
+        val WEBDAV_ENABLED = booleanPreferencesKey("webDavEnabled")
+        val LAST_SYNC_AT = stringPreferencesKey("lastSyncAt")
+        val LAST_SYNC_ETAG = stringPreferencesKey("lastSyncEtag")
 }

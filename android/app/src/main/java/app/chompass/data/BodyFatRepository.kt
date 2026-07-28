@@ -23,7 +23,8 @@ import kotlin.math.abs
 class BodyFatRepository(
     private val prefs: PreferencesStore,
     private val profileRepository: ProfileRepository,
-    private val health: HealthConnectManager? = null
+    private val health: HealthConnectManager? = null,
+    private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
     val entries: Flow<List<BodyFatEntry>> = prefs.bodyFatEntries.map { it.sortedBy { e -> e.date } }
 
@@ -41,6 +42,7 @@ class BodyFatRepository(
     suspend fun addEntry(entry: BodyFatEntry) {
         val current = prefs.bodyFatEntries.first()
         prefs.setBodyFatEntries(current + entry)
+        sync?.touch(entry.id, "bodyfat")
         syncProfileBodyFatToLatest()
         if (shouldSyncHealth()) {
             health?.writeBodyFat(entry)
@@ -50,6 +52,7 @@ class BodyFatRepository(
     suspend fun deleteEntry(id: UUID) {
         val current = prefs.bodyFatEntries.first()
         prefs.setBodyFatEntries(current.filter { it.id != id })
+        sync?.tombstone(id, "bodyfat")
         syncProfileBodyFatToLatest()
         // Delete the HC record even when sync is off (iOS parity, best-effort) —
         // a surviving fudai-tagged record would resurrect through the own-record

@@ -28,6 +28,7 @@ class FoodRepository(
     private val prefs: PreferencesStore,
     private val health: HealthConnectManager? = null,
     private val imageStore: FoodImageStore? = null,
+    private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
     val entries: Flow<List<FoodEntry>> = prefs.foodEntries
 
@@ -80,6 +81,7 @@ class FoodRepository(
         PerfLog.measure("save", "dataStore", "month=${entry.month()}") {
             prefs.applyFoodEntryBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
         }
+        sync?.touch(entry.id, "food")
         if (shouldSyncHealth()) {
             PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
         }
@@ -101,6 +103,7 @@ class FoodRepository(
                 removalIdsByMonth = mapOf(oldMonth to setOf(updated.id)),
             )
         }
+        sync?.touch(updated.id, "food")
         if (shouldSyncHealth()) {
             health?.updateNutrition(updated)
         } else {
@@ -113,6 +116,7 @@ class FoodRepository(
 
     suspend fun deleteEntry(entry: FoodEntry) {
         prefs.applyFoodEntryBucketChanges(removalIdsByMonth = mapOf(entry.month() to setOf(entry.id)))
+        sync?.tombstone(entry.id, "food")
         pruneOrphanedImages()
         // Delete even when sync is off (iOS parity, best-effort) — a surviving
         // fudai-tagged record would resurrect through restoreFromHealthConnect.
@@ -164,6 +168,7 @@ class FoodRepository(
             val removed = current.removeAt(idx)
             prefs.setFavoriteFoodEntries(current)
             prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+            sync?.tombstone(removed.id, "favorite")
             pruneOrphanedImages()
             return
         } else {
@@ -174,6 +179,7 @@ class FoodRepository(
         }
         prefs.setFavoriteFoodEntries(current)
         prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+        sync?.touch(entry.id, "favorite")
     }
 
     /**

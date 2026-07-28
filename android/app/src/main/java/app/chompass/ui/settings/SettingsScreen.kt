@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import app.chompass.AppContainer
 import app.chompass.R
@@ -43,6 +45,7 @@ import app.chompass.export.BodyMetricsImportResult
 import app.chompass.export.BodyMetricsImporter
 import app.chompass.export.DiaryImportResult
 import app.chompass.export.DiaryImporter
+import app.chompass.sync.SyncRepository
 import app.chompass.ui.about.AboutSettingsRows
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
@@ -63,6 +66,11 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     var showBodyMetricsExportSheet by remember { mutableStateOf(false) }
     var importDiaryMessage by remember { mutableStateOf<String?>(null) }
     var importBodyMetricsMessage by remember { mutableStateOf<String?>(null) }
+    var syncMessage by remember { mutableStateOf<String?>(null) }
+    var webDavUrl by remember { mutableStateOf("") }
+    var webDavUsername by remember { mutableStateOf("") }
+    var webDavPassword by remember { mutableStateOf("") }
+    var lastSyncAt by remember { mutableStateOf<String?>(null) }
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }
     var showMaxPinnedAlert by remember { mutableStateOf(false) }
     var showRebalanceBlockedAlert by remember { mutableStateOf(false) }
@@ -75,6 +83,13 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     var pendingHealthPermissionAction by remember { mutableStateOf<HealthConnectPermissionAction?>(null) }
     val activityContext = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        webDavUrl = container.prefs.webDavUrl.first()
+        webDavUsername = container.prefs.webDavUsername.first()
+        webDavPassword = container.keyStore.webDavPassword().orEmpty()
+        lastSyncAt = container.prefs.lastSyncAt.first()
+    }
 
     // Notifications: API 33+ requires runtime POST_NOTIFICATIONS. We only flip the
     // pref to true if the user actually grants. Denial leaves the toggle off so
@@ -196,6 +211,29 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 importBodyMetricsMessage = activityContext.getString(
                     R.string.import_diary_failed,
                     t.localizedMessage ?: "unknown error"
+                )
+            }
+        }
+    }
+
+    val importSyncLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            runCatching {
+                val text = activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                    ?: ""
+                when (val result = container.syncRepository.importDocumentJson(text)) {
+                    is SyncRepository.SyncResult.Success ->
+                        syncMessage = activityContext.getString(R.string.import_sync_success)
+                    is SyncRepository.SyncResult.Failed ->
+                        syncMessage = activityContext.getString(R.string.import_sync_failed, result.message)
+                }
+            }.onFailure { t ->
+                syncMessage = activityContext.getString(
+                    R.string.import_sync_failed,
+                    t.localizedMessage ?: "unknown error",
                 )
             }
         }
@@ -345,6 +383,56 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 },
                 onShowClearFoodDialog = { showClearFoodDialog = true },
                 onShowDeleteDialog = { showDeleteDialog = true },
+            )
+            SettingsSyncSection(
+                webDavUrl = webDavUrl,
+                webDavUsername = webDavUsername,
+                webDavPassword = webDavPassword,
+                lastSyncAt = lastSyncAt,
+                syncStatus = syncMessage,
+                onWebDavUrlChange = { webDavUrl = it },
+                onWebDavUsernameChange = { webDavUsername = it },
+                onWebDavPasswordChange = { webDavPassword = it },
+                onSaveWebDav = {
+                    scope.launch {
+                        container.prefs.setWebDavUrl(webDavUrl)
+                        container.prefs.setWebDavUsername(webDavUsername)
+                        container.keyStore.setWebDavPassword(webDavPassword)
+                        syncMessage = activityContext.getString(R.string.settings_webdav_saved)
+                    }
+                },
+                onExportSync = {
+                    scope.launch {
+                        runCatching {
+                            val content = container.syncRepository.exportDocumentJson()
+                            shareExportedFile(
+                                context = activityContext,
+                                fileName = "Chompass-sync.json",
+                                content = content,
+                                mimeType = "application/json",
+                                chooserTitle = activityContext.getString(R.string.export_sync_title),
+                            )
+                        }.onFailure { t ->
+                            syncMessage = activityContext.getString(
+                                R.string.export_sync_failed,
+                                t.localizedMessage ?: "unknown error",
+                            )
+                        }
+                    }
+                },
+                onImportSync = { importSyncLauncher.launch(arrayOf("application/json", "text/plain")) },
+                onSyncNow = {
+                    scope.launch {
+                        syncMessage = "…"
+                        when (val result = container.syncRepository.syncNow()) {
+                            is SyncRepository.SyncResult.Success -> {
+                                syncMessage = result.message
+                                lastSyncAt = container.prefs.lastSyncAt.first()
+                            }
+                            is SyncRepository.SyncResult.Failed -> syncMessage = result.message
+                        }
+                    }
+                },
             )
             SectionCard(title = stringResource(R.string.nav_about)) {
                 AboutSettingsRows(container)

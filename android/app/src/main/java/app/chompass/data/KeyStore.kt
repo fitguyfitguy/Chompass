@@ -39,6 +39,11 @@ class KeyStore(context: Context) {
         if (key.isNullOrEmpty()) delete(storageKey) else save(storageKey, key)
     }
 
+    fun webDavPassword(): String? = load(WEBDAV_PASSWORD_KEY)
+    fun setWebDavPassword(password: String?) {
+        if (password.isNullOrEmpty()) delete(WEBDAV_PASSWORD_KEY) else save(WEBDAV_PASSWORD_KEY, password)
+    }
+
     fun clearAll() {
         prefs.edit().clear().apply()
     }
@@ -48,6 +53,7 @@ class KeyStore(context: Context) {
         private const val FILE_NAME = "fudai_keychain"
         private const val AI_PREFIX = "apikey_"
         private const val STT_PREFIX = "speechApiKey_"
+        private const val WEBDAV_PASSWORD_KEY = "webdav_password"
 
         /**
          * Open EncryptedSharedPreferences. On Android 14/15 (and occasionally

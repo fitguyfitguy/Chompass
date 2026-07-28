@@ -29,6 +29,13 @@ import {
 import { openConfirm } from "../lib/ui/dialog.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { downloadJson, downloadText } from "../lib/download.js";
+import {
+  buildLocalSyncDocument,
+  importAndMergeSyncDocument,
+  loadWebDavSettings,
+  saveWebDavSettings,
+  syncWebDavNow,
+} from "../lib/sync.js";
 import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
 import {
   HOME_TOP_NUTRIENTS,
@@ -88,6 +95,7 @@ export class SettingsView extends HTMLElement {
           <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
           <a href="#/settings?section=speech">Speech <span>Voice language (browser)</span></a>
           <a href="#/settings?section=data">Data <span>Import / export / clear</span></a>
+          <a href="#/settings?section=sync">Sync <span>WebDAV / sync file</span></a>
           <a href="#/settings?section=ai">AI <span>Keys, instructions, fallback</span></a>
           <a href="#/settings?section=install">Install app <span>Home screen &amp; browsers</span></a>
           <a href="#/settings?section=about">About &amp; methods <span>Formulas</span></a>
@@ -123,6 +131,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "data") {
       await this.renderData();
+      return;
+    }
+    if (this.section === "sync") {
+      await this.renderSync();
       return;
     }
     if (this.section === "ai") {
@@ -678,6 +690,85 @@ export class SettingsView extends HTMLElement {
       if (!ok) return;
       await clearAllUserData();
       location.hash = "#/onboarding";
+    });
+    bindSubpageBack(this, "#/settings");
+  }
+
+  async renderSync() {
+    const cfg = await loadWebDavSettings();
+    this.innerHTML = `
+      ${subpageBar("Sync", { backHref: "#/settings" })}
+      <div class="card">
+        <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
+          Optional user-hosted sync. Chompass has no cloud account — point both the PWA and Android app at the same WebDAV file (e.g. Nextcloud), or move a sync JSON by hand. API keys and food photos are not included.
+        </p>
+        <div class="btn-row">
+          <button class="btn btn--ghost" id="export-sync" type="button">Export sync JSON</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">Import sync JSON
+            <input type="file" accept="application/json" id="import-sync" style="display:none;" />
+          </label>
+        </div>
+        <form class="entry-form" id="webdav-form" style="margin-top:1rem;">
+          <div class="field">
+            <label for="webdav-url">WebDAV file URL</label>
+            <input id="webdav-url" name="url" type="url" placeholder="https://cloud.example/remote.php/dav/files/me/chompass/sync.json" value="${cfg.url.replace(/"/g, "&quot;")}" />
+          </div>
+          <div class="field-row field-row--2">
+            <div class="field">
+              <label for="webdav-user">Username</label>
+              <input id="webdav-user" name="username" autocomplete="username" value="${cfg.username.replace(/"/g, "&quot;")}" />
+            </div>
+            <div class="field">
+              <label for="webdav-pass">Password</label>
+              <input id="webdav-pass" name="password" type="password" autocomplete="current-password" value="${cfg.password.replace(/"/g, "&quot;")}" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="save-webdav" type="submit">Save WebDAV</button>
+            <button class="btn btn--ghost" id="sync-now" type="button">Sync now</button>
+          </div>
+        </form>
+        <p id="sync-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
+          ${cfg.lastSyncAt ? `Last sync: ${cfg.lastSyncAt}` : "Not synced yet."}
+        </p>
+      </div>`;
+    const status = /** @type {HTMLElement|null} */ (this.querySelector("#sync-status"));
+    this.querySelector("#export-sync")?.addEventListener("click", async () => {
+      const doc = await buildLocalSyncDocument();
+      await downloadJson(doc, `Chompass-sync-${new Date().toISOString().slice(0, 10)}.json`);
+      if (status) status.textContent = "Sync JSON exported.";
+    });
+    this.querySelector("#import-sync")?.addEventListener("change", async (ev) => {
+      const input = /** @type {HTMLInputElement} */ (ev.target);
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const doc = JSON.parse(await file.text());
+        await importAndMergeSyncDocument(doc);
+        if (status) status.textContent = "Sync JSON imported and merged.";
+      } catch (err) {
+        if (status) status.textContent = err instanceof Error ? err.message : "Import failed";
+      } finally {
+        input.value = "";
+      }
+    });
+    this.querySelector("#webdav-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const form = /** @type {HTMLFormElement} */ (ev.target);
+      const fd = new FormData(form);
+      await saveWebDavSettings({
+        url: String(fd.get("url") ?? ""),
+        username: String(fd.get("username") ?? ""),
+        password: String(fd.get("password") ?? ""),
+        etag: cfg.etag,
+        lastSyncAt: cfg.lastSyncAt,
+      });
+      if (status) status.textContent = "WebDAV settings saved.";
+    });
+    this.querySelector("#sync-now")?.addEventListener("click", async () => {
+      if (status) status.textContent = "Syncing…";
+      const result = await syncWebDavNow();
+      if (status) status.textContent = result.message;
     });
     bindSubpageBack(this, "#/settings");
   }

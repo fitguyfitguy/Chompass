@@ -14,6 +14,7 @@ PAIRS = [
     ("contracts/diary-1.1.schema.json", "testdata/parity/diary-sample.json"),
     ("contracts/body-metrics-1.0.schema.json", "testdata/parity/body-metrics-sample.json"),
     ("contracts/meal-share-v1.schema.json", "testdata/parity/meal-share-sample.json"),
+    ("contracts/sync-1.0.schema.json", "testdata/parity/sync-sample.json"),
 ]
 
 
