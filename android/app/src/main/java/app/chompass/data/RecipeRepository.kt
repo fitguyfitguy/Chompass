@@ -18,6 +18,7 @@ import java.util.UUID
 class RecipeRepository(
     private val prefs: PreferencesStore,
     private val foodRepository: FoodRepository,
+    private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
     val recipes: Flow<List<Recipe>> = prefs.recipes
 
@@ -26,10 +27,12 @@ class RecipeRepository(
         val idx = current.indexOfFirst { it.id == recipe.id }
         if (idx >= 0) current[idx] = recipe else current.add(recipe)
         prefs.setRecipes(current)
+        sync?.touch(recipe.id, "recipe")
     }
 
     suspend fun deleteRecipe(recipe: Recipe) {
         prefs.setRecipes(prefs.recipes.first().filterNot { it.id == recipe.id })
+        sync?.tombstone(recipe.id, "recipe")
     }
 
     suspend fun moveRecipe(from: Int, to: Int) {

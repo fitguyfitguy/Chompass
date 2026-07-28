@@ -1,0 +1,94 @@
+{
+  "export": {
+    "app": "Chompass",
+    "kind": "sync",
+    "format_version": "1.0",
+    "generated_at": "2026-07-24T10:00:00Z"
+  },
+  "food_entries": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "updated_at": "2026-07-24T12:00:00Z",
+      "deleted_at": null,
+      "name": "Chicken salad",
+      "date": "2026-07-24",
+      "time": "12:30",
+      "meal_type": "lunch",
+      "quantity_g": 350,
+      "calories": 420,
+      "protein_g": 38,
+      "carbs_g": 12,
+      "fat_g": 22,
+      "source": "manually_edited",
+      "note": null,
+      "recipe_log_id": null,
+      "sugar_g": null,
+      "added_sugar_g": null,
+      "fiber_g": 4,
+      "saturated_fat_g": null,
+      "monounsaturated_fat_g": null,
+      "polyunsaturated_fat_g": null,
+      "cholesterol_mg": null,
+      "sodium_mg": null,
+      "potassium_mg": null,
+      "trans_fat_g": null,
+      "calcium_mg": null,
+      "iron_mg": null,
+      "magnesium_mg": null,
+      "zinc_mg": null,
+      "vitamin_a_mcg": null,
+      "vitamin_c_mg": null,
+      "vitamin_d_mcg": null,
+      "vitamin_b12_mcg": null,
+      "vitamin_e_mg": null,
+      "vitamin_k_mcg": null,
+      "folate_mcg": null,
+      "omega3_g": null,
+      "grounding": null
+    }
+  ],
+  "favorites": [],
+  "weights": [
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "updated_at": "2026-07-20T08:00:00Z",
+      "deleted_at": null,
+      "date": "2026-07-20T08:00:00Z",
+      "weight_kg": 79.4
+    }
+  ],
+  "body_fat": [],
+  "measurements": [],
+  "water": [
+    {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "updated_at": "2026-07-24T09:00:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "amount_ml": 500
+    }
+  ],
+  "recipes": [],
+  "profile": {
+    "updated_at": "2026-07-01T00:00:00Z",
+    "deleted_at": null,
+    "payload": {
+      "sex": "male",
+      "age": 35,
+      "height_cm": 178,
+      "weight_kg": 79.4,
+      "activity": "moderate",
+      "goal": "lose"
+    }
+  },
+  "prefs": {
+    "updated_at": "2026-07-01T00:00:00Z",
+    "deleted_at": null,
+    "payload": {
+      "theme": "system",
+      "units": "metric",
+      "show_water": true,
+      "water_goal_ml": 2500
+    }
+  }
+}

@@ -230,5 +230,17 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun clearDebugActivityDays() = clearDebugActivityDaysImpl()
     suspend fun debugActivityDaysJson(): String? = debugActivityDaysJsonImpl()
     suspend fun debugActivityDay(date: LocalDate): DebugActivityDay? = debugActivityDayImpl(date)
+    val syncRevisions: Flow<Map<String, SyncRevision>> get() = syncRevisionsImpl
+    suspend fun setSyncRevisions(revisions: Map<String, SyncRevision>) = setSyncRevisionsImpl(revisions)
+    val webDavUrl: Flow<String> get() = webDavUrlImpl
+    suspend fun setWebDavUrl(url: String) = setWebDavUrlImpl(url)
+    val webDavUsername: Flow<String> get() = webDavUsernameImpl
+    suspend fun setWebDavUsername(username: String) = setWebDavUsernameImpl(username)
+    val webDavEnabled: Flow<Boolean> get() = webDavEnabledImpl
+    suspend fun setWebDavEnabled(enabled: Boolean) = setWebDavEnabledImpl(enabled)
+    val lastSyncAt: Flow<String?> get() = lastSyncAtImpl
+    suspend fun setLastSyncAt(iso: String?) = setLastSyncAtImpl(iso)
+    val lastSyncEtag: Flow<String?> get() = lastSyncEtagImpl
+    suspend fun setLastSyncEtag(etag: String?) = setLastSyncEtagImpl(etag)
     suspend fun clearAll() = clearAllImpl()
 }

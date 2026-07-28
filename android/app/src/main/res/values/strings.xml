@@ -811,6 +811,21 @@
     <string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string>
     <string name="settings_health_background_sync">Background sync</string>
     <string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default.</string>
+    <string name="settings_sync_section">Sync</string>
+    <string name="settings_sync_blurb">Optional user-hosted sync. Point Android and the PWA at the same WebDAV file (for example Nextcloud), or share a sync JSON. Chompass does not run a sync server. API keys and food photos are not included.</string>
+    <string name="settings_webdav_url">WebDAV file URL</string>
+    <string name="settings_webdav_username">Username</string>
+    <string name="settings_webdav_password">Password</string>
+    <string name="settings_webdav_save">Save WebDAV settings</string>
+    <string name="export_sync_title">Export sync JSON</string>
+    <string name="import_sync_title">Import sync JSON</string>
+    <string name="settings_sync_now">Sync now</string>
+    <string name="settings_last_sync">Last sync: %1$s</string>
+    <string name="settings_not_synced">Not synced yet</string>
+    <string name="import_sync_success">Sync document imported.</string>
+    <string name="import_sync_failed">Sync import failed: %1$s</string>
+    <string name="export_sync_failed">Could not export sync document: %1$s</string>
+    <string name="settings_webdav_saved">WebDAV settings saved.</string>
     <string name="settings_health_denied">Health Connect needs Weight, Body Fat, Active Calories, Total Calories, and permission to write Nutrition. Re-tap the toggle and grant all requested permissions to sync and estimate energy goals.</string>
     <string name="settings_health_unavailable">Health Connect isn\'t available on this device. Install it from the Play Store, then re-tap the toggle.</string>
 

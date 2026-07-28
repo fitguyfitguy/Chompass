@@ -28,6 +28,7 @@ import app.chompass.services.grounding.UsdaFoodIndex
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.health.HomeActivityReader
+import app.chompass.sync.SyncRepository
 import app.chompass.services.ondevice.ModelDownloadManager
 import app.chompass.services.ondevice.OnDeviceLlmGateway
 import app.chompass.services.speech.SpeechService
@@ -153,14 +154,15 @@ class AppContainer(app: ChompassApp) {
     val health = HealthConnectManager(app)
     val homeActivityReader = HomeActivityReader(health, prefs)
 
+    val syncRepository = SyncRepository(prefs, keyStore)
     val profileRepository = ProfileRepository(prefs)
-    val foodRepository = FoodRepository(prefs, health, imageStore)
-    val recipeRepository = RecipeRepository(prefs, foodRepository)
-    val weightRepository = WeightRepository(prefs, profileRepository, health)
-    val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health)
-    val bodyMeasurementRepository = BodyMeasurementRepository(prefs)
+    val foodRepository = FoodRepository(prefs, health, imageStore, syncRepository)
+    val recipeRepository = RecipeRepository(prefs, foodRepository, syncRepository)
+    val weightRepository = WeightRepository(prefs, profileRepository, health, syncRepository)
+    val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health, syncRepository)
+    val bodyMeasurementRepository = BodyMeasurementRepository(prefs, syncRepository)
     val chatRepository = ChatRepository(prefs)
-    val waterRepository = WaterRepository(prefs)
+    val waterRepository = WaterRepository(prefs, syncRepository)
 
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)

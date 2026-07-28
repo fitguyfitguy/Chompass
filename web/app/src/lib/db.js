@@ -46,14 +46,61 @@ async function store(storeName) {
   return new Store(await db(), storeName);
 }
 
+/** @type {number} */
+let revisionHooksSuppressed = 0;
+
+/**
+ * Suppress sync revision touch/tombstone while applying a merged sync document.
+ * @template T
+ * @param {() => Promise<T>} fn
+ * @returns {Promise<T>}
+ */
+export async function withRevisionHooksSuppressed(fn) {
+  revisionHooksSuppressed += 1;
+  try {
+    return await fn();
+  } finally {
+    revisionHooksSuppressed -= 1;
+  }
+}
+
+/**
+ * @param {string} id
+ * @param {string} kind
+ */
+async function touchRevision(id, kind) {
+  if (revisionHooksSuppressed > 0 || !id) return;
+  const p = await prefs.load();
+  const revisions = { ...(p.syncRevisions ?? {}) };
+  revisions[id] = { updatedAt: new Date().toISOString(), deletedAt: null, kind };
+  await prefs.save({ syncRevisions: revisions });
+}
+
+/**
+ * @param {string} id
+ * @param {string} kind
+ */
+async function tombstoneRevision(id, kind) {
+  if (revisionHooksSuppressed > 0 || !id) return;
+  const p = await prefs.load();
+  const revisions = { ...(p.syncRevisions ?? {}) };
+  const now = new Date().toISOString();
+  revisions[id] = { updatedAt: now, deletedAt: now, kind };
+  await prefs.save({ syncRevisions: revisions });
+}
+
 export const foodEntries = {
   /** @param {import('./chompass-core/models.js').FoodEntry} entry */
   async put(entry) {
-    return (await store("foodEntries")).put(entry);
+    const result = await (await store("foodEntries")).put(entry);
+    await touchRevision(entry.id, "food");
+    return result;
   },
   /** @param {string} id */
   async delete(id) {
-    return (await store("foodEntries")).delete(id);
+    const result = await (await store("foodEntries")).delete(id);
+    await tombstoneRevision(id, "food");
+    return result;
   },
   /** @param {string} date ISO "YYYY-MM-DD" */
   async byDate(date) {
@@ -70,11 +117,15 @@ export const foodEntries = {
 export const favorites = {
   /** @param {import('./chompass-core/models.js').FoodEntry} entry */
   async put(entry) {
-    return (await store("favorites")).put(entry);
+    const result = await (await store("favorites")).put(entry);
+    await touchRevision(entry.id, "favorite");
+    return result;
   },
   /** @param {string} id */
   async delete(id) {
-    return (await store("favorites")).delete(id);
+    const result = await (await store("favorites")).delete(id);
+    await tombstoneRevision(id, "favorite");
+    return result;
   },
   async all() {
     return (await store("favorites")).getAll();
@@ -87,11 +138,15 @@ export const favorites = {
 export const recipes = {
   /** @param {import('./chompass-core/models.js').Recipe} recipe */
   async put(recipe) {
-    return (await store("recipes")).put(recipe);
+    const result = await (await store("recipes")).put(recipe);
+    await touchRevision(recipe.id, "recipe");
+    return result;
   },
   /** @param {string} id */
   async delete(id) {
-    return (await store("recipes")).delete(id);
+    const result = await (await store("recipes")).delete(id);
+    await tombstoneRevision(id, "recipe");
+    return result;
   },
   async all() {
     return (await store("recipes")).getAll();
@@ -107,10 +162,14 @@ export const recipes = {
 
 export const weights = {
   async put(entry) {
-    return (await store("weights")).put(entry);
+    const result = await (await store("weights")).put(entry);
+    await touchRevision(entry.id, "weight");
+    return result;
   },
   async delete(id) {
-    return (await store("weights")).delete(id);
+    const result = await (await store("weights")).delete(id);
+    await tombstoneRevision(id, "weight");
+    return result;
   },
   async all() {
     return (await store("weights")).getAll();
@@ -122,10 +181,14 @@ export const weights = {
 
 export const bodyFat = {
   async put(entry) {
-    return (await store("bodyFat")).put(entry);
+    const result = await (await store("bodyFat")).put(entry);
+    await touchRevision(entry.id, "bodyfat");
+    return result;
   },
   async delete(id) {
-    return (await store("bodyFat")).delete(id);
+    const result = await (await store("bodyFat")).delete(id);
+    await tombstoneRevision(id, "bodyfat");
+    return result;
   },
   async all() {
     return (await store("bodyFat")).getAll();
@@ -137,10 +200,14 @@ export const bodyFat = {
 
 export const measurements = {
   async put(entry) {
-    return (await store("measurements")).put(entry);
+    const result = await (await store("measurements")).put(entry);
+    await touchRevision(entry.id, "measure");
+    return result;
   },
   async delete(id) {
-    return (await store("measurements")).delete(id);
+    const result = await (await store("measurements")).delete(id);
+    await tombstoneRevision(id, "measure");
+    return result;
   },
   async all() {
     return (await store("measurements")).getAll();
@@ -152,14 +219,21 @@ export const measurements = {
 
 export const water = {
   async put(entry) {
-    return (await store("water")).put(entry);
+    const result = await (await store("water")).put(entry);
+    await touchRevision(entry.id, "water");
+    return result;
   },
   async delete(id) {
-    return (await store("water")).delete(id);
+    const result = await (await store("water")).delete(id);
+    await tombstoneRevision(id, "water");
+    return result;
   },
   /** @param {string} date */
   async byDate(date) {
     return (await store("water")).getAllFromIndex("date", date);
+  },
+  async all() {
+    return (await store("water")).getAll();
   },
   async clear() {
     return (await store("water")).clear();
@@ -235,6 +309,8 @@ export const profile = {
  * @property {string} [primaryAiProvider]
  * @property {string} [speechLang] BCP-47 tag for Web Speech (browser STT)
  * @property {string} [progressRangeId] Progress tab time range id (1W…All)
+ * @property {Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>} [syncRevisions]
+ * @property {{ url?: string, username?: string, password?: string, etag?: string|null, lastSyncAt?: string|null }} [webdav]
  */
 
 export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
@@ -340,5 +416,5 @@ export async function clearAllUserData() {
     chat.clear(),
     keys.clear(),
   ]);
-  await prefs.save({ onboardingComplete: false });
+  await prefs.save({ onboardingComplete: false, syncRevisions: {}, webdav: undefined });
 }

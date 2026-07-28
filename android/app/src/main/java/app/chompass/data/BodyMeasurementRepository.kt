@@ -14,7 +14,10 @@ import java.util.UUID
  * profile field. Entirely optional: an empty store means the feature is invisible to the goal calc
  * and the Coach.
  */
-class BodyMeasurementRepository(private val prefs: PreferencesStore) {
+class BodyMeasurementRepository(
+    private val prefs: PreferencesStore,
+    private val sync: app.chompass.sync.SyncRepository? = null,
+) {
     val entries: Flow<List<BodyMeasurement>> =
         prefs.bodyMeasurements.map { it.sortedBy { e -> e.date } }
 
@@ -25,11 +28,13 @@ class BodyMeasurementRepository(private val prefs: PreferencesStore) {
         if (!entry.hasAnyValue) return
         val current = prefs.bodyMeasurements.first()
         prefs.setBodyMeasurements(current + entry)
+        sync?.touch(entry.id, "measure")
     }
 
     suspend fun deleteEntry(id: UUID) {
         val current = prefs.bodyMeasurements.first()
         prefs.setBodyMeasurements(current.filter { it.id != id })
+        sync?.tombstone(id, "measure")
     }
 
     /**
@@ -46,13 +51,18 @@ class BodyMeasurementRepository(private val prefs: PreferencesStore) {
             val updated = latest.setting(site, cm)
             val rest = current.filter { it.id != latest.id }
             prefs.setBodyMeasurements(if (updated.hasAnyValue) rest + updated else rest)
+            if (updated.hasAnyValue) sync?.touch(updated.id, "measure")
+            else sync?.tombstone(latest.id, "measure")
         } else {
             var fresh = BodyMeasurement()
             if (latest != null) {
                 BodyMeasurement.Site.values().forEach { s -> fresh = fresh.setting(s, latest.value(s)) }
             }
             fresh = fresh.setting(site, cm)
-            if (fresh.hasAnyValue) prefs.setBodyMeasurements(current + fresh)
+            if (fresh.hasAnyValue) {
+                prefs.setBodyMeasurements(current + fresh)
+                sync?.touch(fresh.id, "measure")
+            }
         }
     }
 

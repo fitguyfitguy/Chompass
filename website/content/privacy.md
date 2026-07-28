@@ -10,7 +10,7 @@ Chompass is an ad-free calorie tracker forked from [Fud AI](https://github.com/a
 
 - **No ads:** No AdMob or other advertising SDKs.
 - **No analytics:** No usage tracking, crash analytics, or telemetry SDKs.
-- **No accounts:** No sign-in, cloud sync, or central user database.
+- **No accounts:** No sign-in or central user database. Optional **user-hosted sync** (WebDAV / sync JSON) uses a server you configure; Chompass does not operate a sync backend.
 - **Local storage:** Food logs, weight history, profile, and Coach chat stay on your device.
 - **Bring your own AI key:** Keys are encrypted at rest on your device, then sent only to the provider you choose (not through a Chompass server).
 - **On-Device (Private):** On Android, optional Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
@@ -26,7 +26,7 @@ Encryption protects keys sitting on disk. It does not protect against malware, a
 
 ## Web app (PWA)
 
-The [Chompass PWA](https://chompass.app/app/) runs in any modern browser and stores diary data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you configure. There is no cloud sync between clients. Move data with diary / body-metrics JSON export and import. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
+The [Chompass PWA](https://chompass.app/app/) runs in any modern browser and stores diary data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you choose. Optional user-hosted WebDAV sync (or sync JSON import/export) can keep Android and the PWA aligned. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
 
 ## Data on your device
 
@@ -43,9 +43,10 @@ Chompass contacts external services only when you use a feature that needs them:
 | AI food analysis / Coach | Meal text, images, or chat context you submit | Your configured AI provider |
 | Barcode scan | Scanned barcode | Open Food Facts public API |
 | Health Connect | Nutrition, weight, body fat, height (write); sleep, HR, hydration, steps, energy (read) if enabled | Google Health Connect on-device |
+| User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
 | App updates | (none) | Manual via Codeberg releases |
 
-Optional **background sync** (off by default) only reads Health Connect on-device; it sends nothing off the device.
+Optional **Health Connect background sync** (off by default) only reads Health Connect on-device; it sends nothing off the device. User-hosted WebDAV sync runs only when you tap **Sync now**.
 
 Chompass does not sell or share your health data for advertising.
 

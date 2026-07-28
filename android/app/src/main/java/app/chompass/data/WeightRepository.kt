@@ -25,7 +25,8 @@ data class WeightGoalReachedEvent(val reachedEntry: WeightEntry)
 class WeightRepository(
     private val prefs: PreferencesStore,
     private val profileRepository: ProfileRepository,
-    private val health: HealthConnectManager? = null
+    private val health: HealthConnectManager? = null,
+    private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
     val entries: Flow<List<WeightEntry>> = prefs.weightEntries.map { it.sortedBy { e -> e.date } }
 
@@ -43,6 +44,7 @@ class WeightRepository(
         val current = prefs.weightEntries.first()
         val previousLatest = current.maxByOrNull { it.date }
         prefs.setWeightEntries(current + entry)
+        sync?.touch(entry.id, "weight")
 
         syncProfileWeightToLatest()
         if (shouldSyncHealth()) {
@@ -67,6 +69,7 @@ class WeightRepository(
     suspend fun deleteEntry(id: UUID) {
         val current = prefs.weightEntries.first()
         prefs.setWeightEntries(current.filter { it.id != id })
+        sync?.tombstone(id, "weight")
         syncProfileWeightToLatest()
         // Delete the HC record even when sync is off (iOS parity, best-effort) —
         // a surviving fudai-tagged record would resurrect through the own-record
