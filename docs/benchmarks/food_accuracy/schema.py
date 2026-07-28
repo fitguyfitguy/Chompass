@@ -130,6 +130,18 @@ class Sample:
             return repo_relative
         return DOCS_ROOT / path
 
+    def resolved_video_path(self) -> Path | None:
+        video_path = self.extra.get("video_path")
+        if not video_path:
+            return None
+        path = Path(video_path)
+        if path.is_absolute():
+            return path
+        repo_relative = ROOT / path
+        if repo_relative.exists():
+            return repo_relative
+        return DOCS_ROOT / path
+
 
 def load_manifest(path: Path | str, *, limit: int | None = None) -> list[Sample]:
     manifest_path = Path(path)

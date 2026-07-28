@@ -51,6 +51,17 @@ Portion rules:
 - If the user states amounts (g, tbsp, slices, brand/product), those override visual guesses.
 """.strip()
 
+# Research ablation `compact_scale_ref` only. Extends the reference-object hint
+# already shipped in FoodAnalysisService.analyzeAuto with an explicit standard
+# plate/bowl fallback for when no object is visible. See
+# docs/UNCERTAINTY_DRIVEN_ENTRY.md § New candidates (2026-07-28 brainstorm).
+SCALE_REFERENCE_RULES = """
+Scale rules:
+- If a utensil, hand, coin, or common object of known size is visible, use it to judge the food's real-world scale.
+- Otherwise, if a plate or bowl is visible, assume a standard dinner plate is about 26cm across and a standard bowl is about 15cm across, and scale the food's portion against that.
+- Prefer this visual scale reasoning over a generic restaurant "full plate" assumption when they disagree.
+""".strip()
+
 TEXT_QUANTITY_RULES = """
 Quantity rules:
 - Honor explicit amounts (g, ml, tbsp, tsp, scoop, slice, piece, cup). Do not inflate "2 tbsp hummus" or "1 scoop whey" into a large bowl/shake.
@@ -196,6 +207,17 @@ def _build_image_prompt(sample, builder):
     return builder(description=user_description(sample))
 
 
+def compact_scale_ref_image_prompt(*, description: str | None = None) -> str:
+    prompt = f"""
+Analyze this food image. Estimate macronutrients for the visible serving.
+Respond ONLY with JSON:
+{COMPACT_JSON_SCHEMA}
+Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total weight in grams.
+{SCALE_REFERENCE_RULES}
+""".strip()
+    return append_user_context(prompt, description)
+
+
 # Simulated-clarification research variants: compact baseline plus oracle
 # answers injected as if the user tapped a clarification chip. Items without
 # the oracle extras fall back to plain compact — compare on covered ids only
@@ -286,6 +308,14 @@ Give your best estimate for the visible food amount shown in the image. Use null
         lean_text_prompt(sample.text or "", unit_rule="v2")
         if sample.modality == "text"
         else lean_image_prompt(description=user_description(sample), unit_rule="v2")
+    ),
+    # Research-only: compact + reference-object/plate-scale rules (image only;
+    # falls back to plain compact for text samples, where scale-anchoring doesn't
+    # apply). See docs/UNCERTAINTY_DRIVEN_ENTRY.md § New candidates (2026-07-28).
+    "compact_scale_ref": lambda sample: (
+        compact_text_prompt(sample.text or "")
+        if sample.modality == "text"
+        else _build_image_prompt(sample, compact_scale_ref_image_prompt)
     ),
     # Simulated clarification (oracle chip answers); research-only.
     "compact_clarify_portion": lambda sample: compact_clarify_prompt(sample, portion=True),

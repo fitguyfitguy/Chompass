@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download Nutrition5k metadata and optional overhead RGB subset."""
+"""Download Nutrition5k metadata and optional overhead RGB/depth/video subset."""
 
 from __future__ import annotations
 
@@ -153,6 +153,60 @@ def download_overhead_rgb(dish_id: str, imagery_dir: Path) -> Path | None:
     return local_rgb if local_rgb.exists() else None
 
 
+def depth_raw_url(dish_id: str) -> str:
+    return f"{GCS_HTTPS}/imagery/realsense_overhead/{dish_id}/depth_raw.png"
+
+
+def download_depth_raw(dish_id: str, imagery_dir: Path) -> Path | None:
+    """Download the aligned 16-bit RealSense depth map (mm) for a dish, when present."""
+    local_dir = imagery_dir / "realsense_overhead" / dish_id
+    local_depth = local_dir / "depth_raw.png"
+    if local_depth.exists():
+        return local_depth
+
+    local_dir.mkdir(parents=True, exist_ok=True)
+    url = depth_raw_url(dish_id)
+    if gsutil_available():
+        gcs_path = f"{GCS_PREFIX}/imagery/realsense_overhead/{dish_id}/depth_raw.png"
+        cmd = ["gsutil", "-q", "cp", gcs_path, str(local_depth)]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0 and local_depth.exists():
+            return local_depth
+
+    try:
+        urllib.request.urlretrieve(url, local_depth)
+    except urllib.error.HTTPError:
+        return None
+    return local_depth if local_depth.exists() else None
+
+
+def side_angle_video_url(dish_id: str, camera: str) -> str:
+    return f"{GCS_HTTPS}/imagery/side_angles/{dish_id}/camera_{camera}.h264"
+
+
+def download_side_angle_video(dish_id: str, imagery_dir: Path, camera: str) -> Path | None:
+    """Download one fixed-camera turntable clip (raw h264, ~30-40MB) for a dish."""
+    local_dir = imagery_dir / "side_angles" / dish_id
+    local_video = local_dir / f"camera_{camera}.h264"
+    if local_video.exists():
+        return local_video
+
+    local_dir.mkdir(parents=True, exist_ok=True)
+    url = side_angle_video_url(dish_id, camera)
+    if gsutil_available():
+        gcs_path = f"{GCS_PREFIX}/imagery/side_angles/{dish_id}/camera_{camera}.h264"
+        cmd = ["gsutil", "-q", "cp", gcs_path, str(local_video)]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0 and local_video.exists():
+            return local_video
+
+    try:
+        urllib.request.urlretrieve(url, local_video)
+    except urllib.error.HTTPError:
+        return None
+    return local_video if local_video.exists() else None
+
+
 def dish_ids_with_overhead(candidate_ids: list[str], needed: int) -> list[str]:
     """Return up to `needed` dish IDs that have overhead rgb.png on GCS."""
     found: list[str] = []
@@ -171,6 +225,8 @@ def build_manifest(
     *,
     limit: int | None,
     metadata_only: bool,
+    with_depth: bool = False,
+    with_video: str | None = None,
 ) -> int:
     test_ids = load_test_ids(meta_dir)
     dishes = load_dish_metadata(meta_dir)
@@ -204,6 +260,19 @@ def build_manifest(
                 continue
             image_path = str(rgb.relative_to(repo_root))
 
+        extra: dict[str, object] = {"ingredients": meta.get("ingredients") or []}
+
+        if not metadata_only and with_depth:
+            depth = download_depth_raw(dish_id, imagery_dir)
+            if depth is not None:
+                extra["depth_path"] = str(depth.relative_to(repo_root))
+
+        if not metadata_only and with_video:
+            video = download_side_angle_video(dish_id, imagery_dir, with_video)
+            if video is not None:
+                extra["video_path"] = str(video.relative_to(repo_root))
+                extra["video_camera"] = with_video
+
         samples.append(
             Sample(
                 id=f"n5k-{dish_id}",
@@ -217,7 +286,7 @@ def build_manifest(
                 fat_g=float(meta["fat_g"]),
                 mass_g=float(meta["mass_g"]),
                 notes="Nutrition5k overhead RGB when available",
-                extra={"ingredients": meta.get("ingredients") or []},
+                extra=extra,
             )
         )
 
@@ -243,6 +312,19 @@ def main() -> None:
         default=str(DATA_DIR / "nutrition5k"),
         help="Cache directory",
     )
+    parser.add_argument(
+        "--with-depth",
+        action="store_true",
+        help="Also fetch the aligned 16-bit RealSense depth_raw.png per dish",
+    )
+    parser.add_argument(
+        "--with-video",
+        nargs="?",
+        const="A",
+        default=None,
+        metavar="CAMERA",
+        help="Also fetch one side_angles turntable clip per dish (camera A-D, default A)",
+    )
     args = parser.parse_args()
 
     meta_dir = Path(args.data_dir) / "metadata_cache"
@@ -258,6 +340,8 @@ def main() -> None:
         Path(args.out),
         limit=args.limit,
         metadata_only=args.metadata_only,
+        with_depth=args.with_depth,
+        with_video=args.with_video,
     )
     print(f"Wrote {count} samples to {args.out}")
 

@@ -24,7 +24,7 @@ The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phon
 
 Chompass is BYOK, so accuracy comes down to the model you pick, not a Chompass secret. We test against labeled datasets and publish the results instead of quoting a single accuracy number.
 
-Typed entry is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. Full numbers and methodology: [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md) on Codeberg.
+Typed entry **with a stated portion** is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. A meal title or ingredient list without quantities on top of a photo does not close that gap. Full write-up: [How accurate is AI food logging?](/blog/ai-food-logging-accuracy/) (methodology and raw tables on [Codeberg](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md)).
 
 ## AI Coach
 

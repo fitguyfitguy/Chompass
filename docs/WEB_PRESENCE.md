@@ -5,6 +5,7 @@ Maintainer checklist for discovering Chompass outside Codeberg. Canonical end-us
 ## Already covered
 
 - Hugo project site on Codeberg Pages
+- Blog section at [chompass.app/blog/](https://chompass.app/blog/) (first post: AI food-logging accuracy; draft until `draft: false` in Hugo front matter). Regen charts: `uv run --with matplotlib python scripts/generate_blog_accuracy_charts.py` → `website/static/img/blog/accuracy/`
 - README install CTAs (Obtainium, Codeberg Releases, web app)
 - F-Droid metadata submitted (package `app.chompass`)
 - Social preview card (`website/static/img/og.png`) and sitemap

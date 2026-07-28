@@ -126,15 +126,19 @@ def aggregate_usage(records: list[dict]) -> dict[str, int | float | None]:
 
 class Provider(ABC):
     @abstractmethod
-    def complete(self, *, prompt: str, image_path: Path | None = None) -> ProviderResponse:
+    def complete(
+        self, *, prompt: str, image_path: Path | None = None, video_path: Path | None = None
+    ) -> ProviderResponse:
         raise NotImplementedError
 
 
 class StubProvider(Provider):
     """Deterministic fake macros for pipeline testing without API keys."""
 
-    def complete(self, *, prompt: str, image_path: Path | None = None) -> ProviderResponse:
-        seed = hashlib.sha256((prompt + str(image_path)).encode()).hexdigest()
+    def complete(
+        self, *, prompt: str, image_path: Path | None = None, video_path: Path | None = None
+    ) -> ProviderResponse:
+        seed = hashlib.sha256((prompt + str(image_path) + str(video_path)).encode()).hexdigest()
         calories = 200 + (int(seed[:4], 16) % 600)
         protein = 10 + (int(seed[4:8], 16) % 40)
         carbs = 15 + (int(seed[8:12], 16) % 60)
@@ -176,7 +180,9 @@ class OpenAICompatibleProvider(Provider):
         self.extra_headers = extra_headers or {}
         self.extra_body = extra_body or {}
 
-    def complete(self, *, prompt: str, image_path: Path | None = None) -> ProviderResponse:
+    def complete(
+        self, *, prompt: str, image_path: Path | None = None, video_path: Path | None = None
+    ) -> ProviderResponse:
         if not self.api_key:
             raise RuntimeError("API key is required for this provider")
 
@@ -194,6 +200,21 @@ class OpenAICompatibleProvider(Provider):
                 {
                     "type": "image_url",
                     "image_url": {"url": f"data:{mime};base64,{encoded}"},
+                }
+            )
+        if video_path is not None:
+            if not video_path.exists():
+                raise FileNotFoundError(f"Video not found: {video_path}")
+            encoded = base64.b64encode(video_path.read_bytes()).decode("ascii")
+            mime = "video/mp4"
+            if video_path.suffix.lower() == ".webm":
+                mime = "video/webm"
+            elif video_path.suffix.lower() in {".mov", ".qt"}:
+                mime = "video/mov"
+            content.append(
+                {
+                    "type": "video_url",
+                    "video_url": {"url": f"data:{mime};base64,{encoded}"},
                 }
             )
 
@@ -470,8 +491,10 @@ class NofudFreeRouterProvider(Provider):
             return list(self._vision_pool)
         return list(self._text_pool)
 
-    def complete(self, *, prompt: str, image_path: Path | None = None) -> ProviderResponse:
-        need_vision = image_path is not None
+    def complete(
+        self, *, prompt: str, image_path: Path | None = None, video_path: Path | None = None
+    ) -> ProviderResponse:
+        need_vision = image_path is not None or video_path is not None
         pool = self._pool_for(need_vision=need_vision)
         self._rng.shuffle(pool)
         candidates = pool[: self.failover]
@@ -486,7 +509,7 @@ class NofudFreeRouterProvider(Provider):
                 timeout_s=self.timeout_s,
             )
             try:
-                response = backend.complete(prompt=prompt, image_path=image_path)
+                response = backend.complete(prompt=prompt, image_path=image_path, video_path=video_path)
             except Exception as exc:  # noqa: BLE001
                 msg = str(exc)
                 errors.append(f"{model_id}: {msg}")

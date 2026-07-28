@@ -210,6 +210,23 @@ See also [`docs/benchmarks/food_accuracy/README.md`](benchmarks/food_accuracy/RE
 
 Full Nutrition5k archive is ~181 GB; do not commit images.
 
+Two more per-dish modalities exist on the same GCS bucket and are opt-in via flags
+(neither is fetched by default, to keep the cursory subset small): `--with-depth`
+fetches the aligned 16-bit RealSense `depth_raw.png` (mm) from the same overhead rig
+as the RGB still; `--with-video[=CAMERA]` fetches one fixed turntable camera's raw
+`camera_{A..D}.h264` clip from `imagery/side_angles/{dish_id}/` (decode with
+`ffmpeg -i camera_A.h264 frame_%03d.jpeg`). Both attach a repo-relative path into the
+sample's `extra` dict (`depth_path`, `video_path` — see
+`docs/benchmarks/food_accuracy/manifest/schema.md`). No camera calibration/intrinsics
+file is published for this dataset — `depth_volume_eval.py` uses a nominal RealSense
+D435 640x480 calibration as a documented approximation, not per-dish calibration.
+
+```bash
+uv run --with pillow python docs/benchmarks/food_accuracy/download_nutrition5k.py \
+  --limit 15 --with-depth --with-video A \
+  --out docs/benchmarks/food_accuracy/data/manifests/n5k_depth.jsonl
+```
+
 ### FNDDS text (expand seed set)
 
 ```bash
