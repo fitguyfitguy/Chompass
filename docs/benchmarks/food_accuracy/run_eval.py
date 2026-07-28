@@ -71,10 +71,16 @@ def _evaluate_one(
     provider,
     prompt_name: str,
     retries: int,
+    use_video: bool = False,
 ) -> tuple[dict, SampleScore]:
     prompt = build_prompt(sample, prompt_name)
-    image_path = sample.resolved_image_path() if sample.modality == "image" else None
-    if sample.modality == "image" and (image_path is None or not image_path.exists()):
+    image_path = sample.resolved_image_path() if sample.modality == "image" and not use_video else None
+    video_path = sample.resolved_video_path() if use_video else None
+    if use_video and (video_path is None or not video_path.exists()):
+        err = f"missing_video: {sample.extra.get('video_path')}"
+        scored = SampleScore(id=sample.id, parse_ok=False, error=err)
+        return {"id": sample.id, "parse_ok": False, "error": err, "score": scored.to_dict()}, scored
+    if not use_video and sample.modality == "image" and (image_path is None or not image_path.exists()):
         err = f"missing_image: {sample.image_path}"
         scored = SampleScore(id=sample.id, parse_ok=False, error=err)
         return {"id": sample.id, "parse_ok": False, "error": err, "score": scored.to_dict()}, scored
@@ -83,12 +89,18 @@ def _evaluate_one(
     response = None
     for attempt in range(retries + 1):
         try:
-            response = provider.complete(prompt=prompt, image_path=image_path)
+            response = provider.complete(prompt=prompt, image_path=image_path, video_path=video_path)
             break
         except Exception as exc:  # noqa: BLE001
             last_error = exc
             msg = str(exc)
-            retryable = "429" in msg or "rate-limited" in msg or "502" in msg
+            retryable = (
+                "429" in msg
+                or "rate-limited" in msg
+                or "502" in msg
+                or "504" in msg
+                or "aborted" in msg
+            )
             if attempt < retries and retryable:
                 wait = min(60.0, 5.0 * (2**attempt))
                 print(f" retryable ({exc}); sleep {wait:.0f}s ...", end="", flush=True)
@@ -183,6 +195,11 @@ def main() -> None:
         help="Retries on 429/502 before recording failure (default 2)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Validate manifest / show resume plan and exit")
+    parser.add_argument(
+        "--video",
+        action="store_true",
+        help="Send extra.video_path (video_url) instead of image_path for image-modality samples",
+    )
     args = parser.parse_args()
 
     load_env_local()
@@ -259,6 +276,7 @@ def main() -> None:
                 provider=provider,
                 prompt_name=args.prompt,
                 retries=args.retries,
+                use_video=args.video,
             )
             records[sample.id] = record
             _write_results(per_sample_path, ordered_ids, records)

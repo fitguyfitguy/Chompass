@@ -1,0 +1,28 @@
+{{ define "main" }}
+<article class="page">
+  <header class="page__header">
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p class="page__lede">{{ . }}</p>{{ end }}
+  </header>
+  {{ with .Content }}
+  <div class="prose">
+    {{ . }}
+  </div>
+  {{ end }}
+  <ul class="post-list">
+    {{ range .Pages }}
+    <li class="post-list__item">
+      <a class="post-list__title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ with .Date }}
+      <time class="post-list__date" datetime="{{ .Format "2006-01-02" }}">{{ .Format "2 Jan 2006" }}</time>
+      {{ end }}
+      {{ with .Description }}
+      <p class="post-list__summary">{{ . }}</p>
+      {{ end }}
+    </li>
+    {{ else }}
+    <li class="post-list__item post-list__item--empty">No posts yet.</li>
+    {{ end }}
+  </ul>
+</article>
+{{ end }}

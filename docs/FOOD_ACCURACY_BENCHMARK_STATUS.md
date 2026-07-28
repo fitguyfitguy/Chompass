@@ -59,6 +59,7 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 12. **No OpenRouter `gemini-3.6-flash-lite`.** Lite sibling is `google/gemini-3.5-flash-lite`; full Flash is `google/gemini-3.6-flash`.
 13. **Plate error is portion priors, not meal size.** Consensus hard vs easy JFB meals have nearly identical mean GT kcal (~395 vs ~391). Short “portion grounding” prompt rules did **not** beat compact (see [Failure modes](#failure-modes--portion-reasoning)).
 14. **DeepSeek Flash / GPT-5.6 Luna not useful for this plate slate.** DeepSeek models on OpenRouter are **text-only** (no vision). Luna is ~$1/$6 input/output — not in the cheap tier; skipped for cost.
+15b. **Native video input loses to a still image (2026-07-28).** Sending the raw Nutrition5k turntable clip directly as `video_url` (no depth extraction, model reasons over motion itself) instead of the single overhead RGB still, same free Gemma pin / `compact` prompt / 12 paired dishes: WMAPE **25.6% → 37.2%** (+11.6pp), ±20% kcal **41.7% → 33.3%** (−8.3pp), 4.2× prompt tokens, and materially worse free-tier reliability (video decode capacity 504s). See § Native video input vs still image.
 15. **The old production-prompt gap was rule verbosity, not schema size — lean production shipped (2026-07-24).** A "lean" prompt (full 28-field app schema, compact wording + one-line unit_options rule carrying the object shape, `lean_units2`) matches compact-level text macros while keeping micros/emoji/units: Flash-Lite text WMAPE **5.3%** (old production 6.9%, compact 4.8%) and image **31.25%** (old production 31.1%, compact 35.9%). The Gemma image "production is 8pp worse" finding was a Gemma artifact — on Flash-Lite the verbose image prompt was actually *better* than compact; lean keeps that win at half the prompt tokens. Bonus: the old text prompt never elicited `grams_per_unit`, so **every AI text serving unit was silently dropped by the app parser**; lean fixes this (40/41 usable vs 0). Shipped to `FoodAnalysisService` (all four entry prompts) and mirrored in `prompts.py` `production_*`. See § Lean production prompt (2026-07-24).
 
 ---
@@ -116,6 +117,35 @@ Prompt/model A/B alone will not move the 8 “never ±20%” meals much. Next be
 - Treat text/product-name path as largely solved for canonical foods; invest vision effort in **scale**, not identification
 
 Artifacts: `results/image_text_ab/l0_*`, `l0_gemini35_flash_lite_compact_portion/`.
+
+### Reference-object / scale-anchor prompting (2026-07-28)
+
+Hypothesis: unlike `compact_portion` (visibility/invention rules), give the model
+an explicit **size anchor** — a visible reference object, or a standard dinner
+plate (~26cm) / bowl (~15cm) fallback when nothing else is visible — since the
+dominant failure mode is portion scale, not what to count. New prompt
+`compact_scale_ref` in `docs/benchmarks/food_accuracy/prompts.py`. Both runs
+re-executed together (JFB-50, `google/gemini-3.5-flash-lite`) rather than reusing
+an older baseline row, to avoid cross-run noise.
+
+| Run | prompt | WMAPE | ±20% kcal | parse_ok | cost (50 items) |
+|-----|--------|------:|----------:|---------:|-----------------:|
+| baseline (rerun) | `compact` | 35.9% | 38% | 100% | $0.0245 |
+| candidate | `compact_scale_ref` | **34.4%** | **42%** | 100% | $0.0261 |
+
+WMAPE −1.5pp, ±20% +4pp, no parse-rate cost, negligible token/cost increase (~6%
+more prompt tokens for the extra rule text). Positive but small — well below the
+±8pp WMAPE bar used to graduate the clarification chip, and on the same order as
+noise between `compact` reruns elsewhere in this doc (e.g. `compact` baseline is
+recorded as both 38% and 40% ±20% across runs). **Verdict: mild, real improvement
+in the right direction, but not large enough alone to justify a production prompt
+change.** Reasonable next step if pursued further: combine with the shipping
+portion-clarification chip (Bet 1) rather than as a standalone lever, since the
+two attack the same failure mode from different angles (chip = ask; this = infer)
+and might be complementary — not tested here. See
+`docs/UNCERTAINTY_DRIVEN_ENTRY.md` § New candidates (2026-07-28 brainstorm).
+
+Artifacts: `results/scale_ref_ab/jfb_compact_rerun/`, `results/scale_ref_ab/jfb_compact_scale_ref/`.
 
 ---
 
@@ -269,6 +299,129 @@ Same 50 IDs; only user `text` differs. L1 = meal title; L2 = ingredient names (n
 
 Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 
+### Depth/volume estimation from Nutrition5k (2026-07-28)
+
+Reopens the "monocular image→depth" idea from `UNCERTAINTY_DRIVEN_ENTRY.md`
+(previously parked as a non-bet) using data that sits one step away from
+what the harness already fetches: the same 15-dish cursory Nutrition5k subset
+above, plus its aligned RealSense `depth_raw.png` (16-bit, mm-scale sensor
+units) and one turntable side-camera clip per dish, neither previously
+downloaded. `download_nutrition5k.py --with-depth --with-video` now fetches
+both; `depth_volume_eval.py` is a new standalone script (not routed through
+`run_eval.py` — no LLM calls, pure geometry/vision).
+
+**No camera intrinsics are published for this dataset** (checked: nothing under
+`metadata/` or `scripts/` in the GCS bucket). The observed `depth_raw` values
+(~3000-4000 raw units for the table plane) don't match a physically sensible
+close-range overhead rig under any nominal RealSense mm-per-unit assumption
+tried, so the script does not attempt absolute-unit volume (cm³) or a density
+constant. Instead it computes a **volume proxy** (Σ pixel-height-above-table ×
+depth², proportional to true volume up to one unknown-but-constant
+camera-intrinsic factor for this fixed rig) and fits **one global linear scale**
+against true `mass_g` across the 15-dish set — i.e. it measures whether
+depth-derived volume correlates with mass at all, not whether it hits absolute
+grams.
+
+| Pass | What | Corr(proxy, mass_g) | MAE (g, in-sample) | MAPE (in-sample) |
+|------|------|---------------------:|--------------------:|-------------------:|
+| Oracle (true RealSense depth) | ceiling | **0.564** | 91.2 | 67.4% |
+| Monocular (Depth Anything V2 Small, per-image affine-calibrated to oracle) | realistic phone-camera case | **0.097** | 107.4 | 65.2% |
+
+MAE/MAPE are **in-sample** (the global scale constant was fit on this same
+15-dish set) and therefore overstate held-out accuracy — correlation, which
+doesn't depend on the fit, is the more honest signal at n=15. Per-dish output:
+`results/depth_volume/n5k/per_dish.csv`.
+
+**Verdict:**
+- **True depth has a moderate, real signal** (r=0.564) but the volume proxy
+  badly compresses dynamic range (predicted mass spans ~68-251g while true
+  mass spans 57-552g) — the largest dish (552g) is undershot by more than half.
+  This is the expected consequence of the flat-density assumption: a dense
+  stew and a fluffy salad of the same true depth-volume have very different
+  mass, and this prototype has no per-food density model. Even at the oracle
+  ceiling, naive volumetric mass is far from competitive with typed-text
+  accuracy (~5-6% WMAPE) or even current photo WMAPE (~32-40%).
+- **Monocular (camera-only) depth carries essentially no signal here**
+  (r=0.097) — after per-image affine calibration to the oracle scale, Depth
+  Anything V2 Small's relative depth map does not predict Nutrition5k mass
+  better than noise. This is the realistic case for an eventual phone-camera
+  feature, and it's a negative result.
+- **Video/multi-angle** (turntable `side_angles` clips, 12/15 dishes had a
+  fetchable clip): per-dish coefficient of variation of a relative "bulge"
+  proxy across 2-4 extracted frames averaged **10.1%** — a same-dish, same-lighting
+  view-angle sensitivity check only (no metric calibration attempted for side
+  cameras; no published geometry). Directionally consistent with "a single
+  RGB view is noisy," but not large enough on its own to justify multi-frame
+  capture UX given the monocular result above already failed to clear a bar.
+
+### Native video input vs still image (2026-07-28)
+
+Distinct from the depth-extraction result above: instead of extracting a depth
+map, send the raw turntable clip **directly** to a vision-language model as
+native video (OpenRouter `video_url` content type, base64 `data:video/mp4`),
+and let the model reason over motion/parallax itself — the "casual orbit
+video → native multi-frame reasoning" candidate from
+`UNCERTAINTY_DRIVEN_ENTRY.md` § New candidates. Harness gained first-class
+video support for this: `providers.py` now accepts `video_path` and builds a
+`video_url` block, `schema.py` adds `Sample.resolved_video_path()` (reads
+`extra.video_path`), and `run_eval.py --video` sends the clip instead of the
+sample's still image. Raw Nutrition5k `camera_A.h264` elementary streams were
+remuxed to `.mp4` (`ffmpeg -c copy`, no re-encode) since OpenRouter only
+accepts mp4/mpeg/mov/webm containers. `google/gemma-4-26b-a4b-it:free` was
+confirmed to advertise `video` in `input_modalities` (`list_nofud_free_pool`
+catalog check) — same free pin used elsewhere in this doc, so the run is $0.
+
+Paired same-model, same-prompt (`compact`), same 12 N5k dishes (the subset
+with a fetchable `side_angles` clip):
+
+| Input | parse_ok | WMAPE | ±20% kcal | mean prompt tokens | Notes |
+|-------|----------|------:|----------:|--------------------:|-------|
+| Still image (`image_path`) | 100% | **25.6%** | **41.7%** | 375 | clean run, no retries |
+| Whole clip (`video_url`) | 100%* | 37.2% | 33.3% | 1575 (4.2×) | *5/12 first-pass 504 "media decode ~5859 MiB capacity" timeouts — 504 wasn't in the harness's retryable set (only 429/502 were); fixed and resumed to reach 100% parse |
+
+Per-dish the effect is mixed (3/12 improved a lot, 5/12 got much worse, 4/12
+unchanged), but the aggregate is a clear net loss, not noise: **+11.6pp
+WMAPE, −8.3pp ±20% accuracy, 4.2× prompt tokens, and materially worse
+reliability** (free-tier backends struggle with video decode load — this
+would cost real money and add latency on a paid tier too, given the token
+multiplier). Full per-sample breakdown: `results/video_ab/n5k12_{image_baseline,video}/`.
+
+**Verdict: native video input does not help on this evidence — park.** This
+confirms the same direction as the depth-extraction result (temporal/geometric
+cues from a single fixed-camera clip do not reliably add signal over one
+still frame) via a completely different mechanism (no depth model, raw frames
+straight to the VLM). Doesn't rule out a *casual orbit* capture (deliberate
+multi-angle from the user, not a fixed lab turntable) or a stronger paid model,
+but this was the cheapest test of the "just give the model more frames" idea
+and it lost — not worth spending the self-captured-clip-dataset effort this
+was gating in `UNCERTAINTY_DRIVEN_ENTRY.md` without a stronger prior. Harness
+video support (`--video` flag, `video_path` provider plumbing) is now in place
+for any future re-test.
+
+**Product implication:** this does not move Bet 1-3 in `UNCERTAINTY_DRIVEN_ENTRY.md`.
+The oracle ceiling (true, sensor-grade depth) is still far from useful for a
+direct mass estimate without a food-density model this prototype doesn't have,
+and the realistic camera-only case shows ~zero signal. Combined with the
+already-documented on-device cost (LiteRT-LM can't host a depth model, a
+second inference runtime would contend with Gemma's GPU/RAM budget, and the
+same open F-Droid runtime-model-fetch question would apply), **no Android
+follow-up is justified from this result.** Revisit only if a future monocular
+depth model ships with an explicit, learned food-density head (not a flat
+constant) — a plain relative depth map alone does not appear to help.
+
+Reproduce:
+```bash
+uv run --with pillow python docs/benchmarks/food_accuracy/download_nutrition5k.py \
+  --limit 15 --with-depth --with-video A \
+  --out docs/benchmarks/food_accuracy/data/manifests/n5k_depth.jsonl
+nix shell nixpkgs#ffmpeg -c bash -c '
+  uv run --with torch --with transformers --with pillow --with numpy python \
+    docs/benchmarks/food_accuracy/depth_volume_eval.py \
+    --manifest docs/benchmarks/food_accuracy/data/manifests/n5k_depth.jsonl \
+    --out docs/benchmarks/food_accuracy/results/depth_volume/n5k
+'
+```
+
 ---
 
 ## Defaults going forward
@@ -304,6 +457,7 @@ Artifacts under `docs/benchmarks/food_accuracy/results/` (gitignored).
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
 - [x] **Simulated clarification eval** (2026-07-24, JFB-50, Flash-Lite) — portion clarification **ships** (−15.2pp WMAPE, +12pp ±20%); fat clarification **parked** (−5.2pp, hurts ±20%); model self-selecting which question to ask is **not usable** (92% ask rate, prefers the weaker fat question 34/50 vs portion 12/50) — trigger must be heuristic, not model self-report. See § Simulated clarification eval.
 - [x] Confirm portion-clarification result on Nutrition5k (true-mass oracle, no lexicon dependency) — confirmed, n=15: −18.7pp WMAPE, +53.4pp ±20% (stronger than JFB)
+- [x] **Native video input vs still image** (2026-07-28, N5k turntable clips, free Gemma pin, n=12 paired) — video input **lost**: WMAPE 25.6%→37.2%, ±20% 41.7%→33.3%, 4.2× tokens, worse reliability. See § Native video input vs still image.
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 
 ---
