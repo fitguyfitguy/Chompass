@@ -335,9 +335,13 @@ export class DiaryView extends HTMLElement {
       </div>
 
       <div class="card card--glass home-hero" data-day-swipe>
-        <button type="button" class="calorie-hero calorie-hero--tap" data-nutrition-detail aria-label="Open nutrition detail">
-          ${targets ? ringSvg(totals.calories, calorieTarget) : `<p class="empty-state">Set up your profile in Settings to see calorie targets.</p>`}
-        </button>
+        <div class="home-hero__day-nav">
+          <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">‹</button>
+          <button type="button" class="calorie-hero calorie-hero--tap" data-nutrition-detail aria-label="Open nutrition detail">
+            ${targets ? ringSvg(totals.calories, calorieTarget) : `<p class="empty-state">Set up your profile in Settings to see calorie targets.</p>`}
+          </button>
+          <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${this.date >= today ? "disabled" : ""}>›</button>
+        </div>
         ${
           targets
             ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
@@ -414,6 +418,16 @@ export class DiaryView extends HTMLElement {
       this.openNutritionDetail(entries, targets, optionalGoals);
     });
     this.querySelector('[data-action="fab"]')?.addEventListener("click", () => this.openAddFoodSheet(appPrefs));
+
+    this.querySelectorAll("[data-day-delta]").forEach((el) => {
+      el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+      el.addEventListener("click", () => {
+        const delta = Number(el.getAttribute("data-day-delta"));
+        if (!Number.isFinite(delta) || delta === 0) return;
+        this.setDate(shiftDate(this.date, delta));
+        this.render();
+      });
+    });
 
     this.querySelectorAll(".food-swipe").forEach((row) => {
       const id = row.getAttribute("data-entry-id");
