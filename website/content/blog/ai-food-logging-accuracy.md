@@ -1,98 +1,102 @@
 ---
-title: How accurate is AI food logging?
+title: Wie genau ist KI-gestütztes Food-Logging?
 date: 2026-07-28
-description: Portioned typed entry is near-solved; plate photos are not. Short meal notes and video clips do not close the gap. Measured on labeled datasets.
+description: Getippte Einträge mit Mengenangabe sind nahezu gelöst; Tellerfotos sind es nicht. Kurze Mahlzeitnotizen und Videoclips schließen die Lücke nicht. Gemessen an gelabelten Datensätzen.
 draft: true
 ---
 
-Chompass is BYOK: you bring a cloud AI key (or run Gemma 4 on-device on Android), so food-analysis accuracy depends mostly on the model you pick, not on anything unique to Chompass. We measure accuracy against labeled datasets and publish the numbers instead of claiming a single accuracy percentage.
+## 1 Einleitung
 
-All figures below come from an offline research harness against labeled datasets with known ground-truth calories and macros. Full methodology, every run, and raw result tables live in the [benchmark status note](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) on Codeberg. A shorter research summary is in [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md).
+Chompass folgt dem BYOK-Prinzip: Nutzer bringen einen eigenen Cloud-KI-Schlüssel mit (oder betreiben Gemma 4 lokal auf dem Android-Gerät). Die Genauigkeit der Lebensmittelanalyse hängt daher überwiegend vom gewählten Modell ab, nicht von einer Chompass-spezifischen Eigenschaft. Wir messen die Genauigkeit gegen gelabelte Datensätze und veröffentlichen die Zahlen, anstatt eine einzelne Genauigkeitsangabe zu behaupten.
 
-## Headline numbers
+## 2 Methodik
 
-| Entry method | Metric | Result | Dataset |
+Alle nachfolgenden Werte stammen aus einem Offline-Testrahmen (Research Harness) gegen gelabelte Datensätze mit bekannten Ground-Truth-Kalorien- und Makronährstoffwerten. Die vollständige Methodik, alle Testläufe und die Rohdatentabellen sind im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) auf Codeberg hinterlegt. Eine kürzere Zusammenfassung findet sich in [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md).
+
+## 3 Kernergebnisse
+
+| Eingabemethode | Metrik | Ergebnis | Datensatz |
 |---|---|---|---|
-| **Typed text with a stated portion** | WMAPE (kcal+protein+carbs+fat) | **5.7%** | 42 USDA FNDDS items |
-| **Typed text with a stated portion** | Within ±20% of true calories | **90%** | 42 USDA FNDDS items |
-| **Photo only (best paid model tested)** | WMAPE | **32.3%** | 50 real meal photos ([January Food Benchmark](https://github.com/January-ai/food-scan-benchmarks)) |
-| **Photo only (best paid model tested)** | Within ±20% of true calories | **50%** | 50 real meal photos |
-| **Photo only (free on-device-class model)** | WMAPE | 39.8% | 50 real meal photos |
+| **Text mit angegebener Menge** | WMAPE (kcal+Protein+Kohlenhydrate+Fett) | **5,7 %** | 42 USDA-FNDDS-Einträge |
+| **Text mit angegebener Menge** | Innerhalb ±20 % der wahren Kalorien | **90 %** | 42 USDA-FNDDS-Einträge |
+| **Nur Foto (bestes getestetes Bezahlmodell)** | WMAPE | **32,3 %** | 50 reale Mahlzeitfotos ([January Food Benchmark](https://github.com/January-ai/food-scan-benchmarks)) |
+| **Nur Foto (bestes getestetes Bezahlmodell)** | Innerhalb ±20 % der wahren Kalorien | **50 %** | 50 reale Mahlzeitfotos |
+| **Nur Foto (kostenloses, on-device-taugliches Modell)** | WMAPE | 39,8 % | 50 reale Mahlzeitfotos |
 
-WMAPE = weighted mean absolute percentage error across calories, protein, carbs, and fat. Lower is better. These use food-analysis prompts equivalent to what ships in the app, run against the same manifests for every model tested.
+WMAPE = gewichteter mittlerer absoluter prozentualer Fehler über Kalorien, Protein, Kohlenhydrate und Fett. Niedriger ist besser. Diese Werte beruhen auf Food-Analyse-Prompts, die dem in der App ausgelieferten Prompt entsprechen, ausgeführt gegen dieselben Manifeste für jedes getestete Modell.
 
-The “typed text” row is **not** the same as typing a meal name next to a photo. The FNDDS set looks like `Chicken breast, roasted, 150 g` or `1 cup oatmeal (240 g)` — identity **plus** grams or a household unit. That is why it lands near 6% WMAPE. The photo rows are real plated meals with **no** stated mass. Comparing those two columns is comparing portioned lookup to free-form plate estimation.
+Die Zeile „Text mit angegebener Menge“ ist **nicht** gleichzusetzen mit dem Eintippen eines Mahlzeitnamens neben einem Foto. Der FNDDS-Datensatz enthält Einträge wie `Chicken breast, roasted, 150 g` oder `1 cup oatmeal (240 g)` — Identität **plus** Gramm- oder Haushaltsmaßangabe. Deshalb liegt der Wert bei rund 6 % WMAPE. Die Foto-Zeilen betreffen reale, angerichtete Mahlzeiten **ohne** Mengenangabe. Der Vergleich dieser beiden Spalten ist ein Vergleich zwischen mengenbasierter Nachschlage-Eingabe und freier Tellerschätzung.
 
 <figure>
   <img src="/img/blog/accuracy/text-vs-photo.png" alt="Two bar charts comparing portioned typed entry, best paid photo, and free photo: WMAPE 5.7% vs 32.3% vs 39.8%, and within ±20% calories 90% vs 50% vs 32%." width="800" height="450" loading="lazy">
-  <figcaption>Portioned typed entry (FNDDS 42) vs plate photos (JFB 50). WMAPE is lower-better; ±20% calorie hit rate is higher-better. Different datasets, different inputs — see below.</figcaption>
+  <figcaption>Getippte Eingabe mit Mengenangabe (FNDDS 42) vs. Tellerfotos (JFB 50). WMAPE: niedriger ist besser; ±20-%-Trefferquote bei Kalorien: höher ist besser. Unterschiedliche Datensätze, unterschiedliche Eingaben — siehe unten.</figcaption>
 </figure>
 
-## Photos are hard for every model
+## 4 Fotos sind für jedes Modell schwierig
 
-When the string already includes how much (“150 g”, “1 cup”), typed entry is close to solved. Canonical foods with known grams or units usually come back exact or near-exact. A barcode scan or a saved meal with a fixed recipe behaves the same way.
+Enthält die Texteingabe bereits eine Mengenangabe („150 g“, „1 cup“), ist die getippte Eingabe nahezu gelöst. Kanonische Lebensmittel mit bekannter Gramm- oder Mengenangabe liefern meist exakte oder nahezu exakte Ergebnisse. Ein Barcode-Scan oder eine gespeicherte Mahlzeit mit fester Rezeptur verhält sich entsprechend.
 
-Photo estimation is a different problem. A model has to infer portion size, plate composition, and hidden ingredients (oil, dressing, sauce) from a 2D image with no scale reference. That is hard and unsolved across vision AI in general; it is not specific to Chompass or to any one provider.
+Die Fotoschätzung ist ein anderes Problem. Ein Modell muss Portionsgröße, Tellerzusammensetzung und verborgene Zutaten (Öl, Dressing, Soße) aus einem zweidimensionalen Bild ohne Maßstabsreferenz ableiten. Das ist schwierig und in der Bildverarbeitungs-KI generell ungelöst — nicht spezifisch für Chompass oder einen einzelnen Anbieter.
 
-In our testing:
+In unseren Tests zeigte sich:
 
-- Even the best paid vision model tried still misses about 1 in 2 meals by more than 20% on calories.
-- Difficulty is not “big meals.” Hard and easy photo cohorts share almost the same mean ground-truth calories. What fails is portion scale and denseness the camera understates.
-- The dominant error is **restaurant-portion overestimate**: models invent diner-scale plates or sides that were not logged. Other recurring modes are **hidden-calorie underestimate** (oil, tahini, whole pie vs slice) and **busy multi-item trays** where identification is roughly right but grams are wrong.
-- Clean lab overhead photos are only mildly easier than phone meals. On a small Nutrition5k subset, WMAPE was still around 35% — far from portioned text (~6%). Messy phone photos alone do not explain the gap.
+- Selbst das beste getestete Bezahl-Vision-Modell verfehlt bei rund jeder zweiten Mahlzeit die Kalorienangabe um mehr als 20 %.
+- Die Schwierigkeit hängt nicht von der Mahlzeitgröße ab. Schwierige und einfache Foto-Kohorten weisen nahezu dieselben mittleren Ground-Truth-Kalorienwerte auf. Scheitern liegt an Portionsmaßstab und Dichte, die von der Kamera unterschätzt werden.
+- Der dominante Fehlermodus ist die **Überschätzung im Restaurant-Portionsmaßstab**: Modelle unterstellen Teller- oder Beilagengrößen im Gastronomiestil, die nicht tatsächlich vorlagen. Weitere wiederkehrende Fehlermodi sind die **Unterschätzung verborgener Kalorien** (Öl, Tahini, ganzer Kuchen statt Stück) sowie **unübersichtliche Mehrkomponenten-Tabletts**, bei denen die Identifikation weitgehend korrekt, die Grammangabe jedoch falsch ist.
+- Saubere Laboraufnahmen von oben sind nur geringfügig einfacher als Smartphone-Fotos von Mahlzeiten. Auf einer kleinen Nutrition5k-Teilmenge lag der WMAPE weiterhin bei etwa 35 % — weit entfernt von der Texteingabe mit Mengenangabe (~6 %). Unordentliche Smartphone-Fotos allein erklären die Lücke somit nicht.
 
 <figure>
   <img src="/img/blog/accuracy/failure-modes.png" alt="Three cards: restaurant overestimate plus 100 to 200 percent kcal, hidden-calorie miss minus 65 to 80 percent kcal, and busy multi-item tray with grams wrong." width="800" height="450" loading="lazy">
-  <figcaption>Consensus failure modes across five vision models on JFB 50. Hard plates are not simply high-calorie meals.</figcaption>
+  <figcaption>Konsens-Fehlermodi über fünf Vision-Modelle auf JFB 50. Schwierige Teller sind nicht einfach kalorienreiche Mahlzeiten.</figcaption>
 </figure>
 
-If you need precise numbers, typed entry **with a stated portion**, barcode scan, or a saved meal is measurably more reliable than a photo alone.
+Wer präzise Zahlen benötigt, sollte eine getippte Eingabe **mit angegebener Menge**, einen Barcode-Scan oder eine gespeicherte Mahlzeit verwenden — nachweislich zuverlässiger als ein Foto allein.
 
-### Photo + a short note is not “typed entry”
+### 4.1 Foto plus Kurznotiz ist keine „getippte Eingabe“
 
-We also tried the same 50 JFB meals as **image + user note**: meal title (e.g. `Breakfast Platter`) or an ingredient list without quantities (e.g. `scrambled eggs, bacon, roasted potatoes…`). On a free Gemma pin, photo-only beat both — WMAPE **41.8%** vs **44.9%** (title) vs **45.8%** (ingredient names).
+Wir haben dieselben 50 JFB-Mahlzeiten zusätzlich als **Bild + Nutzernotiz** getestet: entweder als Mahlzeittitel (z. B. `Breakfast Platter`) oder als Zutatenliste ohne Mengenangabe (z. B. `Rührei, Speck, Bratkartoffeln…`). Bei einem kostenlosen Gemma-Modell schnitt „nur Foto“ besser ab als beide Varianten — WMAPE **41,8 %** gegenüber **44,9 %** (Titel) und **45,8 %** (Zutatennamen).
 
-That does **not** contradict the strong FNDDS text result. Those notes have no grams or cups; they are closer to a caption than to `150 g chicken`. We would not expect that kind of text, on its own, to match portioned FNDDS either — we have not published a text-only JFB control, and a paid-model recheck of “photo + title” is still open. Product takeaway: a vague note may help UX or identification, but it does not replace stating how much was on the plate.
+Das widerspricht dem starken FNDDS-Textergebnis **nicht**. Diese Notizen enthalten keine Gramm- oder Mengenangaben; sie ähneln eher einer Bildunterschrift als der Angabe „150 g Hähnchen“. Dass ein solcher Text allein nicht an die mengenbasierte FNDDS-Texteingabe heranreicht, ist zu erwarten — wir haben bislang keine reine Text-Kontrollgruppe für JFB veröffentlicht, und eine Überprüfung von „Foto + Titel“ mit einem Bezahlmodell steht noch aus. Produktseitige Schlussfolgerung: Eine vage Notiz kann die Nutzerführung oder Identifikation unterstützen, ersetzt aber keine Mengenangabe.
 
-## Prompt chasing, depth, and video do not fix plates
+## 5 Prompt-Verfeinerung, Tiefeninformation und Video lösen das Tellerproblem nicht
 
-After A/B testing multiple prompt shapes on the same 50 meal photos, plate WMAPE stayed in roughly the **33–45%** band. Compact prompts often matched or beat longer “production” wording. Short rules meant to ground portion size or invent fewer sides did not move the hard tail. An explicit scale-anchor prompt (plate/bowl size reference) improved WMAPE by about **1.5 percentage points** — real, but too small to ship on its own.
+Nach A/B-Tests mehrerer Prompt-Varianten anhand derselben 50 Mahlzeitfotos blieb der WMAPE für Tellerfotos im Bereich von etwa **33–45 %**. Kompakte Prompts erreichten oder übertrafen häufig längere, „produktionsreife“ Formulierungen. Kurze Regeln zur Verankerung der Portionsgröße oder zur Vermeidung erfundener Beilagen veränderten den schwierigen Bereich der Verteilung kaum. Ein expliziter Maßstabs-Anker im Prompt (Referenzgröße Teller/Schale) verbesserte den WMAPE um rund **1,5 Prozentpunkte** — real, aber zu gering, um allein produktiv eingesetzt zu werden.
 
-Model choice moves the needle more than prompt tuning. Paid vision models land closer to ~32% WMAPE; free-tier vision stays around ~40%. Neither approaches portioned typed entry.
+Die Modellwahl wirkt stärker als die Prompt-Feinabstimmung. Bezahlte Vision-Modelle erreichen einen WMAPE von etwa 32 %; kostenlose Modelle bleiben bei etwa 40 %. Keines der beiden erreicht die getippte Eingabe mit Mengenangabe.
 
 <figure>
   <img src="/img/blog/accuracy/plate-model-ladder.png" alt="Horizontal bar chart of plate photo WMAPE by model from Gemini 3.6 Flash at 32.3 percent down to GPT-5 Nano at 43.8 percent, with a dashed typed-entry reference line at 5.7 percent." width="800" height="450" loading="lazy">
-  <figcaption>Plate WMAPE by model (JFB 50, compact). The dashed line is portioned typed-entry WMAPE (FNDDS) — a different task, shown for scale.</figcaption>
+  <figcaption>WMAPE für Tellerfotos nach Modell (JFB 50, kompakter Prompt). Die gestrichelte Linie zeigt den WMAPE der getippten Eingabe mit Mengenangabe (FNDDS) — eine andere Aufgabe, nur zum Größenvergleich dargestellt.</figcaption>
 </figure>
 
-We also checked richer capture cues on Nutrition5k lab clips:
+Zusätzlich wurden erweiterte Erfassungshinweise anhand von Nutrition5k-Laborclips geprüft:
 
-- **Monocular depth / volume** from a single photo did not clear the bar for mass estimation.
-- **Native video** (sending the turntable clip as `video_url` instead of one still, same free Gemma pin, 12 paired dishes) **lost** to the still: WMAPE **25.6% → 37.2%**, ±20% kcal **41.7% → 33.3%**, about **4.2×** prompt tokens, and worse free-tier reliability. Parked for now — this was a fixed lab turntable, not a casual phone orbit, but “just give the model more frames” did not help on this evidence.
+- **Monokulare Tiefen-/Volumenschätzung** aus einem Einzelfoto erreichte für die Massenschätzung nicht die erforderliche Genauigkeit.
+- **Natives Video** (Übermittlung des Drehteller-Clips als `video_url` anstelle eines Einzelbilds, gleiches kostenloses Gemma-Modell, 12 gepaarte Gerichte) schnitt **schlechter** ab als das Einzelbild: WMAPE **25,6 % → 37,2 %**, ±20-%-Trefferquote bei Kalorien **41,7 % → 33,3 %**, dabei etwa **4,2-fach** höherer Prompt-Token-Verbrauch und schlechtere Zuverlässigkeit im kostenlosen Tarif. Dieser Ansatz ist vorerst zurückgestellt — der Test beruhte auf einem festen Labor-Drehteller, keiner freihändigen Smartphone-Rundumaufnahme, doch „einfach mehr Einzelbilder liefern“ half auf dieser Datenbasis nicht.
 
-## What did move the needle
+## 6 Was tatsächlich etwas gebracht hat
 
-Two results changed how we build the app.
+Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 
-**Leaner production prompts.** The old text prompt never reliably elicited `grams_per_unit` for suggested servings (e.g. "2 slices"). Without that field, the app silently dropped AI serving units on essentially every text response. A rewritten prompt keeps the same macro accuracy, about half the prompt size, and usable units on **40 of 41** eval items. That wording is what ships today.
+**Schlankere Produktions-Prompts.** Der bisherige Text-Prompt lieferte für vorgeschlagene Portionsangaben (z. B. „2 Scheiben“) nicht zuverlässig das Feld `grams_per_unit`. Ohne dieses Feld verwarf die App KI-Portionseinheiten bei praktisch jeder Textantwort stillschweigend. Ein überarbeiteter Prompt erhält dieselbe Makronährstoff-Genauigkeit bei etwa halber Prompt-Länge und liefert bei **40 von 41** Evaluationseinträgen verwendbare Einheiten. Diese Formulierung ist heute produktiv im Einsatz.
 
-**Portion clarification (in progress).** In a simulated eval, injecting a ground-truth portion answer into the photo prompt — a stand-in for a one-tap “how much was on the plate?” chip — cut photo WMAPE by **15 percentage points** (35.9% → 22.8%) and raised the ±20%-accurate rate by 12 points on the same 50-photo set. That is why a portion-chip UX is next: ask the user for scale, instead of hoping the model invents it. That matches the typed-entry lesson — **quantity in the input** is what moves macros, whether as typed grams or as a tapped chip.
+**Portionsklärung (in Entwicklung).** In einer simulierten Evaluation senkte das Einspeisen einer Ground-Truth-Portionsangabe in den Foto-Prompt — als Platzhalter für eine per Antipp auszulösende Rückfrage „Wie viel lag auf dem Teller?“ — den WMAPE für Fotos um **15 Prozentpunkte** (35,9 % → 22,8 %) und erhöhte die ±20-%-Trefferquote um 12 Punkte auf demselben 50-Foto-Datensatz. Deshalb ist eine Portions-Rückfrage-Funktion (Chip-UI) der nächste Entwicklungsschritt: Der Nutzer wird nach dem Maßstab gefragt, anstatt darauf zu hoffen, dass das Modell ihn errät. Das bestätigt die Erkenntnis aus der Texteingabe — **die Mengenangabe in der Eingabe** ist entscheidend für die Makronährstoffgenauigkeit, ob als getippte Grammangabe oder als angetippter Chip.
 
 <figure>
   <img src="/img/blog/accuracy/portion-clarify.png" alt="Grouped bars showing photo-only versus photo plus simulated portion answer: WMAPE 35.9 to 22.8 percent, and within ±20 percent calories 40 to 50 percent." width="800" height="450" loading="lazy">
-  <figcaption>Simulated portion clarification on JFB 50 (Gemini 3.5 Flash-Lite). Oracle portion answer as a stand-in for a one-tap chip — why that UX is next.</figcaption>
+  <figcaption>Simulierte Portionsklärung auf JFB 50 (Gemini 3.5 Flash-Lite). Die Orakel-Portionsangabe steht stellvertretend für eine Antipp-Rückfrage — daher der nächste Entwicklungsschritt.</figcaption>
 </figure>
 
-## What to do as a user
+## 7 Handlungsempfehlungen für Nutzer
 
-- Prefer typed text **with grams or a unit**, barcode, or a saved meal when you care about the number.
-- A photo plus a meal title or ingredient list without quantities is still mostly a photo estimate.
-- Treat photo-only (or photo + vague note) as a fast draft, not a weighed meal.
-- BYOK means your accuracy tracks the model you choose; these figures are per-model harness results, not a single “Chompass accuracy” score.
+- Bevorzugt getippten Text **mit Gramm- oder Mengenangabe**, Barcode-Scan oder eine gespeicherte Mahlzeit, wenn genaue Werte wichtig sind.
+- Ein Foto mit Mahlzeittitel oder Zutatenliste ohne Mengenangabe bleibt im Wesentlichen eine Fotoschätzung.
+- Behandelt reine Fotoeingaben (oder Foto + vage Notiz) als schnellen Entwurf, nicht als gewogene Mahlzeit.
+- Da Chompass dem BYOK-Prinzip folgt, richtet sich die Genauigkeit nach dem gewählten Modell; diese Werte sind modellspezifische Testergebnisse, keine einzelne „Chompass-Genauigkeit“.
 
-## Caveats
+## 8 Einschränkungen
 
-- These are offline research-harness numbers on small, fixed labeled datasets — not a live production accuracy monitor. Results vary by model, photo quality, and food type.
-- The strong text numbers are FNDDS-style portioned strings; the photo / image+note numbers are JFB plated meals. Do not read them as the same meal typed two ways.
-- On-device Gemma 4 (Android, opt-in) is smaller than cloud models and generally less accurate.
-- Numbers will move as models and prompts change. This post reflects the snapshot dated in the [benchmark status note](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) (late July 2026).
+- Es handelt sich um Offline-Testrahmen-Werte auf kleinen, festen gelabelten Datensätzen — kein Live-Produktionsmonitoring der Genauigkeit. Ergebnisse variieren je nach Modell, Fotoqualität und Lebensmittelart.
+- Die starken Textergebnisse beruhen auf FNDDS-Strings mit Mengenangabe; die Foto- bzw. Bild+Notiz-Werte beruhen auf angerichteten JFB-Mahlzeiten. Sie sind nicht als dieselbe, nur zweimal erfasste Mahlzeit zu lesen.
+- On-Device-Gemma 4 (Android, opt-in) ist kleiner als Cloud-Modelle und in der Regel weniger genau.
+- Die Werte ändern sich mit neuen Modellen und Prompts. Dieser Beitrag spiegelt den im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) datierten Stand wider (Ende Juli 2026).

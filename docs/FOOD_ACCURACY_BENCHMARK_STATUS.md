@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **As of** | 2026-07-24 |
+| **As of** | 2026-07-29 |
 | **Harness** | [`docs/benchmarks/food_accuracy/`](benchmarks/food_accuracy/) |
 | **How-to** | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) |
 | **Grounded WIP** | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) — **not production**; UI flag off |
@@ -60,7 +60,10 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 13. **Plate error is portion priors, not meal size.** Consensus hard vs easy JFB meals have nearly identical mean GT kcal (~395 vs ~391). Short “portion grounding” prompt rules did **not** beat compact (see [Failure modes](#failure-modes--portion-reasoning)).
 14. **DeepSeek Flash / GPT-5.6 Luna not useful for this plate slate.** DeepSeek models on OpenRouter are **text-only** (no vision). Luna is ~$1/$6 input/output — not in the cheap tier; skipped for cost.
 15b. **Native video input loses to a still image (2026-07-28).** Sending the raw Nutrition5k turntable clip directly as `video_url` (no depth extraction, model reasons over motion itself) instead of the single overhead RGB still, same free Gemma pin / `compact` prompt / 12 paired dishes: WMAPE **25.6% → 37.2%** (+11.6pp), ±20% kcal **41.7% → 33.3%** (−8.3pp), 4.2× prompt tokens, and materially worse free-tier reliability (video decode capacity 504s). See § Native video input vs still image.
+16. **Plate overestimation is a systematic, correctable per-model bias (2026-07-29).** Free re-scoring of stored predictions: 10/12 vision runs have a fitted kcal scale of 0.76–0.84 (text fits are exactly 1.000). Per-model LOO calibration buys up to **−7.5pp WMAPE / +22pp ±20%**; median-ensembling two models beats every single model (**29.4% WMAPE**, and Gemini 3.6 + gpt-4o-mini reaches **62% ±20%**); the two stack to **27.0% WMAPE / 60% ±20%** — the best plate numbers in this doc. Magnitude does not transfer across datasets, so ship a conservative per-model factor or learn it per user, not a JFB constant. See § Post-hoc calibration & ensembling.
+17. **Nothing the model emits predicts its own error (2026-07-29).** Self-consistency (median of 3 identical runs) does **not** beat one call (37.6% vs 35.9%) — the error is bias, not variance. corr(predicted `serving_size_grams`, true kcal) ≈ +0.14; corr(cross-model disagreement, actual error) = **+0.012**. Together with the 92% ask-rate finding, all model-side confidence channels are dead: chip triggers must be unconditional and calorie bands fixed-width per entry type.
 15. **The old production-prompt gap was rule verbosity, not schema size — lean production shipped (2026-07-24).** A "lean" prompt (full 28-field app schema, compact wording + one-line unit_options rule carrying the object shape, `lean_units2`) matches compact-level text macros while keeping micros/emoji/units: Flash-Lite text WMAPE **5.3%** (old production 6.9%, compact 4.8%) and image **31.25%** (old production 31.1%, compact 35.9%). The Gemma image "production is 8pp worse" finding was a Gemma artifact — on Flash-Lite the verbose image prompt was actually *better* than compact; lean keeps that win at half the prompt tokens. Bonus: the old text prompt never elicited `grams_per_unit`, so **every AI text serving unit was silently dropped by the app parser**; lean fixes this (40/41 usable vs 0). Shipped to `FoodAnalysisService` (all four entry prompts) and mirrored in `prompts.py` `production_*`. See § Lean production prompt (2026-07-24).
+18. **Micronutrient scoring is now implemented — text/FNDDS only (2026-07-29).** The harness previously discarded all 21 micronutrient fields the shipped prompts already ask for; it now scores them against real USDA FNDDS ground truth (`schema.MICRO_FIELDS`, populated by `build_fndds_manifest.py`). Headline: the model **reliably emits every micronutrient** — presence rate is **100%** across all three `FULL_JSON_SCHEMA` prompts tested (`lean_units2`, `production_text`, `fewshot_units`, pinned Gemma 26B :free, n=20-40) — confirming the previously-manual, unverified "Micros present ≥98%" note. Micro accuracy trails macro accuracy by roughly the same ratio macros/plates already show: `micro_wmape` **33-49%** vs macro `wmape` **9-42%** on the same runs (see § Micronutrient scoring below); this is a **new, harder FNDDS text subset** with ambiguous short descriptions (e.g. "Coconut milk, 244 g" — USDA's low-fat beverage definition at 76 kcal vs the model's reasonable full-fat-can assumption at 440 kcal), not directly comparable to the curated `eval_text.jsonl` (~5.7% WMAPE). **JFB and Nutrition5k have no micronutrient ground truth in their source data at all** — micro scoring on those manifests reports `n_micro=0`, not a score; deriving approximate GT via ingredient-name matching to USDA/OFF is a distinct, unstarted follow-up. See § Micronutrient scoring.
 
 ---
 
@@ -149,6 +152,114 @@ Artifacts: `results/scale_ref_ab/jfb_compact_rerun/`, `results/scale_ref_ab/jfb_
 
 ---
 
+## Post-hoc calibration & ensembling (2026-07-29)
+
+Everything in this section is re-scored from **already-stored** `results/*/samples.jsonl`
+predictions — no new API calls, $0. Reproduce with
+`uv run python docs/benchmarks/food_accuracy/posthoc_calibration.py` (sections A–G).
+All rows are JFB-50 L0 `compact`, 50/50 common ids, unless noted.
+
+### The finding: every vision model overestimates, and the bias is correctable
+
+Fitting one multiplicative scale per macro per model (prediction-weighted median
+ratio, **leave-one-out cross-validated** so no sample sees its own fit):
+
+| Model | fitted kcal scale | WMAPE | Δ | ±20% kcal | Δ |
+|---|---:|---:|---:|---:|---:|
+| `qwen/qwen3.5-flash` | 0.800 | **29.62%** | −7.50pp | **58%** | +22pp |
+| `openai/gpt-5-mini` | 0.808 | 32.14% | −7.41pp | 50% | +18pp |
+| Gemma 26B :free | 0.759 | 33.28% | −6.54pp | 40% | +8pp |
+| `nofud/free` | 0.775 | 35.51% | −5.60pp | 40% | +8pp |
+| `openai/gpt-5-nano` | 0.765 | 37.86% | −5.90pp | 30% | +2pp |
+| Gemini 3.5 Flash-Lite | 0.814 | 31.44% | −4.45pp | 50% | +10pp |
+| **Gemini 3.6 Flash** | 0.837 | **31.02%** | −1.32pp | 52% | +2pp |
+| `gpt-4o-mini` | 1.053 | 34.31% | −0.17pp | 46% | −4pp |
+| Claude 3 Haiku | 0.993 | 38.71% | +0.79pp | 40% | 0pp |
+| Claude Haiku 4.5 | 0.924 | 41.85% | +1.40pp | 30% | −8pp |
+
+Ten of twelve runs have a fitted kcal scale **below 1.0** (0.76–0.84 for most) —
+the +100–200% restaurant-portion mode documented under [Failure modes](#failure-modes--portion-reasoning)
+is not just a tail, it is a **systematic multiplicative bias**. `gpt-4o-mini`
+(1.053) is the known mild underestimator; calibrating it or Claude does nothing
+or hurts, so any correction must be **per model, never global**.
+
+**Modality gate is mandatory.** Text fits are exactly **1.000** on every macro
+(`TEXT42 gemma_free`, `TEXT42 flashlite`) — the shrink is a genuine *vision
+portion* bias, not a ground-truth normalisation artifact. Applying the JFB photo
+scale to the text split destroys it (WMAPE 5.71% → 23.46%, ±20% 90% → 14%).
+
+### But the magnitude does not transfer across datasets
+
+| Fit on → apply to | WMAPE | ±20% kcal |
+|---|---|---|
+| JFB-50 → N5k-15 (same free Gemma) | 34.72% → 36.52% (+1.80pp) | 40% → **20%** (−20pp) |
+| N5k-15 → JFB-50 | 39.83% → **34.05%** (−5.77pp) | 32% → 40% (+8pp) |
+| JFB even-half → odd-half (Flash-Lite) | 37.17% → 34.91% (−2.27pp) | 44% → 44% |
+| JFB odd-half → even-half (Flash-Lite) | 34.32% → **27.33%** (−7.00pp) | 36% → 56% |
+
+Within one dataset the correction always helps; across datasets only the
+*direction* survives, not the size (N5k's own kcal scale is 0.855 vs JFB's
+0.759). A uniform-factor sweep across 9 runs bottoms out around **0.85–0.90**
+(mean WMAPE 36.99% → 33.36%), but 0.85 actively hurts the two non-overestimating
+models. **Verdict: real and large, but do not hard-code a constant from JFB.**
+The shippable form is a *conservative* per-model factor (≈0.90 for the
+overestimators, 1.00 for `gpt-4o-mini`/Claude), or better, learn it per user from
+`GroundingCorrectionStore` edits — which is exactly [`UNCERTAINTY_DRIVEN_ENTRY.md`](UNCERTAINTY_DRIVEN_ENTRY.md)
+Bet 3, now with a measured ceiling instead of a hunch.
+
+### Cross-model ensembling: best plate numbers in the record
+
+Median of N independent models per sample:
+
+| Ensemble | WMAPE | ±20% kcal |
+|---|---:|---:|
+| best single (Gemini 3.6 Flash) | 32.33% | 50% |
+| gpt-4o-mini + Qwen3.5-Flash | **29.44%** | 56% |
+| Gemini 3.6 Flash + gpt-4o-mini | 29.66% | **62%** |
+| Gemini 3.6 + gpt-4o-mini + Claude 3 Haiku + Qwen3.5 | **29.05%** | **64%** |
+| median-then-calibrate (Gemini 3.6 + gpt-4o-mini + Qwen3.5) | **27.01%** | 60% |
+
+Two models beat every single model tested, and pairing a documented
+overestimator with the documented underestimator (Gemini + gpt-4o-mini) lifts
+±20% accuracy by **12pp** — the largest photo gain in this doc outside the
+portion-clarification oracle (−15.2pp WMAPE). Calibration and ensembling stack:
+**27.01% WMAPE / 60% ±20%** is the best plate result recorded here. Cost is N×
+API calls and max-latency, so this is a "high accuracy" toggle, not a default;
+free-tier-only ensembling does **not** work (`gemma_free + nofud_free` = 38.16%,
+no better than either alone — they share a bias, so the median has nothing to
+cancel).
+
+### Three negative results that close open questions
+
+1. **Self-consistency does not work.** Three independent runs of Flash-Lite
+   `compact` on identical inputs: singles 35.89% / 35.93% / 37.98%, median of the
+   three **37.61%**, mean 36.34% — no better than one call. The error is *bias*,
+   not sampling variance, so re-sampling the same model buys nothing. Only
+   *different* models cancel. Don't build a retry-and-average path.
+2. **`serving_size_grams` is not a confidence signal.** corr(predicted grams,
+   true kcal) is +0.005 to +0.31 across all twelve runs (median ≈ +0.14). Models
+   emit a plausible-looking mass that barely tracks reality. This matters for
+   Bet 1: the proposed heuristic trigger *"show the portion chip when the model
+   didn't return a confident `serving_size_grams`"* has no signal behind it —
+   **trigger the chip on every photo entry instead.**
+3. **Model disagreement is not an uncertainty signal either.** Splitting JFB-50
+   by cross-model spread, the high-disagreement half is *not* less accurate
+   (mean |kcal err| 29.4% vs 33.5%; ±20% hit 48% vs 52%), corr(spread, error)
+   = **+0.012**. Combined with the 92%-ask-rate result, nothing the models
+   produce — self-report, emitted grams, or mutual agreement — tells the app when
+   it is wrong. Bet 2's calorie bands must be **fixed-width by entry type**, not
+   confidence-scaled.
+
+### Also recorded here: two undocumented model runs
+
+`results/image_text_ab/` contains two JFB-50 L0 `compact` runs (2026-07-22) never
+added to the tables below: `openai/gpt-5-mini` WMAPE **39.54%** / ±20% **32%**,
+and `anthropic/claude-haiku-4.5` WMAPE **40.45%** / ±20% **38%**. Both land in
+free-Gemma territory and neither changes the paid ranking. (`l0_qwen36_flash` is
+an abandoned partial run, n=34, no summary — ignore it.)
+
+---
+
 ## Lean production prompt (2026-07-24)
 
 The entry prompts in `FoodAnalysisService` (analyzeText / analyzeAuto / analyzeFood / analyzeFoodMulti) now use the **lean** wording: full 28-field JSON schema, a condensed one-line nutrient-units sentence, a one-line `unit_options` rule that embeds the option object shape (`{"unit":"slice","quantity":2,"grams_per_unit":180}`), and a short emoji/null line. ~995 chars vs ~1937 for the old wording. Harness `production_text` / `production_image` mirror it; `legacy_production_image` preserves the old image wording for baselines. The PWA `food-analyze.js` SYSTEM prompt was already lean-style and is unchanged.
@@ -172,6 +283,82 @@ Ablations that picked it (`lean_full` = no unit rule; `lean_units` = rule withou
 Micros present ≥98%, emoji 100% on the shipped variant (both modalities). **Open wrinkle:** on the app-primary Gemini 3.6 Flash, the legacy image wording beat lean on ±20% kcal (52% vs 42%, n=50 single run; WMAPE within 0.7pp) — worth a paired re-run before treating that delta as real. Artifacts: `results/lean_prompt_ab/` (gitignored).
 
 Harness fixes landed alongside: `schema.py`/`env_local.py` ROOT was still `parents[2]` from the pre-`docs/` layout (broke `.env.local` key loading and repo-relative manifest paths; image paths in downloaded manifests resolve via a `docs/` fallback), and the smoke script's `query_normalize` import used the old package path.
+
+## Micronutrient scoring (2026-07-29)
+
+Every shipped prompt except the research-only `compact*`/clarify family
+(`FULL_JSON_SCHEMA`: `lean_full`, `lean_units`, `lean_units2` shipped default,
+`fewshot_units`, `production_text`, `production_image`,
+`legacy_production_image`) already asks the model for 21 micronutrient
+fields, and the "Micros present ≥98%" note above (line 283) was a manual,
+unverified read of one gitignored artifact. The harness now scores these
+fields against real ground truth and computes presence rate exactly. See
+[manifest/schema.md § Micronutrient ground-truth fields](benchmarks/food_accuracy/manifest/schema.md#micronutrient-ground-truth-fields-optional-in-extra)
+for the full field list, and `run_eval.py`'s `mae_micro_*`/`mape_micro_*`/
+`n_micro_*`/`presence_rate_*` summary columns / `AggregateScore.micro_wmape`.
+
+**Ground truth: FNDDS text only.** `build_fndds_manifest.py` now pulls 21
+micronutrients from USDA `food_nutrient.csv` (previously discarded down to
+just the 4 macros) — 19 of 21 have **100% GT coverage** across all 5,431
+FNDDS survey foods; `added_sugar_g` and `trans_fat_g` have **zero** rows in
+this FNDDS release (GT always `None`, not a bug); `omega_3_g` is a composite
+of ALA+EPA+DHA+DPA and undercounts since ALA has zero coverage. **JFB and
+Nutrition5k have no micronutrient values anywhere in their source CSVs** —
+GT-free scoring on those manifests reports `n_micro=0` per nutrient rather
+than a score; approximating GT via ingredient-name matching to USDA/Open
+Food Facts is a distinct, unstarted follow-up (see Gaps below).
+
+Building the new micro-GT manifest surfaced two pre-existing, unrelated bugs
+in `build_fndds_manifest.py`, both fixed here since they corrupted the very
+data this eval needed: (1) `n.endswith("food.csv")` also matched
+`input_food.csv` (which sorts earlier in the zip), silently building all food
+descriptions from the wrong CSV (empty/blank text field); (2) `default_portion`
+picked whichever `food_portion.csv` row for a food happened to appear first
+in file order rather than the FNDDS-designated primary serving
+(`seq_num == 1`), landing some foods on nonsensical guideline-amount portions
+(e.g. 2.5g "guideline amount per fl oz of beverage" instead of 244g "1 cup").
+Both fixes are in the regenerated `manifest/fndds_generated_micro.jsonl`
+(200 items, gitignored, `--out` override of the previous
+`manifest/fndds_generated.jsonl` default path).
+
+### Results (pinned `google/gemma-4-26b-a4b-it:free`, `FULL_JSON_SCHEMA` prompts)
+
+| Prompt | n | wmape (macros) | within 20% kcal | parse_ok | micro_wmape | presence rate (all 21 nutrients) |
+|---|---:|---:|---:|---:|---:|---:|
+| `lean_units2` (shipped) | 40 | 20.4% | 70% | 100% | 36.8% | **100%** |
+| `lean_units2`, same 20 ids as below | 20 | 12.1% | 90% | 100% | 33.8% | 100% |
+| `production_text` | 20 | 42.5% | 90% | 100% | 48.6% | 100% |
+| `fewshot_units` | 20 | 8.8% | 94.7% | 95% | 33.0% | 100% |
+
+Macro `wmape` on this set is higher than the curated `eval_text.jsonl`
+baseline (~5.7%, finding 1) — this is a **harder, noisier FNDDS text
+distribution** (near-duplicate short descriptions like "Milk, NFS" /
+"Almond milk, sweetened" / "Coconut milk"), not a regression: e.g.
+"Coconut milk, 244 g" GT is USDA's low-fat coconut-milk *beverage* (76 kcal)
+while the model reasonably assumed common full-fat canned coconut milk
+(440 kcal) — the bare description doesn't disambiguate. Small n (20-40) means
+none of these deltas should be read as a confident prompt ranking; directionally
+consistent with finding 2 (`production_text` no better than `lean`/`compact`)
+though.
+
+**Headline: presence is a non-issue, accuracy is not.** All three prompts hit
+exactly 100% presence on every one of the 21 nutrient fields (not just
+"≥98%") — the model never silently drops a micronutrient. But `micro_wmape`
+(33-49%) is 1.5-4× the matching macro `wmape`, i.e. once a value is present it
+is *not* proportionally as accurate as calories/protein/carbs/fat — sodium
+MAPE ~13-23%, vitamin C MAPE ~100%+ (small-gram vitamin C values make percentage
+error extremely noisy), consistent with USDA per-100g micronutrient values
+being inherently higher-variance across similar-sounding foods than the four
+headline macros.
+
+**Not yet done:** a paired run on the curated `eval_text.jsonl`-style clean
+food set (to isolate prompt/model effects from this set's description
+ambiguity), a paid-model pin (Gemini/gpt-4o-mini) for a stronger micro
+ceiling, and validating whether `micro_wmape` correlates with anything
+actionable (e.g. is sodium/potassium error concentrated in the same
+ambiguous-description items that drive macro error, or independent).
+
+Artifacts: `results/micro_ab/fndds_{lean_units2,production_text,fewshot_units}_gemma/` (gitignored).
 
 ## Simulated clarification eval (pre-registered 2026-07-24, not yet run)
 
@@ -454,11 +641,17 @@ nix shell nixpkgs#ffmpeg -c bash -c '
 - [ ] Nutrition-label OCR track (Open Food Facts)
 - [ ] On-device LiteRT scoring against the same manifests (phase 2)
 - [x] Port a compact-style prompt into [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) — done 2026-07-24 as the **lean** wording (full schema kept; see § Lean production prompt). Follow-up: paired re-run of lean vs `legacy_production_image` on Gemini 3.6 Flash (±20% dip, n=50 single run)
+- [x] **Post-hoc bias calibration + cross-model ensembling** (2026-07-29, $0, re-scored from stored artifacts) — per-model calibration up to −7.5pp WMAPE; 2-model median ensemble 29.4% WMAPE / 62% ±20%; stacked 27.0% / 60%. Self-consistency, `serving_size_grams` confidence, and disagreement-as-uncertainty all **negative**. See § Post-hoc calibration & ensembling
+- [ ] Validate the calibration factor out-of-sample on a **larger N5k slice** (n≥50) before shipping any per-model constant — JFB→N5k transfer cost 20pp of ±20% accuracy
+- [ ] Live A/B of a 2-model ensemble path in the app (cost/latency vs +12pp ±20%); needs a product decision on N× BYOK spend
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
 - [x] **Simulated clarification eval** (2026-07-24, JFB-50, Flash-Lite) — portion clarification **ships** (−15.2pp WMAPE, +12pp ±20%); fat clarification **parked** (−5.2pp, hurts ±20%); model self-selecting which question to ask is **not usable** (92% ask rate, prefers the weaker fat question 34/50 vs portion 12/50) — trigger must be heuristic, not model self-report. See § Simulated clarification eval.
 - [x] Confirm portion-clarification result on Nutrition5k (true-mass oracle, no lexicon dependency) — confirmed, n=15: −18.7pp WMAPE, +53.4pp ±20% (stronger than JFB)
 - [x] **Native video input vs still image** (2026-07-28, N5k turntable clips, free Gemma pin, n=12 paired) — video input **lost**: WMAPE 25.6%→37.2%, ±20% 41.7%→33.3%, 4.2× tokens, worse reliability. See § Native video input vs still image.
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
+- [x] **Micronutrient scoring** (2026-07-29, FNDDS text, pinned Gemma) — implemented for text; presence rate **100%** on every nutrient across all `FULL_JSON_SCHEMA` prompts tested; `micro_wmape` (33-49%) trails macro `wmape` by 1.5-4×. See § Micronutrient scoring.
+- [ ] **Micronutrient scoring for JFB/Nutrition5k (image)** — no micronutrient values exist in either dataset's source data; needs an ingredient-name → USDA/Open Food Facts lookup to derive approximate GT, a distinct and noisier project from the text case. Not started.
+- [ ] Paired micronutrient run on a clean, unambiguous text set (current FNDDS-generated manifest has ambiguous near-duplicate descriptions like "Coconut milk" that inflate macro WMAPE vs the curated `eval_text.jsonl`) to isolate prompt/model micro accuracy from description ambiguity.
 
 ---
 

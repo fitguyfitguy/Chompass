@@ -30,6 +30,7 @@ def main() -> None:
         "parse_ok_rate",
         "mae_calories",
         "within_20pct_calories_rate",
+        "micro_wmape",
         "sum_prompt_tokens",
         "sum_completion_tokens",
         "sum_cached_tokens",
@@ -38,6 +39,19 @@ def main() -> None:
         "cache_hit_rate",
         "sum_cost",
     ]
+    # Per-nutrient columns (mae_micro_*/mape_micro_*/n_micro_*/presence_rate_*)
+    # are only present when a run had GT or model output for that nutrient
+    # (see run_eval.py). Show whichever such columns appear in any file being
+    # compared, sorted for stable output, instead of hardcoding all nutrients.
+    micro_keys = sorted(
+        {
+            k
+            for row in [base] + [cand for _, cand in cands]
+            for k in row
+            if k.startswith(("mae_micro_", "mape_micro_", "n_micro_", "presence_rate_"))
+        }
+    )
+    keys += micro_keys
     print(f"baseline:  {args.baseline}")
     for idx, (path, _) in enumerate(cands, start=1):
         print(f"cand[{idx}]:   {path}")

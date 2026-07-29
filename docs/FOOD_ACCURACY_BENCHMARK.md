@@ -76,7 +76,16 @@ See [`docs/benchmarks/food_accuracy/manifest/schema.md`](benchmarks/food_accurac
 
 ## Metrics
 
-Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted in v1 — sparse GT).
+Scored on **calories, protein_g, carbs_g, fat_g**, plus 21 micronutrients where
+ground truth exists (`schema.MICRO_FIELDS`). Micronutrient GT is currently
+populated **only for FNDDS text** (`build_fndds_manifest.py` pulls it from
+USDA `food_nutrient.csv`); JFB and Nutrition5k images have no micronutrient
+data in their source datasets, so micro metrics on those manifests report
+`n_micro=0` per nutrient rather than a score. See
+[manifest/schema.md § Micronutrient ground-truth fields](benchmarks/food_accuracy/manifest/schema.md#micronutrient-ground-truth-fields-optional-in-extra)
+for field names/units and dataset-specific caveats (`added_sugar_g`/`trans_fat_g`
+have no GT coverage in the current FNDDS release; `omega_3_g` GT is a
+partial composite, not a true total).
 
 | Metric | Description |
 |--------|-------------|
@@ -91,6 +100,9 @@ Scored on **calories, protein_g, carbs_g, fat_g** only (micronutrients omitted i
 | `reasoning_tokens` | From `usage.completion_tokens_details` when present |
 | `cost` | OpenRouter credit cost for the request (when present) |
 | `sum_*` / `mean_*` / `cache_hit_rate` | Aggregated into `summary.csv` / `summary.json` (`cache_hit_rate` = sum cached / sum prompt) |
+| `micro_wmape` | Weighted MAPE across all micronutrients with GT present (separate sum from macro `wmape` — mixing mg/mcg/g-scale nutrients into one blended number would be meaningless) |
+| `mae_micro_<field>` / `mape_micro_<field>` / `n_micro_<field>` | Per-nutrient MAE/MAPE and sample count (only samples with non-null GT *and* non-null prediction count) |
+| `presence_rate_<field>` | Fraction of parsed samples where the model returned a non-null value for that nutrient, independent of GT availability |
 
 ## Prompt variants
 
@@ -196,6 +208,20 @@ uv run python docs/benchmarks/food_accuracy/compare_runs.py \
   docs/benchmarks/food_accuracy/results/ab/fewshot_units/summary.csv
 ```
 
+### Post-hoc analysis (no API calls)
+
+`posthoc_calibration.py` re-scores predictions already stored in
+`results/*/samples.jsonl` under transformations that need no new model output:
+per-model bias calibration (leave-one-out cross-validated), self-consistency over
+repeated runs, cross-model median ensembling, and whether `serving_size_grams` or
+cross-model disagreement predict error. Free to run; results in
+[STATUS § Post-hoc calibration & ensembling](FOOD_ACCURACY_BENCHMARK_STATUS.md#post-hoc-calibration--ensembling-2026-07-29).
+
+```bash
+uv run python docs/benchmarks/food_accuracy/posthoc_calibration.py
+uv run python docs/benchmarks/food_accuracy/posthoc_calibration.py --sections A C G
+```
+
 See also [`docs/benchmarks/food_accuracy/README.md`](benchmarks/food_accuracy/README.md).
 
 ## Download details
@@ -248,5 +274,8 @@ Requires downloading FNDDS CSV from USDA (script uses the public zip URL).
 
 - On-device LiteRT scoring (phase 2: export winning image subset to debug fixtures)
 - Nutrition-label OCR eval track
-- Micronutrient scoring
+- Micronutrient scoring for **image** datasets (JFB / Nutrition5k) — neither
+  has micronutrient values in its source data; deriving approximate GT via
+  ingredient-name matching to USDA/OFF is a distinct, larger follow-up, not
+  attempted here. Text (FNDDS) micronutrient scoring is implemented.
 - Bundling dataset images in the APK or git

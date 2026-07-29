@@ -17,6 +17,37 @@ RESULTS_DIR = BENCHMARK_ROOT / "results"
 
 MACRO_FIELDS = ("calories", "protein_g", "carbs_g", "fat_g")
 
+# Micronutrient ground-truth field name (as stored in Sample.extra / manifest
+# JSON, unit-suffixed like protein_g/carbs_g) -> model prediction JSON key
+# (bare name from prompts.py FULL_JSON_SCHEMA, units documented there).
+# Ground truth is currently populated only by build_fndds_manifest.py (USDA
+# FNDDS text); JFB and Nutrition5k have no micronutrient data in their source
+# CSVs. See docs/benchmarks/food_accuracy/manifest/schema.md.
+MICRO_FIELDS: dict[str, str] = {
+    "sugar_g": "sugar",
+    "added_sugar_g": "added_sugar",
+    "fiber_g": "fiber",
+    "saturated_fat_g": "saturated_fat",
+    "monounsaturated_fat_g": "monounsaturated_fat",
+    "polyunsaturated_fat_g": "polyunsaturated_fat",
+    "trans_fat_g": "trans_fat",
+    "omega_3_g": "omega_3",
+    "cholesterol_mg": "cholesterol",
+    "sodium_mg": "sodium",
+    "potassium_mg": "potassium",
+    "calcium_mg": "calcium",
+    "iron_mg": "iron",
+    "magnesium_mg": "magnesium",
+    "zinc_mg": "zinc",
+    "vitamin_c_mg": "vitamin_c",
+    "vitamin_e_mg": "vitamin_e",
+    "vitamin_a_mcg": "vitamin_a",
+    "vitamin_d_mcg": "vitamin_d",
+    "vitamin_b12_mcg": "vitamin_b12",
+    "vitamin_k_mcg": "vitamin_k",
+    "folate_mcg": "folate",
+}
+
 
 @dataclass
 class GroundTruth:
@@ -95,6 +126,12 @@ class Sample:
             fat_g=self.fat_g,
             mass_g=self.mass_g,
         )
+
+    def micro_ground_truth(self) -> dict[str, float | None]:
+        """Micronutrient GT stored in `extra` (see MICRO_FIELDS). Missing key ->
+        None, distinct from a GT value of 0 — most samples have no micro GT at all
+        (only FNDDS text does today)."""
+        return {key: self.extra.get(key) for key in MICRO_FIELDS}
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {

@@ -60,6 +60,7 @@ android/app/src/debug/assets/ondevice_llm/pizza_slices.jpg
 # Food accuracy benchmark caches and results
 docs/benchmarks/food_accuracy/data/
 docs/benchmarks/food_accuracy/results/
+docs/benchmarks/food_accuracy/manifest/fndds_generated*.jsonl
 
 # USDA FoodData Central raw downloads (built assets live under src/debug/assets/usda/)
 build/usda-fdc/
