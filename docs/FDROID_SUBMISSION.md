@@ -52,7 +52,9 @@ Source branch: `org.codeberg.fitguy.nofud` (kept from the NoFUD-era submission; 
 - [x] Push updates to the **existing** MR source branch (not a new `app.chompass` branch while !42984 is open)
 - [ ] Respond to reviewer questions in the MR
 
-Opening a fresh branch/MR while !42984 is open duplicates review work (this happened with !43940). Always refresh !42984 via `./scripts/submit_fdroiddata_mr.sh`.
+Opening a fresh branch/MR while !42984 is open duplicates review work (this happened with !43940). Always refresh **!42984** only — never a second inclusion MR.
+
+Update [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) in this repo first, then apply the YAML in the GitLab web GUI (or run `submit_fdroiddata_mr.sh` locally if you choose).
 
 ### Optional (faster path)
 
@@ -158,7 +160,7 @@ Forked from Fud AI with a distinct package ID `app.chompass` vs upstream. I am t
 
 ## Submit commands
 
-**One command** (after `glab auth login --hostname gitlab.com` or `GITLAB_TOKEN`). Prefer `GITLAB_HOST=gitlab.com` if other GitLab hosts are configured:
+**One command** (optional maintainer automation — after `glab auth login --hostname gitlab.com` or `GITLAB_TOKEN`). Prefer `GITLAB_HOST=gitlab.com` if other GitLab hosts are configured. Default workflow is the GitLab web GUI:
 
 ```bash
 GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh
@@ -198,9 +200,8 @@ For each release (and while the inclusion MR is still open):
 3. Sync [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml): replace the previous `Builds:` entry with the new version, set `commit:` to the **full** release commit hash (not the `vX.Y.Z` tag), update `CurrentVersion` / `CurrentVersionCode`
 4. Run `./scripts/package_release.sh --check-metadata`, tag `v<version>` on Codeberg, publish APKs
 5. Push upstream metadata to Codeberg `main` before fdroiddata picks up the tag
-6. Refresh the **existing** fdroiddata MR — do not open a new one:
-   `GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh`
+6. Refresh the **existing** fdroiddata MR in the **GitLab web GUI** (paste/update `metadata/app.chompass.yml` from `docs/fdroid/app.chompass.yml`) — do not open a new MR. Optional maintainer script: `GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh`
    Canonical until merged: https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984
-7. After inclusion is merged, F-Droid `checkupdates` may open follow-up update MRs automatically; use the submit script only to push metadata onto those update MRs or when checkupdates does not run
+7. After inclusion is merged, F-Droid `checkupdates` may open follow-up update MRs automatically; use the web GUI (or the submit script locally) only for those update MRs when needed
 
 **Latest release (2026-07-26):** v3.1.1 — camera scale tip, clearer Active calorie / Activity Level guidance. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.1.1

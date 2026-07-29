@@ -16,7 +16,7 @@ devenv shell          # or rely on direnv auto-load after allow
 # optional (also done on devenv enterShell): ./scripts/install_git_hooks.sh
 ```
 
-`devenv shell` / direnv sets `core.hooksPath` to `scripts/git-hooks` so commits cannot pick up Cursor `Co-authored-by` / `Made-with` trailers.
+`devenv shell` / direnv sets `core.hooksPath` to `scripts/git-hooks` (see `scripts/install_git_hooks.sh`).
 
 Build (inside the devenv shell):
 
