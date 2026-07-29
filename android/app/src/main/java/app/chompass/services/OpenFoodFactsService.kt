@@ -20,9 +20,28 @@ import kotlin.math.roundToInt
 
 object OpenFoodFactsService {
     private const val FIELDS = "product_name,generic_name,brands,quantity,serving_size,serving_quantity,nutriments"
-    private const val USER_AGENT = "FudAI/Android (https://fud-ai.app)"
+    private const val SEARCH_FIELDS =
+        "code,product_name,generic_name,brands,serving_size,serving_quantity,nutriments"
+    private const val USER_AGENT = "Chompass/Android (https://chompass.app)"
 
     class LookupException(message: String) : Exception(message)
+
+    /**
+     * One Open Food Facts search hit with per-100g macros for grounding candidates.
+     * [barcode] is the OFF product code (source id).
+     */
+    data class SearchHit(
+        val barcode: String,
+        val name: String,
+        val brand: String?,
+        val caloriesPer100g: Double?,
+        val proteinPer100g: Double?,
+        val carbsPer100g: Double?,
+        val fatPer100g: Double?,
+        val servingGrams: Double?,
+        val incompleteEnergy: Boolean,
+        val score: Double,
+    )
 
     /**
      * Looks up [barcode], preferring a cached result from a previous lookup
@@ -42,6 +61,88 @@ object OpenFoodFactsService {
         val result = lookupNetwork(code, client)
         prefs.cacheBarcodeLookup(code, result)
         result
+    }
+
+    /**
+     * Live text/brand search against Open Food Facts (ODbL). Sends only the
+     * search query — never diary history. Results are not merged into USDA SQLite.
+     */
+    suspend fun search(
+        query: String,
+        brand: String? = null,
+        limit: Int = 6,
+        client: OkHttpClient = FoodAnalysisService.defaultClient,
+    ): List<SearchHit> = withContext(Dispatchers.IO) {
+        val q = query.trim()
+        if (q.isEmpty()) return@withContext emptyList()
+        val capped = limit.coerceIn(1, 8)
+        val terms = listOfNotNull(brand?.trim()?.takeIf { it.isNotEmpty() }, q)
+            .distinct()
+            .joinToString(" ")
+        val encoded = URLEncoder.encode(terms, "UTF-8")
+        val url =
+            "https://world.openfoodfacts.org/cgi/search.pl" +
+                "?search_terms=$encoded&search_simple=1&action=process&json=1" +
+                "&page_size=$capped&fields=$SEARCH_FIELDS"
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("User-Agent", USER_AGENT)
+            .build()
+        val raw = runCatching { client.newCall(request).execute() }
+            .getOrElse { return@withContext emptyList() }
+            .use { response ->
+                if (!response.isSuccessful) return@withContext emptyList()
+                response.body?.string().orEmpty()
+            }
+        val json = runCatching { JSONObject(raw) }.getOrNull() ?: return@withContext emptyList()
+        val products = json.optJSONArray("products") ?: return@withContext emptyList()
+        val queryTokens = terms.lowercase(Locale.US).split(Regex("\\s+")).filter { it.length > 1 }
+        buildList {
+            for (i in 0 until products.length()) {
+                if (size >= capped) break
+                val product = products.optJSONObject(i) ?: continue
+                val code = product.optString("code").trim().ifEmpty {
+                    product.optString("_id").trim()
+                }
+                if (code.isEmpty()) continue
+                val name = productName(product, code)
+                val brandName = product.optString("brands")
+                    .split(",")
+                    .firstOrNull()
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                val nutriments = product.optJSONObject("nutriments")
+                val cal100 = nutriments?.flexibleDouble("energy-kcal_100g")
+                    ?: nutriments?.flexibleDouble("energy_100g")?.let { it * 0.23900573614 }
+                val protein100 = nutriments?.flexibleDouble("proteins_100g")
+                val carbs100 = nutriments?.flexibleDouble("carbohydrates_100g")
+                val fat100 = nutriments?.flexibleDouble("fat_100g")
+                val servingGrams = maxOf(
+                    product.flexibleDouble("serving_quantity")
+                        ?: gramsFrom(product.optString("serving_size").takeIf { it.isNotBlank() })
+                        ?: 0.0,
+                    0.0,
+                ).takeIf { it > 0 }
+                val hay = "$brandName $name".lowercase(Locale.US)
+                val overlap = queryTokens.count { hay.contains(it) }.toDouble()
+                val score = overlap * 2.0 + maxOf(0.0, 3.0 - name.length / 40.0) +
+                    if (cal100 != null) 1.0 else 0.0
+                add(
+                    SearchHit(
+                        barcode = code,
+                        name = name,
+                        brand = brandName,
+                        caloriesPer100g = cal100,
+                        proteinPer100g = protein100,
+                        carbsPer100g = carbs100,
+                        fatPer100g = fat100,
+                        servingGrams = servingGrams,
+                        incompleteEnergy = cal100 == null,
+                        score = score,
+                    ),
+                )
+            }
+        }.sortedByDescending { it.score }
     }
 
     private suspend fun lookupNetwork(code: String, client: OkHttpClient): FoodAnalysis = run {

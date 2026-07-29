@@ -1,0 +1,65 @@
+{
+  "as_of": "2026-07-29",
+  "manifest": "docs/benchmarks/food_accuracy/manifest/eval_grounded_realistic_text.jsonl",
+  "status": "wip_not_production",
+  "role": "primary_text_readiness_gate",
+  "methodology": "Prompts omit gram masses. Slices: vague, household, multi, branded. Ungrounded and grounded compared on the same manifest. Branded search_off uses offline off_fixtures.json.",
+  "pin": {
+    "provider": "openrouter",
+    "model": "google/gemini-3.5-flash-lite",
+    "mode": "grounded_tool",
+    "off_fixtures": "docs/benchmarks/food_accuracy/manifest/off_fixtures.json"
+  },
+  "current_baseline": {
+    "run_dir": "results/grounded_tool_gemini35_flash_lite_realistic_text",
+    "wmape": 0.185,
+    "within_20pct_calories_rate": 0.763,
+    "parse_ok_rate": 1.0,
+    "fallback_rate": 0.0,
+    "identity_top1_rate": 0.842,
+    "silent_zero_rate": 0.0,
+    "mae_calories": 33.0,
+    "off_source_rate": 0.184,
+    "notes": "First dual-run (2026-07-29). Grounded beats same-manifest single-shot overall; branded slice is the clear win (OFF fixtures)."
+  },
+  "ungrounded_reference": {
+    "flash_lite_compact": {
+      "run_dir": "results/quick_gemini35_flash_lite_realistic_text",
+      "wmape": 0.273,
+      "within_20pct_calories_rate": 0.711,
+      "parse_ok_rate": 1.0,
+      "mae_calories": 49.4
+    }
+  },
+  "by_slice": {
+    "grounded": {
+      "vague": {"n": 12, "wmape": 0.322, "within_20pct_calories_rate": 0.583},
+      "household": {"n": 12, "wmape": 0.142, "within_20pct_calories_rate": 0.833},
+      "multi": {"n": 6, "wmape": 0.143, "within_20pct_calories_rate": 0.833},
+      "branded": {"n": 8, "wmape": 0.071, "within_20pct_calories_rate": 0.875, "off_source_rate": 0.75}
+    },
+    "ungrounded": {
+      "vague": {"n": 12, "wmape": 0.226, "within_20pct_calories_rate": 0.583},
+      "household": {"n": 12, "wmape": 0.043, "within_20pct_calories_rate": 0.917},
+      "multi": {"n": 6, "wmape": 0.147, "within_20pct_calories_rate": 0.667},
+      "branded": {"n": 8, "wmape": 1.200, "within_20pct_calories_rate": 0.625}
+    }
+  },
+  "readiness_targets": {
+    "comment": "Pass when grounded is not badly behind same-manifest single-shot; absolute floors from first dual-run with slack.",
+    "wmape_max_vs_ungrounded_ratio": 1.15,
+    "wmape_max": 0.22,
+    "within_20pct_calories_rate_min": 0.70,
+    "parse_ok_rate_min": 0.95,
+    "finalize_rate_min": 0.95,
+    "silent_zero_rate_max": 0.0,
+    "identity_top3_rate_min": 0.75,
+    "branded_off_source_rate_min": 0.5
+  },
+  "regression_floors": {
+    "comment": "Fail a pinned re-run if worse than first dual-run + slack.",
+    "wmape_max": 0.25,
+    "within_20pct_calories_rate_min": 0.65,
+    "parse_ok_rate_min": 0.95
+  }
+}

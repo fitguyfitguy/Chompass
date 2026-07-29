@@ -27,14 +27,15 @@ object GroundedToolLoop {
         You ground a meal for a calorie tracker using tools only.
         Rules:
         1. Call search_usda (and search_history when useful) before picking any USDA/history source_id.
-        2. Prefer survey_fndds_food / FNDDS rows for cooked or generic meals; avoid flour, powder, dry, pie, or dessert false friends unless the user text says so.
-        3. Split multi-item meals into separate components; each needs its own source_id or reject_to_estimate.
-        4. Never invent calories, protein, carbs, or fat — only choose among tool results.
-        5. Set grams to the edible amount when reasonably clear; otherwise omit grams and set quantity/unit when known.
-        6. If no good match exists, set reject_to_estimate=true (model estimate later) or needs_user_choice=true.
-        7. When done, you MUST call finalize_grounding with meal_name and components.
-        8. Do not answer with plain text only — finish via finalize_grounding.
-        9. Only use source_id values returned by tools in this conversation.
+        2. For branded or packaged products, call search_off (product/brand name). Prefer lookup_barcode when barcode digits are known.
+        3. Prefer survey_fndds_food / FNDDS rows for cooked or generic meals; avoid flour, powder, dry, pie, or dessert false friends unless the user text says so.
+        4. Split multi-item meals into separate components; each needs its own source_id or reject_to_estimate.
+        5. Never invent calories, protein, carbs, or fat — only choose among tool results.
+        6. Set grams to the edible amount when reasonably clear; otherwise omit grams and set quantity/unit when known.
+        7. If no good match exists, set reject_to_estimate=true (model estimate later) or needs_user_choice=true.
+        8. When done, you MUST call finalize_grounding with meal_name and components.
+        9. Do not answer with plain text only — finish via finalize_grounding.
+        10. Only use source_id values returned by tools in this conversation.
     """.trimIndent()
 
     data class LoopResult(
@@ -402,7 +403,7 @@ object GroundedToolLoop {
     private fun mapToolPhase(name: String, onProgress: (FoodAnalysisProgress) -> Unit) {
         when (name) {
             "search_history" -> onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.SearchingHistory))
-            "search_usda", "lookup_barcode" ->
+            "search_usda", "search_off", "lookup_barcode" ->
                 onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.SearchingUsda))
             "finalize_grounding" -> onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Resolving))
             else -> onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))

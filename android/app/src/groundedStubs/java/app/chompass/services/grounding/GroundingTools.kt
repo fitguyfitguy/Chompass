@@ -2,6 +2,7 @@ package app.chompass.services.grounding
 
 import app.chompass.data.PreferencesStore
 import app.chompass.models.FoodEntry
+import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.ai.FoodAnalysis
 import org.json.JSONObject
 
@@ -11,11 +12,12 @@ class GroundingTools(
     historyPool: List<FoodEntry>,
     prefs: PreferencesStore?,
     barcodeLookup: (suspend (String) -> FoodAnalysis)? = null,
+    offSearch: (suspend (String, String?, Int) -> List<OpenFoodFactsService.SearchHit>)? = null,
     onToolUsed: (String) -> Unit = {},
 ) {
     init {
         @Suppress("UNUSED_EXPRESSION")
-        usdaIndex to historyPool to prefs to barcodeLookup to onToolUsed
+        usdaIndex to historyPool to prefs to barcodeLookup to offSearch to onToolUsed
     }
 
     var lastFinalize: FinalizePayload? = null
@@ -23,6 +25,8 @@ class GroundingTools(
     var searchUsdaCount: Int = 0
         private set
     var searchHistoryCount: Int = 0
+        private set
+    var searchOffCount: Int = 0
         private set
     var barcodeLookupCount: Int = 0
         private set
@@ -56,5 +60,8 @@ class GroundingTools(
 
     companion object {
         val TOOL_NAMES: List<String> = emptyList()
+        val TOOL_DESCRIPTIONS: Map<String, String> = emptyMap()
+        fun parametersSchema(toolName: String): JSONObject =
+            JSONObject().put("type", "object").put("properties", JSONObject())
     }
 }

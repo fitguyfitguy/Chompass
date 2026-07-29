@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Grounded-entry eval: tool-loop search_usda → finalize → scale macros.
+"""Grounded-entry eval: tool-loop search_* → finalize → scale macros.
 
 Default path mirrors the app cloud GroundedFoodEntryService tool loop
-(search_usda → finalize_grounding → deterministic scale). Use --legacy-top1
+(search_usda / search_history / search_off / lookup_barcode →
+finalize_grounding → PortionResolver-aligned scale). Use --legacy-top1
 for the older recognize-JSON → lexical USDA top-1 path.
 
 Example:
@@ -33,6 +34,7 @@ if str(_HERE) not in sys.path:
 from env_local import load_env_local
 from grounded_metrics import classify_failure, score_trace
 from parse import extract_json_text
+from portion_resolve import resolve_portion
 from providers import aggregate_usage, build_provider, normalize_usage
 from query_normalize import normalize_query, normalize_tokens
 from schema import RESULTS_DIR, load_manifest
@@ -90,6 +92,10 @@ def parse_recognition(text: str) -> dict:
                 grams_f = float(grams) if grams is not None else None
             except (TypeError, ValueError):
                 grams_f = None
+            try:
+                qty_f = float(raw["quantity"]) if raw.get("quantity") is not None else None
+            except (TypeError, ValueError):
+                qty_f = None
             components.append(
                 {
                     "name": name,
@@ -100,6 +106,11 @@ def parse_recognition(text: str) -> dict:
                     "estimated_grams": grams_f,
                     "portion_hint": (
                         str(raw["portion_hint"]).strip() if raw.get("portion_hint") else None
+                    ),
+                    "quantity": qty_f,
+                    "unit": (str(raw["unit"]).strip() if raw.get("unit") else None),
+                    "barcode": (
+                        str(raw["barcode"]).strip() if raw.get("barcode") else None
                     ),
                 }
             )
@@ -185,6 +196,7 @@ class UsdaIndex:
                     "carbs": row["carbs"],
                     "fat": row["fat"],
                     "serving_grams": row["serving_grams"],
+                    "serving_unit": row["serving_unit"] if "serving_unit" in row.keys() else None,
                     "incomplete_energy": row["calories"] is None,
                 }
             )
@@ -211,6 +223,7 @@ class UsdaIndex:
             "carbs": row["carbs"],
             "fat": row["fat"],
             "serving_grams": row["serving_grams"],
+            "serving_unit": row["serving_unit"] if "serving_unit" in row.keys() else None,
             "incomplete_energy": row["calories"] is None,
         }
 
@@ -306,13 +319,15 @@ class UsdaIndex:
 SYSTEM_TOOL_PROMPT = """
 You ground a meal for a calorie tracker using tools only.
 Rules:
-1. Call search_usda before picking any USDA source_id.
+1. Call search_usda (and search_history / search_off when useful) before picking any source_id.
 2. Prefer survey_fndds_food / FNDDS rows for cooked or generic meals; avoid flour, powder, dry, pie, or dessert false friends unless the user text says so.
-3. Split multi-item meals into separate components; each needs its own source_id or reject_to_estimate.
-4. Never invent calories, protein, carbs, or fat — only choose among tool results.
-5. Set grams to the edible amount when reasonably clear; otherwise omit grams.
-6. If no good match exists, set reject_to_estimate=true.
-7. When done, you MUST call finalize_grounding with meal_name and components.
+3. For branded / packaged products, prefer search_off (or lookup_barcode when digits are known); keep USDA for generic/cooked foods.
+4. Split multi-item meals into separate components; each needs its own source_id or reject_to_estimate.
+5. Never invent calories, protein, carbs, or fat — only choose among tool results.
+6. Set grams to the edible amount when reasonably clear; otherwise omit grams and set quantity/unit when known.
+7. If no good match exists, set reject_to_estimate=true.
+8. When done, you MUST call finalize_grounding with meal_name and components.
+9. Only use source_id values returned by tools in this conversation.
 """.strip()
 
 TOOL_SCHEMAS = [
@@ -329,6 +344,42 @@ TOOL_SCHEMAS = [
         },
     },
     {
+        "name": "search_history",
+        "description": "Search confirmed diary/favorites identity matches (eval stub: empty).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "limit": {"type": "integer"},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "search_off",
+        "description": "Search Open Food Facts by product/brand name for packaged foods.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "brand": {"type": "string"},
+                "limit": {"type": "integer"},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "lookup_barcode",
+        "description": "Look up a packaged product by barcode digits via Open Food Facts.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "barcode": {"type": "string"},
+            },
+            "required": ["barcode"],
+        },
+    },
+    {
         "name": "finalize_grounding",
         "description": "Submit meal_name and components with source_id from search results.",
         "parameters": {
@@ -342,9 +393,13 @@ TOOL_SCHEMAS = [
                         "type": "object",
                         "properties": {
                             "name": {"type": "string"},
+                            "brand": {"type": "string"},
                             "source_id": {"type": "string"},
                             "source_kind": {"type": "string"},
                             "grams": {"type": "number"},
+                            "quantity": {"type": "number"},
+                            "unit": {"type": "string"},
+                            "portion_hint": {"type": "string"},
                             "reject_to_estimate": {"type": "boolean"},
                         },
                         "required": ["name"],
@@ -364,9 +419,77 @@ def grounding_user_message(description: str) -> str:
     )
 
 
-def make_tool_executor(usda: UsdaIndex):
+def load_off_fixtures(path: Path | None) -> dict[str, list[dict]]:
+    if path is None or not path.exists():
+        return {}
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError(f"off fixtures must be a JSON object: {path}")
+    out: dict[str, list[dict]] = {}
+    for key, hits in raw.items():
+        if isinstance(hits, list):
+            out[str(key)] = [h for h in hits if isinstance(h, dict)]
+    return out
+
+
+def _off_hit_to_candidate(hit: dict) -> dict:
+    """Normalize fixture / tool hit to scale_macros-compatible candidate."""
+    cal = hit.get("calories_per_100g", hit.get("calories"))
+    return {
+        "fdc_id": hit.get("source_id"),
+        "source_id": str(hit.get("source_id") or ""),
+        "description": hit.get("description") or hit.get("name") or "OFF product",
+        "score": float(hit.get("score") or 10.0),
+        "calories": cal,
+        "protein": hit.get("protein_per_100g", hit.get("protein")),
+        "carbs": hit.get("carbs_per_100g", hit.get("carbs")),
+        "fat": hit.get("fat_per_100g", hit.get("fat")),
+        "serving_grams": hit.get("serving_grams"),
+        "serving_unit": hit.get("serving_unit"),
+        "source_kind": "openFoodFacts",
+        "incomplete_energy": cal is None,
+    }
+
+
+def make_tool_executor(usda: UsdaIndex, off_fixtures: dict[str, list[dict]] | None = None):
+    fixtures = off_fixtures or {}
+    # barcode / source_id → candidate (populated when search_off / lookup returns hits)
+    off_by_id: dict[str, dict] = {}
+    for hits in fixtures.values():
+        for hit in hits:
+            cand = _off_hit_to_candidate(hit)
+            if cand["source_id"]:
+                off_by_id[cand["source_id"]] = cand
+    stats = {
+        "search_usda_count": 0,
+        "search_history_count": 0,
+        "search_off_count": 0,
+        "off_fixture_hits": 0,
+    }
+
+    def _fixture_hits_for_query(query: str, brand: str | None, limit: int) -> list[dict]:
+        q = query.strip()
+        keys = []
+        if brand:
+            keys.append(f"{brand} {q}".strip())
+            keys.append(brand.strip())
+        keys.append(q)
+        # Case-insensitive exact key match, then substring
+        lower_map = {k.lower(): k for k in fixtures}
+        for key in keys:
+            if key in fixtures:
+                return fixtures[key][:limit]
+            lk = key.lower()
+            if lk in lower_map:
+                return fixtures[lower_map[lk]][:limit]
+        for fk, hits in fixtures.items():
+            if q.lower() in fk.lower() or fk.lower() in q.lower():
+                return hits[:limit]
+        return []
+
     def execute(name: str, args: dict) -> str:
         if name == "search_usda":
+            stats["search_usda_count"] += 1
             query = str(args.get("query") or "").strip()
             limit = int(args.get("limit") or 6)
             limit = max(1, min(8, limit))
@@ -385,6 +508,7 @@ def make_tool_executor(usda: UsdaIndex):
                         "carbs_per_100g": h["carbs"],
                         "fat_per_100g": h["fat"],
                         "serving_grams": h.get("serving_grams"),
+                        "serving_unit": h.get("serving_unit"),
                     }
                     for h in hits
                 ],
@@ -394,10 +518,91 @@ def make_tool_executor(usda: UsdaIndex):
                 ),
             }
             return json.dumps(payload)
+        if name == "search_history":
+            stats["search_history_count"] += 1
+            query = str(args.get("query") or "").strip()
+            return json.dumps(
+                {
+                    "query": query,
+                    "results": [],
+                    "hint": "Eval harness has no diary history pool.",
+                }
+            )
+        if name == "search_off":
+            stats["search_off_count"] += 1
+            query = str(args.get("query") or "").strip()
+            brand = args.get("brand")
+            brand_s = str(brand).strip() if brand else None
+            limit = max(1, min(8, int(args.get("limit") or 6)))
+            raw_hits = _fixture_hits_for_query(query, brand_s, limit)
+            results = []
+            for hit in raw_hits:
+                cand = _off_hit_to_candidate(hit)
+                if cand["source_id"]:
+                    off_by_id[cand["source_id"]] = cand
+                results.append(
+                    {
+                        "source_kind": "openFoodFacts",
+                        "source_id": cand["source_id"],
+                        "description": cand["description"],
+                        "brand": hit.get("brand"),
+                        "score": cand["score"],
+                        "calories_per_100g": cand["calories"],
+                        "protein_per_100g": cand["protein"],
+                        "carbs_per_100g": cand["carbs"],
+                        "fat_per_100g": cand["fat"],
+                        "serving_grams": cand.get("serving_grams"),
+                        "serving_unit": cand.get("serving_unit"),
+                    }
+                )
+            if results:
+                stats["off_fixture_hits"] += 1
+            return json.dumps(
+                {
+                    "query": query,
+                    "brand": brand_s,
+                    "results": results,
+                    "hint": (
+                        "Packaged/branded: pick source_id (barcode) from results. "
+                        if results
+                        else "No OFF fixture for this query; try search_usda or reject_to_estimate."
+                    ),
+                }
+            )
+        if name == "lookup_barcode":
+            code = str(args.get("barcode") or "").strip()
+            cand = off_by_id.get(code)
+            if cand is None:
+                for hits in fixtures.values():
+                    for hit in hits:
+                        if str(hit.get("source_id")) == code:
+                            cand = _off_hit_to_candidate(hit)
+                            off_by_id[code] = cand
+                            break
+            if cand is None:
+                return json.dumps({"found": False, "barcode": code})
+            return json.dumps(
+                {
+                    "found": True,
+                    "barcode": code,
+                    "result": {
+                        "source_kind": "openFoodFacts",
+                        "source_id": cand["source_id"],
+                        "description": cand["description"],
+                        "calories_per_100g": cand["calories"],
+                        "protein_per_100g": cand["protein"],
+                        "carbs_per_100g": cand["carbs"],
+                        "fat_per_100g": cand["fat"],
+                        "serving_grams": cand.get("serving_grams"),
+                    },
+                }
+            )
         if name == "finalize_grounding":
             return json.dumps({"ok": True, "message": "finalized"})
         return json.dumps({"error": f"unknown tool {name}"})
 
+    execute.stats = stats  # type: ignore[attr-defined]
+    execute.off_by_id = off_by_id  # type: ignore[attr-defined]
     return execute
 
 
@@ -406,12 +611,15 @@ def resolve_from_finalize(
     *,
     finalize: dict,
     usda: UsdaIndex,
+    off_by_id: dict[str, dict] | None = None,
 ) -> dict:
     components_raw = finalize.get("components") or []
     components_out = []
     totals = {"calories": 0.0, "protein_g": 0.0, "carbs_g": 0.0, "fat_g": 0.0, "grams": 0.0}
     sources: list[str] = []
     top_candidates: list[dict] = []
+    unresolved_portion = False
+    off_index = off_by_id or {}
 
     for comp in components_raw:
         if not isinstance(comp, dict):
@@ -419,31 +627,85 @@ def resolve_from_finalize(
         name = str(comp.get("name") or "").strip() or "food"
         reject = bool(comp.get("reject_to_estimate") or comp.get("rejectToEstimate"))
         source_id = comp.get("source_id") or comp.get("sourceId")
-        grams = comp.get("grams") or comp.get("estimated_grams")
+        source_kind_raw = str(comp.get("source_kind") or comp.get("sourceKind") or "").lower()
+        grams_override = comp.get("grams")
         try:
-            grams_f = float(grams) if grams is not None else None
+            grams_override_f = float(grams_override) if grams_override is not None else None
         except (TypeError, ValueError):
-            grams_f = None
+            grams_override_f = None
+        qty = comp.get("quantity")
+        try:
+            qty_f = float(qty) if qty is not None else None
+        except (TypeError, ValueError):
+            qty_f = None
+        unit = comp.get("unit")
+        portion_hint = comp.get("portion_hint") or comp.get("portionHint")
+        est = comp.get("estimated_grams") or comp.get("estimatedGrams")
+        try:
+            est_f = float(est) if est is not None else None
+        except (TypeError, ValueError):
+            est_f = None
 
         selected = None
         candidates: list[dict] = []
+        selected_kind = "usda"
         if not reject and source_id is not None:
-            selected = usda.get_by_fdc_id(source_id)
-            if selected and selected.get("incomplete_energy"):
-                selected = None
-            query = name
-            candidates = usda.search(query, limit=6)
-            top_candidates.extend(candidates[:3])
+            sid = str(source_id)
+            is_off = (
+                source_kind_raw in {"openfoodfacts", "open_food_facts", "off"}
+                or sid in off_index
+            )
+            if is_off and sid in off_index:
+                selected = off_index[sid]
+                selected_kind = "openFoodFacts"
+                candidates = [selected]
+                top_candidates.extend(candidates[:3])
+            else:
+                selected = usda.get_by_fdc_id(source_id)
+                if selected and selected.get("incomplete_energy"):
+                    selected = None
+                candidates = usda.search(name, limit=6)
+                top_candidates.extend(candidates[:3])
+                selected_kind = "usda"
 
-        if grams_f is None or grams_f <= 0:
-            grams_f = float(sample.mass_g) if sample.mass_g else (
+        portion = resolve_portion(
+            quantity=qty_f,
+            unit=str(unit) if unit else None,
+            estimated_grams=est_f,
+            portion_hint=str(portion_hint) if portion_hint else None,
+            gram_override=grams_override_f,
+            candidate_serving_grams=(
                 float(selected["serving_grams"])
                 if selected and selected.get("serving_grams")
-                else 100.0
+                else None
+            ),
+            candidate_serving_unit=(
+                str(selected["serving_unit"])
+                if selected and selected.get("serving_unit")
+                else None
+            ),
+        )
+        grams_f = portion["grams"]
+        portion_source = portion["source"]
+        if grams_f is None or grams_f <= 0:
+            unresolved_portion = True
+            sources.append("modelEstimate" if selected is None else selected_kind)
+            components_out.append(
+                {
+                    "name": name,
+                    "source_kind": "modelEstimate" if selected is None else selected_kind,
+                    "source_id": (
+                        (selected.get("source_id") or selected.get("fdc_id"))
+                        if selected
+                        else None
+                    ),
+                    "matched": selected["description"] if selected else None,
+                    "grams": None,
+                    "portion_source": "unresolved",
+                    "portion_unresolved": True,
+                }
             )
-            portion_source = "gt_or_default"
-        else:
-            portion_source = "model_estimate"
+            continue
 
         if selected is None:
             sources.append("modelEstimate")
@@ -461,33 +723,46 @@ def resolve_from_finalize(
         macros = scale_macros(selected, grams_f)
         for k in ("calories", "protein_g", "carbs_g", "fat_g", "grams"):
             totals[k] += macros[k]
-        sources.append("usda")
+        sources.append(selected_kind)
         components_out.append(
             {
                 "name": name,
-                "source_kind": "usda",
-                "source_id": selected["fdc_id"],
+                "source_kind": selected_kind,
+                "source_id": selected.get("source_id") or selected.get("fdc_id"),
                 "matched": selected["description"],
                 "match_score": selected.get("score"),
                 "grams": grams_f,
                 "portion_source": portion_source,
                 "macros": macros,
                 "candidates": [
-                    {"fdc_id": c["fdc_id"], "description": c["description"], "score": c["score"]}
+                    {
+                        "fdc_id": c.get("fdc_id") or c.get("source_id"),
+                        "description": c["description"],
+                        "score": c.get("score"),
+                    }
                     for c in candidates[:3]
                 ],
             }
         )
 
     primary = max(set(sources), key=sources.count) if sources else "modelEstimate"
-    pred = ParsedPrediction(
-        ok=True,
-        calories=totals["calories"],
-        protein_g=totals["protein_g"],
-        carbs_g=totals["carbs_g"],
-        fat_g=totals["fat_g"],
-        serving_size_grams=totals["grams"],
+    grounded_ok = any(
+        c.get("source_kind") in {"usda", "openFoodFacts"} and c.get("grams")
+        for c in components_out
     )
+    if unresolved_portion or not grounded_ok:
+        pred = ParsedPrediction(ok=False, error="unresolved_portion")
+        parse_blocker = "unresolved_portion" if unresolved_portion else "no_db_match"
+    else:
+        pred = ParsedPrediction(
+            ok=True,
+            calories=totals["calories"],
+            protein_g=totals["protein_g"],
+            carbs_g=totals["carbs_g"],
+            fat_g=totals["fat_g"],
+            serving_size_grams=totals["grams"],
+        )
+        parse_blocker = None
     return {
         "components": components_out,
         "primary_source": primary,
@@ -495,6 +770,8 @@ def resolve_from_finalize(
         "top_candidates": top_candidates,
         "totals": totals,
         "meal_name": finalize.get("meal_name") or finalize.get("mealName") or "meal",
+        "unresolved_portion": unresolved_portion,
+        "parse_blocker": parse_blocker,
     }
 
 
@@ -535,6 +812,7 @@ def resolve_sample(
     totals = {"calories": 0.0, "protein_g": 0.0, "carbs_g": 0.0, "fat_g": 0.0, "grams": 0.0}
     sources: list[str] = []
     top_candidates: list[dict] = []
+    unresolved_portion = False
 
     for comp in recognition["components"]:
         query = " ".join(
@@ -543,15 +821,38 @@ def resolve_sample(
         candidates = usda.search(query, limit=6)
         top_candidates.extend(candidates[:3])
         selected = candidates[0] if candidates else None
-        grams = comp.get("estimated_grams")
+        portion = resolve_portion(
+            quantity=comp.get("quantity"),
+            unit=comp.get("unit"),
+            estimated_grams=comp.get("estimated_grams"),
+            portion_hint=comp.get("portion_hint"),
+            candidate_serving_grams=(
+                float(selected["serving_grams"])
+                if selected and selected.get("serving_grams")
+                else None
+            ),
+            candidate_serving_unit=(
+                str(selected["serving_unit"])
+                if selected and selected.get("serving_unit")
+                else None
+            ),
+        )
+        grams = portion["grams"]
+        portion_source = portion["source"]
         if grams is None or grams <= 0:
-            # Prefer GT mass when recognition omitted grams (single-item FNDDS texts).
-            grams = float(sample.mass_g) if sample.mass_g else (
-                float(selected["serving_grams"]) if selected and selected.get("serving_grams") else 100.0
+            unresolved_portion = True
+            sources.append("modelEstimate" if selected is None else "usda")
+            components_out.append(
+                {
+                    "name": comp["name"],
+                    "source_kind": "modelEstimate" if selected is None else "usda",
+                    "grams": None,
+                    "portion_source": "unresolved",
+                    "portion_unresolved": True,
+                    "matched": selected["description"] if selected else None,
+                }
             )
-            portion_source = "gt_or_default"
-        else:
-            portion_source = "model_estimate"
+            continue
 
         if selected is None:
             sources.append("modelEstimate")
@@ -588,22 +889,29 @@ def resolve_sample(
         )
 
     primary = max(set(sources), key=sources.count) if sources else "modelEstimate"
-    # If any component fell through to estimate with zero macros, leave zeros —
-    # caller may mark as fallback.
-    pred = ParsedPrediction(
-        ok=True,
-        calories=totals["calories"],
-        protein_g=totals["protein_g"],
-        carbs_g=totals["carbs_g"],
-        fat_g=totals["fat_g"],
-        serving_size_grams=totals["grams"],
-    )
+    if unresolved_portion or not any(
+        c.get("source_kind") == "usda" and c.get("grams") for c in components_out
+    ):
+        pred = ParsedPrediction(ok=False, error="unresolved_portion")
+        parse_blocker = "unresolved_portion"
+    else:
+        pred = ParsedPrediction(
+            ok=True,
+            calories=totals["calories"],
+            protein_g=totals["protein_g"],
+            carbs_g=totals["carbs_g"],
+            fat_g=totals["fat_g"],
+            serving_size_grams=totals["grams"],
+        )
+        parse_blocker = None
     return {
         "components": components_out,
         "primary_source": primary,
         "prediction": pred,
         "top_candidates": top_candidates,
         "totals": totals,
+        "unresolved_portion": unresolved_portion,
+        "parse_blocker": parse_blocker,
     }
 
 
@@ -636,6 +944,12 @@ def main() -> None:
         action="store_true",
         help="Use recognize JSON + lexical USDA top-1 instead of the tool loop",
     )
+    parser.add_argument(
+        "--off-fixtures",
+        type=Path,
+        default=None,
+        help="JSON map of query → OFF search hits for offline search_off (branded readiness)",
+    )
     args = parser.parse_args()
 
     samples = load_manifest(args.manifest)
@@ -664,6 +978,10 @@ def main() -> None:
 
     provider = build_provider(args.provider, model=args.model)
     usda = UsdaIndex(args.usda_db)
+    off_fixtures = load_off_fixtures(args.off_fixtures)
+    tool_executor = make_tool_executor(usda, off_fixtures)
+    if off_fixtures:
+        print(f"OFF fixtures: {len(off_fixtures)} queries from {args.off_fixtures}")
     usda_version = usda.version
     usda_food_count = usda.food_count
     usda_asset_bytes = usda.asset_bytes
@@ -703,9 +1021,15 @@ def main() -> None:
                             system=SYSTEM_TOOL_PROMPT,
                             user=grounding_user_message(sample.text or ""),
                             tools=TOOL_SCHEMAS,
-                            execute_tool=make_tool_executor(usda),
+                            execute_tool=tool_executor,
                             max_rounds=4,
                         )
+                        # Merge harness executor counters (provider may only return rounds).
+                        exec_stats = getattr(tool_executor, "stats", {}) or {}
+                        tool_stats = {
+                            **exec_stats,
+                            **(tool_stats or {}),
+                        }
                     break
                 except Exception as exc:  # noqa: BLE001
                     last_error = exc
@@ -737,7 +1061,12 @@ def main() -> None:
                     else:
                         if finalize is None:
                             raise ValueError("no_finalize_grounding")
-                        resolved = resolve_from_finalize(sample, finalize=finalize, usda=usda)
+                        resolved = resolve_from_finalize(
+                            sample,
+                            finalize=finalize,
+                            usda=usda,
+                            off_by_id=getattr(tool_executor, "off_by_id", {}),
+                        )
                         recognition = {
                             "meal_name": resolved.get("meal_name"),
                             "components": [
@@ -746,11 +1075,20 @@ def main() -> None:
                             ],
                         }
                     pred = resolved["prediction"]
-                    if all(c["source_kind"] == "modelEstimate" for c in resolved["components"]):
+                    if resolved.get("parse_blocker") == "unresolved_portion":
                         scored = SampleScore(
                             id=sample.id,
                             parse_ok=False,
-                            error="no_usda_match",
+                            error="unresolved_portion",
+                        )
+                        parse_ok = False
+                    elif all(
+                        c["source_kind"] == "modelEstimate" for c in resolved["components"]
+                    ):
+                        scored = SampleScore(
+                            id=sample.id,
+                            parse_ok=False,
+                            error="no_db_match",
                         )
                         parse_ok = False
                     else:
@@ -768,7 +1106,8 @@ def main() -> None:
                     identity_top1 = identity_hit(sample.text or "", matched_name)
                     topk = None
                     for rank, cand in enumerate(resolved["top_candidates"], start=1):
-                        if identity_hit(sample.text or "", cand["description"]):
+                        desc = cand.get("description") if isinstance(cand, dict) else None
+                        if identity_hit(sample.text or "", desc):
                             topk = rank
                             break
 
@@ -785,8 +1124,10 @@ def main() -> None:
                         and pred.calories == 0
                         and (sample.ground_truth().get("calories") or 0) > 0
                     )
+                    slice_tag = sample.extra.get("slice") if hasattr(sample, "extra") else None
                     grounded_row = {
                         "id": sample.id,
+                        "slice": slice_tag,
                         "identity_top1": identity_top1,
                         "identity_topk": topk,
                         "source_kind": resolved["primary_source"],
@@ -797,6 +1138,7 @@ def main() -> None:
                         "asset_bytes": usda_asset_bytes,
                         "tool_rounds": tool_stats.get("rounds"),
                         "search_usda_count": tool_stats.get("search_usda_count"),
+                        "search_off_count": tool_stats.get("search_off_count"),
                         "parse_ok": parse_ok,
                         "error": scored.error,
                         "silent_zero": silent_zero,

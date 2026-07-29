@@ -44,6 +44,44 @@ class QueryNormalizerAndPortionTest {
     }
 
     @Test
+    fun portion_tablespoonAliasMatchesTbsp() {
+        val component = RecognizedFoodComponent(
+            name = "Peanut butter",
+            quantity = 2.0,
+            unit = "tablespoons",
+        )
+        val result = PortionResolver.resolve(component)
+        assertEquals(30.0, result.grams!!, 0.01)
+        assertEquals(PortionResolver.Source.QUANTITY_UNIT, result.source)
+    }
+
+    @Test
+    fun portion_twoSlicesBread_needsConfirmation() {
+        val component = RecognizedFoodComponent(
+            name = "Whole wheat bread",
+            quantity = 2.0,
+            unit = "slices",
+        )
+        val result = PortionResolver.resolve(component)
+        assertTrue(result.isResolved)
+        assertEquals(60.0, result.grams!!, 0.01)
+        assertTrue(result.needsUserConfirmation)
+    }
+
+    @Test
+    fun portion_qtyUnitBeatsConflictingEstimatedGrams() {
+        val component = RecognizedFoodComponent(
+            name = "Peanut butter",
+            estimatedGrams = 200.0,
+            quantity = 2.0,
+            unit = "tbsp",
+        )
+        val result = PortionResolver.resolve(component)
+        assertEquals(30.0, result.grams!!, 0.01)
+        assertEquals(PortionResolver.Source.QUANTITY_UNIT, result.source)
+    }
+
+    @Test
     fun portion_overrideBeatsEstimate() {
         val component = RecognizedFoodComponent(
             name = "Banana",
@@ -80,6 +118,22 @@ class QueryNormalizerAndPortionTest {
             candidateServingUnit = "cup",
         )
         assertEquals(244.0, result.grams!!, 0.01)
+    }
+
+    @Test
+    fun portion_candidateUnitAliasOz() {
+        val component = RecognizedFoodComponent(
+            name = "Cheese",
+            quantity = 1.0,
+            unit = "ounce",
+        )
+        val result = PortionResolver.resolve(
+            component,
+            candidateServingGrams = 28.0,
+            candidateServingUnit = "oz",
+        )
+        assertEquals(28.0, result.grams!!, 0.01)
+        assertEquals(PortionResolver.Source.QUANTITY_UNIT, result.source)
     }
 
     @Test

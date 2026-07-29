@@ -1,7 +1,7 @@
 ---
 title: Wie genau ist KI-gestütztes Food-Logging?
 date: 2026-07-28
-description: Getippte Einträge mit Mengenangabe sind nahezu gelöst; Tellerfotos sind es nicht. Kurze Mahlzeitnotizen und Videoclips schließen die Lücke nicht. Gemessen an gelabelten Datensätzen.
+description: Getippte Einträge mit Mengenangabe sind nahezu gelöst; Tellerfotos und Text ohne Maßstab sind es nicht. Kurze Mahlzeitnotizen und Videoclips schließen die Lücke nicht. Gemessen an gelabelten Datensätzen.
 draft: true
 ---
 
@@ -58,6 +58,22 @@ Wir haben dieselben 50 JFB-Mahlzeiten zusätzlich als **Bild + Nutzernotiz** get
 
 Das widerspricht dem starken FNDDS-Textergebnis **nicht**. Diese Notizen enthalten keine Gramm- oder Mengenangaben; sie ähneln eher einer Bildunterschrift als der Angabe „150 g Hähnchen“. Dass ein solcher Text allein nicht an die mengenbasierte FNDDS-Texteingabe heranreicht, ist zu erwarten — wir haben bislang keine reine Text-Kontrollgruppe für JFB veröffentlicht, und eine Überprüfung von „Foto + Titel“ mit einem Bezahlmodell steht noch aus. Produktseitige Schlussfolgerung: Eine vage Notiz kann die Nutzerführung oder Identifikation unterstützen, ersetzt aber keine Mengenangabe.
 
+### 4.2 Auch reiner Text ohne Grammangabe ist eine andere Aufgabe
+
+Um die Lücke zwischen „FNDDS mit Gramm“ und „vager Mahlzeitnotiz“ direkt zu messen, haben wir denselben Flash-Lite-Pfad auf einem **realistischen Text-Set** (38 Einträge) laufen lassen: Mahlzeit- oder Produktnamen **ohne Grammzahl in der Eingabe** — vage Titel (`Chicken breast, roasted`), Haushaltsmaße (`2 tbsp peanut butter`), Mehrkomponenten-Mahlzeiten und Markennamen (`Nutella`, `Coca-Cola`). Die Ground-Truth-Grammwerte bleiben nur in der Auswertung, nicht im Prompt. Methodik und Slice-Aufschlüsselung: [Benchmark-Status](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) (Abschnitt Grounded / realistic text).
+
+| Eingabe (Flash Lite, ungrounded) | WMAPE | Innerhalb ±20 % kcal | n |
+|---|---|---|---|
+| **FNDDS-Text mit Gramm/Maß** (wie in §3) | **~5–6 %** | **~90–93 %** | 42 |
+| **Realistischer Text ohne Gramm** (gesamt) | **27,3 %** | **71 %** | 38 |
+| davon Markennamen | ~120 % | 63 % | 8 |
+| davon Haushaltsmaße (`2 tbsp`, `1 cup`, …) | **4,3 %** | **92 %** | 12 |
+| davon vage Titel | 22,6 % | 58 % | 12 |
+
+Sobald die Menge im Text steht (Haushaltsmaß oder Gramm), bleibt die Schätzung stark. Fehlt sie — oder steht nur ein Markenname —, driftet dasselbe Modell weit ab. Das ist dieselbe Botschaft wie bei Foto + Kurznotiz: **Identität ohne Maßstab ist kein Mengen-Logging.**
+
+Für Packungswaren hilft eine **verifizierte Datenbank** (Barcode / Open Food Facts) klar mehr als reine Modellschätzung. Ein optionaler „Grounded“-Pfad, der Markennamen gegen OFF/USDA auflöst und Makros nur aus Datenbankzeilen skaliert, lag im gleichen realistischen Text-Lauf klar vor ungrounded Flash Lite (WMAPE **18,5 %** vs. **27,3 %**; Marken-Slice **7 %** vs. ~120 %). Dieser Pfad ist **Forschung / WIP** und in der App noch nicht freigeschaltet — die Zahlen belegen die Richtung, kein ausgeliefertes Feature.
+
 ## 5 Prompt-Verfeinerung, Tiefeninformation und Video lösen das Tellerproblem nicht
 
 Nach A/B-Tests mehrerer Prompt-Varianten anhand derselben 50 Mahlzeitfotos blieb der WMAPE für Tellerfotos im Bereich von etwa **33–45 %**. Kompakte Prompts erreichten oder übertrafen häufig längere, „produktionsreife“ Formulierungen. Kurze Regeln zur Verankerung der Portionsgröße oder zur Vermeidung erfundener Beilagen veränderten den schwierigen Bereich der Verteilung kaum. Ein expliziter Maßstabs-Anker im Prompt (Referenzgröße Teller/Schale) verbesserte den WMAPE um rund **1,5 Prozentpunkte** — real, aber zu gering, um allein produktiv eingesetzt zu werden.
@@ -90,6 +106,7 @@ Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 ## 7 Handlungsempfehlungen für Nutzer
 
 - Bevorzugt getippten Text **mit Gramm- oder Mengenangabe**, Barcode-Scan oder eine gespeicherte Mahlzeit, wenn genaue Werte wichtig sind.
+- Nur ein Marken- oder Gerichtsname ohne Menge verhält sich eher wie eine Schätzung als wie ein Nachschlagewerk — siehe Abschnitt 4.2.
 - Ein Foto mit Mahlzeittitel oder Zutatenliste ohne Mengenangabe bleibt im Wesentlichen eine Fotoschätzung.
 - Behandelt reine Fotoeingaben (oder Foto + vage Notiz) als schnellen Entwurf, nicht als gewogene Mahlzeit.
 - Da Chompass dem BYOK-Prinzip folgt, richtet sich die Genauigkeit nach dem gewählten Modell; diese Werte sind modellspezifische Testergebnisse, keine einzelne „Chompass-Genauigkeit“.
@@ -97,6 +114,6 @@ Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 ## 8 Einschränkungen
 
 - Es handelt sich um Offline-Testrahmen-Werte auf kleinen, festen gelabelten Datensätzen — kein Live-Produktionsmonitoring der Genauigkeit. Ergebnisse variieren je nach Modell, Fotoqualität und Lebensmittelart.
-- Die starken Textergebnisse beruhen auf FNDDS-Strings mit Mengenangabe; die Foto- bzw. Bild+Notiz-Werte beruhen auf angerichteten JFB-Mahlzeiten. Sie sind nicht als dieselbe, nur zweimal erfasste Mahlzeit zu lesen.
+- Die starken Textergebnisse beruhen auf FNDDS-Strings mit Mengenangabe; die Foto- bzw. Bild+Notiz-Werte beruhen auf angerichteten JFB-Mahlzeiten; das realistische Text-Set (§4.2) lässt die Grammangabe bewusst weg. Sie sind nicht als dieselbe, nur zweimal erfasste Mahlzeit zu lesen.
 - On-Device-Gemma 4 (Android, opt-in) ist kleiner als Cloud-Modelle und in der Regel weniger genau.
 - Die Werte ändern sich mit neuen Modellen und Prompts. Dieser Beitrag spiegelt den im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) datierten Stand wider (Ende Juli 2026).
