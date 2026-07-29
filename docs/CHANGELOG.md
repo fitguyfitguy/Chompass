@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-07-29
+
+### Changed
+
+- Settings uses a compact hub with drill-down groups on Android and the PWA (Personal, Goals & Nutrition, App & Display, AI & Speech, Health/Data/Sync, About) for easier overview.
+
 ## [3.2.0] - 2026-07-28
 
 ### Added
