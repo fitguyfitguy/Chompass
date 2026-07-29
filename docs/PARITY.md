@@ -31,6 +31,7 @@ For formula / wire-format correctness (not feature lists), see:
 | Full i18n pack | android-only | `res/values*` | EN-first copy | |
 | Service worker / installability | pwa-only | — | `sw.js`, manifest | |
 | IndexedDB local store | pwa-only | DataStore | `db.js` | Optional WebDAV sync is shared |
+| Desktop chrome (rail + wider column) | pwa-only | — | `css/main.css` `@media (min-width: 900px)` | Left nav rail, `56rem` content, content-pinned FAB/coach/banner, constrained sheets; phone shell unchanged below breakpoint |
 
 ## Maintenance rules
 

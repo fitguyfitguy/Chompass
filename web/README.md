@@ -57,8 +57,8 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 
 | Area | Notes |
 |------|--------|
-| Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens |
-| Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, **53-week snap pager**, day swipe, water **off by default** (goal 2000 ml), Add Food sheet (Photo/Note/Recents heroes), tap gauge → nutrition detail |
+| Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens; **desktop (≥900px): left nav rail + `56rem` column** |
+| Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, **53-week snap pager**, day swipe + **prev/next day buttons**, water **off by default** (goal 2000 ml), Add Food sheet (Photo/Note/Recents heroes), tap gauge → nutrition detail |
 | Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right **favorite**; pref-driven macro chips |
 | Entry | Manual, barcode (OFF + live reticle on Chromium), **in-app camera** + multi-photo review (≤10, all images to model), text/voice AI with phased wait overlay + single-flight lock → Review food / **Log**; expandable micros; Recents/Frequent/Favorites/Recipes |
 | Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites/recipes/share carry full micros |
@@ -66,7 +66,7 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 | Progress | Glass chart cards, equal range chips (default 1W), tap tips, log weight/BF dialogs, history delete confirm, forecast, measurements; P/C/F/**fiber** averages |
 | Settings | Profile/goals (custom kcal + P/C/F)/optional nutrients/units+meal times/home tubes/speech language/data/AI/about; Install (pwa-only); Android-only note for HC/notifications/widgets/on-device LLM |
 | Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice; propose_log_food micros; uses `primaryAiProvider` |
-| UI polish | Bottom sheets (drag-dismiss) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber omitted on rows) |
+| UI polish | Bottom sheets (drag-dismiss; **desktop: centered ≤32rem**) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber omitted on rows) |
 | Onboarding | Branded welcome, birthday/age, selection cards, optional body fat + goal BF, AI key step, building-plan animation, **editable** plan-ready targets |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
@@ -77,7 +77,16 @@ notifications, widgets, full i18n pack.
 
 Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 
-Service worker cache: `chompass-shell-v2`.
+Service worker cache: `chompass-shell-v4`.
+
+### Desktop layout
+
+At `min-width: 900px` the bottom tab bar becomes a **left nav rail**, `main.view`
+widens to `56rem`, and fixed chrome (FAB, coach composer, install banner, toasts)
+pins to the content column. Bottom sheets stay phone-height but cap at `32rem`
+wide and center. Camera/webcam UX still uses pointer/hover detection (not this
+breakpoint). Chromium (Chrome/Edge) is preferred for install + standalone windows;
+manifest `orientation` is `any` so desktop landscape works.
 
 ### Manual PWA audit checklist
 

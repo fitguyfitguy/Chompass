@@ -24,6 +24,19 @@
   --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
   --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
   --nav-h: 4.25rem;
+  --content-max: 32rem;
+  --rail-w: 0px;
+  --chrome-gutter: 1.1rem;
+  --chrome-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  /* Pin fixed chrome to the centered content column */
+  --chrome-inset-right: max(
+    var(--chrome-gutter),
+    calc((100vw - var(--rail-w) - var(--content-max)) / 2 + var(--chrome-gutter))
+  );
+  --chrome-inset-left: max(
+    var(--chrome-gutter),
+    calc(var(--rail-w) + (100vw - var(--rail-w) - var(--content-max)) / 2 + var(--chrome-gutter))
+  );
   color-scheme: dark;
 }
 
@@ -83,7 +96,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-body.hide-nav { padding-bottom: env(safe-area-inset-bottom); }
+body.hide-nav {
+  --rail-w: 0px;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: 0;
+}
 body.hide-nav .bottom-nav { display: none; }
 
 a { color: var(--teal); }
@@ -99,7 +116,7 @@ button, input, select, textarea {
 }
 
 main.view {
-  max-width: 32rem;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 1rem;
 }
@@ -852,8 +869,8 @@ main.view {
 /* —— FAB —— */
 .fab {
   position: fixed;
-  right: 1.1rem;
-  bottom: calc(var(--nav-h) + 1rem + env(safe-area-inset-bottom));
+  right: var(--chrome-inset-right);
+  bottom: calc(var(--chrome-bottom) + 1rem);
   z-index: 25;
   width: 3.4rem;
   height: 3.4rem;
@@ -874,7 +891,9 @@ main.view {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--nav-h) + 5.5rem + env(safe-area-inset-bottom));
+  /* Keep toast over the content column, not the rail gutter */
+  margin-left: calc(var(--rail-w) / 2);
+  bottom: calc(var(--chrome-bottom) + 5.5rem);
   z-index: 40;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -882,10 +901,11 @@ main.view {
   padding: 0.55rem 1rem;
   font-size: 0.85rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  max-width: min(var(--content-max), calc(100vw - var(--rail-w) - 2rem));
 }
 
 body:has(coach-view) .toast {
-  bottom: calc(var(--nav-h) + 7.25rem + env(safe-area-inset-bottom));
+  bottom: calc(var(--chrome-bottom) + 7.25rem);
 }
 
 .toast button {
@@ -927,9 +947,9 @@ body:has(coach-view) .toast {
 
 .coach-input {
   position: fixed;
-  left: 0.75rem;
-  right: 0.75rem;
-  bottom: calc(var(--nav-h) + 0.75rem + env(safe-area-inset-bottom));
+  left: var(--chrome-inset-left);
+  right: var(--chrome-inset-right);
+  bottom: calc(var(--chrome-bottom) + 0.75rem);
   z-index: 25;
   display: flex;
   gap: 0.5rem;
@@ -1450,9 +1470,9 @@ form.entry-form > button.btn--primary,
 
 .install-banner {
   position: fixed;
-  left: 0.75rem;
-  right: 0.75rem;
-  bottom: calc(var(--nav-h) + 0.75rem + env(safe-area-inset-bottom));
+  left: var(--chrome-inset-left);
+  right: var(--chrome-inset-right);
+  bottom: calc(var(--chrome-bottom) + 0.75rem);
   z-index: 35;
   background: var(--bg-elevated);
   border: 1px solid color-mix(in srgb, var(--teal) 40%, var(--line));
@@ -2015,7 +2035,7 @@ form.entry-form > button.btn--primary,
 
 .subpage-cta {
   position: sticky;
-  bottom: calc(var(--nav-h) + 0.5rem + env(safe-area-inset-bottom));
+  bottom: calc(var(--chrome-bottom) + 0.5rem);
   z-index: 12;
   margin-top: 1rem;
   padding: 0.75rem 0 calc(0.25rem + env(safe-area-inset-bottom));
@@ -2899,6 +2919,116 @@ body.camera-open {
 .btn--sm {
   padding: 0.25rem 0.65rem;
   font-size: 0.8rem;
+}
+
+/* —— Desktop chrome (nav rail + wider column) —— */
+@media (min-width: 900px) {
+  :root {
+    --content-max: 56rem;
+    --rail-w: 5.25rem;
+    --chrome-bottom: env(safe-area-inset-bottom);
+  }
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: var(--rail-w);
+  }
+
+  body.hide-nav {
+    --rail-w: 0px;
+    padding-left: 0;
+  }
+
+  .bottom-nav {
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: var(--rail-w);
+    height: auto;
+    grid-auto-flow: row;
+    align-content: start;
+    gap: 0.35rem;
+    padding: calc(0.85rem + env(safe-area-inset-top)) 0.35rem calc(0.85rem + env(safe-area-inset-bottom));
+    border-top: none;
+    border-right: 1px solid var(--line);
+    background: var(--bg-elevated);
+  }
+
+  .bottom-nav a {
+    min-height: 3.6rem;
+    border-radius: 0.75rem;
+    padding: 0.35rem 0.2rem;
+  }
+
+  .bottom-nav a[aria-current="page"] {
+    background: color-mix(in srgb, var(--teal) 14%, transparent);
+  }
+
+  .sheet__panel {
+    left: 50%;
+    right: auto;
+    width: min(32rem, calc(100% - 2rem));
+    max-width: min(32rem, calc(100% - 2rem));
+    margin-bottom: 1rem;
+    border-radius: 1.25rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.35rem;
+    transform: translateX(-50%) translateY(110%);
+  }
+
+  .sheet.is-open .sheet__panel {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .sheet.is-leaving .sheet__panel {
+    transform: translateX(-50%) translateY(110%);
+  }
+}
+
+@media (min-width: 900px) and (pointer: fine) {
+  .sheet__handle {
+    opacity: 0.22;
+    cursor: default;
+  }
+}
+
+/* —— Day prev/next on home hero —— */
+.home-hero__day-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.15rem;
+  margin-bottom: 0.15rem;
+}
+
+.day-nav-btn {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--text);
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.day-nav-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--teal) 16%, var(--surface));
+  color: var(--teal);
+}
+
+.day-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.home-hero__day-nav .calorie-hero--tap {
+  min-width: 0;
 }
 
 /* —— Reduced motion —— */

@@ -112,9 +112,16 @@ function bindDragDismiss(panel, handle, dismiss) {
   /** @type {number | null} */
   let pointerId = null;
 
+  const desktopSheet = () =>
+    typeof window.matchMedia === "function" && window.matchMedia("(min-width: 900px)").matches;
+
   const setOffset = (y) => {
     panel.style.transition = "none";
-    panel.style.transform = `translateY(${Math.max(0, y)}px)`;
+    const yPx = Math.max(0, y);
+    // Desktop sheets are horizontally centered via translateX(-50%).
+    panel.style.transform = desktopSheet()
+      ? `translateX(-50%) translateY(${yPx}px)`
+      : `translateY(${yPx}px)`;
   };
 
   const clearOffset = () => {
