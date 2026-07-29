@@ -46,8 +46,8 @@ Results land in `docs/benchmarks/food_accuracy/results/<run_id>/` (summary CSV +
 |---------|----------|------|--------------|---------|-----------|
 | [Nutrition5k](https://github.com/google-research-datasets/Nutrition5k) | Plate RGB (+ depth/video) | ~5k dishes | Weighed ingredients → USDA macros | **CC BY 4.0** | Lab-grade image GT; use metadata + overhead RGB subset (~181 GB full) |
 | [January Food Benchmark (JFB)](https://github.com/January-ai/food-scan-benchmarks) | Mobile meal photos | 1,000 | Human-validated meal + macros | **CC BY 4.0** (MIT code) | Primary real-world image eval |
-| [NutritionVerse-Real](https://www.kaggle.com/datasets/nutritionverse/nutritionverse-real) | Phone multi-angle | 889 imgs | Scale-weighed → Canada Nutrient File | Kaggle / metadata CC0 | Optional; manual Kaggle download |
-| [ACETADA](https://skynet.ecn.purdue.edu/~coburn6/ACETADA/) | Free-living smartphone | 806 | Dietitian-verified | **CC BY-NC 4.0** | Research only; no commercial claims |
+| [NutritionVerse-Real](https://www.kaggle.com/datasets/nutritionverse/nutritionverse-real) | Phone multi-angle | 889 imgs | Scale-weighed → Canada Nutrient File | **CC BY-NC-SA 4.0** | Optional L0/L1/L2; manual Kaggle / `download_nutritionverse_real.py` |
+| [ACETADA](https://skynet.ecn.purdue.edu/~coburn6/ACETADA/) | Free-living smartphone | 806 | Dietitian-verified (served macros) | **CC BY-NC 4.0** | Research-only L0/L1/L2 via `download_acetada.py` |
 | [USDA FNDDS](https://fdc.nal.usda.gov/download-datasets/) | Text | ~5.4k foods | Per-100g + portions | US gov public | Text GT via `build_fndds_manifest.py` or seed manifest |
 | [Open Food Facts](https://world.openfoodfacts.org/) | Label/packaging photos | Millions | Crowd-sourced (variable) | **ODbL** | Label OCR track (future) |
 | MM-Food-100K / Recipe1M+ / Food-101 | Images | Large | Class-only or weak nutrition | Mixed / NC | Recognition research; weak calorie GT |
@@ -116,18 +116,24 @@ partial composite, not a true total).
 
 Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only.
 
-### Image + description eval (JFB)
+### Image + description eval (L0 / L1 / L2)
 
-`download_jfb.py` writes three paired manifests (same 50 IDs):
+Paired manifests share the same IDs; only user `text` differs. Shared helper:
+[`image_text_variants.py`](benchmarks/food_accuracy/image_text_variants.py).
 
-| Level | File | User `text` |
-|-------|------|-------------|
-| L0 | `data/manifests/jfb.jsonl` | absent (image only) |
-| L1 | `data/manifests/jfb_image_text_l1.jsonl` | meal title |
-| L2 | `data/manifests/jfb_image_text_l2.jsonl` | ingredient names only |
+| Level | User `text` | JFB | Nutrition5k | NutritionVerse-Real | ACETADA |
+|-------|-------------|-----|-------------|---------------------|---------|
+| L0 | absent (image only) | `jfb.jsonl` | `n5k.jsonl` | `nvreal.jsonl` | `acetada.jsonl` |
+| L1 | meal title / coarse label | meal name | *(none — dish IDs only)* | synthesized from food types | `meal_type` (Breakfast/Lunch/Dinner) |
+| L2 | ingredient / item names, no qty | ingredient names | ingredient names | food-type names | dietitian food-item names |
 
 ```bash
 uv run python docs/benchmarks/food_accuracy/download_jfb.py --limit 50
+uv run python docs/benchmarks/food_accuracy/download_nutrition5k.py --limit 15   # also writes n5k_image_text_l2.jsonl
+uv run python docs/benchmarks/food_accuracy/download_acetada.py --limit 50      # CC BY-NC; selective zip extract
+# NutritionVerse-Real needs a local Kaggle extract (CC BY-NC-SA):
+uv run python docs/benchmarks/food_accuracy/download_nutritionverse_real.py \
+  --data-dir docs/benchmarks/food_accuracy/data/nutritionverse_real --limit 50
 
 uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model google/gemma-4-26b-a4b-it:free \
@@ -136,7 +142,7 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --out docs/benchmarks/food_accuracy/results/image_text_ab/l1_meal_name
 ```
 
-Compare L0 vs L1 vs L2 with `compare_runs.py`.
+Compare L0 vs L1 vs L2 with `compare_runs.py`. **ACETADA / NutritionVerse are non-commercial** — research numbers only, not product accuracy claims.
 
 Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatically.
 
@@ -228,11 +234,11 @@ See also [`docs/benchmarks/food_accuracy/README.md`](benchmarks/food_accuracy/RE
 
 ### JFB
 
-`download_jfb.py` pulls the public S3 tarball (`january-food-image-dataset-public/food-scan-benchmark-dataset.tar.gz`), extracts to `data/jfb/`, and writes `data/manifests/jfb.jsonl`.
+`download_jfb.py` pulls the public S3 tarball (`january-food-image-dataset-public/food-scan-benchmark-dataset.tar.gz`), extracts to `data/jfb/`, and writes `data/manifests/jfb.jsonl` plus L1/L2 image+text variants.
 
 ### Nutrition5k
 
-`download_nutrition5k.py` always fetches dish metadata CSVs from the GitHub repo. With `--limit N` and `gsutil` on PATH, it downloads overhead RGB frames for test-split dishes into `data/nutrition5k/imagery/realsense_overhead/` and writes `data/manifests/n5k.jsonl`.
+`download_nutrition5k.py` always fetches dish metadata CSVs from the GitHub repo. With `--limit N` and `gsutil` on PATH, it downloads overhead RGB frames for test-split dishes into `data/nutrition5k/imagery/realsense_overhead/` and writes `data/manifests/n5k.jsonl` plus **`n5k_image_text_l2.jsonl`** (ingredient names only — no natural meal titles, so no L1).
 
 Full Nutrition5k archive is ~181 GB; do not commit images.
 
@@ -253,6 +259,30 @@ uv run --with pillow python docs/benchmarks/food_accuracy/download_nutrition5k.p
   --out docs/benchmarks/food_accuracy/data/manifests/n5k_depth.jsonl
 ```
 
+### NutritionVerse-Real
+
+Manual Kaggle download (or `--try-kaggle` with API creds). Unzip under
+`data/nutritionverse_real/`, then:
+
+```bash
+uv run python docs/benchmarks/food_accuracy/download_nutritionverse_real.py \
+  --data-dir docs/benchmarks/food_accuracy/data/nutritionverse_real --limit 50
+```
+
+Writes `nvreal.jsonl` + L1/L2. **CC BY-NC-SA 4.0** — research only. Default keeps one
+camera angle per dish (`--all-angles` to include every view).
+
+### ACETADA
+
+```bash
+uv run python docs/benchmarks/food_accuracy/download_acetada.py --limit 50
+```
+
+Pulls the HF CSV via HTTP range from the public ~4.9 GB ZIP (no full archive
+required), then selectively extracts before-meal JPEGs for the limited split.
+Macros are **served (before-meal)** amounts rescaled from dietitian consumed
+labels. L1 = `meal_type`; L2 = food-item names. **CC BY-NC 4.0** — research only.
+
 ### FNDDS text (expand seed set)
 
 ```bash
@@ -266,7 +296,7 @@ Requires downloading FNDDS CSV from USDA (script uses the public zip URL).
 ## License notes
 
 - **Nutrition5k, JFB:** CC BY 4.0 — OK for research and commercial adaptation with attribution.
-- **ACETADA, MM-Food:** Non-commercial — do not use for product accuracy claims.
+- **ACETADA, NutritionVerse-Real, MM-Food:** Non-commercial — do not use for product accuracy claims.
 - **Open Food Facts:** ODbL — share-alike if you redistribute derived DB.
 - **USDA FNDDS:** Public domain / US government work.
 

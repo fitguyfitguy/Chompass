@@ -392,6 +392,7 @@ class FoodAnalysisService(
         imageBytes: ByteArray,
         description: String? = null,
         singleIngredient: Boolean = false,
+        confirmedPortionGrams: Double? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         var prompt = if (singleIngredient) {
@@ -416,9 +417,7 @@ class FoodAnalysisService(
             $ENTRY_EMOJI_NULL_RULE
             """.trimIndent()
         }
-        if (!description.isNullOrBlank()) {
-            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
-        }
+        prompt = appendUserMealContext(prompt, description, confirmedPortionGrams)
         prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
         val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
@@ -430,11 +429,18 @@ class FoodAnalysisService(
         imageBytesList: List<ByteArray>,
         description: String? = null,
         singleIngredient: Boolean = false,
+        confirmedPortionGrams: Double? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         if (imageBytesList.filter { it.isNotEmpty() }.size <= 1 && singleIngredient) {
             val only = imageBytesList.firstOrNull { it.isNotEmpty() } ?: throw AiError.InvalidResponse
-            return analyzeFood(only, description, singleIngredient = true, onProgress = onProgress)
+            return analyzeFood(
+                only,
+                description,
+                singleIngredient = true,
+                confirmedPortionGrams = confirmedPortionGrams,
+                onProgress = onProgress,
+            )
         }
         var prompt = if (singleIngredient) {
             """
@@ -459,9 +465,7 @@ class FoodAnalysisService(
             $ENTRY_EMOJI_NULL_RULE
             """.trimIndent()
         }
-        if (!description.isNullOrBlank()) {
-            prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
-        }
+        prompt = appendUserMealContext(prompt, description, confirmedPortionGrams)
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
         prompt = appendOffBarcodeContext(prompt, images, onProgress)
@@ -469,6 +473,28 @@ class FoodAnalysisService(
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
         val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = images.first(), description = description, onProgress = onProgress)
+    }
+
+    /**
+     * Append free-form user note (identity / cooking hints) and, separately, a
+     * controlled confirmed-portion instruction so grams are not mixed into the
+     * free-form note string.
+     */
+    internal fun appendUserMealContext(
+        prompt: String,
+        description: String?,
+        confirmedPortionGrams: Double?,
+    ): String {
+        var next = prompt
+        if (!description.isNullOrBlank()) {
+            next += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
+        }
+        val grams = confirmedPortionGrams?.takeIf { it > 0 }
+        if (grams != null) {
+            val formatted = String.format(Locale.US, "%.1f", grams).trimEnd('0').trimEnd('.')
+            next += "\n\nUser-confirmed total edible portion: $formatted g. Treat this as ground truth for serving_size_grams and scale all nutrients to that mass."
+        }
+        return next
     }
 
     /**

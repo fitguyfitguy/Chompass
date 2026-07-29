@@ -17,8 +17,11 @@ docs/benchmarks/food_accuracy/
   results/            # Eval outputs (gitignored)
   run_eval.py         # Main CLI
   compare_runs.py     # Diff two summary.csv files
+  image_text_variants.py  # Shared L1/L2 writers
   download_jfb.py
   download_nutrition5k.py
+  download_acetada.py
+  download_nutritionverse_real.py
   build_fndds_manifest.py
 ```
 

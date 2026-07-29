@@ -684,11 +684,11 @@ fun HomeScreen(container: AppContainer) {
                 pendingCaptureImageBytes = pendingCaptureImageBytes.filterIndexed { itemIndex, _ -> itemIndex != index }
                 if (pendingCaptureImageBytes.isEmpty()) showMultiPhotoCapture = false
             },
-            onAnalyze = { note ->
+            onAnalyze = { note, grams ->
                 val images = pendingCaptureImageBytes
                 pendingCaptureImageBytes = emptyList()
                 showMultiPhotoCapture = false
-                if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note)
+                if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note, grams)
             },
             onDismiss = {
                 showMultiPhotoCapture = false
@@ -728,10 +728,11 @@ fun HomeScreen(container: AppContainer) {
         ContextNoteSheet(
             imageBytes = bytes,
             initialNote = ui.pendingInputNote.orEmpty(),
+            initialConfirmedPortionGrams = ui.pendingInputConfirmedPortionGrams,
             isSubmitting = ui.isEntryAnalysisBusy,
-            onAnalyze = { note ->
+            onAnalyze = { note, grams ->
                 if (!ui.isEntryAnalysisBusy) {
-                    vm.analyzePhotoWithNote(bytes, note)
+                    vm.analyzePhotoWithNote(bytes, note, confirmedPortionGrams = grams)
                 }
             },
             onAddPhoto = {

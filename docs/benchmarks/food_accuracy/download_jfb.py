@@ -14,6 +14,7 @@ _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
+from image_text_variants import write_image_text_variants
 from schema import DATA_DIR, Sample, write_manifest
 
 S3_BUCKET = "january-food-image-dataset-public"
@@ -56,61 +57,6 @@ def parse_ingredients(raw: str | list) -> list:
     return []
 
 
-def ingredient_names_text(ingredients: list) -> str | None:
-    names = [item.get("name", "").strip() for item in ingredients if isinstance(item, dict)]
-    names = [name for name in names if name]
-    if not names:
-        return None
-    return ", ".join(names)
-
-
-def write_image_text_variants(samples: list[Sample], manifests_dir: Path) -> None:
-    """Write L0 (base), L1 (meal_name as text), L2 (ingredient names as text)."""
-    l1: list[Sample] = []
-    l2: list[Sample] = []
-    for sample in samples:
-        l1_text = sample.meal_name
-        l2_text = ingredient_names_text(sample.extra.get("ingredients", []))
-        l1.append(
-            Sample(
-                id=sample.id,
-                modality=sample.modality,
-                source=sample.source,
-                calories=sample.calories,
-                protein_g=sample.protein_g,
-                carbs_g=sample.carbs_g,
-                fat_g=sample.fat_g,
-                text=l1_text,
-                image_path=sample.image_path,
-                mass_g=sample.mass_g,
-                meal_name=sample.meal_name,
-                notes=sample.notes,
-                extra=dict(sample.extra),
-            )
-        )
-        l2.append(
-            Sample(
-                id=sample.id,
-                modality=sample.modality,
-                source=sample.source,
-                calories=sample.calories,
-                protein_g=sample.protein_g,
-                carbs_g=sample.carbs_g,
-                fat_g=sample.fat_g,
-                text=l2_text,
-                image_path=sample.image_path,
-                mass_g=sample.mass_g,
-                meal_name=sample.meal_name,
-                notes=sample.notes,
-                extra=dict(sample.extra),
-            )
-        )
-    write_manifest(manifests_dir / "jfb_image_text_l1.jsonl", l1)
-    write_manifest(manifests_dir / "jfb_image_text_l2.jsonl", l2)
-    print(f"Wrote {len(l1)} samples to {manifests_dir / 'jfb_image_text_l1.jsonl'}")
-    print(f"Wrote {len(l2)} samples to {manifests_dir / 'jfb_image_text_l2.jsonl'}")
-
-
 def build_manifest(root: Path, out_path: Path, limit: int | None) -> list[Sample]:
     import csv
 
@@ -144,7 +90,7 @@ def build_manifest(root: Path, out_path: Path, limit: int | None) -> list[Sample
             )
 
     write_manifest(out_path, samples)
-    write_image_text_variants(samples, out_path.parent)
+    write_image_text_variants(samples, out_path.parent, prefix="jfb")
     return samples
 
 

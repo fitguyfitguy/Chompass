@@ -32,6 +32,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -75,14 +76,9 @@ import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
 
-/** JFB/Nutrition5k-validated portion clarification eval; see docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1.
- *  Above this weight (or with no natural serving unit), photo estimates are most likely to be
- *  wrong on portion, so the beta chip offers to confirm it. */
-private const val PORTION_CLARIFY_LARGE_GRAMS_THRESHOLD = 450.0
-
-private fun shouldOfferPortionClarify(analysis: FoodAnalysis, source: FoodSource): Boolean =
-    source == FoodSource.SNAP_FOOD &&
-        (analysis.servingUnitOptions.isEmpty() || analysis.servingSizeGrams > PORTION_CLARIFY_LARGE_GRAMS_THRESHOLD)
+/** Exposed for JVM tests: every SNAP_FOOD photo gets the portion correction row. */
+internal fun shouldOfferPortionClarify(source: FoodSource): Boolean =
+    source == FoodSource.SNAP_FOOD
 
 /**
  * First-time review sheet shown after photo / text / voice analysis returns
@@ -144,8 +140,8 @@ fun FoodResultSheet(
     var portionChipDismissed by remember(imageBytes) { mutableStateOf(false) }
     var isReprocessingPortion by remember(imageBytes) { mutableStateOf(false) }
     var portionClarifyError by remember(imageBytes) { mutableStateOf<String?>(null) }
-    val showPortionClarify = portionClarifyEnabled && onReprocessPortion != null &&
-        !portionChipDismissed && shouldOfferPortionClarify(analysis, source)
+    val showPortionClarify = portionClarifyEnabled &&
+        !portionChipDismissed && shouldOfferPortionClarify(source)
     var name by remember { mutableStateOf(analysis.name) }
     val servingUnitOptions = remember(analysis.servingUnitOptions, analysis.servingSizeGrams) {
         ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
@@ -447,14 +443,24 @@ fun FoodResultSheet(
             if (showPortionClarify) {
                 item {
                     PortionClarifyRow(
+                        estimatedGrams = analysis.servingSizeGrams,
                         isLoading = isReprocessingPortion,
                         error = portionClarifyError,
+                        showQualitativeChips = onReprocessPortion != null,
+                        onApplyExactGrams = { grams ->
+                            servingGrams = grams
+                            selectedServingUnitId = ServingUnitOption.grams.unit
+                            servingQuantityText = ServingUnitOption.formatQuantity(grams)
+                            portionChipDismissed = true
+                            portionClarifyError = null
+                        },
                         onSelect = { answer ->
+                            val reprocess = onReprocessPortion ?: return@PortionClarifyRow
                             scope.launch {
                                 isReprocessingPortion = true
                                 portionClarifyError = null
                                 try {
-                                    onReprocessPortion?.invoke(answer)
+                                    reprocess(answer)
                                     portionChipDismissed = true
                                 } catch (e: Exception) {
                                     portionClarifyError = e.localizedMessage ?: portionClarifyFailedMessage
@@ -925,16 +931,22 @@ private fun WhatIfImpactRow(
     }
 }
 
-/** Beta portion-size clarification chip row (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1).
- *  Shown only for photo entries the heuristic flags as portion-uncertain; picking an
- *  option re-analyzes with the answer injected as extra context. */
+/** Portion correction row (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1).
+ *  Exact grams rescales locally via [servingGrams]; qualitative chips optionally
+ *  re-analyze with the answer injected as extra context. */
 @Composable
 private fun PortionClarifyRow(
+    estimatedGrams: Double,
     isLoading: Boolean,
     error: String?,
+    showQualitativeChips: Boolean,
+    onApplyExactGrams: (Double) -> Unit,
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    var weightText by remember(estimatedGrams) { mutableStateOf("") }
+    var localError by remember(estimatedGrams) { mutableStateOf<String?>(null) }
+    val invalidWeightMessage = stringResource(R.string.sheet_portion_clarify_weight_invalid)
     Column(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp)) {
         Row(
             Modifier.fillMaxWidth(),
@@ -954,25 +966,78 @@ private fun PortionClarifyRow(
                 }
             }
         }
-        Spacer(Modifier.height(6.dp))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(
-                R.string.sheet_portion_clarify_small,
-                R.string.sheet_portion_clarify_regular,
-                R.string.sheet_portion_clarify_large,
-                R.string.sheet_portion_clarify_restaurant,
-            ).forEach { labelRes ->
-                val label = stringResource(labelRes)
-                FilterChip(
-                    selected = false,
-                    enabled = !isLoading,
-                    onClick = { onSelect(label) },
-                    label = { Text(label) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                        selectedLabelColor = AppColors.Calorie,
-                    ),
-                )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(R.string.sheet_portion_clarify_weight_hint),
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+        )
+        Spacer(Modifier.height(8.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            OutlinedTextField(
+                value = weightText,
+                onValueChange = {
+                    weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
+                    localError = null
+                },
+                enabled = !isLoading,
+                singleLine = true,
+                label = { Text(stringResource(R.string.sheet_portion_clarify_weight_label)) },
+                placeholder = {
+                    Text(
+                        if (estimatedGrams > 0) {
+                            ServingUnitOption.formatQuantity(estimatedGrams)
+                        } else {
+                            stringResource(R.string.sheet_portion_clarify_weight_placeholder)
+                        }
+                    )
+                },
+                suffix = { Text(stringResource(R.string.unit_g)) },
+                modifier = Modifier.weight(1f),
+            )
+            FilterChip(
+                selected = false,
+                enabled = !isLoading,
+                onClick = {
+                    val grams = parsePositiveGrams(weightText)
+                    if (grams == null) {
+                        localError = invalidWeightMessage
+                    } else {
+                        onApplyExactGrams(grams)
+                    }
+                },
+                label = { Text(stringResource(R.string.sheet_portion_clarify_weight_apply)) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                    selectedLabelColor = AppColors.Calorie,
+                ),
+            )
+        }
+        if (showQualitativeChips) {
+            Spacer(Modifier.height(8.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(
+                    R.string.sheet_portion_clarify_small,
+                    R.string.sheet_portion_clarify_regular,
+                    R.string.sheet_portion_clarify_large,
+                    R.string.sheet_portion_clarify_restaurant,
+                ).forEach { labelRes ->
+                    val label = stringResource(labelRes)
+                    FilterChip(
+                        selected = false,
+                        enabled = !isLoading,
+                        onClick = { onSelect(label) },
+                        label = { Text(label) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                            selectedLabelColor = AppColors.Calorie,
+                        ),
+                    )
+                }
             }
         }
         if (isLoading) {
@@ -983,7 +1048,7 @@ private fun PortionClarifyRow(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             )
         }
-        error?.let {
+        (localError ?: error)?.let {
             Spacer(Modifier.height(4.dp))
             Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
         }

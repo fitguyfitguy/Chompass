@@ -5,6 +5,17 @@ Derives ground-truth answers to the two clarification questions the app could
 ask after a photo entry — portion size and hidden added fat — from manifest
 ground truth, and formats them as user-tap answer strings for prompt injection.
 
+Portion answers are split into three independently scoreable signals so product
+claims match the information actually supplied:
+
+- ``grams`` — exact total edible mass (Nutrition5k ``mass_g``)
+- ``bucket`` — qualitative size chip only (small / regular / large / restaurant-size)
+- ``amounts`` — stated per-ingredient quantity + unit (JFB ingredient list)
+
+The historical ``compact_clarify_portion`` prompt injects the richest available
+oracle for the sample (grams+bucket on N5k, stated amounts on JFB). Prefer the
+split prompts when A/B-ing chip UX vs exact-weight correction.
+
 Pure functions, no I/O. See docs/UNCERTAINTY_DRIVEN_ENTRY.md for the bet and
 docs/FOOD_ACCURACY_BENCHMARK_STATUS.md for pre-registered thresholds.
 """
@@ -12,7 +23,7 @@ docs/FOOD_ACCURACY_BENCHMARK_STATUS.md for pre-registered thresholds.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, Literal
 
 # Grams thresholds for the portion chip buckets (small / regular / large /
 # restaurant-size). Boundaries are inclusive on the lower edge.
@@ -22,6 +33,8 @@ PORTION_BUCKETS: tuple[tuple[float, float, str], ...] = (
     (350.0, 600.0, "large"),
     (600.0, float("inf"), "restaurant-size"),
 )
+
+PortionMode = Literal["full", "grams", "bucket", "amounts"]
 
 # Ingredient names that indicate added fat the camera cannot quantify
 # (cooking oil, dressings, spreads, fried coatings).
@@ -52,8 +65,16 @@ def _fmt_qty(quantity: Any) -> str:
     return str(quantity)
 
 
+def stated_amounts(sample: Any) -> list[str]:
+    return [
+        f"{_fmt_qty(i['quantity'])} {i['unit']} {i['name']}"
+        for i in _ingredients(sample)
+        if i.get("quantity") and i.get("unit") and i.get("name")
+    ]
+
+
 def portion_oracle(sample: Any) -> dict | None:
-    """Ground-truth portion answer.
+    """Ground-truth portion answer (richest available signal for the sample).
 
     Nutrition5k has true total mass → grams + bucket. JFB has no total mass;
     the oracle is the stated per-ingredient amounts (quantity + unit), the shape
@@ -65,14 +86,46 @@ def portion_oracle(sample: Any) -> dict | None:
             "grams": round(float(sample.mass_g)),
             "bucket": portion_bucket(float(sample.mass_g)),
         }
-    stated = [
-        f"{_fmt_qty(i['quantity'])} {i['unit']} {i['name']}"
-        for i in _ingredients(sample)
-        if i.get("quantity") and i.get("unit") and i.get("name")
-    ]
+    stated = stated_amounts(sample)
     if stated:
         return {"kind": "stated_amounts", "amounts": stated}
     return None
+
+
+def portion_signal(sample: Any, mode: PortionMode) -> dict | None:
+    """Return the portion oracle restricted to one product-shaped signal.
+
+    ``full`` keeps historical behavior (richest available). Split modes return
+    None when that signal is unavailable for the sample.
+    """
+    if mode == "full":
+        return portion_oracle(sample)
+
+    if mode == "grams":
+        if sample.mass_g is None or sample.mass_g <= 0:
+            return None
+        grams = round(float(sample.mass_g))
+        return {
+            "kind": "grams",
+            "grams": grams,
+            "bucket": portion_bucket(float(sample.mass_g)),
+        }
+
+    if mode == "bucket":
+        if sample.mass_g is not None and sample.mass_g > 0:
+            return {
+                "kind": "bucket",
+                "bucket": portion_bucket(float(sample.mass_g)),
+            }
+        return None
+
+    if mode == "amounts":
+        stated = stated_amounts(sample)
+        if not stated:
+            return None
+        return {"kind": "stated_amounts", "amounts": stated}
+
+    raise ValueError(f"unknown portion mode: {mode}")
 
 
 def fat_oracle(sample: Any) -> dict | None:
@@ -92,25 +145,48 @@ def fat_oracle(sample: Any) -> dict | None:
 
 
 def derive_clarify_fields(sample: Any) -> dict[str, dict]:
-    """Extras to merge into an enriched manifest (`clarify_portion` / `clarify_fat`)."""
+    """Extras to merge into an enriched manifest (`clarify_portion` / `clarify_fat`).
+
+    Also stores split signals when available so covered-id lists and prompts can
+    score grams / bucket / amounts independently.
+    """
     out: dict[str, dict] = {}
     portion = portion_oracle(sample)
     if portion is not None:
         out["clarify_portion"] = portion
+    for mode in ("grams", "bucket", "amounts"):
+        signal = portion_signal(sample, mode)  # type: ignore[arg-type]
+        if signal is not None:
+            out[f"clarify_portion_{mode}"] = signal
     fat = fat_oracle(sample)
     if fat is not None:
         out["clarify_fat"] = fat
     return out
 
 
-def format_portion_answer(portion: dict) -> str:
-    if portion.get("kind") == "grams":
-        return (
-            f"Portion: the whole portion weighs about {portion['grams']} g "
-            f"({portion['bucket']})."
-        )
-    amounts = ", ".join(portion.get("amounts") or [])
-    return f"Portion: the amounts were {amounts}."
+def format_portion_answer(portion: dict, *, mode: PortionMode = "full") -> str:
+    """Format a portion oracle dict as the injected user-answer string."""
+    kind = portion.get("kind")
+    if mode == "bucket" or kind == "bucket":
+        bucket = portion.get("bucket") or "regular"
+        return f"Portion size: {bucket}."
+    if mode == "grams" or (mode == "full" and kind == "grams"):
+        if portion.get("grams") is not None:
+            if mode == "grams":
+                return (
+                    f"Portion: the whole portion weighs about {portion['grams']} g."
+                )
+            return (
+                f"Portion: the whole portion weighs about {portion['grams']} g "
+                f"({portion['bucket']})."
+            )
+    if mode == "amounts" or kind == "stated_amounts":
+        amounts = ", ".join(portion.get("amounts") or [])
+        return f"Portion: the amounts were {amounts}."
+    # Fallback for unexpected shapes.
+    if portion.get("grams") is not None:
+        return f"Portion: the whole portion weighs about {portion['grams']} g."
+    return "Portion: regular."
 
 
 def format_fat_answer(fat: dict) -> str:
@@ -122,12 +198,18 @@ def format_fat_answer(fat: dict) -> str:
 
 
 def clarify_answer_block(
-    sample: Any, *, portion: bool = False, fat: bool = False
+    sample: Any,
+    *,
+    portion: bool = False,
+    fat: bool = False,
+    portion_mode: PortionMode = "full",
 ) -> str:
     """Injected block simulating chip taps; empty when no requested oracle exists."""
     lines: list[str] = []
-    if portion and (p := sample.extra.get("clarify_portion")):
-        lines.append(f"- {format_portion_answer(p)}")
+    if portion:
+        p = _resolve_portion_extra(sample, portion_mode)
+        if p:
+            lines.append(f"- {format_portion_answer(p, mode=portion_mode)}")
     if fat and (f := sample.extra.get("clarify_fat")):
         lines.append(f"- {format_fat_answer(f)}")
     if not lines:
@@ -137,3 +219,29 @@ def clarify_answer_block(
         + "\n".join(lines)
         + "\nTreat these answers as ground truth; adjust portion size and hidden-ingredient calories accordingly."
     )
+
+
+def _resolve_portion_extra(sample: Any, portion_mode: PortionMode) -> dict | None:
+    if portion_mode == "full":
+        return sample.extra.get("clarify_portion") or portion_oracle(sample)
+
+    keyed = sample.extra.get(f"clarify_portion_{portion_mode}")
+    if keyed:
+        return keyed
+
+    signal = portion_signal(sample, portion_mode)
+    if signal:
+        return signal
+
+    # Fixture / legacy manifests may only store the richest clarify_portion.
+    full = sample.extra.get("clarify_portion")
+    if not isinstance(full, dict):
+        return None
+    kind = full.get("kind")
+    if portion_mode == "grams" and kind == "grams" and full.get("grams") is not None:
+        return full
+    if portion_mode == "bucket" and full.get("bucket"):
+        return {"kind": "bucket", "bucket": full["bucket"]}
+    if portion_mode == "amounts" and kind == "stated_amounts":
+        return full
+    return None

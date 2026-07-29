@@ -1,6 +1,6 @@
 # Uncertainty-driven entry — strategy
 
-Status: research direction (2026-07-24). Companion to [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) and [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md). No production code changes yet.
+Status: Bet 1 shipping (2026-07-29) — exact-weight correction on every photo entry; qualitative chips remain soft/opt-in until bucket-only A/B. Companion to [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) and [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md).
 
 ## The problem, from first principles
 
@@ -15,19 +15,22 @@ The limit is information-theoretic: a single RGB photo does not contain the food
 
 ## The bets, in order
 
-### Bet 1 — Portion clarification chip (validated 2026-07-24, proceed to design)
+### Bet 1 — Portion clarification (validated 2026-07-24; signal-split 2026-07-29)
 
 The simulated-clarification eval (JFB-50, Gemini 3.5 Flash-Lite) confirmed the oracle ceiling: a correct portion answer cuts WMAPE 38.0%→22.8% (−15.2pp) and lifts ±20%-kcal accuracy 38%→50% (+12pp) — clears both pre-registered thresholds by a wide margin. Full results: `FOOD_ACCURACY_BENCHMARK_STATUS.md` § Simulated clarification eval.
 
-After photo analysis, `FoodResultSheet` should show one tap-row instead of silently accepting a point guess:
+**Signal caveat:** that JFB run injected **stated ingredient amounts**, and the N5k confirmation injected **true total mass**. Neither isolates the four qualitative size labels (`Small · Regular · Large · Restaurant-size`). The harness now scores those signals separately (`compact_clarify_portion_{grams,bucket,amounts}`).
 
-- **Portion**: `Small · Regular · Large · Restaurant-size` (attacks the +100–200% restaurant-portion mode)
+After photo analysis, `FoodResultSheet` should show a correction row on **every** photo entry:
 
-**Hidden-fat chip: parked, not shipping.** Oracle ceiling only −5.2pp WMAPE and it *hurt* ±20% accuracy slightly — below threshold, consistent with the pre-registered caveat that the fat lexicon/oracle is weak. `compact_clarify_both` gained nothing over portion alone, so there's no reason to bundle a fat question with the portion chip.
+- **Exact grams** (primary, validated): user enters total edible weight → deterministic nutrient rescale, no second AI call
+- **Optional size chips** (secondary, opt-in until bucket A/B): `Small · Regular · Large · Restaurant-size` → re-analyze with the answer injected
 
-**Trigger: must be unconditional on photo entries.** The two-stage ask-then-answer eval showed the model cannot reliably tell the app when to show a chip: it asked 92% of the time (should discriminate, not near-always-ask) and, when it did ask, preferred the *weaker* fat question over the stronger portion question by 34:12. The 2026-07-29 post-hoc analysis closed the two remaining candidate triggers as well: corr(predicted `serving_size_grams`, true kcal) ≈ **+0.14** across twelve runs, and corr(cross-model disagreement, actual error) = **+0.012**. So the earlier suggestion of gating on "the model didn't return a confident `serving_size_grams`" has **no signal behind it** — `FoodResultSheet` should simply show the portion chip on every photo entry.
+**Hidden-fat chip: parked, not shipping.** Oracle ceiling only −5.2pp WMAPE and it *hurt* ±20% accuracy slightly — below threshold, consistent with the pre-registered caveat that the fat lexicon/oracle is weak. `compact_clarify_both` gained nothing over portion alone, so there's no reason to bundle a fat question with the portion row.
 
-**Confirmed on Nutrition5k** (2026-07-24, loose, n=15, true-mass oracle): WMAPE 34.4%→15.6% (−18.7pp), ±20% kcal 13.3%→66.7% (+53.4pp) — stronger than JFB, since N5k's oracle is true mass rather than JFB's stated-ingredient-amount proxy. Two independent datasets now agree: **proceed to Android UX design for the portion chip.**
+**Trigger: must be unconditional on photo entries.** The two-stage ask-then-answer eval showed the model cannot reliably tell the app when to show a chip: it asked 92% of the time (should discriminate, not near-always-ask) and, when it did ask, preferred the *weaker* fat question over the stronger portion question by 34:12. The 2026-07-29 post-hoc analysis closed the two remaining candidate triggers as well: corr(predicted `serving_size_grams`, true kcal) ≈ **+0.14** across twelve runs, and corr(cross-model disagreement, actual error) = **+0.012**. So the earlier suggestion of gating on "the model didn't return a confident `serving_size_grams`" has **no signal behind it** — `FoodResultSheet` should simply show the portion row on every photo entry.
+
+**Confirmed on Nutrition5k** (2026-07-24, loose, n=15, true-mass oracle): WMAPE 34.4%→15.6% (−18.7pp), ±20% kcal 13.3%→66.7% (+53.4pp) — stronger than JFB, since N5k's oracle is true mass rather than JFB's stated-ingredient-amount proxy. Two independent datasets now agree on **exact mass / stated amounts**; bucket-only chips still need a paired A/B before default-on.
 
 ### Bet 2 — Ranges instead of points when uncertain
 
@@ -187,11 +190,12 @@ Do not integrate speculatively.
 
 ### Ordered next steps
 
-1. Ship **portion clarification chip** (Bet 1 → Android design), triggered unconditionally on photo entries
-2. **Calorie bands** for photo uncertainty (Bet 2), fixed-width per entry type
-3. **Personal portion priors** from corrections (Bet 3) — now the natural home for the measured per-model bias factor
-4. **Multi-model ensemble toggle** (Bet 4) — optional, costs N× calls
-5. Optional **ingredient split** for mixed plates / on-device
+1. Ship **exact-weight portion correction** on every photo entry (pre-analysis optional grams + post-analysis deterministic rescale); qualitative chips remain opt-in until bucket A/B
+2. Run paired **`compact_clarify_portion_{grams,bucket,amounts}`** A/B and record in the status doc before defaulting qualitative chips on
+3. **Calorie bands** for photo uncertainty (Bet 2), fixed-width per entry type
+4. **Personal portion priors** from corrections (Bet 3) — now the natural home for the measured per-model bias factor
+5. **Multi-model ensemble toggle** (Bet 4) — optional, costs N× calls
+6. Optional **ingredient split** for mixed plates / on-device
 
 ## Where things live
 
