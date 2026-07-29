@@ -158,6 +158,13 @@ fun HomeScreen(container: AppContainer) {
         }
     }
 
+    LaunchedEffect(ui.resumeProgressiveCapture) {
+        if (ui.resumeProgressiveCapture) {
+            vm.consumeResumeProgressiveCapture()
+            openCamera()
+        }
+    }
+
     val barcodePermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -434,6 +441,32 @@ fun HomeScreen(container: AppContainer) {
                 contentDescription = stringResource(R.string.cd_add_food),
             )
         }
+        val draftForChip = ui.progressiveMeal
+        if (!ui.showProgressiveMealSheet &&
+            draftForChip != null &&
+            draftForChip.items.isNotEmpty() &&
+            ui.pendingAnalysis == null &&
+            !ui.isEntryAnalysisBusy &&
+            !ui.resumeProgressiveCapture &&
+            !showCameraCapture &&
+            !showMultiPhotoCapture
+        ) {
+            FloatingActionButton(
+                onClick = { vm.showProgressiveMealSheet(true) },
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding()
+                    .padding(start = 24.dp, bottom = BottomNavDockedControlPadding + 16.dp),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ) {
+                Text(
+                    stringResource(R.string.progressive_meal_continue, draftForChip.items.size),
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+        }
         if (inSelectionMode) {
             SelectionActionBar(
                 selectedCount = selectedEntryIds.size,
@@ -636,6 +669,7 @@ fun HomeScreen(container: AppContainer) {
         MultiPhotoCaptureSheet(
             imageBytesList = pendingCaptureImageBytes,
             addsFromLibrary = isImportingPhotos,
+            showScaleTip = ui.progressiveMeal?.items?.isNotEmpty() == true,
             onAddPhoto = {
                 if (pendingCaptureImageBytes.size < 10) {
                     if (isImportingPhotos) {
@@ -732,6 +766,7 @@ fun HomeScreen(container: AppContainer) {
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
             portionClarifyEnabled = ui.portionClarifyEnabled,
+            progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
             onReprocessPortion = { answer -> vm.reprocessPendingAnalysis(answer) },
             onWhatIfSuggestion = vm::suggestMealWhatIf,
             onSave = { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis ->
@@ -745,7 +780,35 @@ fun HomeScreen(container: AppContainer) {
                     editedAnalysis = editedAnalysis
                 )
             },
+            onAddToProgressiveMeal = { name, grams, _, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, resumeCapture ->
+                vm.addToProgressiveMeal(
+                    name = name,
+                    servingGrams = grams,
+                    mealType = mealType,
+                    selectedServingUnit = selectedServingUnit,
+                    selectedServingQuantity = selectedServingQuantity,
+                    editedAnalysis = editedAnalysis,
+                    resumeCapture = resumeCapture,
+                )
+            },
             onDismiss = { vm.dismissPending() }
+        )
+    }
+
+    val progressiveDraft = ui.progressiveMeal
+    if (ui.showProgressiveMealSheet && progressiveDraft != null &&
+        ui.pendingAnalysis == null && !ui.isEntryAnalysisBusy
+    ) {
+        ProgressiveMealSheet(
+            draft = progressiveDraft,
+            isSaving = ui.saving,
+            onNameChange = { vm.updateProgressiveMealMeta(it, progressiveDraft.mealType) },
+            onMealTypeChange = { vm.updateProgressiveMealMeta(progressiveDraft.name, it) },
+            onRemoveItem = { vm.removeProgressiveMealItem(it) },
+            onAddAnother = { vm.continueProgressiveCapture() },
+            onLogMeal = { vm.logProgressiveMeal() },
+            onDiscard = { vm.discardProgressiveMeal() },
+            onDismiss = { vm.showProgressiveMealSheet(false) },
         )
     }
 

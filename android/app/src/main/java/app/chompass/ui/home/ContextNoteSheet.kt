@@ -242,6 +242,7 @@ fun ContextNoteSheet(
 fun MultiPhotoCaptureSheet(
     imageBytesList: List<ByteArray>,
     addsFromLibrary: Boolean,
+    showScaleTip: Boolean = false,
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
     onAnalyze: (String?) -> Unit,
@@ -269,6 +270,15 @@ fun MultiPhotoCaptureSheet(
                 .padding(bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
+            if (showScaleTip) {
+                Text(
+                    stringResource(R.string.progressive_meal_scale_tip),
+                    fontSize = 14.sp,
+                    color = AppColors.Calorie,
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                )
+            }
+
             Row(
                 Modifier
                     .fillMaxWidth()
