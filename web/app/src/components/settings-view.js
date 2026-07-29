@@ -76,10 +76,29 @@ const OPTIONAL_GOAL_FIELDS = Object.keys(DEFAULT_OPTIONAL_NUTRIENT_GOALS).map((k
   return /** @type {[string, string]} */ ([key, def ? `${def.label} (${def.unit})` : key]);
 });
 
+/** Parent hash for nested settings pages (mirrors Android hub groups). */
+const SETTINGS_PARENT = {
+  personal: "#/settings",
+  profile: "#/settings",
+  goals: "#/settings",
+  nutrients: "#/settings?section=goals",
+  app: "#/settings",
+  units: "#/settings?section=app",
+  home: "#/settings?section=app",
+  install: "#/settings?section=app",
+  ai: "#/settings",
+  speech: "#/settings?section=ai",
+  data: "#/settings",
+  sync: "#/settings?section=data",
+  about: "#/settings",
+};
+
 export class SettingsView extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
     this.section = params.get("section") || "hub";
+    // Legacy alias: profile → personal (Android “Personal Info” group).
+    if (this.section === "profile") this.section = "personal";
     this.render();
   }
 
@@ -88,24 +107,18 @@ export class SettingsView extends HTMLElement {
       this.innerHTML = `
         <h1 class="screen-title">Settings</h1>
         <nav class="settings-nav" aria-label="Settings sections">
-          <a href="#/settings?section=profile">Profile <span>Body &amp; identity</span></a>
-          <a href="#/settings?section=goals">Goals &amp; diet <span>Calories, keto</span></a>
-          <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
-          <a href="#/settings?section=units">Units &amp; schedule <span>Units, week, meals</span></a>
-          <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
-          <a href="#/settings?section=speech">Speech <span>Voice language (browser)</span></a>
-          <a href="#/settings?section=data">Data <span>Import / export / clear</span></a>
-          <a href="#/settings?section=sync">Sync <span>WebDAV / sync file</span></a>
-          <a href="#/settings?section=ai">AI <span>Keys, instructions, fallback</span></a>
-          <a href="#/settings?section=install">Install app <span>Home screen &amp; browsers</span></a>
-          <a href="#/settings?section=about">About &amp; methods <span>Formulas</span></a>
-          <a href="#/measurements">Body measurements <span>Tape metrics</span></a>
+          <a href="#/settings?section=personal">Personal Info <span>Gender, height, weight, measurements</span></a>
+          <a href="#/settings?section=goals">Goals &amp; Nutrition <span>Diet, macros, optional nutrients</span></a>
+          <a href="#/settings?section=app">App &amp; Display <span>Units, home, install</span></a>
+          <a href="#/settings?section=ai">AI &amp; Speech <span>Providers, models, speech</span></a>
+          <a href="#/settings?section=data">Health, Data &amp; Sync <span>Import / export, WebDAV</span></a>
+          <a href="#/settings?section=about">About <span>Formulas &amp; methods</span></a>
         </nav>
         <p class="settings-android-note">Health Connect, notifications, widgets, and on-device LLM are Android-only.</p>`;
       return;
     }
 
-    if (this.section === "profile") {
+    if (this.section === "personal") {
       await this.renderProfile();
       return;
     }
@@ -115,6 +128,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "nutrients") {
       await this.renderNutrients();
+      return;
+    }
+    if (this.section === "app") {
+      this.renderApp();
       return;
     }
     if (this.section === "units") {
@@ -153,6 +170,17 @@ export class SettingsView extends HTMLElement {
     this.render();
   }
 
+  renderApp() {
+    this.innerHTML = `
+      ${subpageBar("App & Display", { backHref: SETTINGS_PARENT.app })}
+      <nav class="settings-nav" aria-label="App settings">
+        <a href="#/settings?section=units">Units &amp; schedule <span>Units, week, meals, accent</span></a>
+        <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
+        <a href="#/settings?section=install">Install app <span>Home screen &amp; browsers</span></a>
+      </nav>`;
+    bindSubpageBack(this, SETTINGS_PARENT.app);
+  }
+
   async loadProfile() {
     return (
       (await profileStore.load()) ?? {
@@ -180,7 +208,7 @@ export class SettingsView extends HTMLElement {
     const weightVal = appPrefs.weightUnit === "lb" ? (p.weightKg * 2.20462).toFixed(1) : p.weightKg;
 
     this.innerHTML = `
-      ${subpageBar("Profile", { backHref: "#/settings" })}
+      ${subpageBar("Personal Info", { backHref: SETTINGS_PARENT.personal })}
       <form class="entry-form card" id="profile-form">
         <div class="field-row field-row--2">
           <div class="field">
@@ -216,7 +244,10 @@ export class SettingsView extends HTMLElement {
           </select>
         </div>
         <button type="submit" class="btn btn--primary">Save</button>
-      </form>`;
+      </form>
+      <nav class="settings-nav" aria-label="Related">
+        <a href="#/measurements">Body measurements <span>Tape / US Navy</span></a>
+      </nav>`;
     this.querySelector("#profile-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
@@ -232,16 +263,16 @@ export class SettingsView extends HTMLElement {
         bodyFatPercentage: bfRaw ? Number(bfRaw) / 100 : null,
         activityLevel: /** @type {any} */ (fd.get("activityLevel")),
       });
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.personal;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.personal);
   }
 
   async renderGoals() {
     const p = await this.loadProfile();
     const targets = dailyTargets(p);
     this.innerHTML = `
-      ${subpageBar("Goals & diet", { backHref: "#/settings" })}
+      ${subpageBar("Goals & Nutrition", { backHref: SETTINGS_PARENT.goals })}
       <form class="entry-form card" id="goals-form">
         <div class="field-row">
           <div class="field">
@@ -305,7 +336,10 @@ export class SettingsView extends HTMLElement {
           <button type="button" class="btn btn--primary" id="recalculate-goals">Recalculate Goals</button>
         </div>
         <p id="recalc-status" style="color:var(--muted);font-size:0.85rem;margin:0.55rem 0 0;" hidden></p>
-      </div>`;
+      </div>
+      <nav class="settings-nav" aria-label="Related">
+        <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
+      </nav>`;
     this.querySelector("#goals-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
@@ -326,7 +360,7 @@ export class SettingsView extends HTMLElement {
         customCarbs: customCarbs ? Number(customCarbs) : null,
         customFat: customFat ? Number(customFat) : null,
       });
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.goals;
     });
     this.querySelector("#clear-custom")?.addEventListener("click", async () => {
       await profileStore.save({
@@ -339,7 +373,7 @@ export class SettingsView extends HTMLElement {
       this.render();
     });
     this.querySelector("#recalculate-goals")?.addEventListener("click", () => this.onRecalculateGoals(p));
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.goals);
   }
 
   /**
@@ -410,7 +444,7 @@ export class SettingsView extends HTMLElement {
   async renderUnits() {
     const p = await prefs.load();
     this.innerHTML = `
-      ${subpageBar("Units & schedule", { backHref: "#/settings" })}
+      ${subpageBar("Units & schedule", { backHref: SETTINGS_PARENT.units })}
       <form class="entry-form card" id="units-form">
         <div class="field-row field-row--2">
           <div class="field">
@@ -473,16 +507,16 @@ export class SettingsView extends HTMLElement {
         mealSnackStart: timeInputToMinutes(String(fd.get("mealSnackStart"))),
       });
       window.dispatchEvent(new Event("chompass-prefs-changed"));
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.units;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.units);
   }
 
   async renderSpeech() {
     const p = await prefs.load();
     const current = p.speechLang || "";
     this.innerHTML = `
-      ${subpageBar("Speech", { backHref: "#/settings" })}
+      ${subpageBar("Speech", { backHref: SETTINGS_PARENT.speech })}
       <form class="entry-form card" id="speech-form">
         <p style="color:var(--muted);margin:0 0 0.75rem;font-size:0.88rem;">
           Voice dictation uses the browser’s on-device speech recognition (Chrome/Edge best). Cloud speech engines are Android-only.
@@ -499,9 +533,9 @@ export class SettingsView extends HTMLElement {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
       await prefs.save({ speechLang: String(fd.get("speechLang") || "") });
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.speech;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.speech);
   }
 
   async renderHome() {
@@ -512,7 +546,7 @@ export class SettingsView extends HTMLElement {
     const selectedChips = new Set(normalizeFoodLogChips(p.foodLogMacroChips));
     const chipDefs = HOME_TOP_NUTRIENTS.filter((n) => FOOD_LOG_CHIP_KEYS.includes(n.key));
     this.innerHTML = `
-      ${subpageBar("Home display", { backHref: "#/settings" })}
+      ${subpageBar("Home display", { backHref: SETTINGS_PARENT.home })}
       <form class="entry-form card" id="home-form">
         <div class="field">
           <label for="showWater">Water tracking</label>
@@ -589,16 +623,16 @@ export class SettingsView extends HTMLElement {
         homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),
         foodLogMacroChips: normalizeFoodLogChips(chipRaw),
       });
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.home;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.home);
   }
 
   async renderNutrients() {
     const p = await prefs.load();
     const g = mergeOptionalGoals(p.optionalNutrientGoals);
     this.innerHTML = `
-      ${subpageBar("Optional nutrients", { backHref: "#/settings" })}
+      ${subpageBar("Optional nutrients", { backHref: SETTINGS_PARENT.nutrients })}
       <form class="entry-form card" id="nutrients-form">
         <p style="color:var(--muted);font-size:0.85rem;margin:0;">Daily goals for fiber and micros. Used by Home tubes when those nutrients are selected.</p>
         <div class="field-row field-row--2">
@@ -623,14 +657,14 @@ export class SettingsView extends HTMLElement {
         optionalNutrientGoals[k] = Number.isFinite(n) ? Math.max(0, n) : DEFAULT_OPTIONAL_NUTRIENT_GOALS[k];
       }
       await prefs.save({ optionalNutrientGoals });
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.nutrients;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.nutrients);
   }
 
   async renderData() {
     this.innerHTML = `
-      ${subpageBar("Data", { backHref: "#/settings" })}
+      ${subpageBar("Health, Data & Sync", { backHref: SETTINGS_PARENT.data })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Formats match the Android app. Move data freely between the two.
@@ -675,7 +709,10 @@ export class SettingsView extends HTMLElement {
         </div>
         <p id="import-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
         <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;" type="button">Clear all local data</button>
-      </div>`;
+      </div>
+      <nav class="settings-nav" aria-label="Sync">
+        <a href="#/settings?section=sync">Sync <span>WebDAV / sync file</span></a>
+      </nav>`;
     this.querySelector("#export-diary")?.addEventListener("click", () => this.onExportDiary());
     this.querySelector("#export-body")?.addEventListener("click", () => this.onExportBodyMetrics());
     this.querySelector("#import-diary")?.addEventListener("change", (ev) => this.onImportDiary(ev));
@@ -691,13 +728,13 @@ export class SettingsView extends HTMLElement {
       await clearAllUserData();
       location.hash = "#/onboarding";
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.data);
   }
 
   async renderSync() {
     const cfg = await loadWebDavSettings();
     this.innerHTML = `
-      ${subpageBar("Sync", { backHref: "#/settings" })}
+      ${subpageBar("Sync", { backHref: SETTINGS_PARENT.sync })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Optional user-hosted sync. Chompass has no cloud account — point both the PWA and Android app at the same WebDAV file (e.g. Nextcloud), or move a sync JSON by hand. API keys and food photos are not included.
@@ -770,7 +807,7 @@ export class SettingsView extends HTMLElement {
       const result = await syncWebDavNow();
       if (status) status.textContent = result.message;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.sync);
   }
 
   async renderAi() {
@@ -792,7 +829,7 @@ export class SettingsView extends HTMLElement {
       : "none";
 
     this.innerHTML = `
-      ${subpageBar("AI", { backHref: "#/settings" })}
+      ${subpageBar("AI & Speech", { backHref: SETTINGS_PARENT.ai })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Keys are encrypted at rest with Web Crypto (AES-GCM) in IndexedDB, then sent only from your browser to the provider you choose. Not a Chompass server.
@@ -873,7 +910,10 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <button type="submit" class="btn btn--primary">Save AI prefs</button>
-      </form>`;
+      </form>
+      <nav class="settings-nav" aria-label="Speech">
+        <a href="#/settings?section=speech">Speech <span>Voice language (browser)</span></a>
+      </nav>`;
 
     const providerSel = /** @type {HTMLSelectElement} */ (this.querySelector("#ai-provider"));
     const modelSel = /** @type {HTMLSelectElement} */ (this.querySelector("#ai-model"));
@@ -949,16 +989,16 @@ export class SettingsView extends HTMLElement {
         fallbackAiProvider: fbProvider,
         fallbackAiModel: resolveProviderModel(fbProvider, fbModel, "fallback"),
       });
-      location.hash = "#/settings";
+      location.hash = SETTINGS_PARENT.ai;
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.ai);
   }
 
   async renderInstall() {
     const { promptInstall, hasDeferredInstallPrompt, isStandalone } = await import("../lib/install-prompt.js");
     const already = isStandalone();
     this.innerHTML = `
-      ${subpageBar("Install app", { backHref: "#/settings" })}
+      ${subpageBar("Install app", { backHref: SETTINGS_PARENT.install })}
       <div class="card">
         <p style="margin:0 0 0.75rem;">Install Chompass to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
         ${
@@ -1023,12 +1063,12 @@ export class SettingsView extends HTMLElement {
     this.querySelector("#install-cta")?.addEventListener("click", () => {
       void promptInstall();
     });
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.install);
   }
 
   async renderAbout() {
     this.innerHTML = `
-      ${subpageBar("About & methods", { backHref: "#/settings" })}
+      ${subpageBar("About", { backHref: SETTINGS_PARENT.about })}
       <div class="card">
         <p style="margin:0 0 0.6rem;">Chompass browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
         <p style="margin:0;"><a href="#/settings?section=install">How to install</a> this app on your phone or computer.</p>
@@ -1047,7 +1087,7 @@ export class SettingsView extends HTMLElement {
         </dl>
         <p style="color:var(--muted);font-size:0.85rem;margin:0.8rem 0 0;">Canonical register: <code>docs/CALCULATION_METHODS.md</code>. AI estimates are always reviewed before save.</p>
       </div>`;
-    bindSubpageBack(this, "#/settings");
+    bindSubpageBack(this, SETTINGS_PARENT.about);
   }
 
   /** @param {string} message @param {"ok"|"err"|""} [kind] */
