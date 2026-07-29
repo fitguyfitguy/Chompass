@@ -490,6 +490,14 @@
     <string name="settings_section_ai">Fournisseur d\'IA</string>
     <string name="settings_section_speech">Reconnaissance vocale</string>
     <string name="settings_section_health">Santé et données</string>
+    <string name="settings_group_app_display">App et affichage</string>
+    <string name="settings_group_ai">IA et voix</string>
+    <string name="settings_group_data">Santé, données et sync</string>
+    <string name="settings_group_personal_summary">Genre, taille, poids, mesures</string>
+    <string name="settings_group_goals_summary">Régime, macros, objectifs adaptatifs</string>
+    <string name="settings_group_app_summary">Apparence, accueil, notifications</string>
+    <string name="settings_group_ai_summary">Fournisseurs, modèles, voix</string>
+    <string name="settings_group_data_summary">Health Connect, export, sync</string>
 
     <string name="settings_gender">Sexe</string>
     <string name="settings_birthday">Date de naissance</string>

@@ -490,6 +490,14 @@
     <string name="settings_section_ai">AI प्रदाता</string>
     <string name="settings_section_speech">स्पीच-टू-टेक्स्ट</string>
     <string name="settings_section_health">स्वास्थ्य और डेटा</string>
+    <string name="settings_group_app_display">ऐप और प्रदर्शन</string>
+    <string name="settings_group_ai">AI और वाणी</string>
+    <string name="settings_group_data">स्वास्थ्य, डेटा और सिंक</string>
+    <string name="settings_group_personal_summary">लिंग, ऊंचाई, वजन, माप</string>
+    <string name="settings_group_goals_summary">आहार, मैक्रो, अनुकूली लक्ष्य</string>
+    <string name="settings_group_app_summary">दिखावट, होम, सूचनाएँ</string>
+    <string name="settings_group_ai_summary">प्रदाता, मॉडल, वाणी</string>
+    <string name="settings_group_data_summary">Health Connect, निर्यात, सिंक</string>
 
     <string name="settings_gender">लिंग</string>
     <string name="settings_birthday">जन्मदिन</string>

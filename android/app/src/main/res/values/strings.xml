@@ -646,6 +646,14 @@
     <string name="settings_section_ai">AI Provider</string>
     <string name="settings_section_speech">Speech-to-Text</string>
     <string name="settings_section_health">Health &amp; Data</string>
+    <string name="settings_group_app_display">App &amp; Display</string>
+    <string name="settings_group_ai">AI &amp; Speech</string>
+    <string name="settings_group_data">Health, Data &amp; Sync</string>
+    <string name="settings_group_personal_summary">Gender, height, weight, measurements</string>
+    <string name="settings_group_goals_summary">Diet, macros, adaptive goals</string>
+    <string name="settings_group_app_summary">Appearance, home, notifications</string>
+    <string name="settings_group_ai_summary">Providers, models, speech</string>
+    <string name="settings_group_data_summary">Health Connect, export, sync</string>
 
     <string name="settings_gender">Gender</string>
     <string name="settings_birthday">Birthday</string>

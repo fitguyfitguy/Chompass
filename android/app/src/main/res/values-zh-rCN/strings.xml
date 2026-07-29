@@ -490,6 +490,14 @@
     <string name="settings_section_ai">AI 提供商</string>
     <string name="settings_section_speech">语音转文字</string>
     <string name="settings_section_health">健康与数据</string>
+    <string name="settings_group_app_display">应用与显示</string>
+    <string name="settings_group_ai">AI 与语音</string>
+    <string name="settings_group_data">健康、数据与同步</string>
+    <string name="settings_group_personal_summary">性别、身高、体重、测量</string>
+    <string name="settings_group_goals_summary">饮食、宏量营养素、自适应目标</string>
+    <string name="settings_group_app_summary">外观、主页、通知</string>
+    <string name="settings_group_ai_summary">提供商、模型、语音</string>
+    <string name="settings_group_data_summary">Health Connect、导出、同步</string>
 
     <string name="settings_gender">性别</string>
     <string name="settings_birthday">生日</string>
