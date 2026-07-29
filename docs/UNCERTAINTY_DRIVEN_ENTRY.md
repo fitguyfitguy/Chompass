@@ -25,17 +25,29 @@ After photo analysis, `FoodResultSheet` should show one tap-row instead of silen
 
 **Hidden-fat chip: parked, not shipping.** Oracle ceiling only −5.2pp WMAPE and it *hurt* ±20% accuracy slightly — below threshold, consistent with the pre-registered caveat that the fat lexicon/oracle is weak. `compact_clarify_both` gained nothing over portion alone, so there's no reason to bundle a fat question with the portion chip.
 
-**Trigger: must be heuristic, not model self-report.** The two-stage ask-then-answer eval showed the model cannot reliably tell the app when to show a chip: it asked 92% of the time (should discriminate, not near-always-ask) and, when it did ask, preferred the *weaker* fat question over the stronger portion question by 34:12. Any `FoodResultSheet` implementation should trigger the portion chip via a simple rule (e.g. always show it for photo entries, or only when the model didn't return a confident `serving_size_grams`) — not via a `clarify_request` field asked of the model.
+**Trigger: must be unconditional on photo entries.** The two-stage ask-then-answer eval showed the model cannot reliably tell the app when to show a chip: it asked 92% of the time (should discriminate, not near-always-ask) and, when it did ask, preferred the *weaker* fat question over the stronger portion question by 34:12. The 2026-07-29 post-hoc analysis closed the two remaining candidate triggers as well: corr(predicted `serving_size_grams`, true kcal) ≈ **+0.14** across twelve runs, and corr(cross-model disagreement, actual error) = **+0.012**. So the earlier suggestion of gating on "the model didn't return a confident `serving_size_grams`" has **no signal behind it** — `FoodResultSheet` should simply show the portion chip on every photo entry.
 
 **Confirmed on Nutrition5k** (2026-07-24, loose, n=15, true-mass oracle): WMAPE 34.4%→15.6% (−18.7pp), ±20% kcal 13.3%→66.7% (+53.4pp) — stronger than JFB, since N5k's oracle is true mass rather than JFB's stated-ingredient-amount proxy. Two independent datasets now agree: **proceed to Android UX design for the portion chip.**
 
 ### Bet 2 — Ranges instead of points when uncertain
 
-Photo entries display a calorie band ("roughly 550–750") with round bounds; text/barcode/label entries keep point estimates. Reuse the existing three-facet `GroundingConfidence` (identity / portion / nutrientSource, `models/FoodGrounding.kt`) rather than inventing a single score — the render path in `FoodResultSheet` already exists, gated on grounding data being present. Depends on bet 1's eval telling us where uncertainty actually is.
+Photo entries display a calorie band ("roughly 550–750") with round bounds; text/barcode/label entries keep point estimates. Reuse the existing three-facet `GroundingConfidence` (identity / portion / nutrientSource, `models/FoodGrounding.kt`) rather than inventing a single score — the render path in `FoodResultSheet` already exists, gated on grounding data being present.
+
+**Bands must be fixed-width per entry type, not confidence-scaled** (2026-07-29). No model-side channel predicts per-sample error: not self-report (92% ask rate), not emitted `serving_size_grams` (r ≈ +0.14), not cross-model disagreement (r = +0.012). A band whose width varies with a "confidence" the model cannot actually estimate would be false precision about false precision. Derive one width per entry type from the measured error distributions instead (photo ≈ ±32–40% WMAPE, text ≈ ±6%).
 
 ### Bet 3 — Personal portion priors / correction memory
 
 Anchor portions to the user's past corrected values for similar meals (favoriteKey / saved meals), extending the `GroundingCorrectionStore` WIP and the P1 "local correction memory" upstream idea. On-device, no new network surface.
+
+**Now has a measured ceiling** (2026-07-29). Plate overestimation turns out to be a *systematic multiplicative* bias, not just a hard tail: 10 of 12 vision runs fit a kcal scale of 0.76–0.84, while text fits exactly 1.000. A single per-model correction factor is worth up to **−7.5pp WMAPE / +22pp ±20% kcal** (cross-validated). Crucially the magnitude does **not** transfer across datasets (JFB→N5k cost 20pp of ±20% accuracy), which is the argument *for* Bet 3 rather than a shipped constant: the factor should be learned from the individual user's corrections, where it is by construction in-distribution. Two design constraints fall out — the correction must be **modality-gated** (applying the photo factor to typed text wrecks it, 5.7% → 23.5% WMAPE) and **per model**, since `gpt-4o-mini` and Claude do not overestimate. See `FOOD_ACCURACY_BENCHMARK_STATUS.md` § Post-hoc calibration & ensembling.
+
+### Bet 4 — Multi-model ensemble as a "high accuracy" toggle (new, 2026-07-29)
+
+The median of two *differently-biased* models beats every single model measured: `gpt-4o-mini + Qwen3.5-Flash` = **29.4% WMAPE**, and pairing the documented overestimator with the documented underestimator (`gemini-3.6-flash + gpt-4o-mini`) reaches **62% within ±20% kcal** vs 50% for the best single call — a +12pp lift, second only to the portion-clarification oracle. Stacked with calibration: **27.0% WMAPE / 60% ±20%**, the best plate result on record.
+
+Fits BYOK naturally (the user already supplies keys), but costs N× calls and max-latency, so it belongs behind an explicit per-entry or per-setting toggle, never as the default. Two hard constraints from the data: free-tier-only ensembling is **useless** (`gemma_free + nofud_free` = 38.2%, no better than either alone — shared bias, nothing to cancel), and repeating the *same* model is useless (see below). Ranked after bets 1–3 because it spends the user's money rather than adding information.
+
+**Dead end, do not build: self-consistency.** Three independent runs of Flash-Lite `compact` on identical inputs scored 35.9% / 35.9% / 38.0%; the median of all three was **37.6%** — worse than one call. Plate error is bias, not sampling variance, so a retry-and-average path buys nothing. Only genuinely different models cancel.
 
 ## Explicit non-bets
 
@@ -76,6 +88,9 @@ duplicates an exhausted or rejected item.
 | **Provider reasoning / CoT (allow then hide)** | Low–medium, uncertain | Low — harness A/B + OpenRouter `reasoning` flag; latency/cost up | Not started |
 | **Restaurant-item nutrition lookup fallback** | High | Medium — new "is this branded/restaurant" trigger + text-search query path | Not started |
 | **Casual orbit video → native multi-frame reasoning** | Medium-high, uncertain | Medium — needs a small self-captured labeled clip set | **Directly measured 2026-07-28, negative.** Sent the same N5k turntable clips as native `video_url` (no depth extraction, model reasons over raw frames itself) vs the single overhead still, same free Gemma pin, same 12 dishes: WMAPE **25.6%→37.2%** (worse), ±20% kcal **41.7%→33.3%** (worse), 4.2× prompt tokens, worse free-tier reliability. Combined with the depth-proxy variance finding above, both mechanisms tried on this fixed-camera dataset now say video hurts, not helps — **park**, don't spend the self-capture-dataset effort here without a stronger prior (e.g. a genuinely user-directed orbit capture, not a lab turntable, or a paid/stronger model). Harness gained first-class video support (`run_eval.py --video`, `providers.py` `video_path`) for any future re-test. See `FOOD_ACCURACY_BENCHMARK_STATUS.md` § Native video input vs still image. |
+| **Per-model bias calibration** | High | **Zero** — re-scores stored predictions | **Run 2026-07-29: up to −7.5pp WMAPE / +22pp ±20%.** Direction robust (10/12 models overestimate; text bias is exactly 1.000), magnitude dataset-dependent → fold into Bet 3 rather than hard-coding a constant |
+| **Cross-model median ensemble** | High | Low to measure (zero), N× API calls to ship | **Run 2026-07-29: 29.4% WMAPE, 62% ±20%** (best single: 32.3% / 50%). Promoted to **Bet 4** |
+| **Self-consistency (same model, N samples)** | — | Zero | **Run 2026-07-29, negative.** Median of 3 identical runs 37.6% vs 35.9% single — error is bias, not variance. Dead |
 | **Nutrition-label OCR eval track** | Medium | Very low — closes an already-flagged harness gap | Not started |
 | **Nutritionix as a second product DB** (restaurant chains) | Medium | Higher — new vendor, API key/ToS, ongoing cost | Not started; gate on restaurant-lookup finding below |
 
@@ -172,10 +187,11 @@ Do not integrate speculatively.
 
 ### Ordered next steps
 
-1. Ship **portion clarification chip** (Bet 1 → Android design)
-2. **Calorie bands** for photo uncertainty (Bet 2)
-3. **Personal portion priors** from corrections (Bet 3)
-4. Optional **ingredient split** for mixed plates / on-device
+1. Ship **portion clarification chip** (Bet 1 → Android design), triggered unconditionally on photo entries
+2. **Calorie bands** for photo uncertainty (Bet 2), fixed-width per entry type
+3. **Personal portion priors** from corrections (Bet 3) — now the natural home for the measured per-model bias factor
+4. **Multi-model ensemble toggle** (Bet 4) — optional, costs N× calls
+5. Optional **ingredient split** for mixed plates / on-device
 
 ## Where things live
 
@@ -185,5 +201,6 @@ Do not integrate speculatively.
 | Enriched manifests + covered-id lists | `docs/benchmarks/food_accuracy/build_clarify_manifests.py` |
 | Chip-injection prompts | `prompts.py` (`compact_clarify_portion/fat/both`, `compact_clarify_ask`) |
 | Two-stage ask-then-answer runner | `docs/benchmarks/food_accuracy/run_clarify_eval.py` |
+| Post-hoc calibration / ensembling (no API calls) | `docs/benchmarks/food_accuracy/posthoc_calibration.py` |
 | Offline smoke (stub, no network) | `scripts/check_food_accuracy_smoke.sh` / `devenv tasks run benchmark:food-accuracy-smoke` |
 | Thresholds + results | `FOOD_ACCURACY_BENCHMARK_STATUS.md` § Simulated clarification eval |

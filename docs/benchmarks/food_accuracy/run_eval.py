@@ -19,7 +19,7 @@ from env_local import load_env_local
 from parse import parse_food_json
 from prompts import build_prompt, list_prompts
 from providers import aggregate_usage, build_provider, normalize_usage
-from schema import RESULTS_DIR, Sample, load_manifest, validate_sample
+from schema import MICRO_FIELDS, RESULTS_DIR, Sample, load_manifest, validate_sample
 from score import SampleScore, aggregate_scores, score_sample
 
 
@@ -128,7 +128,8 @@ def _evaluate_one(
         }, scored
 
     parsed = parse_food_json(response.text)
-    scored = score_sample(sample.id, sample.ground_truth(), parsed)
+    micro_gt = sample.micro_ground_truth()
+    scored = score_sample(sample.id, sample.ground_truth(), parsed, micro_gt=micro_gt)
     usage_fields = normalize_usage(response.usage)
     record = {
         "id": sample.id,
@@ -140,6 +141,7 @@ def _evaluate_one(
         "parse_ok": scored.parse_ok,
         "prediction": parsed.raw,
         "ground_truth": sample.ground_truth().as_dict(),
+        "micro_ground_truth": {k: v for k, v in micro_gt.items() if v is not None},
         "score": scored.to_dict(),
         "raw_response": response.text[:4000],
         "usage": response.usage,
@@ -332,6 +334,7 @@ def main() -> None:
         "within_20pct_calories_rate": ""
         if agg.within_20pct_calories_rate is None
         else f"{agg.within_20pct_calories_rate:.4f}",
+        "micro_wmape": "" if agg.micro_wmape is None else f"{agg.micro_wmape:.4f}",
         "sum_prompt_tokens": _fmt(usage_agg.get("sum_prompt_tokens"), digits=0),
         "sum_completion_tokens": _fmt(usage_agg.get("sum_completion_tokens"), digits=0),
         "sum_cached_tokens": _fmt(usage_agg.get("sum_cached_tokens"), digits=0),
@@ -343,6 +346,18 @@ def main() -> None:
         "sum_cost": _fmt(usage_agg.get("sum_cost"), digits=6),
         "usage_n": usage_agg.get("usage_n") or 0,
     }
+    # Flatten per-nutrient micro metrics into CSV columns (csv.DictWriter needs
+    # flat fields; only emit a column when at least one sample had data, so
+    # runs against GT-free datasets/prompts don't add 80 empty columns).
+    for gt_key in MICRO_FIELDS:
+        if gt_key in agg.mae_micro:
+            summary[f"mae_micro_{gt_key}"] = f"{agg.mae_micro[gt_key]:.4f}"
+        if gt_key in agg.mape_micro:
+            summary[f"mape_micro_{gt_key}"] = f"{agg.mape_micro[gt_key]:.4f}"
+        if gt_key in agg.n_micro:
+            summary[f"n_micro_{gt_key}"] = agg.n_micro[gt_key]
+        if gt_key in agg.presence_rate:
+            summary[f"presence_rate_{gt_key}"] = f"{agg.presence_rate[gt_key]:.4f}"
 
     summary_path = out_dir / "summary.csv"
     _write_summary_csv(summary_path, summary)

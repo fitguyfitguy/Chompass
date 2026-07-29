@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
+
+from schema import MICRO_FIELDS
 
 
 @dataclass
@@ -19,6 +21,7 @@ class ParsedPrediction:
     serving_size_grams: float | None = None
     raw: dict[str, Any] | None = None
     error: str | None = None
+    micros: dict[str, float | None] = field(default_factory=dict)
 
 
 _JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*(\{.*?\})\s*```", re.DOTALL | re.IGNORECASE)
@@ -49,6 +52,21 @@ def extract_json_text(text: str) -> str:
     return text
 
 
+def extract_micros(payload: dict[str, Any]) -> dict[str, float | None]:
+    """Best-effort micronutrient extraction from a parsed model payload.
+
+    Unlike macros, a bad/missing micro value never fails the overall parse —
+    the shipped prompts explicitly allow the model to return null for any
+    micronutrient it can't estimate (see prompts.py LEAN_NUTRIENT_UNITS)."""
+    micros: dict[str, float | None] = {}
+    for pred_key in MICRO_FIELDS.values():
+        try:
+            micros[pred_key] = _coerce_float(payload.get(pred_key))
+        except (TypeError, ValueError):
+            micros[pred_key] = None
+    return micros
+
+
 def parse_food_json(text: str) -> ParsedPrediction:
     try:
         payload = json.loads(extract_json_text(text))
@@ -77,6 +95,7 @@ def parse_food_json(text: str) -> ParsedPrediction:
             fat_g=fat,
             serving_size_grams=serving,
             raw=payload,
+            micros=extract_micros(payload),
         )
 
     return ParsedPrediction(
@@ -87,4 +106,5 @@ def parse_food_json(text: str) -> ParsedPrediction:
         fat_g=fat,
         serving_size_grams=serving,
         raw=payload,
+        micros=extract_micros(payload),
     )
