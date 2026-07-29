@@ -18,6 +18,8 @@ import app.chompass.models.MealType
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
+import app.chompass.models.ProgressiveMealDraft
+import app.chompass.models.ProgressiveMealItem
 import app.chompass.models.UserProfile
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
@@ -99,6 +101,12 @@ data class HomeUiState(
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     val waterTodayMl: Int = 0,
+    /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
+    val progressiveMeal: ProgressiveMealDraft? = null,
+    /** HomeScreen consumes this once to reopen the camera after Add next ingredient. */
+    val resumeProgressiveCapture: Boolean = false,
+    /** Show [ProgressiveMealSheet] when the draft has items and capture is idle. */
+    val showProgressiveMealSheet: Boolean = false,
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
@@ -422,8 +430,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingDraftImageFilename = null,
             )
         }) { start ->
-            val analysis = container.foodAnalysis.analyzeAuto(bytes) { progress ->
-                onFoodAnalysisProgress(start.generation, progress)
+            val singleIngredient = _ui.value.progressiveMeal?.items?.isNotEmpty() == true
+            val analysis = if (singleIngredient) {
+                container.foodAnalysis.analyzeFood(
+                    bytes,
+                    description = null,
+                    singleIngredient = true,
+                ) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }
+            } else {
+                container.foodAnalysis.analyzeAuto(bytes) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }
             }
             savePendingDraft(analysis, imageBytes = bytes, source = FoodSource.SNAP_FOOD, generation = start.generation)
         }
@@ -439,6 +458,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 }
                 else -> images.first()
             }
+            val singleIngredient = _ui.value.progressiveMeal?.items?.isNotEmpty() == true
             withFoodAnalysis(phased = true, configure = { state ->
                 state.copy(
                     pendingImageBytes = displayBytes,
@@ -452,6 +472,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 val analysis = container.foodAnalysis.analyzeFood(
                     images,
                     note?.takeIf { it.isNotBlank() },
+                    singleIngredient = singleIngredient,
                 ) { progress ->
                     onFoodAnalysisProgress(start.generation, progress)
                 }.copy(customNote = note?.takeIf { it.isNotBlank() })
@@ -659,6 +680,166 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingFoodSource = null,
                     pendingDraftImageFilename = null,
                     pendingReviewSource = null
+                )
+            } finally {
+                _ui.value = _ui.value.copy(saving = false)
+            }
+        }
+    }
+
+    /**
+     * Commits the current pending review into the weigh-as-you-go draft.
+     * When [resumeCapture] is true, HomeScreen reopens the camera; otherwise
+     * the progressive meal sheet is shown so the user can Log meal / Add another.
+     */
+    fun addToProgressiveMeal(
+        name: String? = null,
+        servingGrams: Double? = null,
+        mealType: MealType = MealType.currentMeal,
+        selectedServingUnit: String? = null,
+        selectedServingQuantity: Double? = null,
+        editedAnalysis: FoodAnalysis,
+        resumeCapture: Boolean,
+    ) {
+        val imageBytes = _ui.value.pendingImageBytes
+        val source = _ui.value.pendingReviewSource?.source
+            ?: _ui.value.pendingFoodSource
+            ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT
+        val analysis = editedAnalysis.copy(
+            name = name?.takeIf { it.isNotBlank() } ?: editedAnalysis.name,
+            servingSizeGrams = servingGrams ?: editedAnalysis.servingSizeGrams,
+        )
+        val item = ProgressiveMealItem(
+            analysis = analysis,
+            imageBytes = imageBytes,
+            mealType = mealType,
+            source = source,
+            selectedServingUnit = selectedServingUnit,
+            selectedServingQuantity = selectedServingQuantity,
+        )
+        val existing = _ui.value.progressiveMeal
+        val draft = ProgressiveMealDraft(
+            name = existing?.name.orEmpty(),
+            mealType = existing?.mealType ?: mealType,
+            items = (existing?.items ?: emptyList()) + item,
+        )
+        val previousDraftImage = _ui.value.pendingDraftImageFilename
+        _ui.value = _ui.value.copy(
+            progressiveMeal = draft,
+            pendingAnalysis = null,
+            pendingImageBytes = null,
+            pendingFoodSource = null,
+            pendingDraftImageFilename = null,
+            pendingReviewSource = null,
+            resumeProgressiveCapture = resumeCapture,
+            showProgressiveMealSheet = !resumeCapture,
+        )
+        viewModelScope.launch {
+            discardPendingDraft(previousDraftImage)
+        }
+    }
+
+    fun removeProgressiveMealItem(id: UUID) {
+        val draft = _ui.value.progressiveMeal ?: return
+        val remaining = draft.items.filterNot { it.id == id }
+        _ui.value = if (remaining.isEmpty()) {
+            _ui.value.copy(
+                progressiveMeal = null,
+                showProgressiveMealSheet = false,
+                resumeProgressiveCapture = false,
+            )
+        } else {
+            _ui.value.copy(progressiveMeal = draft.copy(items = remaining))
+        }
+    }
+
+    fun updateProgressiveMealMeta(name: String, mealType: MealType) {
+        val draft = _ui.value.progressiveMeal ?: return
+        _ui.value = _ui.value.copy(progressiveMeal = draft.copy(name = name, mealType = mealType))
+    }
+
+    fun discardProgressiveMeal() {
+        _ui.value = _ui.value.copy(
+            progressiveMeal = null,
+            showProgressiveMealSheet = false,
+            resumeProgressiveCapture = false,
+        )
+    }
+
+    fun consumeResumeProgressiveCapture() {
+        if (_ui.value.resumeProgressiveCapture) {
+            _ui.value = _ui.value.copy(resumeProgressiveCapture = false)
+        }
+    }
+
+    fun showProgressiveMealSheet(show: Boolean) {
+        _ui.value = _ui.value.copy(showProgressiveMealSheet = show)
+    }
+
+    /** Start another capture while keeping the draft; hides the meal sheet until review. */
+    fun continueProgressiveCapture() {
+        if (_ui.value.progressiveMeal?.items.isNullOrEmpty()) return
+        _ui.value = _ui.value.copy(
+            showProgressiveMealSheet = false,
+            resumeProgressiveCapture = true,
+        )
+    }
+
+    fun logProgressiveMeal() {
+        val draft = _ui.value.progressiveMeal ?: return
+        if (draft.items.isEmpty() || _ui.value.saving) return
+        viewModelScope.launch {
+            if (_ui.value.saving) return@launch
+            _ui.value = _ui.value.copy(saving = true)
+            try {
+                val recipeLogId = UUID.randomUUID()
+                val timestamp = timestampForSelectedDay()
+                val knownKeys = container.foodRepository.existingFoodIdentityKeys().toMutableSet()
+                val built = draft.items.map { item ->
+                    val entryId = UUID.randomUUID()
+                    val filename = item.imageBytes?.let { persistImage(it, entryId) }
+                    val analysis = item.analysis
+                    val resolvedName = run {
+                        val resolved = disambiguateFoodName(analysis.name, knownKeys)
+                        knownKeys.add(resolved.lowercase())
+                        resolved
+                    }
+                    analysis.toMicronutrients().applyTo(
+                        FoodEntry(
+                            id = entryId,
+                            name = resolvedName,
+                            calories = analysis.calories,
+                            protein = analysis.protein,
+                            carbs = analysis.carbs,
+                            fat = analysis.fat,
+                            timestamp = timestamp,
+                            imageFilename = filename,
+                            emoji = analysis.emoji,
+                            source = item.source,
+                            mealType = draft.mealType,
+                            servingSizeGrams = analysis.servingSizeGrams,
+                            servingUnitOptions = analysis.servingUnitOptions,
+                            selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) {
+                                null
+                            } else {
+                                item.selectedServingUnit
+                            },
+                            selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) {
+                                null
+                            } else {
+                                item.selectedServingQuantity
+                            },
+                            customNote = analysis.customNote,
+                            grounding = analysis.grounding,
+                            recipeLogId = recipeLogId,
+                        )
+                    )
+                }
+                built.forEach { container.foodRepository.addEntry(it) }
+                _ui.value = _ui.value.copy(
+                    progressiveMeal = null,
+                    showProgressiveMealSheet = false,
+                    resumeProgressiveCapture = false,
                 )
             } finally {
                 _ui.value = _ui.value.copy(saving = false)

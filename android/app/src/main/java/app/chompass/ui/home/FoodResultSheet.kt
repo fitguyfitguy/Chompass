@@ -100,6 +100,8 @@ fun FoodResultSheet(
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
     portionClarifyEnabled: Boolean = false,
+    /** True when a weigh-as-you-go draft already has ingredients. */
+    progressiveMealActive: Boolean = false,
     onReprocessPortion: (suspend (portionAnswer: String) -> Unit)? = null,
     onWhatIfSuggestion: (suspend (FoodEntry) -> String)? = null,
     onSave: (
@@ -111,6 +113,20 @@ fun FoodResultSheet(
         selectedServingQuantity: Double?,
         editedAnalysis: FoodAnalysis
     ) -> Unit,
+    /**
+     * Commit this review into the progressive meal draft.
+     * [resumeCapture] true → reopen camera; false → show the meal sheet.
+     */
+    onAddToProgressiveMeal: ((
+        name: String,
+        servingGrams: Double,
+        scale: Double,
+        mealType: MealType,
+        selectedServingUnit: String?,
+        selectedServingQuantity: Double?,
+        editedAnalysis: FoodAnalysis,
+        resumeCapture: Boolean,
+    ) -> Unit)? = null,
     onDismiss: () -> Unit,
     isSaving: Boolean = false,
     inferringUnits: Boolean = false,
@@ -241,6 +257,8 @@ fun FoodResultSheet(
             title = stringResource(R.string.sheet_review_food),
             primaryLabel = if (isSaving) {
                 stringResource(R.string.action_logging)
+            } else if (progressiveMealActive) {
+                stringResource(R.string.progressive_meal_add_to_meal)
             } else {
                 stringResource(R.string.action_log)
             },
@@ -248,7 +266,19 @@ fun FoodResultSheet(
             primaryEnabled = !isSaving,
             onCancel = { if (!isSaving) onDismiss() },
             onPrimary = {
-                if (!isSaving) {
+                if (isSaving) return@SheetReviewToolbar
+                if (progressiveMealActive && onAddToProgressiveMeal != null) {
+                    onAddToProgressiveMeal(
+                        name.trim().ifEmpty { analysis.name },
+                        servingGrams,
+                        scale,
+                        mealType,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        editedAnalysis(),
+                        false,
+                    )
+                } else {
                     onSave(
                         name.trim().ifEmpty { analysis.name },
                         servingGrams,
@@ -262,6 +292,31 @@ fun FoodResultSheet(
             },
             onSecondary = { whatIfEntry = previewEntry() }
         )
+
+        if (onAddToProgressiveMeal != null && !isSaving) {
+            TextButton(
+                onClick = {
+                    onAddToProgressiveMeal(
+                        name.trim().ifEmpty { analysis.name },
+                        servingGrams,
+                        scale,
+                        mealType,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        editedAnalysis(),
+                        true,
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+            ) {
+                Text(
+                    stringResource(R.string.progressive_meal_add_next),
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+        }
 
         LazyColumn(
             modifier = Modifier

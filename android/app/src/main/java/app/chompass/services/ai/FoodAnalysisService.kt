@@ -391,9 +391,22 @@ class FoodAnalysisService(
     suspend fun analyzeFood(
         imageBytes: ByteArray,
         description: String? = null,
+        singleIngredient: Boolean = false,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        var prompt = """
+        var prompt = if (singleIngredient) {
+            """
+            Analyze this food image. It is a single weighed ingredient being added to a meal —
+            estimate only the visible item on its own (do not invent other ingredients).
+            If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
+            Respond ONLY with JSON:
+            $ENTRY_JSON_SCHEMA
+            $ENTRY_NUTRIENT_UNITS
+            $ENTRY_UNIT_OPTIONS_RULE
+            $ENTRY_EMOJI_NULL_RULE
+            """.trimIndent()
+        } else {
+            """
             Analyze this food image. Estimate the nutritional content of the visible food.
             If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
             Respond ONLY with JSON:
@@ -401,7 +414,8 @@ class FoodAnalysisService(
             $ENTRY_NUTRIENT_UNITS
             $ENTRY_UNIT_OPTIONS_RULE
             $ENTRY_EMOJI_NULL_RULE
-        """.trimIndent()
+            """.trimIndent()
+        }
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
@@ -415,9 +429,26 @@ class FoodAnalysisService(
     suspend fun analyzeFood(
         imageBytesList: List<ByteArray>,
         description: String? = null,
+        singleIngredient: Boolean = false,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        var prompt = """
+        if (imageBytesList.filter { it.isNotEmpty() }.size <= 1 && singleIngredient) {
+            val only = imageBytesList.firstOrNull { it.isNotEmpty() } ?: throw AiError.InvalidResponse
+            return analyzeFood(only, description, singleIngredient = true, onProgress = onProgress)
+        }
+        var prompt = if (singleIngredient) {
+            """
+            Analyze these food images. They show a single weighed ingredient being added to a meal —
+            estimate only that ingredient (do not invent other meal components or double-count).
+            If a utensil, hand, coin, or common object is visible next to the food in any image, use it as a size reference to refine your portion estimate.
+            Respond ONLY with JSON:
+            $ENTRY_JSON_SCHEMA
+            $ENTRY_NUTRIENT_UNITS
+            $ENTRY_UNIT_OPTIONS_RULE
+            $ENTRY_EMOJI_NULL_RULE
+            """.trimIndent()
+        } else {
+            """
             Analyze these food images together. They are different angles or supporting photos of the same meal.
             Use all images to estimate the total nutritional content for the serving shown. Do not double-count the meal across images.
             If a utensil, hand, coin, or common object is visible next to the food in any image, use it as a size reference to refine your portion estimate.
@@ -426,7 +457,8 @@ class FoodAnalysisService(
             $ENTRY_NUTRIENT_UNITS
             $ENTRY_UNIT_OPTIONS_RULE
             $ENTRY_EMOJI_NULL_RULE
-        """.trimIndent()
+            """.trimIndent()
+        }
         if (!description.isNullOrBlank()) {
             prompt += "\n\nAdditional context from the user about this meal: $description\nUse this context to improve accuracy of identification, portion size, and nutrition estimates."
         }
