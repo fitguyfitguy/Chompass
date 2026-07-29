@@ -490,6 +490,14 @@
     <string name="settings_section_ai">AI-provider</string>
     <string name="settings_section_speech">Spraak-naar-tekst</string>
     <string name="settings_section_health">Gezondheid &amp; gegevens</string>
+    <string name="settings_group_app_display">App &amp; weergave</string>
+    <string name="settings_group_ai">AI &amp; spraak</string>
+    <string name="settings_group_data">Gezondheid, gegevens &amp; sync</string>
+    <string name="settings_group_personal_summary">Geslacht, lengte, gewicht, maten</string>
+    <string name="settings_group_goals_summary">Dieet, macro\'s, adaptieve doelen</string>
+    <string name="settings_group_app_summary">Uiterlijk, home, meldingen</string>
+    <string name="settings_group_ai_summary">Providers, modellen, spraak</string>
+    <string name="settings_group_data_summary">Health Connect, export, sync</string>
 
     <string name="settings_gender">Geslacht</string>
     <string name="settings_birthday">Geboortedatum</string>

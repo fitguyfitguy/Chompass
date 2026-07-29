@@ -490,6 +490,14 @@
     <string name="settings_section_ai">AI Təminatçısı</string>
     <string name="settings_section_speech">Nitqdən Mətnə</string>
     <string name="settings_section_health">Sağlamlıq və Məlumat</string>
+    <string name="settings_group_app_display">Tətbiq və görünüş</string>
+    <string name="settings_group_ai">AI və nitq</string>
+    <string name="settings_group_data">Sağlamlıq, məlumat və sync</string>
+    <string name="settings_group_personal_summary">Cins, boy, çəki, ölçülər</string>
+    <string name="settings_group_goals_summary">Diet, makro, adaptiv hədəflər</string>
+    <string name="settings_group_app_summary">Görünüş, ana səhifə, bildirişlər</string>
+    <string name="settings_group_ai_summary">Provayderlər, modellər, nitq</string>
+    <string name="settings_group_data_summary">Health Connect, ixrac, sync</string>
 
     <string name="settings_gender">Cins</string>
     <string name="settings_birthday">Doğum Günü</string>

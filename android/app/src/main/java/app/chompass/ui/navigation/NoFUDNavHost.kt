@@ -33,9 +33,14 @@ import app.chompass.ui.home.HomeScreen
 import app.chompass.ui.onboarding.OnboardingScreen
 import app.chompass.ui.progress.BodyMeasurementsScreen
 import app.chompass.ui.progress.ProgressScreen
+import app.chompass.ui.settings.AiSettingsScreen
+import app.chompass.ui.settings.AppSettingsScreen
 import app.chompass.ui.settings.CalculationMethodsScreen
+import app.chompass.ui.settings.DataSettingsScreen
+import app.chompass.ui.settings.GoalsSettingsScreen
 import app.chompass.ui.settings.HomeDisplaySettingsScreen
 import app.chompass.ui.settings.OptionalNutrientGoalsScreen
+import app.chompass.ui.settings.PersonalSettingsScreen
 import app.chompass.ui.settings.SettingsScreen
 
 /**
@@ -152,6 +157,39 @@ fun ChompassNavHost(
                 composable(ChompassRoutes.PROGRESS) { ProgressScreen(container = container) }
                 composable(ChompassRoutes.COACH) { CoachScreen(container = container) }
                 composable(ChompassRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
+                composable(ChompassRoutes.SETTINGS_PERSONAL) {
+                    PersonalSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_GOALS) {
+                    GoalsSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_APP) {
+                    AppSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_AI) {
+                    AiSettingsScreen(
+                        container = container,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_DATA) {
+                    DataSettingsScreen(
+                        container = container,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
                 composable(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) {
                     OptionalNutrientGoalsScreen(container = container, onBack = { nav.popBackStack() })
                 }

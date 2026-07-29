@@ -490,6 +490,14 @@
     <string name="settings_section_ai">AIプロバイダ</string>
     <string name="settings_section_speech">音声入力</string>
     <string name="settings_section_health">ヘルスとデータ</string>
+    <string name="settings_group_app_display">アプリと表示</string>
+    <string name="settings_group_ai">AIと音声</string>
+    <string name="settings_group_data">ヘルス、データ、同期</string>
+    <string name="settings_group_personal_summary">性別、身長、体重、計測</string>
+    <string name="settings_group_goals_summary">食事、マクロ、適応目標</string>
+    <string name="settings_group_app_summary">外観、ホーム、通知</string>
+    <string name="settings_group_ai_summary">プロバイダ、モデル、音声</string>
+    <string name="settings_group_data_summary">Health Connect、エクスポート、同期</string>
 
     <string name="settings_gender">性別</string>
     <string name="settings_birthday">誕生日</string>

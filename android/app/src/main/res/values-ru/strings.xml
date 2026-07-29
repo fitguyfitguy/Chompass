@@ -491,6 +491,14 @@
     <string name="settings_section_ai">ИИ-провайдер</string>
     <string name="settings_section_speech">Речь в текст</string>
     <string name="settings_section_health">Здоровье и данные</string>
+    <string name="settings_group_app_display">Приложение и экран</string>
+    <string name="settings_group_ai">ИИ и речь</string>
+    <string name="settings_group_data">Здоровье, данные и синхронизация</string>
+    <string name="settings_group_personal_summary">Пол, рост, вес, измерения</string>
+    <string name="settings_group_goals_summary">Диета, макросы, адаптивные цели</string>
+    <string name="settings_group_app_summary">Внешний вид, главная, уведомления</string>
+    <string name="settings_group_ai_summary">Провайдеры, модели, речь</string>
+    <string name="settings_group_data_summary">Health Connect, экспорт, синхронизация</string>
 
     <string name="settings_gender">Пол</string>
     <string name="settings_birthday">Дата рождения</string>

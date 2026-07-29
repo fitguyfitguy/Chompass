@@ -490,6 +490,14 @@
     <string name="settings_section_ai">KI-Anbieter</string>
     <string name="settings_section_speech">Spracherkennung</string>
     <string name="settings_section_health">Gesundheit &amp; Daten</string>
+    <string name="settings_group_app_display">App &amp; Anzeige</string>
+    <string name="settings_group_ai">KI &amp; Sprache</string>
+    <string name="settings_group_data">Gesundheit, Daten &amp; Sync</string>
+    <string name="settings_group_personal_summary">Geschlecht, Größe, Gewicht, Maße</string>
+    <string name="settings_group_goals_summary">Ernährung, Makros, adaptive Ziele</string>
+    <string name="settings_group_app_summary">Erscheinungsbild, Startseite, Benachrichtigungen</string>
+    <string name="settings_group_ai_summary">Anbieter, Modelle, Sprache</string>
+    <string name="settings_group_data_summary">Health Connect, Export, Sync</string>
 
     <string name="settings_gender">Geschlecht</string>
     <string name="settings_birthday">Geburtstag</string>
