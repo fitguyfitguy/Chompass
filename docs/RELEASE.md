@@ -167,7 +167,7 @@ Before / during F-Droid review:
 - Keep store metadata under `metadata/en-US/`
 - Keep `docs/fdroid/app.chompass.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 - In the YAML `Builds:` block: **one** current version entry, `commit:` = **full git commit hash** of the release commit (not the tag name)
-- Push metadata with `GITLAB_HOST=gitlab.com ./scripts/submit_fdroiddata_mr.sh` (updates !42984)
+- Paste/update `docs/fdroid/app.chompass.yml` into [!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) via the GitLab web GUI. Optional local helper (maintainer-run): `./scripts/submit_fdroiddata_mr.sh`
 
 See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the checklist and fdroiddata MR body.
 
