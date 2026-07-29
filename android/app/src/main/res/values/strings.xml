@@ -452,7 +452,12 @@
     <!-- Food sheets shared primitives -->
     <string name="sheet_food_details">Food Details</string>
     <string name="sheet_serving">Serving</string>
-    <string name="sheet_portion_clarify_prompt">Not sure about the portion size?</string>
+    <string name="sheet_portion_clarify_prompt">Confirm the portion?</string>
+    <string name="sheet_portion_clarify_weight_label">Exact weight</string>
+    <string name="sheet_portion_clarify_weight_placeholder">grams</string>
+    <string name="sheet_portion_clarify_weight_apply">Apply</string>
+    <string name="sheet_portion_clarify_weight_hint">Enter the total edible weight to rescale calories and macros without another AI call.</string>
+    <string name="sheet_portion_clarify_weight_invalid">Enter a weight greater than 0 g</string>
     <string name="sheet_portion_clarify_small">Small</string>
     <string name="sheet_portion_clarify_regular">Regular</string>
     <string name="sheet_portion_clarify_large">Large</string>
@@ -491,6 +496,10 @@
     <string name="context_note_section">Add a note (optional)</string>
     <string name="context_note_placeholder">e.g. 2 eggs scrambled in butter, grande oat milk latte, Chipotle chicken bowl no rice</string>
     <string name="context_note_hint">Mention quantities, brands, or how it was cooked for a more accurate estimate.</string>
+    <string name="context_note_weight_section">Total weight (optional)</string>
+    <string name="context_note_weight_hint">If you weighed the serving, enter grams here. Exact weight improves accuracy more than a title or ingredient list alone.</string>
+    <string name="context_note_weight_placeholder">e.g. 280</string>
+    <string name="context_note_weight_unit">g</string>
 
     <!-- In-app camera scale tip -->
     <string name="camera_scale_tip_message">Tip: include a fork, hand, or coin next to your food — it helps estimate portion size.</string>
@@ -760,8 +769,8 @@
     <string name="settings_on_device_accuracy_footer">On-device models run locally for privacy. They are much smaller than cloud models (Gemini, GPT, Claude, etc.) and often misread portions, brand names, and photos. Enable Fallback Provider so a cloud model can retry when on-device fails.</string>
     <string name="settings_gemini_google_search">Google Search grounding</string>
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this — on Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
-    <string name="settings_portion_clarify">Portion size check (Beta)</string>
-    <string name="settings_portion_clarify_footer">When enabled, photo entries with an uncertain portion show a quick size chip (small/regular/large/restaurant-size) and re-analyze with your answer for a more accurate estimate.</string>
+    <string name="settings_portion_clarify">Portion size check</string>
+    <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction (rescale without another AI call) plus optional size chips (small/regular/large/restaurant-size) that re-analyze with your answer.</string>
     <string name="on_device_model_privacy_notice">Runs entirely on this device — nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
     <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or non-Tensor hardware — haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
     <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads — especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>

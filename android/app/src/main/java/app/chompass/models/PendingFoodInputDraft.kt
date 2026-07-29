@@ -11,6 +11,8 @@ import java.time.Instant
 data class PendingFoodInputDraft(
     val imageFilename: String,
     val note: String = "",
+    /** Optional user-confirmed total edible grams; null when absent or legacy drafts. */
+    val confirmedPortionGrams: Double? = null,
     val source: FoodSource = FoodSource.SNAP_FOOD,
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant = Instant.now()

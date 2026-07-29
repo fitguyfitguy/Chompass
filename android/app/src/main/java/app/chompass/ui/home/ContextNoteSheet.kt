@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import app.chompass.R
+import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.theme.AppColors
@@ -63,20 +64,29 @@ import app.chompass.ui.theme.AppColors
 /**
  * Intermediate sheet after a photo is captured or picked. Shows the image and an
  * optional note field before sending to the AI. Also offers a second photo for
- * food + nutrition-label composites.
+ * food + nutrition-label composites, plus an optional exact total-weight field.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContextNoteSheet(
     imageBytes: ByteArray,
     initialNote: String = "",
+    initialConfirmedPortionGrams: Double? = null,
     isSubmitting: Boolean = false,
-    onAnalyze: (note: String) -> Unit,
+    onAnalyze: (note: String, confirmedPortionGrams: Double?) -> Unit,
     onAddPhoto: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember(initialNote) { mutableStateOf(initialNote) }
+    var weightText by remember(initialConfirmedPortionGrams) {
+        mutableStateOf(
+            initialConfirmedPortionGrams
+                ?.takeIf { it > 0 }
+                ?.let { ServingUnitOption.formatQuantity(it) }
+                .orEmpty()
+        )
+    }
     var submitted by remember { mutableStateOf(false) }
     val busy = isSubmitting || submitted
     val focusRequester = remember { FocusRequester() }
@@ -173,6 +183,31 @@ fun ContextNoteSheet(
                         .heightIn(min = 110.dp)
                         .focusRequester(focusRequester)
                 )
+
+                SheetSectionHeader(stringResource(R.string.context_note_weight_section))
+                Text(
+                    stringResource(R.string.context_note_weight_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    FudGlassTextField(
+                        value = weightText,
+                        onValueChange = { if (!busy) weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' } },
+                        placeholder = stringResource(R.string.context_note_weight_placeholder),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        stringResource(R.string.context_note_weight_unit),
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    )
+                }
             }
 
             Spacer(Modifier.height(12.dp))
@@ -212,7 +247,7 @@ fun ContextNoteSheet(
                     onClick = {
                         if (!busy) {
                             submitted = true
-                            onAnalyze(note)
+                            onAnalyze(note, parsePositiveGrams(weightText))
                         }
                     },
                     enabled = !busy,
@@ -245,11 +280,12 @@ fun MultiPhotoCaptureSheet(
     showScaleTip: Boolean = false,
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
-    onAnalyze: (String?) -> Unit,
+    onAnalyze: (note: String?, confirmedPortionGrams: Double?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember { mutableStateOf("") }
+    var weightText by remember { mutableStateOf("") }
 
     ChompassBottomSheet(
         onDismiss = onDismiss,
@@ -259,7 +295,9 @@ fun MultiPhotoCaptureSheet(
             title = stringResource(R.string.meal_photos_title),
             primaryLabel = stringResource(R.string.action_analyze),
             onCancel = onDismiss,
-            onPrimary = { onAnalyze(note.takeIf { it.isNotBlank() }) },
+            onPrimary = {
+                onAnalyze(note.takeIf { it.isNotBlank() }, parsePositiveGrams(weightText))
+            },
         )
 
         Column(
@@ -367,10 +405,41 @@ fun MultiPhotoCaptureSheet(
                         .heightIn(min = 110.dp),
                     placeholder = stringResource(R.string.context_note_placeholder),
                 )
+                Text(
+                    stringResource(R.string.context_note_weight_section),
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    stringResource(R.string.context_note_weight_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    FudGlassTextField(
+                        value = weightText,
+                        onValueChange = { weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' } },
+                        placeholder = stringResource(R.string.context_note_weight_placeholder),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        stringResource(R.string.context_note_weight_unit),
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    )
+                }
             }
         }
     }
 }
+
+/** Parse a user-entered grams string; blank or non-positive → null. */
+internal fun parsePositiveGrams(text: String): Double? =
+    text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it > 0.0 }
 
 private fun decodePreviewBitmap(bytes: ByteArray): android.graphics.Bitmap? {
     val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }

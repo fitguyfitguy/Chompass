@@ -35,7 +35,14 @@ echo "== clarify oracle unit checks =="
 uv run python -c "
 import sys
 sys.path.insert(0, 'docs/benchmarks/food_accuracy')
-from clarify import FAT_LEXICON, clarify_answer_block, derive_clarify_fields, portion_bucket
+from clarify import (
+    FAT_LEXICON,
+    clarify_answer_block,
+    derive_clarify_fields,
+    format_portion_answer,
+    portion_bucket,
+    portion_signal,
+)
 from schema import load_manifest
 assert portion_bucket(149) == 'small'
 assert portion_bucket(150) == 'regular'
@@ -49,12 +56,25 @@ samples = {s.id: s for s in load_manifest('docs/benchmarks/food_accuracy/manifes
 s1 = samples['clar-001']
 derived = derive_clarify_fields(s1)
 assert derived['clarify_portion'] == s1.extra['clarify_portion'], derived
+assert derived['clarify_portion_grams']['grams'] == 350
+assert derived['clarify_portion_bucket']['bucket'] == 'large'
 block = clarify_answer_block(s1, portion=True, fat=True)
 assert '350 g' in block and 'olive oil dressing' in block, block
+grams_block = clarify_answer_block(s1, portion=True, portion_mode='grams')
+assert '350 g' in grams_block and 'large' not in grams_block, grams_block
+bucket_block = clarify_answer_block(s1, portion=True, portion_mode='bucket')
+assert 'Portion size: large.' in bucket_block and '350' not in bucket_block, bucket_block
+assert portion_signal(samples['clar-003'], 'grams') is None
+assert portion_signal(samples['clar-003'], 'bucket') is None
 assert 'stated_amounts' == samples['clar-003'].extra['clarify_portion']['kind']
 assert 'amounts were 2 slices pepperoni pizza' in clarify_answer_block(samples['clar-003'], portion=True)
+assert 'amounts were 2 slices pepperoni pizza' in clarify_answer_block(
+    samples['clar-003'], portion=True, portion_mode='amounts'
+)
+assert clarify_answer_block(samples['clar-003'], portion=True, portion_mode='grams') == ''
 assert 'clarify_fat' not in samples['clar-005'].extra
 assert clarify_answer_block(samples['clar-005'], fat=True) == ''
+assert 'small' in format_portion_answer({'kind': 'bucket', 'bucket': 'small'}, mode='bucket')
 print('clarify oracle ok')
 "
 

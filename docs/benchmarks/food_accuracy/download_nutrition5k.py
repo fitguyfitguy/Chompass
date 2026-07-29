@@ -17,6 +17,7 @@ _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
+from image_text_variants import write_image_text_variants
 from schema import DATA_DIR, Sample, write_manifest
 
 GCS_HTTPS = "https://storage.googleapis.com/nutrition5k_dataset/nutrition5k_dataset"
@@ -260,7 +261,7 @@ def build_manifest(
                 continue
             image_path = str(rgb.relative_to(repo_root))
 
-        extra: dict[str, object] = {"ingredients": meta.get("ingredients") or []}
+        extra: dict[str, object] = {}
 
         if not metadata_only and with_depth:
             depth = download_depth_raw(dish_id, imagery_dir)
@@ -272,6 +273,13 @@ def build_manifest(
             if video is not None:
                 extra["video_path"] = str(video.relative_to(repo_root))
                 extra["video_camera"] = with_video
+
+        # Strip per-ingredient grams/macros from the L2-facing list; keep full
+        # rows under extra["ingredients_weighed"] for portion/clarify oracles.
+        weighed = list(meta.get("ingredients") or [])
+        name_only = [{"name": str(ing.get("name", "")).strip()} for ing in weighed if ing.get("name")]
+        extra["ingredients"] = name_only
+        extra["ingredients_weighed"] = weighed
 
         samples.append(
             Sample(
@@ -285,12 +293,21 @@ def build_manifest(
                 carbs_g=float(meta["carbs_g"]),
                 fat_g=float(meta["fat_g"]),
                 mass_g=float(meta["mass_g"]),
-                notes="Nutrition5k overhead RGB when available",
+                notes="Nutrition5k overhead RGB when available; no natural meal title (L2 only)",
                 extra=extra,
             )
         )
 
     write_manifest(out_path, samples)
+    # Nutrition5k dish IDs are not human meal titles — skip L1; L2 = ingredient names.
+    if not metadata_only and samples:
+        write_image_text_variants(
+            samples,
+            out_path.parent,
+            prefix="n5k",
+            write_l1=False,
+            write_l2=True,
+        )
     return len(samples)
 
 

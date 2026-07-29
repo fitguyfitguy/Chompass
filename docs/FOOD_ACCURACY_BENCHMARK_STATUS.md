@@ -23,6 +23,10 @@ This note records what we have measured so far, which defaults to use, and what 
 | `data/manifests/jfb.jsonl` | 50 JFB meal images L0 — image only (downloaded, gitignored) |
 | `data/manifests/jfb_image_text_l1.jsonl` | 50 JFB — image + meal title as user note |
 | `data/manifests/jfb_image_text_l2.jsonl` | 50 JFB — image + ingredient names as user note |
+| `data/manifests/n5k.jsonl` | Nutrition5k overhead RGB L0 (incl. name-only ingredients) |
+| `data/manifests/n5k_image_text_l2.jsonl` | Nutrition5k — image + ingredient names (no L1; dish IDs only) |
+| `data/manifests/acetada.jsonl` (+ `_l1` / `_l2`) | ACETADA before-meal L0/L1/L2 — **CC BY-NC**, research only |
+| `data/manifests/nvreal.jsonl` (+ `_l1` / `_l2`) | NutritionVerse-Real — needs local Kaggle extract; **CC BY-NC-SA** |
 | Metrics | `parse_ok`, WMAPE on {kcal, protein, carbs, fat}, ±20% kcal rate |
 
 **Default free-tier command shape:**
@@ -360,11 +364,37 @@ ambiguous-description items that drive macro error, or independent).
 
 Artifacts: `results/micro_ab/fndds_{lean_units2,production_text,fewshot_units}_gemma/` (gitignored).
 
-## Simulated clarification eval (pre-registered 2026-07-24, not yet run)
+## Simulated clarification eval (pre-registered 2026-07-24)
 
 Strategy doc: [`UNCERTAINTY_DRIVEN_ENTRY.md`](UNCERTAINTY_DRIVEN_ENTRY.md). Since prompt A/B is exhausted and the dominant image failure modes are portion (+100–200%) and hidden fat (−65–80%), this eval measures the **ceiling** of a one-tap clarification UX before building it: inject oracle answers (from GT) into the `compact` prompt as if the user tapped a chip.
 
-Harness: `clarify.py` (oracle derivation), `build_clarify_manifests.py` (enriched `*_clarify.jsonl` + covered-id lists), prompts `compact_clarify_{portion,fat,both,ask}`, `run_clarify_eval.py` (two-stage ask-then-answer: ask_rate / answered_rate / stage-1 vs final). Stage-0 smoke covers all paths with the stub provider. Oracle coverage on current local data: JFB 50/50 portion (stated ingredient amounts — no total mass in JFB), fat 50/50 (present 24/50); N5k 15/15 portion (true grams + bucket), fat 15/15 (present 6/15, lexicon likely misses cooking oil — treat N5k fat condition as weak).
+Harness: `clarify.py` (oracle derivation), `build_clarify_manifests.py` (enriched `*_clarify.jsonl` + covered-id lists), prompts `compact_clarify_{portion,portion_grams,portion_bucket,portion_amounts,fat,both,ask}`, `run_clarify_eval.py` (two-stage ask-then-answer: ask_rate / answered_rate / stage-1 vs final). Stage-0 smoke covers all paths with the stub provider. Oracle coverage on current local data: JFB 50/50 portion (stated ingredient amounts — no total mass in JFB), fat 50/50 (present 24/50); N5k 15/15 portion (true grams + bucket), fat 15/15 (present 6/15, lexicon likely misses cooking oil — treat N5k fat condition as weak).
+
+### Signal split (2026-07-29) — do not conflate chip labels with mass oracles
+
+The historical `compact_clarify_portion` prompt injects the **richest** available oracle per sample. That mixed two different product shapes:
+
+| Prompt / signal | What the model sees | Dataset coverage | Product analogue |
+|-----------------|---------------------|------------------|------------------|
+| `compact_clarify_portion` (legacy) | grams+bucket **or** stated ingredient amounts | N5k / JFB | Mixed — not chip-only |
+| `compact_clarify_portion_grams` | exact total edible grams only | N5k (`mass_g`) | Exact-weight field / deterministic rescale |
+| `compact_clarify_portion_bucket` | `small` / `regular` / `large` / `restaurant-size` only | N5k (bucket from mass) | Qualitative size chips |
+| `compact_clarify_portion_amounts` | per-ingredient qty + unit | JFB ingredient lists | Typed amounts / ingredient rows |
+
+**Important:** the published JFB −15.2 pp WMAPE / +12 pp ±20% result used **stated ingredient amounts**, not the four size-chip labels. The N5k −18.7 pp confirmation used **true total mass**. Neither run isolates bucket-only chips. Until a paired `compact_clarify_portion_bucket` A/B clears the pre-registered thresholds, ship **exact-weight correction** as the validated default path and keep qualitative chips opt-in / soft UX.
+
+```bash
+# Split-signal A/B (N5k for grams/bucket; JFB for amounts)
+uv run python docs/benchmarks/food_accuracy/build_clarify_manifests.py --manifests n5k jfb
+for P in compact compact_clarify_portion_grams compact_clarify_portion_bucket; do
+  uv run python docs/benchmarks/food_accuracy/run_eval.py \
+    --provider openrouter --model google/gemini-3.5-flash-lite \
+    --prompt "$P" --sleep 3 --retries 2 \
+    --manifest docs/benchmarks/food_accuracy/data/manifests/n5k_clarify.jsonl \
+    --ids "$(paste -sd, docs/benchmarks/food_accuracy/data/manifests/n5k_clarify_ids_portion_grams.txt)" \
+    --out docs/benchmarks/food_accuracy/results/clarify_ab/n5k_${P}
+done
+```
 
 **Pre-registered decision thresholds** (set before any paid run; JFB-50 L0 covered ids, Gemini 3.5 Flash-Lite as the stable pin, baseline `compact` = 35.9% WMAPE / 40% ±20%):
 
@@ -372,29 +402,11 @@ Harness: `clarify.py` (oracle derivation), `build_clarify_manifests.py` (enriche
 - **Park**: 3–8 pp WMAPE gain → re-test on N5k grams-oracle (cleaner portion signal) before deciding.
 - **Kill**: <3 pp → the chips bet dies like `compact_portion`; remaining bets are ranges + correction memory.
 - Two-stage sanity: ask_rate in 20–80% and error reduction concentrated on asked items; otherwise the model can't self-detect uncertainty and any UI would need heuristic triggers instead.
+- **Bucket-only gate (2026-07-29):** enable qualitative chips by default only if `compact_clarify_portion_bucket` clears the same ≥8 pp WMAPE / ≥10 pp ±20% bar vs `compact` on N5k covered ids. Exact grams does not need that gate — mass is information-theoretically sufficient and N5k already confirmed the grams oracle.
 
 Caveats registered up front: JFB portion oracle (stated amounts) is a stronger hint than a grams chip — JFB and N5k results are reported per-dataset, never pooled; fat answers stay qualitative to avoid leaking the fat macro.
 
-```bash
-uv run python docs/benchmarks/food_accuracy/build_clarify_manifests.py
-for P in compact compact_clarify_portion compact_clarify_fat compact_clarify_both; do
-  uv run python docs/benchmarks/food_accuracy/run_eval.py \
-    --provider openrouter --model google/gemini-3.5-flash-lite \
-    --prompt "$P" --sleep 3 --retries 2 \
-    --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_clarify.jsonl \
-    --out docs/benchmarks/food_accuracy/results/clarify_ab/jfb_${P}
-done
-uv run python docs/benchmarks/food_accuracy/compare_runs.py \
-  docs/benchmarks/food_accuracy/results/clarify_ab/jfb_compact/summary.csv \
-  docs/benchmarks/food_accuracy/results/clarify_ab/jfb_compact_clarify_{portion,fat,both}/summary.csv
-
-uv run python docs/benchmarks/food_accuracy/run_clarify_eval.py \
-  --provider openrouter --model google/gemini-3.5-flash-lite --sleep 3 \
-  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_clarify.jsonl \
-  --out docs/benchmarks/food_accuracy/results/clarify_ab/jfb_two_stage
-```
-
-### Results (2026-07-24, JFB-50, `google/gemini-3.5-flash-lite`)
+### Results (2026-07-24, JFB-50, `google/gemini-3.5-flash-lite`) — legacy mixed portion oracle (stated amounts on JFB)
 
 Baseline `compact`: WMAPE 38.0%, ±20% kcal 38%.
 
@@ -408,11 +420,12 @@ Two-stage ask-then-answer (`run_clarify_eval.py`, same manifest/pin): ask_rate *
 
 **Decision:**
 
-- **Portion clarification: SHIP-INVESTIGATE.** Clears both pre-registered thresholds on its own; `compact_clarify_both`'s gain is essentially all portion — fat adds no measurable synergy on top. Proceed to an Android portion-chip design (`docs/UNCERTAINTY_DRIVEN_ENTRY.md` bet 1).
+- **Exact-weight / stated-amount clarification: SHIP.** Clears both pre-registered thresholds; Android ships optional pre-analysis total grams + post-analysis exact-grams correction (deterministic rescale) on every photo entry.
+- **Qualitative size chips (bucket-only): OPT-IN until split A/B.** The published ceiling did **not** isolate chip labels; keep chips behind the portion-clarify setting / soft UX until `compact_clarify_portion_bucket` clears the gate above.
 - **Hidden-fat clarification: park.** −5.2pp WMAPE misses the ship-investigate bar and it slightly *hurt* ±20% accuracy — consistent with the pre-registered caveat that JFB's fat lexicon is thin and the answer stays qualitative. Not worth a dedicated chip on this evidence; revisit only with a stronger fat-oracle dataset.
-- **Model self-selects which question to ask: not usable as a trigger.** Ask rate and question choice are both poor (over-asks, and prefers the weaker lever). The portion chip's trigger should be a **heuristic** (e.g. always offer it on photo entries where the model didn't return `serving_size_grams` with high implied confidence, or simply on every photo entry) rather than model self-reported uncertainty.
+- **Model self-selects which question to ask: not usable as a trigger.** Ask rate and question choice are both poor (over-asks, and prefers the weaker lever). The portion row's trigger is **every photo entry**, not model self-reported uncertainty.
 
-**N5k confirmation** (2026-07-24, loose — n=15, true-mass oracle, no lexicon dependency): baseline `compact` WMAPE 34.4% / ±20% 13.3% → `compact_clarify_portion` WMAPE **15.6%** (**−18.7pp**) / ±20% **66.7%** (**+53.4pp**). Direction and magnitude confirm JFB, if anything stronger since the oracle is true mass rather than JFB's stated-ingredient-amount proxy. Small n — treat as confirmatory, not a replacement for a larger N5k run.
+**N5k confirmation** (2026-07-24, loose — n=15, true-mass oracle, no lexicon dependency): baseline `compact` WMAPE 34.4% / ±20% 13.3% → `compact_clarify_portion` WMAPE **15.6%** (**−18.7pp**) / ±20% **66.7%** (**+53.4pp**). Direction and magnitude confirm JFB, if anything stronger since the oracle is true mass rather than JFB's stated-ingredient-amount proxy. Small n — treat as confirmatory, not a replacement for a larger N5k run. This is the evidence base for shipping exact grams, not for claiming bucket chips alone.
 
 Artifacts: `results/clarify_ab/jfb_{compact,compact_clarify_portion,compact_clarify_fat,compact_clarify_both,two_stage}/` (gitignored).
 
@@ -461,6 +474,34 @@ Same 50 IDs; only user `text` differs. L1 = meal title; L2 = ingredient names (n
 | `image_text_ab/l2_ingredient_names` | ingredient names (L2) | 100% | 45.8% | 178 | 22% | ~8.7 s | +4.0 pp WMAPE vs L0 |
 
 **Image+text ranking (Gemma compact):** L0 ≥ L1 > L2. Product “add a short note” may still help identification/UX; on this pin it did not improve macro WMAPE.
+
+### Image + description on Nutrition5k / ACETADA (2026-07-29)
+
+New adapters (`download_nutrition5k.py` L2, `download_acetada.py` L0/L1/L2). n=15 each,
+`compact`, cheap pins. ACETADA is **CC BY-NC** (research only — not for product claims).
+NutritionVerse-Real skipped (no local Kaggle extract).
+
+#### Flash Lite (`google/gemini-3.5-flash-lite`)
+
+| Run | Dataset / text | parse_ok | WMAPE | mae kcal | within 20% | cost (n=15) | Notes |
+|-----|----------------|----------|------:|---------:|-----------:|------------:|-------|
+| `n5k_l0_gemini35_flash_lite` | N5k L0 | 100% | **37.4%** | 88 | 20% | $0.0070 | Lab plates; matches prior ~35% cursory |
+| `n5k_l2_gemini35_flash_lite` | N5k L2 ingredient names | 100% | **30.6%** | 70 | 27% | $0.0073 | **−6.8 pp WMAPE vs L0** |
+| `acetada_l0_gemini35_flash_lite` | ACETADA L0 | 100% | **22.7%** | 125 | 40% | $0.0073 | Free-living before-meal; easier than JFB/N5k |
+| `acetada_l1_gemini35_flash_lite` | ACETADA L1 meal_type | 100% | **18.9%** | 102 | **67%** | $0.0074 | Breakfast/Lunch/Dinner helps |
+| `acetada_l2_gemini35_flash_lite` | ACETADA L2 item names | 100% | **15.0%** | 81 | **87%** | $0.0077 | **Best of this slate** |
+
+**Flash Lite ranking:** On N5k and ACETADA, short notes **help** (opposite of JFB Gemma L0≥L1>L2). ACETADA L2 is a large win (+47 pp ±20% vs L0). N5k L2 is a moderate win. Total Flash Lite spend ≈ **$0.037**.
+
+#### Free router (`nofud/free`) — skipped (2026-07-30)
+
+Full free slate aborted for rate-limit / wall-time cost. Two N5k runs finished before abort; ACETADA free not run.
+
+| Run | Dataset / text | parse_ok | WMAPE | mae kcal | within 20% | Notes |
+|-----|----------------|----------|------:|---------:|-----------:|-------|
+| `n5k_l0_nofud_free` | N5k L0 | 100% | **46.7%** | 112 | 40% | Completed before skip |
+| `n5k_l2_nofud_free` | N5k L2 | 100% | **33.2%** | 78 | 33% | Completed before skip; **−13.5 pp WMAPE vs L0** (same direction as Flash Lite) |
+| ACETADA L0/L1/L2 | — | — | — | — | — | **Skipped** |
 
 ### Follow-ups (JFB 50, L0/L1)
 
@@ -622,7 +663,7 @@ nix shell nixpkgs#ffmpeg -c bash -c '
 | App-parity prompt | `production_text` / `production_image` (= lean, 2026-07-24) | Only when testing schema/units transfer; `legacy_production_image` for the old wording |
 | Text / image pin (stable A/B) | `google/gemma-4-26b-a4b-it:free` | Fast, accurate, vision-capable |
 | Image pacing | `--sleep 15`+ and `--retries 3`+ | Free-tier per-minute limits (image) |
-| Image+text eval | L0/L1/L2 JFB manifests via `download_jfb.py` | Paired A/B; `text` field = user note |
+| Image+text eval | L0/L1/L2 via `download_jfb.py` / `download_nutrition5k.py` (L2) / `download_acetada.py` / `download_nutritionverse_real.py` | Paired A/B; `text` = user note; ACETADA/NV = NC research only |
 
 ---
 
@@ -630,6 +671,9 @@ nix shell nixpkgs#ffmpeg -c bash -c '
 
 - [x] Image **prompt A/B** on pinned Gemma (`compact` vs `production_image` vs `fewshot_units`) — compact wins; longer prompts hurt
 - [x] Image + **description A/B** on JFB 50 (L0/L1/L2, Gemma compact) — L0 image-only wins; L1/L2 do not improve WMAPE
+- [x] Image + description A/B on **Nutrition5k L2** + **ACETADA** L0/L1/L2 with Flash Lite (n=15) — notes **help** here (opp. JFB); ACETADA L2 best (15.0% WMAPE / 87% ±20%). Free slate skipped after N5k L0/L2 completed
+- [ ] NutritionVerse-Real L0/L2 once Kaggle extract is local (`download_nutritionverse_real.py`)
+- [ ] ACETADA / N5k free-router replicate (skipped 2026-07-30)
 - [x] Full **fresh** 50-image run with `nofud/free` from cold start — parse 100%, WMAPE 41.1% (≈ Gemma pin)
 - [x] Nutrition5k overhead RGB **cursory** (n=15, Gemma compact) — WMAPE ~35%; lab plates still hard
 - [x] Image+text with **`production_image`** on L1 — worse than L1 compact (47.3% vs 44.9% WMAPE)
@@ -645,8 +689,11 @@ nix shell nixpkgs#ffmpeg -c bash -c '
 - [ ] Validate the calibration factor out-of-sample on a **larger N5k slice** (n≥50) before shipping any per-model constant — JFB→N5k transfer cost 20pp of ±20% accuracy
 - [ ] Live A/B of a 2-model ensemble path in the app (cost/latency vs +12pp ±20%); needs a product decision on N× BYOK spend
 - [ ] Optional: refresh `nofud/free` pools periodically mid-run (today: once per process)
-- [x] **Simulated clarification eval** (2026-07-24, JFB-50, Flash-Lite) — portion clarification **ships** (−15.2pp WMAPE, +12pp ±20%); fat clarification **parked** (−5.2pp, hurts ±20%); model self-selecting which question to ask is **not usable** (92% ask rate, prefers the weaker fat question 34/50 vs portion 12/50) — trigger must be heuristic, not model self-report. See § Simulated clarification eval.
+- [x] **Simulated clarification eval** (2026-07-24, JFB-50, Flash-Lite) — portion clarification **ships** (−15.2pp WMAPE, +12pp ±20% on **stated amounts**); fat clarification **parked** (−5.2pp, hurts ±20%); model self-selecting which question to ask is **not usable** (92% ask rate, prefers the weaker fat question 34/50 vs portion 12/50) — trigger must be heuristic, not model self-report. See § Simulated clarification eval.
 - [x] Confirm portion-clarification result on Nutrition5k (true-mass oracle, no lexicon dependency) — confirmed, n=15: −18.7pp WMAPE, +53.4pp ±20% (stronger than JFB)
+- [x] **Split portion-oracle signals** (2026-07-29) — harness prompts `compact_clarify_portion_{grams,bucket,amounts}` + covered-id lists; docs corrected so chip labels are not credited with the mixed-oracle ceiling. Bucket-only default-on still gated on a paid A/B.
+- [ ] Paired N5k A/B: `compact` vs `compact_clarify_portion_grams` vs `compact_clarify_portion_bucket` (gate qualitative chips)
+- [ ] Paired JFB A/B: `compact` vs `compact_clarify_portion_amounts`
 - [x] **Native video input vs still image** (2026-07-28, N5k turntable clips, free Gemma pin, n=12 paired) — video input **lost**: WMAPE 25.6%→37.2%, ±20% 41.7%→33.3%, 4.2× tokens, worse reliability. See § Native video input vs still image.
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 - [x] **Micronutrient scoring** (2026-07-29, FNDDS text, pinned Gemma) — implemented for text; presence rate **100%** on every nutrient across all `FULL_JSON_SCHEMA` prompts tested; `micro_wmape` (33-49%) trails macro `wmape` by 1.5-4×. See § Micronutrient scoring.

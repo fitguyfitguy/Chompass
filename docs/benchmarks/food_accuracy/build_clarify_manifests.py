@@ -52,6 +52,9 @@ def enrich(name: str, manifest_path: Path) -> None:
         attach_n5k_ingredients(samples)
 
     portion_ids: list[str] = []
+    grams_ids: list[str] = []
+    bucket_ids: list[str] = []
+    amounts_ids: list[str] = []
     fat_ids: list[str] = []
     fat_present = 0
     for sample in samples:
@@ -59,6 +62,12 @@ def enrich(name: str, manifest_path: Path) -> None:
         sample.extra.update(fields)
         if "clarify_portion" in fields:
             portion_ids.append(sample.id)
+        if "clarify_portion_grams" in fields:
+            grams_ids.append(sample.id)
+        if "clarify_portion_bucket" in fields:
+            bucket_ids.append(sample.id)
+        if "clarify_portion_amounts" in fields:
+            amounts_ids.append(sample.id)
         if "clarify_fat" in fields:
             fat_ids.append(sample.id)
             if fields["clarify_fat"]["present"]:
@@ -67,14 +76,22 @@ def enrich(name: str, manifest_path: Path) -> None:
     both_ids = [i for i in portion_ids if i in set(fat_ids)]
     out_path = manifest_path.with_name(f"{manifest_path.stem}_clarify.jsonl")
     write_manifest(out_path, samples)
-    for suffix, ids in (("portion", portion_ids), ("fat", fat_ids), ("both", both_ids)):
+    for suffix, ids in (
+        ("portion", portion_ids),
+        ("portion_grams", grams_ids),
+        ("portion_bucket", bucket_ids),
+        ("portion_amounts", amounts_ids),
+        ("fat", fat_ids),
+        ("both", both_ids),
+    ):
         ids_path = manifest_path.with_name(f"{manifest_path.stem}_clarify_ids_{suffix}.txt")
         ids_path.write_text("\n".join(ids) + ("\n" if ids else ""), encoding="utf-8")
 
     n = len(samples)
     fat_rate = f"{fat_present}/{len(fat_ids)}" if fat_ids else "n/a"
     print(
-        f"{name}: {n} samples -> {out_path.name} | portion oracle {len(portion_ids)}/{n}, "
+        f"{name}: {n} samples -> {out_path.name} | portion oracle {len(portion_ids)}/{n} "
+        f"(grams {len(grams_ids)}, bucket {len(bucket_ids)}, amounts {len(amounts_ids)}), "
         f"fat oracle {len(fat_ids)}/{n} (fat present {fat_rate}), both {len(both_ids)}/{n}"
     )
 

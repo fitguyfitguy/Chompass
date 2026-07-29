@@ -88,6 +88,7 @@ data class HomeUiState(
     val pendingReviewSource: FoodEntry? = null,
     val pendingInputImageBytes: ByteArray? = null,
     val pendingInputNote: String? = null,
+    val pendingInputConfirmedPortionGrams: Double? = null,
     val pendingInputDraftImageFilename: String? = null,
     /** Intermediate grounded-entry review (candidate / portion picks). */
     val pendingGroundedReview: PendingGroundedReview? = null,
@@ -448,7 +449,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun analyzePhotos(imageBytesList: List<ByteArray>, note: String? = null) {
+    fun analyzePhotos(
+        imageBytesList: List<ByteArray>,
+        note: String? = null,
+        confirmedPortionGrams: Double? = null,
+    ) {
         viewModelScope.launch {
             val images = imageBytesList.filter { it.isNotEmpty() }.take(10)
             if (images.isEmpty()) return@launch
@@ -458,6 +463,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 }
                 else -> images.first()
             }
+            val grams = confirmedPortionGrams?.takeIf { it > 0 }
             val singleIngredient = _ui.value.progressiveMeal?.items?.isNotEmpty() == true
             withFoodAnalysis(phased = true, configure = { state ->
                 state.copy(
@@ -466,13 +472,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingDraftImageFilename = null,
                 )
             }) { start ->
-                if (!note.isNullOrBlank() && images.size == 1) {
-                    savePendingInputDraft(images.first(), note, FoodSource.SNAP_FOOD)
+                if ((!note.isNullOrBlank() || grams != null) && images.size == 1) {
+                    savePendingInputDraft(
+                        images.first(),
+                        note.orEmpty(),
+                        FoodSource.SNAP_FOOD,
+                        confirmedPortionGrams = grams,
+                    )
                 }
                 val analysis = container.foodAnalysis.analyzeFood(
                     images,
                     note?.takeIf { it.isNotBlank() },
                     singleIngredient = singleIngredient,
+                    confirmedPortionGrams = grams,
                 ) { progress ->
                     onFoodAnalysisProgress(start.generation, progress)
                 }.copy(customNote = note?.takeIf { it.isNotBlank() })
@@ -495,9 +507,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * "Camera + Note" flow — analyze a photo with extra textual context the
      * user typed in (e.g. "extra cheese", "no oil"). Mirrors iOS
      * `cameraMode == .snapFoodWithContext` → `GeminiService.analyzeFood(image, description:)`.
+     * Optional [confirmedPortionGrams] is passed as a controlled ground-truth instruction,
+     * separate from the free-form note.
      */
-    fun analyzePhotoWithNote(bytes: ByteArray, note: String) {
-        analyzePhotos(listOf(bytes), note)
+    fun analyzePhotoWithNote(
+        bytes: ByteArray,
+        note: String,
+        confirmedPortionGrams: Double? = null,
+    ) {
+        analyzePhotos(listOf(bytes), note, confirmedPortionGrams)
     }
 
     fun lookupBarcode(barcode: String) {
@@ -896,7 +914,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 )
                 return@launch
             }
-            analyzePhotoWithNote(bytes, snapshot.pendingInputNote.orEmpty())
+            analyzePhotoWithNote(
+                bytes,
+                snapshot.pendingInputNote.orEmpty(),
+                confirmedPortionGrams = snapshot.pendingInputConfirmedPortionGrams,
+            )
         }
     }
 
@@ -1080,6 +1102,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingReviewSource = null,
             pendingInputImageBytes = null,
             pendingInputNote = null,
+            pendingInputConfirmedPortionGrams = null,
             pendingInputDraftImageFilename = null
         )
     }
@@ -1108,6 +1131,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingReviewSource = null,
                 pendingInputImageBytes = null,
                 pendingInputNote = null,
+                pendingInputConfirmedPortionGrams = null,
                 pendingInputDraftImageFilename = null,
                 error = null
             )
@@ -1129,7 +1153,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private suspend fun savePendingInputDraft(
         imageBytes: ByteArray,
         note: String,
-        source: FoodSource = FoodSource.SNAP_FOOD
+        source: FoodSource = FoodSource.SNAP_FOOD,
+        confirmedPortionGrams: Double? = null,
     ) {
         val previousFilename = _ui.value.pendingInputDraftImageFilename
             ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
@@ -1137,16 +1162,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (previousFilename != null && previousFilename != imageFilename) {
             container.imageStore.delete(previousFilename)
         }
+        val grams = confirmedPortionGrams?.takeIf { it > 0 }
         container.prefs.setPendingFoodInputDraft(
             PendingFoodInputDraft(
                 imageFilename = imageFilename,
                 note = note,
+                confirmedPortionGrams = grams,
                 source = source
             )
         )
         _ui.value = _ui.value.copy(
             pendingInputImageBytes = imageBytes,
             pendingInputNote = note,
+            pendingInputConfirmedPortionGrams = grams,
             pendingInputDraftImageFilename = imageFilename
         )
     }
@@ -1163,6 +1191,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.value = _ui.value.copy(
             pendingInputImageBytes = bytes,
             pendingInputNote = draft.note,
+            pendingInputConfirmedPortionGrams = draft.confirmedPortionGrams?.takeIf { it > 0 },
             pendingInputDraftImageFilename = draft.imageFilename,
             error = null
         )
@@ -1176,6 +1205,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.value = _ui.value.copy(
             pendingInputImageBytes = null,
             pendingInputNote = null,
+            pendingInputConfirmedPortionGrams = null,
             pendingInputDraftImageFilename = null
         )
     }
@@ -1199,19 +1229,27 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             HomeViewModel(container) as T
     }
 
-    /** Beta portion-clarify chip (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1): re-analyzes the
+    /** Portion-clarify chip (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1): re-analyzes the
      *  still-pending (not yet saved) photo analysis with the user's portion answer injected
-     *  as extra context, then replaces pendingAnalysis so FoodResultSheet recomposes with the
-     *  refined estimate. */
+     *  as extra context, preserving the original custom note, then replaces pendingAnalysis
+     *  so FoodResultSheet recomposes with the refined estimate. */
     suspend fun reprocessPendingAnalysis(portionAnswer: String) {
         val bytes = _ui.value.pendingImageBytes ?: return
         val current = _ui.value.pendingAnalysis
+        val originalNote = current?.customNote?.trim()?.takeIf { it.isNotEmpty() }
         val description = buildString {
-            current?.name?.trim()?.takeIf { it.isNotEmpty() }?.let { append(it); append(". ") }
+            current?.name?.trim()?.takeIf { it.isNotEmpty() }?.let {
+                append(it)
+                append(". ")
+            }
+            if (originalNote != null) {
+                append(originalNote)
+                append(". ")
+            }
             append("Portion size: $portionAnswer")
         }
         val result = container.foodAnalysis.analyzeFood(bytes, description)
-            .copy(customNote = current?.customNote)
+            .copy(customNote = originalNote)
         _ui.value = _ui.value.copy(pendingAnalysis = result)
     }
 

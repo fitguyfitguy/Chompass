@@ -229,9 +229,15 @@ def _compact_base_prompt(sample) -> str:
     return compact_image_prompt(description=user_description(sample))
 
 
-def compact_clarify_prompt(sample, *, portion: bool = False, fat: bool = False) -> str:
+def compact_clarify_prompt(
+    sample,
+    *,
+    portion: bool = False,
+    fat: bool = False,
+    portion_mode: str = "full",
+) -> str:
     return _compact_base_prompt(sample) + clarify_answer_block(
-        sample, portion=portion, fat=fat
+        sample, portion=portion, fat=fat, portion_mode=portion_mode  # type: ignore[arg-type]
     )
 
 
@@ -318,7 +324,18 @@ Give your best estimate for the visible food amount shown in the image. Use null
         else _build_image_prompt(sample, compact_scale_ref_image_prompt)
     ),
     # Simulated clarification (oracle chip answers); research-only.
+    # compact_clarify_portion = richest available signal (historical; mixed
+    # grams+bucket on N5k vs stated amounts on JFB — do not treat as chip-only).
     "compact_clarify_portion": lambda sample: compact_clarify_prompt(sample, portion=True),
+    "compact_clarify_portion_grams": lambda sample: compact_clarify_prompt(
+        sample, portion=True, portion_mode="grams"
+    ),
+    "compact_clarify_portion_bucket": lambda sample: compact_clarify_prompt(
+        sample, portion=True, portion_mode="bucket"
+    ),
+    "compact_clarify_portion_amounts": lambda sample: compact_clarify_prompt(
+        sample, portion=True, portion_mode="amounts"
+    ),
     "compact_clarify_fat": lambda sample: compact_clarify_prompt(sample, fat=True),
     "compact_clarify_both": lambda sample: compact_clarify_prompt(
         sample, portion=True, fat=True
