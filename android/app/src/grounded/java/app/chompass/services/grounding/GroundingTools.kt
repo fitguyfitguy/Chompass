@@ -21,6 +21,7 @@ class GroundingTools(
     private val historyPool: List<FoodEntry>,
     private val prefs: PreferencesStore?,
     private val barcodeLookup: (suspend (String) -> FoodAnalysis)? = null,
+    private val offSearch: (suspend (String, String?, Int) -> List<OpenFoodFactsService.SearchHit>)? = null,
     private val onToolUsed: (String) -> Unit = {},
 ) {
     /** Set by the most recent successful [finalize_grounding] in this turn. */
@@ -30,6 +31,8 @@ class GroundingTools(
     var searchUsdaCount: Int = 0
         private set
     var searchHistoryCount: Int = 0
+        private set
+    var searchOffCount: Int = 0
         private set
     var barcodeLookupCount: Int = 0
         private set
@@ -70,6 +73,7 @@ class GroundingTools(
         return when (name) {
             "search_usda" -> searchUsda(args)
             "search_history" -> searchHistory(args)
+            "search_off" -> searchOff(args)
             "lookup_barcode" -> lookupBarcode(args)
             "finalize_grounding" -> finalizeGrounding(args)
             else -> jsonError("Unknown tool: $name. Available: ${TOOL_NAMES.joinToString()}")
@@ -111,6 +115,53 @@ class GroundingTools(
             put(
                 "hint",
                 "History matches identity only — do not copy prior portion unless the user said so.",
+            )
+        }.toString()
+    }
+
+    private suspend fun searchOff(args: JSONObject): String {
+        searchOffCount++
+        val rawQuery = args.optString("query").trim()
+        if (rawQuery.isEmpty()) return jsonError("query is required")
+        val brand = args.optString("brand").takeIf { it.isNotBlank() && it != "null" }
+        val limit = args.optInt("limit", 6).coerceIn(1, 8)
+        val hits = runCatching {
+            offSearch?.invoke(rawQuery, brand, limit)
+                ?: OpenFoodFactsService.search(rawQuery, brand = brand, limit = limit)
+        }.getOrElse { emptyList() }
+        val candidates = hits
+            .filter { !it.incompleteEnergy || it.caloriesPer100g != null }
+            .map { hit ->
+                GroundingCandidate(
+                    sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
+                    sourceId = hit.barcode,
+                    displayName = hit.name,
+                    score = hit.score,
+                    brand = hit.brand,
+                    incompleteEnergy = hit.incompleteEnergy,
+                    caloriesPer100g = hit.caloriesPer100g,
+                    proteinPer100g = hit.proteinPer100g,
+                    carbsPer100g = hit.carbsPer100g,
+                    fatPer100g = hit.fatPer100g,
+                    servingSizeGrams = hit.servingGrams,
+                    matchedBy = "off_search",
+                    datasetVersion = "openfoodfacts-live",
+                )
+            }
+        candidates.forEach { rememberSourceId(it.sourceId) }
+        val ambiguous = candidates.size >= 2 &&
+            (candidates[0].score - candidates[1].score) < UsdaFoodIndex.AMBIGUITY_SCORE_DELTA
+        return JSONObject().apply {
+            put("query", rawQuery)
+            if (brand != null) put("brand", brand)
+            put("results", candidatesToJson(candidates))
+            put("ambiguous", ambiguous)
+            put(
+                "hint",
+                "Packaged/branded products: pick source_id (barcode) from results. " +
+                    "Prefer lookup_barcode when digits are known. " +
+                    (if (ambiguous) "Top matches are close — set needs_user_choice if unsure. " else "") +
+                    "Do not invent macros.",
             )
         }.toString()
     }
@@ -259,6 +310,7 @@ class GroundingTools(
         val TOOL_NAMES = listOf(
             "search_usda",
             "search_history",
+            "search_off",
             "lookup_barcode",
             "finalize_grounding",
         )
@@ -268,6 +320,8 @@ class GroundingTools(
                 "Search the offline USDA Foundation + FNDDS food index. Returns ranked candidates with macros per 100g. Call before picking a USDA source_id.",
             "search_history" to
                 "Search the user's confirmed diary and favorites for identity matches. Portion is not auto-copied.",
+            "search_off" to
+                "Search Open Food Facts by product/brand name for packaged foods. Prefer this over USDA when a brand is known; use lookup_barcode when barcode digits are known.",
             "lookup_barcode" to
                 "Look up a packaged product by barcode digits via Open Food Facts.",
             "finalize_grounding" to
@@ -281,6 +335,18 @@ class GroundingTools(
                     "properties",
                     JSONObject().apply {
                         put("query", JSONObject().put("type", "string").put("description", "Food name / preparation to search"))
+                        put("limit", JSONObject().put("type", "integer").put("description", "Max results 1–8 (default 6)"))
+                    },
+                )
+                put("required", JSONArray().put("query"))
+            }
+            "search_off" -> JSONObject().apply {
+                put("type", "object")
+                put(
+                    "properties",
+                    JSONObject().apply {
+                        put("query", JSONObject().put("type", "string").put("description", "Product name to search on Open Food Facts"))
+                        put("brand", JSONObject().put("type", "string").put("description", "Optional brand to narrow results"))
                         put("limit", JSONObject().put("type", "integer").put("description", "Max results 1–8 (default 6)"))
                     },
                 )

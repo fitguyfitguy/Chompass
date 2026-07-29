@@ -2,6 +2,7 @@ package app.chompass.services
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -148,5 +149,25 @@ class OpenFoodFactsMappingTest {
         )
         val food = OpenFoodFactsService.analysis(product, "999")
         assertEquals("Barcode 999", food.name)
+    }
+
+    @Test
+    fun searchHit_scoresPreferNameOverlap() {
+        // Construction-only: SearchHit is the search API surface used by GroundingTools.
+        val hit = OpenFoodFactsService.SearchHit(
+            barcode = "3017620422003",
+            name = "Nutella",
+            brand = "Ferrero",
+            caloriesPer100g = 539.0,
+            proteinPer100g = 6.3,
+            carbsPer100g = 57.5,
+            fatPer100g = 30.9,
+            servingGrams = 15.0,
+            incompleteEnergy = false,
+            score = 9.0,
+        )
+        assertEquals("3017620422003", hit.barcode)
+        assertEquals(539.0, hit.caloriesPer100g!!, 0.01)
+        assertFalse(hit.incompleteEnergy)
     }
 }

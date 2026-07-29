@@ -9,11 +9,12 @@ import kotlin.math.roundToInt
  * Deterministic portion resolution for grounded entry.
  *
  * Precedence:
- * 1. Explicit gram override (user correction UI)
- * 2. Recognized estimatedGrams
- * 3. quantity × unit using USDA/OFF serving, then household defaults / heuristics
+ * 1. Explicit gram override (user correction UI / finalize grams)
+ * 2. quantity × unit using USDA/OFF serving, then household defaults / heuristics
+ * 3. Recognized estimatedGrams (only when qty/unit/hint cannot resolve)
  * 4. Selected candidate servingSizeGrams
- * 5. Unresolved (null) — never silently invent 100 g
+ * 5. Name heuristic default
+ * 6. Unresolved (null) — never silently invent 100 g
  */
 object PortionResolver {
     enum class Source {
@@ -34,6 +35,11 @@ object PortionResolver {
         val isResolved: Boolean get() = grams != null && grams > 0
     }
 
+    private val VAGUE_UNITS = setOf(
+        "slice", "slices", "piece", "pieces", "large", "medium", "small",
+    )
+
+    /** Canonical household unit → grams. Aliases normalize via [canonicalUnit]. */
     private val HOUSEHOLD_GRAMS = mapOf(
         "g" to 1.0,
         "gram" to 1.0,
@@ -73,6 +79,29 @@ object PortionResolver {
         "small" to 80.0,
     )
 
+    /** Map common aliases / plurals to a key present in [HOUSEHOLD_GRAMS]. */
+    private fun canonicalUnit(unit: String): String {
+        val u = unit.trim().lowercase(Locale.US)
+        return when (u) {
+            "tbs", "tbl", "tbls", "tablespoon", "tablespoons" -> "tbsp"
+            "teaspoon", "teaspoons" -> "tsp"
+            "ounce", "ounces" -> "oz"
+            "pound", "pounds", "lbs" -> "lb"
+            "gram", "grams" -> "g"
+            "liter", "litre", "liters", "litres" -> "l"
+            else -> u
+        }
+    }
+
+    private fun unitsMatch(a: String, b: String): Boolean {
+        val ca = canonicalUnit(a)
+        val cb = canonicalUnit(b)
+        if (ca == cb) return true
+        if (ca.contains(cb) || cb.contains(ca)) return true
+        if (ca.removeSuffix("s") == cb.removeSuffix("s")) return true
+        return false
+    }
+
     fun resolve(
         component: RecognizedFoodComponent,
         gramOverride: Double? = null,
@@ -82,20 +111,18 @@ object PortionResolver {
         if (gramOverride != null && gramOverride > 0) {
             return Result(gramOverride, Source.OVERRIDE, "user_override=${gramOverride}g", false)
         }
-        component.estimatedGrams?.takeIf { it > 0 }?.let {
-            return Result(it, Source.ESTIMATED_GRAMS, "estimated_grams=$it", false)
-        }
 
         val qty = component.quantity
-        val unit = component.unit?.trim()?.lowercase(Locale.US)
-        if (qty != null && qty > 0 && !unit.isNullOrBlank()) {
+        val unitRaw = component.unit?.trim()?.lowercase(Locale.US)
+        if (qty != null && qty > 0 && !unitRaw.isNullOrBlank()) {
+            val unit = canonicalUnit(unitRaw)
             val fromCandidate = unitGramsFromCandidate(unit, candidateServingUnit, candidateServingGrams)
             if (fromCandidate != null) {
                 return Result(
                     grams = qty * fromCandidate,
                     source = Source.QUANTITY_UNIT,
                     evidence = "quantity=${qty}×${unit} via candidate serving ${fromCandidate}g",
-                    needsUserConfirmation = false,
+                    needsUserConfirmation = unit in VAGUE_UNITS || canonicalUnit(unitRaw) in VAGUE_UNITS,
                 )
             }
             HOUSEHOLD_GRAMS[unit]?.let { per ->
@@ -103,13 +130,11 @@ object PortionResolver {
                     grams = qty * per,
                     source = Source.QUANTITY_UNIT,
                     evidence = "quantity=${qty}×${unit} household ${per}g",
-                    needsUserConfirmation = unit in setOf("slice", "slices", "piece", "pieces", "large", "medium", "small"),
+                    needsUserConfirmation = unit in VAGUE_UNITS,
                 )
             }
             ServingUnitHeuristics.matchingRule(component.name)?.let { rule ->
-                if (rule.unit.equals(unit, ignoreCase = true) ||
-                    unit in setOf("piece", "pieces", "slice", "slices")
-                ) {
+                if (unitsMatch(rule.unit, unit) || unit in setOf("piece", "pieces", "slice", "slices")) {
                     return Result(
                         grams = qty * rule.defaultGramsPerUnit,
                         source = Source.HEURISTIC,
@@ -121,7 +146,8 @@ object PortionResolver {
         }
 
         // Unit-only heuristics: "1 large egg" style via portion_hint quantity parse.
-        parseHintQuantity(component.portionHint)?.let { (hintQty, hintUnit) ->
+        parseHintQuantity(component.portionHint)?.let { (hintQty, hintUnitRaw) ->
+            val hintUnit = canonicalUnit(hintUnitRaw)
             val gramsPer = unitGramsFromCandidate(hintUnit, candidateServingUnit, candidateServingGrams)
                 ?: HOUSEHOLD_GRAMS[hintUnit]
                 ?: ServingUnitHeuristics.matchingRule(component.name)?.defaultGramsPerUnit
@@ -133,6 +159,12 @@ object PortionResolver {
                     needsUserConfirmation = true,
                 )
             }
+        }
+
+        // estimatedGrams only after qty/unit/hint failed — bad model grams must not
+        // override an explicit household quantity.
+        component.estimatedGrams?.takeIf { it > 0 }?.let {
+            return Result(it, Source.ESTIMATED_GRAMS, "estimated_grams=$it", false)
         }
 
         candidateServingGrams?.takeIf { it > 0 }?.let {
@@ -173,9 +205,7 @@ object PortionResolver {
     ): Double? {
         if (candidateGrams == null || candidateGrams <= 0) return null
         val cu = candidateUnit?.trim()?.lowercase(Locale.US) ?: return null
-        if (cu == unit || cu.contains(unit) || unit.contains(cu)) return candidateGrams
-        // USDA often stores "cup" while recognition says "cups"
-        if (cu.removeSuffix("s") == unit.removeSuffix("s")) return candidateGrams
+        if (unitsMatch(unit, cu)) return candidateGrams
         return null
     }
 

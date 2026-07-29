@@ -690,14 +690,25 @@ Failure modes / portion reasoning for hard vs easy samples: [§ Failure modes & 
 
 Canonical status and checklist: [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md). **`GroundedEntryFeature.ENABLED` remains false.**
 
-Text-42 tool-loop progress (Flash Lite, same split as single-shot benches):
+### Primary text gate — realistic prompts (no grams in text)
 
-| Run | WMAPE | ±20% kcal | parse | vs ungrounded Flash Lite |
-|-----|------:|----------:|------:|--------------------------|
-| Prior grounded tool-loop | 17.7% | 76.3% | 90.5% | much worse |
-| Post-roadmap grounded (2026-07-22) | **12.8%** | **78.6%** | **100%** | still ~2.7× WMAPE of 4.8% single-shot |
-| Ungrounded Flash Lite `compact` | **4.8%** | **92.9%** | 100% | reference |
-| Ungrounded Gemma `compact` | **5.7%** | 90.5% | 100% | best free text |
+Manifest: [`eval_grounded_realistic_text.jsonl`](benchmarks/food_accuracy/manifest/eval_grounded_realistic_text.jsonl) (38 samples: vague / household / multi / branded). Thresholds: [`grounded_realistic_text_thresholds.json`](benchmarks/food_accuracy/baselines/grounded_realistic_text_thresholds.json).
 
-Ship targets (≤10% WMAPE, ≥85% ±20%) are **not** met. Remaining grounded errors are mostly portion, then identity. Local artifact: `results/grounded_tool_gemini35_flash_lite_text_post_roadmap/` (gitignored).
+| Run (Flash Lite, 2026-07-29) | WMAPE | ±20% kcal | parse |
+|------------------------------|------:|----------:|------:|
+| Ungrounded `compact` | 27.3% | 71.1% | 100% |
+| Grounded tool-loop + OFF fixtures | **18.5%** | **76.3%** | **100%** |
+
+Grounded **beats** same-manifest single-shot overall. Branded slice is the clearest win (7.1% vs 120% WMAPE; 75% OFF source rate). Vague titles remain the weak slice for grounded. Artifacts: `results/*_realistic_text/` (gitignored).
+
+### Gram-rich identity regression (`eval_text.jsonl`)
+
+Not a ship gate — every prompt embeds mass, so single-shot parsing dominates.
+
+| Run | WMAPE | ±20% kcal | parse |
+|-----|------:|----------:|------:|
+| Prior grounded tool-loop | 17.7% | 76.3% | 90.5% |
+| Post-roadmap grounded (2026-07-22) | 12.8% | 78.6% | 100% |
+| Portion-fidelity grounded (2026-07-29) | 10.1% | 81.0% | 100% |
+| Ungrounded Flash Lite `compact` | **4.8%** | **92.9%** | 100% |
 

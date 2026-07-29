@@ -414,8 +414,8 @@ class GroundedFoodEntryService(
                     selected = candidate,
                     candidates = listOf(candidate),
                     analysis = analysis,
-                    needsUserChoice = portion.needsUserConfirmation && grams == null,
-                    question = if (portion.needsUserConfirmation && grams == null) {
+                    needsUserChoice = portion.needsUserConfirmation,
+                    question = if (portion.needsUserConfirmation) {
                         "Confirm portion for \"${pick.name}\""
                     } else null,
                 )
@@ -467,7 +467,10 @@ class GroundedFoodEntryService(
                     selected = candidate,
                     candidates = listOf(candidate),
                     analysis = historyToAnalysis(hit.entry, g, component),
-                    needsUserChoice = false,
+                    needsUserChoice = portion.needsUserConfirmation,
+                    question = if (portion.needsUserConfirmation) {
+                        "Confirm portion for \"${pick.name}\""
+                    } else null,
                 )
             }
             else -> resolveComponent(
@@ -616,7 +619,10 @@ class GroundedFoodEntryService(
                                 portion.source == PortionResolver.Source.OVERRIDE,
                         ),
                     ),
-                    needsUserChoice = false,
+                    needsUserChoice = portion.needsUserConfirmation,
+                    question = if (portion.needsUserConfirmation) {
+                        "Confirm portion for \"${component.name}\""
+                    } else null,
                 )
             }
         }
@@ -742,7 +748,10 @@ class GroundedFoodEntryService(
             selected = selected,
             candidates = ranked,
             analysis = withPortion,
-            needsUserChoice = false,
+            needsUserChoice = portion.needsUserConfirmation,
+            question = if (portion.needsUserConfirmation) {
+                "Confirm portion for \"${component.name}\""
+            } else null,
         )
     }
 

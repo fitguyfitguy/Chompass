@@ -1,0 +1,122 @@
+{
+  "Nutella": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "3017620425035",
+      "description": "Ferrero Nutella",
+      "brand": "Ferrero",
+      "score": 10.0,
+      "calories_per_100g": 539.0,
+      "protein_per_100g": 6.3,
+      "carbs_per_100g": 57.5,
+      "fat_per_100g": 30.9,
+      "serving_grams": 15.0,
+      "serving_unit": "serving"
+    }
+  ],
+  "Ferrero Nutella": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "3017620425035",
+      "description": "Ferrero Nutella",
+      "brand": "Ferrero",
+      "score": 10.0,
+      "calories_per_100g": 539.0,
+      "protein_per_100g": 6.3,
+      "carbs_per_100g": 57.5,
+      "fat_per_100g": 30.9,
+      "serving_grams": 15.0,
+      "serving_unit": "serving"
+    }
+  ],
+  "Coca-Cola": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "5449000000996",
+      "description": "Coca-Cola",
+      "brand": "Coca-Cola",
+      "score": 10.0,
+      "calories_per_100g": 42.0,
+      "protein_per_100g": 0.0,
+      "carbs_per_100g": 10.6,
+      "fat_per_100g": 0.0,
+      "serving_grams": 330.0,
+      "serving_unit": "can"
+    }
+  ],
+  "Coca-Cola can": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "5449000000996",
+      "description": "Coca-Cola",
+      "brand": "Coca-Cola",
+      "score": 10.0,
+      "calories_per_100g": 42.0,
+      "protein_per_100g": 0.0,
+      "carbs_per_100g": 10.6,
+      "fat_per_100g": 0.0,
+      "serving_grams": 330.0,
+      "serving_unit": "can"
+    }
+  ],
+  "Red Bull Energy Drink": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "9002490100070",
+      "description": "Red Bull Energy Drink",
+      "brand": "Red Bull",
+      "score": 10.0,
+      "calories_per_100g": 44.0,
+      "protein_per_100g": 0.5,
+      "carbs_per_100g": 11.0,
+      "fat_per_100g": 0.0,
+      "serving_grams": 250.0,
+      "serving_unit": "can"
+    }
+  ],
+  "Heinz Tomato Ketchup": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "0001300000128",
+      "description": "Heinz Tomato Ketchup",
+      "brand": "Heinz",
+      "score": 10.0,
+      "calories_per_100g": 119.0,
+      "protein_per_100g": 1.2,
+      "carbs_per_100g": 28.0,
+      "fat_per_100g": 0.1,
+      "serving_grams": 17.0,
+      "serving_unit": "tbsp"
+    }
+  ],
+  "Oreo cookies": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "0044000004533",
+      "description": "Oreo Original",
+      "brand": "Oreo",
+      "score": 10.0,
+      "calories_per_100g": 470.0,
+      "protein_per_100g": 5.0,
+      "carbs_per_100g": 71.0,
+      "fat_per_100g": 20.0,
+      "serving_grams": 34.0,
+      "serving_unit": "serving"
+    }
+  ],
+  "Chobani Plain Non-Fat Greek Yogurt": [
+    {
+      "source_kind": "openFoodFacts",
+      "source_id": "0818290010016",
+      "description": "Chobani Plain Non-Fat Greek Yogurt",
+      "brand": "Chobani",
+      "score": 10.0,
+      "calories_per_100g": 53.0,
+      "protein_per_100g": 9.4,
+      "carbs_per_100g": 3.5,
+      "fat_per_100g": 0.0,
+      "serving_grams": 170.0,
+      "serving_unit": "cup"
+    }
+  ]
+}
