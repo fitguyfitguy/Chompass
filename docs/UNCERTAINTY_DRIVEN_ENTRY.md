@@ -1,6 +1,6 @@
 # Uncertainty-driven entry — strategy
 
-Status: Bet 1 shipping (2026-07-29) — exact-weight correction on every photo entry; qualitative chips remain soft/opt-in until bucket-only A/B. Companion to [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) and [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md).
+Status: Bet 1 shipping (2026-07-29) — exact-weight correction on every photo entry; qualitative chips remain soft/opt-in after bucket-only A/B (2026-07-30: N5k-50 Flash Lite bucket 28.7% WMAPE vs L0 32.6%; does not beat Lq vague-quantity notes at 27.6%). Companion to [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) and [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md).
 
 ## The problem, from first principles
 
@@ -30,7 +30,9 @@ After photo analysis, `FoodResultSheet` should show a correction row on **every*
 
 **Trigger: must be unconditional on photo entries.** The two-stage ask-then-answer eval showed the model cannot reliably tell the app when to show a chip: it asked 92% of the time (should discriminate, not near-always-ask) and, when it did ask, preferred the *weaker* fat question over the stronger portion question by 34:12. The 2026-07-29 post-hoc analysis closed the two remaining candidate triggers as well: corr(predicted `serving_size_grams`, true kcal) ≈ **+0.14** across twelve runs, and corr(cross-model disagreement, actual error) = **+0.012**. So the earlier suggestion of gating on "the model didn't return a confident `serving_size_grams`" has **no signal behind it** — `FoodResultSheet` should simply show the portion row on every photo entry.
 
-**Confirmed on Nutrition5k** (2026-07-24, loose, n=15, true-mass oracle): WMAPE 34.4%→15.6% (−18.7pp), ±20% kcal 13.3%→66.7% (+53.4pp) — stronger than JFB, since N5k's oracle is true mass rather than JFB's stated-ingredient-amount proxy. Two independent datasets now agree on **exact mass / stated amounts**; bucket-only chips still need a paired A/B before default-on.
+**Confirmed on Nutrition5k** (2026-07-24, loose, n=15, true-mass oracle): WMAPE 34.4%→15.6% (−18.7pp), ±20% kcal 13.3%→66.7% (+53.4pp) — stronger than JFB, since N5k's oracle is true mass rather than JFB's stated-ingredient-amount proxy. Two independent datasets now agree on **exact mass / stated amounts**.
+
+**Bucket-only A/B (2026-07-30, N5k-50, Flash Lite):** `compact_clarify_portion_bucket` reaches WMAPE **28.7%** / ±20% **32%** vs L0 **32.6%** / **24%** (−3.9pp / +8pp). Real but modest; **Lq** vague-quantity user notes land at **27.6%** / **34%** on the same IDs. Keep qualitative chips soft/opt-in; prefer exact grams and quantity language in notes. Full table: `FOOD_ACCURACY_BENCHMARK_STATUS.md` § Photo-adjacent entry matrix.
 
 ### Bet 2 — Ranges instead of points when uncertain
 

@@ -1,7 +1,7 @@
 ---
 title: Wie genau ist KI-gestütztes Food-Logging?
 date: 2026-07-28
-description: Getippte Einträge mit Mengenangabe sind nahezu gelöst; Tellerfotos und Text ohne Maßstab sind es nicht. Kurze Mahlzeitnotizen und Videoclips schließen die Lücke nicht. Gemessen an gelabelten Datensätzen.
+description: Getippte Einträge mit Mengenangabe sind nahezu gelöst; Tellerfotos ohne Maßstab sind es nicht. Spezifische Zutatennamen können helfen — ersetzen aber keine Menge. Gemessen an gelabelten Datensätzen.
 draft: true
 ---
 
@@ -43,7 +43,7 @@ In unseren Tests zeigte sich:
 - Selbst das beste getestete Bezahl-Vision-Modell verfehlt bei rund jeder zweiten Mahlzeit die Kalorienangabe um mehr als 20 %.
 - Die Schwierigkeit hängt nicht von der Mahlzeitgröße ab. Schwierige und einfache Foto-Kohorten weisen nahezu dieselben mittleren Ground-Truth-Kalorienwerte auf. Scheitern liegt an Portionsmaßstab und Dichte, die von der Kamera unterschätzt werden.
 - Der dominante Fehlermodus ist die **Überschätzung im Restaurant-Portionsmaßstab**: Modelle unterstellen Teller- oder Beilagengrößen im Gastronomiestil, die nicht tatsächlich vorlagen. Weitere wiederkehrende Fehlermodi sind die **Unterschätzung verborgener Kalorien** (Öl, Tahini, ganzer Kuchen statt Stück) sowie **unübersichtliche Mehrkomponenten-Tabletts**, bei denen die Identifikation weitgehend korrekt, die Grammangabe jedoch falsch ist.
-- Saubere Laboraufnahmen von oben sind nur geringfügig einfacher als Smartphone-Fotos von Mahlzeiten. Auf einer kleinen Nutrition5k-Teilmenge lag der WMAPE weiterhin bei etwa 35 % — weit entfernt von der Texteingabe mit Mengenangabe (~6 %). Unordentliche Smartphone-Fotos allein erklären die Lücke somit nicht.
+- Saubere Laboraufnahmen von oben sind nur geringfügig einfacher als Smartphone-Fotos von Mahlzeiten. Auf einer kleinen Nutrition5k-Teilmenge lag der WMAPE weiterhin bei etwa 35–37 % — weit entfernt von der Texteingabe mit Mengenangabe (~6 %). Unordentliche Smartphone-Fotos allein erklären die Lücke somit nicht.
 
 <figure>
   <img src="/img/blog/accuracy/failure-modes.png" alt="Three cards: restaurant overestimate plus 100 to 200 percent kcal, hidden-calorie miss minus 65 to 80 percent kcal, and busy multi-item tray with grams wrong." width="800" height="450" loading="lazy">
@@ -54,9 +54,15 @@ Wer präzise Zahlen benötigt, sollte eine getippte Eingabe **mit angegebener Me
 
 ### 4.1 Foto plus Kurznotiz ist keine „getippte Eingabe“
 
-Wir haben dieselben 50 JFB-Mahlzeiten zusätzlich als **Bild + Nutzernotiz** getestet: entweder als Mahlzeittitel (z. B. `Breakfast Platter`) oder als Zutatenliste ohne Mengenangabe (z. B. `Rührei, Speck, Bratkartoffeln…`). Bei einem kostenlosen Gemma-Modell schnitt „nur Foto“ besser ab als beide Varianten — WMAPE **41,8 %** gegenüber **44,9 %** (Titel) und **45,8 %** (Zutatennamen).
+„Foto + Notiz“ ist nicht dasselbe wie „150 g Hähnchen“. Die Notiz enthält keine Gramm- oder Mengenangabe; sie liefert höchstens eine **Identitätshilfe**. Ob das Makros verbessert, hängt von Modell, Datensatz und Notizqualität ab — nicht von einer allgemeinen Regel.
 
-Das widerspricht dem starken FNDDS-Textergebnis **nicht**. Diese Notizen enthalten keine Gramm- oder Mengenangaben; sie ähneln eher einer Bildunterschrift als der Angabe „150 g Hähnchen“. Dass ein solcher Text allein nicht an die mengenbasierte FNDDS-Texteingabe heranreicht, ist zu erwarten — wir haben bislang keine reine Text-Kontrollgruppe für JFB veröffentlicht, und eine Überprüfung von „Foto + Titel“ mit einem Bezahlmodell steht noch aus. Produktseitige Schlussfolgerung: Eine vage Notiz kann die Nutzerführung oder Identifikation unterstützen, ersetzt aber keine Mengenangabe.
+**JFB (50 reale Handyfotos), kostenloses Gemma:** dieselben Mahlzeiten als Bild allein, Bild + Mahlzeittitel (`Breakfast Platter`) oder Bild + Zutatennamen ohne Menge. „Nur Foto“ war am besten — WMAPE **41,8 %** gegenüber **44,9 %** (Titel) und **45,8 %** (Zutatennamen). Vage Bildunterschriften halfen hier nicht.
+
+**Nutrition5k und ACETADA (je n=15), Gemini 3.5 Flash-Lite:** mit **spezifischen Zutaten- bzw. Lebensmittel-Namen** (ohne Mengen) verbesserte sich die Schätzung. Nutrition5k: WMAPE **37,4 % → 30,6 %**. Auf dem Forschungsdatensatz ACETADA (CC BY-NC, nur Forschung — keine Produktclaims): Bild allein **22,7 %** / ±20 % **40 %**; mit Mahlzeittyp **18,9 %** / **67 %**; mit benannten Lebensmitteln **15,0 %** / **87 %**. Rohdaten: [Benchmark-Status](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) (Abschnitt Image + description on Nutrition5k / ACETADA).
+
+Die Botschaft bleibt: **Identität ohne Maßstab ist kein Mengen-Logging.** Eine präzise Zutatenliste kann dem Modell helfen, *was* auf dem Teller liegt; sie ersetzt keine Gramm-, Chip- oder Haushaltsmaßangabe für *wie viel*. Selbst der beste Kurznotiz-Lauf (ACETADA L2, Forschung) liegt weit über dem FNDDS-Text mit Menge (~6 % WMAPE).
+
+**Nachtrag (2026-07-30):** Eine eigene Bedingung **Foto + vage Mengenangabe** (Lq — z. B. „large plate of …“, „a couple eggs …“, ohne exakte Grammzahl) verbessert Flash Lite klar gegenüber nur Foto: JFB-50 WMAPE **35,9 % → 25,3 %**, ±20 % **40 % → 52 %**; Nutrition5k-50 ähnlich. Nur der Mahlzeittitel (L1) bleibt schwach. Qualitative Größen-Chips (small/regular/large) helfen auf Nutrition5k nur mäßig und schlagen Lq nicht. Produktseitig: optionale Notizen als Identitäts- **und** Mengen-Hilfe (auch vage), nicht als Ersatz für Portions-UX.
 
 ### 4.2 Auch reiner Text ohne Grammangabe ist eine andere Aufgabe
 
@@ -70,7 +76,7 @@ Um die Lücke zwischen „FNDDS mit Gramm“ und „vager Mahlzeitnotiz“ direk
 | davon Haushaltsmaße (`2 tbsp`, `1 cup`, …) | **4,3 %** | **92 %** | 12 |
 | davon vage Titel | 22,6 % | 58 % | 12 |
 
-Sobald die Menge im Text steht (Haushaltsmaß oder Gramm), bleibt die Schätzung stark. Fehlt sie — oder steht nur ein Markenname —, driftet dasselbe Modell weit ab. Das ist dieselbe Botschaft wie bei Foto + Kurznotiz: **Identität ohne Maßstab ist kein Mengen-Logging.**
+Sobald die Menge im Text steht (Haushaltsmaß oder Gramm), bleibt die Schätzung stark. Fehlt sie — oder steht nur ein Markenname —, driftet dasselbe Modell weit ab. Das passt zu §4.1: Identität allein schließt die Portionslücke nicht; eine Mengenangabe in der Eingabe schon.
 
 Für Packungswaren hilft eine **verifizierte Datenbank** (Barcode / Open Food Facts) klar mehr als reine Modellschätzung. Ein optionaler „Grounded“-Pfad, der Markennamen gegen OFF/USDA auflöst und Makros nur aus Datenbankzeilen skaliert, lag im gleichen realistischen Text-Lauf klar vor ungrounded Flash Lite (WMAPE **18,5 %** vs. **27,3 %**; Marken-Slice **7 %** vs. ~120 %). Dieser Pfad ist **Forschung / WIP** und in der App noch nicht freigeschaltet — die Zahlen belegen die Richtung, kein ausgeliefertes Feature.
 
@@ -96,7 +102,7 @@ Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 
 **Schlankere Produktions-Prompts.** Der bisherige Text-Prompt lieferte für vorgeschlagene Portionsangaben (z. B. „2 Scheiben“) nicht zuverlässig das Feld `grams_per_unit`. Ohne dieses Feld verwarf die App KI-Portionseinheiten bei praktisch jeder Textantwort stillschweigend. Ein überarbeiteter Prompt erhält dieselbe Makronährstoff-Genauigkeit bei etwa halber Prompt-Länge und liefert bei **40 von 41** Evaluationseinträgen verwendbare Einheiten. Diese Formulierung ist heute produktiv im Einsatz.
 
-**Portionsklärung (in Entwicklung).** In einer simulierten Evaluation senkte das Einspeisen einer Ground-Truth-Portionsangabe in den Foto-Prompt — als Platzhalter für eine per Antipp auszulösende Rückfrage „Wie viel lag auf dem Teller?“ — den WMAPE für Fotos um **15 Prozentpunkte** (35,9 % → 22,8 %) und erhöhte die ±20-%-Trefferquote um 12 Punkte auf demselben 50-Foto-Datensatz. Deshalb ist eine Portions-Rückfrage-Funktion (Chip-UI) der nächste Entwicklungsschritt: Der Nutzer wird nach dem Maßstab gefragt, anstatt darauf zu hoffen, dass das Modell ihn errät. Das bestätigt die Erkenntnis aus der Texteingabe — **die Mengenangabe in der Eingabe** ist entscheidend für die Makronährstoffgenauigkeit, ob als getippte Grammangabe oder als angetippter Chip.
+**Portionsklärung (in Entwicklung).** In einer simulierten Evaluation senkte das Einspeisen einer Ground-Truth-Portionsangabe in den Foto-Prompt — als Platzhalter für eine per Antipp auszulösende Rückfrage „Wie viel lag auf dem Teller?“ — den WMAPE für Fotos um **15 Prozentpunkte** (35,9 % → 22,8 %) und erhöhte die ±20-%-Trefferquote um 12 Punkte auf demselben 50-Foto-Datensatz. Deshalb ist eine Portions-Rückfrage-Funktion (Chip-UI) der nächste Entwicklungsschritt: Der Nutzer wird nach dem Maßstab gefragt, anstatt darauf zu hoffen, dass das Modell ihn errät. Das bestätigt die Erkenntnis aus der Texteingabe — **die Mengenangabe in der Eingabe** ist entscheidend für die Makronährstoffgenauigkeit, ob als getippte Grammangabe oder als angetippter Chip. Spezifische Zutatennamen (§4.1) können die Identifikation stützen; die große Stellschraube bleibt die Portions-UX.
 
 <figure>
   <img src="/img/blog/accuracy/portion-clarify.png" alt="Grouped bars showing photo-only versus photo plus simulated portion answer: WMAPE 35.9 to 22.8 percent, and within ±20 percent calories 40 to 50 percent." width="800" height="450" loading="lazy">
@@ -107,13 +113,14 @@ Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 
 - Bevorzugt getippten Text **mit Gramm- oder Mengenangabe**, Barcode-Scan oder eine gespeicherte Mahlzeit, wenn genaue Werte wichtig sind.
 - Nur ein Marken- oder Gerichtsname ohne Menge verhält sich eher wie eine Schätzung als wie ein Nachschlagewerk — siehe Abschnitt 4.2.
-- Ein Foto mit Mahlzeittitel oder Zutatenliste ohne Mengenangabe bleibt im Wesentlichen eine Fotoschätzung.
-- Behandelt reine Fotoeingaben (oder Foto + vage Notiz) als schnellen Entwurf, nicht als gewogene Mahlzeit.
+- Ein Foto mit vagem Titel bleibt im Wesentlichen eine Fotoschätzung; **benannte Lebensmittel** ohne Menge können die Identifikation verbessern, ersetzen aber keine Portionsangabe.
+- Behandelt reine Fotoeingaben (oder Foto + Notiz ohne Menge) als schnellen Entwurf, nicht als gewogene Mahlzeit.
 - Da Chompass dem BYOK-Prinzip folgt, richtet sich die Genauigkeit nach dem gewählten Modell; diese Werte sind modellspezifische Testergebnisse, keine einzelne „Chompass-Genauigkeit“.
 
 ## 8 Einschränkungen
 
 - Es handelt sich um Offline-Testrahmen-Werte auf kleinen, festen gelabelten Datensätzen — kein Live-Produktionsmonitoring der Genauigkeit. Ergebnisse variieren je nach Modell, Fotoqualität und Lebensmittelart.
-- Die starken Textergebnisse beruhen auf FNDDS-Strings mit Mengenangabe; die Foto- bzw. Bild+Notiz-Werte beruhen auf angerichteten JFB-Mahlzeiten; das realistische Text-Set (§4.2) lässt die Grammangabe bewusst weg. Sie sind nicht als dieselbe, nur zweimal erfasste Mahlzeit zu lesen.
+- Die starken Textergebnisse beruhen auf FNDDS-Strings mit Mengenangabe; die Foto-Werte auf JFB; Bild+Notiz zusätzlich auf Nutrition5k und (nur Forschung) ACETADA; das realistische Text-Set (§4.2) lässt die Grammangabe bewusst weg. Sie sind nicht als dieselbe, nur zweimal erfasste Mahlzeit zu lesen.
+- ACETADA-Zahlen sind **CC BY-NC** und nur für Forschung — nicht für kommerzielle Genauigkeitsangaben.
 - On-Device-Gemma 4 (Android, opt-in) ist kleiner als Cloud-Modelle und in der Regel weniger genau.
 - Die Werte ändern sich mit neuen Modellen und Prompts. Dieser Beitrag spiegelt den im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) datierten Stand wider (Ende Juli 2026).
