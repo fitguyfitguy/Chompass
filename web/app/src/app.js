@@ -12,6 +12,7 @@ import "./components/add-meal-view.js";
 import { maybeSeedFromUrl } from "./lib/dev-seed.js";
 import { prefs, profile } from "./lib/db.js";
 import { initInstallPrompt, maybeShowInstallBanner } from "./lib/install-prompt.js";
+import { initUpdatePrompt } from "./lib/update-prompt.js";
 
 const view = document.getElementById("view");
 const nav = document.getElementById("bottom-nav");
@@ -104,9 +105,12 @@ maybeSeedFromUrl().then(render);
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch((err) => {
-      console.error("Service worker registration failed", err);
-    });
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then((registration) => initUpdatePrompt(registration))
+      .catch((err) => {
+        console.error("Service worker registration failed", err);
+      });
   });
 }
 
