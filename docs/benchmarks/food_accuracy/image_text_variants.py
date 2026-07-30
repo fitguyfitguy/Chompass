@@ -1,8 +1,10 @@
-"""Shared helpers for image + short-note (L1/L2) manifest variants.
+"""Shared helpers for image + short-note (L1/L2/Lq) manifest variants.
 
 L0 = image only (``text`` absent)
 L1 = meal title / coarse label as user ``text``
 L2 = ingredient / food-item names only (no quantities or macros) as user ``text``
+Lq = vague quantity diary note (bucket / coarsened amounts; no ``\\d+ g``) —
+    see ``build_image_text_lq.py``
 
 Prompt builders inject ``sample.text`` as the optional user note (app
 ``analyzeFood(description=…)``). ``meal_name`` stays metadata-only.

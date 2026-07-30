@@ -125,7 +125,39 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
 | `data/manifests/jfb.jsonl` | 50 default | Image L0 — no user text (after `download_jfb.py`) |
 | `data/manifests/jfb_image_text_l1.jsonl` | 50 | Image + meal title as user note |
 | `data/manifests/jfb_image_text_l2.jsonl` | 50 | Image + ingredient names as user note |
-| `data/manifests/n5k.jsonl` | 20 default | Image/metadata (after `download_nutrition5k.py`) |
+| `data/manifests/jfb_image_text_lq.jsonl` | 50 | Image + vague quantity note (`build_image_text_lq.py`) |
+| `data/manifests/n5k.jsonl` | 50 recommended | Image/metadata (after `download_nutrition5k.py --limit 50`) |
+| `data/manifests/n5k_image_text_l1.jsonl` | 50 | Image + coarse identity from top ingredients |
+| `data/manifests/n5k_image_text_lq.jsonl` | 50 | Image + vague quantity note (bucket + ingredients) |
+| `manifest/jfb_hard_ids.txt` | 10 | Hard-tail IDs for matrix reporting |
+
+## Photo-adjacent entry matrix (L0 / L1 / Lq / bucket)
+
+```bash
+uv run python docs/benchmarks/food_accuracy/download_nutrition5k.py --limit 50
+uv run python docs/benchmarks/food_accuracy/build_image_text_lq.py
+uv run python docs/benchmarks/food_accuracy/build_clarify_manifests.py
+
+# Example single condition
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model google/gemini-3.5-flash-lite \
+  --prompt compact --sleep 2 --retries 2 \
+  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_image_text_lq.jsonl \
+  --out docs/benchmarks/food_accuracy/results/entry_matrix/jfb_lq_flashlite
+
+# Bucket chips (N5k — requires mass_g)
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model google/gemini-3.5-flash-lite \
+  --prompt compact_clarify_portion_bucket --sleep 2 --retries 2 \
+  --manifest docs/benchmarks/food_accuracy/data/manifests/n5k_clarify.jsonl \
+  --out docs/benchmarks/food_accuracy/results/entry_matrix/n5k_bucket_flashlite
+
+uv run python docs/benchmarks/food_accuracy/summarize_entry_matrix.py \
+  --hard-ids docs/benchmarks/food_accuracy/manifest/jfb_hard_ids.txt \
+  --label L0=docs/benchmarks/food_accuracy/results/entry_matrix/jfb_l0_flashlite \
+  --label L1=docs/benchmarks/food_accuracy/results/entry_matrix/jfb_l1_flashlite \
+  --label Lq=docs/benchmarks/food_accuracy/results/entry_matrix/jfb_lq_flashlite
+```
 
 ## Image + description A/B
 

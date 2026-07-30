@@ -27,10 +27,17 @@ the app, run against the same manifests for every model tested.
 
 The typed-text row is FNDDS-style **identity + portion** (e.g. `Chicken breast, roasted, 150 g`).
 It is not the same input as a meal title or ingredient list attached to a plate photo.
-Those “image + short note” trials on JFB (title / ingredient names, no quantities) did
-**not** beat photo-only on free Gemma (~42–46% WMAPE vs ~42% image-only). That is
-compatible with the strong FNDDS result: the notes lack grams/cups. See
-[`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md) § Image + description.
+Those “image + short note” trials are **mixed**: on JFB with free Gemma, title /
+ingredient names (no quantities) did **not** beat photo-only (~42–46% WMAPE vs ~42%
+image-only). On Nutrition5k and ACETADA with Flash Lite, **specific item names**
+helped (N5k 37.4% → 30.6%; ACETADA research-only L2 reached 15.0% WMAPE / 87% ±20%).
+A dedicated **vague quantity note** condition (**Lq** — e.g. “large plate of …”,
+“a couple eggs…”, no exact grams) on Flash Lite clearly beats image-only on both
+JFB-50 (**35.9% → 25.3%** WMAPE, ±20% **40% → 52%**) and N5k-50 (**32.6% → 27.6%**).
+Meal-title-only L1 stays weak. Qualitative size chips (bucket) on N5k help modestly
+but do not beat Lq. Notes with quantity language are identity **plus** scale hints —
+still not typed grams (~6% WMAPE). See
+[`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md) § Photo-adjacent entry matrix.
 Native video input on a Nutrition5k turntable subset also lost to a still image
 (WMAPE 25.6% → 37.2%); parked for now.
 
@@ -53,11 +60,14 @@ it is not specific to Chompass or to any one provider. In our testing:
 - The gap is not prompt wording. After A/B testing multiple prompt shapes, plate
   photo WMAPE stayed in the 33-45% band regardless. Model choice moves it more
   than prompt tuning does.
-- A short meal title or unquantified ingredient list on top of the photo did not
-  rescue macros on the free-Gemma JFB A/B (photo-only was best of L0/L1/L2).
+- A short meal title or unquantified ingredient list is not a substitute for a
+  stated portion. Vague **quantity** language in the photo note (Lq) does move
+  macros on Flash Lite (JFB ~36% → ~25% WMAPE) but still leaves a large gap vs
+  typed entry with grams (~6% WMAPE).
 
 If you need precise numbers, typed entry with a stated portion, barcode scan, or a
-saved meal is measurably more reliable than a photo alone (or a photo plus a vague note).
+saved meal is measurably more reliable than a photo alone. A photo note that
+mentions quantity (even vaguely) beats a title-only note; neither replaces grams.
 
 ## What we changed because of this data
 
@@ -81,8 +91,9 @@ the input is what moves macros, whether typed grams or a tapped chip.
 - These are offline research-harness numbers (small, fixed labeled datasets), not
   a live production accuracy monitor. Actual results vary by model, photo
   quality, and food type.
-- The strong text numbers are portioned FNDDS strings; photo / image+note numbers
-  are JFB plated meals — not the same meal typed two ways.
+- The strong text numbers are portioned FNDDS strings; photo numbers are mostly
+  JFB plated meals; image+note also covers Nutrition5k and research-only ACETADA
+  — not the same meal typed two ways.
 - BYOK means your accuracy depends on which provider or model you choose. The
   figures above are per-model, not a single "Chompass accuracy" number.
 - On-device Gemma 4 (Android, opt-in) is smaller than cloud models and generally

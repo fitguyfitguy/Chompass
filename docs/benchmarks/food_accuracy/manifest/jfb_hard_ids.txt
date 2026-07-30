@@ -1,0 +1,18 @@
+# JFB hard-plate IDs for photo-adjacent matrix hard-tail reporting.
+# Source: never within ±20% kcal on any of five L0 compact runs
+# (Gemini 3.6 Flash, GPT-4o mini, Gemini 3.5 Flash-Lite, Gemma/nofud image-only,
+# Claude 3 Haiku) plus documented hard examples from
+# docs/FOOD_ACCURACY_BENCHMARK_STATUS.md § Failure modes.
+#
+# Never ±20% (8):
+jfb-fsb_00048
+jfb-fsb_00047
+jfb-fsb_00033
+jfb-fsb_00003
+jfb-fsb_00043
+jfb-fsb_00010
+jfb-fsb_00011
+jfb-fsb_00032
+# Documented hard plates (restaurant overestimate / busy tray) not in the never-8:
+jfb-fsb_00000
+jfb-fsb_00009
