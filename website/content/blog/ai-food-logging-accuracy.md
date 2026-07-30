@@ -1,7 +1,7 @@
 ---
 title: Wie genau ist KI-gestütztes Food-Logging?
 date: 2026-07-28
-description: Getippte Einträge mit Mengenangabe sind nahezu gelöst; Tellerfotos ohne Maßstab sind es nicht. Spezifische Zutatennamen können helfen — ersetzen aber keine Menge. Gemessen an gelabelten Datensätzen.
+description: Tierliste der Eingabemethoden nach Benchmark-Genauigkeit — Text mit Menge oben, Tellerfotos ohne Maßstab unten. Gemessen an gelabelten Datensätzen.
 draft: true
 ---
 
@@ -13,23 +13,36 @@ Chompass folgt dem BYOK-Prinzip: Nutzer bringen einen eigenen Cloud-KI-Schlüsse
 
 Alle nachfolgenden Werte stammen aus einem Offline-Testrahmen (Research Harness) gegen gelabelte Datensätze mit bekannten Ground-Truth-Kalorien- und Makronährstoffwerten. Die vollständige Methodik, alle Testläufe und die Rohdatentabellen sind im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) auf Codeberg hinterlegt. Eine kürzere Zusammenfassung findet sich in [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md).
 
-## 3 Kernergebnisse
+WMAPE = gewichteter mittlerer absoluter prozentualer Fehler über Kalorien, Protein, Kohlenhydrate und Fett. **Niedriger ist besser.** ±20 % = Anteil der Einträge, deren Kalorien innerhalb ±20 % der Ground Truth liegen (**höher ist besser**). Die Werte stammen aus Food-Analyse-Prompts, die dem in der App ausgelieferten Prompt entsprechen (bzw. simulierten Portionsantworten, wo gekennzeichnet).
 
-| Eingabemethode | Metrik | Ergebnis | Datensatz |
-|---|---|---|---|
-| **Text mit angegebener Menge** | WMAPE (kcal+Protein+Kohlenhydrate+Fett) | **5,7 %** | 42 USDA-FNDDS-Einträge |
-| **Text mit angegebener Menge** | Innerhalb ±20 % der wahren Kalorien | **90 %** | 42 USDA-FNDDS-Einträge |
-| **Nur Foto (bestes getestetes Bezahlmodell)** | WMAPE | **32,3 %** | 50 reale Mahlzeitfotos ([January Food Benchmark](https://github.com/January-ai/food-scan-benchmarks)) |
-| **Nur Foto (bestes getestetes Bezahlmodell)** | Innerhalb ±20 % der wahren Kalorien | **50 %** | 50 reale Mahlzeitfotos |
-| **Nur Foto (kostenloses, on-device-taugliches Modell)** | WMAPE | 39,8 % | 50 reale Mahlzeitfotos |
+**Wichtig:** Unterschiedliche Zeilen nutzen unterschiedliche Datensätze und Modelle — die Tierliste ordnet **Eingabearten** nach typischer Makrogenauigkeit, nicht denselben 50 Tellern zweimal gemessen. Details und Rohdaten: Statusdokument.
 
-WMAPE = gewichteter mittlerer absoluter prozentualer Fehler über Kalorien, Protein, Kohlenhydrate und Fett. Niedriger ist besser. Diese Werte beruhen auf Food-Analyse-Prompts, die dem in der App ausgelieferten Prompt entsprechen, ausgeführt gegen dieselben Manifeste für jedes getestete Modell.
+## 3 Tierliste der Eingaben
 
-Die Zeile „Text mit angegebener Menge“ ist **nicht** gleichzusetzen mit dem Eintippen eines Mahlzeitnamens neben einem Foto. Der FNDDS-Datensatz enthält Einträge wie `Chicken breast, roasted, 150 g` oder `1 cup oatmeal (240 g)` — Identität **plus** Gramm- oder Haushaltsmaßangabe. Deshalb liegt der Wert bei rund 6 % WMAPE. Die Foto-Zeilen betreffen reale, angerichtete Mahlzeiten **ohne** Mengenangabe. Der Vergleich dieser beiden Spalten ist ein Vergleich zwischen mengenbasierter Nachschlage-Eingabe und freier Tellerschätzung.
+| Tier | Eingabe | WMAPE | ±20 % kcal | Benchmark |
+|---|---|---:|---:|---|
+| **S** | Text **mit** Gramm oder Haushaltsmaß (`150 g`, `2 tbsp`, `1 cup`) | **~5–6 %** | **~90–93 %** | FNDDS 42 (Gemma free / Flash Lite) |
+| **S** | Text mit Haushaltsmaß allein (Slice des realistischen Text-Sets) | **4,3 %** | **92 %** | Realistic text 12 (Flash Lite) |
+| **S\*** | Barcode-Scan / gespeicherte Mahlzeit mit fester Rezeptur | ≈ Text mit Menge | — | Produktanalogie; keine eigene Foto-Bench |
+| **A** | Markenname **mit** Datenbank-Auflösung (OFF/USDA, grounded — **WIP**, nicht in der App) | **18,5 %** gesamt / **~7 %** Marken | **76 %** | Realistic text 38 (Flash Lite + OFF-Fixtures) |
+| **A** | Foto + **genaue** Portionsangabe (simulierte Chip-Antwort: Gramm / Mengenangaben) | **22,8 %** | **50 %** | JFB 50, Flash Lite (Orakel) |
+| **B** | Foto + **vage** Mengenangabe in der Notiz (`large plate`, `a couple eggs` — ohne exakte Grammzahl) | **25,3 %** | **52 %** | JFB 50, Flash Lite (Lq) |
+| **B** | Realistischer Text **ohne** Gramm (Titel, Multi, Marke gemischt) | **27,3 %** | **71 %** | Realistic text 38, Flash Lite ungrounded |
+| **B** | Vager Texttitel ohne Menge (`Chicken breast, roasted`) | **22,6 %** | **58 %** | Realistic text 12 (Flash Lite) — oft falsche Portionsannahme |
+| **B** | Foto + qualitative Größen-Chips (`small` / `regular` / `large`) | **28,7 %** | **32 %** | Nutrition5k 50, Flash Lite |
+| **C** | Nur Foto — bestes getestetes Bezahlmodell | **32,3 %** | **50 %** | JFB 50, Gemini 3.6 Flash |
+| **C** | Foto + Mahlzeittitel ohne Menge (`Breakfast Platter`) | **33,0 %** | **36 %** | JFB 50, Flash Lite (L1) |
+| **C** | Nur Foto — Flash Lite | **35,9 %** | **40 %** | JFB 50 |
+| **D** | Nur Foto — kostenloses / on-device-taugliches Modell | **~40 %** | **~32 %** | JFB 50, Gemma free |
+| **F** | Nur Markenname ohne Datenbank (`Nutella`, `Coca-Cola`) | **~120 %** | **63 %** | Realistic text 8, Flash Lite ungrounded |
+
+\*Barcode und gespeicherte Mahlzeiten verhalten sich wie Nachschlagen mit bekannter Portionsgröße — deshalb Tier S —, wurden aber nicht als eigene Vision-Zeile gegen JFB gemessen.
+
+**Kurzformel:** Menge in der Eingabe (Gramm, Haushaltsmaß, Chip, oder wenigstens vage Quantität) entscheidet über das Tier. Identität allein (Titel, Marke, Foto ohne Maßstab) landet deutlich tiefer.
 
 <figure>
   <img src="/img/blog/accuracy/text-vs-photo.png" alt="Two bar charts comparing portioned typed entry, best paid photo, and free photo: WMAPE 5.7% vs 32.3% vs 39.8%, and within ±20% calories 90% vs 50% vs 32%." width="800" height="450" loading="lazy">
-  <figcaption>Getippte Eingabe mit Mengenangabe (FNDDS 42) vs. Tellerfotos (JFB 50). WMAPE: niedriger ist besser; ±20-%-Trefferquote bei Kalorien: höher ist besser. Unterschiedliche Datensätze, unterschiedliche Eingaben — siehe unten.</figcaption>
+  <figcaption>Auszug Tier S vs. Tier C/D: Text mit Menge (FNDDS 42) gegen Tellerfotos (JFB 50). Unterschiedliche Datensätze — siehe Tierliste.</figcaption>
 </figure>
 
 ## 4 Fotos sind für jedes Modell schwierig
@@ -62,7 +75,7 @@ Wer präzise Zahlen benötigt, sollte eine getippte Eingabe **mit angegebener Me
 
 Die Botschaft bleibt: **Identität ohne Maßstab ist kein Mengen-Logging.** Eine präzise Zutatenliste kann dem Modell helfen, *was* auf dem Teller liegt; sie ersetzt keine Gramm-, Chip- oder Haushaltsmaßangabe für *wie viel*. Selbst der beste Kurznotiz-Lauf (ACETADA L2, Forschung) liegt weit über dem FNDDS-Text mit Menge (~6 % WMAPE).
 
-**Nachtrag (2026-07-30):** Eine eigene Bedingung **Foto + vage Mengenangabe** (Lq — z. B. „large plate of …“, „a couple eggs …“, ohne exakte Grammzahl) verbessert Flash Lite klar gegenüber nur Foto: JFB-50 WMAPE **35,9 % → 25,3 %**, ±20 % **40 % → 52 %**; Nutrition5k-50 ähnlich. Nur der Mahlzeittitel (L1) bleibt schwach. Qualitative Größen-Chips (small/regular/large) helfen auf Nutrition5k nur mäßig und schlagen Lq nicht. Produktseitig: optionale Notizen als Identitäts- **und** Mengen-Hilfe (auch vage), nicht als Ersatz für Portions-UX.
+**Nachtrag (2026-07-30):** In der Tierliste (§3) ist **Foto + vage Mengenangabe** (Lq) Tier **B** — klar besser als nur Foto (Tier C). Nur der Mahlzeittitel (L1) bleibt in Tier C. Qualitative Größen-Chips landen ebenfalls in B, schlagen Lq aber nicht. Details: [Benchmark-Status](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) (Abschnitt Photo-adjacent entry matrix).
 
 ### 4.2 Auch reiner Text ohne Grammangabe ist eine andere Aufgabe
 
@@ -111,11 +124,11 @@ Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 
 ## 7 Handlungsempfehlungen für Nutzer
 
-- Bevorzugt getippten Text **mit Gramm- oder Mengenangabe**, Barcode-Scan oder eine gespeicherte Mahlzeit, wenn genaue Werte wichtig sind.
-- Nur ein Marken- oder Gerichtsname ohne Menge verhält sich eher wie eine Schätzung als wie ein Nachschlagewerk — siehe Abschnitt 4.2.
-- Ein Foto mit vagem Titel bleibt im Wesentlichen eine Fotoschätzung; **benannte Lebensmittel** ohne Menge können die Identifikation verbessern, ersetzen aber keine Portionsangabe.
-- Behandelt reine Fotoeingaben (oder Foto + Notiz ohne Menge) als schnellen Entwurf, nicht als gewogene Mahlzeit.
-- Da Chompass dem BYOK-Prinzip folgt, richtet sich die Genauigkeit nach dem gewählten Modell; diese Werte sind modellspezifische Testergebnisse, keine einzelne „Chompass-Genauigkeit“.
+- **Tier S:** getippter Text **mit** Gramm oder Haushaltsmaß, Barcode oder gespeicherte Mahlzeit — wenn genaue Werte wichtig sind.
+- **Tier A/B:** Foto plus Portionschip bzw. Notiz **mit** Mengensprache (auch vage: „große Portion“, „zwei Eier“) schlägt Titel-only und Foto allein.
+- **Tier C/D:** Nur Foto oder Foto + Mahlzeittitel ohne Menge = schneller Entwurf, keine gewogene Mahlzeit.
+- **Tier F:** Nur Markenname ohne Scan/Datenbank driftet stark — lieber Barcode oder Grammangabe.
+- Da Chompass dem BYOK-Prinzip folgt, richtet sich die Genauigkeit nach dem gewählten Modell; die Tierliste ist eingabe- und modellspezifisch, keine einzelne „Chompass-Genauigkeit“.
 
 ## 8 Einschränkungen
 
