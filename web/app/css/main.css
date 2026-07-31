@@ -154,13 +154,19 @@ main.view {
 }
 
 /* —— Week pager (53 weeks, Android WeekStrip parity) —— */
+.week-nav {
+  display: block;
+  margin-bottom: 1rem;
+}
+
 .week-pager {
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 0 -0.15rem 1rem;
+  margin: 0 -0.15rem;
+  min-width: 0;
   padding-bottom: 0.15rem;
   scrollbar-width: none;
 }
@@ -177,15 +183,7 @@ main.view {
   box-sizing: border-box;
 }
 
-.week-nav {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.2rem;
-  margin-bottom: 1rem;
-}
-
-.week-nav__btn {
+.day-nav-btn {
   display: grid;
   place-items: center;
   width: 2.1rem;
@@ -193,19 +191,32 @@ main.view {
   padding: 0;
   border: none;
   border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.week-nav__btn:hover:not(:disabled) {
-  color: var(--text);
   background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--text);
+  line-height: 0;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
-.week-nav__btn:disabled {
-  opacity: 0.3;
+.day-nav-btn svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.day-nav-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--teal) 16%, var(--surface));
+  color: var(--teal);
+}
+
+.day-nav-btn:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
+}
+
+/* Week-strip side arrows: desktop only (mobile keeps full-width dates like Android) */
+.day-nav-btn--week {
+  display: none;
 }
 
 .week-strip {
@@ -278,15 +289,51 @@ main.view {
   cursor: not-allowed;
 }
 
-/* —— Semicircle calorie gauge + vertical macro tubes —— */
+/* —— Home hero: mobile arc/tubes (Android parity); desktop horizontal bars —— */
+.home-hero {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.home-hero--desktop {
+  display: none;
+}
+
+.home-hero--mobile {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.home-hero__day-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.15rem;
+}
+
 .calorie-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 0.35rem;
-  padding-top: 0.35rem;
+  margin: 0;
+  padding: 0.15rem 0 0;
   overflow: visible;
+}
+
+.calorie-hero--tap-arc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0.15rem 0 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  min-width: 0;
 }
 
 .calorie-ring {
@@ -350,6 +397,7 @@ main.view {
   align-items: center;
   gap: 0.4rem;
   text-align: center;
+  min-width: 0;
 }
 
 .macro-tube__value {
@@ -386,6 +434,7 @@ main.view {
   font-size: 0.75rem;
   font-weight: 650;
   line-height: 1.1;
+  max-width: 100%;
 }
 
 .macro-tubes--4 .macro-tube__label { font-size: 0.68rem; }
@@ -395,6 +444,7 @@ main.view {
   color: var(--muted);
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
+  max-width: 100%;
 }
 
 .macro-tube--protein { --tube-color: var(--protein); }
@@ -421,20 +471,193 @@ main.view {
 .macro-tube--folate,
 .macro-tube--omega { --tube-color: #5a8a6a; }
 
-.calorie-hero--tap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Desktop horizontal calorie + macro rows (default hidden; shown ≥900px) */
+.calorie-hero--tap-bar {
+  display: block;
   width: 100%;
   margin: 0;
-  padding: 0.15rem 0 0;
+  padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   color: inherit;
   font: inherit;
-  text-align: center;
+  text-align: left;
 }
+
+.calorie-hero--bar {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.calorie-hero__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.calorie-hero__nums {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+  min-width: 0;
+}
+
+.calorie-hero__caption {
+  width: 100%;
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.calorie-hero__value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--teal);
+  line-height: 1;
+}
+
+.calorie-hero__sub {
+  font-size: 0.85rem;
+  font-weight: 550;
+  color: var(--muted);
+}
+
+.calorie-hero__left {
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--teal);
+  font-variant-numeric: tabular-nums;
+  padding-bottom: 0.15rem;
+}
+
+.calorie-hero__left.is-over {
+  color: var(--over);
+}
+
+.calorie-bar {
+  height: 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 16%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--teal) 18%, transparent);
+  overflow: hidden;
+}
+
+.calorie-bar > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--teal-deep),
+    var(--teal)
+  );
+  transition: width 280ms ease-out;
+}
+
+.calorie-bar.is-over {
+  background: color-mix(in srgb, var(--over) 16%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--over) 22%, transparent);
+}
+
+.calorie-bar.is-over > span {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--over) 75%, #000), var(--over));
+}
+
+.macro-rows {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.macro-row {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 0;
+  --tube-color: var(--teal);
+}
+
+.macro-row__meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.macro-row__label {
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.macro-row__value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--tube-color);
+  line-height: 1;
+}
+
+.macro-row__status {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.macro-row__track {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tube-color) 18%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tube-color) 20%, transparent);
+  overflow: hidden;
+}
+
+.macro-row__fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--tube-color),
+    color-mix(in srgb, var(--tube-color) 82%, #fff)
+  );
+  transition: width 280ms ease-out;
+}
+
+.macro-row--protein { --tube-color: var(--protein); }
+.macro-row--carbs { --tube-color: var(--carbs); }
+.macro-row--fat { --tube-color: var(--fat); }
+.macro-row--fiber { --tube-color: var(--fiber); }
+.macro-row--sugar,
+.macro-row--added-sugar { --tube-color: #c47a3a; }
+.macro-row--sat-fat,
+.macro-row--trans-fat,
+.macro-row--cholesterol { --tube-color: var(--fat); }
+.macro-row--sodium,
+.macro-row--potassium { --tube-color: var(--water); }
+.macro-row--calcium,
+.macro-row--iron,
+.macro-row--magnesium,
+.macro-row--zinc { --tube-color: #8a7a5a; }
+.macro-row--vit-a,
+.macro-row--vit-c,
+.macro-row--vit-d,
+.macro-row--b12,
+.macro-row--vit-e,
+.macro-row--vit-k,
+.macro-row--folate,
+.macro-row--omega { --tube-color: #5a8a6a; }
 
 .macro-chip {
   font-weight: 650;
@@ -3304,6 +3527,36 @@ body.camera-open {
   .sheet.is-leaving .sheet__panel {
     transform: translateX(-50%) translateY(110%);
   }
+
+  /* Home: week-strip day arrows + horizontal calorie/macros */
+  .week-nav {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .week-pager {
+    margin: 0;
+  }
+
+  .day-nav-btn--week {
+    display: grid;
+  }
+
+  .home-hero {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .home-hero--mobile {
+    display: none;
+  }
+
+  .home-hero--desktop {
+    display: grid;
+    gap: 0.85rem;
+  }
 }
 
 @media (min-width: 900px) and (pointer: fine) {
@@ -3311,44 +3564,6 @@ body.camera-open {
     opacity: 0.22;
     cursor: default;
   }
-}
-
-/* —— Day prev/next on home hero —— */
-.home-hero__day-nav {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.15rem;
-  margin-bottom: 0.15rem;
-}
-
-.day-nav-btn {
-  display: grid;
-  place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 80%, transparent);
-  color: var(--text);
-  font-size: 1.45rem;
-  line-height: 1;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.day-nav-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--teal) 16%, var(--surface));
-  color: var(--teal);
-}
-
-.day-nav-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.home-hero__day-nav .calorie-hero--tap {
-  min-width: 0;
 }
 
 /* —— Reduced motion —— */
@@ -3364,7 +3579,9 @@ body.camera-open {
 
   .macro-bar > span,
   .macro-tube__fill,
+  .macro-row__fill,
   .water-bar > span,
+  .calorie-bar > span,
   .calorie-ring__progress {
     transition: none !important;
   }
