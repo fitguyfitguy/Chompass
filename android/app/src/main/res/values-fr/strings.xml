@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">Saisie manuelle</string>
     <string name="home_menu_saved_meals">Repas enregistrés</string>
     <string name="home_menu_barcode">Code-barres</string>
+    <string name="shortcut_camera_short">Appareil photo</string>
+    <string name="shortcut_camera_long">Enregistrer un repas avec la caméra</string>
+    <string name="shortcut_voice_short">Voix</string>
+    <string name="shortcut_voice_long">Enregistrer un repas à la voix</string>
+    <string name="shortcut_barcode_short">Code-barres</string>
+    <string name="shortcut_barcode_long">Scanner un code-barres</string>
     <string name="add_food_sheet_title">Ajouter un aliment</string>
     <string name="add_food_hero_photo">Photo</string>
     <string name="add_food_hero_photo_sub">Appareil photo ou galerie</string>

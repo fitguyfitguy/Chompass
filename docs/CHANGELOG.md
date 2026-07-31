@@ -7,6 +7,7 @@ All notable changes to Chompass are documented here.
 ### Added
 
 - Opt-in WebDAV **Sync on open** (Android + PWA): once per local day when the app is opened; off by default. Manual Sync now unchanged.
+- Android launcher long-press shortcuts for Camera, Voice, and Barcode food logging.
 
 ## [3.4.0] - 2026-07-31
 

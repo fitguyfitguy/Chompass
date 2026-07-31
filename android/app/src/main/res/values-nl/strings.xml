@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">Handmatige invoer</string>
     <string name="home_menu_saved_meals">Opgeslagen maaltijden</string>
     <string name="home_menu_barcode">Barcode</string>
+    <string name="shortcut_camera_short">Camera</string>
+    <string name="shortcut_camera_long">Voeding loggen met camera</string>
+    <string name="shortcut_voice_short">Spraak</string>
+    <string name="shortcut_voice_long">Voeding loggen met spraak</string>
+    <string name="shortcut_barcode_short">Barcode</string>
+    <string name="shortcut_barcode_long">Scan een barcode</string>
     <string name="add_food_sheet_title">Voeding toevoegen</string>
     <string name="add_food_hero_photo">Foto</string>
     <string name="add_food_hero_photo_sub">Camera of galerij</string>

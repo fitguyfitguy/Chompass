@@ -297,6 +297,12 @@
     <string name="home_menu_manual_entry">Ручной ввод</string>
     <string name="home_menu_saved_meals">Сохранённые блюда</string>
     <string name="home_menu_barcode">Штрих-код</string>
+    <string name="shortcut_camera_short">Камера</string>
+    <string name="shortcut_camera_long">Записать еду с камеры</string>
+    <string name="shortcut_voice_short">Голос</string>
+    <string name="shortcut_voice_long">Записать еду голосом</string>
+    <string name="shortcut_barcode_short">Штрих-код</string>
+    <string name="shortcut_barcode_long">Сканировать штрих-код</string>
     <string name="add_food_sheet_title">Добавить еду</string>
     <string name="add_food_hero_photo">Фото</string>
     <string name="add_food_hero_photo_sub">Камера или галерея</string>

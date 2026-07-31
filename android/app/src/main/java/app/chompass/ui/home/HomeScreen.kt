@@ -62,6 +62,7 @@ import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.services.MealShare
+import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
@@ -178,6 +179,20 @@ fun HomeScreen(container: AppContainer) {
             showBarcodeScanner = true
         } else {
             barcodePermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    // Launcher long-press shortcuts (Camera / Voice / Barcode). Sticky inbox —
+    // survives until Home is composed after onboarding.
+    val shortcutEntry by container.shortcutEntryInbox.collectAsState()
+    LaunchedEffect(shortcutEntry, ui.isEntryAnalysisBusy) {
+        val action = shortcutEntry ?: return@LaunchedEffect
+        if (ui.isEntryAnalysisBusy) return@LaunchedEffect
+        container.shortcutEntryInbox.value = null
+        when (action) {
+            ShortcutEntryAction.CAMERA -> openCamera()
+            ShortcutEntryAction.VOICE -> showVoice = true
+            ShortcutEntryAction.BARCODE -> openBarcodeScanner()
         }
     }
 

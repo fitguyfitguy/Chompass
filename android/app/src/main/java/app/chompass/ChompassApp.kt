@@ -16,7 +16,9 @@ import app.chompass.models.CurrentMealSchedule
 import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
 import app.chompass.services.FoodImageStore
+import app.chompass.services.LauncherShortcuts
 import app.chompass.services.NotificationService
+import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.TestDataSeeder
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.WidgetSnapshotWriter
@@ -60,6 +62,7 @@ class ChompassApp : Application() {
         container = AppContainer(this)
         seedDebugGeminiKeyIfNeeded()
         container.notifications.createChannels()
+        LauncherShortcuts.publish(this)
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         container.prefs.mealSchedule
             .onEach { CurrentMealSchedule.value = it }
@@ -215,6 +218,14 @@ class AppContainer(app: ChompassApp) {
      * onboarding is picked up right after it completes.
      */
     val sharedImageInbox: MutableStateFlow<List<ByteArray>> = MutableStateFlow(emptyList())
+
+    /**
+     * Launcher shortcut destination for Home (Camera / Voice / Barcode).
+     * [MainActivity] fills it; Home consumes and clears it. Sticky like
+     * [sharedImageInbox] so a shortcut that lands during onboarding is
+     * picked up once Home composes.
+     */
+    val shortcutEntryInbox: MutableStateFlow<ShortcutEntryAction?> = MutableStateFlow(null)
 
     private var adaptiveGoalsRefreshInFlight = false
 

@@ -93,6 +93,12 @@ fun ChompassNavHost(
             nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
         }
     }
+    val shortcutEntry by container.shortcutEntryInbox.collectAsState()
+    LaunchedEffect(shortcutEntry) {
+        if (shortcutEntry != null && currentRoute != null && currentRoute != ChompassRoutes.HOME) {
+            nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+        }
+    }
 
     // App-open epoch for the Home fill-from-zero reveal. Bumped only on ON_START
     // that follows an ON_STOP (a genuine background -> foreground return), so

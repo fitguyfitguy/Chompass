@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">Manuelle Eingabe</string>
     <string name="home_menu_saved_meals">Gespeicherte Mahlzeiten</string>
     <string name="home_menu_barcode">Barcode</string>
+    <string name="shortcut_camera_short">Kamera</string>
+    <string name="shortcut_camera_long">Essen mit Kamera loggen</string>
+    <string name="shortcut_voice_short">Sprache</string>
+    <string name="shortcut_voice_long">Essen per Sprache loggen</string>
+    <string name="shortcut_barcode_short">Barcode</string>
+    <string name="shortcut_barcode_long">Barcode scannen</string>
     <string name="add_food_sheet_title">Essen hinzufügen</string>
     <string name="add_food_hero_photo">Foto</string>
     <string name="add_food_hero_photo_sub">Kamera oder Galerie</string>

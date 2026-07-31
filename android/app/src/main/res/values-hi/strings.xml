@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">मैनुअल एंट्री</string>
     <string name="home_menu_saved_meals">सहेजे गए भोजन</string>
     <string name="home_menu_barcode">बारकोड</string>
+    <string name="shortcut_camera_short">कैमरा</string>
+    <string name="shortcut_camera_long">कैमरे से भोजन लॉग करें</string>
+    <string name="shortcut_voice_short">आवाज़</string>
+    <string name="shortcut_voice_long">आवाज़ से भोजन लॉग करें</string>
+    <string name="shortcut_barcode_short">बारकोड</string>
+    <string name="shortcut_barcode_long">बारकोड स्कैन करें</string>
     <string name="add_food_sheet_title">भोजन जोड़ें</string>
     <string name="add_food_hero_photo">फ़ोटो</string>
     <string name="add_food_hero_photo_sub">कैमरा या गैलरी</string>

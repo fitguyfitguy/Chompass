@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">수동 입력</string>
     <string name="home_menu_saved_meals">저장된 식사</string>
     <string name="home_menu_barcode">바코드</string>
+    <string name="shortcut_camera_short">카메라</string>
+    <string name="shortcut_camera_long">카메라로 음식 기록</string>
+    <string name="shortcut_voice_short">음성</string>
+    <string name="shortcut_voice_long">음성으로 음식 기록</string>
+    <string name="shortcut_barcode_short">바코드</string>
+    <string name="shortcut_barcode_long">바코드 스캔</string>
     <string name="add_food_sheet_title">음식 추가</string>
     <string name="add_food_hero_photo">사진</string>
     <string name="add_food_hero_photo_sub">카메라 또는 갤러리</string>

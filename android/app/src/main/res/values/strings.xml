@@ -343,6 +343,12 @@
     <string name="home_menu_saved_meals">Saved Meals</string>
     <string name="home_menu_barcode">Barcode</string>
     <string name="home_menu_grounded">Grounded</string>
+    <string name="shortcut_camera_short">Camera</string>
+    <string name="shortcut_camera_long">Log food with camera</string>
+    <string name="shortcut_voice_short">Voice</string>
+    <string name="shortcut_voice_long">Log food by voice</string>
+    <string name="shortcut_barcode_short">Barcode</string>
+    <string name="shortcut_barcode_long">Scan a barcode</string>
     <string name="add_food_sheet_title">Add food</string>
     <string name="add_food_hero_photo">Photo</string>
     <string name="add_food_hero_photo_sub">Camera or gallery</string>

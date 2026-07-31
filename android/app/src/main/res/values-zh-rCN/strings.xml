@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">手动输入</string>
     <string name="home_menu_saved_meals">已保存的餐食</string>
     <string name="home_menu_barcode">条形码</string>
+    <string name="shortcut_camera_short">相机</string>
+    <string name="shortcut_camera_long">用相机记录食物</string>
+    <string name="shortcut_voice_short">语音</string>
+    <string name="shortcut_voice_long">用语音记录食物</string>
+    <string name="shortcut_barcode_short">条形码</string>
+    <string name="shortcut_barcode_long">扫描条形码</string>
     <string name="add_food_sheet_title">添加食物</string>
     <string name="add_food_hero_photo">照片</string>
     <string name="add_food_hero_photo_sub">相机或相册</string>

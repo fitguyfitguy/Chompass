@@ -33,7 +33,9 @@ import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
 import app.chompass.debug.OnDeviceLlmDefaults
 import app.chompass.services.EntryPerfBenchmark
+import app.chompass.services.LauncherShortcuts
 import app.chompass.services.MealShare
+import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.InAppReview
 import app.chompass.ui.home.ImportSharedMealSheet
 import app.chompass.ui.navigation.ChompassNavHost
@@ -58,10 +60,12 @@ open class MainActivity : ComponentActivity() {
 
     /**
      * Route whatever launched (or re-launched) us: a `fudai://add-meal` link into
-     * pending meals, or a system share-sheet image into the photo entry flow.
+     * pending meals, a system share-sheet image into the photo entry flow, or a
+     * launcher long-press shortcut into Camera / Voice / Barcode.
      */
-    private fun handleShareIntent(intent: Intent?) {
+    private fun handleLaunchIntent(intent: Intent?) {
         intent ?: return
+        handleShortcutIntent(intent)
         when (intent.action) {
             Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE -> handleSharedImages(intent)
             else -> {
@@ -70,6 +74,22 @@ open class MainActivity : ComponentActivity() {
                 MealShare.meals(uri)?.let { pendingSharedMeals = it }
             }
         }
+    }
+
+    /**
+     * Launcher shortcuts set a dedicated action (and a redundant extra). Consume
+     * the extras so Activity.recreate() does not re-open the sheet.
+     */
+    private fun handleShortcutIntent(intent: Intent) {
+        val action = ShortcutEntryAction.fromAction(intent.action)
+            ?: ShortcutEntryAction.fromIntentExtra(intent.getStringExtra(LauncherShortcuts.EXTRA_SHORTCUT))
+            ?: return
+        intent.removeExtra(LauncherShortcuts.EXTRA_SHORTCUT)
+        // Reset action so a later recreate does not re-fire via fromAction().
+        if (intent.action?.startsWith("app.chompass.action.SHORTCUT_") == true) {
+            intent.action = Intent.ACTION_MAIN
+        }
+        (application as ChompassApp).container.shortcutEntryInbox.value = action
     }
 
     /**
@@ -102,7 +122,7 @@ open class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleShareIntent(intent)
+        handleLaunchIntent(intent)
         handleDebugIntentExtras(intent, (application as ChompassApp).container)
     }
     override fun onStart() {
@@ -199,8 +219,8 @@ open class MainActivity : ComponentActivity() {
         // Dev-only seeders / benchmarks — see handleDebugIntentExtras() for adb examples.
         // Extras are consumed there so Activity.recreate() doesn't re-fire them.
         val debugActions = consumeDebugIntentExtras(intent)
-        // A fudai://add-meal link may have cold-launched us.
-        handleShareIntent(intent)
+        // A fudai://add-meal link or launcher shortcut may have cold-launched us.
+        handleLaunchIntent(intent)
         var startOnboarding by mutableStateOf<Boolean?>(null)
         var initialAppearance by mutableStateOf("system")
         var initialThemeColorKey by mutableStateOf(AppThemeColor.DEFAULT_KEY)
