@@ -9,6 +9,10 @@ All notable changes to Chompass are documented here.
 - Opt-in WebDAV **Sync on open** (Android + PWA): once per local day when the app is opened; off by default. Manual Sync now unchanged.
 - Android launcher long-press shortcuts for Camera, Voice, and Barcode food logging.
 
+### Notes
+
+- Meal constituents + g/unit (#154) is the **next roadmap WIP**: candidate prompt gated; Gemini 3.6 Flash passes, free Gemma and 3.5 Flash Lite fail constituent↔total reconcile — schema not shipping until the gate clears (see `docs/FOOD_ACCURACY_BENCHMARK_STATUS.md`).
+
 ## [3.4.0] - 2026-07-31
 
 ### Added

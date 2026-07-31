@@ -16,6 +16,7 @@ docs/benchmarks/food_accuracy/
   data/               # Downloaded datasets (gitignored)
   results/            # Eval outputs (gitignored)
   run_eval.py         # Main CLI
+  score_constituents.py  # P1 constituents gate scorer
   compare_runs.py     # Diff two summary.csv files
   image_text_variants.py  # Shared L1/L2 writers
   download_jfb.py
@@ -23,6 +24,18 @@ docs/benchmarks/food_accuracy/
   download_acetada.py
   download_nutritionverse_real.py
   build_fndds_manifest.py
+  manifest/eval_constituents_text.jsonl  # Composite meals for constituents gate
+```
+
+## Constituents gate (research)
+
+```bash
+# Candidate prompt only — do not ship until score_constituents.py passes
+uv run --with httpx python docs/benchmarks/food_accuracy/run_eval.py \
+  --manifest docs/benchmarks/food_accuracy/manifest/eval_constituents_text.jsonl \
+  --prompt production_text_constituents \
+  --provider openrouter --model google/gemini-3.6-flash \
+  --out docs/benchmarks/food_accuracy/results/constituents/strong
 ```
 
 ## Prompt A/B (text)
