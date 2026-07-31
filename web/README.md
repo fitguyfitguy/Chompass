@@ -78,7 +78,7 @@ see [`docs/LOCALIZATION.md`](../docs/LOCALIZATION.md)).
 
 Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 
-Service worker cache: `chompass-shell-v4`.
+Service worker cache: `chompass-shell-v5`.
 
 ### Desktop layout
 
