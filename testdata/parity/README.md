@@ -5,9 +5,10 @@ Committed golden inputs/expected outputs for Android and PWA drift checks.
 | File | Purpose |
 |------|---------|
 | `formulas-expected.json` | Shared formula / FCAST intake golden scenarios |
-| `diary-sample.json` | Anonymized diary export `format_version` 1.1 |
+| `diary-sample.json` | Anonymized diary export `format_version` 1.2 (serving units + constituents) |
 | `body-metrics-sample.json` | Synthetic body-metrics export `format_version` 1.0 |
-| `meal-share-sample.json` | Meal-share payload `v` 1 (decoded JSON) |
+| `meal-share-sample.json` | Meal-share payload `v` 2 (decoded JSON; camelCase + servingUnitOptions) |
+| `sync-sample.json` | User-hosted sync `format_version` 1.1 (serving units + constituents) |
 | `ai-provider-defaults.json` | BYOK defaults for Gemini / Anthropic / OpenAI (PWA `openai_compatible`) |
 | `goal-formula-prompt-fragments.json` | AI goal-prompt formula line strings |
 | `pref-defaults.json` | Shared semantic preference defaults (not a portable prefs export) |

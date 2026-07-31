@@ -18,11 +18,16 @@ import {
   displayUnit,
   optionId,
 } from "../lib/chompass-core/serving-units.js";
+import {
+  scaleAllConstituents,
+  applyConstituentDisplayEdit,
+} from "../lib/chompass-core/constituents.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 import { analyzeFoodEntry, ANALYSIS_PHASE, isAbortError } from "../lib/ai/food-analyze.js";
 import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
 import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
+import { t } from "../lib/i18n/index.js";
 
 const MICRO_FIELDS = [
   ["sugarG", "Sugar g"],
@@ -69,6 +74,9 @@ export class EntryForm extends HTMLElement {
     this.selectedServingUnit = "g";
     this.quantityText = "100";
     this.servingReady = false;
+    /** @type {import('../lib/chompass-core/models.js').FoodConstituent[]} */
+    this.constituents = [];
+    this.constituentsExpanded = false;
     this.correctNote = "";
     this.correcting = false;
     /** @type {string|null} */
@@ -126,7 +134,14 @@ export class EntryForm extends HTMLElement {
       base[key] = v == null || v === "" ? null : Number(v);
     }
     this.baseNutrition = base;
+    this.constituents = cloneConstituents(e.constituents);
+    if (this.constituents.length > 0) this.constituentsExpanded = true;
     this.servingReady = true;
+  }
+
+  /** Display-space constituent rows (scaled to current serving). */
+  displayConstituents() {
+    return scaleAllConstituents(this.constituents, this.currentScale());
   }
 
   currentServingGrams() {
@@ -226,6 +241,8 @@ export class EntryForm extends HTMLElement {
           <input type="hidden" name="quantityG" id="quantityG" value="${servingGrams}" />
         </section>
 
+        ${this.renderConstituentsSection()}
+
         <section class="entry-section ${lockClass}">
           <div class="entry-section__head">
             <h2 class="entry-section__title">Nutrition</h2>
@@ -308,6 +325,7 @@ export class EntryForm extends HTMLElement {
 
     bindSubpageBack(this, "#/home");
     this.bindServingHandlers();
+    this.bindConstituentHandlers();
     this.bindCorrectHandlers();
     this.querySelector("form")?.addEventListener("submit", (ev) => this.onSubmit(ev));
     this.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
@@ -326,6 +344,252 @@ export class EntryForm extends HTMLElement {
       this.servingReady = true;
       this.render();
     });
+  }
+
+  renderConstituentsSection() {
+    const rows = this.displayConstituents();
+    if (!rows.length) return "";
+    const expanded = this.constituentsExpanded;
+    return `
+      <section class="entry-section entry-section--constituents">
+        <button type="button" class="entry-constituents__toggle" data-constituents-toggle aria-expanded="${expanded}">
+          <span class="entry-constituents__chevron" aria-hidden="true">${expanded ? "▾" : "▸"}</span>
+          <span>${escapeHtml(t("entry.constituents.count", { count: rows.length }))}</span>
+        </button>
+        ${
+          expanded
+            ? `<div class="entry-constituents__list">
+                 ${rows.map((row, index) => this.renderConstituentRow(row, index)).join("")}
+                 <button type="button" class="btn btn--ghost btn--sm" data-constituent-add>
+                   ${escapeHtml(t("entry.constituents.add"))}
+                 </button>
+               </div>`
+            : ""
+        }
+      </section>
+    `;
+  }
+
+  /**
+   * @param {import('../lib/chompass-core/models.js').FoodConstituent} row
+   * @param {number} index
+   */
+  renderConstituentRow(row, index) {
+    const ensured = ensureServingUnits({
+      name: row.name || t("entry.constituents.item_fallback"),
+      quantityG: row.servingSizeGrams,
+      servingUnitOptions: row.servingUnitOptions,
+      selectedServingUnit: row.selectedServingUnit,
+      selectedServingQuantity: row.selectedServingQuantity,
+    });
+    const picker = pickerOptions(ensured.servingUnitOptions);
+    const unitId = ensured.selectedServingUnit;
+    const option = optionMatching(unitId, ensured.servingUnitOptions);
+    const qty =
+      ensured.selectedServingQuantity != null && ensured.selectedServingQuantity > 0
+        ? ensured.selectedServingQuantity
+        : option.gramsPerUnit > 0
+          ? row.servingSizeGrams / option.gramsPerUnit
+          : row.servingSizeGrams;
+    const qtyText = formatQuantity(qty);
+    const showTotal = !isGramUnit(option);
+    return `
+      <div class="entry-constituent-card" data-constituent-index="${index}">
+        <div class="entry-constituent-card__head">
+          ${row.emoji ? `<span class="entry-constituent-card__emoji" aria-hidden="true">${escapeHtml(row.emoji)}</span>` : ""}
+          <div class="field entry-constituent-card__name">
+            <label class="visually-hidden" for="constituent-name-${index}">${escapeHtml(t("entry.constituents.name"))}</label>
+            <input
+              id="constituent-name-${index}"
+              type="text"
+              value="${escapeAttr(row.name || "")}"
+              placeholder="${escapeAttr(t("entry.constituents.item_fallback"))}"
+              data-constituent-name
+            />
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" data-constituent-remove aria-label="${escapeAttr(t("entry.constituents.remove"))}">×</button>
+        </div>
+        <div class="serving-quantity-card serving-quantity-card--nested">
+          <div class="serving-quantity-card__row">
+            <span class="serving-quantity-card__label">${escapeHtml(t("entry.constituents.quantity"))}</span>
+            <div class="serving-quantity-card__controls">
+              <input
+                class="serving-quantity-card__qty"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                value="${escapeAttr(qtyText)}"
+                aria-label="${escapeAttr(t("entry.constituents.quantity"))}"
+                data-constituent-qty
+              />
+              <select class="serving-quantity-card__unit" aria-label="${escapeAttr(t("entry.constituents.unit"))}" data-constituent-unit>
+                ${picker
+                  .map((opt) => {
+                    const id = optionId(opt);
+                    const label = displayUnit(opt, id === unitId ? qty : null);
+                    return `<option value="${escapeAttr(id)}" ${id === unitId ? "selected" : ""}>${escapeHtml(label)}</option>`;
+                  })
+                  .join("")}
+              </select>
+            </div>
+          </div>
+          ${
+            showTotal
+              ? `<div class="serving-quantity-card__total">
+                   <span>Total</span>
+                   <span>~${formatGramsDisplay(row.servingSizeGrams)} g</span>
+                 </div>`
+              : ""
+          }
+        </div>
+        <p class="entry-constituent-card__macros" data-constituent-macros>
+          ${escapeHtml(
+            t("entry.constituents.macros", {
+              calories: Math.round(row.calories),
+              protein: formatQuantity(row.proteinG),
+              carbs: formatQuantity(row.carbsG),
+              fat: formatQuantity(row.fatG),
+            }),
+          )}
+        </p>
+      </div>
+    `;
+  }
+
+  bindConstituentHandlers() {
+    this.querySelector("[data-constituents-toggle]")?.addEventListener("click", () => {
+      this.captureFormIntoSource();
+      this.constituentsExpanded = !this.constituentsExpanded;
+      this.render();
+    });
+    this.querySelector("[data-constituent-add]")?.addEventListener("click", () => {
+      const display = this.displayConstituents();
+      display.push({
+        name: "",
+        calories: 0,
+        proteinG: 0,
+        carbsG: 0,
+        fatG: 0,
+        servingSizeGrams: 50,
+        emoji: null,
+        servingUnitOptions: [],
+        selectedServingUnit: "g",
+        selectedServingQuantity: 50,
+      });
+      this.applyConstituentRows(display);
+    });
+    this.querySelectorAll("[data-constituent-index]").forEach((card) => {
+      const index = Number(card.getAttribute("data-constituent-index"));
+      const nameInput = /** @type {HTMLInputElement|null} */ (card.querySelector("[data-constituent-name]"));
+      const qtyInput = /** @type {HTMLInputElement|null} */ (card.querySelector("[data-constituent-qty]"));
+      const unitSelect = /** @type {HTMLSelectElement|null} */ (card.querySelector("[data-constituent-unit]"));
+      const removeBtn = card.querySelector("[data-constituent-remove]");
+
+      nameInput?.addEventListener("change", () => {
+        const display = this.displayConstituents();
+        if (!display[index]) return;
+        display[index] = { ...display[index], name: nameInput.value };
+        this.applyConstituentRows(display);
+      });
+      qtyInput?.addEventListener("change", () => {
+        this.onConstituentQuantityChange(index, qtyInput.value);
+      });
+      unitSelect?.addEventListener("change", () => {
+        this.onConstituentUnitChange(index, unitSelect.value);
+      });
+      removeBtn?.addEventListener("click", () => {
+        const display = this.displayConstituents();
+        display.splice(index, 1);
+        this.applyConstituentRows(display);
+      });
+    });
+  }
+
+  /**
+   * @param {number} index
+   * @param {string} text
+   */
+  onConstituentQuantityChange(index, text) {
+    const display = this.displayConstituents();
+    const row = display[index];
+    if (!row) return;
+    const ensured = ensureServingUnits({
+      name: row.name,
+      quantityG: row.servingSizeGrams,
+      servingUnitOptions: row.servingUnitOptions,
+      selectedServingUnit: row.selectedServingUnit,
+      selectedServingQuantity: row.selectedServingQuantity,
+    });
+    const option = optionMatching(ensured.selectedServingUnit, ensured.servingUnitOptions);
+    const qty = parseQuantity(text);
+    if (qty == null || qty <= 0) return;
+    const grams = qty * option.gramsPerUnit;
+    const factor = row.servingSizeGrams > 0 ? grams / row.servingSizeGrams : 1;
+    display[index] = {
+      ...row,
+      servingSizeGrams: grams,
+      calories: Math.max(0, Math.round(row.calories * factor)),
+      proteinG: row.proteinG * factor,
+      carbsG: row.carbsG * factor,
+      fatG: row.fatG * factor,
+      selectedServingUnit: option.unit,
+      selectedServingQuantity: qty,
+      servingUnitOptions: ensured.servingUnitOptions,
+    };
+    this.applyConstituentRows(display);
+  }
+
+  /**
+   * @param {number} index
+   * @param {string} unitId
+   */
+  onConstituentUnitChange(index, unitId) {
+    const display = this.displayConstituents();
+    const row = display[index];
+    if (!row) return;
+    const ensured = ensureServingUnits({
+      name: row.name,
+      quantityG: row.servingSizeGrams,
+      servingUnitOptions: row.servingUnitOptions,
+      selectedServingUnit: row.selectedServingUnit,
+      selectedServingQuantity: row.selectedServingQuantity,
+    });
+    const option = optionMatching(unitId, ensured.servingUnitOptions);
+    const qty = option.gramsPerUnit > 0 ? row.servingSizeGrams / option.gramsPerUnit : row.servingSizeGrams;
+    display[index] = {
+      ...row,
+      selectedServingUnit: option.unit,
+      selectedServingQuantity: qty,
+      servingUnitOptions: ensured.servingUnitOptions,
+    };
+    this.applyConstituentRows(display);
+  }
+
+  /**
+   * Rebase meal totals from display-space constituent edits.
+   * @param {import('../lib/chompass-core/models.js').FoodConstituent[]} displayRows
+   */
+  applyConstituentRows(displayRows) {
+    const { rows, aggregate } = applyConstituentDisplayEdit(displayRows);
+    this.constituents = rows;
+    if (aggregate) {
+      this.baseNutrition = {
+        ...(this.baseNutrition || {}),
+        calories: aggregate.calories,
+        proteinG: aggregate.proteinG,
+        carbsG: aggregate.carbsG,
+        fatG: aggregate.fatG,
+      };
+      this.baseGrams = aggregate.servingSizeGrams > 0 ? aggregate.servingSizeGrams : this.baseGrams;
+      const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+      const qty = option.gramsPerUnit > 0 ? this.baseGrams / option.gramsPerUnit : this.baseGrams;
+      this.quantityText = formatQuantity(qty);
+    } else if (rows.length === 0) {
+      this.constituentsExpanded = false;
+    }
+    if (rows.length > 0) this.constituentsExpanded = true;
+    this.servingReady = true;
+    this.render();
   }
 
   /**
@@ -549,6 +813,10 @@ export class EntryForm extends HTMLElement {
     if (this.nutritionLocked || !this.baseNutrition) return;
     const key = input.name;
     if (!NUTRITION_KEYS.includes(key) && key !== "fiberG") return;
+    if (this.constituents.length) {
+      // Manual top-level edits invalidate the constituent breakdown.
+      this.constituents = [];
+    }
     const scale = Math.max(this.currentScale(), 0.0001);
     const raw = input.value.trim();
     if (raw === "") {
@@ -591,6 +859,22 @@ export class EntryForm extends HTMLElement {
     for (const [key] of MICRO_FIELDS) {
       setVal(key, scaled[key]);
     }
+
+    const scaledRows = scaleAllConstituents(this.constituents, scale);
+    this.querySelectorAll("[data-constituent-index]").forEach((card) => {
+      const index = Number(card.getAttribute("data-constituent-index"));
+      const row = scaledRows[index];
+      if (!row) return;
+      const macros = card.querySelector("[data-constituent-macros]");
+      if (macros) {
+        macros.textContent = t("entry.constituents.macros", {
+          calories: Math.round(row.calories),
+          protein: formatQuantity(row.proteinG),
+          carbs: formatQuantity(row.carbsG),
+          fat: formatQuantity(row.fatG),
+        });
+      }
+    });
   }
 
   /** Preserve in-progress form values into existing/prefill for re-render. */
@@ -609,6 +893,7 @@ export class EntryForm extends HTMLElement {
     target.selectedServingUnit = this.selectedServingUnit;
     const qty = parseQuantity(this.quantityText);
     target.selectedServingQuantity = qty != null && qty > 0 ? qty : null;
+    target.constituents = scaleAllConstituents(this.constituents, this.currentScale());
     if (this.baseNutrition) {
       const scaled = scaleNutrition(this.baseNutrition, this.currentScale());
       Object.assign(target, scaled);
@@ -627,6 +912,9 @@ export class EntryForm extends HTMLElement {
     const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
     const servingGrams = this.currentServingGrams();
     const qty = parseQuantity(this.quantityText);
+    const constituents = scaleAllConstituents(this.constituents, scale).filter(
+      (c) => c.name.trim() && c.servingSizeGrams > 0,
+    );
 
     /** @type {import('../lib/chompass-core/models.js').FoodEntry} */
     const entry = {
@@ -639,6 +927,7 @@ export class EntryForm extends HTMLElement {
       servingUnitOptions: this.servingUnitOptions,
       selectedServingUnit: this.selectedServingUnit,
       selectedServingQuantity: qty != null && qty > 0 ? qty : null,
+      constituents,
       calories: Number(scaled.calories ?? 0),
       proteinG: Number(scaled.proteinG ?? 0),
       carbsG: Number(scaled.carbsG ?? 0),
@@ -682,6 +971,20 @@ function escapeAttr(s) {
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+/**
+ * @param {import('../lib/chompass-core/models.js').FoodConstituent[]|null|undefined} list
+ * @returns {import('../lib/chompass-core/models.js').FoodConstituent[]}
+ */
+function cloneConstituents(list) {
+  if (!Array.isArray(list)) return [];
+  return list.map((c) => ({
+    ...c,
+    servingUnitOptions: Array.isArray(c.servingUnitOptions)
+      ? c.servingUnitOptions.map((u) => ({ ...u }))
+      : [],
+  }));
 }
 
 customElements.define("entry-form", EntryForm);

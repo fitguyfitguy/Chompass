@@ -97,8 +97,20 @@ export const hi = Object.freeze({
   'toast.saved': 'सहेजा गया',
   'toast.deleted': 'हटाया गया',
   'toast.copied': 'कॉपी हुआ',
+  // Entry / meal constituents
+  'entry.constituents.title': 'सामग्री',
+  'entry.constituents.count': 'सामग्री ({count})',
+  'entry.constituents.add': 'सामग्री जोड़ें',
+  'entry.constituents.remove': 'सामग्री हटाएँ',
+  'entry.constituents.name': 'नाम',
+  'entry.constituents.quantity': 'मात्रा',
+  'entry.constituents.unit': 'इकाई',
+  'entry.constituents.item_fallback': 'सामग्री',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · F {fat}',
   'a11y.open_menu': 'मेनू खोलें',
   'a11y.close_sheet': 'शीट बंद करें',
   'a11y.add_food': 'खाना जोड़ें',
   'a11y.primary_nav': 'मुख्य',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

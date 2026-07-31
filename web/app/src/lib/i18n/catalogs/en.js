@@ -115,9 +115,22 @@ export const en = Object.freeze({
   "toast.deleted": "Deleted",
   "toast.copied": "Copied",
 
+  // Entry / meal constituents
+  "entry.constituents.title": "Ingredients",
+  "entry.constituents.count": "Ingredients ({count})",
+  "entry.constituents.add": "Add ingredient",
+  "entry.constituents.remove": "Remove ingredient",
+  "entry.constituents.name": "Name",
+  "entry.constituents.quantity": "Quantity",
+  "entry.constituents.unit": "Unit",
+  "entry.constituents.item_fallback": "Ingredient",
+  "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+
   // A11y
   "a11y.open_menu": "Open menu",
   "a11y.close_sheet": "Close sheet",
   "a11y.add_food": "Add food",
   "a11y.primary_nav": "Primary",
+  "settings.ai.meal_constituents": "Meal ingredient breakdown",
+  "settings.ai.meal_constituents_hint": "Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent."
 });

@@ -307,6 +307,7 @@ export const profile = {
  * @property {string} [fallbackAiProvider]
  * @property {string} [fallbackAiModel]
  * @property {string} [primaryAiProvider]
+ * @property {boolean} [mealConstituentsEnabled] Ask AI for optional meal ingredient rows (default true)
  * @property {string} [speechLang] BCP-47 tag for Web Speech (browser STT)
  * @property {string} [uiLang] UI locale id from locales.json (empty = auto-detect browser)
  * @property {string} [progressRangeId] Progress tab time range id (1W…All)
@@ -339,6 +340,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   fallbackAiProvider: ANDROID_PREF_DEFAULTS.fallbackAiProvider,
   fallbackAiModel: ANDROID_PREF_DEFAULTS.fallbackAiModel,
   primaryAiProvider: "",
+  mealConstituentsEnabled: true,
   speechLang: "",
   uiLang: "",
   progressRangeId: "1W",

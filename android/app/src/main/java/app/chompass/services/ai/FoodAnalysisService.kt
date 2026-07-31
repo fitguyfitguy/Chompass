@@ -36,6 +36,9 @@ import app.chompass.models.UnitFormat
 private const val ENTRY_JSON_SCHEMA =
     """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}"""
 
+private const val ENTRY_JSON_SCHEMA_WITH_CONSTITUENTS =
+    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[],"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","unit_options":[]}]}"""
+
 private const val ENTRY_NUTRIENT_UNITS =
     "Calories are integers; other nutrients are numbers (grams for protein/carbs/fat/sugars/fiber/fats/omega-3; " +
         "mg for cholesterol, sodium, potassium, calcium, iron, magnesium, zinc, vitamin C, vitamin E; " +
@@ -46,6 +49,15 @@ private const val ENTRY_UNIT_OPTIONS_RULE =
         "the natural non-gram unit (slice, piece, cup, ml, tbsp, can) with quantity covering " +
         "the whole analyzed amount and its weight per unit. Use [] only when no non-gram unit " +
         "fits; never use g/grams as a unit."
+
+private const val ENTRY_CONSTITUENTS_RULE =
+    "constituents is optional. For multi-item meals, list each distinct edible item " +
+        "(egg, toast, butter, drink, side) with its own macros, serving_size_grams, and " +
+        "unit_options when a non-gram unit is obvious. Keep top-level fields as the meal " +
+        "total. Constituent grams MUST sum to serving_size_grams within ±5%. Constituent " +
+        "calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%. " +
+        "Include every named or clearly implied edible item; do not invent extras. Use [] " +
+        "for a single undivided food."
 
 private const val ENTRY_EMOJI_NULL_RULE =
     "For \"emoji\" pick the single most specific food emoji for this dish. " +
@@ -349,22 +361,56 @@ class FoodAnalysisService(
         return callAi(prompt, imageBytes = null).trim()
     }
 
+    private suspend fun mealConstituentsRequested(): Boolean {
+        val store = prefs ?: return true
+        if (!store.mealConstituentsEnabled.first()) return false
+        // Local Gemma / on-device models fail the constituents reconcile gate.
+        return store.selectedAIProvider.first() != AIProvider.ON_DEVICE
+    }
+
+    private suspend fun entryJsonSchema(): String =
+        if (mealConstituentsRequested()) ENTRY_JSON_SCHEMA_WITH_CONSTITUENTS else ENTRY_JSON_SCHEMA
+
+    private suspend fun entryConstituentsRuleOrEmpty(): String =
+        if (mealConstituentsRequested()) ENTRY_CONSTITUENTS_RULE else ""
+
+    private suspend fun parseEntryFood(raw: String): FoodAnalysis {
+        val parsed = FoodJsonParser.parseFood(raw)
+        return if (mealConstituentsRequested()) parsed else parsed.copy(constituents = emptyList())
+    }
+
     suspend fun analyzeText(
         description: String,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        val prompt = """
-            Estimate the nutritional content for: $description
-            Respond ONLY with JSON:
-            $ENTRY_JSON_SCHEMA
-            $ENTRY_NUTRIENT_UNITS
-            $ENTRY_UNIT_OPTIONS_RULE
-            $ENTRY_EMOJI_NULL_RULE
-        """.trimIndent()
+        val schema = entryJsonSchema()
+        val constituentsRule = entryConstituentsRuleOrEmpty()
+        val prompt = buildString {
+            appendLine("Estimate the nutritional content for: $description")
+            appendLine("Respond ONLY with JSON:")
+            appendLine(schema)
+            appendLine(ENTRY_NUTRIENT_UNITS)
+            appendLine(ENTRY_UNIT_OPTIONS_RULE)
+            if (constituentsRule.isNotEmpty()) appendLine(constituentsRule)
+            append(ENTRY_EMOJI_NULL_RULE)
+        }.trimIndent()
         val raw = callAi(prompt, null, op = "analyzeText", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
+        val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = null, description = description, onProgress = onProgress)
+    }
+
+    private suspend fun entryResponseBlock(): String {
+        val schema = entryJsonSchema()
+        val constituentsRule = entryConstituentsRuleOrEmpty()
+        return buildString {
+            appendLine("Respond ONLY with JSON:")
+            appendLine(schema)
+            appendLine(ENTRY_NUTRIENT_UNITS)
+            appendLine(ENTRY_UNIT_OPTIONS_RULE)
+            if (constituentsRule.isNotEmpty()) appendLine(constituentsRule)
+            append(ENTRY_EMOJI_NULL_RULE)
+        }
     }
 
     suspend fun analyzeAuto(
@@ -376,16 +422,12 @@ class FoodAnalysisService(
             If it's a food photo: estimate the nutritional content of the visible food.
             If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
             If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
-            Respond ONLY with JSON:
-            $ENTRY_JSON_SCHEMA
-            $ENTRY_NUTRIENT_UNITS
-            $ENTRY_UNIT_OPTIONS_RULE
-            $ENTRY_EMOJI_NULL_RULE
+            ${entryResponseBlock()}
         """.trimIndent()
         prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
         val raw = callAi(prompt, imageBytes, op = "analyzeAuto", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
+        val analysis = PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = imageBytes, description = null, onProgress = onProgress)
     }
 
@@ -396,33 +438,26 @@ class FoodAnalysisService(
         confirmedPortionGrams: Double? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
+        val responseBlock = entryResponseBlock()
         var prompt = if (singleIngredient) {
             """
             Analyze this food image. It is a single weighed ingredient being added to a meal —
             estimate only the visible item on its own (do not invent other ingredients).
             If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
-            Respond ONLY with JSON:
-            $ENTRY_JSON_SCHEMA
-            $ENTRY_NUTRIENT_UNITS
-            $ENTRY_UNIT_OPTIONS_RULE
-            $ENTRY_EMOJI_NULL_RULE
+            $responseBlock
             """.trimIndent()
         } else {
             """
             Analyze this food image. Estimate the nutritional content of the visible food.
             If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
-            Respond ONLY with JSON:
-            $ENTRY_JSON_SCHEMA
-            $ENTRY_NUTRIENT_UNITS
-            $ENTRY_UNIT_OPTIONS_RULE
-            $ENTRY_EMOJI_NULL_RULE
+            $responseBlock
             """.trimIndent()
         }
         prompt = appendUserMealContext(prompt, description, confirmedPortionGrams)
         prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
         val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
+        val analysis = PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = imageBytes, description = description, onProgress = onProgress)
     }
 
@@ -443,27 +478,20 @@ class FoodAnalysisService(
                 onProgress = onProgress,
             )
         }
+        val responseBlock = entryResponseBlock()
         var prompt = if (singleIngredient) {
             """
             Analyze these food images. They show a single weighed ingredient being added to a meal —
             estimate only that ingredient (do not invent other meal components or double-count).
             If a utensil, hand, coin, or common object is visible next to the food in any image, use it as a size reference to refine your portion estimate.
-            Respond ONLY with JSON:
-            $ENTRY_JSON_SCHEMA
-            $ENTRY_NUTRIENT_UNITS
-            $ENTRY_UNIT_OPTIONS_RULE
-            $ENTRY_EMOJI_NULL_RULE
+            $responseBlock
             """.trimIndent()
         } else {
             """
             Analyze these food images together. They are different angles or supporting photos of the same meal.
             Use all images to estimate the total nutritional content for the serving shown. Do not double-count the meal across images.
             If a utensil, hand, coin, or common object is visible next to the food in any image, use it as a size reference to refine your portion estimate.
-            Respond ONLY with JSON:
-            $ENTRY_JSON_SCHEMA
-            $ENTRY_NUTRIENT_UNITS
-            $ENTRY_UNIT_OPTIONS_RULE
-            $ENTRY_EMOJI_NULL_RULE
+            $responseBlock
             """.trimIndent()
         }
         prompt = appendUserMealContext(prompt, description, confirmedPortionGrams)
@@ -472,7 +500,7 @@ class FoodAnalysisService(
         prompt = appendOffBarcodeContext(prompt, images, onProgress)
         val raw = callAi(prompt, images, op = "analyzeFoodMulti", onProgress = onProgress)
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { FoodJsonParser.parseFood(raw) }
+        val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = images.first(), description = description, onProgress = onProgress)
     }
 
@@ -743,8 +771,13 @@ class FoodAnalysisService(
         }
     }
 
-    private suspend fun servingUnitInferenceMode(): ServingUnitInferenceMode =
-        inferenceModeForTest ?: prefs!!.servingUnitInferenceMode.first()
+    private suspend fun servingUnitInferenceMode(): ServingUnitInferenceMode {
+        val mode = inferenceModeForTest ?: prefs!!.servingUnitInferenceMode.first()
+        if (mode != ServingUnitInferenceMode.AI_CALL) return mode
+        val provider = prefs?.selectedAIProvider?.first()
+        // Second AI call for units is too unreliable on local Gemma — use heuristics.
+        return if (provider == AIProvider.ON_DEVICE) ServingUnitInferenceMode.HEURISTIC else mode
+    }
 
     private suspend fun finalizeAnalysis(
         analysis: FoodAnalysis,

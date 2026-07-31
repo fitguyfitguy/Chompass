@@ -8,10 +8,12 @@ All notable changes to Chompass are documented here.
 
 - Opt-in WebDAV **Sync on open** (Android + PWA): once per local day when the app is opened; off by default. Manual Sync now unchanged.
 - Android launcher long-press shortcuts for Camera, Voice, and Barcode food logging.
+- Meal constituents + g/unit (#154): composite AI meals can return editable `constituents[]` with per-row serving units; bounded client reconcile keeps row totals aligned with the meal. Diary **1.2**, sync **1.1**, and meal-share **v2** round-trip serving units and constituents (older versions still import).
+- Settings toggle **Meal ingredient breakdown** (Android + PWA): opt out of AI `constituents[]`. Always off for on-device Gemma; on-device also skips the extra AI serving-unit call and uses heuristics instead.
 
-### Notes
+### Changed
 
-- Meal constituents + g/unit (#154) is the **next roadmap WIP**: candidate prompt gated; Gemini 3.6 Flash passes, free Gemma and 3.5 Flash Lite fail constituent↔total reconcile — schema not shipping until the gate clears (see `docs/FOOD_ACCURACY_BENCHMARK_STATUS.md`).
+- Food review sheets (Android + PWA) show grouped ingredient rows: scale, edit, add, or remove constituents; meal macros follow the rows.
 
 ## [3.4.0] - 2026-07-31
 

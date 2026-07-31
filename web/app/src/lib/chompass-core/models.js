@@ -77,7 +77,7 @@
  */
 
 /**
- * Local-only serving unit (not in diary 1.1 wire format).
+ * Local-only serving unit historically; included in diary 1.2+ / sync 1.1+ / meal-share v2.
  * @typedef {Object} ServingUnitOption
  * @property {string} unit
  * @property {number} gramsPerUnit
@@ -85,13 +85,29 @@
  */
 
 /**
+ * One edible row inside a composite meal. Empty list = indivisible food.
+ * @typedef {Object} FoodConstituent
+ * @property {string} name
+ * @property {number} calories
+ * @property {number} proteinG
+ * @property {number} carbsG
+ * @property {number} fatG
+ * @property {number} servingSizeGrams
+ * @property {string|null} [emoji]
+ * @property {ServingUnitOption[]} [servingUnitOptions]
+ * @property {string|null} [selectedServingUnit]
+ * @property {number|null} [selectedServingQuantity]
+ */
+
+/**
  * @typedef {Macro & Micronutrients & Object} FoodEntry
  * @property {string} id
  * @property {string} name
  * @property {number|null} [quantityG]
- * @property {ServingUnitOption[]} [servingUnitOptions]  IndexedDB-only; not exported
- * @property {string|null} [selectedServingUnit]         IndexedDB-only; not exported
- * @property {number|null} [selectedServingQuantity]     IndexedDB-only; not exported
+ * @property {ServingUnitOption[]} [servingUnitOptions]
+ * @property {string|null} [selectedServingUnit]
+ * @property {number|null} [selectedServingQuantity]
+ * @property {FoodConstituent[]} [constituents]
  * @property {"breakfast"|"lunch"|"dinner"|"snack"} mealType
  * @property {string} date        ISO date "YYYY-MM-DD"
  * @property {string} time        "HH:mm"

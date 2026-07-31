@@ -17,9 +17,12 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from reconcile_constituents import (
+    RECONCILE_TOL,
+    extract_constituent_list,
+    reconcile_prediction,
+)
 from schema import load_manifest
-
-RECONCILE_TOL = 0.05
 
 
 def _norm(text: str) -> str:
@@ -27,22 +30,19 @@ def _norm(text: str) -> str:
 
 
 def _extract_constituents(prediction: dict[str, Any] | None) -> list[dict[str, Any]]:
-    if not isinstance(prediction, dict):
-        return []
-    for key in ("constituents", "ingredients", "components", "items"):
-        raw = prediction.get(key)
-        if isinstance(raw, list):
-            return [c for c in raw if isinstance(c, dict)]
-    return []
+    return extract_constituent_list(prediction)
 
 
 def _float(value: Any) -> float | None:
     if value is None:
         return None
     try:
-        return float(value)
+        out = float(value)
     except (TypeError, ValueError):
         return None
+    if out != out or out in (float("inf"), float("-inf")):
+        return None
+    return out
 
 
 def _token_hit(name: str, expected_tokens: list[str]) -> bool:
@@ -95,11 +95,13 @@ class ConstituentAggregate:
 def score_constituent_record(record: dict[str, Any], sample_extra: dict[str, Any]) -> ConstituentSampleScore:
     sample_id = str(record["id"])
     parse_ok = bool(record.get("parse_ok"))
-    prediction = record.get("prediction") if isinstance(record.get("prediction"), dict) else None
+    raw_prediction = record.get("prediction") if isinstance(record.get("prediction"), dict) else None
+    # Apply the same bounded client post-process clients will use before scoring
+    # reconcile / coverage. Top-level macros (WMAPE) stay unchanged.
+    prediction = reconcile_prediction(raw_prediction) if raw_prediction is not None else None
     constituents = _extract_constituents(prediction)
     min_components = int(sample_extra.get("min_components") or 2)
     expected = [str(t) for t in (sample_extra.get("expected_components") or [])]
-
     if not parse_ok:
         return ConstituentSampleScore(
             id=sample_id,

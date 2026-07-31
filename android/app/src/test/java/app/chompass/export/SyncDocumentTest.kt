@@ -14,8 +14,14 @@ class SyncDocumentTest {
         val result = SyncDocument.parse(json, ZoneOffset.UTC)
         assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
         val parsed = (result as SyncDocument.ParseResult.Success).parsed
-        assertEquals(1, parsed.foodEntries.count { it.entry != null })
-        assertEquals("Chicken salad", parsed.foodEntries.first().entry?.name)
+        assertEquals(2, parsed.foodEntries.count { it.entry != null })
+        assertEquals("Chicken salad", parsed.foodEntries.first { it.entry != null }.entry?.name)
+        val salad = parsed.foodEntries.first { it.entry?.name == "Chicken salad" }.entry!!
+        assertEquals("bowl", salad.selectedServingUnit)
+        assertEquals(2, salad.constituents.size)
+        assertEquals(90.0, salad.constituents[0].servingUnitOptions.single().gramsPerUnit, 0.0)
+        val coffee = parsed.foodEntries.first { it.entry?.name == "Black coffee" }.entry!!
+        assertTrue(coffee.constituents.isEmpty())
         assertEquals(1, parsed.weights.count { it.entry != null })
         assertEquals(1, parsed.water.count { it.entry != null })
         assertTrue(parsed.profile != null)

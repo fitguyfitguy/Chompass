@@ -704,6 +704,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
                         customNote = analysis.customNote,
                         grounding = analysis.grounding,
+                        constituents = if (effectiveScale == 1.0) {
+                            analysis.constituents
+                        } else {
+                            app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                                analysis.constituents,
+                                effectiveScale,
+                            )
+                        },
                     )
                 )
                 container.prefs.setPendingFoodAnalysisDraft(
@@ -1346,5 +1354,6 @@ private fun FoodEntry.toAnalysis(): FoodAnalysis = MicronutrientValues.from(this
         selectedServingQuantity = selectedServingQuantity,
         customNote = customNote,
         grounding = grounding,
+        constituents = constituents,
     )
 )

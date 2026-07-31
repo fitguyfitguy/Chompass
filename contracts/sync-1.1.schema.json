@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chompass.app/contracts/sync-1.1.schema.json",
+  "title": "Chompass user-hosted sync document format 1.1",
+  "description": "Sync 1.0 plus serving-unit metadata and embedded meal constituents on food records (snake_case). Imports still accept 1.0.",
+  "type": "object",
+  "required": ["export", "food_entries", "weights", "body_fat", "measurements", "water", "favorites", "recipes"],
+  "additionalProperties": true,
+  "properties": {
+    "export": {
+      "type": "object",
+      "required": ["app", "kind", "format_version"],
+      "properties": {
+        "app": { "type": "string", "minLength": 1 },
+        "kind": { "const": "sync" },
+        "format_version": { "const": "1.1" },
+        "generated_at": { "type": "string" }
+      }
+    },
+    "food_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/foodRecord" }
+    },
+    "favorites": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/foodRecord" }
+    },
+    "weights": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/weightRecord" }
+    },
+    "body_fat": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/bodyFatRecord" }
+    },
+    "measurements": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/measurementRecord" }
+    },
+    "water": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/waterRecord" }
+    },
+    "recipes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/recipeRecord" }
+    },
+    "profile": {
+      "type": ["object", "null"],
+      "properties": {
+        "updated_at": { "type": "string" },
+        "deleted_at": { "type": ["string", "null"] },
+        "payload": { "type": "object" }
+      }
+    },
+    "prefs": {
+      "type": ["object", "null"],
+      "properties": {
+        "updated_at": { "type": "string" },
+        "deleted_at": { "type": ["string", "null"] },
+        "payload": { "type": "object" }
+      }
+    }
+  },
+  "$defs": {
+    "syncMeta": {
+      "type": "object",
+      "required": ["id", "updated_at"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "updated_at": { "type": "string", "minLength": 1 },
+        "deleted_at": { "type": ["string", "null"] }
+      }
+    },
+    "servingUnitOption": {
+      "type": "object",
+      "required": ["unit", "grams_per_unit"],
+      "properties": {
+        "unit": { "type": "string", "minLength": 1 },
+        "grams_per_unit": { "type": "number", "exclusiveMinimum": 0 },
+        "quantity": { "type": ["number", "null"] }
+      }
+    },
+    "constituent": {
+      "type": "object",
+      "required": ["name", "calories", "protein_g", "carbs_g", "fat_g", "quantity_g"],
+      "properties": {
+        "name": { "type": "string" },
+        "calories": { "type": "number" },
+        "protein_g": { "type": "number" },
+        "carbs_g": { "type": "number" },
+        "fat_g": { "type": "number" },
+        "quantity_g": { "type": "number" },
+        "emoji": { "type": ["string", "null"] },
+        "serving_unit_options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/servingUnitOption" }
+        },
+        "selected_serving_unit": { "type": ["string", "null"] },
+        "selected_serving_quantity": { "type": ["number", "null"] }
+      }
+    },
+    "foodRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "date": { "type": "string" },
+            "time": { "type": "string" },
+            "meal_type": { "type": "string" },
+            "quantity_g": { "type": ["number", "null"] },
+            "calories": { "type": "number" },
+            "protein_g": { "type": "number" },
+            "carbs_g": { "type": "number" },
+            "fat_g": { "type": "number" },
+            "source": { "type": "string" },
+            "note": { "type": ["string", "null"] },
+            "recipe_log_id": { "type": ["string", "null"] },
+            "sugar_g": { "type": ["number", "null"] },
+            "added_sugar_g": { "type": ["number", "null"] },
+            "fiber_g": { "type": ["number", "null"] },
+            "saturated_fat_g": { "type": ["number", "null"] },
+            "monounsaturated_fat_g": { "type": ["number", "null"] },
+            "polyunsaturated_fat_g": { "type": ["number", "null"] },
+            "cholesterol_mg": { "type": ["number", "null"] },
+            "sodium_mg": { "type": ["number", "null"] },
+            "potassium_mg": { "type": ["number", "null"] },
+            "trans_fat_g": { "type": ["number", "null"] },
+            "calcium_mg": { "type": ["number", "null"] },
+            "iron_mg": { "type": ["number", "null"] },
+            "magnesium_mg": { "type": ["number", "null"] },
+            "zinc_mg": { "type": ["number", "null"] },
+            "vitamin_a_mcg": { "type": ["number", "null"] },
+            "vitamin_c_mg": { "type": ["number", "null"] },
+            "vitamin_d_mcg": { "type": ["number", "null"] },
+            "vitamin_b12_mcg": { "type": ["number", "null"] },
+            "vitamin_e_mg": { "type": ["number", "null"] },
+            "vitamin_k_mcg": { "type": ["number", "null"] },
+            "folate_mcg": { "type": ["number", "null"] },
+            "omega3_g": { "type": ["number", "null"] },
+            "grounding": { "type": ["object", "null"] },
+            "serving_unit_options": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/servingUnitOption" }
+            },
+            "selected_serving_unit": { "type": ["string", "null"] },
+            "selected_serving_quantity": { "type": ["number", "null"] },
+            "constituents": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/constituent" }
+            }
+          }
+        }
+      ]
+    },
+    "weightRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "weight_kg": { "type": "number" }
+          }
+        }
+      ]
+    },
+    "bodyFatRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "body_fat_percent": { "type": "number" }
+          }
+        }
+      ]
+    },
+    "measurementRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "neck_cm": { "type": ["number", "null"] },
+            "waist_cm": { "type": ["number", "null"] },
+            "hips_cm": { "type": ["number", "null"] },
+            "chest_cm": { "type": ["number", "null"] },
+            "upper_arm_cm": { "type": ["number", "null"] },
+            "thigh_cm": { "type": ["number", "null"] },
+            "calf_cm": { "type": ["number", "null"] },
+            "wrist_cm": { "type": ["number", "null"] }
+          }
+        }
+      ]
+    },
+    "waterRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "amount_ml": { "type": "number" }
+          }
+        }
+      ]
+    },
+    "recipeRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "meal_type": { "type": "string" },
+            "created_at": { "type": "string" },
+            "ingredients": { "type": "array" }
+          }
+        }
+      ]
+    }
+  }
+}

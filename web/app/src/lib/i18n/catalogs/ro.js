@@ -97,8 +97,20 @@ export const ro = Object.freeze({
   'toast.saved': 'Salvat',
   'toast.deleted': 'Șters',
   'toast.copied': 'Copiat',
+  // Entry / meal constituents
+  'entry.constituents.title': 'Ingrediente',
+  'entry.constituents.count': 'Ingrediente ({count})',
+  'entry.constituents.add': 'Adaugă ingredient',
+  'entry.constituents.remove': 'Șterge ingredientul',
+  'entry.constituents.name': 'Nume',
+  'entry.constituents.quantity': 'Cantitate',
+  'entry.constituents.unit': 'Unitate',
+  'entry.constituents.item_fallback': 'Ingredient',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · G {fat}',
   'a11y.open_menu': 'Deschide meniul',
   'a11y.close_sheet': 'Închide panoul',
   'a11y.add_food': 'Adaugă mâncare',
   'a11y.primary_nav': 'Principal',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

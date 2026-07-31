@@ -3,9 +3,11 @@ package app.chompass.services
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.ServingUnitOption
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Base64
@@ -26,7 +28,9 @@ object MealShare {
     private const val LEGACY_WEB_HOST = "www.fud-ai.app"
     private const val LEGACY_WEB_HOST_ALT = "fud-ai.app"
     const val WEB_PATH = "/add-meal"
-    private const val VERSION = 1
+    private const val VERSION = 2
+    /** Versions accepted on decode. New encodes always stamp [VERSION]. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf(1, 2)
 
     fun link(entries: List<FoodEntry>): String {
         val meals = JSONArray()
@@ -87,10 +91,47 @@ object MealShare {
         put("vitaminB12", e.vitaminB12); put("vitaminE", e.vitaminE); put("vitaminK", e.vitaminK)
         put("folate", e.folate); put("omega3", e.omega3)
         put("servingSizeGrams", e.servingSizeGrams)
+        if (e.servingUnitOptions.isNotEmpty()) {
+            d.put("servingUnitOptions", servingUnitsJson(e.servingUnitOptions))
+        }
         e.selectedServingUnit?.let { d.put("selectedServingUnit", it) }
         put("selectedServingQuantity", e.selectedServingQuantity)
         e.customNote?.let { d.put("customNote", it) }
+        d.put("constituents", constituentsJson(e.constituents))
         return d
+    }
+
+    private fun servingUnitsJson(options: List<ServingUnitOption>): JSONArray {
+        val arr = JSONArray()
+        for (o in options) {
+            val row = JSONObject()
+                .put("unit", o.unit)
+                .put("gramsPerUnit", o.gramsPerUnit)
+            o.quantity?.let { row.put("quantity", it) }
+            arr.put(row)
+        }
+        return arr
+    }
+
+    private fun constituentsJson(rows: List<FoodConstituent>): JSONArray {
+        val arr = JSONArray()
+        for (c in rows) {
+            val d = JSONObject()
+                .put("name", c.name)
+                .put("calories", c.calories)
+                .put("protein", c.protein)
+                .put("carbs", c.carbs)
+                .put("fat", c.fat)
+                .put("servingSizeGrams", c.servingSizeGrams)
+            c.emoji?.let { d.put("emoji", it) }
+            if (c.servingUnitOptions.isNotEmpty()) {
+                d.put("servingUnitOptions", servingUnitsJson(c.servingUnitOptions))
+            }
+            c.selectedServingUnit?.let { d.put("selectedServingUnit", it) }
+            c.selectedServingQuantity?.let { d.put("selectedServingQuantity", it) }
+            arr.put(d)
+        }
+        return arr
     }
 
     fun handles(uri: Uri): Boolean {
@@ -109,11 +150,50 @@ object MealShare {
             val bytes = Base64.getUrlDecoder().decode(encoded)
             JSONObject(String(bytes, Charsets.UTF_8))
         }.getOrNull() ?: return null
+        val version = json.optInt("v", 1)
+        if (version !in SUPPORTED_IMPORT_VERSIONS) return null
         val mealsArr = json.optJSONArray("meals") ?: return null
         val entries = (0 until mealsArr.length()).mapNotNull { i ->
             mealsArr.optJSONObject(i)?.let(::entryFrom)
         }
         return entries.ifEmpty { null }
+    }
+
+    private fun parseServingUnits(arr: JSONArray?): List<ServingUnitOption> {
+        if (arr == null) return emptyList()
+        return (0 until arr.length()).mapNotNull { i ->
+            val o = arr.optJSONObject(i) ?: return@mapNotNull null
+            val unit = o.optString("unit").takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+            if (!o.has("gramsPerUnit")) return@mapNotNull null
+            val grams = o.optDouble("gramsPerUnit")
+            if (grams <= 0) return@mapNotNull null
+            ServingUnitOption(
+                unit = unit,
+                gramsPerUnit = grams,
+                quantity = if (o.has("quantity") && !o.isNull("quantity")) o.optDouble("quantity") else null,
+            )
+        }
+    }
+
+    private fun parseConstituents(arr: JSONArray?): List<FoodConstituent> {
+        if (arr == null) return emptyList()
+        return (0 until arr.length()).mapNotNull { i ->
+            val d = arr.optJSONObject(i) ?: return@mapNotNull null
+            val name = d.optString("name").takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+            fun dbl(k: String): Double? = if (d.has(k) && !d.isNull(k)) d.optDouble(k) else null
+            FoodConstituent(
+                name = name,
+                calories = d.optInt("calories"),
+                protein = d.optDouble("protein", 0.0),
+                carbs = d.optDouble("carbs", 0.0),
+                fat = d.optDouble("fat", 0.0),
+                servingSizeGrams = d.optDouble("servingSizeGrams", 0.0),
+                emoji = if (d.has("emoji")) d.optString("emoji") else null,
+                servingUnitOptions = parseServingUnits(d.optJSONArray("servingUnitOptions")),
+                selectedServingUnit = if (d.has("selectedServingUnit")) d.optString("selectedServingUnit") else null,
+                selectedServingQuantity = dbl("selectedServingQuantity"),
+            )
+        }
     }
 
     private fun entryFrom(d: JSONObject): FoodEntry? {
@@ -140,9 +220,11 @@ object MealShare {
             vitaminB12 = dbl("vitaminB12"), vitaminE = dbl("vitaminE"), vitaminK = dbl("vitaminK"),
             folate = dbl("folate"), omega3 = dbl("omega3"),
             servingSizeGrams = dbl("servingSizeGrams"),
+            servingUnitOptions = parseServingUnits(d.optJSONArray("servingUnitOptions")),
             selectedServingUnit = if (d.has("selectedServingUnit")) d.optString("selectedServingUnit") else null,
             selectedServingQuantity = dbl("selectedServingQuantity"),
-            customNote = if (d.has("customNote")) d.optString("customNote") else null
+            customNote = if (d.has("customNote")) d.optString("customNote") else null,
+            constituents = parseConstituents(d.optJSONArray("constituents")),
         )
     }
 }

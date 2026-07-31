@@ -82,6 +82,8 @@ internal object Keys {
         val FALLBACK_MODEL = stringPreferencesKey("selectedFallbackAIModel")
         val GEMINI_GOOGLE_SEARCH_ENABLED = booleanPreferencesKey("geminiGoogleSearchEnabled")
         val PORTION_CLARIFY_ENABLED = booleanPreferencesKey("portionClarifyEnabled")
+        /** Opt-in meal ingredient breakdown from AI (off for on-device / weak models). */
+        val MEAL_CONSTITUENTS_ENABLED = booleanPreferencesKey("mealConstituentsEnabled")
         val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")
         fun selectedSpeechLanguage(provider: SpeechProvider) =
             stringPreferencesKey("selectedSpeechLanguage_${provider.name}")

@@ -97,8 +97,20 @@ export const es = Object.freeze({
   'toast.saved': 'Guardado',
   'toast.deleted': 'Eliminado',
   'toast.copied': 'Copiado',
+  // Entry / meal constituents
+  'entry.constituents.title': 'Ingredientes',
+  'entry.constituents.count': 'Ingredientes ({count})',
+  'entry.constituents.add': 'Añadir ingrediente',
+  'entry.constituents.remove': 'Eliminar ingrediente',
+  'entry.constituents.name': 'Nombre',
+  'entry.constituents.quantity': 'Cantidad',
+  'entry.constituents.unit': 'Unidad',
+  'entry.constituents.item_fallback': 'Ingrediente',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · F {fat}',
   'a11y.open_menu': 'Abrir menú',
   'a11y.close_sheet': 'Cerrar panel',
   'a11y.add_food': 'Añadir comida',
   'a11y.primary_nav': 'Principal',
+  'settings.ai.meal_constituents': 'Desglose de ingredientes',
+  'settings.ai.meal_constituents_hint': 'Pide a la IA que divida comidas compuestas en ingredientes editables. Desactívalo con modelos más débiles si los resultados son inconsistentes.'
 });

@@ -328,6 +328,7 @@ internal fun ToggleRow(
     label: String,
     checked: Boolean,
     icon: ImageVector? = null,
+    enabled: Boolean = true,
     onChange: (Boolean) -> Unit
 ) {
     Row(
@@ -342,9 +343,14 @@ internal fun ToggleRow(
             label,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+            },
         )
-        Switch(checked = checked, onCheckedChange = onChange)
+        Switch(checked = checked, onCheckedChange = onChange, enabled = enabled)
     }
 }
 

@@ -97,8 +97,20 @@ export const az = Object.freeze({
   'toast.saved': 'Saxlanıldı',
   'toast.deleted': 'Silindi',
   'toast.copied': 'Kopyalandı',
+  // Entry / meal constituents
+  'entry.constituents.title': 'Tərkib',
+  'entry.constituents.count': 'Tərkib ({count})',
+  'entry.constituents.add': 'İnqredient əlavə et',
+  'entry.constituents.remove': 'İnqredienti sil',
+  'entry.constituents.name': 'Ad',
+  'entry.constituents.quantity': 'Miqdar',
+  'entry.constituents.unit': 'Vahid',
+  'entry.constituents.item_fallback': 'İnqredient',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · F {fat}',
   'a11y.open_menu': 'Menyunu aç',
   'a11y.close_sheet': 'Paneli bağla',
   'a11y.add_food': 'Yemək əlavə et',
   'a11y.primary_nav': 'Əsas naviqasiya',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

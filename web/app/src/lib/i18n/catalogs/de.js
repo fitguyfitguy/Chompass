@@ -97,8 +97,20 @@ export const de = Object.freeze({
   'toast.saved': 'Gespeichert',
   'toast.deleted': 'Gelöscht',
   'toast.copied': 'Kopiert',
+  // Entry / meal constituents
+  'entry.constituents.title': 'Zutaten',
+  'entry.constituents.count': 'Zutaten ({count})',
+  'entry.constituents.add': 'Zutat hinzufügen',
+  'entry.constituents.remove': 'Zutat entfernen',
+  'entry.constituents.name': 'Name',
+  'entry.constituents.quantity': 'Menge',
+  'entry.constituents.unit': 'Einheit',
+  'entry.constituents.item_fallback': 'Zutat',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · F {fat}',
   'a11y.open_menu': 'Menü öffnen',
   'a11y.close_sheet': 'Sheet schließen',
   'a11y.add_food': 'Essen hinzufügen',
   'a11y.primary_nav': 'Hauptnavigation',
+  'settings.ai.meal_constituents': 'Mahlzeiten-Zutatenaufschlüsselung',
+  'settings.ai.meal_constituents_hint': 'Die KI kann zusammengesetzte Mahlzeiten in bearbeitbare Zutaten teilen. Bei schwächeren Modellen besser ausschalten.'
 });

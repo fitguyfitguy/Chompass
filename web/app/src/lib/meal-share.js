@@ -2,8 +2,12 @@
 /**
  * Meal share encode/decode — Android MealShare.kt compatible payload.
  * Web bridge uses hash route `#/add-meal?d=…` (custom scheme is native-only).
+ * Wire is camelCase (v1 convention). New encodes use v: 2; decode accepts 1 and 2.
  */
 import { ALL_MICRO_KEYS } from "./home-nutrients.js";
+
+export const MEAL_SHARE_VERSION = 2;
+export const MEAL_SHARE_IMPORT_VERSIONS = new Set([1, 2]);
 
 /** Share wire key → FoodEntry field */
 const SHARE_TO_ENTRY = {
@@ -34,6 +38,91 @@ const SHARE_TO_ENTRY = {
 const ENTRY_TO_SHARE = Object.fromEntries(Object.entries(SHARE_TO_ENTRY).map(([a, b]) => [b, a]));
 
 /**
+ * @param {import('./chompass-core/models.js').ServingUnitOption[]} options
+ */
+function servingUnitsToShare(options) {
+  if (!options?.length) return undefined;
+  return options.map((o) => {
+    /** @type {Record<string, unknown>} */
+    const row = { unit: o.unit, gramsPerUnit: o.gramsPerUnit };
+    if (o.quantity != null) row.quantity = o.quantity;
+    return row;
+  });
+}
+
+/**
+ * @param {any} arr
+ * @returns {import('./chompass-core/models.js').ServingUnitOption[]}
+ */
+function servingUnitsFromShare(arr) {
+  if (!Array.isArray(arr)) return [];
+  /** @type {import('./chompass-core/models.js').ServingUnitOption[]} */
+  const out = [];
+  for (const o of arr) {
+    const unit = String(o?.unit ?? "").trim();
+    const grams = Number(o?.gramsPerUnit);
+    if (!unit || !(grams > 0)) continue;
+    out.push({
+      unit,
+      gramsPerUnit: grams,
+      quantity: o?.quantity != null ? Number(o.quantity) : null,
+    });
+  }
+  return out;
+}
+
+/**
+ * @param {import('./chompass-core/models.js').FoodConstituent[]} rows
+ */
+function constituentsToShare(rows) {
+  if (!rows?.length) return [];
+  return rows.map((c) => {
+    /** @type {Record<string, unknown>} */
+    const d = {
+      name: c.name,
+      calories: c.calories,
+      protein: c.proteinG,
+      carbs: c.carbsG,
+      fat: c.fatG,
+      servingSizeGrams: c.servingSizeGrams,
+    };
+    if (c.emoji) d.emoji = c.emoji;
+    const units = servingUnitsToShare(c.servingUnitOptions ?? []);
+    if (units) d.servingUnitOptions = units;
+    if (c.selectedServingUnit) d.selectedServingUnit = c.selectedServingUnit;
+    if (c.selectedServingQuantity != null) d.selectedServingQuantity = c.selectedServingQuantity;
+    return d;
+  });
+}
+
+/**
+ * @param {any} arr
+ * @returns {import('./chompass-core/models.js').FoodConstituent[]}
+ */
+function constituentsFromShare(arr) {
+  if (!Array.isArray(arr)) return [];
+  /** @type {import('./chompass-core/models.js').FoodConstituent[]} */
+  const out = [];
+  for (const d of arr) {
+    const name = String(d?.name ?? "").trim();
+    if (!name) continue;
+    out.push({
+      name,
+      calories: Math.round(Number(d.calories) || 0),
+      proteinG: Number(d.protein) || 0,
+      carbsG: Number(d.carbs) || 0,
+      fatG: Number(d.fat) || 0,
+      servingSizeGrams: Number(d.servingSizeGrams) || 0,
+      emoji: d.emoji ? String(d.emoji) : null,
+      servingUnitOptions: servingUnitsFromShare(d.servingUnitOptions),
+      selectedServingUnit: d.selectedServingUnit ? String(d.selectedServingUnit) : null,
+      selectedServingQuantity: d.selectedServingQuantity != null ? Number(d.selectedServingQuantity) : null,
+    });
+  }
+  return out;
+}
+
+/**
  * @param {Array<Partial<import('./chompass-core/models.js').FoodEntry>>} entries
  */
 export function encodeMealShare(entries) {
@@ -55,10 +144,15 @@ export function encodeMealShare(entries) {
       if (shareKey) put(shareKey, /** @type {Record<string, unknown>} */ (e)[key]);
     }
     put("servingSizeGrams", e.quantityG);
+    const units = servingUnitsToShare(e.servingUnitOptions ?? []);
+    if (units) d.servingUnitOptions = units;
+    put("selectedServingUnit", e.selectedServingUnit);
+    put("selectedServingQuantity", e.selectedServingQuantity);
     if (e.note) d.customNote = e.note;
+    d.constituents = constituentsToShare(e.constituents ?? []);
     return d;
   });
-  const payload = JSON.stringify({ v: 1, meals });
+  const payload = JSON.stringify({ v: MEAL_SHARE_VERSION, meals });
   const b64 = btoa(unescape(encodeURIComponent(payload)))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -87,6 +181,8 @@ export function decodeMealShare(linkOrHash) {
     const padded = encoded.replace(/-/g, "+").replace(/_/g, "/");
     const json = decodeURIComponent(escape(atob(padded)));
     const doc = JSON.parse(json);
+    const version = Number(doc.v ?? 1);
+    if (!MEAL_SHARE_IMPORT_VERSIONS.has(version)) return null;
     const meals = Array.isArray(doc.meals) ? doc.meals : [];
     return meals
       .map((d) => {
@@ -105,6 +201,10 @@ export function decodeMealShare(linkOrHash) {
           mealType,
           note: d.customNote ? String(d.customNote) : null,
           source: "manual",
+          servingUnitOptions: servingUnitsFromShare(d.servingUnitOptions),
+          selectedServingUnit: d.selectedServingUnit ? String(d.selectedServingUnit) : null,
+          selectedServingQuantity: d.selectedServingQuantity != null ? Number(d.selectedServingQuantity) : null,
+          constituents: constituentsFromShare(d.constituents),
         };
         for (const [shareKey, entryKey] of Object.entries(SHARE_TO_ENTRY)) {
           entry[entryKey] = d[shareKey] != null ? Number(d[shareKey]) : null;

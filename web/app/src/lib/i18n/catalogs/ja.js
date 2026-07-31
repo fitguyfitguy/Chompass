@@ -97,8 +97,20 @@ export const ja = Object.freeze({
   'toast.saved': '保存しました',
   'toast.deleted': '削除しました',
   'toast.copied': 'コピーしました',
+  // Entry / meal constituents
+  'entry.constituents.title': '材料',
+  'entry.constituents.count': '材料（{count}）',
+  'entry.constituents.add': '材料を追加',
+  'entry.constituents.remove': '材料を削除',
+  'entry.constituents.name': '名前',
+  'entry.constituents.quantity': '分量',
+  'entry.constituents.unit': '単位',
+  'entry.constituents.item_fallback': '材料',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · F {fat}',
   'a11y.open_menu': 'メニューを開く',
   'a11y.close_sheet': 'シートを閉じる',
   'a11y.add_food': '食事を追加',
   'a11y.primary_nav': 'メイン',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

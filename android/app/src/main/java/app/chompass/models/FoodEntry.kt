@@ -55,6 +55,11 @@ data class FoodEntry(
      * Defaults keep older DataStore JSON and diary exports decodable.
      */
     val grounding: FoodGroundingProvenance? = null,
+    /**
+     * Optional composite-meal breakdown. Empty / absent on legacy records.
+     * When non-empty, grams/macros sum to the meal totals.
+     */
+    val constituents: List<FoodConstituent> = emptyList(),
 ) {
     /**
      * Stable identity for Favorites / Frequent / Recents dedup.
@@ -111,5 +116,6 @@ data class FoodEntry(
         selectedServingQuantity = selectedServingQuantity,
         customNote = customNote,
         grounding = grounding,
+        constituents = constituents,
     )
 }

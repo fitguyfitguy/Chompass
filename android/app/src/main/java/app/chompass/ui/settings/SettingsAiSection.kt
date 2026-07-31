@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Numbers
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
@@ -115,6 +116,28 @@ internal fun SettingsAiSection(
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.settings_portion_clarify_footer),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                HorizontalDivider()
+                val constituentsAvailable = ui.selectedAI != AIProvider.ON_DEVICE
+                ToggleRow(
+                    stringResource(R.string.settings_meal_constituents),
+                    checked = constituentsAvailable && ui.mealConstituentsEnabled,
+                    icon = Icons.Outlined.Restaurant,
+                    enabled = constituentsAvailable,
+                    onChange = { vm.setMealConstituentsEnabled(it) }
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(
+                        if (constituentsAvailable) {
+                            R.string.settings_meal_constituents_footer
+                        } else {
+                            R.string.settings_meal_constituents_footer_on_device
+                        },
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                     modifier = Modifier.padding(horizontal = 4.dp)

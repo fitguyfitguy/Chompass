@@ -181,6 +181,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setGeminiGoogleSearchEnabled(v: Boolean) = setGeminiGoogleSearchEnabledImpl(v)
     val portionClarifyEnabled: Flow<Boolean> get() = portionClarifyEnabledImpl
     suspend fun setPortionClarifyEnabled(v: Boolean) = setPortionClarifyEnabledImpl(v)
+    val mealConstituentsEnabled: Flow<Boolean> get() = mealConstituentsEnabledImpl
+    suspend fun setMealConstituentsEnabled(v: Boolean) = setMealConstituentsEnabledImpl(v)
     val selectedSpeechProvider: Flow<SpeechProvider> get() = selectedSpeechProviderImpl
     suspend fun setSelectedSpeechProvider(p: SpeechProvider) = setSelectedSpeechProviderImpl(p)
     fun selectedSpeechLanguage(provider: SpeechProvider): Flow<SpeechLanguage> = selectedSpeechLanguageImpl(provider)

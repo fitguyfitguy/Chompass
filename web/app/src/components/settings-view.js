@@ -936,6 +936,13 @@ export class SettingsView extends HTMLElement {
           <textarea id="userContext" name="userContext" rows="3" placeholder="Preferences the coach and food AI should follow…">${escapeAttr(p.userContext || "")}</textarea>
         </div>
         <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" name="mealConstituentsEnabled" value="true" ${p.mealConstituentsEnabled !== false ? "checked" : ""} />
+            <span>${escapeHtml(t("settings.ai.meal_constituents"))}</span>
+          </label>
+          <p class="field-hint">${escapeHtml(t("settings.ai.meal_constituents_hint"))}</p>
+        </div>
+        <div class="field">
           <label for="aiFallbackEnabled">Fallback provider on failure</label>
           <select id="aiFallbackEnabled" name="aiFallbackEnabled">
             <option value="false" ${!p.aiFallbackEnabled ? "selected" : ""}>Off</option>
@@ -1038,6 +1045,7 @@ export class SettingsView extends HTMLElement {
       const fbProvider = String(fd.get("fallbackAiProvider") || "gemini");
       await prefs.save({
         userContext: String(fd.get("userContext") || ""),
+        mealConstituentsEnabled: fd.get("mealConstituentsEnabled") === "true",
         aiFallbackEnabled: fd.get("aiFallbackEnabled") === "true",
         fallbackAiProvider: fbProvider,
         fallbackAiModel: resolveProviderModel(fbProvider, fbModel, "fallback"),
@@ -1274,6 +1282,10 @@ export class SettingsView extends HTMLElement {
     }
     ev.target.value = "";
   }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
 function escapeAttr(s) {

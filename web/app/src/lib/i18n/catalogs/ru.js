@@ -97,8 +97,20 @@ export const ru = Object.freeze({
   'toast.saved': 'Сохранено',
   'toast.deleted': 'Удалено',
   'toast.copied': 'Скопировано',
+  // Entry / meal constituents
+  'entry.constituents.title': 'Ингредиенты',
+  'entry.constituents.count': 'Ингредиенты ({count})',
+  'entry.constituents.add': 'Добавить ингредиент',
+  'entry.constituents.remove': 'Удалить ингредиент',
+  'entry.constituents.name': 'Название',
+  'entry.constituents.quantity': 'Количество',
+  'entry.constituents.unit': 'Единица',
+  'entry.constituents.item_fallback': 'Ингредиент',
+  'entry.constituents.macros': '{calories} ккал · Б {protein} · У {carbs} · Ж {fat}',
   'a11y.open_menu': 'Открыть меню',
   'a11y.close_sheet': 'Закрыть панель',
   'a11y.add_food': 'Добавить еду',
   'a11y.primary_nav': 'Основная',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });
