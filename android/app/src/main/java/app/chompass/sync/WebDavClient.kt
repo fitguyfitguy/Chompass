@@ -7,6 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
 /**
@@ -32,7 +33,7 @@ class WebDavClient(
         withContext(Dispatchers.IO) {
             val request = Request.Builder()
                 .url(url)
-                .header("Authorization", Credentials.basic(username, password))
+                .header("Authorization", webDavBasicAuth(username, password))
                 .get()
                 .build()
             http.newCall(request).execute().use { response ->
@@ -57,7 +58,7 @@ class WebDavClient(
     ): PutResult = withContext(Dispatchers.IO) {
         val builder = Request.Builder()
             .url(url)
-            .header("Authorization", Credentials.basic(username, password))
+            .header("Authorization", webDavBasicAuth(username, password))
             .header("Content-Type", "application/json; charset=utf-8")
             .put(body.toRequestBody("application/json; charset=utf-8".toMediaType()))
         when {
@@ -73,3 +74,10 @@ class WebDavClient(
         }
     }
 }
+
+/**
+ * Basic auth matching curl / RFC 7617 (UTF-8). OkHttp's default is ISO-8859-1,
+ * which 401s against hosts like Hetzner Storage Box when the password has ß, §, etc.
+ */
+internal fun webDavBasicAuth(username: String, password: String): String =
+    Credentials.basic(username, password, StandardCharsets.UTF_8)
