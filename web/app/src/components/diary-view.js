@@ -92,13 +92,15 @@ function saveHomeDate(iso) {
   }
 }
 
-/** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape. */
+const DAY_NAV_CHEVRON_L = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
+const DAY_NAV_CHEVRON_R = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>`;
+
+/** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape (mobile). */
 function ringSvg(eaten, target) {
   const width = 260;
   const stroke = 16;
-  // Height must fit the semicircle plus full stroke at the apex (Android insets by stroke/2).
   const r = (width - stroke) / 2;
-  const topPad = 3; // breathing room so AA / round caps aren't clipped
+  const topPad = 3;
   const height = Math.ceil(r + stroke + topPad);
   const cx = width / 2;
   const cy = height - stroke / 2;
@@ -111,7 +113,6 @@ function ringSvg(eaten, target) {
   const y = cy.toFixed(1);
   const arc = `M ${x1} ${y} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y}`;
   const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
-  // Label Y positions are absolute so they sit inside the bowl after the taller viewBox.
   return `
     <svg class="calorie-ring calorie-ring--semi" viewBox="0 0 ${width} ${height}" role="img"
       aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}">
@@ -127,7 +128,31 @@ function ringSvg(eaten, target) {
     </svg>`;
 }
 
-/** Vertical macro tube — Android MacroCard. */
+/** Horizontal calorie progress bar (desktop). */
+function calorieBar(eaten, target) {
+  const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
+  const remaining = Math.round(target - eaten);
+  const over = eaten > target;
+  const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
+  return `
+    <div class="calorie-hero calorie-hero--bar" role="img"
+      aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}">
+      <div class="calorie-hero__top">
+        <div class="calorie-hero__nums">
+          <span class="calorie-hero__caption">Calories</span>
+          <span class="calorie-hero__value">${Math.round(eaten)}</span>
+          <span class="calorie-hero__sub">of ${Math.round(target)} kcal</span>
+        </div>
+        <span class="calorie-hero__left${over ? " is-over" : ""}">🔥 ${leftLabel}</span>
+      </div>
+      <div class="calorie-bar${over ? " is-over" : ""}" role="progressbar"
+        aria-valuemin="0" aria-valuemax="${Math.round(target)}" aria-valuenow="${Math.round(eaten)}">
+        <span data-width="${pct.toFixed(1)}%"></span>
+      </div>
+    </div>`;
+}
+
+/** Vertical macro tube — Android MacroCard (mobile). */
 function macroTube(key, label, value, target, unit = "g") {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
   const status = tubeStatus(value, target, unit);
@@ -142,20 +167,40 @@ function macroTube(key, label, value, target, unit = "g") {
     </div>`;
 }
 
+/** Horizontal macro progress row (desktop). */
+function macroRow(key, label, value, target, unit = "g") {
+  const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
+  const status = tubeStatus(value, target, unit);
+  return `
+    <div class="macro-row macro-row--${key}">
+      <div class="macro-row__meta">
+        <span class="macro-row__label">${label}</span>
+        <span class="macro-row__value">${Math.round(value)}</span>
+        <span class="macro-row__status">${status}</span>
+      </div>
+      <div class="macro-row__track" aria-hidden="true">
+        <span class="macro-row__fill" data-width="${pct.toFixed(1)}%"></span>
+      </div>
+    </div>`;
+}
+
 /**
  * @param {string[]} tubeKeys
  * @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries
  * @param {ReturnType<typeof dailyTargets>|null} targets
  * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
+ * @param {"tube" | "row"} style
  */
-function renderMacroTubes(tubeKeys, entries, targets, optionalGoals) {
+function renderMacros(tubeKeys, entries, targets, optionalGoals, style) {
   return tubeKeys
     .map((key) => {
       const def = nutrientDef(key);
       if (!def) return "";
       const value = sumNutrient(entries, key);
       const goal = nutrientGoal(key, targets, optionalGoals);
-      return macroTube(def.tubeCss, def.label, value, goal, def.unit);
+      return style === "row"
+        ? macroRow(def.tubeCss, def.label, value, goal, def.unit)
+        : macroTube(def.tubeCss, def.label, value, goal, def.unit);
     })
     .join("");
 }
@@ -306,50 +351,74 @@ export class DiaryView extends HTMLElement {
       );
     }
 
+    const nextDisabled = this.date >= today ? "disabled" : "";
+    const macrosMobile = targets
+      ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
+          ${renderMacros(tubeKeys, entries, targets, optionalGoals, "tube")}
+        </div>`
+      : "";
+    const macrosDesktop = targets
+      ? `<div class="macro-rows macro-rows--${tubeKeys.length}">
+          ${renderMacros(tubeKeys, entries, targets, optionalGoals, "row")}
+        </div>`
+      : "";
+    const gaugeMobile = targets
+      ? ringSvg(totals.calories, calorieTarget)
+      : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
+    const gaugeDesktop = targets
+      ? calorieBar(totals.calories, calorieTarget)
+      : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
+
     this.innerHTML = `
-      <div class="week-pager" data-week-pager aria-label="Week calendar">
-        ${weekPages
-          .map(
-            (days, pageIdx) => `
-          <div class="week-page" data-week-page="${pageIdx}">
-            <div class="week-strip" role="tablist" aria-label="Week ${pageIdx + 1}">
-              ${days
-                .map((iso) => {
-                  const d = new Date(`${iso}T00:00:00`);
-                  const selected = iso === this.date ? " is-selected" : "";
-                  const isToday = iso === today ? " is-today" : "";
-                  const has = weekEntryFlags.has(iso) ? " has-entries" : "";
-                  const future = iso > today;
-                  return `
-                    <button type="button" class="week-day${selected}${isToday}${has}" data-date="${iso}" role="tab"
-                      aria-selected="${iso === this.date}" ${future ? "disabled" : ""}>
-                      <span class="week-day__dow">${d.toLocaleDateString(undefined, { weekday: "narrow" })}</span>
-                      <span class="week-day__num">${d.getDate()}</span>
-                      <span class="week-day__dot" aria-hidden="true"></span>
-                    </button>`;
-                })
-                .join("")}
-            </div>
-          </div>`
-          )
-          .join("")}
+      <div class="week-nav">
+        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="-1" aria-label="Previous day">${DAY_NAV_CHEVRON_L}</button>
+        <div class="week-pager" data-week-pager aria-label="Week calendar">
+          ${weekPages
+            .map(
+              (days, pageIdx) => `
+            <div class="week-page" data-week-page="${pageIdx}">
+              <div class="week-strip" role="tablist" aria-label="Week ${pageIdx + 1}">
+                ${days
+                  .map((iso) => {
+                    const d = new Date(`${iso}T00:00:00`);
+                    const selected = iso === this.date ? " is-selected" : "";
+                    const isToday = iso === today ? " is-today" : "";
+                    const has = weekEntryFlags.has(iso) ? " has-entries" : "";
+                    const future = iso > today;
+                    return `
+                      <button type="button" class="week-day${selected}${isToday}${has}" data-date="${iso}" role="tab"
+                        aria-selected="${iso === this.date}" ${future ? "disabled" : ""}>
+                        <span class="week-day__dow">${d.toLocaleDateString(undefined, { weekday: "narrow" })}</span>
+                        <span class="week-day__num">${d.getDate()}</span>
+                        <span class="week-day__dot" aria-hidden="true"></span>
+                      </button>`;
+                  })
+                  .join("")}
+              </div>
+            </div>`
+            )
+            .join("")}
+        </div>
+        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
       </div>
 
       <div class="card card--glass home-hero" data-day-swipe>
-        <div class="home-hero__day-nav">
-          <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">‹</button>
-          <button type="button" class="calorie-hero calorie-hero--tap" data-nutrition-detail aria-label="Open nutrition detail">
-            ${targets ? ringSvg(totals.calories, calorieTarget) : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`}
-          </button>
-          <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${this.date >= today ? "disabled" : ""}>›</button>
+        <div class="home-hero--mobile">
+          <div class="home-hero__day-nav">
+            <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">${DAY_NAV_CHEVRON_L}</button>
+            <button type="button" class="calorie-hero calorie-hero--tap calorie-hero--tap-arc" data-nutrition-detail aria-label="Open nutrition detail">
+              ${gaugeMobile}
+            </button>
+            <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
+          </div>
+          ${macrosMobile}
         </div>
-        ${
-          targets
-            ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
-                ${renderMacroTubes(tubeKeys, entries, targets, optionalGoals)}
-              </div>`
-            : ""
-        }
+        <div class="home-hero--desktop">
+          <button type="button" class="calorie-hero--tap calorie-hero--tap-bar" data-nutrition-detail aria-label="Open nutrition detail">
+            ${gaugeDesktop}
+          </button>
+          ${macrosDesktop}
+        </div>
       </div>
 
       ${
@@ -415,8 +484,10 @@ export class DiaryView extends HTMLElement {
     });
     this.querySelector("[data-water-custom]")?.addEventListener("click", () => this.customWater());
     this.querySelector("[data-water-undo]")?.addEventListener("click", () => this.undoLastWater(waterLogs));
-    this.querySelector("[data-nutrition-detail]")?.addEventListener("click", () => {
-      this.openNutritionDetail(entries, targets, optionalGoals);
+    this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
+      el.addEventListener("click", () => {
+        this.openNutritionDetail(entries, targets, optionalGoals);
+      });
     });
     this.querySelector('[data-action="fab"]')?.addEventListener("click", () => this.openAddFoodSheet(appPrefs));
 
