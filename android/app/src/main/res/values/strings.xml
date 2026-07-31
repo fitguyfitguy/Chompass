@@ -1289,7 +1289,12 @@
     <string name="onboarding_safety_title">Friendly safety notice</string>
     <string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
     <string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string>
+    <string name="onboarding_safety_not_medical">This is not medical advice. Predictive equations carry inherent error. Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, or are under 18.</string>
     <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
+    <string name="onboarding_accuracy_title">Accuracy disclaimer</string>
+    <string name="onboarding_accuracy_body">Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only — not medical facts. Verify important numbers yourself.</string>
+    <string name="settings_accuracy_title">Accuracy of estimates</string>
+    <string name="settings_accuracy_body">Photo food estimates and vague portion labels are often wrong. Suggestions from the app and especially from AI models are not medical facts.</string>
     <string name="settings_waist_cm_format">Waist %1$.0f cm</string>
     <string name="settings_waist_in_format">Waist %1$.0f in</string>
     <string name="export_range_today">Today</string>

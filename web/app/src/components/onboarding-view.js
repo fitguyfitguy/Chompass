@@ -13,55 +13,61 @@ import { t } from "../lib/i18n/index.js";
 /** @type {OnboardingStepDef[]} */
 const STEPS = [
   { id: "welcome", titleKey: "onboarding.welcome_title", hideChrome: true },
-  { id: "sex", title: "About you" },
-  { id: "age", title: "Birthday & age" },
-  { id: "body", title: "Height & weight" },
-  { id: "bodyFat", title: "Body fat (optional)" },
-  { id: "activity", title: "Activity level" },
-  { id: "goal", title: "Your goal" },
-  { id: "diet", title: "Diet mode" },
-  { id: "goalDetails", title: "Pace & goal weight" },
-  { id: "ai", title: "Connect AI (optional)" },
-  { id: "building", title: "Building your plan", hideChrome: true, hideCta: true },
-  { id: "done", title: "Your plan is ready", hideChrome: true },
+  { id: "sex", titleKey: "onboarding.step.sex" },
+  { id: "age", titleKey: "onboarding.step.age" },
+  { id: "body", titleKey: "onboarding.step.body" },
+  { id: "bodyFat", titleKey: "onboarding.step.body_fat" },
+  { id: "activity", titleKey: "onboarding.step.activity" },
+  { id: "goal", titleKey: "onboarding.step.goal" },
+  { id: "diet", titleKey: "onboarding.step.diet" },
+  { id: "goalDetails", titleKey: "onboarding.step.goal_details" },
+  { id: "ai", titleKey: "onboarding.step.ai" },
+  { id: "building", titleKey: "onboarding.step.building", hideChrome: true, hideCta: true },
+  { id: "done", titleKey: "onboarding.step.done", hideChrome: true },
 ];
 
 const ACTIVITY_LEVELS = [
-  { id: "sedentary", label: "Sedentary", sub: "Desk job, little exercise" },
-  { id: "light", label: "Light", sub: "Walks or light training 1–3×/week" },
-  { id: "moderate", label: "Moderate", sub: "Training 3–5×/week" },
-  { id: "active", label: "Active", sub: "Hard training most days" },
-  { id: "very_active", label: "Very active", sub: "Physical job + training" },
-  { id: "extra_active", label: "Extra active", sub: "Very hard training / labor" },
+  { id: "sedentary", labelKey: "onboarding.activity.sedentary", subKey: "onboarding.activity.sedentary_sub" },
+  { id: "light", labelKey: "onboarding.activity.light", subKey: "onboarding.activity.light_sub" },
+  { id: "moderate", labelKey: "onboarding.activity.moderate", subKey: "onboarding.activity.moderate_sub" },
+  { id: "active", labelKey: "onboarding.activity.active", subKey: "onboarding.activity.active_sub" },
+  { id: "very_active", labelKey: "onboarding.activity.very_active", subKey: "onboarding.activity.very_active_sub" },
+  { id: "extra_active", labelKey: "onboarding.activity.extra_active", subKey: "onboarding.activity.extra_active_sub" },
 ];
 
 const GOALS = [
-  { id: "lose", label: "Lose weight", sub: "Steady calorie deficit" },
-  { id: "maintain", label: "Maintain", sub: "Hold your current weight" },
-  { id: "gain", label: "Gain weight", sub: "Surplus for muscle or mass" },
+  { id: "lose", labelKey: "onboarding.goal.lose", subKey: "onboarding.goal.lose_sub" },
+  { id: "maintain", labelKey: "onboarding.goal.maintain", subKey: "onboarding.goal.maintain_sub" },
+  { id: "gain", labelKey: "onboarding.goal.gain", subKey: "onboarding.goal.gain_sub" },
 ];
 
 const SEX_OPTIONS = [
-  { id: "male", label: "Male" },
-  { id: "female", label: "Female" },
-  { id: "other", label: "Other / prefer not to say" },
+  { id: "male", labelKey: "onboarding.sex.male" },
+  { id: "female", labelKey: "onboarding.sex.female" },
+  { id: "other", labelKey: "onboarding.sex.other" },
 ];
 
-const BUILD_ITEMS = [
-  "Calorie target",
-  "Protein goal",
-  "Carb & fat split",
-  "Activity adjustment",
-  "Safety checks",
+const BUILD_ITEM_KEYS = [
+  "onboarding.building.calorie_target",
+  "onboarding.building.protein_goal",
+  "onboarding.building.carb_fat",
+  "onboarding.building.activity",
+  "onboarding.building.safety",
 ];
 
 const BACK_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
 
 const PACE_KG_BY_INDEX = [0.25, 0.5, 1.0];
 const PACE_ICONS = [
-  { label: "Slow", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5zM9.8 21l1-4.4-2.1-2 .6-3.4c1 1.2 2.6 2 4.3 2v-2c-1.5 0-2.7-.7-3.4-1.8l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L2 8.3V13h2V9.6l1.8-.7-1.6 8.1L8.3 21h1.5z"/></svg>` },
-  { label: "Recommended", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5zM9.9 19l-1.5 2H6l2.3-3.4-1-4.7-1.4 1.2L3 16.5 1.6 15l2.9-2.9 3.1-1 1.7-2.7c.3-.5.9-.8 1.5-.7l4.2.7v2l-3.6-.6-1 1.6 3.9 1.6-1 6h-2z"/></svg>` },
-  { label: "Fast", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 21 15 12H10.5L13.5 3 9 11.5h4.5L11 21z"/></svg>` },
+  { labelKey: "onboarding.pace.slow", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5zM9.8 21l1-4.4-2.1-2 .6-3.4c1 1.2 2.6 2 4.3 2v-2c-1.5 0-2.7-.7-3.4-1.8l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L2 8.3V13h2V9.6l1.8-.7-1.6 8.1L8.3 21h1.5z"/></svg>` },
+  { labelKey: "onboarding.pace.recommended", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 5.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5zM9.9 19l-1.5 2H6l2.3-3.4-1-4.7-1.4 1.2L3 16.5 1.6 15l2.9-2.9 3.1-1 1.7-2.7c.3-.5.9-.8 1.5-.7l4.2.7v2l-3.6-.6-1 1.6 3.9 1.6-1 6h-2z"/></svg>` },
+  { labelKey: "onboarding.pace.fast", svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 21 15 12H10.5L13.5 3 9 11.5h4.5L11 21z"/></svg>` },
+];
+
+const PACE_CAPTION_KEYS = [
+  "onboarding.pace.caption_slow",
+  "onboarding.pace.caption_recommended",
+  "onboarding.pace.caption_fast",
 ];
 
 /** @param {number} kg */
@@ -71,11 +77,19 @@ function paceIndexFromKg(kg) {
   return 1;
 }
 
-const PACE_CAPTIONS = [
-  "Slower and easier to sustain long-term.",
-  "A steady, well-rounded pace for most people.",
-  "Faster progress, but harder to stick with.",
-];
+function disclaimerCardsHtml() {
+  return `
+    <div class="onboarding-disclaimers">
+      <aside class="onboarding-disclaimer onboarding-disclaimer--health">
+        <strong>${t("onboarding.health.title")}</strong>
+        <p>${t("onboarding.health.body")}</p>
+      </aside>
+      <aside class="onboarding-disclaimer onboarding-disclaimer--accuracy">
+        <strong>${t("onboarding.accuracy.title")}</strong>
+        <p>${t("onboarding.accuracy.body")}</p>
+      </aside>
+    </div>`;
+}
 
 export class OnboardingView extends HTMLElement {
   constructor() {
@@ -165,8 +179,8 @@ export class OnboardingView extends HTMLElement {
           showCta
             ? `<div class="btn-row" style="flex-direction:column;align-items:stretch;">
                 <button type="button" class="${ctaClass}" data-next>${ctaLabel}</button>
-                ${s.id === "ai" ? `<button type="button" class="onboarding-skip" data-skip-ai>Skip for now</button>` : ""}
-                ${s.id === "bodyFat" ? `<button type="button" class="onboarding-skip" data-skip-bf>Skip</button>` : ""}
+                ${s.id === "ai" ? `<button type="button" class="onboarding-skip" data-skip-ai>${t("onboarding.skip_ai")}</button>` : ""}
+                ${s.id === "bodyFat" ? `<button type="button" class="onboarding-skip" data-skip-bf>${t("onboarding.skip")}</button>` : ""}
               </div>`
             : ""
         }
@@ -304,25 +318,25 @@ export class OnboardingView extends HTMLElement {
     };
 
     if (!key) {
-      setStatus("Paste an API key first.", "err");
+      setStatus(t("onboarding.ai.paste_key_first"), "err");
       return false;
     }
     if (this.aiDraft.provider !== "gemini") {
       // Non-Gemini: no probe in this pass — treat as ready to continue.
       this.aiDraft.validatedKey = key;
-      setStatus("Key saved for continue (quick test is Gemini-only).", "ok");
+      setStatus(t("onboarding.ai.key_saved_gemini_only"), "ok");
       if (advanceOnSuccess) this.goNext();
       return true;
     }
     if (this.aiDraft.validatedKey === key) {
-      setStatus("Key works.", "ok");
+      setStatus(t("onboarding.ai.key_works"), "ok");
       if (advanceOnSuccess) this.goNext();
       return true;
     }
 
     if (btn) btn.disabled = true;
     if (nextBtn) nextBtn.disabled = true;
-    setStatus("Testing…", "");
+    setStatus(t("onboarding.ai.testing"), "");
     const result = await validateGeminiApiKey(key);
     if (btn) btn.disabled = false;
     if (nextBtn) nextBtn.disabled = false;
@@ -333,7 +347,7 @@ export class OnboardingView extends HTMLElement {
       return false;
     }
     this.aiDraft.validatedKey = key;
-    setStatus("Key works.", "ok");
+    setStatus(t("onboarding.ai.key_works"), "ok");
     if (advanceOnSuccess) this.goNext();
     return true;
   }
@@ -346,33 +360,33 @@ export class OnboardingView extends HTMLElement {
         <div class="onboarding-welcome">
           <img class="onboarding-welcome__logo" src="icons/icon-192.png" alt="" width="88" height="88" />
           <h1 class="onboarding-welcome__title">${t("onboarding.welcome_body")}</h1>
-          <p class="onboarding-welcome__sub">Ad-free calorie tracking in your browser. Data stays on this device and exports to the Android app.</p>
+          <p class="onboarding-welcome__sub">${t("onboarding.welcome_sub")}</p>
           <ul class="onboarding-features">
-            <li><span class="onboarding-features__icon">1</span><div><strong>Local-first diary</strong><span>Meals, macros, and progress without accounts.</span></div></li>
-            <li><span class="onboarding-features__icon">2</span><div><strong>Bring your own AI</strong><span>Optional Gemini / Claude keys. Keys leave this device only for the provider you choose.</span></div></li>
-            <li><span class="onboarding-features__icon">3</span><div><strong>Android parity</strong><span>Same formulas and export format as the native app.</span></div></li>
+            <li><span class="onboarding-features__icon">1</span><div><strong>${t("onboarding.feature.local_title")}</strong><span>${t("onboarding.feature.local_body")}</span></div></li>
+            <li><span class="onboarding-features__icon">2</span><div><strong>${t("onboarding.feature.ai_title")}</strong><span>${t("onboarding.feature.ai_body")}</span></div></li>
+            <li><span class="onboarding-features__icon">3</span><div><strong>${t("onboarding.feature.parity_title")}</strong><span>${t("onboarding.feature.parity_body")}</span></div></li>
           </ul>
         </div>`;
     }
     if (id === "sex") {
       return choiceGrid(
         "sex",
-        SEX_OPTIONS.map((o) => ({ id: o.id, label: o.label })),
+        SEX_OPTIONS.map((o) => ({ id: o.id, label: t(o.labelKey) })),
         d.sex
       );
     }
     if (id === "age") {
       return `
-        <p style="color:var(--muted);margin:0 0 0.75rem;">Birthday is preferred (matches Android). Age is used when birthday is blank.</p>
-        <div class="field"><label for="birthday">Birthday</label>
+        <p style="color:var(--muted);margin:0 0 0.75rem;">${t("onboarding.age.hint")}</p>
+        <div class="field"><label for="birthday">${t("onboarding.age.birthday")}</label>
           <input id="birthday" type="date" max="${todayIso()}" value="${d.birthday ?? ""}" /></div>
-        <div class="field"><label for="age">Age (years)</label>
+        <div class="field"><label for="age">${t("onboarding.age.years")}</label>
           <input id="age" type="number" min="1" max="120" value="${d.age}" /></div>`;
     }
     if (id === "body") {
       return `<div class="field-row">
-        <div class="field"><label for="heightCm">Height (cm)</label><input id="heightCm" type="number" min="1" value="${d.heightCm}" /></div>
-        <div class="field"><label for="weightKg">Weight (kg)</label><input id="weightKg" type="number" step="0.1" min="1" value="${d.weightKg}" /></div>
+        <div class="field"><label for="heightCm">${t("onboarding.body.height_cm")}</label><input id="heightCm" type="number" min="1" value="${d.heightCm}" /></div>
+        <div class="field"><label for="weightKg">${t("onboarding.body.weight_kg")}</label><input id="weightKg" type="number" step="0.1" min="1" value="${d.weightKg}" /></div>
       </div>`;
     }
     if (id === "bodyFat") {
@@ -386,23 +400,23 @@ export class OnboardingView extends HTMLElement {
         d.goalBodyFatPercentage != null
           ? Math.round(d.goalBodyFatPercentage * 1000) / 10
           : "";
-      return `<p style="color:var(--muted);margin:0;">Optional. Enables Katch-McArdle BMR when set.</p>
-        <div class="field"><label for="bodyFatPercentage">Body fat %</label>
-          <input id="bodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${bfPct}" placeholder="e.g. 18" /></div>
-        <div class="field"><label for="goalBodyFatPercentage">Goal body fat % (optional)</label>
-          <input id="goalBodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${goalBf}" placeholder="e.g. 15" /></div>`;
+      return `<p style="color:var(--muted);margin:0;">${t("onboarding.body_fat.hint")}</p>
+        <div class="field"><label for="bodyFatPercentage">${t("onboarding.body_fat.pct")}</label>
+          <input id="bodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${bfPct}" placeholder="${escapeAttr(t("onboarding.body_fat.placeholder"))}" /></div>
+        <div class="field"><label for="goalBodyFatPercentage">${t("onboarding.body_fat.goal_pct")}</label>
+          <input id="goalBodyFatPercentage" type="number" step="0.1" min="2" max="65" value="${goalBf}" placeholder="${escapeAttr(t("onboarding.body_fat.goal_placeholder"))}" /></div>`;
     }
     if (id === "activity") {
       return choiceGrid(
         "activityLevel",
-        ACTIVITY_LEVELS.map((a) => ({ id: a.id, label: a.label, sub: a.sub })),
+        ACTIVITY_LEVELS.map((a) => ({ id: a.id, label: t(a.labelKey), sub: t(a.subKey) })),
         d.activityLevel
       );
     }
     if (id === "goal") {
       return choiceGrid(
         "goal",
-        GOALS.map((g) => ({ id: g.id, label: g.label, sub: g.sub })),
+        GOALS.map((g) => ({ id: g.id, label: t(g.labelKey), sub: t(g.subKey) })),
         d.goal
       );
     }
@@ -410,20 +424,20 @@ export class OnboardingView extends HTMLElement {
       return choiceGrid(
         "ketoMode",
         [
-          { id: "false", label: "Standard", sub: "Balanced macros from your targets" },
-          { id: "true", label: "Keto", sub: "Net-carb clamp with higher fat" },
+          { id: "false", label: t("onboarding.diet.standard"), sub: t("onboarding.diet.standard_sub") },
+          { id: "true", label: t("onboarding.diet.keto"), sub: t("onboarding.diet.keto_sub") },
         ],
         d.ketoMode ? "true" : "false"
       );
     }
     if (id === "goalDetails") {
       if (d.goal === "maintain") {
-        return `<p style="color:var(--muted);margin:0;">You'll maintain around your current weight. You can set a goal weight later in Settings.</p>`;
+        return `<p style="color:var(--muted);margin:0;">${t("onboarding.pace.maintain_hint")}</p>`;
       }
       return `${this.paceSelectorHtml()}
       <div class="field" style="margin-top:1.1rem;">
-        <label for="goalWeightKg">Goal weight (kg)</label>
-        <input id="goalWeightKg" type="number" step="0.1" min="0" value="${d.goalWeightKg ?? ""}" placeholder="optional" />
+        <label for="goalWeightKg">${t("onboarding.pace.goal_weight_kg")}</label>
+        <input id="goalWeightKg" type="number" step="0.1" min="0" value="${d.goalWeightKg ?? ""}" placeholder="${escapeAttr(t("onboarding.pace.optional"))}" />
       </div>`;
     }
     if (id === "ai") {
@@ -432,17 +446,20 @@ export class OnboardingView extends HTMLElement {
         ? `onboarding-ai-test-status onboarding-ai-test-status--${this.aiDraft.testKind}`
         : "onboarding-ai-test-status";
       return `
-        <p style="color:var(--muted);margin:0;">Optional bring-your-own key for food photo estimates and the coach. Defaults match Android: Gemini Flash 3.6 with 3.5 Flash Lite fallback.</p>
+        <p style="color:var(--muted);margin:0;">${t("onboarding.ai.hint")}</p>
         <details class="micros-details onboarding-ai-howto" id="ob-ai-howto" ${this.aiDraft.howtoOpen ? "open" : ""}>
-          <summary>How to get a free Google AI Studio key</summary>
+          <summary>${t("onboarding.ai.howto_summary")}</summary>
           <ol>
-            <li>Open <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey</a></li>
-            <li>Sign in with Google and create an API key</li>
-            <li>Copy it and paste below, then tap Test key</li>
+            <li>${t("onboarding.ai.howto_1").replace(
+              "aistudio.google.com/apikey",
+              `<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey</a>`
+            )}</li>
+            <li>${t("onboarding.ai.howto_2")}</li>
+            <li>${t("onboarding.ai.howto_3")}</li>
           </ol>
         </details>
         <div class="field">
-          <label for="ob-ai-provider">Provider</label>
+          <label for="ob-ai-provider">${t("onboarding.ai.provider")}</label>
           <select id="ob-ai-provider">
             ${Object.entries(PROVIDERS)
               .map(([pid, meta]) => `<option value="${pid}" ${provider === pid ? "selected" : ""}>${meta.label}</option>`)
@@ -450,29 +467,29 @@ export class OnboardingView extends HTMLElement {
           </select>
         </div>
         <div class="field">
-          <label for="ob-ai-model">Model</label>
+          <label for="ob-ai-model">${t("onboarding.ai.model")}</label>
           <select id="ob-ai-model">${modelSelectOptionsHtml(provider, this.aiDraft.model, "primary")}</select>
         </div>
         <div class="field">
-          <label for="ob-ai-key">API key</label>
-          <input id="ob-ai-key" type="password" autocomplete="off" placeholder="Paste key to enable AI" value="${escapeAttr(this.aiDraft.apiKey)}" />
+          <label for="ob-ai-key">${t("onboarding.ai.key")}</label>
+          <input id="ob-ai-key" type="password" autocomplete="off" placeholder="${escapeAttr(t("onboarding.ai.key_placeholder"))}" value="${escapeAttr(this.aiDraft.apiKey)}" />
           <div class="onboarding-ai-test-row">
-            <button type="button" class="btn" data-test-ai-key>Test key</button>
+            <button type="button" class="btn" data-test-ai-key>${t("onboarding.ai.test_key")}</button>
             <span id="ob-ai-test-status" class="${testClass}" role="status" aria-live="polite">${escapeAttr(this.aiDraft.testMessage)}</span>
           </div>
         </div>`;
     }
     if (id === "building") {
-      const doneCount = Math.min(BUILD_ITEMS.length, Math.floor((this.buildPct / 100) * BUILD_ITEMS.length));
+      const doneCount = Math.min(BUILD_ITEM_KEYS.length, Math.floor((this.buildPct / 100) * BUILD_ITEM_KEYS.length));
       return `
         <div class="onboarding-building">
           <div class="onboarding-building__pct">${Math.round(this.buildPct)}%</div>
           <div class="onboarding-building__bar"><span class="onboarding-building__fill" style="width:${this.buildPct}%"></span></div>
-          <p style="color:var(--muted);margin:0;">Calculating targets from your profile…</p>
+          <p style="color:var(--muted);margin:0;">${t("onboarding.building.calculating")}</p>
           <ul class="onboarding-checklist">
-            ${BUILD_ITEMS.map(
-              (label, i) =>
-                `<li class="${i < doneCount ? "is-done" : ""}"><span class="onboarding-checklist__mark"></span>${label}</li>`
+            ${BUILD_ITEM_KEYS.map(
+              (key, i) =>
+                `<li class="${i < doneCount ? "is-done" : ""}"><span class="onboarding-checklist__mark"></span>${t(key)}</li>`
             ).join("")}
           </ul>
         </div>`;
@@ -480,27 +497,29 @@ export class OnboardingView extends HTMLElement {
     if (id === "done") {
       const targets = dailyTargets(this.draft);
       const pinned = (key) => this.draft[key] != null;
+      const customMark = ` · ${t("onboarding.plan.custom")}`;
       return `
         <div class="onboarding-plan-ready">
-          <button type="button" class="onboarding-plan-ready__cals-btn" data-edit-plan="customCalories" aria-label="Edit calorie target">
+          <button type="button" class="onboarding-plan-ready__cals-btn" data-edit-plan="customCalories" aria-label="${escapeAttr(t("onboarding.plan.edit_calories_a11y"))}">
             <div class="onboarding-plan-ready__cals">${Math.round(targets.calories)}</div>
-            <p class="onboarding-plan-ready__unit">kcal / day${pinned("customCalories") ? " · custom" : ""}</p>
+            <p class="onboarding-plan-ready__unit">${t("onboarding.plan.kcal_day")}${pinned("customCalories") ? customMark : ""}</p>
           </button>
           <div class="onboarding-plan-macros">
             <button type="button" class="onboarding-plan-macro onboarding-plan-macro--protein" data-edit-plan="customProtein">
               <span class="onboarding-plan-macro__value">${Math.round(targets.proteinG)}g</span>
-              <span class="onboarding-plan-macro__label">Protein${pinned("customProtein") ? " ·" : ""}</span>
+              <span class="onboarding-plan-macro__label">${t("onboarding.plan.protein")}${pinned("customProtein") ? " ·" : ""}</span>
             </button>
             <button type="button" class="onboarding-plan-macro onboarding-plan-macro--carbs" data-edit-plan="customCarbs">
               <span class="onboarding-plan-macro__value">${Math.round(targets.carbsG)}g</span>
-              <span class="onboarding-plan-macro__label">Carbs${pinned("customCarbs") ? " ·" : ""}</span>
+              <span class="onboarding-plan-macro__label">${t("onboarding.plan.carbs")}${pinned("customCarbs") ? " ·" : ""}</span>
             </button>
             <button type="button" class="onboarding-plan-macro onboarding-plan-macro--fat" data-edit-plan="customFat">
               <span class="onboarding-plan-macro__value">${Math.round(targets.fatG)}g</span>
-              <span class="onboarding-plan-macro__label">Fat${pinned("customFat") ? " ·" : ""}</span>
+              <span class="onboarding-plan-macro__label">${t("onboarding.plan.fat")}${pinned("customFat") ? " ·" : ""}</span>
             </button>
           </div>
-          <p style="color:var(--muted);margin:0;font-size:0.85rem;">Tap a target to customize. You can fine-tune anytime in Settings. Estimates aren’t medical advice.</p>
+          <p style="color:var(--muted);margin:0;font-size:0.85rem;">${t("onboarding.plan.customize_hint")}</p>
+          ${disclaimerCardsHtml()}
         </div>`;
     }
     return "";
@@ -513,7 +532,7 @@ export class OnboardingView extends HTMLElement {
     const kg = PACE_KG_BY_INDEX[idx];
     const diffKg = Math.abs((d.goalWeightKg ?? d.weightKg) - d.weightKg);
     const estimatedDays = kg > 0 ? Math.round((diffKg / kg) * 7) : 0;
-    return { idx, kg, estimatedDays, caption: PACE_CAPTIONS[idx] };
+    return { idx, kg, estimatedDays, caption: t(PACE_CAPTION_KEYS[idx]) };
   }
 
   paceSelectorHtml() {
@@ -522,18 +541,18 @@ export class OnboardingView extends HTMLElement {
       <div class="onboarding-pace">
         <div class="onboarding-pace__readout">
           <span class="onboarding-pace__value" id="pace-value">${kg.toFixed(2)}</span>
-          <span class="onboarding-pace__unit">kg / week</span>
+          <span class="onboarding-pace__unit">${t("onboarding.pace.kg_week")}</span>
         </div>
         <div class="onboarding-pace__icons" id="pace-icons">
           ${PACE_ICONS.map(
             (p, i) => `<span class="onboarding-pace__icon ${i === idx ? "is-selected" : ""}" data-pace-icon="${i}">
-              ${p.svg}<span class="onboarding-pace__icon-label">${p.label}</span>
+              ${p.svg}<span class="onboarding-pace__icon-label">${t(p.labelKey)}</span>
             </span>`
           ).join("")}
         </div>
-        <input id="weeklyChangeKg" class="onboarding-pace__slider" type="range" min="0" max="2" step="1" value="${idx}" aria-label="Weekly pace" />
+        <input id="weeklyChangeKg" class="onboarding-pace__slider" type="range" min="0" max="2" step="1" value="${idx}" aria-label="${escapeAttr(t("onboarding.pace.weekly_aria"))}" />
         <div class="onboarding-pace__card" id="pace-card">
-          <p class="onboarding-pace__eta">Reach your goal in <strong id="pace-days">${estimatedDays}</strong> days</p>
+          <p class="onboarding-pace__eta">${t("onboarding.pace.eta_prefix")} <strong id="pace-days">${estimatedDays}</strong> ${t("onboarding.pace.days_unit")}</p>
           <p class="onboarding-pace__caption" id="pace-caption">${caption}</p>
         </div>
       </div>`;
@@ -625,18 +644,17 @@ export class OnboardingView extends HTMLElement {
         }, 280);
         return;
       }
-      // Re-render checklist without resetting timer
       const root = this.querySelector(".onboarding-building");
       if (!root) return;
-      const doneCount = Math.min(BUILD_ITEMS.length, Math.floor((this.buildPct / 100) * BUILD_ITEMS.length));
+      const doneCount = Math.min(BUILD_ITEM_KEYS.length, Math.floor((this.buildPct / 100) * BUILD_ITEM_KEYS.length));
       root.innerHTML = `
         <div class="onboarding-building__pct">${Math.round(this.buildPct)}%</div>
         <div class="onboarding-building__bar"><span class="onboarding-building__fill" style="width:${this.buildPct}%"></span></div>
-        <p style="color:var(--muted);margin:0;">Calculating targets from your profile…</p>
+        <p style="color:var(--muted);margin:0;">${t("onboarding.building.calculating")}</p>
         <ul class="onboarding-checklist">
-          ${BUILD_ITEMS.map(
-            (label, i) =>
-              `<li class="${i < doneCount ? "is-done" : ""}"><span class="onboarding-checklist__mark"></span>${label}</li>`
+          ${BUILD_ITEM_KEYS.map(
+            (key, i) =>
+              `<li class="${i < doneCount ? "is-done" : ""}"><span class="onboarding-checklist__mark"></span>${t(key)}</li>`
           ).join("")}
         </ul>`;
     };
@@ -667,22 +685,22 @@ export class OnboardingView extends HTMLElement {
     const targets = dailyTargets(this.draft);
     /** @type {Record<string, {label: string, unit: string, current: number}>} */
     const meta = {
-      customCalories: { label: "Daily calories", unit: "kcal", current: targets.calories },
-      customProtein: { label: "Protein", unit: "g", current: targets.proteinG },
-      customCarbs: { label: "Carbs", unit: "g", current: targets.carbsG },
-      customFat: { label: "Fat", unit: "g", current: targets.fatG },
+      customCalories: { label: t("onboarding.plan.edit_calories_a11y"), unit: "kcal", current: targets.calories },
+      customProtein: { label: t("onboarding.plan.protein"), unit: "g", current: targets.proteinG },
+      customCarbs: { label: t("onboarding.plan.carbs"), unit: "g", current: targets.carbsG },
+      customFat: { label: t("onboarding.plan.fat"), unit: "g", current: targets.fatG },
     };
     const m = meta[field];
     if (!m) return;
     const raw = await openInput({
-      title: `Edit ${m.label.toLowerCase()}`,
+      title: m.label,
       label: m.label,
       value: String(Math.round(m.current)),
       type: "number",
       inputMode: "decimal",
       unit: m.unit,
-      confirmLabel: "Save",
-      placeholder: "Leave blank to reset",
+      confirmLabel: t("action.save"),
+      placeholder: t("onboarding.pace.optional"),
     });
     if (raw == null) return;
     const trimmed = raw.trim();
@@ -744,6 +762,7 @@ function choiceGrid(field, options, selected) {
   </div>`;
 }
 
+/** @param {string} s */
 function escapeAttr(s) {
   return String(s)
     .replace(/&/g, "&amp;")

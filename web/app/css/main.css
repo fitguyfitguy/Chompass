@@ -2014,6 +2014,45 @@ form.entry-form > button.btn--primary,
   text-align: center;
 }
 
+.onboarding-disclaimers {
+  display: grid;
+  gap: 0.65rem;
+  width: 100%;
+  text-align: start;
+  margin-top: 0.25rem;
+}
+
+.onboarding-disclaimer {
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+
+.onboarding-disclaimer strong {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.onboarding-disclaimer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.onboarding-disclaimer--health {
+  border-color: color-mix(in srgb, #c47a2c 35%, var(--line));
+  background: color-mix(in srgb, #c47a2c 10%, var(--surface));
+}
+
+.onboarding-disclaimer--accuracy {
+  border-color: color-mix(in srgb, var(--teal) 30%, var(--line));
+  background: color-mix(in srgb, var(--teal) 8%, var(--surface));
+}
+
 .onboarding-plan-ready__cals {
   font-size: 3.4rem;
   font-weight: 800;

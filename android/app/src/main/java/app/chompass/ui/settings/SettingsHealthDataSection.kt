@@ -123,6 +123,17 @@ internal fun SettingsHealthDataSection(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
                         )
+                        Text(
+                            stringResource(R.string.settings_accuracy_title),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(top = 6.dp)
+                        )
+                        Text(
+                            stringResource(R.string.settings_accuracy_body),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
                     }
                     HorizontalDivider()
                 } else {

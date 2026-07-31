@@ -59,7 +59,7 @@ node --test web/app/src/lib/__tests__/i18n.test.js
 | ru | complete | most complete non-EN (~87%) |
 | ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | partial (~half); EN fallback for missing keys |
 
-Core surfaces: shell nav, onboarding welcome/CTAs, diary empty states, progress title/ranges, settings hub/app/language, dialogs/errors/a11y.
+Core surfaces: shell nav, **full onboarding flow** (steps, choices, AI setup, plan-ready), diary empty states, progress title/ranges, settings hub/app/language, dialogs/errors/a11y, plus onboarding health + accuracy disclaimers.
 
 ## Out of scope / deferred
 
