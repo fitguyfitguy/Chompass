@@ -1,6 +1,8 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.blockSheetDragAtLazyListEdges
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,7 +44,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,16 +59,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
@@ -115,7 +110,7 @@ fun SavedMealsSheet(
     onEditRecipe: (Recipe) -> Unit = {},
     onCreateRecipe: () -> Unit = {}
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
     val scope = rememberCoroutineScope()
 
     // Restore the last-selected segment from DataStore so reopening the sheet
@@ -493,29 +488,6 @@ private fun FavoriteSwipeToUnfavoriteRow(
             }
         }
     }
-}
-
-@Composable
-private fun Modifier.blockSheetDragAtLazyListEdges(listState: LazyListState): Modifier {
-    val connection = remember(listState) {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (source != NestedScrollSource.UserInput) return Offset.Zero
-                val shouldBlock =
-                    (available.y > 0f && !listState.canScrollBackward) ||
-                    (available.y < 0f && !listState.canScrollForward)
-                return if (shouldBlock) Offset(0f, available.y) else Offset.Zero
-            }
-
-            override suspend fun onPreFling(available: Velocity): Velocity {
-                val shouldBlock =
-                    (available.y > 0f && !listState.canScrollBackward) ||
-                    (available.y < 0f && !listState.canScrollForward)
-                return if (shouldBlock) Velocity(0f, available.y) else Velocity.Zero
-            }
-        }
-    }
-    return nestedScroll(connection)
 }
 
 /**

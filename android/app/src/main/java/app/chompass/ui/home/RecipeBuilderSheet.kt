@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -70,10 +69,7 @@ fun RecipeBuilderSheet(
     onSave: (Recipe) -> Unit,
     onLogNow: (Recipe) -> Unit
 ) {
-    val state = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { it != SheetValue.Hidden }
-    )
+    val state = rememberChompassSheetState()
     var name by remember(recipe.id) { mutableStateOf(recipe.name) }
     var mealType by remember(recipe.id) { mutableStateOf(recipe.mealType) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
@@ -331,7 +327,7 @@ private fun FavoritesIngredientPickerSheet(
     onDismiss: () -> Unit
 ) {
     val favorites by container.foodRepository.favorites.collectAsState(initial = emptyList())
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
 
     ChompassBottomSheet(
         onDismiss = onDismiss,

@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +19,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,10 +54,8 @@ internal fun CopyFromDaySheet(
     onCopy: (List<FoodEntry>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { it != SheetValue.Hidden }
-    )
+    // Dismissible by downward drag; only block while copying entries.
+    val state = rememberChompassSheetState(busy = isSaving)
     var sourceDate by remember(targetDate) { mutableStateOf(targetDate.minusDays(1)) }
     var showDatePicker by remember { mutableStateOf(false) }
     val zone = ZoneId.systemDefault()
@@ -74,7 +71,7 @@ internal fun CopyFromDaySheet(
     val targetText = if (targetDate == LocalDate.now()) "today" else targetDate.format(dateFmt)
 
     ChompassBottomSheet(
-        onDismiss = onDismiss,
+        onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
         containerColor = MaterialTheme.colorScheme.background,
     ) {
@@ -88,7 +85,7 @@ internal fun CopyFromDaySheet(
                 stringResource(R.string.copy_all)
             },
             primaryEnabled = !isSaving,
-            onCancel = onDismiss,
+            onCancel = { if (!isSaving) onDismiss() },
             onPrimary = {
                 if (!isSaving) {
                     if (sourceEntries.isEmpty()) onDismiss() else onCopy(sourceEntries)
