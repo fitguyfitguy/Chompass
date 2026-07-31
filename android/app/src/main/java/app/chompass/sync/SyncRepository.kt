@@ -87,7 +87,7 @@ class SyncRepository(
             if (apply is SyncResult.Failed) return apply
 
             var etag = remote.etag
-            var put = webDav.put(url, user, password, mergedJson, ifMatch = etag)
+            var put = webDav.put(url, user, password, mergedJson, webDavPutMode(remote.etag, remote.notFound))
             if (put.conflict) {
                 val again = webDav.get(url, user, password)
                 val localParsed = SyncDocument.parse(exportDocumentJson(zone), zone) as? SyncDocument.ParseResult.Success
@@ -100,7 +100,12 @@ class SyncRepository(
                 )
                 val retryApply = applyMergedDocument(retryJson, zone)
                 if (retryApply is SyncResult.Failed) return retryApply
-                put = webDav.put(url, user, password, retryJson, ifMatch = again.etag)
+                put = webDav.put(url, user, password, retryJson, webDavPutMode(again.etag, again.notFound))
+                // Broken/weak ETags (or CORS-hidden ones on some stacks) can 412 forever;
+                // after a fresh merge, overwrite once without preconditions.
+                if (put.conflict) {
+                    put = webDav.put(url, user, password, retryJson, WebDavPutMode.Unconditional)
+                }
                 if (put.conflict) return SyncResult.Failed("WebDAV conflict persisted; try again")
                 etag = put.etag ?: again.etag
             } else {

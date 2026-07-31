@@ -216,6 +216,31 @@ export function webDavBasicAuthHeader(username, password) {
 }
 
 /**
+ * If-Match uses strong comparison; weak validators (W/"…") never match.
+ * @param {string|null|undefined} etag
+ * @returns {string}
+ */
+export function normalizeEtagForIfMatch(etag) {
+  const trimmed = (etag ?? "").trim();
+  if (trimmed.toUpperCase().startsWith("W/")) return trimmed.slice(2).trimStart();
+  return trimmed;
+}
+
+/**
+ * PUT precondition headers from a prior GET.
+ * Missing ETag on an existing file must not use If-None-Match: * (create-only).
+ * @param {string|null|undefined} etag
+ * @param {boolean} notFound
+ * @returns {Record<string, string>}
+ */
+export function webDavPutPreconditionHeaders(etag, notFound) {
+  if (notFound) return { "If-None-Match": "*" };
+  const normalized = normalizeEtagForIfMatch(etag);
+  if (normalized) return { "If-Match": normalized };
+  return {};
+}
+
+/**
  * Pull-merge-push against the configured WebDAV URL.
  * @returns {Promise<{ ok: boolean, message: string }>}
  */
@@ -228,14 +253,17 @@ export async function syncWebDavNow() {
   const auth = webDavBasicAuthHeader(cfg.username, cfg.password);
   let remoteText = null;
   let etag = cfg.etag;
+  let notFound = false;
   const getRes = await fetch(cfg.url, { headers: { Authorization: auth } });
   if (getRes.status === 404) {
     remoteText = null;
     etag = null;
+    notFound = true;
   } else if (!getRes.ok) {
     return { ok: false, message: `WebDAV GET failed: HTTP ${getRes.status}` };
   } else {
     remoteText = await getRes.text();
+    // Prefer GET ETag; fall back to stored (browsers often hide ETag without CORS expose).
     etag = getRes.headers.get("ETag") ?? etag;
   }
 
@@ -255,33 +283,43 @@ export async function syncWebDavNow() {
   const putHeaders = {
     Authorization: auth,
     "Content-Type": "application/json; charset=utf-8",
+    ...webDavPutPreconditionHeaders(etag, notFound),
   };
-  if (etag) putHeaders["If-Match"] = etag;
-  else putHeaders["If-None-Match"] = "*";
 
   let putRes = await fetch(cfg.url, { method: "PUT", headers: putHeaders, body });
   if (putRes.status === 412) {
     const again = await fetch(cfg.url, { headers: { Authorization: auth } });
     if (!again.ok) return { ok: false, message: `Conflict re-fetch failed: HTTP ${again.status}` };
     const againText = await again.text();
-    const againEtag = again.headers.get("ETag");
+    const againEtag = again.headers.get("ETag") ?? etag;
+    const againNotFound = false;
     try {
       merged = mergeSyncDocuments(await buildLocalSyncDocument(), parseSyncDocument(JSON.parse(againText)));
     } catch (err) {
       return { ok: false, message: err instanceof Error ? err.message : "Invalid remote after conflict" };
     }
     await applySyncDocument(merged);
+    const retryBody = JSON.stringify(merged, null, 2);
+    /** @type {Record<string, string>} */
     const retryHeaders = {
       Authorization: auth,
       "Content-Type": "application/json; charset=utf-8",
+      ...webDavPutPreconditionHeaders(againEtag, againNotFound),
     };
-    if (againEtag) retryHeaders["If-Match"] = againEtag;
-    putRes = await fetch(cfg.url, {
-      method: "PUT",
-      headers: retryHeaders,
-      body: JSON.stringify(merged, null, 2),
-    });
+    putRes = await fetch(cfg.url, { method: "PUT", headers: retryHeaders, body: retryBody });
+    if (putRes.status === 412) {
+      // Broken/weak/hidden ETags: overwrite once after merge.
+      putRes = await fetch(cfg.url, {
+        method: "PUT",
+        headers: {
+          Authorization: auth,
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: retryBody,
+      });
+    }
     if (putRes.status === 412) return { ok: false, message: "WebDAV conflict persisted; try again" };
+    if (!putRes.ok) return { ok: false, message: `WebDAV PUT failed: HTTP ${putRes.status}` };
     etag = putRes.headers.get("ETag") ?? againEtag;
   } else if (!putRes.ok) {
     return { ok: false, message: `WebDAV PUT failed: HTTP ${putRes.status}` };

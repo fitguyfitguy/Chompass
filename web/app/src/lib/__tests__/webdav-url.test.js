@@ -1,7 +1,12 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalizeWebDavUrl, webDavBasicAuthHeader } from "../sync.js";
+import {
+  normalizeWebDavUrl,
+  webDavBasicAuthHeader,
+  webDavPutPreconditionHeaders,
+  normalizeEtagForIfMatch,
+} from "../sync.js";
 
 test("normalizeWebDavUrl adds https when scheme missing", () => {
   assert.equal(
@@ -36,4 +41,16 @@ test("webDavBasicAuthHeader uses UTF-8 for non-ASCII passwords", () => {
   const latin1 = Buffer.from(`${user}:${password}`, "latin1").toString("base64");
   assert.equal(header, `Basic ${utf8}`);
   assert.notEqual(utf8, latin1);
+});
+
+test("webDavPutPreconditionHeaders create-only only when notFound", () => {
+  assert.deepEqual(webDavPutPreconditionHeaders(null, true), { "If-None-Match": "*" });
+  assert.deepEqual(webDavPutPreconditionHeaders(null, false), {});
+  assert.deepEqual(webDavPutPreconditionHeaders('"abc"', false), { "If-Match": '"abc"' });
+  assert.deepEqual(webDavPutPreconditionHeaders('W/"abc"', false), { "If-Match": '"abc"' });
+});
+
+test("normalizeEtagForIfMatch strips weak prefix", () => {
+  assert.equal(normalizeEtagForIfMatch('W/"x"'), '"x"');
+  assert.equal(normalizeEtagForIfMatch('"x"'), '"x"');
 });
