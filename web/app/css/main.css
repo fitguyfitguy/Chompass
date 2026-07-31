@@ -3236,7 +3236,8 @@ body.camera-open {
 @media (min-width: 900px) {
   :root {
     --content-max: 56rem;
-    --rail-w: 5.25rem;
+    /* Wide enough for long locale labels (e.g. de Einstellungen) inside the rail */
+    --rail-w: 6rem;
     --chrome-bottom: env(safe-area-inset-bottom);
   }
 
@@ -3258,18 +3259,26 @@ body.camera-open {
     width: var(--rail-w);
     height: auto;
     grid-auto-flow: row;
+    /* Cap the column so long locale labels cannot widen past the rail */
+    grid-template-columns: minmax(0, 1fr);
     align-content: start;
     gap: 0.35rem;
-    padding: calc(0.85rem + env(safe-area-inset-top)) 0.35rem calc(0.85rem + env(safe-area-inset-bottom));
+    padding: calc(0.85rem + env(safe-area-inset-top)) 0.4rem calc(0.85rem + env(safe-area-inset-bottom));
     border-top: none;
     border-right: 1px solid var(--line);
     background: var(--bg-elevated);
+    overflow-x: hidden;
   }
 
   .bottom-nav a {
+    min-width: 0;
+    max-width: 100%;
     min-height: 3.6rem;
     border-radius: 0.75rem;
-    padding: 0.35rem 0.2rem;
+    padding: 0.35rem 0.15rem;
+    overflow: hidden;
+    text-align: center;
+    line-height: 1.15;
   }
 
   .bottom-nav a[aria-current="page"] {
