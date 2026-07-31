@@ -47,6 +47,7 @@ import {
   nutrientDef,
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
+import { LOCALES, t } from "../lib/i18n/index.js";
 
 const ACTIVITY_LEVELS = [
   { id: "sedentary", label: "Sedentary" },
@@ -59,7 +60,7 @@ const ACTIVITY_LEVELS = [
 const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
 
 const SPEECH_LANGS = [
-  { id: "", label: "Browser default" },
+  { id: "", labelKey: "settings.speech.browser_default" },
   { id: "en-US", label: "English (US)" },
   { id: "en-GB", label: "English (UK)" },
   { id: "de-DE", label: "Deutsch" },
@@ -68,8 +69,13 @@ const SPEECH_LANGS = [
   { id: "it-IT", label: "Italiano" },
   { id: "nl-NL", label: "Nederlands" },
   { id: "pt-BR", label: "Português (BR)" },
+  { id: "hi-IN", label: "हिन्दी" },
+  { id: "ja-JP", label: "日本語" },
+  { id: "zh-CN", label: "简体中文" },
+  { id: "ko-KR", label: "한국어" },
   { id: "sv-SE", label: "Svenska" },
 ];
+/** @typedef {{ id: string, label?: string, labelKey?: string }} SpeechLangOption */
 
 const OPTIONAL_GOAL_FIELDS = Object.keys(DEFAULT_OPTIONAL_NUTRIENT_GOALS).map((key) => {
   const def = nutrientDef(key);
@@ -85,6 +91,7 @@ const SETTINGS_PARENT = {
   app: "#/settings",
   units: "#/settings?section=app",
   home: "#/settings?section=app",
+  language: "#/settings?section=app",
   install: "#/settings?section=app",
   ai: "#/settings",
   speech: "#/settings?section=ai",
@@ -105,14 +112,14 @@ export class SettingsView extends HTMLElement {
   async render() {
     if (this.section === "hub") {
       this.innerHTML = `
-        <h1 class="screen-title">Settings</h1>
-        <nav class="settings-nav" aria-label="Settings sections">
-          <a href="#/settings?section=personal">Personal Info <span>Gender, height, weight, measurements</span></a>
-          <a href="#/settings?section=goals">Goals &amp; Nutrition <span>Diet, macros, optional nutrients</span></a>
-          <a href="#/settings?section=app">App &amp; Display <span>Units, home, install</span></a>
-          <a href="#/settings?section=ai">AI &amp; Speech <span>Providers, models, speech</span></a>
-          <a href="#/settings?section=data">Health, Data &amp; Sync <span>Import / export, WebDAV</span></a>
-          <a href="#/settings?section=about">About <span>Formulas &amp; methods</span></a>
+        <h1 class="screen-title">${t("settings.title")}</h1>
+        <nav class="settings-nav" aria-label="${t("settings.title")}">
+          <a href="#/settings?section=personal">${t("settings.hub.personal")} <span>${t("settings.hub.personal_hint")}</span></a>
+          <a href="#/settings?section=goals">${t("settings.hub.goals")} <span>${t("settings.hub.goals_hint")}</span></a>
+          <a href="#/settings?section=app">${t("settings.hub.app")} <span>${t("settings.hub.app_hint")}</span></a>
+          <a href="#/settings?section=ai">${t("settings.hub.ai")} <span>${t("settings.hub.ai_hint")}</span></a>
+          <a href="#/settings?section=data">${t("settings.hub.data")} <span>${t("settings.hub.data_hint")}</span></a>
+          <a href="#/settings?section=about">${t("settings.hub.about")} <span>${t("settings.hub.about_hint")}</span></a>
         </nav>
         <p class="settings-android-note">Health Connect, notifications, widgets, and on-device LLM are Android-only.</p>`;
       return;
@@ -140,6 +147,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "home") {
       await this.renderHome();
+      return;
+    }
+    if (this.section === "language") {
+      await this.renderLanguage();
       return;
     }
     if (this.section === "speech") {
@@ -172,13 +183,43 @@ export class SettingsView extends HTMLElement {
 
   renderApp() {
     this.innerHTML = `
-      ${subpageBar("App & Display", { backHref: SETTINGS_PARENT.app })}
-      <nav class="settings-nav" aria-label="App settings">
-        <a href="#/settings?section=units">Units &amp; schedule <span>Units, week, meals, accent</span></a>
-        <a href="#/settings?section=home">Home display <span>Water, gauge, chips</span></a>
-        <a href="#/settings?section=install">Install app <span>Home screen &amp; browsers</span></a>
+      ${subpageBar(t("settings.app.title"), { backHref: SETTINGS_PARENT.app })}
+      <nav class="settings-nav" aria-label="${t("settings.app.title")}">
+        <a href="#/settings?section=language">${t("settings.app.language")} <span>${t("settings.app.language_hint")}</span></a>
+        <a href="#/settings?section=units">${t("settings.app.units")} <span>${t("settings.app.units_hint")}</span></a>
+        <a href="#/settings?section=home">${t("settings.app.home")} <span>${t("settings.app.home_hint")}</span></a>
+        <a href="#/settings?section=install">${t("settings.app.install")} <span>${t("settings.app.install_hint")}</span></a>
       </nav>`;
     bindSubpageBack(this, SETTINGS_PARENT.app);
+  }
+
+  async renderLanguage() {
+    const p = await prefs.load();
+    const current = p.uiLang || "";
+    const options = [
+      `<option value="" ${current === "" ? "selected" : ""}>${t("settings.language.auto")}</option>`,
+      ...LOCALES.map(
+        (l) =>
+          `<option value="${l.id}" ${l.id === current ? "selected" : ""}>${l.nativeName} (${l.name})</option>`,
+      ),
+    ];
+    this.innerHTML = `
+      ${subpageBar(t("settings.language.title"), { backHref: SETTINGS_PARENT.language })}
+      <form class="entry-form card" id="language-form">
+        <div class="field">
+          <label for="uiLang">${t("settings.language.label")}</label>
+          <select id="uiLang" name="uiLang">${options.join("")}</select>
+          <p class="field-hint">${t("settings.language.auto_hint")}</p>
+        </div>
+        <button type="submit" class="btn btn--primary">${t("action.save")}</button>
+      </form>`;
+    bindSubpageBack(this, SETTINGS_PARENT.language);
+    this.querySelector("#language-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      await prefs.save({ uiLang: String(fd.get("uiLang") || "") });
+      window.dispatchEvent(new Event("chompass-prefs-changed"));
+    });
   }
 
   async loadProfile() {
@@ -516,18 +557,21 @@ export class SettingsView extends HTMLElement {
     const p = await prefs.load();
     const current = p.speechLang || "";
     this.innerHTML = `
-      ${subpageBar("Speech", { backHref: SETTINGS_PARENT.speech })}
+      ${subpageBar(t("settings.speech.language"), { backHref: SETTINGS_PARENT.speech })}
       <form class="entry-form card" id="speech-form">
         <p style="color:var(--muted);margin:0 0 0.75rem;font-size:0.88rem;">
           Voice dictation uses the browser’s on-device speech recognition (Chrome/Edge best). Cloud speech engines are Android-only.
         </p>
         <div class="field">
-          <label for="speechLang">Language</label>
+          <label for="speechLang">${t("settings.speech.language")}</label>
           <select id="speechLang" name="speechLang">
-            ${SPEECH_LANGS.map((l) => `<option value="${l.id}" ${l.id === current ? "selected" : ""}>${l.label}</option>`).join("")}
+            ${SPEECH_LANGS.map((/** @type {SpeechLangOption} */ l) => {
+              const label = l.labelKey ? t(l.labelKey) : (l.label || l.id);
+              return `<option value="${l.id}" ${l.id === current ? "selected" : ""}>${label}</option>`;
+            }).join("")}
           </select>
         </div>
-        <button type="submit" class="btn btn--primary">Save</button>
+        <button type="submit" class="btn btn--primary">${t("action.save")}</button>
       </form>`;
     this.querySelector("#speech-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();

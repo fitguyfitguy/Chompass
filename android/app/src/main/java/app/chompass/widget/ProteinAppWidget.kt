@@ -44,7 +44,7 @@ class ProteinAppWidget : GlanceAppWidget() {
 
         provideContent {
             GlanceTheme {
-                ProteinWidgetContent(snapshot)
+                ProteinWidgetContent(context, snapshot)
             }
         }
     }
@@ -60,7 +60,7 @@ class ProteinWidgetReceiver : GlanceAppWidgetReceiver() {
 }
 
 @Composable
-private fun ProteinWidgetContent(snapshot: WidgetSnapshot) {
+private fun ProteinWidgetContent(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     Box(
         modifier = GlanceModifier
@@ -71,15 +71,15 @@ private fun ProteinWidgetContent(snapshot: WidgetSnapshot) {
             .clickable(actionStartActivity<MainActivity>())
     ) {
         if (size.width < ProteinAppWidget.MEDIUM_SIZE.width) {
-            ProteinSmall(snapshot)
+            ProteinSmall(context, snapshot)
         } else {
-            ProteinMedium(snapshot)
+            ProteinMedium(context, snapshot)
         }
     }
 }
 
 @Composable
-private fun ProteinSmall(snapshot: WidgetSnapshot) {
+private fun ProteinSmall(context: Context, snapshot: WidgetSnapshot) {
     val nutrient = snapshot.primaryHomeNutrient
     val remaining = maxOf(0.0, nutrient.goal - nutrient.value)
     val size = LocalSize.current
@@ -103,7 +103,11 @@ private fun ProteinSmall(snapshot: WidgetSnapshot) {
             )
         }
         Text(
-            text = "${MacroValueFormatter.string(remaining)}${nutrient.unit} left",
+            text = context.getString(
+                R.string.widget_unit_left_format,
+                MacroValueFormatter.string(remaining),
+                nutrient.unit,
+            ),
             style = TextStyle(
                 color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                 fontWeight = FontWeight.Medium,
@@ -114,7 +118,7 @@ private fun ProteinSmall(snapshot: WidgetSnapshot) {
 }
 
 @Composable
-private fun ProteinMedium(snapshot: WidgetSnapshot) {
+private fun ProteinMedium(context: Context, snapshot: WidgetSnapshot) {
     val nutrient = snapshot.primaryHomeNutrient
     val remaining = maxOf(0.0, nutrient.goal - nutrient.value)
     val size = LocalSize.current
@@ -137,7 +141,11 @@ private fun ProteinMedium(snapshot: WidgetSnapshot) {
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
-                text = "${MacroValueFormatter.string(remaining)}${nutrient.unit} left",
+                text = context.getString(
+                    R.string.widget_unit_left_format,
+                    MacroValueFormatter.string(remaining),
+                    nutrient.unit,
+                ),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,

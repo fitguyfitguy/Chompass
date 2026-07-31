@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.FudGlassDialog
@@ -44,7 +45,6 @@ import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +62,7 @@ internal fun CopyFromDaySheet(
     var sourceDate by remember(targetDate) { mutableStateOf(targetDate.minusDays(1)) }
     var showDatePicker by remember { mutableStateOf(false) }
     val zone = ZoneId.systemDefault()
-    val dateFmt = remember { DateTimeFormatter.ofPattern("MMM d", Locale.US) }
+    val dateFmt = remember { LocaleFormat.shortDate() }
     val sourceEntries = remember(allEntries, sourceDate) {
         allEntries
             .filter { it.timestamp.atZone(zone).toLocalDate() == sourceDate }

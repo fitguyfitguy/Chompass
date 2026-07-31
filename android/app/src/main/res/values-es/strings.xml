@@ -717,4 +717,15 @@
     <string name="grounding_validation_notes">Notas: %1$s</string>
     <string name="grounded_on_device_unavailable">La entrada contrastada requiere un proveedor de IA en la nube. Los modelos en el dispositivo usan Foto/Nota.</string>
     <string name="grounded_review_unit">Unidad</string>
+
+    <string name="widget_water_tracking">Seguimiento de agua</string>
+    <string name="widget_water_enable_short">Activar en Chompass</string>
+    <string name="widget_ml_left_format">Quedan %1$d ml</string>
+    <string name="widget_fl_oz_left_format">Quedan %1$d fl oz</string>
+    <string name="widget_unit_left_format">Quedan %1$s%2$s</string>
+    <string name="error_invalid_json">JSON no válido</string>
+    <string name="error_unknown">Error desconocido</string>
+    <string name="error_webdav_sync_failed">Falló la sincronización WebDAV</string>
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_system">Predeterminado del sistema</string>
 </resources>

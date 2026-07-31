@@ -64,6 +64,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.ActivityLevel
 import app.chompass.models.Gender
 import app.chompass.models.UserProfile
@@ -482,7 +483,7 @@ internal fun feetInchesLabel(cm: Int): String {
 }
 
 internal val birthdayFormatter: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US)
+    LocaleFormat.mediumDate()
 
 internal fun birthdayDisplay(profile: UserProfile): String {
     val date = profile.birthday.atZone(ZoneId.systemDefault()).toLocalDate()

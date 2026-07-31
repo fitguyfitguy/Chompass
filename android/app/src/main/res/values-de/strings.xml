@@ -717,4 +717,15 @@
     <string name="grounding_validation_notes">Hinweise: %1$s</string>
     <string name="grounded_on_device_unavailable">Datenbank-Eintrag braucht einen Cloud-KI-Anbieter. On-Device-Modelle nutzen Foto/Notiz.</string>
     <string name="grounded_review_unit">Einheit</string>
+
+    <string name="widget_water_tracking">Wasser-Tracking</string>
+    <string name="widget_water_enable_short">In Chompass aktivieren</string>
+    <string name="widget_ml_left_format">Noch %1$d ml</string>
+    <string name="widget_fl_oz_left_format">Noch %1$d fl oz</string>
+    <string name="widget_unit_left_format">Noch %1$s%2$s</string>
+    <string name="error_invalid_json">Ungültiges JSON</string>
+    <string name="error_unknown">Unbekannter Fehler</string>
+    <string name="error_webdav_sync_failed">WebDAV-Sync fehlgeschlagen</string>
+    <string name="settings_language_title">Sprache</string>
+    <string name="settings_language_system">Systemstandard</string>
 </resources>

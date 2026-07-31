@@ -13,10 +13,31 @@ import { maybeSeedFromUrl } from "./lib/dev-seed.js";
 import { prefs, profile } from "./lib/db.js";
 import { initInstallPrompt, maybeShowInstallBanner } from "./lib/install-prompt.js";
 import { initUpdatePrompt } from "./lib/update-prompt.js";
+import { activateFromPrefs, t } from "./lib/i18n/index.js";
 
 const view = document.getElementById("view");
 const nav = document.getElementById("bottom-nav");
 const navLinks = () => document.querySelectorAll(".bottom-nav a");
+
+function applyNavLabels() {
+  const labels = {
+    home: t("nav.home"),
+    progress: t("nav.progress"),
+    coach: t("nav.coach"),
+    settings: t("nav.settings"),
+  };
+  navLinks().forEach((a) => {
+    const href = a.getAttribute("href") || "";
+    const tab = href.replace("#/", "");
+    const label = labels[tab];
+    if (!label) return;
+    const icon = a.querySelector("svg");
+    a.textContent = "";
+    if (icon) a.appendChild(icon);
+    a.appendChild(document.createTextNode(` ${label}`));
+  });
+  if (nav) nav.setAttribute("aria-label", t("a11y.primary_nav"));
+}
 
 const ROUTES = {
   home: () => "<diary-view></diary-view>",
@@ -42,8 +63,10 @@ function currentRoute() {
   return segment in ROUTES ? segment : "home";
 }
 
-async function applyTheme() {
+async function applyThemeAndLocale() {
   const p = await prefs.load();
+  activateFromPrefs(p);
+  applyNavLabels();
   const root = document.documentElement;
   if (p.theme === "system") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", p.theme);
@@ -71,7 +94,7 @@ async function ensureOnboarding() {
 }
 
 async function render() {
-  await applyTheme();
+  await applyThemeAndLocale();
   const ok = await ensureOnboarding();
   if (!ok && currentRoute() !== "onboarding") return;
 
@@ -98,7 +121,12 @@ async function render() {
 window.addEventListener("hashchange", () => {
   render();
 });
-window.addEventListener("chompass-prefs-changed", () => applyTheme());
+window.addEventListener("chompass-prefs-changed", () => {
+  applyThemeAndLocale().then(() => {
+    // Re-render so localized templates pick up the new locale.
+    render();
+  });
+});
 
 if (!location.hash || location.hash === "#/") location.hash = "#/home";
 maybeSeedFromUrl().then(render);

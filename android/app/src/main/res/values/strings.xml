@@ -954,7 +954,17 @@
     <string name="widget_water_label">Chompass Water</string>
     <string name="widget_water_description">See today\'s water progress at a glance.</string>
     <string name="widget_water_disabled">Enable Water Tracking in Chompass</string>
+    <string name="widget_water_tracking">Water Tracking</string>
+    <string name="widget_water_enable_short">Enable in Chompass</string>
+    <string name="widget_ml_left_format">%1$d ml left</string>
+    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
+    <string name="widget_unit_left_format">%1$s%2$s left</string>
 
+    <string name="error_invalid_json">Invalid JSON</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_system">System default</string>
     <string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string>
     <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log - turn off Adaptive Goals in Settings to keep it fixed.</string>
     <string name="onboarding_feature_snap">Snap a photo - AI logs it</string>

@@ -45,7 +45,7 @@ class CalorieAppWidget : GlanceAppWidget() {
 
         provideContent {
             GlanceTheme {
-                CalorieWidgetContent(snapshot)
+                CalorieWidgetContent(context, snapshot)
             }
         }
     }
@@ -61,7 +61,7 @@ class CalorieWidgetReceiver : GlanceAppWidgetReceiver() {
 }
 
 @Composable
-private fun CalorieWidgetContent(snapshot: WidgetSnapshot) {
+private fun CalorieWidgetContent(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     Box(
         modifier = GlanceModifier
@@ -72,15 +72,15 @@ private fun CalorieWidgetContent(snapshot: WidgetSnapshot) {
             .clickable(actionStartActivity<MainActivity>())
     ) {
         if (size.width < CalorieAppWidget.MEDIUM_SIZE.width) {
-            CalorieSmall(snapshot)
+            CalorieSmall(context, snapshot)
         } else {
-            CalorieMedium(snapshot)
+            CalorieMedium(context, snapshot)
         }
     }
 }
 
 @Composable
-private fun CalorieSmall(snapshot: WidgetSnapshot) {
+private fun CalorieSmall(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     // Content area after the outer 14dp padding; the gauge fills whatever the
     // header (~18dp) and the bottom line (~16dp) leave over.
@@ -89,7 +89,7 @@ private fun CalorieSmall(snapshot: WidgetSnapshot) {
     val gaugeW = minOf(contentW, (contentH - 44f) / 0.58f).toInt().coerceAtLeast(80)
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = "Today")
+        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = context.getString(R.string.widget_today))
         Box(
             modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
             contentAlignment = Alignment.Center
@@ -104,7 +104,7 @@ private fun CalorieSmall(snapshot: WidgetSnapshot) {
             )
         }
         Text(
-            text = "${snapshot.caloriesRemaining} kcal left",
+            text = context.getString(R.string.widget_kcal_left_format, snapshot.caloriesRemaining),
             style = TextStyle(
                 color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                 fontWeight = FontWeight.Medium,
@@ -115,7 +115,7 @@ private fun CalorieSmall(snapshot: WidgetSnapshot) {
 }
 
 @Composable
-private fun CalorieMedium(snapshot: WidgetSnapshot) {
+private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     val contentH = size.height.value - 28f
     val gaugeW = minOf(size.width.value * 0.40f, (contentH - 22f) / 0.58f).toInt().coerceAtLeast(90)
@@ -136,7 +136,7 @@ private fun CalorieMedium(snapshot: WidgetSnapshot) {
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
-                text = "${snapshot.caloriesRemaining} kcal left",
+                text = context.getString(R.string.widget_kcal_left_format, snapshot.caloriesRemaining),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,

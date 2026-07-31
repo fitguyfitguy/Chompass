@@ -35,13 +35,14 @@ object UnitFormat {
 
     fun inchesToCmRounded(inches: Int): Int = inchesToCm(inches.toDouble()).roundToInt()
 
-    /** "72.4 kg" or "159.6 lbs". */
-    fun weight(kg: Double, useMetric: Boolean): String =
-        if (useMetric) String.format(Locale.US, "%.1f kg", kg)
-        else String.format(Locale.US, "%.1f lbs", kgToLbs(kg))
+    /** "72.4 kg" or "159.6 lbs" — uses the app display locale. */
+    fun weight(kg: Double, useMetric: Boolean, locale: Locale = Locale.getDefault()): String =
+        if (useMetric) String.format(locale, "%.1f kg", kg)
+        else String.format(locale, "%.1f lbs", kgToLbs(kg))
 
     /** "18.3%" from an already-scaled percentage value. */
-    fun percent(value: Double): String = String.format(Locale.US, "%.1f%%", value)
+    fun percent(value: Double, locale: Locale = Locale.getDefault()): String =
+        String.format(locale, "%.1f%%", value)
 
     /**
      * Signed one-decimal delta with no unit: "+1.2", "-0.8", "0.0".
@@ -50,9 +51,9 @@ object UnitFormat {
      * is never shown with a misleading "+" or "-" sign. Callers append their own
      * unit, which is what keeps "+1.2 kg" and "+1.2%" from needing two helpers.
      */
-    fun signedDelta(value: Double): String {
+    fun signedDelta(value: Double, locale: Locale = Locale.getDefault()): String {
         val rounded = if (abs(value) < 0.05) 0.0 else value
         val sign = if (rounded > 0) "+" else ""
-        return String.format(Locale.US, "%s%.1f", sign, rounded)
+        return String.format(locale, "%s%.1f", sign, rounded)
     }
 }

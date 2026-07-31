@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
 import app.chompass.ui.components.FudGlassSurface
@@ -47,7 +48,7 @@ internal fun AllWeightHistorySheet(
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val fmt = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US).withZone(ZoneId.systemDefault())
+    val fmt = LocaleFormat.mediumDateZoned()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ChompassBottomSheet(
         onDismiss = onDismiss,
@@ -108,7 +109,7 @@ internal fun AllBodyFatHistorySheet(
     onDismiss: () -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val fmt = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US).withZone(ZoneId.systemDefault())
+    val fmt = LocaleFormat.mediumDateZoned()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ChompassBottomSheet(
         onDismiss = onDismiss,

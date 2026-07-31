@@ -29,6 +29,7 @@ REQUIRED_SURFACE_SUBSTRINGS = (
     "Health Connect",
     "On-device LLM",
     "Grounded entry",
+    "Full i18n",
 )
 
 ROW_RE = re.compile(

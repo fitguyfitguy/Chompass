@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.Gender
 import app.chompass.ui.components.FudGlassDialog
@@ -64,11 +65,11 @@ import java.util.Locale
 import app.chompass.models.UnitFormat
 
 private val measurementHistoryFmt: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US).withZone(ZoneId.systemDefault())
+    LocaleFormat.mediumDateZoned()
 
 private fun displayLengthCm(context: android.content.Context, cm: Double, useMetric: Boolean): String =
-    if (useMetric) String.format(Locale.US, "%.1f %s", cm, context.getString(R.string.unit_cm))
-    else String.format(Locale.US, "%.1f %s", UnitFormat.cmToInches(cm), context.getString(R.string.unit_in))
+    if (useMetric) String.format(Locale.getDefault(), "%.1f %s", cm, context.getString(R.string.unit_cm))
+    else String.format(Locale.getDefault(), "%.1f %s", UnitFormat.cmToInches(cm), context.getString(R.string.unit_in))
 
 /** Logged sites in display order, skipping any that weren't entered. */
 private fun measurementSiteList(context: android.content.Context, m: BodyMeasurement): List<Pair<String, Double>> = buildList {
@@ -84,15 +85,15 @@ private fun measurementSiteList(context: android.content.Context, m: BodyMeasure
 
 /** Derived metrics computable from this entry + profile, skipping any missing their inputs. */
 private fun derivedMetricList(context: android.content.Context, m: BodyMeasurement, gender: Gender, heightCm: Double): List<Pair<String, String>> = buildList {
-    m.waistToHipRatio?.let { add(context.getString(R.string.derived_waist_to_hip) to String.format(Locale.US, "%.2f", it)) }
-    m.waistToHeightRatio(heightCm)?.let { add(context.getString(R.string.derived_waist_to_height) to String.format(Locale.US, "%.2f", it)) }
-    m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_body_fat) to String.format(Locale.US, "%.0f%%", it)) }
+    m.waistToHipRatio?.let { add(context.getString(R.string.derived_waist_to_hip) to String.format(Locale.getDefault(), "%.2f", it)) }
+    m.waistToHeightRatio(heightCm)?.let { add(context.getString(R.string.derived_waist_to_height) to String.format(Locale.getDefault(), "%.2f", it)) }
+    m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
     m.wristFrame(gender, heightCm)?.let { add(context.getString(R.string.derived_frame) to context.getString(it.labelRes)) }
 }
 
 private fun measurementHistorySummary(context: android.content.Context, m: BodyMeasurement, gender: Gender, heightCm: Double, useMetric: Boolean): String {
     val sites = measurementSiteList(context, m).map { "${it.first} ${displayLengthCm(context, it.second, useMetric)}" }
-    val bf = m.usNavyBodyFatPercent(gender, heightCm)?.let { "BF ${String.format(Locale.US, "%.0f%%", it)}" }
+    val bf = m.usNavyBodyFatPercent(gender, heightCm)?.let { "BF ${String.format(Locale.getDefault(), "%.0f%%", it)}" }
     return (sites + listOfNotNull(bf)).joinToString(" · ")
 }
 
@@ -180,7 +181,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
     val inUnit = stringResource(R.string.unit_in)
     fun displayValue(site: BodyMeasurement.Site): String {
         val cm = latest?.value(site) ?: return notSet
-        return if (heightMetric) String.format(Locale.US, "%.0f %s", cm, cmUnit) else String.format(Locale.US, "%.0f %s", UnitFormat.cmToInches(cm), inUnit)
+        return if (heightMetric) String.format(Locale.getDefault(), "%.0f %s", cm, cmUnit) else String.format(Locale.getDefault(), "%.0f %s", UnitFormat.cmToInches(cm), inUnit)
     }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->

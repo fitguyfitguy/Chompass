@@ -4,14 +4,15 @@ import { dailyTargets } from "../lib/chompass-core/formulas.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
+import { t } from "../lib/i18n/index.js";
 
 const RANGES = [
-  { id: "1W", label: "1W", days: 7 },
-  { id: "1M", label: "1M", days: 30 },
-  { id: "3M", label: "3M", days: 90 },
-  { id: "6M", label: "6M", days: 180 },
-  { id: "1Y", label: "1Y", days: 365 },
-  { id: "All", label: "All", days: 3650 },
+  { id: "1W", labelKey: "progress.range_1w", days: 7 },
+  { id: "1M", labelKey: "progress.range_1m", days: 30 },
+  { id: "3M", labelKey: "progress.range_3m", days: 90 },
+  { id: "6M", labelKey: "progress.range_6m", days: 180 },
+  { id: "1Y", labelKey: "progress.range_1y", days: 365 },
+  { id: "All", labelKey: "progress.range_all", days: 3650 },
 ];
 
 export class ProgressView extends HTMLElement {
@@ -123,19 +124,19 @@ export class ProgressView extends HTMLElement {
     const netBf = currentBf != null && firstBf != null ? currentBf - firstBf : null;
 
     this.innerHTML = `
-      <h1 class="screen-title">Progress</h1>
-      <div class="range-pills range-pills--equal" role="tablist" aria-label="Time range">
+      <h1 class="screen-title">${t("progress.title")}</h1>
+      <div class="range-pills range-pills--equal" role="tablist" aria-label="${t("progress.title")}">
         ${RANGES.map(
           (r) =>
-            `<button type="button" class="chip${r.id === this.rangeId ? " is-active" : ""}" data-range="${r.id}">${r.label}</button>`
+            `<button type="button" class="chip${r.id === this.rangeId ? " is-active" : ""}" data-range="${r.id}">${t(r.labelKey)}</button>`
         ).join("")}
       </div>
       <div class="chart-tip" hidden data-chart-tip></div>
 
       <div class="card card--glass">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
-          <h2 class="chart-title" style="margin:0;">Weight (${weightUnit})</h2>
-          <button type="button" class="chip progress-log-btn" data-log-weight>Log weight</button>
+          <h2 class="chart-title" style="margin:0;">${t("progress.weight")} (${weightUnit})</h2>
+          <button type="button" class="chip progress-log-btn" data-log-weight>${t("progress.weight")}</button>
         </div>
         <div class="stat-badges">
           <div class="stat-badge"><strong>${fmt(currentW)}</strong>Current</div>

@@ -44,7 +44,7 @@ class WaterAppWidget : GlanceAppWidget() {
 
         provideContent {
             GlanceTheme {
-                WaterWidgetContent(snapshot)
+                WaterWidgetContent(context, snapshot)
             }
         }
     }
@@ -59,7 +59,7 @@ class WaterWidgetReceiver : GlanceAppWidgetReceiver() {
 }
 
 @Composable
-private fun WaterWidgetContent(snapshot: WidgetSnapshot) {
+private fun WaterWidgetContent(context: Context, snapshot: WidgetSnapshot) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -69,15 +69,15 @@ private fun WaterWidgetContent(snapshot: WidgetSnapshot) {
             .clickable(actionStartActivity<MainActivity>()),
     ) {
         if (snapshot.waterTrackingEnabled) {
-            WaterProgressContent(snapshot)
+            WaterProgressContent(context, snapshot)
         } else {
-            WaterDisabledContent()
+            WaterDisabledContent(context)
         }
     }
 }
 
 @Composable
-private fun WaterProgressContent(snapshot: WidgetSnapshot) {
+private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     val contentW = size.width.value - 28f
     val contentH = size.height.value - 28f
@@ -94,13 +94,13 @@ private fun WaterProgressContent(snapshot: WidgetSnapshot) {
         "${WaterAmountFormat.flOzFromMl(snapshot.waterGoalMl)} fl oz"
     }
     val remainingLabel = if (snapshot.waterUseMetric) {
-        "${snapshot.waterRemaining} ml left"
+        context.getString(R.string.widget_ml_left_format, snapshot.waterRemaining)
     } else {
-        "${WaterAmountFormat.flOzFromMl(snapshot.waterRemaining)} fl oz left"
+        context.getString(R.string.widget_fl_oz_left_format, WaterAmountFormat.flOzFromMl(snapshot.waterRemaining))
     }
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_water, label = "Water")
+        WidgetHeader(iconRes = R.drawable.ic_widget_water, label = context.getString(R.string.water))
         Box(
             modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
             contentAlignment = Alignment.Center,
@@ -126,7 +126,7 @@ private fun WaterProgressContent(snapshot: WidgetSnapshot) {
 }
 
 @Composable
-private fun WaterDisabledContent() {
+private fun WaterDisabledContent(context: Context) {
     Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
@@ -136,12 +136,12 @@ private fun WaterDisabledContent() {
             )
             Spacer(modifier = GlanceModifier.height(8.dp))
             Text(
-                text = "Water Tracking",
+                text = context.getString(R.string.widget_water_tracking),
                 style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
             )
             Spacer(modifier = GlanceModifier.height(4.dp))
             Text(
-                text = "Enable in Chompass",
+                text = context.getString(R.string.widget_water_enable_short),
                 style = TextStyle(color = WidgetTheme.secondaryTextProvider, fontSize = 12.sp),
             )
         }

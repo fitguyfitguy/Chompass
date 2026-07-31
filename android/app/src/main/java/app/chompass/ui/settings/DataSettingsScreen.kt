@@ -126,7 +126,7 @@ fun DataSettingsScreen(
             }.onFailure { t ->
                 importDiaryMessage = activityContext.getString(
                     R.string.import_diary_failed,
-                    t.localizedMessage ?: "unknown error"
+                    t.localizedMessage ?: activityContext.getString(R.string.error_unknown)
                 )
             }
         }
@@ -171,7 +171,7 @@ fun DataSettingsScreen(
             }.onFailure { t ->
                 importBodyMetricsMessage = activityContext.getString(
                     R.string.import_diary_failed,
-                    t.localizedMessage ?: "unknown error"
+                    t.localizedMessage ?: activityContext.getString(R.string.error_unknown)
                 )
             }
         }
@@ -194,7 +194,7 @@ fun DataSettingsScreen(
             }.onFailure { t ->
                 syncMessage = activityContext.getString(
                     R.string.import_sync_failed,
-                    t.localizedMessage ?: "unknown error",
+                    t.localizedMessage ?: activityContext.getString(R.string.error_unknown),
                 )
             }
         }
@@ -276,7 +276,7 @@ fun DataSettingsScreen(
                     }.onFailure { t ->
                         syncMessage = activityContext.getString(
                             R.string.export_sync_failed,
-                            t.localizedMessage ?: "unknown error",
+                            t.localizedMessage ?: activityContext.getString(R.string.error_unknown),
                         )
                     }
                 }
@@ -290,7 +290,13 @@ fun DataSettingsScreen(
                             syncMessage = result.message
                             lastSyncAt = container.prefs.lastSyncAt.first()
                         }
-                        is SyncRepository.SyncResult.Failed -> syncMessage = result.message
+                        is SyncRepository.SyncResult.Failed -> {
+                            syncMessage = when (result.message) {
+                                "WebDAV sync failed" ->
+                                    activityContext.getString(R.string.error_webdav_sync_failed)
+                                else -> result.message
+                            }
+                        }
                     }
                 }
             },
