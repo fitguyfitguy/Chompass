@@ -1307,7 +1307,7 @@
     <string name="nutrient_short_vit_e">Vit E</string>
     <string name="nutrient_short_vit_k">Vit K</string>
     <string name="nutrient_short_omega">Omega</string>
-    <string name="sort_standard">Breakfast → Lunch → Dinner</string>
+    <string name="sort_standard">Breakfast → Lunch → Dinner (latest last)</string>
     <string name="sort_latest_first">Latest Meals First</string>
     <string name="home_selected_count">%1$d selected</string>
     <string name="home_share_together">Share together</string>

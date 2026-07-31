@@ -206,6 +206,17 @@ internal data class FoodLogMealGroup(
     val totalFat: Double get() = entries.sumOf { it.fat }
 }
 
+/**
+ * Groups diary rows for the home food log.
+ *
+ * - [FoodLogSortOrder.STANDARD]: meal slots Breakfast → Lunch → Dinner → Snack → Other,
+ *   with oldest entries first inside each slot (latest meals last).
+ * - [FoodLogSortOrder.LATEST_MEALS_FIRST]: contiguous meal-type runs after sorting by
+ *   timestamp descending (newest meal group and newest items within a run first).
+ *
+ * Day entries from [app.chompass.data.FoodRepository.entriesForDate] arrive latest-first;
+ * STANDARD must re-sort within each meal so the two modes stay opposites, not mixed.
+ */
 internal fun foodLogMealGroups(
     entries: List<FoodEntry>,
     sortOrder: FoodLogSortOrder
@@ -215,6 +226,7 @@ internal fun foodLogMealGroups(
         listOf(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK, MealType.OTHER)
             .mapNotNull { meal ->
                 val mealEntries = grouped[meal].orEmpty()
+                    .sortedWith(compareBy<FoodEntry> { it.timestamp }.thenBy { it.id })
                 if (mealEntries.isEmpty()) null else FoodLogMealGroup(
                     id = "standard-${meal.name}",
                     meal = meal,
@@ -226,7 +238,9 @@ internal fun foodLogMealGroups(
 }
 
 private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
-    val sortedEntries = entries.sortedByDescending { it.timestamp }
+    val sortedEntries = entries.sortedWith(
+        compareByDescending<FoodEntry> { it.timestamp }.thenByDescending { it.id }
+    )
     val groups = mutableListOf<FoodLogMealGroup>()
     var currentMeal: MealType? = null
     val currentEntries = mutableListOf<FoodEntry>()
