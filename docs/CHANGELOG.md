@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.3.3] - 2026-07-31
+
+### Fixed
+
+- WebDAV second sync no longer fails with "conflict persisted": `If-None-Match: *` is only used when creating the remote file; updates without a usable ETag overwrite after merge (and weak `W/` ETags are normalized for `If-Match`).
+
 ## [3.3.2] - 2026-07-31
 
 ### Fixed
