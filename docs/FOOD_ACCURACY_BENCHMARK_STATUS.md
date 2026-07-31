@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **As of** | 2026-07-30 |
+| **As of** | 2026-07-31 |
 | **Harness** | [`docs/benchmarks/food_accuracy/`](benchmarks/food_accuracy/) |
 | **How-to** | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) |
 | **Grounded WIP** | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) — **not production**; UI flag off |
@@ -24,11 +24,13 @@ This note records what we have measured so far, which defaults to use, and what 
 | `data/manifests/jfb_image_text_l1.jsonl` | 50 JFB — image + meal title as user note |
 | `data/manifests/jfb_image_text_l2.jsonl` | 50 JFB — image + ingredient names as user note |
 | `data/manifests/jfb_image_text_lq.jsonl` | 50 JFB — image + vague quantity diary note (`build_image_text_lq.py`) |
+| `data/manifests/jfb_text_lq.jsonl` / `jfb_text_l1.jsonl` | 50 JFB — **text-only** Lq / L1 (`build_text_lq.py`) |
 | `manifest/jfb_hard_ids.txt` | Hard-tail IDs (never ±20% cohort + documented hard plates) |
 | `data/manifests/n5k.jsonl` | Nutrition5k overhead RGB L0 (n=50; name-only + weighed ingredients) |
 | `data/manifests/n5k_image_text_l1.jsonl` | Nutrition5k — coarse identity from top ingredients |
 | `data/manifests/n5k_image_text_l2.jsonl` | Nutrition5k — image + ingredient names |
 | `data/manifests/n5k_image_text_lq.jsonl` | Nutrition5k — image + vague quantity note (bucket + ingredients) |
+| `data/manifests/n5k_text_lq.jsonl` / `n5k_text_l1.jsonl` | 50 N5k — text-only Lq / L1 (`build_text_lq.py`) |
 | `data/manifests/acetada.jsonl` (+ `_l1` / `_l2`) | ACETADA before-meal L0/L1/L2 — **CC BY-NC**, research only |
 | `data/manifests/nvreal.jsonl` (+ `_l1` / `_l2`) | NutritionVerse-Real — needs local Kaggle extract; **CC BY-NC-SA** |
 | Metrics | `parse_ok`, WMAPE on {kcal, protein, carbs, fat}, ±20% kcal rate |
@@ -66,13 +68,14 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 11. **Cold `nofud/free` image baseline is solid.** Fresh L0 run: parse **100%**, WMAPE **41.1%**, ±20% **32%** — matches pinned Gemma (~41.8%) within noise; no content-safety fails.
 12. **No OpenRouter `gemini-3.6-flash-lite`.** Lite sibling is `google/gemini-3.5-flash-lite`; full Flash is `google/gemini-3.6-flash`.
 13. **Plate error is portion priors, not meal size.** Consensus hard vs easy JFB meals have nearly identical mean GT kcal (~395 vs ~391). Short “portion grounding” prompt rules did **not** beat compact (see [Failure modes](#failure-modes--portion-reasoning)).
-14. **DeepSeek Flash / GPT-5.6 Luna not useful for this plate slate.** DeepSeek models on OpenRouter are **text-only** (no vision). Luna is ~$1/$6 input/output — not in the cheap tier; skipped for cost.
+14. **DeepSeek Flash / GPT-5.6 Luna not useful for the plate (vision) slate.** DeepSeek models on OpenRouter are **text-only** (no vision). Luna is ~$1/$6 input/output — not in the cheap tier; skipped for cost. DeepSeek **is** competitive on text-only Lq (see finding 20).
 15b. **Native video input loses to a still image (2026-07-28).** Sending the raw Nutrition5k turntable clip directly as `video_url` (no depth extraction, model reasons over motion itself) instead of the single overhead RGB still, same free Gemma pin / `compact` prompt / 12 paired dishes: WMAPE **25.6% → 37.2%** (+11.6pp), ±20% kcal **41.7% → 33.3%** (−8.3pp), 4.2× prompt tokens, and materially worse free-tier reliability (video decode capacity 504s). See § Native video input vs still image.
 16. **Plate overestimation is a systematic, correctable per-model bias (2026-07-29).** Free re-scoring of stored predictions: 10/12 vision runs have a fitted kcal scale of 0.76–0.84 (text fits are exactly 1.000). Per-model LOO calibration buys up to **−7.5pp WMAPE / +22pp ±20%**; median-ensembling two models beats every single model (**29.4% WMAPE**, and Gemini 3.6 + gpt-4o-mini reaches **62% ±20%**); the two stack to **27.0% WMAPE / 60% ±20%** — the best plate numbers in this doc. Magnitude does not transfer across datasets, so ship a conservative per-model factor or learn it per user, not a JFB constant. See § Post-hoc calibration & ensembling.
 17. **Nothing the model emits predicts its own error (2026-07-29).** Self-consistency (median of 3 identical runs) does **not** beat one call (37.6% vs 35.9%) — the error is bias, not variance. corr(predicted `serving_size_grams`, true kcal) ≈ +0.14; corr(cross-model disagreement, actual error) = **+0.012**. Together with the 92% ask-rate finding, all model-side confidence channels are dead: chip triggers must be unconditional and calorie bands fixed-width per entry type.
 15. **The old production-prompt gap was rule verbosity, not schema size — lean production shipped (2026-07-24).** A "lean" prompt (full 28-field app schema, compact wording + one-line unit_options rule carrying the object shape, `lean_units2`) matches compact-level text macros while keeping micros/emoji/units: Flash-Lite text WMAPE **5.3%** (old production 6.9%, compact 4.8%) and image **31.25%** (old production 31.1%, compact 35.9%). The Gemma image "production is 8pp worse" finding was a Gemma artifact — on Flash-Lite the verbose image prompt was actually *better* than compact; lean keeps that win at half the prompt tokens. Bonus: the old text prompt never elicited `grams_per_unit`, so **every AI text serving unit was silently dropped by the app parser**; lean fixes this (40/41 usable vs 0). Shipped to `FoodAnalysisService` (all four entry prompts) and mirrored in `prompts.py` `production_*`. See § Lean production prompt (2026-07-24).
 18. **Micronutrient scoring is now implemented — text/FNDDS only (2026-07-29).** The harness previously discarded all 21 micronutrient fields the shipped prompts already ask for; it now scores them against real USDA FNDDS ground truth (`schema.MICRO_FIELDS`, populated by `build_fndds_manifest.py`). Headline: the model **reliably emits every micronutrient** — presence rate is **100%** across all three `FULL_JSON_SCHEMA` prompts tested (`lean_units2`, `production_text`, `fewshot_units`, pinned Gemma 26B :free, n=20-40) — confirming the previously-manual, unverified "Micros present ≥98%" note. Micro accuracy trails macro accuracy by roughly the same ratio macros/plates already show: `micro_wmape` **33-49%** vs macro `wmape` **9-42%** on the same runs (see § Micronutrient scoring below); this is a **new, harder FNDDS text subset** with ambiguous short descriptions (e.g. "Coconut milk, 244 g" — USDA's low-fat beverage definition at 76 kcal vs the model's reasonable full-fat-can assumption at 440 kcal), not directly comparable to the curated `eval_text.jsonl` (~5.7% WMAPE). **JFB and Nutrition5k have no micronutrient ground truth in their source data at all** — micro scoring on those manifests reports `n_micro=0`, not a score; deriving approximate GT via ingredient-name matching to USDA/OFF is a distinct, unstarted follow-up. See § Micronutrient scoring.
 19. **Vague quantity notes (Lq) beat image-only and meal-title notes (2026-07-30).** Paired Flash Lite matrix on shared IDs: JFB-50 Lq WMAPE **25.3%** / ±20% **52%** vs L0 **35.9%** / **40%** and L1 **33.0%** / **36%**. N5k-50: Lq **27.6%** / **34%** vs L0 **32.6%** / **24%**, L1 **29.6%** / **28%**, bucket chips **28.7%** / **32%**. Identity-only L1 is weak; **quantity language in the user note** (without exact grams) is the lever. Bucket chips help on N5k but do not beat Lq. Hard-tail JFB (10 IDs) still 0% ±20% under all three note conditions — Lq cuts hard-tail mean MAPE proxy 92%→54% but does not “solve” those plates. See § Photo-adjacent entry matrix.
+20. **Text-only hard vague-quantity (Lq) bake-off (2026-07-31).** Same JFB-50 Lq diary strings scored as typed entry (`modality=text`, no photo), 7 models + L1 control. Flash Lite text-Lq (**24.9%** / **52%**) ≈ image+Lq Flash Lite (**25.3%** / **52%**) — **the photo adds almost nothing once quantity language is present**. L1 title-only text collapses to **37.0%** / **32%**. Leader: Gemini 3.6 Flash **22.7%** / **68%**; Qwen3.5-Flash **23.2%** / **66%** (slow); DeepSeek v4 Flash **23.5%** / **62%** (cheap, text-only model finally useful). Still far from gram-rich text (~6%). Hard-tail ±20% opens under stronger models (Qwen **60%**, Gemini/DeepSeek/Claude **40%**) vs 0% under image L0/L1/Lq Flash Lite. See § Text-only vague-quantity bake-off.
 
 ---
 
@@ -716,6 +719,46 @@ JFB has **no** `mass_g`, so bucket chips are N5k-only (0/50 JFB bucket coverage)
 
 ---
 
+## Text-only vague-quantity bake-off (2026-07-31)
+
+Typed diary entry with **vague quantity language** (no exact grams, no photo) —
+the common “I typed what I ate with fuzzy amounts” path. Manifests:
+[`jfb_text_lq.jsonl`](benchmarks/food_accuracy/data/manifests/jfb_text_lq.jsonl) /
+[`jfb_text_l1.jsonl`](benchmarks/food_accuracy/data/manifests/jfb_text_l1.jsonl)
+from [`build_text_lq.py`](benchmarks/food_accuracy/build_text_lq.py) (clones of
+image Lq/L1 strings with `modality=text`). Prompt `compact`. Artifacts:
+`results/text_lq_bakeoff/` (gitignored).
+
+### JFB-50 multi-model Lq (+ L1 control)
+
+| Condition | Model | WMAPE | ±20% kcal | parse | Hard WMAPE† | Hard ±20% | mean lat | cost |
+|-----------|-------|------:|----------:|------:|------------:|----------:|---------:|-----:|
+| Text Lq | `google/gemini-3.6-flash` | **22.7%** | **68%** | 100% | 41.2% | 40% | ~4.4 s | $0.32 |
+| Text Lq | `qwen/qwen3.5-flash-02-23` | 23.2% | 66% | 100% | 40.8% | **60%** | ~27 s | $0.08 |
+| Text Lq | `deepseek/deepseek-v4-flash-0731` | 23.5% | 62% | 100% | **37.9%** | 40% | ~9.1 s | $0.014 |
+| Text Lq | `google/gemini-3.5-flash-lite` | 24.9% | 52% | 100% | 50.6% | 20% | **~0.9 s** | **$0.008** |
+| Text Lq | `google/gemma-4-26b-a4b-it:free` | 27.4% | 44% | 100% | 48.9% | 50% | ~7.8 s | $0 |
+| Text Lq | `openai/gpt-4o-mini` | 27.5% | 48% | 100% | 50.2% | 20% | ~1.3 s | $0.002 |
+| Text Lq | `anthropic/claude-3-haiku` | 28.4% | 46% | 100% | 46.8% | 40% | ~1.1 s | $0.006 |
+| Text L1 (control) | `google/gemini-3.5-flash-lite` | 37.0% | 32% | 100% | 70.6% | 10% | ~0.9 s | $0.008 |
+| *Image+Lq (prior)* | *Flash Lite* | *25.3%* | *52%* | *100%* | *54.2%* | *0%* | — | — |
+
+† Hard-tail = 10 IDs in `jfb_hard_ids.txt`; mean of per-sample macro MAPEs.
+
+**Ranking (WMAPE):** Gemini 3.6 ≥ Qwen ≈ DeepSeek ≥ Flash Lite ≥ Gemma free ≈ gpt-4o-mini ≥ Claude Haiku ≫ L1 title-only.
+
+### Takeaways
+
+- **Photo is nearly redundant given Lq text.** Flash Lite text-only Lq matches image+Lq within noise (−0.4pp WMAPE, same ±20%). Prefer prompting quantity language in typed entry; attaching a photo on top is optional for macro accuracy when the note already carries scale.
+- **Quantity language ≫ meal title** even without a photo (−12.1pp WMAPE / +20pp ±20% Flash Lite Lq vs L1).
+- **DeepSeek belongs in the text BYOK slate** — text-only model that was useless for plates lands mid-pack here, cheap.
+- **Qwen is accurate but latency-hostile** (~27 s mean); Flash Lite remains the latency/cost sweet spot.
+- Still **~4× worse than gram-rich typed text** (~6% WMAPE). Hard plates remain hard; stronger models open hard-tail ±20% but do not clear it.
+
+N5k text-Lq manifests are built (`n5k_text_lq.jsonl`) but not yet run as a second distribution.
+
+---
+
 ## Gaps / not done yet
 
 - [x] Image **prompt A/B** on pinned Gemma (`compact` vs `production_image` vs `fewshot_units`) — compact wins; longer prompts hurt
@@ -745,6 +788,7 @@ JFB has **no** `mass_g`, so bucket chips are N5k-only (0/50 JFB bucket coverage)
 - [ ] Paired N5k A/B: `compact` vs `compact_clarify_portion_grams` (exact mass)
 - [ ] Paired JFB A/B: `compact` vs `compact_clarify_portion_amounts`
 - [x] **Photo-adjacent L0/L1/Lq matrix** (2026-07-30) — see § Photo-adjacent entry matrix
+- [x] **Text-only hard vague-quantity multi-model bake-off** (2026-07-31, JFB-50) — see § Text-only vague-quantity bake-off. Optional: N5k text-Lq replicate; Flash Lite already has manifests.
 - [x] **Native video input vs still image** (2026-07-28, N5k turntable clips, free Gemma pin, n=12 paired) — video input **lost**: WMAPE 25.6%→37.2%, ±20% 41.7%→33.3%, 4.2× tokens, worse reliability. See § Native video input vs still image.
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 - [x] **Micronutrient scoring** (2026-07-29, FNDDS text, pinned Gemma) — implemented for text; presence rate **100%** on every nutrient across all `FULL_JSON_SCHEMA` prompts tested; `micro_wmape` (33-49%) trails macro `wmape` by 1.5-4×. See § Micronutrient scoring.
@@ -756,12 +800,12 @@ JFB has **no** `mass_g`, so bucket chips are N5k-only (0/50 JFB bucket coverage)
 ## Suggested next runs
 
 ```bash
-# Optional: does the plate leader (Gemini 3.6 Flash) also gain from Lq notes?
+# Optional: N5k text-only Lq (second distribution; manifests already built)
 uv run python docs/benchmarks/food_accuracy/run_eval.py \
-  --provider openrouter --model google/gemini-3.6-flash \
-  --prompt compact --sleep 3 --retries 2 \
-  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_image_text_lq.jsonl \
-  --out docs/benchmarks/food_accuracy/results/entry_matrix/jfb_lq_gemini36
+  --provider openrouter --model google/gemini-3.5-flash-lite \
+  --prompt compact --sleep 1 --retries 2 \
+  --manifest docs/benchmarks/food_accuracy/data/manifests/n5k_text_lq.jsonl \
+  --out docs/benchmarks/food_accuracy/results/text_lq_bakeoff/n5k_lq_flashlite
 
 # Exact-grams clarify vs L0 on N5k-50 (bucket already measured)
 uv run python docs/benchmarks/food_accuracy/run_eval.py \

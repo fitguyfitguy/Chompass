@@ -126,10 +126,49 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
 | `data/manifests/jfb_image_text_l1.jsonl` | 50 | Image + meal title as user note |
 | `data/manifests/jfb_image_text_l2.jsonl` | 50 | Image + ingredient names as user note |
 | `data/manifests/jfb_image_text_lq.jsonl` | 50 | Image + vague quantity note (`build_image_text_lq.py`) |
+| `data/manifests/jfb_text_lq.jsonl` | 50 | Text-only vague quantity (`build_text_lq.py`) |
+| `data/manifests/jfb_text_l1.jsonl` | 50 | Text-only meal title control |
 | `data/manifests/n5k.jsonl` | 50 recommended | Image/metadata (after `download_nutrition5k.py --limit 50`) |
 | `data/manifests/n5k_image_text_l1.jsonl` | 50 | Image + coarse identity from top ingredients |
 | `data/manifests/n5k_image_text_lq.jsonl` | 50 | Image + vague quantity note (bucket + ingredients) |
+| `data/manifests/n5k_text_lq.jsonl` | 50 | Text-only vague quantity |
 | `manifest/jfb_hard_ids.txt` | 10 | Hard-tail IDs for matrix reporting |
+
+## Text-only vague-quantity bake-off (Lq)
+
+```bash
+uv run python docs/benchmarks/food_accuracy/build_text_lq.py
+
+# Multi-model Lq (typed diary notes, no photo)
+for spec in \
+  flashlite:google/gemini-3.5-flash-lite \
+  gemini36:google/gemini-3.6-flash \
+  gpt4omini:openai/gpt-4o-mini \
+  claudehaiku:anthropic/claude-3-haiku \
+  qwen35:qwen/qwen3.5-flash-02-23 \
+  gemma:google/gemma-4-26b-a4b-it:free \
+  deepseek:deepseek/deepseek-v4-flash-0731
+do
+  tag="${spec%%:*}"; model="${spec#*:}"
+  uv run python docs/benchmarks/food_accuracy/run_eval.py \
+    --provider openrouter --model "$model" \
+    --prompt compact --sleep 1 --retries 2 \
+    --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_text_lq.jsonl \
+    --out "docs/benchmarks/food_accuracy/results/text_lq_bakeoff/jfb_lq_${tag}"
+done
+
+# L1 control (same IDs, title only)
+uv run python docs/benchmarks/food_accuracy/run_eval.py \
+  --provider openrouter --model google/gemini-3.5-flash-lite \
+  --prompt compact --sleep 1 --retries 2 \
+  --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_text_l1.jsonl \
+  --out docs/benchmarks/food_accuracy/results/text_lq_bakeoff/jfb_l1_flashlite
+
+uv run python docs/benchmarks/food_accuracy/summarize_entry_matrix.py \
+  --hard-ids docs/benchmarks/food_accuracy/manifest/jfb_hard_ids.txt \
+  --label Lq_flashlite=docs/benchmarks/food_accuracy/results/text_lq_bakeoff/jfb_lq_flashlite \
+  --label L1_flashlite=docs/benchmarks/food_accuracy/results/text_lq_bakeoff/jfb_l1_flashlite
+```
 
 ## Photo-adjacent entry matrix (L0 / L1 / Lq / bucket)
 
