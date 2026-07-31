@@ -702,8 +702,8 @@ fun HomeScreen(container: AppContainer) {
         EditFoodEntrySheet(
             entry = entry,
             preferGramsByDefault = ui.preferGramsByDefault,
-            onReprocess = { updatedNote ->
-                vm.reprocessFoodEntry(entry, updatedNote)
+            onReprocess = { updatedNote, onProgress ->
+                vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },
             onSave = { updated ->
                 vm.updateEntry(entry, updated)
@@ -748,6 +748,7 @@ fun HomeScreen(container: AppContainer) {
         EntryAnalysisOverlay(
             phase = phase,
             preview = ui.analysisPreview,
+            partial = ui.analysisPartial,
             imageBytes = ui.pendingImageBytes,
         )
     }

@@ -81,18 +81,24 @@ import app.chompass.ui.components.rememberFoodImage
  *   - Initial values come from the existing entry; save mutates it via onSave.
  * Deletion is handled by swipe-to-delete on the Home food log list.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun EditFoodEntrySheet(
     entry: FoodEntry,
     preferGramsByDefault: Boolean = false,
-    onReprocess: suspend (updatedNote: String) -> FoodAnalysis,
+    onReprocess: suspend (
+        updatedNote: String,
+        onProgress: (FoodAnalysisProgress) -> Unit,
+    ) -> FoodAnalysis,
     onSave: (FoodEntry) -> Unit,
     onDismiss: () -> Unit
 ) {
     var currentBaseEntry by remember(entry) { mutableStateOf(entry) }
     var noteText by remember(entry) { mutableStateOf(entry.customNote ?: "") }
     var isReprocessing by remember { mutableStateOf(false) }
+    var reprocessPhase by remember { mutableStateOf<EntryAnalysisPhase?>(null) }
+    var reprocessPartial by remember { mutableStateOf<app.chompass.services.ai.PartialFoodAnalysis?>(null) }
+    var changedFields by remember { mutableStateOf<List<ReprocessDiffRow>>(emptyList()) }
     // Dismissible by downward drag; only block while reprocessing (matches the
     // touch-consuming overlay below). Never permanently reject Hidden.
     val state = rememberChompassSheetState(busy = isReprocessing)
@@ -190,8 +196,31 @@ fun EditFoodEntrySheet(
         scope.launch {
             isReprocessing = true
             errorText = null
+            changedFields = emptyList()
+            reprocessPhase = EntryAnalysisPhase.Preparing
+            reprocessPartial = null
+            val before = currentBaseEntry
             try {
-                val newAnalysis = onReprocess(noteText)
+                val newAnalysis = onReprocess(noteText) { progress ->
+                    when (progress) {
+                        is FoodAnalysisProgress.Phase -> reprocessPhase = progress.phase
+                        is FoodAnalysisProgress.Partial -> {
+                            reprocessPartial = progress.partial
+                        }
+                        is FoodAnalysisProgress.Parsed -> {
+                            reprocessPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
+                                progress.analysis,
+                                streaming = false,
+                            )
+                        }
+                        is FoodAnalysisProgress.Complete -> {
+                            reprocessPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
+                                progress.analysis,
+                                streaming = false,
+                            )
+                        }
+                    }
+                }
                 currentBaseEntry = currentBaseEntry.copy(
                     name = newAnalysis.name,
                     calories = newAnalysis.calories,
@@ -210,10 +239,15 @@ fun EditFoodEntrySheet(
                 editableCarbs = newAnalysis.carbs
                 editableFat = newAnalysis.fat
                 editableMicros = newAnalysis.toMicronutrients()
+                name = newAnalysis.name
+                servingGrams = newAnalysis.servingSizeGrams
+                changedFields = buildReprocessDiff(before, currentBaseEntry)
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
                 isReprocessing = false
+                reprocessPhase = null
+                reprocessPartial = null
             }
         }
     }
@@ -479,10 +513,90 @@ fun EditFoodEntrySheet(
 
             item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        stringResource(R.string.edit_reprocess_context),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    )
+                    SheetPillCard {
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 18.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(
+                                "${currentBaseEntry.emoji ?: "🍽"}  ${currentBaseEntry.name}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                "${currentBaseEntry.calories} kcal · " +
+                                    MacroValueFormatter.withUnit(currentBaseEntry.protein) + " P · " +
+                                    MacroValueFormatter.withUnit(currentBaseEntry.carbs) + " C · " +
+                                    MacroValueFormatter.withUnit(currentBaseEntry.fat) + " F",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                            )
+                            currentBaseEntry.servingSizeGrams?.takeIf { it > 0 }?.let { grams ->
+                                Text(
+                                    stringResource(R.string.home_serving_format, grams.toInt()),
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                )
+                            }
+                        }
+                    }
+
+                    Text(
+                        stringResource(R.string.edit_reprocess_label),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        stringResource(R.string.edit_reprocess_explain),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        lineHeight = 18.sp,
+                    )
+
+                    val chipLabels = listOf(
+                        stringResource(R.string.edit_reprocess_chip_portion),
+                        stringResource(R.string.edit_reprocess_chip_larger),
+                        stringResource(R.string.edit_reprocess_chip_oil),
+                        stringResource(R.string.edit_reprocess_chip_brand),
+                        stringResource(R.string.edit_reprocess_chip_prep),
+                    )
+                    androidx.compose.foundation.layout.FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        chipLabels.forEach { label ->
+                            androidx.compose.material3.FilterChip(
+                                selected = noteText.contains(label, ignoreCase = true),
+                                enabled = !isReprocessing,
+                                onClick = {
+                                    noteText = if (noteText.isBlank()) label
+                                    else if (noteText.contains(label, ignoreCase = true)) noteText
+                                    else "$noteText, $label"
+                                },
+                                label = { Text(label, fontSize = 13.sp) },
+                                colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                                    selectedLabelColor = AppColors.Calorie,
+                                ),
+                            )
+                        }
+                    }
+
                     OutlinedTextField(
                         value = noteText,
-                        onValueChange = { noteText = it },
+                        onValueChange = {
+                            noteText = it
+                            changedFields = emptyList()
+                        },
                         enabled = !isReprocessing,
                         placeholder = {
                             Text(
@@ -493,6 +607,79 @@ fun EditFoodEntrySheet(
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                     )
+
+                    if (isReprocessing) {
+                        val phase = reprocessPhase
+                        if (phase != null && reprocessPartial?.hasAnyField == true) {
+                            ProgressiveAnalysisCard(partial = reprocessPartial!!)
+                        } else {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            ) {
+                                androidx.compose.material3.CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = AppColors.Calorie,
+                                )
+                                Text(
+                                    when (phase) {
+                                        EntryAnalysisPhase.Preparing ->
+                                            stringResource(R.string.entry_analysis_phase_preparing)
+                                        EntryAnalysisPhase.LookingUpBarcode ->
+                                            stringResource(R.string.entry_analysis_phase_looking_up_barcode)
+                                        EntryAnalysisPhase.CallingAi ->
+                                            stringResource(R.string.entry_analysis_phase_calling_ai)
+                                        EntryAnalysisPhase.Parsing ->
+                                            stringResource(R.string.entry_analysis_phase_parsing)
+                                        else -> stringResource(R.string.edit_reprocessing)
+                                    },
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                )
+                            }
+                        }
+                    }
+
+                    if (!isReprocessing && changedFields.isNotEmpty()) {
+                        SheetPillCard {
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 18.dp, vertical = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
+                                Text(
+                                    stringResource(R.string.edit_reprocess_diff_title),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AppColors.Calorie,
+                                )
+                                changedFields.forEach { row ->
+                                    Text(
+                                        stringResource(
+                                            R.string.edit_reprocess_diff_row,
+                                            row.label,
+                                            row.before,
+                                            row.after,
+                                        ),
+                                        fontSize = 13.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+                                    )
+                                }
+                                Text(
+                                    stringResource(R.string.edit_reprocess_review_hint),
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                )
+                            }
+                        }
+                    } else if (!isReprocessing && noteText.trim() == (currentBaseEntry.customNote ?: "") &&
+                        changedFields.isEmpty() && errorText == null
+                    ) {
+                        // idle
+                    }
+
                     errorText?.let {
                         Text(it, color = Color.Red, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
                     }
@@ -650,4 +837,26 @@ private fun EditFoodTimeDialog(
             onDismiss = onDismiss
         )
     }
+}
+
+internal data class ReprocessDiffRow(
+    val label: String,
+    val before: String,
+    val after: String,
+)
+
+internal fun buildReprocessDiff(before: FoodEntry, after: FoodEntry): List<ReprocessDiffRow> {
+    val rows = mutableListOf<ReprocessDiffRow>()
+    fun add(label: String, a: String, b: String) {
+        if (a != b) rows += ReprocessDiffRow(label, a, b)
+    }
+    add("Name", before.name, after.name)
+    add("Calories", "${before.calories} kcal", "${after.calories} kcal")
+    add("Protein", MacroValueFormatter.withUnit(before.protein), MacroValueFormatter.withUnit(after.protein))
+    add("Carbs", MacroValueFormatter.withUnit(before.carbs), MacroValueFormatter.withUnit(after.carbs))
+    add("Fat", MacroValueFormatter.withUnit(before.fat), MacroValueFormatter.withUnit(after.fat))
+    val beforeG = before.servingSizeGrams?.let { "${it.toInt()} g" } ?: "—"
+    val afterG = after.servingSizeGrams?.let { "${it.toInt()} g" } ?: "—"
+    add("Serving", beforeG, afterG)
+    return rows
 }

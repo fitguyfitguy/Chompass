@@ -93,6 +93,103 @@ object OpenAICompatibleClient {
         return response.text ?: throw AiError.InvalidResponse
     }
 
+    /**
+     * Streaming chat/completions. Invokes [onDelta] with each text fragment;
+     * returns the full concatenated assistant text when the stream ends.
+     * Falls back to non-streaming [analyze] when the endpoint rejects `stream`.
+     */
+    suspend fun analyzeStreaming(
+        client: OkHttpClient,
+        baseUrl: String,
+        model: String,
+        apiKey: String?,
+        prompt: String,
+        imageBytesList: List<ByteArray>,
+        provider: AIProvider,
+        maxTokens: Int,
+        onDelta: (String) -> Unit,
+    ): String {
+        val url = "$baseUrl/chat/completions"
+
+        suspend fun streamOnce(requestPrompt: String, compactRetry: Boolean): Pair<String, Boolean> {
+            val content = JSONArray().apply {
+                imageBytesList.forEach {
+                    put(
+                        JSONObject()
+                            .put("type", "image_url")
+                            .put(
+                                "image_url",
+                                JSONObject().put("url", "data:image/jpeg;base64,${Base64.getEncoder().encodeToString(it)}")
+                            )
+                    )
+                }
+                put(JSONObject().put("type", "text").put("text", requestPrompt))
+            }
+
+            val body = JSONObject()
+                .put("model", model)
+                .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", content)))
+                .put(tokenLimitParameter(provider, model), maxTokens)
+                .put("stream", true)
+            if (provider == AIProvider.OPENROUTER) {
+                body.put(
+                    "reasoning",
+                    JSONObject()
+                        .put("exclude", true)
+                        .apply { if (compactRetry) put("effort", "low") }
+                )
+            }
+
+            val builder = Request.Builder()
+                .url(url)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "text/event-stream")
+                .post(body.toString().toRequestBody(jsonMedia))
+            if (!apiKey.isNullOrEmpty()) builder.addHeader("Authorization", "Bearer $apiKey")
+            if (provider == AIProvider.OPENROUTER) {
+                builder.addHeader("HTTP-Referer", "https://codeberg.org/fitguy/chompass")
+                builder.addHeader("X-Title", "Fud AI")
+            }
+
+            val assembled = StringBuilder()
+            var finishReason: String? = null
+            val response = RetryPolicy.open { client.newCall(builder.build()) }
+            AiSse.read(response) { payload ->
+                val chunk = runCatching { Json.parseToJsonElement(payload).jsonObject }.getOrNull() ?: return@read
+                val choice = chunk["choices"]?.jsonArray?.firstOrNull()?.jsonObject ?: return@read
+                finishReason = choice["finish_reason"]?.jsonPrimitive?.contentOrNull ?: finishReason
+                val delta = choice["delta"]?.jsonObject ?: return@read
+                val piece = when (val contentNode = delta["content"]) {
+                    is JsonPrimitive -> contentNode.contentOrNull
+                    is JsonArray -> contentNode.mapNotNull {
+                        runCatching { it.jsonObject["text"]?.jsonPrimitive?.contentOrNull }.getOrNull()
+                    }.joinToString("")
+                    else -> null
+                }
+                if (!piece.isNullOrEmpty()) {
+                    assembled.append(piece)
+                    onDelta(piece)
+                }
+            }
+            return assembled.toString() to (finishReason == "length")
+        }
+
+        return try {
+            var (text, truncated) = streamOnce(prompt, compactRetry = false)
+            if (text.isBlank() || truncated) {
+                // Compact retry uses the non-streaming path so partial UI state
+                // is not polluted by a truncated first attempt.
+                return analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens)
+            }
+            text
+        } catch (e: AiError) {
+            throw e
+        } catch (_: Throwable) {
+            // Endpoint may not support streaming — fall back to the classic path.
+            analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens)
+        }
+    }
+
     private fun compactRetryPrompt(prompt: String, maxTokens: Int): String =
         "$prompt\n\nIMPORTANT: The previous response did not contain a complete answer. Return only the requested compact JSON object, with no reasoning, explanation, or markdown. Keep the complete response under $maxTokens tokens."
 
