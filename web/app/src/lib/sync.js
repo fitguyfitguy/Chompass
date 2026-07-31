@@ -201,6 +201,21 @@ export async function saveWebDavSettings(cfg) {
 }
 
 /**
+ * Basic Authorization header using UTF-8 (curl / RFC 7617).
+ * Plain `btoa(user:pass)` is Latin-1 and 401s on hosts like Hetzner Storage Box
+ * when the password contains characters such as ß or §.
+ * @param {string} username
+ * @param {string} password
+ * @returns {string}
+ */
+export function webDavBasicAuthHeader(username, password) {
+  const bytes = new TextEncoder().encode(`${username}:${password}`);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return "Basic " + btoa(binary);
+}
+
+/**
  * Pull-merge-push against the configured WebDAV URL.
  * @returns {Promise<{ ok: boolean, message: string }>}
  */
@@ -210,7 +225,7 @@ export async function syncWebDavNow() {
   if (!cfg.url || !cfg.username || !cfg.password) {
     return { ok: false, message: "Configure WebDAV URL, username, and password first" };
   }
-  const auth = "Basic " + btoa(`${cfg.username}:${cfg.password}`);
+  const auth = webDavBasicAuthHeader(cfg.username, cfg.password);
   let remoteText = null;
   let etag = cfg.etag;
   const getRes = await fetch(cfg.url, { headers: { Authorization: auth } });
