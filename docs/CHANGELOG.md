@@ -4,6 +4,8 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-07-31
+
 ### Added
 
 - Opt-in WebDAV **Sync on open** (Android + PWA): once per local day when the app is opened; off by default. Manual Sync now unchanged.
@@ -14,6 +16,11 @@ All notable changes to Chompass are documented here.
 ### Changed
 
 - Food review sheets (Android + PWA) show grouped ingredient rows: scale, edit, add, or remove constituents; meal macros follow the rows.
+- Adaptive launcher icons (API 26+) with themed backgrounds.
+
+### Fixed
+
+- Clearer error when Gemini rejects the request because the network location is unsupported (VPN / region guidance).
 
 ## [3.4.0] - 2026-07-31
 
