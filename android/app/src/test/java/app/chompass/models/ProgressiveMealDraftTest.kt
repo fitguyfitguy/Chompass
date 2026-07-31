@@ -9,7 +9,6 @@ import java.time.Instant
 import java.util.UUID
 
 class ProgressiveMealDraftTest {
-
     @Test
     fun toFoodEntries_sharesOneRecipeLogId() {
         val draft = ProgressiveMealDraft(
