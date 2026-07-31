@@ -42,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import app.chompass.R
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -106,6 +107,7 @@ fun SavedMealsSheet(
     initialTab: SavedTab? = null,
     onDismiss: () -> Unit,
     onRelogEntry: (FoodEntry) -> Unit,
+    onLogEntry: (FoodEntry) -> Unit,
     onLogRecipe: (Recipe) -> Unit = {},
     onEditRecipe: (Recipe) -> Unit = {},
     onCreateRecipe: () -> Unit = {}
@@ -244,7 +246,8 @@ fun SavedMealsSheet(
                                 isFavorite = entry.favoriteKey in favKeys,
                                 subtitle = null,
                                 imageStore = container.imageStore,
-                                onClick = { onRelogEntry(entry); onDismiss() }
+                                onClick = { onRelogEntry(entry); onDismiss() },
+                                onLog = { onLogEntry(entry); onDismiss() },
                             )
                         }
                     }
@@ -261,7 +264,8 @@ fun SavedMealsSheet(
                                 isFavorite = group.template.favoriteKey in favKeys,
                                 subtitle = stringResource(R.string.saved_meals_count_format, group.count),
                                 imageStore = container.imageStore,
-                                onClick = { onRelogEntry(group.template); onDismiss() }
+                                onClick = { onRelogEntry(group.template); onDismiss() },
+                                onLog = { onLogEntry(group.template); onDismiss() },
                             )
                         }
                     }
@@ -285,7 +289,8 @@ fun SavedMealsSheet(
                                 isFavorite = true,
                                 subtitle = null,
                                 imageStore = container.imageStore,
-                                onClick = { onRelogEntry(entry); onDismiss() }
+                                onClick = { onRelogEntry(entry); onDismiss() },
+                                onLog = { onLogEntry(entry); onDismiss() },
                             )
                         }
                     } else {
@@ -585,6 +590,7 @@ private fun SavedMealRow(
     subtitle: String?,
     imageStore: FoodImageStore,
     onClick: () -> Unit,
+    onLog: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
     val isDark = isDarkTheme()
@@ -652,6 +658,18 @@ private fun SavedMealRow(
 
         if (trailing != null) {
             trailing()
+        } else if (onLog != null) {
+            IconButton(
+                onClick = onLog,
+                modifier = Modifier.size(36.dp),
+            ) {
+                Icon(
+                    Icons.Filled.AddCircle,
+                    contentDescription = stringResource(R.string.cd_log),
+                    tint = AppColors.Calorie,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
         } else {
             Icon(
                 Icons.Filled.AddCircle,

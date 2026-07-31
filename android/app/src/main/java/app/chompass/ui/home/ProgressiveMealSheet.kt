@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -65,6 +67,7 @@ fun ProgressiveMealSheet(
     onDismiss: () -> Unit,
 ) {
     val state = rememberChompassSheetState(busy = isSaving)
+    val listState = rememberLazyListState()
     var mealMenuExpanded by remember { mutableStateOf(false) }
     val canLog = draft.items.isNotEmpty() && !isSaving
 
@@ -88,7 +91,11 @@ fun ProgressiveMealSheet(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 28.dp),
+            state = listState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .blockSheetDragAtLazyListEdges(listState)
+                .padding(bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {

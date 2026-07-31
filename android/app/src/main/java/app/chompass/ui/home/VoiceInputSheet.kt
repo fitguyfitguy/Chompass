@@ -34,8 +34,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -93,7 +93,6 @@ fun VoiceInputSheet(
     isSubmitting: Boolean = false,
 ) {
     val ctx = LocalContext.current
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
     val provider by container.prefs.selectedSpeechProvider.collectAsState(initial = SpeechProvider.NATIVE)
@@ -118,6 +117,7 @@ fun VoiceInputSheet(
     var nativeRecognitionMode by remember { mutableStateOf(NativeRecognitionMode.OFFLINE_LANGUAGE) }
     var submitted by remember { mutableStateOf(false) }
     val busy = isSubmitting || submitted
+    val sheetState = rememberChompassSheetState(busy = busy)
 
     // Internal helper: spin up a fresh native recognizer session, appending
     // to [committed] on each Final event so a long pause doesn't end the
@@ -223,9 +223,11 @@ fun VoiceInputSheet(
 
     ChompassBottomSheet(
         onDismiss = {
-            nativeJob?.cancel()
-            recorder.cancel()
-            onDismiss()
+            if (!busy) {
+                nativeJob?.cancel()
+                recorder.cancel()
+                onDismiss()
+            }
         },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,

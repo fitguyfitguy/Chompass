@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -68,6 +70,7 @@ internal fun CopyFromDaySheet(
     val groups = remember(sourceEntries) {
         foodLogMealGroups(sourceEntries, FoodLogSortOrder.STANDARD)
     }
+    val listState = rememberLazyListState()
     val targetText = if (targetDate == LocalDate.now()) "today" else targetDate.format(dateFmt)
 
     ChompassBottomSheet(
@@ -94,7 +97,11 @@ internal fun CopyFromDaySheet(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 28.dp),
+            state = listState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .blockSheetDragAtLazyListEdges(listState)
+                .padding(bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {

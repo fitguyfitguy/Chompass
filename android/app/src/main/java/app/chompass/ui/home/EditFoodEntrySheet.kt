@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
@@ -244,10 +245,8 @@ fun EditFoodEntrySheet(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .pointerInput(Unit) {
-                        detectTapGestures(onTap = { dismissKeyboard() })
-                    }
                     .padding(horizontal = 20.dp)
+                    .imePadding()
                     .padding(bottom = 28.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {

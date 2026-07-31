@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,7 +59,6 @@ fun TextInputSheet(
     isSubmitting: Boolean = false,
 ) {
     val isDark = isDarkTheme()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -74,6 +73,7 @@ fun TextInputSheet(
     var placeholderIdx by remember { mutableIntStateOf(0) }
     var submitted by remember { mutableStateOf(false) }
     val busy = isSubmitting || submitted
+    val sheetState = rememberChompassSheetState(busy = busy)
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -96,7 +96,7 @@ fun TextInputSheet(
     }
 
     ChompassBottomSheet(
-        onDismiss = onDismiss,
+        onDismiss = { if (!busy) onDismiss() },
         sheetState = sheetState,
     ) {
         Column(
@@ -110,7 +110,7 @@ fun TextInputSheet(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onDismiss) {
+                TextButton(onClick = { if (!busy) onDismiss() }) {
                     Text(
                         stringResource(R.string.action_cancel),
                         color = AppColors.Calorie,
