@@ -47,7 +47,7 @@ Chompass may contact external services only when you use a feature that requires
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
 | App update check | Installed version | Not used (manual updates via Codeberg releases) |
 
-Optional **Health Connect background sync** (off by default) only reads from Health Connect on-device on a periodic schedule; it sends nothing off the device. User-hosted WebDAV sync runs only when you tap **Sync now**.
+Optional **Health Connect background sync** (off by default) only reads from Health Connect on-device on a periodic schedule; it sends nothing off the device. User-hosted WebDAV sync runs when you tap **Sync now**, or optionally once per day when you open the app if you enable **Sync on open**.
 
 Chompass does not sell or share your health data for advertising.
 

@@ -52,6 +52,16 @@ internal suspend fun PreferencesStore.setWebDavEnabledImpl(enabled: Boolean) {
     dataStore.edit { it[Keys.WEBDAV_ENABLED] = enabled }
 }
 
+internal val PreferencesStore.webDavAutoSyncDayImpl: Flow<String?>
+    get() = dataStore.data.map { it[Keys.WEBDAV_AUTO_SYNC_DAY] }
+
+internal suspend fun PreferencesStore.setWebDavAutoSyncDayImpl(day: String?) {
+    dataStore.edit {
+        if (day.isNullOrBlank()) it.remove(Keys.WEBDAV_AUTO_SYNC_DAY)
+        else it[Keys.WEBDAV_AUTO_SYNC_DAY] = day
+    }
+}
+
 internal val PreferencesStore.lastSyncAtImpl: Flow<String?>
     get() = dataStore.data.map { it[Keys.LAST_SYNC_AT] }
 

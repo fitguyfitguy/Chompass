@@ -8,6 +8,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.data.SyncRevision
 import app.chompass.export.SyncDocument
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.util.UUID
 
@@ -59,6 +60,30 @@ class SyncRepository(
             ?: remoteParsed.parsed.raw
         val merged = SyncDocument.mergeRawDocuments(localRaw, remoteParsed.parsed.raw)
         return applyMergedDocument(json.encodeToString(JsonObject.serializer(), merged), zone)
+    }
+
+    /**
+     * Opt-in foreground auto-sync: at most once per local calendar day when WebDAV is configured.
+     * Returns null when skipped; otherwise the result of [syncNow].
+     */
+    suspend fun maybeAutoSyncWebDav(zone: ZoneId = ZoneId.systemDefault()): SyncResult? {
+        val url = normalizeWebDavUrl(prefs.webDavUrl.first())
+        val user = prefs.webDavUsername.first().trim()
+        val password = keyStore.webDavPassword().orEmpty()
+        val today = LocalDate.now(zone)
+        if (!shouldAutoSyncWebDav(
+                enabled = prefs.webDavEnabled.first(),
+                configured = url.isNotEmpty() && user.isNotEmpty() && password.isNotEmpty(),
+                today = today,
+                lastSyncAtIso = prefs.lastSyncAt.first(),
+                lastAutoSyncDayIso = prefs.webDavAutoSyncDay.first(),
+                zone = zone,
+            )
+        ) {
+            return null
+        }
+        prefs.setWebDavAutoSyncDay(today.toString())
+        return syncNow(zone)
     }
 
     suspend fun syncNow(zone: ZoneId = ZoneId.systemDefault()): SyncResult {

@@ -108,7 +108,10 @@ internal object Keys {
         val SYNC_REVISIONS = stringPreferencesKey("syncRevisions")
         val WEBDAV_URL = stringPreferencesKey("webDavUrl")
         val WEBDAV_USERNAME = stringPreferencesKey("webDavUsername")
+        /** Opt-in: auto WebDAV sync once per day on app open. */
         val WEBDAV_ENABLED = booleanPreferencesKey("webDavEnabled")
+        /** Local calendar day (yyyy-MM-dd) of the last auto-sync attempt. */
+        val WEBDAV_AUTO_SYNC_DAY = stringPreferencesKey("webDavAutoSyncDay")
         val LAST_SYNC_AT = stringPreferencesKey("lastSyncAt")
         val LAST_SYNC_ETAG = stringPreferencesKey("lastSyncEtag")
 }

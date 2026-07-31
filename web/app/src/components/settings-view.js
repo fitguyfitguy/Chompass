@@ -804,6 +804,10 @@ export class SettingsView extends HTMLElement {
               <input id="webdav-pass" name="password" type="password" autocomplete="current-password" value="${cfg.password.replace(/"/g, "&quot;")}" />
             </div>
           </div>
+          <label class="field" style="display:flex;align-items:center;gap:0.6rem;margin-top:0.75rem;">
+            <input id="webdav-auto" name="autoSync" type="checkbox" ${cfg.autoSync ? "checked" : ""} />
+            <span>Sync on open <span style="color:var(--muted);font-size:0.85rem;">(once a day; off by default)</span></span>
+          </label>
           <div class="btn-row">
             <button class="btn" id="save-webdav" type="submit">Save WebDAV</button>
             <button class="btn btn--ghost" id="sync-now" type="button">Sync now</button>
@@ -843,6 +847,8 @@ export class SettingsView extends HTMLElement {
         password: String(fd.get("password") ?? ""),
         etag: cfg.etag,
         lastSyncAt: cfg.lastSyncAt,
+        autoSync: Boolean(fd.get("autoSync")),
+        autoSyncDay: cfg.autoSyncDay,
       });
       const saved = await loadWebDavSettings();
       const urlInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#webdav-url"));

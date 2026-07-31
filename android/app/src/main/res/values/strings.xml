@@ -859,6 +859,8 @@
     <string name="settings_webdav_username">Username</string>
     <string name="settings_webdav_password">Password</string>
     <string name="settings_webdav_save">Save WebDAV settings</string>
+    <string name="settings_webdav_auto_sync">Sync on open</string>
+    <string name="settings_webdav_auto_sync_desc">Once a day when you open the app, if WebDAV is configured. Off by default. Manual Sync now still works anytime.</string>
     <string name="export_sync_title">Export sync JSON</string>
     <string name="import_sync_title">Import sync JSON</string>
     <string name="settings_sync_now">Sync now</string>

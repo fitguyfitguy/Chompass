@@ -120,6 +120,8 @@ open class MainActivity : ComponentActivity() {
             // Pull any new external weight / body-fat readings (e.g. a Withings scale)
             // from Health Connect into the app on every foreground (issue #91).
             container.syncHealthConnectReads()
+            // Opt-in WebDAV: at most once per local day on open (manual Sync now always available).
+            container.syncRepository.maybeAutoSyncWebDav()
             foregroundSyncJob = null
         }
     }

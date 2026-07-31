@@ -6,6 +6,7 @@ import {
   webDavBasicAuthHeader,
   webDavPutPreconditionHeaders,
   normalizeEtagForIfMatch,
+  shouldAutoSyncWebDav,
 } from "../sync.js";
 
 test("normalizeWebDavUrl adds https when scheme missing", () => {
@@ -53,4 +54,47 @@ test("webDavPutPreconditionHeaders create-only only when notFound", () => {
 test("normalizeEtagForIfMatch strips weak prefix", () => {
   assert.equal(normalizeEtagForIfMatch('W/"x"'), '"x"');
   assert.equal(normalizeEtagForIfMatch('"x"'), '"x"');
+});
+
+test("shouldAutoSyncWebDav is once per day and opt-in", () => {
+  assert.equal(
+    shouldAutoSyncWebDav({
+      enabled: false,
+      configured: true,
+      today: "2026-07-31",
+      lastSyncAt: null,
+      lastAutoSyncDay: null,
+    }),
+    false,
+  );
+  assert.equal(
+    shouldAutoSyncWebDav({
+      enabled: true,
+      configured: true,
+      today: "2026-07-31",
+      lastSyncAt: null,
+      lastAutoSyncDay: null,
+    }),
+    true,
+  );
+  assert.equal(
+    shouldAutoSyncWebDav({
+      enabled: true,
+      configured: true,
+      today: "2026-07-31",
+      lastSyncAt: null,
+      lastAutoSyncDay: "2026-07-31",
+    }),
+    false,
+  );
+  assert.equal(
+    shouldAutoSyncWebDav({
+      enabled: true,
+      configured: true,
+      today: "2026-07-31",
+      lastSyncAt: "2026-07-31T08:00:00.000Z",
+      lastAutoSyncDay: null,
+    }),
+    false,
+  );
 });

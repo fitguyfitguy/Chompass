@@ -311,7 +311,7 @@ export const profile = {
  * @property {string} [uiLang] UI locale id from locales.json (empty = auto-detect browser)
  * @property {string} [progressRangeId] Progress tab time range id (1W…All)
  * @property {Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>} [syncRevisions]
- * @property {{ url?: string, username?: string, password?: string, etag?: string|null, lastSyncAt?: string|null }} [webdav]
+ * @property {{ url?: string, username?: string, password?: string, etag?: string|null, lastSyncAt?: string|null, autoSync?: boolean, autoSyncDay?: string|null }} [webdav]
  */
 
 export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({

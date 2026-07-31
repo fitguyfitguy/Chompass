@@ -21,7 +21,7 @@ For formula / wire-format correctness (not feature lists), see:
 | Copy day / meal share | shared | `MealShare.kt` | `meal-share.js` | Native `chompass://`; PWA `#/add-meal?d=` |
 | Diary JSON export/import 1.1 | shared | `export/Diary*` | `diary-format.js` | Contract: `contracts/diary-1.1.schema.json` |
 | Body-metrics JSON 1.0 | shared | `export/BodyMetrics*` | `body-metrics-format.js` | Contract: `contracts/body-metrics-1.0.schema.json` |
-| User-hosted sync 1.0 (WebDAV / sync JSON) | shared | `sync/SyncRepository`, `export/SyncDocument` | `sync.js`, `chompass-core/sync-*.js` | Contract: `contracts/sync-1.0.schema.json`; manual Sync now only; excludes API keys and food photos |
+| User-hosted sync 1.0 (WebDAV / sync JSON) | shared | `sync/SyncRepository`, `export/SyncDocument` | `sync.js`, `chompass-core/sync-*.js` | Contract: `contracts/sync-1.0.schema.json`; manual Sync now + opt-in once-per-day on open; excludes API keys and food photos |
 | Deterministic goal formulas | shared | `UserProfile` + services | `chompass-core/formulas.js` | Goldens: `testdata/parity/formulas-expected.json`; custom macro pins honored |
 | AI Coach (BYOK cloud) | shared | coach + AI services | `lib/ai/` | Overlapping provider/model defaults: `testdata/parity/ai-provider-defaults.json` (Gemini / Anthropic Haiku / OpenAI mini); goal-prompt formula lines: `goal-formula-prompt-fragments.json` |
 | Health Connect | android-only | HC services | — | Measured TDEE path not on web |
