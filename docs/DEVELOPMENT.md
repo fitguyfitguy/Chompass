@@ -145,6 +145,12 @@ Chompass uses original launcher and splash artwork (distinct from Fud AI). Regen
 uv run --with pillow python scripts/generate_icons.py
 ```
 
+That script writes:
+
+- Density `mipmap-*` PNGs (legacy pre-masked fallbacks) and splash `ic_logo*` drawables
+- Adaptive launcher layers: `drawable-nodpi/ic_launcher_foreground.png`, `ic_launcher_monochrome.png`, per-theme `drawable/ic_launcher_background_*.xml`, and `mipmap-anydpi-v26/ic_launcher_*.xml` (system icon shape + Material You themed icons)
+- PWA / F-Droid / website store icons (still pre-shaped squircles)
+
 Edit `scripts/chompass_icon_master.png` before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
 ## On-device LLM smoke test (debug only)

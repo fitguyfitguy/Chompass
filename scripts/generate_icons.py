@@ -21,6 +21,11 @@ DENSITIES = {
     "mipmap-xxxhdpi": 192,
 }
 
+# Adaptive icon layers are 108dp; xxxhdpi (4x) → 432px. Safe zone is the
+# inner ~66% so OEM masks (circle / squircle / teardrop / …) keep the mark.
+ADAPTIVE_PX = 432
+SAFE_ZONE_RATIO = 0.66
+
 # Matches AppThemeColor in Color.kt: (suffix, start_rgb, end_rgb, ic_logo_name or None)
 # Unsuffixed theme is the default brand (teal), same as AppThemeColor.TEAL / PWA / website.
 THEMES: list[tuple[str, tuple[int, int, int], tuple[int, int, int], str | None]] = [
@@ -49,6 +54,10 @@ LOGO_SIZE = 512
 
 def lerp(a: int, b: int, t: float) -> int:
     return int(round(a + (b - a) * t))
+
+
+def rgb_hex(color: tuple[int, int, int]) -> str:
+    return f"#{color[0]:02X}{color[1]:02X}{color[2]:02X}"
 
 
 def make_gradient(size: int, start: tuple[int, int, int], end: tuple[int, int, int]) -> Image.Image:
@@ -181,6 +190,82 @@ def compose_maskable(
     return out
 
 
+def compose_adaptive_foreground(
+    size: int,
+    logo_mask: Image.Image,
+    content_ratio: float = SAFE_ZONE_RATIO,
+) -> Image.Image:
+    """White logo on transparent canvas, inset to the adaptive safe zone."""
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    content = max(1, int(round(size * content_ratio)))
+    logo = logo_mask.resize((content, content), Image.Resampling.LANCZOS)
+    white = Image.new("RGBA", (content, content), (255, 255, 255, 255))
+    layer = Image.new("RGBA", (content, content), (0, 0, 0, 0))
+    layer.paste(white, mask=logo)
+    offset = (size - content) // 2
+    out.alpha_composite(layer, (offset, offset))
+    return out
+
+
+def background_drawable_name(suffix: str) -> str:
+    if not suffix:
+        return "ic_launcher_background"
+    return f"ic_launcher_background{suffix}"
+
+
+def write_gradient_background_xml(
+    path: Path,
+    start: tuple[int, int, int],
+    end: tuple[int, int, int],
+) -> None:
+    # angle 270 = top → bottom, matching make_gradient().
+    path.write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<shape xmlns:android="http://schemas.android.com/apk/res/android"\n'
+        '    android:shape="rectangle">\n'
+        "    <gradient\n"
+        '        android:type="linear"\n'
+        '        android:angle="270"\n'
+        f'        android:startColor="{rgb_hex(start)}"\n'
+        f'        android:endColor="{rgb_hex(end)}" />\n'
+        "</shape>\n",
+        encoding="utf-8",
+    )
+
+
+def write_adaptive_icon_xml(path: Path, background_name: str) -> None:
+    path.write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+        f'    <background android:drawable="@drawable/{background_name}" />\n'
+        '    <foreground android:drawable="@drawable/ic_launcher_foreground" />\n'
+        '    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />\n'
+        "</adaptive-icon>\n",
+        encoding="utf-8",
+    )
+
+
+def write_adaptive_icons(logo_mask: Image.Image) -> None:
+    """Emit adaptive layers + anydpi-v26 XML so the system icon mask applies."""
+    drawable = RES / "drawable"
+    drawable.mkdir(parents=True, exist_ok=True)
+    nodpi = RES / "drawable-nodpi"
+    nodpi.mkdir(parents=True, exist_ok=True)
+    anydpi = RES / "mipmap-anydpi-v26"
+    anydpi.mkdir(parents=True, exist_ok=True)
+
+    foreground = compose_adaptive_foreground(ADAPTIVE_PX, logo_mask)
+    foreground.save(nodpi / "ic_launcher_foreground.png", optimize=True)
+    # Same silhouette; Android themed icons tint via the alpha channel.
+    foreground.save(nodpi / "ic_launcher_monochrome.png", optimize=True)
+
+    for suffix, start, end, _logo_name in THEMES:
+        bg_name = background_drawable_name(suffix)
+        write_gradient_background_xml(drawable / f"{bg_name}.xml", start, end)
+        base = "ic_launcher" + suffix
+        write_adaptive_icon_xml(anydpi / f"{base}.xml", bg_name)
+
+
 def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
     """Write PWA / store icons with transparent corners (no white canvas padding).
 
@@ -243,15 +328,18 @@ def main() -> None:
         for folder, px in DENSITIES.items():
             out_dir = RES / folder
             out_dir.mkdir(parents=True, exist_ok=True)
+            # Legacy density PNGs (pre-masked) remain as fallbacks; API 26+
+            # prefers mipmap-anydpi-v26 adaptive XML written below.
             square = compose_icon(px, rounded_mask, logo_mask, start, end)
             round_icon = make_round(square)
             square.save(out_dir / f"{base}.png", optimize=True)
             round_icon.save(out_dir / f"{base}_round.png", optimize=True)
 
+    write_adaptive_icons(logo_mask)
     write_pwa_icons(rounded_mask, logo_mask)
     print(
         f"Generated icons for {len(THEMES)} themes across {len(DENSITIES)} densities "
-        f"+ PWA icons in {PWA_ICONS.relative_to(ROOT)}."
+        f"+ adaptive anydpi-v26 + PWA icons in {PWA_ICONS.relative_to(ROOT)}."
     )
 
 
