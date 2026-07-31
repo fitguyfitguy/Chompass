@@ -1,0 +1,1 @@
+• WebDAV sync: UTF-8 Basic auth so non-ASCII passwords (e.g. ß, §) work with Storage Box and similar hosts
