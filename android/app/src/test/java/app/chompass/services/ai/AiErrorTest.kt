@@ -53,7 +53,40 @@ class AiErrorTest {
     }
 
     @Test
+    fun locationUnsupportedOn400ReturnsGuidance() {
+        assertEquals(
+            locationUnsupported,
+            friendlyMessage(400, "User location is not supported for the API use.")
+        )
+    }
+
+    @Test
+    fun locationUnsupportedFailedPreconditionReturnsGuidance() {
+        assertEquals(
+            locationUnsupported,
+            friendlyMessage(
+                400,
+                "FAILED_PRECONDITION: User location is not supported for the API use."
+            )
+        )
+    }
+
+    @Test
+    fun freeTierCountryRestrictionReturnsGuidance() {
+        assertEquals(
+            locationUnsupported,
+            friendlyMessage(
+                400,
+                "Gemini API free tier is not available in your country. Please enable billing on your project in Google AI Studio."
+            )
+        )
+    }
+
+    @Test
     fun unmappedStatusReturnsRawMessage() {
         assertEquals("Internal error", friendlyMessage(500, "Internal error"))
     }
+
+    private val locationUnsupported =
+        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit — datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
 }

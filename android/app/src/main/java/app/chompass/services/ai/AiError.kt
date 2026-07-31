@@ -14,17 +14,26 @@ sealed class AiError(message: String) : Exception(message) {
 
 internal fun friendlyMessage(status: Int, raw: String): String {
     val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."
+    val locationUnsupported =
+        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit — datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
     val hasKeyInvalidMarker =
         raw.contains("api key not valid", ignoreCase = true) ||
             raw.contains("api_key_invalid", ignoreCase = true) ||
             raw.contains("api key expired", ignoreCase = true) ||
             raw.contains("api_key_expired", ignoreCase = true)
+    val hasLocationUnsupportedMarker =
+        raw.contains("location is not supported", ignoreCase = true) ||
+            raw.contains("not available in your country", ignoreCase = true)
 
     return when (status) {
         503, 529 -> "The AI provider is overloaded right now. We retried a few times — please try again in a minute, or switch to a different provider/model in Settings → AI Provider."
         429 -> "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider."
-        400 -> if (hasKeyInvalidMarker) keyRejected else raw
+        400 -> when {
+            hasKeyInvalidMarker -> keyRejected
+            hasLocationUnsupportedMarker -> locationUnsupported
+            else -> raw
+        }
         401, 403 -> keyRejected
-        else -> raw
+        else -> if (hasLocationUnsupportedMarker) locationUnsupported else raw
     }
 }
