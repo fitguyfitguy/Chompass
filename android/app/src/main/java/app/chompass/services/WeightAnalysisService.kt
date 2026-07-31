@@ -97,7 +97,7 @@ object AdaptiveGoalService {
                 profile = profile,
                 changed = false,
                 updatedCalories = null,
-                message = "Adaptive Goals is on. It needs at least $MINIMUM_FOOD_DAYS logged food days and $MINIMUM_WEIGHT_ENTRIES recent weight entries — or Health Connect energy data — before making a correction."
+                message = "Adaptive Goals is on. It needs at least $MINIMUM_FOOD_DAYS logged food days and $MINIMUM_WEIGHT_ENTRIES recent weight entries, or Health Connect energy data, before making a correction."
             )
         }
 

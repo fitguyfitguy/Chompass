@@ -140,7 +140,7 @@
     <string name="ai_provider_ollama">Ollama (Local)</string>
     <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
     <string name="ai_provider_on_device">On-Device (Private)</string>
-    <string name="ai_provider_on_device_subtitle">Private and offline — less accurate than cloud AI; ~2–4 GB download</string>
+    <string name="ai_provider_on_device_subtitle">Private and offline. Less accurate than cloud AI; ~2-4 GB download</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="ai_key_placeholder_gemini">AIza...</string>
@@ -248,7 +248,7 @@
     <string name="onboarding_yes">Yes</string>
     <string name="onboarding_no">No</string>
     <string name="onboarding_body_fat_ranges">Common ranges: Men 10-25%, Women 18-35%</string>
-    <string name="onboarding_body_fat_no_worries">No worries! We\'ll use a standard formula\nbased on your height, weight, and age.</string>
+    <string name="onboarding_body_fat_no_worries">That\'s fine. We\'ll use a standard formula\nbased on your height, weight, and age.</string>
     <string name="onboarding_goal_optional">Goal (optional)</string>
     <string name="onboarding_goal_set_later">You can set this later in Settings.</string>
     <string name="progress_metric_weight">Weight</string>
@@ -306,7 +306,7 @@
     <string name="onboarding_api_key_empty">Paste an API key first</string>
     <string name="onboarding_api_key_network">Network error. Check your connection and try again.</string>
     <string name="onboarding_api_key_rejected">That API key was rejected. Create a new key at AI Studio and paste it again.</string>
-    <string name="onboarding_api_key_non_gemini_ok">Ready — quick test is Gemini-only</string>
+    <string name="onboarding_api_key_non_gemini_ok">Ready. Quick test is Gemini-only</string>
 
     <string name="onboarding_building_calories">Calories</string>
     <string name="onboarding_building_carbs">Carbs</string>
@@ -403,7 +403,7 @@
     <string name="entry_analysis_phase_searching_usda">Looking up USDA foods…</string>
     <string name="entry_analysis_phase_resolving">Resolving nutrients…</string>
     <string name="grounded_entry_title">Grounded entry</string>
-    <string name="grounded_entry_subtitle">Describe and/or photograph a meal. Nutrients come from USDA, Open Food Facts, or your confirmed history — not free-form guesses.</string>
+    <string name="grounded_entry_subtitle">Describe and/or photograph a meal. Nutrients come from USDA, Open Food Facts, or your confirmed history, not free-form guesses.</string>
     <string name="grounded_entry_placeholder">e.g. 2 scrambled eggs and a banana</string>
     <string name="grounded_entry_add_photo">Add photo</string>
     <string name="grounded_entry_analyze">Ground nutrients</string>
@@ -422,7 +422,7 @@
     <string name="grounding_badge_history">Grounded · Your history</string>
     <string name="grounding_badge_label">Grounded · Label</string>
     <string name="grounding_badge_estimate">Estimate · not database-matched</string>
-    <string name="grounding_confidence_summary">Confidence — identity %1$d%% · portion %2$d%% · source %3$d%%</string>
+    <string name="grounding_confidence_summary">Confidence: identity %1$d%% · portion %2$d%% · source %3$d%%</string>
     <string name="grounding_validation_notes">Notes: %1$s</string>
     <string name="grounded_on_device_unavailable">Grounded entry needs a cloud AI provider. On-device models use Photo/Note instead.</string>
     <string name="grounded_review_unit">Unit</string>
@@ -431,7 +431,7 @@
     <string name="entry_analysis_field_pending">Serving size pending…</string>
     <string name="entry_analysis_micros_found">%d more nutrients found</string>
     <string name="entry_analysis_units_found">Serving units found</string>
-    <string name="entry_analysis_streaming_hint">Values appear as the AI responds — you can review them before logging.</string>
+    <string name="entry_analysis_streaming_hint">Values appear as the AI responds. You can review them before logging.</string>
     <string name="home_fiber_format">Fiber: %1$.1fg</string>
     <string name="home_sugar_format">Sugar: %1$.1fg</string>
     <string name="home_sat_fat_format">Sat fat: %1$.1fg</string>
@@ -523,7 +523,7 @@
     <string name="context_note_weight_unit">g</string>
 
     <!-- In-app camera scale tip -->
-    <string name="camera_scale_tip_message">Tip: include a fork, hand, or coin next to your food — it helps estimate portion size.</string>
+    <string name="camera_scale_tip_message">Tip: include a fork, hand, or coin next to your food. It helps estimate portion size.</string>
     <string name="camera_scale_tip_dismiss">Got it</string>
 
     <!-- Multi-photo capture sheet -->
@@ -789,15 +789,15 @@
     <string name="settings_on_device_model_not_downloaded">Not downloaded</string>
     <string name="settings_on_device_accuracy_footer">On-device models run locally for privacy. They are much smaller than cloud models (Gemini, GPT, Claude, etc.) and often misread portions, brand names, and photos. Enable Fallback Provider so a cloud model can retry when on-device fails.</string>
     <string name="settings_gemini_google_search">Google Search grounding</string>
-    <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this — on Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
+    <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this. On Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
     <string name="settings_portion_clarify">Portion size check</string>
     <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction (rescale without another AI call) plus optional size chips (small/regular/large/restaurant-size) that re-analyze with your answer.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>
     <string name="settings_meal_constituents_footer">When enabled, the AI may split composite meals into editable ingredients with grams and units. Works best with stronger cloud models; turn off for cheaper or smaller models if results look inconsistent.</string>
-    <string name="settings_meal_constituents_footer_on_device">Unavailable for on-device Gemma — ingredient breakdown needs a stronger model. Switch to a cloud provider to enable this.</string>
-    <string name="on_device_model_privacy_notice">Runs entirely on this device — nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
-    <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or non-Tensor hardware — haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
-    <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads — especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>
+    <string name="settings_meal_constituents_footer_on_device">Unavailable for on-device Gemma: ingredient breakdown needs a stronger model. Switch to a cloud provider to enable this.</string>
+    <string name="on_device_model_privacy_notice">Runs entirely on this device. Nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
+    <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices, especially lower-tier or non-Tensor hardware, haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
+    <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads, especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>
     <string name="on_device_model_e4b_notice">Larger and slower than E2B, but may give better food descriptions. Photo analysis runs a CPU/GPU split for stability, so it may be noticeably slower than text-only. Pick E2B in Settings → Model if you prefer faster responses.</string>
     <string name="on_device_model_storage_short">Not enough free storage. Need at least %1$s free (have %2$s).</string>
     <string name="on_device_model_wifi_only">Download over Wi-Fi only</string>
@@ -805,8 +805,8 @@
     <string name="on_device_model_downloading">Downloading… %1$d%%</string>
     <string name="on_device_model_verifying">Verifying download…</string>
     <string name="on_device_model_ready">Downloaded and ready.</string>
-    <string name="on_device_model_loaded">Model loaded — ready for instant use.</string>
-    <string name="on_device_model_not_loaded">Not loaded — first request after app start may take up to a minute.</string>
+    <string name="on_device_model_loaded">Model loaded. Ready to use.</string>
+    <string name="on_device_model_not_loaded">Not loaded. First request after app start may take up to a minute.</string>
     <string name="on_device_model_unload">Unload model (frees memory)</string>
     <string name="on_device_model_delete">Delete downloaded model</string>
     <string name="on_device_model_retry">Retry download</string>
@@ -1113,7 +1113,7 @@
     <string name="home_take_second_shot">Take the second shot</string>
     <string name="edit_reprocess_section">Ask AI to correct</string>
     <string name="edit_reprocess_label">What changed?</string>
-    <string name="edit_reprocess_hint">Describe the correction — e.g. large bowl, cooked in butter, oat milk instead of dairy</string>
+    <string name="edit_reprocess_hint">Describe the correction, e.g. large bowl, cooked in butter, oat milk instead of dairy</string>
     <string name="edit_reprocess_explain">AI will recalculate name, serving, calories, and macros from your note. Review the changes, then tap Save.</string>
     <string name="edit_reprocess_context">Current entry</string>
     <string name="edit_reprocess_chip_portion">Smaller portion</string>
@@ -1125,7 +1125,7 @@
     <string name="edit_reprocessing">Correcting…</string>
     <string name="edit_reprocessing_failed">Correction failed</string>
     <string name="edit_reprocess_diff_title">What changed</string>
-    <string name="edit_reprocess_diff_unchanged">No fields changed — adjust your note and try again.</string>
+    <string name="edit_reprocess_diff_unchanged">No fields changed. Adjust your note and try again.</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_review_hint">Review the updated values above, then tap Save to keep them.</string>
     <string name="section_date_time">Date &amp; Time</string>
@@ -1249,7 +1249,7 @@
     <string name="settings_calc_katch_used">Used automatically when you\'ve entered a body fat %. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = weight × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Activity-multiplier method</string>
-    <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. Moderate uses 1.465 — between FAO/WHO light (1.375) and moderate (1.55) — for desk-active users who exercise a few times per week. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>
+    <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. Moderate uses 1.465 (between FAO/WHO light 1.375 and moderate 1.55) for desk-active users who exercise a few times per week. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>
     <string name="settings_calc_tdee_formula">Sedentary: 1.2 · Light: 1.375 · Moderate: 1.465 · Active: 1.55 · Very Active: 1.725 · Extra Active: 1.9</string>
     <string name="settings_calc_sec_home_gauge">Home calorie gauge</string>
     <string name="settings_calc_home_gauge_name">Active burn on the home ring</string>
@@ -1268,31 +1268,31 @@
     <string name="settings_calc_forecast_used">Progress charts and goal ETA use your recent food logs and weigh-ins (up to 90 days). When you log on fewer than half the days in the window, intake is averaged across calendar days so occasional big-log days do not inflate the forecast. Otherwise intake is averaged across logged days only. Observed weight trend uses a robust median-slope (Theil–Sen) fit on scale entries.</string>
     <string name="settings_calc_forecast_formula">predicted kg/week = (avgDailyCalories − TDEE) × 7 ÷ 7,700\nobserved kg/week = Theil–Sen slope × 7\nsparse logging: avg intake ÷ calendar days when logged days &lt; 50%% of window</string>
     <string name="settings_calc_adaptive_name">Adaptive Goals (weekly)</string>
-    <string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins — or Health Connect energy data.</string>
+    <string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins, or Health Connect energy data.</string>
     <string name="settings_calc_adaptive_formula">adjustment = (targetWeeklyChange − observedWeeklyChange) × 7,700 ÷ 7\nclamped to ±150 kcal/day</string>
     <string name="settings_calc_sec_body">Body composition estimates</string>
     <string name="settings_calc_body_name">Tape-measure derived metrics</string>
-    <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are field estimates for coaching context — they do not override BMR unless you separately enter a body-fat percentage on your profile.</string>
+    <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are rough tape-measure estimates. They do not override BMR unless you separately enter a body-fat percentage on your profile.</string>
     <string name="settings_calc_body_formula">Waist-to-hip = waist ÷ hips\nWaist-to-height = waist ÷ height\nUS Navy %BF: sex-specific log equations (neck, waist, hips, height)</string>
     <string name="settings_not_medical_title">Not medical advice</string>
-    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Predictive equations carry inherent error (typically ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
+    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Formula estimates can be off (often around ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
     <string name="settings_safety_medical">Safety &amp; Medical</string>
-    <string name="settings_safety_summary">Friendly guidance before making major changes</string>
+    <string name="settings_safety_summary">Read this before making major diet changes</string>
     <string name="settings_safety_open">View</string>
     <string name="settings_safety_hide">Hide</string>
-    <string name="settings_safety_title">Safety first</string>
-    <string name="settings_safety_body">Chompass can support awareness and habit building, but it is not a medical device and it is not a replacement for care from a doctor, therapist, or dietitian.</string>
-    <string name="settings_safety_consult">If you are planning major diet or body-composition changes, check in with a qualified clinician first so your plan fits your health history.</string>
+    <string name="settings_safety_title">Safety</string>
+    <string name="settings_safety_body">Chompass helps you track food and weight, but it is not a medical device and it is not a replacement for care from a doctor, therapist, or dietitian.</string>
+    <string name="settings_safety_consult">If you are planning major diet or body-composition changes, talk to a doctor or dietitian first so your plan fits your health history.</string>
     <string name="settings_safety_ed">If you have a current or past eating disorder, or tracking starts increasing anxiety around food or body image, pause app use and speak with your care team.</string>
     <string name="settings_safety_low_bf">Low body-fat caution: staying very lean for long periods can carry risk. In women, very low body fat can affect hormonal and menstrual health. In men, very low body fat can affect hormones, mood, recovery, and performance.</string>
     <string name="settings_safety_escalate">If you notice fatigue, dizziness, sleep disruption, mood changes, menstrual changes, or reduced libido, get medical advice promptly.</string>
-    <string name="onboarding_safety_title">Friendly safety notice</string>
+    <string name="onboarding_safety_title">Safety notice</string>
     <string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
     <string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string>
-    <string name="onboarding_safety_not_medical">This is not medical advice. Predictive equations carry inherent error. Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, or are under 18.</string>
+    <string name="onboarding_safety_not_medical">This is not medical advice. Formula estimates can be off. Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, or are under 18.</string>
     <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
     <string name="onboarding_accuracy_title">Accuracy disclaimer</string>
-    <string name="onboarding_accuracy_body">Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only — not medical facts. Verify important numbers yourself.</string>
+    <string name="onboarding_accuracy_body">Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only, not medical facts. Verify important numbers yourself.</string>
     <string name="settings_accuracy_title">Accuracy of estimates</string>
     <string name="settings_accuracy_body">Photo food estimates and vague portion labels are often wrong. Suggestions from the app and especially from AI models are not medical facts.</string>
     <string name="settings_waist_cm_format">Waist %1$.0f cm</string>

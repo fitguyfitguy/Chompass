@@ -102,7 +102,7 @@ export function progressiveCardHtml(partial) {
       }
       ${
         partial.streaming
-          ? `<div class="analyze-partial__hint">Values appear as the AI responds — review before logging.</div>`
+          ? `<div class="analyze-partial__hint">Values appear as the AI responds. Review them before logging.</div>`
           : ""
       }
     </div>

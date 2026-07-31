@@ -700,7 +700,7 @@
     <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
     <string name="grounded_entry_title">Datenbank-Eintrag</string>
-    <string name="grounded_entry_subtitle">Beschreibe und/oder fotografiere eine Mahlzeit. Nährwerte kommen aus USDA, Open Food Facts oder deiner bestätigten Historie — nicht aus freien Schätzungen.</string>
+    <string name="grounded_entry_subtitle">Beschreibe und/oder fotografiere eine Mahlzeit. Nährwerte kommen aus USDA, Open Food Facts oder deiner bestätigten Historie, nicht aus freien Schätzungen.</string>
     <string name="grounded_entry_placeholder">z. B. 2 Rühreier und eine Banane</string>
     <string name="grounded_entry_add_photo">Foto hinzufügen</string>
     <string name="grounded_entry_analyze">Nährwerte zuordnen</string>
@@ -719,7 +719,7 @@
     <string name="grounding_badge_history">Zugeordnet · Deine Historie</string>
     <string name="grounding_badge_label">Zugeordnet · Etikett</string>
     <string name="grounding_badge_estimate">Schätzung · nicht datenbankzugeordnet</string>
-    <string name="grounding_confidence_summary">Konfidenz — Identität %1$d%% · Portion %2$d%% · Quelle %3$d%%</string>
+    <string name="grounding_confidence_summary">Konfidenz: Identität %1$d%% · Portion %2$d%% · Quelle %3$d%%</string>
     <string name="grounding_validation_notes">Hinweise: %1$s</string>
     <string name="grounded_on_device_unavailable">Datenbank-Eintrag braucht einen Cloud-KI-Anbieter. On-Device-Modelle nutzen Foto/Notiz.</string>
     <string name="grounded_review_unit">Einheit</string>

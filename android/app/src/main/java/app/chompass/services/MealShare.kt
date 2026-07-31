@@ -64,7 +64,7 @@ object MealShare {
         val lines = entries.map { e ->
             val macros = "${e.protein.roundToInt()}P · ${e.carbs.roundToInt()}C · ${e.fat.roundToInt()}F"
             val prefix = e.emoji?.let { "$it " } ?: ""
-            "$prefix${e.name} — ${e.calories} kcal · $macros"
+            "$prefix${e.name}: ${e.calories} kcal · $macros"
         }.toMutableList()
         lines.add("")
         lines.add("Open in Chompass to add:")

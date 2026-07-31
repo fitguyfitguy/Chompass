@@ -636,7 +636,7 @@ export class EntryForm extends HTMLElement {
             )
             .join("")}
         </div>
-        <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="Describe the correction — e.g. large bowl, cooked in butter">${escapeHtml(this.correctNote)}</textarea>
+        <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="Describe the correction, e.g. large bowl, cooked in butter">${escapeHtml(this.correctNote)}</textarea>
         <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
           ${this.correcting ? "Correcting…" : "Correct with AI"}
         </button>

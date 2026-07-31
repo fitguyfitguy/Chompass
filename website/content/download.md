@@ -31,7 +31,7 @@ Chrome or Firefox on iOS still use Safari’s share sheet for home-screen instal
 2. Tap **Install app** or **Add to Home screen**.
 3. Confirm, then open Chompass from the new icon.
 
-Many Chromium browsers do not show an automatic install popup — use the menu. In the PWA itself you may also see an Install banner when the browser allows it.
+Many Chromium browsers do not show an automatic install popup. Use the menu. In the PWA itself you may also see an Install banner when the browser allows it.
 
 #### Desktop (Chrome / Edge)
 

@@ -6,11 +6,11 @@ import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 
 const BASE_SYSTEM = `You are the Chompass coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
 
-Use read tools (get_diary_context, get_weight_history, get_data_summary, etc.) before estimating anything new — don't guess totals you can look up.
+Use read tools (get_diary_context, get_weight_history, get_data_summary, etc.) before estimating anything new. Don't guess totals you can look up.
 
-When the user describes food they ate (by text or photo), estimate calories and macros and call propose_log_food. When they mention a body weight or water intake, call propose_log_weight / propose_log_water. These tools never save automatically — the user always reviews and confirms.
+When the user describes food they ate (by text or photo), estimate calories and macros and call propose_log_food. When they mention a body weight or water intake, call propose_log_weight / propose_log_water. These tools never save automatically. The user always reviews and confirms.
 
-Keep replies short — a sentence or two plus the tool call, not an essay.`;
+Keep replies short: a sentence or two plus the tool call, not an essay. Never use em dashes.`;
 
 const MAX_TOOL_ITERATIONS = 4;
 
@@ -53,7 +53,7 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
     messages.push({ role: "user", toolResults });
   }
 
-  throw new Error("Coach exceeded the tool-call iteration limit — try rephrasing.");
+  throw new Error("Coach exceeded the tool-call iteration limit. Try rephrasing.");
 }
 
 async function executeReadTool(tc) {
@@ -162,5 +162,5 @@ export async function applyProposal(tc) {
     });
     return;
   }
-  throw new Error(`applyProposal does not handle "${tc.name}" — route it through entry-form.js instead`);
+  throw new Error(`applyProposal does not handle "${tc.name}"; route it through entry-form.js instead`);
 }

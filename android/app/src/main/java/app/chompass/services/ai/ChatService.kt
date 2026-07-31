@@ -136,7 +136,7 @@ class ChatService(
         }
 
         val lines = mutableListOf<String>()
-        lines.add("You are Coach, an AI nutrition and weight-change assistant inside a calorie tracking app. Answer in plain ${nonEnglishResponseLanguage() ?: "English"}, be specific and factual, and ground your recommendations in the user's own data. Avoid medical advice; when relevant, suggest consulting a doctor. Be concise — 2–5 sentences per response unless the user asks for detail.")
+        lines.add("You are Coach, an AI nutrition and weight-change assistant inside a calorie tracking app. Answer in plain ${nonEnglishResponseLanguage() ?: "English"}, be specific and factual, and ground your recommendations in the user's own data. Avoid medical advice; when relevant, suggest consulting a doctor. Be concise (2-5 sentences per response unless the user asks for detail). Never use em dashes.")
         lines.add("")
         lines.add("## Current date")
         lines.add("- Today: $currentDate ($currentTimeZone)")
@@ -150,7 +150,7 @@ class ChatService(
         lines.add("Do NOT call tools for questions you can answer from the profile/forecast below.")
         lines.add("")
         lines.add("## Logging on the user's behalf")
-        lines.add("If the user asks you to log/add/track food, weight, or water, call the matching propose_log_* tool. These tools NEVER save anything by themselves — they only prepare a confirmation the user must approve in the app. Call at most one propose_log_* tool per response. After calling it, briefly tell the user what you're proposing to log and that they need to confirm it.")
+        lines.add("If the user asks you to log/add/track food, weight, or water, call the matching propose_log_* tool. These tools NEVER save anything by themselves. They only prepare a confirmation the user must approve in the app. Call at most one propose_log_* tool per response. After calling it, briefly tell the user what you're proposing to log and that they need to confirm it.")
         lines.add("")
         lines.add("## User profile")
         lines.add("- Gender: ${profile.gender.name.lowercase()}")
@@ -190,7 +190,7 @@ class ChatService(
             lines.add("- Expected weight in 90 days: ${wUnit(forecast.predictedWeight90dKg)}")
             forecast.daysToGoal?.let { lines.add("- Days to goal at current pace: ~$it days") }
             if (forecast.trendsDisagree) {
-                lines.add("- NOTE: Predicted and observed trends differ by >0.3 kg/week — user may be under-logging food.")
+                lines.add("- NOTE: Predicted and observed trends differ by >0.3 kg/week; user may be under-logging food.")
             }
         } else {
             lines.add("- Not enough data yet (need ≥2 days food + ≥2 weights). Encourage the user to log more.")
@@ -202,7 +202,7 @@ class ChatService(
             lines.add("")
             lines.add("## Body measurements (latest)")
             lines.add("- $summary")
-            lines.add("A shrinking waist alongside steady or rising weight is recomposition (fat down, muscle up) — read it that way instead of calling a flat scale a plateau. Treat the US-Navy body-fat figure as an estimate.")
+            lines.add("A shrinking waist alongside steady or rising weight is recomposition (fat down, muscle up). Read it that way instead of calling a flat scale a plateau. Treat the US-Navy body-fat figure as an estimate.")
         }
         lines.add("")
         lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. When they ask expected weight, reference the forecast numbers above.")

@@ -179,7 +179,7 @@ export const es = Object.freeze({
   "onboarding.plan.edit_calories_a11y": "Editar objetivo de calorías",
   "onboarding.plan.customize_hint": "Toca un objetivo para personalizarlo. Puedes ajustarlo en cualquier momento en Ajustes.",
   "onboarding.health.title": "Aviso de salud",
-  "onboarding.health.body": "Chompass es una ayuda de seguimiento, no una herramienta clínica. Las ecuaciones predictivas tienen un margen de error inherente. Si tienes una condición médica, estás embarazada o en periodo de lactancia, eres menor de 18 años, o tienes antecedentes de trastornos alimentarios, detente y habla con un médico o terapeuta antes de continuar. Esto no es un consejo médico.",
+  "onboarding.health.body": "Chompass es una ayuda de seguimiento, no una herramienta clínica. Las estimaciones de las fórmulas pueden fallar. Si tienes una condición médica, estás embarazada o en periodo de lactancia, eres menor de 18 años, o tienes antecedentes de trastornos alimentarios, detente y habla con un médico o terapeuta antes de continuar. Esto no es un consejo médico.",
   "onboarding.accuracy.title": "Aviso de precisión",
   "onboarding.accuracy.body": "Las estimaciones por foto y las etiquetas de cantidad vagas (puñado, taza, porción) suelen ser inexactas. Las sugerencias de la app, y especialmente las respuestas de la IA/LLM, son solo estimaciones, no hechos médicos. Verifica tú mismo los datos importantes.",
   "coach.title": "Coach",

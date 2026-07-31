@@ -179,7 +179,7 @@ export const ko = Object.freeze({
   "onboarding.plan.edit_calories_a11y": "칼로리 목표 편집",
   "onboarding.plan.customize_hint": "목표를 눌러 조정하세요. 설정에서 언제든지 세부 조정할 수 있습니다.",
   "onboarding.health.title": "건강 관련 안내",
-  "onboarding.health.body": "Chompass는 기록을 돕는 도구이며 임상 도구가 아닙니다. 예측 공식에는 본질적인 오차가 있습니다. 지병이 있거나, 임신 또는 수유 중이거나, 18세 미만이거나, 섭식장애 이력이 있다면 계속하기 전에 잠시 멈추고 의사나 치료사와 상담하세요. 이는 의학적 조언이 아닙니다.",
+  "onboarding.health.body": "Chompass는 기록을 돕는 도구이며 임상 도구가 아닙니다. 공식 추정은 빗나갈 수 있습니다. 지병이 있거나, 임신 또는 수유 중이거나, 18세 미만이거나, 섭식장애 이력이 있다면 계속하기 전에 잠시 멈추고 의사나 치료사와 상담하세요. 이는 의학적 조언이 아닙니다.",
   "onboarding.accuracy.title": "정확도 관련 안내",
   "onboarding.accuracy.body": "사진 기반 추정과 '한 줌', '컵', '1인분' 같은 모호한 수량 표현은 부정확한 경우가 많습니다. 앱의 제안, 특히 AI/LLM 출력은 어디까지나 추정치일 뿐 의학적 사실이 아닙니다. 중요한 수치는 직접 확인하세요.",
   "coach.title": "코치",
