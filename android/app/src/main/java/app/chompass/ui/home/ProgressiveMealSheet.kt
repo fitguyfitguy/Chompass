@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,10 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,10 +64,7 @@ fun ProgressiveMealSheet(
     onDiscard: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val state = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { target -> target != SheetValue.Hidden || !isSaving },
-    )
+    val state = rememberChompassSheetState(busy = isSaving)
     var mealMenuExpanded by remember { mutableStateOf(false) }
     val canLog = draft.items.isNotEmpty() && !isSaving
 

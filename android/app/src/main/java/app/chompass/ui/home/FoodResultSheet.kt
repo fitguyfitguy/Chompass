@@ -2,6 +2,7 @@ package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -33,10 +34,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -128,10 +127,7 @@ fun FoodResultSheet(
     inferringUnits: Boolean = false,
 ) {
     val bitmap = rememberDecodedBitmap(imageBytes)
-    val state = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { target -> target != SheetValue.Hidden || !isSaving },
-    )
+    val state = rememberChompassSheetState(busy = isSaving)
     val scope = rememberCoroutineScope()
     val portionClarifyFailedMessage = stringResource(R.string.sheet_portion_clarify_failed)
     // Keyed on imageBytes (stable across a reprocess call for the same photo), not analysis

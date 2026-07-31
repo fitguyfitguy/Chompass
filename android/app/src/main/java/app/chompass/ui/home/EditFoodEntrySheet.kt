@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -28,9 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,13 +89,12 @@ fun EditFoodEntrySheet(
     onSave: (FoodEntry) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { it != SheetValue.Hidden }
-    )
     var currentBaseEntry by remember(entry) { mutableStateOf(entry) }
     var noteText by remember(entry) { mutableStateOf(entry.customNote ?: "") }
     var isReprocessing by remember { mutableStateOf(false) }
+    // Dismissible by downward drag; only block while reprocessing (matches the
+    // touch-consuming overlay below). Never permanently reject Hidden.
+    val state = rememberChompassSheetState(busy = isReprocessing)
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
@@ -220,7 +218,7 @@ fun EditFoodEntrySheet(
     }
 
     ChompassBottomSheet(
-        onDismiss = onDismiss,
+        onDismiss = { if (!isReprocessing) onDismiss() },
         sheetState = state,
         containerColor = sheetSurface,
     ) {
@@ -234,7 +232,7 @@ fun EditFoodEntrySheet(
                 noteChanged -> stringResource(R.string.edit_reprocess)
                 else -> stringResource(R.string.action_save)
             },
-            onCancel = onDismiss,
+            onCancel = { if (!isReprocessing) onDismiss() },
             onPrimary = {
                 if (!isReprocessing) {
                     if (noteChanged) reprocess() else onSave(buildUpdated())
