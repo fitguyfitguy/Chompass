@@ -211,3 +211,155 @@ test("analyzeFoodEntry_abortErrorFromSendSkipsFallback", async () => {
     PROVIDERS.gemini.send = originalGemini;
   }
 });
+
+test("analyzeFoodEntry_parsesAndReconcilesConstituents", async () => {
+  const original = PROVIDERS.anthropic.send;
+  PROVIDERS.anthropic.send = async () => ({
+    text: JSON.stringify({
+      name: "Eggs and toast",
+      mealType: "breakfast",
+      calories: 200,
+      proteinG: 14,
+      carbsG: 18,
+      fatG: 8,
+      quantityG: 120,
+      fiberG: 2,
+      constituents: [
+        {
+          name: "Egg",
+          calories: 90,
+          protein: 8,
+          carbs: 1,
+          fat: 6,
+          serving_size_grams: 55,
+          emoji: "🥚",
+          unit_options: [{ unit: "piece", quantity: 1, grams_per_unit: 55 }],
+        },
+        {
+          name: "Toast",
+          calories: 100,
+          protein: 5,
+          carbs: 16,
+          fat: 2,
+          serving_size_grams: 60,
+          unit_options: [{ unit: "slice", quantity: 1, grams_per_unit: 60 }],
+        },
+      ],
+    }),
+    toolCalls: [],
+  });
+  try {
+    const result = await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      text: "eggs and toast",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.equal(result.name, "Eggs and toast");
+    assert.equal(result.fiberG, 2);
+    assert.ok(Array.isArray(result.constituents));
+    assert.equal(result.constituents.length, 2);
+    const sumCal = result.constituents.reduce((a, c) => a + c.calories, 0);
+    const sumG = result.constituents.reduce((a, c) => a + c.servingSizeGrams, 0);
+    assert.equal(sumCal, 200);
+    assert.equal(Math.round(sumG * 10) / 10, 120);
+    assert.equal(result.constituents[0].selectedServingUnit, "piece");
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
+test("analyzeFoodEntry_respectsMealConstituentsOptOut", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {string|undefined} */
+  let systemSeen;
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    systemSeen = req.systemPrompt;
+    return {
+      text: JSON.stringify({
+        name: "Eggs and toast",
+        mealType: "breakfast",
+        calories: 200,
+        proteinG: 14,
+        carbsG: 18,
+        fatG: 8,
+        quantityG: 120,
+        constituents: [
+          {
+            name: "Egg",
+            calories: 100,
+            protein: 7,
+            carbs: 1,
+            fat: 7,
+            serving_size_grams: 60,
+          },
+          {
+            name: "Toast",
+            calories: 100,
+            protein: 7,
+            carbs: 17,
+            fat: 1,
+            serving_size_grams: 60,
+          },
+        ],
+      }),
+      toolCalls: [],
+    };
+  };
+  try {
+    const result = await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      text: "eggs and toast",
+      prefsOverride: /** @type {any} */ ({
+        aiFallbackEnabled: false,
+        mealConstituentsEnabled: false,
+      }),
+    });
+    assert.ok(systemSeen);
+    assert.equal(systemSeen.includes("constituents"), false);
+    assert.deepEqual(result.constituents, []);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
+test("analyzeFoodEntry_dropsFarConstituentsKeepsMicros", async () => {
+  const original = PROVIDERS.gemini.send;
+  PROVIDERS.gemini.send = async () => ({
+    text: JSON.stringify({
+      name: "Meal",
+      mealType: "lunch",
+      calories: 600,
+      proteinG: 40,
+      carbsG: 50,
+      fatG: 20,
+      quantityG: 400,
+      sodiumMg: 500,
+      constituents: [
+        {
+          name: "Crumb",
+          calories: 5,
+          protein: 0.1,
+          carbs: 1,
+          fat: 0,
+          serving_size_grams: 2,
+        },
+      ],
+    }),
+    toolCalls: [],
+  });
+  try {
+    const result = await analyzeFoodEntry({
+      providerId: "gemini",
+      config: { apiKey: "test-key" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.deepEqual(result.constituents, []);
+    assert.equal(result.calories, 600);
+    assert.equal(result.sodiumMg, 500);
+  } finally {
+    PROVIDERS.gemini.send = original;
+  }
+});

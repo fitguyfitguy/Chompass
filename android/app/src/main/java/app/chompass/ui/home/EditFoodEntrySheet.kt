@@ -105,9 +105,9 @@ fun EditFoodEntrySheet(
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
-    val baseServing = currentBaseEntry.servingSizeGrams ?: 100.0
-    val servingUnitOptions = remember(currentBaseEntry.servingUnitOptions, baseServing) {
-        ServingUnitOption.normalizedOptions(currentBaseEntry.servingUnitOptions, baseServing)
+    val entryBaseServing = currentBaseEntry.servingSizeGrams ?: 100.0
+    val servingUnitOptions = remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {
+        ServingUnitOption.normalizedOptions(currentBaseEntry.servingUnitOptions, entryBaseServing)
     }
     var name by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.name) }
     val initialServingUnit = if (preferGramsByDefault) {
@@ -118,11 +118,16 @@ fun EditFoodEntrySheet(
     var selectedServingUnitId by remember(currentBaseEntry, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
     }
-    var servingGrams by remember(currentBaseEntry, baseServing) { mutableStateOf(baseServing) }
+    var servingGrams by remember(currentBaseEntry, entryBaseServing) { mutableStateOf(entryBaseServing) }
+    var baseServingGrams by remember(currentBaseEntry, entryBaseServing) { mutableStateOf(entryBaseServing) }
+    var editableConstituents by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.constituents) }
+    var constituentsExpanded by remember(currentBaseEntry) {
+        mutableStateOf(currentBaseEntry.constituents.isNotEmpty())
+    }
     var servingQuantityText by remember(currentBaseEntry, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(
             ServingUnitOption.initialQuantityText(
-                totalGrams = baseServing,
+                totalGrams = entryBaseServing,
                 selectedUnitId = selectedServingUnitId,
                 selectedQuantity = currentBaseEntry.selectedServingQuantity,
                 options = servingUnitOptions
@@ -131,7 +136,7 @@ fun EditFoodEntrySheet(
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
-    val scale = if (baseServing > 0) servingGrams / baseServing else 1.0
+    val scale = if (baseServingGrams > 0) servingGrams / baseServingGrams else 1.0
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
@@ -186,7 +191,11 @@ fun EditFoodEntrySheet(
                 servingSizeGrams = servingGrams,
                 servingUnitOptions = servingUnitOptions,
                 selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity
+                selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                    editableConstituents,
+                    scale,
+                ),
             )
         )
 
@@ -232,7 +241,8 @@ fun EditFoodEntrySheet(
                     selectedServingUnit = newAnalysis.selectedServingUnit,
                     selectedServingQuantity = newAnalysis.selectedServingQuantity,
                     customNote = noteText.trim().takeIf { it.isNotEmpty() },
-                    emoji = newAnalysis.emoji
+                    emoji = newAnalysis.emoji,
+                    constituents = newAnalysis.constituents,
                 ).let { newAnalysis.toMicronutrients().applyTo(it) }
                 editableCalories = newAnalysis.calories
                 editableProtein = newAnalysis.protein
@@ -241,6 +251,9 @@ fun EditFoodEntrySheet(
                 editableMicros = newAnalysis.toMicronutrients()
                 name = newAnalysis.name
                 servingGrams = newAnalysis.servingSizeGrams
+                baseServingGrams = newAnalysis.servingSizeGrams
+                editableConstituents = newAnalysis.constituents
+                constituentsExpanded = newAnalysis.constituents.isNotEmpty()
                 changedFields = buildReprocessDiff(before, currentBaseEntry)
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
@@ -350,6 +363,38 @@ fun EditFoodEntrySheet(
                     menuExpanded = servingMenuExpanded,
                     onMenuExpandedChange = { servingMenuExpanded = it },
                     gramUnit = stringResource(R.string.unit_g)
+                )
+            }
+
+            item {
+                ConstituentsSection(
+                    rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                        editableConstituents,
+                        scale,
+                    ),
+                    expanded = constituentsExpanded,
+                    onExpandedChange = { constituentsExpanded = it },
+                    onRowsChange = { displayRows ->
+                        val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
+                        editableConstituents = cleaned
+                        if (serving > 0) {
+                            baseServingGrams = serving
+                            servingGrams = serving
+                            servingQuantityText = ServingUnitOption.formatQuantity(
+                                if (selectedServingOption.gramsPerUnit > 0) {
+                                    serving / selectedServingOption.gramsPerUnit
+                                } else {
+                                    serving
+                                },
+                            )
+                        }
+                        if (agg != null) {
+                            editableCalories = agg.calories
+                            editableProtein = agg.protein
+                            editableCarbs = agg.carbs
+                            editableFat = agg.fat
+                        }
+                    },
                 )
             }
 

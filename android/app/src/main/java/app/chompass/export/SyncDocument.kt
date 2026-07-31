@@ -14,6 +14,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodSource
@@ -21,6 +22,7 @@ import app.chompass.models.MealType
 import app.chompass.models.NutrientSourceKind
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
+import app.chompass.models.ServingUnitOption
 import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import java.time.Instant
@@ -31,13 +33,14 @@ import java.time.ZoneOffset
 import java.util.UUID
 
 /**
- * Sync-1.0 document parse/build. Mirrors web/.../sync-format.js.
- * Photos and API keys are intentionally excluded.
+ * Sync-1.1 document parse/build. Mirrors web/.../sync-format.js.
+ * Photos and API keys are intentionally excluded. Imports also accept 1.0.
  */
 object SyncDocument {
     const val APP_NAME = "Chompass"
     const val KIND = "sync"
-    const val FORMAT_VERSION = "1.0"
+    const val FORMAT_VERSION = "1.1"
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1")
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -120,7 +123,8 @@ object SyncDocument {
         val app = export["app"]?.asString().orEmpty().trim().lowercase()
         if (app != "chompass" && app != "nofud" && app != "fud ai") return ParseResult.UnsupportedFormat
         if (export["kind"]?.asString() != KIND) return ParseResult.UnsupportedFormat
-        if (export["format_version"]?.asString() != FORMAT_VERSION) return ParseResult.UnsupportedFormat
+        val version = export["format_version"]?.asString()
+        if (version == null || version !in SUPPORTED_IMPORT_VERSIONS) return ParseResult.UnsupportedFormat
 
         fun arr(key: String): JsonArray =
             root[key]?.asArrayOrNull() ?: JsonArray(emptyList())
@@ -435,10 +439,60 @@ object SyncDocument {
             putNullableNumber("vitamin_k_mcg", e.vitaminK)
             putNullableNumber("folate_mcg", e.folate)
             putNullableNumber("omega3_g", e.omega3)
+            put(
+                "serving_unit_options",
+                buildJsonArray {
+                    for (o in e.servingUnitOptions) {
+                        add(
+                            buildJsonObject {
+                                put("unit", o.unit)
+                                put("grams_per_unit", o.gramsPerUnit)
+                                putNullableNumber("quantity", o.quantity)
+                            },
+                        )
+                    }
+                },
+            )
+            putNullable("selected_serving_unit", e.selectedServingUnit)
+            putNullableNumber("selected_serving_quantity", e.selectedServingQuantity)
+            put(
+                "constituents",
+                buildJsonArray {
+                    for (c in e.constituents) {
+                        add(constituentToWire(c))
+                    }
+                },
+            )
             val g = e.grounding
             if (g == null) put("grounding", JsonNull)
             else put("grounding", groundingToWire(g))
         }
+    }
+
+    private fun constituentToWire(c: FoodConstituent): JsonObject = buildJsonObject {
+        put("name", c.name)
+        put("calories", c.calories)
+        put("protein_g", c.protein)
+        put("carbs_g", c.carbs)
+        put("fat_g", c.fat)
+        put("quantity_g", c.servingSizeGrams)
+        putNullable("emoji", c.emoji)
+        put(
+            "serving_unit_options",
+            buildJsonArray {
+                for (o in c.servingUnitOptions) {
+                    add(
+                        buildJsonObject {
+                            put("unit", o.unit)
+                            put("grams_per_unit", o.gramsPerUnit)
+                            putNullableNumber("quantity", o.quantity)
+                        },
+                    )
+                }
+            },
+        )
+        putNullable("selected_serving_unit", c.selectedServingUnit)
+        putNullableNumber("selected_serving_quantity", c.selectedServingQuantity)
     }
 
     private fun parseFoodWire(el: JsonElement, zone: ZoneId): FoodWire? {
@@ -488,13 +542,53 @@ object SyncDocument {
             folate = o["folate_mcg"]?.asDouble(),
             omega3 = o["omega3_g"]?.asDouble(),
             servingSizeGrams = o["quantity_g"]?.asDouble(),
+            servingUnitOptions = parseServingUnitOptions(o["serving_unit_options"]?.asArrayOrNull()),
+            selectedServingUnit = o["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
+            selectedServingQuantity = o["selected_serving_quantity"]?.asDouble(),
             customNote = o["note"]?.asString()?.takeIf { it.isNotBlank() },
             recipeLogId = o["recipe_log_id"]?.asString()?.let {
                 runCatching { UUID.fromString(it) }.getOrNull()
             },
             grounding = parseGrounding(o["grounding"]?.asObjectOrNull()),
+            constituents = parseConstituents(o["constituents"]?.asArrayOrNull()),
         )
         return FoodWire(id, updatedAt, null, entry)
+    }
+
+    private fun parseServingUnitOptions(arr: JsonArray?): List<ServingUnitOption> {
+        if (arr == null) return emptyList()
+        return arr.mapNotNull { el ->
+            val row = el.asObjectOrNull() ?: return@mapNotNull null
+            val unit = row["unit"]?.asString()?.trim().orEmpty()
+            val grams = row["grams_per_unit"]?.asDouble()
+            if (unit.isEmpty() || grams == null || grams <= 0) return@mapNotNull null
+            ServingUnitOption(
+                unit = unit,
+                gramsPerUnit = grams,
+                quantity = row["quantity"]?.asDouble(),
+            )
+        }
+    }
+
+    private fun parseConstituents(arr: JsonArray?): List<FoodConstituent> {
+        if (arr == null) return emptyList()
+        return arr.mapNotNull { el ->
+            val row = el.asObjectOrNull() ?: return@mapNotNull null
+            val name = row["name"]?.asString()?.trim().orEmpty()
+            if (name.isEmpty()) return@mapNotNull null
+            FoodConstituent(
+                name = name,
+                calories = row["calories"]?.asInt() ?: 0,
+                protein = row["protein_g"]?.asDouble() ?: 0.0,
+                carbs = row["carbs_g"]?.asDouble() ?: 0.0,
+                fat = row["fat_g"]?.asDouble() ?: 0.0,
+                servingSizeGrams = row["quantity_g"]?.asDouble() ?: 0.0,
+                emoji = row["emoji"]?.asString()?.takeIf { it.isNotBlank() },
+                servingUnitOptions = parseServingUnitOptions(row["serving_unit_options"]?.asArrayOrNull()),
+                selectedServingUnit = row["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
+                selectedServingQuantity = row["selected_serving_quantity"]?.asDouble(),
+            )
+        }
     }
 
     private fun parseWeightWire(el: JsonElement): WeightWire? {

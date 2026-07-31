@@ -2,7 +2,7 @@
   "export": {
     "app": "Chompass",
     "kind": "sync",
-    "format_version": "1.0",
+    "format_version": "1.1",
     "generated_at": "2026-07-24T10:00:00Z"
   },
   "food_entries": [
@@ -44,7 +44,98 @@
       "vitamin_k_mcg": null,
       "folate_mcg": null,
       "omega3_g": null,
-      "grounding": null
+      "grounding": null,
+      "serving_unit_options": [
+        {
+          "unit": "bowl",
+          "grams_per_unit": 350.0,
+          "quantity": 1.0
+        }
+      ],
+      "selected_serving_unit": "bowl",
+      "selected_serving_quantity": 1.0,
+      "constituents": [
+        {
+          "name": "Chicken",
+          "calories": 280,
+          "protein_g": 32.0,
+          "carbs_g": 0.0,
+          "fat_g": 16.0,
+          "quantity_g": 180.0,
+          "emoji": "\ud83c\udf57",
+          "serving_unit_options": [
+            {
+              "unit": "piece",
+              "grams_per_unit": 90.0,
+              "quantity": 2.0
+            }
+          ],
+          "selected_serving_unit": "piece",
+          "selected_serving_quantity": 2.0
+        },
+        {
+          "name": "Mixed greens",
+          "calories": 140,
+          "protein_g": 6.0,
+          "carbs_g": 12.0,
+          "fat_g": 6.0,
+          "quantity_g": 170.0,
+          "emoji": null,
+          "serving_unit_options": [],
+          "selected_serving_unit": null,
+          "selected_serving_quantity": null
+        }
+      ]
+    },
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "updated_at": "2026-07-24T08:00:00Z",
+      "deleted_at": null,
+      "name": "Black coffee",
+      "date": "2026-07-24",
+      "time": "08:00",
+      "meal_type": "breakfast",
+      "quantity_g": 240,
+      "calories": 2,
+      "protein_g": 0.3,
+      "carbs_g": 0,
+      "fat_g": 0,
+      "source": "manually_edited",
+      "note": null,
+      "recipe_log_id": null,
+      "sugar_g": null,
+      "added_sugar_g": null,
+      "fiber_g": null,
+      "saturated_fat_g": null,
+      "monounsaturated_fat_g": null,
+      "polyunsaturated_fat_g": null,
+      "cholesterol_mg": null,
+      "sodium_mg": null,
+      "potassium_mg": null,
+      "trans_fat_g": null,
+      "calcium_mg": null,
+      "iron_mg": null,
+      "magnesium_mg": null,
+      "zinc_mg": null,
+      "vitamin_a_mcg": null,
+      "vitamin_c_mg": null,
+      "vitamin_d_mcg": null,
+      "vitamin_b12_mcg": null,
+      "vitamin_e_mg": null,
+      "vitamin_k_mcg": null,
+      "folate_mcg": null,
+      "omega3_g": null,
+      "grounding": null,
+      "serving_unit_options": [
+        {
+          "unit": "cup",
+          "grams_per_unit": 240.0,
+          "quantity": 1.0
+        }
+      ],
+      "selected_serving_unit": "cup",
+      "selected_serving_quantity": 1.0,
+      "constituents": []
     }
   ],
   "favorites": [],

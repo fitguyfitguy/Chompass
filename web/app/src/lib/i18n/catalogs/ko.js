@@ -97,8 +97,20 @@ export const ko = Object.freeze({
   'toast.saved': '저장됨',
   'toast.deleted': '삭제됨',
   'toast.copied': '복사됨',
+  // Entry / meal constituents
+  'entry.constituents.title': '재료',
+  'entry.constituents.count': '재료 ({count})',
+  'entry.constituents.add': '재료 추가',
+  'entry.constituents.remove': '재료 삭제',
+  'entry.constituents.name': '이름',
+  'entry.constituents.quantity': '양',
+  'entry.constituents.unit': '단위',
+  'entry.constituents.item_fallback': '재료',
+  'entry.constituents.macros': '{calories} kcal · P {protein} · C {carbs} · F {fat}',
   'a11y.open_menu': '메뉴 열기',
   'a11y.close_sheet': '시트 닫기',
   'a11y.add_food': '음식 추가',
   'a11y.primary_nav': '기본',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

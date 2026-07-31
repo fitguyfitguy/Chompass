@@ -7,6 +7,10 @@ import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
 import { ALL_MICRO_KEYS } from "../home-nutrients.js";
 import { ensureServingUnits } from "../chompass-core/serving-units.js";
+import {
+  parseConstituentsFromPrediction,
+  reconcileConstituents,
+} from "../chompass-core/constituents.js";
 import { FoodPartialJsonAssembler } from "./partial-json.js";
 
 /** Shared entry analysis phases (Android EntryAnalysisPhase subset for cloud AI). */
@@ -44,9 +48,19 @@ export function isAbortError(err) {
   return name === "AbortError";
 }
 
-const SYSTEM = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
+const SYSTEM_BASE = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
 {"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null}
 Include micronutrients when you can estimate them confidently; use null when unsure. Prefer the meal type that fits the current local time if unclear. When multiple photos are provided, treat them as angles of the same meal and produce one estimate.`;
+
+const SYSTEM_CONSTITUENTS = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
+{"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null,"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","unit_options":[]}]}
+Include micronutrients when you can estimate them confidently; use null when unsure. Prefer the meal type that fits the current local time if unclear. When multiple photos are provided, treat them as angles of the same meal and produce one estimate.
+constituents is optional. For multi-item meals, list each distinct edible item (egg, toast, butter, drink, side) with its own macros, serving_size_grams, and unit_options when a non-gram unit is obvious. Keep top-level fields as the meal total. Constituent grams MUST sum to quantityG within ±5%. Constituent calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%. Include every named or clearly implied edible item; do not invent extras. Use [] for a single undivided food. unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}; never use g/grams as a unit.`;
+
+/** @param {import('../db.js').AppPrefs} appPrefs */
+function mealConstituentsEnabled(appPrefs) {
+  return appPrefs.mealConstituentsEnabled !== false;
+}
 
 /**
  * @param {Object} args
@@ -109,7 +123,7 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
   if (signal?.aborted) throw abortError();
   config = { ...config, model: resolveProviderModel(providerId, config.model, "primary") };
-  let systemPrompt = SYSTEM;
+  let systemPrompt = mealConstituentsEnabled(appPrefs) ? SYSTEM_CONSTITUENTS : SYSTEM_BASE;
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
   }
@@ -167,18 +181,33 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   const name = String(parsed.name || "Food");
   const quantityG = optNum(parsed.quantityG);
   const units = ensureServingUnits({ name, quantityG });
+  const calories = Math.max(0, Math.round(Number(parsed.calories) || 0));
+  const proteinG = Math.max(0, Number(parsed.proteinG) || 0);
+  const carbsG = Math.max(0, Number(parsed.carbsG) || 0);
+  const fatG = Math.max(0, Number(parsed.fatG) || 0);
+  const reconciled = reconcileConstituents({
+    calories,
+    proteinG,
+    carbsG,
+    fatG,
+    quantityG: units.quantityG > 0 ? units.quantityG : 100,
+    constituents: mealConstituentsEnabled(appPrefs)
+      ? parseConstituentsFromPrediction(parsed)
+      : [],
+  });
 
   return {
     name,
     mealType,
-    calories: Math.max(0, Math.round(Number(parsed.calories) || 0)),
-    proteinG: Math.max(0, Number(parsed.proteinG) || 0),
-    carbsG: Math.max(0, Number(parsed.carbsG) || 0),
-    fatG: Math.max(0, Number(parsed.fatG) || 0),
+    calories,
+    proteinG,
+    carbsG,
+    fatG,
     quantityG: units.quantityG,
     servingUnitOptions: units.servingUnitOptions,
     selectedServingUnit: units.selectedServingUnit,
     selectedServingQuantity: units.selectedServingQuantity,
+    constituents: reconciled.constituents,
     note: parsed.note ? String(parsed.note) : null,
     source: "ai_estimated",
     ...Object.fromEntries(ALL_MICRO_KEYS.map((key) => [key, optNum(parsed[key])])),

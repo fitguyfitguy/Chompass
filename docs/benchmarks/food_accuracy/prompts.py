@@ -34,11 +34,12 @@ CONSTITUENTS_JSON_SCHEMA = (
 
 CONSTITUENTS_RULE = """
 constituents is optional. For multi-item meals, list each distinct edible item
-(egg, toast, butter, drink, side) with its own macros and serving_size_grams.
-Keep top-level fields as the meal total. Constituent grams should roughly sum to
-serving_size_grams (±10%). Constituent macros should roughly sum to the meal
-totals (±10%). Use [] for a single undivided food. Do not invent items that are
-not named or clearly implied.
+(egg, toast, butter, drink, side) with its own macros, serving_size_grams, and
+unit_options when a non-gram unit is obvious. Keep top-level fields as the meal
+total. Constituent grams MUST sum to serving_size_grams within ±5%. Constituent
+calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%.
+Include every named or clearly implied edible item; do not invent extras. Use []
+for a single undivided food.
 """.strip()
 
 

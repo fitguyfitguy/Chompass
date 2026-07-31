@@ -1,7 +1,7 @@
 {
   "export": {
     "app": "Chompass",
-    "format_version": "1.1",
+    "format_version": "1.2",
     "date_range": {
       "start": "2026-04-27",
       "end": "2026-04-28"
@@ -63,7 +63,17 @@
               "omega3_g": null,
               "time": "23:09",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [
+                {
+                  "unit": "bowl",
+                  "grams_per_unit": 330.0,
+                  "quantity": 1.0
+                }
+              ],
+              "selected_serving_unit": "bowl",
+              "selected_serving_quantity": 1.0,
+              "constituents": []
             }
           ]
         },
@@ -101,7 +111,66 @@
               "omega3_g": null,
               "time": "23:09",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [
+                {
+                  "unit": "bowl",
+                  "grams_per_unit": 620.0,
+                  "quantity": 1.0
+                }
+              ],
+              "selected_serving_unit": "bowl",
+              "selected_serving_quantity": 1.0,
+              "constituents": [
+                {
+                  "name": "Grilled chicken",
+                  "calories": 420,
+                  "protein_g": 48.0,
+                  "carbs_g": 0.0,
+                  "fat_g": 24.0,
+                  "quantity_g": 220.0,
+                  "emoji": "\ud83c\udf57",
+                  "serving_unit_options": [
+                    {
+                      "unit": "piece",
+                      "grams_per_unit": 110.0,
+                      "quantity": 2.0
+                    }
+                  ],
+                  "selected_serving_unit": "piece",
+                  "selected_serving_quantity": 2.0
+                },
+                {
+                  "name": "Rice",
+                  "calories": 365,
+                  "protein_g": 8.0,
+                  "carbs_g": 72.0,
+                  "fat_g": 4.0,
+                  "quantity_g": 250.0,
+                  "emoji": "\ud83c\udf5a",
+                  "serving_unit_options": [
+                    {
+                      "unit": "cup",
+                      "grams_per_unit": 158.0,
+                      "quantity": 1.6
+                    }
+                  ],
+                  "selected_serving_unit": "cup",
+                  "selected_serving_quantity": 1.6
+                },
+                {
+                  "name": "Salad greens",
+                  "calories": 200,
+                  "protein_g": 12.0,
+                  "carbs_g": 0.0,
+                  "fat_g": 20.0,
+                  "quantity_g": 150.0,
+                  "emoji": null,
+                  "serving_unit_options": [],
+                  "selected_serving_unit": null,
+                  "selected_serving_quantity": null
+                }
+              ]
             }
           ]
         },
@@ -139,7 +208,17 @@
               "omega3_g": null,
               "time": "19:11",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [
+                {
+                  "unit": "cup",
+                  "grams_per_unit": 200.0,
+                  "quantity": 1.0
+                }
+              ],
+              "selected_serving_unit": "cup",
+              "selected_serving_quantity": 1.0,
+              "constituents": []
             },
             {
               "name": "Sample Dinner Item 2",
@@ -172,7 +251,11 @@
               "omega3_g": null,
               "time": "20:25",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             }
           ]
         },
@@ -210,7 +293,11 @@
               "omega3_g": null,
               "time": "21:22",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             }
           ]
         }
@@ -271,7 +358,11 @@
               "omega3_g": null,
               "time": "07:27",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             },
             {
               "name": "Sample Breakfast Item 2",
@@ -304,7 +395,11 @@
               "omega3_g": null,
               "time": "09:38",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             }
           ]
         },
@@ -342,7 +437,11 @@
               "omega3_g": null,
               "time": "11:23",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             },
             {
               "name": "Sample Lunch Item 2",
@@ -375,7 +474,11 @@
               "omega3_g": null,
               "time": "11:47",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             }
           ]
         },
@@ -413,7 +516,11 @@
               "omega3_g": null,
               "time": "20:40",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             }
           ]
         },
@@ -451,7 +558,11 @@
               "omega3_g": null,
               "time": "22:03",
               "source": "ai_estimated",
-              "note": null
+              "note": null,
+              "serving_unit_options": [],
+              "selected_serving_unit": null,
+              "selected_serving_quantity": null,
+              "constituents": []
             }
           ]
         }

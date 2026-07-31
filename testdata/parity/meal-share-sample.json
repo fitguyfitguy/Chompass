@@ -1,5 +1,5 @@
 {
-  "v": 1,
+  "v": 2,
   "meals": [
     {
       "name": "Shared Oatmeal",
@@ -9,7 +9,17 @@
       "fat": 8,
       "fiber": 6,
       "mealType": "breakfast",
-      "servingSizeGrams": 200
+      "servingSizeGrams": 200,
+      "servingUnitOptions": [
+        {
+          "unit": "bowl",
+          "gramsPerUnit": 200,
+          "quantity": 1
+        }
+      ],
+      "selectedServingUnit": "bowl",
+      "selectedServingQuantity": 1,
+      "constituents": []
     },
     {
       "name": "Shared Chicken Bowl",
@@ -20,7 +30,53 @@
       "sodium": 480,
       "mealType": "lunch",
       "servingSizeGrams": 350,
-      "customNote": "parity fixture"
+      "servingUnitOptions": [
+        {
+          "unit": "bowl",
+          "gramsPerUnit": 350,
+          "quantity": 1
+        }
+      ],
+      "selectedServingUnit": "bowl",
+      "selectedServingQuantity": 1,
+      "customNote": "parity fixture",
+      "constituents": [
+        {
+          "name": "Chicken",
+          "calories": 280,
+          "protein": 32,
+          "carbs": 0,
+          "fat": 12,
+          "servingSizeGrams": 150,
+          "emoji": "\ud83c\udf57",
+          "servingUnitOptions": [
+            {
+              "unit": "piece",
+              "gramsPerUnit": 75,
+              "quantity": 2
+            }
+          ],
+          "selectedServingUnit": "piece",
+          "selectedServingQuantity": 2
+        },
+        {
+          "name": "Rice",
+          "calories": 240,
+          "protein": 10,
+          "carbs": 40,
+          "fat": 6,
+          "servingSizeGrams": 200,
+          "servingUnitOptions": [
+            {
+              "unit": "cup",
+              "gramsPerUnit": 158,
+              "quantity": 1.3
+            }
+          ],
+          "selectedServingUnit": "cup",
+          "selectedServingQuantity": 1.3
+        }
+      ]
     }
   ]
 }

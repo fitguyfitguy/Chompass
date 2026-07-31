@@ -1,11 +1,12 @@
 // @ts-check
 /**
- * Serializer/validator for the sync-1.0 JSON document.
- * Compatible with android/.../export/SyncDocument.kt.
+ * Serializer/validator for the sync-1.1 JSON document.
+ * Compatible with android/.../export/SyncDocument.kt. Imports also accept 1.0.
  */
 
-export const SYNC_FORMAT_VERSION = "1.0";
+export const SYNC_FORMAT_VERSION = "1.1";
 export const SYNC_KIND = "sync";
+export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1"]);
 
 /** @param {import('./models.js').Grounding|null|undefined} g */
 function groundingToWire(g) {
@@ -117,6 +118,75 @@ function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
+/** @param {import('./models.js').ServingUnitOption[]} options */
+function servingUnitsToWire(options) {
+  if (!options?.length) return [];
+  return options.map((o) => ({
+    unit: o.unit,
+    grams_per_unit: round1(o.gramsPerUnit),
+    quantity: o.quantity != null ? round1(o.quantity) : null,
+  }));
+}
+
+/** @param {any} arr */
+function servingUnitsFromWire(arr) {
+  if (!Array.isArray(arr)) return [];
+  /** @type {import('./models.js').ServingUnitOption[]} */
+  const out = [];
+  for (const o of arr) {
+    const unit = String(o?.unit ?? "").trim();
+    const grams = Number(o?.grams_per_unit);
+    if (!unit || !(grams > 0)) continue;
+    out.push({
+      unit,
+      gramsPerUnit: grams,
+      quantity: o?.quantity != null ? Number(o.quantity) : null,
+    });
+  }
+  return out;
+}
+
+/** @param {import('./models.js').FoodConstituent[]} rows */
+function constituentsToWire(rows) {
+  if (!rows?.length) return [];
+  return rows.map((c) => ({
+    name: c.name,
+    calories: Math.round(c.calories),
+    protein_g: round1(c.proteinG),
+    carbs_g: round1(c.carbsG),
+    fat_g: round1(c.fatG),
+    quantity_g: round1(c.servingSizeGrams),
+    emoji: c.emoji ?? null,
+    serving_unit_options: servingUnitsToWire(c.servingUnitOptions ?? []),
+    selected_serving_unit: c.selectedServingUnit ?? null,
+    selected_serving_quantity: c.selectedServingQuantity != null ? round1(c.selectedServingQuantity) : null,
+  }));
+}
+
+/** @param {any} arr */
+function constituentsFromWire(arr) {
+  if (!Array.isArray(arr)) return [];
+  /** @type {import('./models.js').FoodConstituent[]} */
+  const out = [];
+  for (const c of arr) {
+    const name = String(c?.name ?? "").trim();
+    if (!name) continue;
+    out.push({
+      name,
+      calories: Math.round(Number(c.calories) || 0),
+      proteinG: Number(c.protein_g) || 0,
+      carbsG: Number(c.carbs_g) || 0,
+      fatG: Number(c.fat_g) || 0,
+      servingSizeGrams: Number(c.quantity_g) || 0,
+      emoji: c.emoji ?? null,
+      servingUnitOptions: servingUnitsFromWire(c.serving_unit_options),
+      selectedServingUnit: c.selected_serving_unit ?? null,
+      selectedServingQuantity: c.selected_serving_quantity != null ? Number(c.selected_serving_quantity) : null,
+    });
+  }
+  return out;
+}
+
 /**
  * @param {import('./models.js').FoodEntry} item
  * @param {string} updatedAt
@@ -141,6 +211,10 @@ export function foodEntryToSyncWire(item, updatedAt, deletedAt = null) {
     note: item.note ?? null,
     recipe_log_id: item.recipeLogId ?? null,
     grounding: groundingToWire(item.grounding ?? null),
+    serving_unit_options: servingUnitsToWire(item.servingUnitOptions ?? []),
+    selected_serving_unit: item.selectedServingUnit ?? null,
+    selected_serving_quantity: item.selectedServingQuantity != null ? round1(item.selectedServingQuantity) : null,
+    constituents: constituentsToWire(item.constituents ?? []),
   };
   for (const [wireKey, modelKey] of MICRO_FIELDS) {
     wire[wireKey] = round1(item[modelKey] ?? null);
@@ -169,6 +243,10 @@ export function foodEntryFromSyncWire(wire) {
     note: wire.note ?? null,
     recipeLogId: wire.recipe_log_id ?? null,
     grounding: groundingFromWire(wire.grounding ?? null),
+    servingUnitOptions: servingUnitsFromWire(wire.serving_unit_options),
+    selectedServingUnit: wire.selected_serving_unit ?? null,
+    selectedServingQuantity: wire.selected_serving_quantity != null ? Number(wire.selected_serving_quantity) : null,
+    constituents: constituentsFromWire(wire.constituents),
   };
   for (const [wireKey, modelKey] of MICRO_FIELDS) {
     entry[modelKey] = wire[wireKey] ?? null;
@@ -367,7 +445,7 @@ export function parseSyncDocument(doc) {
   if (exp.kind !== SYNC_KIND) {
     throw new UnsupportedSyncFormatError(`Unsupported kind: ${exp.kind}`);
   }
-  if (exp.format_version !== SYNC_FORMAT_VERSION) {
+  if (!SYNC_IMPORT_VERSIONS.has(exp.format_version)) {
     throw new UnsupportedSyncFormatError(`Unsupported format_version: ${exp.format_version}`);
   }
   for (const key of [

@@ -259,7 +259,9 @@ When changing any formula, constant, or guardrail:
 7. Note change in `docs/CHANGELOG.md` with user impact (e.g. “lose goal at 0.5 kg/wk now −550 kcal vs −500”).
 8. Run `devenv shell bash -lc 'cd android && ./gradlew test'` and `devenv tasks run release:check-parity` (or `./scripts/check_parity.sh`).
 
-When changing **diary / body-metrics / meal-share** wire formats: bump `format_version` / `v`, update both exporters/importers, extend [`contracts/`](../contracts/), refresh [`testdata/parity/`](../testdata/parity/) samples, then re-run `release:check-parity`. Feature imparity: [`docs/PARITY.md`](PARITY.md).
+When changing **diary / body-metrics / meal-share / sync** wire formats: bump `format_version` / `v`, update both exporters/importers, extend [`contracts/`](../contracts/), refresh [`testdata/parity/`](../testdata/parity/) samples, then re-run `release:check-parity`. Feature imparity: [`docs/PARITY.md`](PARITY.md).
+
+**Meal constituents (#154):** top-level meal nutrition is authoritative at parse time. Optional `constituents[]` rows are scaled or dropped by `ConstituentReconcile` / `constituents.js` (`MAX_REL_ERROR=0.50`) so grams and macros sum to the meal totals. After the user edits rows in review, constituent sums become the meal totals; whole-meal serving scale multiplies every row.
 
 ---
 

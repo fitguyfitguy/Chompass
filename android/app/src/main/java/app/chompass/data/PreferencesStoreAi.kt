@@ -126,6 +126,18 @@ internal suspend fun PreferencesStore.setPortionClarifyEnabledImpl(v: Boolean) {
         dataStore.edit { it[Keys.PORTION_CLARIFY_ENABLED] = v }
     }
 
+    /**
+     * Ask the food AI for optional `constituents[]` on composite meals.
+     * Default on for cloud providers; [FoodAnalysisService] still forces this off
+     * when the selected provider is on-device (local Gemma).
+     */
+internal val PreferencesStore.mealConstituentsEnabledImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.MEAL_CONSTITUENTS_ENABLED] ?: true
+    }
+internal suspend fun PreferencesStore.setMealConstituentsEnabledImpl(v: Boolean) {
+        dataStore.edit { it[Keys.MEAL_CONSTITUENTS_ENABLED] = v }
+    }
+
     // -- Speech Provider selection ---------------------------------------
 internal val PreferencesStore.selectedSpeechProviderImpl: Flow<SpeechProvider> get() = dataStore.data.map {
         val raw = it[Keys.SELECTED_SPEECH_PROVIDER]

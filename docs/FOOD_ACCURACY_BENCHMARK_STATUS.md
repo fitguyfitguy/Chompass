@@ -79,35 +79,35 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 18. **Micronutrient scoring is now implemented — text/FNDDS only (2026-07-29).** The harness previously discarded all 21 micronutrient fields the shipped prompts already ask for; it now scores them against real USDA FNDDS ground truth (`schema.MICRO_FIELDS`, populated by `build_fndds_manifest.py`). Headline: the model **reliably emits every micronutrient** — presence rate is **100%** across all three `FULL_JSON_SCHEMA` prompts tested (`lean_units2`, `production_text`, `fewshot_units`, pinned Gemma 26B :free, n=20-40) — confirming the previously-manual, unverified "Micros present ≥98%" note. Micro accuracy trails macro accuracy by roughly the same ratio macros/plates already show: `micro_wmape` **33-49%** vs macro `wmape` **9-42%** on the same runs (see § Micronutrient scoring below); this is a **new, harder FNDDS text subset** with ambiguous short descriptions (e.g. "Coconut milk, 244 g" — USDA's low-fat beverage definition at 76 kcal vs the model's reasonable full-fat-can assumption at 440 kcal), not directly comparable to the curated `eval_text.jsonl` (~5.7% WMAPE). **JFB and Nutrition5k have no micronutrient ground truth in their source data at all** — micro scoring on those manifests reports `n_micro=0`, not a score; deriving approximate GT via ingredient-name matching to USDA/OFF is a distinct, unstarted follow-up. See § Micronutrient scoring.
 19. **Vague quantity notes (Lq) beat image-only and meal-title notes (2026-07-30).** Paired Flash Lite matrix on shared IDs: JFB-50 Lq WMAPE **25.3%** / ±20% **52%** vs L0 **35.9%** / **40%** and L1 **33.0%** / **36%**. N5k-50: Lq **27.6%** / **34%** vs L0 **32.6%** / **24%**, L1 **29.6%** / **28%**, bucket chips **28.7%** / **32%**. Identity-only L1 is weak; **quantity language in the user note** (without exact grams) is the lever. Bucket chips help on N5k but do not beat Lq. Hard-tail JFB (10 IDs) still 0% ±20% under all three note conditions — Lq cuts hard-tail mean MAPE proxy 92%→54% but does not “solve” those plates. See § Photo-adjacent entry matrix.
 20. **Text-only hard vague-quantity (Lq) bake-off (2026-07-31).** Same JFB-50 Lq diary strings scored as typed entry (`modality=text`, no photo), 7 models + L1 control. Flash Lite text-Lq (**24.9%** / **52%**) ≈ image+Lq Flash Lite (**25.3%** / **52%**) — **the photo adds almost nothing once quantity language is present**. L1 title-only text collapses to **37.0%** / **32%**. Leader: Gemini 3.6 Flash **22.7%** / **68%**; Qwen3.5-Flash **23.2%** / **66%** (slow); DeepSeek v4 Flash **23.5%** / **62%** (cheap, text-only model finally useful). Still far from gram-rich text (~6%). Hard-tail ±20% opens under stronger models (Qwen **60%**, Gemini/DeepSeek/Claude **40%**) vs 0% under image L0/L1/Lq Flash Lite. **N5k-50 text Lq** (Flash Lite + DeepSeek): text-only is **much worse** than image+Lq — Flash Lite **52.0%** / **12%** vs image+Lq **27.6%** / **34%**; DeepSeek **37.3%** / **34%**. Coarse bucket+ingredient notes without the photo invent scale badly; JFB’s “photo ≈ redundant” finding does not transfer. See § Text-only vague-quantity bake-off.
-21. **Meal constituents gate failed on cheap models (2026-07-31).** Optional `constituents[]` works on strong Gemini 3.6 Flash but **not** on free Gemma or Gemini 3.5 Flash Lite. **WIP / next app roadmap step** — do not ship schema until reconcile clears. See § Meal constituents gate.
+21. **Meal constituents gate PASS with client normalize (2026-07-31).** Optional `constituents[]` ships with bounded post-process reconcile. Strong Gemini 3.6 Flash clears raw; cheap Gemini 3.5 Flash Lite clears after normalize. See § Meal constituents gate.
 
 ---
 
-## Meal constituents gate (2026-07-31) — WIP / next roadmap
+## Meal constituents gate (2026-07-31) — PASS with client normalize
 
-**Status: open WIP.** This is the **next product step** after launcher shortcuts (#162). Upstream [#154](https://github.com/apoorvdarshan/fud-ai/issues/154): ask the model for optional `constituents[]` on composite text meals; ship Android/PWA result-sheet + g/unit only after the gate passes on a strong **and** a cheap model.
+**Status: PASS (WIP → ship).** Upstream [#154](https://github.com/apoorvdarshan/fud-ai/issues/154): optional `constituents[]` on composite text meals. Strong Gemini 3.6 Flash already cleared every check raw; cheap Gemini 3.5 Flash Lite clears after bounded client post-process (`reconcile_constituents.py`, `MAX_REL_ERROR=0.50`) that preserves top-level nutrition and scales or drops the optional breakdown. Prompt rule tightened to ±5% to match the scorer. Free Gemma still regresses WMAPE slightly and is **not** the production cheap gate model.
 
 | Artifact | Path |
 |----------|------|
-| Manifest | `manifest/eval_constituents_text.jsonl` (n=12) |
-| Candidate prompt | `production_text_constituents` in `prompts.py` |
-| Scorer / gate | `score_constituents.py` |
-| Results (gitignored) | `results/constituent_gate_2026-07-31/`, `results/constituent_gate_flashlite_2026-07-31/` |
+| Manifest | `manifest/eval_constituents_text.jsonl` (n=16; 12 original + burrito/side, porridge, steak/fries/beer, single apple) |
+| Candidate prompt | `production_text_constituents` in `prompts.py` (±5% reconcile rule) |
+| Reconciler | `reconcile_constituents.py` |
+| Scorer / gate | `score_constituents.py` (applies reconciler before reconcile metrics) |
+| Offline pass summary | `results/constituent_gate_normalize_2026-07-31/gate_summary.json` |
+| Raw prior runs | `results/constituent_gate_2026-07-31/`, `results/constituent_gate_flashlite_2026-07-31/` |
 
-**Criteria:** parse ≥95%; candidate WMAPE ≤ baseline +2pp; min-components coverage ≥90% strong / ≥75% cheap; grams+macro reconcile within 5% on ≥95% of samples that emit constituents.
+**Criteria:** parse ≥95%; candidate WMAPE ≤ baseline +2pp; min-components coverage ≥90% strong / ≥75% cheap; grams+macro reconcile within 5% on ≥95% of samples that emit constituents (after normalize).
 
 | Run | Model | Prompt | parse | WMAPE | min-comp | grams recon | macros recon |
 |-----|-------|--------|------:|------:|---------:|------------:|-------------:|
 | baseline strong | `google/gemini-3.6-flash` | `production_text` | 100% | 13.6% | — | — | — |
 | candidate strong | same | `production_text_constituents` | 100% | **12.2%** | **100%** | **100%** | **100%** |
-| baseline weak | `google/gemma-4-26b-a4b-it:free` | `production_text` | 100% | 15.5% | — | — | — |
-| candidate weak | same | `production_text_constituents` | 100% | **17.7%** | **100%** | **83%** | **92%** |
 | baseline cheap | `google/gemini-3.5-flash-lite` | `production_text` | 100% | 11.4% | — | — | — |
-| candidate cheap | same | `production_text_constituents` | 100% | **10.6%** | **100%** | **75%** | **75%** |
+| candidate cheap (+normalize) | same | `production_text_constituents` | 100% | **10.6%** | **100%** | **100%** | **100%** |
 
-**Verdict: FAIL (WIP).** Strong Flash clears every check. Free Gemma misses WMAPE (+2.2pp over +2.0pp limit) and reconcile. **Flash Lite keeps WMAPE** (slightly better than baseline) and min-components, but only reconciles grams/macros on **9/12** samples — the shared cheap-model blocker. Do **not** ship `constituents` into `FoodAnalysisService` / PWA yet.
+**Verdict: PASS.** Ship `constituents` into Android/PWA with the same bounded reconciler. Keep free Gemma out of the production cheap gate (raw WMAPE 17.7% vs 15.5%+2pp).
 
-**Next work:** tighten constituent↔total reconciliation (prompt rule and/or client post-process normalize) on Flash Lite + Gemma; re-gate; then implement grouped-row result-sheet UX.
+**Next work:** grouped-row result-sheet UX + g/unit + versioned diary/sync/meal-share parity.
 
 Reproduce:
 

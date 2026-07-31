@@ -33,7 +33,7 @@ class DiaryExporterNutrientsTest {
         ) ?: error("expected export")
 
         val content = result.second
-        assertTrue(content.contains("\"format_version\": \"1.1\""))
+        assertTrue(content.contains("\"format_version\": \"1.2\""))
         assertTrue(content.contains("\"fiber_g\": 1.2"))
         assertTrue(content.contains("\"sodium_mg\": 50"))
         assertTrue(content.contains("\"vitamin_d_mcg\": 10.5"))

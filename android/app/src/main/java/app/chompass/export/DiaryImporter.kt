@@ -10,12 +10,14 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodSource
 import app.chompass.models.GroundedComponentProvenance
 import app.chompass.models.MealType
 import app.chompass.models.NutrientSourceKind
+import app.chompass.models.ServingUnitOption
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -29,11 +31,12 @@ sealed class DiaryImportResult {
 
 /**
  * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI / NoFUD) into [FoodEntry] rows.
- * Accepts format 1.0 (macros only) and 1.1 (macros + micronutrients). Exports always use 1.1.
+ * Accepts format 1.0 (macros), 1.1 (macros + micros), and 1.2 (serving units + constituents).
+ * Exports always use 1.2.
  */
 object DiaryImporter {
-    /** Versions accepted on import. New exports always stamp format 1.1. */
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1")
+    /** Versions accepted on import. New exports always stamp format 1.2. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2")
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -60,7 +63,7 @@ object DiaryImporter {
         val version = export["format_version"]?.asString()
         if (version == null || version !in SUPPORTED_IMPORT_VERSIONS) {
             return DiaryImportResult.UnsupportedFormat(
-                "unsupported format_version \"${version ?: ""}\" (need 1.0 or 1.1)",
+                "unsupported format_version \"${version ?: ""}\" (need 1.0, 1.1, or 1.2)",
             )
         }
 
@@ -122,8 +125,12 @@ object DiaryImporter {
                         folate = item["folate_mcg"]?.asDouble(),
                         omega3 = item["omega3_g"]?.asDouble(),
                         servingSizeGrams = item["quantity_g"]?.asDouble(),
+                        servingUnitOptions = parseServingUnitOptions(item["serving_unit_options"]?.asArrayOrNull()),
+                        selectedServingUnit = item["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
+                        selectedServingQuantity = item["selected_serving_quantity"]?.asDouble(),
                         customNote = item["note"]?.asString()?.takeIf { it.isNotBlank() },
                         grounding = parseGrounding(item["grounding"]?.asObjectOrNull()),
+                        constituents = parseConstituents(item["constituents"]?.asArrayOrNull()),
                     )
                 }
             }
@@ -166,6 +173,42 @@ object DiaryImporter {
             "nutritionLabel" -> NutrientSourceKind.NUTRITION_LABEL
             else -> NutrientSourceKind.MODEL_ESTIMATE
         }
+
+    private fun parseServingUnitOptions(arr: JsonArray?): List<ServingUnitOption> {
+        if (arr == null) return emptyList()
+        return arr.mapNotNull { el ->
+            val o = el.asObjectOrNull() ?: return@mapNotNull null
+            val unit = o["unit"]?.asString()?.trim().orEmpty()
+            val grams = o["grams_per_unit"]?.asDouble()
+            if (unit.isEmpty() || grams == null || grams <= 0) return@mapNotNull null
+            ServingUnitOption(
+                unit = unit,
+                gramsPerUnit = grams,
+                quantity = o["quantity"]?.asDouble(),
+            )
+        }
+    }
+
+    private fun parseConstituents(arr: JsonArray?): List<FoodConstituent> {
+        if (arr == null) return emptyList()
+        return arr.mapNotNull { el ->
+            val o = el.asObjectOrNull() ?: return@mapNotNull null
+            val name = o["name"]?.asString()?.trim().orEmpty()
+            if (name.isEmpty()) return@mapNotNull null
+            FoodConstituent(
+                name = name,
+                calories = o["calories"]?.asInt() ?: 0,
+                protein = o["protein_g"]?.asDouble() ?: 0.0,
+                carbs = o["carbs_g"]?.asDouble() ?: 0.0,
+                fat = o["fat_g"]?.asDouble() ?: 0.0,
+                servingSizeGrams = o["quantity_g"]?.asDouble() ?: 0.0,
+                emoji = o["emoji"]?.asString()?.takeIf { it.isNotBlank() },
+                servingUnitOptions = parseServingUnitOptions(o["serving_unit_options"]?.asArrayOrNull()),
+                selectedServingUnit = o["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
+                selectedServingQuantity = o["selected_serving_quantity"]?.asDouble(),
+            )
+        }
+    }
 
     private fun parseGrounding(obj: JsonObject?): FoodGroundingProvenance? {
         if (obj == null) return null

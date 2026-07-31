@@ -97,8 +97,20 @@ export const zh_CN = Object.freeze({
   'toast.saved': '已保存',
   'toast.deleted': '已删除',
   'toast.copied': '已复制',
+  // Entry / meal constituents
+  'entry.constituents.title': '食材',
+  'entry.constituents.count': '食材（{count}）',
+  'entry.constituents.add': '添加食材',
+  'entry.constituents.remove': '移除食材',
+  'entry.constituents.name': '名称',
+  'entry.constituents.quantity': '份量',
+  'entry.constituents.unit': '单位',
+  'entry.constituents.item_fallback': '食材',
+  'entry.constituents.macros': '{calories} 千卡 · 蛋白 {protein} · 碳水 {carbs} · 脂肪 {fat}',
   'a11y.open_menu': '打开菜单',
   'a11y.close_sheet': '关闭面板',
   'a11y.add_food': '添加食物',
   'a11y.primary_nav': '主要',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

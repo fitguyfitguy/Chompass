@@ -2,9 +2,11 @@ package app.chompass.export
 
 import app.chompass.R
 
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -127,6 +129,25 @@ object DiaryExporter {
     private fun optionalNumber(x: Double?, missing: String = ""): String = x?.let { r1(it).toString() } ?: missing
     private fun time(entry: FoodEntry): String = timeFmt.format(entry.timestamp.atZone(zone))
 
+    private fun servingUnitDto(o: ServingUnitOption): ServingUnitDto = ServingUnitDto(
+        unit = o.unit,
+        grams_per_unit = r1(o.gramsPerUnit),
+        quantity = o.quantity?.let { r1(it) },
+    )
+
+    private fun constituentDto(c: FoodConstituent): ConstituentDto = ConstituentDto(
+        name = c.name,
+        calories = c.calories,
+        protein_g = r1(c.protein),
+        carbs_g = r1(c.carbs),
+        fat_g = r1(c.fat),
+        quantity_g = r1(c.servingSizeGrams),
+        emoji = c.emoji,
+        serving_unit_options = c.servingUnitOptions.takeIf { it.isNotEmpty() }?.map { servingUnitDto(it) },
+        selected_serving_unit = c.selectedServingUnit,
+        selected_serving_quantity = c.selectedServingQuantity?.let { r1(it) },
+    )
+
     private fun itemDto(e: FoodEntry): ItemDto = ItemDto(
         name = e.name,
         quantity_g = e.servingSizeGrams?.let { r1(it) },
@@ -182,6 +203,10 @@ object DiaryExporter {
                 },
             )
         },
+        serving_unit_options = e.servingUnitOptions.takeIf { it.isNotEmpty() }?.map { servingUnitDto(it) },
+        selected_serving_unit = e.selectedServingUnit,
+        selected_serving_quantity = e.selectedServingQuantity?.let { r1(it) },
+        constituents = e.constituents.map { constituentDto(it) },
     )
 
     private fun nutrientCells(e: FoodEntry): List<String> = listOf(
@@ -199,6 +224,23 @@ object DiaryExporter {
     // --- JSON ---
 
     @Serializable private data class Macro(val calories: Int, val protein_g: Double, val carbs_g: Double, val fat_g: Double)
+    @Serializable private data class ServingUnitDto(
+        val unit: String,
+        val grams_per_unit: Double,
+        val quantity: Double? = null,
+    )
+    @Serializable private data class ConstituentDto(
+        val name: String,
+        val calories: Int,
+        val protein_g: Double,
+        val carbs_g: Double,
+        val fat_g: Double,
+        val quantity_g: Double,
+        val emoji: String? = null,
+        val serving_unit_options: List<ServingUnitDto>? = null,
+        val selected_serving_unit: String? = null,
+        val selected_serving_quantity: Double? = null,
+    )
     @Serializable private data class ItemDto(
         val name: String, val quantity_g: Double? = null, val calories: Int,
         val protein_g: Double, val carbs_g: Double, val fat_g: Double,
@@ -213,6 +255,10 @@ object DiaryExporter {
         val folate_mcg: Double? = null, val omega3_g: Double? = null,
         val time: String, val source: String, val note: String? = null,
         val grounding: GroundingDto? = null,
+        val serving_unit_options: List<ServingUnitDto>? = null,
+        val selected_serving_unit: String? = null,
+        val selected_serving_quantity: Double? = null,
+        val constituents: List<ConstituentDto> = emptyList(),
     )
     @Serializable private data class GroundingComponentDto(
         val name: String,
@@ -266,7 +312,7 @@ object DiaryExporter {
             )
         }
         val doc = Doc(
-            export = MetaDto("Chompass", "1.1", RangeDto(dayFmt.format(lo), dayFmt.format(hi))),
+            export = MetaDto("Chompass", "1.2", RangeDto(dayFmt.format(lo), dayFmt.format(hi))),
             days = days,
         )
         return jsonPretty.encodeToString(Doc.serializer(), doc)

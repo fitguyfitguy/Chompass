@@ -252,7 +252,7 @@ class DiaryImporterTest {
             mealDisplay = { it.name },
         ) ?: error("expected export")
 
-        assertTrue(exported.second.contains("\"format_version\": \"1.1\""))
+        assertTrue(exported.second.contains("\"format_version\": \"1.2\""))
         val imported = DiaryImporter.parse(exported.second, ZoneId.systemDefault())
         assertTrue(imported is DiaryImportResult.Success)
         val entry = (imported as DiaryImportResult.Success).entries.single()

@@ -16,34 +16,52 @@ class ContractSchemaPresenceTest {
     @Test
     fun contractSchemasExistAndMatchFixtureVersions() {
         val contracts = repoFile("contracts")
+        assertTrue(File(contracts, "diary-1.2.schema.json").isFile)
         assertTrue(File(contracts, "diary-1.1.schema.json").isFile)
         assertTrue(File(contracts, "body-metrics-1.0.schema.json").isFile)
+        assertTrue(File(contracts, "meal-share-v2.schema.json").isFile)
         assertTrue(File(contracts, "meal-share-v1.schema.json").isFile)
+        assertTrue(File(contracts, "sync-1.1.schema.json").isFile)
+        assertTrue(File(contracts, "sync-1.0.schema.json").isFile)
 
-        val diarySchema = JSONObject(File(contracts, "diary-1.1.schema.json").readText())
-        val diaryConst = diarySchema
-            .getJSONObject("properties")
-            .getJSONObject("export")
-            .getJSONObject("properties")
-            .getJSONObject("format_version")
-            .getString("const")
-        val diaryFixture = ParityFixtures.readJson("diary-sample.json")
-        assertEquals(diaryConst, diaryFixture.getJSONObject("export").getString("format_version"))
+        assertVersionMatch(
+            schemaFile = File(contracts, "diary-1.2.schema.json"),
+            fixture = ParityFixtures.readJson("diary-sample.json"),
+            exportFormat = true,
+        )
+        assertVersionMatch(
+            schemaFile = File(contracts, "body-metrics-1.0.schema.json"),
+            fixture = ParityFixtures.readJson("body-metrics-sample.json"),
+            exportFormat = true,
+        )
+        assertVersionMatch(
+            schemaFile = File(contracts, "sync-1.1.schema.json"),
+            fixture = ParityFixtures.readJson("sync-sample.json"),
+            exportFormat = true,
+        )
 
-        val bodySchema = JSONObject(File(contracts, "body-metrics-1.0.schema.json").readText())
-        val bodyConst = bodySchema
-            .getJSONObject("properties")
-            .getJSONObject("export")
-            .getJSONObject("properties")
-            .getJSONObject("format_version")
-            .getString("const")
-        val bodyFixture = ParityFixtures.readJson("body-metrics-sample.json")
-        assertEquals(bodyConst, bodyFixture.getJSONObject("export").getString("format_version"))
-
-        val mealSchema = JSONObject(File(contracts, "meal-share-v1.schema.json").readText())
+        val mealSchema = JSONObject(File(contracts, "meal-share-v2.schema.json").readText())
         val mealConst = mealSchema.getJSONObject("properties").getJSONObject("v").getInt("const")
         val mealFixture = ParityFixtures.readJson("meal-share-sample.json")
         assertEquals(mealConst, mealFixture.getInt("v"))
+    }
+
+    private fun assertVersionMatch(
+        schemaFile: File,
+        fixture: JSONObject,
+        exportFormat: Boolean,
+    ) {
+        val schema = JSONObject(schemaFile.readText())
+        val const = schema
+            .getJSONObject("properties")
+            .getJSONObject("export")
+            .getJSONObject("properties")
+            .getJSONObject("format_version")
+            .getString("const")
+        assertEquals(const, fixture.getJSONObject("export").getString("format_version"))
+        if (exportFormat) {
+            assertTrue(fixture.getJSONObject("export").has("format_version"))
+        }
     }
 
     private fun repoFile(relative: String): File {

@@ -87,7 +87,7 @@ const LIST_KEYS = [
 ];
 
 /**
- * Merge two sync-1.0 documents into one. Export metadata comes from `remote`
+ * Merge two sync documents into one. Export metadata comes from `remote`
  * when present, else `local`, with generated_at refreshed by the caller if desired.
  * @param {any} local
  * @param {any} remote
@@ -101,7 +101,7 @@ export function mergeSyncDocuments(local, remote) {
       ...(remote.export ?? local.export ?? {}),
       app: "Chompass",
       kind: "sync",
-      format_version: "1.0",
+      format_version: "1.1",
     },
   };
   for (const key of LIST_KEYS) {

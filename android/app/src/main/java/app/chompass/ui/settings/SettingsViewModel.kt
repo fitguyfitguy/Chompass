@@ -93,6 +93,7 @@ data class SettingsUiState(
     val fallbackApiKeyMasked: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
     val portionClarifyEnabled: Boolean = false,
+    val mealConstituentsEnabled: Boolean = true,
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val mealSchedule: app.chompass.models.MealSchedule = app.chompass.models.MealSchedule.Default,
@@ -171,6 +172,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
             val geminiGoogleSearch = container.prefs.geminiGoogleSearchEnabled.first()
             val portionClarify = container.prefs.portionClarifyEnabled.first()
+            val mealConstituents = container.prefs.mealConstituentsEnabled.first()
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
             val homeDisplay = container.prefs.homeDisplayPreferences.first()
             val mealSchedule = container.prefs.mealSchedule.first()
@@ -223,6 +225,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 fallbackApiKeyMasked = fbMasked,
                 geminiGoogleSearchEnabled = geminiGoogleSearch,
                 portionClarifyEnabled = portionClarify,
+                mealConstituentsEnabled = mealConstituents,
                 optionalNutrientGoals = optionalGoals,
                 homeDisplay = homeDisplay,
                 mealSchedule = mealSchedule,
@@ -302,6 +305,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setPortionClarifyEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setPortionClarifyEnabled(v) },
         { copy(portionClarifyEnabled = v) },
+    )
+
+    fun setMealConstituentsEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setMealConstituentsEnabled(v) },
+        { copy(mealConstituentsEnabled = v) },
     )
 
     fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) = updateUiPref(

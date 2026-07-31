@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chompass.app/contracts/meal-share-v2.schema.json",
+  "title": "Chompass meal-share payload v2",
+  "description": "Meal-share v1 plus servingUnitOptions (with gramsPerUnit) and embedded constituents. CamelCase wire matches v1. Imports still accept v: 1.",
+  "type": "object",
+  "required": ["v", "meals"],
+  "additionalProperties": true,
+  "properties": {
+    "v": { "const": 2 },
+    "meals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "calories"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "calories": { "type": "number" },
+          "protein": { "type": "number" },
+          "carbs": { "type": "number" },
+          "fat": { "type": "number" },
+          "mealType": {
+            "type": "string",
+            "enum": ["breakfast", "lunch", "dinner", "snack"]
+          },
+          "emoji": { "type": "string" },
+          "sugar": { "type": "number" },
+          "addedSugar": { "type": "number" },
+          "fiber": { "type": "number" },
+          "saturatedFat": { "type": "number" },
+          "monounsaturatedFat": { "type": "number" },
+          "polyunsaturatedFat": { "type": "number" },
+          "cholesterol": { "type": "number" },
+          "sodium": { "type": "number" },
+          "potassium": { "type": "number" },
+          "transFat": { "type": "number" },
+          "calcium": { "type": "number" },
+          "iron": { "type": "number" },
+          "magnesium": { "type": "number" },
+          "zinc": { "type": "number" },
+          "vitaminA": { "type": "number" },
+          "vitaminC": { "type": "number" },
+          "vitaminD": { "type": "number" },
+          "vitaminB12": { "type": "number" },
+          "vitaminE": { "type": "number" },
+          "vitaminK": { "type": "number" },
+          "folate": { "type": "number" },
+          "omega3": { "type": "number" },
+          "servingSizeGrams": { "type": "number" },
+          "servingUnitOptions": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/servingUnitOption" }
+          },
+          "selectedServingUnit": { "type": "string" },
+          "selectedServingQuantity": { "type": "number" },
+          "customNote": { "type": "string" },
+          "constituents": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/constituent" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "servingUnitOption": {
+      "type": "object",
+      "required": ["unit", "gramsPerUnit"],
+      "properties": {
+        "unit": { "type": "string", "minLength": 1 },
+        "gramsPerUnit": { "type": "number", "exclusiveMinimum": 0 },
+        "quantity": { "type": ["number", "null"] }
+      }
+    },
+    "constituent": {
+      "type": "object",
+      "required": ["name", "calories"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "calories": { "type": "number" },
+        "protein": { "type": "number" },
+        "carbs": { "type": "number" },
+        "fat": { "type": "number" },
+        "servingSizeGrams": { "type": "number" },
+        "emoji": { "type": "string" },
+        "servingUnitOptions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/servingUnitOption" }
+        },
+        "selectedServingUnit": { "type": "string" },
+        "selectedServingQuantity": { "type": "number" }
+      }
+    }
+  }
+}

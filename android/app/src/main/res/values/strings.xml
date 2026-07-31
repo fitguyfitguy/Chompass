@@ -464,6 +464,11 @@
     <!-- Food sheets shared primitives -->
     <string name="sheet_food_details">Food Details</string>
     <string name="sheet_serving">Serving</string>
+    <string name="sheet_constituents">Ingredients</string>
+    <string name="sheet_constituents_count">Ingredients (%1$d)</string>
+    <string name="sheet_constituents_add">Add ingredient</string>
+    <string name="sheet_constituents_remove">Remove ingredient</string>
+    <string name="sheet_constituents_macros_format">%1$d kcal · P %2$s · C %3$s · F %4$s</string>
     <string name="sheet_portion_clarify_prompt">Confirm the portion?</string>
     <string name="sheet_portion_clarify_weight_label">Exact weight</string>
     <string name="sheet_portion_clarify_weight_placeholder">grams</string>
@@ -787,6 +792,9 @@
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this — on Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
     <string name="settings_portion_clarify">Portion size check</string>
     <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction (rescale without another AI call) plus optional size chips (small/regular/large/restaurant-size) that re-analyze with your answer.</string>
+    <string name="settings_meal_constituents">Meal ingredient breakdown</string>
+    <string name="settings_meal_constituents_footer">When enabled, the AI may split composite meals into editable ingredients with grams and units. Works best with stronger cloud models; turn off for cheaper or smaller models if results look inconsistent.</string>
+    <string name="settings_meal_constituents_footer_on_device">Unavailable for on-device Gemma — ingredient breakdown needs a stronger model. Switch to a cloud provider to enable this.</string>
     <string name="on_device_model_privacy_notice">Runs entirely on this device — nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
     <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices — especially lower-tier or non-Tensor hardware — haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
     <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads — especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>

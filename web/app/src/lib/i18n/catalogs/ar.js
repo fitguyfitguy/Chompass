@@ -97,8 +97,20 @@ export const ar = Object.freeze({
   'toast.saved': 'تم الحفظ',
   'toast.deleted': 'تم الحذف',
   'toast.copied': 'تم النسخ',
+  // Entry / meal constituents
+  'entry.constituents.title': 'المكونات',
+  'entry.constituents.count': 'المكونات ({count})',
+  'entry.constituents.add': 'إضافة مكون',
+  'entry.constituents.remove': 'إزالة المكون',
+  'entry.constituents.name': 'الاسم',
+  'entry.constituents.quantity': 'الكمية',
+  'entry.constituents.unit': 'الوحدة',
+  'entry.constituents.item_fallback': 'مكون',
+  'entry.constituents.macros': '{calories} سعرة · ب {protein} · ك {carbs} · د {fat}',
   'a11y.open_menu': 'فتح القائمة',
   'a11y.close_sheet': 'إغلاق اللوحة',
   'a11y.add_food': 'إضافة طعام',
   'a11y.primary_nav': 'أساسي',
+  'settings.ai.meal_constituents': 'Meal ingredient breakdown',
+  'settings.ai.meal_constituents_hint': 'Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.'
 });

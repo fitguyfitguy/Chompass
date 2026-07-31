@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.GroundingConfidence
 import app.chompass.models.MicronutrientValues
@@ -99,6 +100,11 @@ data class FoodAnalysis(
     /** Present when nutrients were grounded (USDA / OFF / history) rather than free-form estimated. */
     val grounding: FoodGroundingProvenance? = null,
     val groundingConfidence: GroundingConfidence? = null,
+    /**
+     * Optional composite-meal breakdown. Empty means an indivisible food.
+     * When non-empty, grams/macros sum to the meal totals after reconcile.
+     */
+    val constituents: List<FoodConstituent> = emptyList(),
 )
 
 /**
@@ -127,6 +133,7 @@ fun FoodAnalysis.toFoodEntry(
             selectedServingQuantity = selectedServingQuantity,
             customNote = customNote,
             grounding = grounding,
+            constituents = constituents,
         )
     )
 
@@ -264,7 +271,7 @@ internal object FoodJsonParser {
         val selectedOption = unitOptions.firstOrNull()
         fun optDouble(key: String): Double? =
             optDouble(json, key)
-        return MicronutrientValues.fromJson(::optDouble).applyTo(
+        val parsed = MicronutrientValues.fromJson(::optDouble).applyTo(
             FoodAnalysis(
                 name = name,
                 calories = json.optInt("calories"),
@@ -275,9 +282,11 @@ internal object FoodJsonParser {
                 emoji = json.optString("emoji").takeIf { it.isNotEmpty() },
                 servingUnitOptions = unitOptions,
                 selectedServingUnit = selectedOption?.unit,
-                selectedServingQuantity = selectedOption?.quantityFor(servingSizeGrams)
+                selectedServingQuantity = selectedOption?.quantityFor(servingSizeGrams),
+                constituents = parseConstituents(json),
             )
         )
+        return ConstituentReconcile.reconcile(parsed)
     }
 
     fun parseRecognition(text: String): app.chompass.models.FoodRecognitionResult {
@@ -427,6 +436,46 @@ internal object FoodJsonParser {
             fat = macro("fat", 400),
             reason = json.optString("reason").takeIf { it.isNotBlank() }
         )
+    }
+
+    private fun parseConstituents(json: JSONObject): List<FoodConstituent> {
+        val raw = json.optJSONArray("constituents")
+            ?: json.optJSONArray("ingredients")
+            ?: json.optJSONArray("components")
+            ?: json.optJSONArray("items")
+            ?: return emptyList()
+        val out = mutableListOf<FoodConstituent>()
+        for (i in 0 until raw.length()) {
+            if (out.size >= ConstituentReconcile.MAX_CONSTITUENTS) break
+            val row = raw.optJSONObject(i) ?: continue
+            val name = row.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue
+            val grams = optDouble(row, "serving_size_grams") ?: continue
+            val calories = when (val value = row.opt("calories")) {
+                is Number -> value.toDouble().roundToInt()
+                is String -> value.toDoubleOrNull()?.roundToInt()
+                else -> null
+            } ?: continue
+            val protein = optDouble(row, "protein") ?: continue
+            val carbs = optDouble(row, "carbs") ?: continue
+            val fat = optDouble(row, "fat") ?: continue
+            if (grams <= 0 || calories < 0 || protein < 0 || carbs < 0 || fat < 0) continue
+            if (!grams.isFinite() || !protein.isFinite() || !carbs.isFinite() || !fat.isFinite()) continue
+            val unitOptions = parseServingUnitOptions(row, grams)
+            val selected = unitOptions.firstOrNull()
+            out += FoodConstituent(
+                name = name,
+                calories = calories,
+                protein = protein,
+                carbs = carbs,
+                fat = fat,
+                servingSizeGrams = grams,
+                emoji = row.optString("emoji").takeIf { it.isNotBlank() && it != "null" },
+                servingUnitOptions = unitOptions,
+                selectedServingUnit = selected?.unit,
+                selectedServingQuantity = selected?.quantityFor(grams),
+            )
+        }
+        return out
     }
 
     private fun parseServingUnitOptions(
