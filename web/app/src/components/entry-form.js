@@ -19,6 +19,10 @@ import {
   optionId,
 } from "../lib/chompass-core/serving-units.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
+import { analyzeFoodEntry, ANALYSIS_PHASE, isAbortError } from "../lib/ai/food-analyze.js";
+import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
+import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
+import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 
 const MICRO_FIELDS = [
   ["sugarG", "Sugar g"],
@@ -65,6 +69,17 @@ export class EntryForm extends HTMLElement {
     this.selectedServingUnit = "g";
     this.quantityText = "100";
     this.servingReady = false;
+    this.correctNote = "";
+    this.correcting = false;
+    /** @type {string|null} */
+    this.correctPhase = null;
+    /** @type {import('../lib/ai/partial-json.js').PartialFoodEstimate|null} */
+    this.correctPartial = null;
+    /** @type {{label: string, before: string, after: string}[]} */
+    this.correctDiff = [];
+    this.correctError = "";
+    /** @type {AbortController|null} */
+    this.correctAbort = null;
     const prefillRaw = params.get("prefill");
     if (prefillRaw && (!this.entryId || this.entryId === "new")) {
       try {
@@ -280,10 +295,12 @@ export class EntryForm extends HTMLElement {
           </div>
         </section>
 
+        ${this.existing ? this.renderCorrectSection(e) : ""}
+
         ${this.existing ? `<button type="button" class="btn btn--ghost" data-action="favorite">${fav ? "Unfavorite" : "Favorite"}</button>` : ""}
         ${this.existing ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
         <div class="subpage-cta btn-row">
-          <button type="submit" class="btn btn--primary">${primaryLabel}</button>
+          <button type="submit" class="btn btn--primary" ${this.correcting ? "disabled" : ""}>${primaryLabel}</button>
           <button type="button" class="btn btn--ghost" data-action="cancel">Cancel</button>
         </div>
       </form>
@@ -291,6 +308,7 @@ export class EntryForm extends HTMLElement {
 
     bindSubpageBack(this, "#/home");
     this.bindServingHandlers();
+    this.bindCorrectHandlers();
     this.querySelector("form")?.addEventListener("submit", (ev) => this.onSubmit(ev));
     this.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
       location.hash = "#/home";
@@ -308,6 +326,180 @@ export class EntryForm extends HTMLElement {
       this.servingReady = true;
       this.render();
     });
+  }
+
+  /**
+   * @param {Record<string, any>} e
+   */
+  renderCorrectSection(e) {
+    const chips = ["Smaller portion", "Larger portion", "Extra oil / butter", "Different brand", "Different cooking"];
+    const diffHtml =
+      this.correctDiff.length > 0
+        ? `<div class="entry-correct-diff card">
+             <strong>What changed</strong>
+             <ul>${this.correctDiff
+               .map((row) => `<li><span>${escapeHtml(row.label)}</span>: ${escapeHtml(row.before)} → ${escapeHtml(row.after)}</li>`)
+               .join("")}</ul>
+             <p class="entry-correct-diff__hint">Review the updated values above, then tap Save to keep them.</p>
+           </div>`
+        : "";
+    const progressHtml = this.correcting
+      ? this.correctPartial?.hasAnyField
+        ? progressiveCardHtml(this.correctPartial)
+        : `<p class="entry-correct-status" role="status">${escapeHtml(
+            this.correctPhase === ANALYSIS_PHASE.CALLING_AI
+              ? "Calling AI…"
+              : this.correctPhase === ANALYSIS_PHASE.PARSING
+                ? "Reading result…"
+                : "Correcting…"
+          )}</p>`
+      : "";
+    return `
+      <section class="entry-section entry-correct">
+        <h2 class="entry-section__title">Ask AI to correct</h2>
+        <div class="entry-correct-context card">
+          <strong>${escapeHtml(e.name || "Entry")}</strong>
+          <p>${Math.round(Number(e.calories || 0))} kcal · ${formatQuantity(Number(e.proteinG || 0))}P /
+            ${formatQuantity(Number(e.carbsG || 0))}C / ${formatQuantity(Number(e.fatG || 0))}F</p>
+        </div>
+        <p class="field-hint">AI will recalculate name, serving, calories, and macros from your note. Review the changes, then tap Save.</p>
+        <label class="field-label" for="correct-note">What changed?</label>
+        <div class="chip-row">
+          ${chips
+            .map(
+              (c) =>
+                `<button type="button" class="chip" data-correct-chip="${escapeAttr(c)}" ${this.correcting ? "disabled" : ""}>${escapeHtml(c)}</button>`
+            )
+            .join("")}
+        </div>
+        <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="Describe the correction — e.g. large bowl, cooked in butter">${escapeHtml(this.correctNote)}</textarea>
+        <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
+          ${this.correcting ? "Correcting…" : "Correct with AI"}
+        </button>
+        ${progressHtml}
+        ${this.correctError ? `<p class="entry-correct-error">${escapeHtml(this.correctError)}</p>` : ""}
+        ${diffHtml}
+      </section>
+    `;
+  }
+
+  bindCorrectHandlers() {
+    const noteEl = /** @type {HTMLTextAreaElement|null} */ (this.querySelector("#correct-note"));
+    noteEl?.addEventListener("input", () => {
+      this.correctNote = noteEl.value;
+      this.correctDiff = [];
+      const btn = /** @type {HTMLButtonElement|null} */ (this.querySelector('[data-action="correct"]'));
+      if (btn) btn.disabled = this.correcting || !this.correctNote.trim();
+    });
+    this.querySelectorAll("[data-correct-chip]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const label = btn.getAttribute("data-correct-chip") || "";
+        if (!label || this.correcting) return;
+        const cur = this.correctNote.trim();
+        if (cur.toLowerCase().includes(label.toLowerCase())) return;
+        this.correctNote = cur ? `${cur}, ${label}` : label;
+        if (noteEl) noteEl.value = this.correctNote;
+        const correctBtn = /** @type {HTMLButtonElement|null} */ (this.querySelector('[data-action="correct"]'));
+        if (correctBtn) correctBtn.disabled = false;
+      });
+    });
+    this.querySelector('[data-action="correct"]')?.addEventListener("click", () => this.onCorrectWithAi());
+  }
+
+  async onCorrectWithAi() {
+    if (!this.existing || this.correcting) return;
+    const note = this.correctNote.trim();
+    if (!note) return;
+    this.captureFormIntoSource();
+    const before = { ...this.existing };
+
+    const providers = await listConfiguredProviders();
+    if (!providers.length) {
+      location.hash = "#/settings?section=ai";
+      return;
+    }
+    const appPrefs = await prefs.load();
+    /** @type {import('../lib/ai/key-storage.js').ProviderId} */
+    let providerId = /** @type {import('../lib/ai/key-storage.js').ProviderId} */ (providers[0]);
+    if (
+      appPrefs.primaryAiProvider &&
+      providers.includes(/** @type {import('../lib/ai/key-storage.js').ProviderId} */ (appPrefs.primaryAiProvider))
+    ) {
+      providerId = /** @type {import('../lib/ai/key-storage.js').ProviderId} */ (appPrefs.primaryAiProvider);
+    }
+    const config = await loadProviderKey(providerId);
+    if (!config) {
+      this.correctError = "Provider key missing. Re-add it in Settings.";
+      this.render();
+      return;
+    }
+
+    this.correctAbort?.abort();
+    const ac = new AbortController();
+    this.correctAbort = ac;
+    this.correcting = true;
+    this.correctError = "";
+    this.correctDiff = [];
+    this.correctPartial = null;
+    this.correctPhase = ANALYSIS_PHASE.PREPARING;
+    this.render();
+
+    const parts = [];
+    if (before.name) parts.push(String(before.name));
+    if (before.selectedServingQuantity && before.selectedServingUnit) {
+      parts.push(`${before.selectedServingQuantity} ${before.selectedServingUnit}`);
+    } else if (before.quantityG) {
+      parts.push(`${before.quantityG} g`);
+    }
+    const description = parts.length ? `${parts.join(", ")}. ${note}` : note;
+
+    try {
+      const estimate = await analyzeFoodEntry({
+        providerId: /** @type {any} */ (providerId),
+        config,
+        text: description,
+        signal: ac.signal,
+        onPhase: (phase) => {
+          this.correctPhase = phase;
+          this.render();
+        },
+        onPartial: (partial) => {
+          this.correctPartial = partial;
+          this.correctPhase = ANALYSIS_PHASE.CALLING_AI;
+          this.render();
+        },
+      });
+      if (ac.signal.aborted) return;
+
+      this.existing = {
+        ...this.existing,
+        ...estimate,
+        id: this.existing.id,
+        date: this.existing.date,
+        time: this.existing.time,
+        note,
+        source: this.existing.source || "ai_estimated",
+      };
+      this.servingReady = false;
+      this.initServingState(this.existing);
+      this.nutritionLocked = true;
+      this.correctDiff = buildCorrectDiff(before, this.existing);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    } catch (err) {
+      if (isAbortError(err) || ac.signal.aborted) {
+        this.correcting = false;
+        this.correctPhase = null;
+        return;
+      }
+      this.correctError = err instanceof Error ? err.message : String(err);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    }
   }
 
   bindServingHandlers() {

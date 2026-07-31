@@ -1456,6 +1456,135 @@ form.entry-form > button.btn--primary,
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--kcal);
+  text-align: center;
+}
+
+.analyze-overlay__hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.analyze-partial {
+  width: min(100%, 22rem);
+  text-align: left;
+  padding: 1rem 1.1rem;
+}
+
+.analyze-partial__name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.analyze-partial__cal {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--kcal);
+  margin-bottom: 0.5rem;
+}
+
+.analyze-partial__macro {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0.15rem 0;
+}
+
+.analyze-partial__macro--pending,
+.analyze-partial .is-pending {
+  opacity: 0.4;
+}
+
+.analyze-partial__serving,
+.analyze-partial__meta,
+.analyze-partial__hint {
+  margin-top: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--kcal) 35%, transparent);
+  background: color-mix(in srgb, var(--kcal) 12%, transparent);
+  color: inherit;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.field-hint {
+  margin: 0.15rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.field-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.entry-correct-context {
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.entry-correct-context p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.entry-correct textarea {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.entry-correct-status {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+}
+
+.entry-correct-error {
+  color: var(--danger, #c62828);
+  font-size: 0.9rem;
+}
+
+.entry-correct-diff {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+}
+
+.entry-correct-diff ul {
+  margin: 0.5rem 0;
+  padding-left: 1.1rem;
+}
+
+.entry-correct-diff__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--kcal);
 }
 
 .analyze-error-actions {

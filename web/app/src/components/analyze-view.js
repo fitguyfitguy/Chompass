@@ -3,8 +3,6 @@ import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import {
   ANALYSIS_PHASE,
-  ANALYSIS_PHASE_LABEL,
-  ANALYSIS_PHASE_STEPS,
   analyzeFoodEntry,
   isAbortError,
 } from "../lib/ai/food-analyze.js";
@@ -15,6 +13,7 @@ import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { createSpeechCapture } from "../lib/speech.js";
 import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
+import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
 
 const MAX_PHOTOS = 10;
 
@@ -26,6 +25,8 @@ export class AnalyzeView extends HTMLElement {
     this.abortController = null;
     /** @type {string | null} */
     this.phase = null;
+    /** @type {import('../lib/ai/partial-json.js').PartialFoodEstimate|null} */
+    this.partial = null;
     /** @type {string} */
     this.pendingNote = "";
   }
@@ -88,6 +89,17 @@ export class AnalyzeView extends HTMLElement {
   setPhase(phase, generation) {
     if (generation !== this.analysisGeneration) return;
     this.phase = phase;
+    this.render();
+  }
+
+  /**
+   * @param {import('../lib/ai/partial-json.js').PartialFoodEstimate} partial
+   * @param {number} generation
+   */
+  setPartial(partial, generation) {
+    if (generation !== this.analysisGeneration) return;
+    this.partial = partial;
+    this.phase = ANALYSIS_PHASE.CALLING_AI;
     this.render();
   }
 
@@ -222,34 +234,14 @@ export class AnalyzeView extends HTMLElement {
 
   renderOverlay() {
     const phase = this.phase || ANALYSIS_PHASE.PREPARING;
-    const currentIndex = ANALYSIS_PHASE_STEPS.indexOf(/** @type {any} */ (phase));
-    const stepIndex = currentIndex >= 0 ? currentIndex : 0;
-    const stepsHtml = ANALYSIS_PHASE_STEPS.map((step, index) => {
-      const done = index < stepIndex;
-      const active = index === stepIndex;
-      return `
-        <div class="analyze-step ${done ? "analyze-step--done" : ""} ${active ? "analyze-step--active" : ""}" aria-hidden="true">
-          ${done ? `<span class="analyze-step__check">✓</span>` : active ? `<span class="analyze-step__spin"></span>` : ""}
-        </div>
-        ${index < ANALYSIS_PHASE_STEPS.length - 1 ? `<div class="analyze-step__rail ${done ? "analyze-step__rail--done" : ""}"></div>` : ""}
-      `;
-    }).join("");
-
-    const previewHtml =
-      this.previewUrls.length > 1
-        ? `<div class="analyze-overlay__thumbs">${this.previewUrls
-            .map((u) => `<img class="analyze-overlay__thumb" src="${escapeAttr(u)}" alt="" />`)
-            .join("")}</div>`
-        : this.previewUrls[0]
-          ? `<img class="analyze-overlay__preview" src="${escapeAttr(this.previewUrls[0])}" alt="" />`
-          : `<div class="analyze-overlay__icon" aria-hidden="true">⌕</div>`;
-
     return `
       <div class="analyze-overlay" role="status" aria-live="polite" aria-busy="true">
-        ${previewHtml}
-        <div class="analyze-steps">${stepsHtml}</div>
-        <p class="analyze-overlay__phase">${escapeHtml(ANALYSIS_PHASE_LABEL[phase] || ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PREPARING])}</p>
-        <div class="analyze-overlay__spinner" aria-hidden="true"></div>
+        ${renderAnalyzeOverlayHtml({
+          phase,
+          partial: this.partial,
+          previewUrls: this.previewUrls,
+          showCancel: false,
+        })}
       </div>
     `;
   }
@@ -294,6 +286,7 @@ export class AnalyzeView extends HTMLElement {
     this.busy = true;
     this.error = "";
     this.phase = ANALYSIS_PHASE.PREPARING;
+    this.partial = null;
     this.render();
 
     try {
@@ -323,6 +316,7 @@ export class AnalyzeView extends HTMLElement {
         images,
         signal: ac.signal,
         onPhase: (phase) => this.setPhase(phase, generation),
+        onPartial: (partial) => this.setPartial(partial, generation),
       });
 
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
