@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">Entrada manual</string>
     <string name="home_menu_saved_meals">Comidas guardadas</string>
     <string name="home_menu_barcode">Código de barras</string>
+    <string name="shortcut_camera_short">Cámara</string>
+    <string name="shortcut_camera_long">Registrar comida con cámara</string>
+    <string name="shortcut_voice_short">Voz</string>
+    <string name="shortcut_voice_long">Registrar comida por voz</string>
+    <string name="shortcut_barcode_short">Código de barras</string>
+    <string name="shortcut_barcode_long">Escanear un código de barras</string>
     <string name="add_food_sheet_title">Añadir comida</string>
     <string name="add_food_hero_photo">Foto</string>
     <string name="add_food_hero_photo_sub">Cámara o galería</string>

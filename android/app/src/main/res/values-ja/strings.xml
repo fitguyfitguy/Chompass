@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">手動入力</string>
     <string name="home_menu_saved_meals">保存した食事</string>
     <string name="home_menu_barcode">バーコード</string>
+    <string name="shortcut_camera_short">カメラ</string>
+    <string name="shortcut_camera_long">カメラで食事を記録</string>
+    <string name="shortcut_voice_short">音声</string>
+    <string name="shortcut_voice_long">音声で食事を記録</string>
+    <string name="shortcut_barcode_short">バーコード</string>
+    <string name="shortcut_barcode_long">バーコードをスキャン</string>
     <string name="add_food_sheet_title">食事を追加</string>
     <string name="add_food_hero_photo">写真</string>
     <string name="add_food_hero_photo_sub">カメラまたはギャラリー</string>

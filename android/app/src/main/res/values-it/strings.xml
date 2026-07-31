@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">Inserimento manuale</string>
     <string name="home_menu_saved_meals">Pasti salvati</string>
     <string name="home_menu_barcode">Codice a barre</string>
+    <string name="shortcut_camera_short">Fotocamera</string>
+    <string name="shortcut_camera_long">Registra cibo con la fotocamera</string>
+    <string name="shortcut_voice_short">Voce</string>
+    <string name="shortcut_voice_long">Registra cibo con la voce</string>
+    <string name="shortcut_barcode_short">Codice a barre</string>
+    <string name="shortcut_barcode_long">Scansiona un codice a barre</string>
     <string name="add_food_sheet_title">Aggiungi cibo</string>
     <string name="add_food_hero_photo">Foto</string>
     <string name="add_food_hero_photo_sub">Fotocamera o galleria</string>

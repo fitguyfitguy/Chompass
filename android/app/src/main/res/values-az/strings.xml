@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">Əl ilə Daxil Et</string>
     <string name="home_menu_saved_meals">Saxlanılmış Yeməklər</string>
     <string name="home_menu_barcode">Barkod</string>
+    <string name="shortcut_camera_short">Kamera</string>
+    <string name="shortcut_camera_long">Yeməyi kamera ilə qeyd et</string>
+    <string name="shortcut_voice_short">Səs</string>
+    <string name="shortcut_voice_long">Yeməyi səslə qeyd et</string>
+    <string name="shortcut_barcode_short">Barkod</string>
+    <string name="shortcut_barcode_long">Barkodu skan et</string>
     <string name="add_food_sheet_title">Yemək əlavə et</string>
     <string name="add_food_hero_photo">Foto</string>
     <string name="add_food_hero_photo_sub">Kamera və ya qalereya</string>

@@ -296,6 +296,12 @@
     <string name="home_menu_manual_entry">إدخال يدوي</string>
     <string name="home_menu_saved_meals">الوجبات المحفوظة</string>
     <string name="home_menu_barcode">الباركود</string>
+    <string name="shortcut_camera_short">الكاميرا</string>
+    <string name="shortcut_camera_long">تسجيل الطعام بالكاميرا</string>
+    <string name="shortcut_voice_short">الصوت</string>
+    <string name="shortcut_voice_long">تسجيل الطعام بالصوت</string>
+    <string name="shortcut_barcode_short">الباركود</string>
+    <string name="shortcut_barcode_long">مسح باركود</string>
     <string name="add_food_sheet_title">إضافة طعام</string>
     <string name="add_food_hero_photo">صورة</string>
     <string name="add_food_hero_photo_sub">الكاميرا أو المعرض</string>
