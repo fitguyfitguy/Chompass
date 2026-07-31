@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
 import app.chompass.services.MealShare
 import app.chompass.models.MacroValueFormatter
@@ -145,8 +146,8 @@ fun EditFoodEntrySheet(
     val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val context = LocalContext.current
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US) }
-    val timeFormatter = remember(context) { DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.US) }
+    val dateFormatter = remember { LocaleFormat.mediumDate() }
+    val timeFormatter = remember(context) { DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault()) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val dismissKeyboard = {

@@ -1224,6 +1224,13 @@ form.entry-form {
   color: var(--muted);
 }
 
+.field-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .field input:not([type="checkbox"]):not([type="radio"]),
 .field select,
 .field textarea {

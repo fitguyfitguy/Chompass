@@ -73,7 +73,8 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 **Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`, Gemini fallback `gemini-3.5-flash-lite`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
 
 **Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
-notifications, widgets, full i18n pack.
+notifications, widgets. Localization: core UI surfaces via `lib/i18n/` (15 locales;
+see [`docs/LOCALIZATION.md`](../docs/LOCALIZATION.md)).
 
 Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 

@@ -28,6 +28,7 @@ import {
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
 import { createSpeechCapture } from "../lib/speech.js";
+import { t } from "../lib/i18n/index.js";
 import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 import { openVoiceCaptureSheet } from "../lib/ui/voice-capture.js";
 
@@ -338,7 +339,7 @@ export class DiaryView extends HTMLElement {
         <div class="home-hero__day-nav">
           <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">‹</button>
           <button type="button" class="calorie-hero calorie-hero--tap" data-nutrition-detail aria-label="Open nutrition detail">
-            ${targets ? ringSvg(totals.calories, calorieTarget) : `<p class="empty-state">Set up your profile in Settings to see calorie targets.</p>`}
+            ${targets ? ringSvg(totals.calories, calorieTarget) : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`}
           </button>
           <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${this.date >= today ? "disabled" : ""}>›</button>
         </div>
@@ -371,7 +372,7 @@ export class DiaryView extends HTMLElement {
 
       ${
         entries.length === 0
-          ? `<p class="empty-state">No entries yet for this day. Tap + to log food.</p>`
+          ? `<p class="empty-state">${t("diary.empty")}</p>`
           : MEAL_ORDER.filter((m) => entries.some((e) => e.mealType === m))
               .map((mealType) => mealCard(mealType, entries.filter((e) => e.mealType === mealType), chipKeys))
               .join("")
@@ -884,7 +885,7 @@ export class DiaryView extends HTMLElement {
                   )
                   .join("")}
               </div>`
-            : `<p class="empty-state" style="padding:1rem 0;">Nothing here yet.</p>`
+            : `<p class="empty-state" style="padding:1rem 0;">${t("diary.nothing")}</p>`
         }`;
 
       root.querySelectorAll("[data-seg]").forEach((btn) => {

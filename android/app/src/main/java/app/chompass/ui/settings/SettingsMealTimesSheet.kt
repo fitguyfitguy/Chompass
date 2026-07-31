@@ -38,7 +38,7 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
     var schedule by remember(current) { mutableStateOf(current.validatedOrDefault()) }
     var editing by remember { mutableStateOf<MealBoundary?>(null) }
     val context = LocalContext.current
-    val formatter = remember(context) { DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.US) }
+    val formatter = remember(context) { DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault()) }
     fun formattedTime(minutes: Int): String =
         LocalTime.of(minutes / 60, minutes % 60).format(formatter)
 

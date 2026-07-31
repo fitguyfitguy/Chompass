@@ -48,7 +48,7 @@ class AllMetricsAppWidget : GlanceAppWidget() {
 
         provideContent {
             GlanceTheme {
-                AllMetricsContent(snapshot)
+                AllMetricsContent(context, snapshot)
             }
         }
     }
@@ -64,7 +64,7 @@ class AllMetricsWidgetReceiver : GlanceAppWidgetReceiver() {
 }
 
 @Composable
-private fun AllMetricsContent(snapshot: WidgetSnapshot) {
+private fun AllMetricsContent(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     Box(
         modifier = GlanceModifier
@@ -75,15 +75,15 @@ private fun AllMetricsContent(snapshot: WidgetSnapshot) {
             .clickable(actionStartActivity<MainActivity>())
     ) {
         if (size.height < AllMetricsAppWidget.TALL_SIZE.height) {
-            AllMetricsWide(snapshot)
+            AllMetricsWide(context, snapshot)
         } else {
-            AllMetricsTall(snapshot)
+            AllMetricsTall(context, snapshot)
         }
     }
 }
 
 @Composable
-private fun AllMetricsWide(snapshot: WidgetSnapshot) {
+private fun AllMetricsWide(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     val contentH = size.height.value - 28f
     val gaugeW = minOf(size.width.value * 0.36f, (contentH - 20f) / 0.58f).toInt().coerceAtLeast(80)
@@ -104,7 +104,7 @@ private fun AllMetricsWide(snapshot: WidgetSnapshot) {
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
-                text = "${snapshot.caloriesRemaining} left",
+                text = context.getString(R.string.home_calories_left, snapshot.caloriesRemaining),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,
@@ -125,7 +125,7 @@ private fun AllMetricsWide(snapshot: WidgetSnapshot) {
 }
 
 @Composable
-private fun AllMetricsTall(snapshot: WidgetSnapshot) {
+private fun AllMetricsTall(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     val contentW = size.width.value - 28f
     val contentH = size.height.value - 28f
@@ -133,7 +133,7 @@ private fun AllMetricsTall(snapshot: WidgetSnapshot) {
     val barH = (contentH - 34f - gaugeW * 0.58f - 66f).toInt().coerceAtLeast(40)
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = "Today")
+        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = context.getString(R.string.widget_today))
         Spacer(modifier = GlanceModifier.height(4.dp))
         Box(
             modifier = GlanceModifier.fillMaxWidth(),
@@ -153,7 +153,7 @@ private fun AllMetricsTall(snapshot: WidgetSnapshot) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${snapshot.caloriesRemaining} kcal left",
+                text = context.getString(R.string.widget_kcal_left_format, snapshot.caloriesRemaining),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,

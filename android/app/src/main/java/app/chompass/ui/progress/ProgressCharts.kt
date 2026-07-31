@@ -1,5 +1,7 @@
 package app.chompass.ui.progress
 
+import app.chompass.models.LocaleFormat
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -201,7 +203,7 @@ internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, 
     val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
     val showsYear = spanDays > 150 &&
         Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
-    val xLabelFmt = DateTimeFormatter.ofPattern(if (showsYear) "MMM yyyy" else "MMM d", Locale.US).withZone(zone)
+    val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
     val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), displayKg(it.weightKg)) })
     val showsDots = points.size <= 31
     return WeightChartModel(
@@ -236,7 +238,7 @@ internal fun buildBodyFatChartModel(entries: List<BodyFatEntry>, goalFraction: D
     val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
     val showsYear = spanDays > 150 &&
         Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
-    val xLabelFmt = DateTimeFormatter.ofPattern(if (showsYear) "MMM yyyy" else "MMM d", Locale.US).withZone(zone)
+    val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
     val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), it.bodyFatFraction * 100) })
     val showsDots = points.size <= 31
     return BodyFatChartModel(
@@ -490,7 +492,7 @@ internal fun CalorieBarChart(dailyCalories: List<Pair<LocalDate, Int>>, goal: In
     val density = LocalDensity.current
     val ticks = niceAxisTicks(0.0, maxValue, count = 5)
     val yTop = ticks.last().coerceAtLeast(maxValue)
-    val xLabelFmt = DateTimeFormatter.ofPattern("MMM d", Locale.US)
+    val xLabelFmt = LocaleFormat.shortDate()
 
     Column {
         Row(Modifier.fillMaxWidth().height(180.dp)) {

@@ -1,0 +1,123 @@
+// @ts-check
+/** English catalog — source of truth for PWA core-surface keys. */
+
+/** @type {Readonly<Record<string, string>>} */
+export const en = Object.freeze({
+  // Shell / nav
+  "nav.home": "Home",
+  "nav.progress": "Progress",
+  "nav.coach": "Coach",
+  "nav.settings": "Settings",
+  "nav.primary": "Primary",
+  "app.title": "Chompass",
+  "app.description": "Ad-free calorie tracker. Installable PWA for any modern browser (Chromium works best).",
+
+  // Common actions
+  "action.save": "Save",
+  "action.cancel": "Cancel",
+  "action.done": "Done",
+  "action.ok": "OK",
+  "action.delete": "Delete",
+  "action.continue": "Continue",
+  "action.get_started": "Get started",
+  "action.retry": "Retry",
+  "action.back": "Back",
+  "action.close": "Close",
+  "action.log": "Log",
+  "action.edit": "Edit",
+  "action.confirm": "Confirm",
+
+  // Settings hub
+  "settings.title": "Settings",
+  "settings.hub.personal": "Personal Info",
+  "settings.hub.personal_hint": "Gender, height, weight, measurements",
+  "settings.hub.goals": "Goals & Nutrition",
+  "settings.hub.goals_hint": "Diet, macros, optional nutrients",
+  "settings.hub.app": "App & Display",
+  "settings.hub.app_hint": "Language, units, home, install",
+  "settings.hub.ai": "AI & Speech",
+  "settings.hub.ai_hint": "Providers, models, speech",
+  "settings.hub.data": "Data",
+  "settings.hub.data_hint": "Export, import, sync, reset",
+  "settings.hub.about": "About",
+  "settings.hub.about_hint": "Version, licenses, privacy",
+  "settings.app.title": "App & Display",
+  "settings.app.language": "Language",
+  "settings.app.language_hint": "App display language",
+  "settings.app.units": "Units & schedule",
+  "settings.app.units_hint": "Units, week, meals, accent",
+  "settings.app.home": "Home display",
+  "settings.app.home_hint": "Water, gauge, chips",
+  "settings.app.install": "Install",
+  "settings.app.install_hint": "Add to home screen",
+  "settings.language.title": "Language",
+  "settings.language.auto": "System default",
+  "settings.language.auto_hint": "Match the browser language when supported",
+  "settings.language.label": "Display language",
+  "settings.speech.language": "Speech language",
+  "settings.speech.browser_default": "Browser default",
+
+  // Diary / home
+  "diary.empty": "No entries yet for this day. Tap + to log food.",
+  "diary.empty_no_profile": "Set up your profile to start tracking.",
+  "diary.nothing": "Nothing here yet.",
+  "diary.add_food": "Add food",
+  "diary.prev_day": "Previous day",
+  "diary.next_day": "Next day",
+  "diary.today": "Today",
+  "diary.water": "Water",
+  "diary.calories": "Calories",
+  "diary.remaining": "remaining",
+  "diary.eaten": "eaten",
+  "diary.goal": "goal",
+  "meal.breakfast": "Breakfast",
+  "meal.lunch": "Lunch",
+  "meal.dinner": "Dinner",
+  "meal.snack": "Snack",
+
+  // Progress
+  "progress.title": "Progress",
+  "progress.weight": "Weight",
+  "progress.body_fat": "Body fat",
+  "progress.measurements": "Measurements",
+  "progress.forecast": "Forecast",
+  "progress.empty": "Log weight or body fat to see charts.",
+  "progress.range_1w": "1W",
+  "progress.range_1m": "1M",
+  "progress.range_3m": "3M",
+  "progress.range_6m": "6M",
+  "progress.range_1y": "1Y",
+  "progress.range_all": "All",
+
+  // Onboarding
+  "onboarding.welcome_title": "Welcome to Chompass",
+  "onboarding.welcome_body": "Track food. Keep control.",
+  "onboarding.get_started": "Get started",
+  "onboarding.continue": "Continue",
+  "onboarding.start_logging": "Start logging",
+  "onboarding.back": "Back",
+
+  // Coach
+  "coach.title": "Coach",
+  "coach.placeholder": "Ask your coach…",
+  "coach.send": "Send",
+
+  // Dialogs / errors
+  "dialog.confirm_title": "Confirm",
+  "dialog.delete_title": "Delete?",
+  "error.generic": "Something went wrong.",
+  "error.network": "Network error. Check your connection.",
+  "error.invalid_json": "Invalid JSON",
+  "error.unknown": "Unknown error",
+  "error.webdav_sync": "WebDAV sync failed",
+  "error.load_failed": "Could not load data.",
+  "toast.saved": "Saved",
+  "toast.deleted": "Deleted",
+  "toast.copied": "Copied",
+
+  // A11y
+  "a11y.open_menu": "Open menu",
+  "a11y.close_sheet": "Close sheet",
+  "a11y.add_food": "Add food",
+  "a11y.primary_nav": "Primary",
+});

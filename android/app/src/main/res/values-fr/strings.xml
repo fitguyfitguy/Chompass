@@ -717,4 +717,15 @@
     <string name="grounding_validation_notes">Notes : %1$s</string>
     <string name="grounded_on_device_unavailable">La saisie ancrée nécessite un fournisseur IA cloud. Les modèles on-device utilisent Photo/Note.</string>
     <string name="grounded_review_unit">Unité</string>
+
+    <string name="widget_water_tracking">Suivi de l\'eau</string>
+    <string name="widget_water_enable_short">Activer dans Chompass</string>
+    <string name="widget_ml_left_format">%1$d ml restants</string>
+    <string name="widget_fl_oz_left_format">%1$d fl oz restants</string>
+    <string name="widget_unit_left_format">%1$s%2$s restants</string>
+    <string name="error_invalid_json">JSON invalide</string>
+    <string name="error_unknown">Erreur inconnue</string>
+    <string name="error_webdav_sync_failed">Échec de la synchronisation WebDAV</string>
+    <string name="settings_language_title">Langue</string>
+    <string name="settings_language_system">Par défaut du système</string>
 </resources>

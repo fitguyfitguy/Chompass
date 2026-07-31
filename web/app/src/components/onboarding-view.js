@@ -6,12 +6,13 @@ import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
 import { openInput } from "../lib/ui/dialog.js";
+import { t } from "../lib/i18n/index.js";
 
-/** @typedef {{ id: string, title: string, hideChrome?: boolean, hideCta?: boolean }} OnboardingStepDef */
+/** @typedef {{ id: string, title?: string, titleKey?: string, hideChrome?: boolean, hideCta?: boolean }} OnboardingStepDef */
 
 /** @type {OnboardingStepDef[]} */
 const STEPS = [
-  { id: "welcome", title: "Welcome to Chompass", hideChrome: true },
+  { id: "welcome", titleKey: "onboarding.welcome_title", hideChrome: true },
   { id: "sex", title: "About you" },
   { id: "age", title: "Birthday & age" },
   { id: "body", title: "Height & weight" },
@@ -138,20 +139,25 @@ export class OnboardingView extends HTMLElement {
     const showCta = !s.hideCta;
     const isWelcome = s.id === "welcome";
     const isDone = s.id === "done";
-    const ctaLabel = isWelcome ? "Get started" : isDone ? "Start logging" : "Continue";
+    const ctaLabel = isWelcome
+      ? t("onboarding.get_started")
+      : isDone
+        ? t("onboarding.start_logging")
+        : t("onboarding.continue");
     const ctaClass = isWelcome || isDone ? "btn btn--primary btn--gradient" : "btn btn--primary";
+    const title = s.titleKey ? t(s.titleKey) : s.title || "";
 
     this.innerHTML = `
       <div class="onboarding-step">
         ${
           showChrome
             ? `<div class="onboarding-chrome">
-                <button type="button" class="onboarding-chrome__back" data-prev aria-label="Back">${BACK_ICON}</button>
+                <button type="button" class="onboarding-chrome__back" data-prev aria-label="${t("onboarding.back")}">${BACK_ICON}</button>
                 <div class="onboarding-progress-track" aria-hidden="true">
                   <span class="onboarding-progress-fill" style="width:${(this.progressPct() * 100).toFixed(1)}%"></span>
                 </div>
               </div>
-              <h1 class="screen-title">${s.title}</h1>`
+              <h1 class="screen-title">${title}</h1>`
             : ""
         }
         ${this.stepBody(s.id)}
@@ -339,7 +345,7 @@ export class OnboardingView extends HTMLElement {
       return `
         <div class="onboarding-welcome">
           <img class="onboarding-welcome__logo" src="icons/icon-192.png" alt="" width="88" height="88" />
-          <h1 class="onboarding-welcome__title">Track food.<span class="onboarding-welcome__title-accent">Keep control.</span></h1>
+          <h1 class="onboarding-welcome__title">${t("onboarding.welcome_body")}</h1>
           <p class="onboarding-welcome__sub">Ad-free calorie tracking in your browser. Data stays on this device and exports to the Android app.</p>
           <ul class="onboarding-features">
             <li><span class="onboarding-features__icon">1</span><div><strong>Local-first diary</strong><span>Meals, macros, and progress without accounts.</span></div></li>

@@ -692,4 +692,15 @@
     <string name="settings_keto_carb_mode">Keto carb mode</string>
     <string name="settings_keto_net_carbs">Keto net carbs</string>
     <string name="sheet_keto_carb_mode">Keto carb mode</string>
+
+    <string name="widget_water_tracking">Water Tracking</string>
+    <string name="widget_water_enable_short">Enable in Chompass</string>
+    <string name="widget_ml_left_format">%1$d ml left</string>
+    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
+    <string name="widget_unit_left_format">%1$s%2$s left</string>
+    <string name="error_invalid_json">Invalid JSON</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_system">System default</string>
 </resources>

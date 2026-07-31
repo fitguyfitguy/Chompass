@@ -10,7 +10,7 @@ object MacroValueFormatter {
         return if (abs(rounded - value) < 0.0001) {
             rounded.toInt().toString()
         } else {
-            String.format(Locale.US, "%.1f", value)
+            String.format(Locale.getDefault(), "%.1f", value)
         }
     }
 
