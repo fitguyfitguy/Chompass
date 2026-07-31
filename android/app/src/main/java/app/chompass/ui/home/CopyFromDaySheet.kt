@@ -45,7 +45,6 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

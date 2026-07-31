@@ -76,7 +76,6 @@ import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import app.chompass.models.UnitFormat
 
 internal enum class SettingsSheet {

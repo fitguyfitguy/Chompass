@@ -59,7 +59,6 @@ import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.settings.NutritionPickerSheet
 import app.chompass.ui.theme.AppColors
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import app.chompass.models.UnitFormat

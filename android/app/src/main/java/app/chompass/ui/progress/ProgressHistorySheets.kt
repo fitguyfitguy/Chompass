@@ -35,8 +35,6 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.theme.AppColors
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
