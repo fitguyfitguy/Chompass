@@ -50,6 +50,7 @@ export function messageImages(m) {
  * @property {AiMessage[]} messages
  * @property {AiTool[]} tools
  * @property {AbortSignal} [signal]
+ * @property {(delta: string) => void} [onDelta] text fragments while streaming
  */
 
 /**
@@ -58,6 +59,14 @@ export function messageImages(m) {
  * @returns {Promise<AiResponse>}
  */
 export async function anthropicSend(config, req) {
+  if (req.onDelta && !req.tools.length) {
+    try {
+      return await anthropicSendStreaming(config, req);
+    } catch (err) {
+      if (req.signal?.aborted) throw err;
+      // Fall through to non-streaming for CORS / endpoint quirks.
+    }
+  }
   const body = {
     model: config.model || PROVIDERS.anthropic.defaultModel,
     max_tokens: 1024,
@@ -87,6 +96,49 @@ export async function anthropicSend(config, req) {
   return { text, toolCalls };
 }
 
+/**
+ * @param {{apiKey: string, model?: string}} config
+ * @param {AiRequest} req
+ * @returns {Promise<AiResponse>}
+ */
+async function anthropicSendStreaming(config, req) {
+  const body = {
+    model: config.model || PROVIDERS.anthropic.defaultModel,
+    max_tokens: 1024,
+    stream: true,
+    system: req.systemPrompt,
+    messages: req.messages.map(anthropicMessage),
+  };
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "text/event-stream",
+      "x-api-key": config.apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body),
+    signal: req.signal,
+  });
+  if (!res.ok) throw new Error(`Anthropic API error ${res.status}: ${await safeText(res)}`);
+  let text = "";
+  await readSse(res, (payload) => {
+    let json;
+    try {
+      json = JSON.parse(payload);
+    } catch {
+      return;
+    }
+    if (json.type === "content_block_delta" && json.delta?.type === "text_delta" && json.delta.text) {
+      text += json.delta.text;
+      req.onDelta?.(json.delta.text);
+    }
+  });
+  if (!text) throw new Error("Empty streaming response");
+  return { text, toolCalls: [] };
+}
+
 /** @param {AiMessage} m */
 export function anthropicMessage(m) {
   const content = [];
@@ -105,6 +157,13 @@ export function anthropicMessage(m) {
  * @returns {Promise<AiResponse>}
  */
 export async function geminiSend(config, req) {
+  if (req.onDelta && !req.tools.length) {
+    try {
+      return await geminiSendStreaming(config, req);
+    } catch (err) {
+      if (req.signal?.aborted) throw err;
+    }
+  }
   const model = config.model || PROVIDERS.gemini.defaultModel;
   const body = {
     systemInstruction: { parts: [{ text: req.systemPrompt }] },
@@ -128,6 +187,49 @@ export async function geminiSend(config, req) {
   return { text, toolCalls };
 }
 
+/**
+ * @param {{apiKey: string, model?: string}} config
+ * @param {AiRequest} req
+ * @returns {Promise<AiResponse>}
+ */
+async function geminiSendStreaming(config, req) {
+  const model = config.model || PROVIDERS.gemini.defaultModel;
+  const body = {
+    systemInstruction: { parts: [{ text: req.systemPrompt }] },
+    contents: req.messages.map(geminiContent),
+  };
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "text/event-stream",
+      "x-goog-api-key": config.apiKey,
+    },
+    body: JSON.stringify(body),
+    signal: req.signal,
+  });
+  if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await safeText(res)}`);
+  let text = "";
+  await readSse(res, (payload) => {
+    let json;
+    try {
+      json = JSON.parse(payload);
+    } catch {
+      return;
+    }
+    const parts = json.candidates?.[0]?.content?.parts ?? [];
+    for (const p of parts) {
+      if (p.text) {
+        text += p.text;
+        req.onDelta?.(p.text);
+      }
+    }
+  });
+  if (!text) throw new Error("Empty streaming response");
+  return { text, toolCalls: [] };
+}
+
 /** @param {AiMessage} m */
 export function geminiContent(m) {
   const parts = [];
@@ -146,6 +248,13 @@ export function geminiContent(m) {
  * @returns {Promise<AiResponse>}
  */
 export async function openAiCompatibleSend(config, req) {
+  if (req.onDelta && !req.tools.length) {
+    try {
+      return await openAiCompatibleSendStreaming(config, req);
+    } catch (err) {
+      if (req.signal?.aborted) throw err;
+    }
+  }
   const base = (config.baseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
   const messages = [{ role: "system", content: req.systemPrompt }, ...req.messages.flatMap(openAiMessages)];
   const body = {
@@ -164,6 +273,48 @@ export async function openAiCompatibleSend(config, req) {
   const msg = data.choices[0].message;
   const toolCalls = (msg.tool_calls ?? []).map((tc) => ({ id: tc.id, name: tc.function.name, input: JSON.parse(tc.function.arguments || "{}") }));
   return { text: msg.content ?? "", toolCalls };
+}
+
+/**
+ * @param {{apiKey: string, model?: string, baseUrl?: string}} config
+ * @param {AiRequest} req
+ * @returns {Promise<AiResponse>}
+ */
+async function openAiCompatibleSendStreaming(config, req) {
+  const base = (config.baseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
+  const messages = [{ role: "system", content: req.systemPrompt }, ...req.messages.flatMap(openAiMessages)];
+  const body = {
+    model: config.model || PROVIDERS.openai_compatible.defaultModel,
+    messages,
+    stream: true,
+  };
+  const res = await fetch(`${base}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "text/event-stream",
+      authorization: `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify(body),
+    signal: req.signal,
+  });
+  if (!res.ok) throw new Error(`OpenAI-compatible API error ${res.status}: ${await safeText(res)}`);
+  let text = "";
+  await readSse(res, (payload) => {
+    let json;
+    try {
+      json = JSON.parse(payload);
+    } catch {
+      return;
+    }
+    const piece = json.choices?.[0]?.delta?.content;
+    if (typeof piece === "string" && piece) {
+      text += piece;
+      req.onDelta?.(piece);
+    }
+  });
+  if (!text) throw new Error("Empty streaming response");
+  return { text, toolCalls: [] };
 }
 
 /**
@@ -202,6 +353,35 @@ async function safeText(res) {
     return await res.text();
   } catch {
     return "(no body)";
+  }
+}
+
+/**
+ * Read Server-Sent Event `data:` payloads from a fetch Response.
+ * @param {Response} res
+ * @param {(payload: string) => void} onData
+ */
+async function readSse(res, onData) {
+  if (!res.body) throw new Error("No response body for streaming");
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+      const payload = line.slice(5).trim();
+      if (!payload || payload === "[DONE]") continue;
+      onData(payload);
+    }
+  }
+  if (buffer.startsWith("data:")) {
+    const payload = buffer.slice(5).trim();
+    if (payload && payload !== "[DONE]") onData(payload);
   }
 }
 

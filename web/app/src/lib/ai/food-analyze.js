@@ -7,6 +7,7 @@ import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
 import { ALL_MICRO_KEYS } from "../home-nutrients.js";
 import { ensureServingUnits } from "../chompass-core/serving-units.js";
+import { FoodPartialJsonAssembler } from "./partial-json.js";
 
 /** Shared entry analysis phases (Android EntryAnalysisPhase subset for cloud AI). */
 export const ANALYSIS_PHASE = Object.freeze({
@@ -22,6 +23,7 @@ export const ANALYSIS_PHASE_LABEL = Object.freeze({
   [ANALYSIS_PHASE.LOOKING_UP_BARCODE]: "Checking barcodes…",
   [ANALYSIS_PHASE.CALLING_AI]: "Calling AI…",
   [ANALYSIS_PHASE.PARSING]: "Reading result…",
+  filling_fields: "Filling in nutrition…",
 });
 
 /** Ordered steps for the analyze overlay (non-grounded). */
@@ -56,6 +58,7 @@ Include micronutrients when you can estimate them confidently; use null when uns
  * @param {{mimeType: string, base64: string}[]} [args.images]
  * @param {AbortSignal} [args.signal]
  * @param {(phase: string) => void} [args.onPhase]
+ * @param {(partial: import('./partial-json.js').PartialFoodEstimate) => void} [args.onPartial]
  * @param {import('../db.js').AppPrefs} [args.prefsOverride] test hook
  */
 export async function analyzeFoodEntry({
@@ -67,6 +70,7 @@ export async function analyzeFoodEntry({
   images,
   signal,
   onPhase,
+  onPartial,
   prefsOverride,
 }) {
   const appPrefs = prefsOverride ?? (await prefs.load());
@@ -74,7 +78,7 @@ export async function analyzeFoodEntry({
   if (!text && !imageList.length) throw new Error("Provide a photo or a text description.");
 
   try {
-    return await runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase);
+    return await runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase, onPartial);
   } catch (primaryErr) {
     // Do not burn a fallback provider after the user cancelled / navigated away.
     if (isAbortError(primaryErr) || signal?.aborted) throw primaryErr;
@@ -85,7 +89,7 @@ export async function analyzeFoodEntry({
     if (!fbConfig) throw primaryErr;
     if (appPrefs.fallbackAiModel) fbConfig.model = appPrefs.fallbackAiModel;
     fbConfig.model = resolveProviderModel(fbId, fbConfig.model, "fallback");
-    return runAnalyze(fbId, fbConfig, text, productContext, imageList, appPrefs, signal, onPhase);
+    return runAnalyze(fbId, fbConfig, text, productContext, imageList, appPrefs, signal, onPhase, onPartial);
   }
 }
 
@@ -98,8 +102,9 @@ export async function analyzeFoodEntry({
  * @param {import('../db.js').AppPrefs} appPrefs
  * @param {AbortSignal} [signal]
  * @param {(phase: string) => void} [onPhase]
+ * @param {(partial: import('./partial-json.js').PartialFoodEstimate) => void} [onPartial]
  */
-async function runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase) {
+async function runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase, onPartial) {
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
   if (signal?.aborted) throw abortError();
@@ -129,11 +134,22 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   } else if (imageList.length > 1) {
     userMessage.images = imageList;
   }
+
+  const assembler = new FoodPartialJsonAssembler();
+  /** @type {(delta: string) => void | undefined} */
+  const onDelta = onPartial
+    ? (delta) => {
+        const partial = assembler.push(delta);
+        if (partial) onPartial(partial);
+      }
+    : undefined;
+
   const response = await provider.send(config, {
     systemPrompt,
     messages: [userMessage],
     tools: [],
     signal,
+    onDelta,
   });
 
   if (signal?.aborted) throw abortError();

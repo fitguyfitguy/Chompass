@@ -7,14 +7,13 @@ import { shouldUseNativeCaptureHint } from "../media-devices.js";
 import { fileToJpegBase64 } from "../ai/image.js";
 import {
   ANALYSIS_PHASE,
-  ANALYSIS_PHASE_LABEL,
-  ANALYSIS_PHASE_STEPS,
   analyzeFoodEntry,
   isAbortError,
 } from "../ai/food-analyze.js";
 import { collectOffPromptContext } from "../ai/off-prompt-context.js";
 import { listConfiguredProviders, loadProviderKey } from "../ai/key-storage.js";
 import { prefs } from "../db.js";
+import { renderAnalyzeOverlayHtml } from "./analyze-overlay.js";
 
 export const MAX_PHOTOS = 10;
 
@@ -170,7 +169,14 @@ export function openMultiPhotoReview(opts) {
         }
       </div>
       <div class="field">
-        <label for="multi-photo-note">Context note (optional)</label>
+        <label for="multi-photo-note">Tell AI what this is (optional)</label>
+        <p class="field-hint">Mention quantities, brands, or how it was cooked.</p>
+        <div class="chip-row" data-note-chips>
+          <button type="button" class="chip" data-chip="No oil">No oil</button>
+          <button type="button" class="chip" data-chip="Extra cheese">Extra cheese</button>
+          <button type="button" class="chip" data-chip="Large portion">Large portion</button>
+          <button type="button" class="chip" data-chip="Grilled">Grilled</button>
+        </div>
         <textarea id="multi-photo-note" rows="3" placeholder="e.g. homemade, olive oil drizzle">${escapeAttr(note)}</textarea>
       </div>
     `;
@@ -178,6 +184,17 @@ export function openMultiPhotoReview(opts) {
     body.querySelector("[data-cancel]")?.addEventListener("click", () => {
       sheet.close();
       opts.onCancel();
+    });
+    body.querySelectorAll("[data-chip]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const label = btn.getAttribute("data-chip") || "";
+        const noteEl = /** @type {HTMLTextAreaElement | null} */ (body.querySelector("#multi-photo-note"));
+        if (!noteEl || !label) return;
+        const cur = noteEl.value.trim();
+        if (cur.toLowerCase().includes(label.toLowerCase())) return;
+        noteEl.value = cur ? `${cur}, ${label}` : label;
+        note = noteEl.value;
+      });
     });
     body.querySelector("[data-analyze]")?.addEventListener("click", () => {
       const noteEl = /** @type {HTMLTextAreaElement | null} */ (body.querySelector("#multi-photo-note"));
@@ -262,35 +279,16 @@ async function runPhotoAnalysis(args) {
   const previewUrls = args.files.map((f) => URL.createObjectURL(f));
   const ac = new AbortController();
   let generation = 1;
+  /** @type {import('../ai/partial-json.js').PartialFoodEstimate|null} */
+  let partial = null;
 
   const setPhase = (phase) => {
-    const currentIndex = ANALYSIS_PHASE_STEPS.indexOf(/** @type {any} */ (phase));
-    const stepIndex = currentIndex >= 0 ? currentIndex : 0;
-    const stepsHtml = ANALYSIS_PHASE_STEPS.map((_step, index) => {
-      const done = index < stepIndex;
-      const active = index === stepIndex;
-      return `
-        <div class="analyze-step ${done ? "analyze-step--done" : ""} ${active ? "analyze-step--active" : ""}" aria-hidden="true">
-          ${done ? `<span class="analyze-step__check">✓</span>` : active ? `<span class="analyze-step__spin"></span>` : ""}
-        </div>
-        ${index < ANALYSIS_PHASE_STEPS.length - 1 ? `<div class="analyze-step__rail ${done ? "analyze-step__rail--done" : ""}"></div>` : ""}
-      `;
-    }).join("");
-    const previewHtml =
-      previewUrls.length > 1
-        ? `<div class="analyze-overlay__thumbs">${previewUrls
-            .map((u) => `<img class="analyze-overlay__thumb" src="${u}" alt="" />`)
-            .join("")}</div>`
-        : previewUrls[0]
-          ? `<img class="analyze-overlay__preview" src="${previewUrls[0]}" alt="" />`
-          : `<div class="analyze-overlay__icon" aria-hidden="true">⌕</div>`;
-    overlay.innerHTML = `
-      ${previewHtml}
-      <div class="analyze-steps">${stepsHtml}</div>
-      <p class="analyze-overlay__phase">${ANALYSIS_PHASE_LABEL[phase] || ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PREPARING]}</p>
-      <div class="analyze-overlay__spinner" aria-hidden="true"></div>
-      <button type="button" class="btn btn--ghost analyze-overlay__cancel" data-cancel-analyze>Cancel</button>
-    `;
+    overlay.innerHTML = renderAnalyzeOverlayHtml({
+      phase,
+      partial,
+      previewUrls,
+      showCancel: true,
+    });
     overlay.querySelector("[data-cancel-analyze]")?.addEventListener("click", () => {
       generation += 1;
       ac.abort();
@@ -336,6 +334,11 @@ async function runPhotoAnalysis(args) {
       onPhase: (phase) => {
         if (generation !== 1) return;
         setPhase(phase);
+      },
+      onPartial: (next) => {
+        if (generation !== 1) return;
+        partial = next;
+        setPhase(ANALYSIS_PHASE.CALLING_AI);
       },
     });
 
