@@ -1,0 +1,5 @@
+• Streaming AI food analysis: macros fill in as the provider responds
+• Ask AI to correct a logged entry (chips, note, before/after diff)
+• Photo review quick chips (no oil, extra cheese, large, grilled)
+• PWA Language setting + shared 15-locale core catalogs; locale-aware Android dates/numbers
+• Bottom sheets no longer drag-dismiss while busy

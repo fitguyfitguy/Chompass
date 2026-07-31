@@ -4,6 +4,20 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-07-31
+
+### Added
+
+- Streaming AI food analysis: calories and macros fill in as the provider responds (Android and PWA when SSE is available).
+- Ask AI to correct on a logged entry: quick chips, note, before/after field diff, then Save (Android and PWA).
+- Quick context chips on photo review (No oil, Extra cheese, Large portion, Grilled).
+- Shared 15-locale UI contract: PWA Language setting with core-surface catalogs; Android locale-aware date/number formatting.
+
+### Changed
+
+- Modal bottom sheets stay open while a busy operation is in progress (no accidental drag-dismiss).
+- Photo context and edit-entry copy clarified (“Tell AI what this is”, “Ask AI to correct”).
+
 ## [3.3.3] - 2026-07-31
 
 ### Fixed
