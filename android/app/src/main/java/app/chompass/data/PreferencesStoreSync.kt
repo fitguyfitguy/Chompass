@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import app.chompass.sync.normalizeWebDavUrl
 
 @Serializable
 data class SyncRevision(
@@ -34,7 +35,7 @@ internal val PreferencesStore.webDavUrlImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.WEBDAV_URL].orEmpty() }
 
 internal suspend fun PreferencesStore.setWebDavUrlImpl(url: String) {
-    dataStore.edit { it[Keys.WEBDAV_URL] = url.trim() }
+    dataStore.edit { it[Keys.WEBDAV_URL] = normalizeWebDavUrl(url) }
 }
 
 internal val PreferencesStore.webDavUsernameImpl: Flow<String>

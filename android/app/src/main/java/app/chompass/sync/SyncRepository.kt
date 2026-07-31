@@ -62,7 +62,7 @@ class SyncRepository(
     }
 
     suspend fun syncNow(zone: ZoneId = ZoneId.systemDefault()): SyncResult {
-        val url = prefs.webDavUrl.first().trim()
+        val url = normalizeWebDavUrl(prefs.webDavUrl.first())
         val user = prefs.webDavUsername.first().trim()
         val password = keyStore.webDavPassword().orEmpty()
         if (url.isEmpty() || user.isEmpty() || password.isEmpty()) {

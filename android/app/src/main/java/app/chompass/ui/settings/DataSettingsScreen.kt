@@ -27,6 +27,7 @@ import app.chompass.export.BodyMetricsImporter
 import app.chompass.export.DiaryImportResult
 import app.chompass.export.DiaryImporter
 import app.chompass.sync.SyncRepository
+import app.chompass.sync.normalizeWebDavUrl
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 
@@ -253,7 +254,9 @@ fun DataSettingsScreen(
             onWebDavPasswordChange = { webDavPassword = it },
             onSaveWebDav = {
                 scope.launch {
-                    container.prefs.setWebDavUrl(webDavUrl)
+                    val normalized = normalizeWebDavUrl(webDavUrl)
+                    webDavUrl = normalized
+                    container.prefs.setWebDavUrl(normalized)
                     container.prefs.setWebDavUsername(webDavUsername)
                     container.keyStore.setWebDavPassword(webDavPassword)
                     syncMessage = activityContext.getString(R.string.settings_webdav_saved)

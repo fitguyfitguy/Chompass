@@ -56,7 +56,9 @@ internal fun SettingsSyncSection(
                 value = webDavUrl,
                 onValueChange = onWebDavUrlChange,
                 label = { Text(stringResource(R.string.settings_webdav_url)) },
+                placeholder = { Text(stringResource(R.string.settings_webdav_url_hint)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(

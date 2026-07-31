@@ -748,7 +748,7 @@ export class SettingsView extends HTMLElement {
         <form class="entry-form" id="webdav-form" style="margin-top:1rem;">
           <div class="field">
             <label for="webdav-url">WebDAV file URL</label>
-            <input id="webdav-url" name="url" type="url" placeholder="https://cloud.example/remote.php/dav/files/me/chompass/sync.json" value="${cfg.url.replace(/"/g, "&quot;")}" />
+            <input id="webdav-url" name="url" type="url" placeholder="https://uXXXXX.your-storagebox.de/sync.json" value="${cfg.url.replace(/"/g, "&quot;")}" />
           </div>
           <div class="field-row field-row--2">
             <div class="field">
@@ -800,6 +800,9 @@ export class SettingsView extends HTMLElement {
         etag: cfg.etag,
         lastSyncAt: cfg.lastSyncAt,
       });
+      const saved = await loadWebDavSettings();
+      const urlInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#webdav-url"));
+      if (urlInput) urlInput.value = saved.url;
       if (status) status.textContent = "WebDAV settings saved.";
     });
     this.querySelector("#sync-now")?.addEventListener("click", async () => {
