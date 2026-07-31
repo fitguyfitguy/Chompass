@@ -4,6 +4,17 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.5.1] - 2026-08-01
+
+### Added
+
+- Health and accuracy disclaimers on onboarding plan-ready (Android + PWA): not medical advice; photo estimates and vague portion labels are often wrong; AI/LLM output is estimates only.
+- Accuracy note under Android Settings → Safety & Medical.
+
+### Changed
+
+- PWA onboarding is fully localized across the shared 15-locale set (steps, choices, AI setup, plan-ready), not only welcome/CTA buttons.
+
 ## [3.5.0] - 2026-07-31
 
 ### Added
