@@ -15,7 +15,6 @@ import org.junit.Test
  */
 @OptIn(ExperimentalMaterial3Api::class)
 class SheetDismissPolicyTest {
-
     @Test
     fun allowsHide_whenIdle() {
         assertTrue(allowsSheetHide(SheetValue.Hidden, busy = false))
