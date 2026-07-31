@@ -169,7 +169,7 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
     ? `- Diet mode: keto (net carbs target ${targets.carbsG} g/day)`
     : "- Diet mode: standard";
   const ketoSection = profile.ketoMode
-    ? `\nDIET MODE OVERRIDE — the user follows a KETO diet. Ignore the standard fat/carb formulas above and use these rules instead (they match the app's own keto math):` +
+    ? `\nDIET MODE OVERRIDE: the user follows a KETO diet. Ignore the standard fat/carb formulas above and use these rules instead (they match the app's own keto math):` +
       `\n- Carbs: fixed at the keto net-carb target of ${targets.carbsG} g/day. Do not raise it to fill remaining calories.` +
       `\n- Protein: at least the formula protein below (it already includes the keto floor of 1.6 g/kg lean mass, minimum 60 g).` +
       `\n- Fat: fills the calories remaining after carbs and protein, never below 45 g/day. Fat is the primary energy source.` +
@@ -186,7 +186,7 @@ FORMULAS
 - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg.
 - TDEE = BMR * activity multiplier. Multipliers: ${activityLine}.
 - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${calorieAdjLine}.
-- Protein: aim NEAR the formula protein value shown below — that value is the activity multiplier (${proteinLine} g/kg; +0.2 if losing) applied to the user's ${proteinBasis}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
+- Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${proteinLine} g/kg; +0.2 if losing) applied to the user's ${proteinBasis}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
 - Fat: 0.6 g/kg of full bodyweight.
 - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
 BMR method in effect for this user: ${bmrMethod}.
@@ -204,7 +204,7 @@ USER PROFILE
 - Goal weight: ${goalWeight}
 ${dietLine}
 ${ketoSection}
-APP FORMULA REFERENCE (already computed deterministically — use as the anchor)
+APP FORMULA REFERENCE (already computed deterministically; use as the anchor)
 - BMR: ${Math.trunc(bmr(formulaProfile))} kcal/day
 - TDEE: ${Math.trunc(tdee(formulaProfile))} kcal/day
 - Formula calorie target: ${targets.calories} kcal/day
@@ -220,10 +220,10 @@ function buildObservedSection(forecast, weightMetric) {
   if (!forecast?.hasEnoughData) return "";
   const lines = [
     "",
-    "OBSERVED DATA — from the user's OWN logs (prefer this over the formula when reliable):",
+    "OBSERVED DATA: from the user's OWN logs (prefer this over the formula when reliable):",
   ];
   const intakeBasis = forecast.usesCalendarDayAverage
-    ? `avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days — sparse logging)`
+    ? `avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days; sparse logging)`
     : `avg ${forecast.avgDailyCalories} kcal/day across ${forecast.daysOfFoodData} logged days`;
   lines.push(`- Logged intake: ${intakeBasis}`);
   const obs = forecast.observedWeeklyChangeKg;
@@ -243,7 +243,7 @@ function buildObservedSection(forecast, weightMetric) {
   lines.push(`- Formula TDEE for comparison: ${forecast.tdee} kcal/day`);
   if (forecast.trendsDisagree) {
     lines.push(
-      "- WARNING: logged intake and the real weight trend DISAGREE — the user is likely under-logging. Trust the weight trend over raw logged calories."
+      "- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories."
     );
   }
   lines.push(

@@ -36,7 +36,7 @@ class ModelDownloadWorker(
         if (target.exists()) return Result.success()
 
         if (!hasEnoughFreeSpace(modelsDir, entry.sizeBytes)) {
-            return failure("Not enough free storage — need at least ${entry.sizeBytes / (1024 * 1024)} MB free.")
+            return failure("Not enough free storage. Need at least ${entry.sizeBytes / (1024 * 1024)} MB free.")
         }
 
         return try {
@@ -44,7 +44,7 @@ class ModelDownloadWorker(
             setProgress(workDataOf(PROGRESS_PERCENT to 100))
             if (!verifySha256(partFile, entry.sha256)) {
                 partFile.delete()
-                return failure("Downloaded file failed integrity check — please retry.")
+                return failure("Downloaded file failed integrity check. Please retry.")
             }
             if (!partFile.renameTo(target)) {
                 partFile.delete()

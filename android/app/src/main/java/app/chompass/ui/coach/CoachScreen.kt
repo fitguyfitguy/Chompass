@@ -283,7 +283,7 @@ fun CoachScreen(container: AppContainer) {
         FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_food_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                "${entry.name} — ${entry.calories} kcal (${String.format(Locale.US, "%.0f", entry.protein)}g protein, " +
+                "${entry.name}: ${entry.calories} kcal (${String.format(Locale.US, "%.0f", entry.protein)}g protein, " +
                     "${String.format(Locale.US, "%.0f", entry.carbs)}g carbs, ${String.format(Locale.US, "%.0f", entry.fat)}g fat)",
                 style = MaterialTheme.typography.bodyMedium
             )

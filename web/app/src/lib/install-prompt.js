@@ -116,7 +116,7 @@ export function installHelpContent() {
         <ol class="install-steps">
           <li>Tap the browser menu (⋮).</li>
           <li>Tap <strong>Add to Home</strong> / <strong>Add to Home Screen</strong>.</li>
-          <li>If nothing happens, your launcher may block shortcuts — try Chrome or Firefox, or set a Home app under Android Settings → Apps → Default apps.</li>
+          <li>If nothing happens, your launcher may block shortcuts. Try Chrome or Firefox, or set a Home app under Android Settings → Apps → Default apps.</li>
         </ol>`,
       note: "For a full-screen installed app, open https://chompass.app/app/ in Chrome, Edge, or Brave, then use Install app / Add to Home screen.",
     };
@@ -142,7 +142,7 @@ export function installHelpContent() {
           <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
           <li>Confirm. Open Chompass from the new icon afterward.</li>
         </ol>`,
-      note: "Many Chromium browsers do not show an automatic install popup — use the menu.",
+      note: "Many Chromium browsers do not show an automatic install popup. Use the menu.",
     };
   }
   return {
@@ -171,7 +171,7 @@ function platformTip() {
     return "DuckDuckGo cannot fully install PWAs. Use the menu for a shortcut, or open in Chrome / Firefox to install.";
   }
   if (isFirefox() && isAndroid()) {
-    return "Firefox has no in-page install button — use the menu (⋮) → Add to Home screen.";
+    return "Firefox has no in-page install button. Use the menu (⋮) → Add to Home screen.";
   }
   return "Install Chompass to your home screen or dock for easier access.";
 }

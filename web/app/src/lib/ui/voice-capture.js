@@ -31,7 +31,7 @@ export async function openVoiceCaptureSheet(opts) {
   const render = () => {
     body.innerHTML = `
       <div class="voice-capture__status" aria-live="polite">
-        ${listening ? "Listening…" : transcript ? "Got it — tap Use to continue" : "Tap the mic to start"}
+        ${listening ? "Listening…" : transcript ? "Got it. Tap Use to continue" : "Tap the mic to start"}
       </div>
       <p class="voice-capture__transcript">${escapeHtml(transcript) || "<span class=\"voice-capture__placeholder\">Your words will appear here</span>"}</p>
       <div class="voice-capture__actions btn-row">

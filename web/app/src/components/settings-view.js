@@ -428,7 +428,7 @@ export class SettingsView extends HTMLElement {
       title: "Recalculate goals?",
       message: aiClient
         ? "Uses your AI provider with your profile and recent food/weight logs to refresh calorie targets. Macros stay formula-based on the web app."
-        : "No AI key configured — resets calories to formula defaults from your height/weight/activity/goal. Add an AI key in Settings for the same AI recalculation as Android.",
+        : "No AI key configured. Resets calories to formula defaults from your height/weight/activity/goal. Add an AI key in Settings for the same AI recalculation as Android.",
       confirmLabel: "Recalculate",
     });
     if (!ok) return;
@@ -476,7 +476,7 @@ export class SettingsView extends HTMLElement {
       const msg = err instanceof Error ? err.message : String(err);
       if (status) {
         status.hidden = false;
-        status.textContent = `Couldn't recalculate — goals unchanged. Check your AI key in Settings. (${msg})`;
+        status.textContent = `Couldn't recalculate. Goals unchanged. Check your AI key in Settings. (${msg})`;
       }
       if (btn) btn.disabled = false;
     }
@@ -781,7 +781,7 @@ export class SettingsView extends HTMLElement {
       ${subpageBar("Sync", { backHref: SETTINGS_PARENT.sync })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Optional user-hosted sync. Chompass has no cloud account — point both the PWA and Android app at the same WebDAV file (e.g. Nextcloud), or move a sync JSON by hand. API keys and food photos are not included.
+          Optional user-hosted sync. Chompass has no cloud account. Point both the PWA and Android app at the same WebDAV file (e.g. Nextcloud), or move a sync JSON by hand. API keys and food photos are not included.
         </p>
         <div class="btn-row">
           <button class="btn btn--ghost" id="export-sync" type="button">Export sync JSON</button>
@@ -1078,9 +1078,9 @@ export class SettingsView extends HTMLElement {
           <li>Open Chompass in <strong>Safari</strong> (required for a true home-screen app).</li>
           <li>Tap the <strong>Share</strong> button (square with an upward arrow).</li>
           <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
-          <li>Open Chompass from the <strong>home-screen icon</strong> — not a Safari tab — for the full-screen app.</li>
+          <li>Open Chompass from the <strong>home-screen icon</strong> (not a Safari tab) for the full-screen app.</li>
         </ol>
-        <p class="install-note">Brave, Chrome, and Firefox on iOS cannot install home-screen web apps — Apple only allows Safari to. If you use one of those, copy the address into Safari and follow the steps above.</p>
+        <p class="install-note">Brave, Chrome, and Firefox on iOS cannot install home-screen web apps. Apple only allows Safari to. If you use one of those, copy the address into Safari and follow the steps above.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">Android (Chrome, Edge, Brave)</h2>
@@ -1089,7 +1089,7 @@ export class SettingsView extends HTMLElement {
           <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
           <li>Confirm. Open Chompass from the new icon afterward.</li>
         </ol>
-        <p class="install-note">Many Chromium browsers do not show an automatic install popup — use the menu. An Install banner may also appear when the browser allows it.</p>
+        <p class="install-note">Many Chromium browsers do not show an automatic install popup. Use the menu. An Install banner may also appear when the browser allows it.</p>
       </div>
       <div class="card">
         <h2 class="chart-title">Firefox (Android)</h2>
@@ -1104,7 +1104,7 @@ export class SettingsView extends HTMLElement {
         <h2 class="chart-title">DuckDuckGo (Android)</h2>
         <ol class="install-steps">
           <li>Menu → <strong>Add to Home</strong> creates a shortcut only (not a full PWA).</li>
-          <li>If that does nothing, your launcher may block shortcuts — try Chrome or Firefox instead.</li>
+          <li>If that does nothing, your launcher may block shortcuts. Try Chrome or Firefox instead.</li>
         </ol>
         <p class="install-note">For a full-screen installed app, open this page in Chrome, Edge, or Brave, then use Install app / Add to Home screen.</p>
       </div>

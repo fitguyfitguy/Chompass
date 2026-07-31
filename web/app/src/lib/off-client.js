@@ -116,7 +116,7 @@ export function mapProduct(product, barcode) {
     vitaminKMcg: micrograms(servingValue("vitamin-k")),
     folateMcg: micrograms(servingValue("folates")),
     omega3G: round1(servingValue("omega-3-fat")),
-    note: `Open Food Facts · barcode ${barcode} · values for ${Math.round(servingGrams)}g serving — adjust if needed`,
+    note: `Open Food Facts · barcode ${barcode} · values for ${Math.round(servingGrams)}g serving; adjust if needed`,
     source: "barcode",
   };
 }

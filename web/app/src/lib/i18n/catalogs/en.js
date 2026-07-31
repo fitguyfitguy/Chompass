@@ -1,5 +1,5 @@
 // @ts-check
-/** English catalog — source of truth for PWA core-surface keys. */
+/** English catalog: source of truth for PWA core-surface keys. */
 
 /** @type {Readonly<Record<string, string>>} */
 export const en = Object.freeze({
@@ -190,11 +190,11 @@ export const en = Object.freeze({
   "onboarding.plan.carbs": "Carbs",
   "onboarding.plan.fat": "Fat",
   "onboarding.plan.edit_calories_a11y": "Edit calorie target",
-  "onboarding.plan.customize_hint": "Tap a target to customize. You can fine-tune anytime in Settings.",
+  "onboarding.plan.customize_hint": "Tap a target to customize. You can adjust them anytime in Settings.",
   "onboarding.health.title": "Health disclaimer",
-  "onboarding.health.body": "Chompass is a tracking helper, not a clinical tool. Predictive equations carry inherent error. If you have a medical condition, are pregnant or breastfeeding, are under 18, or have a history of disordered eating — pause and talk with a doctor or therapist before continuing. This is not medical advice.",
+  "onboarding.health.body": "Chompass is a tracking helper, not a clinical tool. Formula estimates can be off. If you have a medical condition, are pregnant or breastfeeding, are under 18, or have a history of disordered eating, pause and talk with a doctor or therapist before continuing. This is not medical advice.",
   "onboarding.accuracy.title": "Accuracy disclaimer",
-  "onboarding.accuracy.body": "Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only — not medical facts. Verify important numbers yourself.",
+  "onboarding.accuracy.body": "Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only, not medical facts. Verify important numbers yourself.",
 
   // Coach
   "coach.title": "Coach",

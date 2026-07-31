@@ -53,7 +53,7 @@ export const AI_TOOLS = [
   },
   {
     name: "propose_log_food",
-    description: "Propose logging a food entry. Does NOT save — opens a review card the user must confirm.",
+    description: "Propose logging a food entry. Does NOT save. Opens a review card the user must confirm.",
     inputSchema: {
       type: "object",
       required: ["name", "mealType", "date", "calories"],
@@ -83,12 +83,12 @@ export const AI_TOOLS = [
   },
   {
     name: "propose_log_weight",
-    description: "Propose logging a body weight measurement. Does not save — the user must confirm.",
+    description: "Propose logging a body weight measurement. Does not save. The user must confirm.",
     inputSchema: { type: "object", required: ["weightKg"], properties: { weightKg: { type: "number" } } },
   },
   {
     name: "propose_log_water",
-    description: "Propose logging a water intake amount. Does not save — the user must confirm.",
+    description: "Propose logging a water intake amount. Does not save. The user must confirm.",
     inputSchema: {
       type: "object",
       required: ["amountMl"],

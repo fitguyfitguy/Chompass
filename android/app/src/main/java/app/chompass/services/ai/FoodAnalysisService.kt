@@ -95,7 +95,7 @@ class FoodAnalysisService(
                 - daily_protein_g: ${it.effectiveProtein}
                 - daily_carbs_g: ${it.effectiveCarbs}
                 - daily_fat_g: ${it.effectiveFat}
-                - diet_mode: ${it.dietMode.name.lowercase()}${if (it.dietMode == DietMode.KETO) " (net carbs capped at ${it.ketoActiveCarbTarget} g/day — keep sugar and added_sugar goals low and consistent with keto)" else ""}
+                - diet_mode: ${it.dietMode.name.lowercase()}${if (it.dietMode == DietMode.KETO) " (net carbs capped at ${it.ketoActiveCarbTarget} g/day; keep sugar and added_sugar goals low and consistent with keto)" else ""}
             """.trimIndent()
         } ?: "No user profile is available. Use conservative general adult defaults."
         val prompt = """
@@ -214,9 +214,9 @@ class FoodAnalysisService(
         val observedSection = buildString {
             if (forecast != null && forecast.hasEnoughData) {
                 appendLine()
-                appendLine("OBSERVED DATA — from the user's OWN logs (prefer this over the formula when reliable):")
+                appendLine("OBSERVED DATA: from the user's OWN logs (prefer this over the formula when reliable):")
                 val intakeBasis = if (forecast.usesCalendarDayAverage) {
-                    "avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days — sparse logging)"
+                    "avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days; sparse logging)"
                 } else {
                     "avg ${forecast.avgDailyCalories} kcal/day across ${forecast.daysOfFoodData} logged days"
                 }
@@ -234,7 +234,7 @@ class FoodAnalysisService(
                 }
                 appendLine("- Formula TDEE for comparison: ${forecast.tdee} kcal/day")
                 if (forecast.trendsDisagree) {
-                    appendLine("- WARNING: logged intake and the real weight trend DISAGREE — the user is likely under-logging. Trust the weight trend over raw logged calories.")
+                    appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories.")
                 }
                 append("HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. Keep calories within 800-6000.")
             }
@@ -243,14 +243,14 @@ class FoodAnalysisService(
         // Energy Burn toggle: when on (and Health Connect has enough data) this measured
         // maintenance replaces the formula TDEE as the calorie anchor.
         val measuredSection = if (measuredTdee != null) {
-            "\nMEASURED ENERGY BURN — the user's REAL maintenance from Health Connect (14-day average of active + basal calories). Use THIS as the maintenance/TDEE anchor INSTEAD of the formula TDEE: $measuredTdee kcal/day. Apply the weight goal and weekly-change adjustment to this measured maintenance. Still sanity-check it against the observed weight trend."
+            "\nMEASURED ENERGY BURN: the user's REAL maintenance from Health Connect (14-day average of active + basal calories). Use THIS as the maintenance/TDEE anchor INSTEAD of the formula TDEE: $measuredTdee kcal/day. Apply the weight goal and weekly-change adjustment to this measured maintenance. Still sanity-check it against the observed weight trend."
         } else ""
 
         // Optional tape-measure circumferences + derived metrics. Extra signal only — never overrides
         // the formulas. A shrinking waist alongside flat/declining weight implies recomposition.
         val measurementsSummary = measurement?.promptSummary(profile.gender, profile.heightCm)
         val measurementsSection = if (measurementsSummary != null) {
-            "\nBODY MEASUREMENTS — the user's latest tape-measure circumferences and the metrics derived from them. Use as extra signal: a shrinking waist with steady or falling weight suggests recomposition, so keep protein high and don't over-cut. Treat the US-Navy body-fat figure as a rough estimate, not exact.\n$measurementsSummary"
+            "\nBODY MEASUREMENTS: the user's latest tape-measure circumferences and the metrics derived from them. Use as extra signal: a shrinking waist with steady or falling weight suggests recomposition, so keep protein high and don't over-cut. Treat the US-Navy body-fat figure as a rough estimate, not exact.\n$measurementsSummary"
         } else ""
 
         val prompt = """
@@ -264,7 +264,7 @@ class FoodAnalysisService(
             - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg.
             - TDEE = BMR * activity multiplier. Multipliers: ${GoalFormulaReference.activityMultipliersLine()}.
             - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${GoalFormulaReference.calorieAdjustmentLine()}.
-            - Protein: aim NEAR the formula protein value shown below — that value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's ${if (profile.bodyFatPercentage != null) "lean body mass" else "full bodyweight"}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
+            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's ${if (profile.bodyFatPercentage != null) "lean body mass" else "full bodyweight"}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
             - Fat: 0.6 g/kg of full bodyweight.
             - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
             BMR method in effect for this user: $bmrMethod.
@@ -282,7 +282,7 @@ class FoodAnalysisService(
             - Goal weight: $goalWeight
             ${dietModeLine(profile)}
             ${ketoGoalRulesSection(profile)}
-            APP FORMULA REFERENCE (already computed deterministically — use as the anchor)
+            APP FORMULA REFERENCE (already computed deterministically; use as the anchor)
             - BMR: ${profile.bmr.toInt()} kcal/day
             - TDEE: ${profile.tdee.toInt()} kcal/day
             - Formula calorie target: ${profile.dailyCalories} kcal/day
@@ -441,8 +441,8 @@ class FoodAnalysisService(
         val responseBlock = entryResponseBlock()
         var prompt = if (singleIngredient) {
             """
-            Analyze this food image. It is a single weighed ingredient being added to a meal —
-            estimate only the visible item on its own (do not invent other ingredients).
+            Analyze this food image. It is a single weighed ingredient being added to a meal.
+            Estimate only the visible item on its own (do not invent other ingredients).
             If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
             $responseBlock
             """.trimIndent()
@@ -481,8 +481,8 @@ class FoodAnalysisService(
         val responseBlock = entryResponseBlock()
         var prompt = if (singleIngredient) {
             """
-            Analyze these food images. They show a single weighed ingredient being added to a meal —
-            estimate only that ingredient (do not invent other meal components or double-count).
+            Analyze these food images. They show a single weighed ingredient being added to a meal.
+            Estimate only that ingredient (do not invent other meal components or double-count).
             If a utensil, hand, coin, or common object is visible next to the food in any image, use it as a size reference to refine your portion estimate.
             $responseBlock
             """.trimIndent()
@@ -685,7 +685,7 @@ class FoodAnalysisService(
      */
     private fun ketoGoalRulesSection(profile: UserProfile): String {
         if (profile.dietMode != DietMode.KETO) return ""
-        return "\nDIET MODE OVERRIDE — the user follows a KETO diet. Ignore the standard fat/carb formulas above and use these rules instead (they match the app's own keto math):" +
+        return "\nDIET MODE OVERRIDE: the user follows a KETO diet. Ignore the standard fat/carb formulas above and use these rules instead (they match the app's own keto math):" +
             "\n- Carbs: fixed at the keto net-carb target of ${profile.ketoActiveCarbTarget} g/day. Do not raise it to fill remaining calories." +
             "\n- Protein: at least the formula protein below (it already includes the keto floor of 1.6 g/kg lean mass, minimum 60 g)." +
             "\n- Fat: fills the calories remaining after carbs and protein, never below 45 g/day. Fat is the primary energy source." +

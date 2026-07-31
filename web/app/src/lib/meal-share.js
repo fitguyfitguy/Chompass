@@ -223,7 +223,7 @@ export function decodeMealShare(linkOrHash) {
 export function mealShareText(entries) {
   const lines = entries.map((e) => {
     const macros = `${Math.round(e.proteinG || 0)}P · ${Math.round(e.carbsG || 0)}C · ${Math.round(e.fatG || 0)}F`;
-    return `${e.name} — ${Math.round(e.calories || 0)} kcal · ${macros}`;
+    return `${e.name}: ${Math.round(e.calories || 0)} kcal · ${macros}`;
   });
   const origin = typeof location !== "undefined" ? `${location.origin}${location.pathname}` : "";
   const hash = encodeMealShare(entries);

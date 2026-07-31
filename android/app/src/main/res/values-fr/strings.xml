@@ -700,7 +700,7 @@
     <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
     <string name="grounded_entry_title">Saisie ancrée</string>
-    <string name="grounded_entry_subtitle">Décrivez et/ou photographiez un repas. Les nutriments viennent d’USDA, Open Food Facts ou de votre historique confirmé — pas d’estimations libres.</string>
+    <string name="grounded_entry_subtitle">Décrivez et/ou photographiez un repas. Les nutriments viennent d’USDA, Open Food Facts ou de votre historique confirmé, pas d’estimations libres.</string>
     <string name="grounded_entry_placeholder">ex. 2 œufs brouillés et une banane</string>
     <string name="grounded_entry_add_photo">Ajouter une photo</string>
     <string name="grounded_entry_analyze">Ancrer les nutriments</string>
@@ -719,7 +719,7 @@
     <string name="grounding_badge_history">Ancré · Votre historique</string>
     <string name="grounding_badge_label">Ancré · Étiquette</string>
     <string name="grounding_badge_estimate">Estimation · non trouvé en base</string>
-    <string name="grounding_confidence_summary">Confiance — identité %1$d%% · portion %2$d%% · source %3$d%%</string>
+    <string name="grounding_confidence_summary">Confiance : identité %1$d%% · portion %2$d%% · source %3$d%%</string>
     <string name="grounding_validation_notes">Notes : %1$s</string>
     <string name="grounded_on_device_unavailable">La saisie ancrée nécessite un fournisseur IA cloud. Les modèles on-device utilisent Photo/Note.</string>
     <string name="grounded_review_unit">Unité</string>
