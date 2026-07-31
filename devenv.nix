@@ -23,9 +23,12 @@
     # Avoid hanging adb commands when Windows also runs adb on the shared WSL localhost.
     export ANDROID_ADB_SERVER_PORT=5038
     # Reject Cursor/AI commit trailers (Co-authored-by: Cursor, Made-with: Cursor, …).
+    # Pin Codeberg maintainer identity for this clone (do not use global personal identity).
     if [[ -d .git ]]; then
       chmod +x scripts/git-hooks/* 2>/dev/null || true
       git config core.hooksPath scripts/git-hooks
+      git config user.name fitguy
+      git config user.email fit.guy@mailfence.com
     fi
   '';
 
