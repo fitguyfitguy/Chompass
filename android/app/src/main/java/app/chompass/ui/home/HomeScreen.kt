@@ -591,6 +591,7 @@ fun HomeScreen(container: AppContainer) {
             // Tapping a Saved Meals row opens the FoodResultSheet for review
             // instead of logging immediately — same UX as the photo flow.
             onRelogEntry = { vm.reviewSavedMeal(it) },
+            onLogEntry = { vm.relogMeal(it) },
             onLogRecipe = { vm.logRecipe(it) },
             onEditRecipe = { recipe -> savedMealsTab = null; editingRecipe = recipe },
             onCreateRecipe = {
@@ -724,7 +725,7 @@ fun HomeScreen(container: AppContainer) {
     }
 
     // Restored failed single-photo input — optional note before retry.
-    ui.pendingInputImageBytes?.let { bytes ->
+    if (ui.error == null) ui.pendingInputImageBytes?.let { bytes ->
         ContextNoteSheet(
             imageBytes = bytes,
             initialNote = ui.pendingInputNote.orEmpty(),

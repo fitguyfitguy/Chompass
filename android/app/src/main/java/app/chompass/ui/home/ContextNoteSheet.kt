@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -77,7 +78,6 @@ fun ContextNoteSheet(
     onAddPhoto: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember(initialNote) { mutableStateOf(initialNote) }
     var weightText by remember(initialConfirmedPortionGrams) {
         mutableStateOf(
@@ -89,6 +89,7 @@ fun ContextNoteSheet(
     }
     var submitted by remember { mutableStateOf(false) }
     val busy = isSubmitting || submitted
+    val state = rememberChompassSheetState(busy = busy)
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -103,7 +104,7 @@ fun ContextNoteSheet(
     }
 
     ChompassBottomSheet(
-        onDismiss = onDismiss,
+        onDismiss = { if (!busy) onDismiss() },
         sheetState = state,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
@@ -118,7 +119,7 @@ fun ContextNoteSheet(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onDismiss) {
+                TextButton(onClick = { if (!busy) onDismiss() }) {
                     Text(
                         stringResource(R.string.action_cancel),
                         color = AppColors.Calorie,
