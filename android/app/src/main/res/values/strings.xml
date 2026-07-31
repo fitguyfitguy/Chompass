@@ -845,6 +845,7 @@
     <string name="settings_sync_section">Sync</string>
     <string name="settings_sync_blurb">Optional user-hosted sync. Point Android and the PWA at the same WebDAV file (for example Nextcloud), or share a sync JSON. Chompass does not run a sync server. API keys and food photos are not included.</string>
     <string name="settings_webdav_url">WebDAV file URL</string>
+    <string name="settings_webdav_url_hint">https://uXXXXX.your-storagebox.de/sync.json</string>
     <string name="settings_webdav_username">Username</string>
     <string name="settings_webdav_password">Password</string>
     <string name="settings_webdav_save">Save WebDAV settings</string>

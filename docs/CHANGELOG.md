@@ -4,6 +4,23 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.3.1] - 2026-07-31
+
+### Added
+
+- Progressive meal draft on Android: weigh and analyze ingredients one at a time, then log the combined meal (or add another item).
+- Optional confirmed total portion weight during food entry clarification, so analysis can use a ground-truth gram amount.
+- Desktop PWA layout at 900px+: left nav rail, wider content column, and centered sheets.
+- PWA update toast to reload onto a new service-worker version without silently swapping mid-session (IndexedDB data kept).
+
+### Fixed
+
+- WebDAV sync URL normalization on Android and the PWA: missing scheme defaults to HTTPS; stacked schemes (e.g. `https://https://…`) are collapsed. Clearer URL hint for storage-box style hosts.
+
+### Changed
+
+- Food-logging accuracy docs and blog post updated with tiered input methods and revised benchmark metrics (maintainer tooling only; grounded entry remains off in shipping builds).
+
 ## [3.3.0] - 2026-07-29
 
 ### Changed

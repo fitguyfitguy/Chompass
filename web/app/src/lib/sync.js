@@ -142,6 +142,37 @@ export async function applySyncDocument(doc) {
 }
 
 /**
+ * Normalize a user-entered WebDAV file URL.
+ * Missing scheme → https; collapses stacked schemes (https://https://…).
+ * @param {string} raw
+ * @returns {string}
+ */
+export function normalizeWebDavUrl(raw) {
+  let rest = (raw ?? "").trim();
+  if (!rest) return rest;
+
+  let preferHttp = false;
+  let sawScheme = false;
+  while (true) {
+    const lower = rest.toLowerCase();
+    if (lower.startsWith("https://")) {
+      rest = rest.slice(8);
+      preferHttp = false;
+      sawScheme = true;
+    } else if (lower.startsWith("http://")) {
+      rest = rest.slice(7);
+      if (!sawScheme) preferHttp = true;
+      sawScheme = true;
+    } else {
+      break;
+    }
+  }
+  rest = rest.replace(/^\/+/, "");
+  if (!rest) return (raw ?? "").trim();
+  return `${preferHttp ? "http" : "https"}://${rest}`;
+}
+
+/**
  * @returns {Promise<{ url: string, username: string, password: string, etag: string|null, lastSyncAt: string|null }>}
  */
 export async function loadWebDavSettings() {
@@ -160,7 +191,7 @@ export async function loadWebDavSettings() {
 export async function saveWebDavSettings(cfg) {
   await prefs.save({
     webdav: {
-      url: cfg.url.trim(),
+      url: normalizeWebDavUrl(cfg.url),
       username: cfg.username.trim(),
       password: cfg.password,
       etag: cfg.etag ?? null,
@@ -175,6 +206,7 @@ export async function saveWebDavSettings(cfg) {
  */
 export async function syncWebDavNow() {
   const cfg = await loadWebDavSettings();
+  cfg.url = normalizeWebDavUrl(cfg.url);
   if (!cfg.url || !cfg.username || !cfg.password) {
     return { ok: false, message: "Configure WebDAV URL, username, and password first" };
   }
