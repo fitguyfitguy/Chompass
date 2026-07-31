@@ -16,6 +16,32 @@ FULL_JSON_SCHEMA = (
     '"folate":0.0,"omega_3":0.0,"unit_options":[]}'
 )
 
+# Candidate schema for P1 meal-constituents gate (research-only until the gate
+# in score_constituents.py / FOOD_ACCURACY_BENCHMARK_STATUS.md passes).
+# constituents is optional and may be [] for single-item foods.
+CONSTITUENTS_JSON_SCHEMA = (
+    '{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,'
+    '"serving_size_grams":0.0,"emoji":"<single specific food emoji>",'
+    '"sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,'
+    '"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,'
+    '"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,'
+    '"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,'
+    '"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,'
+    '"folate":0.0,"omega_3":0.0,"unit_options":[],'
+    '"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,'
+    '"fat":0.0,"serving_size_grams":0.0,"emoji":"...","unit_options":[]}]}'
+)
+
+CONSTITUENTS_RULE = """
+constituents is optional. For multi-item meals, list each distinct edible item
+(egg, toast, butter, drink, side) with its own macros and serving_size_grams.
+Keep top-level fields as the meal total. Constituent grams should roughly sum to
+serving_size_grams (±10%). Constituent macros should roughly sum to the meal
+totals (±10%). Use [] for a single undivided food. Do not invent items that are
+not named or clearly implied.
+""".strip()
+
+
 COMPACT_JSON_SCHEMA = (
     '{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,'
     '"serving_size_grams":0.0}'
@@ -199,6 +225,19 @@ def fewshot_text_prompt(description: str) -> str:
     return production_text_prompt(description) + "\n\n" + FEWSHOT_UNITS
 
 
+def production_text_constituents_prompt(description: str) -> str:
+    """Lean production text + optional constituents[] (P1 gate candidate)."""
+    units = _lean_unit_line("v2")
+    return f"""
+Estimate the nutritional content for: {description}
+Respond ONLY with JSON:
+{CONSTITUENTS_JSON_SCHEMA}
+{LEAN_NUTRIENT_UNITS}{units}
+{CONSTITUENTS_RULE}
+For "emoji" pick the single most specific food emoji for this dish. Use null for any nutrient you cannot estimate.
+""".strip()
+
+
 def fewshot_image_prompt(*, description: str | None = None) -> str:
     return production_image_prompt(description=description) + "\n\n" + FEWSHOT_UNITS
 
@@ -273,6 +312,12 @@ Calories are integers. Protein/carbs/fat are grams. serving_size_grams is total 
 
 PROMPT_BUILDERS = {
     "production_text": lambda sample: production_text_prompt(sample.text or ""),
+    # P1 constituents gate candidate — text only; falls back to production_text for images.
+    "production_text_constituents": lambda sample: (
+        production_text_constituents_prompt(sample.text or "")
+        if sample.modality == "text"
+        else _build_image_prompt(sample, production_image_prompt)
+    ),
     "production_image": lambda sample: _build_image_prompt(sample, production_image_prompt),
     "compact": lambda sample: (
         compact_text_prompt(sample.text or "")

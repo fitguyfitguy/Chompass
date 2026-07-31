@@ -34,6 +34,9 @@ This note records what we have measured so far, which defaults to use, and what 
 | `data/manifests/acetada.jsonl` (+ `_l1` / `_l2`) | ACETADA before-meal L0/L1/L2 — **CC BY-NC**, research only |
 | `data/manifests/nvreal.jsonl` (+ `_l1` / `_l2`) | NutritionVerse-Real — needs local Kaggle extract; **CC BY-NC-SA** |
 | Metrics | `parse_ok`, WMAPE on {kcal, protein, carbs, fat}, ±20% kcal rate |
+| `manifest/eval_constituents_text.jsonl` | 12 composite meals for P1 constituents gate |
+| `production_text_constituents` | Research candidate prompt (optional `constituents[]`) |
+| `score_constituents.py` | Constituent presence / min-components / reconcile gate scorer |
 
 **Default free-tier command shape:**
 
@@ -76,6 +79,50 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 18. **Micronutrient scoring is now implemented — text/FNDDS only (2026-07-29).** The harness previously discarded all 21 micronutrient fields the shipped prompts already ask for; it now scores them against real USDA FNDDS ground truth (`schema.MICRO_FIELDS`, populated by `build_fndds_manifest.py`). Headline: the model **reliably emits every micronutrient** — presence rate is **100%** across all three `FULL_JSON_SCHEMA` prompts tested (`lean_units2`, `production_text`, `fewshot_units`, pinned Gemma 26B :free, n=20-40) — confirming the previously-manual, unverified "Micros present ≥98%" note. Micro accuracy trails macro accuracy by roughly the same ratio macros/plates already show: `micro_wmape` **33-49%** vs macro `wmape` **9-42%** on the same runs (see § Micronutrient scoring below); this is a **new, harder FNDDS text subset** with ambiguous short descriptions (e.g. "Coconut milk, 244 g" — USDA's low-fat beverage definition at 76 kcal vs the model's reasonable full-fat-can assumption at 440 kcal), not directly comparable to the curated `eval_text.jsonl` (~5.7% WMAPE). **JFB and Nutrition5k have no micronutrient ground truth in their source data at all** — micro scoring on those manifests reports `n_micro=0`, not a score; deriving approximate GT via ingredient-name matching to USDA/OFF is a distinct, unstarted follow-up. See § Micronutrient scoring.
 19. **Vague quantity notes (Lq) beat image-only and meal-title notes (2026-07-30).** Paired Flash Lite matrix on shared IDs: JFB-50 Lq WMAPE **25.3%** / ±20% **52%** vs L0 **35.9%** / **40%** and L1 **33.0%** / **36%**. N5k-50: Lq **27.6%** / **34%** vs L0 **32.6%** / **24%**, L1 **29.6%** / **28%**, bucket chips **28.7%** / **32%**. Identity-only L1 is weak; **quantity language in the user note** (without exact grams) is the lever. Bucket chips help on N5k but do not beat Lq. Hard-tail JFB (10 IDs) still 0% ±20% under all three note conditions — Lq cuts hard-tail mean MAPE proxy 92%→54% but does not “solve” those plates. See § Photo-adjacent entry matrix.
 20. **Text-only hard vague-quantity (Lq) bake-off (2026-07-31).** Same JFB-50 Lq diary strings scored as typed entry (`modality=text`, no photo), 7 models + L1 control. Flash Lite text-Lq (**24.9%** / **52%**) ≈ image+Lq Flash Lite (**25.3%** / **52%**) — **the photo adds almost nothing once quantity language is present**. L1 title-only text collapses to **37.0%** / **32%**. Leader: Gemini 3.6 Flash **22.7%** / **68%**; Qwen3.5-Flash **23.2%** / **66%** (slow); DeepSeek v4 Flash **23.5%** / **62%** (cheap, text-only model finally useful). Still far from gram-rich text (~6%). Hard-tail ±20% opens under stronger models (Qwen **60%**, Gemini/DeepSeek/Claude **40%**) vs 0% under image L0/L1/Lq Flash Lite. **N5k-50 text Lq** (Flash Lite + DeepSeek): text-only is **much worse** than image+Lq — Flash Lite **52.0%** / **12%** vs image+Lq **27.6%** / **34%**; DeepSeek **37.3%** / **34%**. Coarse bucket+ingredient notes without the photo invent scale badly; JFB’s “photo ≈ redundant” finding does not transfer. See § Text-only vague-quantity bake-off.
+21. **Meal constituents gate failed on cheap models (2026-07-31).** Optional `constituents[]` works on strong Gemini 3.6 Flash but **not** on free Gemma or Gemini 3.5 Flash Lite. **WIP / next app roadmap step** — do not ship schema until reconcile clears. See § Meal constituents gate.
+
+---
+
+## Meal constituents gate (2026-07-31) — WIP / next roadmap
+
+**Status: open WIP.** This is the **next product step** after launcher shortcuts (#162). Upstream [#154](https://github.com/apoorvdarshan/fud-ai/issues/154): ask the model for optional `constituents[]` on composite text meals; ship Android/PWA result-sheet + g/unit only after the gate passes on a strong **and** a cheap model.
+
+| Artifact | Path |
+|----------|------|
+| Manifest | `manifest/eval_constituents_text.jsonl` (n=12) |
+| Candidate prompt | `production_text_constituents` in `prompts.py` |
+| Scorer / gate | `score_constituents.py` |
+| Results (gitignored) | `results/constituent_gate_2026-07-31/`, `results/constituent_gate_flashlite_2026-07-31/` |
+
+**Criteria:** parse ≥95%; candidate WMAPE ≤ baseline +2pp; min-components coverage ≥90% strong / ≥75% cheap; grams+macro reconcile within 5% on ≥95% of samples that emit constituents.
+
+| Run | Model | Prompt | parse | WMAPE | min-comp | grams recon | macros recon |
+|-----|-------|--------|------:|------:|---------:|------------:|-------------:|
+| baseline strong | `google/gemini-3.6-flash` | `production_text` | 100% | 13.6% | — | — | — |
+| candidate strong | same | `production_text_constituents` | 100% | **12.2%** | **100%** | **100%** | **100%** |
+| baseline weak | `google/gemma-4-26b-a4b-it:free` | `production_text` | 100% | 15.5% | — | — | — |
+| candidate weak | same | `production_text_constituents` | 100% | **17.7%** | **100%** | **83%** | **92%** |
+| baseline cheap | `google/gemini-3.5-flash-lite` | `production_text` | 100% | 11.4% | — | — | — |
+| candidate cheap | same | `production_text_constituents` | 100% | **10.6%** | **100%** | **75%** | **75%** |
+
+**Verdict: FAIL (WIP).** Strong Flash clears every check. Free Gemma misses WMAPE (+2.2pp over +2.0pp limit) and reconcile. **Flash Lite keeps WMAPE** (slightly better than baseline) and min-components, but only reconciles grams/macros on **9/12** samples — the shared cheap-model blocker. Do **not** ship `constituents` into `FoodAnalysisService` / PWA yet.
+
+**Next work:** tighten constituent↔total reconciliation (prompt rule and/or client post-process normalize) on Flash Lite + Gemma; re-gate; then implement grouped-row result-sheet UX.
+
+Reproduce:
+
+```bash
+OUT=docs/benchmarks/food_accuracy/results/constituent_gate_YYYY-MM-DD
+MANIFEST=docs/benchmarks/food_accuracy/manifest/eval_constituents_text.jsonl
+# baseline + candidate × strong/cheap, then:
+uv run --with httpx python docs/benchmarks/food_accuracy/score_constituents.py \
+  --manifest "$MANIFEST" \
+  --strong "$OUT/candidate_strong/samples.jsonl" \
+  --weak "$OUT/candidate_weak/samples.jsonl" \
+  --baseline-strong "$OUT/baseline_strong/samples.jsonl" \
+  --baseline-weak "$OUT/baseline_weak/samples.jsonl" \
+  --out "$OUT/gate_summary.json"
+```
 
 ---
 
@@ -805,6 +852,7 @@ Artifacts: `results/text_lq_bakeoff/n5k_lq_{flashlite,deepseek}/`.
 - [x] **Portion-aware prompt A/B** — `compact` vs `compact_portion` on Gemini 3.5 Flash-Lite JFB L0: portion rules **did not win** (WMAPE 37.2% vs 35.9%, ±20% 36% vs 40%). Reverted from production prompts; `compact_portion` kept as research-only.
 - [x] **Micronutrient scoring** (2026-07-29, FNDDS text, pinned Gemma) — implemented for text; presence rate **100%** on every nutrient across all `FULL_JSON_SCHEMA` prompts tested; `micro_wmape` (33-49%) trails macro `wmape` by 1.5-4×. See § Micronutrient scoring.
 - [ ] **Micronutrient scoring for JFB/Nutrition5k (image)** — no micronutrient values exist in either dataset's source data; needs an ingredient-name → USDA/Open Food Facts lookup to derive approximate GT, a distinct and noisier project from the text case. Not started.
+- [ ] **Meal constituents gate (WIP / next app roadmap)** — `production_text_constituents` + `score_constituents.py`. Gemini 3.6 Flash passes; free Gemma + 3.5 Flash Lite fail grams/macros reconcile (Lite 75%). Fix reconcile → re-gate → ship schema + result-sheet UX (#154). See § Meal constituents gate.
 - [ ] Paired micronutrient run on a clean, unambiguous text set (current FNDDS-generated manifest has ambiguous near-duplicate descriptions like "Coconut milk" that inflate macro WMAPE vs the curated `eval_text.jsonl`) to isolate prompt/model micro accuracy from description ambiguity.
 
 ---
