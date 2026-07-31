@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.3.2] - 2026-07-31
+
+### Fixed
+
+- WebDAV Basic auth now uses UTF-8 (matching curl), so passwords with characters like ß or § work against hosts such as Hetzner Storage Box.
+
 ## [3.3.1] - 2026-07-31
 
 ### Added
