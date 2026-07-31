@@ -51,7 +51,7 @@ import java.util.UUID
 import kotlin.math.roundToInt
 
 enum class FoodLogSortOrder(val storageValue: String, val displayName: String, val displayNameRes: Int) {
-    STANDARD("standard", "Breakfast → Lunch → Dinner", R.string.sort_standard),
+    STANDARD("standard", "Breakfast → Lunch → Dinner (latest last)", R.string.sort_standard),
     LATEST_MEALS_FIRST("latestMealsFirst", "Latest Meals First", R.string.sort_latest_first);
 
     companion object {
