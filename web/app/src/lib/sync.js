@@ -173,7 +173,7 @@ export function normalizeWebDavUrl(raw) {
 }
 
 /**
- * @returns {Promise<{ url: string, username: string, password: string, etag: string|null, lastSyncAt: string|null }>}
+ * @returns {Promise<{ url: string, username: string, password: string, etag: string|null, lastSyncAt: string|null, autoSync: boolean, autoSyncDay: string|null }>}
  */
 export async function loadWebDavSettings() {
   const p = await prefs.load();
@@ -184,10 +184,14 @@ export async function loadWebDavSettings() {
     password: cfg.password ?? "",
     etag: cfg.etag ?? null,
     lastSyncAt: cfg.lastSyncAt ?? null,
+    autoSync: cfg.autoSync === true,
+    autoSyncDay: cfg.autoSyncDay ?? null,
   };
 }
 
-/** @param {{ url: string, username: string, password: string, etag?: string|null, lastSyncAt?: string|null }} cfg */
+/**
+ * @param {{ url: string, username: string, password: string, etag?: string|null, lastSyncAt?: string|null, autoSync?: boolean, autoSyncDay?: string|null }} cfg
+ */
 export async function saveWebDavSettings(cfg) {
   await prefs.save({
     webdav: {
@@ -196,6 +200,8 @@ export async function saveWebDavSettings(cfg) {
       password: cfg.password,
       etag: cfg.etag ?? null,
       lastSyncAt: cfg.lastSyncAt ?? null,
+      autoSync: cfg.autoSync === true,
+      autoSyncDay: cfg.autoSyncDay ?? null,
     },
   });
 }
@@ -330,4 +336,54 @@ export async function syncWebDavNow() {
   const lastSyncAt = new Date().toISOString();
   await saveWebDavSettings({ ...cfg, etag, lastSyncAt });
   return { ok: true, message: "Synced with WebDAV" };
+}
+
+/**
+ * Local calendar day yyyy-MM-dd.
+ * @param {Date} [d]
+ * @returns {string}
+ */
+export function localCalendarDay(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Mirrors Android shouldAutoSyncWebDav.
+ * @param {{ enabled: boolean, configured: boolean, today: string, lastSyncAt: string|null, lastAutoSyncDay: string|null }} args
+ * @returns {boolean}
+ */
+export function shouldAutoSyncWebDav({ enabled, configured, today, lastSyncAt, lastAutoSyncDay }) {
+  if (!enabled || !configured) return false;
+  if (lastAutoSyncDay === today) return false;
+  if (lastSyncAt) {
+    const last = new Date(lastSyncAt);
+    if (!Number.isNaN(last.getTime()) && localCalendarDay(last) === today) return false;
+  }
+  return true;
+}
+
+/**
+ * Opt-in auto-sync: at most once per local calendar day when WebDAV is configured.
+ * @returns {Promise<{ ok: boolean, message: string }|null>} null when skipped
+ */
+export async function maybeAutoSyncWebDav() {
+  const cfg = await loadWebDavSettings();
+  cfg.url = normalizeWebDavUrl(cfg.url);
+  const today = localCalendarDay();
+  if (
+    !shouldAutoSyncWebDav({
+      enabled: cfg.autoSync,
+      configured: Boolean(cfg.url && cfg.username && cfg.password),
+      today,
+      lastSyncAt: cfg.lastSyncAt,
+      lastAutoSyncDay: cfg.autoSyncDay,
+    })
+  ) {
+    return null;
+  }
+  await saveWebDavSettings({ ...cfg, autoSyncDay: today });
+  return syncWebDavNow();
 }

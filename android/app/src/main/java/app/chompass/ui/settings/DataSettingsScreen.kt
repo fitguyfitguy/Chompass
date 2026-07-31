@@ -51,6 +51,7 @@ fun DataSettingsScreen(
     var webDavUrl by remember { mutableStateOf("") }
     var webDavUsername by remember { mutableStateOf("") }
     var webDavPassword by remember { mutableStateOf("") }
+    var webDavAutoSync by remember { mutableStateOf(false) }
     var lastSyncAt by remember { mutableStateOf<String?>(null) }
     var showSafetyMedicalInfo by remember { mutableStateOf(false) }
     var permissionDeniedMessage by remember { mutableStateOf<String?>(null) }
@@ -66,6 +67,7 @@ fun DataSettingsScreen(
         webDavUrl = container.prefs.webDavUrl.first()
         webDavUsername = container.prefs.webDavUsername.first()
         webDavPassword = container.keyStore.webDavPassword().orEmpty()
+        webDavAutoSync = container.prefs.webDavEnabled.first()
         lastSyncAt = container.prefs.lastSyncAt.first()
     }
 
@@ -247,6 +249,7 @@ fun DataSettingsScreen(
             webDavUrl = webDavUrl,
             webDavUsername = webDavUsername,
             webDavPassword = webDavPassword,
+            webDavAutoSync = webDavAutoSync,
             lastSyncAt = lastSyncAt,
             syncStatus = syncMessage,
             onWebDavUrlChange = { webDavUrl = it },
@@ -261,6 +264,10 @@ fun DataSettingsScreen(
                     container.keyStore.setWebDavPassword(webDavPassword)
                     syncMessage = activityContext.getString(R.string.settings_webdav_saved)
                 }
+            },
+            onWebDavAutoSyncChange = { enabled ->
+                webDavAutoSync = enabled
+                scope.launch { container.prefs.setWebDavEnabled(enabled) }
             },
             onExportSync = {
                 scope.launch {

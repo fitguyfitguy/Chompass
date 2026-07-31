@@ -34,12 +34,14 @@ internal fun SettingsSyncSection(
     webDavUrl: String,
     webDavUsername: String,
     webDavPassword: String,
+    webDavAutoSync: Boolean,
     lastSyncAt: String?,
     syncStatus: String?,
     onWebDavUrlChange: (String) -> Unit,
     onWebDavUsernameChange: (String) -> Unit,
     onWebDavPasswordChange: (String) -> Unit,
     onSaveWebDav: () -> Unit,
+    onWebDavAutoSyncChange: (Boolean) -> Unit,
     onExportSync: () -> Unit,
     onImportSync: () -> Unit,
     onSyncNow: () -> Unit,
@@ -97,6 +99,18 @@ internal fun SettingsSyncSection(
                 )
             }
         }
+        HorizontalDivider()
+        ToggleRow(
+            label = stringResource(R.string.settings_webdav_auto_sync),
+            checked = webDavAutoSync,
+            onChange = onWebDavAutoSyncChange,
+        )
+        Text(
+            stringResource(R.string.settings_webdav_auto_sync_desc),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+        )
         HorizontalDivider()
         Row(
             Modifier

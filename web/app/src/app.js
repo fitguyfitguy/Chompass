@@ -14,6 +14,7 @@ import { prefs, profile } from "./lib/db.js";
 import { initInstallPrompt, maybeShowInstallBanner } from "./lib/install-prompt.js";
 import { initUpdatePrompt } from "./lib/update-prompt.js";
 import { activateFromPrefs, t } from "./lib/i18n/index.js";
+import { maybeAutoSyncWebDav } from "./lib/sync.js";
 
 const view = document.getElementById("view");
 const nav = document.getElementById("bottom-nav");
@@ -129,7 +130,9 @@ window.addEventListener("chompass-prefs-changed", () => {
 });
 
 if (!location.hash || location.hash === "#/") location.hash = "#/home";
-maybeSeedFromUrl().then(render);
+maybeSeedFromUrl()
+  .then(render)
+  .then(() => maybeAutoSyncWebDav().catch(() => null));
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

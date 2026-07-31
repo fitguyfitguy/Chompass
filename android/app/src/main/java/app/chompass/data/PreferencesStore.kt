@@ -238,6 +238,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setWebDavUsername(username: String) = setWebDavUsernameImpl(username)
     val webDavEnabled: Flow<Boolean> get() = webDavEnabledImpl
     suspend fun setWebDavEnabled(enabled: Boolean) = setWebDavEnabledImpl(enabled)
+    val webDavAutoSyncDay: Flow<String?> get() = webDavAutoSyncDayImpl
+    suspend fun setWebDavAutoSyncDay(day: String?) = setWebDavAutoSyncDayImpl(day)
     val lastSyncAt: Flow<String?> get() = lastSyncAtImpl
     suspend fun setLastSyncAt(iso: String?) = setLastSyncAtImpl(iso)
     val lastSyncEtag: Flow<String?> get() = lastSyncEtagImpl
