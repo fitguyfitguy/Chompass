@@ -6,6 +6,9 @@ L2 = ingredient / food-item names only (no quantities or macros) as user ``text`
 Lq = vague quantity diary note (bucket / coarsened amounts; no ``\\d+ g``) —
     see ``build_image_text_lq.py``
 
+Text-only clones (``*_text_lq.jsonl`` / ``*_text_l1.jsonl``) keep the same
+``text`` strings with ``modality=text`` and no image — see ``build_text_lq.py``.
+
 Prompt builders inject ``sample.text`` as the optional user note (app
 ``analyzeFood(description=…)``). ``meal_name`` stays metadata-only.
 """

@@ -17,6 +17,8 @@ result tables: [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STA
 |---|---|---|---|
 | **Typed text with a stated portion** | WMAPE (kcal+protein+carbs+fat) | **5.7%** | 42 USDA FNDDS items |
 | **Typed text with a stated portion** | Within ±20% of true calories | **90%** | 42 USDA FNDDS items |
+| **Typed vague-quantity text (best paid)** | WMAPE | **22.7%** | 50 JFB meal diary notes (no photo) |
+| **Typed vague-quantity text (best paid)** | Within ±20% of true calories | **68%** | 50 JFB meal diary notes (no photo) |
 | **Photo only (best paid model tested)** | WMAPE | **32.3%** | 50 real meal photos ([January Food Benchmark](https://github.com/January-ai/food-scan-benchmarks)) |
 | **Photo only (best paid model tested)** | Within ±20% of true calories | **50%** | 50 real meal photos |
 | **Photo only (free on-device-class model)** | WMAPE | 39.8% | 50 real meal photos |
@@ -35,9 +37,13 @@ A dedicated **vague quantity note** condition (**Lq** — e.g. “large plate of
 “a couple eggs…”, no exact grams) on Flash Lite clearly beats image-only on both
 JFB-50 (**35.9% → 25.3%** WMAPE, ±20% **40% → 52%**) and N5k-50 (**32.6% → 27.6%**).
 Meal-title-only L1 stays weak. Qualitative size chips (bucket) on N5k help modestly
-but do not beat Lq. Notes with quantity language are identity **plus** scale hints —
-still not typed grams (~6% WMAPE). See
-[`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md) § Photo-adjacent entry matrix.
+but do not beat Lq. The same Lq strings scored as **typed text only** (no photo)
+match image+Lq within noise on Flash Lite (**24.9%** / **52%**); a multi-model
+bake-off puts Gemini 3.6 Flash at **22.7%** / **68%** and DeepSeek (text-only
+model) at **23.5%** / **62%**. Quantity language is the lever; the photo adds
+almost nothing once it is present — still far from typed grams (~6% WMAPE). See
+[`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md)
+§ Photo-adjacent entry matrix and § Text-only vague-quantity bake-off.
 Native video input on a Nutrition5k turntable subset also lost to a still image
 (WMAPE 25.6% → 37.2%); parked for now.
 
@@ -61,13 +67,13 @@ it is not specific to Chompass or to any one provider. In our testing:
   photo WMAPE stayed in the 33-45% band regardless. Model choice moves it more
   than prompt tuning does.
 - A short meal title or unquantified ingredient list is not a substitute for a
-  stated portion. Vague **quantity** language in the photo note (Lq) does move
-  macros on Flash Lite (JFB ~36% → ~25% WMAPE) but still leaves a large gap vs
-  typed entry with grams (~6% WMAPE).
+  stated portion. Vague **quantity** language (Lq) does move macros (~36% → ~23–25%
+  WMAPE depending on model) whether typed alone or attached to a photo, but still
+  leaves a large gap vs typed entry with grams (~6% WMAPE).
 
 If you need precise numbers, typed entry with a stated portion, barcode scan, or a
-saved meal is measurably more reliable than a photo alone. A photo note that
-mentions quantity (even vaguely) beats a title-only note; neither replaces grams.
+saved meal is measurably more reliable than a photo alone. Quantity language
+(even vague) beats a title-only note; neither replaces grams.
 
 ## What we changed because of this data
 
