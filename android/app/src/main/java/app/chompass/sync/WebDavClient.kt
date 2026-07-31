@@ -54,16 +54,17 @@ class WebDavClient(
         username: String,
         password: String,
         body: String,
-        ifMatch: String?,
+        mode: WebDavPutMode,
     ): PutResult = withContext(Dispatchers.IO) {
         val builder = Request.Builder()
             .url(url)
             .header("Authorization", webDavBasicAuth(username, password))
             .header("Content-Type", "application/json; charset=utf-8")
             .put(body.toRequestBody("application/json; charset=utf-8".toMediaType()))
-        when {
-            ifMatch.isNullOrBlank() -> builder.header("If-None-Match", "*")
-            else -> builder.header("If-Match", ifMatch)
+        when (mode) {
+            WebDavPutMode.CreateOnly -> builder.header("If-None-Match", "*")
+            is WebDavPutMode.IfMatch -> builder.header("If-Match", mode.etag)
+            WebDavPutMode.Unconditional -> Unit
         }
         http.newCall(builder.build()).execute().use { response ->
             when (response.code) {
@@ -72,6 +73,43 @@ class WebDavClient(
                 else -> error("WebDAV PUT failed: HTTP ${response.code}")
             }
         }
+    }
+}
+
+/** How to condition a WebDAV PUT for create vs update. */
+sealed class WebDavPutMode {
+    /** Only succeed if the resource does not exist yet. */
+    data object CreateOnly : WebDavPutMode()
+
+    /** Only succeed if the current ETag matches. */
+    data class IfMatch(val etag: String) : WebDavPutMode()
+
+    /** Overwrite with no precondition (no / broken ETag from the server). */
+    data object Unconditional : WebDavPutMode()
+}
+
+/**
+ * Choose PUT preconditions from a prior GET.
+ *
+ * Important: a missing ETag on an existing file must NOT use If-None-Match: *
+ * (that means "create only" and 412s on every subsequent sync).
+ */
+internal fun webDavPutMode(etag: String?, notFound: Boolean): WebDavPutMode = when {
+    notFound -> WebDavPutMode.CreateOnly
+    !etag.isNullOrBlank() -> WebDavPutMode.IfMatch(normalizeEtagForIfMatch(etag))
+    else -> WebDavPutMode.Unconditional
+}
+
+/**
+ * If-Match uses strong comparison; weak validators (W/"…") never match.
+ * Strip the weak prefix so Apache/Hetzner-style ETags can still be used.
+ */
+internal fun normalizeEtagForIfMatch(etag: String): String {
+    val trimmed = etag.trim()
+    return if (trimmed.startsWith("W/", ignoreCase = true)) {
+        trimmed.substring(2).trimStart()
+    } else {
+        trimmed
     }
 }
 
