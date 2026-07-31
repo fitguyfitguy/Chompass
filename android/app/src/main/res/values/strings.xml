@@ -390,6 +390,7 @@
     <string name="entry_analysis_phase_preparing">Preparing request…</string>
     <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
     <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
+    <string name="entry_analysis_phase_filling_fields">Filling in nutrition…</string>
     <string name="entry_analysis_phase_parsing">Reading result…</string>
     <string name="entry_analysis_phase_recognizing">Recognizing foods…</string>
     <string name="entry_analysis_phase_searching_history">Checking your history…</string>
@@ -420,6 +421,11 @@
     <string name="grounded_on_device_unavailable">Grounded entry needs a cloud AI provider. On-device models use Photo/Note instead.</string>
     <string name="grounded_review_unit">Unit</string>
     <string name="entry_analysis_inferring_units">Calculating serving units…</string>
+    <string name="entry_analysis_waiting_response">Waiting for the AI response…</string>
+    <string name="entry_analysis_field_pending">Serving size pending…</string>
+    <string name="entry_analysis_micros_found">%d more nutrients found</string>
+    <string name="entry_analysis_units_found">Serving units found</string>
+    <string name="entry_analysis_streaming_hint">Values appear as the AI responds — you can review them before logging.</string>
     <string name="home_fiber_format">Fiber: %1$.1fg</string>
     <string name="home_sugar_format">Sugar: %1$.1fg</string>
     <string name="home_sat_fat_format">Sat fat: %1$.1fg</string>
@@ -493,9 +499,13 @@
 
     <!-- Context note sheet -->
     <string name="context_note_title">Review photo</string>
-    <string name="context_note_section">Add a note (optional)</string>
+    <string name="context_note_section">Tell AI what this is (optional)</string>
     <string name="context_note_placeholder">e.g. 2 eggs scrambled in butter, grande oat milk latte, Chipotle chicken bowl no rice</string>
     <string name="context_note_hint">Mention quantities, brands, or how it was cooked for a more accurate estimate.</string>
+    <string name="context_note_chip_no_oil">No oil</string>
+    <string name="context_note_chip_extra_cheese">Extra cheese</string>
+    <string name="context_note_chip_large">Large portion</string>
+    <string name="context_note_chip_grilled">Grilled</string>
     <string name="context_note_weight_section">Total weight (optional)</string>
     <string name="context_note_weight_hint">If you weighed the serving, enter grams here. Exact weight improves accuracy more than a title or ingredient list alone.</string>
     <string name="context_note_weight_placeholder">e.g. 280</string>
@@ -1085,11 +1095,23 @@
     </plurals>
     <string name="home_first_photo_saved">First photo saved</string>
     <string name="home_take_second_shot">Take the second shot</string>
-    <string name="edit_reprocess_section">Reprocess with AI</string>
-    <string name="edit_reprocess_hint">Add a note to refine this entry - e.g. large bowl, extra olive oil - then tap Reprocess</string>
-    <string name="edit_reprocess">Reprocess</string>
-    <string name="edit_reprocessing">Reprocessing...</string>
-    <string name="edit_reprocessing_failed">Reprocessing failed</string>
+    <string name="edit_reprocess_section">Ask AI to correct</string>
+    <string name="edit_reprocess_label">What changed?</string>
+    <string name="edit_reprocess_hint">Describe the correction — e.g. large bowl, cooked in butter, oat milk instead of dairy</string>
+    <string name="edit_reprocess_explain">AI will recalculate name, serving, calories, and macros from your note. Review the changes, then tap Save.</string>
+    <string name="edit_reprocess_context">Current entry</string>
+    <string name="edit_reprocess_chip_portion">Smaller portion</string>
+    <string name="edit_reprocess_chip_larger">Larger portion</string>
+    <string name="edit_reprocess_chip_oil">Extra oil / butter</string>
+    <string name="edit_reprocess_chip_brand">Different brand</string>
+    <string name="edit_reprocess_chip_prep">Different cooking</string>
+    <string name="edit_reprocess">Correct with AI</string>
+    <string name="edit_reprocessing">Correcting…</string>
+    <string name="edit_reprocessing_failed">Correction failed</string>
+    <string name="edit_reprocess_diff_title">What changed</string>
+    <string name="edit_reprocess_diff_unchanged">No fields changed — adjust your note and try again.</string>
+    <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
+    <string name="edit_reprocess_review_hint">Review the updated values above, then tap Save to keep them.</string>
     <string name="section_date_time">Date &amp; Time</string>
     <string name="section_share">Share</string>
     <string name="placeholder_hour">Hour</string>

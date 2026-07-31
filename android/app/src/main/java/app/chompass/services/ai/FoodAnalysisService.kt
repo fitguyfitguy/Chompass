@@ -18,6 +18,7 @@ import app.chompass.BuildConfig
 import app.chompass.services.OffPromptContext
 import app.chompass.services.PerfLog
 import app.chompass.services.WeightForecast
+import app.chompass.ui.home.AnalysisPreviewSource
 import app.chompass.ui.home.EntryAnalysisPhase
 import app.chompass.ui.home.FoodAnalysisProgress
 import app.chompass.services.health.HealthEnergySummary
@@ -722,11 +723,23 @@ class FoodAnalysisService(
         }
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
+        val streamProgress: (FoodAnalysisProgress) -> Unit =
+            if (reportPhases) onProgress else ({})
         return try {
-            dispatch(primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch, readTimeoutSeconds)
+            dispatch(
+                primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages,
+                maxTokens, geminiGoogleSearch, readTimeoutSeconds,
+                onProgress = streamProgress,
+                preferStreaming = reportPhases,
+            )
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
-            dispatch(fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages, maxTokens, geminiGoogleSearch, readTimeoutSeconds)
+            dispatch(
+                fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages,
+                maxTokens, geminiGoogleSearch, readTimeoutSeconds,
+                onProgress = streamProgress,
+                preferStreaming = reportPhases,
+            )
         }
     }
 
@@ -871,6 +884,8 @@ class FoodAnalysisService(
         maxTokens: Int,
         geminiGoogleSearch: Boolean,
         readTimeoutSeconds: Int,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+        preferStreaming: Boolean = false,
     ): String {
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
@@ -881,13 +896,44 @@ class FoodAnalysisService(
         if (provider.requiresApiKey && sanitizedKey.isNullOrEmpty()) throw AiError.NoApiKey
         val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
         val enableGoogleSearch = provider.apiFormat == AIProvider.ApiFormat.GEMINI && geminiGoogleSearch
+        if (!preferStreaming) {
+            return when (provider.apiFormat) {
+                AIProvider.ApiFormat.GEMINI ->
+                    GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, enableGoogleSearch)
+                AIProvider.ApiFormat.ANTHROPIC ->
+                    AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens)
+                AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
+                    OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens)
+                AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
+            }
+        }
+
+        val assembler = FoodPartialJsonAssembler()
+        val onDelta: (String) -> Unit = { piece ->
+            val partial = assembler.push(piece)
+            if (partial != null) {
+                onProgress(
+                    FoodAnalysisProgress.Partial(
+                        partial = partial,
+                        source = AnalysisPreviewSource.Streaming,
+                    )
+                )
+            }
+        }
         return when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI ->
-                GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, enableGoogleSearch)
+                GeminiClient.analyzeStreaming(
+                    httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList,
+                    enableGoogleSearch, onDelta,
+                )
             AIProvider.ApiFormat.ANTHROPIC ->
-                AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens)
+                AnthropicClient.analyzeStreaming(
+                    httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens, onDelta,
+                )
             AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens)
+                OpenAICompatibleClient.analyzeStreaming(
+                    httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens, onDelta,
+                )
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
     }

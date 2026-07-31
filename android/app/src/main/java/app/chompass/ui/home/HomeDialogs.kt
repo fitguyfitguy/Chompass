@@ -41,6 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -50,6 +53,7 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
+import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
@@ -64,6 +68,7 @@ import app.chompass.ui.components.rememberDecodedBitmap
 internal fun EntryAnalysisOverlay(
     phase: EntryAnalysisPhase,
     preview: FoodAnalysis? = null,
+    partial: PartialFoodAnalysis? = null,
     imageBytes: ByteArray? = null,
 ) {
     val bitmap = rememberDecodedBitmap(imageBytes)
@@ -76,7 +81,9 @@ internal fun EntryAnalysisOverlay(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.padding(horizontal = 32.dp)
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .semantics { liveRegion = LiveRegionMode.Polite }
         ) {
             if (bitmap != null) {
                 androidx.compose.foundation.Image(
@@ -98,31 +105,57 @@ internal fun EntryAnalysisOverlay(
 
             EntryAnalysisStepRow(currentPhase = phase)
 
+            val phaseLabel = when (phase) {
+                EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
+                EntryAnalysisPhase.LookingUpBarcode -> stringResource(R.string.entry_analysis_phase_looking_up_barcode)
+                EntryAnalysisPhase.CallingAi -> {
+                    if (partial?.hasAnyField == true) {
+                        stringResource(R.string.entry_analysis_phase_filling_fields)
+                    } else {
+                        stringResource(R.string.entry_analysis_phase_calling_ai)
+                    }
+                }
+                EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
+                EntryAnalysisPhase.Recognizing -> stringResource(R.string.entry_analysis_phase_recognizing)
+                EntryAnalysisPhase.SearchingHistory -> stringResource(R.string.entry_analysis_phase_searching_history)
+                EntryAnalysisPhase.SearchingUsda -> stringResource(R.string.entry_analysis_phase_searching_usda)
+                EntryAnalysisPhase.Resolving -> stringResource(R.string.entry_analysis_phase_resolving)
+            }
             Text(
-                text = when (phase) {
-                    EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
-                    EntryAnalysisPhase.LookingUpBarcode -> stringResource(R.string.entry_analysis_phase_looking_up_barcode)
-                    EntryAnalysisPhase.CallingAi -> stringResource(R.string.entry_analysis_phase_calling_ai)
-                    EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
-                    EntryAnalysisPhase.Recognizing -> stringResource(R.string.entry_analysis_phase_recognizing)
-                    EntryAnalysisPhase.SearchingHistory -> stringResource(R.string.entry_analysis_phase_searching_history)
-                    EntryAnalysisPhase.SearchingUsda -> stringResource(R.string.entry_analysis_phase_searching_usda)
-                    EntryAnalysisPhase.Resolving -> stringResource(R.string.entry_analysis_phase_resolving)
-                },
+                text = phaseLabel,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.Calorie,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
 
-            if (preview != null) {
-                AnalysisPreviewCard(analysis = preview)
-            } else {
-                CircularProgressIndicator(
-                    color = AppColors.Calorie,
-                    strokeWidth = 4.dp,
-                    modifier = Modifier.size(40.dp)
-                )
+            when {
+                partial != null && partial.hasAnyField -> {
+                    ProgressiveAnalysisCard(partial = partial)
+                }
+                preview != null -> {
+                    AnalysisPreviewCard(analysis = preview)
+                }
+                else -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        CircularProgressIndicator(
+                            color = AppColors.Calorie,
+                            strokeWidth = 4.dp,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        if (phase == EntryAnalysisPhase.CallingAi) {
+                            Text(
+                                stringResource(R.string.entry_analysis_waiting_response),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -201,39 +234,118 @@ private fun phasesForOverlay(current: EntryAnalysisPhase): List<EntryAnalysisPha
     }
 
 @Composable
-internal fun AnalysisPreviewCard(analysis: FoodAnalysis) {
+internal fun ProgressiveAnalysisCard(
+    partial: PartialFoodAnalysis,
+    animate: Boolean = true,
+) {
     FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            val nameAlpha by animateFloatAsState(
+                targetValue = if (partial.name != null) 1f else 0.35f,
+                animationSpec = spring(stiffness = if (animate) Spring.StiffnessMediumLow else Spring.StiffnessHigh),
+                label = "nameAlpha",
+            )
             Text(
-                "${analysis.emoji ?: "🍽"}  ${analysis.name}",
+                "${partial.emoji ?: "🍽"}  ${partial.name ?: "····"}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = nameAlpha),
+                modifier = Modifier.graphicsLayer { alpha = nameAlpha },
+            )
+            val calAlpha by animateFloatAsState(
+                targetValue = if (partial.calories != null) 1f else 0.35f,
+                animationSpec = spring(stiffness = if (animate) Spring.StiffnessMediumLow else Spring.StiffnessHigh),
+                label = "calAlpha",
             )
             Text(
-                "${analysis.calories} kcal",
+                partial.calories?.let { "$it kcal" } ?: "··· kcal",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.Calorie,
+                color = AppColors.Calorie.copy(alpha = calAlpha),
             )
-            MacroLine(
-                stringResource(R.string.macro_protein_format, MacroValueFormatter.withUnit(analysis.protein)),
-                AppColors.Protein,
+            ProgressiveMacroLine(
+                label = stringResource(R.string.nutrition_label_protein),
+                value = partial.protein,
+                color = AppColors.Protein,
+                animate = animate,
             )
-            MacroLine(
-                stringResource(R.string.macro_carbs_format, MacroValueFormatter.withUnit(analysis.carbs)),
-                AppColors.Carbs,
+            ProgressiveMacroLine(
+                label = stringResource(R.string.nutrition_label_carbs),
+                value = partial.carbs,
+                color = AppColors.Carbs,
+                animate = animate,
             )
-            MacroLine(
-                stringResource(R.string.macro_fat_format, MacroValueFormatter.withUnit(analysis.fat)),
-                AppColors.Fat,
+            ProgressiveMacroLine(
+                label = stringResource(R.string.nutrition_label_fat),
+                value = partial.fat,
+                color = AppColors.Fat,
+                animate = animate,
             )
             Text(
-                stringResource(R.string.home_serving_format, analysis.servingSizeGrams.toInt()),
+                partial.servingSizeGrams?.let {
+                    stringResource(R.string.home_serving_format, it.toInt())
+                } ?: stringResource(R.string.entry_analysis_field_pending),
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(
+                    alpha = if (partial.servingSizeGrams != null) 0.55f else 0.28f
+                ),
             )
+            if (partial.micronutrientCount > 0) {
+                Text(
+                    stringResource(R.string.entry_analysis_micros_found, partial.micronutrientCount),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                )
+            }
+            if (partial.hasUnitOptions) {
+                Text(
+                    stringResource(R.string.entry_analysis_units_found),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                )
+            }
+            if (partial.streaming) {
+                Text(
+                    stringResource(R.string.entry_analysis_streaming_hint),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun ProgressiveMacroLine(
+    label: String,
+    value: Double?,
+    color: Color,
+    animate: Boolean,
+) {
+    val alpha by animateFloatAsState(
+        targetValue = if (value != null) 1f else 0.35f,
+        animationSpec = spring(stiffness = if (animate) Spring.StiffnessMediumLow else Spring.StiffnessHigh),
+        label = "macroAlpha-$label",
+    )
+    Text(
+        text = if (value != null) {
+            "$label ${MacroValueFormatter.withUnit(value)}"
+        } else {
+            "$label ···"
+        },
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Medium,
+        color = color.copy(alpha = alpha),
+        modifier = Modifier.graphicsLayer { this.alpha = alpha },
+    )
+}
+
+@Composable
+internal fun AnalysisPreviewCard(analysis: FoodAnalysis) {
+    ProgressiveAnalysisCard(
+        partial = PartialFoodAnalysis.fromComplete(analysis, streaming = false),
+        animate = true,
+    )
 }
 
 @Composable

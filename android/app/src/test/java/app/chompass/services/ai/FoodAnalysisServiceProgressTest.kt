@@ -56,4 +56,16 @@ class FoodAnalysisServiceProgressTest {
     assertEquals("slice", complete.analysis.servingUnitOptions.first().unit)
     assertEquals("Pizza", result.name)
   }
+
+  @Test
+  fun analyzeText_delegatePath_doesNotEmitPartialEvents() = runBlocking {
+    val progress = mutableListOf<FoodAnalysisProgress>()
+    val service = FoodAnalysisService(
+      callAiDelegate = { _, _, _ -> foodJsonNoUnits },
+      inferenceModeForTest = ServingUnitInferenceMode.GRAMS_ONLY,
+    )
+    service.analyzeText("pizza") { progress += it }
+    assertTrue(progress.none { it is FoodAnalysisProgress.Partial })
+    assertTrue(progress.any { it is FoodAnalysisProgress.Complete })
+  }
 }

@@ -95,6 +95,8 @@ data class HomeUiState(
     val analyzing: Boolean = false,
     val analysisPhase: EntryAnalysisPhase? = null,
     val analysisPreview: FoodAnalysis? = null,
+    /** Validated fields observed while the AI response is still streaming. */
+    val analysisPartial: app.chompass.services.ai.PartialFoodAnalysis? = null,
     val inferringUnits: Boolean = false,
     val saving: Boolean = false,
     val error: String? = null,
@@ -166,6 +168,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     analyzing = true,
                     analysisPhase = if (phased) EntryAnalysisPhase.Preparing else null,
                     analysisPreview = null,
+                    analysisPartial = null,
                     inferringUnits = false,
                 )
             )
@@ -178,18 +181,35 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             is FoodAnalysisProgress.Phase -> {
                 _ui.value = _ui.value.copy(analysisPhase = progress.phase)
             }
+            is FoodAnalysisProgress.Partial -> {
+                val preview = progress.partial.toPreviewAnalysis()
+                _ui.value = _ui.value.copy(
+                    analysisPartial = progress.partial,
+                    analysisPreview = preview ?: _ui.value.analysisPreview,
+                )
+            }
             is FoodAnalysisProgress.Parsed -> {
                 if (progress.unitsPending) {
                     _ui.value = _ui.value.copy(
                         analysisPhase = null,
                         analysisPreview = progress.analysis,
+                        analysisPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
+                            progress.analysis,
+                            streaming = false,
+                        ),
                         pendingAnalysis = progress.analysis,
                         analyzing = false,
                         inferringUnits = true,
                     )
                     container.analyzingFood.value = false
                 } else {
-                    _ui.value = _ui.value.copy(analysisPreview = progress.analysis)
+                    _ui.value = _ui.value.copy(
+                        analysisPreview = progress.analysis,
+                        analysisPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
+                            progress.analysis,
+                            streaming = false,
+                        ),
+                    )
                 }
             }
             is FoodAnalysisProgress.Complete -> {
@@ -197,6 +217,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingAnalysis = progress.analysis,
                     inferringUnits = false,
                     analysisPreview = null,
+                    analysisPartial = null,
                     analysisPhase = null,
                 )
             }
@@ -209,6 +230,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             analyzing = false,
             analysisPhase = null,
             analysisPreview = null,
+            analysisPartial = null,
             inferringUnits = false,
             error = message,
         )
@@ -576,6 +598,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     analysisPhase = null,
                     inferringUnits = false,
                     analysisPreview = null,
+                    analysisPartial = null,
                 )
             } else {
                 savePendingDraft(
@@ -891,6 +914,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingGroundedReview = null,
             analysisPhase = null,
             analysisPreview = null,
+            analysisPartial = null,
             inferringUnits = false,
             analyzing = false,
             error = null
@@ -1094,6 +1118,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             analyzing = false,
             analysisPhase = null,
             analysisPreview = null,
+            analysisPartial = null,
             inferringUnits = false,
             pendingAnalysis = uniqueAnalysis,
             pendingImageBytes = imageBytes,
@@ -1123,6 +1148,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 analyzing = false,
                 analysisPhase = null,
                 analysisPreview = null,
+                analysisPartial = null,
                 inferringUnits = false,
                 pendingAnalysis = unique,
                 pendingImageBytes = bytes,
@@ -1248,12 +1274,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             append("Portion size: $portionAnswer")
         }
-        val result = container.foodAnalysis.analyzeFood(bytes, description)
+        // Portion clarify runs inside FoodResultSheet with its own spinner; still
+        // emit progress so callers can observe streaming fields if needed.
+        val result = container.foodAnalysis.analyzeFood(bytes, description) { }
             .copy(customNote = originalNote)
         _ui.value = _ui.value.copy(pendingAnalysis = result)
     }
 
-    suspend fun reprocessFoodEntry(entry: FoodEntry, updatedNote: String): FoodAnalysis {
+    suspend fun reprocessFoodEntry(
+        entry: FoodEntry,
+        updatedNote: String,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis {
         val imageBytes = entry.imageFilename?.let {
             runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
         }
@@ -1262,9 +1294,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // gets the name/note as extra grounding on top of the image.
         val description = reprocessDescription(entry, updatedNote)
         val result = if (imageBytes != null) {
-            container.foodAnalysis.analyzeFood(imageBytes, description.takeIf { it.isNotBlank() })
+            container.foodAnalysis.analyzeFood(
+                imageBytes,
+                description.takeIf { it.isNotBlank() },
+                onProgress = onProgress,
+            )
         } else {
-            container.foodAnalysis.analyzeText(description)
+            container.foodAnalysis.analyzeText(description, onProgress = onProgress)
         }
         return result.copy(customNote = updatedNote.takeIf { it.isNotBlank() })
     }

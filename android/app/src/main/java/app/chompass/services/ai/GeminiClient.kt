@@ -78,6 +78,70 @@ object GeminiClient {
     }
 
     /**
+     * Streaming generateContent (`:streamGenerateContent?alt=sse`). Invokes
+     * [onDelta] with each text fragment; returns the full concatenated text.
+     * Falls back to [analyze] when streaming is unavailable.
+     */
+    suspend fun analyzeStreaming(
+        client: OkHttpClient,
+        baseUrl: String,
+        model: String,
+        apiKey: String,
+        prompt: String,
+        imageBytesList: List<ByteArray>,
+        enableGoogleSearch: Boolean = false,
+        onDelta: (String) -> Unit,
+    ): String {
+        val url = "$baseUrl/models/$model:streamGenerateContent?alt=sse"
+
+        val parts = JSONArray().apply {
+            imageBytesList.forEach {
+                put(
+                    JSONObject().put(
+                        "inlineData",
+                        JSONObject()
+                            .put("mimeType", "image/jpeg")
+                            .put("data", Base64.getEncoder().encodeToString(it))
+                    )
+                )
+            }
+            put(JSONObject().put("text", prompt))
+        }
+
+        val body = JSONObject().apply {
+            put("contents", JSONArray().put(JSONObject().put("parts", parts)))
+            buildToolsArray(enableGoogleSearch)?.let { put("tools", it) }
+        }
+
+        return try {
+            val assembled = StringBuilder()
+            val response = RetryPolicy.open {
+                client.newCall(
+                    Request.Builder()
+                        .url(url)
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("Accept", "text/event-stream")
+                        .addHeader("X-goog-api-key", apiKey)
+                        .post(body.toString().toRequestBody(jsonMedia))
+                        .build()
+                )
+            }
+            AiSse.read(response) { payload ->
+                val piece = parseStreamChunkText(payload) ?: return@read
+                if (piece.isNotEmpty()) {
+                    assembled.append(piece)
+                    onDelta(piece)
+                }
+            }
+            assembled.toString().ifBlank { throw AiError.InvalidResponse }
+        } catch (e: AiError) {
+            throw e
+        } catch (_: Throwable) {
+            analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, enableGoogleSearch)
+        }
+    }
+
+    /**
      * Multi-turn variant for the coach chat. Uses systemInstruction + contents[{role: user|model, parts: [{text}]}].
      */
     suspend fun chat(
@@ -160,5 +224,19 @@ object GeminiClient {
         val text = parts.optJSONObject(0)?.optString("text").orEmpty()
         if (text.isEmpty()) throw AiError.InvalidResponse
         return text
+    }
+
+    private fun parseStreamChunkText(payload: String): String? {
+        val json = runCatching { JSONObject(payload) }.getOrNull() ?: return null
+        val candidates = json.optJSONArray("candidates") ?: return null
+        val first = candidates.optJSONObject(0) ?: return null
+        val content = first.optJSONObject("content") ?: return null
+        val parts = content.optJSONArray("parts") ?: return null
+        val out = StringBuilder()
+        for (i in 0 until parts.length()) {
+            val text = parts.optJSONObject(i)?.optString("text").orEmpty()
+            if (text.isNotEmpty()) out.append(text)
+        }
+        return out.toString().takeIf { it.isNotEmpty() }
     }
 }

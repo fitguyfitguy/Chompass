@@ -24,6 +24,16 @@ object RetryPolicy {
         code == 503 || code == 529
 
     suspend fun execute(callFactory: () -> Call): String {
+        open(callFactory).use { response ->
+            return response.body?.string().orEmpty()
+        }
+    }
+
+    /**
+     * Like [execute], but returns the successful [Response] with its body stream
+     * still open for SSE/chunked reading. Caller must close the response.
+     */
+    suspend fun open(callFactory: () -> Call): Response {
         var lastMessage = "Request failed"
         for (attempt in 0..delays.size) {
             val response = try {
@@ -32,11 +42,10 @@ object RetryPolicy {
                 throw AiError.Network(io)
             }
 
+            if (response.isSuccessful) return response
+
             val bodyStr = response.use { it.body?.string().orEmpty() }
             val code = response.code
-
-            if (response.isSuccessful) return bodyStr
-
             val raw = parseErrorMessage(bodyStr)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
             lastMessage = friendlyMessage(code, raw)
 
@@ -49,7 +58,7 @@ object RetryPolicy {
         throw AiError.Api(lastMessage)
     }
 
-    private fun parseErrorMessage(body: String): String? {
+    internal fun parseErrorMessage(body: String): String? {
         if (body.isBlank()) return null
         return runCatching {
             val json = JSONObject(body)

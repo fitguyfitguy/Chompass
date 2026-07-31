@@ -81,6 +81,96 @@ object AnthropicClient {
         return response.text ?: throw AiError.InvalidResponse
     }
 
+    /**
+     * Streaming Messages API. Invokes [onDelta] with each text fragment and
+     * returns the full concatenated text. Falls back to [analyze] if streaming fails.
+     */
+    suspend fun analyzeStreaming(
+        client: OkHttpClient,
+        baseUrl: String,
+        model: String,
+        apiKey: String,
+        prompt: String,
+        imageBytesList: List<ByteArray>,
+        maxTokens: Int,
+        onDelta: (String) -> Unit,
+    ): String {
+        val url = "$baseUrl/messages"
+
+        suspend fun streamOnce(requestPrompt: String): Pair<String, Boolean> {
+            val content = JSONArray().apply {
+                imageBytesList.forEach {
+                    put(
+                        JSONObject()
+                            .put("type", "image")
+                            .put(
+                                "source",
+                                JSONObject()
+                                    .put("type", "base64")
+                                    .put("media_type", "image/jpeg")
+                                    .put("data", Base64.getEncoder().encodeToString(it))
+                            )
+                    )
+                }
+                put(JSONObject().put("type", "text").put("text", requestPrompt))
+            }
+
+            val body = JSONObject()
+                .put("model", model)
+                .put("max_tokens", maxTokens)
+                .put("stream", true)
+                .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", content)))
+
+            val assembled = StringBuilder()
+            var stopReason: String? = null
+            val response = RetryPolicy.open {
+                client.newCall(
+                    Request.Builder()
+                        .url(url)
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("Accept", "text/event-stream")
+                        .addHeader("x-api-key", apiKey)
+                        .addHeader("anthropic-version", API_VERSION)
+                        .post(body.toString().toRequestBody(jsonMedia))
+                        .build()
+                )
+            }
+            AiSse.read(response) { payload ->
+                val json = runCatching { Json.parseToJsonElement(payload).jsonObject }.getOrNull()
+                    ?: return@read
+                when (json["type"]?.jsonPrimitive?.contentOrNull) {
+                    "content_block_delta" -> {
+                        val delta = json["delta"]?.jsonObject ?: return@read
+                        if (delta["type"]?.jsonPrimitive?.contentOrNull != "text_delta") return@read
+                        val piece = delta["text"]?.jsonPrimitive?.contentOrNull
+                        if (!piece.isNullOrEmpty()) {
+                            assembled.append(piece)
+                            onDelta(piece)
+                        }
+                    }
+                    "message_delta" -> {
+                        stopReason = json["delta"]?.jsonObject
+                            ?.get("stop_reason")?.jsonPrimitive?.contentOrNull
+                            ?: stopReason
+                    }
+                }
+            }
+            return assembled.toString() to (stopReason == "max_tokens")
+        }
+
+        return try {
+            val (text, truncated) = streamOnce(prompt)
+            if (text.isBlank() || truncated) {
+                return analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, maxTokens)
+            }
+            text
+        } catch (e: AiError) {
+            throw e
+        } catch (_: Throwable) {
+            analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, maxTokens)
+        }
+    }
+
     suspend fun chat(
         client: OkHttpClient,
         baseUrl: String,

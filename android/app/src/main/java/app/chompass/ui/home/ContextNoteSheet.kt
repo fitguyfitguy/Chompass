@@ -67,7 +67,7 @@ import app.chompass.ui.theme.AppColors
  * optional note field before sending to the AI. Also offers a second photo for
  * food + nutrition-label composites, plus an optional exact total-weight field.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun ContextNoteSheet(
     imageBytes: ByteArray,
@@ -171,6 +171,34 @@ fun ContextNoteSheet(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
+
+                val contextChips = listOf(
+                    stringResource(R.string.context_note_chip_no_oil),
+                    stringResource(R.string.context_note_chip_extra_cheese),
+                    stringResource(R.string.context_note_chip_large),
+                    stringResource(R.string.context_note_chip_grilled),
+                )
+                androidx.compose.foundation.layout.FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    contextChips.forEach { label ->
+                        androidx.compose.material3.FilterChip(
+                            selected = note.contains(label, ignoreCase = true),
+                            enabled = !busy,
+                            onClick = {
+                                note = if (note.isBlank()) label
+                                else if (note.contains(label, ignoreCase = true)) note
+                                else "$note, $label"
+                            },
+                            label = { Text(label, fontSize = 13.sp) },
+                            colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                                selectedLabelColor = AppColors.Calorie,
+                            ),
+                        )
+                    }
+                }
 
                 FudGlassTextField(
                     value = note,

@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.services.ai.FoodAnalysis
+import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.grounding.GroundedFoodEntryService
 
 enum class EntryAnalysisPhase {
@@ -16,8 +17,23 @@ enum class EntryAnalysisPhase {
     Resolving,
 }
 
+/** How a preview was produced — streaming chunks vs final parse. */
+enum class AnalysisPreviewSource {
+    Streaming,
+    FinalParse,
+}
+
 sealed class FoodAnalysisProgress {
     data class Phase(val phase: EntryAnalysisPhase) : FoodAnalysisProgress()
+
+    /**
+     * Validated fields observed while the provider response is still arriving.
+     * Only emitted when streaming is available; never invents incomplete values.
+     */
+    data class Partial(
+        val partial: PartialFoodAnalysis,
+        val source: AnalysisPreviewSource = AnalysisPreviewSource.Streaming,
+    ) : FoodAnalysisProgress()
 
     /** Primary parse done; units may still be pending. */
     data class Parsed(val analysis: FoodAnalysis, val unitsPending: Boolean) : FoodAnalysisProgress()
