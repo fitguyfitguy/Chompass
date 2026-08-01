@@ -2,6 +2,7 @@ package app.chompass
 
 import app.chompass.models.ActivityLevel
 import app.chompass.models.ChatMessage
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.FoodSource
@@ -9,8 +10,11 @@ import app.chompass.models.Gender
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.MealType
+import app.chompass.models.Recipe
+import app.chompass.models.RecipeIngredient
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
+import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.ui.coach.CoachUiState
 import app.chompass.ui.home.HomeUiState
@@ -103,6 +107,159 @@ internal object ScreenshotFixtures {
             fiber = 8.0,
             emoji = "🐟",
         ),
+    )
+
+    val mealConstituents: List<FoodConstituent> = listOf(
+        FoodConstituent(
+            name = "Grilled chicken",
+            calories = 220,
+            protein = 36.0,
+            carbs = 0.0,
+            fat = 8.0,
+            servingSizeGrams = 140.0,
+            emoji = "🍗",
+        ),
+        FoodConstituent(
+            name = "Jasmine rice",
+            calories = 210,
+            protein = 4.0,
+            carbs = 46.0,
+            fat = 1.0,
+            servingSizeGrams = 160.0,
+            emoji = "🍚",
+        ),
+        FoodConstituent(
+            name = "Cucumber salad",
+            calories = 45,
+            protein = 1.0,
+            carbs = 8.0,
+            fat = 1.0,
+            servingSizeGrams = 90.0,
+            emoji = "🥒",
+        ),
+        FoodConstituent(
+            name = "Sesame dressing",
+            calories = 65,
+            protein = 1.0,
+            carbs = 4.0,
+            fat = 4.0,
+            servingSizeGrams = 20.0,
+            emoji = "🥣",
+        ),
+    )
+
+    val demoRecipes: List<Recipe> = listOf(
+        Recipe(
+            id = UUID.fromString("00000000-0000-4000-8000-000000000021"),
+            name = "Chicken rice bowl",
+            emoji = "🍗",
+            mealType = MealType.LUNCH,
+            ingredients = listOf(
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000031"),
+                    name = "Grilled chicken",
+                    emoji = "🍗",
+                    baseCalories = 220,
+                    baseProtein = 36.0,
+                    baseCarbs = 0.0,
+                    baseFat = 8.0,
+                ),
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000032"),
+                    name = "Jasmine rice",
+                    emoji = "🍚",
+                    baseCalories = 210,
+                    baseProtein = 4.0,
+                    baseCarbs = 46.0,
+                    baseFat = 1.0,
+                ),
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000033"),
+                    name = "Cucumber salad",
+                    emoji = "🥒",
+                    baseCalories = 45,
+                    baseProtein = 1.0,
+                    baseCarbs = 8.0,
+                    baseFat = 1.0,
+                ),
+            ),
+            createdAt = atNoon(snapshotDate),
+        ),
+        Recipe(
+            id = UUID.fromString("00000000-0000-4000-8000-000000000022"),
+            name = "Overnight oats",
+            emoji = "🥣",
+            mealType = MealType.BREAKFAST,
+            ingredients = listOf(
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000034"),
+                    name = "Rolled oats",
+                    emoji = "🌾",
+                    baseCalories = 150,
+                    baseProtein = 5.0,
+                    baseCarbs = 27.0,
+                    baseFat = 3.0,
+                ),
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000035"),
+                    name = "Greek yogurt",
+                    emoji = "🥛",
+                    baseCalories = 100,
+                    baseProtein = 17.0,
+                    baseCarbs = 6.0,
+                    baseFat = 0.0,
+                ),
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000036"),
+                    name = "Blueberries",
+                    emoji = "🫐",
+                    baseCalories = 40,
+                    baseProtein = 0.5,
+                    baseCarbs = 10.0,
+                    baseFat = 0.0,
+                ),
+            ),
+            createdAt = atNoon(snapshotDate).minusSeconds(86_400),
+        ),
+        Recipe(
+            id = UUID.fromString("00000000-0000-4000-8000-000000000023"),
+            name = "Salmon plate",
+            emoji = "🐟",
+            mealType = MealType.DINNER,
+            ingredients = listOf(
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000037"),
+                    name = "Baked salmon",
+                    emoji = "🐟",
+                    baseCalories = 340,
+                    baseProtein = 34.0,
+                    baseCarbs = 0.0,
+                    baseFat = 22.0,
+                ),
+                RecipeIngredient(
+                    id = UUID.fromString("00000000-0000-4000-8000-000000000038"),
+                    name = "Roasted broccoli",
+                    emoji = "🥦",
+                    baseCalories = 70,
+                    baseProtein = 4.0,
+                    baseCarbs = 10.0,
+                    baseFat = 2.0,
+                ),
+            ),
+            createdAt = atNoon(snapshotDate).minusSeconds(172_800),
+        ),
+    )
+
+    /** Mid-stream AI fields for the progressive analysis marketing shot. */
+    val streamingPartial: PartialFoodAnalysis = PartialFoodAnalysis(
+        name = "Chicken rice bowl",
+        emoji = "🍗",
+        calories = 540,
+        protein = 42.0,
+        carbs = null,
+        fat = 14.0,
+        servingSizeGrams = 410.0,
+        streaming = true,
     )
 
     fun homeUiState(): HomeUiState = HomeUiState(

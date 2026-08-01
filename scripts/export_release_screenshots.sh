@@ -65,6 +65,19 @@ if [[ ! -d "$REF_DIR" ]]; then
   exit 1
 fi
 
+# Dark-mode previews plus marketing UX highlights — embedded in README / site gallery
+declare -a README_EXPORTS=(
+  "HomeDarkScreenshot_05-home-dark|home.png"
+  "HomeLightScreenshot_01-home-light|home-light.png"
+  "ProgressDarkScreenshot_06-progress-dark|progress.png"
+  "AddFoodDarkScreenshot_10-add-food-dark|add-food.png"
+  "CoachDarkScreenshot_08-coach-dark|coach.png"
+  "SettingsDarkScreenshot_09-settings-dark|settings.png"
+  "MealComponentsDarkScreenshot_11-meal-components-dark|meal-components.png"
+  "RecipesDarkScreenshot_12-recipes-dark|recipes.png"
+  "AiAnalysisDarkScreenshot_13-ai-analysis-dark|ai-analysis.png"
+)
+
 # prefix|release-screenshots filename
 declare -a RELEASE_EXPORTS=(
   "HomeLightScreenshot_01-home-light|01-home-light.png"
@@ -77,16 +90,9 @@ declare -a RELEASE_EXPORTS=(
   "CoachDarkScreenshot_08-coach-dark|08-coach-dark.png"
   "SettingsDarkScreenshot_09-settings-dark|09-settings-dark.png"
   "AddFoodDarkScreenshot_10-add-food-dark|10-add-food-dark.png"
-)
-
-# Dark-mode previews plus one light home shot — embedded in README / site gallery
-declare -a README_EXPORTS=(
-  "HomeDarkScreenshot_05-home-dark|home.png"
-  "HomeLightScreenshot_01-home-light|home-light.png"
-  "ProgressDarkScreenshot_06-progress-dark|progress.png"
-  "AddFoodDarkScreenshot_10-add-food-dark|add-food.png"
-  "CoachDarkScreenshot_08-coach-dark|coach.png"
-  "SettingsDarkScreenshot_09-settings-dark|settings.png"
+  "MealComponentsDarkScreenshot_11-meal-components-dark|11-meal-components-dark.png"
+  "RecipesDarkScreenshot_12-recipes-dark|12-recipes-dark.png"
+  "AiAnalysisDarkScreenshot_13-ai-analysis-dark|13-ai-analysis-dark.png"
 )
 
 find_newest_ref() {

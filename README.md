@@ -4,9 +4,9 @@
 
 # Chompass
 
-**Ad-free AI calorie tracker: Android app and browser PWA**
+**Private calorie tracking for Android and the browser**
 
-Bring your own cloud AI key on either client. On the Android app you can also run Gemma 4 on-device. Fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with no ads and no analytics.
+Bring your own AI key on either client. On the Android app you can also run Gemma 4 on-device. No ads, no analytics. Based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 [Website](https://chompass.app/) · [Download](https://chompass.app/download/) · [Web app](https://chompass.app/app/) · [Privacy](docs/PRIVACY.md)
 
@@ -98,7 +98,7 @@ Shared on the [PWA](https://chompass.app/app/) and Android app unless noted:
 
 ## Why Chompass
 
-Chompass forked [Fud AI](https://github.com/apoorvdarshan/fud-ai) in July 2026 when upstream briefly shipped AdMob banners (removed again in 3.0.3). This fork stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds open export/import plus Health Connect. It does not try to match upstream feature for feature.
+Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai) (forked in July 2026 when upstream briefly shipped AdMob banners, later removed in 3.0.3). Chompass stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds meal components, recipes, progressive AI feedback, open export/import, and Health Connect. It does not try to match upstream feature for feature.
 
 Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)), and a data-compatible [PWA](https://chompass.app/app/) for any modern browser.
 

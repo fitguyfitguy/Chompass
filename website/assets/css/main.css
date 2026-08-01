@@ -303,6 +303,7 @@ a:hover {
 
 .shots,
 .pitch,
+.pillars,
 .compare {
   padding: 1.5rem 0 3.5rem;
 }
@@ -419,6 +420,41 @@ a:hover {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--muted);
+}
+
+.pillars {
+  width: min(100% - 2rem, var(--max));
+  margin-inline: auto;
+}
+
+.pillars__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.pillars__list li {
+  padding: 1.2rem 1.15rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+}
+
+.pillars__list h3 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.pillars__list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .pitch__grid {
@@ -641,6 +677,7 @@ a:hover {
   }
 
   .strip__list,
+  .pillars__list,
   .pitch__grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -654,6 +691,7 @@ a:hover {
   }
 
   .strip__list,
+  .pillars__list,
   .pitch__grid {
     grid-template-columns: 1fr;
   }

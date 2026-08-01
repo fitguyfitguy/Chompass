@@ -3,8 +3,8 @@
   <div class="hero__copy">
     <p class="hero__eyebrow">PWA · Android · ad-free</p>
     <h1 id="hero-brand" class="hero__brand">Chompass</h1>
-    <p class="hero__tagline">Ad-free AI calorie tracker: Android app and browser PWA.</p>
-    <p class="hero__support">Bring your own cloud AI key on either client. Optional on-device Gemma&nbsp;4 on Android. No ads, no analytics, no account. The web app runs in any modern browser; Chromium-based browsers work best.</p>
+    <p class="hero__tagline">Private calorie tracking for Android and the browser.</p>
+    <p class="hero__support">Bring your own AI key. Optional on-device Gemma&nbsp;4 on Android. No ads, no analytics, no account. The web app runs in any modern browser; Chromium-based browsers work best.</p>
     <div class="hero__actions">
       <a class="btn btn--primary" href="{{ "app/" | relURL }}">Try web app</a>
       <a class="btn btn--ghost" href="{{ .Site.Params.obtainium }}">Get on Obtainium</a>
@@ -25,26 +25,59 @@
 
 <section class="strip" aria-label="Product highlights">
   <ul class="strip__list">
-    <li><strong>No ads</strong><span>Never shipped AdMob</span></li>
+    <li><strong>No ads</strong><span>No analytics either</span></li>
     <li><strong>Browser PWA</strong><span>Any modern browser</span></li>
-    <li><strong>On-device AI</strong><span>Opt-in Gemma&nbsp;4 (Android app)</span></li>
+    <li><strong>On-device AI</strong><span>Opt-in Gemma&nbsp;4 (Android)</span></li>
     <li><strong>{{ .Site.Params.apkArm64Note }}</strong><span>arm64 APK (v{{ .Site.Params.version }})</span></li>
+  </ul>
+</section>
+
+<section class="pillars" aria-labelledby="pillars-heading">
+  <div class="section-head">
+    <h2 id="pillars-heading">What you get</h2>
+    <p>Food logging that stays on your device unless you choose cloud AI, plus extras that make daily use clearer.</p>
+  </div>
+  <ul class="pillars__list">
+    <li>
+      <h3>Android and browser</h3>
+      <p>Installable PWA and Android app share the same diary and body-metrics JSON. No cloud sync between clients.</p>
+    </li>
+    <li>
+      <h3>AI you control</h3>
+      <p>Bring your own cloud key. On Android, opt into on-device Gemma&nbsp;4. Analysis shows progress steps and fills fields as the model replies.</p>
+    </li>
+    <li>
+      <h3>Meal components</h3>
+      <p>After AI entry, expand ingredients, edit grams per row, and keep meal totals in sync.</p>
+    </li>
+    <li>
+      <h3>Recipes and saved meals</h3>
+      <p>Save recents, favorites, and multi-ingredient recipes for one-tap logging.</p>
+    </li>
+    <li>
+      <h3>Diet modes and Health Connect</h3>
+      <p>Keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration through Health Connect.</p>
+    </li>
+    <li>
+      <h3>Open data, honest accuracy</h3>
+      <p>FOSS barcode on Android, open export and import, and published AI accuracy notes instead of a single marketing number.</p>
+    </li>
   </ul>
 </section>
 
 <section class="shots" aria-labelledby="shots-heading">
   <div class="section-head">
-    <h2 id="shots-heading">See the app</h2>
+    <h2 id="shots-heading">Highlights in the app</h2>
     <p>Material&nbsp;3 dark theme. Light theme is available in Settings.</p>
   </div>
   <div class="shots__grid">
     {{ range slice
       (dict "src" "screenshots/home.png" "alt" "Home: calorie ring and meal log" "label" "Home")
-      (dict "src" "screenshots/home-light.png" "alt" "Home in light theme" "label" "Home (light)")
       (dict "src" "screenshots/add-food.png" "alt" "Add food sheet with photo and AI options" "label" "Add food")
+      (dict "src" "screenshots/meal-components.png" "alt" "Meal review with editable ingredient rows" "label" "Meal components")
+      (dict "src" "screenshots/recipes.png" "alt" "Saved meals Recipes tab with multi-ingredient recipes" "label" "Recipes")
+      (dict "src" "screenshots/ai-analysis.png" "alt" "AI analysis overlay with progress steps and streaming nutrition fields" "label" "AI analysis")
       (dict "src" "screenshots/progress.png" "alt" "Progress charts for weight and body fat" "label" "Progress")
-      (dict "src" "screenshots/coach.png" "alt" "AI Coach chat" "label" "Coach")
-      (dict "src" "screenshots/settings.png" "alt" "Settings with diet modes and Health Connect" "label" "Settings")
     }}
     <figure class="shot">
       <img src="{{ .src | relURL }}" alt="{{ .alt }}" width="200" height="433" loading="lazy" />
@@ -58,15 +91,15 @@
   <div class="shoutout">
     <p class="shoutout__kicker">Built on open source</p>
     <p class="shoutout__body">
-      Chompass is a privacy-focused fork of
+      Chompass is based on
       <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer"><strong>Fud&nbsp;AI</strong></a>
-      by Apoorv Darshan. Same BYOK AI food logging, plus an Android app and browser PWA on Codeberg.
-      If you want workouts and the upstream feature set, check out
-      <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI on GitHub</a>.
+      by Apoorv Darshan. Same BYOK food logging roots, plus an Android app and browser PWA on Codeberg.
+      Prefer workouts and the upstream feature set?
+      See <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI on GitHub</a>.
     </p>
   </div>
   <div class="section-head">
-    <h2 id="compare-heading">Fud&nbsp;AI vs Chompass Android vs Chompass&nbsp;PWA</h2>
+    <h2 id="compare-heading">Where Chompass differs</h2>
     <p>Compact differences. Full table lives in the <a href="{{ .Site.Params.repo }}">project README</a>.</p>
   </div>
   <div class="compare__scroll">
@@ -152,13 +185,13 @@
 
 <section class="pitch" aria-labelledby="pitch-heading">
   <div class="section-head">
-    <h2 id="pitch-heading">Privacy-focused food tracking</h2>
-    <p>Forked from <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI</a> to stay ad-free on Codeberg. Snap, speak, scan, share, or type. Food text and photos stay on your device unless you choose cloud AI.</p>
+    <h2 id="pitch-heading">Private food tracking</h2>
+    <p>Snap, speak, scan, share, or type. Food text and photos stay on your device unless you choose cloud AI.</p>
   </div>
   <div class="pitch__grid">
     <a class="pitch-card" href="{{ "features/" | relURL }}">
       <h3>Features</h3>
-      <p>Multi-photo logging, keto modes, open export, FOSS barcode, and a browser PWA.</p>
+      <p>Meal components, recipes, progressive AI feedback, keto modes, open export, and a browser PWA.</p>
     </a>
     <a class="pitch-card" href="{{ "download/" | relURL }}">
       <h3>Install</h3>
