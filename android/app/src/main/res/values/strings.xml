@@ -1232,6 +1232,7 @@
     <string name="camera_error_open">Could not open camera</string>
     <string name="camera_error_save">Could not save photo</string>
     <string name="camera_error_capture">Could not capture photo</string>
+    <string name="photo_import_failed">Could not import photo</string>
     <string name="barcode_hint">Point the camera at the barcode</string>
     <string name="barcode_off_note">Packaged foods use Open Food Facts when available.</string>
     <string name="measure_neck">Neck</string>

@@ -56,7 +56,11 @@ class ChompassApp : Application() {
     lateinit var container: AppContainer
         private set
 
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    /** Process-lifetime scope for work that must outlive a disposed Compose tree. */
+    val applicationScope: CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private val appScope get() = applicationScope
 
     override fun onCreate() {
         super.onCreate()
