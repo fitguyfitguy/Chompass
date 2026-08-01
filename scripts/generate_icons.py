@@ -161,14 +161,29 @@ def compose_icon(
     return out
 
 
-def make_round(square: Image.Image) -> Image.Image:
-    size = square.size[0]
-    mask = Image.new("L", (size, size), 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0, size - 1, size - 1), fill=255)
+def compose_round_icon(
+    size: int,
+    logo_mask: Image.Image,
+    start: tuple[int, int, int],
+    end: tuple[int, int, int],
+) -> Image.Image:
+    """True circle: full gradient disk + logo (no squircle intersection)."""
+    circle = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(circle).ellipse((0, 0, size - 1, size - 1), fill=255)
+
+    bg = make_gradient(size, start, end).convert("RGBA")
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    out.paste(square, mask=mask)
-    return out
+    out.paste(bg, mask=circle)
+
+    logo = logo_mask.resize((size, size), Image.Resampling.LANCZOS)
+    white = Image.new("RGBA", (size, size), (255, 255, 255, 255))
+    layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    layer.paste(white, mask=logo)
+    out = Image.alpha_composite(out, layer)
+
+    final = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    final.paste(out, mask=circle)
+    return final
 
 
 def compose_maskable(
@@ -331,7 +346,7 @@ def main() -> None:
             # Legacy density PNGs (pre-masked) remain as fallbacks; API 26+
             # prefers mipmap-anydpi-v26 adaptive XML written below.
             square = compose_icon(px, rounded_mask, logo_mask, start, end)
-            round_icon = make_round(square)
+            round_icon = compose_round_icon(px, logo_mask, start, end)
             square.save(out_dir / f"{base}.png", optimize=True)
             round_icon.save(out_dir / f"{base}_round.png", optimize=True)
 
