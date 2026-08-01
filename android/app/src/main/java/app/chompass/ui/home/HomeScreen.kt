@@ -2,6 +2,7 @@ package app.chompass.ui.home
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +55,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
 import java.util.UUID
@@ -74,7 +76,9 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,15 +131,20 @@ fun HomeScreen(container: AppContainer) {
 
     // Photos shared into the app via the system share sheet (filled by
     // MainActivity). Up to 10 images enter the multi-photo review sheet.
+    // Only consume while RESUMED so a stopped MainActivity under a duplicate
+    // share-launched instance cannot clear the app-scoped inbox first.
     val sharedImages by container.sharedImageInbox.collectAsState()
-    LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy) {
-        val images = sharedImages
-        if (images.isEmpty()) return@LaunchedEffect
+    LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy, lifecycleOwner) {
+        if (sharedImages.isEmpty()) return@LaunchedEffect
         if (ui.isEntryAnalysisBusy) return@LaunchedEffect
-        container.sharedImageInbox.value = emptyList()
-        pendingCaptureImageBytes = images.take(10)
-        isImportingPhotos = true
-        showMultiPhotoCapture = true
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            val images = container.sharedImageInbox.value
+            if (images.isEmpty()) return@repeatOnLifecycle
+            container.sharedImageInbox.value = emptyList()
+            pendingCaptureImageBytes = images.take(10)
+            isImportingPhotos = true
+            showMultiPhotoCapture = true
+        }
     }
 
     val cameraPermission = rememberLauncherForActivityResult(
@@ -184,16 +193,20 @@ fun HomeScreen(container: AppContainer) {
     }
 
     // Launcher long-press shortcuts (Camera / Voice / Barcode). Sticky inbox —
-    // survives until Home is composed after onboarding.
+    // survives until Home is composed after onboarding. RESUMED-only so a
+    // stopped activity cannot consume ahead of the foreground instance.
     val shortcutEntry by container.shortcutEntryInbox.collectAsState()
-    LaunchedEffect(shortcutEntry, ui.isEntryAnalysisBusy) {
-        val action = shortcutEntry ?: return@LaunchedEffect
+    LaunchedEffect(shortcutEntry, ui.isEntryAnalysisBusy, lifecycleOwner) {
+        if (shortcutEntry == null) return@LaunchedEffect
         if (ui.isEntryAnalysisBusy) return@LaunchedEffect
-        container.shortcutEntryInbox.value = null
-        when (action) {
-            ShortcutEntryAction.CAMERA -> openCamera()
-            ShortcutEntryAction.VOICE -> showVoice = true
-            ShortcutEntryAction.BARCODE -> openBarcodeScanner()
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            val action = container.shortcutEntryInbox.value ?: return@repeatOnLifecycle
+            container.shortcutEntryInbox.value = null
+            when (action) {
+                ShortcutEntryAction.CAMERA -> openCamera()
+                ShortcutEntryAction.VOICE -> showVoice = true
+                ShortcutEntryAction.BARCODE -> openBarcodeScanner()
+            }
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -86,24 +87,37 @@ fun ChompassNavHost(
     // A photo was shared into the app while another tab (or a detail screen) was
     // showing — bring Home forward so it can consume the inbox and start the
     // photo entry flow. No-op during onboarding (HOME isn't on the stack yet);
-    // the inbox is sticky, so Home picks it up once it composes.
+    // the inbox is sticky, so Home picks it up once it composes. RESUMED-only
+    // so a stopped duplicate MainActivity cannot mutate this nav controller.
+    val lifecycleOwner = LocalLifecycleOwner.current
     val sharedImages by container.sharedImageInbox.collectAsState()
-    LaunchedEffect(sharedImages) {
-        if (sharedImages.isNotEmpty() && currentRoute != null && currentRoute != ChompassRoutes.HOME) {
-            nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+    LaunchedEffect(sharedImages, currentRoute, lifecycleOwner) {
+        if (sharedImages.isEmpty()) return@LaunchedEffect
+        if (currentRoute == null || currentRoute == ChompassRoutes.HOME) return@LaunchedEffect
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            if (container.sharedImageInbox.value.isEmpty()) return@repeatOnLifecycle
+            val route = nav.currentBackStackEntry?.destination?.route
+            if (route != null && route != ChompassRoutes.HOME) {
+                nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+            }
         }
     }
     val shortcutEntry by container.shortcutEntryInbox.collectAsState()
-    LaunchedEffect(shortcutEntry) {
-        if (shortcutEntry != null && currentRoute != null && currentRoute != ChompassRoutes.HOME) {
-            nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+    LaunchedEffect(shortcutEntry, currentRoute, lifecycleOwner) {
+        if (shortcutEntry == null) return@LaunchedEffect
+        if (currentRoute == null || currentRoute == ChompassRoutes.HOME) return@LaunchedEffect
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            if (container.shortcutEntryInbox.value == null) return@repeatOnLifecycle
+            val route = nav.currentBackStackEntry?.destination?.route
+            if (route != null && route != ChompassRoutes.HOME) {
+                nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+            }
         }
     }
 
     // App-open epoch for the Home fill-from-zero reveal. Bumped only on ON_START
     // that follows an ON_STOP (a genuine background -> foreground return), so
     // transient pauses (notification shade, permission dialog) don't retrigger it.
-    val lifecycleOwner = LocalLifecycleOwner.current
     var launchFillEpoch by remember { mutableIntStateOf(1) }
     var hasStopped by remember { mutableStateOf(false) }
     DisposableEffect(lifecycleOwner) {
