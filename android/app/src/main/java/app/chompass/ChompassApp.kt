@@ -212,11 +212,10 @@ class AppContainer(app: ChompassApp) {
     val analyzingFood: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     /**
-     * Photos shared into the app via the system share sheet (ACTION_SEND /
-     * ACTION_SEND_MULTIPLE). [MainActivity] fills it; the Home screen consumes
-     * it (while resumed) and opens the multi-photo food-entry sheet.
-     * Survives until a resumed Home is composed, so a share that lands during
-     * onboarding is picked up right after it completes.
+     * Photos from the system share sheet (ACTION_SEND / ACTION_SEND_MULTIPLE)
+     * or the in-app gallery picker. [MainActivity] / Home fill it; a resumed
+     * Home merges into the multi-photo food-entry sheet. Survives until a
+     * resumed Home consumes it (onboarding-safe; duplicate-activity-safe).
      */
     val sharedImageInbox: MutableStateFlow<List<ByteArray>> = MutableStateFlow(emptyList())
 

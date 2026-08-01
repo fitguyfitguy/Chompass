@@ -4,6 +4,10 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Launcher Camera / Voice / Barcode shortcuts target the enabled launcher icon alias (same as share), so image capture and gallery pick no longer die on the Home screen after selecting a photo (Android).
+
 ## [3.6.0] - 2026-08-01
 
 ### Added

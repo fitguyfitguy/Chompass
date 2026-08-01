@@ -5,13 +5,17 @@ import android.content.Intent
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
-import app.chompass.MainActivity
 import app.chompass.R
 
 /**
  * Publishes the static set of Home entry shortcuts (Camera, Voice, Barcode).
  * Dynamic publication works across launcher-icon activity-aliases; static XML
  * shortcuts would only attach to whichever alias currently owns MAIN/LAUNCHER.
+ *
+ * Intents target the **enabled launcher alias**, not [app.chompass.MainActivity]
+ * directly — matching share-sheet filters — so `singleTop` / `CLEAR_TOP` hit the
+ * existing task instead of stacking a second activity that steals camera/gallery
+ * results from the foreground Home.
  */
 object LauncherShortcuts {
     const val EXTRA_SHORTCUT = "shortcut_entry"
@@ -54,7 +58,8 @@ object LauncherShortcuts {
         iconRes: Int,
         action: ShortcutEntryAction,
     ): ShortcutInfoCompat {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent().apply {
+            component = AndroidAppIconManager.enabledLauncherComponent(context)
             this.action = action.action
             putExtra(EXTRA_SHORTCUT, action.name.lowercase())
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or

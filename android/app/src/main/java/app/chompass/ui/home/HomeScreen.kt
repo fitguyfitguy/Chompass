@@ -4,9 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -43,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -121,22 +124,24 @@ fun HomeScreen(container: AppContainer) {
     // Set when Gallery is tapped from the camera Dialog — launch the picker only
     // after the Dialog has left composition so the Activity Result is not lost.
     var pendingGalleryPick by remember { mutableStateOf(false) }
-    val photoImportScope = rememberCoroutineScope()
 
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
         if (uris.isEmpty()) return@rememberLauncherForActivityResult
-        photoImportScope.launch {
-            val remaining = 10 - pendingCaptureImageBytes.size
-            if (remaining <= 0) return@launch
+        // Activity lifecycleScope (not rememberCoroutineScope): the picker may
+        // return after this composition was disposed (duplicate MainActivity /
+        // task switch). Deliver via the app-scoped inbox so a resumed Home can
+        // open the multi-photo sheet.
+        val activity = ctx as? ComponentActivity ?: return@rememberLauncherForActivityResult
+        activity.lifecycleScope.launch {
+            val remaining = (10 - pendingCaptureImageBytes.size).coerceAtLeast(0)
+            if (remaining == 0) return@launch
             val imported = withContext(Dispatchers.IO) {
                 uris.take(remaining).mapNotNull { uri -> readImageBytes(ctx, uri) }
             }
             if (imported.isEmpty()) return@launch
-            pendingCaptureImageBytes = (pendingCaptureImageBytes + imported).take(10)
-            isImportingPhotos = true
-            showMultiPhotoCapture = true
+            container.sharedImageInbox.value = imported
         }
     }
 
@@ -153,14 +158,17 @@ fun HomeScreen(container: AppContainer) {
     LaunchedEffect(pendingGalleryPick, showCameraCapture) {
         if (pendingGalleryPick && !showCameraCapture) {
             pendingGalleryPick = false
+            // Two frames: Dialog leaves composition, then its Window dismisses.
+            withFrameNanos { }
+            withFrameNanos { }
             photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
-    // Photos shared into the app via the system share sheet (filled by
-    // MainActivity). Up to 10 images enter the multi-photo review sheet.
+    // Photos from the system share sheet (MainActivity) or in-app gallery pick.
     // Only consume while RESUMED so a stopped MainActivity under a duplicate
-    // share-launched instance cannot clear the app-scoped inbox first.
+    // instance cannot clear the app-scoped inbox first. Merge into any photos
+    // already staged in the multi-photo sheet (add-more from gallery).
     val sharedImages by container.sharedImageInbox.collectAsState()
     LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy, lifecycleOwner) {
         if (sharedImages.isEmpty()) return@LaunchedEffect
@@ -169,7 +177,7 @@ fun HomeScreen(container: AppContainer) {
             val images = container.sharedImageInbox.value
             if (images.isEmpty()) return@repeatOnLifecycle
             container.sharedImageInbox.value = emptyList()
-            pendingCaptureImageBytes = images.take(10)
+            pendingCaptureImageBytes = (pendingCaptureImageBytes + images).take(10)
             isImportingPhotos = true
             showMultiPhotoCapture = true
         }
