@@ -2,6 +2,10 @@
 import { weights, foodEntries, profile as profileStore, bodyFat, prefs } from "../lib/db.js";
 import { dailyTargets } from "../lib/chompass-core/formulas.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
+import {
+  computeWeightTrend,
+  resolveProgressRangeId,
+} from "../lib/chompass-core/weight-trend.js";
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t } from "../lib/i18n/index.js";
@@ -14,11 +18,13 @@ const RANGES = [
   { id: "1Y", labelKey: "progress.range_1y", days: 365 },
   { id: "All", labelKey: "progress.range_all", days: 3650 },
 ];
+const RANGE_IDS = RANGES.map((r) => r.id);
 
 export class ProgressView extends HTMLElement {
   constructor() {
     super();
-    this.rangeId = "1W";
+    /** @type {string | null} */
+    this.rangeId = null;
     this.showWeightHistory = false;
     this.showBodyFatHistory = false;
     /** @type {HTMLElement | null} */
@@ -37,20 +43,38 @@ export class ProgressView extends HTMLElement {
       profileStore.load(),
       prefs.load(),
     ]);
-    if (appPrefs.progressRangeId && RANGES.some((r) => r.id === appPrefs.progressRangeId)) {
-      this.rangeId = appPrefs.progressRangeId;
-    }
+    this.rangeId = resolveProgressRangeId(
+      this.rangeId ?? appPrefs.progressRangeId,
+      appPrefs.progressDefaultRangeId,
+      RANGE_IDS,
+    );
     const activeRange = RANGES.find((r) => r.id === this.rangeId) ?? RANGES[0];
     const startIso = shiftDate(todayIso(), -(activeRange.days - 1));
     const weightUnit = appPrefs.weightUnit === "lb" ? "lb" : "kg";
     const toDisplay = (kg) => (weightUnit === "lb" ? kg * 2.20462 : kg);
     const fromDisplay = (v) => (weightUnit === "lb" ? v / 2.20462 : v);
 
-    const weightPoints = allWeights
+    const filteredWeights = allWeights
       .filter((w) => w.date.slice(0, 10) >= startIso)
       .slice()
-      .sort((a, b) => a.date.localeCompare(b.date))
-      .map((w) => ({ label: shortDate(w.date), value: toDisplay(w.weightKg), id: w.id, raw: w }));
+      .sort((a, b) => a.date.localeCompare(b.date));
+    const weightPoints = filteredWeights.map((w) => ({
+      label: shortDate(w.date),
+      value: toDisplay(w.weightKg),
+      id: w.id,
+      raw: w,
+      day: w.date.slice(0, 10),
+    }));
+
+    const trendKg = computeWeightTrend(
+      filteredWeights.map((w) => ({ date: w.date, weightKg: w.weightKg })),
+    );
+    const trendPoints = trendKg.map((p) => ({
+      label: shortDate(`${p.date}T12:00:00.000Z`),
+      value: toDisplay(p.valueKg),
+      day: p.date,
+    }));
+    const hasTrend = trendPoints.length > 0;
 
     const bfPoints = allBf
       .filter((w) => w.date.slice(0, 10) >= startIso)
@@ -144,9 +168,25 @@ export class ProgressView extends HTMLElement {
           <div class="stat-badge"><strong>${fmt(netChange, true)}</strong>Net</div>
           <div class="stat-badge"><strong>${fmt(avgW)}</strong>Average</div>
         </div>
+        <p class="chart-legend" style="margin:0.35rem 0 0.5rem;font-size:0.78rem;color:var(--muted);">
+          <span style="color:var(--teal);">●</span> ${t("progress.weight_raw_legend")}
+          ${
+            hasTrend
+              ? ` · <span style="color:var(--protein);">– –</span> ${t("progress.weight_trend_legend")}`
+              : weightPoints.length
+                ? ` · ${t("progress.weight_trend_need_more")}`
+                : ""
+          }
+        </p>
         ${lineChartSvg(
-          weightPoints.map(({ label, value }) => ({ label, value })),
-          { color: "var(--teal)", unit: weightUnit, goal: goalWeight }
+          weightPoints.map(({ label, value, day }) => ({ label, value, day })),
+          {
+            color: "var(--teal)",
+            unit: weightUnit,
+            goal: goalWeight,
+            trend: hasTrend ? trendPoints.map(({ label, value, day }) => ({ label, value, day })) : null,
+            trendColor: "var(--protein)",
+          }
         )}
         ${
           weightPoints.length

@@ -55,6 +55,10 @@ internal object Keys {
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
         val WEEK_STARTS_MONDAY = booleanPreferencesKey("weekStartsOnMonday")
+        /** Factory / Settings default for Progress tab range chips (`1W`…`All`). */
+        val PROGRESS_DEFAULT_RANGE_ID = stringPreferencesKey("progressDefaultRangeId")
+        /** Last Progress range the user selected; null until first chip tap. */
+        val PROGRESS_LAST_RANGE_ID = stringPreferencesKey("progressLastRangeId")
         val MEAL_BREAKFAST_START = intPreferencesKey("mealBreakfastStart")
         val MEAL_LUNCH_START = intPreferencesKey("mealLunchStart")
         val MEAL_DINNER_START = intPreferencesKey("mealDinnerStart")

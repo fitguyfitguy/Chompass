@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "notes": "Display-only trailing MA for Progress weight charts. Calendar-day bucket averages; emit only when the trailing window has ≥ minDaysInWindow weigh-in days. Does not feed Adaptive Goals. Zone for date bucketing in fixtures: UTC (Android tests use ZoneOffset.UTC).",
+  "windowDays": 7,
+  "minDaysInWindow": 2,
+  "cases": [
+    {
+      "id": "sparse-single-day",
+      "inputs": [
+        { "date": "2026-03-01T08:00:00Z", "weightKg": 80.0 }
+      ],
+      "expected": []
+    },
+    {
+      "id": "two-consecutive-days",
+      "inputs": [
+        { "date": "2026-03-01T08:00:00Z", "weightKg": 80.0 },
+        { "date": "2026-03-02T08:00:00Z", "weightKg": 79.0 }
+      ],
+      "expected": [
+        { "date": "2026-03-02", "valueKg": 79.5 }
+      ]
+    },
+    {
+      "id": "daily-duplicates",
+      "inputs": [
+        { "date": "2026-03-01T08:00:00Z", "weightKg": 80.0 },
+        { "date": "2026-03-01T20:00:00Z", "weightKg": 82.0 },
+        { "date": "2026-03-02T08:00:00Z", "weightKg": 80.0 },
+        { "date": "2026-03-03T08:00:00Z", "weightKg": 79.0 }
+      ],
+      "expected": [
+        { "date": "2026-03-02", "valueKg": 80.5 },
+        { "date": "2026-03-03", "valueKg": 80.0 }
+      ]
+    },
+    {
+      "id": "irregular-spacing",
+      "inputs": [
+        { "date": "2026-03-01T12:00:00Z", "weightKg": 90.0 },
+        { "date": "2026-03-03T12:00:00Z", "weightKg": 89.0 },
+        { "date": "2026-03-10T12:00:00Z", "weightKg": 88.0 },
+        { "date": "2026-03-11T12:00:00Z", "weightKg": 87.5 }
+      ],
+      "expected": [
+        { "date": "2026-03-03", "valueKg": 89.5 },
+        { "date": "2026-03-11", "valueKg": 87.75 }
+      ]
+    },
+    {
+      "id": "seven-day-window",
+      "inputs": [
+        { "date": "2026-04-01T08:00:00Z", "weightKg": 70.0 },
+        { "date": "2026-04-02T08:00:00Z", "weightKg": 71.0 },
+        { "date": "2026-04-03T08:00:00Z", "weightKg": 72.0 },
+        { "date": "2026-04-04T08:00:00Z", "weightKg": 73.0 },
+        { "date": "2026-04-05T08:00:00Z", "weightKg": 74.0 },
+        { "date": "2026-04-06T08:00:00Z", "weightKg": 75.0 },
+        { "date": "2026-04-07T08:00:00Z", "weightKg": 76.0 },
+        { "date": "2026-04-08T08:00:00Z", "weightKg": 77.0 }
+      ],
+      "expected": [
+        { "date": "2026-04-02", "valueKg": 70.5 },
+        { "date": "2026-04-03", "valueKg": 71.0 },
+        { "date": "2026-04-04", "valueKg": 71.5 },
+        { "date": "2026-04-05", "valueKg": 72.0 },
+        { "date": "2026-04-06", "valueKg": 72.5 },
+        { "date": "2026-04-07", "valueKg": 73.0 },
+        { "date": "2026-04-08", "valueKg": 74.0 }
+      ]
+    }
+  ]
+}

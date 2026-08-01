@@ -651,6 +651,9 @@
     <string name="progress_stat_net_change">Net Change</string>
     <string name="progress_stat_average">Average</string>
     <string name="progress_log_first_weight">Log your first weight to see trends</string>
+    <string name="progress_weight_trend_legend">7-day trend</string>
+    <string name="progress_weight_trend_need_more">7-day trend needs at least 2 weigh-in days</string>
+    <string name="progress_weight_raw_legend">Daily weigh-ins</string>
 
     <string name="progress_weight_history">Weight History</string>
     <string name="progress_body_fat_history">Body Fat History</string>
@@ -759,6 +762,7 @@
     <string name="settings_week_starts">Week Starts On</string>
     <string name="settings_week_monday">Monday</string>
     <string name="settings_week_sunday">Sunday</string>
+    <string name="settings_progress_default_range">Progress default range</string>
     <string name="settings_meal_times">Meal times</string>
     <string name="settings_meal_times_customize">Customize</string>
     <string name="settings_meal_times_description">Set when automatic meal selection switches to the next meal.</string>

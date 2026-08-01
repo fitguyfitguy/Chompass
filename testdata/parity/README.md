@@ -12,6 +12,7 @@ Committed golden inputs/expected outputs for Android and PWA drift checks.
 | `ai-provider-defaults.json` | BYOK defaults for Gemini / Anthropic / OpenAI (PWA `openai_compatible`) |
 | `goal-formula-prompt-fragments.json` | AI goal-prompt formula line strings |
 | `pref-defaults.json` | Shared semantic preference defaults (not a portable prefs export) |
+| `weight-trend-expected.json` | Display-only 7-day trailing MA goldens for Progress weight charts |
 
 Do not commit personal diary exports here. Keep samples small and synthetic/anonymized.
 Schemas live in `contracts/` (wire formats only).

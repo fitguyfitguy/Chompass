@@ -88,6 +88,10 @@ export const en = Object.freeze({
   "progress.range_6m": "6M",
   "progress.range_1y": "1Y",
   "progress.range_all": "All",
+  "progress.weight_raw_legend": "Daily weigh-ins",
+  "progress.weight_trend_legend": "7-day trend",
+  "progress.weight_trend_need_more": "7-day trend needs at least 2 weigh-in days",
+  "settings.progress_default_range": "Progress default range",
 
   // Onboarding
   "onboarding.welcome_title": "Welcome to Chompass",

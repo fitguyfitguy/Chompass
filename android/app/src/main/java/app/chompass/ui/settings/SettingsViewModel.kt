@@ -86,6 +86,8 @@ data class SettingsUiState(
     val glassBlurEnabled: Boolean = false,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
+    /** Settings default Progress range id (`1W`…`All`). */
+    val progressDefaultRangeId: String = "1W",
     val userContext: String = "",
     val fallbackEnabled: Boolean = true,
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
@@ -162,6 +164,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val glassBlurEnabled = container.prefs.glassBlurEnabled.first()
             val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
             val weekMon = container.prefs.weekStartsOnMonday.first()
+            val progressDefaultRangeId = container.prefs.progressDefaultRangeId.first()
             val userContext = container.prefs.userContext.first()
             val maxTokens = container.prefs.maxResponseTokens.first()
             val aiReadTimeout = container.prefs.aiReadTimeoutSeconds.first()
@@ -218,6 +221,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 glassBlurEnabled = glassBlurEnabled,
                 foodLogSortOrder = foodLogSortOrder,
                 weekStartsOnMonday = weekMon,
+                progressDefaultRangeId = progressDefaultRangeId,
                 userContext = userContext,
                 fallbackEnabled = fbEnabled,
                 fallbackProvider = fbProvider,
@@ -402,6 +406,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setWeekStartsOnMonday(monday: Boolean) = updateUiPref(
         { container.prefs.setWeekStartsOnMonday(monday) },
         { copy(weekStartsOnMonday = monday) },
+    )
+
+    fun setProgressDefaultRangeId(rangeId: String) = updateUiPref(
+        { container.prefs.setProgressDefaultRangeId(rangeId) },
+        { copy(progressDefaultRangeId = rangeId) },
     )
 
     fun setMealSchedule(schedule: app.chompass.models.MealSchedule) {

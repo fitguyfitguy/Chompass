@@ -83,6 +83,11 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         viewModelScope.launch {
+            val lastViewed = container.prefs.progressLastRangeId.first()
+            val defaultId = container.prefs.progressDefaultRangeId.first()
+            timeRange.value = TimeRange.resolve(lastViewed, defaultId)
+        }
+        viewModelScope.launch {
             if (container.prefs.healthConnectEnabled.first() &&
                 container.health.isAvailable()
             ) {
@@ -171,6 +176,9 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setTimeRange(range: TimeRange) {
         timeRange.value = range
+        viewModelScope.launch {
+            container.prefs.setProgressLastRangeId(range.storageId)
+        }
     }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
