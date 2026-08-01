@@ -3,7 +3,8 @@
  * Saved Meals helpers — Recents / Frequent / Favorites, mirroring Android
  * FoodRepository recentFoodTemplates / frequentFoodGroups / toggleFavorite.
  */
-import { foodEntries, favorites as favoritesStore } from "./db.js";
+import { foodEntries, favorites as favoritesStore, prefs } from "./db.js";
+import { guessMealTypeFromPrefs } from "./meal-schedule.js";
 
 /** @param {import('./chompass-core/models.js').FoodEntry | {name?: string}} entry */
 export function favoriteKey(entry) {
@@ -89,29 +90,93 @@ export async function frequentFoodGroups(days = 90) {
 }
 
 /**
- * Favorites → recents → frequent, unique by favoriteKey (Android quickRelogTemplates).
- * @param {number} [limit]
- * @returns {Promise<import('./chompass-core/models.js').FoodEntry[]>}
+ * @param {import('./chompass-core/models.js').FoodEntry} entry
  */
-export async function quickRelogTemplates(limit = 6) {
-  const [favorites, recents, frequent] = await Promise.all([
-    listFavorites(),
-    recentFoodTemplates(30, limit),
-    frequentFoodGroups(90),
-  ]);
+function entryStamp(entry) {
+  return Date.parse(`${entry.date}T${entry.time || "12:00"}`) || 0;
+}
+
+/**
+ * Mealtime-aware hub chips — mirrors Android quickRelogFoodTemplates.
+ * @param {import('./chompass-core/models.js').FoodEntry[]} favorites
+ * @param {import('./chompass-core/models.js').FoodEntry[]} recents
+ * @param {import('./chompass-core/models.js').FoodEntry[]} frequents
+ * @param {"breakfast"|"lunch"|"dinner"|"snack"|"other"} currentMeal
+ * @param {Set<string>} [favoriteKeys]
+ * @param {number} [limit]
+ * @returns {import('./chompass-core/models.js').FoodEntry[]}
+ */
+export function quickRelogFoodTemplates(
+  favorites,
+  recents,
+  frequents,
+  currentMeal,
+  favoriteKeys = new Set(favorites.map(favoriteKey).filter(Boolean)),
+  limit = 6,
+) {
   const seen = new Set();
   /** @type {import('./chompass-core/models.js').FoodEntry[]} */
-  const out = [];
-  for (const source of [favorites, recents, frequent.map((g) => g.template)]) {
+  const pool = [];
+  for (const source of [favorites, recents, frequents]) {
     for (const entry of source) {
       const key = favoriteKey(entry);
       if (!key || seen.has(key)) continue;
       seen.add(key);
-      out.push(entry);
-      if (out.length >= limit) return out;
+      pool.push(entry);
     }
   }
-  return out;
+
+  /**
+   * @param {import('./chompass-core/models.js').FoodEntry} a
+   * @param {import('./chompass-core/models.js').FoodEntry} b
+   */
+  const withinBucket = (a, b) => {
+    const aFav = favoriteKeys.has(favoriteKey(a)) ? 1 : 0;
+    const bFav = favoriteKeys.has(favoriteKey(b)) ? 1 : 0;
+    if (bFav !== aFav) return bFav - aFav;
+    return entryStamp(b) - entryStamp(a);
+  };
+
+  /** @type {import('./chompass-core/models.js').FoodEntry[][]} */
+  let buckets;
+  if (currentMeal === "snack") {
+    buckets = [
+      pool.filter((e) => e.mealType === "snack"),
+      pool.filter((e) => e.mealType !== "snack"),
+    ];
+  } else {
+    buckets = [
+      pool.filter((e) => e.mealType === currentMeal),
+      pool.filter((e) => e.mealType === "snack"),
+      pool.filter((e) => e.mealType !== currentMeal && e.mealType !== "snack"),
+    ];
+  }
+
+  return buckets.flatMap((bucket) => bucket.slice().sort(withinBucket)).slice(0, limit);
+}
+
+/**
+ * Meal-matched (or snacks in the snack window) first; favorites soft-boost
+ * within each bucket. Unique by favoriteKey (Android quickRelogTemplates).
+ * @param {number} [limit]
+ * @returns {Promise<import('./chompass-core/models.js').FoodEntry[]>}
+ */
+export async function quickRelogTemplates(limit = 6) {
+  const [favorites, recents, frequent, appPrefs] = await Promise.all([
+    listFavorites(),
+    recentFoodTemplates(30, 50),
+    frequentFoodGroups(90),
+    prefs.load(),
+  ]);
+  const currentMeal = guessMealTypeFromPrefs(appPrefs);
+  return quickRelogFoodTemplates(
+    favorites,
+    recents,
+    frequent.map((g) => g.template),
+    currentMeal,
+    undefined,
+    limit,
+  );
 }
 
 export async function listFavorites() {

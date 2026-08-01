@@ -47,10 +47,11 @@ export function timeInputToMinutes(hhmm) {
 export function guessMealTypeFromPrefs(prefs, now = new Date()) {
   const mins = now.getHours() * 60 + now.getMinutes();
   const s = mealStarts(prefs);
-  if (mins < s.lunch) return "breakfast";
-  if (mins < s.dinner) return "lunch";
-  if (mins < s.snack) return "dinner";
-  return "snack";
+  // Mirror Android MealSchedule.mealTypeAt: overnight / pre-breakfast is snack.
+  if (mins >= s.snack || mins < s.breakfast) return "snack";
+  if (mins >= s.dinner) return "dinner";
+  if (mins >= s.lunch) return "lunch";
+  return "breakfast";
 }
 
 /**
