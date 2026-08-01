@@ -26,7 +26,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -34,6 +37,8 @@ import app.chompass.models.FoodConstituent
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.ConstituentReconcile
+import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.MacroKind
 import kotlin.math.roundToInt
 
 /**
@@ -184,16 +189,27 @@ private fun ConstituentRowCard(
                 onMenuExpandedChange = { unitMenuExpanded = it },
                 gramUnit = stringResource(R.string.unit_g),
             )
+            val kcalUnit = stringResource(R.string.unit_kcal)
+            val separatorColor = MaterialTheme.colorScheme.onSurfaceVariant
             Text(
-                text = stringResource(
-                    R.string.sheet_constituents_macros_format,
-                    row.calories,
-                    MacroValueFormatter.string(row.protein),
-                    MacroValueFormatter.string(row.carbs),
-                    MacroValueFormatter.string(row.fat),
-                ),
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
+                        append("${row.calories} $kcalUnit")
+                    }
+                    withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
+                    withStyle(SpanStyle(color = MacroKind.PROTEIN.color(), fontWeight = FontWeight.Medium)) {
+                        append("${MacroKind.PROTEIN.glyph} ${MacroValueFormatter.string(row.protein)}")
+                    }
+                    withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
+                    withStyle(SpanStyle(color = MacroKind.CARBS.color(), fontWeight = FontWeight.Medium)) {
+                        append("${MacroKind.CARBS.glyph} ${MacroValueFormatter.string(row.carbs)}")
+                    }
+                    withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
+                    withStyle(SpanStyle(color = MacroKind.FAT.color(), fontWeight = FontWeight.Medium)) {
+                        append("${MacroKind.FAT.glyph} ${MacroValueFormatter.string(row.fat)}")
+                    }
+                },
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
