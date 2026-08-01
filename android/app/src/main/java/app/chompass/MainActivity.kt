@@ -185,11 +185,14 @@ open class MainActivity : ComponentActivity() {
                 val primaryArgb = themeColor.widgetAccentColors(this@MainActivity).first.toArgb()
                 val primaryChanged = lastSystemPrimaryArgb != null && lastSystemPrimaryArgb != primaryArgb
                 lastSystemPrimaryArgb = primaryArgb
-                systemPaletteEpoch++
-                AndroidAppIconManager.apply(this@MainActivity, themeColor)
+                // Only remount the Compose tree when Material You primary actually
+                // changed. Bumping on every onResume was wiping Home sheet state
+                // (Voice / Camera / Barcode shortcuts) right after delivery.
                 if (primaryChanged) {
+                    systemPaletteEpoch++
                     container.widgetSnapshotWriter.refresh()
                 }
+                AndroidAppIconManager.apply(this@MainActivity, themeColor)
             } finally {
                 systemPaletteRefreshJob = null
             }

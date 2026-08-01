@@ -103,10 +103,10 @@ fun HomeScreen(container: AppContainer) {
     }
 
     var showText by remember { mutableStateOf(false) }
-    var showVoice by remember { mutableStateOf(false) }
+    var showVoiceLocal by remember { mutableStateOf(false) }
     var showManual by remember { mutableStateOf(false) }
     var savedMealsTab by remember { mutableStateOf<SavedTab?>(null) }
-    var showBarcodeScanner by remember { mutableStateOf(false) }
+    var showBarcodeScannerLocal by remember { mutableStateOf(false) }
     var showCopyFromDay by remember { mutableStateOf(false) }
     var showAddFoodSheet by remember { mutableStateOf(false) }
     var hubRecentMeals by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
@@ -183,6 +183,24 @@ fun HomeScreen(container: AppContainer) {
         }
     }
 
+    // Launcher long-press shortcuts (Camera / Voice / Barcode). Keep the action
+    // in the app-scoped inbox until the destination UI dismisses — clearing into
+    // ephemeral Compose flags alone lost Voice/Barcode after a NavHost remount
+    // (e.g. System theme palette refresh on resume), same class of bug as share-ins.
+    val shortcutEntry by container.shortcutEntryInbox.collectAsState()
+    fun clearShortcut(action: ShortcutEntryAction) {
+        if (container.shortcutEntryInbox.value == action) {
+            container.shortcutEntryInbox.value = null
+        }
+    }
+    val showVoice =
+        showVoiceLocal ||
+            (shortcutEntry == ShortcutEntryAction.VOICE && !ui.isEntryAnalysisBusy)
+    // Barcode needs CAMERA permission before the sheet is useful — drive visibility
+    // from the local flag only; the sticky inbox re-triggers openBarcodeScanner
+    // after a remount until dismiss clears it.
+    val showBarcodeScanner = showBarcodeScannerLocal
+
     val cameraPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -190,6 +208,8 @@ fun HomeScreen(container: AppContainer) {
             isImportingPhotos = false
             pendingCaptureImageBytes = emptyList()
             showCameraCapture = true
+        } else {
+            clearShortcut(ShortcutEntryAction.CAMERA)
         }
     }
 
@@ -215,33 +235,33 @@ fun HomeScreen(container: AppContainer) {
     val barcodePermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        if (granted) showBarcodeScanner = true
+        if (granted) {
+            showBarcodeScannerLocal = true
+        } else {
+            clearShortcut(ShortcutEntryAction.BARCODE)
+        }
     }
 
     fun openBarcodeScanner() {
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED
         ) {
-            showBarcodeScanner = true
+            showBarcodeScannerLocal = true
         } else {
             barcodePermission.launch(Manifest.permission.CAMERA)
         }
     }
 
-    // Launcher long-press shortcuts (Camera / Voice / Barcode). Sticky inbox —
-    // survives until Home is composed after onboarding. RESUMED-only so a
-    // stopped activity cannot consume ahead of the foreground instance.
-    val shortcutEntry by container.shortcutEntryInbox.collectAsState()
+    // Drive Camera / Barcode openers from the sticky inbox. Voice is derived
+    // above (no opener needed). Do not clear here — clear on dismiss/submit.
     LaunchedEffect(shortcutEntry, ui.isEntryAnalysisBusy, lifecycleOwner) {
         if (shortcutEntry == null) return@LaunchedEffect
         if (ui.isEntryAnalysisBusy) return@LaunchedEffect
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            val action = container.shortcutEntryInbox.value ?: return@repeatOnLifecycle
-            container.shortcutEntryInbox.value = null
-            when (action) {
+            when (container.shortcutEntryInbox.value) {
                 ShortcutEntryAction.CAMERA -> openCamera()
-                ShortcutEntryAction.VOICE -> showVoice = true
                 ShortcutEntryAction.BARCODE -> openBarcodeScanner()
+                ShortcutEntryAction.VOICE, null -> return@repeatOnLifecycle
             }
         }
     }
@@ -567,7 +587,7 @@ fun HomeScreen(container: AppContainer) {
             onPhoto = { openCamera() },
             onNote = { showText = true },
             onSavedRecents = { savedMealsTab = SavedTab.RECENTS },
-            onVoice = { showVoice = true },
+            onVoice = { showVoiceLocal = true },
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
             onCopyFromDay = { showCopyFromDay = true },
@@ -642,11 +662,15 @@ fun HomeScreen(container: AppContainer) {
     if (showVoice) {
         VoiceInputSheet(
             container = container,
-            onDismiss = { showVoice = false },
+            onDismiss = {
+                showVoiceLocal = false
+                clearShortcut(ShortcutEntryAction.VOICE)
+            },
             isSubmitting = ui.isEntryAnalysisBusy,
             onSubmit = {
                 if (!ui.isEntryAnalysisBusy) {
-                    showVoice = false
+                    showVoiceLocal = false
+                    clearShortcut(ShortcutEntryAction.VOICE)
                     vm.analyzeText(it)
                 }
             }
@@ -719,10 +743,14 @@ fun HomeScreen(container: AppContainer) {
     if (showBarcodeScanner) {
         BarcodeScannerSheet(
             onBarcode = { barcode ->
-                showBarcodeScanner = false
+                showBarcodeScannerLocal = false
+                clearShortcut(ShortcutEntryAction.BARCODE)
                 vm.lookupBarcode(barcode)
             },
-            onDismiss = { showBarcodeScanner = false }
+            onDismiss = {
+                showBarcodeScannerLocal = false
+                clearShortcut(ShortcutEntryAction.BARCODE)
+            }
         )
     }
 
@@ -732,12 +760,14 @@ fun HomeScreen(container: AppContainer) {
             onScaleTipDismissed = vm::dismissCameraScaleTip,
             onCapture = { bytes ->
                 showCameraCapture = false
+                clearShortcut(ShortcutEntryAction.CAMERA)
                 pendingCaptureImageBytes = (pendingCaptureImageBytes + bytes).take(10)
                 showMultiPhotoCapture = true
             },
             onOpenGallery = { openGalleryPicker() },
             onDismiss = {
                 showCameraCapture = false
+                clearShortcut(ShortcutEntryAction.CAMERA)
                 if (pendingCaptureImageBytes.isNotEmpty()) {
                     showMultiPhotoCapture = true
                 }
