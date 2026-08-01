@@ -61,26 +61,26 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
       <sub><b>Home</b>: calorie ring, macros, meals</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/progress.png" width="180" alt="Progress screen in dark theme" /><br />
-      <sub><b>Progress</b>: weight, steps, goals</sub>
-    </td>
-    <td align="center" width="33%">
       <img src="docs/screenshots/add-food.png" width="180" alt="Add food sheet in dark theme" /><br />
       <sub><b>Add food</b>: photo, voice, barcode, AI</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/screenshots/meal-components.png" width="180" alt="Meal components sheet in dark theme" /><br />
+      <sub><b>Meal components</b>: edit ingredients and grams</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="33%">
-      <img src="docs/screenshots/coach.png" width="180" alt="AI Coach in dark theme" /><br />
-      <sub><b>Coach</b>: chat with your provider key</sub>
+      <img src="docs/screenshots/recipes.png" width="180" alt="Recipes tab in dark theme" /><br />
+      <sub><b>Recipes</b>: multi-ingredient saved meals</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/settings.png" width="180" alt="Settings screen in dark theme" /><br />
-      <sub><b>Settings</b>: diet modes, Health Connect</sub>
+      <img src="docs/screenshots/ai-analysis.png" width="180" alt="AI analysis progress overlay" /><br />
+      <sub><b>AI analysis</b>: progress steps and streaming fields</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/home-light.png" width="180" alt="Home screen in light theme" /><br />
-      <sub><b>Home (light)</b>: same dashboard, light theme</sub>
+      <img src="docs/screenshots/progress.png" width="180" alt="Progress screen in dark theme" /><br />
+      <sub><b>Progress</b>: weight, steps, goals</sub>
     </td>
   </tr>
 </table>
@@ -89,8 +89,8 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
 
 Shared on the [PWA](https://chompass.app/app/) and Android app unless noted:
 
-- **Food logging**: multi-photo (up to 10), share into the app (Android), voice, barcode (FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser / Open Food Facts on web), text, manual entry, saved meals, draft recovery
-- **AI**: cloud BYOK (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use). On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
+- **Food logging**: multi-photo (up to 10), share into the app (Android), voice, barcode (FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser / Open Food Facts on web), text, manual entry, editable meal components, recipes and saved meals, draft recovery
+- **AI**: cloud BYOK (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use) with progress steps and streaming field preview. On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
 - **Progress**: weight, body fat, measurements, forecast. **Health Connect** (Android): steps, exercise, wellness; two-way sync with Gadgetbridge, openScale, and other Health Connect apps
 - **Diet & extras**: keto and other diet modes, water tracking. Android: home-screen widgets, 15 languages (web is EN-first)
 - **Open data**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links (`chompass://` on Android; hash URL on web)
