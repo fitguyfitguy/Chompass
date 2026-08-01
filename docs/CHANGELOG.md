@@ -4,6 +4,14 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.6.1] - 2026-08-01
+
+### Changed
+
+- Add Food “Log again” chips prefer foods that match the current meal slot, then soft-boost favorites within that meal (Android + PWA).
+- Ingredient-row macros use themed kcal/P/C/F colors; AI progressive analysis shows clearer nutrition rows (Android).
+- Refreshed launcher and branding icons (new mark across densities; website logo and OG image).
+
 ### Fixed
 
 - Gallery food-photo pick opens the multi-photo review sheet again instead of silently returning to Home (Android).
