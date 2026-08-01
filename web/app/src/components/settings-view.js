@@ -522,6 +522,24 @@ export class SettingsView extends HTMLElement {
             <option value="false" ${p.weekStartsOnMonday === false ? "selected" : ""}>Sunday</option>
           </select>
         </div>
+        <div class="field">
+          <label for="progressDefaultRangeId">${t("settings.progress_default_range")}</label>
+          <select id="progressDefaultRangeId" name="progressDefaultRangeId">
+            ${[
+              ["1W", "progress.range_1w"],
+              ["1M", "progress.range_1m"],
+              ["3M", "progress.range_3m"],
+              ["6M", "progress.range_6m"],
+              ["1Y", "progress.range_1y"],
+              ["All", "progress.range_all"],
+            ]
+              .map(
+                ([id, key]) =>
+                  `<option value="${id}" ${(p.progressDefaultRangeId || "1W") === id ? "selected" : ""}>${t(key)}</option>`
+              )
+              .join("")}
+          </select>
+        </div>
         <p class="section-label">Meal times</p>
         <div class="field-row field-row--2">
           <div class="field"><label for="mealBreakfastStart">Breakfast</label><input id="mealBreakfastStart" name="mealBreakfastStart" type="time" value="${minutesToTimeInput(p.mealBreakfastStart ?? 300)}" /></div>
@@ -542,6 +560,7 @@ export class SettingsView extends HTMLElement {
         theme: /** @type {any} */ (fd.get("theme")),
         accent: String(fd.get("accent") || "teal"),
         weekStartsOnMonday: fd.get("weekStartsOnMonday") === "true",
+        progressDefaultRangeId: String(fd.get("progressDefaultRangeId") || "1W"),
         mealBreakfastStart: timeInputToMinutes(String(fd.get("mealBreakfastStart"))),
         mealLunchStart: timeInputToMinutes(String(fd.get("mealLunchStart"))),
         mealDinnerStart: timeInputToMinutes(String(fd.get("mealDinnerStart"))),

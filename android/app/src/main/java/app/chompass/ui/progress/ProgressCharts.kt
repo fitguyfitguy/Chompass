@@ -66,6 +66,9 @@ internal data class WeightChartModel(
     val showsYear: Boolean,
     val xLabelFmt: DateTimeFormatter,
     val points: List<TrendPoint>,
+    /** Analytical 7-day MA (display units); empty when sparse. */
+    val trendPoints: List<TrendPoint>,
+    val trendSegments: List<List<TrendPoint>>,
     val showsDots: Boolean,
     val goalDisplayValue: Double?
 )
@@ -188,7 +191,20 @@ internal fun pickXLabelIndices(n: Int, maxLabels: Int = 7): List<Int> {
 
 internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, useMetric: Boolean): WeightChartModel {
     val displayKg = { kg: Double -> if (useMetric) kg else UnitFormat.kgToLbs(kg) }
-    val displayWeights = entries.map { displayKg(it.weightKg) } + listOfNotNull(goalKg?.let(displayKg))
+    val zone = ZoneId.systemDefault()
+    val trendKg = computeWeightTrend(
+        weighIns = entries.map { WeightTrendInput(at = it.date, weightKg = it.weightKg) },
+        zone = zone,
+    )
+    val trendDisplay = trendKg.map {
+        TrendPoint(
+            timeMs = it.day.atStartOfDay(zone).toInstant().toEpochMilli(),
+            value = displayKg(it.valueKg),
+        )
+    }
+    val displayWeights = entries.map { displayKg(it.weightKg) } +
+        trendDisplay.map { it.value } +
+        listOfNotNull(goalKg?.let(displayKg))
     val minW = displayWeights.min()
     val maxW = displayWeights.max()
     val pad = maxOf((maxW - minW) * 0.15, 2.0)
@@ -199,12 +215,23 @@ internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, 
     val singleEntry = entries.size == 1
     val tRange = maxOf(1L, tEnd - tStart)
     val ticks = niceAxisTicks(yMin, yMax, count = 5)
-    val zone = ZoneId.systemDefault()
     val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
     val showsYear = spanDays > 150 &&
         Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
     val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
+    // Analytical trend first, then visual downsampling of raw weigh-ins.
     val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), displayKg(it.weightKg)) })
+    val trendForDraw = downsampleTrend(trendDisplay)
+    val trendSegments = splitTrendSegments(trendKg).map { segment ->
+        downsampleTrend(
+            segment.map {
+                TrendPoint(
+                    timeMs = it.day.atStartOfDay(zone).toInstant().toEpochMilli(),
+                    value = displayKg(it.valueKg),
+                )
+            }
+        )
+    }.filter { it.size >= 2 }
     val showsDots = points.size <= 31
     return WeightChartModel(
         yMin = yMin,
@@ -217,6 +244,8 @@ internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, 
         showsYear = showsYear,
         xLabelFmt = xLabelFmt,
         points = points,
+        trendPoints = trendForDraw,
+        trendSegments = trendSegments,
         showsDots = showsDots,
         goalDisplayValue = goalKg?.let(displayKg)
     )
@@ -350,9 +379,28 @@ internal fun WeightChartCanvas(
                     h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
                 )
             }
+            fun pointOffset(p: TrendPoint): Offset = Offset(
+                if (chartModel.singleEntry) w / 2f
+                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+            )
             clipRect {
-                val trendPath = if (chartRenderPhase >= 1) smoothTrendPath(offsets) else straightTrendPath(offsets)
-                drawPath(trendPath, AppColors.Calorie, style = Stroke(width = 5f))
+                // Raw weigh-ins: straight path. Catmull–Rom was cosmetic only and
+                // looked like a calculated trend. Trend overlay uses a dashed stroke.
+                if (chartRenderPhase >= 1) {
+                    for (segment in chartModel.trendSegments) {
+                        val trendOffsets = segment.map(::pointOffset)
+                        drawPath(
+                            straightTrendPath(trendOffsets),
+                            AppColors.Protein,
+                            style = Stroke(
+                                width = 4f,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f)),
+                            ),
+                        )
+                    }
+                }
+                drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
                 if (chartRenderPhase >= 2 && chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }

@@ -76,6 +76,20 @@ internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) { data
 internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.WEEK_STARTS_MONDAY] ?: true }
 internal suspend fun PreferencesStore.setWeekStartsOnMondayImpl(v: Boolean) { dataStore.edit { it[Keys.WEEK_STARTS_MONDAY] = v } }
 
+/** Settings default for Progress time range. Factory default: `1W`. */
+internal val PreferencesStore.progressDefaultRangeIdImpl: Flow<String> get() =
+    dataStore.data.map { it[Keys.PROGRESS_DEFAULT_RANGE_ID] ?: "1W" }
+internal suspend fun PreferencesStore.setProgressDefaultRangeIdImpl(v: String) {
+    dataStore.edit { it[Keys.PROGRESS_DEFAULT_RANGE_ID] = v }
+}
+
+/** Last Progress chip selection; null until the user picks a range. */
+internal val PreferencesStore.progressLastRangeIdImpl: Flow<String?> get() =
+    dataStore.data.map { it[Keys.PROGRESS_LAST_RANGE_ID] }
+internal suspend fun PreferencesStore.setProgressLastRangeIdImpl(v: String) {
+    dataStore.edit { it[Keys.PROGRESS_LAST_RANGE_ID] = v }
+}
+
     /** "RECENTS" | "FREQUENT" | "FAVORITES". Mirrors iOS @AppStorage("lastRecentsSegment"). */
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }

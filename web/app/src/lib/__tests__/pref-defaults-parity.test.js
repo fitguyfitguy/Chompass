@@ -47,6 +47,7 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(DEFAULT_PREFS.mealLunchStart, fixture.mealLunchStart);
     assert.equal(DEFAULT_PREFS.mealDinnerStart, fixture.mealDinnerStart);
     assert.equal(DEFAULT_PREFS.mealSnackStart, fixture.mealSnackStart);
+    assert.equal(DEFAULT_PREFS.progressDefaultRangeId, fixture.progressDefaultRangeId);
   });
 
   it("optional nutrient goals match fixture", () => {

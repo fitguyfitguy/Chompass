@@ -45,6 +45,11 @@ class PrefDefaultsParityTest {
         assertEquals(f.getInt("mealLunchStart"), MealSchedule.DEFAULT_LUNCH_START)
         assertEquals(f.getInt("mealDinnerStart"), MealSchedule.DEFAULT_DINNER_START)
         assertEquals(f.getInt("mealSnackStart"), MealSchedule.DEFAULT_SNACK_START)
+        assertEquals("1W", f.getString("progressDefaultRangeId"))
+        assertEquals(
+            app.chompass.ui.progress.TimeRange.WEEK.storageId,
+            f.getString("progressDefaultRangeId"),
+        )
 
         val goals = f.getJSONObject("optionalNutrientGoals")
         val d = OptionalNutrientGoals.Default

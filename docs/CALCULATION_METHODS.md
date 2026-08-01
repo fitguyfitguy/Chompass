@@ -175,6 +175,18 @@ observedWeeklyChangeKg = theilSenSlope(kg/day) × 7
 
 **Sparse logging:** Calendar-day averaging prevents cheat-day-only logs from inflating intake.
 
+### Progress chart: 7-day weight trend (display-only)
+
+**Not used by FCAST/ADAPT.** Trailing calendar-day moving average overlaid on Progress weight charts.
+
+```
+dailyKg[day] = mean(weigh-ins on that local calendar day)
+trend[day] = mean(dailyKg in [day−6, day] that exist)
+emit trend[day] only when ≥2 weigh-in days fall in that window
+```
+
+Shared goldens: `testdata/parity/weight-trend-expected.json`.
+
 ### ADAPT: Adaptive goals (weekly)
 
 **Data gates:** ≥4 logged food days AND ≥3 weight entries in window, **or** measured Health Connect TDEE.

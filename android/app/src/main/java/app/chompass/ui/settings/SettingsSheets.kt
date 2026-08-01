@@ -463,6 +463,13 @@ internal fun SettingsSheets(
                     selected = { it.first == ui.weekStartsOnMonday },
                     onSelect = { vm.setWeekStartsOnMonday(it.first); onDismiss() }
                 )
+                SettingsSheet.PROGRESS_DEFAULT_RANGE -> ListSheet(
+                    title = stringResource(R.string.settings_progress_default_range),
+                    items = app.chompass.ui.progress.TimeRange.entries.toList(),
+                    label = { stringResource(it.labelRes) },
+                    selected = { it.storageId == ui.progressDefaultRangeId },
+                    onSelect = { vm.setProgressDefaultRangeId(it.storageId); onDismiss() }
+                )
                 SettingsSheet.MEAL_TIMES -> MealTimesSheet(
                     current = ui.mealSchedule,
                     onSave = {

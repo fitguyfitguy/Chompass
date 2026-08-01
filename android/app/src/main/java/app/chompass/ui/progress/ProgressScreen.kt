@@ -49,17 +49,34 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
  *   5. MacroAveragesSection — averages over the selected time range,
  *      one MacroProgressRow per macro
  */
-enum class TimeRange(@StringRes val labelRes: Int, val days: Int) {
-    WEEK(R.string.progress_range_week, 7),
-    MONTH(R.string.progress_range_month, 30),
-    THREE_MONTHS(R.string.progress_range_3m, 90),
-    SIX_MONTHS(R.string.progress_range_6m, 180),
-    YEAR(R.string.progress_range_year, 365),
-    ALL_TIME(R.string.progress_range_all, 3650);
+enum class TimeRange(@StringRes val labelRes: Int, val days: Int, val storageId: String) {
+    WEEK(R.string.progress_range_week, 7, "1W"),
+    MONTH(R.string.progress_range_month, 30, "1M"),
+    THREE_MONTHS(R.string.progress_range_3m, 90, "3M"),
+    SIX_MONTHS(R.string.progress_range_6m, 180, "6M"),
+    YEAR(R.string.progress_range_year, 365, "1Y"),
+    ALL_TIME(R.string.progress_range_all, 3650, "All");
 
     fun dateRange(today: java.time.LocalDate = java.time.LocalDate.now()): Pair<java.time.LocalDate, java.time.LocalDate> {
         val start = today.minusDays((days - 1).toLong())
         return start to today
+    }
+
+    companion object {
+        /** Resolve stored chip id → enum. Unknown / null → [WEEK]. */
+        fun fromStorageId(id: String?): TimeRange =
+            entries.firstOrNull { it.storageId == id } ?: WEEK
+
+        /**
+         * Last viewed chip wins; otherwise Settings default; otherwise factory 1W.
+         */
+        fun resolve(lastViewedId: String?, defaultId: String?): TimeRange =
+            when {
+                !lastViewedId.isNullOrBlank() && entries.any { it.storageId == lastViewedId } ->
+                    fromStorageId(lastViewedId)
+                !defaultId.isNullOrBlank() -> fromStorageId(defaultId)
+                else -> WEEK
+            }
     }
 }
 

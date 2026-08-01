@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.UnfoldMore
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.CalendarToday
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.chompass.R
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.ui.progress.TimeRange
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
 
@@ -142,6 +144,12 @@ internal fun SettingsAppSection(
                     if (ui.weekStartsOnMonday) stringResource(R.string.settings_week_monday) else stringResource(R.string.settings_week_sunday),
                     icon = Icons.Outlined.CalendarToday
                 ) { onOpenSheet(SettingsSheet.WEEK_START) }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_progress_default_range),
+                    stringResource(TimeRange.fromStorageId(ui.progressDefaultRangeId).labelRes),
+                    icon = Icons.AutoMirrored.Outlined.ShowChart
+                ) { onOpenSheet(SettingsSheet.PROGRESS_DEFAULT_RANGE) }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_meal_times),

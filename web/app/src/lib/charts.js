@@ -3,7 +3,7 @@
 
 /**
  * Downsample chronological points to at most maxPoints (keep ends).
- * @template {{label: string, value: number}} T
+ * @template {{label: string, value: number, day?: string}} T
  * @param {T[]} points
  * @param {number} [maxPoints]
  * @returns {T[]}
@@ -21,8 +21,8 @@ export function downsamplePoints(points, maxPoints = 60) {
 }
 
 /**
- * @param {{label: string, value: number}[]} points chronological, ascending
- * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean}} [opts]
+ * @param {{label: string, value: number, day?: string}[]} points chronological, ascending
+ * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean, trend?: {label: string, value: number, day?: string}[]|null, trendColor?: string}} [opts]
  * @returns {string} inline SVG markup
  */
 export function lineChartSvg(points, opts = {}) {
@@ -30,10 +30,13 @@ export function lineChartSvg(points, opts = {}) {
   const height = opts.height ?? 120;
   const padding = 24;
   const color = opts.color ?? "var(--teal)";
+  const trendColor = opts.trendColor ?? "var(--protein)";
   const unit = opts.unit ?? "";
   const goal = opts.goal;
   const interactive = opts.interactive !== false;
   const series = downsamplePoints(points);
+  /** @type {{label: string, value: number, day?: string}[]} */
+  const trendSeries = opts.trend && opts.trend.length ? opts.trend : [];
 
   if (series.length === 0) {
     return `<svg viewBox="0 0 ${width} ${height}" class="chart-svg"><text x="${width / 2}" y="${height / 2}" text-anchor="middle" class="chart-empty">No data yet</text></svg>`;
@@ -41,6 +44,7 @@ export function lineChartSvg(points, opts = {}) {
 
   const values = series.map((p) => p.value);
   if (goal != null) values.push(goal);
+  for (const p of trendSeries) values.push(p.value);
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
@@ -54,7 +58,32 @@ export function lineChartSvg(points, opts = {}) {
     return [x, y];
   });
 
+  // Place trend points on the same x mapping as the (possibly downsampled) raw series.
+  const trendCoords = [];
+  for (const p of trendSeries) {
+    let idx = -1;
+    for (let i = 0; i < series.length; i++) {
+      if (series[i].label === p.label || (p.day && series[i].day === p.day)) {
+        idx = i;
+        break;
+      }
+    }
+    if (idx < 0 && series.length > 0) {
+      // Fall back to even spacing across trend length when labels diverge after downsample.
+      idx = trendSeries.length > 1
+        ? Math.round((trendCoords.length / Math.max(1, trendSeries.length - 1)) * (series.length - 1))
+        : 0;
+    }
+    if (idx < 0) continue;
+    const x = padding + idx * stepX;
+    trendCoords.push([x, yFor(p.value)]);
+  }
+
   const path = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const trendPath =
+    trendCoords.length >= 2
+      ? trendCoords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ")
+      : "";
   const [lastX, lastY] = coords[coords.length - 1];
   const goalY = goal != null ? yFor(goal) : null;
 
@@ -73,6 +102,11 @@ export function lineChartSvg(points, opts = {}) {
       ${
         goalY != null
           ? `<line x1="${padding}" y1="${goalY.toFixed(1)}" x2="${width - padding}" y2="${goalY.toFixed(1)}" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" />`
+          : ""
+      }
+      ${
+        trendPath
+          ? `<path d="${trendPath}" fill="none" stroke="${trendColor}" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round" stroke-linecap="round" opacity="0.95" />`
           : ""
       }
       <path d="${path}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />

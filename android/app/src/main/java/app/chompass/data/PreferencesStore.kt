@@ -129,6 +129,10 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
     val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
     suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
+    val progressDefaultRangeId: Flow<String> get() = progressDefaultRangeIdImpl
+    suspend fun setProgressDefaultRangeId(v: String) = setProgressDefaultRangeIdImpl(v)
+    val progressLastRangeId: Flow<String?> get() = progressLastRangeIdImpl
+    suspend fun setProgressLastRangeId(v: String) = setProgressLastRangeIdImpl(v)
     val mealSchedule: Flow<app.chompass.models.MealSchedule> get() = mealScheduleImpl
     suspend fun setMealSchedule(schedule: app.chompass.models.MealSchedule) = setMealScheduleImpl(schedule)
     val lastSavedMealsSegment: Flow<String> get() = lastSavedMealsSegmentImpl
