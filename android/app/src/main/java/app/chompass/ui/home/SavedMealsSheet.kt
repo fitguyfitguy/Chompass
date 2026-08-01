@@ -160,8 +160,8 @@ fun SavedMealsSheet(
     // users see their previous favorites in the new ordered list.
     LaunchedEffect(Unit) { container.foodRepository.migratedFavorites() }
 
-    LaunchedEffect(initialTab, tab, favKeys) {
-        when (initialTab ?: tab) {
+    LaunchedEffect(tab, favKeys) {
+        when (tab) {
             SavedTab.RECENTS -> recents = container.foodRepository.recent()
             SavedTab.FREQUENT -> frequent = container.foodRepository.frequent()
             SavedTab.FAVORITES -> Unit  // driven by `favorites` Flow above
@@ -184,7 +184,7 @@ fun SavedMealsSheet(
                 .padding(bottom = 16.dp)
         ) {
             Text(
-                when (initialTab ?: tab) {
+                when (tab) {
                     SavedTab.RECENTS -> stringResource(R.string.saved_meals_tab_recents)
                     SavedTab.FREQUENT -> stringResource(R.string.saved_meals_tab_frequent)
                     SavedTab.FAVORITES -> stringResource(R.string.saved_meals_tab_favorites)
@@ -197,13 +197,11 @@ fun SavedMealsSheet(
                     .padding(top = 4.dp, bottom = 12.dp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
-            if (initialTab == null) {
-                SegmentedTabs(selected = tab, onSelect = { newTab ->
-                    tab = newTab
-                    scope.launch { container.prefs.setLastSavedMealsSegment(newTab.name) }
-                })
-                Spacer(Modifier.height(12.dp))
-            }
+            SegmentedTabs(selected = tab, onSelect = { newTab ->
+                tab = newTab
+                scope.launch { container.prefs.setLastSavedMealsSegment(newTab.name) }
+            })
+            Spacer(Modifier.height(12.dp))
 
             // Search field — filters whichever tab is active. Substring match,
             // case-insensitive. Reset on tab switch via remember(tab) above.
@@ -233,7 +231,7 @@ fun SavedMealsSheet(
             )
             Spacer(Modifier.height(16.dp))
 
-            when (initialTab ?: tab) {
+            when (tab) {
                 SavedTab.RECENTS -> {
                     if (filteredRecents.isEmpty()) {
                         val msg = if (isSearching) stringResource(R.string.saved_meals_no_match)

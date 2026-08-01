@@ -1,7 +1,10 @@
 package app.chompass.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +17,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
@@ -22,13 +24,14 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.WaterDrop
 import app.chompass.services.grounding.GroundedEntryFeature
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,8 +61,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import app.chompass.R
+import app.chompass.models.FoodEntry
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
@@ -74,8 +80,6 @@ fun AddFoodSheet(
     onPhoto: () -> Unit,
     onNote: () -> Unit,
     onSavedRecents: () -> Unit,
-    onSavedFrequent: () -> Unit,
-    onSavedFavorites: () -> Unit,
     onVoice: () -> Unit,
     onBarcode: () -> Unit,
     onManual: () -> Unit,
@@ -88,14 +92,15 @@ fun AddFoodSheet(
     waterUseMetric: Boolean = true,
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
+    recentMeals: List<FoodEntry> = emptyList(),
+    onRelogRecent: (FoodEntry) -> Unit = {},
+    onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
     ChompassBottomSheet(onDismiss = onDismiss) {
         AddFoodSheetContent(
             onPhoto = { onDismiss(); onPhoto() },
             onNote = { onNote(); onDismiss() },
             onSavedRecents = { onDismiss(); onSavedRecents() },
-            onSavedFrequent = { onDismiss(); onSavedFrequent() },
-            onSavedFavorites = { onDismiss(); onSavedFavorites() },
             onVoice = { onDismiss(); onVoice() },
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
@@ -107,6 +112,9 @@ fun AddFoodSheet(
             waterUseMetric = waterUseMetric,
             onWater = { ml -> onDismiss(); onWater(ml) },
             onWaterCustom = { onDismiss(); onWaterCustom() },
+            recentMeals = recentMeals,
+            onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
+            onReviewRecent = { entry -> onDismiss(); onReviewRecent(entry) },
         )
     }
 }
@@ -117,8 +125,6 @@ internal fun AddFoodSheetContent(
     onPhoto: () -> Unit = {},
     onNote: () -> Unit = {},
     onSavedRecents: () -> Unit = {},
-    onSavedFrequent: () -> Unit = {},
-    onSavedFavorites: () -> Unit = {},
     onVoice: () -> Unit = {},
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
@@ -130,20 +136,23 @@ internal fun AddFoodSheetContent(
     waterUseMetric: Boolean = true,
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
+    recentMeals: List<FoodEntry> = emptyList(),
+    onRelogRecent: (FoodEntry) -> Unit = {},
+    onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
     Column(
         Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
             .padding(horizontal = 20.dp)
-            .padding(top = 4.dp, bottom = 24.dp)
+            .padding(top = 4.dp, bottom = 20.dp)
     ) {
         Text(
             stringResource(R.string.add_food_sheet_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(14.dp))
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -153,7 +162,8 @@ internal fun AddFoodSheetContent(
                 subtitle = stringResource(R.string.add_food_hero_photo_sub),
                 icon = Icons.Filled.PhotoCamera,
                 size = AddFoodTileSize.Hero,
-                modifier = Modifier.weight(1f),
+                emphasis = true,
+                modifier = Modifier.weight(1.2f),
                 onClick = onPhoto,
             )
             AddFoodActionTile(
@@ -173,7 +183,31 @@ internal fun AddFoodSheetContent(
                 onClick = onSavedRecents,
             )
         }
-        Spacer(Modifier.height(20.dp))
+        if (recentMeals.isNotEmpty()) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                stringResource(R.string.add_food_quick_relog),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                recentMeals.take(3).forEach { entry ->
+                    AddFoodRelogChip(
+                        entry = entry,
+                        onRelog = { onRelogRecent(entry) },
+                        onReview = { onReviewRecent(entry) },
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(16.dp))
         SheetSectionHeader(stringResource(R.string.add_food_more_section))
         Spacer(Modifier.height(6.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -197,30 +231,6 @@ internal fun AddFoodSheetContent(
                         onClick = onBarcode,
                     )
                 }
-            }
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                AddFoodActionTile(
-                    label = stringResource(R.string.saved_meals_tab_frequent),
-                    icon = Icons.Filled.Repeat,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onSavedFrequent,
-                )
-                AddFoodActionTile(
-                    label = stringResource(R.string.saved_meals_tab_favorites),
-                    icon = Icons.Filled.Bookmark,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onSavedFavorites,
-                )
-            }
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
                 AddFoodActionTile(
                     label = stringResource(R.string.home_menu_manual_entry),
                     icon = Icons.Filled.DriveFileRenameOutline,
@@ -253,7 +263,7 @@ internal fun AddFoodSheetContent(
             }
         }
         if (waterTrackingEnabled) {
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(12.dp))
             AddFoodWaterQuickRow(
                 presetsMl = waterQuickPresetsMl,
                 useMetric = waterUseMetric,
@@ -261,6 +271,59 @@ internal fun AddFoodSheetContent(
                 onWaterCustom = onWaterCustom,
             )
         }
+    }
+}
+
+@Composable
+private fun AddFoodRelogChip(
+    entry: FoodEntry,
+    onRelog: () -> Unit,
+    onReview: () -> Unit,
+) {
+    val isDark = isDarkTheme()
+    val shape = RoundedCornerShape(20.dp)
+    val fill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val border = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    Row(
+        Modifier
+            .clip(shape)
+            .background(fill)
+            .border(0.5.dp, border, shape)
+            .pointerInput(entry.id.toString()) {
+                detectTapGestures(
+                    onTap = { onRelog() },
+                    onLongPress = { onReview() },
+                )
+            }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            entry.emoji ?: "🍽",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Column(Modifier.widthIn(max = 140.dp)) {
+            Text(
+                entry.name,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                stringResource(R.string.add_food_relog_kcal, entry.calories),
+                style = MaterialTheme.typography.labelSmall,
+                color = AppColors.Calorie,
+                maxLines = 1,
+            )
+        }
+        Icon(
+            Icons.Filled.Add,
+            contentDescription = stringResource(R.string.cd_relog_meal, entry.name),
+            tint = AppColors.Calorie,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 
@@ -389,21 +452,30 @@ private fun AddFoodActionTile(
     size: AddFoodTileSize,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    emphasis: Boolean = false,
     onClick: () -> Unit
 ) {
     val isHero = size == AddFoodTileSize.Hero
     val shape = if (isHero) MaterialTheme.shapes.large else MaterialTheme.shapes.medium
-    val bubbleSize = if (isHero) 22.dp else 20.dp
-    val iconSize = if (isHero) 14.dp else 12.dp
+    val bubbleSize = when {
+        isHero && emphasis -> 26.dp
+        isHero -> 22.dp
+        else -> 20.dp
+    }
+    val iconSize = when {
+        isHero && emphasis -> 16.dp
+        isHero -> 14.dp
+        else -> 12.dp
+    }
     Column(
         modifier
-            .heightIn(min = if (isHero) 96.dp else 72.dp)
+            .heightIn(min = if (isHero) 96.dp else 64.dp)
             .clip(shape)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)
             .padding(
                 horizontal = if (isHero) 10.dp else 8.dp,
-                vertical = if (isHero) 14.dp else 12.dp
+                vertical = if (isHero) 14.dp else 10.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

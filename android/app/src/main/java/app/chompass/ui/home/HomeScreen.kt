@@ -100,6 +100,7 @@ fun HomeScreen(container: AppContainer) {
     var showBarcodeScanner by remember { mutableStateOf(false) }
     var showCopyFromDay by remember { mutableStateOf(false) }
     var showAddFoodSheet by remember { mutableStateOf(false) }
+    var hubRecentMeals by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
     var showCustomWaterLog by remember { mutableStateOf(false) }
     var showGroundedEntry by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
@@ -499,16 +500,21 @@ fun HomeScreen(container: AppContainer) {
         }
     }
 
+    LaunchedEffect(showAddFoodSheet) {
+        if (showAddFoodSheet) {
+            hubRecentMeals = container.foodRepository.recent().take(3)
+        }
+    }
+
     if (showAddFoodSheet) {
         AddFoodSheet(
             waterTrackingEnabled = ui.waterTrackingEnabled,
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
+            recentMeals = hubRecentMeals,
             onPhoto = { openCamera() },
             onNote = { showText = true },
             onSavedRecents = { savedMealsTab = SavedTab.RECENTS },
-            onSavedFrequent = { savedMealsTab = SavedTab.FREQUENT },
-            onSavedFavorites = { savedMealsTab = SavedTab.FAVORITES },
             onVoice = { showVoice = true },
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
@@ -520,6 +526,8 @@ fun HomeScreen(container: AppContainer) {
             },
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
+            onRelogRecent = { vm.relogMeal(it) },
+            onReviewRecent = { vm.reviewSavedMeal(it) },
             onDismiss = { showAddFoodSheet = false }
         )
     }
@@ -784,6 +792,7 @@ fun HomeScreen(container: AppContainer) {
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
             portionClarifyEnabled = ui.portionClarifyEnabled,
+            portionPreConfirmed = ui.pendingPortionPreConfirmed,
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
             onReprocessPortion = { answer -> vm.reprocessPendingAnalysis(answer) },
             onWhatIfSuggestion = vm::suggestMealWhatIf,

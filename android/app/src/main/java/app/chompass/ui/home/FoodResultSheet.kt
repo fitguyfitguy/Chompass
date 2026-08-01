@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -75,13 +75,16 @@ import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
 
 /** Exposed for JVM tests: every SNAP_FOOD photo gets the portion correction row. */
-internal fun shouldOfferPortionClarify(source: FoodSource): Boolean =
-    source == FoodSource.SNAP_FOOD
+internal fun shouldOfferPortionClarify(
+    source: FoodSource,
+    portionPreConfirmed: Boolean = false,
+): Boolean =
+    source == FoodSource.SNAP_FOOD && !portionPreConfirmed
 
 /**
  * First-time review sheet shown after photo / text / voice analysis returns
  * a [FoodAnalysis]. Visually identical to [EditFoodEntrySheet] — only the
- * top-right action differs ("Log" vs "Save"). Shared visual primitives live
+ * sticky primary action differs ("Log" vs "Save"). Shared visual primitives live
  * in FoodSheetPrimitives.kt.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +97,8 @@ fun FoodResultSheet(
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
     portionClarifyEnabled: Boolean = false,
+    /** True when the user already entered exact grams on multi-photo / context note. */
+    portionPreConfirmed: Boolean = false,
     /** True when a weigh-as-you-go draft already has ingredients. */
     progressiveMealActive: Boolean = false,
     onReprocessPortion: (suspend (portionAnswer: String) -> Unit)? = null,
@@ -136,7 +141,8 @@ fun FoodResultSheet(
     var isReprocessingPortion by remember(imageBytes) { mutableStateOf(false) }
     var portionClarifyError by remember(imageBytes) { mutableStateOf<String?>(null) }
     val showPortionClarify = portionClarifyEnabled &&
-        !portionChipDismissed && shouldOfferPortionClarify(source)
+        !portionChipDismissed &&
+        shouldOfferPortionClarify(source, portionPreConfirmed)
     var name by remember { mutableStateOf(analysis.name) }
     val servingUnitOptions = remember(analysis.servingUnitOptions, analysis.servingSizeGrams) {
         ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
@@ -257,83 +263,68 @@ fun FoodResultSheet(
         sheetState = state,
         containerColor = sheetSurface,
     ) {
-        SheetReviewToolbar(
-            title = stringResource(R.string.sheet_review_food),
-            primaryLabel = if (isSaving) {
-                stringResource(R.string.action_logging)
-            } else if (progressiveMealActive) {
-                stringResource(R.string.progressive_meal_add_to_meal)
+        fun commitLog() {
+            if (isSaving) return
+            if (progressiveMealActive && onAddToProgressiveMeal != null) {
+                onAddToProgressiveMeal(
+                    name.trim().ifEmpty { analysis.name },
+                    servingGrams,
+                    scale,
+                    mealType,
+                    if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                    if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                    editedAnalysis(),
+                    false,
+                )
             } else {
-                stringResource(R.string.action_log)
-            },
-            secondaryLabel = stringResource(R.string.action_what_if),
-            primaryEnabled = !isSaving,
-            onCancel = { if (!isSaving) onDismiss() },
-            onPrimary = {
-                if (isSaving) return@SheetReviewToolbar
-                if (progressiveMealActive && onAddToProgressiveMeal != null) {
-                    onAddToProgressiveMeal(
-                        name.trim().ifEmpty { analysis.name },
-                        servingGrams,
-                        scale,
-                        mealType,
-                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                        editedAnalysis(),
-                        false,
-                    )
-                } else {
-                    onSave(
-                        name.trim().ifEmpty { analysis.name },
-                        servingGrams,
-                        scale,
-                        mealType,
-                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                        editedAnalysis()
-                    )
-                }
-            },
-            onSecondary = { whatIfEntry = previewEntry() }
-        )
-
-        if (onAddToProgressiveMeal != null && !isSaving) {
-            TextButton(
-                onClick = {
-                    onAddToProgressiveMeal(
-                        name.trim().ifEmpty { analysis.name },
-                        servingGrams,
-                        scale,
-                        mealType,
-                        if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                        if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                        editedAnalysis(),
-                        true,
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-            ) {
-                Text(
-                    stringResource(R.string.progressive_meal_add_next),
-                    fontWeight = FontWeight.Medium,
+                onSave(
+                    name.trim().ifEmpty { analysis.name },
+                    servingGrams,
+                    scale,
+                    mealType,
+                    if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                    if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                    editedAnalysis()
                 )
             }
         }
+        fun commitAddNext() {
+            if (isSaving || onAddToProgressiveMeal == null) return
+            onAddToProgressiveMeal(
+                name.trim().ifEmpty { analysis.name },
+                servingGrams,
+                scale,
+                mealType,
+                if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                editedAnalysis(),
+                true,
+            )
+        }
 
-        LazyColumn(
-            modifier = Modifier
+        Column(
+            Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .imePadding()
-                .padding(bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+                .fillMaxHeight(0.92f)
         ) {
-            // Square hero (captured photo) OR 80sp emoji fallback — centered.
+            SheetReviewToolbar(
+                title = stringResource(R.string.sheet_review_food),
+                secondaryLabel = stringResource(R.string.action_what_if),
+                onCancel = { if (!isSaving) onDismiss() },
+                onSecondary = { whatIfEntry = previewEntry() },
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+            // Compact hero (captured photo) OR emoji fallback — centered.
             item {
                 Box(
-                    Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (bitmap != null) {
@@ -342,11 +333,11 @@ fun FoodResultSheet(
                             contentDescription = null,
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
-                                .size(240.dp)
-                                .clip(RoundedCornerShape(20.dp))
+                                .size(160.dp)
+                                .clip(RoundedCornerShape(16.dp))
                         )
                     } else {
-                        Text(analysis.emoji ?: "🍽", fontSize = 80.sp)
+                        Text(analysis.emoji ?: "🍽", fontSize = 56.sp)
                     }
                 }
             }
@@ -666,6 +657,29 @@ fun FoodResultSheet(
                     }
                 }
             }
+            }
+
+            SheetStickyPrimaryBar(
+                primaryLabel = if (isSaving) {
+                    stringResource(R.string.action_logging)
+                } else if (progressiveMealActive) {
+                    stringResource(R.string.progressive_meal_add_to_meal)
+                } else {
+                    stringResource(R.string.action_log)
+                },
+                primaryEnabled = !isSaving,
+                onPrimary = { commitLog() },
+                textActionLabel = if (onAddToProgressiveMeal != null && !isSaving) {
+                    stringResource(R.string.progressive_meal_add_next)
+                } else {
+                    null
+                },
+                onTextAction = if (onAddToProgressiveMeal != null) {
+                    { commitAddNext() }
+                } else {
+                    null
+                },
+            )
         }
     }
 

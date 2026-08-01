@@ -89,6 +89,11 @@ data class HomeUiState(
     val pendingInputImageBytes: ByteArray? = null,
     val pendingInputNote: String? = null,
     val pendingInputConfirmedPortionGrams: Double? = null,
+    /**
+     * True when the pending review already received exact grams on multi-photo /
+     * context note — skip the portion-clarify row on [FoodResultSheet].
+     */
+    val pendingPortionPreConfirmed: Boolean = false,
     val pendingInputDraftImageFilename: String? = null,
     /** Intermediate grounded-entry review (candidate / portion picks). */
     val pendingGroundedReview: PendingGroundedReview? = null,
@@ -165,6 +170,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     error = null,
                     pendingAnalysis = null,
                     pendingReviewSource = null,
+                    pendingPortionPreConfirmed = false,
                     analyzing = true,
                     analysisPhase = if (phased) EntryAnalysisPhase.Preparing else null,
                     analysisPreview = null,
@@ -516,6 +522,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     imageBytes = displayBytes,
                     source = FoodSource.SNAP_FOOD,
                     generation = start.generation,
+                    portionPreConfirmed = grams != null,
                 )
             }
         }
@@ -920,6 +927,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingDraftImageFilename = null,
             pendingReviewSource = null,
             pendingGroundedReview = null,
+            pendingPortionPreConfirmed = false,
             analysisPhase = null,
             analysisPreview = null,
             analysisPartial = null,
@@ -982,6 +990,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingFoodSource = template.source,
             pendingDraftImageFilename = null,
             pendingReviewSource = template,
+            pendingPortionPreConfirmed = false,
             error = null
         )
     }
@@ -1105,6 +1114,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         imageBytes: ByteArray?,
         source: FoodSource,
         generation: Int,
+        portionPreConfirmed: Boolean = false,
     ) {
         if (generation != analysisGeneration) return
         val uniqueAnalysis = analysis.copy(
@@ -1136,6 +1146,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingInputImageBytes = null,
             pendingInputNote = null,
             pendingInputConfirmedPortionGrams = null,
+            pendingPortionPreConfirmed = portionPreConfirmed,
             pendingInputDraftImageFilename = null
         )
     }
@@ -1166,6 +1177,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingInputImageBytes = null,
                 pendingInputNote = null,
                 pendingInputConfirmedPortionGrams = null,
+                pendingPortionPreConfirmed = false,
                 pendingInputDraftImageFilename = null,
                 error = null
             )

@@ -357,6 +357,9 @@
     <string name="add_food_hero_saved">Saved</string>
     <string name="add_food_hero_saved_sub">Recents &amp; favorites</string>
     <string name="add_food_more_section">More ways to log</string>
+    <string name="add_food_quick_relog">Quick re-log</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="cd_relog_meal">Log %1$s again</string>
     <string name="add_food_water_section">Water</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
