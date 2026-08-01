@@ -177,6 +177,8 @@ internal fun CalorieHero(
     displayMode: HomeCalorieDisplayMode,
     activeCalorieSource: ActiveCalorieSource? = null,
     freezeProgress: Boolean = false,
+    /** True when Settings asks for ADD_ACTIVE but today’s burn is still 0. */
+    awaitingActiveBurn: Boolean = false,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val remaining = HomeCalorieDisplay.remaining(displayMode, current, baseGoal, activeCalories)
@@ -318,6 +320,13 @@ internal fun CalorieHero(
                             },
                         )
                     }
+                } else if (awaitingActiveBurn) {
+                    Text(
+                        " · ${stringResource(R.string.home_calorie_clause_add_active_waiting)}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = muted,
+                    )
                 }
             }
             Row(

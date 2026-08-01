@@ -14,6 +14,7 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
+import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
@@ -115,6 +116,7 @@ data class HomeUiState(
     val resumeProgressiveCapture: Boolean = false,
     /** Show [ProgressiveMealSheet] when the draft has items and capture is idle. */
     val showProgressiveMealSheet: Boolean = false,
+    val manualActiveKcal: Int = 0,
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
@@ -128,6 +130,7 @@ data class HomeUiState(
             homeDisplay.calorieDisplayMode,
             activitySnapshot,
             p.estimatedDailyActiveCalories,
+            manualActiveKcal,
         )
     }
     val effectiveCalorieMode: HomeCalorieDisplayMode get() =
@@ -377,6 +380,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { total -> _ui.value = _ui.value.copy(waterTodayMl = total) }
             .launchIn(viewModelScope)
 
+        combine(container.manualActiveRepository.entries, _selectedDate) { entries, day ->
+            entries.filter { it.date == day.toString() }.sumOf { it.calories }
+        }
+            .onEach { total -> _ui.value = _ui.value.copy(manualActiveKcal = total) }
+            .launchIn(viewModelScope)
+
         viewModelScope.launch {
             val analysisDraft = container.prefs.pendingFoodAnalysisDraft.first()
             if (analysisDraft != null) {
@@ -397,6 +406,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             container.waterRepository.add(
                 WaterEntry(date = timestampForSelectedDay(), milliliters = milliliters),
             )
+        }
+    }
+
+    fun addManualActive(name: String, calories: Int) {
+        if (calories <= 0) return
+        viewModelScope.launch {
+            container.manualActiveRepository.add(
+                ManualActiveEntry.forDay(_selectedDate.value, name, calories),
+            )
+            container.widgetSnapshotWriter.refresh()
         }
     }
 

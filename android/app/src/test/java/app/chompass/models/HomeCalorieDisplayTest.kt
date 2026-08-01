@@ -86,6 +86,35 @@ class HomeCalorieDisplayTest {
     }
 
     @Test
+    fun resolveActiveBurn_addsManualOnTopOfMeasured() {
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 500,
+            source = ActivityDataSource.HEALTH_CONNECT,
+        )
+        val burn = HomeCalorieDisplay.resolveActiveBurn(
+            HomeCalorieDisplayMode.ADD_ACTIVE,
+            snapshot,
+            estimatedDailyActive = 400,
+            manualActiveCalories = 150,
+        )
+        assertEquals(ActiveCalorieSource.MEASURED, burn?.source)
+        assertEquals(650, burn?.calories)
+    }
+
+    @Test
+    fun resolveActiveBurn_manualOnlyWhenNoHcOrEstimate() {
+        val burn = HomeCalorieDisplay.resolveActiveBurn(
+            HomeCalorieDisplayMode.ADD_ACTIVE,
+            emptySnapshot,
+            estimatedDailyActive = 0,
+            manualActiveCalories = 220,
+        )
+        assertEquals(ActiveCalorieSource.MANUAL, burn?.source)
+        assertEquals(220, burn?.calories)
+    }
+
+    @Test
     fun homeTopNutrient_respectsCardCount() {
         val three = HomeTopNutrient.normalized(
             listOf(HomeTopNutrient.PROTEIN, HomeTopNutrient.CARBS, HomeTopNutrient.FAT, HomeTopNutrient.FIBER),

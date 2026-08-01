@@ -33,6 +33,9 @@ data class UserProfile(
     val customProtein: Int? = null,
     val customFat: Int? = null,
     val customCarbs: Int? = null,
+    /** When [proteinTargetMode] uses g/kg, this rate is the source of truth for protein grams. */
+    val proteinGramsPerKg: Double? = null,
+    val proteinTargetMode: ProteinTargetMode = ProteinTargetMode.Default,
     val autoBalanceMacro: AutoBalanceMacro? = null,
     /** User lock over the calorie target. When locked, editing one macro holds this total fixed
      *  (the other unlocked macros absorb the change) instead of letting calories float to the new
@@ -98,6 +101,13 @@ data class UserProfile(
     private val proteinBasisWeightKg: Double get() =
         bodyFatPercentage?.let { weightKg * (1.0 - it).coerceIn(0.05, 1.0) } ?: weightKg
 
+    /** Body-mass basis for [proteinGramsPerKg] when the user pins protein as g/kg. */
+    val proteinTargetBasisKg: Double get() = when (proteinTargetMode) {
+        ProteinTargetMode.GRAMS_PER_DAY -> weightKg
+        ProteinTargetMode.G_PER_KG_TOTAL -> weightKg
+        ProteinTargetMode.G_PER_KG_LBM -> proteinBasisWeightKg
+    }.coerceAtLeast(0.1)
+
     private val standardFatGoal: Int get() = (0.6 * weightKg).toInt()
 
     private val ketoAdaptiveCarbTarget: Int
@@ -148,12 +158,23 @@ data class UserProfile(
 
     val pinnedCount: Int get() = AutoBalanceMacro.values().count { isPinned(it) }
 
-    val effectiveProtein: Int get() = customProtein ?: autoMacroValue(AutoBalanceMacro.PROTEIN)
+    val effectiveProtein: Int get() {
+        if (proteinTargetMode.usesRate) {
+            proteinGramsPerKg?.let { rate ->
+                return (rate * proteinTargetBasisKg).roundToInt().coerceAtLeast(0)
+            }
+        }
+        return customProtein ?: autoMacroValue(AutoBalanceMacro.PROTEIN)
+    }
     val effectiveCarbs: Int get() = customCarbs ?: autoMacroValue(AutoBalanceMacro.CARBS)
     val effectiveFat: Int get() = customFat ?: autoMacroValue(AutoBalanceMacro.FAT)
 
     private fun customValue(macro: AutoBalanceMacro): Int? = when (macro) {
-        AutoBalanceMacro.PROTEIN -> customProtein
+        AutoBalanceMacro.PROTEIN -> when {
+            proteinTargetMode.usesRate && proteinGramsPerKg != null ->
+                (proteinGramsPerKg!! * proteinTargetBasisKg).roundToInt().coerceAtLeast(0)
+            else -> customProtein
+        }
         AutoBalanceMacro.CARBS -> customCarbs
         AutoBalanceMacro.FAT -> customFat
     }
@@ -221,12 +242,19 @@ data class UserProfile(
     /** Freeze current effective values into the stored custom* fields so edits are explicit
      *  (no hidden auto-balance). Snapshots all three macros before writing, so writing one
      *  doesn't shift another's auto value mid-materialization. */
-    private fun materialized(): UserProfile = copy(
-        customCalories = effectiveCalories,
-        customProtein = effectiveProtein,
-        customCarbs = effectiveCarbs,
-        customFat = effectiveFat
-    )
+    private fun materialized(): UserProfile {
+        val base = copy(
+            customCalories = effectiveCalories,
+            customCarbs = effectiveCarbs,
+            customFat = effectiveFat,
+        )
+        return if (proteinTargetMode.usesRate && proteinGramsPerKg != null) {
+            // Keep g/kg as the source of truth so weight/BF% changes still scale protein.
+            base.copy(customProtein = null)
+        } else {
+            base.copy(customProtein = effectiveProtein)
+        }
+    }
 
     /** Distribute [targetKcal] over [macros], split proportional to each macro's current kcal
      *  (falling back to formula weights when current is zero). The last macro absorbs the rounding
@@ -256,10 +284,53 @@ data class UserProfile(
         return result
     }
 
-    private fun withMacroGrams(updates: Map<AutoBalanceMacro, Int>): UserProfile = copy(
-        customProtein = updates[AutoBalanceMacro.PROTEIN]?.let { maxOf(0, it) } ?: customProtein,
-        customCarbs = updates[AutoBalanceMacro.CARBS]?.let { maxOf(0, it) } ?: customCarbs,
-        customFat = updates[AutoBalanceMacro.FAT]?.let { maxOf(0, it) } ?: customFat
+    private fun withMacroGrams(updates: Map<AutoBalanceMacro, Int>): UserProfile {
+        val next = copy(
+            customProtein = updates[AutoBalanceMacro.PROTEIN]?.let { maxOf(0, it) } ?: customProtein,
+            customCarbs = updates[AutoBalanceMacro.CARBS]?.let { maxOf(0, it) } ?: customCarbs,
+            customFat = updates[AutoBalanceMacro.FAT]?.let { maxOf(0, it) } ?: customFat
+        )
+        val proteinGrams = updates[AutoBalanceMacro.PROTEIN] ?: return next
+        return if (next.proteinTargetMode.usesRate) {
+            next.copy(
+                customProtein = null,
+                proteinGramsPerKg = proteinGrams / next.proteinTargetBasisKg,
+            )
+        } else {
+            next.copy(proteinGramsPerKg = null)
+        }
+    }
+
+    /** Switch protein pin mode, converting the current effective grams into the new representation. */
+    fun withProteinTargetMode(mode: ProteinTargetMode): UserProfile {
+        val grams = effectiveProtein
+        return when (mode) {
+            ProteinTargetMode.GRAMS_PER_DAY -> copy(
+                proteinTargetMode = mode,
+                proteinGramsPerKg = null,
+                customProtein = grams,
+            )
+            ProteinTargetMode.G_PER_KG_TOTAL,
+            ProteinTargetMode.G_PER_KG_LBM -> {
+                val basis = when (mode) {
+                    ProteinTargetMode.G_PER_KG_LBM ->
+                        bodyFatPercentage?.let { weightKg * (1.0 - it).coerceIn(0.05, 1.0) } ?: weightKg
+                    else -> weightKg
+                }.coerceAtLeast(0.1)
+                copy(
+                    proteinTargetMode = mode,
+                    proteinGramsPerKg = grams / basis,
+                    customProtein = null,
+                )
+            }
+        }
+    }
+
+    /** Set an explicit g/kg protein rate (pins protein in rate mode). */
+    fun withProteinGramsPerKg(rate: Double): UserProfile = copy(
+        proteinTargetMode = if (proteinTargetMode.usesRate) proteinTargetMode else ProteinTargetMode.G_PER_KG_TOTAL,
+        proteinGramsPerKg = rate.coerceAtLeast(0.0),
+        customProtein = null,
     )
 
     /** User edited the calorie target directly. Hold any locked macros fixed and rescale the
@@ -320,9 +391,17 @@ data class UserProfile(
             .filter { it != macro }
             .sumOf { base.effectiveGrams(it) * it.kcalPerGram }
         val grams = maxOf(0, base.effectiveCalories - othersKcal) / macro.kcalPerGram
-        return base
+        val unlocked = base
             .copy(lockedMacros = lockedMacros - macro)
             .withMacroGrams(mapOf(macro to grams))
+        return if (macro == AutoBalanceMacro.PROTEIN) {
+            unlocked.copy(
+                proteinTargetMode = ProteinTargetMode.Default,
+                proteinGramsPerKg = null,
+            )
+        } else {
+            unlocked
+        }
     }
 
     /**
@@ -334,6 +413,8 @@ data class UserProfile(
         customProtein = null,
         customFat = null,
         customCarbs = null,
+        proteinGramsPerKg = null,
+        proteinTargetMode = ProteinTargetMode.Default,
         autoBalanceMacro = null,
         caloriesLocked = false,
         lockedMacros = emptySet()

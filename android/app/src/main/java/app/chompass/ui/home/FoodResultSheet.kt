@@ -309,9 +309,7 @@ fun FoodResultSheet(
         ) {
             SheetReviewToolbar(
                 title = stringResource(R.string.sheet_review_food),
-                secondaryLabel = stringResource(R.string.action_what_if),
                 onCancel = { if (!isSaving) onDismiss() },
-                onSecondary = { whatIfEntry = previewEntry() },
             )
 
             LazyColumn(
@@ -321,10 +319,10 @@ fun FoodResultSheet(
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-            // Compact hero (captured photo) OR emoji fallback — centered.
+            // Compact hero so name / serving / macros fit the first viewport.
             item {
                 Box(
-                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    Modifier.fillMaxWidth().padding(vertical = 2.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (bitmap != null) {
@@ -333,11 +331,11 @@ fun FoodResultSheet(
                             contentDescription = null,
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
-                                .size(160.dp)
-                                .clip(RoundedCornerShape(16.dp))
+                                .size(96.dp)
+                                .clip(RoundedCornerShape(14.dp))
                         )
                     } else {
-                        Text(analysis.emoji ?: "🍽", fontSize = 56.sp)
+                        Text(analysis.emoji ?: "🍽", fontSize = 40.sp)
                     }
                 }
             }
@@ -438,72 +436,6 @@ fun FoodResultSheet(
             }
 
             item {
-                    ConstituentsSection(
-                        rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(
-                            editableConstituents,
-                            scale,
-                        ),
-                        expanded = constituentsExpanded,
-                        onExpandedChange = { constituentsExpanded = it },
-                        onRowsChange = { displayRows ->
-                            val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
-                            editableConstituents = cleaned
-                            if (serving > 0) {
-                                baseServingGrams = serving
-                                servingGrams = serving
-                                servingQuantityText = ServingUnitOption.formatQuantity(
-                                    if (selectedServingOption.gramsPerUnit > 0) {
-                                        serving / selectedServingOption.gramsPerUnit
-                                    } else {
-                                        serving
-                                    },
-                                )
-                            }
-                            if (agg != null) {
-                                editableCalories = agg.calories
-                                editableProtein = agg.protein
-                                editableCarbs = agg.carbs
-                                editableFat = agg.fat
-                            }
-                        },
-                    )
-                }
-
-            if (showPortionClarify) {
-                item {
-                    PortionClarifyRow(
-                        estimatedGrams = analysis.servingSizeGrams,
-                        isLoading = isReprocessingPortion,
-                        error = portionClarifyError,
-                        showQualitativeChips = onReprocessPortion != null,
-                        onApplyExactGrams = { grams ->
-                            servingGrams = grams
-                            selectedServingUnitId = ServingUnitOption.grams.unit
-                            servingQuantityText = ServingUnitOption.formatQuantity(grams)
-                            portionChipDismissed = true
-                            portionClarifyError = null
-                        },
-                        onSelect = { answer ->
-                            val reprocess = onReprocessPortion ?: return@PortionClarifyRow
-                            scope.launch {
-                                isReprocessingPortion = true
-                                portionClarifyError = null
-                                try {
-                                    reprocess(answer)
-                                    portionChipDismissed = true
-                                } catch (e: Exception) {
-                                    portionClarifyError = e.localizedMessage ?: portionClarifyFailedMessage
-                                } finally {
-                                    isReprocessingPortion = false
-                                }
-                            }
-                        },
-                        onDismiss = { portionChipDismissed = true },
-                    )
-                }
-            }
-
-            item {
                 SheetSectionHeaderWithLock(
                     title = stringResource(R.string.sheet_nutrition),
                     unlocked = nutritionUnlocked,
@@ -572,41 +504,6 @@ fun FoodResultSheet(
                 }
             }
 
-            // "More Nutrition" — own pill row with chevron-right that flips to
-            // chevron-down when expanded; matches iOS DisclosureGroup.
-            item {
-                SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
-                    Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                    Icon(
-                        if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
-                        else Icons.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    )
-                }
-            }
-            if (moreNutritionExpanded) {
-                item {
-                    SheetPillCard {
-                        MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
-                            if (idx > 0) SheetHairline()
-                            val value = scaledD(editableMicros[field])
-                            ReviewNutritionValueRow(
-                                label = stringResource(field.labelRes),
-                                displayValue = displayD(value),
-                                editValue = editD(value),
-                                unit = stringResource(field.unitRes),
-                                unlocked = nutritionUnlocked,
-                                dim = true,
-                                onEdit = {
-                                    editableMicros = editableMicros.with(field, baseOptionalFromText(it))
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
             item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
             item {
                 SheetPillRow(onClick = { mealMenuExpanded = true }) {
@@ -654,6 +551,119 @@ fun FoodResultSheet(
                                 )
                             }
                         }
+                    }
+                }
+            }
+
+            // Secondary: portion check, ingredients, micros, what-if — after the Log path.
+            if (showPortionClarify) {
+                item {
+                    PortionClarifyRow(
+                        estimatedGrams = analysis.servingSizeGrams,
+                        isLoading = isReprocessingPortion,
+                        error = portionClarifyError,
+                        showQualitativeChips = onReprocessPortion != null,
+                        onApplyExactGrams = { grams ->
+                            servingGrams = grams
+                            selectedServingUnitId = ServingUnitOption.grams.unit
+                            servingQuantityText = ServingUnitOption.formatQuantity(grams)
+                            portionChipDismissed = true
+                            portionClarifyError = null
+                        },
+                        onSelect = { answer ->
+                            val reprocess = onReprocessPortion ?: return@PortionClarifyRow
+                            scope.launch {
+                                isReprocessingPortion = true
+                                portionClarifyError = null
+                                try {
+                                    reprocess(answer)
+                                    portionChipDismissed = true
+                                } catch (e: Exception) {
+                                    portionClarifyError = e.localizedMessage ?: portionClarifyFailedMessage
+                                } finally {
+                                    isReprocessingPortion = false
+                                }
+                            }
+                        },
+                        onDismiss = { portionChipDismissed = true },
+                    )
+                }
+            }
+
+            item {
+                ConstituentsSection(
+                    rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                        editableConstituents,
+                        scale,
+                    ),
+                    expanded = constituentsExpanded,
+                    onExpandedChange = { constituentsExpanded = it },
+                    onRowsChange = { displayRows ->
+                        val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
+                        editableConstituents = cleaned
+                        if (serving > 0) {
+                            baseServingGrams = serving
+                            servingGrams = serving
+                            servingQuantityText = ServingUnitOption.formatQuantity(
+                                if (selectedServingOption.gramsPerUnit > 0) {
+                                    serving / selectedServingOption.gramsPerUnit
+                                } else {
+                                    serving
+                                },
+                            )
+                        }
+                        if (agg != null) {
+                            editableCalories = agg.calories
+                            editableProtein = agg.protein
+                            editableCarbs = agg.carbs
+                            editableFat = agg.fat
+                        }
+                    },
+                )
+            }
+
+            item {
+                SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
+                    Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    Icon(
+                        if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
+                        else Icons.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
+            }
+            if (moreNutritionExpanded) {
+                item {
+                    SheetPillCard {
+                        MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
+                            if (idx > 0) SheetHairline()
+                            val value = scaledD(editableMicros[field])
+                            ReviewNutritionValueRow(
+                                label = stringResource(field.labelRes),
+                                displayValue = displayD(value),
+                                editValue = editD(value),
+                                unit = stringResource(field.unitRes),
+                                unlocked = nutritionUnlocked,
+                                dim = true,
+                                onEdit = {
+                                    editableMicros = editableMicros.with(field, baseOptionalFromText(it))
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (onWhatIfSuggestion != null) {
+                item {
+                    SheetPillRow(onClick = { whatIfEntry = previewEntry() }) {
+                        Text(stringResource(R.string.action_what_if), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Icon(
+                            Icons.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
                     }
                 }
             }

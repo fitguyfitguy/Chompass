@@ -428,6 +428,18 @@ class FoodRepository(
             prefs.foodEntries.first().filter { !it.timestamp.isBefore(cutoff) },
         )
     }
+
+    /**
+     * Hub chips for one-tap re-log: favorites first, then recents, then frequent,
+     * de-duplicated by [FoodEntry.favoriteKey].
+     */
+    suspend fun quickRelogTemplates(limit: Int = 6): List<FoodEntry> {
+        migratedFavorites()
+        val favorites = prefs.favoriteFoodEntries.first()
+        val recents = recent()
+        val frequents = frequent().map { it.template }
+        return quickRelogFoodTemplates(favorites, recents, frequents, limit)
+    }
 }
 
 /**
@@ -440,6 +452,28 @@ internal fun recentFoodTemplates(entries: List<FoodEntry>, limit: Int = 50): Lis
         .sortedByDescending { it.timestamp }
         .filter { it.favoriteKey.isNotEmpty() && seen.add(it.favoriteKey) }
         .take(limit)
+}
+
+/**
+ * Favorites → recents → frequent, unique by [FoodEntry.favoriteKey].
+ */
+internal fun quickRelogFoodTemplates(
+    favorites: List<FoodEntry>,
+    recents: List<FoodEntry>,
+    frequents: List<FoodEntry>,
+    limit: Int = 6,
+): List<FoodEntry> {
+    val seen = mutableSetOf<String>()
+    val out = ArrayList<FoodEntry>(limit)
+    for (source in listOf(favorites, recents, frequents)) {
+        for (entry in source) {
+            val key = entry.favoriteKey
+            if (key.isEmpty() || !seen.add(key)) continue
+            out.add(entry)
+            if (out.size >= limit) return out
+        }
+    }
+    return out
 }
 
 /**

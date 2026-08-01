@@ -64,6 +64,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.services.MealShare
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
@@ -107,6 +108,7 @@ fun HomeScreen(container: AppContainer) {
     var showAddFoodSheet by remember { mutableStateOf(false) }
     var hubRecentMeals by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
     var showCustomWaterLog by remember { mutableStateOf(false) }
+    var showManualActive by remember { mutableStateOf(false) }
     var showGroundedEntry by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
@@ -331,6 +333,9 @@ fun HomeScreen(container: AppContainer) {
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
                         activeCalorieSource = ui.resolvedActiveBurn?.source,
+                        awaitingActiveBurn = ui.homeDisplay.calorieDisplayMode ==
+                            HomeCalorieDisplayMode.ADD_ACTIVE &&
+                            calorieMode == HomeCalorieDisplayMode.STATIC,
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
@@ -541,7 +546,7 @@ fun HomeScreen(container: AppContainer) {
 
     LaunchedEffect(showAddFoodSheet) {
         if (showAddFoodSheet) {
-            hubRecentMeals = container.foodRepository.recent().take(3)
+            hubRecentMeals = container.foodRepository.quickRelogTemplates(limit = 6)
         }
     }
 
@@ -558,6 +563,7 @@ fun HomeScreen(container: AppContainer) {
             onBarcode = { openBarcodeScanner() },
             onManual = { showManual = true },
             onCopyFromDay = { showCopyFromDay = true },
+            onManualActive = { showManualActive = true },
             onGrounded = {
                 if (GroundedEntryFeature.ENABLED) {
                     showGroundedEntry = true
@@ -602,6 +608,13 @@ fun HomeScreen(container: AppContainer) {
             useMetric = ui.weightMetric,
             onDismiss = { showCustomWaterLog = false },
             onAdd = vm::addWater,
+        )
+    }
+
+    if (showManualActive) {
+        ManualActiveSheet(
+            onSave = { name, kcal -> vm.addManualActive(name, kcal) },
+            onDismiss = { showManualActive = false },
         )
     }
 

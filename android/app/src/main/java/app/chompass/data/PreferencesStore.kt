@@ -9,6 +9,7 @@ import app.chompass.models.ChatMessage
 import app.chompass.models.FoodEntry
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeDisplayPreferences
+import app.chompass.models.ManualActiveEntry
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
@@ -82,6 +83,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setWaterQuickPresetsMl(amountsMl: List<Int>) = setWaterQuickPresetsMlImpl(amountsMl)
     val waterEntries: Flow<List<WaterEntry>> get() = waterEntriesImpl
     suspend fun setWaterEntries(entries: List<WaterEntry>) = setWaterEntriesImpl(entries)
+    val manualActiveEntries: Flow<List<ManualActiveEntry>> get() = manualActiveEntriesImpl
+    suspend fun setManualActiveEntries(entries: List<ManualActiveEntry>) = setManualActiveEntriesImpl(entries)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
     suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
     val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl
