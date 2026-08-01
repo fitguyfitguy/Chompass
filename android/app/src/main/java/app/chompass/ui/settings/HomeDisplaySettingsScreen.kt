@@ -170,6 +170,14 @@ fun HomeDisplaySettingsScreen(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                         )
+                        if (display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
+                            Text(
+                                stringResource(R.string.home_calorie_mode_add_active_hc_hint),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+                            )
+                        }
                     }
                 }
             }

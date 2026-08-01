@@ -7,6 +7,7 @@ import {
   recentFoodTemplates,
   frequentFoodGroups,
   listFavorites,
+  quickRelogTemplates,
   toggleFavorite,
   isFavorite,
   duplicatedForLogging,
@@ -730,7 +731,7 @@ export class DiaryView extends HTMLElement {
   }
 
   /** @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs */
-  openAddFoodSheet(appPrefs) {
+  async openAddFoodSheet(appPrefs) {
     if (this._sheet) {
       this._sheet.close();
       this._sheet = null;
@@ -744,12 +745,34 @@ export class DiaryView extends HTMLElement {
 
     const showWater = appPrefs.showWater === true;
     const speech = createSpeechCapture();
+    const quickRelogs = await quickRelogTemplates(6);
+    const quickRelogBlock =
+      quickRelogs.length > 0
+        ? `<p class="add-food-section">Log again</p>
+           <p class="add-food-hint">Favorites and past meals — faster than rescanning</p>
+           <div class="add-food-relog" role="list">
+             ${quickRelogs
+               .map(
+                 (e, i) => `
+               <button type="button" class="add-food-relog-chip" data-relog="${i}" role="listitem">
+                 <span class="add-food-relog-chip__emoji" aria-hidden="true">${e.emoji ? escapeHtml(String(e.emoji)) : "🍽"}</span>
+                 <span class="add-food-relog-chip__text">
+                   <strong>${escapeHtml(e.name)}</strong>
+                   <span class="add-food-relog-chip__kcal">${Math.round(e.calories)} kcal</span>
+                 </span>
+                 <span class="add-food-relog-chip__add" aria-hidden="true">+</span>
+               </button>`
+               )
+               .join("")}
+           </div>`
+        : `<p class="add-food-hint add-food-hint--empty">Favorite a meal or log one once — it will show up here for one-tap re-log</p>`;
     const body = `
       <div class="add-food-heroes">
         ${tile("photo", "Photo", "Snap a meal", ICONS.photo)}
         ${tile("note", "Note", "Describe food", ICONS.note)}
-        ${tile("recents", "Recents", "Quick re-log", ICONS.recents)}
+        ${tile("recents", "Saved", "Recents & favorites", ICONS.recents)}
       </div>
+      ${quickRelogBlock}
       <p class="add-food-section">More</p>
       <div class="add-food-row">
         ${speech.supported ? tile("voice", "Voice", "", ICONS.voice) : tile("scan", "Barcode", "", ICONS.barcode)}
@@ -815,6 +838,20 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-add="voice"]')?.addEventListener("click", () => {
       sheet.close();
       this.startVoiceNote();
+    });
+
+    sheet.body.querySelectorAll("[data-relog]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const idx = Number(btn.getAttribute("data-relog"));
+        const entry = quickRelogs[idx];
+        if (!entry) return;
+        sheet.close();
+        const mealType = guessMealTypeFromPrefs(appPrefs);
+        const now = new Date();
+        const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+        await foodEntries.put(duplicatedForLogging(entry, this.date, time, mealType));
+        this.render();
+      });
     });
 
     sheet.body.querySelectorAll("[data-sheet-water]").forEach((el) => {

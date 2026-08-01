@@ -208,6 +208,32 @@ export function ketoNetCarbGoal(profile) {
 }
 
 /**
+ * Body-mass basis for a g/kg protein pin (Android UserProfile.proteinTargetBasisKg).
+ * @param {UserProfile} profile
+ */
+export function proteinTargetBasisKg(profile) {
+  const mode = profile.proteinTargetMode || "gramsPerDay";
+  const leanFrac = leanMassFraction(profile);
+  if (mode === "gPerKgLbm" && leanFrac != null) {
+    return Math.max(0.1, profile.weightKg * leanFrac);
+  }
+  return Math.max(0.1, profile.weightKg);
+}
+
+/**
+ * Effective protein g/day including custom pin / g/kg rate (Android effectiveProtein).
+ * @param {UserProfile} profile
+ */
+export function effectiveProteinG(profile) {
+  const mode = profile.proteinTargetMode || "gramsPerDay";
+  if ((mode === "gPerKgTotal" || mode === "gPerKgLbm") && profile.proteinGramsPerKg != null) {
+    return Math.trunc(Number(profile.proteinGramsPerKg) * proteinTargetBasisKg(profile));
+  }
+  if (profile.customProtein != null) return Math.trunc(profile.customProtein);
+  return proteinGoal(profile);
+}
+
+/**
  * Full macro/calorie target bundle for a profile, matching the app's
  * standard vs keto branching (UserProfile.kt dailyCalories/proteinGoal/
  * fatGoal/carbsGoal).
@@ -216,8 +242,7 @@ export function ketoNetCarbGoal(profile) {
  */
 export function dailyTargets(profile) {
   const calories = dailyCalories(profile);
-  const proteinG =
-    profile.customProtein != null ? Math.trunc(profile.customProtein) : proteinGoal(profile);
+  const proteinG = effectiveProteinG(profile);
 
   if (profile.ketoMode) {
     const carbsG =

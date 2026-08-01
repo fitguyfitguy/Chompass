@@ -16,6 +16,7 @@ import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.ProteinTargetMode
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
@@ -1079,6 +1080,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
      *  total to the sum of the macros. */
     fun resetCaloriesLock() {
         updateProfile { it.resetCaloriesToBalance() }
+    }
+
+    fun setProteinTargetMode(mode: ProteinTargetMode) {
+        updateProfile { it.withProteinTargetMode(mode) }
     }
 
     fun setCustomBaseUrl(provider: AIProvider, url: String) = launchPref {

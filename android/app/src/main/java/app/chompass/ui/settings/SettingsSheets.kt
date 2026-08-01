@@ -54,6 +54,7 @@ import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.OptionalNutrient
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.ProteinTargetMode
 import app.chompass.models.ServingUnitHeuristicRule
 import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitInferenceMode
@@ -504,18 +505,24 @@ internal fun SettingsSheets(
                         { vm.resetCaloriesLock(); onDismiss() }
                     } else null
                 )
-                SettingsSheet.PROTEIN -> NutritionPickerSheet(
-                    label = stringResource(R.string.macro_protein), unit = stringResource(R.string.unit_g),
-                    currentValue = ui.profile?.effectiveProtein ?: 0,
-                    range = 10..500, step = 5,
-                    accentColor = AppColors.Protein,
-                    onSave = { v ->
+                SettingsSheet.PROTEIN -> ProteinGoalSheet(
+                    profile = ui.profile,
+                    onModeChange = { mode ->
+                        vm.setProteinTargetMode(mode)
+                    },
+                    onSaveGrams = { v ->
                         vm.editMacroGoal(AutoBalanceMacro.PROTEIN, v) { onRebalanceBlocked() }
                         onDismiss()
                     },
-                    onResetToAuto = if (ui.profile?.isMacroLocked(AutoBalanceMacro.PROTEIN) == true) {
-                        { vm.resetMacroLock(AutoBalanceMacro.PROTEIN); onDismiss() }
-                    } else null
+                    onResetToAuto = if (ui.profile?.isMacroLocked(AutoBalanceMacro.PROTEIN) == true ||
+                        (ui.profile?.proteinTargetMode?.usesRate == true && ui.profile?.proteinGramsPerKg != null)
+                    ) {
+                        {
+                            vm.resetMacroLock(AutoBalanceMacro.PROTEIN)
+                            vm.setProteinTargetMode(ProteinTargetMode.GRAMS_PER_DAY)
+                            onDismiss()
+                        }
+                    } else null,
                 )
                 SettingsSheet.CARBS -> NutritionPickerSheet(
                     label = stringResource(R.string.macro_carbs), unit = stringResource(R.string.unit_g),

@@ -171,7 +171,6 @@ export class EntryForm extends HTMLElement {
     const fav = this.existing ? await isFavorite(this.existing) : false;
     const scale = this.currentScale();
     const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
-    const hasExtraMicros = MICRO_FIELDS.some(([k]) => scaled[k] != null);
     const lockAttr = this.nutritionLocked ? "readonly" : "";
     const lockClass = this.nutritionLocked ? "is-locked" : "";
     const picker = pickerOptions(this.servingUnitOptions);
@@ -241,8 +240,6 @@ export class EntryForm extends HTMLElement {
           <input type="hidden" name="quantityG" id="quantityG" value="${servingGrams}" />
         </section>
 
-        ${this.renderConstituentsSection()}
-
         <section class="entry-section ${lockClass}">
           <div class="entry-section__head">
             <h2 class="entry-section__title">Nutrition</h2>
@@ -276,7 +273,9 @@ export class EntryForm extends HTMLElement {
           </div>
         </section>
 
-        <details class="micros-details" ${hasExtraMicros ? "open" : ""}>
+        ${this.renderConstituentsSection()}
+
+        <details class="micros-details">
           <summary>More nutrition</summary>
           <div class="field-row field-row--micros">
             ${MICRO_FIELDS.map(([key, label]) => {

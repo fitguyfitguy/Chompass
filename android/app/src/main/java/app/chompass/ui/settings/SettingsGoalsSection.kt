@@ -131,10 +131,19 @@ internal fun SettingsGoalsSection(
                     HorizontalDivider()
                     LockableGoalRow(
                         label = stringResource(R.string.macro_protein),
-                        value = "${p.effectiveProtein}g",
+                        value = when {
+                            p.proteinTargetMode.usesRate && p.proteinGramsPerKg != null ->
+                                stringResource(
+                                    R.string.protein_target_g_per_kg_format,
+                                    p.proteinGramsPerKg!!,
+                                    p.effectiveProtein,
+                                )
+                            else -> "${p.effectiveProtein}g"
+                        },
                         icon = Icons.Outlined.DataUsage,
                         iconTint = AppColors.Protein,
-                        locked = p.isMacroLocked(AutoBalanceMacro.PROTEIN),
+                        locked = p.isMacroLocked(AutoBalanceMacro.PROTEIN) ||
+                            (p.proteinTargetMode.usesRate && p.proteinGramsPerKg != null),
                         lockEnabled = lockEnabled,
                         onClick = { openGoal(SettingsSheet.PROTEIN) }
                     )

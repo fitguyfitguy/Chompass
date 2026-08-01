@@ -72,6 +72,12 @@
 
     <!-- Macros / Goal labels -->
     <string name="macro_protein">Protein</string>
+    <string name="protein_target_mode_label">Protein target</string>
+    <string name="protein_target_mode_grams">Grams per day</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg body weight</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg lean mass</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/day</string>
+    <string name="protein_target_lbm_missing_hint">No body-fat %% set — using total weight until BF%% is logged</string>
     <string name="macro_carbs">Carbs</string>
     <string name="macro_fat">Fat</string>
     <string name="macro_calories">Calories</string>
@@ -357,7 +363,9 @@
     <string name="add_food_hero_saved">Saved</string>
     <string name="add_food_hero_saved_sub">Recents &amp; favorites</string>
     <string name="add_food_more_section">More ways to log</string>
-    <string name="add_food_quick_relog">Quick re-log</string>
+    <string name="add_food_quick_relog">Log again</string>
+    <string name="add_food_quick_relog_hint">Favorites and past meals — faster than rescanning</string>
+    <string name="add_food_quick_relog_empty">Favorite a meal or log one once — it will show up here for one-tap re-log</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">Log %1$s again</string>
     <string name="add_food_water_section">Water</string>
@@ -1068,17 +1076,25 @@
     <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
     <string name="home_calories_label">CALORIES</string>
     <string name="home_calorie_of_goal">of %1$d</string>
-    <string name="home_calorie_clause_add_active">(incl. %1$d active)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d active → budget)</string>
+    <string name="home_calorie_clause_add_active_waiting">Active burn will extend today’s budget</string>
     <string name="home_calorie_active_estimated_a11y">Active calories estimated from your activity level</string>
     <string name="home_calorie_mode_static">Static goal</string>
-    <string name="home_calorie_mode_add_active">Add active calories to goal</string>
-    <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed regardless of movement.</string>
-    <string name="home_calorie_mode_add_active_desc">Active burn extends the gauge and adds to your daily budget. Uses Health Connect when available; otherwise your activity-level estimate (TDEE minus BMR). Set Activity Level to your everyday baseline (not peak training days) so workouts aren\'t double-counted.</string>
+    <string name="home_calorie_mode_add_active">Add active burn to budget</string>
+    <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. Movement does not change today’s budget.</string>
+    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget — eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Connect Health Connect under Settings → Health for measured burn.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">Tip: enable Health Connect to use watch/phone active calories instead of the activity-level estimate.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>
     <string name="home_steps_goal_format">Goal %1$s</string>
     <string name="home_active_calories_label">Active kcal</string>
     <string name="home_calories_left">%1$d left</string>
+    <string name="manual_active_title">Log active burn</string>
+    <string name="manual_active_subtitle">Add burned calories from a walk, ride, or workout. They extend today’s budget when “Add active burn” is on.</string>
+    <string name="manual_active_name_hint">Activity name (optional)</string>
+    <string name="manual_active_kcal_hint">Calories burned</string>
+    <string name="manual_active_save">Add to budget</string>
+    <string name="home_menu_manual_active">Active burn</string>
     <string name="home_calories_active_burn">%1$d active burned</string>
     <string name="home_calories_goal_plus_active">Goal %1$d + %2$d active</string>
     <string name="measurement_history">Measurement History</string>

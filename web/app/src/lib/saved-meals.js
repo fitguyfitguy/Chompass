@@ -88,6 +88,32 @@ export async function frequentFoodGroups(days = 90) {
   );
 }
 
+/**
+ * Favorites → recents → frequent, unique by favoriteKey (Android quickRelogTemplates).
+ * @param {number} [limit]
+ * @returns {Promise<import('./chompass-core/models.js').FoodEntry[]>}
+ */
+export async function quickRelogTemplates(limit = 6) {
+  const [favorites, recents, frequent] = await Promise.all([
+    listFavorites(),
+    recentFoodTemplates(30, limit),
+    frequentFoodGroups(90),
+  ]);
+  const seen = new Set();
+  /** @type {import('./chompass-core/models.js').FoodEntry[]} */
+  const out = [];
+  for (const source of [favorites, recents, frequent.map((g) => g.template)]) {
+    for (const entry of source) {
+      const key = favoriteKey(entry);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      out.push(entry);
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
+}
+
 export async function listFavorites() {
   return favoritesStore.all();
 }

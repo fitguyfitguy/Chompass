@@ -4,6 +4,17 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Protein goal modes: grams/day, g/kg body weight, or g/kg lean mass (Android Settings + PWA); rate modes update daily grams when weight or body fat changes.
+- Manual active burn log from Add Food (Android): name + kcal merges into today’s ADD_ACTIVE budget (with Health Connect or activity-level estimate).
+- Add Food “Log again” chips prefer favorites, then recents, then frequent (Android + PWA), with empty-state guidance.
+
+### Changed
+
+- Food review sheets put name, serving, macros, and meal first; portion check, ingredients, micros, and What-if sit below (Android + PWA).
+- Clearer ADD_ACTIVE calorie-mode copy on Home and Home Display settings; waiting hint when burn is still zero.
+
 ## [3.5.1] - 2026-08-01
 
 ### Added

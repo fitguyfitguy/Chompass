@@ -89,7 +89,8 @@ data class HomeDisplayPreferences(
 enum class ActiveCalorieSource(val storageKey: String) {
     UNAVAILABLE("unavailable"),
     ESTIMATED("estimated"),
-    MEASURED("measured");
+    MEASURED("measured"),
+    MANUAL("manual");
 
     companion object {
         fun fromStorage(raw: String?): ActiveCalorieSource =
@@ -107,18 +108,29 @@ object HomeCalorieDisplay {
         mode: HomeCalorieDisplayMode,
         snapshot: HomeActivitySnapshot,
         estimatedDailyActive: Int,
+        manualActiveCalories: Int = 0,
     ): ResolvedActiveBurn? {
         val measured = if (snapshot.energyAvailable) {
             ResolvedActiveBurn(snapshot.activeCalories, ActiveCalorieSource.MEASURED)
         } else {
             null
         }
-        return when (mode) {
+        val core = when (mode) {
             HomeCalorieDisplayMode.STATIC -> null
             HomeCalorieDisplayMode.ADD_ACTIVE -> measured ?: estimatedDailyActive
                 .takeIf { it > 0 }
                 ?.let { ResolvedActiveBurn(it, ActiveCalorieSource.ESTIMATED) }
         }
+        val manual = manualActiveCalories.coerceAtLeast(0)
+        if (mode == HomeCalorieDisplayMode.STATIC) return null
+        val total = (core?.calories ?: 0) + manual
+        if (total <= 0) return null
+        val source = when {
+            core?.source == ActiveCalorieSource.MEASURED -> ActiveCalorieSource.MEASURED
+            core != null -> core.source
+            else -> ActiveCalorieSource.MANUAL
+        }
+        return ResolvedActiveBurn(total, source)
     }
 
     fun effectiveMode(requested: HomeCalorieDisplayMode, burn: ResolvedActiveBurn?): HomeCalorieDisplayMode =

@@ -102,6 +102,9 @@ class WidgetSnapshotWriter(
                 display.calorieDisplayMode,
                 activity,
                 profile.estimatedDailyActiveCalories,
+                prefs.manualActiveEntries.first()
+                    .filter { it.date == LocalDate.now().toString() }
+                    .sumOf { it.calories },
             )
             val mode = HomeCalorieDisplay.effectiveMode(display.calorieDisplayMode, burn)
             val gaugeBase = HomeCalorieDisplay.gaugeBaseGoal(

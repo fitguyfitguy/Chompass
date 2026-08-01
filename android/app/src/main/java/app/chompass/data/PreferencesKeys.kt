@@ -33,6 +33,7 @@ internal object Keys {
         val WATER_REMINDER_MINUTE = intPreferencesKey("waterReminderMinute")
         val WATER_QUICK_PRESETS_ML = stringPreferencesKey("waterQuickPresetsMl")
         val WATER_ENTRIES = stringPreferencesKey("waterEntries")
+        val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
         val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")

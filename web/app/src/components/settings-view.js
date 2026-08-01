@@ -347,9 +347,24 @@ export class SettingsView extends HTMLElement {
         <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">Formula targets: ${targets.calories} kcal · ${Math.round(targets.proteinG)}P / ${Math.round(targets.carbsG)}C / ${Math.round(targets.fatG)}F. Leave blank to use formula.</p>
         <div class="field-row">
           <div class="field">
+            <label for="proteinTargetMode">Protein target</label>
+            <select id="proteinTargetMode" name="proteinTargetMode">
+              <option value="gramsPerDay" ${(p.proteinTargetMode || "gramsPerDay") === "gramsPerDay" ? "selected" : ""}>Grams per day</option>
+              <option value="gPerKgTotal" ${p.proteinTargetMode === "gPerKgTotal" ? "selected" : ""}>g/kg body weight</option>
+              <option value="gPerKgLbm" ${p.proteinTargetMode === "gPerKgLbm" ? "selected" : ""}>g/kg lean mass</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="proteinGramsPerKg">Protein g/kg</label>
+            <input id="proteinGramsPerKg" name="proteinGramsPerKg" type="number" min="0" step="0.1" value="${p.proteinGramsPerKg ?? ""}" placeholder="e.g. 2.0" />
+          </div>
+          <div class="field">
             <label for="customProtein">Custom protein g</label>
             <input id="customProtein" name="customProtein" type="number" min="0" value="${p.customProtein ?? ""}" placeholder="${Math.round(targets.proteinG)}" />
           </div>
+        </div>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">In g/kg mode, the rate updates daily grams when weight or body fat changes. Leave g/day blank when using a rate.</p>
+        <div class="field-row">
           <div class="field">
             <label for="customCarbs">Custom carbs g</label>
             <input id="customCarbs" name="customCarbs" type="number" min="0" value="${p.customCarbs ?? ""}" placeholder="${Math.round(targets.carbsG)}" />
@@ -390,6 +405,16 @@ export class SettingsView extends HTMLElement {
       const customProtein = fd.get("customProtein");
       const customCarbs = fd.get("customCarbs");
       const customFat = fd.get("customFat");
+      const proteinTargetModeRaw = String(fd.get("proteinTargetMode") || "gramsPerDay");
+      const proteinTargetMode =
+        proteinTargetModeRaw === "gPerKgTotal" || proteinTargetModeRaw === "gPerKgLbm"
+          ? proteinTargetModeRaw
+          : "gramsPerDay";
+      const proteinGramsPerKgRaw = fd.get("proteinGramsPerKg");
+      const proteinGramsPerKg =
+        proteinGramsPerKgRaw !== null && String(proteinGramsPerKgRaw).trim() !== ""
+          ? Number(proteinGramsPerKgRaw)
+          : null;
       await profileStore.save({
         ...p,
         goal: /** @type {any} */ (fd.get("goal")),
@@ -397,9 +422,13 @@ export class SettingsView extends HTMLElement {
         goalWeightKg: goalW ? Number(goalW) : null,
         ketoMode: fd.get("ketoMode") === "true",
         customCalories: custom ? Number(custom) : null,
-        customProtein: customProtein ? Number(customProtein) : null,
+        customProtein:
+          proteinTargetMode === "gramsPerDay" && customProtein ? Number(customProtein) : null,
         customCarbs: customCarbs ? Number(customCarbs) : null,
         customFat: customFat ? Number(customFat) : null,
+        proteinTargetMode,
+        proteinGramsPerKg:
+          proteinTargetMode === "gramsPerDay" ? null : proteinGramsPerKg,
       });
       location.hash = SETTINGS_PARENT.goals;
     });
@@ -410,6 +439,8 @@ export class SettingsView extends HTMLElement {
         customProtein: null,
         customCarbs: null,
         customFat: null,
+        proteinTargetMode: "gramsPerDay",
+        proteinGramsPerKg: null,
       });
       this.render();
     });

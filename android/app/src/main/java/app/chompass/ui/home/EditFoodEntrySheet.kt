@@ -290,13 +290,13 @@ fun EditFoodEntrySheet(
                         .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
-            // Compact hero (saved photo) OR emoji fallback — centered.
+            // Compact hero so name / serving / macros fit the first viewport.
             item {
                 val ctx = LocalContext.current
                 val container = (ctx.applicationContext as app.chompass.ChompassApp).container
                 val bitmap = rememberFoodImage(currentBaseEntry.imageFilename, container.imageStore)
                 Box(
-                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    Modifier.fillMaxWidth().padding(vertical = 2.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (bitmap != null) {
@@ -305,11 +305,11 @@ fun EditFoodEntrySheet(
                             contentDescription = null,
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
-                                .size(160.dp)
-                                .clip(RoundedCornerShape(16.dp))
+                                .size(96.dp)
+                                .clip(RoundedCornerShape(14.dp))
                         )
                     } else {
-                        Text(currentBaseEntry.emoji ?: "🍽", fontSize = 56.sp)
+                        Text(currentBaseEntry.emoji ?: "🍽", fontSize = 40.sp)
                     }
                 }
             }
@@ -356,38 +356,6 @@ fun EditFoodEntrySheet(
                     menuExpanded = servingMenuExpanded,
                     onMenuExpandedChange = { servingMenuExpanded = it },
                     gramUnit = stringResource(R.string.unit_g)
-                )
-            }
-
-            item {
-                ConstituentsSection(
-                    rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(
-                        editableConstituents,
-                        scale,
-                    ),
-                    expanded = constituentsExpanded,
-                    onExpandedChange = { constituentsExpanded = it },
-                    onRowsChange = { displayRows ->
-                        val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
-                        editableConstituents = cleaned
-                        if (serving > 0) {
-                            baseServingGrams = serving
-                            servingGrams = serving
-                            servingQuantityText = ServingUnitOption.formatQuantity(
-                                if (selectedServingOption.gramsPerUnit > 0) {
-                                    serving / selectedServingOption.gramsPerUnit
-                                } else {
-                                    serving
-                                },
-                            )
-                        }
-                        if (agg != null) {
-                            editableCalories = agg.calories
-                            editableProtein = agg.protein
-                            editableCarbs = agg.carbs
-                            editableFat = agg.fat
-                        }
-                    },
                 )
             }
 
@@ -547,6 +515,38 @@ fun EditFoodEntrySheet(
                         }
                     }
                 }
+            }
+
+            item {
+                ConstituentsSection(
+                    rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                        editableConstituents,
+                        scale,
+                    ),
+                    expanded = constituentsExpanded,
+                    onExpandedChange = { constituentsExpanded = it },
+                    onRowsChange = { displayRows ->
+                        val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
+                        editableConstituents = cleaned
+                        if (serving > 0) {
+                            baseServingGrams = serving
+                            servingGrams = serving
+                            servingQuantityText = ServingUnitOption.formatQuantity(
+                                if (selectedServingOption.gramsPerUnit > 0) {
+                                    serving / selectedServingOption.gramsPerUnit
+                                } else {
+                                    serving
+                                },
+                            )
+                        }
+                        if (agg != null) {
+                            editableCalories = agg.calories
+                            editableProtein = agg.protein
+                            editableCarbs = agg.carbs
+                            editableFat = agg.fat
+                        }
+                    },
+                )
             }
 
             item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }

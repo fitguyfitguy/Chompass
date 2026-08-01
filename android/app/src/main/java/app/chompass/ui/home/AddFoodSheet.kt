@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
@@ -84,6 +85,7 @@ fun AddFoodSheet(
     onBarcode: () -> Unit,
     onManual: () -> Unit,
     onCopyFromDay: () -> Unit,
+    onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
     onDismiss: () -> Unit,
     barcodeEnabled: Boolean = true,
@@ -105,6 +107,7 @@ fun AddFoodSheet(
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
             onCopyFromDay = { onDismiss(); onCopyFromDay() },
+            onManualActive = { onDismiss(); onManualActive() },
             onGrounded = { onDismiss(); onGrounded() },
             barcodeEnabled = barcodeEnabled,
             waterTrackingEnabled = waterTrackingEnabled,
@@ -129,6 +132,7 @@ internal fun AddFoodSheetContent(
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
     onCopyFromDay: () -> Unit = {},
+    onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
@@ -191,6 +195,12 @@ internal fun AddFoodSheetContent(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
             )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                stringResource(R.string.add_food_quick_relog_hint),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.42f),
+            )
             Spacer(Modifier.height(6.dp))
             Row(
                 Modifier
@@ -198,7 +208,7 @@ internal fun AddFoodSheetContent(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                recentMeals.take(3).forEach { entry ->
+                recentMeals.forEach { entry ->
                     AddFoodRelogChip(
                         entry = entry,
                         onRelog = { onRelogRecent(entry) },
@@ -206,6 +216,13 @@ internal fun AddFoodSheetContent(
                     )
                 }
             }
+        } else {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                stringResource(R.string.add_food_quick_relog_empty),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.48f),
+            )
         }
         Spacer(Modifier.height(16.dp))
         SheetSectionHeader(stringResource(R.string.add_food_more_section))
@@ -258,6 +275,30 @@ internal fun AddFoodSheetContent(
                         modifier = Modifier.weight(1f),
                         onClick = onGrounded,
                     )
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_manual_active),
+                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onManualActive,
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Spacer(Modifier.weight(1f))
+                }
+            } else {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_manual_active),
+                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onManualActive,
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Spacer(Modifier.weight(1f))
                     Spacer(Modifier.weight(1f))
                 }
             }

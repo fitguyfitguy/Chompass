@@ -128,6 +128,8 @@ base g/kg by activity: 0.8, 1.2, 1.6, 1.8, 2.0, 2.2
 If body fat % set: requirement is expressed per kg total weight via lean-mass fraction adjustment
 ```
 
+**User pin modes** (`ProteinTargetMode`): grams/day (`customProtein`), or g/kg of total weight / lean mass (`proteinGramsPerKg`). Rate modes recompute g/day when weight or BF% changes.
+
 **Keto floor:** `max(standard, 1.6 × proteinBasisWeight, 60 g)`.
 
 **Evidence:** Morton et al. 2018; Helms et al. 2014 (cutting boost).
