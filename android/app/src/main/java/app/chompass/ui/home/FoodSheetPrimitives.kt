@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
@@ -75,19 +78,25 @@ import app.chompass.models.MacroValueFormatter
 // `Sheet*`-prefixed so they don't collide with the look-alike privates in
 // HomeScreen.kt and NutritionDetailSheet.kt.
 
+/**
+ * Top chrome for review/edit sheets. Pass [primaryLabel]/[onPrimary] to keep
+ * the primary action in the toolbar (utility sheets). Food review/edit sheets
+ * omit primary here and use [SheetStickyPrimaryBar] instead.
+ */
 @Composable
 internal fun SheetReviewToolbar(
     title: String,
-    primaryLabel: String,
+    onCancel: () -> Unit,
+    primaryLabel: String? = null,
     secondaryLabel: String? = null,
     primaryEnabled: Boolean = true,
-    onCancel: () -> Unit,
-    onPrimary: () -> Unit,
+    onPrimary: (() -> Unit)? = null,
     onSecondary: (() -> Unit)? = null
 ) {
     val compact = LocalConfiguration.current.screenWidthDp < 380
     val outerPadding = if (compact) 8.dp else 14.dp
     val itemGap = if (compact) 6.dp else 8.dp
+    val showPrimary = primaryLabel != null && onPrimary != null
     Row(
         Modifier.fillMaxWidth().padding(horizontal = outerPadding, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -106,9 +115,82 @@ internal fun SheetReviewToolbar(
         Spacer(Modifier.width(itemGap))
         if (secondaryLabel != null && onSecondary != null) {
             SheetToolbarPill(secondaryLabel, compact = compact, onClick = onSecondary)
-            Spacer(Modifier.width(itemGap))
+            if (showPrimary) Spacer(Modifier.width(itemGap))
         }
-        SheetToolbarPill(primaryLabel, bold = true, compact = compact, enabled = primaryEnabled, onClick = onPrimary)
+        if (showPrimary) {
+            SheetToolbarPill(
+                primaryLabel,
+                bold = true,
+                compact = compact,
+                enabled = primaryEnabled,
+                onClick = onPrimary,
+            )
+        }
+    }
+}
+
+/**
+ * Sticky primary CTA for [FoodResultSheet] / [EditFoodEntrySheet].
+ * Sits below the scroll body so Log/Save stays visible with the IME open.
+ */
+@Composable
+internal fun SheetStickyPrimaryBar(
+    primaryLabel: String,
+    onPrimary: () -> Unit,
+    primaryEnabled: Boolean = true,
+    textActionLabel: String? = null,
+    onTextAction: (() -> Unit)? = null,
+) {
+    val isDark = isDarkTheme()
+    val hairline = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .navigationBarsPadding()
+            .imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(0.5.dp)
+                .background(hairline),
+        )
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (textActionLabel != null && onTextAction != null) {
+                TextButton(
+                    onClick = onTextAction,
+                    enabled = primaryEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(textActionLabel, fontWeight = FontWeight.Medium)
+                }
+            }
+            val shape = RoundedCornerShape(28.dp)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(shape)
+                    .background(Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd)))
+                    .alpha(if (primaryEnabled) 1f else 0.45f)
+                    .clickable(enabled = primaryEnabled, onClick = onPrimary)
+                    .padding(vertical = 14.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    primaryLabel,
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+        }
     }
 }
 

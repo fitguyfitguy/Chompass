@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
@@ -77,7 +77,7 @@ import app.chompass.ui.components.rememberFoodImage
  * Edit page for an existing FoodEntry. Visually identical to [FoodResultSheet]
  * (the first-time review page), so the edit experience matches the logging
  * experience. Differences from FoodResultSheet:
- *   - Top-right action says "Save" instead of "Log".
+ *   - Sticky primary action says "Save" instead of "Log".
  *   - Initial values come from the existing entry; save mutates it via onSave.
  * Deletion is handled by swipe-to-delete on the Home food log list.
  */
@@ -273,37 +273,30 @@ fun EditFoodEntrySheet(
         // While the note differs from what's saved, the primary button becomes
         // "Reprocess"; once reprocessed (or unchanged) it reverts to "Save".
         val noteChanged = noteText.trim() != (currentBaseEntry.customNote ?: "")
-        SheetReviewToolbar(
-            title = stringResource(R.string.sheet_edit_food),
-            primaryLabel = when {
-                isReprocessing -> stringResource(R.string.edit_reprocessing)
-                noteChanged -> stringResource(R.string.edit_reprocess)
-                else -> stringResource(R.string.action_save)
-            },
-            onCancel = { if (!isReprocessing) onDismiss() },
-            onPrimary = {
-                if (!isReprocessing) {
-                    if (noteChanged) reprocess() else onSave(buildUpdated())
-                }
-            }
-        )
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.92f)
+        ) {
+            SheetReviewToolbar(
+                title = stringResource(R.string.sheet_edit_food),
+                onCancel = { if (!isReprocessing) onDismiss() },
+            )
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .imePadding()
-                    .padding(bottom = 28.dp),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
-            ) {
-            // Square hero (saved photo) OR 80sp emoji fallback — centered.
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                ) {
+            // Compact hero (saved photo) OR emoji fallback — centered.
             item {
                 val ctx = LocalContext.current
                 val container = (ctx.applicationContext as app.chompass.ChompassApp).container
                 val bitmap = rememberFoodImage(currentBaseEntry.imageFilename, container.imageStore)
                 Box(
-                    Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (bitmap != null) {
@@ -312,11 +305,11 @@ fun EditFoodEntrySheet(
                             contentDescription = null,
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
-                                .size(240.dp)
-                                .clip(RoundedCornerShape(20.dp))
+                                .size(160.dp)
+                                .clip(RoundedCornerShape(16.dp))
                         )
                     } else {
-                        Text(currentBaseEntry.emoji ?: "🍽", fontSize = 80.sp)
+                        Text(currentBaseEntry.emoji ?: "🍽", fontSize = 56.sp)
                     }
                 }
             }
@@ -797,16 +790,31 @@ fun EditFoodEntrySheet(
                 }
             }
         }
-        if (isReprocessing) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .pointerInput(Unit) {
-                        detectTapGestures { /* Consume touches to disable UI interaction during reprocessing */ }
+                if (isReprocessing) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .pointerInput(Unit) {
+                                detectTapGestures { /* Consume touches while reprocessing */ }
+                            }
+                    )
+                }
+            }
+
+            SheetStickyPrimaryBar(
+                primaryLabel = when {
+                    isReprocessing -> stringResource(R.string.edit_reprocessing)
+                    noteChanged -> stringResource(R.string.edit_reprocess)
+                    else -> stringResource(R.string.action_save)
+                },
+                primaryEnabled = !isReprocessing,
+                onPrimary = {
+                    if (!isReprocessing) {
+                        if (noteChanged) reprocess() else onSave(buildUpdated())
                     }
+                },
             )
         }
-    }
     }
 
     if (showDatePicker) {

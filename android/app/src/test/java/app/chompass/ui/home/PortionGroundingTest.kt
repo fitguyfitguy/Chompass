@@ -36,6 +36,7 @@ class PortionGroundingTest {
     @Test
     fun shouldOfferPortionClarify_onlyForSnapFood() {
         assertTrue(shouldOfferPortionClarify(FoodSource.SNAP_FOOD))
+        assertFalse(shouldOfferPortionClarify(FoodSource.SNAP_FOOD, portionPreConfirmed = true))
         assertFalse(shouldOfferPortionClarify(FoodSource.TEXT_INPUT))
         assertFalse(shouldOfferPortionClarify(FoodSource.BARCODE))
         assertFalse(shouldOfferPortionClarify(FoodSource.MANUAL))
