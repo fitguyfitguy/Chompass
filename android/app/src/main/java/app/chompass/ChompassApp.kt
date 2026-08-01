@@ -17,6 +17,7 @@ import app.chompass.models.CurrentMealSchedule
 import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
 import app.chompass.services.FoodImageStore
+import app.chompass.services.FoodPhotoSession
 import app.chompass.services.LauncherShortcuts
 import app.chompass.services.NotificationService
 import app.chompass.services.ShortcutEntryAction
@@ -216,12 +217,18 @@ class AppContainer(app: ChompassApp) {
     val analyzingFood: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     /**
-     * Photos from the system share sheet (ACTION_SEND / ACTION_SEND_MULTIPLE)
-     * or the in-app gallery picker. [MainActivity] / Home fill it; a resumed
-     * Home merges into the multi-photo food-entry sheet. Survives until a
-     * resumed Home consumes it (onboarding-safe; duplicate-activity-safe).
+     * Photos from the system share sheet only (ACTION_SEND / ACTION_SEND_MULTIPLE).
+     * [MainActivity] fills it; a resumed Home merges into [foodPhotoSession].
+     * Do **not** write in-app gallery picks here — that caused NavHost/Home races
+     * and “gallery returns to bare Home” bugs.
      */
     val sharedImageInbox: MutableStateFlow<List<ByteArray>> = MutableStateFlow(emptyList())
+
+    /**
+     * In-app camera / gallery staging + multi-photo review sheet state.
+     * Activity-registered Photo Picker writes here; share-ins merge via Home.
+     */
+    val foodPhotoSession: FoodPhotoSession = FoodPhotoSession()
 
     /**
      * Launcher shortcut destination for Home (Camera / Voice / Barcode).

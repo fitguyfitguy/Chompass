@@ -4,6 +4,13 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.6.2] - 2026-08-01
+
+### Fixed
+
+- In-app Photo → Gallery uses an Activity-registered Photo Picker and app-scoped `FoodPhotoSession`, so picks open the multi-photo review sheet instead of dropping to Home (Android). Gallery no longer writes the share-image inbox.
+- Notification taps target the enabled launcher icon alias (same as share/shortcuts), avoiding a second `MainActivity` that can steal entry results (Android).
+
 ## [3.6.1] - 2026-08-01
 
 ### Changed

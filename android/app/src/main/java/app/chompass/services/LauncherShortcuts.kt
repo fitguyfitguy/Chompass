@@ -13,9 +13,9 @@ import app.chompass.R
  * shortcuts would only attach to whichever alias currently owns MAIN/LAUNCHER.
  *
  * Intents target the **enabled launcher alias**, not [app.chompass.MainActivity]
- * directly — matching share-sheet filters — so `singleTop` / `CLEAR_TOP` hit the
- * existing task instead of stacking a second activity that steals camera/gallery
- * results from the foreground Home.
+ * directly — matching share-sheet filters and [ChompassLaunchIntents] — so
+ * `singleTop` / `CLEAR_TOP` hit the existing task instead of stacking a second
+ * activity that steals camera/gallery results from the foreground Home.
  */
 object LauncherShortcuts {
     const val EXTRA_SHORTCUT = "shortcut_entry"

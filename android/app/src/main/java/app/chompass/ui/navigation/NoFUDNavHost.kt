@@ -85,10 +85,11 @@ fun ChompassNavHost(
     }
 
     // A photo was shared into the app while another tab (or a detail screen) was
-    // showing — bring Home forward so it can consume the inbox and start the
-    // photo entry flow. No-op during onboarding (HOME isn't on the stack yet);
+    // showing — bring Home forward so it can consume the share inbox and open
+    // FoodPhotoSession review. No-op during onboarding (HOME isn't on the stack yet);
     // the inbox is sticky, so Home picks it up once it composes. RESUMED-only
     // so a stopped duplicate MainActivity cannot mutate this nav controller.
+    // In-app gallery does not use sharedImageInbox (Activity FoodPhotoSession).
     val lifecycleOwner = LocalLifecycleOwner.current
     val sharedImages by container.sharedImageInbox.collectAsState()
     LaunchedEffect(sharedImages, currentRoute, lifecycleOwner) {

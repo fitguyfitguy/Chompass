@@ -4,13 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -47,7 +43,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -66,11 +61,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
 import java.util.UUID
 import app.chompass.AppContainer
-import app.chompass.ChompassApp
+import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
@@ -84,9 +80,7 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,78 +115,34 @@ fun HomeScreen(container: AppContainer) {
     var showNutritionDetail by remember { mutableStateOf(false) }
 
     var showCameraCapture by remember { mutableStateOf(false) }
-    var showMultiPhotoCapture by remember { mutableStateOf(false) }
-    var pendingCaptureImageBytes by remember { mutableStateOf<List<ByteArray>>(emptyList()) }
-    var isImportingPhotos by remember { mutableStateOf(false) }
-    // Set when Gallery is tapped from the camera Dialog — launch the picker only
-    // after the Dialog has left composition so the Activity Result is not lost.
-    var pendingGalleryPick by remember { mutableStateOf(false) }
+    val photoSession = container.foodPhotoSession
+    val stagedPhotoBytes by photoSession.stagedImages.collectAsState()
+    val showMultiPhotoCapture by photoSession.reviewOpen.collectAsState()
+    val isImportingPhotos by photoSession.importFromLibrary.collectAsState()
+    val importFailedTick by photoSession.importFailedTick.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val photoImportFailedMessage = stringResource(R.string.photo_import_failed)
 
-    val photoPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
-    ) { uris ->
-        if (uris.isEmpty()) return@rememberLauncherForActivityResult
-        // Prefer Activity lifecycleScope; fall back to app scope when LocalContext is
-        // wrapped or this composition was disposed after a duplicate MainActivity /
-        // task switch. Deliver via the app-scoped inbox so a resumed Home can open
-        // the multi-photo sheet; also open locally when this composition is alive.
-        val activity = ctx.findComponentActivity()
-        val importScope = activity?.lifecycleScope
-            ?: (ctx.applicationContext as ChompassApp).applicationScope
-        if (activity == null) {
-            Log.w(PHOTO_IMPORT_TAG, "gallery pick: no ComponentActivity; using appScope")
-        }
-        importScope.launch {
-            val remaining = (10 - pendingCaptureImageBytes.size).coerceAtLeast(0)
-            if (remaining == 0) return@launch
-            val imported = withContext(Dispatchers.IO) {
-                uris.take(remaining).mapNotNull { uri -> readImageBytes(ctx, uri) }
-            }
-            if (imported.isEmpty()) {
-                Log.w(PHOTO_IMPORT_TAG, "gallery pick: ${uris.size} uri(s), 0 readable")
-                withContext(Dispatchers.Main) {
-                    snackbarHostState.showSnackbar(photoImportFailedMessage)
-                }
-                return@launch
-            }
-            withContext(Dispatchers.Main.immediate) {
-                // Same ByteArray refs as inbox so the RESUMED consumer can skip
-                // duplicate merge when this composition already applied them.
-                pendingCaptureImageBytes = (pendingCaptureImageBytes + imported).take(10)
-                isImportingPhotos = true
-                showMultiPhotoCapture = true
-                container.sharedImageInbox.value = imported
-            }
-        }
-    }
-
     fun openGalleryPicker() {
-        isImportingPhotos = true
+        val activity = ctx.findComponentActivity() as? MainActivity ?: return
         if (showCameraCapture) {
             showCameraCapture = false
-            pendingGalleryPick = true
+            // Post after Dialog window teardown so the Activity Result is not lost.
+            activity.window.decorView.post {
+                activity.launchFoodGalleryPick()
+            }
         } else {
-            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            activity.launchFoodGalleryPick()
         }
     }
 
-    LaunchedEffect(pendingGalleryPick, showCameraCapture) {
-        if (pendingGalleryPick && !showCameraCapture) {
-            pendingGalleryPick = false
-            // Two frames: Dialog leaves composition, then its Window dismisses.
-            withFrameNanos { }
-            withFrameNanos { }
-            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
+    LaunchedEffect(importFailedTick) {
+        if (importFailedTick == 0) return@LaunchedEffect
+        snackbarHostState.showSnackbar(photoImportFailedMessage)
     }
 
-    // Photos from the system share sheet (MainActivity) or in-app gallery pick.
-    // Only consume while RESUMED so a stopped MainActivity under a duplicate
-    // instance cannot clear the app-scoped inbox first. Merge into any photos
-    // already staged in the multi-photo sheet (add-more from gallery). Skip
-    // ByteArrays already applied by the picker callback (same instance refs).
+    // Share-sheet photos only. Merge into FoodPhotoSession while RESUMED so a
+    // stopped duplicate MainActivity cannot clear the inbox first.
     val sharedImages by container.sharedImageInbox.collectAsState()
     LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy, lifecycleOwner) {
         if (sharedImages.isEmpty()) return@LaunchedEffect
@@ -201,18 +151,7 @@ fun HomeScreen(container: AppContainer) {
             val images = container.sharedImageInbox.value
             if (images.isEmpty()) return@repeatOnLifecycle
             container.sharedImageInbox.value = emptyList()
-            val existing = pendingCaptureImageBytes
-            val toAdd = images.filter { img -> existing.none { it === img } }
-            if (toAdd.isEmpty()) {
-                if (existing.isNotEmpty()) {
-                    isImportingPhotos = true
-                    showMultiPhotoCapture = true
-                }
-                return@repeatOnLifecycle
-            }
-            pendingCaptureImageBytes = (existing + toAdd).take(10)
-            isImportingPhotos = true
-            showMultiPhotoCapture = true
+            photoSession.mergeExternalShare(images)
         }
     }
 
@@ -238,8 +177,7 @@ fun HomeScreen(container: AppContainer) {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            isImportingPhotos = false
-            pendingCaptureImageBytes = emptyList()
+            photoSession.prepareFreshCameraCapture()
             showCameraCapture = true
         } else {
             clearShortcut(ShortcutEntryAction.CAMERA)
@@ -247,11 +185,10 @@ fun HomeScreen(container: AppContainer) {
     }
 
     fun openCamera() {
-        isImportingPhotos = false
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED
         ) {
-            pendingCaptureImageBytes = emptyList()
+            photoSession.prepareFreshCameraCapture()
             showCameraCapture = true
         } else {
             cameraPermission.launch(Manifest.permission.CAMERA)
@@ -793,48 +730,42 @@ fun HomeScreen(container: AppContainer) {
             onCapture = { bytes ->
                 showCameraCapture = false
                 clearShortcut(ShortcutEntryAction.CAMERA)
-                pendingCaptureImageBytes = (pendingCaptureImageBytes + bytes).take(10)
-                showMultiPhotoCapture = true
+                photoSession.stageFromCamera(bytes)
             },
             onOpenGallery = { openGalleryPicker() },
             onDismiss = {
                 showCameraCapture = false
                 clearShortcut(ShortcutEntryAction.CAMERA)
-                if (pendingCaptureImageBytes.isNotEmpty()) {
-                    showMultiPhotoCapture = true
-                }
+                photoSession.openReviewIfStaged()
             }
         )
     }
 
-    if (showMultiPhotoCapture && pendingCaptureImageBytes.isNotEmpty()) {
+    if (showMultiPhotoCapture && stagedPhotoBytes.isNotEmpty()) {
         MultiPhotoCaptureSheet(
-            imageBytesList = pendingCaptureImageBytes,
+            imageBytesList = stagedPhotoBytes,
             addsFromLibrary = isImportingPhotos,
             showScaleTip = ui.progressiveMeal?.items?.isNotEmpty() == true,
             onAddPhoto = {
-                if (pendingCaptureImageBytes.size < 10) {
+                if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
                     if (isImportingPhotos) {
                         openGalleryPicker()
                     } else {
-                        showMultiPhotoCapture = false
+                        photoSession.hideReviewKeepStaged()
                         showCameraCapture = true
                     }
                 }
             },
             onRemove = { index ->
-                pendingCaptureImageBytes = pendingCaptureImageBytes.filterIndexed { itemIndex, _ -> itemIndex != index }
-                if (pendingCaptureImageBytes.isEmpty()) showMultiPhotoCapture = false
+                photoSession.removeAt(index)
             },
             onAnalyze = { note, grams ->
-                val images = pendingCaptureImageBytes
-                pendingCaptureImageBytes = emptyList()
-                showMultiPhotoCapture = false
+                val images = photoSession.stagedImages.value
+                photoSession.clear()
                 if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note, grams)
             },
             onDismiss = {
-                showMultiPhotoCapture = false
-                pendingCaptureImageBytes = emptyList()
+                photoSession.clear()
             },
         )
     }
@@ -1115,14 +1046,7 @@ internal fun HomeScreenPreviewContent(
     }
 }
 
-/** Reads image bytes from a Photo Picker / share URI; failures are skipped. */
-private fun readImageBytes(context: Context, uri: Uri): ByteArray? =
-    runCatching {
-        context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-    }.getOrNull()?.takeIf { it.isNotEmpty() }
-
-private const val PHOTO_IMPORT_TAG = "Chompass"
-
+/** Unwrap LocalContext through ContextWrappers to the hosting ComponentActivity. */
 private fun Context.findComponentActivity(): ComponentActivity? {
     var current: Context? = this
     while (current is ContextWrapper) {

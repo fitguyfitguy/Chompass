@@ -19,7 +19,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import app.chompass.MainActivity
 import app.chompass.ChompassApp
 import app.chompass.R
 import java.time.LocalDate
@@ -99,9 +98,7 @@ class NotificationService(private val context: Context) {
     }
 
     fun showGoalReached() {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
+        val intent = ChompassLaunchIntents.openApp(context)
         val content = PendingIntent.getActivity(
             context, 0, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -273,9 +270,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 if (shouldPost) {
                     val open = PendingIntent.getActivity(
                         context, 0,
-                        Intent(context, MainActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        },
+                        ChompassLaunchIntents.openApp(context),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                     val notif = NotificationCompat.Builder(context, channel)
