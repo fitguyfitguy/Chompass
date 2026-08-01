@@ -212,9 +212,8 @@ class AppContainer(app: ChompassApp) {
     /**
      * Photos shared into the app via the system share sheet (ACTION_SEND /
      * ACTION_SEND_MULTIPLE). [MainActivity] fills it; the Home screen consumes
-     * it and starts the photo food-entry flow — one image goes through the
-     * context-note sheet, two are analyzed side-by-side like dual capture.
-     * Survives until Home is composed, so a share that lands during
+     * it (while resumed) and opens the multi-photo food-entry sheet.
+     * Survives until a resumed Home is composed, so a share that lands during
      * onboarding is picked up right after it completes.
      */
     val sharedImageInbox: MutableStateFlow<List<ByteArray>> = MutableStateFlow(emptyList())

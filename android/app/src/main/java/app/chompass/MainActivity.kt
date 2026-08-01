@@ -93,19 +93,33 @@ open class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Photos shared from another app (camera, gallery). At most two are used —
-     * the analysis pipeline composes a pair side-by-side, same as dual capture.
+     * Photos shared from another app (camera, gallery). Up to 10 images enter
+     * the multi-photo review sheet (same cap as in-app gallery pick).
      * Bytes are read off the main thread, then handed to Home via the
      * container's [sharedImageInbox][AppContainer.sharedImageInbox].
      */
     private fun handleSharedImages(intent: Intent) {
-        if (intent.type?.startsWith("image/") != true) return
-        val uris = when (intent.action) {
-            Intent.ACTION_SEND ->
-                listOfNotNull(IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java))
-            else ->
-                IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java).orEmpty()
-        }.take(2)
+        val type = intent.type
+        val looksLikeImage = type == null || type == "*/*" || type.startsWith("image/")
+        if (!looksLikeImage) return
+        val uris = buildList {
+            when (intent.action) {
+                Intent.ACTION_SEND -> {
+                    IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+                        ?.let(::add)
+                }
+                Intent.ACTION_SEND_MULTIPLE -> {
+                    IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+                        ?.let(::addAll)
+                }
+            }
+            // Some senders put the URI only in ClipData.
+            intent.clipData?.let { clip ->
+                for (i in 0 until clip.itemCount) {
+                    clip.getItemAt(i)?.uri?.let(::add)
+                }
+            }
+        }.distinct().take(10)
         if (uris.isEmpty()) return
         lifecycleScope.launch(Dispatchers.IO) {
             val images = uris.mapNotNull { uri ->
