@@ -221,9 +221,9 @@ class AppContainer(app: ChompassApp) {
 
     /**
      * Launcher shortcut destination for Home (Camera / Voice / Barcode).
-     * [MainActivity] fills it; Home consumes and clears it. Sticky like
-     * [sharedImageInbox] so a shortcut that lands during onboarding is
-     * picked up once Home composes.
+     * [MainActivity] fills it; Home opens the matching entry UI and clears it
+     * only when that UI dismisses. Sticky like [sharedImageInbox] so delivery
+     * survives onboarding and Compose remounts (theme / palette refresh).
      */
     val shortcutEntryInbox: MutableStateFlow<ShortcutEntryAction?> = MutableStateFlow(null)
 
