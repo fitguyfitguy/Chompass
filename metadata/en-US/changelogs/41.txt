@@ -1,0 +1,4 @@
+• Protein goal modes: g/day, g/kg weight, or g/kg lean mass
+• Manual active burn log; Add Food “Log again” chips (favorites → recents → frequent)
+• Progress default range + 7-day weight trend; share/pick up to 10 photos
+• Food review layout polish; clearer Add Active copy; share/gallery inbox fixes

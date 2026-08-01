@@ -4,16 +4,27 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-08-01
+
 ### Added
 
 - Protein goal modes: grams/day, g/kg body weight, or g/kg lean mass (Android Settings + PWA); rate modes update daily grams when weight or body fat changes.
 - Manual active burn log from Add Food (Android): name + kcal merges into today’s ADD_ACTIVE budget (with Health Connect or activity-level estimate).
 - Add Food “Log again” chips prefer favorites, then recents, then frequent (Android + PWA), with empty-state guidance.
+- Progress chart default range setting, with last-viewed range remembered (Android + PWA).
+- Display-only 7-day moving-average weight trend on Progress charts (Android + PWA); not used by Adaptive Goals.
 
 ### Changed
 
 - Food review sheets put name, serving, macros, and meal first; portion check, ingredients, micros, and What-if sit below (Android + PWA).
 - Clearer ADD_ACTIVE calorie-mode copy on Home and Home Display settings; waiting hint when burn is still zero.
+- Share or pick up to 10 food photos into the multi-photo review sheet (Android; was capped at 2 for share-ins).
+- PWA desktop home hero (≥900px): week-strip day arrows and horizontal calorie/macro bars; mobile keeps the semicircle gauge and vertical tubes.
+
+### Fixed
+
+- Sharing images into Chompass while launched from a launcher shortcut no longer drops the inbox when Home is stopped (Android).
+- Gallery multi-photo import survives activity recreation more reliably (Android).
 
 ## [3.5.1] - 2026-08-01
 
