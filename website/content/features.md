@@ -1,14 +1,26 @@
 ---
 title: Features
-description: Food logging, BYOK AI, keto modes, open export, browser PWA, and Android extras. No ads or analytics.
+description: Food logging, meal components, recipes, BYOK AI with progressive feedback, keto modes, open export, browser PWA, and Android extras. No ads or analytics.
 layout: single
 ---
 
-Calorie and macro tracking as an [installable PWA](https://chompass.app/app/) in any modern browser and as an Android app. Core logging from Fud AI plus fork-specific additions.
+Calorie and macro tracking as an [installable PWA](https://chompass.app/app/) in any modern browser and as an Android app. Log food, review meal components, save recipes, and export open JSON on both clients.
 
 ## Food logging
 
 Multi-photo capture (up to 10), share into the Android app, voice, barcode, text, manual entry, and saved meals. Draft recovery if analysis is interrupted.
+
+## Meal components
+
+After AI or manual review, expand ingredients in the meal sheet. Edit grams or units per row, add or remove items, and keep meal totals aligned with the parts.
+
+## Recipes and saved meals
+
+Recents, frequent foods, favorites, and multi-ingredient recipes. Log a whole recipe in one tap, or open the builder to scale ingredients.
+
+## AI analysis feedback
+
+Photo and text analysis shows clear progress steps (including barcode lookup when photos contain codes). Nutrition fields fill in as the model streams a response, so you can see what is arriving before the final review sheet.
 
 ## Browser PWA
 
@@ -18,13 +30,13 @@ The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phon
 
 ## On-device AI (opt-in, Android app)
 
-**On-Device (Private)** in Settings → AI Provider runs Gemma 4 Edge (E2B or E4B) via LiteRT-LM. One-time download (~2.4–3.4 GB). No API key and no server upload for food text or photo analysis. Cloud AI remains more accurate; optional fallback retries in the cloud when on-device fails. The PWA uses BYOK cloud AI only.
+**On-Device (Private)** in Settings → AI Provider runs Gemma 4 Edge (E2B or E4B) via LiteRT-LM. One-time download (about 2.4-3.4 GB). No API key and no server upload for food text or photo analysis. Cloud AI remains more accurate; optional fallback retries in the cloud when on-device fails. The PWA uses BYOK cloud AI only.
 
 ## Accuracy, honestly
 
 Chompass is BYOK, so accuracy comes down to the model you pick, not a Chompass secret. We test against labeled datasets and publish the results instead of quoting a single accuracy number.
 
-Typed entry **with a stated portion** is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. A meal title or ingredient list without quantities is not the same as typed entry with grams — it may help identification on some models/datasets, but it does not close the portion gap. Full write-up: [How accurate is AI food logging?](/blog/ai-food-logging-accuracy/) (methodology and raw tables on [Codeberg](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md)).
+Typed entry **with a stated portion** is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. A meal title or ingredient list without quantities is not the same as typed entry with grams. It may help identification on some models and datasets, but it does not close the portion gap. Full write-up: [How accurate is AI food logging?](/blog/ai-food-logging-accuracy/) (methodology and raw tables on [Codeberg](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md)).
 
 ## AI Coach
 
@@ -34,17 +46,17 @@ Chat with your own provider key on both clients. Optional fallback provider. Rep
 
 Including keto carb mode. Goals, meal advice, and Coach stay in sync on both clients.
 
-## Progress & Health Connect
+## Progress and Health Connect
 
 Weight, body fat, calorie history, and goals on both clients. On the Android app: steps/exercise and wellness (sleep, HR, hydration) via Health Connect. Two-way sync; live meal import from other apps; optional background sync (off by default). Works with Gadgetbridge, openScale, Samsung Health, and other Health Connect companions. No vendor SDKs.
 
 ## Water, widgets, export
 
-Optional local water log. Android app: reminders and home-screen calorie, protein, metrics, and water widgets. Diary export (JSON / Markdown / CSV), weight & body-metrics import/export, meal sharing, and bulk JSON import on both clients.
+Optional local water log. Android app: reminders and home-screen calorie, protein, metrics, and water widgets. Diary export (JSON / Markdown / CSV), weight and body-metrics import/export, meal sharing, and bulk JSON import on both clients.
 
-## Why this fork
+## Upstream credit
 
-Chompass started when upstream [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) briefly shipped AdMob. Huge thanks to **Apoorv Darshan** and Fud&nbsp;AI. This fork keeps that core BYOK food logger and adds an Android app plus browser PWA on Codeberg. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
+Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by **Apoorv Darshan**. Huge thanks for the open BYOK food logger. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
 
 | Feature | [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android | [Chompass&nbsp;PWA](https://chompass.app/app/) |
 |---------|--------|---------------|-----------|

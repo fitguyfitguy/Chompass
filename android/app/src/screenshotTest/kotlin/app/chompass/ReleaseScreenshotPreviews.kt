@@ -10,7 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import app.chompass.ui.coach.CoachScreenPreviewContent
+import app.chompass.ui.home.EntryAnalysisOverlay
+import app.chompass.ui.home.EntryAnalysisPhase
 import app.chompass.ui.home.HomeAddFoodScreenshotContent
+import app.chompass.ui.home.HomeMealComponentsScreenshotContent
+import app.chompass.ui.home.HomeRecipesScreenshotContent
 import app.chompass.ui.home.HomeScreenPreviewContent
 import app.chompass.ui.navigation.ChompassBottomNavBar
 import app.chompass.ui.navigation.ChompassRoutes
@@ -28,6 +32,7 @@ private const val PHONE = "spec:width=411dp,height=914dp,dpi=420"
 private fun ReleaseScreenshotFrame(
     currentRoute: String,
     darkTheme: Boolean,
+    showNavBar: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     ChompassTheme(
@@ -41,11 +46,13 @@ private fun ReleaseScreenshotFrame(
         ) {
             Box(Modifier.fillMaxSize()) {
                 content()
-                ChompassBottomNavBar(
-                    currentRoute = currentRoute,
-                    onTap = {},
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
+                if (showNavBar) {
+                    ChompassBottomNavBar(
+                        currentRoute = currentRoute,
+                        onTap = {},
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    )
+                }
             }
         }
     }
@@ -144,5 +151,48 @@ fun SettingsDarkScreenshot() {
 fun AddFoodDarkScreenshot() {
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
         HomeAddFoodScreenshotContent(ui = ScreenshotFixtures.homeUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "11-meal-components-dark", device = PHONE)
+@Composable
+fun MealComponentsDarkScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
+        HomeMealComponentsScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            constituents = ScreenshotFixtures.mealConstituents,
+            mealName = "Chicken rice bowl",
+            mealCalories = 540,
+            mealEmoji = "🍗",
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "12-recipes-dark", device = PHONE)
+@Composable
+fun RecipesDarkScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
+        HomeRecipesScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            recipes = ScreenshotFixtures.demoRecipes,
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "13-ai-analysis-dark", device = PHONE)
+@Composable
+fun AiAnalysisDarkScreenshot() {
+    ReleaseScreenshotFrame(
+        currentRoute = ChompassRoutes.HOME,
+        darkTheme = true,
+        showNavBar = false,
+    ) {
+        EntryAnalysisOverlay(
+            phase = EntryAnalysisPhase.CallingAi,
+            partial = ScreenshotFixtures.streamingPartial,
+        )
     }
 }

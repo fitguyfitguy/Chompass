@@ -52,10 +52,10 @@ def main() -> None:
     sub_font = load_font(28, bold=False)
 
     draw.text((280, 200), "Chompass", font=title_font, fill=TEXT)
-    draw.text((280, 320), "Ad-free AI calorie tracker for Android", font=tag_font, fill=TEAL)
+    draw.text((280, 320), "Private calorie tracking", font=tag_font, fill=TEAL)
     draw.text(
         (280, 390),
-        "Cloud BYOK or on-device Gemma 4 · No ads · No analytics",
+        "Android and browser. Your AI key. No ads.",
         font=sub_font,
         fill=MUTED,
     )

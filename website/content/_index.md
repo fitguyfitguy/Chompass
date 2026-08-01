@@ -1,4 +1,4 @@
 ---
 title: Chompass
-description: "Ad-free AI calorie tracker: Android app and browser PWA. Bring your own cloud AI key on either client; optional on-device Gemma 4 on Android. Fork of Fud AI."
+description: "Private calorie tracking for Android and the browser. Bring your own AI key; optional on-device Gemma 4 on Android. No ads, no analytics, no account."
 ---
