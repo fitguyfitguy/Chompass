@@ -2,8 +2,10 @@ package app.chompass.ui.home
 
 import android.Manifest
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -64,6 +66,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
 import java.util.UUID
 import app.chompass.AppContainer
+import app.chompass.ChompassApp
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
@@ -124,24 +127,44 @@ fun HomeScreen(container: AppContainer) {
     // Set when Gallery is tapped from the camera Dialog — launch the picker only
     // after the Dialog has left composition so the Activity Result is not lost.
     var pendingGalleryPick by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val photoImportFailedMessage = stringResource(R.string.photo_import_failed)
 
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
         if (uris.isEmpty()) return@rememberLauncherForActivityResult
-        // Activity lifecycleScope (not rememberCoroutineScope): the picker may
-        // return after this composition was disposed (duplicate MainActivity /
-        // task switch). Deliver via the app-scoped inbox so a resumed Home can
-        // open the multi-photo sheet.
-        val activity = ctx as? ComponentActivity ?: return@rememberLauncherForActivityResult
-        activity.lifecycleScope.launch {
+        // Prefer Activity lifecycleScope; fall back to app scope when LocalContext is
+        // wrapped or this composition was disposed after a duplicate MainActivity /
+        // task switch. Deliver via the app-scoped inbox so a resumed Home can open
+        // the multi-photo sheet; also open locally when this composition is alive.
+        val activity = ctx.findComponentActivity()
+        val importScope = activity?.lifecycleScope
+            ?: (ctx.applicationContext as ChompassApp).applicationScope
+        if (activity == null) {
+            Log.w(PHOTO_IMPORT_TAG, "gallery pick: no ComponentActivity; using appScope")
+        }
+        importScope.launch {
             val remaining = (10 - pendingCaptureImageBytes.size).coerceAtLeast(0)
             if (remaining == 0) return@launch
             val imported = withContext(Dispatchers.IO) {
                 uris.take(remaining).mapNotNull { uri -> readImageBytes(ctx, uri) }
             }
-            if (imported.isEmpty()) return@launch
-            container.sharedImageInbox.value = imported
+            if (imported.isEmpty()) {
+                Log.w(PHOTO_IMPORT_TAG, "gallery pick: ${uris.size} uri(s), 0 readable")
+                withContext(Dispatchers.Main) {
+                    snackbarHostState.showSnackbar(photoImportFailedMessage)
+                }
+                return@launch
+            }
+            withContext(Dispatchers.Main.immediate) {
+                // Same ByteArray refs as inbox so the RESUMED consumer can skip
+                // duplicate merge when this composition already applied them.
+                pendingCaptureImageBytes = (pendingCaptureImageBytes + imported).take(10)
+                isImportingPhotos = true
+                showMultiPhotoCapture = true
+                container.sharedImageInbox.value = imported
+            }
         }
     }
 
@@ -168,7 +191,8 @@ fun HomeScreen(container: AppContainer) {
     // Photos from the system share sheet (MainActivity) or in-app gallery pick.
     // Only consume while RESUMED so a stopped MainActivity under a duplicate
     // instance cannot clear the app-scoped inbox first. Merge into any photos
-    // already staged in the multi-photo sheet (add-more from gallery).
+    // already staged in the multi-photo sheet (add-more from gallery). Skip
+    // ByteArrays already applied by the picker callback (same instance refs).
     val sharedImages by container.sharedImageInbox.collectAsState()
     LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy, lifecycleOwner) {
         if (sharedImages.isEmpty()) return@LaunchedEffect
@@ -177,7 +201,16 @@ fun HomeScreen(container: AppContainer) {
             val images = container.sharedImageInbox.value
             if (images.isEmpty()) return@repeatOnLifecycle
             container.sharedImageInbox.value = emptyList()
-            pendingCaptureImageBytes = (pendingCaptureImageBytes + images).take(10)
+            val existing = pendingCaptureImageBytes
+            val toAdd = images.filter { img -> existing.none { it === img } }
+            if (toAdd.isEmpty()) {
+                if (existing.isNotEmpty()) {
+                    isImportingPhotos = true
+                    showMultiPhotoCapture = true
+                }
+                return@repeatOnLifecycle
+            }
+            pendingCaptureImageBytes = (existing + toAdd).take(10)
             isImportingPhotos = true
             showMultiPhotoCapture = true
         }
@@ -278,7 +311,6 @@ fun HomeScreen(container: AppContainer) {
         ui.todayEntries.filter { it.id in selectedEntryIds }
     }
     val inSelectionMode = selectedEntryIds.isNotEmpty()
-    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val foodRemovedMessage = stringResource(R.string.home_food_removed)
     val undoLabel = stringResource(R.string.action_undo)
@@ -1088,3 +1120,14 @@ private fun readImageBytes(context: Context, uri: Uri): ByteArray? =
     runCatching {
         context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
     }.getOrNull()?.takeIf { it.isNotEmpty() }
+
+private const val PHOTO_IMPORT_TAG = "Chompass"
+
+private fun Context.findComponentActivity(): ComponentActivity? {
+    var current: Context? = this
+    while (current is ContextWrapper) {
+        if (current is ComponentActivity) return current
+        current = current.baseContext
+    }
+    return current as? ComponentActivity
+}
