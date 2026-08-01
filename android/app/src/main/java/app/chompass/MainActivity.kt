@@ -8,10 +8,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.util.Log
 import androidx.core.content.IntentCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +36,7 @@ import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
 import app.chompass.debug.OnDeviceLlmDefaults
 import app.chompass.services.EntryPerfBenchmark
+import app.chompass.services.FoodPhotoSession
 import app.chompass.services.LauncherShortcuts
 import app.chompass.services.MealShare
 import app.chompass.services.ShortcutEntryAction
@@ -46,6 +50,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 open class MainActivity : ComponentActivity() {
     // Shared-meal deep link (issue #107). Non-empty -> the confirm sheet is shown over the app.
@@ -57,6 +62,47 @@ open class MainActivity : ComponentActivity() {
     private var lastSystemPrimaryArgb: Int? = null
     private var wallpaperColorsListener: WallpaperManager.OnColorsChangedListener? = null
     private var systemPaletteRefreshJob: Job? = null
+
+    /**
+     * Activity-owned Photo Picker for food entry. Registered here (not in Home
+     * composition) so results survive Dialog dismiss / Compose dispose and never
+     * need the share-sheet [AppContainer.sharedImageInbox] as a fallback.
+     * Property initializer — must register before the Activity is CREATED.
+     */
+    private val foodGalleryPicker =
+        registerForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia(maxItems = FoodPhotoSession.MAX_IMAGES)
+        ) { uris ->
+            if (uris.isEmpty()) return@registerForActivityResult
+            val session = (application as ChompassApp).container.foodPhotoSession
+            val remaining = session.remainingSlots()
+            if (remaining == 0) return@registerForActivityResult
+            lifecycleScope.launch(Dispatchers.IO) {
+                val imported = uris.take(remaining).mapNotNull { uri ->
+                    runCatching {
+                        contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    }.getOrNull()?.takeIf { it.isNotEmpty() }
+                }
+                withContext(Dispatchers.Main) {
+                    if (imported.isEmpty()) {
+                        Log.w(PHOTO_IMPORT_TAG, "gallery pick: ${uris.size} uri(s), 0 readable")
+                        session.signalImportFailed()
+                    } else {
+                        session.stageFromImport(imported)
+                    }
+                }
+            }
+        }
+
+    /**
+     * Open the system Photo Picker for food photos. Call after dismissing any
+     * camera Dialog (Home posts onto the decor view) so the Activity Result is not lost.
+     */
+    fun launchFoodGalleryPick() {
+        foodGalleryPicker.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
 
     /**
      * Route whatever launched (or re-launched) us: a `fudai://add-meal` link into
@@ -95,8 +141,8 @@ open class MainActivity : ComponentActivity() {
     /**
      * Photos shared from another app (camera, gallery). Up to 10 images enter
      * the multi-photo review sheet (same cap as in-app gallery pick).
-     * Bytes are read off the main thread, then handed to Home via the
-     * container's [sharedImageInbox][AppContainer.sharedImageInbox].
+     * Bytes are read off the main thread, then handed to Home via
+     * [AppContainer.sharedImageInbox] (share-ins only — not in-app gallery).
      */
     private fun handleSharedImages(intent: Intent) {
         val type = intent.type
@@ -313,6 +359,7 @@ open class MainActivity : ComponentActivity() {
 
     private companion object {
         const val FOREGROUND_SYNC_MIN_INTERVAL_MS = 60_000L
+        const val PHOTO_IMPORT_TAG = "Chompass"
     }
 
     /**
