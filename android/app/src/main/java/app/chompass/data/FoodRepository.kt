@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -430,15 +431,18 @@ class FoodRepository(
     }
 
     /**
-     * Hub chips for one-tap re-log: favorites first, then recents, then frequent,
-     * de-duplicated by [FoodEntry.favoriteKey].
+     * Hub chips for one-tap re-log: meal-matched (or snacks in the snack
+     * window) first, favorites soft-boosted within each bucket, then fill
+     * from snacks / other recents / frequent. De-duplicated by
+     * [FoodEntry.favoriteKey].
      */
     suspend fun quickRelogTemplates(limit: Int = 6): List<FoodEntry> {
         migratedFavorites()
         val favorites = prefs.favoriteFoodEntries.first()
         val recents = recent()
         val frequents = frequent().map { it.template }
-        return quickRelogFoodTemplates(favorites, recents, frequents, limit)
+        val currentMeal = prefs.mealSchedule.first().mealTypeAt(LocalTime.now())
+        return quickRelogFoodTemplates(favorites, recents, frequents, currentMeal, limit = limit)
     }
 }
 
@@ -455,25 +459,52 @@ internal fun recentFoodTemplates(entries: List<FoodEntry>, limit: Int = 50): Lis
 }
 
 /**
- * Favorites → recents → frequent, unique by [FoodEntry.favoriteKey].
+ * Mealtime-aware hub chips: unique by [FoodEntry.favoriteKey] (merge order
+ * favorites → recents → frequent for template payload), then ranked by
+ * current meal window with favorites soft-boosted within each bucket.
  */
 internal fun quickRelogFoodTemplates(
     favorites: List<FoodEntry>,
     recents: List<FoodEntry>,
     frequents: List<FoodEntry>,
+    currentMeal: MealType,
+    favoriteKeys: Set<String> = favorites
+        .map { it.favoriteKey }
+        .filter { it.isNotEmpty() }
+        .toSet(),
     limit: Int = 6,
 ): List<FoodEntry> {
     val seen = mutableSetOf<String>()
-    val out = ArrayList<FoodEntry>(limit)
+    val pool = ArrayList<FoodEntry>()
     for (source in listOf(favorites, recents, frequents)) {
         for (entry in source) {
             val key = entry.favoriteKey
             if (key.isEmpty() || !seen.add(key)) continue
-            out.add(entry)
-            if (out.size >= limit) return out
+            pool.add(entry)
         }
     }
-    return out
+
+    val withinBucket = Comparator<FoodEntry> { a, b ->
+        val favCmp = (b.favoriteKey in favoriteKeys).compareTo(a.favoriteKey in favoriteKeys)
+        if (favCmp != 0) favCmp else b.timestamp.compareTo(a.timestamp)
+    }
+
+    val buckets = if (currentMeal == MealType.SNACK) {
+        listOf(
+            pool.filter { it.mealType == MealType.SNACK },
+            pool.filter { it.mealType != MealType.SNACK },
+        )
+    } else {
+        listOf(
+            pool.filter { it.mealType == currentMeal },
+            pool.filter { it.mealType == MealType.SNACK },
+            pool.filter { it.mealType != currentMeal && it.mealType != MealType.SNACK },
+        )
+    }
+
+    return buckets
+        .flatMap { bucket -> bucket.sortedWith(withinBucket) }
+        .take(limit)
 }
 
 /**
