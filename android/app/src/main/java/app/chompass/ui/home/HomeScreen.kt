@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -115,18 +116,43 @@ fun HomeScreen(container: AppContainer) {
     var showMultiPhotoCapture by remember { mutableStateOf(false) }
     var pendingCaptureImageBytes by remember { mutableStateOf<List<ByteArray>>(emptyList()) }
     var isImportingPhotos by remember { mutableStateOf(false) }
+    // Set when Gallery is tapped from the camera Dialog — launch the picker only
+    // after the Dialog has left composition so the Activity Result is not lost.
+    var pendingGalleryPick by remember { mutableStateOf(false) }
+    val photoImportScope = rememberCoroutineScope()
 
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10)
     ) { uris ->
-        val remaining = 10 - pendingCaptureImageBytes.size
-        val imported = uris.take(remaining).mapNotNull { uri ->
-            ctx.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-        }
-        if (imported.isNotEmpty()) {
+        if (uris.isEmpty()) return@rememberLauncherForActivityResult
+        photoImportScope.launch {
+            val remaining = 10 - pendingCaptureImageBytes.size
+            if (remaining <= 0) return@launch
+            val imported = withContext(Dispatchers.IO) {
+                uris.take(remaining).mapNotNull { uri -> readImageBytes(ctx, uri) }
+            }
+            if (imported.isEmpty()) return@launch
             pendingCaptureImageBytes = (pendingCaptureImageBytes + imported).take(10)
+            isImportingPhotos = true
+            showMultiPhotoCapture = true
         }
-        if (pendingCaptureImageBytes.isNotEmpty()) showMultiPhotoCapture = true
+    }
+
+    fun openGalleryPicker() {
+        isImportingPhotos = true
+        if (showCameraCapture) {
+            showCameraCapture = false
+            pendingGalleryPick = true
+        } else {
+            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+    }
+
+    LaunchedEffect(pendingGalleryPick, showCameraCapture) {
+        if (pendingGalleryPick && !showCameraCapture) {
+            pendingGalleryPick = false
+            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
     }
 
     // Photos shared into the app via the system share sheet (filled by
@@ -688,11 +714,7 @@ fun HomeScreen(container: AppContainer) {
                 pendingCaptureImageBytes = (pendingCaptureImageBytes + bytes).take(10)
                 showMultiPhotoCapture = true
             },
-            onOpenGallery = {
-                showCameraCapture = false
-                isImportingPhotos = true
-                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
+            onOpenGallery = { openGalleryPicker() },
             onDismiss = {
                 showCameraCapture = false
                 if (pendingCaptureImageBytes.isNotEmpty()) {
@@ -710,7 +732,7 @@ fun HomeScreen(container: AppContainer) {
             onAddPhoto = {
                 if (pendingCaptureImageBytes.size < 10) {
                     if (isImportingPhotos) {
-                        photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        openGalleryPicker()
                     } else {
                         showMultiPhotoCapture = false
                         showCameraCapture = true
@@ -1009,3 +1031,9 @@ internal fun HomeScreenPreviewContent(
         }
     }
 }
+
+/** Reads image bytes from a Photo Picker / share URI; failures are skipped. */
+private fun readImageBytes(context: Context, uri: Uri): ByteArray? =
+    runCatching {
+        context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+    }.getOrNull()?.takeIf { it.isNotEmpty() }
