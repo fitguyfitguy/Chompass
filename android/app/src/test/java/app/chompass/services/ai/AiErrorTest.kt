@@ -38,7 +38,7 @@ class AiErrorTest {
 
     @Test
     fun overloadedStatusesReturnOverloadedMessage() {
-        val overloaded = "The AI provider is overloaded right now. We retried a few times — please try again in a minute, or switch to a different provider/model in Settings → AI Provider."
+        val overloaded = "The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider."
 
         assertEquals(overloaded, friendlyMessage(503, "Service unavailable"))
         assertEquals(overloaded, friendlyMessage(529, "Overloaded"))
@@ -88,5 +88,5 @@ class AiErrorTest {
     }
 
     private val locationUnsupported =
-        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit — datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
+        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
 }
