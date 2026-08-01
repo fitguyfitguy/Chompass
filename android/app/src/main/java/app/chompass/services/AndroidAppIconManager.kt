@@ -15,24 +15,43 @@ object AndroidAppIconManager {
         val currentlyEnabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
             isAliasEnabled(pm, context, color)
         }
-        if (currentlyEnabled == resolved) return
-
-        AppThemeColor.iconSelectableColors().forEach { color ->
-            val component = ComponentName(
-                context.packageName,
-                "$MANIFEST_NAMESPACE.${color.launcherAliasSimpleName}",
-            )
-            val state = if (color == resolved) {
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-            } else {
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        if (currentlyEnabled != resolved) {
+            AppThemeColor.iconSelectableColors().forEach { color ->
+                val component = ComponentName(
+                    context.packageName,
+                    "$MANIFEST_NAMESPACE.${color.launcherAliasSimpleName}",
+                )
+                val state = if (color == resolved) {
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                } else {
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                }
+                pm.setComponentEnabledSetting(
+                    component,
+                    state,
+                    PackageManager.DONT_KILL_APP,
+                )
             }
-            pm.setComponentEnabledSetting(
-                component,
-                state,
-                PackageManager.DONT_KILL_APP,
-            )
         }
+        // Shortcuts must target the enabled alias (same component as the live
+        // task). Republish after every apply so theme switches stay in sync.
+        LauncherShortcuts.publish(context)
+    }
+
+    /**
+     * Component currently owning MAIN/LAUNCHER (themed activity-alias).
+     * Explicit intents (shortcuts, shares) must use this — not [app.chompass.MainActivity] —
+     * or `singleTop` / `CLEAR_TOP` can stack a second instance and drop entry results.
+     */
+    fun enabledLauncherComponent(context: Context): ComponentName {
+        val pm = context.packageManager
+        val enabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
+            isAliasEnabled(pm, context, color)
+        } ?: AppThemeColor.TEAL
+        return ComponentName(
+            context.packageName,
+            "$MANIFEST_NAMESPACE.${enabled.launcherAliasSimpleName}",
+        )
     }
 
     private fun isAliasEnabled(

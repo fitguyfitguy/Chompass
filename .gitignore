@@ -81,3 +81,4 @@ Fud-Food-Diary-2026-04-27_to_2026-07-22.cleaned.json
 # Chrome/Lighthouse under WSL may create Windows-style user-data paths as
 # literal cwd-relative directories (e.g. C:\Users\...\lighthouse.*)
 /C\:\\*/
+scripts/_tmp_finish_3_6_0_publish.sh
