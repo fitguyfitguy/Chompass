@@ -479,7 +479,6 @@
     <string name="sheet_constituents_count">Ingredients (%1$d)</string>
     <string name="sheet_constituents_add">Add ingredient</string>
     <string name="sheet_constituents_remove">Remove ingredient</string>
-    <string name="sheet_constituents_macros_format">%1$d kcal · P %2$s · C %3$s · F %4$s</string>
     <string name="sheet_portion_clarify_prompt">Confirm the portion?</string>
     <string name="sheet_portion_clarify_weight_label">Exact weight</string>
     <string name="sheet_portion_clarify_weight_placeholder">grams</string>

@@ -239,46 +239,46 @@ internal fun ProgressiveAnalysisCard(
     animate: Boolean = true,
 ) {
     FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            val nameFilled = partial.name != null
             val nameAlpha by animateFloatAsState(
-                targetValue = if (partial.name != null) 1f else 0.35f,
+                targetValue = if (nameFilled) 1f else 0.7f,
                 animationSpec = spring(stiffness = if (animate) Spring.StiffnessMediumLow else Spring.StiffnessHigh),
                 label = "nameAlpha",
             )
             Text(
-                "${partial.emoji ?: "🍽"}  ${partial.name ?: "····"}",
+                text = "${partial.emoji ?: "🍽"}  ${partial.name ?: "····"}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = nameAlpha),
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.graphicsLayer { alpha = nameAlpha },
             )
-            val calAlpha by animateFloatAsState(
-                targetValue = if (partial.calories != null) 1f else 0.35f,
-                animationSpec = spring(stiffness = if (animate) Spring.StiffnessMediumLow else Spring.StiffnessHigh),
-                label = "calAlpha",
+            ProgressiveNutritionRow(
+                label = stringResource(R.string.nutrition_label_calories),
+                displayValue = partial.calories?.toString(),
+                unit = stringResource(R.string.unit_kcal),
+                accentColor = AppColors.Calorie,
+                animate = animate,
             )
-            Text(
-                partial.calories?.let { "$it kcal" } ?: "··· kcal",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = AppColors.Calorie.copy(alpha = calAlpha),
-            )
-            ProgressiveMacroLine(
+            ProgressiveNutritionRow(
                 label = stringResource(R.string.nutrition_label_protein),
-                value = partial.protein,
-                color = AppColors.Protein,
+                displayValue = partial.protein?.let { MacroValueFormatter.string(it) },
+                unit = stringResource(R.string.unit_g),
+                accentColor = AppColors.Protein,
                 animate = animate,
             )
-            ProgressiveMacroLine(
+            ProgressiveNutritionRow(
                 label = stringResource(R.string.nutrition_label_carbs),
-                value = partial.carbs,
-                color = AppColors.Carbs,
+                displayValue = partial.carbs?.let { MacroValueFormatter.string(it) },
+                unit = stringResource(R.string.unit_g),
+                accentColor = AppColors.Carbs,
                 animate = animate,
             )
-            ProgressiveMacroLine(
+            ProgressiveNutritionRow(
                 label = stringResource(R.string.nutrition_label_fat),
-                value = partial.fat,
-                color = AppColors.Fat,
+                displayValue = partial.fat?.let { MacroValueFormatter.string(it) },
+                unit = stringResource(R.string.unit_g),
+                accentColor = AppColors.Fat,
                 animate = animate,
             )
             Text(
@@ -287,7 +287,7 @@ internal fun ProgressiveAnalysisCard(
                 } ?: stringResource(R.string.entry_analysis_field_pending),
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = if (partial.servingSizeGrams != null) 0.55f else 0.28f
+                    alpha = if (partial.servingSizeGrams != null) 0.55f else 0.4f
                 ),
             )
             if (partial.micronutrientCount > 0) {
@@ -316,28 +316,57 @@ internal fun ProgressiveAnalysisCard(
 }
 
 @Composable
-private fun ProgressiveMacroLine(
+private fun ProgressiveNutritionRow(
     label: String,
-    value: Double?,
-    color: Color,
+    displayValue: String?,
+    unit: String,
+    accentColor: Color,
     animate: Boolean,
 ) {
-    val alpha by animateFloatAsState(
-        targetValue = if (value != null) 1f else 0.35f,
+    val filled = displayValue != null
+    val rowAlpha by animateFloatAsState(
+        targetValue = if (filled) 1f else 0.7f,
         animationSpec = spring(stiffness = if (animate) Spring.StiffnessMediumLow else Spring.StiffnessHigh),
-        label = "macroAlpha-$label",
+        label = "nutritionRowAlpha-$label",
     )
-    Text(
-        text = if (value != null) {
-            "$label ${MacroValueFormatter.withUnit(value)}"
-        } else {
-            "$label ···"
-        },
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        color = color.copy(alpha = alpha),
-        modifier = Modifier.graphicsLayer { this.alpha = alpha },
-    )
+    val pendingWash = accentColor.copy(alpha = 0.08f)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (!filled) {
+                    Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(pendingWash)
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                } else {
+                    Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                },
+            )
+            .graphicsLayer { alpha = rowAlpha },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = accentColor,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = displayValue ?: "···",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (filled) accentColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = unit,
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            modifier = Modifier.width(36.dp),
+        )
+    }
 }
 
 @Composable
