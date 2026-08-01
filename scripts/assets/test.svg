@@ -1,0 +1,36 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App icon background (squircle) -->
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#bgGradient)"/>
+
+  <!-- Compass ring -->
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.85"/>
+
+  <!-- Cardinal tick marks -->
+  <rect x="252" y="86"  width="8" height="18" rx="3" fill="#ffffff" opacity="0.6"/>
+  <rect x="252" y="408" width="8" height="18" rx="3" fill="#ffffff" opacity="0.6"/>
+  <rect x="86"  y="252" width="18" height="8" rx="3" fill="#ffffff" opacity="0.6"/>
+  <rect x="408" y="252" width="18" height="8" rx="3" fill="#ffffff" opacity="0.6"/>
+
+  <!-- Compass needle: North half = fork head -->
+  <g fill="#ffffff">
+    <!-- Neck / trapezoid connecting fork to pivot -->
+    <polygon points="256,256 226,190 286,190"/>
+    <!-- Fork tines -->
+    <rect x="227" y="118" width="14" height="80" rx="7"/>
+    <rect x="249" y="118" width="14" height="80" rx="7"/>
+    <rect x="271" y="118" width="14" height="80" rx="7"/>
+  </g>
+
+  <!-- Compass needle: South half = pointed tail -->
+  <polygon points="256,394 238,256 274,256" fill="#ffffff" opacity="0.35"/>
+
+  <!-- Center pivot -->
+  <circle cx="256" cy="256" r="11" fill="#1e1b4b" stroke="#ffffff" stroke-width="3"/>
+</svg>

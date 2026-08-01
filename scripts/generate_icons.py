@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
-"""Generate Chompass launcher, PWA, and splash logos from the master artwork."""
+"""Generate Chompass launcher, PWA, and splash logos from the SVG brand mark."""
 
 from __future__ import annotations
 
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-MASTER = ROOT / "scripts" / "chompass_icon_master.png"
+MASTER_SVG = ROOT / "scripts" / "assets" / "chompass_icon_mark.svg"
+# Generated preview (teal squircle) — not an editable source.
+MASTER_PREVIEW = ROOT / "scripts" / "chompass_icon_master.png"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
 PWA_ICONS = ROOT / "web" / "app" / "icons"
 METADATA_ICON = ROOT / "metadata" / "en-US" / "images" / "icon.png"
+
+# Rasterize the SVG well above the largest consumer size, then LANCZOS-down.
+RASTER_PX = 2048
+# Squircle corner radius as a fraction of canvas (matches prior master look).
+SQUIRCLE_CORNER_RATIO = 0.215
 
 DENSITIES = {
     "mipmap-mdpi": 48,
@@ -75,70 +85,58 @@ def make_gradient(size: int, start: tuple[int, int, int], end: tuple[int, int, i
     return img
 
 
-def fill_mask_holes(mask: Image.Image) -> Image.Image:
-    """Fill enclosed zero regions in a binary L mask (keeps exterior transparent).
-
-    Seed flood-fill from every border zero. Seeding only (0, 0) misses white
-    padding pockets sealed against other edges when the squircle touches the
-    canvas — those were treated as holes and became white edge fringe.
-    """
-    temp = mask.point(lambda v: 255 if v > 127 else 0)
-    w, h = mask.size
-    border: list[tuple[int, int]] = []
-    for x in range(w):
-        border.append((x, 0))
-        border.append((x, h - 1))
-    for y in range(1, h - 1):
-        border.append((0, y))
-        border.append((w - 1, y))
-    for point in border:
-        if temp.getpixel(point) == 0:
-            ImageDraw.floodfill(temp, point, 128)
-    out = Image.new("L", mask.size, 0)
-    src = temp.load()
-    dst = out.load()
-    for y in range(h):
-        for x in range(w):
-            v = src[x, y]
-            # 255 = original solid; 0 = enclosed hole → both become solid.
-            if v != 128:
-                dst[x, y] = 255
-    return out
+def _resvg_command() -> list[str]:
+    """Prefer a PATH resvg; otherwise invoke via nix shell."""
+    found = shutil.which("resvg")
+    if found:
+        return [found]
+    if shutil.which("nix"):
+        return ["nix", "shell", "nixpkgs#resvg", "-c", "resvg"]
+    raise SystemExit(
+        "resvg not found. Install resvg, or ensure `nix` can run "
+        "`nix shell nixpkgs#resvg -c resvg`."
+    )
 
 
-def extract_masks(master: Image.Image) -> tuple[Image.Image, Image.Image]:
-    """Return (rounded_square_alpha, white_logo_alpha) from the master icon."""
-    rgba = master.convert("RGBA")
-    w, h = rgba.size
-    rounded = Image.new("L", (w, h), 0)
-    logo = Image.new("L", (w, h), 0)
-    pixels = rgba.load()
-    rounded_px = rounded.load()
-    logo_px = logo.load()
+def rasterize_svg(svg_path: Path, size: int) -> Image.Image:
+    """Render the brand-mark SVG to an RGBA PIL image at `size` px."""
+    if not svg_path.is_file():
+        raise SystemExit(f"Master SVG missing: {svg_path}")
 
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = pixels[x, y]
-            if a < 16:
-                continue
-            # The master PNG is a square export with opaque white in the outer
-            # corners. Only the colored squircle is the icon background.
-            if r > 210 and g > 210 and b > 210:
-                logo_px[x, y] = 255
-                continue
-            rounded_px[x, y] = 255
+    with tempfile.TemporaryDirectory(prefix="chompass-icon-") as tmp:
+        out = Path(tmp) / "mark.png"
+        cmd = [
+            *_resvg_command(),
+            "-w",
+            str(size),
+            "-h",
+            str(size),
+            str(svg_path),
+            str(out),
+        ]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError as exc:
+            detail = (exc.stderr or exc.stdout or "").strip()
+            raise SystemExit(f"resvg failed ({exc.returncode}): {detail}") from exc
+        return Image.open(out).convert("RGBA").copy()
 
-    # White NF sits on top of the squircle, so those pixels are missing from
-    # `rounded`. Fill holes so the interior is solid, then keep only logo
-    # whites that fall inside that filled squircle (drop corner padding).
-    filled = fill_mask_holes(rounded)
-    filled_px = filled.load()
-    for y in range(h):
-        for x in range(w):
-            if logo_px[x, y] and not filled_px[x, y]:
-                logo_px[x, y] = 0
 
-    return filled, logo
+def logo_mask_from_raster(raster: Image.Image) -> Image.Image:
+    """Preserve resvg antialiased alpha (do not binary-threshold — that jagged every size)."""
+    alpha = raster.getchannel("A")
+    # Drop near-zero noise only; keep soft edge coverage for LANCZOS downscales.
+    return alpha.point(lambda v: 0 if v < 8 else v)
+
+
+def make_squircle_mask(size: int, corner_ratio: float = SQUIRCLE_CORNER_RATIO) -> Image.Image:
+    """Programmatic rounded-rect mask with supersampled soft edges."""
+    scale = 4
+    big = size * scale
+    mask = Image.new("L", (big, big), 0)
+    radius = max(1, int(round(big * corner_ratio)))
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, big - 1, big - 1), radius=radius, fill=255)
+    return mask.resize((size, size), Image.Resampling.LANCZOS)
 
 
 def compose_icon(
@@ -325,19 +323,23 @@ def write_pwa_icons(rounded_mask: Image.Image, logo_mask: Image.Image) -> None:
 
 
 def main() -> None:
-    if not MASTER.exists():
-        raise SystemExit(f"Master icon missing: {MASTER}")
+    raster = rasterize_svg(MASTER_SVG, RASTER_PX)
+    logo_mask = logo_mask_from_raster(raster)
+    rounded_mask = make_squircle_mask(RASTER_PX)
 
-    master = Image.open(MASTER)
-    rounded_mask, logo_mask = extract_masks(master)
+    teal = next(t for t in THEMES if t[0] == "_teal")
+    # Generated preview for quick eyeballing; edit the SVG, not this PNG.
+    compose_icon(1024, rounded_mask, logo_mask, teal[1], teal[2]).save(
+        MASTER_PREVIEW, optimize=True
+    )
 
     drawable = RES / "drawable-nodpi"
     drawable.mkdir(parents=True, exist_ok=True)
 
     for suffix, start, end, logo_name in THEMES:
-        icon_2048 = compose_icon(LOGO_SIZE, rounded_mask, logo_mask, start, end)
+        icon_512 = compose_icon(LOGO_SIZE, rounded_mask, logo_mask, start, end)
         if logo_name:
-            icon_2048.save(drawable / logo_name, optimize=True)
+            icon_512.save(drawable / logo_name, optimize=True)
 
         base = "ic_launcher" + suffix
         for folder, px in DENSITIES.items():
@@ -353,8 +355,10 @@ def main() -> None:
     write_adaptive_icons(logo_mask)
     write_pwa_icons(rounded_mask, logo_mask)
     print(
-        f"Generated icons for {len(THEMES)} themes across {len(DENSITIES)} densities "
-        f"+ adaptive anydpi-v26 + PWA icons in {PWA_ICONS.relative_to(ROOT)}."
+        f"Generated icons from {MASTER_SVG.relative_to(ROOT)} "
+        f"({RASTER_PX}px raster) for {len(THEMES)} themes across "
+        f"{len(DENSITIES)} densities + adaptive anydpi-v26 + PWA icons in "
+        f"{PWA_ICONS.relative_to(ROOT)}."
     )
 
 
