@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">Cheie API opțională pentru foto de mâncare și coach.
 Google AI Studio este gratuit și recomandat.</string>
     <string name="onboarding_provider_recommended_title">Recomandat: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Gratuit și de calitate — ideal pentru foto de mâncare</string>
+    <string name="onboarding_provider_recommended_subtitle">Gratuit și de calitate. Ideal pentru fotografii de mâncare.</string>
     <string name="onboarding_provider_howto_title">Cum obții o cheie gratuită Google AI Studio</string>
     <string name="onboarding_provider_step_1">Deschide aistudio.google.com/apikey (atinge pentru a deschide)</string>
     <string name="onboarding_provider_step_2">Autentifică-te cu Google și creează o cheie API</string>
@@ -394,7 +394,7 @@ acest dispozitiv, criptată. Poți schimba în Setări.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Verifică fotografia</string>
     <string name="context_note_section">Adaugă o notă (opțional)</string>
-    <string name="context_note_placeholder">ex. 2 ouă în unt, salată cu dressing, pui la grătar fără sos</string>
+    <string name="context_note_placeholder">ex. 2 ouă omletă în unt, bol Chipotle cu ulei extra, pui la grătar fără sos</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Ascult...</string>
@@ -581,7 +581,7 @@ acest dispozitiv, criptată. Poți schimba în Setări.</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Este ora cântăririi</string>
     <string name="notif_weight_log_text">Înregistrează greutatea de azi pentru a menține graficul tău de progres precis.</string>
-    <string name="settings_health_unavailable">Health Connect nu este disponibil pe acest dispozitiv. De la Android 14 face parte din sistem; dacă ROM-ul nu îl expune, folosește export/import de fișiere. Chompass nu necesită aplicația din Play Store pe Android 14+.</string>
+    <string name="settings_health_unavailable">Health Connect nu este disponibil pe acest dispozitiv. Pe Android 14 și versiuni ulterioare vine cu sistemul. Folosește export/import de fișiere dacă ROM-ul nu îl expune. Chompass nu necesită niciodată aplicația Health Connect din Play Store pe Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">Furnizor AI</string>
@@ -716,4 +716,80 @@ acest dispozitiv, criptată. Poți schimba în Setări.</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">Înregistrează din nou</string>
+    <string name="add_food_quick_relog_empty">Adaugă o masă la favorite sau înregistreaz-o o dată. Va apărea aici pentru reînregistrare cu o atingere.</string>
+    <string name="add_food_quick_relog_hint">Favorite și mese anterioare. Mai rapid decât rescanarea.</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">Privat și offline. Mai puțin precis decât IA în cloud; descărcare de ~2-4 GB</string>
+    <string name="camera_scale_tip_message">Sfat: include o furculiță, mâna sau o monedă lângă mâncare. Ajută la estimarea porției.</string>
+    <string name="cd_relog_meal">Înregistrează din nou %1$s</string>
+    <string name="context_note_hint">Fii specific: cantități, mărci, uleiuri sau sosuri și modul de preparare.</string>
+    <string name="edit_reprocess_diff_unchanged">Niciun câmp modificat. Ajustează nota și încearcă din nou.</string>
+    <string name="edit_reprocess_hint">Descrie corecția, ex. bol mare, gătit în unt, lapte de ovăz în loc de lapte</string>
+    <string name="entry_analysis_add_photo">Adaugă fotografie</string>
+    <string name="entry_analysis_busy_analyzing">Se analizează…</string>
+    <string name="entry_analysis_busy_filling">Se completează nutriția…</string>
+    <string name="entry_analysis_busy_units">Se calculează porțiile…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">Gata de verificat</string>
+    <string name="entry_analysis_status_helper">Se verifică codurile de bare din fotografie, apoi se solicită nutriția de la furnizorul tău IA.</string>
+    <string name="entry_analysis_streaming_hint">Valorile apar pe măsură ce IA răspunde. Le poți verifica înainte de înregistrare.</string>
+    <string name="entry_analysis_tip_apply">Reanalizează cu sugestie</string>
+    <string name="entry_analysis_tip_cta">Adaugă sugestie pentru IA (opțional)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d active → buget)</string>
+    <string name="home_calorie_clause_add_active_waiting">Arderea activă va extinde bugetul de azi</string>
+    <string name="home_calorie_mode_add_active">Adaugă arderea activă la buget</string>
+    <string name="home_calorie_mode_add_active_desc">Caloriile active din Health Connect (sau estimarea după nivelul de activitate) se adaugă la bugetul caloric de azi. Mănâncă înapoi ce arzi. Setează nivelul de activitate ca bază zilnică ca antrenamentele să nu fie numărate de două ori. Conectează Health Connect în Setări → Sănătate pentru arderea măsurată.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">Sfat: activează Health Connect pentru calorii active de la ceas/telefon în loc de estimarea după nivelul de activitate.</string>
+    <string name="home_calorie_mode_static_desc">Obiectivul caloric rămâne fix. Mișcarea nu schimbă bugetul de azi.</string>
+    <string name="home_menu_manual_active">Ardere activă</string>
+    <string name="manual_active_kcal_hint">Calorii arse</string>
+    <string name="manual_active_name_hint">Nume activitate (opțional)</string>
+    <string name="manual_active_save">Adaugă la buget</string>
+    <string name="manual_active_subtitle">Adaugă calorii arse de la o plimbare, pedalare sau antrenament. Extind bugetul de azi când «Adaugă arderea activă» este activ.</string>
+    <string name="manual_active_title">Înregistrează arderea activă</string>
+    <string name="meal_photos_add_label">Adaugă etichetă</string>
+    <string name="meal_photos_confirm_back">Continuă editarea</string>
+    <string name="meal_photos_confirm_continue">Analizează oricum</string>
+    <string name="meal_photos_confirm_no_note">Încă nu există notă. Estimările IA sunt mai puțin precise fără cantități sau descriere. Continui oricum?</string>
+    <string name="meal_photos_confirm_one_photo">Doar o fotografie. A doua (un alt unghi sau eticheta nutrițională) ajută des. Continui cu o singură fotografie?</string>
+    <string name="meal_photos_confirm_sparse">Fără notă și cu o singură fotografie. Adaugă un sfat sau o fotografie a etichetei pentru o estimare mai bună, sau continuă oricum.</string>
+    <string name="meal_photos_confirm_title">Analizezi acum?</string>
+    <string name="meal_photos_dont_ask_note">Nu mai cere o notă</string>
+    <string name="meal_photos_note_section">Ce este asta?</string>
+    <string name="meal_photos_skip_note">Omite nota și analizează</string>
+    <string name="meal_photos_subtitle">Adaugă o notă scurtă și opțional o a doua fotografie (ex. etichetă nutrițională), apoi atinge Analizează. IA pornește doar după confirmare.</string>
+    <string name="meal_photos_subtitle_note_optional">Adaugă altă fotografie sau un sfat dacă vrei, apoi Analizează. IA pornește doar după confirmare.</string>
+    <string name="meal_photos_title">Înainte de analiză</string>
+    <string name="on_device_model_accuracy_notice">Aceste modele nu sunt la fel de precise ca IA în cloud. Așteaptă-te la calorii greșite, elemente ratate sau citiri slabe ale fotografiilor, mai ales cu modelul E2B mai mic. Furnizorii cloud rămân setarea recomandată pentru înregistrare fiabilă.</string>
+    <string name="on_device_model_device_notice">Testat pe Pixel 9a (GrapheneOS). Alte dispozitive, mai ales entry-level sau fără hardware Tensor, nu au fost validate încă și pot fi mai lente sau neacceptate; un furnizor cloud e mai sigur acolo.</string>
+    <string name="on_device_model_loaded">Model încărcat. Gata de utilizare.</string>
+    <string name="on_device_model_not_loaded">Neîncărcat. Prima solicitare după pornirea aplicației poate dura până la un minut.</string>
+    <string name="on_device_model_privacy_notice">Rulează integral pe acest dispozitiv. Nimic din ce tastezi sau fotografiezi nu se trimite pe un server. Descărcarea preia fișierul modelului direct de la Hugging Face (%1$s), un gazdă terță nefolosită altfel de această aplicație.</string>
+    <string name="onboarding_api_key_non_gemini_ok">Gata. Testul rapid este doar cu Gemini</string>
+    <string name="photo_accuracy_guide_body">Fotografiile omit multe. Adaugă o notă scurtă când poți:
+
+• Fii specific: cantități, mărci și ce e în farfurie
+• Menționează uleiuri, sosuri și dressinguri grase (adesea invizibile)
+• Spune prepararea când contează: prăjit, la grătar, abur, făcut acasă
+• Grame exacte sau fotografie a etichetei nutriționale ajută cel mai mult</string>
+    <string name="photo_accuracy_guide_cd">Cum să îmbunătățești precizia fotografiilor</string>
+    <string name="photo_accuracy_guide_dismiss">Am înțeles</string>
+    <string name="photo_accuracy_guide_title">Sfaturi pentru o estimare mai bună</string>
+    <string name="photo_import_failed">Nu s-a putut importa fotografia</string>
+    <string name="progress_weight_raw_legend">Cântăriri zilnice</string>
+    <string name="progress_weight_trend_legend">Tendință pe 7 zile</string>
+    <string name="progress_weight_trend_need_more">Tendința pe 7 zile necesită cel puțin 2 zile cu cântărire</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/zi</string>
+    <string name="protein_target_lbm_missing_hint">Fără %% grăsime corporală setat. Se folosește greutatea totală până la înregistrarea BF%%.</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg masă slabă</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg greutate corporală</string>
+    <string name="protein_target_mode_grams">Grame pe zi</string>
+    <string name="protein_target_mode_label">Țintă proteică</string>
+    <string name="settings_gemini_google_search_footer">Când este activat, Gemini poate căuta pe web când ajută la răspunsul unui prompt. Interogările de căutare sunt trimise la Google. Google facturează proiectul tău API Gemini. Pe modelele Gemini 3, fiecare căutare executată contează la utilizare; pe Gemini 2.5 și mai vechi, facturarea e per prompt care folosește căutarea.</string>
+    <string name="settings_health_unavailable_platform">Health Connect nu este disponibil pentru aplicații pe acest dispozitiv. Pe Android 14 și versiuni ulterioare este modul de sistem. Dacă Setările arată Health Connect dar Chompass nu se poate conecta, ROM-ul poate să nu expună serviciul (frecvent pe unele build-uri de-Googled). Chompass nu necesită Play Store sau Play în sandbox. Folosește export/import pentru jurnal și metrici corporale, sau WebDAV opțional.</string>
+    <string name="settings_meal_constituents_footer_on_device">Indisponibil pentru Gemma on-device: defalcarea ingredientelor necesită un model mai puternic. Treci la un furnizor cloud pentru a activa.</string>
+    <string name="settings_photo_note_prompt">Cere notă pentru fotografie</string>
+    <string name="settings_photo_note_prompt_footer">Când e activ, introducerea cu fotografie evidențiază câmpul de notă înainte de Analizează. Poți confirma și continua fără notă.</string>
+    <string name="settings_progress_default_range">Interval implicit în Progres</string>
 </resources>

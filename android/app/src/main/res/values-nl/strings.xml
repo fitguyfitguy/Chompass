@@ -255,7 +255,7 @@
     <string name="onboarding_provider_title">Breng je eigen AI mee</string>
     <string name="onboarding_provider_subtitle">Optionele API-sleutel voor maaltijdfoto\'s en coach.\nGoogle AI Studio is gratis en aanbevolen.</string>
     <string name="onboarding_provider_recommended_title">Aanbevolen: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Gratis en hoge kwaliteit — ideaal voor maaltijdfoto\'s</string>
+    <string name="onboarding_provider_recommended_subtitle">Gratis en hoge kwaliteit. Het best voor maaltijdfoto\'s.</string>
     <string name="onboarding_provider_howto_title">Zo krijg je een gratis Google AI Studio-sleutel</string>
     <string name="onboarding_provider_step_1">Open aistudio.google.com/apikey (tik om te openen)</string>
     <string name="onboarding_provider_step_2">Log in met Google en maak een API-sleutel</string>
@@ -393,7 +393,7 @@ op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Foto bekijken</string>
     <string name="context_note_section">Voeg een notitie toe (optioneel)</string>
-    <string name="context_note_placeholder">bijv. 2 eieren in boter, salade met dressing, gegrilde kip zonder saus</string>
+    <string name="context_note_placeholder">bijv. 2 eieren roerei in boter, Chipotle-bowl met extra olie, gegrilde kip zonder saus</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Luisteren...</string>
@@ -580,7 +580,7 @@ op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Tijd om te wegen</string>
     <string name="notif_weight_log_text">Log je gewicht van vandaag om je voortgangsgrafiek nauwkeurig te houden.</string>
-    <string name="settings_health_unavailable">Health Connect is niet beschikbaar op dit apparaat. Vanaf Android 14 zit het in het systeem; als je ROM het niet blootstelt, gebruik bestandsimport/-export. Chompass vereist geen Play Store-app op Android 14+.</string>
+    <string name="settings_health_unavailable">Health Connect is niet beschikbaar op dit apparaat. Vanaf Android 14 zit het in het systeem. Gebruik bestandsexport/-import als je ROM het niet blootstelt. Chompass vereist op Android 14+ geen Health Connect-app uit de Play Store.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI-provider</string>
@@ -715,4 +715,80 @@ op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">Opnieuw loggen</string>
+    <string name="add_food_quick_relog_empty">Markeer een maaltijd als favoriet of log hem een keer. Hij verschijnt hier voor één-tik opnieuw loggen.</string>
+    <string name="add_food_quick_relog_hint">Favorieten en eerdere maaltijden. Sneller dan opnieuw scannen.</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">Privé en offline. Minder nauwkeurig dan cloud-AI; ~2-4 GB download</string>
+    <string name="camera_scale_tip_message">Tip: leg een vork, hand of munt naast je eten. Dat helpt de portiegrootte te schatten.</string>
+    <string name="cd_relog_meal">%1$s opnieuw loggen</string>
+    <string name="context_note_hint">Wees specifiek: hoeveelheden, merken, oliën of dressings, en hoe het is bereid.</string>
+    <string name="edit_reprocess_diff_unchanged">Geen velden gewijzigd. Pas je notitie aan en probeer opnieuw.</string>
+    <string name="edit_reprocess_hint">Beschrijf de correctie, bijv. grote kom, gekookt in boter, havermelk in plaats van melk</string>
+    <string name="entry_analysis_add_photo">Foto toevoegen</string>
+    <string name="entry_analysis_busy_analyzing">Analyseren…</string>
+    <string name="entry_analysis_busy_filling">Voedingswaarden invullen…</string>
+    <string name="entry_analysis_busy_units">Portie-eenheden berekenen…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">Klaar om te controleren</string>
+    <string name="entry_analysis_status_helper">Barcodes op de foto worden gecontroleerd, daarna vraagt je AI-provider om voedingswaarden.</string>
+    <string name="entry_analysis_streaming_hint">Waarden verschijnen terwijl de AI antwoordt. Je kunt ze controleren voordat je logt.</string>
+    <string name="entry_analysis_tip_apply">Opnieuw analyseren met tip</string>
+    <string name="entry_analysis_tip_cta">Tip voor AI toevoegen (optioneel)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d actief → budget)</string>
+    <string name="home_calorie_clause_add_active_waiting">Actieve verbranding vergroot het budget van vandaag</string>
+    <string name="home_calorie_mode_add_active">Actieve verbranding aan budget toevoegen</string>
+    <string name="home_calorie_mode_add_active_desc">Actieve calorieën uit Health Connect (of je schatting op activiteitsniveau) worden aan het caloriebudget van vandaag toegevoegd. Eet terug wat je verbrandt. Stel Activiteitsniveau in op dagelijkse basislijn zodat workouts niet dubbel worden geteld. Verbind Health Connect via Instellingen → Gezondheid voor gemeten verbranding.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">Tip: schakel Health Connect in om actieve calorieën van horloge/telefoon te gebruiken in plaats van de schatting op activiteitsniveau.</string>
+    <string name="home_calorie_mode_static_desc">Je caloriedoel blijft vast. Beweging verandert het budget van vandaag niet.</string>
+    <string name="home_menu_manual_active">Actieve verbranding</string>
+    <string name="manual_active_kcal_hint">Verbrande calorieën</string>
+    <string name="manual_active_name_hint">Activiteitsnaam (optioneel)</string>
+    <string name="manual_active_save">Aan budget toevoegen</string>
+    <string name="manual_active_subtitle">Voeg verbrande calorieën van een wandeling, rit of workout toe. Ze vergroten het budget van vandaag wanneer „Actieve verbranding toevoegen“ aan staat.</string>
+    <string name="manual_active_title">Actieve verbranding loggen</string>
+    <string name="meal_photos_add_label">Etiket toevoegen</string>
+    <string name="meal_photos_confirm_back">Verder bewerken</string>
+    <string name="meal_photos_confirm_continue">Toch analyseren</string>
+    <string name="meal_photos_confirm_no_note">Nog geen notitie. AI-schattingen zijn minder nauwkeurig zonder hoeveelheden of beschrijving. Toch doorgaan?</string>
+    <string name="meal_photos_confirm_one_photo">Slechts één foto. Een tweede (andere hoek of voedingswaardenetiket) helpt vaak. Doorgaan met één foto?</string>
+    <string name="meal_photos_confirm_sparse">Geen notitie en slechts één foto. Voeg een tip of etiketfoto toe voor een betere schatting, of ga toch door?</string>
+    <string name="meal_photos_confirm_title">Nu analyseren?</string>
+    <string name="meal_photos_dont_ask_note">Niet meer om een notitie vragen</string>
+    <string name="meal_photos_note_section">Wat is dit?</string>
+    <string name="meal_photos_skip_note">Notitie overslaan &amp; analyseren</string>
+    <string name="meal_photos_subtitle">Voeg een korte notitie en optioneel een tweede foto toe (bijv. voedingswaardenetiket), tik dan op Analyseren. AI start pas na je bevestiging.</string>
+    <string name="meal_photos_subtitle_note_optional">Voeg desgewenst een extra foto of tip toe, daarna Analyseren. AI start pas na je bevestiging.</string>
+    <string name="meal_photos_title">Voor analyseren</string>
+    <string name="on_device_model_accuracy_notice">Deze modellen zijn niet zo nauwkeurig als cloud-AI. Verwacht verkeerde calorieën, gemiste items of zwakke fotolezingen, vooral met het kleinere E2B-model. Cloudproviders blijven de aanbevolen standaard voor betrouwbaar loggen.</string>
+    <string name="on_device_model_device_notice">Getest op Pixel 9a (GrapheneOS). Andere apparaten, vooral goedkopere of zonder Tensor-hardware, zijn nog niet gevalideerd en kunnen trager zijn of niet ondersteund worden; een cloudprovider is daar een veiliger standaard.</string>
+    <string name="on_device_model_loaded">Model geladen. Klaar voor gebruik.</string>
+    <string name="on_device_model_not_loaded">Niet geladen. Eerste verzoek na app-start kan tot een minuut duren.</string>
+    <string name="on_device_model_privacy_notice">Draait volledig op dit apparaat. Niets wat je typt of fotografeert wordt naar een server gestuurd. Bij downloaden wordt het modelbestand direct van Hugging Face (%1$s) opgehaald, een externe host die deze app verder niet gebruikt.</string>
+    <string name="onboarding_api_key_non_gemini_ok">Klaar. Snelle test is alleen voor Gemini</string>
+    <string name="photo_accuracy_guide_body">Foto\'s missen veel. Voeg waar mogelijk een korte notitie toe:
+
+• Wees specifiek: hoeveelheden, merken en wat op het bord ligt
+• Noem oliën, dressings en vette sauzen (vaak onzichtbaar)
+• Vermeld bereiding wanneer het ertoe doet: gebakken, gegrild, gestoomd, zelfgemaakt
+• Exacte grammen of een foto van het voedingswaardenetiket helpen het meest</string>
+    <string name="photo_accuracy_guide_cd">Zo verbeter je fotonauwkeurigheid</string>
+    <string name="photo_accuracy_guide_dismiss">Begrepen</string>
+    <string name="photo_accuracy_guide_title">Tips voor een betere schatting</string>
+    <string name="photo_import_failed">Foto kon niet worden geïmporteerd</string>
+    <string name="progress_weight_raw_legend">Dagelijkse wegingen</string>
+    <string name="progress_weight_trend_legend">7-daagse trend</string>
+    <string name="progress_weight_trend_need_more">7-daagse trend vereist minstens 2 weegdagen</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/dag</string>
+    <string name="protein_target_lbm_missing_hint">Geen lichaamsvet-%% ingesteld. Totaalgewicht wordt gebruikt tot BF%% is gelogd.</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg vetvrije massa</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg lichaamsgewicht</string>
+    <string name="protein_target_mode_grams">Gram per dag</string>
+    <string name="protein_target_mode_label">Eiwitdoel</string>
+    <string name="settings_gemini_google_search_footer">Indien ingeschakeld kan Gemini op het web zoeken wanneer dat helpt bij een prompt. Zoekopdrachten gaan naar Google. Google factureert dit aan je Gemini API-project. Bij Gemini 3-modellen telt elke uitgevoerde zoekopdracht mee voor gebruik; bij Gemini 2.5 en ouder wordt per prompt met zoeken gefactureerd.</string>
+    <string name="settings_health_unavailable_platform">Health Connect is niet beschikbaar voor apps op dit apparaat. Vanaf Android 14 is het een systeemmodule. Als Instellingen Health Connect toont maar Chompass geen verbinding kan maken, stelt je ROM de Health Connect-service mogelijk niet bloot (gebruikelijk bij sommige de-Googled builds). Chompass vereist geen Play Store of sandboxed Play. Gebruik in plaats daarvan dagboek- en lichaamsgegevens-export/-import, of optioneel WebDAV.</string>
+    <string name="settings_meal_constituents_footer_on_device">Niet beschikbaar voor on-device Gemma: ingrediëntenopsplitsing vereist een sterker model. Schakel over naar een cloudprovider om dit in te schakelen.</string>
+    <string name="settings_photo_note_prompt">Om fotonotitie vragen</string>
+    <string name="settings_photo_note_prompt_footer">Indien aan, markeert foto-invoer het notitieveld vóór Analyseren. Je kunt nog steeds bevestigen en doorgaan zonder notitie.</string>
+    <string name="settings_progress_default_range">Standaardperiode voortgang</string>
 </resources>

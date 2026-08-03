@@ -77,7 +77,7 @@
     <string name="protein_target_mode_g_per_kg_total">g/kg body weight</string>
     <string name="protein_target_mode_g_per_kg_lbm">g/kg lean mass</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/day</string>
-    <string name="protein_target_lbm_missing_hint">No body-fat %% set — using total weight until BF%% is logged</string>
+    <string name="protein_target_lbm_missing_hint">No body-fat %% set. Using total weight until BF%% is logged.</string>
     <string name="macro_carbs">Carbs</string>
     <string name="macro_fat">Fat</string>
     <string name="macro_calories">Calories</string>
@@ -300,7 +300,7 @@
     <string name="onboarding_provider_title">Bring Your Own AI</string>
     <string name="onboarding_provider_subtitle">Optional API key for food photos and coach.\nGoogle AI Studio is free and recommended.</string>
     <string name="onboarding_provider_recommended_title">Recommended: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Free and high quality — best for food photos</string>
+    <string name="onboarding_provider_recommended_subtitle">Free and high quality. Best for food photos.</string>
     <string name="onboarding_provider_howto_title">How to get a free Google AI Studio key</string>
     <string name="onboarding_provider_step_1">Open aistudio.google.com/apikey (tap to open)</string>
     <string name="onboarding_provider_step_2">Sign in with Google and create an API key</string>
@@ -369,8 +369,8 @@
     <string name="add_food_hero_saved_sub">Recents &amp; favorites</string>
     <string name="add_food_more_section">More ways to log</string>
     <string name="add_food_quick_relog">Log again</string>
-    <string name="add_food_quick_relog_hint">Favorites and past meals — faster than rescanning</string>
-    <string name="add_food_quick_relog_empty">Favorite a meal or log one once — it will show up here for one-tap re-log</string>
+    <string name="add_food_quick_relog_hint">Favorites and past meals. Faster than rescanning.</string>
+    <string name="add_food_quick_relog_empty">Favorite a meal or log one once. It will show up here for one-tap re-log.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">Log %1$s again</string>
     <string name="add_food_water_section">Water</string>
@@ -536,9 +536,9 @@
     <string name="context_note_title">Review photo</string>
     <string name="context_note_section">Tell AI what this is (optional)</string>
     <string name="context_note_placeholder">e.g. 2 eggs scrambled in butter, Chipotle bowl with extra oil, grilled chicken no sauce</string>
-    <string name="context_note_hint">Be specific — quantities, brands, oils or dressings, and how it was cooked.</string>
+    <string name="context_note_hint">Be specific: quantities, brands, oils or dressings, and how it was cooked.</string>
     <string name="photo_accuracy_guide_title">Tips for a better estimate</string>
-    <string name="photo_accuracy_guide_body">Photos miss a lot. Add a short note when you can:\n\n• Be specific — amounts, brands, and what’s on the plate\n• Call out oils, dressings, and oily sauces (often invisible)\n• Mention prep when it matters — fried, grilled, steamed, homemade\n• Exact grams or a nutrition-label photo help most</string>
+    <string name="photo_accuracy_guide_body">Photos miss a lot. Add a short note when you can:\n\n• Be specific: amounts, brands, and what’s on the plate\n• Call out oils, dressings, and oily sauces (often invisible)\n• Mention prep when it matters: fried, grilled, steamed, homemade\n• Exact grams or a nutrition-label photo help most</string>
     <string name="photo_accuracy_guide_dismiss">Got it</string>
     <string name="photo_accuracy_guide_cd">How to improve photo accuracy</string>
     <string name="context_note_weight_section">Total weight (optional)</string>
@@ -933,13 +933,13 @@
     <string name="settings_health_unavailable_install">Health Connect isn\'t installed. Install it from the Play Store, then re-tap the toggle.</string>
     <string name="settings_health_update_required_apk">Health Connect needs an update. Update it from the Play Store, then re-tap the toggle.</string>
     <!-- API 34+: framework / Mainline module — never tell users to install the old Play Store APK. -->
-    <string name="settings_health_unavailable_platform">Health Connect isn\'t available to apps on this device. On Android 14 and later it\'s a system module — if Settings shows Health Connect but Chompass cannot connect, your ROM may not expose the Health Connect service (common on some de-Googled builds). Chompass does not require Play Store or sandboxed Play. Use diary and body-metrics export/import, or optional WebDAV, instead.</string>
+    <string name="settings_health_unavailable_platform">Health Connect isn\'t available to apps on this device. On Android 14 and later it\'s a system module. If Settings shows Health Connect but Chompass cannot connect, your ROM may not expose the Health Connect service (common on some de-Googled builds). Chompass does not require Play Store or sandboxed Play. Use diary and body-metrics export/import, or optional WebDAV, instead.</string>
     <string name="settings_health_update_required">Health Connect needs a system update. Install a Google Play system update (or your ROM\'s equivalent), then re-tap the toggle. You do not need to install a separate Health Connect app on Android 14+.</string>
     <string name="settings_health_manage_failed">Couldn\'t open Health Connect settings on this device.</string>
     <string name="settings_health_open_settings">Open Health Connect</string>
     <string name="settings_health_open_play_store">Open Play Store</string>
     <!-- Kept for older locale packs; prefer status-specific strings above. -->
-    <string name="settings_health_unavailable">Health Connect isn\'t available on this device. On Android 14 and later it comes with the system — use file export/import if your ROM does not expose it. Chompass never requires the Play Store Health Connect app on Android 14+.</string>
+    <string name="settings_health_unavailable">Health Connect isn\'t available on this device. On Android 14 and later it comes with the system. Use file export/import if your ROM does not expose it. Chompass never requires the Play Store Health Connect app on Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI Provider</string>
@@ -1121,7 +1121,7 @@
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active burn to budget</string>
     <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. Movement does not change today’s budget.</string>
-    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget — eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Connect Health Connect under Settings → Health for measured burn.</string>
+    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Connect Health Connect under Settings → Health for measured burn.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: enable Health Connect to use watch/phone active calories instead of the activity-level estimate.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>

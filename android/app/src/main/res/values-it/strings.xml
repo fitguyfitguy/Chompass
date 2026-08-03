@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">Chiave API facoltativa per foto dei pasti e coach.
 Google AI Studio è gratuito e consigliato.</string>
     <string name="onboarding_provider_recommended_title">Consigliato: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Gratuito e di alta qualità — ideale per le foto dei pasti</string>
+    <string name="onboarding_provider_recommended_subtitle">Gratuito e di alta qualità. Ideale per le foto dei pasti.</string>
     <string name="onboarding_provider_howto_title">Come ottenere una chiave gratuita di Google AI Studio</string>
     <string name="onboarding_provider_step_1">Apri aistudio.google.com/apikey (tocca per aprire)</string>
     <string name="onboarding_provider_step_2">Accedi con Google e crea una chiave API</string>
@@ -394,7 +394,7 @@ su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Rivedi foto</string>
     <string name="context_note_section">Aggiungi una nota (facoltativa)</string>
-    <string name="context_note_placeholder">es. 2 uova al burro, insalata con condimento, pollo grigliato senza salsa</string>
+    <string name="context_note_placeholder">es. 2 uova strapazzate nel burro, bowl Chipotle con olio extra, pollo grigliato senza salsa</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">In ascolto...</string>
@@ -581,7 +581,7 @@ su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">È ora di pesarti</string>
     <string name="notif_weight_log_text">Registra il peso di oggi per mantenere accurato il grafico dei progressi.</string>
-    <string name="settings_health_unavailable">Health Connect non è disponibile su questo dispositivo. Da Android 14 è un modulo di sistema; se la ROM non lo espone, usa esportazione/importazione file. Chompass non richiede l\'app del Play Store su Android 14+.</string>
+    <string name="settings_health_unavailable">Health Connect non è disponibile su questo dispositivo. Da Android 14 in poi fa parte del sistema. Usa esportazione/importazione file se la ROM non lo espone. Chompass non richiede mai l\'app Health Connect del Play Store su Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">Fornitore IA</string>
@@ -716,4 +716,80 @@ su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">Registra di nuovo</string>
+    <string name="add_food_quick_relog_empty">Aggiungi un pasto ai preferiti o registralo una volta. Comparirà qui per un nuovo log con un tocco.</string>
+    <string name="add_food_quick_relog_hint">Preferiti e pasti recenti. Più veloce di una nuova scansione.</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">Privato e offline. Meno preciso dell\'IA cloud; download di ~2-4 GB</string>
+    <string name="camera_scale_tip_message">Suggerimento: includi una forchetta, la mano o una moneta accanto al cibo. Aiuta a stimare la porzione.</string>
+    <string name="cd_relog_meal">Registra di nuovo %1$s</string>
+    <string name="context_note_hint">Sii specifico: quantità, marche, oli o condimenti e modalità di cottura.</string>
+    <string name="edit_reprocess_diff_unchanged">Nessun campo modificato. Aggiorna la nota e riprova.</string>
+    <string name="edit_reprocess_hint">Descrivi la correzione, es. ciotola grande, cotto nel burro, latte d\'avena al posto del latte</string>
+    <string name="entry_analysis_add_photo">Aggiungi foto</string>
+    <string name="entry_analysis_busy_analyzing">Analisi in corso…</string>
+    <string name="entry_analysis_busy_filling">Compilazione dati nutrizionali…</string>
+    <string name="entry_analysis_busy_units">Calcolo delle porzioni…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">Pronto per la revisione</string>
+    <string name="entry_analysis_status_helper">Controllo codici a barre nella foto, poi richiesta nutrizionale al tuo provider IA.</string>
+    <string name="entry_analysis_streaming_hint">I valori compaiono mentre l\'IA risponde. Puoi controllarli prima di registrare.</string>
+    <string name="entry_analysis_tip_apply">Rianalizza con suggerimento</string>
+    <string name="entry_analysis_tip_cta">Aggiungi suggerimento per l\'IA (facoltativo)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d attive → budget)</string>
+    <string name="home_calorie_clause_add_active_waiting">Il consumo attivo estenderà il budget di oggi</string>
+    <string name="home_calorie_mode_add_active">Aggiungi consumo attivo al budget</string>
+    <string name="home_calorie_mode_add_active_desc">Le calorie attive da Health Connect (o la stima dal livello di attività) vengono aggiunte al budget calorico di oggi. Recupera ciò che bruci. Imposta il livello di attività come baseline quotidiana per non contare due volte gli allenamenti. Collega Health Connect in Impostazioni → Salute per il consumo misurato.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">Suggerimento: attiva Health Connect per usare le calorie attive da orologio/telefono invece della stima per livello di attività.</string>
+    <string name="home_calorie_mode_static_desc">Il tuo obiettivo calorico resta fisso. Il movimento non modifica il budget di oggi.</string>
+    <string name="home_menu_manual_active">Consumo attivo</string>
+    <string name="manual_active_kcal_hint">Calorie bruciate</string>
+    <string name="manual_active_name_hint">Nome attività (facoltativo)</string>
+    <string name="manual_active_save">Aggiungi al budget</string>
+    <string name="manual_active_subtitle">Aggiungi calorie bruciate da una camminata, bici o allenamento. Estendono il budget di oggi quando «Aggiungi consumo attivo» è attivo.</string>
+    <string name="manual_active_title">Registra consumo attivo</string>
+    <string name="meal_photos_add_label">Aggiungi etichetta</string>
+    <string name="meal_photos_confirm_back">Continua a modificare</string>
+    <string name="meal_photos_confirm_continue">Analizza comunque</string>
+    <string name="meal_photos_confirm_no_note">Nessuna nota ancora. Le stime IA sono meno precise senza quantità o descrizione. Continuare comunque?</string>
+    <string name="meal_photos_confirm_one_photo">Solo una foto. Una seconda (altro angolo o etichetta nutrizionale) spesso aiuta. Continuare con una sola foto?</string>
+    <string name="meal_photos_confirm_sparse">Nessuna nota e una sola foto. Aggiungi un suggerimento o foto etichetta per una stima migliore, oppure continua comunque.</string>
+    <string name="meal_photos_confirm_title">Analizzare ora?</string>
+    <string name="meal_photos_dont_ask_note">Non chiedere più una nota</string>
+    <string name="meal_photos_note_section">Cos\'è?</string>
+    <string name="meal_photos_skip_note">Salta nota e analizza</string>
+    <string name="meal_photos_subtitle">Aggiungi una breve nota e facoltativamente una seconda foto (es. etichetta nutrizionale), poi tocca Analizza. L\'IA parte solo dopo la conferma.</string>
+    <string name="meal_photos_subtitle_note_optional">Aggiungi un\'altra foto o un suggerimento se vuoi, poi Analizza. L\'IA parte solo dopo la conferma.</string>
+    <string name="meal_photos_title">Prima dell\'analisi</string>
+    <string name="on_device_model_accuracy_notice">Questi modelli non sono precisi quanto l\'IA cloud. Aspettati calorie errate, elementi mancati o letture foto deboli, soprattutto con il modello E2B più piccolo. I provider cloud restano l\'impostazione consigliata per un log affidabile.</string>
+    <string name="on_device_model_device_notice">Testato su Pixel 9a (GrapheneOS). Altri dispositivi, soprattutto di fascia bassa o senza Tensor, non sono ancora stati validati e possono essere più lenti o non supportati; un provider cloud è più sicuro.</string>
+    <string name="on_device_model_loaded">Modello caricato. Pronto all\'uso.</string>
+    <string name="on_device_model_not_loaded">Non caricato. La prima richiesta dopo l\'avvio dell\'app può richiedere fino a un minuto.</string>
+    <string name="on_device_model_privacy_notice">Funziona interamente su questo dispositivo. Nulla di ciò che scrivi o fotografi viene inviato a un server. Il download recupera il file del modello direttamente da Hugging Face (%1$s), un host di terze parti non usato altrimenti da questa app.</string>
+    <string name="onboarding_api_key_non_gemini_ok">Pronto. Il test rapido è solo con Gemini</string>
+    <string name="photo_accuracy_guide_body">Le foto perdono molto. Aggiungi una breve nota quando puoi:
+
+• Sii specifico: quantità, marche e cosa c\'è nel piatto
+• Segnala oli, condimenti e salse oleose (spesso invisibili)
+• Indica la preparazione quando conta: fritto, grigliato, al vapore, fatto in casa
+• Grammi esatti o foto dell\'etichetta nutrizionale aiutano di più</string>
+    <string name="photo_accuracy_guide_cd">Come migliorare la precisione delle foto</string>
+    <string name="photo_accuracy_guide_dismiss">Capito</string>
+    <string name="photo_accuracy_guide_title">Suggerimenti per una stima migliore</string>
+    <string name="photo_import_failed">Impossibile importare la foto</string>
+    <string name="progress_weight_raw_legend">Pesate giornaliere</string>
+    <string name="progress_weight_trend_legend">Trend a 7 giorni</string>
+    <string name="progress_weight_trend_need_more">Il trend a 7 giorni richiede almeno 2 giorni con pesata</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/giorno</string>
+    <string name="protein_target_lbm_missing_hint">Nessuna %% di grasso corporeo impostata. Si usa il peso totale finché non registri BF%%.</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg massa magra</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg peso corporeo</string>
+    <string name="protein_target_mode_grams">Grammi al giorno</string>
+    <string name="protein_target_mode_label">Obiettivo proteico</string>
+    <string name="settings_gemini_google_search_footer">Se attivato, Gemini può cercare sul web quando aiuta a rispondere a un prompt. Le query di ricerca vengono inviate a Google. Google addebita il tuo progetto API Gemini. Sui modelli Gemini 3, ogni ricerca eseguita conta nel consumo; su Gemini 2.5 e precedenti, la fatturazione è per prompt che usa la ricerca.</string>
+    <string name="settings_health_unavailable_platform">Health Connect non è disponibile per le app su questo dispositivo. Da Android 14 in poi è un modulo di sistema. Se Impostazioni mostra Health Connect ma Chompass non può connettersi, la ROM potrebbe non esporre il servizio (comune su alcune build de-Googled). Chompass non richiede Play Store o Play in sandbox. Usa esportazione/importazione di diario e metriche corporee, o WebDAV opzionale.</string>
+    <string name="settings_meal_constituents_footer_on_device">Non disponibile per Gemma on-device: la scomposizione ingredienti richiede un modello più potente. Passa a un provider cloud per abilitarlo.</string>
+    <string name="settings_photo_note_prompt">Chiedi nota per la foto</string>
+    <string name="settings_photo_note_prompt_footer">Se attivo, l\'inserimento foto evidenzia il campo nota prima di Analizza. Puoi comunque confermare e continuare senza nota.</string>
+    <string name="settings_progress_default_range">Intervallo predefinito Progressi</string>
 </resources>

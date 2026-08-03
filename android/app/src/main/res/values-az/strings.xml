@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">Yemək fotoları və kouç üçün istəyə bağlı API açarı.
 Google AI Studio pulsuzdur və tövsiyə olunur.</string>
     <string name="onboarding_provider_recommended_title">Tövsiyə olunur: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Pulsuz və yüksək keyfiyyət — yemək fotoları üçün ən yaxşı</string>
+    <string name="onboarding_provider_recommended_subtitle">Pulsuz və yüksək keyfiyyət. Yemək fotoları üçün ən yaxşı.</string>
     <string name="onboarding_provider_howto_title">Pulsuz Google AI Studio açarını necə əldə etmək olar</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey açın (açmaq üçün toxunun)</string>
     <string name="onboarding_provider_step_2">Google ilə daxil olun və API açarı yaradın</string>
@@ -394,7 +394,7 @@ Google AI Studio pulsuzdur və tövsiyə olunur.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Fotonu yoxla</string>
     <string name="context_note_section">Qeyd əlavə et (istəyə bağlı)</string>
-    <string name="context_note_placeholder">məs. yağda 2 yumurta, souslu salat, soussuz qril toyuq</string>
+    <string name="context_note_placeholder">məs. 2 yumurta yağda, Chipotle qabı əlavə yağla, qril toyuq sousuz</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Dinlənilir...</string>
@@ -581,7 +581,7 @@ Google AI Studio pulsuzdur və tövsiyə olunur.</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Çəkilmə vaxtıdır</string>
     <string name="notif_weight_log_text">Tərəqqi qrafikinizin dəqiq qalması üçün bugünkü çəkinizi qeyd edin.</string>
-    <string name="settings_health_unavailable">Health Connect bu cihazda mövcud deyil. Android 14+ sistem moduludur; ROM təmin etmirsə fayl ixrac/idxal istifadə edin. Android 14+ üçün Play Store quraşdırması tələb olunmur.</string>
+    <string name="settings_health_unavailable">Health Connect bu cihazda əlçatan deyil. Android 14 və sonrakı versiyalarda sistemlə gəlir. ROM onu təqdim etmirsə, fayl ixrac/idxalından istifadə edin. Chompass Android 14+ üçün Play Store Health Connect tətbiqini tələb etmir.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI Təminatçısı</string>
@@ -716,4 +716,80 @@ Google AI Studio pulsuzdur və tövsiyə olunur.</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">Yenidən qeyd et</string>
+    <string name="add_food_quick_relog_empty">Bir yeməyi sevimlilərə əlavə edin və ya bir dəfə qeyd edin. Bir toxunuşla yenidən qeyd üçün burada görünəcək.</string>
+    <string name="add_food_quick_relog_hint">Sevimlilər və keçmiş yeməklər. Yenidən skan etməkdən daha sürətli.</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">Məxfi və oflayn. Bulud AI-dan daha az dəqiq; ~2-4 GB endirmə</string>
+    <string name="camera_scale_tip_message">Məsləhət: yeməyin yanına çəngəl, əl və ya sikkə qoyun. Porsiya ölçüsünü təxmin etməyə kömək edir.</string>
+    <string name="cd_relog_meal">%1$s yenidən qeyd et</string>
+    <string name="context_note_hint">Dəqiq olun: miqdarlar, brendlər, yağlar və souslar, necə bişirildiyi.</string>
+    <string name="edit_reprocess_diff_unchanged">Heç bir sahə dəyişmədi. Qeydinizi düzəldin və yenidən cəhd edin.</string>
+    <string name="edit_reprocess_hint">Düzəlişi təsvir edin, məs. böyük qab, yağda bişmiş, adi süddən yulaf südü</string>
+    <string name="entry_analysis_add_photo">Foto əlavə et</string>
+    <string name="entry_analysis_busy_analyzing">Təhlil edilir…</string>
+    <string name="entry_analysis_busy_filling">Qidalanma doldurulur…</string>
+    <string name="entry_analysis_busy_units">Porsiya vahidləri hesablanır…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">Yoxlamağa hazırdır</string>
+    <string name="entry_analysis_status_helper">Fotodakı barkodlar yoxlanır, sonra AI provayderinizdən qidalanma soruşulur.</string>
+    <string name="entry_analysis_streaming_hint">Dəyərlər AI cavab verdikcə görünür. Qeyd etmədən əvvəl yoxlaya bilərsiniz.</string>
+    <string name="entry_analysis_tip_apply">Məsləhətlə yenidən təhlil et</string>
+    <string name="entry_analysis_tip_cta">AI üçün məsləhət əlavə et (istəyə bağlı)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d aktiv → büdcə)</string>
+    <string name="home_calorie_clause_add_active_waiting">Aktiv yanma bu günkü büdcəni genişləndirəcək</string>
+    <string name="home_calorie_mode_add_active">Aktiv yanmanı büdcəyə əlavə et</string>
+    <string name="home_calorie_mode_add_active_desc">Health Connect-dən (və ya fəaliyyət səviyyəsi təxminindən) aktiv kalorilər bu günkü kalori büdcəsinə əlavə olunur. Nə yandırsanız, onu yeyin. Məşqlərin iki dəfə sayılmaması üçün Fəaliyyət Səviyyəsini gündəlik baza kimi təyin edin. Ölçülü yanma üçün Parametrlər → Sağlamlıq altında Health Connect qoşun.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">Məsləhət: saat/telefon aktiv kalorilərini fəaliyyət səviyyəsi təxmininə görə istifadə etmək üçün Health Connect-i aktiv edin.</string>
+    <string name="home_calorie_mode_static_desc">Kalori hədəfiniz sabit qalır. Hərəkət bu günkü büdcəni dəyişdirmir.</string>
+    <string name="home_menu_manual_active">Aktiv yanma</string>
+    <string name="manual_active_kcal_hint">Yanan kalorilər</string>
+    <string name="manual_active_name_hint">Fəaliyyət adı (istəyə bağlı)</string>
+    <string name="manual_active_save">Büdcəyə əlavə et</string>
+    <string name="manual_active_subtitle">Gəzinti, sürüş və ya məşqdən yanan kaloriləri əlavə edin. «Aktiv yanmanı büdcəyə əlavə et» aktiv olanda bu günkü büdcəni genişləndirir.</string>
+    <string name="manual_active_title">Aktiv yanmanı qeyd et</string>
+    <string name="meal_photos_add_label">Etiket əlavə et</string>
+    <string name="meal_photos_confirm_back">Redaktəyə davam et</string>
+    <string name="meal_photos_confirm_continue">Yenə də təhlil et</string>
+    <string name="meal_photos_confirm_no_note">Hələ qeyd yoxdur. Miqdar və ya təsvir olmadan AI təxminləri daha az dəqiqdir. Yenə də davam edilsin?</string>
+    <string name="meal_photos_confirm_one_photo">Yalnız bir foto. İkinci çəkiliş (başqa bucaq və ya qidalanma etiketi) tez-tez kömək edir. Bir foto ilə davam edilsin?</string>
+    <string name="meal_photos_confirm_sparse">Qeyd yoxdur və yalnız bir foto. Daha yaxşı təxmin üçün məsləhət və ya etiket fotosu əlavə edin, yaxud davam edin.</string>
+    <string name="meal_photos_confirm_title">İndi təhlil edilsin?</string>
+    <string name="meal_photos_dont_ask_note">Qeyd soruşulmasın</string>
+    <string name="meal_photos_note_section">Bu nədir?</string>
+    <string name="meal_photos_skip_note">Qeydi keç və təhlil et</string>
+    <string name="meal_photos_subtitle">Qısa qeyd və istəyə bağlı ikinci foto (məs. qidalanma etiketi) əlavə edin, sonra Təhlil et düyməsinə toxunun. AI yalnız təsdiqlədikdən sonra başlayır.</string>
+    <string name="meal_photos_subtitle_note_optional">İstəsəniz başqa foto və ya məsləhət əlavə edin, sonra Təhlil et. AI yalnız təsdiqlədikdən sonra başlayır.</string>
+    <string name="meal_photos_title">Təhlil etmədən əvvəl</string>
+    <string name="on_device_model_accuracy_notice">Bu modellər bulud AI qədər dəqiq deyil. Yanlış kalori, buraxılmış elementlər və ya zəif foto oxunuşu gözləyin, xüsusilə kiçik E2B modeli ilə. Etibarlı qeyd üçün bulud provayderləri tövsiyə olunan standartdır.</string>
+    <string name="on_device_model_device_notice">Pixel 9a (GrapheneOS) üzərində sınaqdan keçib. Digər cihazlar, xüsusilə aşağı səviyyəli və ya Tensor olmayan avadanlıq, hələ yoxlanmayıb və daha yavaş və ya dəstəklənməyə bilər; orada bulud provayderi daha etibarlıdır.</string>
+    <string name="on_device_model_loaded">Model yükləndi. İstifadəyə hazırdır.</string>
+    <string name="on_device_model_not_loaded">Yüklənməyib. Tətbiq açıldıqdan sonra ilk sorğu bir dəqiqəyə qədər çəkə bilər.</string>
+    <string name="on_device_model_privacy_notice">Tamamilə bu cihazda işləyir. Yazdığınız və ya çəkdiyiniz heç nə serverə göndərilmir. Endirmə model faylını birbaşa Hugging Face-dən (%1$s) alır, bu tətbiqin başqa yerdə istifadə etmədiyi üçüncü tərəf hostdur.</string>
+    <string name="onboarding_api_key_non_gemini_ok">Hazırdır. Sürətli test yalnız Gemini üçündür</string>
+    <string name="photo_accuracy_guide_body">Fotolar çox şeyi qaçırır. Mümkün olanda qısa qeyd əlavə edin:
+
+• Dəqiq olun: miqdarlar, brendlər və boşqabdakılar
+• Yağları, sousları və yağlı sousları qeyd edin (tez-tez görünmür)
+• Vacib olanda bişirmə üsulunu qeyd edin: qızardılmış, qril, buxarda, evdə
+• Dəqiq qramlar və ya qidalanma etiketi fotosu ən çox kömək edir</string>
+    <string name="photo_accuracy_guide_cd">Foto dəqiqliyini necə yaxşılaşdırmaq olar</string>
+    <string name="photo_accuracy_guide_dismiss">Anladım</string>
+    <string name="photo_accuracy_guide_title">Daha yaxşı təxmin üçün məsləhətlər</string>
+    <string name="photo_import_failed">Foto idxal edilə bilmədi</string>
+    <string name="progress_weight_raw_legend">Gündəlik çəkilmələr</string>
+    <string name="progress_weight_trend_legend">7 günlük trend</string>
+    <string name="progress_weight_trend_need_more">7 günlük trend üçün ən azı 2 çəkilmə günü lazımdır</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f q/kq · %2$d q/gün</string>
+    <string name="protein_target_lbm_missing_hint">Bədən yağı %% təyin edilməyib. BF%% qeyd olunana qədər ümumi çəki istifadə olunur.</string>
+    <string name="protein_target_mode_g_per_kg_lbm">q/kq yağsız kütlə</string>
+    <string name="protein_target_mode_g_per_kg_total">q/kq bədən çəkisi</string>
+    <string name="protein_target_mode_grams">Gündə qram</string>
+    <string name="protein_target_mode_label">Protein hədəfi</string>
+    <string name="settings_gemini_google_search_footer">Aktiv olanda Gemini sorğuya cavab verməyə kömək edəndə vebdə axtarış edə bilər. Axtarış sorğuları Google-a göndərilir. Google bunun üçün Gemini API layihənizə hesab çıxarır. Gemini 3 modellərində hər icra olunan axtarış sorğusu istifadəyə daxil olur; Gemini 2.5 və köhnələrində axtarış istifadə edən hər sorğu üçün ödəniş edilir.</string>
+    <string name="settings_health_unavailable_platform">Health Connect bu cihazda tətbiqlər üçün əlçatan deyil. Android 14 və sonrakı versiyalarda sistem moduludur. Parametrlərdə Health Connect görünsə də Chompass qoşula bilmirsə, ROM Health Connect xidmətini təqdim etməyə bilər (bəzi de-Googled quruluşlarda ümumi). Chompass Play Store və ya sandboxed Play tələb etmir. Gündəlik və bədən göstəriciləri ixrac/idxalı və ya istəyə bağlı WebDAV istifadə edin.</string>
+    <string name="settings_meal_constituents_footer_on_device">Cihazdakı Gemma üçün əlçatan deyil: inqrediyent bölgüsü daha güclü model tələb edir. Aktiv etmək üçün bulud provayderinə keçin.</string>
+    <string name="settings_photo_note_prompt">Foto qeydi soruş</string>
+    <string name="settings_photo_note_prompt_footer">Aktiv olanda foto qeydi Təhlil etmədən əvvəl qeyd sahəsini vurğulayır. Qeyd olmadan da təsdiqləyib davam edə bilərsiniz.</string>
+    <string name="settings_progress_default_range">Tərəqqi standart aralığı</string>
 </resources>

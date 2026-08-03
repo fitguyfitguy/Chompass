@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">مفتاح API اختياري لصور الطعام والمدرب.
 Google AI Studio مجاني وموصى به.</string>
     <string name="onboarding_provider_recommended_title">موصى به: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">مجاني وعالي الجودة — الأفضل لصور الطعام</string>
+    <string name="onboarding_provider_recommended_subtitle">مجاني وعالي الجودة. الأفضل لصور الطعام.</string>
     <string name="onboarding_provider_howto_title">كيفية الحصول على مفتاح Google AI Studio مجاني</string>
     <string name="onboarding_provider_step_1">افتح aistudio.google.com/apikey (انقر للفتح)</string>
     <string name="onboarding_provider_step_2">سجّل الدخول عبر Google وأنشئ مفتاح API</string>
@@ -394,7 +394,7 @@ Google AI Studio مجاني وموصى به.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">مراجعة الصورة</string>
     <string name="context_note_section">إضافة ملاحظة (اختياري)</string>
-    <string name="context_note_placeholder">مثال: بيضتان بالزبدة، سلطة بصلصة دهنية، دجاج مشوي بدون صلصة</string>
+    <string name="context_note_placeholder">مثال: بيضتان مخفوقتان بالزبدة، Chipotle بزيت إضافي، دجاج مشوي بدون صلصة</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">جارٍ الاستماع...</string>
@@ -581,7 +581,7 @@ Google AI Studio مجاني وموصى به.</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">حان وقت الوزن</string>
     <string name="notif_weight_log_text">سجّل وزنك اليوم لإبقاء مخطط تقدمك دقيقاً.</string>
-    <string name="settings_health_unavailable">Health Connect غير متاح على هذا الجهاز. على Android 14 فما فوق هو جزء من النظام — إن لم توفره الشريحة المخصصة فاستخدم تصدير/استيراد الملفات. لا يتطلب Chompass تطبيق متجر Play على Android 14+.</string>
+    <string name="settings_health_unavailable">Health Connect غير متاح على هذا الجهاز. على Android 14 فما فوق يأتي مع النظام. استخدم تصدير/استيراد الملفات إذا لم تقدّمه الشريحة المخصّصة. لا يتطلّب Chompass تطبيق Health Connect من Play Store على Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">مزود الذكاء الاصطناعي</string>
@@ -716,4 +716,80 @@ Google AI Studio مجاني وموصى به.</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">تسجيل مرة أخرى</string>
+    <string name="add_food_quick_relog_empty">أضِف وجبة إلى المفضّلة أو سجّلها مرة. ستظهر هنا لإعادة التسجيل بلمسة واحدة.</string>
+    <string name="add_food_quick_relog_hint">المفضّلة والوجبات السابقة. أسرع من إعادة المسح.</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">خاص وبدون اتصال. أقل دقة من الذكاء الاصطناعي السحابي؛ تنزيل ~2-4 GB</string>
+    <string name="camera_scale_tip_message">نصيحة: ضع شوكة أو يدًا أو عملة بجانب طعامك. يساعد في تقدير حجم الحصة.</string>
+    <string name="cd_relog_meal">تسجيل %1$s مرة أخرى</string>
+    <string name="context_note_hint">كن محددًا: الكميات والعلامات التجارية والزيوت أو الصلصات وطريقة الطهي.</string>
+    <string name="edit_reprocess_diff_unchanged">لم تتغير أي حقول. عدّل ملاحظتك وحاول مرة أخرى.</string>
+    <string name="edit_reprocess_hint">صف التصحيح، مثال: وعاء كبير، مطبوخ بالزبدة، حليب الشوفان بدل الحليب</string>
+    <string name="entry_analysis_add_photo">إضافة صورة</string>
+    <string name="entry_analysis_busy_analyzing">جارٍ التحليل…</string>
+    <string name="entry_analysis_busy_filling">جارٍ ملء التغذية…</string>
+    <string name="entry_analysis_busy_units">جارٍ حساب وحدات الحصة…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">جاهز للمراجعة</string>
+    <string name="entry_analysis_status_helper">فحص الرموز الشريطية في الصورة، ثم طلب التغذية من مزوّد الذكاء الاصطناعي.</string>
+    <string name="entry_analysis_streaming_hint">تظهر القيم مع استجابة الذكاء الاصطناعي. يمكنك مراجعتها قبل التسجيل.</string>
+    <string name="entry_analysis_tip_apply">إعادة التحليل مع نصيحة</string>
+    <string name="entry_analysis_tip_cta">إضافة نصيحة للذكاء الاصطناعي (اختياري)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d نشط → الميزانية)</string>
+    <string name="home_calorie_clause_add_active_waiting">الحرق النشط سيمدّد ميزانية اليوم</string>
+    <string name="home_calorie_mode_add_active">إضافة الحرق النشط إلى الميزانية</string>
+    <string name="home_calorie_mode_add_active_desc">تُضاف السعرات النشطة من Health Connect (أو تقدير مستوى النشاط) إلى ميزانية السعرات اليوم. كُل ما تحرقه. اضبط مستوى النشاط على خط الأساس اليومي حتى لا تُحسب التمارين مرتين. اربط Health Connect من الإعدادات ← الصحة للحرق المقاس.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">نصيحة: فعّل Health Connect لاستخدام سعرات الساعة/الهاتف النشطة بدل تقدير مستوى النشاط.</string>
+    <string name="home_calorie_mode_static_desc">هدف السعرات يبقى ثابتًا. الحركة لا تغيّر ميزانية اليوم.</string>
+    <string name="home_menu_manual_active">الحرق النشط</string>
+    <string name="manual_active_kcal_hint">السعرات المحروقة</string>
+    <string name="manual_active_name_hint">اسم النشاط (اختياري)</string>
+    <string name="manual_active_save">إضافة إلى الميزانية</string>
+    <string name="manual_active_subtitle">أضِف السعرات المحروقة من مشي أو ركوب أو تمرين. تمتد ميزانية اليوم عند تفعيل «إضافة الحرق النشط».</string>
+    <string name="manual_active_title">تسجيل الحرق النشط</string>
+    <string name="meal_photos_add_label">إضافة ملصق</string>
+    <string name="meal_photos_confirm_back">متابعة التعديل</string>
+    <string name="meal_photos_confirm_continue">التحليل على أي حال</string>
+    <string name="meal_photos_confirm_no_note">لا توجد ملاحظة بعد. تقديرات الذكاء الاصطناعي أقل دقة بدون كميات أو وصف. المتابعة على أي حال؟</string>
+    <string name="meal_photos_confirm_one_photo">صورة واحدة فقط. لقطة ثانية (زاوية أخرى أو ملصق التغذية) تساعد غالبًا. المتابعة بصورة واحدة؟</string>
+    <string name="meal_photos_confirm_sparse">لا ملاحظة وصورة واحدة فقط. أضِف نصيحة أو صورة ملصق لتقدير أفضل، أو تابع على أي حال.</string>
+    <string name="meal_photos_confirm_title">التحليل الآن؟</string>
+    <string name="meal_photos_dont_ask_note">عدم السؤال عن ملاحظة مرة أخرى</string>
+    <string name="meal_photos_note_section">ما هذا؟</string>
+    <string name="meal_photos_skip_note">تخطّي الملاحظة والتحليل</string>
+    <string name="meal_photos_subtitle">أضِف ملاحظة قصيرة وصورة ثانية اختياريًا (مثل ملصق التغذية)، ثم اضغط تحليل. يبدأ الذكاء الاصطناعي فقط بعد التأكيد.</string>
+    <string name="meal_photos_subtitle_note_optional">أضِف صورة أخرى أو نصيحة إن أردت، ثم تحليل. يبدأ الذكاء الاصطناعي فقط بعد التأكيد.</string>
+    <string name="meal_photos_title">قبل التحليل</string>
+    <string name="on_device_model_accuracy_notice">هذه النماذج ليست بدقة الذكاء الاصطناعي السحابي. توقّع سعرات خاطئة أو عناصر فائتة أو قراءة ضعيفة للصور، خاصة مع نموذج E2B الأصغر. يبقى المزوّدون السحابيون الخيار الموصى به للتسجيل الموثوق.</string>
+    <string name="on_device_model_device_notice">مُختبر على Pixel 9a (GrapheneOS). أجهزة أخرى، خاصة الأقل مستوى أو غير Tensor، لم تُتحقّق بعد وقد تكون أبطأ أو غير مدعومة؛ المزوّد السحابي أكثر أمانًا هناك.</string>
+    <string name="on_device_model_loaded">تم تحميل النموذج. جاهز للاستخدام.</string>
+    <string name="on_device_model_not_loaded">غير محمّل. قد يستغرق أول طلب بعد بدء التطبيق حتى دقيقة.</string>
+    <string name="on_device_model_privacy_notice">يعمل بالكامل على هذا الجهاز. لا يُرسل ما تكتبه أو تصوّره إلى خادم. التنزيل يجلب ملف النموذج مباشرة من Hugging Face (%1$s)، مضيف طرف ثالث لا يستخدمه التطبيق غير ذلك.</string>
+    <string name="onboarding_api_key_non_gemini_ok">جاهز. الاختبار السريع لـ Gemini فقط</string>
+    <string name="photo_accuracy_guide_body">الصور تفوت الكثير. أضِف ملاحظة قصيرة عندما تستطيع:
+
+• كن محددًا: الكميات والعلامات وما في الطبق
+• اذكر الزيوت والصلصات والصلصات الدهنية (غالبًا غير مرئية)
+• اذكر التحضير عندما يهم: مقلي، مشوي، على البخار، منزلي
+• الجرامات الدقيقة أو صورة ملصق التغذية تساعد أكثر</string>
+    <string name="photo_accuracy_guide_cd">كيفية تحسين دقة الصورة</string>
+    <string name="photo_accuracy_guide_dismiss">فهمت</string>
+    <string name="photo_accuracy_guide_title">نصائح لتقدير أفضل</string>
+    <string name="photo_import_failed">تعذّر استيراد الصورة</string>
+    <string name="progress_weight_raw_legend">الوزن اليومي</string>
+    <string name="progress_weight_trend_legend">اتجاه 7 أيام</string>
+    <string name="progress_weight_trend_need_more">اتجاه 7 أيام يحتاج يومي وزن على الأقل</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f غ/كغ · %2$d غ/يوم</string>
+    <string name="protein_target_lbm_missing_hint">نسبة دهون الجسم %% غير مضبوطة. يُستخدم الوزن الكلي حتى تسجيل BF%%.</string>
+    <string name="protein_target_mode_g_per_kg_lbm">غ/كغ الكتلة الخالية من الدهون</string>
+    <string name="protein_target_mode_g_per_kg_total">غ/كغ وزن الجسم</string>
+    <string name="protein_target_mode_grams">غرامات في اليوم</string>
+    <string name="protein_target_mode_label">هدف البروتين</string>
+    <string name="settings_gemini_google_search_footer">عند التفعيل، قد يبحث Gemini في الويب عندما يساعد في الإجابة. تُرسل استعلامات البحث إلى Google. تُفوتر Google مشروع Gemini API. في نماذج Gemini 3، يُحسب كل استعلام بحث نُفّذ ضمن الاستخدام؛ في Gemini 2.5 والأقدم، الفوترة لكل مطالبة تستخدم البحث.</string>
+    <string name="settings_health_unavailable_platform">Health Connect غير متاح للتطبيقات على هذا الجهاز. على Android 14 فما فوق هو وحدة نظام. إذا ظهر Health Connect في الإعدادات لكن Chompass لا يتصل، قد لا تقدّم الشريحة خدمة Health Connect (شائع في بعض إصدارات de-Googled). لا يتطلّب Chompass Play Store أو sandboxed Play. استخدم تصدير/استيراد اليوميات ومقاييس الجسم، أو WebDAV اختياريًا.</string>
+    <string name="settings_meal_constituents_footer_on_device">غير متاح لـ Gemma على الجهاز: تفصيل المكوّنات يحتاج نموذجًا أقوى. انتقل إلى مزوّد سحابي لتفعيله.</string>
+    <string name="settings_photo_note_prompt">السؤال عن ملاحظة للصورة</string>
+    <string name="settings_photo_note_prompt_footer">عند التفعيل، يُبرز إدخال الصورة حقل الملاحظة قبل التحليل. يمكنك التأكيد والمتابعة بدون ملاحظة.</string>
+    <string name="settings_progress_default_range">النطاق الافتراضي للتقدّم</string>
 </resources>

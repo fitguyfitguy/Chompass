@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">用于食物照片和教练的可选 API 密钥。
 推荐免费的 Google AI Studio。</string>
     <string name="onboarding_provider_recommended_title">推荐：Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">免费且高质量 — 最适合食物照片</string>
+    <string name="onboarding_provider_recommended_subtitle">免费且高质量。最适合食物照片。</string>
     <string name="onboarding_provider_howto_title">如何获取免费的 Google AI Studio 密钥</string>
     <string name="onboarding_provider_step_1">打开 aistudio.google.com/apikey（点按打开）</string>
     <string name="onboarding_provider_step_2">使用 Google 登录并创建 API 密钥</string>
@@ -394,7 +394,7 @@
     <!-- Context note sheet -->
         <string name="context_note_title">查看照片</string>
     <string name="context_note_section">添加备注（可选）</string>
-    <string name="context_note_placeholder">如：黄油炒蛋2个、淋酱沙拉、无酱汁烤鸡</string>
+    <string name="context_note_placeholder">例如：黄油炒两个鸡蛋、Chipotle 碗（多加油）、无酱烤鸡</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">聆听中...</string>
@@ -581,7 +581,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">称重时间到了</string>
     <string name="notif_weight_log_text">记录今天的体重，让进度图保持准确。</string>
-    <string name="settings_health_unavailable">此设备上无法使用 Health Connect。Android 14 及更高版本中它是系统模块；若 ROM 未提供该服务，请使用文件导入/导出。Android 14+ 不需要从 Play Store 安装独立应用。</string>
+    <string name="settings_health_unavailable">此设备无法使用 Health Connect。Android 14 及更高版本随系统提供。若 ROM 未提供，请使用文件导出/导入。Android 14+ 上 Chompass 从不要求 Play Store 版 Health Connect 应用。</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI 提供商</string>
@@ -716,4 +716,80 @@
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">再次记录</string>
+    <string name="add_food_quick_relog_empty">将一餐加入收藏或先记录一次。之后会显示在这里，可一键再次记录。</string>
+    <string name="add_food_quick_relog_hint">收藏和过往餐食。比重新扫描更快。</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">私密且离线。比云端 AI 准确度低；约 2~4 GB 下载</string>
+    <string name="camera_scale_tip_message">提示：在食物旁放入叉子、手或硬币。有助于估算份量。</string>
+    <string name="cd_relog_meal">再次记录 %1$s</string>
+    <string name="context_note_hint">请尽量具体：数量、品牌、油或酱汁，以及烹饪方式。</string>
+    <string name="edit_reprocess_diff_unchanged">没有字段发生变化。请调整备注后重试。</string>
+    <string name="edit_reprocess_hint">描述修正内容，例如：大份、黄油烹饪、燕麦奶代替乳制品</string>
+    <string name="entry_analysis_add_photo">添加照片</string>
+    <string name="entry_analysis_busy_analyzing">分析中…</string>
+    <string name="entry_analysis_busy_filling">填写营养信息…</string>
+    <string name="entry_analysis_busy_units">计算份量单位…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">可以查看</string>
+    <string name="entry_analysis_status_helper">先检查照片中的条形码，再向你的 AI 提供商查询营养信息。</string>
+    <string name="entry_analysis_streaming_hint">AI 回复时数值会逐步显示。记录前你可以先查看。</string>
+    <string name="entry_analysis_tip_apply">带提示重新分析</string>
+    <string name="entry_analysis_tip_cta">为 AI 添加提示（可选）</string>
+    <string name="home_calorie_clause_add_active">(+%1$d 活动 → 预算)</string>
+    <string name="home_calorie_clause_add_active_waiting">活动消耗将延长今日预算</string>
+    <string name="home_calorie_mode_add_active">将活动消耗加入预算</string>
+    <string name="home_calorie_mode_add_active_desc">来自 Health Connect（或你的活动水平估算）的活动热量会加入今日卡路里预算。消耗多少可以再吃回来。将活动水平设为日常基准，避免运动被重复计算。要在设置 → 健康中连接 Health Connect 以使用实测消耗。</string>
+    <string name="home_calorie_mode_add_active_hc_hint">提示：启用 Health Connect 后，可使用手表/手机的活动热量，而不是活动水平估算。</string>
+    <string name="home_calorie_mode_static_desc">卡路里目标保持不变。运动不会改变今日预算。</string>
+    <string name="home_menu_manual_active">活动消耗</string>
+    <string name="manual_active_kcal_hint">消耗热量</string>
+    <string name="manual_active_name_hint">活动名称（可选）</string>
+    <string name="manual_active_save">加入预算</string>
+    <string name="manual_active_subtitle">添加步行、骑行或锻炼消耗的热量。开启“将活动消耗加入预算”时，会延长今日预算。</string>
+    <string name="manual_active_title">记录活动消耗</string>
+    <string name="meal_photos_add_label">添加标签</string>
+    <string name="meal_photos_confirm_back">继续编辑</string>
+    <string name="meal_photos_confirm_continue">仍然分析</string>
+    <string name="meal_photos_confirm_no_note">还没有备注。没有数量或描述时，AI 估算不太准确。仍然继续？</string>
+    <string name="meal_photos_confirm_one_photo">只有一张照片。第二张（另一角度或营养标签）通常更有帮助。仍用一张照片继续？</string>
+    <string name="meal_photos_confirm_sparse">没有备注且只有一张照片。添加提示或标签照片以获得更好估算，或仍然继续。</string>
+    <string name="meal_photos_confirm_title">现在分析？</string>
+    <string name="meal_photos_dont_ask_note">不再询问备注</string>
+    <string name="meal_photos_note_section">这是什么？</string>
+    <string name="meal_photos_skip_note">跳过备注并分析</string>
+    <string name="meal_photos_subtitle">添加简短备注，可选第二张照片（如营养标签），然后点分析。确认后 AI 才会开始。</string>
+    <string name="meal_photos_subtitle_note_optional">如需可再添加照片或提示，然后点分析。确认后 AI 才会开始。</string>
+    <string name="meal_photos_title">分析前</string>
+    <string name="on_device_model_accuracy_notice">这些模型不如云端 AI 准确。可能出现热量错误、遗漏项目或照片识别不佳，较小的 E2B 模型尤其明显。可靠记录仍建议使用云端提供商。</string>
+    <string name="on_device_model_device_notice">已在 Pixel 9a（GrapheneOS）上测试。其他设备，尤其是较低配置或非 Tensor 硬件，尚未验证，可能更慢或不支持；云端提供商更安全。</string>
+    <string name="on_device_model_loaded">模型已加载。可以使用。</string>
+    <string name="on_device_model_not_loaded">未加载。应用启动后首次请求可能需要最多一分钟。</string>
+    <string name="on_device_model_privacy_notice">完全在本设备上运行。你输入或拍摄的内容不会发送到服务器。下载会直接从 Hugging Face（%1$s）获取模型文件，这是本应用通常不使用的第三方主机。</string>
+    <string name="onboarding_api_key_non_gemini_ok">就绪。快速测试仅支持 Gemini</string>
+    <string name="photo_accuracy_guide_body">照片会漏掉很多信息。尽量添加简短备注:
+
+• 尽量具体：数量、品牌和盘中的内容
+• 说明油、酱汁和油性调味（往往看不出来）
+• 烹饪方式重要时请注明：炸、烤、蒸、自制
+• 精确克数或营养标签照片最有帮助</string>
+    <string name="photo_accuracy_guide_cd">如何提高照片准确度</string>
+    <string name="photo_accuracy_guide_dismiss">知道了</string>
+    <string name="photo_accuracy_guide_title">获得更好估算的提示</string>
+    <string name="photo_import_failed">无法导入照片</string>
+    <string name="progress_weight_raw_legend">每日称重</string>
+    <string name="progress_weight_trend_legend">7 日趋势</string>
+    <string name="progress_weight_trend_need_more">7 日趋势至少需要 2 天的称重记录</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/天</string>
+    <string name="protein_target_lbm_missing_hint">未设置体脂%%。在记录 BF%% 前使用总体重。</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg 去脂体重</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg 体重</string>
+    <string name="protein_target_mode_grams">每日克数</string>
+    <string name="protein_target_mode_label">蛋白质目标</string>
+    <string name="settings_gemini_google_search_footer">启用后，Gemini 可能在有助于回答提示时搜索网页。搜索查询会发送到 Google。Google 会向你的 Gemini API 项目计费。Gemini 3 模型中，每次执行的搜索查询计入用量；Gemini 2.5 及更早版本按使用搜索的每次提示计费。</string>
+    <string name="settings_health_unavailable_platform">此设备上的应用无法使用 Health Connect。Android 14 及更高版本它是系统模块。若设置中显示 Health Connect 但 Chompass 无法连接，你的 ROM 可能未公开 Health Connect 服务（某些去 Google 化版本常见）。Chompass 不需要 Play Store 或沙盒 Play。请改用日记和体成分导出/导入，或可选 WebDAV。</string>
+    <string name="settings_meal_constituents_footer_on_device">设备端 Gemma 不可用：食材分解需要更强的模型。切换到云端提供商以启用。</string>
+    <string name="settings_photo_note_prompt">要求填写照片备注</string>
+    <string name="settings_photo_note_prompt_footer">开启后，照片录入在分析前会突出备注字段。你仍可确认并继续，无需备注。</string>
+    <string name="settings_progress_default_range">进度默认范围</string>
 </resources>
