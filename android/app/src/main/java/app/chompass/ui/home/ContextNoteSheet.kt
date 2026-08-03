@@ -304,9 +304,8 @@ fun ContextNoteSheet(
 }
 
 /**
- * Lightweight pre-LLM staging: photos (plate + optional label), optional tip/grams,
- * then one-tap Analyze. Keeps context cheap — the morphing Log sheet starts only
- * after Analyze.
+ * Lightweight pre-LLM staging: photos (plate + optional label), text note
+ * (required by default), optional tip/grams, then Analyze.
  */
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
@@ -314,15 +313,43 @@ fun MultiPhotoCaptureSheet(
     imageBytesList: List<ByteArray>,
     addsFromLibrary: Boolean,
     showScaleTip: Boolean = false,
+    /** When true (default), a non-blank note is required for the primary Analyze button. */
+    requireNote: Boolean = true,
+    /** After several empty-note skips, offer a persistent opt-out checkbox. */
+    showDontAskAgain: Boolean = false,
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
-    onAnalyze: (note: String?, confirmedPortionGrams: Double?) -> Unit,
+    onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember { mutableStateOf("") }
     var weightText by remember { mutableStateOf("") }
-    var tipExpanded by remember { mutableStateOf(false) }
+    var tipExpanded by remember(requireNote) { mutableStateOf(requireNote) }
+    var dontAskAgain by remember { mutableStateOf(false) }
+    val noteFocus = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(requireNote) {
+        if (requireNote) {
+            tipExpanded = true
+            delay(100)
+            runCatching {
+                noteFocus.requestFocus()
+                keyboardController?.show()
+            }
+        }
+    }
+
+    fun submit(forceWithoutNote: Boolean) {
+        val trimmed = note.trim()
+        if (requireNote && trimmed.isEmpty() && !forceWithoutNote) return
+        onAnalyze(
+            trimmed.takeIf { it.isNotEmpty() },
+            parsePositiveGrams(weightText),
+            dontAskAgain && showDontAskAgain,
+        )
+    }
 
     ChompassBottomSheet(
         onDismiss = onDismiss,
@@ -347,7 +374,10 @@ fun MultiPhotoCaptureSheet(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 Text(
-                    stringResource(R.string.meal_photos_subtitle),
+                    stringResource(
+                        if (requireNote) R.string.meal_photos_subtitle
+                        else R.string.meal_photos_subtitle_note_optional,
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
                     modifier = Modifier.padding(horizontal = 20.dp),
@@ -360,6 +390,148 @@ fun MultiPhotoCaptureSheet(
                         color = AppColors.Calorie,
                         modifier = Modifier.padding(horizontal = 20.dp),
                     )
+                }
+
+                // Note first when required — before LLM, and before optional extras.
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (requireNote) {
+                        Text(
+                            stringResource(R.string.meal_photos_note_section),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            stringResource(R.string.context_note_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        )
+                        val contextChips = listOf(
+                            stringResource(R.string.context_note_chip_no_oil),
+                            stringResource(R.string.context_note_chip_extra_cheese),
+                            stringResource(R.string.context_note_chip_large),
+                            stringResource(R.string.context_note_chip_grilled),
+                        )
+                        androidx.compose.foundation.layout.FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            contextChips.forEach { label ->
+                                androidx.compose.material3.FilterChip(
+                                    selected = note.contains(label, ignoreCase = true),
+                                    onClick = {
+                                        note = if (note.isBlank()) label
+                                        else if (note.contains(label, ignoreCase = true)) note
+                                        else "$note, $label"
+                                    },
+                                    label = { Text(label, fontSize = 13.sp) },
+                                    colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                                        selectedLabelColor = AppColors.Calorie,
+                                    ),
+                                )
+                            }
+                        }
+                        FudGlassTextField(
+                            value = note,
+                            onValueChange = { note = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 88.dp)
+                                .focusRequester(noteFocus),
+                            placeholder = stringResource(R.string.context_note_placeholder),
+                        )
+                        Text(
+                            stringResource(R.string.context_note_weight_section),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            FudGlassTextField(
+                                value = weightText,
+                                onValueChange = {
+                                    weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
+                                },
+                                placeholder = stringResource(R.string.context_note_weight_placeholder),
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                stringResource(R.string.context_note_weight_unit),
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            )
+                        }
+                        if (showDontAskAgain) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                androidx.compose.material3.Checkbox(
+                                    checked = dontAskAgain,
+                                    onCheckedChange = { dontAskAgain = it },
+                                )
+                                Text(
+                                    stringResource(R.string.meal_photos_dont_ask_note),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(start = 4.dp),
+                                )
+                            }
+                        }
+                    } else {
+                        TextButton(onClick = { tipExpanded = !tipExpanded }) {
+                            Text(
+                                stringResource(R.string.entry_analysis_tip_cta),
+                                color = AppColors.Calorie,
+                                fontSize = 14.sp,
+                            )
+                        }
+                        if (tipExpanded) {
+                            Text(
+                                stringResource(R.string.context_note_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            )
+                            FudGlassTextField(
+                                value = note,
+                                onValueChange = { note = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 88.dp),
+                                placeholder = stringResource(R.string.context_note_placeholder),
+                            )
+                            Text(
+                                stringResource(R.string.context_note_weight_section),
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                FudGlassTextField(
+                                    value = weightText,
+                                    onValueChange = {
+                                        weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
+                                    },
+                                    placeholder = stringResource(R.string.context_note_weight_placeholder),
+                                    singleLine = true,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Text(
+                                    stringResource(R.string.context_note_weight_unit),
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Row(
@@ -427,92 +599,21 @@ fun MultiPhotoCaptureSheet(
                         }
                     }
                 }
-
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    TextButton(onClick = { tipExpanded = !tipExpanded }) {
-                        Text(
-                            stringResource(R.string.entry_analysis_tip_cta),
-                            color = AppColors.Calorie,
-                            fontSize = 14.sp,
-                        )
-                    }
-                    if (tipExpanded) {
-                        Text(
-                            stringResource(R.string.context_note_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        )
-                        val contextChips = listOf(
-                            stringResource(R.string.context_note_chip_no_oil),
-                            stringResource(R.string.context_note_chip_extra_cheese),
-                            stringResource(R.string.context_note_chip_large),
-                            stringResource(R.string.context_note_chip_grilled),
-                        )
-                        androidx.compose.foundation.layout.FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            contextChips.forEach { label ->
-                                androidx.compose.material3.FilterChip(
-                                    selected = note.contains(label, ignoreCase = true),
-                                    onClick = {
-                                        note = if (note.isBlank()) label
-                                        else if (note.contains(label, ignoreCase = true)) note
-                                        else "$note, $label"
-                                    },
-                                    label = { Text(label, fontSize = 13.sp) },
-                                    colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                                        selectedLabelColor = AppColors.Calorie,
-                                    ),
-                                )
-                            }
-                        }
-                        FudGlassTextField(
-                            value = note,
-                            onValueChange = { note = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 88.dp),
-                            placeholder = stringResource(R.string.context_note_placeholder),
-                        )
-                        Text(
-                            stringResource(R.string.context_note_weight_section),
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            FudGlassTextField(
-                                value = weightText,
-                                onValueChange = {
-                                    weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
-                                },
-                                placeholder = stringResource(R.string.context_note_weight_placeholder),
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                stringResource(R.string.context_note_weight_unit),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            )
-                        }
-                    }
-                }
             }
 
             SheetStickyPrimaryBar(
                 primaryLabel = stringResource(R.string.action_analyze),
-                onPrimary = {
-                    onAnalyze(note.takeIf { it.isNotBlank() }, parsePositiveGrams(weightText))
+                primaryEnabled = !requireNote || note.isNotBlank(),
+                onPrimary = { submit(forceWithoutNote = false) },
+                textActionLabel = if (requireNote) {
+                    stringResource(R.string.meal_photos_skip_note)
+                } else {
+                    null
+                },
+                onTextAction = if (requireNote) {
+                    { submit(forceWithoutNote = true) }
+                } else {
+                    null
                 },
             )
         }

@@ -97,6 +97,8 @@ data class SettingsUiState(
     val geminiGoogleSearchEnabled: Boolean = false,
     val portionClarifyEnabled: Boolean = false,
     val mealConstituentsEnabled: Boolean = true,
+    /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */
+    val skipPhotoNotePrompt: Boolean = false,
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val mealSchedule: app.chompass.models.MealSchedule = app.chompass.models.MealSchedule.Default,
@@ -184,6 +186,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val geminiGoogleSearch = container.prefs.geminiGoogleSearchEnabled.first()
             val portionClarify = container.prefs.portionClarifyEnabled.first()
             val mealConstituents = container.prefs.mealConstituentsEnabled.first()
+            val skipPhotoNote = container.prefs.skipPhotoNotePrompt.first()
             val optionalGoals = container.prefs.optionalNutrientGoals.first()
             val homeDisplay = container.prefs.homeDisplayPreferences.first()
             val mealSchedule = container.prefs.mealSchedule.first()
@@ -238,6 +241,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 geminiGoogleSearchEnabled = geminiGoogleSearch,
                 portionClarifyEnabled = portionClarify,
                 mealConstituentsEnabled = mealConstituents,
+                skipPhotoNotePrompt = skipPhotoNote,
                 optionalNutrientGoals = optionalGoals,
                 homeDisplay = homeDisplay,
                 mealSchedule = mealSchedule,
@@ -317,6 +321,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setPortionClarifyEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setPortionClarifyEnabled(v) },
         { copy(portionClarifyEnabled = v) },
+    )
+
+    fun setAskPhotoNotePrompt(ask: Boolean) = updateUiPref(
+        {
+            container.prefs.setSkipPhotoNotePrompt(!ask)
+            if (ask) container.prefs.setPhotoNoteSkipCount(0)
+        },
+        { copy(skipPhotoNotePrompt = !ask) },
     )
 
     fun setMealConstituentsEnabled(v: Boolean) = updateUiPref(

@@ -74,6 +74,10 @@ data class HomeUiState(
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val preferGramsByDefault: Boolean = false,
     val portionClarifyEnabled: Boolean = false,
+    /** When false (default), photo staging requires a text note before Analyze. */
+    val skipPhotoNotePrompt: Boolean = false,
+    /** Consecutive empty-note photo analyzes; at ≥3 offer “don’t ask again”. */
+    val photoNoteSkipCount: Int = 0,
     val hasSeenCameraScaleTip: Boolean = true,
     val weightMetric: Boolean = true,
     val favoriteKeys: Set<String> = emptySet(),
@@ -155,6 +159,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(HomeUiState())
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
     private val _selectedDate = MutableStateFlow(LocalDate.now())
+
+    companion object {
+        /** After this many empty-note photo analyzes, offer “don’t ask again”. */
+        const val PHOTO_NOTE_SKIP_OFFER_THRESHOLD = 3
+    }
 
     @Volatile
     private var analysisInFlight = false
@@ -376,6 +385,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.skipPhotoNotePrompt
+            .onEach { skip ->
+                _ui.value = _ui.value.copy(skipPhotoNotePrompt = skip)
+            }
+            .launchIn(viewModelScope)
+
+        container.prefs.photoNoteSkipCount
+            .onEach { count ->
+                _ui.value = _ui.value.copy(photoNoteSkipCount = count)
+            }
+            .launchIn(viewModelScope)
+
         container.prefs.hasSeenCameraScaleTip
             .onEach { seen ->
                 _ui.value = _ui.value.copy(hasSeenCameraScaleTip = seen)
@@ -577,6 +598,32 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 )
             }
         }
+    }
+
+    /**
+     * Photo staging Analyze: update skip / don’t-ask prefs, then run [analyzePhotos].
+     * [dontAskAgain] persists opt-out when the user checked the offer after ≥3 skips.
+     */
+    fun analyzePhotosFromStaging(
+        imageBytesList: List<ByteArray>,
+        note: String?,
+        confirmedPortionGrams: Double?,
+        dontAskAgain: Boolean = false,
+    ) {
+        viewModelScope.launch {
+            val trimmed = note?.trim().orEmpty()
+            if (dontAskAgain) {
+                container.prefs.setSkipPhotoNotePrompt(true)
+                container.prefs.setPhotoNoteSkipCount(0)
+            } else if (!_ui.value.skipPhotoNotePrompt) {
+                if (trimmed.isEmpty()) {
+                    container.prefs.setPhotoNoteSkipCount(_ui.value.photoNoteSkipCount + 1)
+                } else {
+                    container.prefs.setPhotoNoteSkipCount(0)
+                }
+            }
+        }
+        analyzePhotos(imageBytesList, note, confirmedPortionGrams)
     }
 
     fun analyzePhotos(firstBytes: ByteArray, secondBytes: ByteArray) {
