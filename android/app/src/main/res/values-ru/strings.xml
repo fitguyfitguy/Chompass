@@ -575,7 +575,7 @@
     
     <string name="notif_weight_log_title">Пора взвеситься</string>
     <string name="notif_weight_log_text">Запишите свой вес сегодня, чтобы график прогресса оставался точным.</string>
-    <string name="settings_health_unavailable">Health Connect недоступен на этом устройстве. Установите его из Play Store, затем снова коснитесь переключателя.</string>
+    <string name="settings_health_unavailable">Health Connect недоступен на этом устройстве. На Android 14+ это системный модуль; если прошивка его не предоставляет, используйте экспорт/импорт файлов. Chompass не требует приложение из Play Store на Android 14+.</string>
 
     
     <string name="sheet_ai_provider">ИИ-провайдер</string>

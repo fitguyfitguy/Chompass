@@ -77,10 +77,18 @@ class ChompassApp : Application() {
         // Older builds removed food rows without removing their JPEGs.
         appScope.launch { container.foodRepository.pruneOrphanedImages() }
         // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
-        // this a no-op when the periodic work is already enqueued.
+        // this a no-op when the periodic work is already enqueued. Requires the
+        // module feature + background-read grant (API varies by Mainline version).
         appScope.launch {
-            if (container.prefs.healthBackgroundSyncEnabled.first()) {
+            if (container.prefs.healthBackgroundSyncEnabled.first() &&
+                container.health.isAvailable() &&
+                container.health.isBackgroundReadAvailable() &&
+                container.health.hasBackgroundRead()
+            ) {
                 HealthSyncWorker.schedule(this@ChompassApp)
+            } else if (container.prefs.healthBackgroundSyncEnabled.first()) {
+                container.prefs.setHealthBackgroundSyncEnabled(false)
+                HealthSyncWorker.cancel(this@ChompassApp)
             }
         }
         // Re-arm the daily weight-log alarm on every cold start. AlarmManager

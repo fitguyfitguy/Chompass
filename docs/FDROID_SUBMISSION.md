@@ -149,8 +149,9 @@ Happy to add labels reviewers suggest. My reading:
 
 ## Health Connect
 
-Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, resting HR, hydration, energy burn when user grants permissions. Optional background sync is **off by default**.
+Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, resting HR, hydration, energy burn when user grants permissions. Optional background sync is **off by default** and only offered when the device’s Health Connect module supports background reads.
 
+**Delivery:** Android 13 and lower use the Play Store Health Connect APK; Android 14+ uses the system/Mainline module. Chompass talks to both through Jetpack `connect-client` and does not require sandboxed Play. De-Googled ROMs that omit the binder service will report HC unavailable — file import/export remains the fallback.
 ## Fork note
 
 Forked from Fud AI with a distinct package ID `app.chompass` vs upstream. I am the Chompass maintainer.

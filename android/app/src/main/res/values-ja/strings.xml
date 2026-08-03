@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">計量の時間です</string>
     <string name="notif_weight_log_text">進捗グラフを正確に保つために、今日の体重を記録しましょう。</string>
-    <string name="settings_health_unavailable">この端末では Health Connect が利用できません。Play ストアからインストールしてからトグルを再度タップしてください。</string>
+    <string name="settings_health_unavailable">この端末では Health Connect を利用できません。Android 14 以降はシステム機能です。ROM が提供しない場合はファイルの書き出し／読み込みを使ってください。Android 14 以降で Play ストア版のインストールは不要です。</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AIプロバイダ</string>

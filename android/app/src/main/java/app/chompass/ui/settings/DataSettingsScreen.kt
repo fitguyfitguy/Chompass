@@ -55,13 +55,21 @@ fun DataSettingsScreen(
     var lastSyncAt by remember { mutableStateOf<String?>(null) }
     var showSafetyMedicalInfo by remember { mutableStateOf(false) }
     var permissionDeniedMessage by remember { mutableStateOf<String?>(null) }
+    var healthAvailabilityActionLabel by remember { mutableStateOf<String?>(null) }
+    var healthAvailabilityActionIntent by remember {
+        mutableStateOf<android.content.Intent?>(null)
+    }
     var pendingHealthPermissionAction by remember {
         mutableStateOf<HealthConnectPermissionAction?>(null)
     }
     val activityContext = LocalContext.current
     val scope = rememberCoroutineScope()
     val healthDeniedMsg = stringResource(R.string.settings_health_denied)
-    val healthUnavailableMsg = stringResource(R.string.settings_health_unavailable)
+    val healthBackgroundDeniedMsg = stringResource(R.string.settings_health_background_denied)
+    val healthBackgroundUnsupportedMsg =
+        stringResource(R.string.settings_health_background_sync_unsupported)
+    val healthManageFailedMsg = stringResource(R.string.settings_health_manage_failed)
+    val backgroundSyncSupported = remember { container.health.isBackgroundReadAvailable() }
 
     LaunchedEffect(Unit) {
         webDavUrl = container.prefs.webDavUrl.first()
@@ -76,13 +84,31 @@ fun DataSettingsScreen(
     ) { granted ->
         val action = pendingHealthPermissionAction ?: HealthConnectPermissionAction.SYNC
         pendingHealthPermissionAction = null
-        if (granted.any { it in container.health.permissions }) {
-            when (action) {
-                HealthConnectPermissionAction.SYNC -> vm.setHealthConnectEnabled(true)
-                HealthConnectPermissionAction.ENERGY_GOALS -> vm.setHealthEnergyGoalsEnabled(true)
+        when (action) {
+            HealthConnectPermissionAction.BACKGROUND_SYNC -> {
+                if (container.health.backgroundReadPermission in granted) {
+                    vm.setHealthBackgroundSyncEnabled(true)
+                } else {
+                    permissionDeniedMessage = healthBackgroundDeniedMsg
+                    healthAvailabilityActionLabel = null
+                    healthAvailabilityActionIntent = null
+                }
             }
-        } else {
-            permissionDeniedMessage = healthDeniedMsg
+            HealthConnectPermissionAction.SYNC,
+            HealthConnectPermissionAction.ENERGY_GOALS -> {
+                if (granted.any { it in container.health.permissions }) {
+                    when (action) {
+                        HealthConnectPermissionAction.SYNC -> vm.setHealthConnectEnabled(true)
+                        HealthConnectPermissionAction.ENERGY_GOALS ->
+                            vm.setHealthEnergyGoalsEnabled(true)
+                        HealthConnectPermissionAction.BACKGROUND_SYNC -> Unit
+                    }
+                } else {
+                    permissionDeniedMessage = healthDeniedMsg
+                    healthAvailabilityActionLabel = null
+                    healthAvailabilityActionIntent = null
+                }
+            }
         }
     }
 
@@ -202,22 +228,62 @@ fun DataSettingsScreen(
         }
     }
 
+    fun showHealthAvailabilityMessage() {
+        permissionDeniedMessage =
+            activityContext.getString(container.health.unavailableMessageRes())
+        val labelRes = container.health.availabilityActionLabelRes()
+        healthAvailabilityActionLabel =
+            labelRes?.let { activityContext.getString(it) }
+        healthAvailabilityActionIntent = container.health.availabilityActionIntent()
+    }
+
     fun onHealthConnectToggle(enabled: Boolean) {
         if (!enabled) {
             vm.setHealthConnectEnabled(false)
             return
         }
         if (!container.health.isAvailable()) {
-            permissionDeniedMessage = healthUnavailableMsg
+            showHealthAvailabilityMessage()
             return
         }
         pendingHealthPermissionAction = HealthConnectPermissionAction.SYNC
         healthConnectLauncher.launch(container.health.permissions)
     }
 
+    fun onBackgroundSyncToggle(enabled: Boolean) {
+        if (!enabled) {
+            vm.setHealthBackgroundSyncEnabled(false)
+            return
+        }
+        if (!container.health.isBackgroundReadAvailable()) {
+            permissionDeniedMessage = healthBackgroundUnsupportedMsg
+            healthAvailabilityActionLabel = null
+            healthAvailabilityActionIntent = null
+            return
+        }
+        scope.launch {
+            if (container.health.hasBackgroundRead()) {
+                vm.setHealthBackgroundSyncEnabled(true)
+            } else {
+                pendingHealthPermissionAction = HealthConnectPermissionAction.BACKGROUND_SYNC
+                healthConnectLauncher.launch(setOf(container.health.backgroundReadPermission))
+            }
+        }
+    }
+
     fun openHealthConnectAccess() {
         runCatching { activityContext.startActivity(container.health.manageAccessIntent()) }
-            .onFailure { permissionDeniedMessage = healthUnavailableMsg }
+            .onFailure {
+                permissionDeniedMessage = healthManageFailedMsg
+                healthAvailabilityActionLabel =
+                    activityContext.getString(R.string.settings_health_open_settings)
+                healthAvailabilityActionIntent =
+                    runCatching {
+                        android.content.Intent(
+                            androidx.health.connect.client.HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+                        ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }.getOrNull()
+            }
     }
 
     SettingsSubScreen(
@@ -226,11 +292,12 @@ fun DataSettingsScreen(
     ) {
         SettingsHealthDataSection(
             ui = ui,
-            vm = vm,
             safetyMedicalExpanded = showSafetyMedicalInfo,
             onToggleSafetyMedical = { showSafetyMedicalInfo = !showSafetyMedicalInfo },
             onHealthConnectToggle = ::onHealthConnectToggle,
             onManageHealthAccess = ::openHealthConnectAccess,
+            backgroundSyncSupported = backgroundSyncSupported,
+            onBackgroundSyncToggle = ::onBackgroundSyncToggle,
             onShowExportDiary = { showExportSheet = true },
             onShowExportBodyMetrics = { showBodyMetricsExportSheet = true },
             onImportDiary = { importDiaryLauncher.launch(arrayOf("application/json", "text/plain")) },
@@ -368,13 +435,43 @@ fun DataSettingsScreen(
     }
 
     permissionDeniedMessage?.let { msg ->
-        FudGlassDialog(onDismissRequest = { permissionDeniedMessage = null }) {
+        val actionLabel = healthAvailabilityActionLabel
+        val actionIntent = healthAvailabilityActionIntent
+        FudGlassDialog(
+            onDismissRequest = {
+                permissionDeniedMessage = null
+                healthAvailabilityActionLabel = null
+                healthAvailabilityActionIntent = null
+            }
+        ) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
-            FudGlassDialogActions(
-                primaryText = stringResource(R.string.action_ok),
-                onPrimary = { permissionDeniedMessage = null }
-            )
+            if (actionLabel != null && actionIntent != null) {
+                FudGlassDialogActions(
+                    primaryText = actionLabel,
+                    onPrimary = {
+                        runCatching { activityContext.startActivity(actionIntent) }
+                        permissionDeniedMessage = null
+                        healthAvailabilityActionLabel = null
+                        healthAvailabilityActionIntent = null
+                    },
+                    dismissText = stringResource(R.string.action_ok),
+                    onDismiss = {
+                        permissionDeniedMessage = null
+                        healthAvailabilityActionLabel = null
+                        healthAvailabilityActionIntent = null
+                    },
+                )
+            } else {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_ok),
+                    onPrimary = {
+                        permissionDeniedMessage = null
+                        healthAvailabilityActionLabel = null
+                        healthAvailabilityActionIntent = null
+                    }
+                )
+            }
         }
     }
 

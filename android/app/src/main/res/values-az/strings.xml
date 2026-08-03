@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Çəkilmə vaxtıdır</string>
     <string name="notif_weight_log_text">Tərəqqi qrafikinizin dəqiq qalması üçün bugünkü çəkinizi qeyd edin.</string>
-    <string name="settings_health_unavailable">Health Connect bu cihazda mövcud deyil. Play Store-dan quraşdırın, sonra düyməyə yenidən toxunun.</string>
+    <string name="settings_health_unavailable">Health Connect bu cihazda mövcud deyil. Android 14+ sistem moduludur; ROM təmin etmirsə fayl ixrac/idxal istifadə edin. Android 14+ üçün Play Store quraşdırması tələb olunmur.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI Təminatçısı</string>

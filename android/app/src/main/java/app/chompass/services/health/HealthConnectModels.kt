@@ -4,6 +4,16 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 
+/** Jetpack [androidx.health.connect.client.HealthConnectClient.getSdkStatus] mapped for UX. */
+enum class HealthConnectSdkStatus {
+    /** Provider ready — request permissions / use the client. */
+    Available,
+    /** Module/APK present but needs an update (Play System Update on 14+, APK update on ≤13). */
+    UpdateRequired,
+    /** No usable provider (missing module, de-Googled ROM, work/Private Space profile, etc.). */
+    Unavailable,
+}
+
 internal data class DailyEnergy(
     val active: Double,
     val total: Double?

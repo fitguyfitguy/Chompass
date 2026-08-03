@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Hora de pesarte</string>
     <string name="notif_weight_log_text">Registra tu peso de hoy para que tu gráfico de progreso siga siendo preciso.</string>
-    <string name="settings_health_unavailable">Health Connect no está disponible en este dispositivo. Instálalo desde la Play Store y vuelve a tocar el interruptor.</string>
+    <string name="settings_health_unavailable">Health Connect no está disponible en este dispositivo. En Android 14 o posterior forma parte del sistema; si tu ROM no lo expone, usa exportación/importación de archivos. Chompass no requiere la app de Play Store en Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">Proveedor de IA</string>

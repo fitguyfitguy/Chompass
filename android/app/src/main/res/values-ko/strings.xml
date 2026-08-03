@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">체중 측정 시간</string>
     <string name="notif_weight_log_text">진행 그래프를 정확하게 유지하려면 오늘 체중을 기록하세요.</string>
-    <string name="settings_health_unavailable">이 기기에서는 Health Connect를 사용할 수 없습니다. Play 스토어에서 설치한 후 토글을 다시 탭하세요.</string>
+    <string name="settings_health_unavailable">이 기기에서는 Health Connect를 사용할 수 없습니다. Android 14 이상에서는 시스템 모듈입니다. ROM에서 제공하지 않으면 파일 내보내기/가져오기를 사용하세요. Android 14+에서는 Play 스토어 앱 설치가 필요하지 않습니다.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI 제공자</string>

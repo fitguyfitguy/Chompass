@@ -154,7 +154,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val hc = reconcileHealthConnectState()
             val profile = container.profileRepository.current()
             val energyGoals = container.prefs.healthEnergyGoalsEnabled.first() && hc
-            val backgroundSync = container.prefs.healthBackgroundSyncEnabled.first() && hc
+            var backgroundSync = container.prefs.healthBackgroundSyncEnabled.first() && hc
+            if (backgroundSync &&
+                !(container.health.isBackgroundReadAvailable() && container.health.hasBackgroundRead())
+            ) {
+                container.prefs.setHealthBackgroundSyncEnabled(false)
+                HealthSyncWorker.cancel(container.appContext)
+                backgroundSync = false
+            }
             val adaptiveGoals = container.prefs.adaptiveGoalsEnabled.first()
             val onDeviceAvailable = container.prefs.onDeviceFeatureVisible.first() &&
                 OnDeviceCapability.isSupported(container.appContext)
@@ -727,10 +734,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     /** Opt-in periodic background sync. Requires Health Connect to already be
-     *  connected; enabling schedules the worker, disabling cancels it. Default OFF. */
+     *  connected and [HealthConnectManager.isBackgroundReadAvailable]; the Settings
+     *  UI requests [HealthConnectManager.backgroundReadPermission] before calling this.
+     *  Enabling schedules the worker, disabling cancels it. Default OFF. */
     fun setHealthBackgroundSyncEnabled(v: Boolean) {
         viewModelScope.launch {
             if (v && !container.prefs.healthConnectEnabled.first()) return@launch
+            if (v && !container.health.isBackgroundReadAvailable()) return@launch
+            if (v && !container.health.hasBackgroundRead()) return@launch
             container.prefs.setHealthBackgroundSyncEnabled(v)
             if (v) HealthSyncWorker.schedule(container.appContext)
             else HealthSyncWorker.cancel(container.appContext)

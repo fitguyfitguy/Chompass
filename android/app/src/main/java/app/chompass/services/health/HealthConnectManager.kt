@@ -2,8 +2,11 @@ package app.chompass.services.health
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
@@ -17,6 +20,7 @@ import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
+import app.chompass.R
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.FoodEntry
 import app.chompass.models.WeightEntry
@@ -34,6 +38,10 @@ import java.util.UUID
  *   can represent from Fud AI's food model.
  * - The "typesVersion" integer bumps when we add new record types so existing
  *   users get a re-authorization prompt.
+ *
+ * Availability: on API ≤33 Jetpack talks to the Play Store HC APK; on API 34+
+ * it uses the platform `HEALTHCONNECT_SERVICE` (no Play package check). Feature
+ * flags ([HealthConnectFeatures]) gate background/history and newer types.
  */
 class HealthConnectManager(private val context: Context) {
     private val client: HealthConnectClient? by lazy {
@@ -54,8 +62,31 @@ class HealthConnectManager(private val context: Context) {
         )
     }
 
-    fun isAvailable(): Boolean =
-        HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE
+    fun sdkStatus(): HealthConnectSdkStatus =
+        when (HealthConnectClient.getSdkStatus(context)) {
+            HealthConnectClient.SDK_AVAILABLE -> HealthConnectSdkStatus.Available
+            HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED ->
+                HealthConnectSdkStatus.UpdateRequired
+            else -> HealthConnectSdkStatus.Unavailable
+        }
+
+    fun isAvailable(): Boolean = sdkStatus() == HealthConnectSdkStatus.Available
+
+    /** True when the HC module supports [HealthPermission.PERMISSION_READ_HEALTH_DATA_IN_BACKGROUND]. */
+    fun isBackgroundReadAvailable(): Boolean =
+        isFeatureAvailable(HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_IN_BACKGROUND)
+
+    /** True when the HC module supports reading beyond the default ~30-day window. */
+    fun isHistoryReadAvailable(): Boolean =
+        isFeatureAvailable(HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_HISTORY)
+
+    private fun isFeatureAvailable(feature: Int): Boolean {
+        if (!isAvailable()) return false
+        val c = client ?: return false
+        return runCatching {
+            c.features.getFeatureStatus(feature) == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE
+        }.getOrDefault(false)
+    }
 
     // Individual permission strings so each direction can be gated independently.
     // The old all-or-nothing gate meant a user who granted only READ (e.g. to pull
@@ -75,11 +106,82 @@ class HealthConnectManager(private val context: Context) {
     private val restingHrRead = HealthPermission.getReadPermission(RestingHeartRateRecord::class)
     private val hydrationRead = HealthPermission.getReadPermission(HydrationRecord::class)
 
-    val permissions: Set<String> = setOf(
+    private val corePermissions: Set<String> = setOf(
         weightRead, weightWrite, nutritionRead, nutritionWrite,
         bodyFatRead, bodyFatWrite, activeEnergyRead, totalEnergyRead,
         stepsRead, exerciseRead, heightWrite, sleepRead, restingHrRead, hydrationRead
     )
+
+    /**
+     * Permissions requested when connecting Health Connect. Includes history read
+     * when the module supports it so restore/import can see data older than ~30 days.
+     * Background read is requested separately when enabling [HealthSyncWorker].
+     */
+    val permissions: Set<String> by lazy {
+        if (isHistoryReadAvailable()) {
+            corePermissions + HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY
+        } else {
+            corePermissions
+        }
+    }
+
+    val backgroundReadPermission: String =
+        HealthPermission.PERMISSION_READ_HEALTH_DATA_IN_BACKGROUND
+
+    /** Message for a non-[HealthConnectSdkStatus.Available] status (never "install from Play" on API 34+). */
+    @StringRes
+    fun unavailableMessageRes(): Int {
+        val framework = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        return when (sdkStatus()) {
+            HealthConnectSdkStatus.Available -> R.string.settings_health_denied
+            HealthConnectSdkStatus.UpdateRequired ->
+                if (framework) R.string.settings_health_update_required
+                else R.string.settings_health_update_required_apk
+            HealthConnectSdkStatus.Unavailable ->
+                if (framework) R.string.settings_health_unavailable_platform
+                else R.string.settings_health_unavailable_install
+        }
+    }
+
+    /**
+     * Optional secondary action when HC is not ready: Play Store on API ≤33,
+     * Health Connect Settings on API 34+ (soft-path; may still fail on ROMs without a binder).
+     */
+    fun availabilityActionIntent(): Intent? =
+        when (sdkStatus()) {
+            HealthConnectSdkStatus.Available -> null
+            HealthConnectSdkStatus.UpdateRequired,
+            HealthConnectSdkStatus.Unavailable ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    healthConnectSettingsIntent()
+                } else {
+                    playStoreProviderIntent()
+                }
+        }
+
+    @StringRes
+    fun availabilityActionLabelRes(): Int? =
+        when (sdkStatus()) {
+            HealthConnectSdkStatus.Available -> null
+            HealthConnectSdkStatus.UpdateRequired,
+            HealthConnectSdkStatus.Unavailable ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    R.string.settings_health_open_settings
+                } else {
+                    R.string.settings_health_open_play_store
+                }
+        }
+
+    private fun healthConnectSettingsIntent(): Intent =
+        Intent(HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    private fun playStoreProviderIntent(): Intent =
+        Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("market://details?id=$HC_PROVIDER_PACKAGE")
+            setPackage("com.android.vending")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
 
     private suspend fun granted(): Set<String> =
         runCatching { client?.permissionController?.getGrantedPermissions() }.getOrNull() ?: emptySet()
@@ -99,6 +201,9 @@ class HealthConnectManager(private val context: Context) {
     suspend fun hasHeightWrite(): Boolean = heightWrite in granted()
     suspend fun hasWellnessRead(): Boolean =
         granted().let { sleepRead in it || restingHrRead in it || hydrationRead in it }
+    suspend fun hasBackgroundRead(): Boolean = backgroundReadPermission in granted()
+    suspend fun hasHistoryRead(): Boolean =
+        HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY in granted()
 
     /** One permission read snapshotting every capability — used by the read-sync coordinator. */
     suspend fun capabilities(): HealthCapabilities {
@@ -202,6 +307,8 @@ class HealthConnectManager(private val context: Context) {
     companion object {
         private const val ACTION_MANAGE_HEALTH_PERMISSIONS =
             "android.health.connect.action.MANAGE_HEALTH_PERMISSIONS"
+        /** Play Store package for the standalone HC APK (API ≤33). Public constant is internal in Jetpack. */
+        private const val HC_PROVIDER_PACKAGE = "com.google.android.apps.healthdata"
         internal const val CLIENT_PREFIX = "fudai_"
 
         /** Bump this when we add a new record type so users re-auth.
@@ -209,7 +316,8 @@ class HealthConnectManager(private val context: Context) {
          *  v3 = added energy burn read permissions.
          *  v4 = added NutritionRecord read permission (food-log restore).
          *  v5 = added Steps + ExerciseSession read permissions (activity card).
-         *  v6 = added Height write + Sleep/RestingHeartRate/Hydration reads (wellness card). */
-        const val CURRENT_TYPES_VERSION = 6
+         *  v6 = added Height write + Sleep/RestingHeartRate/Hydration reads (wellness card).
+         *  v7 = added READ_HEALTH_DATA_HISTORY when the module supports it. */
+        const val CURRENT_TYPES_VERSION = 7
     }
 }
