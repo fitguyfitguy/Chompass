@@ -265,8 +265,8 @@ Google AI Studio è gratuito e consigliato.</string>
 su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <string name="onboarding_skip_ai">Salta per ora</string>
     <string name="onboarding_skip_ai_title">Continuare senza chiave cloud?</string>
-    <string name="onboarding_skip_ai_body">L'IA sul dispositivo gira in privato sul telefono, ma è molto meno accurata di Google AI Studio o altri modelli cloud. Aspettati calorie errate, elementi mancanti o letture foto deboli. Puoi aggiungere una chiave AI Studio gratuita in qualsiasi momento in Impostazioni.</string>
-    <string name="onboarding_skip_ai_later_body">L'IA delle foto cibo e il coach richiedono una chiave API o un modello sul dispositivo. Puoi configurarli in Impostazioni quando vuoi.</string>
+    <string name="onboarding_skip_ai_body">L\'IA sul dispositivo gira in privato sul telefono, ma è molto meno accurata di Google AI Studio o altri modelli cloud. Aspettati calorie errate, elementi mancanti o letture foto deboli. Puoi aggiungere una chiave AI Studio gratuita in qualsiasi momento in Impostazioni.</string>
+    <string name="onboarding_skip_ai_later_body">L\'IA delle foto cibo e il coach richiedono una chiave API o un modello sul dispositivo. Puoi configurarli in Impostazioni quando vuoi.</string>
     <string name="onboarding_skip_ai_confirm">Continua comunque</string>
 
     <string name="onboarding_building_calories">Calorie</string>

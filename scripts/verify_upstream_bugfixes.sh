@@ -72,7 +72,7 @@ fi
 
 if ! "${ADB_BIN}" shell pm path "${PACKAGE}" >/dev/null 2>&1; then
   echo "ERROR: ${PACKAGE} not installed. Re-run with --install or install from PowerShell:" >&2
-  echo '  adb install -r \\wsl$\archlinux\home\archliNix\Chompass\android\app\build\outputs\apk\debug\app-debug.apk' >&2
+  echo '  adb install -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-debug.apk' >&2
   exit 1
 fi
 
@@ -164,7 +164,7 @@ EOF
 section "PowerShell equivalents (Windows host adb)"
 cat <<'EOF'
 Install debug APK from WSL path:
-  adb install -r \\wsl$\archlinux\home\archliNix\Chompass\android\app\build\outputs\apk\debug\app-debug.apk
+  adb install -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-debug.apk
 
 Launch:
   adb shell am start -n app.chompass.debug/app.chompass.MainActivity

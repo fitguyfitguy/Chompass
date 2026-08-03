@@ -16,13 +16,13 @@ import app.chompass.models.AIProvider
 import app.chompass.models.CurrentMealSchedule
 import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
+import app.chompass.services.AdaptiveGoalsService
 import app.chompass.services.FoodImageStore
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.LauncherShortcuts
 import app.chompass.services.NotificationService
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.TestDataSeeder
-import app.chompass.services.WeightAnalysisService
 import app.chompass.services.WidgetSnapshotWriter
 import app.chompass.services.ai.ChatService
 import app.chompass.services.ai.FoodAnalysisService
@@ -30,13 +30,13 @@ import app.chompass.services.grounding.GroundedFoodEntryService
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.services.grounding.UsdaFoodIndex
 import app.chompass.services.health.HealthConnectManager
+import app.chompass.services.health.HealthConnectReadSync
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.health.HomeActivityReader
 import app.chompass.sync.SyncRepository
 import app.chompass.services.ondevice.ModelDownloadManager
 import app.chompass.services.ondevice.OnDeviceLlmGateway
 import app.chompass.services.speech.SpeechService
-import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -45,9 +45,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
 
 /**
  * Application-scoped singleton wiring. Manual DI (no Hilt) — repositories and
@@ -156,12 +153,6 @@ class ChompassApp : Application() {
     }
 }
 
-/** Stable labels for the read types a Health Connect changes token was seeded for,
- *  persisted alongside the token so we can detect a newly-granted read capability. */
-private const val HEALTH_READ_TYPE_WEIGHT = "weight"
-private const val HEALTH_READ_TYPE_BODY_FAT = "bodyfat"
-private const val HEALTH_READ_TYPE_NUTRITION = "nutrition"
-
 class AppContainer(app: ChompassApp) {
     val appContext = app.applicationContext
     val prefs = PreferencesStore(app)
@@ -216,6 +207,23 @@ class AppContainer(app: ChompassApp) {
     val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository)
     val testDataSeeder = TestDataSeeder(this)
 
+    private val healthConnectReadSync = HealthConnectReadSync(
+        prefs = prefs,
+        health = health,
+        foodRepository = foodRepository,
+        weightRepository = weightRepository,
+        bodyFatRepository = bodyFatRepository,
+    )
+    private val adaptiveGoals = AdaptiveGoalsService(
+        prefs = prefs,
+        health = health,
+        profileRepository = profileRepository,
+        foodRepository = foodRepository,
+        weightRepository = weightRepository,
+        bodyMeasurementRepository = bodyMeasurementRepository,
+        foodAnalysis = foodAnalysis,
+    )
+
     /**
      * App-scoped flag set by [HomeViewModel] while a food analysis request is
      * in flight. The bottom nav reads this so the bar can hide during the
@@ -246,178 +254,14 @@ class AppContainer(app: ChompassApp) {
      */
     val shortcutEntryInbox: MutableStateFlow<ShortcutEntryAction?> = MutableStateFlow(null)
 
-    private var adaptiveGoalsRefreshInFlight = false
+    /** See [HealthConnectReadSync.sync]. */
+    suspend fun syncHealthConnectReads() = healthConnectReadSync.sync()
 
-    @Volatile
-    private var healthReadSyncInFlight = false
+    /** See [AdaptiveGoalsService.measuredEnergyTdeeIfEnabled]. */
+    suspend fun measuredEnergyTdeeIfEnabled(profile: UserProfile) =
+        adaptiveGoals.measuredEnergyTdeeIfEnabled(profile)
 
-    /**
-     * Pull external weight + body-fat readings FROM Health Connect into the app (e.g. a
-     * Withings scale that writes weigh-ins to Health Connect). Runs on app foreground and
-     * right after the user connects/grants. Read-direction only — gated per metric on READ
-     * permission, so a user who granted read but not write still gets their data imported
-     * (issue #91). Incremental via a persisted changes token, with a one-time historical
-     * backfill when there's no token yet; imports are deduped, so re-runs are harmless.
-     */
-    suspend fun syncHealthConnectReads() {
-        if (healthReadSyncInFlight) return
-        if (!prefs.healthConnectEnabled.first()) return
-        if (!health.isAvailable()) return
-        val caps = health.capabilities()
-        if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
-
-        healthReadSyncInFlight = true
-        try {
-            // One-shot food-log restore: after a reinstall or new phone the local
-            // store is empty but our own NutritionRecords survive in Health Connect.
-            // Ids already in the log are skipped, so this is a no-op for intact users.
-            // A null read means a page failed mid-pagination — leave the flag unset
-            // so the restore retries on a later foreground instead of permanently
-            // accepting a partial history.
-            if (caps.nutritionRead && !prefs.healthFoodRestoreDone.first()) {
-                val now = Instant.now()
-                val records = health.readNutrition(now.minus(Duration.ofDays(730)), now)
-                if (records != null) {
-                    foodRepository.restoreFromHealthConnect(records)
-                    prefs.setHealthFoodRestoreDone(true)
-                }
-            }
-            if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
-
-            val desiredTypes = buildSet {
-                if (caps.weightRead) add(HEALTH_READ_TYPE_WEIGHT)
-                if (caps.bodyFatRead) add(HEALTH_READ_TYPE_BODY_FAT)
-                if (caps.nutritionRead) add(HEALTH_READ_TYPE_NUTRITION)
-            }
-            // If a read type was granted AFTER the token was seeded, the existing token never
-            // observes it. Drop the token so we re-enter the backfill branch and import that
-            // metric's history + re-seed a token covering everything now granted.
-            if (!prefs.healthChangesTokenTypes.first().containsAll(desiredTypes)) {
-                prefs.clearHealthChangesToken()
-            }
-
-            val token = prefs.healthChangesToken.first()
-            if (token == null) {
-                // First sync: backfill recent history (two years) so existing scale data shows up.
-                val now = Instant.now()
-                val from = now.minus(Duration.ofDays(730))
-                if (caps.weightRead) {
-                    weightRepository.importExternalWeights(health.readWeights(from, now))
-                }
-                if (caps.bodyFatRead) {
-                    bodyFatRepository.importExternalBodyFats(health.readBodyFats(from, now))
-                }
-                // Seed a token covering only the types we can actually read. Nutrition
-                // gets no external backfill on purpose — the one-shot restore above
-                // already brings back Fud AI's own history, and silently importing two
-                // years of another tracker's diary would be surprising; external meals
-                // flow in live from here on.
-                val recordTypes = buildSet {
-                    if (caps.weightRead) add(androidx.health.connect.client.records.WeightRecord::class)
-                    if (caps.bodyFatRead) add(androidx.health.connect.client.records.BodyFatRecord::class)
-                    if (caps.nutritionRead) add(androidx.health.connect.client.records.NutritionRecord::class)
-                }
-                health.getChangesToken(recordTypes)?.let {
-                    prefs.setHealthChangesToken(it)
-                    prefs.setHealthChangesTokenTypes(desiredTypes)
-                }
-            } else {
-                var next: String? = null
-                if (caps.weightRead) {
-                    val result = health.consumeWeightChanges(token)
-                    if (result == null) { prefs.clearHealthChangesToken(); return }
-                    weightRepository.importExternalWeights(result.first)
-                    next = result.second
-                }
-                if (caps.bodyFatRead) {
-                    val result = health.consumeBodyFatChanges(token)
-                    if (result == null) { prefs.clearHealthChangesToken(); return }
-                    bodyFatRepository.importExternalBodyFats(result.first)
-                    next = result.second ?: next
-                }
-                if (caps.nutritionRead) {
-                    val result = health.consumeNutritionChanges(token)
-                    if (result == null) { prefs.clearHealthChangesToken(); return }
-                    foodRepository.importExternalNutrition(result.first)
-                    next = result.second ?: next
-                }
-                next?.let { prefs.setHealthChangesToken(it) }
-            }
-        } finally {
-            healthReadSyncInFlight = false
-        }
-    }
-
-    /**
-     * Energy Burn toggle resolved to a number: the user's measured maintenance from Health Connect
-     * (14-day active + basal average), or null when Energy Burn is off, Health is unavailable, or
-     * there isn't enough data. Single source consulted by both manual Recalculate and Adaptive.
-     */
-    suspend fun measuredEnergyTdeeIfEnabled(profile: UserProfile): Int? {
-        if (!prefs.healthEnergyGoalsEnabled.first()) return null
-        if (!prefs.healthConnectEnabled.first()) return null
-        if (!health.isAvailable() || !health.hasEnergyRead()) return null
-        val summary = runCatching { health.readRecentEnergySummary(days = 14) }.getOrNull() ?: return null
-        return summary.totalAverageCalories ?: (profile.bmr.roundToInt() + summary.activeAverageCalories)
-    }
-
-    /**
-     * Adaptive Goals: automatically re-runs the FULL AI goal calculation (the same one the
-     * Recalculate button uses) about once a week, from the latest logged food + weight trend
-     * (hit-and-trial) and — when Energy Burn is on — the measured Health maintenance anchor.
-     * Silent and non-destructive on AI failure (keeps existing goals; marks checked so it does not
-     * retry on every app open). Protein is pinned to the activity multiplier, like manual recalc.
-     */
-    suspend fun refreshAdaptiveGoalsIfNeeded(force: Boolean = false): AdaptiveGoalResult? {
-        if (adaptiveGoalsRefreshInFlight) return null
-        adaptiveGoalsRefreshInFlight = true
-        try {
-            if (!prefs.adaptiveGoalsEnabled.first()) return null
-
-            val today = LocalDate.now()
-            if (!force && !shouldCheckAdaptiveGoals(prefs.adaptiveGoalsLastCheckDay.first(), today)) {
-                return null
-            }
-
-            val profile = profileRepository.current() ?: return null
-            val heightMetric = prefs.heightUnit.first() == "cm"
-            val weightMetric = prefs.weightUnit.first() == "kg"
-            val measuredTdee = measuredEnergyTdeeIfEnabled(profile)
-            val forecast = WeightAnalysisService.compute(
-                weights = weightRepository.entries.first(),
-                foods = foodRepository.entries.first(),
-                profile = profile
-            )
-            val result = runCatching {
-                foodAnalysis.calculateGoals(profile, forecast, heightMetric, weightMetric, measuredTdee, bodyMeasurementRepository.latestSnapshot())
-            }.getOrNull()
-            // Mark checked on success OR AI failure so a misconfigured provider isn't hit on every
-            // foreground; the weekly cadence simply resumes next week.
-            prefs.setAdaptiveGoalsLastCheckDay(today.toString())
-            if (result == null) return null
-
-            prefs.saveAdaptiveGoalPreviousTargetsIfNeeded(profile)
-            val next = profile.recalculatedFromFormulas().copy(
-                customCalories = result.calories,
-                customProtein = result.protein,
-                customCarbs = result.carbs,
-                customFat = result.fat
-            )
-            profileRepository.save(next)
-            return AdaptiveGoalResult(
-                profile = next,
-                changed = true,
-                updatedCalories = result.calories,
-                message = "Updated to ${result.calories} kcal from your latest data." + (result.reason?.let { " $it" } ?: "")
-            )
-        } finally {
-            adaptiveGoalsRefreshInFlight = false
-        }
-    }
-
-    private fun shouldCheckAdaptiveGoals(lastCheckDay: String?, today: LocalDate): Boolean {
-        val lastCheck = lastCheckDay?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-            ?: return true
-        return !lastCheck.plusDays(7).isAfter(today)
-    }
+    /** See [AdaptiveGoalsService.refreshIfNeeded]. */
+    suspend fun refreshAdaptiveGoalsIfNeeded(force: Boolean = false): AdaptiveGoalResult? =
+        adaptiveGoals.refreshIfNeeded(force)
 }

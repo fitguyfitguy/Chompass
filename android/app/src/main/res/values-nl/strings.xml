@@ -253,10 +253,9 @@
     <string name="onboarding_health_connect">Verbinden</string>
 
     <string name="onboarding_provider_title">Breng je eigen AI mee</string>
-    <string name="onboarding_provider_subtitle">Optionele API-sleutel voor maaltijdfoto's en coach.
-Google AI Studio is gratis en aanbevolen.</string>
+    <string name="onboarding_provider_subtitle">Optionele API-sleutel voor maaltijdfoto\'s en coach.\nGoogle AI Studio is gratis en aanbevolen.</string>
     <string name="onboarding_provider_recommended_title">Aanbevolen: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Gratis en hoge kwaliteit — ideaal voor maaltijdfoto's</string>
+    <string name="onboarding_provider_recommended_subtitle">Gratis en hoge kwaliteit — ideaal voor maaltijdfoto\'s</string>
     <string name="onboarding_provider_howto_title">Zo krijg je een gratis Google AI Studio-sleutel</string>
     <string name="onboarding_provider_step_1">Open aistudio.google.com/apikey (tik om te openen)</string>
     <string name="onboarding_provider_step_2">Log in met Google en maak een API-sleutel</string>
