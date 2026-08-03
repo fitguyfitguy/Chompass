@@ -33,7 +33,7 @@ enum class OnboardingStep {
     WELCOME, GENDER, BIRTHDAY, HEIGHT_WEIGHT, BODY_FAT,
     ACTIVITY, GOAL, DIET_MODE, GOAL_WEIGHT, GOAL_SPEED,
     NOTIFICATIONS, HEALTH_CONNECT, PROVIDER,
-    BUILDING_PLAN, PLAN_READY
+    BUILDING_PLAN, PLAN_READY, DISCLAIMERS
 }
 
 /** Snapshot of in-progress onboarding answers, persisted to DataStore so the flow can resume
@@ -132,8 +132,8 @@ data class OnboardingState(
     val customCarbs: Int? = null,
     val customFat: Int? = null
 ) {
-    /** PLAN_READY is the final step (the old Rate-fud review step was removed). */
-    val isLastStep: Boolean get() = step == OnboardingStep.PLAN_READY
+    /** DISCLAIMERS is the final step (safety + accuracy notices after the plan). */
+    val isLastStep: Boolean get() = step == OnboardingStep.DISCLAIMERS
 
     /** Provider step is skippable: empty cloud keys open the skip dialog in the UI.
      *  Disable only while a Gemini probe is in flight. */
@@ -377,7 +377,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun next() {
-        if (_ui.value.step == OnboardingStep.PLAN_READY) return
+        if (_ui.value.step == OnboardingStep.DISCLAIMERS) return
         val state = _ui.value
         // Empty cloud key: UI shows the skip dialog; do not advance here.
         if (state.needsAiSkipConfirm) return
@@ -438,7 +438,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private fun advanceStep() {
-        if (_ui.value.step == OnboardingStep.PLAN_READY) return
+        if (_ui.value.step == OnboardingStep.DISCLAIMERS) return
         val nextStep = OnboardingStep.values().getOrNull(_ui.value.step.ordinal + 1) ?: return
         _ui.value = _ui.value.copy(step = nextStep)
     }

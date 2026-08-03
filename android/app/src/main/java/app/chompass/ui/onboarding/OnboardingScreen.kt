@@ -178,6 +178,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                 )
                 OnboardingStep.BUILDING_PLAN -> BuildingPlanStep(vm = vm, onComplete = vm::next)
                 OnboardingStep.PLAN_READY -> PlanReadyStep(state = ui, vm = vm)
+                OnboardingStep.DISCLAIMERS -> DisclaimersStep()
             }
         }
 
@@ -216,10 +217,9 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                 // height so layout doesn't jump when we land on this step.
                 Spacer(Modifier.height(54.dp + 36.dp + 24.dp))
             }
-            OnboardingStep.PLAN_READY -> {
-                // Final step — completes onboarding directly (the old Rate-fud
-                // review step was removed; store-rating pressure in onboarding
-                // is rejection bait on both stores).
+            OnboardingStep.DISCLAIMERS -> {
+                // Final step — completes onboarding after the user has room to
+                // read safety + accuracy notices (kept off the crowded plan screen).
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

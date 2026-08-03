@@ -336,6 +336,9 @@
     <string name="onboarding_plan_doctor_title">Please consult with a doctor</string>
     <string name="onboarding_plan_doctor_message">The minimum recommendation is 1,200 calories per day.</string>
 
+    <string name="onboarding_disclaimers_title">Before you start</string>
+    <string name="onboarding_disclaimers_subtitle">Please read these important notices</string>
+
     <string name="onboarding_plan_field_calories">Daily calories</string>
     <string name="onboarding_plan_field_protein">Protein</string>
     <string name="onboarding_plan_field_carbs">Carbs</string>
