@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import app.chompass.ui.coach.CoachScreenPreviewContent
-import app.chompass.ui.home.EntryAnalysisOverlay
 import app.chompass.ui.home.EntryAnalysisPhase
+import app.chompass.ui.home.FoodResultSheet
 import app.chompass.ui.home.HomeAddFoodScreenshotContent
 import app.chompass.ui.home.HomeMealComponentsScreenshotContent
 import app.chompass.ui.home.HomeRecipesScreenshotContent
@@ -190,9 +190,13 @@ fun AiAnalysisDarkScreenshot() {
         darkTheme = true,
         showNavBar = false,
     ) {
-        EntryAnalysisOverlay(
-            phase = EntryAnalysisPhase.CallingAi,
+        FoodResultSheet(
+            analysis = null,
+            analysisPhase = EntryAnalysisPhase.CallingAi,
             partial = ScreenshotFixtures.streamingPartial,
+            analysisReady = false,
+            onSave = { _, _, _, _, _, _, _ -> },
+            onDismiss = {},
         )
     }
 }

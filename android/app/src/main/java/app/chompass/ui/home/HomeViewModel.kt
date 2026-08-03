@@ -25,6 +25,7 @@ import app.chompass.models.UserProfile
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodImageComposer
+import app.chompass.services.FoodPhotoSession
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
 import app.chompass.services.grounding.GroundedEntryFeature
@@ -78,6 +79,8 @@ data class HomeUiState(
     val favoriteKeys: Set<String> = emptySet(),
     val pendingAnalysis: FoodAnalysis? = null,
     val pendingImageBytes: ByteArray? = null,
+    /** Raw photo bytes for the in-flight / pending review (for tip re-analyze / add photo). */
+    val pendingAnalysisImages: List<ByteArray> = emptyList(),
     val pendingFoodSource: FoodSource? = null,
     val pendingDraftImageFilename: String? = null,
     /**
@@ -119,6 +122,10 @@ data class HomeUiState(
     val manualActiveKcal: Int = 0,
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
+    /** Progressive Log sheet: analysis running or a completed review is waiting. */
+    val showFoodResultSheet: Boolean get() = pendingAnalysis != null || isEntryAnalysisBusy
+    /** Fields + Log unlocked only after the AI call (and unit inference) finish. */
+    val analysisReadyForEdit: Boolean get() = pendingAnalysis != null && !isEntryAnalysisBusy
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
     val proteinToday: Double get() = todayEntries.sumOf { it.protein }
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
@@ -183,6 +190,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
             AnalysisStart(gen, previousDraftImage)
         }
+
+    /**
+     * Invalidate any in-flight analysis so a tip / add-photo restart can call
+     * [beginAnalysis] immediately. Keeps staged image bytes for re-analyze.
+     */
+    private fun cancelInFlightAnalysisKeepInput() {
+        synchronized(this) {
+            ++analysisGeneration
+            analysisInFlight = false
+        }
+        container.analyzingFood.value = false
+        _ui.value = _ui.value.copy(
+            pendingAnalysis = null,
+            pendingReviewSource = null,
+            analyzing = false,
+            analysisPhase = null,
+            analysisPreview = null,
+            analysisPartial = null,
+            inferringUnits = false,
+            error = null,
+        )
+    }
 
     private fun onFoodAnalysisProgress(generation: Int, progress: FoodAnalysisProgress) {
         if (generation != analysisGeneration) return
@@ -459,6 +488,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         runFoodAnalysis(phased = true, configure = { state ->
             state.copy(
                 pendingImageBytes = null,
+                pendingAnalysisImages = emptyList(),
                 pendingFoodSource = FoodSource.TEXT_INPUT,
                 pendingDraftImageFilename = null,
             )
@@ -474,6 +504,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         runFoodAnalysis(phased = true, configure = { state ->
             state.copy(
                 pendingImageBytes = bytes,
+                pendingAnalysisImages = listOf(bytes),
                 pendingFoodSource = FoodSource.SNAP_FOOD,
                 pendingDraftImageFilename = null,
             )
@@ -515,6 +546,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             withFoodAnalysis(phased = true, configure = { state ->
                 state.copy(
                     pendingImageBytes = displayBytes,
+                    pendingAnalysisImages = images,
                     pendingFoodSource = FoodSource.SNAP_FOOD,
                     pendingDraftImageFilename = null,
                 )
@@ -572,6 +604,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             configure = { state ->
                 state.copy(
                     pendingImageBytes = null,
+                    pendingAnalysisImages = emptyList(),
                     pendingFoodSource = FoodSource.BARCODE,
                     pendingDraftImageFilename = null,
                 )
@@ -752,6 +785,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 _ui.value = _ui.value.copy(
                     pendingAnalysis = null,
                     pendingImageBytes = null,
+                    pendingAnalysisImages = emptyList(),
                     pendingFoodSource = null,
                     pendingDraftImageFilename = null,
                     pendingReviewSource = null
@@ -803,6 +837,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             progressiveMeal = draft,
             pendingAnalysis = null,
             pendingImageBytes = null,
+            pendingAnalysisImages = emptyList(),
             pendingFoodSource = null,
             pendingDraftImageFilename = null,
             pendingReviewSource = null,
@@ -938,10 +973,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val previousDraftImage = _ui.value.pendingDraftImageFilename
         synchronized(this) {
             ++analysisGeneration
+            analysisInFlight = false
         }
         _ui.value = _ui.value.copy(
             pendingAnalysis = null,
             pendingImageBytes = null,
+            pendingAnalysisImages = emptyList(),
             pendingFoodSource = null,
             pendingDraftImageFilename = null,
             pendingReviewSource = null,
@@ -958,6 +995,32 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             discardPendingDraft(previousDraftImage)
         }
+    }
+
+    /**
+     * Cancel the current (or completed) photo analysis and re-run with an optional
+     * tip note and/or exact grams. Used from the progressive Log sheet tip strip.
+     */
+    fun reanalyzeWithTip(note: String?, confirmedPortionGrams: Double?) {
+        val images = _ui.value.pendingAnalysisImages.ifEmpty {
+            listOfNotNull(_ui.value.pendingImageBytes)
+        }
+        if (images.isEmpty()) return
+        cancelInFlightAnalysisKeepInput()
+        analyzePhotos(images, note, confirmedPortionGrams)
+    }
+
+    /** Append photo(s) to the current pending set and re-analyze (label + plate, etc.). */
+    fun appendPhotosAndReanalyze(newImages: List<ByteArray>) {
+        val added = newImages.filter { it.isNotEmpty() }
+        if (added.isEmpty()) return
+        val existing = _ui.value.pendingAnalysisImages.ifEmpty {
+            listOfNotNull(_ui.value.pendingImageBytes)
+        }
+        val merged = (existing + added).take(FoodPhotoSession.MAX_IMAGES)
+        if (merged.isEmpty()) return
+        cancelInFlightAnalysisKeepInput()
+        analyzePhotos(merged)
     }
 
     fun retryFailedInput() {
@@ -1006,6 +1069,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.value = _ui.value.copy(
             pendingAnalysis = analysis,
             pendingImageBytes = bytes,
+            pendingAnalysisImages = listOfNotNull(bytes),
             pendingFoodSource = template.source,
             pendingDraftImageFilename = null,
             pendingReviewSource = template,
@@ -1190,6 +1254,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 inferringUnits = false,
                 pendingAnalysis = unique,
                 pendingImageBytes = bytes,
+                pendingAnalysisImages = listOfNotNull(bytes),
                 pendingFoodSource = draft.source,
                 pendingDraftImageFilename = draft.imageFilename,
                 pendingReviewSource = null,
