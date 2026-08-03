@@ -781,7 +781,12 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    if (showMultiPhotoCapture && stagedPhotoBytes.isNotEmpty() && !ui.showFoodResultSheet) {
+    if (showMultiPhotoCapture && stagedPhotoBytes.isNotEmpty()) {
+        // Staging always wins over a leftover Log sheet so the LLM never runs
+        // under the note/add-photo UI.
+        LaunchedEffect(Unit) {
+            if (ui.showFoodResultSheet) vm.dismissPending()
+        }
         MultiPhotoCaptureSheet(
             imageBytesList = stagedPhotoBytes,
             addsFromLibrary = isImportingPhotos,
@@ -862,7 +867,7 @@ fun HomeScreen(container: AppContainer) {
         }
     }
 
-    if (ui.showFoodResultSheet) {
+    if (ui.showFoodResultSheet && !showMultiPhotoCapture) {
         FoodResultSheet(
             analysis = ui.pendingAnalysis,
             imageBytes = ui.pendingImageBytes,

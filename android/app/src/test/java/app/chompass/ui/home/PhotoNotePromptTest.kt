@@ -23,11 +23,17 @@ class PhotoNotePromptTest {
     }
 
     @Test
-    fun analyzeEnabled_requiresNoteWhenPromptOn() {
-        assertFalse(primaryAnalyzeEnabled(requireNote = true, note = ""))
-        assertFalse(primaryAnalyzeEnabled(requireNote = true, note = "   "))
-        assertTrue(primaryAnalyzeEnabled(requireNote = true, note = "2 eggs"))
-        assertTrue(primaryAnalyzeEnabled(requireNote = false, note = ""))
+    fun analyzeConfirm_whenSparseInput() {
+        assertTrue(needsAnalyzeConfirm(noteBlank = true, imageCount = 1))
+        assertTrue(needsAnalyzeConfirm(noteBlank = true, imageCount = 2))
+        assertTrue(needsAnalyzeConfirm(noteBlank = false, imageCount = 1))
+        assertFalse(needsAnalyzeConfirm(noteBlank = false, imageCount = 2))
+    }
+
+    @Test
+    fun tipStrip_onlyAfterAnalysisReady() {
+        assertFalse(showTipStripDuringAnalysis(analysisReady = false))
+        assertTrue(showTipStripDuringAnalysis(analysisReady = true))
     }
 
     private fun requirePhotoNote(skipPrompt: Boolean): Boolean = !skipPrompt
@@ -35,6 +41,8 @@ class PhotoNotePromptTest {
     private fun showDontAskAgain(skipPrompt: Boolean, skipCount: Int): Boolean =
         !skipPrompt && skipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD
 
-    private fun primaryAnalyzeEnabled(requireNote: Boolean, note: String): Boolean =
-        !requireNote || note.isNotBlank()
+    private fun needsAnalyzeConfirm(noteBlank: Boolean, imageCount: Int): Boolean =
+        noteBlank || imageCount < 2
+
+    private fun showTipStripDuringAnalysis(analysisReady: Boolean): Boolean = analysisReady
 }

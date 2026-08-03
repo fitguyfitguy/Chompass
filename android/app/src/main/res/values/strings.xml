@@ -552,17 +552,23 @@
 
     <!-- Multi-photo capture sheet -->
     <string name="meal_photos_title">Before analyzing</string>
-    <string name="meal_photos_subtitle">Add a short note about what\'s on the plate, then Analyze. A label photo is optional.</string>
-    <string name="meal_photos_subtitle_note_optional">Add a label photo or tip if you want, then Analyze.</string>
+    <string name="meal_photos_subtitle">Add a short note and optionally a second photo (e.g. nutrition label), then tap Analyze. AI starts only after you confirm.</string>
+    <string name="meal_photos_subtitle_note_optional">Add another photo or a tip if you want, then Analyze. AI starts only after you confirm.</string>
     <string name="meal_photos_count">%1$d of 10 photos</string>
     <string name="meal_photos_add_photo">Add photo</string>
     <string name="meal_photos_add_label">Add label</string>
     <string name="meal_photos_add_from_library">Add photos</string>
-    <string name="meal_photos_note_section">What is this? (required)</string>
+    <string name="meal_photos_note_section">What is this?</string>
     <string name="meal_photos_skip_note">Skip note &amp; analyze</string>
     <string name="meal_photos_dont_ask_note">Don\'t ask for a note again</string>
+    <string name="meal_photos_confirm_title">Analyze now?</string>
+    <string name="meal_photos_confirm_no_note">No note yet. AI estimates are less accurate without quantities or a description. Continue anyway?</string>
+    <string name="meal_photos_confirm_one_photo">Only one photo. A second shot (another angle or the nutrition label) often helps. Continue with one photo?</string>
+    <string name="meal_photos_confirm_sparse">No note and only one photo. Add a tip or a label photo for a better estimate, or continue anyway?</string>
+    <string name="meal_photos_confirm_continue">Analyze anyway</string>
+    <string name="meal_photos_confirm_back">Keep editing</string>
     <string name="settings_photo_note_prompt">Ask for a photo note</string>
-    <string name="settings_photo_note_prompt_footer">When on, photo entry asks for a short text note before calling AI. Turn off to Analyze from photos alone.</string>
+    <string name="settings_photo_note_prompt_footer">When on, photo entry highlights the note field before Analyze. You can still confirm and continue without a note.</string>
     <string name="meal_photo_cd">Photo %1$d</string>
     <string name="action_remove">Remove</string>
 

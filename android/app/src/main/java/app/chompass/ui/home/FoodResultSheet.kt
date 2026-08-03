@@ -283,8 +283,8 @@ fun FoodResultSheet(
         keyboardController?.hide()
     }
     val emDashText = stringResource(R.string.nutrition_em_dash)
-    val canOfferTip = onReanalyzeWithTip != null && imageBytes != null
-    val canAddPhoto = onAddPhoto != null && imageCount < FoodPhotoSession.MAX_IMAGES
+    val canOfferTip = analysisReady && onReanalyzeWithTip != null && imageBytes != null
+    val canAddPhoto = analysisReady && onAddPhoto != null && imageCount < FoodPhotoSession.MAX_IMAGES
 
     fun scaledInt(v: Int) = (v * scale).roundToInt()
     fun scaledMacro(v: Double) = v * scale
