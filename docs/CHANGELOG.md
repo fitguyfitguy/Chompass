@@ -4,14 +4,27 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
-### Fixed
+## [3.7.0] - 2026-08-03
 
-- Health Connect availability copy no longer tells Android 14+ users to install the Play Store HC APK; status-aware messages cover update-required vs unavailable, with Open Health Connect / Play Store actions where appropriate (Android).
+### Added
+
+- Photo accuracy tip card on early photo analyses, with dismissible guidance (Android).
+- Settings toggle **Ask for a photo note**: highlight the note before Analyze; after repeated empty skips, offer to stop asking (Android).
+- Dedicated onboarding **Before you start** disclaimers step (Android).
+- PWA progressive meal draft and manual active burn logging (parity with Android).
 
 ### Changed
 
+- Photo entry uses a lightweight pre-Analyze staging sheet (note, optional label/extra photos), then morphs into the Log sheet with a ready-gate; mid-flight tip or add-photo can re-analyze (Android).
+- Confirm before analyzing with an empty note or fewer than two photos (Android).
+- Onboarding AI setup: recommend Google AI Studio; skip AI with confirmation (Android + PWA).
 - Background Health Connect sync is feature-gated (`READ_HEALTH_DATA_IN_BACKGROUND`) and requests that permission when enabled; history read is requested on connect when the module supports it (Android).
+- Native speech recognition resolves usable `RecognitionService` packages more reliably (including third-party engines) and surfaces a clear error when none is available in the profile (Android).
 - README / PRIVACY / F-Droid notes: APK vs framework HC, no sandboxed-Play requirement, file import fallback on de-Googled ROMs.
+
+### Fixed
+
+- Health Connect availability copy no longer tells Android 14+ users to install the Play Store HC APK; status-aware messages cover update-required vs unavailable, with Open Health Connect / Play Store actions where appropriate (Android).
 
 ## [3.6.2] - 2026-08-01
 
