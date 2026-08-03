@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -304,8 +305,9 @@ fun ContextNoteSheet(
 }
 
 /**
- * Lightweight pre-LLM staging: photos (plate + optional label), text note
- * (required by default), optional tip/grams, then Analyze.
+ * Lightweight pre-LLM staging only — never starts analysis by itself.
+ * Note + add-photo live here; Analyze asks for confirmation when the note is
+ * empty and/or there is only one photo.
  */
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
@@ -313,9 +315,9 @@ fun MultiPhotoCaptureSheet(
     imageBytesList: List<ByteArray>,
     addsFromLibrary: Boolean,
     showScaleTip: Boolean = false,
-    /** When true (default), a non-blank note is required for the primary Analyze button. */
+    /** When true, highlight the note field and focus it (default until user opts out). */
     requireNote: Boolean = true,
-    /** After several empty-note skips, offer a persistent opt-out checkbox. */
+    /** After several empty-note analyzes, offer a persistent opt-out checkbox. */
     showDontAskAgain: Boolean = false,
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
@@ -327,6 +329,7 @@ fun MultiPhotoCaptureSheet(
     var weightText by remember { mutableStateOf("") }
     var tipExpanded by remember(requireNote) { mutableStateOf(requireNote) }
     var dontAskAgain by remember { mutableStateOf(false) }
+    var pendingConfirm by remember { mutableStateOf(false) }
     val noteFocus = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -341,13 +344,54 @@ fun MultiPhotoCaptureSheet(
         }
     }
 
-    fun submit(forceWithoutNote: Boolean) {
+    fun commitAnalyze() {
         val trimmed = note.trim()
-        if (requireNote && trimmed.isEmpty() && !forceWithoutNote) return
         onAnalyze(
             trimmed.takeIf { it.isNotEmpty() },
             parsePositiveGrams(weightText),
             dontAskAgain && showDontAskAgain,
+        )
+    }
+
+    fun requestAnalyze() {
+        val trimmed = note.trim()
+        val sparse = trimmed.isEmpty() || imageBytesList.size < 2
+        if (sparse) {
+            pendingConfirm = true
+        } else {
+            commitAnalyze()
+        }
+    }
+
+    val confirmMessage = when {
+        note.isBlank() && imageBytesList.size < 2 ->
+            stringResource(R.string.meal_photos_confirm_sparse)
+        note.isBlank() ->
+            stringResource(R.string.meal_photos_confirm_no_note)
+        else ->
+            stringResource(R.string.meal_photos_confirm_one_photo)
+    }
+
+    if (pendingConfirm) {
+        AlertDialog(
+            onDismissRequest = { pendingConfirm = false },
+            title = { Text(stringResource(R.string.meal_photos_confirm_title)) },
+            text = { Text(confirmMessage) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pendingConfirm = false
+                        commitAnalyze()
+                    },
+                ) {
+                    Text(stringResource(R.string.meal_photos_confirm_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingConfirm = false }) {
+                    Text(stringResource(R.string.meal_photos_confirm_back))
+                }
+            },
         )
     }
 
@@ -392,14 +436,14 @@ fun MultiPhotoCaptureSheet(
                     )
                 }
 
-                // Note first when required — before LLM, and before optional extras.
+                // Note + chips before LLM — staging only.
                 Column(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    if (requireNote) {
+                    if (requireNote || tipExpanded) {
                         Text(
                             stringResource(R.string.meal_photos_note_section),
                             fontWeight = FontWeight.SemiBold,
@@ -441,7 +485,7 @@ fun MultiPhotoCaptureSheet(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 88.dp)
-                                .focusRequester(noteFocus),
+                                .then(if (requireNote) Modifier.focusRequester(noteFocus) else Modifier),
                             placeholder = stringResource(R.string.context_note_placeholder),
                         )
                         Text(
@@ -485,51 +529,12 @@ fun MultiPhotoCaptureSheet(
                             }
                         }
                     } else {
-                        TextButton(onClick = { tipExpanded = !tipExpanded }) {
+                        TextButton(onClick = { tipExpanded = true }) {
                             Text(
                                 stringResource(R.string.entry_analysis_tip_cta),
                                 color = AppColors.Calorie,
                                 fontSize = 14.sp,
                             )
-                        }
-                        if (tipExpanded) {
-                            Text(
-                                stringResource(R.string.context_note_hint),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            )
-                            FudGlassTextField(
-                                value = note,
-                                onValueChange = { note = it },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 88.dp),
-                                placeholder = stringResource(R.string.context_note_placeholder),
-                            )
-                            Text(
-                                stringResource(R.string.context_note_weight_section),
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                FudGlassTextField(
-                                    value = weightText,
-                                    onValueChange = {
-                                        weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
-                                    },
-                                    placeholder = stringResource(R.string.context_note_weight_placeholder),
-                                    singleLine = true,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                Text(
-                                    stringResource(R.string.context_note_weight_unit),
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                )
-                            }
                         }
                     }
                 }
@@ -603,18 +608,8 @@ fun MultiPhotoCaptureSheet(
 
             SheetStickyPrimaryBar(
                 primaryLabel = stringResource(R.string.action_analyze),
-                primaryEnabled = !requireNote || note.isNotBlank(),
-                onPrimary = { submit(forceWithoutNote = false) },
-                textActionLabel = if (requireNote) {
-                    stringResource(R.string.meal_photos_skip_note)
-                } else {
-                    null
-                },
-                onTextAction = if (requireNote) {
-                    { submit(forceWithoutNote = true) }
-                } else {
-                    null
-                },
+                primaryEnabled = true,
+                onPrimary = { requestAnalyze() },
             )
         }
     }
