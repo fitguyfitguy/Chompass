@@ -140,6 +140,7 @@ internal fun SheetStickyPrimaryBar(
     primaryEnabled: Boolean = true,
     textActionLabel: String? = null,
     onTextAction: (() -> Unit)? = null,
+    textActionEnabled: Boolean = true,
 ) {
     val isDark = isDarkTheme()
     val hairline = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
@@ -166,7 +167,7 @@ internal fun SheetStickyPrimaryBar(
             if (textActionLabel != null && onTextAction != null) {
                 TextButton(
                     onClick = onTextAction,
-                    enabled = primaryEnabled,
+                    enabled = textActionEnabled,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(textActionLabel, fontWeight = FontWeight.Medium)

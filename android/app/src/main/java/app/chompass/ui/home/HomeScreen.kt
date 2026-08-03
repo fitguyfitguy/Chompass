@@ -786,6 +786,9 @@ fun HomeScreen(container: AppContainer) {
             imageBytesList = stagedPhotoBytes,
             addsFromLibrary = isImportingPhotos,
             showScaleTip = ui.progressiveMeal?.items?.isNotEmpty() == true,
+            requireNote = !ui.skipPhotoNotePrompt,
+            showDontAskAgain = !ui.skipPhotoNotePrompt &&
+                ui.photoNoteSkipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD,
             onAddPhoto = {
                 if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
                     if (isImportingPhotos) {
@@ -798,10 +801,12 @@ fun HomeScreen(container: AppContainer) {
             onRemove = { index ->
                 photoSession.removeAt(index)
             },
-            onAnalyze = { note, grams ->
+            onAnalyze = { note, grams, dontAskAgain ->
                 val images = photoSession.stagedImages.value
                 photoSession.clear()
-                if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note, grams)
+                if (!ui.isEntryAnalysisBusy) {
+                    vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain)
+                }
             },
             onDismiss = {
                 photoSession.clear()

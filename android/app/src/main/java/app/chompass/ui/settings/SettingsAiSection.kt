@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Numbers
+import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SmartToy
@@ -116,6 +117,20 @@ internal fun SettingsAiSection(
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.settings_portion_clarify_footer),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                HorizontalDivider()
+                ToggleRow(
+                    stringResource(R.string.settings_photo_note_prompt),
+                    checked = !ui.skipPhotoNotePrompt,
+                    icon = Icons.Outlined.Notes,
+                    onChange = { vm.setAskPhotoNotePrompt(it) }
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.settings_photo_note_prompt_footer),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                     modifier = Modifier.padding(horizontal = 4.dp)

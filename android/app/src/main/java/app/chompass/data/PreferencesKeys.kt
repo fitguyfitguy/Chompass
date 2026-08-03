@@ -87,6 +87,13 @@ internal object Keys {
         val FALLBACK_MODEL = stringPreferencesKey("selectedFallbackAIModel")
         val GEMINI_GOOGLE_SEARCH_ENABLED = booleanPreferencesKey("geminiGoogleSearchEnabled")
         val PORTION_CLARIFY_ENABLED = booleanPreferencesKey("portionClarifyEnabled")
+        /**
+         * When true, photo staging does not require a text note before Analyze
+         * (user opted out after repeatedly skipping).
+         */
+        val SKIP_PHOTO_NOTE_PROMPT = booleanPreferencesKey("skipPhotoNotePrompt")
+        /** Consecutive photo analyzes submitted with an empty note while the prompt was on. */
+        val PHOTO_NOTE_SKIP_COUNT = intPreferencesKey("photoNoteSkipCount")
         /** Opt-in meal ingredient breakdown from AI (off for on-device / weak models). */
         val MEAL_CONSTITUENTS_ENABLED = booleanPreferencesKey("mealConstituentsEnabled")
         val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")

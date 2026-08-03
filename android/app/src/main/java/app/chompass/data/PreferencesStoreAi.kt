@@ -126,6 +126,21 @@ internal suspend fun PreferencesStore.setPortionClarifyEnabledImpl(v: Boolean) {
         dataStore.edit { it[Keys.PORTION_CLARIFY_ENABLED] = v }
     }
 
+/** When true, photo staging skips the required-note step. Default false. */
+internal val PreferencesStore.skipPhotoNotePromptImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.SKIP_PHOTO_NOTE_PROMPT] ?: false
+    }
+internal suspend fun PreferencesStore.setSkipPhotoNotePromptImpl(v: Boolean) {
+        dataStore.edit { it[Keys.SKIP_PHOTO_NOTE_PROMPT] = v }
+    }
+
+internal val PreferencesStore.photoNoteSkipCountImpl: Flow<Int> get() = dataStore.data.map {
+        it[Keys.PHOTO_NOTE_SKIP_COUNT] ?: 0
+    }
+internal suspend fun PreferencesStore.setPhotoNoteSkipCountImpl(v: Int) {
+        dataStore.edit { it[Keys.PHOTO_NOTE_SKIP_COUNT] = v.coerceAtLeast(0) }
+    }
+
     /**
      * Ask the food AI for optional `constituents[]` on composite meals.
      * Default on for cloud providers; [FoodAnalysisService] still forces this off
