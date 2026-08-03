@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import app.chompass.ui.coach.CoachScreenPreviewContent
+import app.chompass.ui.home.EntryAnalysisOverlay
 import app.chompass.ui.home.EntryAnalysisPhase
-import app.chompass.ui.home.FoodResultSheet
 import app.chompass.ui.home.HomeAddFoodScreenshotContent
 import app.chompass.ui.home.HomeMealComponentsScreenshotContent
 import app.chompass.ui.home.HomeRecipesScreenshotContent
@@ -185,18 +185,15 @@ fun RecipesDarkScreenshot() {
 @Preview(name = "13-ai-analysis-dark", device = PHONE)
 @Composable
 fun AiAnalysisDarkScreenshot() {
+    // Full-screen overlay (not ModalBottomSheet) so JVM screenshot capture works.
     ReleaseScreenshotFrame(
         currentRoute = ChompassRoutes.HOME,
         darkTheme = true,
         showNavBar = false,
     ) {
-        FoodResultSheet(
-            analysis = null,
-            analysisPhase = EntryAnalysisPhase.CallingAi,
+        EntryAnalysisOverlay(
+            phase = EntryAnalysisPhase.CallingAi,
             partial = ScreenshotFixtures.streamingPartial,
-            analysisReady = false,
-            onSave = { _, _, _, _, _, _, _ -> },
-            onDismiss = {},
         )
     }
 }

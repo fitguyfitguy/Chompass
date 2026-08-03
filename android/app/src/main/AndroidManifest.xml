@@ -35,6 +35,7 @@
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
+        <package android:name="dev.soupslurpr.transcribro" />
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
         </intent>

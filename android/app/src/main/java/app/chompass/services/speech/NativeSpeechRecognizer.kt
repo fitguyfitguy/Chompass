@@ -44,14 +44,27 @@ class NativeSpeechRecognizer(private val context: Context) {
 
         /** Assist / voice-interaction services are not bindable by normal apps. */
         private const val PERM_VOICE_INTERACTION = "android.permission.BIND_VOICE_INTERACTION"
-        private const val PERM_RECOGNITION_SERVICE = "android.permission.BIND_RECOGNITION_SERVICE"
+
+        /**
+         * Assist / incomplete "RecognitionService" stubs that advertise the intent but
+         * fail for third-party [SpeechRecognizer] clients (ERROR_CLIENT).
+         */
+        private val DENYLISTED_PACKAGES = setOf(
+            "com.anthropic.claude",
+            "io.homeassistant.companion.android.minimal",
+            "io.homeassistant.companion.android",
+        )
 
         /**
          * Well-known RecognitionService components. Used when the system default
-         * is unset (common on GrapheneOS) or when Assist apps stole the default.
-         * Packages installed only in another profile (e.g. Private Space) are skipped.
+         * is unset or Assist apps pollute the query results. Packages installed only
+         * in another profile (e.g. Private Space) are skipped.
          */
         private val KNOWN_SERVICES = listOf(
+            ComponentName(
+                "dev.soupslurpr.transcribro",
+                "dev.soupslurpr.transcribro.recognitionservice.MainRecognitionService",
+            ),
             ComponentName(
                 "com.google.android.googlequicksearchbox",
                 "com.google.android.voicesearch.serviceapi.GoogleRecognitionService",
@@ -102,66 +115,71 @@ class NativeSpeechRecognizer(private val context: Context) {
             }.getOrDefault(emptyList())
         }
 
-        private fun scoreService(pm: PackageManager, info: ResolveInfo): Int {
+        private fun scoreService(info: ResolveInfo): Int {
             val service = info.serviceInfo ?: return Int.MIN_VALUE
             val pkg = service.packageName
             val perm = service.permission
+            if (pkg in DENYLISTED_PACKAGES) return Int.MIN_VALUE
             // Voice-interaction Assist services cannot be bound by third-party apps.
             if (perm == PERM_VOICE_INTERACTION) return Int.MIN_VALUE
-            // Claude / incomplete providers advertise RecognitionService but omit
-            // the required android.speech meta-data — binding yields ERROR_CLIENT.
-            if (!hasRecognitionMetadata(pm, ComponentName(pkg, service.name))) {
-                return Int.MIN_VALUE
-            }
 
             var s = 10
             when {
+                // FOSS on-device STT (GrapheneOS-friendly). Prefer over Assist stubs.
+                pkg == "dev.soupslurpr.transcribro" -> s += 120
                 pkg == "com.google.android.googlequicksearchbox" -> s += 100
                 pkg == "com.google.android.tts" -> s += 80
                 pkg.startsWith("com.google.") -> s += 60
-                perm == PERM_RECOGNITION_SERVICE || perm.isNullOrBlank() -> s += 40
+                // Typical real STT engines: no binder permission, or RECORD_AUDIO.
+                perm.isNullOrBlank() || perm == Manifest.permission.RECORD_AUDIO -> s += 40
                 else -> s += 5
             }
             return s
         }
 
-        private fun hasRecognitionMetadata(pm: PackageManager, component: ComponentName): Boolean =
-            runCatching {
-                val flags = PackageManager.GET_META_DATA.toLong()
-                val si = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    pm.getServiceInfo(component, PackageManager.ComponentInfoFlags.of(flags))
-                } else {
-                    @Suppress("DEPRECATION")
-                    pm.getServiceInfo(component, PackageManager.GET_META_DATA)
-                }
-                si.metaData?.getInt("android.speech", -1) != -1 ||
-                    si.metaData?.containsKey("android.speech") == true
-            }.getOrDefault(false)
+        private fun parseSecureRecognitionService(context: Context): ComponentName? {
+            val raw = runCatching {
+                android.provider.Settings.Secure.getString(
+                    context.contentResolver,
+                    "voice_recognition_service",
+                )
+            }.getOrNull()?.trim().orEmpty()
+            if (raw.isEmpty()) return null
+            return runCatching { ComponentName.unflattenFromString(raw) }.getOrNull()
+                ?.takeIf { isPackageInstalled(context.packageManager, it.packageName) }
+                ?.takeIf { it.packageName !in DENYLISTED_PACKAGES }
+        }
 
         /**
          * Pick a recognition service that third-party apps can bind to.
          *
          * [SpeechRecognizer.createSpeechRecognizer] without a component uses the
          * *default* RecognitionService. On GrapheneOS that setting is often empty
-         * ("no selected voice recognition service"), and Assist apps (Home Assistant,
-         * Claude) may be the only advertised services — those fail with ERROR_CLIENT.
-         * Always resolve an explicit [ComponentName] in the *current* user when possible.
+         * or points at Assist stubs (Home Assistant / Claude) that fail with
+         * ERROR_CLIENT. Prefer Settings → Voice input, then real STT engines
+         * (Transcribro, Google if present), never Assist-only packages.
          */
         internal fun resolvePreferredRecognitionService(context: Context): ComponentName? {
             val pm = context.packageManager
+
+            parseSecureRecognitionService(context)?.let { preferred ->
+                Log.i(TAG, "Using Settings voice_recognition_service $preferred")
+                return preferred
+            }
+
             val queried = queryRecognitionServices(pm)
             Log.i(TAG, "queryIntentServices(RecognitionService) count=${queried.size}")
             queried.forEach { info ->
                 val s = info.serviceInfo
                 Log.i(
                     TAG,
-                    "  candidate ${s?.packageName}/${s?.name} perm=${s?.permission} score=${scoreService(pm, info)}"
+                    "  candidate ${s?.packageName}/${s?.name} perm=${s?.permission} score=${scoreService(info)}"
                 )
             }
 
             val fromQuery = queried
-                .maxByOrNull { scoreService(pm, it) }
-                ?.takeIf { scoreService(pm, it) > 0 }
+                .maxByOrNull(::scoreService)
+                ?.takeIf { scoreService(it) > 0 }
                 ?.serviceInfo
                 ?.let { ComponentName(it.packageName, it.name) }
             if (fromQuery != null) {
@@ -174,10 +192,7 @@ class NativeSpeechRecognizer(private val context: Context) {
                     Log.i(TAG, "Known service not installed in this profile: $component")
                     continue
                 }
-                if (!hasRecognitionMetadata(pm, component)) {
-                    Log.i(TAG, "Known service missing android.speech meta-data: $component")
-                    continue
-                }
+                if (component.packageName in DENYLISTED_PACKAGES) continue
                 Log.i(TAG, "Using known recognition service $component")
                 return component
             }
