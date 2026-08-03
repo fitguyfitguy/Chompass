@@ -394,7 +394,7 @@
     <!-- Context note sheet -->
         <string name="context_note_title">查看照片</string>
     <string name="context_note_section">添加备注（可选）</string>
-    <string name="context_note_placeholder">如：不放油、加双倍奶酪、大份</string>
+    <string name="context_note_placeholder">如：黄油炒蛋2个、淋酱沙拉、无酱汁烤鸡</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">聆听中...</string>

@@ -79,7 +79,6 @@ import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.FudGlassTextField
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.OutlinedButton
 
 /** Exposed for JVM tests: every SNAP_FOOD photo gets the portion correction row. */
 internal fun shouldOfferPortionClarify(
@@ -124,7 +123,8 @@ fun FoodResultSheet(
     onReprocessPortion: (suspend (portionAnswer: String) -> Unit)? = null,
     onWhatIfSuggestion: (suspend (FoodEntry) -> String)? = null,
     onReanalyzeWithTip: ((note: String?, confirmedPortionGrams: Double?) -> Unit)? = null,
-    onAddPhoto: (() -> Unit)? = null,
+    /** Add another photo for re-analyze; receives current tip note/grams to preserve. */
+    onAddPhoto: ((note: String?, confirmedPortionGrams: Double?) -> Unit)? = null,
     onSave: (
         name: String,
         servingGrams: Double,
@@ -514,7 +514,12 @@ fun FoodResultSheet(
                             )
                             tipExpanded = false
                         },
-                        onAddPhoto = { onAddPhoto?.invoke() },
+                        onAddPhoto = {
+                            val grams = parsePositiveGrams(tipWeightText)
+                            val tip = tipNote.takeIf { it.isNotBlank() }
+                                ?: effectiveAnalysis.customNote?.takeIf { it.isNotBlank() }
+                            onAddPhoto?.invoke(tip, grams)
+                        },
                     )
                 }
             }
@@ -888,7 +893,7 @@ fun FoodResultSheet(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EntryAnalysisTipStrip(
     expanded: Boolean,
@@ -918,43 +923,31 @@ private fun EntryAnalysisTipStrip(
                 }
             }
             if (canAddPhoto) {
-                OutlinedButton(onClick = onAddPhoto) {
-                    Text(stringResource(R.string.entry_analysis_add_photo), fontSize = 14.sp)
+                TextButton(onClick = onAddPhoto) {
+                    Text(
+                        stringResource(R.string.entry_analysis_add_photo),
+                        color = AppColors.Calorie,
+                        fontSize = 14.sp,
+                    )
                 }
             }
         }
         if (expanded && canOfferTip) {
-            Text(
-                stringResource(R.string.context_note_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            )
-            val contextChips = listOf(
-                stringResource(R.string.context_note_chip_no_oil),
-                stringResource(R.string.context_note_chip_extra_cheese),
-                stringResource(R.string.context_note_chip_large),
-                stringResource(R.string.context_note_chip_grilled),
-            )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                contextChips.forEach { label ->
-                    FilterChip(
-                        selected = note.contains(label, ignoreCase = true),
-                        onClick = {
-                            onNoteChange(
-                                if (note.isBlank()) label
-                                else if (note.contains(label, ignoreCase = true)) note
-                                else "$note, $label",
-                            )
-                        },
-                        label = { Text(label, fontSize = 13.sp) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                            selectedLabelColor = AppColors.Calorie,
-                        ),
-                    )
+                Text(
+                    stringResource(R.string.context_note_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier.weight(1f),
+                )
+                var showGuide by remember { mutableStateOf(false) }
+                PhotoAccuracyInfoButton(onClick = { showGuide = true })
+                if (showGuide) {
+                    PhotoAccuracyGuideDialog(onDismiss = { showGuide = false })
                 }
             }
             FudGlassTextField(

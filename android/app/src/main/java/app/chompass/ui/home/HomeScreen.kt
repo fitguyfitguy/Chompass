@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -117,6 +118,9 @@ fun HomeScreen(container: AppContainer) {
     var showCameraCapture by remember { mutableStateOf(false) }
     /** When true, next capture/gallery pick appends into an in-flight analysis re-run. */
     var appendPhotoForReanalyze by remember { mutableStateOf(false) }
+    var appendReanalyzeNote by remember { mutableStateOf<String?>(null) }
+    var appendReanalyzeGrams by remember { mutableStateOf<Double?>(null) }
+    var showAppendPhotoChooser by remember { mutableStateOf(false) }
     /** When true, camera opens without clearing staged photos (Add label / Add photo). */
     var appendToStagedPhotos by remember { mutableStateOf(false) }
     val photoSession = container.foodPhotoSession
@@ -149,9 +153,13 @@ fun HomeScreen(container: AppContainer) {
     LaunchedEffect(stagedPhotoBytes, appendPhotoForReanalyze) {
         if (stagedPhotoBytes.isEmpty() || !appendPhotoForReanalyze) return@LaunchedEffect
         val images = stagedPhotoBytes.toList()
+        val note = appendReanalyzeNote
+        val grams = appendReanalyzeGrams
         photoSession.clear()
         appendPhotoForReanalyze = false
-        vm.appendPhotosAndReanalyze(images)
+        appendReanalyzeNote = null
+        appendReanalyzeGrams = null
+        vm.appendPhotosAndReanalyze(images, note, grams)
     }
 
     // Share-sheet photos only. Merge into FoodPhotoSession while RESUMED so a
@@ -750,6 +758,45 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
+    if (showAppendPhotoChooser) {
+        FudGlassDialog(
+            onDismissRequest = {
+                showAppendPhotoChooser = false
+                appendReanalyzeNote = null
+                appendReanalyzeGrams = null
+            },
+        ) {
+            Text(
+                stringResource(R.string.add_food_photo_source_title),
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.add_food_photo_camera),
+                onPrimary = {
+                    showAppendPhotoChooser = false
+                    appendPhotoForReanalyze = true
+                    openCamera()
+                },
+                dismissText = stringResource(R.string.add_food_photo_gallery),
+                onDismiss = {
+                    showAppendPhotoChooser = false
+                    appendPhotoForReanalyze = true
+                    openGalleryPicker()
+                },
+            )
+            TextButton(
+                onClick = {
+                    showAppendPhotoChooser = false
+                    appendReanalyzeNote = null
+                    appendReanalyzeGrams = null
+                },
+            ) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
+    }
+
     if (showCameraCapture) {
         InAppCameraCaptureDialog(
             showScaleTip = !ui.hasSeenCameraScaleTip,
@@ -761,7 +808,11 @@ fun HomeScreen(container: AppContainer) {
                     appendPhotoForReanalyze -> {
                         appendPhotoForReanalyze = false
                         appendToStagedPhotos = false
-                        vm.appendPhotosAndReanalyze(listOf(bytes))
+                        val note = appendReanalyzeNote
+                        val grams = appendReanalyzeGrams
+                        appendReanalyzeNote = null
+                        appendReanalyzeGrams = null
+                        vm.appendPhotosAndReanalyze(listOf(bytes), note, grams)
                     }
                     else -> {
                         // Stage into pre-Analyze sheet (do not call the LLM yet).
@@ -776,6 +827,8 @@ fun HomeScreen(container: AppContainer) {
                 clearShortcut(ShortcutEntryAction.CAMERA)
                 appendPhotoForReanalyze = false
                 appendToStagedPhotos = false
+                appendReanalyzeNote = null
+                appendReanalyzeGrams = null
                 photoSession.openReviewIfStaged()
             }
         )
@@ -794,6 +847,7 @@ fun HomeScreen(container: AppContainer) {
             requireNote = !ui.skipPhotoNotePrompt,
             showDontAskAgain = !ui.skipPhotoNotePrompt &&
                 ui.photoNoteSkipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD,
+            showAccuracyGuide = ui.photoAccuracyGuideCount < HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT,
             onAddPhoto = {
                 if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
                     if (isImportingPhotos) {
@@ -899,9 +953,10 @@ fun HomeScreen(container: AppContainer) {
                 (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty()) &&
                 ui.pendingAnalysisImages.size < FoodPhotoSession.MAX_IMAGES
             ) {
-                {
-                    appendPhotoForReanalyze = true
-                    openCamera()
+                { note, grams ->
+                    appendReanalyzeNote = note
+                    appendReanalyzeGrams = grams
+                    showAppendPhotoChooser = true
                 }
             } else {
                 null

@@ -394,7 +394,7 @@ Google AI Studio pulsuzdur və tövsiyə olunur.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Fotonu yoxla</string>
     <string name="context_note_section">Qeyd əlavə et (istəyə bağlı)</string>
-    <string name="context_note_placeholder">məs. yağsız, əlavə pendir, böyük porsiya</string>
+    <string name="context_note_placeholder">məs. yağda 2 yumurta, souslu salat, soussuz qril toyuq</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Dinlənilir...</string>

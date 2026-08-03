@@ -36,6 +36,15 @@ class PhotoNotePromptTest {
         assertTrue(showTipStripDuringAnalysis(analysisReady = true))
     }
 
+    @Test
+    fun accuracyGuideCard_forFirstThreePhotoAnalyzes() {
+        val t = HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT
+        assertTrue(showAccuracyGuideCard(guideCount = 0))
+        assertTrue(showAccuracyGuideCard(guideCount = t - 1))
+        assertFalse(showAccuracyGuideCard(guideCount = t))
+        assertFalse(showAccuracyGuideCard(guideCount = t + 5))
+    }
+
     private fun requirePhotoNote(skipPrompt: Boolean): Boolean = !skipPrompt
 
     private fun showDontAskAgain(skipPrompt: Boolean, skipCount: Int): Boolean =
@@ -45,4 +54,7 @@ class PhotoNotePromptTest {
         noteBlank || imageCount < 2
 
     private fun showTipStripDuringAnalysis(analysisReady: Boolean): Boolean = analysisReady
+
+    private fun showAccuracyGuideCard(guideCount: Int): Boolean =
+        guideCount < HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT
 }

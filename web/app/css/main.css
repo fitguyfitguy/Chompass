@@ -1454,6 +1454,31 @@ form.entry-form {
   line-height: 1.35;
 }
 
+.field-hint-details {
+  margin: 0.35rem 0 0.15rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.field-hint-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--kcal);
+  list-style: none;
+}
+
+.field-hint-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.field-hint-details[open] summary {
+  margin-bottom: 0.35rem;
+}
+
+.field-hint-details .field-hint {
+  margin: 0;
+}
+
 .checkbox-row {
   display: flex;
   align-items: flex-start;

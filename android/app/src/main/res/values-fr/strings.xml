@@ -394,7 +394,7 @@ sur cet appareil, chiffrée. Modifiable dans Réglages.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Vérifier la photo</string>
     <string name="context_note_section">Ajouter une note (facultatif)</string>
-    <string name="context_note_placeholder">ex. sans huile, fromage en plus, grande portion</string>
+    <string name="context_note_placeholder">ex. 2 œufs au beurre, salade avec sauce, poulet grillé sans huile</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Écoute...</string>

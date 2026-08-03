@@ -394,7 +394,7 @@ su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Rivedi foto</string>
     <string name="context_note_section">Aggiungi una nota (facoltativa)</string>
-    <string name="context_note_placeholder">es. senza olio, formaggio extra, porzione grande</string>
+    <string name="context_note_placeholder">es. 2 uova al burro, insalata con condimento, pollo grigliato senza salsa</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">In ascolto...</string>

@@ -394,7 +394,7 @@ Google AI Studio मुफ़्त और अनुशंसित है।</s
     <!-- Context note sheet -->
         <string name="context_note_title">फ़ोटो देखें</string>
     <string name="context_note_section">एक नोट जोड़ें (वैकल्पिक)</string>
-    <string name="context_note_placeholder">जैसे तेल नहीं, अतिरिक्त चीज़, बड़ा हिस्सा</string>
+    <string name="context_note_placeholder">जैसे मक्खन में 2 अंडे, ड्रेसिंग वाली सलाद, बिना सॉस ग्रिल्ड चिकन</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">सुन रहे हैं...</string>

@@ -78,6 +78,8 @@ data class HomeUiState(
     val skipPhotoNotePrompt: Boolean = false,
     /** Consecutive empty-note photo analyzes; at ≥3 offer “don’t ask again”. */
     val photoNoteSkipCount: Int = 0,
+    /** Completed photo staging Analyzes; tip card while below [HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT]. */
+    val photoAccuracyGuideCount: Int = 0,
     val hasSeenCameraScaleTip: Boolean = true,
     val weightMetric: Boolean = true,
     val favoriteKeys: Set<String> = emptySet(),
@@ -163,6 +165,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     companion object {
         /** After this many empty-note photo analyzes, offer “don’t ask again”. */
         const val PHOTO_NOTE_SKIP_OFFER_THRESHOLD = 3
+        /** Show the prominent accuracy tip card for the first N photo staging Analyzes. */
+        const val PHOTO_ACCURACY_GUIDE_COUNT = 3
     }
 
     @Volatile
@@ -397,6 +401,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.photoAccuracyGuideCount
+            .onEach { count ->
+                _ui.value = _ui.value.copy(photoAccuracyGuideCount = count)
+            }
+            .launchIn(viewModelScope)
+
         container.prefs.hasSeenCameraScaleTip
             .onEach { seen ->
                 _ui.value = _ui.value.copy(hasSeenCameraScaleTip = seen)
@@ -621,6 +631,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 } else {
                     container.prefs.setPhotoNoteSkipCount(0)
                 }
+            }
+            val guideCount = _ui.value.photoAccuracyGuideCount
+            if (guideCount < PHOTO_ACCURACY_GUIDE_COUNT) {
+                container.prefs.setPhotoAccuracyGuideCount(guideCount + 1)
             }
         }
         analyzePhotos(imageBytesList, note, confirmedPortionGrams)
@@ -1057,8 +1071,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         analyzePhotos(images, note, confirmedPortionGrams)
     }
 
-    /** Append photo(s) to the current pending set and re-analyze (label + plate, etc.). */
-    fun appendPhotosAndReanalyze(newImages: List<ByteArray>) {
+    /**
+     * Append photo(s) to the current pending set and re-analyze (label + plate, etc.).
+     * Preserves an optional tip note / grams so adding a photo does not wipe context.
+     */
+    fun appendPhotosAndReanalyze(
+        newImages: List<ByteArray>,
+        note: String? = null,
+        confirmedPortionGrams: Double? = null,
+    ) {
         val added = newImages.filter { it.isNotEmpty() }
         if (added.isEmpty()) return
         val existing = _ui.value.pendingAnalysisImages.ifEmpty {
@@ -1066,8 +1087,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
         val merged = (existing + added).take(FoodPhotoSession.MAX_IMAGES)
         if (merged.isEmpty()) return
+        val tip = note?.takeIf { it.isNotBlank() }
+            ?: _ui.value.pendingAnalysis?.customNote?.takeIf { it.isNotBlank() }
+            ?: _ui.value.pendingInputNote?.takeIf { it.isNotBlank() }
+        val grams = confirmedPortionGrams?.takeIf { it > 0 }
+            ?: _ui.value.pendingInputConfirmedPortionGrams?.takeIf { it > 0 }
         cancelInFlightAnalysisKeepInput()
-        analyzePhotos(merged)
+        analyzePhotos(merged, tip, grams)
     }
 
     fun retryFailedInput() {

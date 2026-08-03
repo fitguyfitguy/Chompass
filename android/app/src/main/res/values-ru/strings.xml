@@ -395,7 +395,7 @@ Google AI Studio бесплатен и рекомендуется.</string>
     
         <string name="context_note_title">Проверить фото</string>
     <string name="context_note_section">Добавить заметку (необязательно)</string>
-    <string name="context_note_placeholder">напр., без масла, больше сыра, большая порция</string>
+    <string name="context_note_placeholder">напр., 2 яйца на масле, салат с заправкой, курица-гриль без соуса</string>
 
     
     <string name="voice_listening">Слушаю...</string>

@@ -2,7 +2,6 @@ package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,7 +69,7 @@ import app.chompass.ui.theme.AppColors
  * optional note field before sending to the AI. Also offers a second photo for
  * food + nutrition-label composites, plus an optional exact total-weight field.
  */
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContextNoteSheet(
     imageBytes: ByteArray,
@@ -167,41 +166,24 @@ fun ContextNoteSheet(
                     }
                 }
 
-                SheetSectionHeader(stringResource(R.string.context_note_section))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    SheetSectionHeader(stringResource(R.string.context_note_section))
+                    var showGuide by remember { mutableStateOf(false) }
+                    PhotoAccuracyInfoButton(onClick = { showGuide = true })
+                    if (showGuide) {
+                        PhotoAccuracyGuideDialog(onDismiss = { showGuide = false })
+                    }
+                }
 
                 Text(
                     stringResource(R.string.context_note_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
-
-                val contextChips = listOf(
-                    stringResource(R.string.context_note_chip_no_oil),
-                    stringResource(R.string.context_note_chip_extra_cheese),
-                    stringResource(R.string.context_note_chip_large),
-                    stringResource(R.string.context_note_chip_grilled),
-                )
-                androidx.compose.foundation.layout.FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    contextChips.forEach { label ->
-                        androidx.compose.material3.FilterChip(
-                            selected = note.contains(label, ignoreCase = true),
-                            enabled = !busy,
-                            onClick = {
-                                note = if (note.isBlank()) label
-                                else if (note.contains(label, ignoreCase = true)) note
-                                else "$note, $label"
-                            },
-                            label = { Text(label, fontSize = 13.sp) },
-                            colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                                selectedLabelColor = AppColors.Calorie,
-                            ),
-                        )
-                    }
-                }
 
                 FudGlassTextField(
                     value = note,
@@ -306,19 +288,21 @@ fun ContextNoteSheet(
 
 /**
  * Lightweight pre-LLM staging only — never starts analysis by itself.
- * Note + add-photo live here; Analyze asks for confirmation when the note is
- * empty and/or there is only one photo.
+ * Photos first, then an optional tip note; Analyze asks for confirmation when
+ * the note is empty and/or there is only one photo.
  */
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MultiPhotoCaptureSheet(
     imageBytesList: List<ByteArray>,
     addsFromLibrary: Boolean,
     showScaleTip: Boolean = false,
-    /** When true, highlight the note field and focus it (default until user opts out). */
+    /** When true, expand the note field by default (until user opts out in settings). */
     requireNote: Boolean = true,
     /** After several empty-note analyzes, offer a persistent opt-out checkbox. */
     showDontAskAgain: Boolean = false,
+    /** First N photo Analyzes: show the prominent accuracy tip card. */
+    showAccuracyGuide: Boolean = false,
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
     onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean) -> Unit,
@@ -330,19 +314,6 @@ fun MultiPhotoCaptureSheet(
     var tipExpanded by remember(requireNote) { mutableStateOf(requireNote) }
     var dontAskAgain by remember { mutableStateOf(false) }
     var pendingConfirm by remember { mutableStateOf(false) }
-    val noteFocus = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(requireNote) {
-        if (requireNote) {
-            tipExpanded = true
-            delay(100)
-            runCatching {
-                noteFocus.requestFocus()
-                keyboardController?.show()
-            }
-        }
-    }
 
     fun commitAnalyze() {
         val trimmed = note.trim()
@@ -436,7 +407,86 @@ fun MultiPhotoCaptureSheet(
                     )
                 }
 
-                // Note + chips before LLM — staging only.
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        stringResource(R.string.meal_photos_count, imageBytesList.size),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    )
+                }
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp),
+                ) {
+                    itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
+                        val bitmap = remember(bytes) { decodePreviewBitmap(bytes) }
+                        Box {
+                            if (bitmap != null) {
+                                androidx.compose.foundation.Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(width = 160.dp, height = 180.dp)
+                                        .clip(RoundedCornerShape(16.dp)),
+                                )
+                            }
+                            IconButton(
+                                onClick = { onRemove(index) },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(6.dp)
+                                    .size(32.dp)
+                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.action_remove),
+                                    tint = Color.White,
+                                )
+                            }
+                        }
+                    }
+                    if (imageBytesList.size < FoodPhotoSession.MAX_IMAGES) {
+                        item(key = "add-photo") {
+                            OutlinedButton(
+                                onClick = onAddPhoto,
+                                modifier = Modifier.size(width = 120.dp, height = 180.dp),
+                                shape = RoundedCornerShape(16.dp),
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                ) {
+                                    Icon(
+                                        if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
+                                        contentDescription = null,
+                                        tint = AppColors.Calorie,
+                                        modifier = Modifier.size(28.dp),
+                                    )
+                                    Text(
+                                        stringResource(
+                                            if (addsFromLibrary) R.string.meal_photos_add_from_library
+                                            else if (imageBytesList.size == 1) R.string.meal_photos_add_label
+                                            else R.string.meal_photos_add_photo,
+                                        ),
+                                        color = AppColors.Calorie,
+                                        fontSize = 13.sp,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Column(
                     Modifier
                         .fillMaxWidth()
@@ -444,48 +494,21 @@ fun MultiPhotoCaptureSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     if (requireNote || tipExpanded) {
-                        Text(
-                            stringResource(R.string.meal_photos_note_section),
-                            fontWeight = FontWeight.SemiBold,
+                        PhotoAccuracyGuide(
+                            showProminentCard = showAccuracyGuide,
+                            sectionTitle = stringResource(R.string.meal_photos_note_section),
                         )
                         Text(
                             stringResource(R.string.context_note_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         )
-                        val contextChips = listOf(
-                            stringResource(R.string.context_note_chip_no_oil),
-                            stringResource(R.string.context_note_chip_extra_cheese),
-                            stringResource(R.string.context_note_chip_large),
-                            stringResource(R.string.context_note_chip_grilled),
-                        )
-                        androidx.compose.foundation.layout.FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            contextChips.forEach { label ->
-                                androidx.compose.material3.FilterChip(
-                                    selected = note.contains(label, ignoreCase = true),
-                                    onClick = {
-                                        note = if (note.isBlank()) label
-                                        else if (note.contains(label, ignoreCase = true)) note
-                                        else "$note, $label"
-                                    },
-                                    label = { Text(label, fontSize = 13.sp) },
-                                    colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                                        selectedLabelColor = AppColors.Calorie,
-                                    ),
-                                )
-                            }
-                        }
                         FudGlassTextField(
                             value = note,
                             onValueChange = { note = it },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(min = 88.dp)
-                                .then(if (requireNote) Modifier.focusRequester(noteFocus) else Modifier),
+                                .heightIn(min = 88.dp),
                             placeholder = stringResource(R.string.context_note_placeholder),
                         )
                         Text(
@@ -535,72 +558,6 @@ fun MultiPhotoCaptureSheet(
                                 color = AppColors.Calorie,
                                 fontSize = 14.sp,
                             )
-                        }
-                    }
-                }
-
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        stringResource(R.string.meal_photos_count, imageBytesList.size),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    )
-                    if (imageBytesList.size < FoodPhotoSession.MAX_IMAGES) {
-                        OutlinedButton(onClick = onAddPhoto) {
-                            Icon(
-                                if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                            Text(
-                                stringResource(
-                                    if (addsFromLibrary) R.string.meal_photos_add_from_library
-                                    else if (imageBytesList.size == 1) R.string.meal_photos_add_label
-                                    else R.string.meal_photos_add_photo,
-                                ),
-                                modifier = Modifier.padding(start = 8.dp),
-                            )
-                        }
-                    }
-                }
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp),
-                ) {
-                    itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
-                        val bitmap = remember(bytes) { decodePreviewBitmap(bytes) }
-                        Box {
-                            if (bitmap != null) {
-                                androidx.compose.foundation.Image(
-                                    bitmap = bitmap.asImageBitmap(),
-                                    contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .size(width = 160.dp, height = 180.dp)
-                                        .clip(RoundedCornerShape(16.dp)),
-                                )
-                            }
-                            IconButton(
-                                onClick = { onRemove(index) },
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(6.dp)
-                                    .size(32.dp)
-                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
-                            ) {
-                                Icon(
-                                    Icons.Filled.Close,
-                                    contentDescription = stringResource(R.string.action_remove),
-                                    tint = Color.White,
-                                )
-                            }
                         }
                     }
                 }
