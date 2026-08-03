@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">음식 사진과 코치를 위한 선택적 API 키.
 Google AI Studio는 무료이며 권장됩니다.</string>
     <string name="onboarding_provider_recommended_title">추천: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">무료이고 고품질 — 음식 사진에 최적</string>
+    <string name="onboarding_provider_recommended_subtitle">무료이고 고품질. 음식 사진에 최적.</string>
     <string name="onboarding_provider_howto_title">무료 Google AI Studio 키 받는 방법</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey 열기 (탭하여 열기)</string>
     <string name="onboarding_provider_step_2">Google로 로그인하고 API 키 만들기</string>
@@ -394,7 +394,7 @@ Google AI Studio는 무료이며 권장됩니다.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">사진 확인</string>
     <string name="context_note_section">메모 추가 (선택)</string>
-    <string name="context_note_placeholder">예: 버터에 스크램블 2개, 드레싱 샐러드, 소스 없는 그릴 치킨</string>
+    <string name="context_note_placeholder">예: 버터에 스크램블 에그 2개, Chipotle 볼(기름 추가), 소스 없는 그릴 치킨</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">듣고 있어요...</string>
@@ -581,7 +581,7 @@ Google AI Studio는 무료이며 권장됩니다.</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">체중 측정 시간</string>
     <string name="notif_weight_log_text">진행 그래프를 정확하게 유지하려면 오늘 체중을 기록하세요.</string>
-    <string name="settings_health_unavailable">이 기기에서는 Health Connect를 사용할 수 없습니다. Android 14 이상에서는 시스템 모듈입니다. ROM에서 제공하지 않으면 파일 내보내기/가져오기를 사용하세요. Android 14+에서는 Play 스토어 앱 설치가 필요하지 않습니다.</string>
+    <string name="settings_health_unavailable">이 기기에서는 Health Connect를 사용할 수 없습니다. Android 14 이상에서는 시스템에 포함됩니다. ROM이 제공하지 않으면 파일 내보내기/가져오기를 사용하세요. Android 14+에서 Chompass는 Play Store Health Connect 앱을 필요로 하지 않습니다.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI 제공자</string>
@@ -716,4 +716,80 @@ Google AI Studio는 무료이며 권장됩니다.</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">다시 기록</string>
+    <string name="add_food_quick_relog_empty">식사를 즐겨찾기하거나 한 번 기록하세요. 여기에 표시되어 한 번에 다시 기록할 수 있습니다.</string>
+    <string name="add_food_quick_relog_hint">즐겨찾기와 지난 식사. 다시 스캔하는 것보다 빠릅니다.</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">비공개·오프라인. 클라우드 AI보다 정확도 낮음. 약 2~4 GB 다운로드</string>
+    <string name="camera_scale_tip_message">팁: 포크, 손, 또는 동전을 음식 옆에 함께 찍으세요. 1인분 크기 추정에 도움이 됩니다.</string>
+    <string name="cd_relog_meal">%1$s 다시 기록</string>
+    <string name="context_note_hint">구체적으로: 양, 브랜드, 기름이나 드레싱, 조리 방법.</string>
+    <string name="edit_reprocess_diff_unchanged">변경된 항목이 없습니다. 메모를 수정하고 다시 시도하세요.</string>
+    <string name="edit_reprocess_hint">수정 내용을 설명하세요. 예: 큰 그릇, 버터에 조리, 우유 대신 귀리 우유</string>
+    <string name="entry_analysis_add_photo">사진 추가</string>
+    <string name="entry_analysis_busy_analyzing">분석 중…</string>
+    <string name="entry_analysis_busy_filling">영양 정보 입력 중…</string>
+    <string name="entry_analysis_busy_units">1회 제공량 단위 계산 중…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">검토 준비 완료</string>
+    <string name="entry_analysis_status_helper">사진의 바코드를 확인한 뒤 AI 제공업체에 영양 정보를 요청합니다.</string>
+    <string name="entry_analysis_streaming_hint">AI 응답에 따라 값이 표시됩니다. 기록 전에 검토할 수 있습니다.</string>
+    <string name="entry_analysis_tip_apply">팁으로 다시 분석</string>
+    <string name="entry_analysis_tip_cta">AI용 팁 추가(선택)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d 활동 → 예산)</string>
+    <string name="home_calorie_clause_add_active_waiting">활동 소모가 오늘 예산을 늘립니다</string>
+    <string name="home_calorie_mode_add_active">활동 소모를 예산에 추가</string>
+    <string name="home_calorie_mode_add_active_desc">Health Connect(또는 활동 수준 추정치)의 활동 칼로리가 오늘 칼로리 예산에 더해집니다. 소모한 만큼 먹으세요. 운동이 중복 계산되지 않도록 활동 수준을 일상 기준으로 설정하세요. 측정값을 쓰려면 설정 → 건강에서 Health Connect를 연결하세요.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">팁: Health Connect를 켜면 활동 수준 추정치 대신 시계/휴대폰의 활동 칼로리를 사용할 수 있습니다.</string>
+    <string name="home_calorie_mode_static_desc">칼로리 목표는 고정됩니다. 움직임이 오늘 예산을 바꾸지 않습니다.</string>
+    <string name="home_menu_manual_active">활동 소모</string>
+    <string name="manual_active_kcal_hint">소모 칼로리</string>
+    <string name="manual_active_name_hint">활동 이름(선택)</string>
+    <string name="manual_active_save">예산에 추가</string>
+    <string name="manual_active_subtitle">걷기, 자전거, 운동 등에서 소모한 칼로리를 추가합니다. \"활동 소모를 예산에 추가\"가 켜져 있으면 오늘 예산이 늘어납니다.</string>
+    <string name="manual_active_title">활동 소모 기록</string>
+    <string name="meal_photos_add_label">라벨 추가</string>
+    <string name="meal_photos_confirm_back">편집 계속</string>
+    <string name="meal_photos_confirm_continue">그래도 분석</string>
+    <string name="meal_photos_confirm_no_note">메모가 없습니다. 양이나 설명이 없으면 AI 추정 정확도가 떨어집니다. 그래도 계속할까요?</string>
+    <string name="meal_photos_confirm_one_photo">사진이 한 장뿐입니다. 다른 각도나 영양 성분표 사진이 있으면 도움이 되는 경우가 많습니다. 한 장으로 계속할까요?</string>
+    <string name="meal_photos_confirm_sparse">메모도 없고 사진도 한 장뿐입니다. 더 나은 추정을 위해 팁이나 라벨 사진을 추가하거나 그래도 계속하세요.</string>
+    <string name="meal_photos_confirm_title">지금 분석할까요?</string>
+    <string name="meal_photos_dont_ask_note">메모 확인을 다시 묻지 않음</string>
+    <string name="meal_photos_note_section">이것은 무엇인가요?</string>
+    <string name="meal_photos_skip_note">메모 건너뛰고 분석</string>
+    <string name="meal_photos_subtitle">짧은 메모와 필요하면 두 번째 사진(예: 영양 성분표)을 추가한 뒤 분석을 탭하세요. 확인 후에 AI가 시작됩니다.</string>
+    <string name="meal_photos_subtitle_note_optional">원하면 다른 사진이나 팁을 추가한 뒤 분석을 탭하세요. 확인 후에 AI가 시작됩니다.</string>
+    <string name="meal_photos_title">분석 전</string>
+    <string name="on_device_model_accuracy_notice">이 모델은 클라우드 AI만큼 정확하지 않습니다. 칼로리 오류, 누락, 사진 인식 부족이 있을 수 있으며, 특히 작은 E2B 모델에서 두드러집니다. 안정적인 기록에는 클라우드 제공업체가 권장됩니다.</string>
+    <string name="on_device_model_device_notice">Pixel 9a(GrapheneOS)에서 테스트했습니다. 다른 기기, 특히 저사양이나 비 Tensor 하드웨어는 아직 검증되지 않았으며 더 느리거나 지원되지 않을 수 있습니다. 클라우드 제공업체가 더 안전합니다.</string>
+    <string name="on_device_model_loaded">모델을 불러왔습니다. 사용할 수 있습니다.</string>
+    <string name="on_device_model_not_loaded">불러오지 않음. 앱 시작 후 첫 요청은 최대 1분 걸릴 수 있습니다.</string>
+    <string name="on_device_model_privacy_notice">이 기기에서만 실행됩니다. 입력하거나 촬영한 내용은 서버로 전송되지 않습니다. 다운로드 시 모델 파일은 Hugging Face(%1$s)에서 직접 가져옵니다. 이 앱에서 평소 사용하지 않는 제3자 호스트입니다.</string>
+    <string name="onboarding_api_key_non_gemini_ok">준비 완료. 빠른 테스트는 Gemini만</string>
+    <string name="photo_accuracy_guide_body">사진만으로는 부족합니다. 가능하면 짧은 메모를 추가하세요:
+
+• 구체적으로: 양, 브랜드, 접시에 담긴 것
+• 기름, 드레싱, 기름진 소스(눈에 잘 안 보임)
+• 조리법이 중요할 때: 튀김, 그릴, 찜, 집에서 만든 음식
+• 정확한 그램 수나 영양 성분표 사진이 가장 도움이 됩니다</string>
+    <string name="photo_accuracy_guide_cd">사진 정확도를 높이는 방법</string>
+    <string name="photo_accuracy_guide_dismiss">확인</string>
+    <string name="photo_accuracy_guide_title">더 나은 추정을 위한 팁</string>
+    <string name="photo_import_failed">사진을 가져올 수 없습니다</string>
+    <string name="progress_weight_raw_legend">매일 체중</string>
+    <string name="progress_weight_trend_legend">7일 추세</string>
+    <string name="progress_weight_trend_need_more">7일 추세에는 최소 2일의 체중 기록이 필요합니다</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/일</string>
+    <string name="protein_target_lbm_missing_hint">체지방 %%가 설정되지 않았습니다. BF%%가 기록될 때까지 총 체중을 사용합니다.</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg 순수체중</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg 체중</string>
+    <string name="protein_target_mode_grams">하루 그램</string>
+    <string name="protein_target_mode_label">단백질 목표</string>
+    <string name="settings_gemini_google_search_footer">켜면 Gemini가 프롬프트 답변에 도움이 될 때 웹 검색을 할 수 있습니다. 검색 쿼리는 Google로 전송됩니다. Google은 Gemini API 프로젝트에 이를 청구합니다. Gemini 3 모델에서는 실행된 각 검색 쿼리가 사용량에 포함됩니다. Gemini 2.5 이하에서는 검색을 사용한 프롬프트마다 청구됩니다.</string>
+    <string name="settings_health_unavailable_platform">이 기기에서는 앱이 Health Connect를 사용할 수 없습니다. Android 14 이상에서는 시스템 모듈입니다. 설정에 Health Connect가 보이는데 Chompass가 연결되지 않으면 ROM이 Health Connect 서비스를 노출하지 않을 수 있습니다(de-Googled 빌드에서 흔함). Chompass는 Play Store나 샌드박스 Play를 필요로 하지 않습니다. 대신 식단 및 체성분 내보내기/가져오기 또는 선택적 WebDAV를 사용하세요.</string>
+    <string name="settings_meal_constituents_footer_on_device">온디바이스 Gemma에서는 사용할 수 없습니다: 재료 분해에는 더 강한 모델이 필요합니다. 클라우드 제공업체로 전환하여 켜세요.</string>
+    <string name="settings_photo_note_prompt">사진 메모 요청</string>
+    <string name="settings_photo_note_prompt_footer">켜면 분석 전에 사진 입력에서 메모 필드가 강조됩니다. 메모 없이도 확인하고 계속할 수 있습니다.</string>
+    <string name="settings_progress_default_range">진행 기본 기간</string>
 </resources>

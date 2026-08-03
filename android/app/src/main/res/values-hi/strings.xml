@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">फ़ूड फ़ोटो और कोच के लिए वैकल्पिक API कुंजी।
 Google AI Studio मुफ़्त और अनुशंसित है।</string>
     <string name="onboarding_provider_recommended_title">अनुशंसित: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">मुफ़्त और उच्च गुणवत्ता — फ़ूड फ़ोटो के लिए सबसे अच्छा</string>
+    <string name="onboarding_provider_recommended_subtitle">मुफ़्त और उच्च गुणवत्ता। फ़ूड फ़ोटो के लिए सबसे अच्छा।</string>
     <string name="onboarding_provider_howto_title">मुफ़्त Google AI Studio कुंजी कैसे पाएँ</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey खोलें (खोलने के लिए टैप करें)</string>
     <string name="onboarding_provider_step_2">Google से साइन इन करें और API कुंजी बनाएँ</string>
@@ -394,7 +394,7 @@ Google AI Studio मुफ़्त और अनुशंसित है।</s
     <!-- Context note sheet -->
         <string name="context_note_title">फ़ोटो देखें</string>
     <string name="context_note_section">एक नोट जोड़ें (वैकल्पिक)</string>
-    <string name="context_note_placeholder">जैसे मक्खन में 2 अंडे, ड्रेसिंग वाली सलाद, बिना सॉस ग्रिल्ड चिकन</string>
+    <string name="context_note_placeholder">जैसे 2 अंडे मक्खन में, Chipotle बाउल अतिरिक्त तेल के साथ, ग्रिल्ड चिकन बिना सॉस</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">सुन रहे हैं...</string>
@@ -581,7 +581,7 @@ Google AI Studio मुफ़्त और अनुशंसित है।</s
     <!-- Notification copy -->
     <string name="notif_weight_log_title">वज़न मापने का समय</string>
     <string name="notif_weight_log_text">अपनी प्रगति का चार्ट सटीक रखने के लिए आज का वज़न दर्ज करें।</string>
-    <string name="settings_health_unavailable">इस डिवाइस पर Health Connect उपलब्ध नहीं है। Android 14+ पर यह सिस्टम मॉड्यूल है; यदि ROM इसे नहीं देता तो फ़ाइल निर्यात/आयात उपयोग करें। Android 14+ पर Play Store ऐप की ज़रूरत नहीं।</string>
+    <string name="settings_health_unavailable">इस डिवाइस पर Health Connect उपलब्ध नहीं है। Android 14 और उसके बाद यह सिस्टम के साथ आता है। यदि ROM इसे नहीं देता तो फ़ाइल निर्यात/आयात उपयोग करें। Android 14+ पर Chompass को Play Store Health Connect ऐप की ज़रूरत नहीं।</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI प्रदाता</string>
@@ -716,4 +716,80 @@ Google AI Studio मुफ़्त और अनुशंसित है।</s
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">फिर से लॉग करें</string>
+    <string name="add_food_quick_relog_empty">कोई भोजन पसंदीदा बनाएँ या एक बार लॉग करें। यह यहाँ एक-टैप पुनः-लॉग के लिए दिखेगा।</string>
+    <string name="add_food_quick_relog_hint">पसंदीदा और पिछले भोजन। दोबारा स्कैन से तेज़।</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">निजी और ऑफ़लाइन। क्लाउड AI से कम सटीक; ~2-4 GB डाउनलोड</string>
+    <string name="camera_scale_tip_message">सुझाव: भोजन के बगल में कांटा, हाथ या सिक्का रखें। यह हिस्से का अनुमान लगाने में मदद करता है।</string>
+    <string name="cd_relog_meal">%1$s फिर से लॉग करें</string>
+    <string name="context_note_hint">विशिष्ट रहें: मात्रा, ब्रांड, तेल या ड्रेसिंग, और कैसे पकाया गया।</string>
+    <string name="edit_reprocess_diff_unchanged">कोई फ़ील्ड नहीं बदली। अपना नोट बदलें और फिर कोशिश करें।</string>
+    <string name="edit_reprocess_hint">सुधार बताएँ, जैसे बड़ा कटोरा, मक्खन में पका, डेयरी की जगह ओट मिल्क</string>
+    <string name="entry_analysis_add_photo">फ़ोटो जोड़ें</string>
+    <string name="entry_analysis_busy_analyzing">विश्लेषण हो रहा है…</string>
+    <string name="entry_analysis_busy_filling">पोषण भरा जा रहा है…</string>
+    <string name="entry_analysis_busy_units">सर्विंग इकाइयाँ गिनी जा रही हैं…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">समीक्षा के लिए तैयार</string>
+    <string name="entry_analysis_status_helper">फ़ोटो में बारकोड जाँचे जा रहे हैं, फिर आपके AI प्रदाता से पोषण माँगा जाएगा।</string>
+    <string name="entry_analysis_streaming_hint">AI जवाब देते ही मान दिखते हैं। लॉग करने से पहले उन्हें देख सकते हैं।</string>
+    <string name="entry_analysis_tip_apply">सुझाव के साथ फिर विश्लेषण</string>
+    <string name="entry_analysis_tip_cta">AI के लिए सुझाव जोड़ें (वैकल्पिक)</string>
+    <string name="home_calorie_clause_add_active">(+%1$d सक्रिय → बजट)</string>
+    <string name="home_calorie_clause_add_active_waiting">सक्रिय बर्न आज का बजट बढ़ाएगा</string>
+    <string name="home_calorie_mode_add_active">सक्रिय बर्न बजट में जोड़ें</string>
+    <string name="home_calorie_mode_add_active_desc">Health Connect (या आपके गतिविधि-स्तर अनुमान) से सक्रिय कैलोरी आज के कैलोरी बजट में जोड़ी जाती हैं। जितना जलाएँ, उतना खाएँ। वर्कआउट दो बार न गिनें, इसलिए गतिविधि स्तर को रोज़मर्रा बेसलाइन पर रखें। मापा हुआ बर्न के लिए सेटिंग्स → स्वास्थ्य में Health Connect जोड़ें।</string>
+    <string name="home_calorie_mode_add_active_hc_hint">सुझाव: घड़ी/फ़ोन की सक्रिय कैलोरी के लिए Health Connect चालू करें, गतिविधि-स्तर अनुमान की जगह।</string>
+    <string name="home_calorie_mode_static_desc">आपका कैलोरी लक्ष्य स्थिर रहता है। हलचल आज का बजट नहीं बदलती।</string>
+    <string name="home_menu_manual_active">सक्रिय बर्न</string>
+    <string name="manual_active_kcal_hint">जली कैलोरी</string>
+    <string name="manual_active_name_hint">गतिविधि का नाम (वैकल्पिक)</string>
+    <string name="manual_active_save">बजट में जोड़ें</string>
+    <string name="manual_active_subtitle">चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। «सक्रिय बर्न बजट में जोड़ें» चालू होने पर ये आज का बजट बढ़ाती हैं।</string>
+    <string name="manual_active_title">सक्रिय बर्न लॉग करें</string>
+    <string name="meal_photos_add_label">लेबल जोड़ें</string>
+    <string name="meal_photos_confirm_back">संपादन जारी रखें</string>
+    <string name="meal_photos_confirm_continue">फिर भी विश्लेषण करें</string>
+    <string name="meal_photos_confirm_no_note">अभी कोई नोट नहीं। मात्रा या विवरण के बिना AI अनुमान कम सटीक होते हैं। फिर भी जारी रखें?</string>
+    <string name="meal_photos_confirm_one_photo">केवल एक फ़ोटो। दूसरी शॉट (दूसा कोण या पोषण लेबल) अक्सर मदद करती है। एक फ़ोटो से जारी रखें?</string>
+    <string name="meal_photos_confirm_sparse">नोट नहीं और केवल एक फ़ोटो। बेहतर अनुमान के लिए सुझाव या लेबल फ़ोटो जोड़ें, या फिर भी जारी रखें।</string>
+    <string name="meal_photos_confirm_title">अभी विश्लेषण करें?</string>
+    <string name="meal_photos_dont_ask_note">नोट फिर न पूछें</string>
+    <string name="meal_photos_note_section">यह क्या है?</string>
+    <string name="meal_photos_skip_note">नोट छोड़ें और विश्लेषण करें</string>
+    <string name="meal_photos_subtitle">संक्षिप्त नोट और वैकल्पिक दूसरी फ़ोटो (जैसे पोषण लेबल) जोड़ें, फिर विश्लेषण पर टैप करें। AI केवल पुष्टि के बाद शुरू होता है।</string>
+    <string name="meal_photos_subtitle_note_optional">चाहें तो और फ़ोटो या सुझाव जोड़ें, फिर विश्लेषण। AI केवल पुष्टि के बाद शुरू होता है।</string>
+    <string name="meal_photos_title">विश्लेषण से पहले</string>
+    <string name="on_device_model_accuracy_notice">ये मॉडल क्लाउड AI जितने सटीक नहीं हैं। गलत कैलोरी, छूटे आइटम या कमज़ोर फ़ोटो रीड की उम्मीद करें, खासकर छोटे E2B मॉडल से। विश्वसनीय लॉगिंग के लिए क्लाउड प्रदाता अनुशंसित डिफ़ॉल्ट हैं।</string>
+    <string name="on_device_model_device_notice">Pixel 9a (GrapheneOS) पर परीक्षित। अन्य डिवाइस, खासकर निचले-स्तर या गैर-Tensor हार्डवेयर, अभी सत्यापित नहीं और धीमे या असमर्थित हो सकते हैं; वहाँ क्लाउड प्रदाता सुरक्षित विकल्प है।</string>
+    <string name="on_device_model_loaded">मॉडल लोड हो गया। उपयोग के लिए तैयार।</string>
+    <string name="on_device_model_not_loaded">लोड नहीं। ऐप शुरू होने के बाद पहला अनुरोध एक मिनट तक लग सकता है।</string>
+    <string name="on_device_model_privacy_notice">पूरी तरह इस डिवाइस पर चलता है। जो लिखें या फ़ोटो खींचें, सर्वर पर नहीं जाता। डाउनलोड Hugging Face (%1$s) से सीधे मॉडल फ़ाइल लाता है, तीसरे पक्ष का होस्ट जो ऐप अन्यथा उपयोग नहीं करता।</string>
+    <string name="onboarding_api_key_non_gemini_ok">तैयार। त्वरित परीक्षण केवल Gemini के लिए</string>
+    <string name="photo_accuracy_guide_body">फ़ोटो बहुत कुछ छूट जाता है। जब हो सके संक्षिप्त नोट जोड़ें:
+
+• विशिष्ट रहें: मात्रा, ब्रांड और प्लेट पर क्या है
+• तेल, ड्रेसिंग और तैलीय सॉस बताएँ (अक्सर दिखाई नहीं देते)
+• जब मायने रखे तो तैयारी बताएँ: तला, ग्रिल, भाप, घर का
+• सटीक ग्राम या पोषण-लेबल फ़ोटो सबसे मदद करते हैं</string>
+    <string name="photo_accuracy_guide_cd">फ़ोटो सटीकता कैसे बेहतर करें</string>
+    <string name="photo_accuracy_guide_dismiss">समझ गया</string>
+    <string name="photo_accuracy_guide_title">बेहतर अनुमान के सुझाव</string>
+    <string name="photo_import_failed">फ़ोटो आयात नहीं हो सका</string>
+    <string name="progress_weight_raw_legend">दैनिक तौल</string>
+    <string name="progress_weight_trend_legend">7-दिन का रुझान</string>
+    <string name="progress_weight_trend_need_more">7-दिन के रुझान के लिए कम से कम 2 तौल-दिन चाहिए</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/दिन</string>
+    <string name="protein_target_lbm_missing_hint">शरीर-वसा %% सेट नहीं। BF%% लॉग होने तक कुल वज़न उपयोग हो रहा है।</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg दुबली मांसपेशी</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg शरीर का वज़न</string>
+    <string name="protein_target_mode_grams">प्रतिदिन ग्राम</string>
+    <string name="protein_target_mode_label">प्रोटीन लक्ष्य</string>
+    <string name="settings_gemini_google_search_footer">चालू होने पर Gemini प्रॉम्प्ट का जवाब देने में मदद के लिए वेब खोज सकता है। खोज क्वेरी Google को जाती हैं। Google आपके Gemini API प्रोजेक्ट को बिल करता है। Gemini 3 मॉडल में हर चलाई गई खोज क्वेरी उपयोग में गिनती है; Gemini 2.5 और पुराने में खोज वाले प्रत्येक प्रॉम्प्ट पर बिलिंग।</string>
+    <string name="settings_health_unavailable_platform">इस डिवाइस पर Health Connect ऐप्स के लिए उपलब्ध नहीं है। Android 14 और उसके बाद यह सिस्टम मॉड्यूल है। यदि सेटिंग्स में Health Connect दिखे पर Chompass कनेक्ट न हो, तो ROM Health Connect सेवा न दे रहा हो (कुछ de-Googled बिल्ड में आम)। Chompass को Play Store या sandboxed Play की ज़रूरत नहीं। डायरी और बॉडी-मेट्रिक्स निर्यात/आयात, या वैकल्पिक WebDAV उपयोग करें।</string>
+    <string name="settings_meal_constituents_footer_on_device">ऑन-डिवाइस Gemma के लिए उपलब्ध नहीं: सामग्री विभाजन के लिए मज़बूत मॉडल चाहिए। इसे चालू करने के लिए क्लाउड प्रदाता पर जाएँ।</string>
+    <string name="settings_photo_note_prompt">फ़ोटो नोट पूछें</string>
+    <string name="settings_photo_note_prompt_footer">चालू होने पर फ़ोटो एंट्री विश्लेषण से पहले नोट फ़ील्ड हाइलाइट करती है। बिना नोट के भी पुष्टि और जारी रख सकते हैं।</string>
+    <string name="settings_progress_default_range">प्रगति डिफ़ॉल्ट रेंज</string>
 </resources>

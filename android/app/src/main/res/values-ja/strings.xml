@@ -256,7 +256,7 @@
     <string name="onboarding_provider_subtitle">食事写真とコーチ用の任意のAPIキー。
 Google AI Studioは無料でおすすめです。</string>
     <string name="onboarding_provider_recommended_title">おすすめ：Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">無料で高品質 — 食事写真に最適</string>
+    <string name="onboarding_provider_recommended_subtitle">無料で高品質。食事写真に最適。</string>
     <string name="onboarding_provider_howto_title">無料の Google AI Studio キーの取得方法</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey を開く（タップで開く）</string>
     <string name="onboarding_provider_step_2">GoogleでログインしてAPIキーを作成</string>
@@ -394,7 +394,7 @@ Google AI Studioは無料でおすすめです。</string>
     <!-- Context note sheet -->
         <string name="context_note_title">写真を確認</string>
     <string name="context_note_section">メモを追加（任意）</string>
-    <string name="context_note_placeholder">例：バター炒め卵2個、ドレッシング多めのサラダ、ソースなしグリルチキン</string>
+    <string name="context_note_placeholder">例: バターで炒めた卵2個、Chipotleのボウル（油多め）、ソースなしのグリルチキン</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">聞き取り中...</string>
@@ -581,7 +581,7 @@ Google AI Studioは無料でおすすめです。</string>
     <!-- Notification copy -->
     <string name="notif_weight_log_title">計量の時間です</string>
     <string name="notif_weight_log_text">進捗グラフを正確に保つために、今日の体重を記録しましょう。</string>
-    <string name="settings_health_unavailable">この端末では Health Connect を利用できません。Android 14 以降はシステム機能です。ROM が提供しない場合はファイルの書き出し／読み込みを使ってください。Android 14 以降で Play ストア版のインストールは不要です。</string>
+    <string name="settings_health_unavailable">この端末では Health Connect を利用できません。Android 14 以降はシステムに同梱されています。ROM が提供しない場合はファイルのエクスポート/インポートを使ってください。Android 14 以降、Chompass は Play ストア版 Health Connect アプリを必要としません。</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AIプロバイダ</string>
@@ -716,4 +716,80 @@ Google AI Studioは無料でおすすめです。</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
+    <string name="add_food_quick_relog">再ログ</string>
+    <string name="add_food_quick_relog_empty">食事をお気に入りに追加するか、一度記録してください。ワンタップで再ログできます。</string>
+    <string name="add_food_quick_relog_hint">お気に入りと過去の食事。再スキャンより速い。</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="ai_provider_on_device_subtitle">非公開・オフライン。クラウドAIより精度は低い。約2〜4 GBのダウンロード</string>
+    <string name="camera_scale_tip_message">ヒント: フォーク、手、またはコインを食べ物の横に入れてください。分量の推定に役立ちます。</string>
+    <string name="cd_relog_meal">%1$sを再ログ</string>
+    <string name="context_note_hint">具体的に: 量、ブランド、油やドレッシング、調理方法。</string>
+    <string name="edit_reprocess_diff_unchanged">変更された項目はありません。メモを修正して再試行してください。</string>
+    <string name="edit_reprocess_hint">修正内容を記述。例: 大盛り、バターで調理、牛乳の代わりにオートミルク</string>
+    <string name="entry_analysis_add_photo">写真を追加</string>
+    <string name="entry_analysis_busy_analyzing">分析中…</string>
+    <string name="entry_analysis_busy_filling">栄養情報を入力中…</string>
+    <string name="entry_analysis_busy_units">提供量単位を計算中…</string>
+    <string name="entry_analysis_placeholder_name">····</string>
+    <string name="entry_analysis_ready">確認の準備完了</string>
+    <string name="entry_analysis_status_helper">写真内のバーコードを確認し、AIプロバイダーに栄養情報を問い合わせます。</string>
+    <string name="entry_analysis_streaming_hint">AIの応答に合わせて値が表示されます。記録前に確認できます。</string>
+    <string name="entry_analysis_tip_apply">ヒント付きで再分析</string>
+    <string name="entry_analysis_tip_cta">AI用ヒントを追加（任意）</string>
+    <string name="home_calorie_clause_add_active">(+%1$d アクティブ → 予算)</string>
+    <string name="home_calorie_clause_add_active_waiting">アクティブ消費が今日の予算を延長します</string>
+    <string name="home_calorie_mode_add_active">アクティブ消費を予算に追加</string>
+    <string name="home_calorie_mode_add_active_desc">Health Connect（または活動レベルの推定値）からのアクティブカロリーが今日のカロリー予算に加算されます。消費分を食べ返せます。運動の二重カウントを避けるため、活動レベルは日常の基準に設定してください。実測値を使うには、設定 → ヘルスで Health Connect を接続してください。</string>
+    <string name="home_calorie_mode_add_active_hc_hint">ヒント: Health Connect を有効にすると、活動レベルの推定値の代わりにウォッチ/スマホのアクティブカロリーを使えます。</string>
+    <string name="home_calorie_mode_static_desc">カロリー目標は固定のまま。運動は今日の予算を変えません。</string>
+    <string name="home_menu_manual_active">アクティブ消費</string>
+    <string name="manual_active_kcal_hint">消費カロリー</string>
+    <string name="manual_active_name_hint">活動名（任意）</string>
+    <string name="manual_active_save">予算に追加</string>
+    <string name="manual_active_subtitle">散歩、サイクリング、ワークアウトなどで消費したカロリーを追加。「アクティブ消費を予算に追加」がオンのとき、今日の予算が延長されます。</string>
+    <string name="manual_active_title">アクティブ消費を記録</string>
+    <string name="meal_photos_add_label">ラベルを追加</string>
+    <string name="meal_photos_confirm_back">編集を続ける</string>
+    <string name="meal_photos_confirm_continue">このまま分析</string>
+    <string name="meal_photos_confirm_no_note">メモがありません。量や説明がないとAI推定の精度が下がります。このまま続けますか？</string>
+    <string name="meal_photos_confirm_one_photo">写真が1枚のみ。別角度や栄養成分表示の2枚目があると精度が上がることが多いです。1枚のまま続けますか？</string>
+    <string name="meal_photos_confirm_sparse">メモもなく写真も1枚のみ。精度を上げるにはヒントやラベル写真を追加するか、このまま続けてください。</string>
+    <string name="meal_photos_confirm_title">今すぐ分析しますか？</string>
+    <string name="meal_photos_dont_ask_note">メモの確認を今後表示しない</string>
+    <string name="meal_photos_note_section">これは何ですか？</string>
+    <string name="meal_photos_skip_note">メモをスキップして分析</string>
+    <string name="meal_photos_subtitle">短いメモと、必要なら2枚目の写真（栄養成分表示など）を追加し、分析をタップ。確認後にAIが開始します。</string>
+    <string name="meal_photos_subtitle_note_optional">必要なら別の写真やヒントを追加し、分析をタップ。確認後にAIが開始します。</string>
+    <string name="meal_photos_title">分析前</string>
+    <string name="on_device_model_accuracy_notice">これらのモデルはクラウドAIほど正確ではありません。カロリーの誤差、見落とし、写真の読み取り不良が起こり得ます。特に小型の E2B モデルで顕著です。信頼性の高い記録にはクラウドプロバイダーが推奨です。</string>
+    <string name="on_device_model_device_notice">Pixel 9a（GrapheneOS）でテスト済み。他の端末、特に低スペックや非 Tensor ハードウェアは未検証で、遅いか非対応の可能性があります。クラウドプロバイダーの方が安全です。</string>
+    <string name="on_device_model_loaded">モデルを読み込みました。使用できます。</string>
+    <string name="on_device_model_not_loaded">未読み込み。アプリ起動後の初回リクエストは最大1分かかる場合があります。</string>
+    <string name="on_device_model_privacy_notice">この端末上で完全に動作します。入力や撮影した内容はサーバーに送信されません。ダウンロード時、モデルファイルは Hugging Face（%1$s）から直接取得されます。このアプリでは通常使わない第三者ホストです。</string>
+    <string name="onboarding_api_key_non_gemini_ok">準備完了。クイックテストは Gemini のみ</string>
+    <string name="photo_accuracy_guide_body">写真だけでは情報が足りません。可能なら短いメモを追加してください:
+
+• 具体的に: 量、ブランド、皿の中身
+• 油、ドレッシング、油性ソース（見えにくいことが多い）
+• 調理法が重要な場合: 揚げ物、グリル、蒸し、手作り
+• 正確なグラム数や栄養成分表示の写真が最も効果的</string>
+    <string name="photo_accuracy_guide_cd">写真の精度を上げる方法</string>
+    <string name="photo_accuracy_guide_dismiss">了解</string>
+    <string name="photo_accuracy_guide_title">より良い推定のヒント</string>
+    <string name="photo_import_failed">写真をインポートできませんでした</string>
+    <string name="progress_weight_raw_legend">毎日の計量</string>
+    <string name="progress_weight_trend_legend">7日間トレンド</string>
+    <string name="progress_weight_trend_need_more">7日間トレンドには少なくとも2日分の計量が必要です</string>
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/日</string>
+    <string name="protein_target_lbm_missing_hint">体脂肪率%%が未設定。BF%%が記録されるまで総体重を使用します。</string>
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg 除脂肪体重</string>
+    <string name="protein_target_mode_g_per_kg_total">g/kg 体重</string>
+    <string name="protein_target_mode_grams">1日あたりのグラム数</string>
+    <string name="protein_target_mode_label">タンパク質目標</string>
+    <string name="settings_gemini_google_search_footer">有効にすると、Gemini はプロンプトへの回答に役立つ場合、ウェブ検索を行うことがあります。検索クエリは Google に送信されます。Google は Gemini API プロジェクトに課金します。Gemini 3 モデルでは実行された各検索クエリが使用量にカウントされます。Gemini 2.5 以前は検索を使ったプロンプトごとに課金されます。</string>
+    <string name="settings_health_unavailable_platform">この端末ではアプリから Health Connect を利用できません。Android 14 以降はシステムモジュールです。設定に Health Connect が表示されるのに Chompass が接続できない場合、ROM が Health Connect サービスを公開していない可能性があります（de-Googled ビルドでよくあります）。Chompass は Play ストアやサンドボックス化 Play を必要としません。代わりに食事日記と体組成のエクスポート/インポート、または任意の WebDAV を使ってください。</string>
+    <string name="settings_meal_constituents_footer_on_device">オンデバイスの Gemma では利用不可: 食材の内訳にはより強力なモデルが必要です。クラウドプロバイダーに切り替えて有効にしてください。</string>
+    <string name="settings_photo_note_prompt">写真メモを求める</string>
+    <string name="settings_photo_note_prompt_footer">オンにすると、分析前に写真入力でメモ欄が強調表示されます。メモなしでも確認して続行できます。</string>
+    <string name="settings_progress_default_range">進捗のデフォルト期間</string>
 </resources>
