@@ -6,7 +6,6 @@ import org.junit.Test
 
 /** Pref / threshold rules for required photo notes before Analyze. */
 class PhotoNotePromptTest {
-
     @Test
     fun requireNote_whenNotSkipped() {
         assertTrue(requirePhotoNote(skipPrompt = false))

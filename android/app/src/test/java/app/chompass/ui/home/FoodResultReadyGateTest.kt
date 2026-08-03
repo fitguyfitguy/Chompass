@@ -12,7 +12,6 @@ import org.junit.Test
  * Mirrors [HomeUiState.analysisReadyForEdit] / [HomeUiState.showFoodResultSheet].
  */
 class FoodResultReadyGateTest {
-
     @Test
     fun showSheet_whileBusyEvenWithoutAnalysis() {
         assertTrue(showFoodResultSheet(pending = null, busy = true))
