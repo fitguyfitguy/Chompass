@@ -101,6 +101,7 @@ fun VoiceInputSheet(
     val micDeniedMsg = stringResource(R.string.voice_mic_permission_denied)
     val micStartFailedMsg = stringResource(R.string.voice_mic_start_failed)
     val transcriptionFailedMsg = stringResource(R.string.voice_transcription_failed)
+    val nativeUnavailableMsg = stringResource(R.string.voice_native_unavailable)
 
     var phase by remember { mutableStateOf(VoicePhase.IDLE) }
     var transcript by remember { mutableStateOf("") }
@@ -151,7 +152,12 @@ fun VoiceInputSheet(
                         }
                     }
                     is SttEvent.Error -> {
-                        val fallbackMode = if (NativeSpeechRecognizer.isLanguageSupportError(event.code)) {
+                        // Language unavailable, or offline prefer failing as ERROR_CLIENT
+                        // when no on-device model is installed → try online / auto locale.
+                        val preferOffline = recognitionMode == NativeRecognitionMode.OFFLINE_LANGUAGE
+                        val fallbackMode = if (
+                            NativeSpeechRecognizer.shouldFallbackRecognitionMode(event.code, preferOffline)
+                        ) {
                             recognitionMode.nextAfterLanguageError()
                         } else {
                             null
@@ -173,7 +179,11 @@ fun VoiceInputSheet(
                             kotlinx.coroutines.delay(300)
                             if (phase == VoicePhase.RECORDING) launchNativeListenerLoop()
                         } else {
-                            error = event.message
+                            error = if (event.message == "NO_USABLE_RECOGNITION_SERVICE") {
+                                nativeUnavailableMsg
+                            } else {
+                                event.message
+                            }
                             phase = VoicePhase.IDLE
                         }
                     }
@@ -188,6 +198,11 @@ fun VoiceInputSheet(
         committed = ""
         error = null
         if (provider == SpeechProvider.NATIVE) {
+            if (!native.hasUsableRecognitionService()) {
+                error = nativeUnavailableMsg
+                phase = VoicePhase.IDLE
+                return
+            }
             nativeRecognitionMode = NativeRecognitionMode.OFFLINE_LANGUAGE
             phase = VoicePhase.RECORDING
             launchNativeListenerLoop()

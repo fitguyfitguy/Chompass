@@ -178,7 +178,7 @@
     <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">Your AssemblyAI key</string>
 
-    <string name="speech_description_native">Android\'s on-device speech recognition. Free, works offline on most phones, real-time partial results. Recommended default.</string>
+    <string name="speech_description_native">Uses the device\'s Android speech recognition service when one is available in this profile. Free, with real-time partial results. Needs a system STT engine (Assist-only apps do not count).</string>
     <string name="speech_description_gemini">Gemini API audio transcription. Uses batch audio understanding, not Google Cloud\'s real-time Speech-to-Text API.</string>
     <string name="speech_description_openai">OpenAI Whisper API. High accuracy, 99+ languages, paid per minute.</string>
     <string name="speech_description_groq">Groq-hosted Whisper Large v3. Very fast inference, has a free tier.</string>
@@ -581,6 +581,7 @@
     <string name="voice_transcribing_format">Transcribing via %1$s...</string>
     <string name="voice_mic_permission_denied">Microphone permission denied.</string>
     <string name="voice_mic_start_failed">Couldn\'t start the mic. Check permissions.</string>
+    <string name="voice_native_unavailable">No usable speech recognition service in this profile. Choose a cloud speech engine in Settings (Whisper, Groq, Gemini, …), or install a speech-to-text app that provides Android RecognitionService here.</string>
     <string name="voice_transcription_failed">Transcription failed</string>
     <string name="voice_stop">Stop</string>
     <string name="voice_record">Record</string>

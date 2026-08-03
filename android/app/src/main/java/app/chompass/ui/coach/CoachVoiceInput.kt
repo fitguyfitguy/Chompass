@@ -103,6 +103,11 @@ class CoachVoiceController(
 
     fun begin() {
         if (phase != VoicePhase.Idle) return
+        if (provider == SpeechProvider.NATIVE && !native.hasUsableRecognitionService()) {
+            // No bindable STT in this profile (common on GrapheneOS without a
+            // system RecognitionService). Bail instead of ERROR_CLIENT looping.
+            return
+        }
         phase = VoicePhase.Holding
         cancelArmed = false
         committed = ""
@@ -200,9 +205,14 @@ class CoachVoiceController(
                         }
                     }
                     is SttEvent.Error -> {
-                        val fallback = if (NativeSpeechRecognizer.isLanguageSupportError(ev.code)) {
+                        val preferOffline = mode == CoachNativeMode.OFFLINE_LANGUAGE
+                        val fallback = if (
+                            NativeSpeechRecognizer.shouldFallbackRecognitionMode(ev.code, preferOffline)
+                        ) {
                             nativeMode.next()
-                        } else null
+                        } else {
+                            null
+                        }
                         if (fallback != null && recording) {
                             nativeMode = fallback
                             delay(300)
