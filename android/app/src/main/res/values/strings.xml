@@ -551,9 +551,11 @@
     <string name="camera_scale_tip_dismiss">Got it</string>
 
     <!-- Multi-photo capture sheet -->
-    <string name="meal_photos_title">Meal photos</string>
+    <string name="meal_photos_title">Before analyzing</string>
+    <string name="meal_photos_subtitle">Add a label photo or a short tip if you have one, then Analyze. You can also Analyze with just the photo.</string>
     <string name="meal_photos_count">%1$d of 10 photos</string>
     <string name="meal_photos_add_photo">Add photo</string>
+    <string name="meal_photos_add_label">Add label</string>
     <string name="meal_photos_add_from_library">Add photos</string>
     <string name="meal_photo_cd">Photo %1$d</string>
     <string name="action_remove">Remove</string>
