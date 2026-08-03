@@ -24,7 +24,7 @@ Build (inside the devenv shell):
 
 ```bash
 build-debug
-install-debug    # Windows-aware adb: install + common seed launch
+install-debug    # assembleDebug + Windows adb install + common seed launch
 build-release
 ```
 
@@ -70,10 +70,11 @@ cd android
 Install the debug APK (side-by-side package `app.chompass.debug`) and launch with the common seed extras:
 
 ```bash
-./scripts/install_debug.sh            # install + seed launch (WSL → Windows adb)
+./scripts/install_debug.sh            # build + install + seed launch (WSL → Windows adb)
 install-debug                         # same, inside devenv shell
-./scripts/install_debug.sh --no-seed  # install + plain launch
-./scripts/install_debug.sh --reseed   # skip install; force-stop + seed again
+./scripts/install_debug.sh --no-build # skip Gradle; install existing APK
+./scripts/install_debug.sh --no-seed  # build + install + plain launch
+./scripts/install_debug.sh --reseed   # skip build/install; force-stop + seed again
 ```
 
 **Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split — ignore them if your device is visible to local `adb devices`.
