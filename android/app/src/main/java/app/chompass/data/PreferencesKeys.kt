@@ -94,6 +94,11 @@ internal object Keys {
         val SKIP_PHOTO_NOTE_PROMPT = booleanPreferencesKey("skipPhotoNotePrompt")
         /** Consecutive photo analyzes submitted with an empty note while the prompt was on. */
         val PHOTO_NOTE_SKIP_COUNT = intPreferencesKey("photoNoteSkipCount")
+        /**
+         * How many photo staging Analyzes the user has completed. Used to show
+         * the accuracy tip card for the first few entries, then collapse to Info.
+         */
+        val PHOTO_ACCURACY_GUIDE_COUNT = intPreferencesKey("photoAccuracyGuideCount")
         /** Opt-in meal ingredient breakdown from AI (off for on-device / weak models). */
         val MEAL_CONSTITUENTS_ENABLED = booleanPreferencesKey("mealConstituentsEnabled")
         val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")

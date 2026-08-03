@@ -394,7 +394,7 @@ en este dispositivo, cifrada. Puedes cambiarlo en Ajustes.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Revisar foto</string>
     <string name="context_note_section">Añadir una nota (opcional)</string>
-    <string name="context_note_placeholder">p. ej. sin aceite, queso extra, porción grande</string>
+    <string name="context_note_placeholder">p. ej. 2 huevos con mantequilla, ensalada con aliño, pollo a la plancha sin salsa</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Escuchando...</string>

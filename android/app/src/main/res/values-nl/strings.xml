@@ -393,7 +393,7 @@ op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Foto bekijken</string>
     <string name="context_note_section">Voeg een notitie toe (optioneel)</string>
-    <string name="context_note_placeholder">bijv. zonder olie, extra kaas, grote portie</string>
+    <string name="context_note_placeholder">bijv. 2 eieren in boter, salade met dressing, gegrilde kip zonder saus</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Luisteren...</string>

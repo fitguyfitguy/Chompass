@@ -394,7 +394,7 @@ Google AI Studio는 무료이며 권장됩니다.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">사진 확인</string>
     <string name="context_note_section">메모 추가 (선택)</string>
-    <string name="context_note_placeholder">예: 기름 없이, 치즈 추가, 큰 분량</string>
+    <string name="context_note_placeholder">예: 버터에 스크램블 2개, 드레싱 샐러드, 소스 없는 그릴 치킨</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">듣고 있어요...</string>

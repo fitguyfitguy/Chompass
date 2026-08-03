@@ -394,7 +394,7 @@ Google AI Studioは無料でおすすめです。</string>
     <!-- Context note sheet -->
         <string name="context_note_title">写真を確認</string>
     <string name="context_note_section">メモを追加（任意）</string>
-    <string name="context_note_placeholder">例：油なし、チーズ多め、大盛り</string>
+    <string name="context_note_placeholder">例：バター炒め卵2個、ドレッシング多めのサラダ、ソースなしグリルチキン</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">聞き取り中...</string>

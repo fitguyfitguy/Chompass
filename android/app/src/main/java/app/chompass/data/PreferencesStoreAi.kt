@@ -141,6 +141,14 @@ internal suspend fun PreferencesStore.setPhotoNoteSkipCountImpl(v: Int) {
         dataStore.edit { it[Keys.PHOTO_NOTE_SKIP_COUNT] = v.coerceAtLeast(0) }
     }
 
+/** Completed photo staging Analyzes; tip card shows while below the guide threshold. */
+internal val PreferencesStore.photoAccuracyGuideCountImpl: Flow<Int> get() = dataStore.data.map {
+        it[Keys.PHOTO_ACCURACY_GUIDE_COUNT] ?: 0
+    }
+internal suspend fun PreferencesStore.setPhotoAccuracyGuideCountImpl(v: Int) {
+        dataStore.edit { it[Keys.PHOTO_ACCURACY_GUIDE_COUNT] = v.coerceAtLeast(0) }
+    }
+
     /**
      * Ask the food AI for optional `constituents[]` on composite meals.
      * Default on for cloud providers; [FoodAnalysisService] still forces this off

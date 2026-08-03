@@ -394,7 +394,7 @@ Google AI Studio مجاني وموصى به.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">مراجعة الصورة</string>
     <string name="context_note_section">إضافة ملاحظة (اختياري)</string>
-    <string name="context_note_placeholder">مثال: بدون زيت، جبنة إضافية، حصة كبيرة</string>
+    <string name="context_note_placeholder">مثال: بيضتان بالزبدة، سلطة بصلصة دهنية، دجاج مشوي بدون صلصة</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">جارٍ الاستماع...</string>

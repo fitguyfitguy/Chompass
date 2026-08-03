@@ -170,31 +170,23 @@ export function openMultiPhotoReview(opts) {
       </div>
       <div class="field">
         <label for="multi-photo-note">Tell AI what this is (optional)</label>
-        <p class="field-hint">Mention quantities, brands, or how it was cooked.</p>
-        <div class="chip-row" data-note-chips>
-          <button type="button" class="chip" data-chip="No oil">No oil</button>
-          <button type="button" class="chip" data-chip="Extra cheese">Extra cheese</button>
-          <button type="button" class="chip" data-chip="Large portion">Large portion</button>
-          <button type="button" class="chip" data-chip="Grilled">Grilled</button>
-        </div>
-        <textarea id="multi-photo-note" rows="3" placeholder="e.g. homemade, olive oil drizzle">${escapeAttr(note)}</textarea>
+        <details class="field-hint-details">
+          <summary>Tips for a better estimate</summary>
+          <p class="field-hint">
+            Photos miss a lot. Add a short note when you can: be specific about
+            amounts and brands; call out oils, dressings, and oily sauces; mention
+            prep when it matters (fried, grilled, steamed, homemade). Exact grams or
+            a nutrition-label photo help most.
+          </p>
+        </details>
+        <p class="field-hint">Be specific — quantities, brands, oils or dressings, and how it was cooked.</p>
+        <textarea id="multi-photo-note" rows="3" placeholder="e.g. 2 eggs scrambled in butter, Chipotle bowl with extra oil, grilled chicken no sauce">${escapeAttr(note)}</textarea>
       </div>
     `;
 
     body.querySelector("[data-cancel]")?.addEventListener("click", () => {
       sheet.close();
       opts.onCancel();
-    });
-    body.querySelectorAll("[data-chip]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const label = btn.getAttribute("data-chip") || "";
-        const noteEl = /** @type {HTMLTextAreaElement | null} */ (body.querySelector("#multi-photo-note"));
-        if (!noteEl || !label) return;
-        const cur = noteEl.value.trim();
-        if (cur.toLowerCase().includes(label.toLowerCase())) return;
-        noteEl.value = cur ? `${cur}, ${label}` : label;
-        note = noteEl.value;
-      });
     });
     body.querySelector("[data-analyze]")?.addEventListener("click", () => {
       const noteEl = /** @type {HTMLTextAreaElement | null} */ (body.querySelector("#multi-photo-note"));

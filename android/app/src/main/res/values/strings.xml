@@ -535,12 +535,12 @@
     <!-- Context note sheet -->
     <string name="context_note_title">Review photo</string>
     <string name="context_note_section">Tell AI what this is (optional)</string>
-    <string name="context_note_placeholder">e.g. 2 eggs scrambled in butter, grande oat milk latte, Chipotle chicken bowl no rice</string>
-    <string name="context_note_hint">Mention quantities, brands, or how it was cooked for a more accurate estimate.</string>
-    <string name="context_note_chip_no_oil">No oil</string>
-    <string name="context_note_chip_extra_cheese">Extra cheese</string>
-    <string name="context_note_chip_large">Large portion</string>
-    <string name="context_note_chip_grilled">Grilled</string>
+    <string name="context_note_placeholder">e.g. 2 eggs scrambled in butter, Chipotle bowl with extra oil, grilled chicken no sauce</string>
+    <string name="context_note_hint">Be specific — quantities, brands, oils or dressings, and how it was cooked.</string>
+    <string name="photo_accuracy_guide_title">Tips for a better estimate</string>
+    <string name="photo_accuracy_guide_body">Photos miss a lot. Add a short note when you can:\n\n• Be specific — amounts, brands, and what’s on the plate\n• Call out oils, dressings, and oily sauces (often invisible)\n• Mention prep when it matters — fried, grilled, steamed, homemade\n• Exact grams or a nutrition-label photo help most</string>
+    <string name="photo_accuracy_guide_dismiss">Got it</string>
+    <string name="photo_accuracy_guide_cd">How to improve photo accuracy</string>
     <string name="context_note_weight_section">Total weight (optional)</string>
     <string name="context_note_weight_hint">If you weighed the serving, enter grams here. Exact weight improves accuracy more than a title or ingredient list alone.</string>
     <string name="context_note_weight_placeholder">e.g. 280</string>

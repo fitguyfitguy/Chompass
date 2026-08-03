@@ -394,7 +394,7 @@ acest dispozitiv, criptată. Poți schimba în Setări.</string>
     <!-- Context note sheet -->
         <string name="context_note_title">Verifică fotografia</string>
     <string name="context_note_section">Adaugă o notă (opțional)</string>
-    <string name="context_note_placeholder">ex. fără ulei, brânză în plus, porție mare</string>
+    <string name="context_note_placeholder">ex. 2 ouă în unt, salată cu dressing, pui la grătar fără sos</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Ascult...</string>

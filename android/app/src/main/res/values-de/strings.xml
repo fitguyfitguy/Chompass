@@ -394,7 +394,7 @@ verschlüsselt auf diesem Gerät. Später in den Einstellungen änderbar.</strin
     <!-- Context note sheet -->
         <string name="context_note_title">Foto prüfen</string>
     <string name="context_note_section">Notiz hinzufügen (optional)</string>
-    <string name="context_note_placeholder">z. B. ohne Öl, extra Käse, große Portion</string>
+    <string name="context_note_placeholder">z. B. 2 Eier in Butter, Salat mit Dressing, gegrilltes Huhn ohne Sauce</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Hört zu...</string>
