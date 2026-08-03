@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">称重时间到了</string>
     <string name="notif_weight_log_text">记录今天的体重，让进度图保持准确。</string>
-    <string name="settings_health_unavailable">此设备不支持 Health Connect。请从 Play Store 安装后再次点按开关。</string>
+    <string name="settings_health_unavailable">此设备上无法使用 Health Connect。Android 14 及更高版本中它是系统模块；若 ROM 未提供该服务，请使用文件导入/导出。Android 14+ 不需要从 Play Store 安装独立应用。</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI 提供商</string>

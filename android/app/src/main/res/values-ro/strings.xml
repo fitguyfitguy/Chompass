@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">Este ora cântăririi</string>
     <string name="notif_weight_log_text">Înregistrează greutatea de azi pentru a menține graficul tău de progres precis.</string>
-    <string name="settings_health_unavailable">Health Connect nu este disponibil pe acest dispozitiv. Instalează-l din Play Store, apoi atinge din nou comutatorul.</string>
+    <string name="settings_health_unavailable">Health Connect nu este disponibil pe acest dispozitiv. De la Android 14 face parte din sistem; dacă ROM-ul nu îl expune, folosește export/import de fișiere. Chompass nu necesită aplicația din Play Store pe Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">Furnizor AI</string>

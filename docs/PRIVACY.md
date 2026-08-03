@@ -43,12 +43,13 @@ Chompass may contact external services only when you use a feature that requires
 |---------|----------------|-------|
 | AI food analysis / Coach | Meal text, images, or chat context you submit | Your configured AI provider |
 | Barcode scan | Scanned barcode | Open Food Facts public API |
-| Health Connect | Nutrition, weight, body fat, height (write); sleep, resting heart rate, hydration, steps, energy (read) if you enable sync | Google Health Connect on-device |
+| Health Connect | Nutrition, weight, body fat, height (write); sleep, resting heart rate, hydration, steps, energy (read) if you enable sync | Google Health Connect **on-device** (Android 14+: system module; Android 13 and lower: optional Play Store APK). No Chompass cloud. |
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
 | App update check | Installed version | Not used (manual updates via Codeberg releases) |
 
-Optional **Health Connect background sync** (off by default) only reads from Health Connect on-device on a periodic schedule; it sends nothing off the device. User-hosted WebDAV sync runs when you tap **Sync now**, or optionally once per day when you open the app if you enable **Sync on open**.
+Optional **Health Connect background sync** (off by default) only reads from Health Connect on-device on a periodic schedule when the module supports background reads and you grant that permission; it sends nothing off the device. User-hosted WebDAV sync runs when you tap **Sync now**, or optionally once per day when you open the app if you enable **Sync on open**.
 
+On Android 14+, Health Connect is a system/Mainline module. Chompass never requires installing the old Play Store Health Connect APK on those versions, and does not require sandboxed Play. If your ROM does not expose the Health Connect service to apps, use diary / body-metrics export/import (or WebDAV) instead.
 Chompass does not sell or share your health data for advertising.
 
 ## Meal sharing

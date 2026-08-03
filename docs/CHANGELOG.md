@@ -4,6 +4,15 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Health Connect availability copy no longer tells Android 14+ users to install the Play Store HC APK; status-aware messages cover update-required vs unavailable, with Open Health Connect / Play Store actions where appropriate (Android).
+
+### Changed
+
+- Background Health Connect sync is feature-gated (`READ_HEALTH_DATA_IN_BACKGROUND`) and requests that permission when enabled; history read is requested on connect when the module supports it (Android).
+- README / PRIVACY / F-Droid notes: APK vs framework HC, no sandboxed-Play requirement, file import fallback on de-Googled ROMs.
+
 ## [3.6.2] - 2026-08-01
 
 ### Fixed

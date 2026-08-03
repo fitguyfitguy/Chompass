@@ -120,7 +120,7 @@ Coach chat still needs a cloud provider. Added in [v1.14.0](docs/CHANGELOG.md#11
 
 ## Health Connect
 
-**Android app.** Chompass uses **Android Health Connect**. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with Chompass:
+**Android app.** Chompass uses **Android Health Connect** via Jetpack `connect-client`. No vendor SDKs, no accounts. Anything that syncs into Health Connect works with Chompass:
 
 | Companion | What it brings | Notes |
 |-----------|----------------|-------|
@@ -133,7 +133,18 @@ Coach chat still needs a cloud provider. Added in [v1.14.0](docs/CHANGELOG.md#11
 | **In** | Weight and body fat (live), meals from other apps, steps and exercise, sleep / resting HR / hydration, active/total energy burn |
 | **Out** | Every meal as a full `NutritionRecord`, plus weight, body fat, and height |
 
-Optional **background sync** (Settings → Health & Data, off by default) checks Health Connect every few hours when Chompass is closed.
+Optional **background sync** (Settings → Health & Data, off by default) checks Health Connect every few hours when Chompass is closed. It is shown only when the device’s Health Connect module supports background reads, and it requests that permission when you enable it. History read (data older than ~30 days) is requested on connect when the module supports it.
+
+### How Health Connect is delivered
+
+| Android | Provider | What Chompass tells you if unavailable |
+|---------|----------|----------------------------------------|
+| **13 and lower** | Standalone Play Store APK (`com.google.android.apps.healthdata`) | Install / update from the Play Store |
+| **14 and later** | System / Mainline module (`HEALTHCONNECT_SERVICE`) | Not available / needs a **system** update — **never** “install the Play Store HC app” |
+
+Chompass does **not** require sandboxed Play or Google Play Services in its own code. On Android 14+, Jetpack uses the platform binder when the ROM registers it. Some de-Googled builds (including GrapheneOS without Play) may show Health Connect in Settings while apps still see `SDK_UNAVAILABLE` — then use **file export/import** or optional WebDAV. Chompass cannot reimplement the system Health Connect bus.
+
+Newer capabilities (background read, history read, and later types) are gated with Jetpack `HealthConnectFeatures` / Mainline updates, not only by OS API level.
 
 > **Huawei Health users:** pair your wearable with [Gadgetbridge](https://gadgetbridge.org/) instead. Huawei Health Kit requires an HMS account and is not supported.
 

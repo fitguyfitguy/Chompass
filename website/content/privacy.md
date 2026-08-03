@@ -42,11 +42,11 @@ Chompass contacts external services only when you use a feature that needs them:
 |---------|----------------|-------|
 | AI food analysis / Coach | Meal text, images, or chat context you submit | Your configured AI provider |
 | Barcode scan | Scanned barcode | Open Food Facts public API |
-| Health Connect | Nutrition, weight, body fat, height (write); sleep, HR, hydration, steps, energy (read) if enabled | Google Health Connect on-device |
+| Health Connect | Nutrition, weight, body fat, height (write); sleep, HR, hydration, steps, energy (read) if enabled | Google Health Connect on-device (Android 14+: system module; ≤13: optional Play Store APK). No Chompass cloud. |
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
 | App updates | (none) | Manual via Codeberg releases |
 
-Optional **Health Connect background sync** (off by default) only reads Health Connect on-device; it sends nothing off the device. User-hosted WebDAV sync runs when you tap **Sync now**, or optionally once per day when you open the app if you enable **Sync on open**.
+Optional **Health Connect background sync** (off by default) only reads Health Connect on-device when the module supports background reads; it sends nothing off the device. User-hosted WebDAV sync runs when you tap **Sync now**, or optionally once per day when you open the app if you enable **Sync on open**. On Android 14+, Chompass does not require the Play Store Health Connect APK or sandboxed Play — if the ROM does not expose HC to apps, use file export/import or WebDAV.
 
 Chompass does not sell or share your health data for advertising.
 

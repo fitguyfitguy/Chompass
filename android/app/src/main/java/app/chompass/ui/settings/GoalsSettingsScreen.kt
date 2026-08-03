@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -36,11 +37,15 @@ fun GoalsSettingsScreen(
     var showHealthEnergyGoalsInfo by remember { mutableStateOf(false) }
     var showAdaptiveGoalsInfo by remember { mutableStateOf(false) }
     var permissionDeniedMessage by remember { mutableStateOf<String?>(null) }
+    var healthAvailabilityActionLabel by remember { mutableStateOf<String?>(null) }
+    var healthAvailabilityActionIntent by remember {
+        mutableStateOf<android.content.Intent?>(null)
+    }
     var pendingHealthPermissionAction by remember {
         mutableStateOf<HealthConnectPermissionAction?>(null)
     }
     val healthDeniedMsg = stringResource(R.string.settings_health_denied)
-    val healthUnavailableMsg = stringResource(R.string.settings_health_unavailable)
+    val activityContext = LocalContext.current
 
     val healthConnectLauncher = rememberLauncherForActivityResult(
         contract = container.health.permissionRequestContract()
@@ -51,9 +56,12 @@ fun GoalsSettingsScreen(
             when (action) {
                 HealthConnectPermissionAction.SYNC -> vm.setHealthConnectEnabled(true)
                 HealthConnectPermissionAction.ENERGY_GOALS -> vm.setHealthEnergyGoalsEnabled(true)
+                HealthConnectPermissionAction.BACKGROUND_SYNC -> Unit
             }
         } else {
             permissionDeniedMessage = healthDeniedMsg
+            healthAvailabilityActionLabel = null
+            healthAvailabilityActionIntent = null
         }
     }
 
@@ -63,7 +71,12 @@ fun GoalsSettingsScreen(
             return
         }
         if (!container.health.isAvailable()) {
-            permissionDeniedMessage = healthUnavailableMsg
+            permissionDeniedMessage =
+                activityContext.getString(container.health.unavailableMessageRes())
+            val labelRes = container.health.availabilityActionLabelRes()
+            healthAvailabilityActionLabel =
+                labelRes?.let { activityContext.getString(it) }
+            healthAvailabilityActionIntent = container.health.availabilityActionIntent()
             return
         }
         pendingHealthPermissionAction = HealthConnectPermissionAction.ENERGY_GOALS
@@ -198,13 +211,43 @@ fun GoalsSettingsScreen(
     }
 
     permissionDeniedMessage?.let { msg ->
-        FudGlassDialog(onDismissRequest = { permissionDeniedMessage = null }) {
+        val actionLabel = healthAvailabilityActionLabel
+        val actionIntent = healthAvailabilityActionIntent
+        FudGlassDialog(
+            onDismissRequest = {
+                permissionDeniedMessage = null
+                healthAvailabilityActionLabel = null
+                healthAvailabilityActionIntent = null
+            }
+        ) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
-            FudGlassDialogActions(
-                primaryText = stringResource(R.string.action_ok),
-                onPrimary = { permissionDeniedMessage = null }
-            )
+            if (actionLabel != null && actionIntent != null) {
+                FudGlassDialogActions(
+                    primaryText = actionLabel,
+                    onPrimary = {
+                        runCatching { activityContext.startActivity(actionIntent) }
+                        permissionDeniedMessage = null
+                        healthAvailabilityActionLabel = null
+                        healthAvailabilityActionIntent = null
+                    },
+                    dismissText = stringResource(R.string.action_ok),
+                    onDismiss = {
+                        permissionDeniedMessage = null
+                        healthAvailabilityActionLabel = null
+                        healthAvailabilityActionIntent = null
+                    },
+                )
+            } else {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_ok),
+                    onPrimary = {
+                        permissionDeniedMessage = null
+                        healthAvailabilityActionLabel = null
+                        healthAvailabilityActionIntent = null
+                    }
+                )
+            }
         }
     }
 }

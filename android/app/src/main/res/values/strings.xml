@@ -879,7 +879,9 @@
     <string name="notif_body_fat_log_text">Log today\'s body fat % to track your composition trend.</string>
     <string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string>
     <string name="settings_health_background_sync">Background sync</string>
-    <string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default.</string>
+    <string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default. Needs background-read permission when your Health Connect module supports it.</string>
+    <string name="settings_health_background_sync_unsupported">Background sync isn\'t supported on this device\'s Health Connect module. Foreground sync still works when you open Chompass.</string>
+    <string name="settings_health_background_denied">Background sync needs permission to read Health Connect while Chompass is closed. Re-tap the toggle and grant it.</string>
     <string name="settings_sync_section">Sync</string>
     <string name="settings_sync_blurb">Optional user-hosted sync. Point Android and the PWA at the same WebDAV file (for example Nextcloud), or share a sync JSON. Chompass does not run a sync server. API keys and food photos are not included.</string>
     <string name="settings_webdav_url">WebDAV file URL</string>
@@ -899,7 +901,17 @@
     <string name="export_sync_failed">Could not export sync document: %1$s</string>
     <string name="settings_webdav_saved">WebDAV settings saved.</string>
     <string name="settings_health_denied">Health Connect needs Weight, Body Fat, Active Calories, Total Calories, and permission to write Nutrition. Re-tap the toggle and grant all requested permissions to sync and estimate energy goals.</string>
-    <string name="settings_health_unavailable">Health Connect isn\'t available on this device. Install it from the Play Store, then re-tap the toggle.</string>
+    <!-- API ≤33 only: standalone Health Connect APK via Play Store. -->
+    <string name="settings_health_unavailable_install">Health Connect isn\'t installed. Install it from the Play Store, then re-tap the toggle.</string>
+    <string name="settings_health_update_required_apk">Health Connect needs an update. Update it from the Play Store, then re-tap the toggle.</string>
+    <!-- API 34+: framework / Mainline module — never tell users to install the old Play Store APK. -->
+    <string name="settings_health_unavailable_platform">Health Connect isn\'t available to apps on this device. On Android 14 and later it\'s a system module — if Settings shows Health Connect but Chompass cannot connect, your ROM may not expose the Health Connect service (common on some de-Googled builds). Chompass does not require Play Store or sandboxed Play. Use diary and body-metrics export/import, or optional WebDAV, instead.</string>
+    <string name="settings_health_update_required">Health Connect needs a system update. Install a Google Play system update (or your ROM\'s equivalent), then re-tap the toggle. You do not need to install a separate Health Connect app on Android 14+.</string>
+    <string name="settings_health_manage_failed">Couldn\'t open Health Connect settings on this device.</string>
+    <string name="settings_health_open_settings">Open Health Connect</string>
+    <string name="settings_health_open_play_store">Open Play Store</string>
+    <!-- Kept for older locale packs; prefer status-specific strings above. -->
+    <string name="settings_health_unavailable">Health Connect isn\'t available on this device. On Android 14 and later it comes with the system — use file export/import if your ROM does not expose it. Chompass never requires the Play Store Health Connect app on Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI Provider</string>

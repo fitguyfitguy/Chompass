@@ -88,7 +88,7 @@ internal enum class SettingsSheet {
 }
 
 internal enum class HealthConnectPermissionAction {
-    SYNC, ENERGY_GOALS
+    SYNC, ENERGY_GOALS, BACKGROUND_SYNC
 }
 
 @Composable

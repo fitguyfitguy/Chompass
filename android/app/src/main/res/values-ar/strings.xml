@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">حان وقت الوزن</string>
     <string name="notif_weight_log_text">سجّل وزنك اليوم لإبقاء مخطط تقدمك دقيقاً.</string>
-    <string name="settings_health_unavailable">Health Connect غير متاح على هذا الجهاز. ثبّته من Play Store، ثم أعد الضغط على المفتاح.</string>
+    <string name="settings_health_unavailable">Health Connect غير متاح على هذا الجهاز. على Android 14 فما فوق هو جزء من النظام — إن لم توفره الشريحة المخصصة فاستخدم تصدير/استيراد الملفات. لا يتطلب Chompass تطبيق متجر Play على Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">مزود الذكاء الاصطناعي</string>

@@ -574,7 +574,7 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">वज़न मापने का समय</string>
     <string name="notif_weight_log_text">अपनी प्रगति का चार्ट सटीक रखने के लिए आज का वज़न दर्ज करें।</string>
-    <string name="settings_health_unavailable">इस डिवाइस पर Health Connect उपलब्ध नहीं है। इसे Play Store से इंस्टॉल करें, फिर टॉगल पर फिर से टैप करें।</string>
+    <string name="settings_health_unavailable">इस डिवाइस पर Health Connect उपलब्ध नहीं है। Android 14+ पर यह सिस्टम मॉड्यूल है; यदि ROM इसे नहीं देता तो फ़ाइल निर्यात/आयात उपयोग करें। Android 14+ पर Play Store ऐप की ज़रूरत नहीं।</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI प्रदाता</string>

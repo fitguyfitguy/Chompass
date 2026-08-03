@@ -36,11 +36,12 @@ import androidx.compose.material.icons.outlined.Info
 @Composable
 internal fun SettingsHealthDataSection(
     ui: SettingsUiState,
-    vm: SettingsViewModel,
     safetyMedicalExpanded: Boolean,
     onToggleSafetyMedical: () -> Unit,
     onHealthConnectToggle: (Boolean) -> Unit,
     onManageHealthAccess: () -> Unit,
+    backgroundSyncSupported: Boolean,
+    onBackgroundSyncToggle: (Boolean) -> Unit,
     onShowExportDiary: () -> Unit,
     onShowExportBodyMetrics: () -> Unit,
     onImportDiary: () -> Unit,
@@ -64,17 +65,26 @@ internal fun SettingsHealthDataSection(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
                     )
-                    ToggleRow(
-                        stringResource(R.string.settings_health_background_sync),
-                        ui.healthBackgroundSyncEnabled,
-                        onChange = { vm.setHealthBackgroundSyncEnabled(it) }
-                    )
-                    Text(
-                        stringResource(R.string.settings_health_background_sync_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
-                    )
+                    if (backgroundSyncSupported) {
+                        ToggleRow(
+                            stringResource(R.string.settings_health_background_sync),
+                            ui.healthBackgroundSyncEnabled,
+                            onChange = onBackgroundSyncToggle
+                        )
+                        Text(
+                            stringResource(R.string.settings_health_background_sync_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                        )
+                    } else {
+                        Text(
+                            stringResource(R.string.settings_health_background_sync_unsupported),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                        )
+                    }
                 }
                 HorizontalDivider()
                 SettingRow(
