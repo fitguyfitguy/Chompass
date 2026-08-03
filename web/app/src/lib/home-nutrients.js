@@ -232,13 +232,12 @@ const CHIP_CSS = {
 };
 
 /**
- * Food-row / meal-header chips temporarily omit fiber to reduce clutter.
- * Home tubes still show fiber by default.
+ * Food-row / meal-header chips follow the user's selection (Android FoodLogMacroChip).
  * @param {string[]} chipKeys
  * @returns {string[]}
  */
 export function chipsForFoodLogDisplay(chipKeys) {
-  return normalizeFoodLogChips(chipKeys).filter((k) => k !== "fiberG");
+  return normalizeFoodLogChips(chipKeys);
 }
 
 /**
@@ -265,7 +264,7 @@ export function formatMacroChipLine(values, chipKeys) {
 }
 
 /**
- * Format food-row chip line from prefs (HTML; fiber excluded for now).
+ * Format food-row chip line from prefs (HTML).
  * @param {FoodEntry} entry
  * @param {string[]} chipKeys
  */

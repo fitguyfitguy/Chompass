@@ -75,6 +75,29 @@ export const en = Object.freeze({
   "meal.dinner": "Dinner",
   "meal.snack": "Snack",
 
+  // Progressive meal draft
+  "progressive_meal.title": "Building meal",
+  "progressive_meal.name_placeholder": "Meal name (optional)",
+  "progressive_meal.add_next": "Add next ingredient",
+  "progressive_meal.add_to_meal": "Add to meal",
+  "progressive_meal.add_another": "Add another",
+  "progressive_meal.log": "Log meal",
+  "progressive_meal.discard": "Discard meal",
+  "progressive_meal.ingredient_count": "{count} ingredients",
+  "progressive_meal.empty": "No ingredients yet",
+  "progressive_meal.remove": "Remove ingredient",
+  "progressive_meal.continue": "Continue meal ({count})",
+  "progressive_meal.totals": "Meal totals",
+  "progressive_meal.meal_label": "Meal",
+
+  // Manual active burn
+  "manual_active.title": "Log active burn",
+  "manual_active.title_short": "Active burn",
+  "manual_active.subtitle": "Add burned calories from a walk, ride, or workout. They extend today’s budget when “Add active burn” is on.",
+  "manual_active.name_hint": "Activity name (optional)",
+  "manual_active.kcal_hint": "Calories burned",
+  "manual_active.save": "Add to budget",
+
   // Progress
   "progress.title": "Progress",
   "progress.weight": "Weight",
@@ -241,5 +264,10 @@ export const en = Object.freeze({
   "a11y.add_food": "Add food",
   "a11y.primary_nav": "Primary",
   "settings.ai.meal_constituents": "Meal ingredient breakdown",
-  "settings.ai.meal_constituents_hint": "Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent."
+  "settings.ai.meal_constituents_hint": "Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.",
+  "settings.ai.serving_unit_mode": "Serving unit inference",
+  "settings.ai.serving_unit_mode_hint": "How to fill a non-gram unit when the model omits one. Grams only is fastest; heuristic guesses from the food name; AI-inferred uses model unit_options when present.",
+  "settings.ai.serving_unit_grams_only": "Grams only",
+  "settings.ai.serving_unit_heuristic": "Heuristic",
+  "settings.ai.serving_unit_ai_call": "AI-inferred"
 });

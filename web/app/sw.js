@@ -2,7 +2,7 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "chompass-shell-v6";
+const CACHE_NAME = "chompass-shell-v7";
 
 const SHELL_ASSETS = [
   "./",

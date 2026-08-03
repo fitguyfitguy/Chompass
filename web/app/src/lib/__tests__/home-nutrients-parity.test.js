@@ -23,21 +23,22 @@ describe("food log macro chips", () => {
     source: "manual",
   };
 
-  it("excludes fiber from display chips even when selected", () => {
+  it("includes fiber in display chips when selected", () => {
     assert.deepEqual(chipsForFoodLogDisplay(["proteinG", "carbsG", "fatG", "fiberG"]), [
       "proteinG",
       "carbsG",
       "fatG",
+      "fiberG",
     ]);
   });
 
-  it("emits colored glyph HTML without fiber", () => {
+  it("emits colored glyph HTML including fiber when selected", () => {
     const html = formatFoodChips(entry, ["proteinG", "carbsG", "fatG", "fiberG"]);
     assert.match(html, /macro-chip--protein/);
     assert.match(html, /macro-chip--carbs/);
     assert.match(html, /macro-chip--fat/);
-    assert.doesNotMatch(html, /macro-chip--fiber/);
-    assert.doesNotMatch(html, />Fi</);
+    assert.match(html, /macro-chip--fiber/);
+    assert.match(html, />Fi</);
   });
 
   it("formats meal header totals with colored chips", () => {
