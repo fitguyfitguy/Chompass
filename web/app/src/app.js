@@ -71,7 +71,8 @@ async function applyThemeAndLocale() {
   const root = document.documentElement;
   if (p.theme === "system") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", p.theme);
-  if (p.accent && p.accent !== "teal") root.setAttribute("data-accent", p.accent);
+  // Android default accent is "system" (Material You → teal fallback). PWA "system"/"teal" use CSS defaults.
+  if (p.accent && p.accent !== "teal" && p.accent !== "system") root.setAttribute("data-accent", p.accent);
   else root.removeAttribute("data-accent");
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", getComputedStyle(root).getPropertyValue("--teal-deep").trim() || "#006b5e");

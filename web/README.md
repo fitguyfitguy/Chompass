@@ -60,25 +60,25 @@ Canonical matrix: [`docs/PARITY.md`](../docs/PARITY.md). Summary below for quick
 | Shell | Home / Progress / Coach / Settings nav, SVG icons, Compose-like tokens; **desktop (≥900px): left nav rail + `56rem` column** |
 | Home | Semicircle gauge, pref-driven nutrient tubes (default P/C/F/**Fiber**, count 4), meal glass cards, **53-week snap pager**, day swipe + **prev/next day buttons**, water **off by default** (goal 2000 ml), Add Food sheet (Photo/Note/Recents heroes), tap gauge → nutrition detail |
 | Food rows | Overflow sheet (edit / meal / favorite / share / duplicate / delete), swipe-left delete + undo, swipe-right **favorite**; pref-driven macro chips |
-| Entry | Manual, barcode (OFF + live reticle on Chromium), **in-app camera** + multi-photo review (≤10, all images to model), text/voice AI with phased wait overlay + single-flight lock → Review food / **Log**; expandable micros; Recents/Frequent/Favorites/Recipes |
+| Entry | Manual, barcode (OFF + live reticle on Chromium), **in-app camera** + multi-photo review (≤10, all images to model), text/voice AI with phased wait overlay + single-flight lock → Review food / **Log**; **progressive meal draft**; expandable micros; Recents/Frequent/Favorites/Recipes; **manual active burn** |
 | Saved meals | Recents / Frequent / Favorites tabs + recipe builder/log; favorites/recipes/share carry full micros |
 | Copy / share | Copy-from-day multi-select; meal share encode + `#/add-meal?d=` import (https/hash bridge) |
 | Progress | Glass chart cards, equal range chips (default 1W), tap tips, log weight/BF dialogs, history delete confirm, forecast, measurements; P/C/F/**fiber** averages |
 | Settings | Profile/goals (custom kcal + P/C/F)/optional nutrients/units+meal times/home tubes/speech language/data/AI/about; Install (pwa-only); Android-only note for HC/notifications/widgets/on-device LLM |
 | Coach | Broader read tools, persistent chat, glass proposals, SVG camera + Web Speech voice; propose_log_food micros; uses `primaryAiProvider` |
-| UI polish | Bottom sheets (drag-dismiss; **desktop: centered ≤32rem**) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber omitted on rows) |
+| UI polish | Bottom sheets (drag-dismiss; **desktop: centered ≤32rem**) + glass dialogs; Manrope; reduced-motion; home date persisted across tabs; calorie hero eaten/goal/remaining; colored meal P/C/F chips (fiber when selected) |
 | Onboarding | Branded welcome, birthday/age, selection cards, optional body fat + goal BF, AI key step, building-plan animation, **editable** plan-ready targets |
 | Deploy | `deploy_pages.sh` rsyncs `web/app/` → `website/public/app/` |
 
-**Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`, Gemini fallback `gemini-3.5-flash-lite`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
+**Defaults note:** New IndexedDB installs match Android (`showWater: false`, water 2000 ml, home tubes include fiber@30g, `aiFallbackEnabled: true`, Gemini fallback `gemini-3.5-flash-lite`, accent `system`, primary AI `gemini`, serving-unit inference `gramsOnly`). Existing installs keep stored prefs; optional nutrient goals deep-merge with Android defaults for missing keys.
 
-**Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect,
+**Not ported (by design):** grounded entry WIP, on-device LLM, Health Connect measured burn,
 notifications, widgets. Localization: core UI surfaces via `lib/i18n/` (15 locales;
 see [`docs/LOCALIZATION.md`](../docs/LOCALIZATION.md)).
 
 Landing URL: `fitguy.codeberg.page/Chompass/app/` (linked from site nav + Download).
 
-Service worker cache: `chompass-shell-v6`.
+Service worker cache: `chompass-shell-v7`.
 
 ### Desktop layout
 

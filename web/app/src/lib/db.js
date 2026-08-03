@@ -308,6 +308,8 @@ export const profile = {
  * @property {string} [fallbackAiModel]
  * @property {string} [primaryAiProvider]
  * @property {boolean} [mealConstituentsEnabled] Ask AI for optional meal ingredient rows (default true)
+ * @property {"gramsOnly"|"heuristic"|"aiCall"} [servingUnitInferenceMode] How to fill non-gram units when AI omits them
+ * @property {Array<{id: string, date: string, name: string, calories: number}>} [manualActiveEntries] Local-only active burn logs
  * @property {string} [speechLang] BCP-47 tag for Web Speech (browser STT)
  * @property {string} [uiLang] UI locale id from locales.json (empty = auto-detect browser)
  * @property {string} [progressDefaultRangeId] Settings default Progress range (1W…All)
@@ -319,7 +321,7 @@ export const profile = {
 export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   onboardingComplete: false,
   theme: "system",
-  accent: "teal",
+  accent: "system",
   weightUnit: "kg",
   heightUnit: "cm",
   showWater: ANDROID_PREF_DEFAULTS.showWater,
@@ -340,8 +342,10 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   aiFallbackEnabled: ANDROID_PREF_DEFAULTS.aiFallbackEnabled,
   fallbackAiProvider: ANDROID_PREF_DEFAULTS.fallbackAiProvider,
   fallbackAiModel: ANDROID_PREF_DEFAULTS.fallbackAiModel,
-  primaryAiProvider: "",
+  primaryAiProvider: "gemini",
   mealConstituentsEnabled: true,
+  servingUnitInferenceMode: "gramsOnly",
+  manualActiveEntries: [],
   speechLang: "",
   uiLang: "",
   progressDefaultRangeId: "1W",

@@ -76,8 +76,8 @@ test("formatFoodChips", () => {
   assert.match(html, /12<span class="macro-chip macro-chip--protein">P<\/span>/);
   assert.match(html, /30<span class="macro-chip macro-chip--carbs">C<\/span>/);
   assert.match(html, /8<span class="macro-chip macro-chip--fat">F<\/span>/);
-  // Fiber is omitted from row display even when requested.
-  assert.doesNotMatch(formatFoodChips(entry, ["proteinG", "fiberG"]), /Fi/);
+  // Fiber shows when selected (Android FoodLogMacroChip parity).
+  assert.match(formatFoodChips(entry, ["proteinG", "fiberG"]), /6<span class="macro-chip macro-chip--fiber">Fi<\/span>/);
 });
 
 test("ALL_MICRO_KEYS_count", () => {

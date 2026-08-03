@@ -263,20 +263,22 @@ export function heuristicOptions(foodName, totalGrams) {
 }
 
 /**
- * Ensure an entry has usable unit options (heuristic if missing) and sensible defaults.
- * @param {{name?: string, quantityG?: number|null, servingUnitOptions?: ServingUnitOption[], selectedServingUnit?: string|null, selectedServingQuantity?: number|null}} entry
- * @param {{preferHeuristicUnit?: boolean}} [opts]
+ * Ensure serving unit options based on inference mode (Android ServingUnitInferenceMode).
+ * Default without opts keeps heuristic fill for callers that predate the mode pref.
+ * @param {{ name?: string, quantityG?: number|null, servingUnitOptions?: ServingUnitOption[], selectedServingUnit?: string|null, selectedServingQuantity?: number|null }} entry
+ * @param {{ preferHeuristicUnit?: boolean, inferenceMode?: "gramsOnly"|"heuristic"|"aiCall" }} [opts]
  */
 export function ensureServingUnits(entry, opts = {}) {
-  const preferHeuristic = opts.preferHeuristicUnit !== false;
+  const mode = opts.inferenceMode || (opts.preferHeuristicUnit === false ? "gramsOnly" : "heuristic");
   const totalGrams = entry.quantityG != null && entry.quantityG > 0 ? entry.quantityG : 100;
   let options = normalizedOptions(entry.servingUnitOptions ?? [], totalGrams);
-  if (options.length === 0 && entry.name) {
+  if (options.length === 0 && entry.name && mode === "heuristic") {
     options = heuristicOptions(entry.name, totalGrams);
   }
+  // aiCall: keep model-provided options only (no second AI call on PWA; no heuristic fill)
   const preferred =
     entry.selectedServingUnit ??
-    (preferHeuristic && options[0] ? optionId(options[0]) : optionId(GRAMS_OPTION));
+    (options[0] && mode !== "gramsOnly" ? optionId(options[0]) : optionId(GRAMS_OPTION));
   const selectedServingUnit = initialUnitId(preferred, options);
   const selectedServingQuantity =
     entry.selectedServingQuantity != null && entry.selectedServingQuantity > 0

@@ -32,6 +32,26 @@ import { createSpeechCapture } from "../lib/speech.js";
 import { t } from "../lib/i18n/index.js";
 import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 import { openVoiceCaptureSheet } from "../lib/ui/voice-capture.js";
+import {
+  consumeResumeProgressiveCapture,
+  consumeShowProgressiveMealSheet,
+  discardProgressiveMeal,
+  draftTotals,
+  getProgressiveMeal,
+  hasProgressiveMealItems,
+  progressiveMealItemCount,
+  progressiveMealToFoodEntries,
+  removeProgressiveMealItem,
+  setShowProgressiveMealSheet,
+  updateProgressiveMealMeta,
+} from "../lib/progressive-meal.js";
+import {
+  addActiveGaugeTarget,
+  addManualActiveEntry,
+  makeManualActiveEntry,
+  manualActiveKcalForDate,
+  resolveWebActiveBurn,
+} from "../lib/manual-active.js";
 
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
@@ -49,6 +69,7 @@ const ICONS = {
   copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`,
   recipe: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 4h8v2H8V4zm0 4h8v2H8V8zm0 4h5v2H8v-2zm-4 8h16v2H4v-2zM6 2v20h2V2H6zm10 0v20h2V2h-2z"/></svg>`,
   voice: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`,
+  active: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9 1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-.9-.4 2 7 1.4z"/></svg>`,
   breakfast: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18 2H6v6h12V2zm0 8H6c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zM8 16H6v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>`,
   lunch: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>`,
   dinner: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.1 13.34 3.91 9.16a4.008 4.008 0 0 1 0-5.66l7.05 7.05-2.86 2.79zm6.78-.02c1.58.92 3.68.55 5.05-.81s1.74-3.46.81-5.05l-3.14 3.14L14.2 8.2l3.14-3.14c-1.58-.92-3.68-.55-5.05.81s-1.74 3.46-.81 5.05l-7.06 7.05 1.41 1.41 5.05-5.05L15 18.95l1.41-1.41-1.53-4.22z"/></svg>`,
@@ -299,12 +320,13 @@ export class DiaryView extends HTMLElement {
   }
 
   async render() {
-    const [entries, prof, waterLogs, appPrefs, weekEntryFlags] = await Promise.all([
+    const [entries, prof, waterLogs, appPrefs, weekEntryFlags, manualKcal] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
       water.byDate(this.date),
       prefs.load(),
       this.weekHasEntries(),
+      manualActiveKcalForDate(this.date),
     ]);
 
     const totals = entries.reduce(
@@ -321,8 +343,9 @@ export class DiaryView extends HTMLElement {
     const targets = prof ? dailyTargets(prof) : null;
     let calorieTarget = targets?.calories ?? 0;
     if (prof && targets && appPrefs.calorieGaugeMode === "add_active") {
-      const { sedentaryBudget } = estimatedDailyActiveCalories(prof, targets.calories);
-      calorieTarget = Math.max(0, sedentaryBudget);
+      const { sedentaryBudget, estimatedDailyActive } = estimatedDailyActiveCalories(prof, targets.calories);
+      const burn = resolveWebActiveBurn(estimatedDailyActive, manualKcal);
+      calorieTarget = addActiveGaugeTarget(targets.calories, sedentaryBudget, burn);
     }
 
     const waterMl = waterLogs.reduce((s, w) => s + w.amountMl, 0);
@@ -369,6 +392,14 @@ export class DiaryView extends HTMLElement {
     const gaugeDesktop = targets
       ? calorieBar(totals.calories, calorieTarget)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
+
+    const progressiveCount = progressiveMealItemCount();
+    const progressiveChip =
+      progressiveCount > 0
+        ? `<button type="button" class="chip progressive-meal-chip" data-progressive-meal>
+             ${escapeHtml(t("progressive_meal.continue", { count: String(progressiveCount) }))}
+           </button>`
+        : "";
 
     this.innerHTML = `
       <div class="week-nav">
@@ -440,6 +471,8 @@ export class DiaryView extends HTMLElement {
           : ""
       }
 
+      ${progressiveChip ? `<div class="progressive-meal-bar">${progressiveChip}</div>` : ""}
+
       ${
         entries.length === 0
           ? `<p class="empty-state">${t("diary.empty")}</p>`
@@ -454,6 +487,18 @@ export class DiaryView extends HTMLElement {
     this.bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
+    this.afterHomeRender(appPrefs);
+  }
+
+  /** @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs */
+  afterHomeRender(appPrefs) {
+    if (consumeResumeProgressiveCapture()) {
+      startPhotoAiFlow({ date: this.date });
+      return;
+    }
+    if (consumeShowProgressiveMealSheet()) {
+      this.openProgressiveMealSheet(appPrefs);
+    }
   }
 
   /** @param {number} pageIndex */
@@ -491,6 +536,10 @@ export class DiaryView extends HTMLElement {
       });
     });
     this.querySelector('[data-action="fab"]')?.addEventListener("click", () => this.openAddFoodSheet(appPrefs));
+    this.querySelector("[data-progressive-meal]")?.addEventListener("click", () => {
+      setShowProgressiveMealSheet(true);
+      this.openProgressiveMealSheet(appPrefs);
+    });
 
     this.querySelectorAll("[data-day-delta]").forEach((el) => {
       el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
@@ -784,7 +833,11 @@ export class DiaryView extends HTMLElement {
       </div>
       <div class="add-food-row">
         ${tile("manual", "Manual", "", ICONS.manual)}
+        ${tile("active", t("manual_active.title_short"), "", ICONS.active)}
+      </div>
+      <div class="add-food-row">
         ${tile("copy", "Copy from day", "", ICONS.copy)}
+        <span class="add-food-tile add-food-tile--spacer" aria-hidden="true"></span>
       </div>
       ${
         showWater
@@ -831,6 +884,10 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-add="frequent"]')?.addEventListener("click", () => openSaved("FREQUENT"));
     sheet.body.querySelector('[data-add="favorites"]')?.addEventListener("click", () => openSaved("FAVORITES"));
     sheet.body.querySelector('[data-add="manual"]')?.addEventListener("click", () => go(`#/entry/new?date=${this.date}`));
+    sheet.body.querySelector('[data-add="active"]')?.addEventListener("click", () => {
+      sheet.close();
+      this.openManualActiveSheet();
+    });
     sheet.body.querySelector('[data-add="scan"]')?.addEventListener("click", () => go(`#/scan?date=${this.date}`));
     sheet.body.querySelector('[data-add="copy"]')?.addEventListener("click", () => {
       this.openCopyFromDaySheet(sheet);
@@ -872,6 +929,142 @@ export class DiaryView extends HTMLElement {
         await this.addWater(ml);
         sheet.close();
       }
+    });
+  }
+
+  openManualActiveSheet() {
+    const sheet = openSheet({
+      title: t("manual_active.title"),
+      body: `
+        <p class="add-food-hint">${escapeHtml(t("manual_active.subtitle"))}</p>
+        <form class="entry-form" id="manual-active-form">
+          <div class="field">
+            <label for="active-name">${escapeHtml(t("manual_active.name_hint"))}</label>
+            <input id="active-name" name="name" type="text" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="active-kcal">${escapeHtml(t("manual_active.kcal_hint"))}</label>
+            <input id="active-kcal" name="calories" type="number" min="1" max="99999" inputmode="numeric" required />
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn--primary">${escapeHtml(t("manual_active.save"))}</button>
+          </div>
+        </form>
+      `,
+    });
+    sheet.body.querySelector("#manual-active-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      const kcal = Number(fd.get("calories"));
+      if (!(kcal > 0)) return;
+      await addManualActiveEntry(makeManualActiveEntry(this.date, String(fd.get("name") || ""), kcal));
+      sheet.close();
+      this.render();
+    });
+  }
+
+  /** @param {Awaited<ReturnType<typeof prefs.load>>} [appPrefs] */
+  openProgressiveMealSheet(appPrefs) {
+    const draft = getProgressiveMeal();
+    if (!draft || draft.items.length === 0) return;
+    const totals = draftTotals(draft);
+    const mealOptions = MEAL_ORDER.map(
+      (m) =>
+        `<option value="${m}" ${draft.mealType === m ? "selected" : ""}>${escapeHtml(t(`meal.${m}`))}</option>`
+    ).join("");
+    const rows = draft.items
+      .map(
+        (item) => `
+        <div class="progressive-meal-row" data-item-id="${escapeAttr(item.id)}">
+          <div class="progressive-meal-row__text">
+            <strong>${escapeHtml(item.analysis.name)}</strong>
+            <span>${Math.round(item.analysis.calories)} kcal${
+              item.analysis.quantityG != null ? ` · ${Math.round(item.analysis.quantityG)} g` : ""
+            }</span>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" data-remove-item aria-label="${escapeAttr(t("progressive_meal.remove"))}">×</button>
+        </div>`
+      )
+      .join("");
+
+    const sheet = openSheet({
+      title: t("progressive_meal.title"),
+      body: `
+        <form class="entry-form" id="progressive-meal-form">
+          <div class="field">
+            <label for="pm-name">${escapeHtml(t("progressive_meal.name_placeholder"))}</label>
+            <input id="pm-name" name="name" type="text" value="${escapeAttr(draft.name)}" placeholder="${escapeAttr(t("progressive_meal.name_placeholder"))}" />
+          </div>
+          <p class="add-food-hint">${escapeHtml(t("progressive_meal.ingredient_count", { count: String(draft.items.length) }))}</p>
+          <div class="field">
+            <label for="pm-meal">${escapeHtml(t("progressive_meal.meal_label"))}</label>
+            <select id="pm-meal" name="mealType">${mealOptions}</select>
+          </div>
+          <div class="progressive-meal-list">${rows}</div>
+          <div class="progressive-meal-totals">
+            <p class="add-food-hint">${escapeHtml(t("progressive_meal.totals"))}</p>
+            <p><strong>${Math.round(totals.calories)} kcal</strong></p>
+            <p>${Math.round(totals.proteinG)}P · ${Math.round(totals.carbsG)}C · ${Math.round(totals.fatG)}F</p>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn--primary" data-pm-log>${escapeHtml(t("progressive_meal.log"))}</button>
+            <button type="button" class="btn btn--ghost" data-pm-add>${escapeHtml(t("progressive_meal.add_another"))}</button>
+          </div>
+          <button type="button" class="btn btn--danger" data-pm-discard>${escapeHtml(t("progressive_meal.discard"))}</button>
+        </form>
+      `,
+    });
+
+    const syncMeta = () => {
+      const nameInput = /** @type {HTMLInputElement|null} */ (sheet.body.querySelector("#pm-name"));
+      const mealSel = /** @type {HTMLSelectElement|null} */ (sheet.body.querySelector("#pm-meal"));
+      updateProgressiveMealMeta(nameInput?.value ?? "", mealSel?.value || draft.mealType);
+    };
+
+    sheet.body.querySelector("#pm-name")?.addEventListener("change", syncMeta);
+    sheet.body.querySelector("#pm-meal")?.addEventListener("change", syncMeta);
+
+    sheet.body.querySelectorAll("[data-remove-item]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const row = btn.closest("[data-item-id]");
+        const id = row?.getAttribute("data-item-id");
+        if (!id) return;
+        removeProgressiveMealItem(id);
+        sheet.close();
+        if (hasProgressiveMealItems()) {
+          setShowProgressiveMealSheet(true);
+          this.openProgressiveMealSheet(appPrefs);
+        } else {
+          this.render();
+        }
+      });
+    });
+
+    sheet.body.querySelector("[data-pm-log]")?.addEventListener("click", async () => {
+      syncMeta();
+      const current = getProgressiveMeal();
+      if (!current || current.items.length === 0) return;
+      const now = new Date();
+      const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      const built = progressiveMealToFoodEntries(current, { date: this.date, time });
+      for (const entry of built) {
+        await foodEntries.put(entry);
+      }
+      discardProgressiveMeal();
+      sheet.close();
+      this.render();
+    });
+
+    sheet.body.querySelector("[data-pm-add]")?.addEventListener("click", () => {
+      syncMeta();
+      sheet.close();
+      startPhotoAiFlow({ date: this.date });
+    });
+
+    sheet.body.querySelector("[data-pm-discard]")?.addEventListener("click", () => {
+      discardProgressiveMeal();
+      sheet.close();
+      this.render();
     });
   }
 

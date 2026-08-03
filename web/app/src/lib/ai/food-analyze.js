@@ -180,7 +180,24 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
 
   const name = String(parsed.name || "Food");
   const quantityG = optNum(parsed.quantityG);
-  const units = ensureServingUnits({ name, quantityG });
+  /** @type {"gramsOnly"|"heuristic"|"aiCall"} */
+  const inferenceMode =
+    appPrefs.servingUnitInferenceMode === "heuristic" || appPrefs.servingUnitInferenceMode === "aiCall"
+      ? appPrefs.servingUnitInferenceMode
+      : "gramsOnly";
+  const fromModel = Array.isArray(parsed.unit_options)
+    ? parsed.unit_options
+        .map((u) => ({
+          unit: String(u?.unit || u?.Unit || ""),
+          gramsPerUnit: Number(u?.grams_per_unit ?? u?.gramsPerUnit ?? 0),
+          quantity: u?.quantity != null ? Number(u.quantity) : null,
+        }))
+        .filter((u) => u.unit && u.gramsPerUnit > 0)
+    : [];
+  const units = ensureServingUnits(
+    { name, quantityG, servingUnitOptions: fromModel },
+    { inferenceMode },
+  );
   const calories = Math.max(0, Math.round(Number(parsed.calories) || 0));
   const proteinG = Math.max(0, Number(parsed.proteinG) || 0);
   const carbsG = Math.max(0, Number(parsed.carbsG) || 0);

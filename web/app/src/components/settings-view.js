@@ -57,7 +57,7 @@ const ACTIVITY_LEVELS = [
   { id: "very_active", label: "Very active" },
   { id: "extra_active", label: "Extra active" },
 ];
-const ACCENTS = ["teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
+const ACCENTS = ["system", "teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
 
 const SPEECH_LANGS = [
   { id: "", labelKey: "settings.speech.browser_default" },
@@ -589,7 +589,7 @@ export class SettingsView extends HTMLElement {
         weightUnit: /** @type {any} */ (fd.get("weightUnit")),
         heightUnit: /** @type {any} */ (fd.get("heightUnit")),
         theme: /** @type {any} */ (fd.get("theme")),
-        accent: String(fd.get("accent") || "teal"),
+        accent: String(fd.get("accent") || "system"),
         weekStartsOnMonday: fd.get("weekStartsOnMonday") === "true",
         progressDefaultRangeId: String(fd.get("progressDefaultRangeId") || "1W"),
         mealBreakfastStart: timeInputToMinutes(String(fd.get("mealBreakfastStart"))),
@@ -657,9 +657,9 @@ export class SettingsView extends HTMLElement {
           <label for="calorieGaugeMode">Calorie gauge</label>
           <select id="calorieGaugeMode" name="calorieGaugeMode">
             <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
-            <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>Add active (sedentary budget)</option>
+            <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>Add active burn to budget</option>
           </select>
-          <p class="nutrient-picker__hint">Add active: set Activity Level to everyday baseline (not peak training). Measured active burn is Android/Health Connect only; here the estimate is TDEE − BMR.</p>
+          <p class="nutrient-picker__hint">Add active: set Activity Level to everyday baseline (not peak training). Uses your activity-level estimate (TDEE − BMR) plus any manual active burn you log from Add food. Measured Health Connect burn is Android-only.</p>
         </div>
         <div class="field">
           <label for="adaptiveGoals">Adaptive goals (Progress)</label>
@@ -993,6 +993,15 @@ export class SettingsView extends HTMLElement {
           <p class="field-hint">${escapeHtml(t("settings.ai.meal_constituents_hint"))}</p>
         </div>
         <div class="field">
+          <label for="servingUnitInferenceMode">${escapeHtml(t("settings.ai.serving_unit_mode"))}</label>
+          <select id="servingUnitInferenceMode" name="servingUnitInferenceMode">
+            <option value="gramsOnly" ${p.servingUnitInferenceMode === "gramsOnly" || !p.servingUnitInferenceMode ? "selected" : ""}>${escapeHtml(t("settings.ai.serving_unit_grams_only"))}</option>
+            <option value="heuristic" ${p.servingUnitInferenceMode === "heuristic" ? "selected" : ""}>${escapeHtml(t("settings.ai.serving_unit_heuristic"))}</option>
+            <option value="aiCall" ${p.servingUnitInferenceMode === "aiCall" ? "selected" : ""}>${escapeHtml(t("settings.ai.serving_unit_ai_call"))}</option>
+          </select>
+          <p class="field-hint">${escapeHtml(t("settings.ai.serving_unit_mode_hint"))}</p>
+        </div>
+        <div class="field">
           <label for="aiFallbackEnabled">Fallback provider on failure</label>
           <select id="aiFallbackEnabled" name="aiFallbackEnabled">
             <option value="false" ${!p.aiFallbackEnabled ? "selected" : ""}>Off</option>
@@ -1096,6 +1105,7 @@ export class SettingsView extends HTMLElement {
       await prefs.save({
         userContext: String(fd.get("userContext") || ""),
         mealConstituentsEnabled: fd.get("mealConstituentsEnabled") === "true",
+        servingUnitInferenceMode: /** @type {any} */ (String(fd.get("servingUnitInferenceMode") || "gramsOnly")),
         aiFallbackEnabled: fd.get("aiFallbackEnabled") === "true",
         fallbackAiProvider: fbProvider,
         fallbackAiModel: resolveProviderModel(fbProvider, fbModel, "fallback"),

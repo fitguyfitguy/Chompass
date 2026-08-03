@@ -28,6 +28,10 @@ import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.
 import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
 import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 import { t } from "../lib/i18n/index.js";
+import {
+  addToProgressiveMeal,
+  hasProgressiveMealItems,
+} from "../lib/progressive-meal.js";
 
 const MICRO_FIELDS = [
   ["sugarG", "Sugar g"],
@@ -167,7 +171,12 @@ export class EntryForm extends HTMLElement {
     const defaultMeal = e.mealType || guessMealTypeFromPrefs(appPrefs);
     const isNew = !this.existing;
     const title = this.existing ? "Edit entry" : this.prefill ? "Review food" : "Log food";
-    const primaryLabel = this.existing ? "Save" : "Log";
+    const progressiveActive = !this.existing && hasProgressiveMealItems();
+    const primaryLabel = this.existing
+      ? "Save"
+      : progressiveActive
+        ? t("progressive_meal.add_to_meal")
+        : t("action.log");
     const fav = this.existing ? await isFavorite(this.existing) : false;
     const scale = this.currentScale();
     const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
@@ -317,7 +326,12 @@ export class EntryForm extends HTMLElement {
         ${this.existing ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
         <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary" ${this.correcting ? "disabled" : ""}>${primaryLabel}</button>
-          <button type="button" class="btn btn--ghost" data-action="cancel">Cancel</button>
+          ${
+            !this.existing
+              ? `<button type="button" class="btn btn--ghost" data-action="progressive-next" ${this.correcting ? "disabled" : ""}>${escapeHtml(t("progressive_meal.add_next"))}</button>`
+              : ""
+          }
+          <button type="button" class="btn btn--ghost" data-action="cancel">${escapeHtml(t("action.cancel"))}</button>
         </div>
       </form>
     `;
@@ -329,6 +343,9 @@ export class EntryForm extends HTMLElement {
     this.querySelector("form")?.addEventListener("submit", (ev) => this.onSubmit(ev));
     this.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
       location.hash = "#/home";
+    });
+    this.querySelector('[data-action="progressive-next"]')?.addEventListener("click", () => {
+      void this.commitToProgressiveMeal({ resumeCapture: true });
     });
     this.querySelector('[data-action="delete"]')?.addEventListener("click", () => this.onDelete());
     this.querySelector('[data-action="favorite"]')?.addEventListener("click", async () => {
@@ -900,13 +917,17 @@ export class EntryForm extends HTMLElement {
     if (!this.existing && !this.prefill) this.prefill = target;
   }
 
-  async onSubmit(ev) {
-    ev.preventDefault();
-    const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
-    // Apply any pending unlocked nutrition edits
+  /**
+   * Build a FoodEntry snapshot from the current review form (does not persist).
+   * @returns {import('../lib/chompass-core/models.js').FoodEntry|null}
+   */
+  buildEntryFromForm() {
+    const form = /** @type {HTMLFormElement|null} */ (this.querySelector("form"));
+    if (!form) return null;
     for (const input of this.querySelectorAll("[data-nutrition]")) {
       this.onNutritionEdit(/** @type {HTMLInputElement} */ (input));
     }
+    const fd = new FormData(form);
     const scale = this.currentScale();
     const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
     const servingGrams = this.currentServingGrams();
@@ -918,7 +939,7 @@ export class EntryForm extends HTMLElement {
     /** @type {import('../lib/chompass-core/models.js').FoodEntry} */
     const entry = {
       id: this.existing?.id ?? crypto.randomUUID(),
-      name: String(fd.get("name")),
+      name: String(fd.get("name") || "").trim() || "Food",
       mealType: /** @type {any} */ (fd.get("mealType")),
       date: this.date,
       time: String(fd.get("time") || nowHm()),
@@ -941,6 +962,40 @@ export class EntryForm extends HTMLElement {
       if (key === "fiberG") continue;
       entry[key] = scaled[key] ?? null;
     }
+    return entry;
+  }
+
+  /**
+   * @param {{ resumeCapture: boolean }} opts
+   */
+  async commitToProgressiveMeal(opts) {
+    if (this.existing || this.correcting) return;
+    const entry = this.buildEntryFromForm();
+    if (!entry) return;
+    addToProgressiveMeal({
+      analysis: entry,
+      mealType: entry.mealType,
+      source: entry.source,
+      selectedServingUnit: entry.selectedServingUnit ?? null,
+      selectedServingQuantity: entry.selectedServingQuantity ?? null,
+      resumeCapture: opts.resumeCapture,
+    });
+    if (opts.resumeCapture) {
+      location.hash = "#/home";
+      // DiaryView will open photo capture via consumeResumeProgressiveCapture.
+    } else {
+      location.hash = "#/home";
+    }
+  }
+
+  async onSubmit(ev) {
+    ev.preventDefault();
+    if (!this.existing && hasProgressiveMealItems()) {
+      await this.commitToProgressiveMeal({ resumeCapture: false });
+      return;
+    }
+    const entry = this.buildEntryFromForm();
+    if (!entry) return;
     await foodEntries.put(entry);
     location.hash = "#/home";
   }
