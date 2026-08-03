@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">接続</string>
 
     <string name="onboarding_provider_title">自分のAIを使う</string>
-    <string name="onboarding_provider_subtitle">食事写真とコーチ用の任意のAPIキー。
-Google AI Studioは無料でおすすめです。</string>
+    <string name="onboarding_provider_subtitle">食事写真とコーチ用の任意のAPIキー。\nGoogle AI Studioは無料でおすすめです。</string>
     <string name="onboarding_provider_recommended_title">おすすめ：Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">無料で高品質。食事写真に最適。</string>
     <string name="onboarding_provider_howto_title">無料の Google AI Studio キーの取得方法</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey を開く（タップで開く）</string>
     <string name="onboarding_provider_step_2">GoogleでログインしてAPIキーを作成</string>
     <string name="onboarding_provider_step_3">下に貼り付けて「キーをテスト」をタップ</string>
-    <string name="onboarding_provider_footer">すべてのプロバイダに対応。キーはこの端末に
-暗号化して保存されます。設定で後から変更できます。</string>
+    <string name="onboarding_provider_footer">すべてのプロバイダに対応。キーはこの端末に\n暗号化して保存されます。設定で後から変更できます。</string>
     <string name="onboarding_skip_ai">今はスキップ</string>
     <string name="onboarding_skip_ai_title">クラウドキーなしで続行しますか？</string>
     <string name="onboarding_skip_ai_body">オンデバイスAIは端末上でプライベートに動作しますが、Google AI Studioや他のクラウドモデルより精度がかなり低いです。カロリーの誤り、見落とし、弱い写真認識が起きやすいです。無料のAI Studioキーは設定からいつでも追加できます。</string>
@@ -767,12 +765,7 @@ Google AI Studioは無料でおすすめです。</string>
     <string name="on_device_model_not_loaded">未読み込み。アプリ起動後の初回リクエストは最大1分かかる場合があります。</string>
     <string name="on_device_model_privacy_notice">この端末上で完全に動作します。入力や撮影した内容はサーバーに送信されません。ダウンロード時、モデルファイルは Hugging Face（%1$s）から直接取得されます。このアプリでは通常使わない第三者ホストです。</string>
     <string name="onboarding_api_key_non_gemini_ok">準備完了。クイックテストは Gemini のみ</string>
-    <string name="photo_accuracy_guide_body">写真だけでは情報が足りません。可能なら短いメモを追加してください:
-
-• 具体的に: 量、ブランド、皿の中身
-• 油、ドレッシング、油性ソース（見えにくいことが多い）
-• 調理法が重要な場合: 揚げ物、グリル、蒸し、手作り
-• 正確なグラム数や栄養成分表示の写真が最も効果的</string>
+    <string name="photo_accuracy_guide_body">写真だけでは情報が足りません。可能なら短いメモを追加してください:\n\n• 具体的に: 量、ブランド、皿の中身\n• 油、ドレッシング、油性ソース（見えにくいことが多い）\n• 調理法が重要な場合: 揚げ物、グリル、蒸し、手作り\n• 正確なグラム数や栄養成分表示の写真が最も効果的</string>
     <string name="photo_accuracy_guide_cd">写真の精度を上げる方法</string>
     <string name="photo_accuracy_guide_dismiss">了解</string>
     <string name="photo_accuracy_guide_title">より良い推定のヒント</string>

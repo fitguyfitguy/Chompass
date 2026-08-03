@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">Conectează</string>
 
     <string name="onboarding_provider_title">Adu propriul tău AI</string>
-    <string name="onboarding_provider_subtitle">Cheie API opțională pentru foto de mâncare și coach.
-Google AI Studio este gratuit și recomandat.</string>
+    <string name="onboarding_provider_subtitle">Cheie API opțională pentru foto de mâncare și coach.\nGoogle AI Studio este gratuit și recomandat.</string>
     <string name="onboarding_provider_recommended_title">Recomandat: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">Gratuit și de calitate. Ideal pentru fotografii de mâncare.</string>
     <string name="onboarding_provider_howto_title">Cum obții o cheie gratuită Google AI Studio</string>
     <string name="onboarding_provider_step_1">Deschide aistudio.google.com/apikey (atinge pentru a deschide)</string>
     <string name="onboarding_provider_step_2">Autentifică-te cu Google și creează o cheie API</string>
     <string name="onboarding_provider_step_3">Lipește-o mai jos și apasă Testează cheia</string>
-    <string name="onboarding_provider_footer">Toți furnizorii sunt acceptați. Cheia rămâne pe
-acest dispozitiv, criptată. Poți schimba în Setări.</string>
+    <string name="onboarding_provider_footer">Toți furnizorii sunt acceptați. Cheia rămâne pe\nacest dispozitiv, criptată. Poți schimba în Setări.</string>
     <string name="onboarding_skip_ai">Omite deocamdată</string>
     <string name="onboarding_skip_ai_title">Continui fără cheie cloud?</string>
     <string name="onboarding_skip_ai_body">AI pe dispozitiv rulează privat pe telefon, dar e mult mai puțin precis decât Google AI Studio sau alte modele cloud. Așteaptă calorii greșite, elemente ratate sau citiri slabe de foto. Poți adăuga oricând o cheie AI Studio gratuită în Setări.</string>
@@ -767,12 +765,7 @@ acest dispozitiv, criptată. Poți schimba în Setări.</string>
     <string name="on_device_model_not_loaded">Neîncărcat. Prima solicitare după pornirea aplicației poate dura până la un minut.</string>
     <string name="on_device_model_privacy_notice">Rulează integral pe acest dispozitiv. Nimic din ce tastezi sau fotografiezi nu se trimite pe un server. Descărcarea preia fișierul modelului direct de la Hugging Face (%1$s), un gazdă terță nefolosită altfel de această aplicație.</string>
     <string name="onboarding_api_key_non_gemini_ok">Gata. Testul rapid este doar cu Gemini</string>
-    <string name="photo_accuracy_guide_body">Fotografiile omit multe. Adaugă o notă scurtă când poți:
-
-• Fii specific: cantități, mărci și ce e în farfurie
-• Menționează uleiuri, sosuri și dressinguri grase (adesea invizibile)
-• Spune prepararea când contează: prăjit, la grătar, abur, făcut acasă
-• Grame exacte sau fotografie a etichetei nutriționale ajută cel mai mult</string>
+    <string name="photo_accuracy_guide_body">Fotografiile omit multe. Adaugă o notă scurtă când poți:\n\n• Fii specific: cantități, mărci și ce e în farfurie\n• Menționează uleiuri, sosuri și dressinguri grase (adesea invizibile)\n• Spune prepararea când contează: prăjit, la grătar, abur, făcut acasă\n• Grame exacte sau fotografie a etichetei nutriționale ajută cel mai mult</string>
     <string name="photo_accuracy_guide_cd">Cum să îmbunătățești precizia fotografiilor</string>
     <string name="photo_accuracy_guide_dismiss">Am înțeles</string>
     <string name="photo_accuracy_guide_title">Sfaturi pentru o estimare mai bună</string>

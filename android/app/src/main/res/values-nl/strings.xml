@@ -260,8 +260,7 @@
     <string name="onboarding_provider_step_1">Open aistudio.google.com/apikey (tik om te openen)</string>
     <string name="onboarding_provider_step_2">Log in met Google en maak een API-sleutel</string>
     <string name="onboarding_provider_step_3">Plak hieronder en tik op Sleutel testen</string>
-    <string name="onboarding_provider_footer">Alle providers ondersteund. Je sleutel blijft
-op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
+    <string name="onboarding_provider_footer">Alle providers ondersteund. Je sleutel blijft\nop dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
     <string name="onboarding_skip_ai">Voorlopig overslaan</string>
     <string name="onboarding_skip_ai_title">Doorgaan zonder cloudsleutel?</string>
     <string name="onboarding_skip_ai_body">On-device AI draait privé op je telefoon, maar is veel minder nauwkeurig dan Google AI Studio of andere cloudmodellen. Verwacht verkeerde calorieën, gemiste items of zwakke fotolezingen. Je kunt altijd een gratis AI Studio-sleutel toevoegen in Instellingen.</string>
@@ -766,12 +765,7 @@ op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
     <string name="on_device_model_not_loaded">Niet geladen. Eerste verzoek na app-start kan tot een minuut duren.</string>
     <string name="on_device_model_privacy_notice">Draait volledig op dit apparaat. Niets wat je typt of fotografeert wordt naar een server gestuurd. Bij downloaden wordt het modelbestand direct van Hugging Face (%1$s) opgehaald, een externe host die deze app verder niet gebruikt.</string>
     <string name="onboarding_api_key_non_gemini_ok">Klaar. Snelle test is alleen voor Gemini</string>
-    <string name="photo_accuracy_guide_body">Foto\'s missen veel. Voeg waar mogelijk een korte notitie toe:
-
-• Wees specifiek: hoeveelheden, merken en wat op het bord ligt
-• Noem oliën, dressings en vette sauzen (vaak onzichtbaar)
-• Vermeld bereiding wanneer het ertoe doet: gebakken, gegrild, gestoomd, zelfgemaakt
-• Exacte grammen of een foto van het voedingswaardenetiket helpen het meest</string>
+    <string name="photo_accuracy_guide_body">Foto\'s missen veel. Voeg waar mogelijk een korte notitie toe:\n\n• Wees specifiek: hoeveelheden, merken en wat op het bord ligt\n• Noem oliën, dressings en vette sauzen (vaak onzichtbaar)\n• Vermeld bereiding wanneer het ertoe doet: gebakken, gegrild, gestoomd, zelfgemaakt\n• Exacte grammen of een foto van het voedingswaardenetiket helpen het meest</string>
     <string name="photo_accuracy_guide_cd">Zo verbeter je fotonauwkeurigheid</string>
     <string name="photo_accuracy_guide_dismiss">Begrepen</string>
     <string name="photo_accuracy_guide_title">Tips voor een betere schatting</string>

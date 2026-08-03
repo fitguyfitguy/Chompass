@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">Conectar</string>
 
     <string name="onboarding_provider_title">Use sua própria IA</string>
-    <string name="onboarding_provider_subtitle">Chave de API opcional para fotos de comida e o coach.
-O Google AI Studio é gratuito e recomendado.</string>
+    <string name="onboarding_provider_subtitle">Chave de API opcional para fotos de comida e o coach.\nO Google AI Studio é gratuito e recomendado.</string>
     <string name="onboarding_provider_recommended_title">Recomendado: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">Grátis e de alta qualidade. Ideal para fotos de comida.</string>
     <string name="onboarding_provider_howto_title">Como obter uma chave gratuita do Google AI Studio</string>
     <string name="onboarding_provider_step_1">Abra aistudio.google.com/apikey (toque para abrir)</string>
     <string name="onboarding_provider_step_2">Entre com o Google e crie uma chave de API</string>
     <string name="onboarding_provider_step_3">Cole abaixo e toque em Testar chave</string>
-    <string name="onboarding_provider_footer">Todos os provedores suportados. Sua chave fica
-neste dispositivo, criptografada. Você pode mudar em Ajustes.</string>
+    <string name="onboarding_provider_footer">Todos os provedores suportados. Sua chave fica\nneste dispositivo, criptografada. Você pode mudar em Ajustes.</string>
     <string name="onboarding_skip_ai">Pular por enquanto</string>
     <string name="onboarding_skip_ai_title">Continuar sem chave na nuvem?</string>
     <string name="onboarding_skip_ai_body">A IA no dispositivo roda em privado no seu telefone, mas é bem menos precisa que o Google AI Studio ou outros modelos na nuvem. Espere calorias erradas, itens perdidos ou leituras fracas de fotos. Você pode adicionar uma chave gratuita do AI Studio a qualquer momento em Ajustes.</string>
@@ -767,12 +765,7 @@ neste dispositivo, criptografada. Você pode mudar em Ajustes.</string>
     <string name="on_device_model_not_loaded">Não carregado. A primeira solicitação após abrir o app pode levar até um minuto.</string>
     <string name="on_device_model_privacy_notice">Funciona inteiramente neste dispositivo. Nada do que você digita ou fotografa é enviado a um servidor. O download busca o arquivo do modelo diretamente do Hugging Face (%1$s), um host de terceiros não usado de outra forma por este app.</string>
     <string name="onboarding_api_key_non_gemini_ok">Pronto. O teste rápido é somente com Gemini</string>
-    <string name="photo_accuracy_guide_body">Fotos deixam passar muito. Adicione uma nota curta quando puder:
-
-• Seja específico: quantidades, marcas e o que está no prato
-• Mencione óleos, molhos e dressings oleosos (muitas vezes invisíveis)
-• Informe o preparo quando importar: frito, grelhado, no vapor, caseiro
-• Gramas exatas ou foto do rótulo nutricional ajudam mais</string>
+    <string name="photo_accuracy_guide_body">Fotos deixam passar muito. Adicione uma nota curta quando puder:\n\n• Seja específico: quantidades, marcas e o que está no prato\n• Mencione óleos, molhos e dressings oleosos (muitas vezes invisíveis)\n• Informe o preparo quando importar: frito, grelhado, no vapor, caseiro\n• Gramas exatas ou foto do rótulo nutricional ajudam mais</string>
     <string name="photo_accuracy_guide_cd">Como melhorar a precisão das fotos</string>
     <string name="photo_accuracy_guide_dismiss">Entendi</string>
     <string name="photo_accuracy_guide_title">Dicas para uma estimativa melhor</string>

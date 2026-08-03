@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">कनेक्ट करें</string>
 
     <string name="onboarding_provider_title">अपनी खुद की AI लाएँ</string>
-    <string name="onboarding_provider_subtitle">फ़ूड फ़ोटो और कोच के लिए वैकल्पिक API कुंजी।
-Google AI Studio मुफ़्त और अनुशंसित है।</string>
+    <string name="onboarding_provider_subtitle">फ़ूड फ़ोटो और कोच के लिए वैकल्पिक API कुंजी।\nGoogle AI Studio मुफ़्त और अनुशंसित है।</string>
     <string name="onboarding_provider_recommended_title">अनुशंसित: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">मुफ़्त और उच्च गुणवत्ता। फ़ूड फ़ोटो के लिए सबसे अच्छा।</string>
     <string name="onboarding_provider_howto_title">मुफ़्त Google AI Studio कुंजी कैसे पाएँ</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey खोलें (खोलने के लिए टैप करें)</string>
     <string name="onboarding_provider_step_2">Google से साइन इन करें और API कुंजी बनाएँ</string>
     <string name="onboarding_provider_step_3">नीचे पेस्ट करें और कुंजी जाँचें पर टैप करें</string>
-    <string name="onboarding_provider_footer">सभी प्रदाता समर्थित। आपकी कुंजी इस डिवाइस पर
-एन्क्रिप्टेड रहती है। सेटिंग्स में बाद में बदल सकते हैं।</string>
+    <string name="onboarding_provider_footer">सभी प्रदाता समर्थित। आपकी कुंजी इस डिवाइस पर\nएन्क्रिप्टेड रहती है। सेटिंग्स में बाद में बदल सकते हैं।</string>
     <string name="onboarding_skip_ai">अभी के लिए छोड़ें</string>
     <string name="onboarding_skip_ai_title">क्लाउड कुंजी के बिना जारी रखें?</string>
     <string name="onboarding_skip_ai_body">ऑन-डिवाइस AI आपके फ़ोन पर निजी रूप से चलता है, लेकिन Google AI Studio या अन्य क्लाउड मॉडल से बहुत कम सटीक है। गलत कैलोरी, छूटे आइटम या कमज़ोर फ़ोटो रीड की उम्मीद करें। मुफ़्त AI Studio कुंजी कभी भी सेटिंग्स में जोड़ सकते हैं।</string>
@@ -767,12 +765,7 @@ Google AI Studio मुफ़्त और अनुशंसित है।</s
     <string name="on_device_model_not_loaded">लोड नहीं। ऐप शुरू होने के बाद पहला अनुरोध एक मिनट तक लग सकता है।</string>
     <string name="on_device_model_privacy_notice">पूरी तरह इस डिवाइस पर चलता है। जो लिखें या फ़ोटो खींचें, सर्वर पर नहीं जाता। डाउनलोड Hugging Face (%1$s) से सीधे मॉडल फ़ाइल लाता है, तीसरे पक्ष का होस्ट जो ऐप अन्यथा उपयोग नहीं करता।</string>
     <string name="onboarding_api_key_non_gemini_ok">तैयार। त्वरित परीक्षण केवल Gemini के लिए</string>
-    <string name="photo_accuracy_guide_body">फ़ोटो बहुत कुछ छूट जाता है। जब हो सके संक्षिप्त नोट जोड़ें:
-
-• विशिष्ट रहें: मात्रा, ब्रांड और प्लेट पर क्या है
-• तेल, ड्रेसिंग और तैलीय सॉस बताएँ (अक्सर दिखाई नहीं देते)
-• जब मायने रखे तो तैयारी बताएँ: तला, ग्रिल, भाप, घर का
-• सटीक ग्राम या पोषण-लेबल फ़ोटो सबसे मदद करते हैं</string>
+    <string name="photo_accuracy_guide_body">फ़ोटो बहुत कुछ छूट जाता है। जब हो सके संक्षिप्त नोट जोड़ें:\n\n• विशिष्ट रहें: मात्रा, ब्रांड और प्लेट पर क्या है\n• तेल, ड्रेसिंग और तैलीय सॉस बताएँ (अक्सर दिखाई नहीं देते)\n• जब मायने रखे तो तैयारी बताएँ: तला, ग्रिल, भाप, घर का\n• सटीक ग्राम या पोषण-लेबल फ़ोटो सबसे मदद करते हैं</string>
     <string name="photo_accuracy_guide_cd">फ़ोटो सटीकता कैसे बेहतर करें</string>
     <string name="photo_accuracy_guide_dismiss">समझ गया</string>
     <string name="photo_accuracy_guide_title">बेहतर अनुमान के सुझाव</string>
