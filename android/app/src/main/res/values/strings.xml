@@ -298,14 +298,19 @@
     <string name="onboarding_health_connect">Connect</string>
 
     <string name="onboarding_provider_title">Bring Your Own AI</string>
-    <string name="onboarding_provider_subtitle">Chompass needs an AI provider key to\nanalyze your food. You bring your own.</string>
-    <string name="onboarding_provider_recommended_title">Recommended: Google Gemini</string>
-    <string name="onboarding_provider_recommended_subtitle">Free tier available, fast &amp; accurate</string>
+    <string name="onboarding_provider_subtitle">Optional API key for food photos and coach.\nGoogle AI Studio is free and recommended.</string>
+    <string name="onboarding_provider_recommended_title">Recommended: Google AI Studio</string>
+    <string name="onboarding_provider_recommended_subtitle">Free and high quality — best for food photos</string>
     <string name="onboarding_provider_howto_title">How to get a free Google AI Studio key</string>
     <string name="onboarding_provider_step_1">Open aistudio.google.com/apikey (tap to open)</string>
     <string name="onboarding_provider_step_2">Sign in with Google and create an API key</string>
     <string name="onboarding_provider_step_3">Paste it below and tap Test key</string>
-    <string name="onboarding_provider_footer">13 providers supported. Your key stays on\nthis device, encrypted.</string>
+    <string name="onboarding_provider_footer">All providers supported. Your key stays on\nthis device, encrypted. You can change this in Settings.</string>
+    <string name="onboarding_skip_ai">Skip for now</string>
+    <string name="onboarding_skip_ai_title">Continue without a cloud key?</string>
+    <string name="onboarding_skip_ai_body">On-device AI runs privately on your phone, but it is much less accurate than Google AI Studio or other cloud models. Expect wrong calories, missed items, or weak photo reads. You can add a free AI Studio key anytime in Settings.</string>
+    <string name="onboarding_skip_ai_later_body">Food photo AI and coach need an API key or an on-device model. You can set either up anytime in Settings.</string>
+    <string name="onboarding_skip_ai_confirm">Continue anyway</string>
     <string name="onboarding_api_key_test">Test key</string>
     <string name="onboarding_api_key_testing">Testing…</string>
     <string name="onboarding_api_key_works">Key works</string>

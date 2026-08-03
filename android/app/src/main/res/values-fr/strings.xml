@@ -253,14 +253,21 @@
     <string name="onboarding_health_connect">Connecter</string>
 
     <string name="onboarding_provider_title">Utilisez votre propre IA</string>
-    <string name="onboarding_provider_subtitle">Chompass a besoin d\'une clé de fournisseur d\'IA\npour analyser vos aliments. Vous fournissez la vôtre.</string>
-    <string name="onboarding_provider_recommended_title">Recommandé : Google Gemini</string>
-    <string name="onboarding_provider_recommended_subtitle">Offre gratuite, rapide et précise</string>
+    <string name="onboarding_provider_subtitle">Clé API facultative pour les photos de repas et le coach.
+Google AI Studio est gratuit et recommandé.</string>
+    <string name="onboarding_provider_recommended_title">Recommandé : Google AI Studio</string>
+    <string name="onboarding_provider_recommended_subtitle">Gratuit et de haute qualité — idéal pour les photos de repas</string>
     <string name="onboarding_provider_howto_title">Comment obtenir une clé Google AI Studio gratuite</string>
     <string name="onboarding_provider_step_1">Ouvrez aistudio.google.com/apikey (appuyez pour ouvrir)</string>
     <string name="onboarding_provider_step_2">Connectez-vous avec Google et créez une clé API</string>
     <string name="onboarding_provider_step_3">Collez-la ci-dessous et appuyez sur Tester la clé</string>
-    <string name="onboarding_provider_footer">13 fournisseurs pris en charge. Votre clé reste\nsur cet appareil, chiffrée.</string>
+    <string name="onboarding_provider_footer">Tous les fournisseurs sont pris en charge. Votre clé reste
+sur cet appareil, chiffrée. Modifiable dans Réglages.</string>
+    <string name="onboarding_skip_ai">Passer pour l'instant</string>
+    <string name="onboarding_skip_ai_title">Continuer sans clé cloud ?</string>
+    <string name="onboarding_skip_ai_body">L'IA sur l'appareil tourne en privé sur votre téléphone, mais elle est bien moins précise que Google AI Studio ou d'autres modèles cloud. Attendez-vous à des calories incorrectes, des éléments manqués ou de mauvaises lectures de photos. Vous pouvez ajouter une clé AI Studio gratuite à tout moment dans Réglages.</string>
+    <string name="onboarding_skip_ai_later_body">L'IA photo et le coach nécessitent une clé API ou un modèle sur l'appareil. Vous pouvez configurer l'un ou l'autre à tout moment dans Réglages.</string>
+    <string name="onboarding_skip_ai_confirm">Continuer quand même</string>
 
     <string name="onboarding_building_calories">Calories</string>
     <string name="onboarding_building_carbs">Glucides</string>

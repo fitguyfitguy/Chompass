@@ -253,14 +253,21 @@
     <string name="onboarding_health_connect">Verbinden</string>
 
     <string name="onboarding_provider_title">Breng je eigen AI mee</string>
-    <string name="onboarding_provider_subtitle">Chompass heeft een AI-providersleutel nodig om\nje eten te analyseren. Je gebruikt je eigen sleutel.</string>
-    <string name="onboarding_provider_recommended_title">Aanbevolen: Google Gemini</string>
-    <string name="onboarding_provider_recommended_subtitle">Gratis abonnement beschikbaar, snel &amp; nauwkeurig</string>
+    <string name="onboarding_provider_subtitle">Optionele API-sleutel voor maaltijdfoto's en coach.
+Google AI Studio is gratis en aanbevolen.</string>
+    <string name="onboarding_provider_recommended_title">Aanbevolen: Google AI Studio</string>
+    <string name="onboarding_provider_recommended_subtitle">Gratis en hoge kwaliteit — ideaal voor maaltijdfoto's</string>
     <string name="onboarding_provider_howto_title">Zo krijg je een gratis Google AI Studio-sleutel</string>
     <string name="onboarding_provider_step_1">Open aistudio.google.com/apikey (tik om te openen)</string>
     <string name="onboarding_provider_step_2">Log in met Google en maak een API-sleutel</string>
     <string name="onboarding_provider_step_3">Plak hieronder en tik op Sleutel testen</string>
-    <string name="onboarding_provider_footer">13 providers ondersteund. Je sleutel blijft op\ndit apparaat, versleuteld.</string>
+    <string name="onboarding_provider_footer">Alle providers ondersteund. Je sleutel blijft
+op dit apparaat, versleuteld. Later te wijzigen in Instellingen.</string>
+    <string name="onboarding_skip_ai">Voorlopig overslaan</string>
+    <string name="onboarding_skip_ai_title">Doorgaan zonder cloudsleutel?</string>
+    <string name="onboarding_skip_ai_body">On-device AI draait privé op je telefoon, maar is veel minder nauwkeurig dan Google AI Studio of andere cloudmodellen. Verwacht verkeerde calorieën, gemiste items of zwakke fotolezingen. Je kunt altijd een gratis AI Studio-sleutel toevoegen in Instellingen.</string>
+    <string name="onboarding_skip_ai_later_body">Foto-AI en coach hebben een API-sleutel of een on-device model nodig. Je kunt beide later in Instellingen instellen.</string>
+    <string name="onboarding_skip_ai_confirm">Toch doorgaan</string>
 
     <string name="onboarding_building_calories">Calorieën</string>
     <string name="onboarding_building_carbs">Koolhydraten</string>

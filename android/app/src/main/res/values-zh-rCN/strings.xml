@@ -253,14 +253,21 @@
     <string name="onboarding_health_connect">连接</string>
 
     <string name="onboarding_provider_title">使用你自己的 AI</string>
-    <string name="onboarding_provider_subtitle">Chompass 需要 AI 提供商密钥来\n分析你的食物。请使用你自己的密钥。</string>
-    <string name="onboarding_provider_recommended_title">推荐：Google Gemini</string>
-    <string name="onboarding_provider_recommended_subtitle">提供免费套餐，快速且准确</string>
+    <string name="onboarding_provider_subtitle">用于食物照片和教练的可选 API 密钥。
+推荐免费的 Google AI Studio。</string>
+    <string name="onboarding_provider_recommended_title">推荐：Google AI Studio</string>
+    <string name="onboarding_provider_recommended_subtitle">免费且高质量 — 最适合食物照片</string>
     <string name="onboarding_provider_howto_title">如何获取免费的 Google AI Studio 密钥</string>
     <string name="onboarding_provider_step_1">打开 aistudio.google.com/apikey（点按打开）</string>
     <string name="onboarding_provider_step_2">使用 Google 登录并创建 API 密钥</string>
     <string name="onboarding_provider_step_3">粘贴到下方并点按“测试密钥”</string>
-    <string name="onboarding_provider_footer">支持 13 个提供商。你的密钥仅保留在\n本设备上，并经过加密。</string>
+    <string name="onboarding_provider_footer">支持所有提供商。密钥加密保存在
+本设备上。可稍后在设置中更改。</string>
+    <string name="onboarding_skip_ai">暂时跳过</string>
+    <string name="onboarding_skip_ai_title">不使用云端密钥继续？</string>
+    <string name="onboarding_skip_ai_body">端侧 AI 在手机上私密运行，但远不如 Google AI Studio 或其他云端模型准确。可能会出现卡路里错误、漏项或较弱的照片识别。你可以随时在设置中添加免费的 AI Studio 密钥。</string>
+    <string name="onboarding_skip_ai_later_body">食物照片 AI 和教练需要 API 密钥或端侧模型。你可以随时在设置中配置任一选项。</string>
+    <string name="onboarding_skip_ai_confirm">仍然继续</string>
 
     <string name="onboarding_building_calories">卡路里</string>
     <string name="onboarding_building_carbs">碳水</string>

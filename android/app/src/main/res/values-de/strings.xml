@@ -253,14 +253,21 @@
     <string name="onboarding_health_connect">Verbinden</string>
 
     <string name="onboarding_provider_title">Eigene KI verwenden</string>
-    <string name="onboarding_provider_subtitle">Chompass braucht einen KI-Anbieter-Schlüssel,\num dein Essen zu analysieren. Du bringst ihn mit.</string>
-    <string name="onboarding_provider_recommended_title">Empfohlen: Google Gemini</string>
-    <string name="onboarding_provider_recommended_subtitle">Kostenlose Stufe, schnell &amp; genau</string>
+    <string name="onboarding_provider_subtitle">Optionaler API-Schlüssel für Essensfotos und Coach.
+Google AI Studio ist kostenlos und empfohlen.</string>
+    <string name="onboarding_provider_recommended_title">Empfohlen: Google AI Studio</string>
+    <string name="onboarding_provider_recommended_subtitle">Kostenlos und hochwertig — ideal für Essensfotos</string>
     <string name="onboarding_provider_howto_title">So bekommst du einen kostenlosen Google-AI-Studio-Schlüssel</string>
     <string name="onboarding_provider_step_1">Öffne aistudio.google.com/apikey (tippen zum Öffnen)</string>
     <string name="onboarding_provider_step_2">Melde dich mit Google an und erstelle einen API-Schlüssel</string>
     <string name="onboarding_provider_step_3">Unten einfügen und auf Schlüssel testen tippen</string>
-    <string name="onboarding_provider_footer">13 Anbieter unterstützt. Dein Schlüssel bleibt\nverschlüsselt auf diesem Gerät.</string>
+    <string name="onboarding_provider_footer">Alle Anbieter unterstützt. Dein Schlüssel bleibt
+verschlüsselt auf diesem Gerät. Später in den Einstellungen änderbar.</string>
+    <string name="onboarding_skip_ai">Vorerst überspringen</string>
+    <string name="onboarding_skip_ai_title">Ohne Cloud-Schlüssel fortfahren?</string>
+    <string name="onboarding_skip_ai_body">On-Device-KI läuft privat auf dem Telefon, ist aber deutlich ungenauer als Google AI Studio oder andere Cloud-Modelle. Rechne mit falschen Kalorien, fehlenden Einträgen oder schwachen Fotolesungen. Einen kostenlosen AI-Studio-Schlüssel kannst du jederzeit in den Einstellungen hinzufügen.</string>
+    <string name="onboarding_skip_ai_later_body">Essensfoto-KI und Coach brauchen einen API-Schlüssel oder ein On-Device-Modell. Beides kannst du jederzeit in den Einstellungen einrichten.</string>
+    <string name="onboarding_skip_ai_confirm">Trotzdem fortfahren</string>
 
     <string name="onboarding_building_calories">Kalorien</string>
     <string name="onboarding_building_carbs">Kohlenhydrate</string>

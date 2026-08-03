@@ -135,18 +135,18 @@ data class OnboardingState(
     /** PLAN_READY is the final step (the old Rate-fud review step was removed). */
     val isLastStep: Boolean get() = step == OnboardingStep.PLAN_READY
 
-    /** AI is required for goal calculation, so BYOK users must enter an API key before leaving
-     *  the provider step (Ollama needs none). Gemini keys must pass a quick probe first. */
+    /** Provider step is skippable: empty cloud keys open the skip dialog in the UI.
+     *  Disable only while a Gemini probe is in flight. */
     val canAdvance: Boolean get() = when (step) {
-        OnboardingStep.PROVIDER -> when {
-            !aiProvider.requiresApiKey -> true
-            apiKey.trim().isEmpty() -> false
-            apiKeyTesting -> false
-            aiProvider == AIProvider.GEMINI -> true // next() runs/reuses probe
-            else -> true
-        }
+        OnboardingStep.PROVIDER -> !apiKeyTesting
         else -> true
     }
+
+    /** Continue/Skip should warn and optionally switch to on-device when leaving without a key. */
+    val needsAiSkipConfirm: Boolean
+        get() = step == OnboardingStep.PROVIDER &&
+            aiProvider.requiresApiKey &&
+            apiKey.trim().isEmpty()
 
     fun buildProfile(): UserProfile = UserProfile(
         gender = gender,
@@ -379,6 +379,8 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     fun next() {
         if (_ui.value.step == OnboardingStep.PLAN_READY) return
         val state = _ui.value
+        // Empty cloud key: UI shows the skip dialog; do not advance here.
+        if (state.needsAiSkipConfirm) return
         if (state.step == OnboardingStep.PROVIDER &&
             state.aiProvider.requiresApiKey &&
             state.aiProvider == AIProvider.GEMINI &&
@@ -398,6 +400,41 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             return
         }
         advanceStep()
+    }
+
+    /**
+     * Leave the provider step without a cloud key. When [useOnDevice] is true, select
+     * on-device AI; otherwise keep the current provider with an empty key (set up later
+     * in Settings). Mirrors PWA "Skip for now".
+     */
+    fun skipAiSetup(useOnDevice: Boolean) {
+        viewModelScope.launch {
+            val state = _ui.value
+            if (state.step != OnboardingStep.PROVIDER) return@launch
+            if (useOnDevice) {
+                container.prefs.setSelectedAIProvider(AIProvider.ON_DEVICE)
+                container.prefs.setSelectedAIModel(AIProvider.ON_DEVICE.defaultModel)
+                _ui.value = state.copy(
+                    aiProvider = AIProvider.ON_DEVICE,
+                    aiModel = AIProvider.ON_DEVICE.defaultModel,
+                    apiKey = "",
+                    validatedApiKey = "",
+                    apiKeyTestMessage = "",
+                    apiKeyTestOk = null,
+                    apiKeyTesting = false,
+                )
+            } else {
+                container.keyStore.setApiKey(state.aiProvider, null)
+                _ui.value = state.copy(
+                    apiKey = "",
+                    validatedApiKey = "",
+                    apiKeyTestMessage = "",
+                    apiKeyTestOk = null,
+                    apiKeyTesting = false,
+                )
+            }
+            advanceStep()
+        }
     }
 
     private fun advanceStep() {
