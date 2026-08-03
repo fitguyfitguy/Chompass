@@ -193,7 +193,7 @@ methodology: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
 ## Docs & privacy
 
-Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md).
+Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md). Building from source: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 

@@ -4,6 +4,8 @@ Requirements: JDK 17+, Android SDK 36.
 
 Distribution: single F-Droid / Codeberg build. The former **`play` flavor is disabled**. See [`DISTRIBUTION.md`](DISTRIBUTION.md).
 
+Contributor tiers and the day-to-day command table: [`CONTRIBUTING.md`](../CONTRIBUTING.md).
+
 ## WSL / Nix (devenv)
 
 If you use home-manager with devenv and direnv (as on WSL2 Arch + Nix), the repo provides a project environment with JDK 17 and Android SDK 36:
@@ -16,7 +18,7 @@ devenv shell          # or rely on direnv auto-load after allow
 # optional (also done on devenv enterShell): ./scripts/install_git_hooks.sh
 ```
 
-`devenv shell` / direnv sets `core.hooksPath` to `scripts/git-hooks` (see `scripts/install_git_hooks.sh`).
+`devenv shell` / direnv sets `core.hooksPath` to `scripts/git-hooks` (see `scripts/install_git_hooks.sh`). Packages include `uv` for parity/asset Python scripts.
 
 Build (inside the devenv shell):
 
@@ -27,11 +29,12 @@ build-release
 
 Debug APK package: `app.chompass.debug` (`assembleDebug`).
 
-Or from outside the shell:
+Or from outside the shell (prefer **tasks** as the documented entry points):
 
 ```bash
 devenv tasks run build:debug
 devenv tasks run build:release
+devenv tasks run ci:verify      # Android unit tests + parity
 devenv shell -- build-debug
 ```
 
@@ -68,6 +71,8 @@ Install the debug APK (side-by-side package `app.chompass.debug`):
 ```bash
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+**Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split — ignore them if your device is visible to local `adb devices`.
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
 

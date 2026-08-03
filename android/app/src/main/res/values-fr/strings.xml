@@ -263,10 +263,10 @@ Google AI Studio est gratuit et recommandé.</string>
     <string name="onboarding_provider_step_3">Collez-la ci-dessous et appuyez sur Tester la clé</string>
     <string name="onboarding_provider_footer">Tous les fournisseurs sont pris en charge. Votre clé reste
 sur cet appareil, chiffrée. Modifiable dans Réglages.</string>
-    <string name="onboarding_skip_ai">Passer pour l'instant</string>
+    <string name="onboarding_skip_ai">Passer pour l\'instant</string>
     <string name="onboarding_skip_ai_title">Continuer sans clé cloud ?</string>
-    <string name="onboarding_skip_ai_body">L'IA sur l'appareil tourne en privé sur votre téléphone, mais elle est bien moins précise que Google AI Studio ou d'autres modèles cloud. Attendez-vous à des calories incorrectes, des éléments manqués ou de mauvaises lectures de photos. Vous pouvez ajouter une clé AI Studio gratuite à tout moment dans Réglages.</string>
-    <string name="onboarding_skip_ai_later_body">L'IA photo et le coach nécessitent une clé API ou un modèle sur l'appareil. Vous pouvez configurer l'un ou l'autre à tout moment dans Réglages.</string>
+    <string name="onboarding_skip_ai_body">L\'IA sur l\'appareil tourne en privé sur votre téléphone, mais elle est bien moins précise que Google AI Studio ou d\'autres modèles cloud. Attendez-vous à des calories incorrectes, des éléments manqués ou de mauvaises lectures de photos. Vous pouvez ajouter une clé AI Studio gratuite à tout moment dans Réglages.</string>
+    <string name="onboarding_skip_ai_later_body">L\'IA photo et le coach nécessitent une clé API ou un modèle sur l\'appareil. Vous pouvez configurer l\'un ou l\'autre à tout moment dans Réglages.</string>
     <string name="onboarding_skip_ai_confirm">Continuer quand même</string>
 
     <string name="onboarding_building_calories">Calories</string>

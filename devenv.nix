@@ -15,7 +15,8 @@
   # Kotlin Android plugin, which AGP 9 replaced with built-in Kotlin support, so
   # it never sees app/src. Running the CLI also keeps the linter out of the
   # F-Droid release build graph.
-  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.typescript pkgs.ktlint ];
+  # uv: parity validators and asset scripts (never bare python/pip).
+  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.typescript pkgs.ktlint pkgs.uv ];
 
   enterShell = ''
     mkdir -p android
@@ -67,6 +68,16 @@
   tasks."release:check-parity" = {
     exec = "./scripts/check_parity.sh";
     description = "PWA tests + typecheck + validate testdata/parity fixtures against contracts/ schemas";
+  };
+
+  tasks."ci:verify" = {
+    exec = ''
+      set -euo pipefail
+      cd android && ./gradlew :app:testDebugUnitTest
+      cd ..
+      ./scripts/check_parity.sh
+    '';
+    description = "PR happy path: Android debug unit tests + release:check-parity";
   };
 
   tasks."release:check-metadata" = {

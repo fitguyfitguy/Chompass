@@ -178,7 +178,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.coil.compose)
-    implementation(libs.gson)
+    // Gson is only used by the debug on-device LLM smoke test (src/debug).
+    debugImplementation(libs.gson)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -213,11 +214,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    // On-device LLM (LiteRT-LM) — see docs/ON_DEVICE_LLM.md. Promoted from
-    // debugImplementation now that OnDeviceLlmClient backs the production
-    // ON_DEVICE dispatch path (behind the onDeviceFeatureVisible flag,
-    // default off). Whether litertlm-android + a runtime fetch of a
-    // non-buildable binary blob from Hugging Face clear F-Droid's guidelines
+    // On-device LLM (LiteRT-LM) — see docs/ON_DEVICE_LLM.md. Kept as a normal
+    // (release) implementation dependency so ON_DEVICE dispatch works in shipping
+    // builds when the user enables the feature / downloads a model. Behind the
+    // onDeviceFeatureVisible flag (default off). Whether a runtime fetch of a
+    // non-buildable binary blob from Hugging Face clears F-Droid's guidelines
     // is still an open question (production plan Phase 3). The Google Play
     // distribution flavor is disabled for now — see docs/DISTRIBUTION.md.
     implementation(libs.litertlm.android)
