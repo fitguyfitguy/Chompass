@@ -303,6 +303,7 @@ internal fun ServingQuantityCard(
     onMenuExpandedChange: (Boolean) -> Unit,
     gramUnit: String,
     isLoadingUnits: Boolean = false,
+    enabled: Boolean = true,
 ) {
     val pickerOptions = ServingUnitOption.pickerOptions(unitOptions)
     val selectedOption = ServingUnitOption.optionMatching(selectedUnitId, unitOptions)
@@ -348,15 +349,18 @@ internal fun ServingQuantityCard(
             BasicTextField(
                 value = quantityFieldValue,
                 onValueChange = { newValue ->
+                    if (!enabled) return@BasicTextField
                     quantityFieldValue = newValue.copy(
                         selection = TextRange(newValue.text.length)
                     )
                     onQuantityChange(newValue.text)
                 },
                 singleLine = true,
+                enabled = enabled,
+                readOnly = !enabled,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.55f),
                     fontSize = 17.sp,
                     textAlign = TextAlign.End
                 ),
@@ -365,7 +369,7 @@ internal fun ServingQuantityCard(
                     .width(80.dp)
                     .focusRequester(focusRequester)
             )
-            if (quantityText.isNotEmpty()) {
+            if (quantityText.isNotEmpty() && enabled) {
                 Spacer(Modifier.width(6.dp))
                 Icon(
                     Icons.Filled.Cancel,
@@ -387,7 +391,7 @@ internal fun ServingQuantityCard(
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable(enabled = !isLoadingUnits) {
+                            .clickable(enabled = enabled && !isLoadingUnits) {
                                 dismissKeyboard()
                                 onMenuExpandedChange(true)
                             }

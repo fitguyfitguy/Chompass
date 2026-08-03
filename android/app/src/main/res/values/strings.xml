@@ -444,6 +444,15 @@
     <string name="grounded_review_unit">Unit</string>
     <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="entry_analysis_waiting_response">Waiting for the AI response…</string>
+    <string name="entry_analysis_status_helper">Checking barcodes in the photo, then asking your AI provider for nutrition.</string>
+    <string name="entry_analysis_busy_analyzing">Analyzing…</string>
+    <string name="entry_analysis_busy_filling">Filling in nutrition…</string>
+    <string name="entry_analysis_busy_units">Calculating serving units…</string>
+    <string name="entry_analysis_ready">Ready to review</string>
+    <string name="entry_analysis_tip_cta">Add tip for AI (optional)</string>
+    <string name="entry_analysis_tip_apply">Re-analyze with tip</string>
+    <string name="entry_analysis_add_photo">Add photo</string>
+    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_field_pending">Serving size pending…</string>
     <string name="entry_analysis_micros_found">%d more nutrients found</string>
     <string name="entry_analysis_units_found">Serving units found</string>

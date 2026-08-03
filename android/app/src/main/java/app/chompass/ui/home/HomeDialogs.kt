@@ -105,22 +105,7 @@ internal fun EntryAnalysisOverlay(
 
             EntryAnalysisStepRow(currentPhase = phase)
 
-            val phaseLabel = when (phase) {
-                EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
-                EntryAnalysisPhase.LookingUpBarcode -> stringResource(R.string.entry_analysis_phase_looking_up_barcode)
-                EntryAnalysisPhase.CallingAi -> {
-                    if (partial?.hasAnyField == true) {
-                        stringResource(R.string.entry_analysis_phase_filling_fields)
-                    } else {
-                        stringResource(R.string.entry_analysis_phase_calling_ai)
-                    }
-                }
-                EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
-                EntryAnalysisPhase.Recognizing -> stringResource(R.string.entry_analysis_phase_recognizing)
-                EntryAnalysisPhase.SearchingHistory -> stringResource(R.string.entry_analysis_phase_searching_history)
-                EntryAnalysisPhase.SearchingUsda -> stringResource(R.string.entry_analysis_phase_searching_usda)
-                EntryAnalysisPhase.Resolving -> stringResource(R.string.entry_analysis_phase_resolving)
-            }
+            val phaseLabel = entryAnalysisPhaseLabel(phase, fillingFields = partial?.hasAnyField == true)
             Text(
                 text = phaseLabel,
                 fontSize = 17.sp,
@@ -162,7 +147,7 @@ internal fun EntryAnalysisOverlay(
 }
 
 @Composable
-private fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
+internal fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
     val phases = phasesForOverlay(currentPhase)
     val currentIndex = phases.indexOf(currentPhase).coerceAtLeast(0)
     Row(
@@ -212,6 +197,27 @@ private fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
             }
         }
     }
+}
+
+@Composable
+internal fun entryAnalysisPhaseLabel(
+    phase: EntryAnalysisPhase,
+    fillingFields: Boolean = false,
+): String = when (phase) {
+    EntryAnalysisPhase.Preparing -> stringResource(R.string.entry_analysis_phase_preparing)
+    EntryAnalysisPhase.LookingUpBarcode -> stringResource(R.string.entry_analysis_phase_looking_up_barcode)
+    EntryAnalysisPhase.CallingAi -> {
+        if (fillingFields) {
+            stringResource(R.string.entry_analysis_phase_filling_fields)
+        } else {
+            stringResource(R.string.entry_analysis_phase_calling_ai)
+        }
+    }
+    EntryAnalysisPhase.Parsing -> stringResource(R.string.entry_analysis_phase_parsing)
+    EntryAnalysisPhase.Recognizing -> stringResource(R.string.entry_analysis_phase_recognizing)
+    EntryAnalysisPhase.SearchingHistory -> stringResource(R.string.entry_analysis_phase_searching_history)
+    EntryAnalysisPhase.SearchingUsda -> stringResource(R.string.entry_analysis_phase_searching_usda)
+    EntryAnalysisPhase.Resolving -> stringResource(R.string.entry_analysis_phase_resolving)
 }
 
 private fun phasesForOverlay(current: EntryAnalysisPhase): List<EntryAnalysisPhase> =

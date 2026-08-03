@@ -115,10 +115,9 @@ fun HomeScreen(container: AppContainer) {
     var showNutritionDetail by remember { mutableStateOf(false) }
 
     var showCameraCapture by remember { mutableStateOf(false) }
+    var appendPhotoForReanalyze by remember { mutableStateOf(false) }
     val photoSession = container.foodPhotoSession
     val stagedPhotoBytes by photoSession.stagedImages.collectAsState()
-    val showMultiPhotoCapture by photoSession.reviewOpen.collectAsState()
-    val isImportingPhotos by photoSession.importFromLibrary.collectAsState()
     val importFailedTick by photoSession.importFailedTick.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val photoImportFailedMessage = stringResource(R.string.photo_import_failed)
@@ -136,9 +135,30 @@ fun HomeScreen(container: AppContainer) {
         }
     }
 
+    fun startAnalyzeFromStaged(images: List<ByteArray>) {
+        if (images.isEmpty() || ui.isEntryAnalysisBusy) return
+        photoSession.clear()
+        vm.analyzePhotos(images)
+    }
+
     LaunchedEffect(importFailedTick) {
         if (importFailedTick == 0) return@LaunchedEffect
         snackbarHostState.showSnackbar(photoImportFailedMessage)
+    }
+
+    // Gallery / share staging → analyze immediately (no review sheet).
+    LaunchedEffect(stagedPhotoBytes, ui.isEntryAnalysisBusy, appendPhotoForReanalyze, ui.showFoodResultSheet) {
+        if (stagedPhotoBytes.isEmpty()) return@LaunchedEffect
+        val images = stagedPhotoBytes.toList()
+        if (appendPhotoForReanalyze) {
+            photoSession.clear()
+            appendPhotoForReanalyze = false
+            vm.appendPhotosAndReanalyze(images)
+            return@LaunchedEffect
+        }
+        // Don't steal photos while a result sheet is open (unless appending above).
+        if (ui.isEntryAnalysisBusy || ui.showFoodResultSheet) return@LaunchedEffect
+        startAnalyzeFromStaged(images)
     }
 
     // Share-sheet photos only. Merge into FoodPhotoSession while RESUMED so a
@@ -502,11 +522,9 @@ fun HomeScreen(container: AppContainer) {
         if (!ui.showProgressiveMealSheet &&
             draftForChip != null &&
             draftForChip.items.isNotEmpty() &&
-            ui.pendingAnalysis == null &&
-            !ui.isEntryAnalysisBusy &&
+            !ui.showFoodResultSheet &&
             !ui.resumeProgressiveCapture &&
-            !showCameraCapture &&
-            !showMultiPhotoCapture
+            !showCameraCapture
         ) {
             FloatingActionButton(
                 onClick = { vm.showProgressiveMealSheet(true) },
@@ -730,43 +748,20 @@ fun HomeScreen(container: AppContainer) {
             onCapture = { bytes ->
                 showCameraCapture = false
                 clearShortcut(ShortcutEntryAction.CAMERA)
-                photoSession.stageFromCamera(bytes)
+                if (appendPhotoForReanalyze) {
+                    appendPhotoForReanalyze = false
+                    vm.appendPhotosAndReanalyze(listOf(bytes))
+                } else {
+                    photoSession.clear()
+                    if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(listOf(bytes))
+                }
             },
             onOpenGallery = { openGalleryPicker() },
             onDismiss = {
                 showCameraCapture = false
                 clearShortcut(ShortcutEntryAction.CAMERA)
-                photoSession.openReviewIfStaged()
+                appendPhotoForReanalyze = false
             }
-        )
-    }
-
-    if (showMultiPhotoCapture && stagedPhotoBytes.isNotEmpty()) {
-        MultiPhotoCaptureSheet(
-            imageBytesList = stagedPhotoBytes,
-            addsFromLibrary = isImportingPhotos,
-            showScaleTip = ui.progressiveMeal?.items?.isNotEmpty() == true,
-            onAddPhoto = {
-                if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
-                    if (isImportingPhotos) {
-                        openGalleryPicker()
-                    } else {
-                        photoSession.hideReviewKeepStaged()
-                        showCameraCapture = true
-                    }
-                }
-            },
-            onRemove = { index ->
-                photoSession.removeAt(index)
-            },
-            onAnalyze = { note, grams ->
-                val images = photoSession.stagedImages.value
-                photoSession.clear()
-                if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note, grams)
-            },
-            onDismiss = {
-                photoSession.clear()
-            },
         )
     }
 
@@ -796,47 +791,43 @@ fun HomeScreen(container: AppContainer) {
         )
     }
 
-    // Restored failed single-photo input — optional note before retry.
-    if (ui.error == null) ui.pendingInputImageBytes?.let { bytes ->
-        ContextNoteSheet(
-            imageBytes = bytes,
-            initialNote = ui.pendingInputNote.orEmpty(),
-            initialConfirmedPortionGrams = ui.pendingInputConfirmedPortionGrams,
-            isSubmitting = ui.isEntryAnalysisBusy,
-            onAnalyze = { note, grams ->
-                if (!ui.isEntryAnalysisBusy) {
-                    vm.analyzePhotoWithNote(bytes, note, confirmedPortionGrams = grams)
-                }
-            },
-            onAddPhoto = {
-                vm.dismissFailedInput()
-                openCamera()
-            },
-            onDismiss = { vm.dismissFailedInput() },
-        )
+    ui.error?.let { err ->
+        val hasRetryableInput = ui.pendingInputImageBytes != null || ui.pendingInputDraftImageFilename != null
+        FudGlassDialog(onDismissRequest = { vm.clearError() }) {
+            Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            if (hasRetryableInput) {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_retry),
+                    onPrimary = { vm.retryFailedInput() },
+                    primaryEnabled = !ui.isEntryAnalysisBusy,
+                    dismissText = stringResource(R.string.action_discard),
+                    onDismiss = { vm.dismissFailedInput() }
+                )
+            } else {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_ok),
+                    onPrimary = { vm.clearError() }
+                )
+            }
+        }
     }
 
-    ui.analysisPhase?.let { phase ->
-        EntryAnalysisOverlay(
-            phase = phase,
-            preview = ui.analysisPreview,
-            partial = ui.analysisPartial,
-            imageBytes = ui.pendingImageBytes,
-        )
-    }
-    if (ui.analyzing && ui.analysisPhase == null) {
-        AnalyzingOverlay(imageBytes = ui.pendingImageBytes)
-    }
-
-    ui.pendingAnalysis?.let { analysis ->
+    if (ui.showFoodResultSheet) {
         FoodResultSheet(
-            analysis = analysis,
+            analysis = ui.pendingAnalysis,
             imageBytes = ui.pendingImageBytes,
             preferGramsByDefault = ui.preferGramsByDefault,
             profile = ui.profile,
             dayEntries = ui.todayEntries,
             isSaving = ui.saving,
             inferringUnits = ui.inferringUnits,
+            analysisPhase = ui.analysisPhase,
+            partial = ui.analysisPartial,
+            analysisReady = ui.analysisReadyForEdit,
+            imageCount = ui.pendingAnalysisImages.size.coerceAtLeast(
+                if (ui.pendingImageBytes != null) 1 else 0,
+            ),
             source = ui.pendingReviewSource?.source
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
@@ -845,6 +836,22 @@ fun HomeScreen(container: AppContainer) {
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
             onReprocessPortion = { answer -> vm.reprocessPendingAnalysis(answer) },
             onWhatIfSuggestion = vm::suggestMealWhatIf,
+            onReanalyzeWithTip = if (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty()) {
+                { note, grams -> vm.reanalyzeWithTip(note, grams) }
+            } else {
+                null
+            },
+            onAddPhoto = if (
+                (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty()) &&
+                ui.pendingAnalysisImages.size < FoodPhotoSession.MAX_IMAGES
+            ) {
+                {
+                    appendPhotoForReanalyze = true
+                    openCamera()
+                }
+            } else {
+                null
+            },
             onSave = { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis ->
                 vm.saveAnalysis(
                     name = name,
@@ -873,7 +880,7 @@ fun HomeScreen(container: AppContainer) {
 
     val progressiveDraft = ui.progressiveMeal
     if (ui.showProgressiveMealSheet && progressiveDraft != null &&
-        ui.pendingAnalysis == null && !ui.isEntryAnalysisBusy
+        !ui.showFoodResultSheet
     ) {
         ProgressiveMealSheet(
             draft = progressiveDraft,
@@ -886,28 +893,6 @@ fun HomeScreen(container: AppContainer) {
             onDiscard = { vm.discardProgressiveMeal() },
             onDismiss = { vm.showProgressiveMealSheet(false) },
         )
-    }
-
-    ui.error?.let { err ->
-        val hasRetryableInput = ui.pendingInputImageBytes != null || ui.pendingInputDraftImageFilename != null
-        FudGlassDialog(onDismissRequest = { vm.clearError() }) {
-            Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
-            if (hasRetryableInput) {
-                FudGlassDialogActions(
-                    primaryText = stringResource(R.string.action_retry),
-                    onPrimary = { vm.retryFailedInput() },
-                    primaryEnabled = !ui.isEntryAnalysisBusy,
-                    dismissText = stringResource(R.string.action_discard),
-                    onDismiss = { vm.dismissFailedInput() }
-                )
-            } else {
-                FudGlassDialogActions(
-                    primaryText = stringResource(R.string.action_ok),
-                    onPrimary = { vm.clearError() }
-                )
-            }
-        }
     }
 }
 /** Static home layout for release screenshot previews (no ViewModel / permissions). */

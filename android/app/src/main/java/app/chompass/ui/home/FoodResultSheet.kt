@@ -1,7 +1,6 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +50,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,7 +67,9 @@ import app.chompass.models.MealType
 import app.chompass.models.MicronutrientField
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
+import app.chompass.services.FoodPhotoSession
 import app.chompass.services.ai.FoodAnalysis
+import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
 import app.chompass.ui.theme.AppColors
@@ -73,6 +77,9 @@ import kotlin.math.roundToInt
 import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
+import app.chompass.ui.components.FudGlassTextField
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.OutlinedButton
 
 /** Exposed for JVM tests: every SNAP_FOOD photo gets the portion correction row. */
 internal fun shouldOfferPortionClarify(
@@ -81,28 +88,43 @@ internal fun shouldOfferPortionClarify(
 ): Boolean =
     source == FoodSource.SNAP_FOOD && !portionPreConfirmed
 
+private val EmptyFoodAnalysisPlaceholder = FoodAnalysis(
+    name = "",
+    calories = 0,
+    protein = 0.0,
+    carbs = 0.0,
+    fat = 0.0,
+    servingSizeGrams = 100.0,
+)
+
 /**
- * First-time review sheet shown after photo / text / voice analysis returns
- * a [FoodAnalysis]. Visually identical to [EditFoodEntrySheet] — only the
- * sticky primary action differs ("Log" vs "Save"). Shared visual primitives live
- * in FoodSheetPrimitives.kt.
+ * Progressive Log sheet: opens while AI analysis runs (partial fields stream in),
+ * then unlocks editing and Log when [analysisReady]. Visually shares primitives
+ * with [EditFoodEntrySheet].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodResultSheet(
-    analysis: FoodAnalysis,
+    analysis: FoodAnalysis? = null,
     imageBytes: ByteArray? = null,
     preferGramsByDefault: Boolean = false,
     profile: UserProfile? = null,
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
     portionClarifyEnabled: Boolean = false,
-    /** True when the user already entered exact grams on multi-photo / context note. */
+    /** True when the user already entered exact grams on tip strip / prior note. */
     portionPreConfirmed: Boolean = false,
     /** True when a weigh-as-you-go draft already has ingredients. */
     progressiveMealActive: Boolean = false,
+    analysisPhase: EntryAnalysisPhase? = null,
+    partial: PartialFoodAnalysis? = null,
+    /** False while AI (or unit inference) is in flight — fields and Log stay locked. */
+    analysisReady: Boolean = analysis != null,
+    imageCount: Int = if (imageBytes != null) 1 else 0,
     onReprocessPortion: (suspend (portionAnswer: String) -> Unit)? = null,
     onWhatIfSuggestion: (suspend (FoodEntry) -> String)? = null,
+    onReanalyzeWithTip: ((note: String?, confirmedPortionGrams: Double?) -> Unit)? = null,
+    onAddPhoto: (() -> Unit)? = null,
     onSave: (
         name: String,
         servingGrams: Double,
@@ -130,8 +152,12 @@ fun FoodResultSheet(
     isSaving: Boolean = false,
     inferringUnits: Boolean = false,
 ) {
+    val placeholderName = stringResource(R.string.entry_analysis_placeholder_name)
+    val effectiveAnalysis = analysis
+        ?: partial?.toPreviewAnalysis()
+        ?: EmptyFoodAnalysisPlaceholder
     val bitmap = rememberDecodedBitmap(imageBytes)
-    val state = rememberChompassSheetState(busy = isSaving)
+    val state = rememberChompassSheetState(busy = isSaving || !analysisReady)
     val scope = rememberCoroutineScope()
     val portionClarifyFailedMessage = stringResource(R.string.sheet_portion_clarify_failed)
     // Keyed on imageBytes (stable across a reprocess call for the same photo), not analysis
@@ -140,33 +166,34 @@ fun FoodResultSheet(
     var portionChipDismissed by remember(imageBytes) { mutableStateOf(false) }
     var isReprocessingPortion by remember(imageBytes) { mutableStateOf(false) }
     var portionClarifyError by remember(imageBytes) { mutableStateOf<String?>(null) }
-    val showPortionClarify = portionClarifyEnabled &&
+    val showPortionClarify = analysisReady &&
+        portionClarifyEnabled &&
         !portionChipDismissed &&
         shouldOfferPortionClarify(source, portionPreConfirmed)
-    var name by remember { mutableStateOf(analysis.name) }
-    val servingUnitOptions = remember(analysis.servingUnitOptions, analysis.servingSizeGrams) {
-        ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
+    var name by remember { mutableStateOf(effectiveAnalysis.name) }
+    val servingUnitOptions = remember(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams) {
+        ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams)
     }
     val initialServingUnit = if (preferGramsByDefault) {
         ServingUnitOption.grams.unit
     } else {
-        analysis.selectedServingUnit
+        effectiveAnalysis.selectedServingUnit
     }
-    var selectedServingUnitId by remember(analysis, servingUnitOptions, preferGramsByDefault) {
+    var selectedServingUnitId by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
     }
-    var servingGrams by remember(analysis) { mutableStateOf(analysis.servingSizeGrams) }
-    var baseServingGrams by remember(analysis) { mutableStateOf(analysis.servingSizeGrams) }
-    var editableConstituents by remember(analysis) { mutableStateOf(analysis.constituents) }
-    var constituentsExpanded by remember(analysis) {
-        mutableStateOf(analysis.constituents.isNotEmpty())
+    var servingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams) }
+    var baseServingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams) }
+    var editableConstituents by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.constituents) }
+    var constituentsExpanded by remember(effectiveAnalysis) {
+        mutableStateOf(effectiveAnalysis.constituents.isNotEmpty())
     }
-    var servingQuantityText by remember(analysis, servingUnitOptions, preferGramsByDefault) {
+    var servingQuantityText by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(
             ServingUnitOption.initialQuantityText(
-                totalGrams = analysis.servingSizeGrams,
+                totalGrams = effectiveAnalysis.servingSizeGrams,
                 selectedUnitId = selectedServingUnitId,
-                selectedQuantity = analysis.selectedServingQuantity,
+                selectedQuantity = effectiveAnalysis.selectedServingQuantity,
                 options = servingUnitOptions
             )
         )
@@ -177,30 +204,77 @@ fun FoodResultSheet(
     var mealType by remember { mutableStateOf(MealType.currentMeal) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
-    var editableCalories by remember(analysis) { mutableStateOf(analysis.calories) }
-    var editableProtein by remember(analysis) { mutableStateOf(analysis.protein) }
-    var editableCarbs by remember(analysis) { mutableStateOf(analysis.carbs) }
-    var editableFat by remember(analysis) { mutableStateOf(analysis.fat) }
-    var editableMicros by remember(analysis) { mutableStateOf(analysis.toMicronutrients()) }
+    var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
+    var editableProtein by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.protein) }
+    var editableCarbs by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.carbs) }
+    var editableFat by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.fat) }
+    var editableMicros by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.toMicronutrients()) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
+    var tipExpanded by remember { mutableStateOf(false) }
+    var tipNote by remember(imageBytes) { mutableStateOf("") }
+    var tipWeightText by remember(imageBytes) { mutableStateOf("") }
+    var wasReady by remember { mutableStateOf(analysisReady) }
 
-    LaunchedEffect(analysis.servingUnitOptions, inferringUnits) {
-        if (!inferringUnits && analysis.servingUnitOptions.isNotEmpty()) {
-            val options = ServingUnitOption.normalizedOptions(analysis.servingUnitOptions, analysis.servingSizeGrams)
+    // Sync streamed partials / completed analysis into editable fields.
+    LaunchedEffect(analysis, partial) {
+        val sourceAnalysis = analysis ?: partial?.toPreviewAnalysis() ?: return@LaunchedEffect
+        name = sourceAnalysis.name
+        servingGrams = sourceAnalysis.servingSizeGrams
+        baseServingGrams = sourceAnalysis.servingSizeGrams
+        editableConstituents = sourceAnalysis.constituents
+        editableCalories = sourceAnalysis.calories
+        editableProtein = sourceAnalysis.protein
+        editableCarbs = sourceAnalysis.carbs
+        editableFat = sourceAnalysis.fat
+        editableMicros = sourceAnalysis.toMicronutrients()
+        val options = ServingUnitOption.normalizedOptions(
+            sourceAnalysis.servingUnitOptions,
+            sourceAnalysis.servingSizeGrams,
+        )
+        selectedServingUnitId = ServingUnitOption.initialUnitId(
+            if (preferGramsByDefault) ServingUnitOption.grams.unit else sourceAnalysis.selectedServingUnit,
+            options,
+        )
+        servingQuantityText = ServingUnitOption.initialQuantityText(
+            totalGrams = sourceAnalysis.servingSizeGrams,
+            selectedUnitId = selectedServingUnitId,
+            selectedQuantity = sourceAnalysis.selectedServingQuantity,
+            options = options,
+        )
+    }
+
+    LaunchedEffect(analysisReady) {
+        if (analysisReady && !wasReady) {
+            nutritionUnlocked = false
+            tipExpanded = false
+        }
+        if (!analysisReady) {
+            nutritionUnlocked = false
+            mealMenuExpanded = false
+            servingMenuExpanded = false
+        }
+        wasReady = analysisReady
+    }
+
+    LaunchedEffect(effectiveAnalysis.servingUnitOptions, inferringUnits) {
+        if (!inferringUnits && effectiveAnalysis.servingUnitOptions.isNotEmpty()) {
+            val options = ServingUnitOption.normalizedOptions(
+                effectiveAnalysis.servingUnitOptions,
+                effectiveAnalysis.servingSizeGrams,
+            )
             if (selectedServingUnitId !in options.map { it.id }) {
-                selectedServingUnitId = ServingUnitOption.initialUnitId(analysis.selectedServingUnit, options)
+                selectedServingUnitId = ServingUnitOption.initialUnitId(effectiveAnalysis.selectedServingUnit, options)
                 servingQuantityText = ServingUnitOption.initialQuantityText(
                     totalGrams = servingGrams,
                     selectedUnitId = selectedServingUnitId,
-                    selectedQuantity = analysis.selectedServingQuantity,
+                    selectedQuantity = effectiveAnalysis.selectedServingQuantity,
                     options = options,
                 )
             }
         }
     }
 
-    val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -209,6 +283,8 @@ fun FoodResultSheet(
         keyboardController?.hide()
     }
     val emDashText = stringResource(R.string.nutrition_em_dash)
+    val canOfferTip = onReanalyzeWithTip != null && imageBytes != null
+    val canAddPhoto = onAddPhoto != null && imageCount < FoodPhotoSession.MAX_IMAGES
 
     fun scaledInt(v: Int) = (v * scale).roundToInt()
     fun scaledMacro(v: Double) = v * scale
@@ -220,14 +296,14 @@ fun FoodResultSheet(
     fun baseDoubleFromText(text: String): Double = (decimalValue(text) ?: 0.0) / scale.coerceAtLeast(0.0001)
     fun baseOptionalFromText(text: String): Double? = decimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
     fun editedAnalysis() = editableMicros.scaled(scale).applyTo(
-        analysis.copy(
-            name = name.trim().ifEmpty { analysis.name },
+        effectiveAnalysis.copy(
+            name = name.trim().ifEmpty { effectiveAnalysis.name.ifEmpty { placeholderName } },
             calories = scaledInt(editableCalories),
             protein = scaledMacro(editableProtein),
             carbs = scaledMacro(editableCarbs),
             fat = scaledMacro(editableFat),
             servingSizeGrams = servingGrams,
-            grounding = analysis.grounding?.copy(userCorrected = true),
+            grounding = effectiveAnalysis.grounding?.copy(userCorrected = true),
             constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
                 editableConstituents,
                 scale,
@@ -236,18 +312,18 @@ fun FoodResultSheet(
     )
     fun previewEntry() = editableMicros.scaled(scale).applyTo(
         FoodEntry(
-            name = name.trim().ifEmpty { analysis.name },
+            name = name.trim().ifEmpty { effectiveAnalysis.name.ifEmpty { placeholderName } },
             calories = scaledInt(editableCalories),
             protein = scaledMacro(editableProtein),
             carbs = scaledMacro(editableCarbs),
             fat = scaledMacro(editableFat),
             timestamp = Instant.now(),
             imageFilename = null,
-            emoji = analysis.emoji,
+            emoji = effectiveAnalysis.emoji,
             source = source,
             mealType = mealType,
             servingSizeGrams = servingGrams,
-            servingUnitOptions = analysis.servingUnitOptions,
+            servingUnitOptions = effectiveAnalysis.servingUnitOptions,
             selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
             selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
             constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
@@ -258,13 +334,23 @@ fun FoodResultSheet(
     )
     var whatIfEntry by remember { mutableStateOf<FoodEntry?>(null) }
 
+    val busyPrimaryLabel = when {
+        inferringUnits -> stringResource(R.string.entry_analysis_busy_units)
+        analysisPhase == EntryAnalysisPhase.CallingAi && partial?.hasAnyField == true ->
+            stringResource(R.string.entry_analysis_busy_filling)
+        !analysisReady -> stringResource(R.string.entry_analysis_busy_analyzing)
+        isSaving -> stringResource(R.string.action_logging)
+        progressiveMealActive -> stringResource(R.string.progressive_meal_add_to_meal)
+        else -> stringResource(R.string.action_log)
+    }
+
     ChompassBottomSheet(
         onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
         containerColor = sheetSurface,
     ) {
         fun commitLog() {
-            if (isSaving) return
+            if (isSaving || !analysisReady || analysis == null) return
             if (progressiveMealActive && onAddToProgressiveMeal != null) {
                 onAddToProgressiveMeal(
                     name.trim().ifEmpty { analysis.name },
@@ -289,7 +375,7 @@ fun FoodResultSheet(
             }
         }
         fun commitAddNext() {
-            if (isSaving || onAddToProgressiveMeal == null) return
+            if (isSaving || !analysisReady || analysis == null || onAddToProgressiveMeal == null) return
             onAddToProgressiveMeal(
                 name.trim().ifEmpty { analysis.name },
                 servingGrams,
@@ -319,6 +405,59 @@ fun FoodResultSheet(
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
+            // Status strip while AI runs — also announces when editing unlocks.
+            item {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    if (!analysisReady) {
+                        analysisPhase?.let { phase ->
+                            EntryAnalysisStepRow(currentPhase = phase)
+                            Text(
+                                entryAnalysisPhaseLabel(
+                                    phase,
+                                    fillingFields = partial?.hasAnyField == true,
+                                ),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = AppColors.Calorie,
+                                textAlign = TextAlign.Center,
+                            )
+                        } ?: run {
+                            if (inferringUnits) {
+                                Text(
+                                    stringResource(R.string.entry_analysis_inferring_units),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AppColors.Calorie,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
+                        if (imageBytes != null) {
+                            Text(
+                                stringResource(R.string.entry_analysis_status_helper),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    } else if (!wasReady) {
+                        // One-shot announce when the gate opens (wasReady flips in LaunchedEffect).
+                        Text(
+                            stringResource(R.string.entry_analysis_ready),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                        )
+                    }
+                }
+            }
+
             // Compact hero so name / serving / macros fit the first viewport.
             item {
                 Box(
@@ -335,13 +474,54 @@ fun FoodResultSheet(
                                 .clip(RoundedCornerShape(14.dp))
                         )
                     } else {
-                        Text(analysis.emoji ?: "🍽", fontSize = 40.sp)
+                        Text(effectiveAnalysis.emoji ?: "🍽", fontSize = 40.sp)
                     }
                 }
             }
 
+            // Early streaming spinner before any validated fields arrive.
+            if (!analysisReady && analysis == null && (partial == null || !partial.hasAnyField)) {
+                item {
+                    Box(
+                        Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator(
+                            color = AppColors.Calorie,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(36.dp),
+                        )
+                    }
+                }
+            }
+
+            if (canOfferTip || canAddPhoto) {
+                item {
+                    EntryAnalysisTipStrip(
+                        expanded = tipExpanded,
+                        onExpandedChange = { tipExpanded = it },
+                        note = tipNote,
+                        onNoteChange = { tipNote = it },
+                        weightText = tipWeightText,
+                        onWeightChange = { tipWeightText = it },
+                        canOfferTip = canOfferTip,
+                        canAddPhoto = canAddPhoto,
+                        onApplyTip = {
+                            val grams = parsePositiveGrams(tipWeightText)
+                            onReanalyzeWithTip?.invoke(
+                                tipNote.takeIf { it.isNotBlank() },
+                                grams,
+                            )
+                            tipExpanded = false
+                        },
+                        onAddPhoto = { onAddPhoto?.invoke() },
+                    )
+                }
+            }
+
+            if (analysisReady || analysis != null || (partial?.hasAnyField == true)) {
             item { SheetSectionHeader(stringResource(R.string.sheet_food_details)) }
-            analysis.grounding?.let { grounding ->
+            effectiveAnalysis.grounding?.let { grounding ->
                 item {
                     Text(
                         text = when (grounding.sourceKind) {
@@ -361,7 +541,7 @@ fun FoodResultSheet(
                         modifier = Modifier.padding(bottom = 4.dp),
                     )
                 }
-                analysis.groundingConfidence?.let { conf ->
+                effectiveAnalysis.groundingConfidence?.let { conf ->
                     item {
                         Text(
                             text = stringResource(
@@ -395,11 +575,15 @@ fun FoodResultSheet(
                     Text(stringResource(R.string.sheet_name), fontSize = 17.sp, modifier = Modifier.padding(end = 8.dp))
                     Spacer(Modifier.weight(1f))
                     androidx.compose.foundation.text.BasicTextField(
-                        value = name,
-                        onValueChange = { name = it },
+                        value = name.ifEmpty { if (!analysisReady) placeholderName else "" },
+                        onValueChange = { if (analysisReady) name = it },
                         singleLine = true,
+                        enabled = analysisReady,
+                        readOnly = !analysisReady,
                         textStyle = androidx.compose.ui.text.TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = if (analysisReady) 1f else 0.55f,
+                            ),
                             fontSize = 17.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.End
                         ),
@@ -414,6 +598,7 @@ fun FoodResultSheet(
                 ServingQuantityCard(
                     quantityText = servingQuantityText,
                     onQuantityChange = { newValue ->
+                        if (!analysisReady) return@ServingQuantityCard
                         servingQuantityText = newValue
                         ServingUnitOption.parseQuantity(newValue)?.takeIf { it > 0 }?.let {
                             servingGrams = it * selectedServingOption.gramsPerUnit
@@ -421,6 +606,7 @@ fun FoodResultSheet(
                     },
                     selectedUnitId = selectedServingUnitId,
                     onSelectedUnitChange = { optionId ->
+                        if (!analysisReady) return@ServingQuantityCard
                         selectedServingUnitId = optionId
                         val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
                         val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
@@ -428,18 +614,20 @@ fun FoodResultSheet(
                     },
                     servingSizeGrams = servingGrams,
                     unitOptions = servingUnitOptions,
-                    menuExpanded = servingMenuExpanded,
-                    onMenuExpandedChange = { servingMenuExpanded = it },
+                    menuExpanded = servingMenuExpanded && analysisReady,
+                    onMenuExpandedChange = { if (analysisReady) servingMenuExpanded = it },
                     gramUnit = stringResource(R.string.unit_g),
                     isLoadingUnits = inferringUnits,
+                    enabled = analysisReady,
                 )
             }
 
             item {
                 SheetSectionHeaderWithLock(
                     title = stringResource(R.string.sheet_nutrition),
-                    unlocked = nutritionUnlocked,
+                    unlocked = nutritionUnlocked && analysisReady,
                     onToggle = {
+                        if (!analysisReady) return@SheetSectionHeaderWithLock
                         nutritionUnlocked = !nutritionUnlocked
                         if (!nutritionUnlocked) dismissKeyboard()
                     }
@@ -452,7 +640,7 @@ fun FoodResultSheet(
                         displayValue = "${scaledInt(editableCalories)}",
                         editValue = "${scaledInt(editableCalories)}",
                         unit = stringResource(R.string.unit_kcal),
-                        unlocked = nutritionUnlocked,
+                        unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Calorie,
                         onEdit = { editableCalories = baseDoubleFromText(it).roundToInt() }
                     )
@@ -462,7 +650,7 @@ fun FoodResultSheet(
                         displayValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
                         editValue = MacroValueFormatter.string(scaledMacro(editableProtein)),
                         unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked,
+                        unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Protein,
                         onEdit = { editableProtein = baseDoubleFromText(it) }
                     )
@@ -472,7 +660,7 @@ fun FoodResultSheet(
                         displayValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
                         editValue = MacroValueFormatter.string(scaledMacro(editableCarbs)),
                         unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked,
+                        unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Carbs,
                         onEdit = { editableCarbs = baseDoubleFromText(it) }
                     )
@@ -482,7 +670,7 @@ fun FoodResultSheet(
                         displayValue = MacroValueFormatter.string(scaledMacro(editableFat)),
                         editValue = MacroValueFormatter.string(scaledMacro(editableFat)),
                         unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked,
+                        unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Fat,
                         onEdit = { editableFat = baseDoubleFromText(it) }
                     )
@@ -492,7 +680,7 @@ fun FoodResultSheet(
                         displayValue = displayD(scaledD(editableMicros.fiber)),
                         editValue = editD(scaledD(editableMicros.fiber)),
                         unit = stringResource(R.string.unit_g),
-                        unlocked = nutritionUnlocked,
+                        unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Fiber,
                         onEdit = {
                             editableMicros = editableMicros.with(
@@ -506,7 +694,7 @@ fun FoodResultSheet(
 
             item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
             item {
-                SheetPillRow(onClick = { mealMenuExpanded = true }) {
+                SheetPillRow(onClick = { if (analysisReady) mealMenuExpanded = true }) {
                     Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
                     // Anchor the DropdownMenu inside the right-side cluster so
                     // it pops open under the value, not the row's left edge.
@@ -535,7 +723,7 @@ fun FoodResultSheet(
                             )
                         }
                         SheetGlassDropdownMenu(
-                            expanded = mealMenuExpanded,
+                            expanded = mealMenuExpanded && analysisReady,
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
@@ -559,7 +747,7 @@ fun FoodResultSheet(
             if (showPortionClarify) {
                 item {
                     PortionClarifyRow(
-                        estimatedGrams = analysis.servingSizeGrams,
+                        estimatedGrams = effectiveAnalysis.servingSizeGrams,
                         isLoading = isReprocessingPortion,
                         error = portionClarifyError,
                         showQualitativeChips = onReprocessPortion != null,
@@ -597,8 +785,9 @@ fun FoodResultSheet(
                         scale,
                     ),
                     expanded = constituentsExpanded,
-                    onExpandedChange = { constituentsExpanded = it },
+                    onExpandedChange = { if (analysisReady) constituentsExpanded = it },
                     onRowsChange = { displayRows ->
+                        if (!analysisReady) return@ConstituentsSection
                         val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
                         editableConstituents = cleaned
                         if (serving > 0) {
@@ -623,7 +812,7 @@ fun FoodResultSheet(
             }
 
             item {
-                SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
+                SheetPillRow(onClick = { if (analysisReady) moreNutritionExpanded = !moreNutritionExpanded }) {
                     Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
                     Icon(
                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
@@ -633,7 +822,7 @@ fun FoodResultSheet(
                     )
                 }
             }
-            if (moreNutritionExpanded) {
+            if (moreNutritionExpanded && analysisReady) {
                 item {
                     SheetPillCard {
                         MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
@@ -644,7 +833,7 @@ fun FoodResultSheet(
                                 displayValue = displayD(value),
                                 editValue = editD(value),
                                 unit = stringResource(field.unitRes),
-                                unlocked = nutritionUnlocked,
+                                unlocked = nutritionUnlocked && analysisReady,
                                 dim = true,
                                 onEdit = {
                                     editableMicros = editableMicros.with(field, baseOptionalFromText(it))
@@ -655,7 +844,7 @@ fun FoodResultSheet(
                 }
             }
 
-            if (onWhatIfSuggestion != null) {
+            if (onWhatIfSuggestion != null && analysisReady) {
                 item {
                     SheetPillRow(onClick = { whatIfEntry = previewEntry() }) {
                         Text(stringResource(R.string.action_what_if), fontSize = 17.sp, modifier = Modifier.weight(1f))
@@ -667,24 +856,19 @@ fun FoodResultSheet(
                     }
                 }
             }
+            } // analysisReady || analysis != null || partial has fields
             }
 
             SheetStickyPrimaryBar(
-                primaryLabel = if (isSaving) {
-                    stringResource(R.string.action_logging)
-                } else if (progressiveMealActive) {
-                    stringResource(R.string.progressive_meal_add_to_meal)
-                } else {
-                    stringResource(R.string.action_log)
-                },
-                primaryEnabled = !isSaving,
+                primaryLabel = busyPrimaryLabel,
+                primaryEnabled = analysisReady && !isSaving && analysis != null,
                 onPrimary = { commitLog() },
-                textActionLabel = if (onAddToProgressiveMeal != null && !isSaving) {
+                textActionLabel = if (onAddToProgressiveMeal != null && analysisReady && !isSaving) {
                     stringResource(R.string.progressive_meal_add_next)
                 } else {
                     null
                 },
-                onTextAction = if (onAddToProgressiveMeal != null) {
+                onTextAction = if (onAddToProgressiveMeal != null && analysisReady) {
                     { commitAddNext() }
                 } else {
                     null
@@ -701,6 +885,119 @@ fun FoodResultSheet(
             onDismiss = { whatIfEntry = null },
             onSuggest = onWhatIfSuggestion
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun EntryAnalysisTipStrip(
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    note: String,
+    onNoteChange: (String) -> Unit,
+    weightText: String,
+    onWeightChange: (String) -> Unit,
+    canOfferTip: Boolean,
+    canAddPhoto: Boolean,
+    onApplyTip: () -> Unit,
+    onAddPhoto: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (canOfferTip) {
+                TextButton(onClick = { onExpandedChange(!expanded) }) {
+                    Text(
+                        stringResource(R.string.entry_analysis_tip_cta),
+                        color = AppColors.Calorie,
+                        fontSize = 14.sp,
+                    )
+                }
+            }
+            if (canAddPhoto) {
+                OutlinedButton(onClick = onAddPhoto) {
+                    Text(stringResource(R.string.entry_analysis_add_photo), fontSize = 14.sp)
+                }
+            }
+        }
+        if (expanded && canOfferTip) {
+            Text(
+                stringResource(R.string.context_note_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            )
+            val contextChips = listOf(
+                stringResource(R.string.context_note_chip_no_oil),
+                stringResource(R.string.context_note_chip_extra_cheese),
+                stringResource(R.string.context_note_chip_large),
+                stringResource(R.string.context_note_chip_grilled),
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                contextChips.forEach { label ->
+                    FilterChip(
+                        selected = note.contains(label, ignoreCase = true),
+                        onClick = {
+                            onNoteChange(
+                                if (note.isBlank()) label
+                                else if (note.contains(label, ignoreCase = true)) note
+                                else "$note, $label",
+                            )
+                        },
+                        label = { Text(label, fontSize = 13.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                            selectedLabelColor = AppColors.Calorie,
+                        ),
+                    )
+                }
+            }
+            FudGlassTextField(
+                value = note,
+                onValueChange = onNoteChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 88.dp),
+                placeholder = stringResource(R.string.context_note_placeholder),
+            )
+            Text(
+                stringResource(R.string.context_note_weight_section),
+                fontWeight = FontWeight.SemiBold,
+            )
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FudGlassTextField(
+                    value = weightText,
+                    onValueChange = { onWeightChange(it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }) },
+                    placeholder = stringResource(R.string.context_note_weight_placeholder),
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    stringResource(R.string.context_note_weight_unit),
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                )
+            }
+            TextButton(
+                onClick = onApplyTip,
+                enabled = note.isNotBlank() || parsePositiveGrams(weightText) != null,
+            ) {
+                Text(
+                    stringResource(R.string.entry_analysis_tip_apply),
+                    color = AppColors.Calorie,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+        }
     }
 }
 
