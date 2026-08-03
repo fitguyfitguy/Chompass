@@ -34,6 +34,7 @@
   '';
 
   scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
+  scripts.install-debug.exec = "./scripts/install_debug.sh";
   scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
   scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/";
   scripts.site-build.exec = "hugo --minify -s website";
