@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">Connetti</string>
 
     <string name="onboarding_provider_title">Usa la tua IA</string>
-    <string name="onboarding_provider_subtitle">Chiave API facoltativa per foto dei pasti e coach.
-Google AI Studio è gratuito e consigliato.</string>
+    <string name="onboarding_provider_subtitle">Chiave API facoltativa per foto dei pasti e coach.\nGoogle AI Studio è gratuito e consigliato.</string>
     <string name="onboarding_provider_recommended_title">Consigliato: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">Gratuito e di alta qualità. Ideale per le foto dei pasti.</string>
     <string name="onboarding_provider_howto_title">Come ottenere una chiave gratuita di Google AI Studio</string>
     <string name="onboarding_provider_step_1">Apri aistudio.google.com/apikey (tocca per aprire)</string>
     <string name="onboarding_provider_step_2">Accedi con Google e crea una chiave API</string>
     <string name="onboarding_provider_step_3">Incollala sotto e tocca Verifica chiave</string>
-    <string name="onboarding_provider_footer">Tutti i provider supportati. La chiave resta
-su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
+    <string name="onboarding_provider_footer">Tutti i provider supportati. La chiave resta\nsu questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <string name="onboarding_skip_ai">Salta per ora</string>
     <string name="onboarding_skip_ai_title">Continuare senza chiave cloud?</string>
     <string name="onboarding_skip_ai_body">L\'IA sul dispositivo gira in privato sul telefono, ma è molto meno accurata di Google AI Studio o altri modelli cloud. Aspettati calorie errate, elementi mancanti o letture foto deboli. Puoi aggiungere una chiave AI Studio gratuita in qualsiasi momento in Impostazioni.</string>
@@ -767,12 +765,7 @@ su questo dispositivo, crittografata. Modificabile in Impostazioni.</string>
     <string name="on_device_model_not_loaded">Non caricato. La prima richiesta dopo l\'avvio dell\'app può richiedere fino a un minuto.</string>
     <string name="on_device_model_privacy_notice">Funziona interamente su questo dispositivo. Nulla di ciò che scrivi o fotografi viene inviato a un server. Il download recupera il file del modello direttamente da Hugging Face (%1$s), un host di terze parti non usato altrimenti da questa app.</string>
     <string name="onboarding_api_key_non_gemini_ok">Pronto. Il test rapido è solo con Gemini</string>
-    <string name="photo_accuracy_guide_body">Le foto perdono molto. Aggiungi una breve nota quando puoi:
-
-• Sii specifico: quantità, marche e cosa c\'è nel piatto
-• Segnala oli, condimenti e salse oleose (spesso invisibili)
-• Indica la preparazione quando conta: fritto, grigliato, al vapore, fatto in casa
-• Grammi esatti o foto dell\'etichetta nutrizionale aiutano di più</string>
+    <string name="photo_accuracy_guide_body">Le foto perdono molto. Aggiungi una breve nota quando puoi:\n\n• Sii specifico: quantità, marche e cosa c\'è nel piatto\n• Segnala oli, condimenti e salse oleose (spesso invisibili)\n• Indica la preparazione quando conta: fritto, grigliato, al vapore, fatto in casa\n• Grammi esatti o foto dell\'etichetta nutrizionale aiutano di più</string>
     <string name="photo_accuracy_guide_cd">Come migliorare la precisione delle foto</string>
     <string name="photo_accuracy_guide_dismiss">Capito</string>
     <string name="photo_accuracy_guide_title">Suggerimenti per una stima migliore</string>

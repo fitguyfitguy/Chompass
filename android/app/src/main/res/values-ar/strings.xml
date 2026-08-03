@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">ربط</string>
 
     <string name="onboarding_provider_title">استخدم الذكاء الاصطناعي الخاص بك</string>
-    <string name="onboarding_provider_subtitle">مفتاح API اختياري لصور الطعام والمدرب.
-Google AI Studio مجاني وموصى به.</string>
+    <string name="onboarding_provider_subtitle">مفتاح API اختياري لصور الطعام والمدرب.\nGoogle AI Studio مجاني وموصى به.</string>
     <string name="onboarding_provider_recommended_title">موصى به: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">مجاني وعالي الجودة. الأفضل لصور الطعام.</string>
     <string name="onboarding_provider_howto_title">كيفية الحصول على مفتاح Google AI Studio مجاني</string>
     <string name="onboarding_provider_step_1">افتح aistudio.google.com/apikey (انقر للفتح)</string>
     <string name="onboarding_provider_step_2">سجّل الدخول عبر Google وأنشئ مفتاح API</string>
     <string name="onboarding_provider_step_3">الصقه أدناه واضغط اختبار المفتاح</string>
-    <string name="onboarding_provider_footer">جميع المزودين مدعومون. يبقى مفتاحك
-على هذا الجهاز مشفّرًا. يمكن تغييره لاحقًا في الإعدادات.</string>
+    <string name="onboarding_provider_footer">جميع المزودين مدعومون. يبقى مفتاحك\nعلى هذا الجهاز مشفّرًا. يمكن تغييره لاحقًا في الإعدادات.</string>
     <string name="onboarding_skip_ai">تخطّي الآن</string>
     <string name="onboarding_skip_ai_title">المتابعة بدون مفتاح سحابي؟</string>
     <string name="onboarding_skip_ai_body">يعمل الذكاء الاصطناعي على الجهاز بخصوصية على هاتفك، لكنه أقل دقة بكثير من Google AI Studio أو نماذج السحابة الأخرى. توقّع سعرات خاطئة أو عناصر فائتة أو قراءة ضعيفة للصور. يمكنك إضافة مفتاح AI Studio مجاني في أي وقت من الإعدادات.</string>
@@ -767,12 +765,7 @@ Google AI Studio مجاني وموصى به.</string>
     <string name="on_device_model_not_loaded">غير محمّل. قد يستغرق أول طلب بعد بدء التطبيق حتى دقيقة.</string>
     <string name="on_device_model_privacy_notice">يعمل بالكامل على هذا الجهاز. لا يُرسل ما تكتبه أو تصوّره إلى خادم. التنزيل يجلب ملف النموذج مباشرة من Hugging Face (%1$s)، مضيف طرف ثالث لا يستخدمه التطبيق غير ذلك.</string>
     <string name="onboarding_api_key_non_gemini_ok">جاهز. الاختبار السريع لـ Gemini فقط</string>
-    <string name="photo_accuracy_guide_body">الصور تفوت الكثير. أضِف ملاحظة قصيرة عندما تستطيع:
-
-• كن محددًا: الكميات والعلامات وما في الطبق
-• اذكر الزيوت والصلصات والصلصات الدهنية (غالبًا غير مرئية)
-• اذكر التحضير عندما يهم: مقلي، مشوي، على البخار، منزلي
-• الجرامات الدقيقة أو صورة ملصق التغذية تساعد أكثر</string>
+    <string name="photo_accuracy_guide_body">الصور تفوت الكثير. أضِف ملاحظة قصيرة عندما تستطيع:\n\n• كن محددًا: الكميات والعلامات وما في الطبق\n• اذكر الزيوت والصلصات والصلصات الدهنية (غالبًا غير مرئية)\n• اذكر التحضير عندما يهم: مقلي، مشوي، على البخار، منزلي\n• الجرامات الدقيقة أو صورة ملصق التغذية تساعد أكثر</string>
     <string name="photo_accuracy_guide_cd">كيفية تحسين دقة الصورة</string>
     <string name="photo_accuracy_guide_dismiss">فهمت</string>
     <string name="photo_accuracy_guide_title">نصائح لتقدير أفضل</string>

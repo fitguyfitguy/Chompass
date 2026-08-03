@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">Connecter</string>
 
     <string name="onboarding_provider_title">Utilisez votre propre IA</string>
-    <string name="onboarding_provider_subtitle">Clé API facultative pour les photos de repas et le coach.
-Google AI Studio est gratuit et recommandé.</string>
+    <string name="onboarding_provider_subtitle">Clé API facultative pour les photos de repas et le coach.\nGoogle AI Studio est gratuit et recommandé.</string>
     <string name="onboarding_provider_recommended_title">Recommandé : Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">Gratuit et de haute qualité. Idéal pour les photos de repas.</string>
     <string name="onboarding_provider_howto_title">Comment obtenir une clé Google AI Studio gratuite</string>
     <string name="onboarding_provider_step_1">Ouvrez aistudio.google.com/apikey (appuyez pour ouvrir)</string>
     <string name="onboarding_provider_step_2">Connectez-vous avec Google et créez une clé API</string>
     <string name="onboarding_provider_step_3">Collez-la ci-dessous et appuyez sur Tester la clé</string>
-    <string name="onboarding_provider_footer">Tous les fournisseurs sont pris en charge. Votre clé reste
-sur cet appareil, chiffrée. Modifiable dans Réglages.</string>
+    <string name="onboarding_provider_footer">Tous les fournisseurs sont pris en charge. Votre clé reste\nsur cet appareil, chiffrée. Modifiable dans Réglages.</string>
     <string name="onboarding_skip_ai">Passer pour l\'instant</string>
     <string name="onboarding_skip_ai_title">Continuer sans clé cloud ?</string>
     <string name="onboarding_skip_ai_body">L\'IA sur l\'appareil tourne en privé sur votre téléphone, mais elle est bien moins précise que Google AI Studio ou d\'autres modèles cloud. Attendez-vous à des calories incorrectes, des éléments manqués ou de mauvaises lectures de photos. Vous pouvez ajouter une clé AI Studio gratuite à tout moment dans Réglages.</string>
@@ -792,12 +790,7 @@ sur cet appareil, chiffrée. Modifiable dans Réglages.</string>
     <string name="on_device_model_not_loaded">Non chargé. La première requête après le démarrage de l\'app peut prendre jusqu\'à une minute.</string>
     <string name="on_device_model_privacy_notice">Fonctionne entièrement sur cet appareil. Rien de ce que vous saisissez ou photographiez n\'est envoyé à un serveur. Le téléchargement récupère le fichier modèle directement depuis Hugging Face (%1$s), un hébergeur tiers non utilisé par ailleurs par cette app.</string>
     <string name="onboarding_api_key_non_gemini_ok">Prêt. Le test rapide est réservé à Gemini</string>
-    <string name="photo_accuracy_guide_body">Les photos laissent passer beaucoup de choses. Ajoutez une courte note quand vous le pouvez :
-
-• Soyez précis : quantités, marques et contenu de l\'assiette
-• Signalez huiles, vinaigrettes et sauces grasses (souvent invisibles)
-• Mentionnez la préparation quand c\'est important : frit, grillé, vapeur, fait maison
-• Des grammes exacts ou une photo d\'étiquette nutritionnelle aident le plus</string>
+    <string name="photo_accuracy_guide_body">Les photos laissent passer beaucoup de choses. Ajoutez une courte note quand vous le pouvez :\n\n• Soyez précis : quantités, marques et contenu de l\'assiette\n• Signalez huiles, vinaigrettes et sauces grasses (souvent invisibles)\n• Mentionnez la préparation quand c\'est important : frit, grillé, vapeur, fait maison\n• Des grammes exacts ou une photo d\'étiquette nutritionnelle aident le plus</string>
     <string name="photo_accuracy_guide_cd">Comment améliorer la précision des photos</string>
     <string name="photo_accuracy_guide_dismiss">Compris</string>
     <string name="photo_accuracy_guide_title">Astuces pour une meilleure estimation</string>

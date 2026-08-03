@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">连接</string>
 
     <string name="onboarding_provider_title">使用你自己的 AI</string>
-    <string name="onboarding_provider_subtitle">用于食物照片和教练的可选 API 密钥。
-推荐免费的 Google AI Studio。</string>
+    <string name="onboarding_provider_subtitle">用于食物照片和教练的可选 API 密钥。\n推荐免费的 Google AI Studio。</string>
     <string name="onboarding_provider_recommended_title">推荐：Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">免费且高质量。最适合食物照片。</string>
     <string name="onboarding_provider_howto_title">如何获取免费的 Google AI Studio 密钥</string>
     <string name="onboarding_provider_step_1">打开 aistudio.google.com/apikey（点按打开）</string>
     <string name="onboarding_provider_step_2">使用 Google 登录并创建 API 密钥</string>
     <string name="onboarding_provider_step_3">粘贴到下方并点按“测试密钥”</string>
-    <string name="onboarding_provider_footer">支持所有提供商。密钥加密保存在
-本设备上。可稍后在设置中更改。</string>
+    <string name="onboarding_provider_footer">支持所有提供商。密钥加密保存在\n本设备上。可稍后在设置中更改。</string>
     <string name="onboarding_skip_ai">暂时跳过</string>
     <string name="onboarding_skip_ai_title">不使用云端密钥继续？</string>
     <string name="onboarding_skip_ai_body">端侧 AI 在手机上私密运行，但远不如 Google AI Studio 或其他云端模型准确。可能会出现卡路里错误、漏项或较弱的照片识别。你可以随时在设置中添加免费的 AI Studio 密钥。</string>
@@ -767,12 +765,7 @@
     <string name="on_device_model_not_loaded">未加载。应用启动后首次请求可能需要最多一分钟。</string>
     <string name="on_device_model_privacy_notice">完全在本设备上运行。你输入或拍摄的内容不会发送到服务器。下载会直接从 Hugging Face（%1$s）获取模型文件，这是本应用通常不使用的第三方主机。</string>
     <string name="onboarding_api_key_non_gemini_ok">就绪。快速测试仅支持 Gemini</string>
-    <string name="photo_accuracy_guide_body">照片会漏掉很多信息。尽量添加简短备注:
-
-• 尽量具体：数量、品牌和盘中的内容
-• 说明油、酱汁和油性调味（往往看不出来）
-• 烹饪方式重要时请注明：炸、烤、蒸、自制
-• 精确克数或营养标签照片最有帮助</string>
+    <string name="photo_accuracy_guide_body">照片会漏掉很多信息。尽量添加简短备注:\n\n• 尽量具体：数量、品牌和盘中的内容\n• 说明油、酱汁和油性调味（往往看不出来）\n• 烹饪方式重要时请注明：炸、烤、蒸、自制\n• 精确克数或营养标签照片最有帮助</string>
     <string name="photo_accuracy_guide_cd">如何提高照片准确度</string>
     <string name="photo_accuracy_guide_dismiss">知道了</string>
     <string name="photo_accuracy_guide_title">获得更好估算的提示</string>

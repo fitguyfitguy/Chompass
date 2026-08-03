@@ -253,16 +253,14 @@
     <string name="onboarding_health_connect">Qoşul</string>
 
     <string name="onboarding_provider_title">Öz AI-nizi Gətirin</string>
-    <string name="onboarding_provider_subtitle">Yemək fotoları və kouç üçün istəyə bağlı API açarı.
-Google AI Studio pulsuzdur və tövsiyə olunur.</string>
+    <string name="onboarding_provider_subtitle">Yemək fotoları və kouç üçün istəyə bağlı API açarı.\nGoogle AI Studio pulsuzdur və tövsiyə olunur.</string>
     <string name="onboarding_provider_recommended_title">Tövsiyə olunur: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">Pulsuz və yüksək keyfiyyət. Yemək fotoları üçün ən yaxşı.</string>
     <string name="onboarding_provider_howto_title">Pulsuz Google AI Studio açarını necə əldə etmək olar</string>
     <string name="onboarding_provider_step_1">aistudio.google.com/apikey açın (açmaq üçün toxunun)</string>
     <string name="onboarding_provider_step_2">Google ilə daxil olun və API açarı yaradın</string>
     <string name="onboarding_provider_step_3">Aşağıya yapışdırın və Açarı yoxla düyməsinə toxunun</string>
-    <string name="onboarding_provider_footer">Bütün təminatçılar dəstəklənir. Açınız bu cihazda
-şifrələnmiş qalır. Sonra Parametrlərdə dəyişə bilərsiniz.</string>
+    <string name="onboarding_provider_footer">Bütün təminatçılar dəstəklənir. Açınız bu cihazda\nşifrələnmiş qalır. Sonra Parametrlərdə dəyişə bilərsiniz.</string>
     <string name="onboarding_skip_ai">Hələlik keç</string>
     <string name="onboarding_skip_ai_title">Bulud açarı olmadan davam edilsin?</string>
     <string name="onboarding_skip_ai_body">Cihazdakı AI telefonunuzda məxfi işləyir, amma Google AI Studio və digər bulud modellərindən çox daha az dəqiqdir. Yanlış kalori, buraxılmış elementlər və ya zəif foto oxunuşları gözləyin. Pulsuz AI Studio açarını Parametrlərdə istənilən vaxt əlavə edə bilərsiniz.</string>
@@ -767,12 +765,7 @@ Google AI Studio pulsuzdur və tövsiyə olunur.</string>
     <string name="on_device_model_not_loaded">Yüklənməyib. Tətbiq açıldıqdan sonra ilk sorğu bir dəqiqəyə qədər çəkə bilər.</string>
     <string name="on_device_model_privacy_notice">Tamamilə bu cihazda işləyir. Yazdığınız və ya çəkdiyiniz heç nə serverə göndərilmir. Endirmə model faylını birbaşa Hugging Face-dən (%1$s) alır, bu tətbiqin başqa yerdə istifadə etmədiyi üçüncü tərəf hostdur.</string>
     <string name="onboarding_api_key_non_gemini_ok">Hazırdır. Sürətli test yalnız Gemini üçündür</string>
-    <string name="photo_accuracy_guide_body">Fotolar çox şeyi qaçırır. Mümkün olanda qısa qeyd əlavə edin:
-
-• Dəqiq olun: miqdarlar, brendlər və boşqabdakılar
-• Yağları, sousları və yağlı sousları qeyd edin (tez-tez görünmür)
-• Vacib olanda bişirmə üsulunu qeyd edin: qızardılmış, qril, buxarda, evdə
-• Dəqiq qramlar və ya qidalanma etiketi fotosu ən çox kömək edir</string>
+    <string name="photo_accuracy_guide_body">Fotolar çox şeyi qaçırır. Mümkün olanda qısa qeyd əlavə edin:\n\n• Dəqiq olun: miqdarlar, brendlər və boşqabdakılar\n• Yağları, sousları və yağlı sousları qeyd edin (tez-tez görünmür)\n• Vacib olanda bişirmə üsulunu qeyd edin: qızardılmış, qril, buxarda, evdə\n• Dəqiq qramlar və ya qidalanma etiketi fotosu ən çox kömək edir</string>
     <string name="photo_accuracy_guide_cd">Foto dəqiqliyini necə yaxşılaşdırmaq olar</string>
     <string name="photo_accuracy_guide_dismiss">Anladım</string>
     <string name="photo_accuracy_guide_title">Daha yaxşı təxmin üçün məsləhətlər</string>
