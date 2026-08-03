@@ -4,15 +4,26 @@
 # ADB_BIN isn't set, auto-detect a Windows adb.exe in the usual spots and fall
 # back to plain `adb`. A Windows adb.exe must NOT inherit ANDROID_ADB_SERVER_PORT
 # (devenv sets 5038 for WSL adb) or it won't find the device on the 5037 server.
+#
+# Globs run in a subshell with nullglob so unmatched patterns are fine in both
+# bash and zsh (zsh NOMATCH otherwise aborts on e.g. missing Sdk/platform-tools).
 if [ -z "${ADB_BIN:-}" ]; then
-  for cand in \
-    /mnt/c/Users/*/Downloads/platform-tools*/platform-tools/adb.exe \
-    /mnt/c/Users/*/AppData/Local/Android/Sdk/platform-tools/adb.exe \
-    /mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/Google.PlatformTools_*/platform-tools/adb.exe \
-    /mnt/c/Android/platform-tools/adb.exe \
-    /mnt/c/platform-tools/adb.exe; do
-    if [ -f "$cand" ]; then ADB_BIN="$cand"; break; fi
-  done
+  ADB_BIN="$(
+    if [ -n "${ZSH_VERSION:-}" ]; then
+      setopt NULL_GLOB
+    elif [ -n "${BASH_VERSION:-}" ]; then
+      shopt -s nullglob
+    fi
+    for cand in \
+      /mnt/c/Users/*/Downloads/platform-tools*/platform-tools/adb.exe \
+      /mnt/c/Users/*/AppData/Local/Android/Sdk/platform-tools/adb.exe \
+      /mnt/c/Users/*/AppData/Local/Microsoft/WinGet/Packages/Google.PlatformTools_*/platform-tools/adb.exe \
+      /mnt/c/Android/platform-tools/adb.exe \
+      /mnt/c/platform-tools/adb.exe; do
+      if [ -f "$cand" ]; then printf '%s\n' "$cand"; exit 0; fi
+    done
+    exit 0
+  )"
 fi
 ADB_BIN="${ADB_BIN:-adb}"
 case "$ADB_BIN" in
