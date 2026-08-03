@@ -115,9 +115,14 @@ fun HomeScreen(container: AppContainer) {
     var showNutritionDetail by remember { mutableStateOf(false) }
 
     var showCameraCapture by remember { mutableStateOf(false) }
+    /** When true, next capture/gallery pick appends into an in-flight analysis re-run. */
     var appendPhotoForReanalyze by remember { mutableStateOf(false) }
+    /** When true, camera opens without clearing staged photos (Add label / Add photo). */
+    var appendToStagedPhotos by remember { mutableStateOf(false) }
     val photoSession = container.foodPhotoSession
     val stagedPhotoBytes by photoSession.stagedImages.collectAsState()
+    val showMultiPhotoCapture by photoSession.reviewOpen.collectAsState()
+    val isImportingPhotos by photoSession.importFromLibrary.collectAsState()
     val importFailedTick by photoSession.importFailedTick.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val photoImportFailedMessage = stringResource(R.string.photo_import_failed)
@@ -135,30 +140,18 @@ fun HomeScreen(container: AppContainer) {
         }
     }
 
-    fun startAnalyzeFromStaged(images: List<ByteArray>) {
-        if (images.isEmpty() || ui.isEntryAnalysisBusy) return
-        photoSession.clear()
-        vm.analyzePhotos(images)
-    }
-
     LaunchedEffect(importFailedTick) {
         if (importFailedTick == 0) return@LaunchedEffect
         snackbarHostState.showSnackbar(photoImportFailedMessage)
     }
 
-    // Gallery / share staging → analyze immediately (no review sheet).
-    LaunchedEffect(stagedPhotoBytes, ui.isEntryAnalysisBusy, appendPhotoForReanalyze, ui.showFoodResultSheet) {
-        if (stagedPhotoBytes.isEmpty()) return@LaunchedEffect
+    // Mid-flight "Add photo" from the Log sheet only — never auto-start LLM on staging.
+    LaunchedEffect(stagedPhotoBytes, appendPhotoForReanalyze) {
+        if (stagedPhotoBytes.isEmpty() || !appendPhotoForReanalyze) return@LaunchedEffect
         val images = stagedPhotoBytes.toList()
-        if (appendPhotoForReanalyze) {
-            photoSession.clear()
-            appendPhotoForReanalyze = false
-            vm.appendPhotosAndReanalyze(images)
-            return@LaunchedEffect
-        }
-        // Don't steal photos while a result sheet is open (unless appending above).
-        if (ui.isEntryAnalysisBusy || ui.showFoodResultSheet) return@LaunchedEffect
-        startAnalyzeFromStaged(images)
+        photoSession.clear()
+        appendPhotoForReanalyze = false
+        vm.appendPhotosAndReanalyze(images)
     }
 
     // Share-sheet photos only. Merge into FoodPhotoSession while RESUMED so a
@@ -197,6 +190,7 @@ fun HomeScreen(container: AppContainer) {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
+            appendToStagedPhotos = false
             photoSession.prepareFreshCameraCapture()
             showCameraCapture = true
         } else {
@@ -208,7 +202,21 @@ fun HomeScreen(container: AppContainer) {
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED
         ) {
+            appendToStagedPhotos = false
             photoSession.prepareFreshCameraCapture()
+            showCameraCapture = true
+        } else {
+            cameraPermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    /** Add another photo/label without wiping the staging sheet. */
+    fun openCameraAppendStaged() {
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            appendToStagedPhotos = true
+            photoSession.hideReviewKeepStaged()
             showCameraCapture = true
         } else {
             cameraPermission.launch(Manifest.permission.CAMERA)
@@ -524,7 +532,8 @@ fun HomeScreen(container: AppContainer) {
             draftForChip.items.isNotEmpty() &&
             !ui.showFoodResultSheet &&
             !ui.resumeProgressiveCapture &&
-            !showCameraCapture
+            !showCameraCapture &&
+            !showMultiPhotoCapture
         ) {
             FloatingActionButton(
                 onClick = { vm.showProgressiveMealSheet(true) },
@@ -748,12 +757,17 @@ fun HomeScreen(container: AppContainer) {
             onCapture = { bytes ->
                 showCameraCapture = false
                 clearShortcut(ShortcutEntryAction.CAMERA)
-                if (appendPhotoForReanalyze) {
-                    appendPhotoForReanalyze = false
-                    vm.appendPhotosAndReanalyze(listOf(bytes))
-                } else {
-                    photoSession.clear()
-                    if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(listOf(bytes))
+                when {
+                    appendPhotoForReanalyze -> {
+                        appendPhotoForReanalyze = false
+                        appendToStagedPhotos = false
+                        vm.appendPhotosAndReanalyze(listOf(bytes))
+                    }
+                    else -> {
+                        // Stage into pre-Analyze sheet (do not call the LLM yet).
+                        appendToStagedPhotos = false
+                        photoSession.stageFromCamera(bytes)
+                    }
                 }
             },
             onOpenGallery = { openGalleryPicker() },
@@ -761,7 +775,37 @@ fun HomeScreen(container: AppContainer) {
                 showCameraCapture = false
                 clearShortcut(ShortcutEntryAction.CAMERA)
                 appendPhotoForReanalyze = false
+                appendToStagedPhotos = false
+                photoSession.openReviewIfStaged()
             }
+        )
+    }
+
+    if (showMultiPhotoCapture && stagedPhotoBytes.isNotEmpty() && !ui.showFoodResultSheet) {
+        MultiPhotoCaptureSheet(
+            imageBytesList = stagedPhotoBytes,
+            addsFromLibrary = isImportingPhotos,
+            showScaleTip = ui.progressiveMeal?.items?.isNotEmpty() == true,
+            onAddPhoto = {
+                if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
+                    if (isImportingPhotos) {
+                        openGalleryPicker()
+                    } else {
+                        openCameraAppendStaged()
+                    }
+                }
+            },
+            onRemove = { index ->
+                photoSession.removeAt(index)
+            },
+            onAnalyze = { note, grams ->
+                val images = photoSession.stagedImages.value
+                photoSession.clear()
+                if (!ui.isEntryAnalysisBusy) vm.analyzePhotos(images, note, grams)
+            },
+            onDismiss = {
+                photoSession.clear()
+            },
         )
     }
 

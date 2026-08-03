@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import app.chompass.R
 import app.chompass.models.ServingUnitOption
+import app.chompass.services.FoodPhotoSession
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.theme.AppColors
@@ -301,7 +303,12 @@ fun ContextNoteSheet(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Lightweight pre-LLM staging: photos (plate + optional label), optional tip/grams,
+ * then one-tap Analyze. Keeps context cheap — the morphing Log sheet starts only
+ * after Analyze.
+ */
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun MultiPhotoCaptureSheet(
     imageBytesList: List<ByteArray>,
@@ -315,153 +322,199 @@ fun MultiPhotoCaptureSheet(
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var note by remember { mutableStateOf("") }
     var weightText by remember { mutableStateOf("") }
+    var tipExpanded by remember { mutableStateOf(false) }
 
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = state,
     ) {
-        SheetReviewToolbar(
-            title = stringResource(R.string.meal_photos_title),
-            primaryLabel = stringResource(R.string.action_analyze),
-            onCancel = onDismiss,
-            onPrimary = {
-                onAnalyze(note.takeIf { it.isNotBlank() }, parsePositiveGrams(weightText))
-            },
-        )
-
         Column(
             Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .imePadding()
-                .padding(bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
+                .fillMaxHeight(0.92f)
         ) {
-            if (showScaleTip) {
-                Text(
-                    stringResource(R.string.progressive_meal_scale_tip),
-                    fontSize = 14.sp,
-                    color = AppColors.Calorie,
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                )
-            }
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    stringResource(R.string.meal_photos_count, imageBytesList.size),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                )
-                if (imageBytesList.size < 10) {
-                    OutlinedButton(onClick = onAddPhoto) {
-                        Icon(
-                            if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Text(
-                            stringResource(
-                                if (addsFromLibrary) R.string.meal_photos_add_from_library
-                                else R.string.meal_photos_add_photo,
-                            ),
-                            modifier = Modifier.padding(start = 8.dp),
-                        )
-                    }
-                }
-            }
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp),
-            ) {
-                itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
-                    val bitmap = remember(bytes) { decodePreviewBitmap(bytes) }
-                    Box {
-                        if (bitmap != null) {
-                            androidx.compose.foundation.Image(
-                                bitmap = bitmap.asImageBitmap(),
-                                contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .size(width = 240.dp, height = 260.dp)
-                                    .clip(RoundedCornerShape(20.dp)),
-                            )
-                        }
-                        IconButton(
-                            onClick = { onRemove(index) },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(8.dp)
-                                .size(34.dp)
-                                .background(Color.Black.copy(alpha = 0.62f), CircleShape),
-                        ) {
-                            Icon(
-                                Icons.Filled.Close,
-                                contentDescription = stringResource(R.string.action_remove),
-                                tint = Color.White,
-                            )
-                        }
-                    }
-                }
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.meal_photos_title),
+                onCancel = onDismiss,
+            )
 
             Column(
                 Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 Text(
-                    stringResource(R.string.context_note_section),
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    stringResource(R.string.context_note_hint),
+                    stringResource(R.string.meal_photos_subtitle),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    modifier = Modifier.padding(horizontal = 20.dp),
                 )
-                FudGlassTextField(
-                    value = note,
-                    onValueChange = { note = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 110.dp),
-                    placeholder = stringResource(R.string.context_note_placeholder),
-                )
-                Text(
-                    stringResource(R.string.context_note_weight_section),
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    stringResource(R.string.context_note_weight_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    FudGlassTextField(
-                        value = weightText,
-                        onValueChange = { weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' } },
-                        placeholder = stringResource(R.string.context_note_weight_placeholder),
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                    )
+
+                if (showScaleTip) {
                     Text(
-                        stringResource(R.string.context_note_weight_unit),
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        stringResource(R.string.progressive_meal_scale_tip),
+                        fontSize = 14.sp,
+                        color = AppColors.Calorie,
+                        modifier = Modifier.padding(horizontal = 20.dp),
                     )
                 }
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        stringResource(R.string.meal_photos_count, imageBytesList.size),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    )
+                    if (imageBytesList.size < FoodPhotoSession.MAX_IMAGES) {
+                        OutlinedButton(onClick = onAddPhoto) {
+                            Icon(
+                                if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                stringResource(
+                                    if (addsFromLibrary) R.string.meal_photos_add_from_library
+                                    else if (imageBytesList.size == 1) R.string.meal_photos_add_label
+                                    else R.string.meal_photos_add_photo,
+                                ),
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                    }
+                }
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp),
+                ) {
+                    itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
+                        val bitmap = remember(bytes) { decodePreviewBitmap(bytes) }
+                        Box {
+                            if (bitmap != null) {
+                                androidx.compose.foundation.Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(width = 160.dp, height = 180.dp)
+                                        .clip(RoundedCornerShape(16.dp)),
+                                )
+                            }
+                            IconButton(
+                                onClick = { onRemove(index) },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(6.dp)
+                                    .size(32.dp)
+                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.action_remove),
+                                    tint = Color.White,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    TextButton(onClick = { tipExpanded = !tipExpanded }) {
+                        Text(
+                            stringResource(R.string.entry_analysis_tip_cta),
+                            color = AppColors.Calorie,
+                            fontSize = 14.sp,
+                        )
+                    }
+                    if (tipExpanded) {
+                        Text(
+                            stringResource(R.string.context_note_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        )
+                        val contextChips = listOf(
+                            stringResource(R.string.context_note_chip_no_oil),
+                            stringResource(R.string.context_note_chip_extra_cheese),
+                            stringResource(R.string.context_note_chip_large),
+                            stringResource(R.string.context_note_chip_grilled),
+                        )
+                        androidx.compose.foundation.layout.FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            contextChips.forEach { label ->
+                                androidx.compose.material3.FilterChip(
+                                    selected = note.contains(label, ignoreCase = true),
+                                    onClick = {
+                                        note = if (note.isBlank()) label
+                                        else if (note.contains(label, ignoreCase = true)) note
+                                        else "$note, $label"
+                                    },
+                                    label = { Text(label, fontSize = 13.sp) },
+                                    colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
+                                        selectedLabelColor = AppColors.Calorie,
+                                    ),
+                                )
+                            }
+                        }
+                        FudGlassTextField(
+                            value = note,
+                            onValueChange = { note = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 88.dp),
+                            placeholder = stringResource(R.string.context_note_placeholder),
+                        )
+                        Text(
+                            stringResource(R.string.context_note_weight_section),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            FudGlassTextField(
+                                value = weightText,
+                                onValueChange = {
+                                    weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
+                                },
+                                placeholder = stringResource(R.string.context_note_weight_placeholder),
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                stringResource(R.string.context_note_weight_unit),
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            )
+                        }
+                    }
+                }
             }
+
+            SheetStickyPrimaryBar(
+                primaryLabel = stringResource(R.string.action_analyze),
+                onPrimary = {
+                    onAnalyze(note.takeIf { it.isNotBlank() }, parsePositiveGrams(weightText))
+                },
+            )
         }
     }
 }

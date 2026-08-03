@@ -5,11 +5,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * App-scoped staging for in-app camera / gallery food photos.
- * Survives Home composition dispose and theme remounts — unlike
+ * App-scoped staging for in-app camera / gallery food photos and the pre-Analyze
+ * sheet. Survives Home composition dispose and theme remounts — unlike
  * `remember { }` flags that used to drop gallery results back to bare Home.
  *
- * Home auto-starts AI analysis when images are staged (no obligatory review sheet).
+ * Home opens a lightweight staging sheet so the user can add a label photo or tip
+ * before the LLM call; Analyze starts the morphing Log sheet.
  * External share-ins use [app.chompass.AppContainer.sharedImageInbox] only; Home merges those
  * into this session. Do **not** write gallery picks into the share inbox.
  */
