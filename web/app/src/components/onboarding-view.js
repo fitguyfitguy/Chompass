@@ -5,8 +5,11 @@ import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/
 import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
-import { openInput } from "../lib/ui/dialog.js";
+import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t } from "../lib/i18n/index.js";
+
+/** Gemini first — matches Android AI Studio default/recommend. */
+const ONBOARDING_PROVIDER_ORDER = ["gemini", "anthropic", "openai_compatible"];
 
 /** @typedef {{ id: string, title?: string, titleKey?: string, hideChrome?: boolean, hideCta?: boolean }} OnboardingStepDef */
 
@@ -190,12 +193,7 @@ export class OnboardingView extends HTMLElement {
     this.querySelector("[data-prev]")?.addEventListener("click", () => this.goPrev());
     this.querySelector("[data-next]")?.addEventListener("click", () => this.onNext());
     this.querySelector("[data-skip-ai]")?.addEventListener("click", () => {
-      this.aiDraft.skip = true;
-      this.aiDraft.apiKey = "";
-      this.aiDraft.validatedKey = "";
-      this.aiDraft.testKind = "";
-      this.aiDraft.testMessage = "";
-      this.goNext();
+      void this.skipAiSetup();
     });
     this.querySelector("[data-skip-bf]")?.addEventListener("click", () => {
       this.draft.bodyFatPercentage = null;
@@ -282,7 +280,33 @@ export class OnboardingView extends HTMLElement {
       this.querySelector("[data-test-ai-key]")?.addEventListener("click", () => {
         void this.testAiKey({ advanceOnSuccess: false });
       });
+      this.querySelector("[data-recommend-ai-studio]")?.addEventListener("click", () => {
+        this.collectAiDraft();
+        this.aiDraft.provider = "gemini";
+        this.aiDraft.model = resolveProviderModel("gemini", null, "primary");
+        this.aiDraft.validatedKey = "";
+        this.aiDraft.testKind = "";
+        this.aiDraft.testMessage = "";
+        this.render();
+      });
     }
+  }
+
+  /** Confirm leaving without a cloud key (PWA has no on-device LLM — set up later in Settings). */
+  async skipAiSetup() {
+    const ok = await openConfirm({
+      title: t("onboarding.ai.skip_title"),
+      message: t("onboarding.ai.skip_body"),
+      confirmLabel: t("onboarding.ai.skip_confirm"),
+      cancelLabel: t("action.cancel"),
+    });
+    if (!ok) return;
+    this.aiDraft.skip = true;
+    this.aiDraft.apiKey = "";
+    this.aiDraft.validatedKey = "";
+    this.aiDraft.testKind = "";
+    this.aiDraft.testMessage = "";
+    this.goNext();
   }
 
   collectAiDraft() {
@@ -445,9 +469,15 @@ export class OnboardingView extends HTMLElement {
       const testClass = this.aiDraft.testKind
         ? `onboarding-ai-test-status onboarding-ai-test-status--${this.aiDraft.testKind}`
         : "onboarding-ai-test-status";
-      return `
-        <p style="color:var(--muted);margin:0;">${t("onboarding.ai.hint")}</p>
-        <details class="micros-details onboarding-ai-howto" id="ob-ai-howto" ${this.aiDraft.howtoOpen ? "open" : ""}>
+      const providerOptions = ONBOARDING_PROVIDER_ORDER.filter((pid) => PROVIDERS[pid])
+        .map((pid) => {
+          const meta = PROVIDERS[pid];
+          return `<option value="${pid}" ${provider === pid ? "selected" : ""}>${meta.label}</option>`;
+        })
+        .join("");
+      const howto =
+        provider === "gemini"
+          ? `<details class="micros-details onboarding-ai-howto" id="ob-ai-howto" ${this.aiDraft.howtoOpen ? "open" : ""}>
           <summary>${t("onboarding.ai.howto_summary")}</summary>
           <ol>
             <li>${t("onboarding.ai.howto_1").replace(
@@ -457,14 +487,21 @@ export class OnboardingView extends HTMLElement {
             <li>${t("onboarding.ai.howto_2")}</li>
             <li>${t("onboarding.ai.howto_3")}</li>
           </ol>
-        </details>
+        </details>`
+          : "";
+      return `
+        <p style="color:var(--muted);margin:0;">${t("onboarding.ai.hint")}</p>
+        <button type="button" class="onboarding-ai-recommend" data-recommend-ai-studio>
+          <span class="onboarding-ai-recommend__star" aria-hidden="true">★</span>
+          <span class="onboarding-ai-recommend__copy">
+            <strong>${t("onboarding.ai.recommended_title")}</strong>
+            <span>${t("onboarding.ai.recommended_subtitle")}</span>
+          </span>
+        </button>
+        ${howto}
         <div class="field">
           <label for="ob-ai-provider">${t("onboarding.ai.provider")}</label>
-          <select id="ob-ai-provider">
-            ${Object.entries(PROVIDERS)
-              .map(([pid, meta]) => `<option value="${pid}" ${provider === pid ? "selected" : ""}>${meta.label}</option>`)
-              .join("")}
-          </select>
+          <select id="ob-ai-provider">${providerOptions}</select>
         </div>
         <div class="field">
           <label for="ob-ai-model">${t("onboarding.ai.model")}</label>
@@ -477,7 +514,8 @@ export class OnboardingView extends HTMLElement {
             <button type="button" class="btn" data-test-ai-key>${t("onboarding.ai.test_key")}</button>
             <span id="ob-ai-test-status" class="${testClass}" role="status" aria-live="polite">${escapeAttr(this.aiDraft.testMessage)}</span>
           </div>
-        </div>`;
+        </div>
+        <p class="onboarding-ai-footer">${t("onboarding.ai.footer")}</p>`;
     }
     if (id === "building") {
       const doneCount = Math.min(BUILD_ITEM_KEYS.length, Math.floor((this.buildPct / 100) * BUILD_ITEM_KEYS.length));
@@ -669,9 +707,13 @@ export class OnboardingView extends HTMLElement {
       await this.finish();
       return;
     }
-    if (id === "ai" && this.aiDraft.apiKey.trim()) {
-      const ok = await this.testAiKey({ advanceOnSuccess: true });
-      if (!ok) return;
+    if (id === "ai") {
+      if (this.aiDraft.apiKey.trim()) {
+        const ok = await this.testAiKey({ advanceOnSuccess: true });
+        if (!ok) return;
+        return;
+      }
+      await this.skipAiSetup();
       return;
     }
     this.goNext();

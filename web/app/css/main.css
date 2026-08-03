@@ -2976,6 +2976,51 @@ body.dialog-open {
   margin: 0.4rem 0 0.85rem;
 }
 
+.onboarding-ai-recommend {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0.85rem 0 0.5rem;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border: 1px solid color-mix(in srgb, var(--accent, #e85d75) 35%, transparent);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.onboarding-ai-recommend__star {
+  color: var(--accent, #e85d75);
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.onboarding-ai-recommend__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.onboarding-ai-recommend__copy strong {
+  font-size: 0.95rem;
+}
+
+.onboarding-ai-recommend__copy span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.onboarding-ai-footer {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 .onboarding-ai-howto ol {
   margin: 0.5rem 0 0;
   padding-left: 1.2rem;
