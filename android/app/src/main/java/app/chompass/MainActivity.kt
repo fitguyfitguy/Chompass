@@ -41,6 +41,7 @@ import app.chompass.services.LauncherShortcuts
 import app.chompass.services.MealShare
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.InAppReview
+import app.chompass.services.health.HealthConnectDiagnostics
 import app.chompass.ui.home.ImportSharedMealSheet
 import app.chompass.ui.navigation.ChompassNavHost
 import app.chompass.ui.theme.AppThemeColor
@@ -386,6 +387,7 @@ open class MainActivity : ComponentActivity() {
         val onDeviceLlmPrompt: String = "full",
         val onDeviceLlmRepeat: Int = 1,
         val onDeviceLlmClearCache: Boolean = false,
+        val diagnoseHealthConnect: Boolean = false,
     )
 
     private fun consumeDebugIntentExtras(intent: Intent?): DebugIntentActions {
@@ -409,6 +411,8 @@ open class MainActivity : ComponentActivity() {
             onDeviceLlmPrompt = if (presetDaily) "fewshot_units" else intent.getStringExtra("ondevice_llm_prompt") ?: "full",
             onDeviceLlmRepeat = intent.getIntExtra("ondevice_llm_repeat", 1).coerceIn(1, 5),
             onDeviceLlmClearCache = intent.getBooleanExtra("ondevice_llm_clear_cache", false),
+            diagnoseHealthConnect = BuildConfig.DEBUG &&
+                intent.getBooleanExtra("diagnose_health_connect", false),
         )
         if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
         if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -417,6 +421,7 @@ open class MainActivity : ComponentActivity() {
         if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")
         if (actions.restoreRealData) intent.removeExtra("restore_real_data")
         if (actions.runEntryBenchmark) intent.removeExtra("run_entry_benchmark")
+        if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
         if (actions.runOnDeviceLlmTest) {
             intent.removeExtra("run_ondevice_llm_test")
             intent.removeExtra("ondevice_llm_backend")
@@ -474,6 +479,12 @@ open class MainActivity : ComponentActivity() {
                         repeatCount = actions.onDeviceLlmRepeat,
                         clearCache = actions.onDeviceLlmClearCache,
                     ),
+                )
+            }
+            if (actions.diagnoseHealthConnect) {
+                HealthConnectDiagnostics.log(
+                    this@MainActivity,
+                    container.health,
                 )
             }
         }
