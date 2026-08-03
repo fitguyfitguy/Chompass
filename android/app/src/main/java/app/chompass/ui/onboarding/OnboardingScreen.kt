@@ -18,31 +18,41 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronLeft
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.ui.theme.AppColors
 
 @Composable
 fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
     val vm: OnboardingViewModel = viewModel(factory = OnboardingViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
+    val context = LocalContext.current
+    val onDeviceAvailable = remember(context) { OnDeviceCapability.isSupported(context) }
+    var showAiSkipDialog by remember { mutableStateOf(false) }
 
     Column(
         Modifier
@@ -160,6 +170,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     apiKeyTesting = ui.apiKeyTesting,
                     apiKeyTestMessage = ui.apiKeyTestMessage,
                     apiKeyTestOk = ui.apiKeyTestOk,
+                    onDeviceAvailable = onDeviceAvailable,
                     onProviderChange = vm::setAiProvider,
                     onModelChange = vm::setAiModel,
                     onKeyChange = vm::setApiKey,
@@ -232,6 +243,40 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     )
                 }
             }
+            OnboardingStep.PROVIDER -> {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        onClick = {
+                            if (ui.needsAiSkipConfirm) showAiSkipDialog = true
+                            else vm.next()
+                        },
+                        enabled = ui.canAdvance,
+                        shape = RoundedCornerShape(28.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onBackground,
+                            contentColor = MaterialTheme.colorScheme.background
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.action_continue),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    TextButton(onClick = { showAiSkipDialog = true }) {
+                        Text(stringResource(R.string.onboarding_skip_ai))
+                    }
+                }
+            }
             else -> {
                 // iOS continueButton: full-width inverse-coloured capsule.
                 Button(
@@ -256,5 +301,35 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                 }
             }
         }
+    }
+
+    if (showAiSkipDialog) {
+        AlertDialog(
+            onDismissRequest = { showAiSkipDialog = false },
+            title = { Text(stringResource(R.string.onboarding_skip_ai_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        if (onDeviceAvailable) R.string.onboarding_skip_ai_body
+                        else R.string.onboarding_skip_ai_later_body
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showAiSkipDialog = false
+                        vm.skipAiSetup(useOnDevice = onDeviceAvailable)
+                    }
+                ) {
+                    Text(stringResource(R.string.onboarding_skip_ai_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAiSkipDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
     }
 }

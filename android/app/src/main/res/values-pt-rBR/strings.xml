@@ -253,14 +253,21 @@
     <string name="onboarding_health_connect">Conectar</string>
 
     <string name="onboarding_provider_title">Use sua própria IA</string>
-    <string name="onboarding_provider_subtitle">O Chompass precisa de uma chave de provedor\nde IA para analisar sua comida. Você usa a sua.</string>
-    <string name="onboarding_provider_recommended_title">Recomendado: Google Gemini</string>
-    <string name="onboarding_provider_recommended_subtitle">Versão gratuita disponível, rápida e precisa</string>
+    <string name="onboarding_provider_subtitle">Chave de API opcional para fotos de comida e o coach.
+O Google AI Studio é gratuito e recomendado.</string>
+    <string name="onboarding_provider_recommended_title">Recomendado: Google AI Studio</string>
+    <string name="onboarding_provider_recommended_subtitle">Grátis e de alta qualidade — ideal para fotos de comida</string>
     <string name="onboarding_provider_howto_title">Como obter uma chave gratuita do Google AI Studio</string>
     <string name="onboarding_provider_step_1">Abra aistudio.google.com/apikey (toque para abrir)</string>
     <string name="onboarding_provider_step_2">Entre com o Google e crie uma chave de API</string>
     <string name="onboarding_provider_step_3">Cole abaixo e toque em Testar chave</string>
-    <string name="onboarding_provider_footer">13 provedores compatíveis. Sua chave fica\nneste dispositivo, criptografada.</string>
+    <string name="onboarding_provider_footer">Todos os provedores suportados. Sua chave fica
+neste dispositivo, criptografada. Você pode mudar em Ajustes.</string>
+    <string name="onboarding_skip_ai">Pular por enquanto</string>
+    <string name="onboarding_skip_ai_title">Continuar sem chave na nuvem?</string>
+    <string name="onboarding_skip_ai_body">A IA no dispositivo roda em privado no seu telefone, mas é bem menos precisa que o Google AI Studio ou outros modelos na nuvem. Espere calorias erradas, itens perdidos ou leituras fracas de fotos. Você pode adicionar uma chave gratuita do AI Studio a qualquer momento em Ajustes.</string>
+    <string name="onboarding_skip_ai_later_body">A IA de fotos de comida e o coach precisam de uma chave de API ou de um modelo no dispositivo. Você pode configurar qualquer um a qualquer momento em Ajustes.</string>
+    <string name="onboarding_skip_ai_confirm">Continuar mesmo assim</string>
 
     <string name="onboarding_building_calories">Calorias</string>
     <string name="onboarding_building_carbs">Carboidratos</string>

@@ -74,17 +74,20 @@ internal fun ProviderStep(
     apiKeyTesting: Boolean,
     apiKeyTestMessage: String,
     apiKeyTestOk: Boolean?,
+    onDeviceAvailable: Boolean,
     onProviderChange: (AIProvider) -> Unit,
     onModelChange: (String) -> Unit,
     onKeyChange: (String) -> Unit,
     onTestKey: () -> Unit,
 ) {
-    // iOS aiProviderStep: sparkles icon in circle, "Bring Your Own AI" title,
-    // recommended-provider Gemini card with star icon, expandable setup guide, footer.
-    // Scrollable — the BYOK card (provider + model + key) can overflow shorter screens.
+    // Sparkles hero, AI Studio recommended card, expandable setup guide (Gemini only),
+    // and BYOK card. Key is optional — empty cloud keys go through the skip dialog.
     var selectorSheet by remember { mutableStateOf<ProviderSelectorSheet?>(null) }
     var howtoExpanded by remember { mutableStateOf(false) }
     val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+    val providerChoices = remember(onDeviceAvailable) {
+        AIProvider.values().filter { it != AIProvider.ON_DEVICE || onDeviceAvailable }
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -121,14 +124,16 @@ internal fun ProviderStep(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(18.dp))
-        // Recommended provider card
+        // Recommended provider card — tap selects Google AI Studio (Gemini).
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
             border = BorderStroke(1.dp, AppColors.Calorie.copy(alpha = 0.25f)),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onProviderChange(AIProvider.GEMINI) }
         ) {
             Row(
                 Modifier.padding(14.dp),
@@ -164,60 +169,59 @@ internal fun ProviderStep(
             }
         }
         Spacer(Modifier.height(10.dp))
-        // Collapsible how-to (collapsed by default)
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { howtoExpanded = !howtoExpanded }
-                ) {
-                    Text(
-                        stringResource(R.string.onboarding_provider_howto_title),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = Icons.Outlined.KeyboardArrowDown,
-                        contentDescription = null,
-                        modifier = Modifier.size(22.dp),
-                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
-                    )
-                }
-                if (howtoExpanded) {
-                    AiSetupRow(
-                        number = "1",
-                        text = stringResource(R.string.onboarding_provider_step_1),
-                        onClick = { uriHandler.openUri("https://aistudio.google.com/apikey") }
-                    )
-                    AiSetupRow("2", stringResource(R.string.onboarding_provider_step_2))
-                    AiSetupRow("3", stringResource(R.string.onboarding_provider_step_3))
+        // Collapsible how-to — only relevant while Gemini / AI Studio is selected.
+        if (provider == AIProvider.GEMINI) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { howtoExpanded = !howtoExpanded }
+                    ) {
+                        Text(
+                            stringResource(R.string.onboarding_provider_howto_title),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Outlined.KeyboardArrowDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp),
+                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                        )
+                    }
+                    if (howtoExpanded) {
+                        AiSetupRow(
+                            number = "1",
+                            text = stringResource(R.string.onboarding_provider_step_1),
+                            onClick = { uriHandler.openUri("https://aistudio.google.com/apikey") }
+                        )
+                        AiSetupRow("2", stringResource(R.string.onboarding_provider_step_2))
+                        AiSetupRow("3", stringResource(R.string.onboarding_provider_step_3))
+                    }
                 }
             }
+            Spacer(Modifier.height(10.dp))
         }
-        Spacer(Modifier.height(10.dp))
-        // BYOK setup: provider, model, and API key. AI drives goal calculation, so a key is
-        // required to continue (gated via OnboardingState.canAdvance). Persisted by the VM.
+        // BYOK setup: provider, model, and optional API key.
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(Modifier.padding(vertical = 4.dp)) {
-                // Provider — opens the shared polished picker sheet (matches Settings).
                 OnboardingSelectorRow(
                     label = stringResource(R.string.settings_ai_provider),
                     value = stringResource(provider.displayNameRes),
                     onClick = { selectorSheet = ProviderSelectorSheet.PROVIDER }
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 14.dp))
-                // Model — same picker; providers that allow a custom model id get a custom field.
                 OnboardingSelectorRow(
                     label = stringResource(R.string.settings_ai_model),
                     value = model.ifEmpty { stringResource(R.string.settings_ai_model_unset) },
@@ -273,7 +277,6 @@ internal fun ProviderStep(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
-        // Privacy note on the AI provider step.
         Text(
             stringResource(R.string.onboarding_privacy_note),
             style = MaterialTheme.typography.bodySmall,
@@ -285,8 +288,12 @@ internal fun ProviderStep(
     when (selectorSheet) {
         ProviderSelectorSheet.PROVIDER -> OptionPickerSheet(
             title = stringResource(R.string.sheet_ai_provider),
-            items = AIProvider.values().toList(),
+            items = providerChoices,
             label = { stringResource(it.displayNameRes) },
+            subtitle = {
+                if (it == AIProvider.ON_DEVICE) stringResource(R.string.ai_provider_on_device_subtitle)
+                else null
+            },
             selected = { it == provider },
             onSelect = { onProviderChange(it); selectorSheet = null },
             onDismiss = { selectorSheet = null }
