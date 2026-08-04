@@ -774,7 +774,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         selectedServingQuantity: Double? = null,
         editedAnalysis: FoodAnalysis? = null
     ) {
-        val analysis = editedAnalysis ?: _ui.value.pendingAnalysis ?: return
+        val pendingAnalysis = _ui.value.pendingAnalysis
+        val analysis = editedAnalysis ?: pendingAnalysis ?: return
         if (_ui.value.saving) return
         val reviewSource = _ui.value.pendingReviewSource
         val pendingFoodSource = _ui.value.pendingFoodSource
@@ -783,6 +784,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             if (_ui.value.saving) return@launch
             _ui.value = _ui.value.copy(saving = true)
             try {
+                withContext(Dispatchers.Default) {
                 val imageBytes = _ui.value.pendingImageBytes
                 val id = UUID.randomUUID()
                 // If this analysis came from a Saved Meals review, reuse the
@@ -801,10 +803,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     ?: pendingFoodSource
                     ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT
                 val rawName = name?.takeIf { it.isNotBlank() } ?: analysis.name
-                // Relog of the same Saved Meals identity keeps the name so
-                // servings merge. Brand-new logs (or a rename that collides)
-                // get "Name (2)" etc.
-                val resolvedName = resolveNewFoodName(rawName, relogTemplate = reviewSource)
+                // The pending draft's name was already disambiguated against the
+                // diary when it was saved (savePendingDraft), so an unedited name
+                // is still unique — skip the O(history) existing-name lookup at
+                // confirm time. Saved-meals relogs keep resolveNewFoodName's
+                // relog short-circuit so servings still merge.
+                val resolvedName = if (reviewSource == null && rawName == pendingAnalysis?.name) {
+                    rawName
+                } else {
+                    resolveNewFoodName(rawName, relogTemplate = reviewSource)
+                }
                 val entry = analysis.toMicronutrients().scaled(effectiveScale, round1 = false).applyTo(
                     FoodEntry(
                         id = id,
@@ -834,14 +842,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         },
                     )
                 )
-                container.prefs.setPendingFoodAnalysisDraft(
-                    PendingFoodAnalysisDraft(
+                // Commit the confirming AI-entry draft snapshot atomically with
+                // the diary row (one DataStore edit instead of a draft-write +
+                // entry-write pair), then a small edit clears the draft now that
+                // the row exists.
+                container.foodRepository.addEntry(
+                    entry,
+                    draft = PendingFoodAnalysisDraft(
                         analysis = analysis,
                         imageFilename = filename,
                         source = entrySource,
-                    )
+                    ),
                 )
-                container.foodRepository.addEntry(entry)
                 container.prefs.setPendingFoodAnalysisDraft(null)
                 _ui.value = _ui.value.copy(
                     pendingAnalysis = null,
@@ -851,6 +863,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingDraftImageFilename = null,
                     pendingReviewSource = null
                 )
+                }
             } finally {
                 _ui.value = _ui.value.copy(saving = false)
             }

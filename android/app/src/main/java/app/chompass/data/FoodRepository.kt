@@ -2,6 +2,7 @@ package app.chompass.data
 
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.services.FoodImageStore
 import app.chompass.services.PerfLog
 import app.chompass.services.ReviewPrompter
@@ -76,11 +77,16 @@ class FoodRepository(
             }
         }
 
-    suspend fun addEntry(entry: FoodEntry) {
+    suspend fun addEntry(entry: FoodEntry, draft: PendingFoodAnalysisDraft? = null) {
         // Persistence commit — only this entry's month bucket is re-serialized
         // and written, not the whole food log, then the Health Connect IPC insert.
+        // An optional confirming AI-entry draft snapshot commits in the same edit
+        // so the save never costs an extra full-file DataStore write.
         PerfLog.measure("save", "dataStore", "month=${entry.month()}") {
-            prefs.applyFoodEntryBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
+            prefs.applyFoodEntryBucketChanges(
+                upsertsByMonth = mapOf(entry.month() to listOf(entry)),
+                draft = draft,
+            )
         }
         sync?.touch(entry.id, "food")
         if (shouldSyncHealth()) {
