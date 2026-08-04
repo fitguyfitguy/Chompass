@@ -417,6 +417,16 @@ main.view {
   transition: stroke-dasharray 280ms ease-out;
 }
 
+.calorie-ring__burn {
+  transition: stroke-dasharray 280ms ease-out;
+}
+
+.calorie-ring__burn-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  fill: var(--protein);
+}
+
 .macro-tubes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -607,6 +617,14 @@ main.view {
 
 .calorie-bar.is-over > span {
   background: linear-gradient(90deg, color-mix(in srgb, var(--over) 75%, #000), var(--over));
+}
+
+.calorie-hero__burn {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--protein);
 }
 
 .macro-rows {

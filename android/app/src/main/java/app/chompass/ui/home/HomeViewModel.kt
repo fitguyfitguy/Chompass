@@ -9,6 +9,7 @@ import app.chompass.data.disambiguateFoodName
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
+import app.chompass.models.ActiveBurnArcData
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
@@ -160,6 +161,20 @@ data class HomeUiState(
         return HomeCalorieDisplay.gaugeBaseGoal(effectiveCalorieMode, baseCalorieGoal, sedentary)
     }
     val displayActiveCalories: Int get() = resolvedActiveBurn?.calories ?: 0
+    /**
+     * Today's live active burn vs its "typical" reference, for the hero's
+     * inner arc. Kept separate from [resolvedActiveBurn] (whose estimate
+     * fallback conflates live with reference); null when nothing live to draw.
+     */
+    val activeBurnArc: ActiveBurnArcData? get() {
+        val p = profile ?: return null
+        return HomeCalorieDisplay.activeBurnArc(
+            liveHcActive = activitySnapshot.activeCalories,
+            manualActiveCalories = manualActiveKcal,
+            healthConnectAverage = measuredActiveAverageCalories,
+            estimatedDailyActive = p.estimatedDailyActiveCalories,
+        )
+    }
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
 }
 
@@ -495,11 +510,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val day = _selectedDate.value
             val display = _ui.value.homeDisplay
-            val needsMeasuredEnergy = when (display.calorieDisplayMode) {
-                HomeCalorieDisplayMode.STATIC -> false
-                HomeCalorieDisplayMode.ADD_ACTIVE -> container.prefs.healthConnectEnabled.first()
-            }
-            if (!display.showSteps && !needsMeasuredEnergy) {
+            val needsActivitySnapshot = display.showSteps || display.showActiveCalories
+            val needsMeasuredEnergy = display.calorieDisplayMode ==
+                HomeCalorieDisplayMode.ADD_ACTIVE && container.prefs.healthConnectEnabled.first()
+            if (!needsActivitySnapshot && !needsMeasuredEnergy) {
                 _ui.value = _ui.value.copy(activitySnapshot = HomeActivitySnapshot(date = day))
                 return@launch
             }

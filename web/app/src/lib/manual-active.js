@@ -82,3 +82,23 @@ export function addActiveGaugeTarget(fullTarget, sedentaryBudget, burn) {
   if (!burn || burn.calories <= 0) return Math.max(0, fullTarget);
   return Math.max(0, sedentaryBudget) + burn.calories;
 }
+
+/**
+ * Today's active burn vs a "typical" reference for the diary hero's inner
+ * arc. Web has no Health Connect, so live = manual entries only and the
+ * reference is always the PAL estimate. Mirrors Android
+ * HomeCalorieDisplay.activeBurnArc (which additionally sources the reference
+ * from the Health Connect 14-day average when available).
+ * @param {number} liveManualKcal
+ * @param {number} estimatedDailyActive
+ */
+export function activeBurnArcWeb(liveManualKcal, estimatedDailyActive) {
+  const live = Math.max(0, Math.round(liveManualKcal) || 0);
+  if (live <= 0) return null;
+  const typical = Math.max(0, Math.round(estimatedDailyActive) || 0);
+  return {
+    live,
+    typical,
+    source: typical > 0 ? "estimated" : "manual",
+  };
+}
