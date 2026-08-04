@@ -102,3 +102,15 @@ export function activeBurnArcWeb(liveManualKcal, estimatedDailyActive) {
     source: typical > 0 ? "estimated" : "manual",
   };
 }
+
+/**
+ * Burn-thermometer progress: how much of a typical day's active burn has been
+ * reached, clamped to [0, 1]. Mirrors Android
+ * HomeCalorieDisplay.activeBurnRampProgress.
+ * @param {number} live
+ * @param {number} typical
+ */
+export function activeBurnRampProgress(live, typical) {
+  if (!(typical > 0)) return 1;
+  return Math.min(1, Math.max(0, live / typical));
+}

@@ -47,6 +47,7 @@ import {
 } from "../lib/progressive-meal.js";
 import {
   activeBurnArcWeb,
+  activeBurnRampProgress,
   addActiveGaugeTarget,
   addManualActiveEntry,
   makeManualActiveEntry,
@@ -139,32 +140,25 @@ function ringSvg(eaten, target, burnArc = null, baseGoal = null) {
   const arc = `M ${x1} ${y} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y}`;
   const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
 
-  // Activity-earned tail [baseGoal → target], shaded light (always estimated on
-  // web — no Health Connect); the beyond-typical excess fades further.
+  // Activity-earned tail [baseGoal → target]. Its opacity is a burn thermometer
+  // (live vs typical day); a success dot marks beating the typical day.
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
   let tailMarkup = "";
   if (baseFrac < 1) {
     const gap = baseFrac * halfC;
-    let endFrac = 1;
-    let overMarkup = "";
-    if (burnArc && burnArc.typical > 0) {
-      const typicalFrac = Math.min(1, (baseGoal + burnArc.typical) / target);
-      if (typicalFrac > baseFrac && typicalFrac < 1) {
-        endFrac = typicalFrac;
-        const typicalDist = typicalFrac * halfC;
-        overMarkup = `
-      <path class="calorie-ring__tail calorie-ring__tail--over" d="${arc}" fill="none"
-        stroke="var(--protein)" stroke-width="${stroke}" stroke-linecap="round"
-        stroke-dasharray="${typicalDist.toFixed(1)} 0"
-        data-dash="${typicalDist.toFixed(1)} ${(halfC - typicalDist).toFixed(1)}" />`;
-      }
-    }
-    const baseLen = (endFrac - baseFrac) * halfC;
+    const tailLen = (1 - baseFrac) * halfC;
+    const ramp = burnArc && burnArc.typical > 0
+      ? 0.25 + 0.6 * activeBurnRampProgress(burnArc.live, burnArc.typical)
+      : 0.45;
+    const overDot = burnArc && burnArc.typical > 0 && burnArc.live > burnArc.typical
+      ? `<circle class="calorie-ring__tail-dot" cx="${(cx + r).toFixed(1)}" cy="${y}" r="6" />`
+      : "";
     tailMarkup = `
       <path class="calorie-ring__tail" d="${arc}" fill="none"
         stroke="var(--protein)" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="${gap.toFixed(1)} 0"
-        data-dash="${gap.toFixed(1)} ${baseLen.toFixed(1)}" />${overMarkup}`;
+        data-dash="${gap.toFixed(1)} ${tailLen.toFixed(1)}"
+        style="opacity:${ramp.toFixed(2)}" />${overDot}`;
   }
 
   let burnMarkup = "";
@@ -206,17 +200,12 @@ function calorieBar(eaten, target, infoBtn = "", burnArc = null, baseGoal = null
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
   let tailMarkup = "";
   if (baseFrac < 1) {
-    let overMarkup = "";
-    if (burnArc && burnArc.typical > 0) {
-      const typicalFrac = Math.min(1, (baseGoal + burnArc.typical) / target);
-      if (typicalFrac > baseFrac && typicalFrac < 1) {
-        overMarkup = `<span class="calorie-bar__tail calorie-bar__tail--over"
-          style="left:${(typicalFrac * 100).toFixed(1)}%" data-width="${((1 - typicalFrac) * 100).toFixed(1)}%"></span>`;
-      }
-    }
+    const ramp = burnArc && burnArc.typical > 0
+      ? 0.25 + 0.6 * activeBurnRampProgress(burnArc.live, burnArc.typical)
+      : 0.45;
     tailMarkup = `
-      <span class="calorie-bar__tail" style="left:${(baseFrac * 100).toFixed(1)}%"
-        data-width="${((1 - baseFrac) * 100).toFixed(1)}%"></span>${overMarkup}`;
+      <span class="calorie-bar__tail" style="left:${(baseFrac * 100).toFixed(1)}%;opacity:${ramp.toFixed(2)}"
+        data-width="${((1 - baseFrac) * 100).toFixed(1)}%"></span>`;
   }
   return `
     <div class="calorie-hero calorie-hero--bar" role="img"

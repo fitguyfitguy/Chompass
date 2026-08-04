@@ -201,6 +201,20 @@ class HomeCalorieDisplayTest {
     }
 
     @Test
+    fun activeBurnRampProgress_clampsToUnitInterval() {
+        assertEquals(0f, HomeCalorieDisplay.activeBurnRampProgress(live = 0, typical = 540), 0.0001f)
+        assertEquals(0.5f, HomeCalorieDisplay.activeBurnRampProgress(live = 270, typical = 540), 0.0001f)
+        assertEquals(1f, HomeCalorieDisplay.activeBurnRampProgress(live = 540, typical = 540), 0.0001f)
+        assertEquals(1f, HomeCalorieDisplay.activeBurnRampProgress(live = 800, typical = 540), 0.0001f)
+    }
+
+    @Test
+    fun activeBurnRampProgress_noReferenceIsFull() {
+        assertEquals(1f, HomeCalorieDisplay.activeBurnRampProgress(live = 100, typical = 0), 0.0001f)
+        assertEquals(1f, HomeCalorieDisplay.activeBurnRampProgress(live = 100, typical = -5), 0.0001f)
+    }
+
+    @Test
     fun homeTopNutrient_respectsCardCount() {
         val three = HomeTopNutrient.normalized(
             listOf(HomeTopNutrient.PROTEIN, HomeTopNutrient.CARBS, HomeTopNutrient.FAT, HomeTopNutrient.FIBER),

@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   activeBurnArcWeb,
+  activeBurnRampProgress,
   addActiveGaugeTarget,
   makeManualActiveEntry,
   resolveWebActiveBurn,
@@ -47,5 +48,16 @@ describe("manual active burn helpers", () => {
       typical: 0,
       source: "manual",
     });
+  });
+
+  it("activeBurnRampProgress clamps to unit interval", () => {
+    assert.equal(activeBurnRampProgress(0, 540), 0);
+    assert.equal(activeBurnRampProgress(270, 540), 0.5);
+    assert.equal(activeBurnRampProgress(540, 540), 1);
+    assert.equal(activeBurnRampProgress(800, 540), 1);
+  });
+
+  it("activeBurnRampProgress no reference is full", () => {
+    assert.equal(activeBurnRampProgress(100, 0), 1);
   });
 });
