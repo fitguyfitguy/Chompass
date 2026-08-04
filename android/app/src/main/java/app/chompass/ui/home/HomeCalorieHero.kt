@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -51,6 +53,8 @@ import app.chompass.R
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.ui.components.FudGlassDialog
+import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.theme.AppColors
 import java.time.DayOfWeek
@@ -184,6 +188,7 @@ internal fun CalorieHero(
     val remaining = HomeCalorieDisplay.remaining(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
+    var showBudgetSheet by remember { mutableStateOf(false) }
     val goalLabel = when (displayMode) {
         HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal
         else -> baseGoal
@@ -288,44 +293,43 @@ internal fun CalorieHero(
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
             )
-            // Single goal line: the active-calorie figure appears at most once, folded into a
-            // trailing clause whose wording matches what the mode actually does to the goal
-            // (ADD_ACTIVE extends it, NET subtracts from intake, DUAL is purely informational).
-            Row(verticalAlignment = Alignment.Bottom) {
+            // Decluttered goal line: "of <budget>". In ADD_ACTIVE the budget already includes
+            // today's active burn, so the ⓘ affordance opens a sheet that explains the breakdown
+            // instead of jamming the active figure into this one-line caption.
+            val explainsBudget = integratesBurn || awaitingActiveBurn
+            val goalDescription = when {
+                awaitingActiveBurn -> stringResource(R.string.home_calorie_of_goal, goalLabel) +
+                    ". " + stringResource(R.string.home_calorie_budget_sheet_awaiting)
+                integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED ->
+                    stringResource(R.string.home_calorie_budget_a11y, goalLabel, baseGoal, activeCalories) +
+                        ". " + stringResource(R.string.home_calorie_active_estimated_a11y)
+                integratesBurn ->
+                    stringResource(R.string.home_calorie_budget_a11y, goalLabel, baseGoal, activeCalories)
+                else -> null
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(R.string.home_calorie_of_goal, goalLabel),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = muted,
+                    modifier = goalDescription?.let { desc ->
+                        Modifier.semantics { contentDescription = desc }
+                    } ?: Modifier,
                 )
-                if (integratesBurn) {
-                    val isEstimated = activeCalorieSource == ActiveCalorieSource.ESTIMATED
-                    val clauseRes = when (displayMode) {
-                        HomeCalorieDisplayMode.ADD_ACTIVE -> R.string.home_calorie_clause_add_active
-                        HomeCalorieDisplayMode.STATIC -> null
-                    }
-                    if (clauseRes != null) {
-                        val clauseText = stringResource(clauseRes, activeCalories)
-                        val displayText = if (isEstimated) "~$clauseText" else clauseText
-                        val estimatedA11y = stringResource(R.string.home_calorie_active_estimated_a11y)
-                        Text(
-                            " $displayText",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = tertiary,
-                            modifier = if (isEstimated) {
-                                Modifier.semantics { contentDescription = "$estimatedA11y: $displayText" }
-                            } else {
-                                Modifier
-                            },
-                        )
-                    }
-                } else if (awaitingActiveBurn) {
-                    Text(
-                        " · ${stringResource(R.string.home_calorie_clause_add_active_waiting)}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = muted,
+                if (explainsBudget) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = stringResource(R.string.home_calorie_budget_info),
+                        tint = tertiary,
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { showBudgetSheet = true },
+                            ),
                     )
                 }
             }
@@ -347,6 +351,73 @@ internal fun CalorieHero(
                 )
             }
         }
+    }
+    if (showBudgetSheet) {
+        BudgetExplanationDialog(
+            goal = baseGoal,
+            active = activeCalories,
+            source = activeCalorieSource,
+            awaiting = awaitingActiveBurn,
+            onDismiss = { showBudgetSheet = false },
+        )
+    }
+}
+
+@Composable
+private fun BudgetExplanationDialog(
+    goal: Int,
+    active: Int,
+    source: ActiveCalorieSource?,
+    awaiting: Boolean,
+    onDismiss: () -> Unit,
+) {
+    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    FudGlassDialog(onDismissRequest = onDismiss) {
+        Text(
+            stringResource(R.string.home_calorie_budget_sheet_title),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (awaiting) {
+                Text(
+                    stringResource(R.string.home_calorie_budget_sheet_awaiting),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            } else {
+                Text(
+                    stringResource(R.string.home_calories_goal_plus_active, goal, active),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+                when (source) {
+                    ActiveCalorieSource.MEASURED -> Text(
+                        stringResource(R.string.home_calorie_budget_source_measured),
+                        fontSize = 13.sp,
+                        color = muted,
+                    )
+                    ActiveCalorieSource.ESTIMATED -> Text(
+                        stringResource(R.string.home_calorie_active_estimated_a11y),
+                        fontSize = 13.sp,
+                        color = muted,
+                    )
+                    ActiveCalorieSource.MANUAL -> Text(
+                        stringResource(R.string.home_calorie_budget_source_manual),
+                        fontSize = 13.sp,
+                        color = muted,
+                    )
+                    ActiveCalorieSource.UNAVAILABLE, null -> {}
+                }
+            }
+        }
+        FudGlassDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = onDismiss,
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss,
+        )
     }
 }
 

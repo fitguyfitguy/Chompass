@@ -759,8 +759,6 @@
     <string name="entry_analysis_streaming_hint">Les valeurs apparaissent au fil de la réponse de l\'IA. Vous pouvez les vérifier avant d\'enregistrer.</string>
     <string name="entry_analysis_tip_apply">Ré-analyser avec l\'astuce</string>
     <string name="entry_analysis_tip_cta">Ajouter une astuce pour l\'IA (facultatif)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d actif → budget)</string>
-    <string name="home_calorie_clause_add_active_waiting">La dépense active étendra le budget du jour</string>
     <string name="home_calorie_mode_add_active">Ajouter la dépense active au budget</string>
     <string name="home_calorie_mode_add_active_desc">Les calories actives de Health Connect (ou votre estimation de niveau d\'activité) sont ajoutées au budget calorique du jour. Mangez ce que vous brûlez. Réglez le niveau d\'activité sur la base quotidienne pour éviter de compter deux fois les entraînements. Connectez Health Connect dans Réglages → Santé pour une dépense mesurée.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Astuce : activez Health Connect pour utiliser les calories actives de la montre/téléphone au lieu de l\'estimation de niveau d\'activité.</string>

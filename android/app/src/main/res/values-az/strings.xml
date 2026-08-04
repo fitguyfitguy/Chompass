@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">Dəyərlər AI cavab verdikcə görünür. Qeyd etmədən əvvəl yoxlaya bilərsiniz.</string>
     <string name="entry_analysis_tip_apply">Məsləhətlə yenidən təhlil et</string>
     <string name="entry_analysis_tip_cta">AI üçün məsləhət əlavə et (istəyə bağlı)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d aktiv → büdcə)</string>
-    <string name="home_calorie_clause_add_active_waiting">Aktiv yanma bu günkü büdcəni genişləndirəcək</string>
     <string name="home_calorie_mode_add_active">Aktiv yanmanı büdcəyə əlavə et</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect-dən (və ya fəaliyyət səviyyəsi təxminindən) aktiv kalorilər bu günkü kalori büdcəsinə əlavə olunur. Nə yandırsanız, onu yeyin. Məşqlərin iki dəfə sayılmaması üçün Fəaliyyət Səviyyəsini gündəlik baza kimi təyin edin. Ölçülü yanma üçün Parametrlər → Sağlamlıq altında Health Connect qoşun.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Məsləhət: saat/telefon aktiv kalorilərini fəaliyyət səviyyəsi təxmininə görə istifadə etmək üçün Health Connect-i aktiv edin.</string>

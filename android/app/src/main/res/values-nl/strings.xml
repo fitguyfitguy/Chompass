@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">Waarden verschijnen terwijl de AI antwoordt. Je kunt ze controleren voordat je logt.</string>
     <string name="entry_analysis_tip_apply">Opnieuw analyseren met tip</string>
     <string name="entry_analysis_tip_cta">Tip voor AI toevoegen (optioneel)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d actief → budget)</string>
-    <string name="home_calorie_clause_add_active_waiting">Actieve verbranding vergroot het budget van vandaag</string>
     <string name="home_calorie_mode_add_active">Actieve verbranding aan budget toevoegen</string>
     <string name="home_calorie_mode_add_active_desc">Actieve calorieën uit Health Connect (of je schatting op activiteitsniveau) worden aan het caloriebudget van vandaag toegevoegd. Eet terug wat je verbrandt. Stel Activiteitsniveau in op dagelijkse basislijn zodat workouts niet dubbel worden geteld. Verbind Health Connect via Instellingen → Gezondheid voor gemeten verbranding.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: schakel Health Connect in om actieve calorieën van horloge/telefoon te gebruiken in plaats van de schatting op activiteitsniveau.</string>

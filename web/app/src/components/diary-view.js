@@ -2,7 +2,7 @@
 import { foodEntries, profile as profileStore, water, prefs } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { openSheet } from "../lib/ui/sheet.js";
-import { openConfirm, openInput } from "../lib/ui/dialog.js";
+import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
 import {
   recentFoodTemplates,
   frequentFoodGroups,
@@ -151,7 +151,7 @@ function ringSvg(eaten, target) {
 }
 
 /** Horizontal calorie progress bar (desktop). */
-function calorieBar(eaten, target) {
+function calorieBar(eaten, target, infoBtn = "") {
   const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
   const remaining = Math.round(target - eaten);
   const over = eaten > target;
@@ -163,7 +163,7 @@ function calorieBar(eaten, target) {
         <div class="calorie-hero__nums">
           <span class="calorie-hero__caption">Calories</span>
           <span class="calorie-hero__value">${Math.round(eaten)}</span>
-          <span class="calorie-hero__sub">of ${Math.round(target)} kcal</span>
+          <span class="calorie-hero__sub">of ${Math.round(target)} kcal</span>${infoBtn}
         </div>
         <span class="calorie-hero__left${over ? " is-over" : ""}">🔥 ${leftLabel}</span>
       </div>
@@ -342,10 +342,15 @@ export class DiaryView extends HTMLElement {
 
     const targets = prof ? dailyTargets(prof) : null;
     let calorieTarget = targets?.calories ?? 0;
+    /** @type {{ goal: number, active: number, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
+    let gaugeInfo = null;
     if (prof && targets && appPrefs.calorieGaugeMode === "add_active") {
       const { sedentaryBudget, estimatedDailyActive } = estimatedDailyActiveCalories(prof, targets.calories);
       const burn = resolveWebActiveBurn(estimatedDailyActive, manualKcal);
       calorieTarget = addActiveGaugeTarget(targets.calories, sedentaryBudget, burn);
+      gaugeInfo = burn
+        ? { goal: sedentaryBudget, active: burn.calories, source: burn.source, awaiting: false }
+        : { goal: sedentaryBudget, awaiting: true };
     }
 
     const waterMl = waterLogs.reduce((s, w) => s + w.amountMl, 0);
@@ -386,11 +391,18 @@ export class DiaryView extends HTMLElement {
           ${renderMacros(tubeKeys, entries, targets, optionalGoals, "row")}
         </div>`
       : "";
+    const gaugeInfoLabel = t("diary.calorie_budget_info");
+    const gaugeInfoBtnMobile = gaugeInfo
+      ? `<button type="button" class="gauge-info-btn" data-gauge-info aria-label="${gaugeInfoLabel}">ⓘ</button>`
+      : "";
+    const gaugeInfoBtnDesktop = gaugeInfo
+      ? `<button type="button" class="gauge-info-btn gauge-info-btn--inline" data-gauge-info aria-label="${gaugeInfoLabel}">ⓘ</button>`
+      : "";
     const gaugeMobile = targets
       ? ringSvg(totals.calories, calorieTarget)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
     const gaugeDesktop = targets
-      ? calorieBar(totals.calories, calorieTarget)
+      ? calorieBar(totals.calories, calorieTarget, gaugeInfoBtnDesktop)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
 
     const progressiveCount = progressiveMealItemCount();
@@ -438,9 +450,12 @@ export class DiaryView extends HTMLElement {
         <div class="home-hero--mobile">
           <div class="home-hero__day-nav">
             <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">${DAY_NAV_CHEVRON_L}</button>
-            <button type="button" class="calorie-hero calorie-hero--tap calorie-hero--tap-arc" data-nutrition-detail aria-label="Open nutrition detail">
-              ${gaugeMobile}
-            </button>
+            <div class="home-hero__gauge-wrap">
+              <button type="button" class="calorie-hero calorie-hero--tap calorie-hero--tap-arc" data-nutrition-detail aria-label="Open nutrition detail">
+                ${gaugeMobile}
+              </button>
+              ${gaugeInfoBtnMobile}
+            </div>
             <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
           </div>
           ${macrosMobile}
@@ -484,6 +499,7 @@ export class DiaryView extends HTMLElement {
       <button class="fab" aria-label="Add food" aria-expanded="${this.fabOpen}" data-action="fab">+</button>
     `;
 
+    this._gaugeInfo = gaugeInfo;
     this.bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
@@ -535,6 +551,12 @@ export class DiaryView extends HTMLElement {
         this.openNutritionDetail(entries, targets, optionalGoals);
       });
     });
+    this.querySelectorAll("[data-gauge-info]").forEach((el) => {
+      el.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        this.openGaugeInfo();
+      });
+    });
     this.querySelector('[data-action="fab"]')?.addEventListener("click", () => this.openAddFoodSheet(appPrefs));
     this.querySelector("[data-progressive-meal]")?.addEventListener("click", () => {
       setShowProgressiveMealSheet(true);
@@ -581,6 +603,35 @@ export class DiaryView extends HTMLElement {
           if (dash) el.setAttribute("stroke-dasharray", dash);
         }
       });
+    });
+  }
+
+  openGaugeInfo() {
+    const info = this._gaugeInfo;
+    if (!info) return;
+    if ("active" in info) {
+      const sourceLine =
+        info.source === "estimated"
+          ? t("diary.calorie_budget_source_estimated")
+          : t("diary.calorie_budget_source_manual");
+      openInfo({
+        title: t("diary.calorie_budget_title"),
+        bodyHtml: `
+          <p class="dialog__message dialog__message--strong">${escapeHtml(
+            t("diary.calorie_budget_goal_plus_active", {
+              goal: String(info.goal),
+              active: String(info.active),
+            }),
+          )}</p>
+          <p class="dialog__message">${escapeHtml(sourceLine)}</p>`,
+        doneLabel: t("action.done"),
+      });
+      return;
+    }
+    openInfo({
+      title: t("diary.calorie_budget_title"),
+      message: t("diary.calorie_budget_awaiting"),
+      doneLabel: t("action.done"),
     });
   }
 

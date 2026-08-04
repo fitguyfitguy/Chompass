@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">Valorile apar pe măsură ce IA răspunde. Le poți verifica înainte de înregistrare.</string>
     <string name="entry_analysis_tip_apply">Reanalizează cu sugestie</string>
     <string name="entry_analysis_tip_cta">Adaugă sugestie pentru IA (opțional)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d active → buget)</string>
-    <string name="home_calorie_clause_add_active_waiting">Arderea activă va extinde bugetul de azi</string>
     <string name="home_calorie_mode_add_active">Adaugă arderea activă la buget</string>
     <string name="home_calorie_mode_add_active_desc">Caloriile active din Health Connect (sau estimarea după nivelul de activitate) se adaugă la bugetul caloric de azi. Mănâncă înapoi ce arzi. Setează nivelul de activitate ca bază zilnică ca antrenamentele să nu fie numărate de două ori. Conectează Health Connect în Setări → Sănătate pentru arderea măsurată.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Sfat: activează Health Connect pentru calorii active de la ceas/telefon în loc de estimarea după nivelul de activitate.</string>

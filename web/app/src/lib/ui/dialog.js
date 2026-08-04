@@ -117,6 +117,31 @@ export function openInput(opts) {
  *   submitOnEnter?: boolean,
  * }} opts
  */
+/**
+ * Centered glass informational dialog with a single dismiss action.
+ * @param {{ title: string, message?: string, bodyHtml?: string, doneLabel?: string }} opts
+ * @returns {Promise<void>}
+ */
+export function openInfo(opts) {
+  return new Promise((resolve) => {
+    const bodyHtml =
+      opts.bodyHtml ?? `<p class="dialog__message">${escapeHtml(opts.message ?? "")}</p>`;
+    mountDialog({
+      title: opts.title,
+      bodyHtml,
+      actions: [
+        {
+          label: opts.doneLabel ?? "Done",
+          className: "btn btn--primary",
+          value: true,
+          autofocus: true,
+        },
+      ],
+      onResult: () => resolve(),
+    });
+  });
+}
+
 function mountDialog(opts) {
   const host = document.createElement("div");
   host.className = "dialog";

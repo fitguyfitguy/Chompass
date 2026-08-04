@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">تظهر القيم مع استجابة الذكاء الاصطناعي. يمكنك مراجعتها قبل التسجيل.</string>
     <string name="entry_analysis_tip_apply">إعادة التحليل مع نصيحة</string>
     <string name="entry_analysis_tip_cta">إضافة نصيحة للذكاء الاصطناعي (اختياري)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d نشط → الميزانية)</string>
-    <string name="home_calorie_clause_add_active_waiting">الحرق النشط سيمدّد ميزانية اليوم</string>
     <string name="home_calorie_mode_add_active">إضافة الحرق النشط إلى الميزانية</string>
     <string name="home_calorie_mode_add_active_desc">تُضاف السعرات النشطة من Health Connect (أو تقدير مستوى النشاط) إلى ميزانية السعرات اليوم. كُل ما تحرقه. اضبط مستوى النشاط على خط الأساس اليومي حتى لا تُحسب التمارين مرتين. اربط Health Connect من الإعدادات ← الصحة للحرق المقاس.</string>
     <string name="home_calorie_mode_add_active_hc_hint">نصيحة: فعّل Health Connect لاستخدام سعرات الساعة/الهاتف النشطة بدل تقدير مستوى النشاط.</string>

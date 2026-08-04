@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">AIの応答に合わせて値が表示されます。記録前に確認できます。</string>
     <string name="entry_analysis_tip_apply">ヒント付きで再分析</string>
     <string name="entry_analysis_tip_cta">AI用ヒントを追加（任意）</string>
-    <string name="home_calorie_clause_add_active">(+%1$d アクティブ → 予算)</string>
-    <string name="home_calorie_clause_add_active_waiting">アクティブ消費が今日の予算を延長します</string>
     <string name="home_calorie_mode_add_active">アクティブ消費を予算に追加</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect（または活動レベルの推定値）からのアクティブカロリーが今日のカロリー予算に加算されます。消費分を食べ返せます。運動の二重カウントを避けるため、活動レベルは日常の基準に設定してください。実測値を使うには、設定 → ヘルスで Health Connect を接続してください。</string>
     <string name="home_calorie_mode_add_active_hc_hint">ヒント: Health Connect を有効にすると、活動レベルの推定値の代わりにウォッチ/スマホのアクティブカロリーを使えます。</string>

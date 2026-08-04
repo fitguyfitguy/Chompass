@@ -310,6 +310,44 @@ main.view {
   gap: 0.15rem;
 }
 
+.home-hero__gauge-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.gauge-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gauge-info-btn--inline {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 0.3rem;
+}
+
+.home-hero__gauge-wrap > .gauge-info-btn {
+  position: absolute;
+  top: 74%;
+  left: calc(50% + 1.9rem);
+  transform: translateY(-50%);
+}
+
+.gauge-info-btn:hover {
+  color: var(--teal);
+}
+
 .calorie-hero {
   display: flex;
   flex-direction: column;

@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">I valori compaiono mentre l\'IA risponde. Puoi controllarli prima di registrare.</string>
     <string name="entry_analysis_tip_apply">Rianalizza con suggerimento</string>
     <string name="entry_analysis_tip_cta">Aggiungi suggerimento per l\'IA (facoltativo)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d attive → budget)</string>
-    <string name="home_calorie_clause_add_active_waiting">Il consumo attivo estenderà il budget di oggi</string>
     <string name="home_calorie_mode_add_active">Aggiungi consumo attivo al budget</string>
     <string name="home_calorie_mode_add_active_desc">Le calorie attive da Health Connect (o la stima dal livello di attività) vengono aggiunte al budget calorico di oggi. Recupera ciò che bruci. Imposta il livello di attività come baseline quotidiana per non contare due volte gli allenamenti. Collega Health Connect in Impostazioni → Salute per il consumo misurato.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Suggerimento: attiva Health Connect per usare le calorie attive da orologio/telefono invece della stima per livello di attività.</string>

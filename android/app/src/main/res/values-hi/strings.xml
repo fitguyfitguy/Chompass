@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">AI जवाब देते ही मान दिखते हैं। लॉग करने से पहले उन्हें देख सकते हैं।</string>
     <string name="entry_analysis_tip_apply">सुझाव के साथ फिर विश्लेषण</string>
     <string name="entry_analysis_tip_cta">AI के लिए सुझाव जोड़ें (वैकल्पिक)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d सक्रिय → बजट)</string>
-    <string name="home_calorie_clause_add_active_waiting">सक्रिय बर्न आज का बजट बढ़ाएगा</string>
     <string name="home_calorie_mode_add_active">सक्रिय बर्न बजट में जोड़ें</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect (या आपके गतिविधि-स्तर अनुमान) से सक्रिय कैलोरी आज के कैलोरी बजट में जोड़ी जाती हैं। जितना जलाएँ, उतना खाएँ। वर्कआउट दो बार न गिनें, इसलिए गतिविधि स्तर को रोज़मर्रा बेसलाइन पर रखें। मापा हुआ बर्न के लिए सेटिंग्स → स्वास्थ्य में Health Connect जोड़ें।</string>
     <string name="home_calorie_mode_add_active_hc_hint">सुझाव: घड़ी/फ़ोन की सक्रिय कैलोरी के लिए Health Connect चालू करें, गतिविधि-स्तर अनुमान की जगह।</string>

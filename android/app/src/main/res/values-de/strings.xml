@@ -768,8 +768,6 @@
     <string name="entry_analysis_streaming_hint">Werte erscheinen, während die KI antwortet. Du kannst sie vor dem Eintragen prüfen.</string>
     <string name="entry_analysis_tip_apply">Mit Tipp neu analysieren</string>
     <string name="entry_analysis_tip_cta">Tipp für KI hinzufügen (optional)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d aktiv → Budget)</string>
-    <string name="home_calorie_clause_add_active_waiting">Aktive Verbrennung erweitert das heutige Budget</string>
     <string name="home_calorie_mode_add_active">Aktive Verbrennung zum Budget addieren</string>
     <string name="home_calorie_mode_add_active_desc">Aktive Kalorien aus Health Connect (oder deiner Aktivitätsstufen-Schätzung) werden zum heutigen Kalorienbudget addiert. Iss zurück, was du verbrennst. Setze Aktivitätsstufe auf Alltags-Baseline, damit Workouts nicht doppelt gezählt werden. Verbinde Health Connect unter Einstellungen → Gesundheit für gemessene Verbrennung.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tipp: Aktiviere Health Connect, um aktive Kalorien von Uhr/Telefon statt der Aktivitätsstufen-Schätzung zu nutzen.</string>
