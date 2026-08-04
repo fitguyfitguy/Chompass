@@ -100,6 +100,9 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setHealthFoodRestoreDone(v: Boolean) = setHealthFoodRestoreDoneImpl(v)
     val healthEnergyGoalsEnabled: Flow<Boolean> get() = healthEnergyGoalsEnabledImpl
     suspend fun setHealthEnergyGoalsEnabled(v: Boolean) = setHealthEnergyGoalsEnabledImpl(v)
+    val healthEnergyMeasuredActive: Flow<Int> get() = healthEnergyMeasuredActiveImpl
+    suspend fun setHealthEnergyMeasuredActive(v: Int) = setHealthEnergyMeasuredActiveImpl(v)
+    suspend fun clearHealthEnergyMeasuredActive() = clearHealthEnergyMeasuredActiveImpl()
     val healthBackgroundSyncEnabled: Flow<Boolean> get() = healthBackgroundSyncEnabledImpl
     suspend fun setHealthBackgroundSyncEnabled(v: Boolean) = setHealthBackgroundSyncEnabledImpl(v)
     val healthEnergyGoalsLastAutoRefreshDay: Flow<String?> get() = healthEnergyGoalsLastAutoRefreshDayImpl

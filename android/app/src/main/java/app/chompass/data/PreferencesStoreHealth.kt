@@ -60,6 +60,15 @@ internal val PreferencesStore.healthEnergyGoalsEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setHealthEnergyGoalsEnabledImpl(v: Boolean) =
     setBoolPref(Keys.HEALTH_ENERGY_GOALS_ENABLED, v)
 
+/// Measured Health Connect active kcal/day average (0 when unavailable or Energy Burn off).
+internal val PreferencesStore.healthEnergyMeasuredActiveImpl: Flow<Int>
+    get() = intPref(Keys.HEALTH_ENERGY_MEASURED_ACTIVE, 0)
+internal suspend fun PreferencesStore.setHealthEnergyMeasuredActiveImpl(v: Int) =
+    setIntPref(Keys.HEALTH_ENERGY_MEASURED_ACTIVE, v.coerceAtLeast(0))
+internal suspend fun PreferencesStore.clearHealthEnergyMeasuredActiveImpl() {
+    removePref(Keys.HEALTH_ENERGY_MEASURED_ACTIVE)
+}
+
 /** Opt-in periodic background Health Connect sync. Default OFF — see HealthSyncWorker. */
 internal val PreferencesStore.healthBackgroundSyncEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.HEALTH_BACKGROUND_SYNC_ENABLED, false)

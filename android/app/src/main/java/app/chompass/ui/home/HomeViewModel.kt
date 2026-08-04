@@ -70,6 +70,8 @@ data class HomeUiState(
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val homeTopNutrients: List<HomeTopNutrient> = HomeTopNutrient.DefaultSelection,
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
+    /** Measured Health Connect active kcal/day average (Energy Burn Goals). 0 = unavailable. */
+    val measuredActiveAverageCalories: Int = 0,
     val activitySnapshot: HomeActivitySnapshot = HomeActivitySnapshot(date = LocalDate.now()),
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
@@ -140,10 +142,11 @@ data class HomeUiState(
     val baseCalorieGoal: Int get() = profile?.effectiveCalories ?: 2000
     val resolvedActiveBurn: ResolvedActiveBurn? get() {
         val p = profile ?: return null
+        val estimate = measuredActiveAverageCalories.takeIf { it > 0 } ?: p.estimatedDailyActiveCalories
         return HomeCalorieDisplay.resolveActiveBurn(
             homeDisplay.calorieDisplayMode,
             activitySnapshot,
-            p.estimatedDailyActiveCalories,
+            estimate,
             manualActiveKcal,
         )
     }
@@ -151,7 +154,9 @@ data class HomeUiState(
         HomeCalorieDisplay.effectiveMode(homeDisplay.calorieDisplayMode, resolvedActiveBurn)
     val gaugeBaseCalorieGoal: Int get() {
         val p = profile ?: return baseCalorieGoal
-        val sedentary = p.sedentaryCalorieBudget(baseCalorieGoal)
+        val sedentary = measuredActiveAverageCalories.takeIf { it > 0 }
+            ?.let { (baseCalorieGoal - it).coerceAtLeast(0) }
+            ?: p.sedentaryCalorieBudget(baseCalorieGoal)
         return HomeCalorieDisplay.gaugeBaseGoal(effectiveCalorieMode, baseCalorieGoal, sedentary)
     }
     val displayActiveCalories: Int get() = resolvedActiveBurn?.calories ?: 0
@@ -365,6 +370,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     foodLogMacroChips = display.foodLogMacroChips,
                 )
                 refreshActivitySnapshot()
+            }
+            .launchIn(viewModelScope)
+
+        container.prefs.healthEnergyMeasuredActive
+            .onEach { measuredActive ->
+                _ui.value = _ui.value.copy(measuredActiveAverageCalories = measuredActive)
             }
             .launchIn(viewModelScope)
 

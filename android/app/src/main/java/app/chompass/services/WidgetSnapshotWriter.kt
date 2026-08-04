@@ -98,19 +98,26 @@ class WidgetSnapshotWriter(
             val (themeStart, themeEnd) = theme.widgetAccentColors(context)
             val activity = homeActivityReader.readForDate(LocalDate.now())
             val effectiveCalories = profile.effectiveCalories
+            // Energy Burn measured active average overrides the PAL estimate for the ADD_ACTIVE
+            // split, so the widget mirrors the home gauge (goal − measured active → base).
+            val measuredActive = prefs.healthEnergyMeasuredActive.first()
+            val estimatedActive = measuredActive.takeIf { it > 0 } ?: profile.estimatedDailyActiveCalories
             val burn = HomeCalorieDisplay.resolveActiveBurn(
                 display.calorieDisplayMode,
                 activity,
-                profile.estimatedDailyActiveCalories,
+                estimatedActive,
                 prefs.manualActiveEntries.first()
                     .filter { it.date == LocalDate.now().toString() }
                     .sumOf { it.calories },
             )
             val mode = HomeCalorieDisplay.effectiveMode(display.calorieDisplayMode, burn)
+            val sedentary = measuredActive.takeIf { it > 0 }
+                ?.let { (effectiveCalories - it).coerceAtLeast(0) }
+                ?: profile.sedentaryCalorieBudget(effectiveCalories)
             val gaugeBase = HomeCalorieDisplay.gaugeBaseGoal(
                 mode,
                 effectiveCalories,
-                profile.sedentaryCalorieBudget(effectiveCalories),
+                sedentary,
             )
             val activeCalories = burn?.calories ?: 0
             val effectiveGoal = HomeCalorieDisplay.effectiveGoal(mode, gaugeBase, activeCalories)

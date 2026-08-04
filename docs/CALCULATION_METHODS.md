@@ -100,14 +100,16 @@ sedentaryBudget = effectiveCalories − estimatedDailyActive
 
 ### Home calorie gauge modes
 
-| Mode | HC off | HC on |
-|------|--------|-------|
-| Static | Fixed `effectiveCalories` goal | Same |
-| Add Active | Sedentary budget + estimated active | Sedentary budget + measured active |
-| Net | Falls back to Static | Net intake (eaten − active) vs fixed goal |
-| Dual | Burn hint arc uses estimated active | Burn hint arc uses measured active |
+| Mode       | HC off                              | HC on                                     |
+| ---------- | ----------------------------------- | ----------------------------------------- |
+| Static     | Fixed `effectiveCalories` goal      | Same                                      |
+| Add Active | Sedentary budget + estimated active | Sedentary budget + measured active        |
+| Net        | Falls back to Static                | Net intake (eaten − active) vs fixed goal |
+| Dual       | Burn hint arc uses estimated active | Burn hint arc uses measured active        |
 
 Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied. With Add Active, set **Activity Level** to everyday non-training life (not peak training days); measured Health Connect burn (or the PAL estimate when HC is off) covers workouts so they are not stacked on a high PAL.
+
+When **Energy Burn Goals** is on, the stored goal is the _measured_ Health Connect TDEE (basal + active), so the PAL strip would double-subtract activity. In that case the sedentary budget uses the **measured active average** (`HealthEnergySummary.activeAverageCalories`, persisted as `healthEnergyMeasuredActiveCalories`) instead of the PAL estimate: `sedentaryBudget = effectiveCalories − measuredActiveAverage`, and the ADD_ACTIVE goal converges back to `effectiveCalories` on a typical day. The measured override applies to the home ring and widgets (`HomeUiState.gaugeBaseCalorieGoal`, `WidgetSnapshotWriter`); the shared `chompass-core` formula is unchanged (PWA has no Health Connect).
 
 ### CAL-ADJ: Goal calorie adjustment
 

@@ -37,6 +37,9 @@ class AdaptiveGoalsService(
         if (!prefs.healthConnectEnabled.first()) return null
         if (!health.isAvailable() || !health.hasEnergyRead()) return null
         val summary = runCatching { health.readRecentEnergySummary(days = 14) }.getOrNull() ?: return null
+        // Persist the measured active average so the home gauge can split the measured goal
+        // into a sedentary base (goal − measured active) instead of a PAL estimate.
+        prefs.setHealthEnergyMeasuredActive(summary.activeAverageCalories)
         return summary.totalAverageCalories ?: (profile.bmr.roundToInt() + summary.activeAverageCalories)
     }
 

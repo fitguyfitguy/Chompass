@@ -718,6 +718,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 }
                 container.prefs.setHealthConnectEnabled(false)
                 container.prefs.setHealthEnergyGoalsEnabled(false)
+                container.prefs.clearHealthEnergyMeasuredActive()
                 // Disconnecting Health Connect stops any background sync too.
                 container.prefs.setHealthBackgroundSyncEnabled(false)
                 HealthSyncWorker.cancel(container.appContext)
@@ -737,7 +738,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 container.syncHealthConnectReads()
                 container.prefs.setHealthPermissionsVersion(HealthConnectManager.CURRENT_TYPES_VERSION)
             }
-            if (!enabled) container.prefs.setHealthEnergyGoalsEnabled(false)
+            if (!enabled) {
+                container.prefs.setHealthEnergyGoalsEnabled(false)
+                container.prefs.clearHealthEnergyMeasuredActive()
+            }
             _ui.value = _ui.value.copy(
                 healthConnectEnabled = enabled,
                 healthEnergyGoalsEnabled = if (enabled) _ui.value.healthEnergyGoalsEnabled else false
@@ -780,6 +784,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 container.prefs.clearHealthEnergyGoalPreviousTargets()
             }
             container.prefs.setHealthEnergyGoalsEnabled(false)
+            container.prefs.clearHealthEnergyMeasuredActive()
             // Losing all permissions also stops background sync.
             container.prefs.setHealthBackgroundSyncEnabled(false)
             HealthSyncWorker.cancel(container.appContext)
@@ -795,6 +800,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             container.prefs.clearHealthEnergyGoalPreviousTargets()
             container.prefs.setHealthEnergyGoalsEnabled(false)
+            container.prefs.clearHealthEnergyMeasuredActive()
         }
 
         if (granted && (!stored || version < HealthConnectManager.CURRENT_TYPES_VERSION)) {
@@ -836,6 +842,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 }
             }
             container.prefs.setHealthEnergyGoalsEnabled(v)
+            if (!v) container.prefs.clearHealthEnergyMeasuredActive()
             _ui.value = _ui.value.copy(
                 healthEnergyGoalsEnabled = v,
                 healthConnectEnabled = if (v) true else _ui.value.healthConnectEnabled

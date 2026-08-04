@@ -43,6 +43,28 @@ class HomeCalorieDisplayTest {
     }
 
     @Test
+    fun addActive_energyBurnMeasured_usesMeasuredBase() {
+        val effectiveCalories = 2392
+        val measuredActiveAverage = 489
+        val sedentary = (effectiveCalories - measuredActiveAverage).coerceAtLeast(0)
+        val mode = HomeCalorieDisplayMode.ADD_ACTIVE
+        val base = HomeCalorieDisplay.gaugeBaseGoal(mode, effectiveCalories, sedentary)
+        assertEquals(1903, base)
+        // Mid-day live burn: budget starts at basal and grows toward the measured goal.
+        assertEquals(2076, HomeCalorieDisplay.effectiveGoal(mode, base, 173))
+        // A full average day (489 active) converges to the measured goal.
+        assertEquals(effectiveCalories, HomeCalorieDisplay.effectiveGoal(mode, base, measuredActiveAverage))
+    }
+
+    @Test
+    fun addActive_energyBurnMeasured_remainingUsesEffectiveGoal() {
+        val mode = HomeCalorieDisplayMode.ADD_ACTIVE
+        val base = 1903
+        val active = 173
+        assertEquals(1575, HomeCalorieDisplay.remaining(mode, eaten = 501, baseGoal = base, activeCalories = active))
+    }
+
+    @Test
     fun static_ignoresActive() {
         val mode = HomeCalorieDisplayMode.STATIC
         assertEquals(2000, HomeCalorieDisplay.effectiveGoal(mode, 2000, 400))
