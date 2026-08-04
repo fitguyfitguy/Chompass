@@ -1,5 +1,6 @@
 package app.chompass.data
 
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.edit
 import app.chompass.models.FoodEntry
 import app.chompass.models.PendingFoodAnalysisDraft
@@ -63,24 +64,42 @@ internal fun PreferencesStore.foodEntriesForMonthImpl(month: YearMonth): Flow<Li
      * (remove from old bucket + insert into new) can never be observed
      * half-applied. A bucket that ends up empty is removed entirely, so key
      * count stays bounded (~12/year) rather than growing without limit.
+     *
+     * When [draft] is non-null it is written in the same transaction, so the
+     * crash-safety snapshot of a confirming AI entry commits atomically with
+     * the diary row instead of costing a second full-file DataStore write.
      */
 internal suspend fun PreferencesStore.applyFoodEntryBucketChangesImpl(
         upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+        draft: PendingFoodAnalysisDraft? = null,
     ) {
-        if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
+        if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty() && draft == null) return
         dataStore.edit { prefs ->
             for (month in upsertsByMonth.keys + removalIdsByMonth.keys) {
-                val key = Keys.foodEntriesBucket(month)
-                val existing = decodeEntryListImpl(prefs[key])
-                val removals = removalIdsByMonth[month].orEmpty()
-                val kept = if (removals.isEmpty()) existing else existing.filterNot { it.id in removals }
-                val byId = kept.associateByTo(LinkedHashMap()) { it.id }
-                for (entry in upsertsByMonth[month].orEmpty()) byId[entry.id] = entry
-                val merged = byId.values.sortedBy { it.timestamp }
-                if (merged.isEmpty()) prefs.remove(key) else prefs[key] = encodeEntryListImpl(merged)
+                mergeFoodEntryMonth(prefs, month, upsertsByMonth[month].orEmpty(), removalIdsByMonth[month].orEmpty())
+            }
+            if (draft != null) {
+                prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT] =
+                    json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
             }
         }
+    }
+
+    /** Merges one month's upserts/removals into an in-flight DataStore edit. */
+private fun PreferencesStore.mergeFoodEntryMonth(
+        prefs: MutablePreferences,
+        month: YearMonth,
+        upserts: List<FoodEntry>,
+        removals: Set<UUID>,
+    ) {
+        val key = Keys.foodEntriesBucket(month)
+        val existing = decodeEntryListImpl(prefs[key])
+        val kept = if (removals.isEmpty()) existing else existing.filterNot { it.id in removals }
+        val byId = kept.associateByTo(LinkedHashMap()) { it.id }
+        for (entry in upserts) byId[entry.id] = entry
+        val merged = byId.values.sortedBy { it.timestamp }
+        if (merged.isEmpty()) prefs.remove(key) else prefs[key] = encodeEntryListImpl(merged)
     }
 
     /** Full replace (reseed / clear-all) — wipes every existing bucket and regroups [entries] by month. */

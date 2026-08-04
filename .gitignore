@@ -26,6 +26,8 @@ ios/Local.xcconfig
 .claude/
 .cursor/
 .cursorrules
+.opencode/
+opencode.json
 ios/build-sim/
 .vercel
 

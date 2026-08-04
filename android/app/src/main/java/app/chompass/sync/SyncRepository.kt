@@ -94,6 +94,7 @@ class SyncRepository(
             return SyncResult.Failed("Configure WebDAV URL, username, and password first")
         }
         return try {
+            backfillRevisionsIfNeeded()
             val remote = webDav.get(url, user, password)
             val localJson = exportDocumentJson(zone)
             val mergedJson = if (remote.notFound || remote.body.isNullOrBlank()) {
@@ -145,6 +146,7 @@ class SyncRepository(
     }
 
     suspend fun touch(id: UUID, kind: String) {
+        if (!syncConfigured()) return
         val now = Instant.now().toString()
         val current = prefs.syncRevisions.first().toMutableMap()
         current[id.toString()] = SyncRevision(updatedAt = now, deletedAt = null, kind = kind)
@@ -152,10 +154,49 @@ class SyncRepository(
     }
 
     suspend fun tombstone(id: UUID, kind: String) {
+        if (!syncConfigured()) return
         val now = Instant.now().toString()
         val current = prefs.syncRevisions.first().toMutableMap()
         current[id.toString()] = SyncRevision(updatedAt = now, deletedAt = now, kind = kind)
         prefs.setSyncRevisions(current)
+    }
+
+    /**
+     * Whether revision tracking is meaningful: WebDAV is opted in and a URL is
+     * set. When false, [touch]/[tombstone] are no-ops so logging never pays a
+     * full-file DataStore write for a revision map nothing will consume.
+     */
+    private suspend fun syncConfigured(): Boolean {
+        val enabled = prefs.webDavEnabled.first()
+        val url = normalizeWebDavUrl(prefs.webDavUrl.first())
+        return enabled && url.isNotEmpty()
+    }
+
+    /**
+     * One-time repair for records created while WebDAV was disabled (or before
+     * revision tracking existed): records a live revision for every current
+     * row the revision map is missing, so a freshly-enabled sync uploads the
+     * whole history instead of relying on wire-level timestamp fallbacks. Runs
+     * only at sync time, never on the save path.
+     */
+    private suspend fun backfillRevisionsIfNeeded() {
+        val revisions = prefs.syncRevisions.first().toMutableMap()
+        var changed = false
+        fun track(id: UUID, kind: String) {
+            val key = id.toString()
+            if (key !in revisions) {
+                revisions[key] = SyncRevision(updatedAt = Instant.now().toString(), deletedAt = null, kind = kind)
+                changed = true
+            }
+        }
+        prefs.foodEntries.first().forEach { track(it.id, "food") }
+        prefs.favoriteFoodEntries.first().forEach { track(it.id, "favorite") }
+        prefs.weightEntries.first().forEach { track(it.id, "weight") }
+        prefs.bodyFatEntries.first().forEach { track(it.id, "bodyfat") }
+        prefs.bodyMeasurements.first().forEach { track(it.id, "measure") }
+        prefs.waterEntries.first().forEach { track(it.id, "water") }
+        prefs.recipes.first().forEach { track(it.id, "recipe") }
+        if (changed) prefs.setSyncRevisions(revisions)
     }
 
     private suspend fun applyMergedDocument(jsonText: String, zone: ZoneId): SyncResult {
