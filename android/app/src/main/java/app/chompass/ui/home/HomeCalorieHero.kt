@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.ActiveBurnArcData
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
@@ -57,6 +58,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.success
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.WeekFields
@@ -180,6 +182,7 @@ internal fun CalorieHero(
     activeCalories: Int,
     displayMode: HomeCalorieDisplayMode,
     activeCalorieSource: ActiveCalorieSource? = null,
+    burnArc: ActiveBurnArcData? = null,
     freezeProgress: Boolean = false,
     /** True when Settings asks for ADD_ACTIVE but today’s burn is still 0. */
     awaitingActiveBurn: Boolean = false,
@@ -220,6 +223,7 @@ internal fun CalorieHero(
     val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     val tertiary = MaterialTheme.colorScheme.tertiary
+    val successColor = MaterialTheme.colorScheme.success
 
     Box(
         modifier = Modifier
@@ -245,10 +249,11 @@ internal fun CalorieHero(
                 size = arcSize,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
-            if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
-                // Base segment of the track stays plain neutral (drawn above); only the bonus
-                // (activity-earned) tail beyond it gets the tertiary tint, so the ring reads as
-                // "normal track, extended by activity" rather than two similarly-dim greys.
+            if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0 &&
+                burnArc == null
+            ) {
+                // Legacy bonus segment — only when the inner burn arc is not
+                // drawing (the arc supersedes it so tertiary appears once).
                 val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
                 val bonusSweep = (180f - baseSweep).coerceAtLeast(0f)
                 if (bonusSweep > 0f) {
@@ -272,6 +277,59 @@ internal fun CalorieHero(
                 size = arcSize,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
+            val burn = burnArc
+            if (burn != null && burn.typical > 0) {
+                // Concentric inner arc: full span = a "typical" day (HC average
+                // or PAL estimate), fill = today's live burn, marker at the
+                // typical (100%) end — solid for measured, hollow for estimate.
+                val innerStroke = 6.dp.toPx()
+                val gap = 10.dp.toPx()
+                val outerRadius = (size.width - stroke) / 2f
+                val innerRadius = outerRadius - stroke / 2f - gap - innerStroke / 2f
+                val cx = size.width / 2f
+                val cy = size.width / 2f
+                val innerSize = Size(innerRadius * 2f, innerRadius * 2f)
+                val innerTopLeft = Offset(cx - innerRadius, cy - innerRadius)
+                drawArc(
+                    color = trackColor,
+                    startAngle = 180f,
+                    sweepAngle = 180f,
+                    useCenter = false,
+                    topLeft = innerTopLeft,
+                    size = innerSize,
+                    style = Stroke(width = innerStroke, cap = StrokeCap.Round)
+                )
+                val burnRatio = burn.live.toFloat() / burn.typical
+                val overTypical = burnRatio > 1f
+                val burnSweep = 180f * burnRatio.coerceIn(0f, 1f)
+                if (burnSweep > 0f) {
+                    drawArc(
+                        color = tertiary,
+                        startAngle = 180f,
+                        sweepAngle = burnSweep,
+                        useCenter = false,
+                        topLeft = innerTopLeft,
+                        size = innerSize,
+                        style = Stroke(width = innerStroke, cap = StrokeCap.Round)
+                    )
+                }
+                val markerCenter = Offset(cx + innerRadius, cy)
+                val markerColor = if (overTypical) successColor else tertiary
+                if (burn.typicalSource == ActiveCalorieSource.MEASURED) {
+                    drawCircle(
+                        color = markerColor,
+                        radius = innerStroke / 2f,
+                        center = markerCenter
+                    )
+                } else {
+                    drawCircle(
+                        color = markerColor,
+                        radius = innerStroke / 2f,
+                        center = markerCenter,
+                        style = Stroke(width = 1.5.dp.toPx())
+                    )
+                }
+            }
         }
 
         Column(
@@ -350,6 +408,10 @@ internal fun CalorieHero(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+            val burn = burnArc
+            if (burn != null && burn.typical > 0) {
+                BurnArcCaption(burn = burn)
+            }
         }
     }
     if (showBudgetSheet) {
@@ -360,6 +422,50 @@ internal fun CalorieHero(
             awaiting = awaitingActiveBurn,
             onDismiss = { showBudgetSheet = false },
         )
+    }
+}
+
+@Composable
+private fun BurnArcCaption(burn: ActiveBurnArcData) {
+    val over = burn.live > burn.typical
+    val measured = burn.typicalSource == ActiveCalorieSource.MEASURED
+    val tertiary = MaterialTheme.colorScheme.tertiary
+    val a11y = when {
+        over && measured -> stringResource(R.string.home_active_burn_a11y_over_measured, burn.live, burn.live - burn.typical)
+        over -> stringResource(R.string.home_active_burn_a11y_over_estimated, burn.live, burn.live - burn.typical)
+        measured -> stringResource(R.string.home_active_burn_a11y_measured, burn.live, burn.typical)
+        else -> stringResource(R.string.home_active_burn_a11y_estimated, burn.live, burn.typical)
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        modifier = Modifier.semantics { contentDescription = a11y }
+    ) {
+        Icon(
+            Icons.Filled.LocalFireDepartment,
+            contentDescription = null,
+            tint = tertiary,
+            modifier = Modifier.size(11.dp)
+        )
+        Text(
+            stringResource(
+                if (measured) R.string.home_active_burn_caption_measured
+                else R.string.home_active_burn_caption_estimated,
+                burn.live,
+                burn.typical,
+            ),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = tertiary,
+        )
+        if (over) {
+            Text(
+                stringResource(R.string.home_active_burn_over, burn.live - burn.typical),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.success,
+            )
+        }
     }
 }
 

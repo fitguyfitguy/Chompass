@@ -367,6 +367,7 @@ fun HomeScreen(container: AppContainer) {
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
                         activeCalorieSource = ui.resolvedActiveBurn?.source,
+                        burnArc = if (ui.homeDisplay.showActiveCalories) ui.activeBurnArc else null,
                         awaitingActiveBurn = ui.homeDisplay.calorieDisplayMode ==
                             HomeCalorieDisplayMode.ADD_ACTIVE &&
                             calorieMode == HomeCalorieDisplayMode.STATIC,
@@ -1057,6 +1058,7 @@ internal fun HomeScreenPreviewContent(
                             activeCalories = ui.displayActiveCalories,
                             displayMode = ui.effectiveCalorieMode,
                             activeCalorieSource = ui.resolvedActiveBurn?.source,
+                            burnArc = if (ui.homeDisplay.showActiveCalories) ui.activeBurnArc else null,
                             freezeProgress = freezeAnimations,
                         )
                         Spacer(Modifier.height(20.dp))

@@ -103,6 +103,17 @@ data class ResolvedActiveBurn(
     val source: ActiveCalorieSource,
 )
 
+/**
+ * Today's active burn vs a single "typical" reference, for the home hero's
+ * inner arc. [typical] is the Health Connect 14-day average when available,
+ * otherwise the PAL activity-level estimate; [typicalSource] says which.
+ */
+data class ActiveBurnArcData(
+    val live: Int,
+    val typical: Int,
+    val typicalSource: ActiveCalorieSource,
+)
+
 object HomeCalorieDisplay {
     fun resolveActiveBurn(
         mode: HomeCalorieDisplayMode,
@@ -179,5 +190,29 @@ object HomeCalorieDisplay {
             (effectiveGoal(mode, baseGoal, activeCalories) - eaten).coerceAtLeast(0)
         HomeCalorieDisplayMode.STATIC ->
             (baseGoal - eaten).coerceAtLeast(0)
+    }
+
+    /**
+     * Data for the hero's inner active-burn arc. Unlike [resolveActiveBurn],
+     * live and reference stay strictly separate: the estimate never stands in
+     * for live burn. [liveHcActive] is today's measured Health Connect burn;
+     * [healthConnectAverage] is the stored 14-day measured average. Returns
+     * null when there is no live burn to draw.
+     */
+    fun activeBurnArc(
+        liveHcActive: Int,
+        manualActiveCalories: Int,
+        healthConnectAverage: Int,
+        estimatedDailyActive: Int,
+    ): ActiveBurnArcData? {
+        val live = liveHcActive.coerceAtLeast(0) + manualActiveCalories.coerceAtLeast(0)
+        if (live <= 0) return null
+        val typical = healthConnectAverage.takeIf { it > 0 } ?: estimatedDailyActive.takeIf { it > 0 } ?: 0
+        val source = when {
+            healthConnectAverage > 0 -> ActiveCalorieSource.MEASURED
+            typical > 0 -> ActiveCalorieSource.ESTIMATED
+            else -> ActiveCalorieSource.MANUAL
+        }
+        return ActiveBurnArcData(live, typical, source)
     }
 }

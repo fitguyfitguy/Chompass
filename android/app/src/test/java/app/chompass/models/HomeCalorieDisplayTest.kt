@@ -3,6 +3,7 @@ package app.chompass.models
 import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
@@ -134,6 +135,69 @@ class HomeCalorieDisplayTest {
         )
         assertEquals(ActiveCalorieSource.MANUAL, burn?.source)
         assertEquals(220, burn?.calories)
+    }
+
+    @Test
+    fun activeBurnArc_prefersMeasuredAverageReference() {
+        val arc = HomeCalorieDisplay.activeBurnArc(
+            liveHcActive = 320,
+            manualActiveCalories = 0,
+            healthConnectAverage = 540,
+            estimatedDailyActive = 480,
+        )
+        assertEquals(320, arc?.live)
+        assertEquals(540, arc?.typical)
+        assertEquals(ActiveCalorieSource.MEASURED, arc?.typicalSource)
+    }
+
+    @Test
+    fun activeBurnArc_fallsBackToEstimateReference() {
+        val arc = HomeCalorieDisplay.activeBurnArc(
+            liveHcActive = 320,
+            manualActiveCalories = 0,
+            healthConnectAverage = 0,
+            estimatedDailyActive = 480,
+        )
+        assertEquals(320, arc?.live)
+        assertEquals(480, arc?.typical)
+        assertEquals(ActiveCalorieSource.ESTIMATED, arc?.typicalSource)
+    }
+
+    @Test
+    fun activeBurnArc_liveIncludesManual() {
+        val arc = HomeCalorieDisplay.activeBurnArc(
+            liveHcActive = 100,
+            manualActiveCalories = 60,
+            healthConnectAverage = 200,
+            estimatedDailyActive = 0,
+        )
+        assertEquals(160, arc?.live)
+        assertEquals(200, arc?.typical)
+    }
+
+    @Test
+    fun activeBurnArc_nullWhenNoLiveBurn() {
+        assertNull(
+            HomeCalorieDisplay.activeBurnArc(
+                liveHcActive = 0,
+                manualActiveCalories = 0,
+                healthConnectAverage = 540,
+                estimatedDailyActive = 480,
+            )
+        )
+    }
+
+    @Test
+    fun activeBurnArc_manualOnlyTypicalUnavailable() {
+        val arc = HomeCalorieDisplay.activeBurnArc(
+            liveHcActive = 0,
+            manualActiveCalories = 100,
+            healthConnectAverage = 0,
+            estimatedDailyActive = 0,
+        )
+        assertEquals(100, arc?.live)
+        assertEquals(0, arc?.typical)
+        assertEquals(ActiveCalorieSource.MANUAL, arc?.typicalSource)
     }
 
     @Test

@@ -2,6 +2,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  activeBurnArcWeb,
   addActiveGaugeTarget,
   makeManualActiveEntry,
   resolveWebActiveBurn,
@@ -26,5 +27,25 @@ describe("manual active burn helpers", () => {
   it("addActiveGaugeTarget falls back to full target without burn", () => {
     assert.equal(addActiveGaugeTarget(2200, 1800, null), 2200);
     assert.equal(addActiveGaugeTarget(2200, 1800, { calories: 400 }), 2200);
+  });
+
+  it("activeBurnArcWeb returns null without live burn", () => {
+    assert.equal(activeBurnArcWeb(0, 480), null);
+  });
+
+  it("activeBurnArcWeb uses estimate as typical", () => {
+    assert.deepEqual(activeBurnArcWeb(320, 480), {
+      live: 320,
+      typical: 480,
+      source: "estimated",
+    });
+  });
+
+  it("activeBurnArcWeb is manual-only when no estimate", () => {
+    assert.deepEqual(activeBurnArcWeb(220, 0), {
+      live: 220,
+      typical: 0,
+      source: "manual",
+    });
   });
 });

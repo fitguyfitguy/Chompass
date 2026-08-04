@@ -1140,6 +1140,15 @@
     <string name="home_steps_label">Steps</string>
     <string name="home_steps_goal_format">Goal %1$s</string>
     <string name="home_active_calories_label">Active kcal</string>
+    <string name="home_active_burn_caption_measured">%1$d active · %2$d avg</string>
+    <string name="home_active_burn_caption_estimated">%1$d active · %2$d est.</string>
+    <string name="home_active_burn_over">+%1$d over</string>
+    <string name="home_active_burn_a11y_measured">Active burn %1$d of %2$d average</string>
+    <string name="home_active_burn_a11y_estimated">Active burn %1$d of %2$d estimated</string>
+    <string name="home_active_burn_a11y_over_measured">Active burn %1$d, %2$d above average</string>
+    <string name="home_active_burn_a11y_over_estimated">Active burn %1$d, %2$d above estimate</string>
+    <string name="home_display_show_active_calories">Show active calories</string>
+    <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge compared with your typical burn.</string>
     <string name="home_calories_left">%1$d left</string>
     <string name="home_calorie_budget_sheet_title">Today’s calorie budget</string>
     <string name="home_calorie_budget_sheet_awaiting">Your goal will grow once activity burn is recorded</string>
