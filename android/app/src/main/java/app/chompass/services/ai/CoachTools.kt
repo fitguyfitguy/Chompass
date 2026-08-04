@@ -302,6 +302,7 @@ class CoachTools(
         FoodSource.BARCODE -> "barcode"
         FoodSource.TEXT_INPUT -> "textInput"
         FoodSource.MANUAL -> "manual"
+        FoodSource.SEARCH -> "search"
         FoodSource.GROUNDED -> "grounded"
     }
 

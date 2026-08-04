@@ -357,6 +357,15 @@
     <string name="home_menu_saved_meals">Saved Meals</string>
     <string name="home_menu_barcode">Barcode</string>
     <string name="home_menu_grounded">Grounded</string>
+    <string name="home_menu_search_food">Search food</string>
+    <string name="food_search_sheet_title">Search food databases</string>
+    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
+    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
+    <string name="food_search_empty">Type to search packaged and generic foods</string>
+    <string name="food_search_no_results">No foods found. Try a different name.</string>
+    <string name="food_search_source_off">Open Food Facts</string>
+    <string name="food_search_source_usda">USDA</string>
+    <string name="food_search_source_swiss">Swiss</string>
     <string name="shortcut_camera_short">Camera</string>
     <string name="shortcut_camera_long">Log food with camera</string>
     <string name="shortcut_voice_short">Voice</string>
@@ -433,11 +442,13 @@
     <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
     <string name="grounding_source_usda">USDA</string>
     <string name="grounding_source_off">Open Food Facts</string>
+    <string name="grounding_source_swiss">Swiss</string>
     <string name="grounding_source_history">Your history</string>
     <string name="grounding_source_label">Nutrition label</string>
     <string name="grounding_source_estimate">AI estimate</string>
     <string name="grounding_badge_usda">Grounded · USDA</string>
     <string name="grounding_badge_off">Grounded · Open Food Facts</string>
+    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
     <string name="grounding_badge_history">Grounded · Your history</string>
     <string name="grounding_badge_label">Grounded · Label</string>
     <string name="grounding_badge_estimate">Estimate · not database-matched</string>
@@ -1216,6 +1227,7 @@
     <string name="error_analysis_failed">Analysis failed</string>
     <string name="error_failed_input_missing">Saved input could not be restored. Please take a new photo.</string>
     <string name="error_barcode_lookup_failed">Barcode lookup failed</string>
+    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
     <string name="error_ai_suggestion">Could not load AI suggestion.</string>
     <string name="finish_onboarding_hint">Finish onboarding first to compare this meal against your daily goals.</string>
     <string name="export_from">From</string>

@@ -11,7 +11,7 @@ Example:
   uv run python docs/benchmarks/food_accuracy/run_grounded_eval.py \\
     --provider openrouter --model google/gemini-3.5-flash-lite \\
     --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \\
-    --usda-db android/app/src/debug/assets/usda/usda_foods.sqlite \\
+    --usda-db android/app/src/main/assets/usda/usda_foods.sqlite \\
     --sleep 6 --retries 2 \\
     --out docs/benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
 """
@@ -42,7 +42,7 @@ from score import SampleScore, aggregate_scores, score_sample
 from parse import ParsedPrediction
 
 REPO = _HERE.parents[1]
-DEFAULT_USDA = REPO / "android" / "app" / "src" / "debug" / "assets" / "usda" / "usda_foods.sqlite"
+DEFAULT_USDA = REPO / "android" / "app" / "src" / "main" / "assets" / "usda" / "usda_foods.sqlite"
 
 RECOGNITION_SCHEMA = (
     '{"meal_name":"...","emoji":null,"notes":null,'

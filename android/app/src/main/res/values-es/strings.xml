@@ -810,4 +810,16 @@
     <string name="settings_photo_note_prompt">Pedir nota para la foto</string>
     <string name="settings_photo_note_prompt_footer">Si está activado, al registrar con foto se resalta el campo de nota antes de Analizar. Puedes confirmar y continuar sin nota.</string>
     <string name="settings_progress_default_range">Rango predeterminado en Progreso</string>
+    <string name="home_menu_search_food">Buscar alimento</string>
+    <string name="food_search_sheet_title">Buscar en bases de datos de alimentos</string>
+    <string name="food_search_placeholder">p. ej. yogur griego, leche, quark</string>
+    <string name="food_search_hint">Alimentos envasados de Open Food Facts y bases USDA y suiza sin conexión. Los resultados muestran su fuente.</string>
+    <string name="food_search_empty">Escribe para buscar alimentos envasados y genéricos</string>
+    <string name="food_search_no_results">No se encontraron alimentos. Prueba con otro nombre.</string>
+    <string name="food_search_source_off">Open Food Facts</string>
+    <string name="food_search_source_usda">USDA</string>
+    <string name="food_search_source_swiss">Suiza</string>
+    <string name="grounding_badge_swiss">Contrastado · Base suiza de composición de alimentos</string>
+    <string name="grounding_source_swiss">Suiza</string>
+    <string name="error_search_food_failed">No se pudo cargar este alimento. Inténtalo de nuevo.</string>
 </resources>

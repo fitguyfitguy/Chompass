@@ -240,6 +240,7 @@ private fun sourceBadgeLabel(kind: NutrientSourceKind): String =
     when (kind) {
         NutrientSourceKind.USDA -> stringResource(R.string.grounding_source_usda)
         NutrientSourceKind.OPEN_FOOD_FACTS -> stringResource(R.string.grounding_source_off)
+        NutrientSourceKind.SWISS -> stringResource(R.string.grounding_source_swiss)
         NutrientSourceKind.HISTORY -> stringResource(R.string.grounding_source_history)
         NutrientSourceKind.NUTRITION_LABEL -> stringResource(R.string.grounding_source_label)
         NutrientSourceKind.MODEL_ESTIMATE -> stringResource(R.string.grounding_source_estimate)

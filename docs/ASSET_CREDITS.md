@@ -6,7 +6,14 @@ Chompass is forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai) by Apo
 
 ## Barcode nutrition
 
-Barcode product lookups are powered by the [Open Food Facts](https://world.openfoodfacts.org) database, queried live via its public API. Open Food Facts data is available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). Chompass does not bundle the database — nutrition facts are fetched per scanned barcode.
+Barcode product lookups are powered by the [Open Food Facts](https://world.openfoodfacts.org) database, queried live via its public API. Open Food Facts data is available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). Chompass does not bundle the database — nutrition facts are fetched per scanned barcode. The Add Food **Search food** sheet also queries Open Food Facts live by product/brand search string (same ODbL terms, query only — never diary data).
+
+## Food databases (offline search)
+
+The Add Food **Search food** sheet reads two bundled offline databases, each under its own license — results keep a provenance badge so the source is never ambiguous:
+
+- **USDA FoodData Central** (Foundation + FNDDS subset, CC0 / public domain) — `android/app/src/main/assets/usda/usda_foods.sqlite`, rebuilt from the pinned FoodData Central bulk CSV release by `scripts/build_usda_food_index.py`. Cite USDA when redistributing.
+- **Swiss Food Composition Database** — `android/app/src/main/assets/swiss/swiss_foods.sqlite`, built by `scripts/build_swiss_food_index.py`. Source: Federal authorities of the Swiss Confederation, [naehrwertdaten.ch](https://naehrwertdaten.ch). The four localized CSV files (en/de/fr/it) are downloaded into `build/swiss-sfdc/` (gitignored) from the mirror bundle shipped by the [Food You](https://github.com/maksimowiczm/FoodYou) open-source project (GPL-3.0) — the underlying data is the official federal dataset, not Food You code.
 
 ## App icon
 

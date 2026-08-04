@@ -10,6 +10,8 @@ enum class FoodSource {
     @SerialName("barcode") BARCODE,
     @SerialName("textInput") TEXT_INPUT,
     @SerialName("manual") MANUAL,
+    /** Add Food "Search food" database pick (Open Food Facts / USDA / Swiss). */
+    @SerialName("search") SEARCH,
     /** Optional grounded entry: model recognition + local USDA/OFF/history nutrients. */
     @SerialName("grounded") GROUNDED,
 }

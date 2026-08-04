@@ -19,7 +19,7 @@
  * @typedef {Object} GroundingComponent
  * @property {string} name
  * @property {number} grams
- * @property {"usda"|"openFoodFacts"|"history"|"nutritionLabel"|"modelEstimate"} sourceKind
+ * @property {"usda"|"openFoodFacts"|"swiss"|"history"|"nutritionLabel"|"modelEstimate"} sourceKind
  * @property {string|null} [sourceId]
  * @property {string|null} [sourceName]
  * @property {string|null} [matchedBy]
@@ -27,7 +27,7 @@
 
 /**
  * @typedef {Object} Grounding
- * @property {"usda"|"openFoodFacts"|"history"|"nutritionLabel"|"modelEstimate"} sourceKind
+ * @property {"usda"|"openFoodFacts"|"swiss"|"history"|"nutritionLabel"|"modelEstimate"} sourceKind
  * @property {string|null} [sourceId]
  * @property {string|null} [sourceName]
  * @property {string|null} [datasetVersion]

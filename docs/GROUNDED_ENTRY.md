@@ -11,7 +11,7 @@ sources only (never from invented macros).
 
 ### Built (research / debug only)
 
-1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~3.8 MB` with FTS), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) with **FTS5**, multi-portion table, Atwater energy fill, WWEIA categories when present, omega-3 merge. Android [`UsdaFoodIndex`](../android/app/src/main/java/app/chompass/services/grounding/UsdaFoodIndex.kt). Packaged in **debug** builds only (`src/debug/assets/usda/`), not release.
+1. **Offline USDA index** — Foundation + FNDDS SQLite (`~5.8k` foods, `~3.8 MB` with FTS), builder at [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) with **FTS5**, multi-portion table, Atwater energy fill, WWEIA categories when present, omega-3 merge. Android [`UsdaFoodIndex`](../android/app/src/main/java/app/chompass/services/grounding/UsdaFoodIndex.kt). Ships in **all** build types under `src/main/assets/usda/` — it also powers the Add Food **Search food** sheet (see [`PARITY.md`](PARITY.md)); only the grounded *entry UI* is hidden.
 2. **Provenance model** — `FoodGroundingProvenance` / `GroundingCandidate` / validation helpers; `FoodSource.GROUNDED` for diary export/import (**provenance round-trips in JSON export**).
 3. **Orchestrator** — [`GroundedFoodEntryService`](../android/app/src/main/java/app/chompass/services/grounding/GroundedFoodEntryService.kt): barcode → OFF, history, USDA, then model-estimate fallback. Deterministic **scale from DB rows** (model must not invent macros). Preserves first-pass recognition on candidate review.
 4. **Cloud tool loop** — [`GroundingTools`](../android/app/src/main/java/app/chompass/services/grounding/GroundingTools.kt) + [`GroundedToolLoop`](../android/app/src/main/java/app/chompass/services/ai/GroundedToolLoop.kt) (max 4 rounds): `search_usda` / `search_history` / **`search_off`** / `lookup_barcode` → `finalize_grounding`. Finalize only accepts `source_id`s seen in this run. `search_off` is live OFF product/brand search (ODbL; query string only — not diary).
@@ -57,7 +57,7 @@ Gram-rich prompts (`"…, 150 g"`) favor single-shot parsing. Keep as **identity
 - Household units: single-shot still ahead (easy qty×density); grounded should close via USDA serving rows.
 - Photo grounded eval (JFB / Nutrition5k) not run to readiness.
 - On-device path is lexical only; gated off via `ALLOW_ON_DEVICE`.
-- Release packaging must not run until checklist is green (`./scripts/package_usda_for_release.sh --confirm` is intentionally confirm-gated).
+- Release packaging of the USDA asset already happened for the **Search food** feature (it now ships under `src/main/assets`), so readiness item 8 is effectively complete — the remaining gate is the grounded-entry UI flag itself, which stays `false`.
 
 ## Readiness checklist
 
@@ -70,9 +70,9 @@ Enable `GroundedEntryFeature.ENABLED` only when **all** of the following hold:
 5. **On-device policy** — `GroundedEntryFeature.ALLOW_ON_DEVICE == false` (grounded disabled for LiteRT) **or** ship a tested deterministic path with the same provenance rules.
 6. **Strings** — Localized grounded UI strings for shipped locales (EN + DE/ES/FR done; remaining locales fall back to EN until translated).
 7. **Release note** — Short CHANGELOG blurb + privacy line (BYOK recognition + local USDA/OFF/history).
-8. **USDA packaging** — Run [`scripts/package_usda_for_release.sh --confirm`](../scripts/package_usda_for_release.sh) to copy `src/debug/assets/usda/` → `src/main/assets/usda/` (or ship a downloadable index) so release/F-Droid APKs include the offline DB before flipping the flag.
+8. **USDA packaging** — **Done (2026-08-04):** the offline USDA index now ships under `src/main/assets/usda/` for the Add Food **Search food** sheet, so release/F-Droid APKs already include it. Flip `GroundedEntryFeature.ENABLED` only when the remaining checklist items above are green.
 
-Until then: keep the flag **false**; treat grounded as **WIP research only**; USDA stays out of release APKs; develop via unit tests + `run_grounded_eval.py` against the debug asset.
+Until then: keep the flag **false**; treat grounded as **WIP research only**; develop via unit tests + `run_grounded_eval.py` against the committed index.
 
 ### Local re-enable for development
 
@@ -85,7 +85,7 @@ const val ENABLED: Boolean = true
 
 1. Exact barcode → live [Open Food Facts](https://world.openfoodfacts.org/) (cached)
 2. Explicitly selected confirmed history / favorites (identity only; portion not auto-copied)
-3. Compact offline USDA Foundation + FNDDS index (`src/debug/assets/usda/usda_foods.sqlite` until productized)
+3. Compact offline USDA Foundation + FNDDS index (`src/main/assets/usda/usda_foods.sqlite`)
 4. Clearly marked model estimate when no database match exists
 
 ## UX (when enabled)
@@ -110,8 +110,8 @@ If a cloud provider fails to tool-call or finalize, the orchestrator falls back 
 
 | Item | Path |
 |------|------|
-| SQLite asset (debug APK only) | [`android/app/src/debug/assets/usda/usda_foods.sqlite`](../android/app/src/debug/assets/usda/usda_foods.sqlite) |
-| Manifest (sha256, version) | [`android/app/src/debug/assets/usda/usda_foods.manifest.json`](../android/app/src/debug/assets/usda/usda_foods.manifest.json) |
+| SQLite asset (all build types) | [`android/app/src/main/assets/usda/usda_foods.sqlite`](../android/app/src/main/assets/usda/usda_foods.sqlite) |
+| Manifest (sha256, version) | [`android/app/src/main/assets/usda/usda_foods.manifest.json`](../android/app/src/main/assets/usda/usda_foods.manifest.json) |
 | Build script | [`scripts/build_usda_food_index.py`](../scripts/build_usda_food_index.py) |
 
 Ranking prefers **FNDDS / `survey_fndds_food`** for cooked or generic meals and soft-penalizes form mismatches (flour / powder / dry / pie vs cooked solids; wrong beverage hits). Search omits rows with null calories by default so Foundation energy gaps cannot scale as 0 kcal.
@@ -129,9 +129,9 @@ uv run python scripts/build_usda_food_index.py
 # or: uv run python scripts/build_usda_food_index.py --zip-path /path/to/FoodData_Central_csv_*.zip
 ```
 
-Raw downloads land in `build/usda-fdc/` (gitignored). Debug APKs ship whatever
-SQLite is currently under `src/debug/assets/usda/`. Release APKs omit it until
-grounded entry is productized (then move back under `src/main/assets`).
+Raw downloads land in `build/usda-fdc/` (gitignored). The committed SQLite under
+`src/main/assets/usda/` ships in every build type — the Add Food **Search food**
+sheet reads it directly; grounded entry reuses the same index once enabled.
 
 ### Licensing
 
@@ -207,7 +207,7 @@ uv run python docs/benchmarks/food_accuracy/build_realistic_text_manifest.py
 Asset integrity:
 
 ```bash
-uv run python -c "import json,hashlib,pathlib; m=json.load(open('android/app/src/debug/assets/usda/usda_foods.manifest.json')); b=pathlib.Path('android/app/src/debug/assets/usda/usda_foods.sqlite').read_bytes(); assert hashlib.sha256(b).hexdigest()==m['sha256']; print(m['food_count'], 'foods ok')"
+uv run python -c "import json,hashlib,pathlib; m=json.load(open('android/app/src/main/assets/usda/usda_foods.manifest.json')); b=pathlib.Path('android/app/src/main/assets/usda/usda_foods.sqlite').read_bytes(); assert hashlib.sha256(b).hexdigest()==m['sha256']; print(m['food_count'], 'foods ok')"
 ```
 
 Metrics: top-k identity hit rate, source coverage, gram error, nutrient WMAPE, tool rounds, search count, fallback/correction rate, latency, asset size.

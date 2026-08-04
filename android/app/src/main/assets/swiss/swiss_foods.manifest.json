@@ -1,0 +1,12 @@
+{
+  "dataset_version": "swiss-sfdc-2026-08",
+  "food_count": 4760,
+  "sha256": "4b03fda57643856cefec537b1f9351426edda511c78711cedd2f847e06991fca",
+  "langs": [
+    "en",
+    "de",
+    "fr",
+    "it"
+  ],
+  "source": "Swiss Food Composition Database (naehrwertdaten.ch)"
+}

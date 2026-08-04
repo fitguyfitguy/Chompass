@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Build a compact USDA Foundation + FNDDS SQLite index for Chompass grounded entry.
+"""Build a compact USDA Foundation + FNDDS SQLite index for Chompass.
 
 Downloads a pinned FoodData Central bulk CSV release (or uses --fixture to emit a
 tiny committed seed without network), normalizes Chompass-supported nutrients to
-per-100g, and writes (debug APK assets only while grounded entry is gated):
+per-100g, and writes (main assets — ships in all build types):
 
-  android/app/src/debug/assets/usda/usda_foods.sqlite
-  android/app/src/debug/assets/usda/usda_foods.manifest.json
+  android/app/src/main/assets/usda/usda_foods.sqlite
+  android/app/src/main/assets/usda/usda_foods.manifest.json
 
 Usage (from repo root):
   uv run python scripts/build_usda_food_index.py --fixture
@@ -20,22 +20,27 @@ from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
-import json
 import sqlite3
 import sys
 import zipfile
 from pathlib import Path
 from urllib.request import urlretrieve
 
+from _food_index_common import (
+    create_schema,
+    rebuild_fts,
+    set_meta,
+    tokenize,
+    write_manifest,
+)
+
 REPO = Path(__file__).resolve().parents[1]
-OUT_DIR = REPO / "android" / "app" / "src" / "debug" / "assets" / "usda"
+OUT_DIR = REPO / "android" / "app" / "src" / "main" / "assets" / "usda"
 CACHE_DIR = REPO / "build" / "usda-fdc"
 
 # Pin a known public FDC bulk dump. Override with --zip-url if USDA moves the file.
 DEFAULT_ZIP_URL = (
-    "https://fdc.nal.usda.gov/fdc-datasets/"
-    "FoodData_Central_csv_2024-10-31.zip"
+    "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_csv_2024-10-31.zip"
 )
 DATASET_VERSION = "fdc-2024-10-31-foundation-fndds"
 
@@ -289,13 +294,9 @@ FIXTURE_FOODS = [
 ]
 
 
-def tokenize(text: str) -> str:
-    return " ".join(
-        "".join(ch.lower() if ch.isalnum() else " " for ch in text).split()
-    )
-
-
-def atwater_kcal(protein: float | None, carbs: float | None, fat: float | None) -> float | None:
+def atwater_kcal(
+    protein: float | None, carbs: float | None, fat: float | None
+) -> float | None:
     """Fill missing energy from macros using classic Atwater factors (4/4/9)."""
     if protein is None and carbs is None and fat is None:
         return None
@@ -309,53 +310,6 @@ def merge_omega3(nuts: dict[str, float]) -> None:
     total = sum(v for v in (epa, dha, ala) if v is not None)
     if total > 0:
         nuts["omega_3"] = total
-
-
-def create_schema(conn: sqlite3.Connection) -> None:
-    nutrient_cols = ",\n  ".join(f"{c} REAL" for c in NUTRIENT_COLUMNS)
-    conn.executescript(
-        f"""
-        DROP TABLE IF EXISTS foods_fts;
-        DROP TABLE IF EXISTS food_portions;
-        DROP TABLE IF EXISTS foods;
-        DROP TABLE IF EXISTS meta;
-        CREATE TABLE meta (
-          key TEXT PRIMARY KEY,
-          value TEXT NOT NULL
-        );
-        CREATE TABLE foods (
-          fdc_id INTEGER PRIMARY KEY,
-          description TEXT NOT NULL,
-          data_type TEXT NOT NULL,
-          food_category TEXT,
-          tokens TEXT NOT NULL,
-          serving_unit TEXT,
-          serving_grams REAL,
-          {nutrient_cols}
-        );
-        CREATE TABLE food_portions (
-          fdc_id INTEGER NOT NULL,
-          unit TEXT NOT NULL,
-          grams REAL NOT NULL,
-          PRIMARY KEY (fdc_id, unit),
-          FOREIGN KEY (fdc_id) REFERENCES foods(fdc_id)
-        );
-        CREATE INDEX foods_tokens_idx ON foods(tokens);
-        CREATE INDEX foods_desc_idx ON foods(description);
-        CREATE INDEX foods_category_idx ON foods(food_category);
-        CREATE VIRTUAL TABLE foods_fts USING fts5(
-          description,
-          tokens,
-          food_category,
-          content='foods',
-          content_rowid='fdc_id'
-        );
-        """
-    )
-
-
-def rebuild_fts(conn: sqlite3.Connection) -> None:
-    conn.execute("INSERT INTO foods_fts(foods_fts) VALUES('rebuild')")
 
 
 def insert_food(conn: sqlite3.Connection, row: dict) -> None:
@@ -382,7 +336,9 @@ def insert_food(conn: sqlite3.Connection, row: dict) -> None:
     )
 
 
-def insert_portions(conn: sqlite3.Connection, fdc_id: int, portions: list[tuple[str, float]]) -> None:
+def insert_portions(
+    conn: sqlite3.Connection, fdc_id: int, portions: list[tuple[str, float]]
+) -> None:
     for unit, grams in portions:
         if not unit or grams <= 0:
             continue
@@ -398,7 +354,35 @@ def write_fixture(db_path: Path) -> int:
         db_path.unlink()
     conn = sqlite3.connect(db_path)
     try:
-        create_schema(conn)
+        create_schema(
+            conn,
+            nutrient_columns=NUTRIENT_COLUMNS,
+            fixed_columns=[
+                "fdc_id INTEGER PRIMARY KEY",
+                "description TEXT NOT NULL",
+                "data_type TEXT NOT NULL",
+                "food_category TEXT",
+                "tokens TEXT NOT NULL",
+                "serving_unit TEXT",
+                "serving_grams REAL",
+            ],
+            fts_columns=["description", "tokens", "food_category"],
+            fts_rowid="fdc_id",
+            extra_statements=[
+                "DROP TABLE IF EXISTS food_portions;",
+                """
+                CREATE TABLE food_portions (
+                  fdc_id INTEGER NOT NULL,
+                  unit TEXT NOT NULL,
+                  grams REAL NOT NULL,
+                  PRIMARY KEY (fdc_id, unit),
+                  FOREIGN KEY (fdc_id) REFERENCES foods(fdc_id)
+                );
+                """,
+                "CREATE INDEX foods_desc_idx ON foods(description);",
+                "CREATE INDEX foods_category_idx ON foods(food_category);",
+            ],
+        )
         for food in FIXTURE_FOODS:
             insert_food(conn, food)
             if food.get("serving_unit") and food.get("serving_grams"):
@@ -408,22 +392,10 @@ def write_fixture(db_path: Path) -> int:
                     [(str(food["serving_unit"]), float(food["serving_grams"]))],
                 )
         rebuild_fts(conn)
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("dataset_version", DATASET_VERSION + "-fixture"),
-        )
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("source", "USDA FoodData Central (fixture subset)"),
-        )
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("license", "CC0 / public domain"),
-        )
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("features", "fts5,portions,atwater_fill,wweia_category"),
-        )
+        set_meta(conn, "dataset_version", DATASET_VERSION + "-fixture")
+        set_meta(conn, "source", "USDA FoodData Central (fixture subset)")
+        set_meta(conn, "license", "CC0 / public domain")
+        set_meta(conn, "features", "fts5,portions,atwater_fill,wweia_category")
         conn.commit()
         return len(FIXTURE_FOODS)
     finally:
@@ -442,9 +414,11 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
         zf.extractall(extract)
 
     # FoodData Central CSV layout nests files one level deep.
-    csv_root = next(p for p in extract.iterdir() if p.is_dir()) if any(
-        p.is_dir() for p in extract.iterdir()
-    ) else extract
+    csv_root = (
+        next(p for p in extract.iterdir() if p.is_dir())
+        if any(p.is_dir() for p in extract.iterdir())
+        else extract
+    )
 
     food_path = csv_root / "food.csv"
     nutrient_path = csv_root / "food_nutrient.csv"
@@ -470,8 +444,14 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
     wweia_cats: dict[str, str] = {}
     if wweia_path.exists():
         for r in read_csv_dict(wweia_path):
-            code = r.get("wweia_food_category") or r.get("wweia_food_category_code") or r.get("code")
-            desc = r.get("wweia_food_category_description") or r.get("description") or ""
+            code = (
+                r.get("wweia_food_category")
+                or r.get("wweia_food_category_code")
+                or r.get("code")
+            )
+            desc = (
+                r.get("wweia_food_category_description") or r.get("description") or ""
+            )
             if code:
                 wweia_cats[str(code)] = desc
 
@@ -520,7 +500,9 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
                 continue
             if fid not in foods or grams <= 0:
                 continue
-            unit = (r.get("portion_description") or r.get("modifier") or "serving").strip()
+            unit = (
+                r.get("portion_description") or r.get("modifier") or "serving"
+            ).strip()
             portions.setdefault(fid, [])
             # Keep up to 6 distinct household measures per food.
             if len(portions[fid]) >= 6:
@@ -532,7 +514,11 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
     # Optional survey food → WWEIA category via food.csv wweia_category_code when present.
     survey_wweia: dict[int, str] = {}
     for fid, meta in foods.items():
-        code = meta.get("wweia_category_code") or meta.get("wweia_food_category_code") or ""
+        code = (
+            meta.get("wweia_category_code")
+            or meta.get("wweia_food_category_code")
+            or ""
+        )
         if code and str(code) in wweia_cats:
             survey_wweia[fid] = wweia_cats[str(code)]
 
@@ -541,25 +527,51 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
     try:
-        create_schema(conn)
+        create_schema(
+            conn,
+            nutrient_columns=NUTRIENT_COLUMNS,
+            fixed_columns=[
+                "fdc_id INTEGER PRIMARY KEY",
+                "description TEXT NOT NULL",
+                "data_type TEXT NOT NULL",
+                "food_category TEXT",
+                "tokens TEXT NOT NULL",
+                "serving_unit TEXT",
+                "serving_grams REAL",
+            ],
+            fts_columns=["description", "tokens", "food_category"],
+            fts_rowid="fdc_id",
+            extra_statements=[
+                "DROP TABLE IF EXISTS food_portions;",
+                """
+                CREATE TABLE food_portions (
+                  fdc_id INTEGER NOT NULL,
+                  unit TEXT NOT NULL,
+                  grams REAL NOT NULL,
+                  PRIMARY KEY (fdc_id, unit),
+                  FOREIGN KEY (fdc_id) REFERENCES foods(fdc_id)
+                );
+                """,
+                "CREATE INDEX foods_desc_idx ON foods(description);",
+                "CREATE INDEX foods_category_idx ON foods(food_category);",
+            ],
+        )
         count = 0
         for fid, meta in foods.items():
             nuts = dict(nutrients.get(fid) or {})
             merge_omega3(nuts)
             if "calories" not in nuts:
-                filled = atwater_kcal(nuts.get("protein"), nuts.get("carbs"), nuts.get("fat"))
+                filled = atwater_kcal(
+                    nuts.get("protein"), nuts.get("carbs"), nuts.get("fat")
+                )
                 if filled is not None and filled > 0:
                     nuts["calories"] = round(filled, 1)
             if "calories" not in nuts and "protein" not in nuts:
                 continue
             cat_id = meta.get("food_category_id") or ""
-            food_category = (
-                survey_wweia.get(fid)
-                or categories.get(cat_id)
-                or None
-            )
+            food_category = survey_wweia.get(fid) or categories.get(cat_id) or None
             food_portions = portions.get(fid) or []
-            unit, grams = (food_portions[0] if food_portions else (None, None))
+            unit, grams = food_portions[0] if food_portions else (None, None)
             row = {
                 "fdc_id": fid,
                 "description": meta.get("description") or f"FDC {fid}",
@@ -575,42 +587,25 @@ def build_from_zip(zip_path: Path, db_path: Path) -> int:
             insert_portions(conn, fid, food_portions)
             count += 1
         rebuild_fts(conn)
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("dataset_version", DATASET_VERSION),
-        )
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("source", "USDA FoodData Central Foundation + FNDDS"),
-        )
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("license", "CC0 / public domain"),
-        )
-        conn.execute(
-            "INSERT INTO meta(key,value) VALUES (?,?)",
-            ("features", "fts5,portions,atwater_fill,wweia_category,omega3"),
-        )
+        set_meta(conn, "dataset_version", DATASET_VERSION)
+        set_meta(conn, "source", "USDA FoodData Central Foundation + FNDDS")
+        set_meta(conn, "license", "CC0 / public domain")
+        set_meta(conn, "features", "fts5,portions,atwater_fill,wweia_category,omega3")
         conn.commit()
         return count
     finally:
         conn.close()
 
 
-def write_manifest(db_path: Path, food_count: int, fixture: bool) -> Path:
-    digest = hashlib.sha256(db_path.read_bytes()).hexdigest()
-    manifest = {
+def build_manifest(food_count: int, fixture: bool) -> dict:
+    return {
         "dataset_version": DATASET_VERSION + ("-fixture" if fixture else ""),
         "food_count": food_count,
-        "sha256": digest,
         "license": "CC0 / public domain (USDA FoodData Central)",
         "attribution": "U.S. Department of Agriculture, Agricultural Research Service, FoodData Central",
         "nutrients": NUTRIENT_COLUMNS,
         "fixture": fixture,
     }
-    path = db_path.with_name("usda_foods.manifest.json")
-    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    return path
 
 
 def download_zip(url: str, dest: Path) -> Path:
@@ -646,7 +641,7 @@ def main() -> None:
 
     if args.fixture:
         count = write_fixture(args.out)
-        manifest = write_manifest(args.out, count, fixture=True)
+        manifest = write_manifest(args.out, build_manifest(count, fixture=True))
         print(f"Wrote fixture {count} foods → {args.out}")
         print(f"Manifest → {manifest}")
         return
@@ -655,7 +650,7 @@ def main() -> None:
     if args.zip_path is None:
         zip_path = download_zip(args.zip_url, zip_path)
     count = build_from_zip(zip_path, args.out)
-    manifest = write_manifest(args.out, count, fixture=False)
+    manifest = write_manifest(args.out, build_manifest(count, fixture=False))
     print(f"Wrote {count} foods → {args.out}")
     print(f"Manifest → {manifest}")
 

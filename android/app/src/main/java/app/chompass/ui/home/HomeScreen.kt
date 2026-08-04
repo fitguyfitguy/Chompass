@@ -111,6 +111,7 @@ fun HomeScreen(container: AppContainer) {
     var showCustomWaterLog by remember { mutableStateOf(false) }
     var showManualActive by remember { mutableStateOf(false) }
     var showGroundedEntry by remember { mutableStateOf(false) }
+    var showFoodSearch by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
     var showNutritionDetail by remember { mutableStateOf(false) }
@@ -601,6 +602,7 @@ fun HomeScreen(container: AppContainer) {
                     showGroundedEntry = true
                 }
             },
+            onSearch = { showFoodSearch = true },
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
             onRelogRecent = { vm.relogMeal(it) },
@@ -633,6 +635,17 @@ fun HomeScreen(container: AppContainer) {
                 },
             )
         }
+    }
+
+    if (showFoodSearch) {
+        FoodDatabaseSearchSheet(
+            container = container,
+            onSelect = { result ->
+                showFoodSearch = false
+                vm.selectFoodSearchResult(result)
+            },
+            onDismiss = { showFoodSearch = false },
+        )
     }
 
     if (showCustomWaterLog) {

@@ -26,8 +26,10 @@ import app.chompass.services.TestDataSeeder
 import app.chompass.services.WidgetSnapshotWriter
 import app.chompass.services.ai.ChatService
 import app.chompass.services.ai.FoodAnalysisService
+import app.chompass.services.grounding.FoodDatabaseSearch
 import app.chompass.services.grounding.GroundedFoodEntryService
 import app.chompass.services.grounding.GroundedEntryFeature
+import app.chompass.services.grounding.SwissFoodIndex
 import app.chompass.services.grounding.UsdaFoodIndex
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthConnectReadSync
@@ -177,18 +179,25 @@ class AppContainer(app: ChompassApp) {
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
     val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
     /**
-     * Offline USDA index + grounded orchestrator. Asset is debug-only (~2.1 MB) and
-     * [GroundedEntryFeature.ENABLED] is false in shipping builds — do not touch these
-     * from release UI paths.
+     * Offline food-database indexes + the gated grounded orchestrator.
+     * USDA (CC0) and Swiss (federal open data) SQLite assets ship in all build
+     * types and power the Add Food "Search food" sheet. [groundedFoodEntry]
+     * stays gated behind [GroundedEntryFeature.ENABLED] (false in shipping builds).
      */
     val usdaFoodIndex: UsdaFoodIndex by lazy(LazyThreadSafetyMode.NONE) {
-        check(GroundedEntryFeature.ENABLED) {
-            "UsdaFoodIndex is only for grounded entry (currently disabled)"
-        }
         check(UsdaFoodIndex.assetAvailable(appContext)) {
-            "USDA SQLite missing from APK assets (debug builds only until grounded ships)"
+            "USDA SQLite missing from APK assets"
         }
         UsdaFoodIndex(appContext)
+    }
+    val swissFoodIndex: SwissFoodIndex by lazy(LazyThreadSafetyMode.NONE) {
+        check(SwissFoodIndex.assetAvailable(appContext)) {
+            "Swiss food SQLite missing from APK assets"
+        }
+        SwissFoodIndex(appContext)
+    }
+    val foodDatabaseSearch: FoodDatabaseSearch by lazy(LazyThreadSafetyMode.NONE) {
+        FoodDatabaseSearch(prefs, usdaFoodIndex, swissFoodIndex)
     }
     val groundedFoodEntry: GroundedFoodEntryService by lazy(LazyThreadSafetyMode.NONE) {
         check(GroundedEntryFeature.ENABLED) {

@@ -534,6 +534,8 @@ fun FoodResultSheet(
                                 stringResource(R.string.grounding_badge_usda)
                             app.chompass.models.NutrientSourceKind.OPEN_FOOD_FACTS ->
                                 stringResource(R.string.grounding_badge_off)
+                            app.chompass.models.NutrientSourceKind.SWISS ->
+                                stringResource(R.string.grounding_badge_swiss)
                             app.chompass.models.NutrientSourceKind.HISTORY ->
                                 stringResource(R.string.grounding_badge_history)
                             app.chompass.models.NutrientSourceKind.NUTRITION_LABEL ->

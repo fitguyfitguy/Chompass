@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
 import app.chompass.services.grounding.GroundedEntryFeature
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,6 +88,7 @@ fun AddFoodSheet(
     onCopyFromDay: () -> Unit,
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
+    onSearch: () -> Unit = {},
     onDismiss: () -> Unit,
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
@@ -109,6 +111,7 @@ fun AddFoodSheet(
             onCopyFromDay = { onDismiss(); onCopyFromDay() },
             onManualActive = { onDismiss(); onManualActive() },
             onGrounded = { onDismiss(); onGrounded() },
+            onSearch = { onDismiss(); onSearch() },
             barcodeEnabled = barcodeEnabled,
             waterTrackingEnabled = waterTrackingEnabled,
             waterQuickPresetsMl = waterQuickPresetsMl,
@@ -134,6 +137,7 @@ internal fun AddFoodSheetContent(
     onCopyFromDay: () -> Unit = {},
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
+    onSearch: () -> Unit = {},
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
     waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
@@ -276,20 +280,12 @@ internal fun AddFoodSheetContent(
                         onClick = onGrounded,
                     )
                     AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_manual_active),
-                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                        label = stringResource(R.string.home_menu_search_food),
+                        icon = Icons.Filled.Search,
                         size = AddFoodTileSize.Compact,
                         modifier = Modifier.weight(1f),
-                        onClick = onManualActive,
+                        onClick = onSearch,
                     )
-                    Spacer(Modifier.weight(1f))
-                    Spacer(Modifier.weight(1f))
-                }
-            } else {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
                     AddFoodActionTile(
                         label = stringResource(R.string.home_menu_manual_active),
                         icon = Icons.AutoMirrored.Filled.DirectionsRun,
@@ -298,6 +294,26 @@ internal fun AddFoodSheetContent(
                         onClick = onManualActive,
                     )
                     Spacer(Modifier.weight(1f))
+                }
+            } else {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_search_food),
+                        icon = Icons.Filled.Search,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onSearch,
+                    )
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_manual_active),
+                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onManualActive,
+                    )
                     Spacer(Modifier.weight(1f))
                     Spacer(Modifier.weight(1f))
                 }

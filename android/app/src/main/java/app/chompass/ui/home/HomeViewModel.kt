@@ -28,6 +28,7 @@ import app.chompass.services.FoodImageComposer
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
+import app.chompass.services.grounding.DatabaseSearchResult
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.services.ai.AiError
 import app.chompass.services.health.HomeActivitySnapshot
@@ -673,6 +674,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         ) { start ->
             val analysis = OpenFoodFactsService.lookup(barcode, container.prefs)
             savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE, generation = start.generation)
+        }
+    }
+
+    /**
+     * Add Food "Search food" database pick: resolve the hit to a full
+     * [FoodAnalysis] (OFF barcode lookup for micros, or offline USDA/Swiss row)
+     * and prefill the review sheet with its provenance badge.
+     */
+    fun selectFoodSearchResult(result: DatabaseSearchResult) {
+        runFoodAnalysis(
+            defaultErrorRes = R.string.error_search_food_failed,
+            configure = { state ->
+                state.copy(
+                    pendingImageBytes = null,
+                    pendingAnalysisImages = emptyList(),
+                    pendingFoodSource = FoodSource.SEARCH,
+                    pendingDraftImageFilename = null,
+                )
+            },
+        ) { start ->
+            val analysis = container.foodDatabaseSearch.toAnalysis(result)
+            savePendingDraft(analysis, imageBytes = null, source = FoodSource.SEARCH, generation = start.generation)
         }
     }
 
