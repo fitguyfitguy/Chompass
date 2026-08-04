@@ -119,15 +119,12 @@ const DAY_NAV_CHEVRON_L = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fil
 const DAY_NAV_CHEVRON_R = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>`;
 
 /** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape (mobile). */
-function ringSvg(eaten, target, burnArc = null) {
+function ringSvg(eaten, target, burnArc = null, baseGoal = null) {
   const width = 260;
   const stroke = 16;
   const r = (width - stroke) / 2;
   const topPad = 3;
   const baseHeight = Math.ceil(r + stroke + topPad);
-  const innerStroke = 6;
-  const gap = 10;
-  const innerR = r - stroke / 2 - gap - innerStroke / 2;
   const burnLineH = burnArc ? 22 : 0;
   const height = baseHeight + burnLineH;
   const cx = width / 2;
@@ -142,20 +139,39 @@ function ringSvg(eaten, target, burnArc = null) {
   const arc = `M ${x1} ${y} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y}`;
   const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
 
+  // Activity-earned tail [baseGoal → target], shaded light (always estimated on
+  // web — no Health Connect); the beyond-typical excess fades further.
+  const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
+  let tailMarkup = "";
+  if (baseFrac < 1) {
+    const gap = baseFrac * halfC;
+    let endFrac = 1;
+    let overMarkup = "";
+    if (burnArc && burnArc.typical > 0) {
+      const typicalFrac = Math.min(1, (baseGoal + burnArc.typical) / target);
+      if (typicalFrac > baseFrac && typicalFrac < 1) {
+        endFrac = typicalFrac;
+        const typicalDist = typicalFrac * halfC;
+        overMarkup = `
+      <path class="calorie-ring__tail calorie-ring__tail--over" d="${arc}" fill="none"
+        stroke="var(--protein)" stroke-width="${stroke}" stroke-linecap="round"
+        stroke-dasharray="${typicalDist.toFixed(1)} 0"
+        data-dash="${typicalDist.toFixed(1)} ${(halfC - typicalDist).toFixed(1)}" />`;
+      }
+    }
+    const baseLen = (endFrac - baseFrac) * halfC;
+    tailMarkup = `
+      <path class="calorie-ring__tail" d="${arc}" fill="none"
+        stroke="var(--protein)" stroke-width="${stroke}" stroke-linecap="round"
+        stroke-dasharray="${gap.toFixed(1)} 0"
+        data-dash="${gap.toFixed(1)} ${baseLen.toFixed(1)}" />${overMarkup}`;
+  }
+
   let burnMarkup = "";
   let ariaBurn = "";
   if (burnArc && burnArc.typical > 0) {
-    const bArc = `M ${(cx - innerR).toFixed(1)} ${y} A ${innerR.toFixed(1)} ${innerR.toFixed(1)} 0 0 1 ${(cx + innerR).toFixed(1)} ${y}`;
-    const halfB = Math.PI * innerR;
-    const bPct = Math.min(1, burnArc.live / burnArc.typical);
     const cap = `${Math.round(burnArc.live)} active · ${Math.round(burnArc.typical)} est.`;
     burnMarkup = `
-      <path d="${bArc}" fill="none" stroke="var(--surface)" stroke-width="${innerStroke}" stroke-linecap="round" />
-      <path class="calorie-ring__burn" d="${bArc}" fill="none" stroke="var(--protein)" stroke-width="${innerStroke}"
-        stroke-linecap="round" stroke-dasharray="0 ${halfB.toFixed(1)}"
-        data-dash="${(bPct * halfB).toFixed(1)} ${halfB.toFixed(1)}" />
-      <circle cx="${(cx + innerR).toFixed(1)}" cy="${y}" r="${(innerStroke / 2).toFixed(1)}" fill="none"
-        stroke="var(--protein)" stroke-width="1.5" />
       <text x="50%" y="148" text-anchor="middle" class="calorie-ring__burn-label">${cap}</text>`;
     ariaBurn = `, active burn ${Math.round(burnArc.live)} of ${Math.round(burnArc.typical)} estimated`;
   }
@@ -164,6 +180,7 @@ function ringSvg(eaten, target, burnArc = null) {
     <svg class="calorie-ring calorie-ring--semi" viewBox="0 0 ${width} ${height}" role="img"
       aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}${ariaBurn}">
       <path d="${arc}" fill="none" stroke="var(--surface)" stroke-width="${stroke}" stroke-linecap="round" />
+      ${tailMarkup}
       <path class="calorie-ring__progress" d="${arc}" fill="none"
         stroke="${over ? "var(--over)" : "var(--teal)"}" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="0 ${halfC.toFixed(1)}"
@@ -177,7 +194,7 @@ function ringSvg(eaten, target, burnArc = null) {
 }
 
 /** Horizontal calorie progress bar (desktop). */
-function calorieBar(eaten, target, infoBtn = "", burnArc = null) {
+function calorieBar(eaten, target, infoBtn = "", burnArc = null, baseGoal = null) {
   const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
   const remaining = Math.round(target - eaten);
   const over = eaten > target;
@@ -186,6 +203,21 @@ function calorieBar(eaten, target, infoBtn = "", burnArc = null) {
     burnArc && burnArc.typical > 0
       ? `<span class="calorie-hero__burn">${Math.round(burnArc.live)} active · ${Math.round(burnArc.typical)} est.</span>`
       : "";
+  const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
+  let tailMarkup = "";
+  if (baseFrac < 1) {
+    let overMarkup = "";
+    if (burnArc && burnArc.typical > 0) {
+      const typicalFrac = Math.min(1, (baseGoal + burnArc.typical) / target);
+      if (typicalFrac > baseFrac && typicalFrac < 1) {
+        overMarkup = `<span class="calorie-bar__tail calorie-bar__tail--over"
+          style="left:${(typicalFrac * 100).toFixed(1)}%" data-width="${((1 - typicalFrac) * 100).toFixed(1)}%"></span>`;
+      }
+    }
+    tailMarkup = `
+      <span class="calorie-bar__tail" style="left:${(baseFrac * 100).toFixed(1)}%"
+        data-width="${((1 - baseFrac) * 100).toFixed(1)}%"></span>${overMarkup}`;
+  }
   return `
     <div class="calorie-hero calorie-hero--bar" role="img"
       aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}">
@@ -200,6 +232,7 @@ function calorieBar(eaten, target, infoBtn = "", burnArc = null) {
       <div class="calorie-bar${over ? " is-over" : ""}" role="progressbar"
         aria-valuemin="0" aria-valuemax="${Math.round(target)}" aria-valuenow="${Math.round(eaten)}">
         <span data-width="${pct.toFixed(1)}%"></span>
+        ${tailMarkup}
       </div>
       ${burnMarkup}
     </div>`;
@@ -437,11 +470,12 @@ export class DiaryView extends HTMLElement {
     const gaugeInfoBtnDesktop = gaugeInfo
       ? `<button type="button" class="gauge-info-btn gauge-info-btn--inline" data-gauge-info aria-label="${gaugeInfoLabel}">ⓘ</button>`
       : "";
+    const gaugeBaseGoal = gaugeInfo && "active" in gaugeInfo ? gaugeInfo.goal : calorieTarget;
     const gaugeMobile = targets
-      ? ringSvg(totals.calories, calorieTarget, arcBurn)
+      ? ringSvg(totals.calories, calorieTarget, arcBurn, gaugeBaseGoal)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
     const gaugeDesktop = targets
-      ? calorieBar(totals.calories, calorieTarget, gaugeInfoBtnDesktop, arcBurn)
+      ? calorieBar(totals.calories, calorieTarget, gaugeInfoBtnDesktop, arcBurn, gaugeBaseGoal)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
 
     const progressiveCount = progressiveMealItemCount();
@@ -642,7 +676,7 @@ export class DiaryView extends HTMLElement {
           if (dash) el.setAttribute("stroke-dasharray", dash);
         }
       });
-      this.querySelectorAll(".calorie-ring__burn").forEach((el) => {
+      this.querySelectorAll(".calorie-ring__tail").forEach((el) => {
         if (el instanceof SVGElement) {
           const dash = el.getAttribute("data-dash");
           if (dash) el.setAttribute("stroke-dasharray", dash);

@@ -417,8 +417,13 @@ main.view {
   transition: stroke-dasharray 280ms ease-out;
 }
 
-.calorie-ring__burn {
+.calorie-ring__tail {
   transition: stroke-dasharray 280ms ease-out;
+  opacity: 0.55;
+}
+
+.calorie-ring__tail--over {
+  opacity: 0.3;
 }
 
 .calorie-ring__burn-label {
@@ -590,6 +595,7 @@ main.view {
 }
 
 .calorie-bar {
+  position: relative;
   height: 0.7rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--teal) 16%, var(--surface));
@@ -597,10 +603,12 @@ main.view {
   overflow: hidden;
 }
 
-.calorie-bar > span {
+.calorie-bar > span:not(.calorie-bar__tail) {
   display: block;
   height: 100%;
   width: 0;
+  position: relative;
+  z-index: 1;
   border-radius: inherit;
   background: linear-gradient(
     90deg,
@@ -615,7 +623,7 @@ main.view {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--over) 22%, transparent);
 }
 
-.calorie-bar.is-over > span {
+.calorie-bar.is-over > span:not(.calorie-bar__tail) {
   background: linear-gradient(90deg, color-mix(in srgb, var(--over) 75%, #000), var(--over));
 }
 
@@ -625,6 +633,21 @@ main.view {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--protein);
+}
+
+.calorie-bar__tail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--protein) 45%, transparent);
+  transition: width 280ms ease-out;
+}
+
+.calorie-bar__tail--over {
+  background: color-mix(in srgb, var(--protein) 22%, transparent);
 }
 
 .macro-rows {
