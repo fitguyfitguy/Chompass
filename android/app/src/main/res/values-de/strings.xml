@@ -818,4 +818,16 @@
     <string name="settings_photo_note_prompt">Nach Fotonotiz fragen</string>
     <string name="settings_photo_note_prompt_footer">Wenn aktiv, wird beim Foto-Eintrag das Notizfeld vor Analysieren hervorgehoben. Du kannst trotzdem bestätigen und ohne Notiz fortfahren.</string>
     <string name="settings_progress_default_range">Standard-Zeitraum Fortschritt</string>
+    <string name="home_menu_search_food">Lebensmittel suchen</string>
+    <string name="food_search_sheet_title">Lebensmitteldatenbanken durchsuchen</string>
+    <string name="food_search_placeholder">z. B. griechischer Joghurt, Milch, Quark</string>
+    <string name="food_search_hint">Verpackte Lebensmittel von Open Food Facts sowie offline USDA- und Schweizer Datenbanken. Ergebnisse tragen eine Quellen-Kennzeichnung.</string>
+    <string name="food_search_empty">Tippe, um verpackte und generische Lebensmittel zu suchen</string>
+    <string name="food_search_no_results">Keine Lebensmittel gefunden. Versuche einen anderen Namen.</string>
+    <string name="food_search_source_off">Open Food Facts</string>
+    <string name="food_search_source_usda">USDA</string>
+    <string name="food_search_source_swiss">Schweiz</string>
+    <string name="grounding_badge_swiss">Zugeordnet · Schweizer Nährwertdatenbank</string>
+    <string name="grounding_source_swiss">Schweiz</string>
+    <string name="error_search_food_failed">Dieses Lebensmittel konnte nicht geladen werden. Bitte erneut versuchen.</string>
 </resources>

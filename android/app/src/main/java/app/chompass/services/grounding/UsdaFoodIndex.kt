@@ -1,13 +1,11 @@
 package app.chompass.services.grounding
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import app.chompass.models.GroundingCandidate
 import app.chompass.models.NutrientBasis
 import app.chompass.models.NutrientSourceKind
-import app.chompass.services.ai.FoodAnalysis
 import app.chompass.models.ServingUnitOption
-import java.io.File
+import app.chompass.services.ai.FoodAnalysis
 import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
@@ -16,38 +14,19 @@ import kotlin.math.roundToInt
 
 /**
  * Read-only lookup over the compact USDA Foundation + FNDDS SQLite asset
- * (`assets/usda/usda_foods.sqlite`). Packaged in **debug** builds only while
- * grounded entry is gated; release APKs omit it. No Room — opens a copied file
- * with [SQLiteDatabase.openDatabase].
+ * (`assets/usda/usda_foods.sqlite`). Ships in all build types and powers the
+ * Add Food "Search food" sheet plus the gated grounded-entry pipeline. No Room —
+ * opens a copied file with [android.database.sqlite.SQLiteDatabase.openDatabase].
  */
 class UsdaFoodIndex(
     context: Context,
     assetPath: String = ASSET_PATH,
+) : OfflineFoodIndex(
+    context = context,
+    assetPath = assetPath,
+    manifestAssetPath = MANIFEST_ASSET_PATH,
+    dbFileName = DB_FILE_NAME,
 ) {
-    private val appContext = context.applicationContext
-    private val dbFile: File = File(appContext.filesDir, "usda_foods.sqlite")
-    private val datasetVersion: String
-    private val db: SQLiteDatabase
-
-    init {
-        copyAssetIfNeeded(assetPath)
-        db = SQLiteDatabase.openDatabase(
-            dbFile.absolutePath,
-            null,
-            SQLiteDatabase.OPEN_READONLY or SQLiteDatabase.NO_LOCALIZED_COLLATORS,
-        )
-        datasetVersion = readMeta("dataset_version")
-            ?: "unknown"
-    }
-
-    fun version(): String = datasetVersion
-
-    fun foodCount(): Int {
-        db.rawQuery("SELECT COUNT(*) FROM foods", null).use { c ->
-            return if (c.moveToFirst()) c.getInt(0) else 0
-        }
-    }
-
     fun getByFdcId(fdcId: Long): UsdaFoodRecord? {
         db.rawQuery(
             "SELECT * FROM foods WHERE fdc_id = ? LIMIT 1",
@@ -73,63 +52,13 @@ class UsdaFoodIndex(
         val tokens = QueryNormalizer.normalizeTokens(query)
         if (tokens.isEmpty()) return emptyList()
 
-        val rows = mutableListOf<UsdaFoodRecord>()
-        val seen = mutableSetOf<Long>()
-
-        // Prefer FTS multi-token when the packaged DB includes foods_fts.
-        runCatching {
-            val ftsQ = tokens.joinToString(" ")
-            db.rawQuery(
-                """
-                SELECT foods.* FROM foods_fts
-                JOIN foods ON foods.fdc_id = foods_fts.rowid
-                WHERE foods_fts MATCH ?
-                LIMIT 80
-                """.trimIndent(),
-                arrayOf(ftsQ),
-            ).use { c ->
-                while (c.moveToNext()) {
-                    val rec = readRecord(c)
-                    if (seen.add(rec.fdcId)) rows += rec
-                }
-            }
-        }
-
-        if (rows.isEmpty()) {
-            // Multi-token LIKE: OR across first few tokens (compact asset).
-            val clauses = mutableListOf<String>()
-            val args = mutableListOf<String>()
-            for (tok in tokens.take(4)) {
-                val like = "%$tok%"
-                clauses += "(tokens LIKE ? OR description LIKE ?)"
-                args += like
-                args += like
-            }
-            db.rawQuery(
-                "SELECT * FROM foods WHERE ${clauses.joinToString(" OR ")} LIMIT 120",
-                args.toTypedArray(),
-            ).use { c ->
-                while (c.moveToNext()) {
-                    val rec = readRecord(c)
-                    if (seen.add(rec.fdcId)) rows += rec
-                }
-            }
-        }
-
-        if (rows.isEmpty()) {
-            val loose = "%${QueryNormalizer.normalizeQuery(query)}%"
-            db.rawQuery(
-                "SELECT * FROM foods WHERE description LIKE ? OR tokens LIKE ? LIMIT 80",
-                arrayOf(loose, loose),
-            ).use { c ->
-                while (c.moveToNext()) {
-                    val rec = readRecord(c)
-                    if (seen.add(rec.fdcId)) rows += rec
-                }
-            }
-        }
-
-        return rows
+        return searchRows(
+            query = query,
+            idColumn = "fdc_id",
+            nameColumn = "description",
+            tokensColumn = "tokens",
+            rowReader = ::readRecord,
+        )
             .asSequence()
             .filter { includeIncompleteEnergy || it.calories != null }
             .map { it to score(tokens, it) }
@@ -138,51 +67,6 @@ class UsdaFoodIndex(
             .take(limit)
             .map { (food, score) -> food.toCandidate(score, datasetVersion) }
             .toList()
-    }
-
-    fun close() {
-        db.close()
-    }
-
-    private fun copyAssetIfNeeded(assetPath: String) {
-        val am = appContext.assets
-        val packagedSha = readPackagedSha256()
-        val needCopy = !dbFile.exists() || dbFile.length() == 0L ||
-            (packagedSha != null && readInstalledSha256() != packagedSha)
-        if (!needCopy) {
-            // Fallback: refresh when the packaged asset size changes.
-            val assetSize = am.openFd(assetPath).use { it.length }
-            if (dbFile.length() == assetSize) return
-        }
-        dbFile.parentFile?.mkdirs()
-        am.open(assetPath).use { input ->
-            dbFile.outputStream().use { output -> input.copyTo(output) }
-        }
-        packagedSha?.let { writeInstalledSha256(it) }
-    }
-
-    private fun readPackagedSha256(): String? = runCatching {
-        appContext.assets.open(MANIFEST_ASSET_PATH).bufferedReader().use { reader ->
-            val text = reader.readText()
-            Regex(""""sha256"\s*:\s*"([a-fA-F0-9]+)"""").find(text)?.groupValues?.get(1)
-        }
-    }.getOrNull()
-
-    private fun shaFile(): File = File(appContext.filesDir, "usda_foods.sha256")
-
-    private fun readInstalledSha256(): String? =
-        runCatching { shaFile().takeIf { it.exists() }?.readText()?.trim() }.getOrNull()
-
-    private fun writeInstalledSha256(sha: String) {
-        runCatching { shaFile().writeText(sha) }
-    }
-
-    private fun readMeta(key: String): String? {
-        return runCatching {
-            db.rawQuery("SELECT value FROM meta WHERE key = ? LIMIT 1", arrayOf(key)).use { c ->
-                if (c.moveToFirst()) c.getString(0) else null
-            }
-        }.getOrNull()
     }
 
     private fun readRecord(c: android.database.Cursor): UsdaFoodRecord {
@@ -236,15 +120,13 @@ class UsdaFoodIndex(
     companion object {
         const val ASSET_PATH = "usda/usda_foods.sqlite"
         const val MANIFEST_ASSET_PATH = "usda/usda_foods.manifest.json"
+        private const val DB_FILE_NAME = "usda_foods.sqlite"
         /** Score margin below which top-2 candidates are treated as ambiguous. */
         const val AMBIGUITY_SCORE_DELTA = 1.5
 
-        /** True when the APK includes the offline index (debug source set today). */
+        /** True when the APK includes the offline index (all build types today). */
         fun assetAvailable(context: Context, assetPath: String = ASSET_PATH): Boolean =
-            runCatching {
-                context.applicationContext.assets.open(assetPath).use { }
-                true
-            }.getOrDefault(false)
+            OfflineFoodIndex.assetAvailable(context, assetPath)
 
         internal fun tokenize(text: String): List<String> = QueryNormalizer.normalizeTokens(text)
 
@@ -337,6 +219,7 @@ class UsdaFoodIndex(
                 NutrientSourceKind.OPEN_FOOD_FACTS -> 12.0
                 NutrientSourceKind.NUTRITION_LABEL -> 10.0
                 NutrientSourceKind.USDA -> 4.0
+                NutrientSourceKind.SWISS -> 4.0
                 NutrientSourceKind.HISTORY -> 2.5
                 NutrientSourceKind.MODEL_ESTIMATE -> 0.0
             }
@@ -411,8 +294,6 @@ data class UsdaFoodRecord(
 
     /** Scale per-100g nutrients to [grams]. */
     fun toFoodAnalysis(grams: Double, datasetVersion: String): FoodAnalysis {
-        val scale = grams / 100.0
-        fun s(v: Double?) = v?.let { round(it * scale * 10.0) / 10.0 }
         val unitOptions = if (!servingUnit.isNullOrBlank() && servingGrams != null && servingGrams > 0) {
             listOf(
                 ServingUnitOption(
@@ -425,38 +306,35 @@ data class UsdaFoodRecord(
             emptyList()
         }
         val selected = unitOptions.firstOrNull()
-        return FoodAnalysis(
+        val per100 = FoodAnalysis(
             name = description,
-            calories = ((calories ?: 0.0) * scale).roundToInt(),
-            protein = (protein ?: 0.0) * scale,
-            carbs = (carbs ?: 0.0) * scale,
-            fat = (fat ?: 0.0) * scale,
-            servingSizeGrams = grams,
-            sugar = s(sugar),
-            addedSugar = s(addedSugar),
-            fiber = s(fiber),
-            saturatedFat = s(saturatedFat),
-            monounsaturatedFat = s(monounsaturatedFat),
-            polyunsaturatedFat = s(polyunsaturatedFat),
-            cholesterol = s(cholesterol),
-            sodium = s(sodium),
-            potassium = s(potassium),
-            transFat = s(transFat),
-            calcium = s(calcium),
-            iron = s(iron),
-            magnesium = s(magnesium),
-            zinc = s(zinc),
-            vitaminA = s(vitaminA),
-            vitaminC = s(vitaminC),
-            vitaminD = s(vitaminD),
-            vitaminB12 = s(vitaminB12),
-            vitaminE = s(vitaminE),
-            vitaminK = s(vitaminK),
-            folate = s(folate),
-            omega3 = s(omega3),
-            servingUnitOptions = unitOptions,
-            selectedServingUnit = selected?.unit,
-            selectedServingQuantity = selected?.quantityFor(grams),
+            calories = (calories ?: 0.0).roundToInt(),
+            protein = protein ?: 0.0,
+            carbs = carbs ?: 0.0,
+            fat = fat ?: 0.0,
+            servingSizeGrams = 100.0,
+            sugar = sugar,
+            addedSugar = addedSugar,
+            fiber = fiber,
+            saturatedFat = saturatedFat,
+            monounsaturatedFat = monounsaturatedFat,
+            polyunsaturatedFat = polyunsaturatedFat,
+            cholesterol = cholesterol,
+            sodium = sodium,
+            potassium = potassium,
+            transFat = transFat,
+            calcium = calcium,
+            iron = iron,
+            magnesium = magnesium,
+            zinc = zinc,
+            vitaminA = vitaminA,
+            vitaminC = vitaminC,
+            vitaminD = vitaminD,
+            vitaminB12 = vitaminB12,
+            vitaminE = vitaminE,
+            vitaminK = vitaminK,
+            folate = folate,
+            omega3 = omega3,
             grounding = app.chompass.models.FoodGroundingProvenance(
                 sourceKind = NutrientSourceKind.USDA,
                 sourceId = fdcId.toString(),
@@ -467,6 +345,16 @@ data class UsdaFoodRecord(
                 identityEvidence = "USDA FDC $fdcId",
             ),
         )
+        val scaled = NutrientScaling.scaleAnalysis(per100, grams)
+        return if (unitOptions.isEmpty()) {
+            scaled
+        } else {
+            scaled.copy(
+                servingUnitOptions = unitOptions,
+                selectedServingUnit = selected?.unit,
+                selectedServingQuantity = selected?.quantityFor(grams),
+            )
+        }
     }
 }
 

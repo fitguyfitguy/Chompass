@@ -4,6 +4,11 @@ All notable changes to Chompass are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Add Food **Search food** sheet (Android): type to search **Open Food Facts** (live), **USDA FoodData Central** (offline), and the **Swiss Food Composition Database** (offline, en/de/fr/it names) with per-source chips and a provenance badge on every hit. Picking a hit prefills the review sheet with full micronutrients and the source stamped on the diary entry (`search` source; `grounding.sourceKind` = `usda` / `openFoodFacts` / `swiss`).
+- Offline food databases now ship in all Android builds (~5.3 MB): the USDA Foundation+FNDDS SQLite (was debug-only) and a new Swiss SQLite built from the federal naehrwertdaten.ch CSVs (`scripts/build_swiss_food_index.py`). Grounded entry stays disabled.
+
 ## [3.7.0] - 2026-08-03
 
 ### Added

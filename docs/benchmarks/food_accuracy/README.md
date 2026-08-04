@@ -79,7 +79,7 @@ Latest text-42 Flash Lite tool-loop (2026-07-22 post-roadmap): WMAPE **12.8%** /
 uv run python docs/benchmarks/food_accuracy/run_grounded_eval.py \
   --provider openrouter --model google/gemini-3.5-flash-lite \
   --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
-  --usda-db android/app/src/debug/assets/usda/usda_foods.sqlite \
+  --usda-db android/app/src/main/assets/usda/usda_foods.sqlite \
   --sleep 6 --retries 2 \
   --out docs/benchmarks/food_accuracy/results/grounded_tool_gemini35_flash_lite_text
 ```

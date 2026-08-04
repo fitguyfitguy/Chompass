@@ -923,7 +923,7 @@ class GroundedFoodEntryService(
             }
         ) 0.7 else 0.4
         val nutrientConf = when (primaryKind) {
-            NutrientSourceKind.USDA, NutrientSourceKind.OPEN_FOOD_FACTS -> 0.9
+            NutrientSourceKind.USDA, NutrientSourceKind.OPEN_FOOD_FACTS, NutrientSourceKind.SWISS -> 0.9
             NutrientSourceKind.HISTORY, NutrientSourceKind.NUTRITION_LABEL -> 0.75
             NutrientSourceKind.MODEL_ESTIMATE -> 0.35
         }

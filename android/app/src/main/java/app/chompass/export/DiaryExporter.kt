@@ -122,6 +122,7 @@ object DiaryExporter {
             FoodSource.MANUAL -> "manually_edited"
             FoodSource.GROUNDED -> "grounded"
             FoodSource.BARCODE -> "barcode"
+            FoodSource.SEARCH -> "search"
             else -> "ai_estimated"
         }
 
@@ -172,6 +173,7 @@ object DiaryExporter {
                 source_kind = when (g.sourceKind) {
                     app.chompass.models.NutrientSourceKind.USDA -> "usda"
                     app.chompass.models.NutrientSourceKind.OPEN_FOOD_FACTS -> "openFoodFacts"
+                    app.chompass.models.NutrientSourceKind.SWISS -> "swiss"
                     app.chompass.models.NutrientSourceKind.HISTORY -> "history"
                     app.chompass.models.NutrientSourceKind.NUTRITION_LABEL -> "nutritionLabel"
                     app.chompass.models.NutrientSourceKind.MODEL_ESTIMATE -> "modelEstimate"
@@ -192,6 +194,7 @@ object DiaryExporter {
                         source_kind = when (c.sourceKind) {
                             app.chompass.models.NutrientSourceKind.USDA -> "usda"
                             app.chompass.models.NutrientSourceKind.OPEN_FOOD_FACTS -> "openFoodFacts"
+                            app.chompass.models.NutrientSourceKind.SWISS -> "swiss"
                             app.chompass.models.NutrientSourceKind.HISTORY -> "history"
                             app.chompass.models.NutrientSourceKind.NUTRITION_LABEL -> "nutritionLabel"
                             app.chompass.models.NutrientSourceKind.MODEL_ESTIMATE -> "modelEstimate"

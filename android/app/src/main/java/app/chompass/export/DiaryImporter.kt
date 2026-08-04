@@ -162,6 +162,7 @@ object DiaryImporter {
             "manually_edited" -> FoodSource.MANUAL
             "barcode" -> FoodSource.BARCODE
             "grounded" -> FoodSource.GROUNDED
+            "search" -> FoodSource.SEARCH
             else -> FoodSource.TEXT_INPUT
         }
 
@@ -169,6 +170,7 @@ object DiaryImporter {
         when (raw?.trim()) {
             "usda" -> NutrientSourceKind.USDA
             "openFoodFacts" -> NutrientSourceKind.OPEN_FOOD_FACTS
+            "swiss" -> NutrientSourceKind.SWISS
             "history" -> NutrientSourceKind.HISTORY
             "nutritionLabel" -> NutrientSourceKind.NUTRITION_LABEL
             else -> NutrientSourceKind.MODEL_ESTIMATE

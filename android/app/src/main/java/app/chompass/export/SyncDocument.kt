@@ -770,6 +770,7 @@ object SyncDocument {
         FoodSource.MANUAL -> "manually_edited"
         FoodSource.BARCODE -> "barcode"
         FoodSource.GROUNDED -> "grounded"
+        FoodSource.SEARCH -> "search"
         else -> "ai_estimated"
     }
 
@@ -777,6 +778,7 @@ object SyncDocument {
         "manually_edited", "manual" -> FoodSource.MANUAL
         "barcode" -> FoodSource.BARCODE
         "grounded" -> FoodSource.GROUNDED
+        "search" -> FoodSource.SEARCH
         else -> FoodSource.TEXT_INPUT
     }
 
@@ -800,6 +802,7 @@ object SyncDocument {
             when (g.sourceKind) {
                 NutrientSourceKind.USDA -> "usda"
                 NutrientSourceKind.OPEN_FOOD_FACTS -> "openFoodFacts"
+                NutrientSourceKind.SWISS -> "swiss"
                 NutrientSourceKind.HISTORY -> "history"
                 NutrientSourceKind.NUTRITION_LABEL -> "nutritionLabel"
                 NutrientSourceKind.MODEL_ESTIMATE -> "modelEstimate"
@@ -821,6 +824,7 @@ object SyncDocument {
         val kind = when (o["source_kind"]?.asString()) {
             "usda" -> NutrientSourceKind.USDA
             "openFoodFacts" -> NutrientSourceKind.OPEN_FOOD_FACTS
+            "swiss" -> NutrientSourceKind.SWISS
             "history" -> NutrientSourceKind.HISTORY
             "nutritionLabel" -> NutrientSourceKind.NUTRITION_LABEL
             else -> NutrientSourceKind.MODEL_ESTIMATE

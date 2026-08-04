@@ -64,8 +64,10 @@ docs/benchmarks/food_accuracy/data/
 docs/benchmarks/food_accuracy/results/
 docs/benchmarks/food_accuracy/manifest/fndds_generated*.jsonl
 
-# USDA FoodData Central raw downloads (built assets live under src/debug/assets/usda/)
+# USDA FoodData Central raw downloads (built assets live under src/main/assets/usda/)
 build/usda-fdc/
+# Swiss Food Composition Database raw downloads (built assets live under src/main/assets/swiss/)
+build/swiss-sfdc/
 
 # Python
 __pycache__/
