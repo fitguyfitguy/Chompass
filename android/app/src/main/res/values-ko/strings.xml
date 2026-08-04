@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">AI 응답에 따라 값이 표시됩니다. 기록 전에 검토할 수 있습니다.</string>
     <string name="entry_analysis_tip_apply">팁으로 다시 분석</string>
     <string name="entry_analysis_tip_cta">AI용 팁 추가(선택)</string>
-    <string name="home_calorie_clause_add_active">(+%1$d 활동 → 예산)</string>
-    <string name="home_calorie_clause_add_active_waiting">활동 소모가 오늘 예산을 늘립니다</string>
     <string name="home_calorie_mode_add_active">활동 소모를 예산에 추가</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect(또는 활동 수준 추정치)의 활동 칼로리가 오늘 칼로리 예산에 더해집니다. 소모한 만큼 먹으세요. 운동이 중복 계산되지 않도록 활동 수준을 일상 기준으로 설정하세요. 측정값을 쓰려면 설정 → 건강에서 Health Connect를 연결하세요.</string>
     <string name="home_calorie_mode_add_active_hc_hint">팁: Health Connect를 켜면 활동 수준 추정치 대신 시계/휴대폰의 활동 칼로리를 사용할 수 있습니다.</string>

@@ -734,8 +734,6 @@
     <string name="entry_analysis_streaming_hint">AI 回复时数值会逐步显示。记录前你可以先查看。</string>
     <string name="entry_analysis_tip_apply">带提示重新分析</string>
     <string name="entry_analysis_tip_cta">为 AI 添加提示（可选）</string>
-    <string name="home_calorie_clause_add_active">(+%1$d 活动 → 预算)</string>
-    <string name="home_calorie_clause_add_active_waiting">活动消耗将延长今日预算</string>
     <string name="home_calorie_mode_add_active">将活动消耗加入预算</string>
     <string name="home_calorie_mode_add_active_desc">来自 Health Connect（或你的活动水平估算）的活动热量会加入今日卡路里预算。消耗多少可以再吃回来。将活动水平设为日常基准，避免运动被重复计算。要在设置 → 健康中连接 Health Connect 以使用实测消耗。</string>
     <string name="home_calorie_mode_add_active_hc_hint">提示：启用 Health Connect 后，可使用手表/手机的活动热量，而不是活动水平估算。</string>
