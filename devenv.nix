@@ -1,9 +1,14 @@
 { pkgs, ... }:
 
 {
+  devenv.warnOnNewVersion = false;
+
   android = {
     enable = true;
-    platforms.version = [ "36" "36.1" ];
+    platforms.version = [
+      "36"
+      "36.1"
+    ];
     buildTools.version = [ "36.0.0" ];
     emulator.enable = false;
     systemImages.enable = false;
@@ -16,7 +21,14 @@
   # it never sees app/src. Running the CLI also keeps the linter out of the
   # F-Droid release build graph.
   # uv: parity validators and asset scripts (never bare python/pip).
-  packages = [ pkgs.android-tools pkgs.hugo pkgs.nodejs pkgs.typescript pkgs.ktlint pkgs.uv ];
+  packages = [
+    pkgs.android-tools
+    pkgs.hugo
+    pkgs.nodejs
+    pkgs.typescript
+    pkgs.ktlint
+    pkgs.uv
+  ];
 
   enterShell = ''
     mkdir -p android
