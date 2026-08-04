@@ -215,4 +215,14 @@ object HomeCalorieDisplay {
         }
         return ActiveBurnArcData(live, typical, source)
     }
+
+    /**
+     * How much of a typical day's active burn has been reached, clamped to
+     * [0, 1]. Drives the hero's burn-thermometer alpha ramp. Returns 1 when
+     * there is no reference (nothing to measure against).
+     */
+    fun activeBurnRampProgress(live: Int, typical: Int): Float {
+        if (typical <= 0) return 1f
+        return (live.toFloat() / typical).coerceIn(0f, 1f)
+    }
 }

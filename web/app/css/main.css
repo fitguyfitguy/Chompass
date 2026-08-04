@@ -12,6 +12,7 @@
   --kcal: #e891a8;
   --water: #4a90d9;
   --over: #e08585;
+  --success: #9cd67d;
   --bg: #1c1b1f;
   --bg-elevated: #1d1b20;
   --surface: #2b2930;
@@ -49,6 +50,7 @@
     --muted: #49454f;
     --line: rgba(121, 116, 126, 0.24);
     --teal-ink: #003731;
+    --success: #386a20;
     color-scheme: light;
   }
 }
@@ -61,6 +63,7 @@
   --muted: #49454f;
   --line: rgba(121, 116, 126, 0.24);
   --teal-ink: #003731;
+  --success: #386a20;
   color-scheme: light;
 }
 
@@ -419,11 +422,11 @@ main.view {
 
 .calorie-ring__tail {
   transition: stroke-dasharray 280ms ease-out;
-  opacity: 0.55;
+  opacity: 0.45;
 }
 
-.calorie-ring__tail--over {
-  opacity: 0.3;
+.calorie-ring__tail-dot {
+  fill: var(--success);
 }
 
 .calorie-ring__burn-label {
@@ -644,10 +647,6 @@ main.view {
   border-radius: inherit;
   background: color-mix(in srgb, var(--protein) 45%, transparent);
   transition: width 280ms ease-out;
-}
-
-.calorie-bar__tail--over {
-  background: color-mix(in srgb, var(--protein) 22%, transparent);
 }
 
 .macro-rows {
