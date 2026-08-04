@@ -216,8 +216,9 @@ internal fun CalorieHero(
     // Ring color roles, one meaning per hue across every mode:
     // - trackColor (neutral) = unfilled budget, always.
     // - progressColor (primary, opaque) = consumed/eaten. Never reused elsewhere.
-    // - tertiary = activity-derived calories, exclusively — the ADD_ACTIVE bonus segment,
-    //   the DUAL burn ring, and the tertiary text clause in the goal line all share this hue.
+    // - tertiary = activity-derived calories, exclusively — the ADD_ACTIVE tail,
+    //   shaded by density (alpha) for provenance, and the tertiary text clause in
+    //   the goal line all share this hue.
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val progressColor = MaterialTheme.colorScheme.primary
     val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
@@ -249,18 +250,62 @@ internal fun CalorieHero(
                 size = arcSize,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
-            if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0 &&
-                burnArc == null
-            ) {
-                // Legacy bonus segment — only when the inner burn arc is not
-                // drawing (the arc supersedes it so tertiary appears once).
+            // Activity-earned tail: [baseGoal → effectiveGoal]. Shaded by density
+            // (provenance) and split when today's burn beats the typical reference.
+            // With no live burn data (burnArc null) it falls back to the legacy
+            // plain bonus segment so ADD_ACTIVE behavior is unchanged off-toggle.
+            if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
                 val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
-                val bonusSweep = (180f - baseSweep).coerceAtLeast(0f)
-                if (bonusSweep > 0f) {
+                val tailSweep = (180f - baseSweep).coerceAtLeast(0f)
+                val burn = burnArc
+                if (burn != null && burn.typical > 0) {
+                    val measured = activeCalorieSource == ActiveCalorieSource.MEASURED ||
+                        activeCalorieSource == ActiveCalorieSource.MANUAL
+                    val denseColor = tertiary.copy(alpha = if (measured) 0.85f else 0.40f)
+                    if (burn.live > burn.typical) {
+                        val typicalSweep = 180f *
+                            ((baseGoal + burn.typical).toFloat() / effectiveGoal).coerceIn(baseSweep, 180f)
+                        drawArc(
+                            color = denseColor,
+                            startAngle = 180f + baseSweep,
+                            sweepAngle = typicalSweep - baseSweep,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                        drawArc(
+                            color = tertiary.copy(alpha = 0.25f),
+                            startAngle = 180f + typicalSweep,
+                            sweepAngle = 180f - typicalSweep,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                        // Success end-dot on the arc tip marks "past your typical".
+                        val radius = (size.width - stroke) / 2f
+                        drawCircle(
+                            color = successColor,
+                            radius = 6.dp.toPx(),
+                            center = Offset(size.width / 2f + radius, size.width / 2f)
+                        )
+                    } else {
+                        drawArc(
+                            color = denseColor,
+                            startAngle = 180f + baseSweep,
+                            sweepAngle = tailSweep,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                    }
+                } else if (tailSweep > 0f) {
                     drawArc(
                         color = bonusColor,
                         startAngle = 180f + baseSweep,
-                        sweepAngle = bonusSweep,
+                        sweepAngle = tailSweep,
                         useCenter = false,
                         topLeft = topLeft,
                         size = arcSize,
@@ -277,59 +322,6 @@ internal fun CalorieHero(
                 size = arcSize,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
-            val burn = burnArc
-            if (burn != null && burn.typical > 0) {
-                // Concentric inner arc: full span = a "typical" day (HC average
-                // or PAL estimate), fill = today's live burn, marker at the
-                // typical (100%) end — solid for measured, hollow for estimate.
-                val innerStroke = 6.dp.toPx()
-                val gap = 10.dp.toPx()
-                val outerRadius = (size.width - stroke) / 2f
-                val innerRadius = outerRadius - stroke / 2f - gap - innerStroke / 2f
-                val cx = size.width / 2f
-                val cy = size.width / 2f
-                val innerSize = Size(innerRadius * 2f, innerRadius * 2f)
-                val innerTopLeft = Offset(cx - innerRadius, cy - innerRadius)
-                drawArc(
-                    color = trackColor,
-                    startAngle = 180f,
-                    sweepAngle = 180f,
-                    useCenter = false,
-                    topLeft = innerTopLeft,
-                    size = innerSize,
-                    style = Stroke(width = innerStroke, cap = StrokeCap.Round)
-                )
-                val burnRatio = burn.live.toFloat() / burn.typical
-                val overTypical = burnRatio > 1f
-                val burnSweep = 180f * burnRatio.coerceIn(0f, 1f)
-                if (burnSweep > 0f) {
-                    drawArc(
-                        color = tertiary,
-                        startAngle = 180f,
-                        sweepAngle = burnSweep,
-                        useCenter = false,
-                        topLeft = innerTopLeft,
-                        size = innerSize,
-                        style = Stroke(width = innerStroke, cap = StrokeCap.Round)
-                    )
-                }
-                val markerCenter = Offset(cx + innerRadius, cy)
-                val markerColor = if (overTypical) successColor else tertiary
-                if (burn.typicalSource == ActiveCalorieSource.MEASURED) {
-                    drawCircle(
-                        color = markerColor,
-                        radius = innerStroke / 2f,
-                        center = markerCenter
-                    )
-                } else {
-                    drawCircle(
-                        color = markerColor,
-                        radius = innerStroke / 2f,
-                        center = markerCenter,
-                        style = Stroke(width = 1.5.dp.toPx())
-                    )
-                }
-            }
         }
 
         Column(
