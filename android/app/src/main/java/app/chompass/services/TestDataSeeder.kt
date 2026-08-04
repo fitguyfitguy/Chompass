@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import java.time.LocalDate
 
 /**
  * Dev-only helper that swaps the user's real data for a year of synthetic food + weight
@@ -84,6 +85,36 @@ class TestDataSeeder(private val container: AppContainer) {
         // no separate activity cards, burn integrated into the hero gauge.
         container.prefs.setHomeShowSteps(false)
         container.prefs.setHomeShowActiveCalories(false)
+    }
+
+    /**
+     * seed_test_data + the hero burn thermometer enabled. [overrideTodayActive]
+     * optionally replaces today's debug active burn (e.g. > the PAL estimate to
+     * exercise the over-typical success state):
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_active_calories true
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_active_calories true --ei active_today_override 1200
+     */
+    suspend fun seedActiveCalories(overrideTodayActive: Int? = null) {
+        seedYear()
+        if (overrideTodayActive != null && overrideTodayActive > 0) {
+            val today = LocalDate.now().toString()
+            val days = container.prefs.debugActivityDaysJson()?.let {
+                runCatching {
+                    json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), it)
+                }.getOrNull()
+            } ?: emptyList()
+            container.prefs.setDebugActivityDays(
+                days.filterNot { it.date == today } +
+                    DebugActivityDay(
+                        date = today,
+                        steps = 11_000,
+                        activeCalories = overrideTodayActive,
+                        totalCalories = overrideTodayActive + 1_600,
+                    )
+            )
+        }
+        container.prefs.setHomeShowActiveCalories(true)
     }
 
     /**

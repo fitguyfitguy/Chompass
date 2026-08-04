@@ -376,6 +376,8 @@ open class MainActivity : ComponentActivity() {
         val seedBodyMetrics: Boolean = false,
         val seedBodyMetricsTwoYears: Boolean = false,
         val seedKetoSettings: Boolean = false,
+        val seedActiveCalories: Boolean = false,
+        val activeTodayOverride: Int = 0,
         val restoreRealData: Boolean = false,
         val runEntryBenchmark: Boolean = false,
         val entryBenchmarkCount: Int = 3,
@@ -399,6 +401,8 @@ open class MainActivity : ComponentActivity() {
             seedBodyMetrics = intent.getBooleanExtra("seed_body_metrics", false),
             seedBodyMetricsTwoYears = intent.getBooleanExtra("seed_body_metrics_2y", false),
             seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
+            seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
+            activeTodayOverride = intent.getIntExtra("active_today_override", 0),
             restoreRealData = intent.getBooleanExtra("restore_real_data", false),
             runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
             entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
@@ -419,6 +423,10 @@ open class MainActivity : ComponentActivity() {
         if (actions.seedBodyMetrics) intent.removeExtra("seed_body_metrics")
         if (actions.seedBodyMetricsTwoYears) intent.removeExtra("seed_body_metrics_2y")
         if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")
+        if (actions.seedActiveCalories) {
+            intent.removeExtra("seed_active_calories")
+            intent.removeExtra("active_today_override")
+        }
         if (actions.restoreRealData) intent.removeExtra("restore_real_data")
         if (actions.runEntryBenchmark) intent.removeExtra("run_entry_benchmark")
         if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
@@ -457,6 +465,11 @@ open class MainActivity : ComponentActivity() {
             if (actions.seedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
             if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
             if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
+            if (actions.seedActiveCalories) {
+                container.testDataSeeder.seedActiveCalories(
+                    actions.activeTodayOverride.takeIf { it > 0 }
+                )
+            }
             if (actions.restoreRealData) container.testDataSeeder.restore()
 
             // Independent of seeding/onboarding: benchmarks only need the AI provider + key.
