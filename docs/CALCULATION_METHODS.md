@@ -26,22 +26,22 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 
 ## Formula register
 
-| ID | Name | Type | Implementation | Units |
-|----|------|------|----------------|-------|
-| BMR-MSJ | Mifflin-St Jeor BMR | Deterministic | `UserProfile.bmr` when no body fat % | kcal/day |
-| BMR-KM | Katch-McArdle BMR | Deterministic | `UserProfile.bmr` when `bodyFatPercentage` set | kcal/day |
-| TDEE | Activity multiplier TDEE | Deterministic | `UserProfile.tdee` | kcal/day |
-| ACT-EST | Estimated daily active | Deterministic | `UserProfile.estimatedDailyActiveCalories` | kcal/day |
-| CAL-ADJ | Goal calorie adjustment | Deterministic | `UserProfile.calorieAdjustment` | kcal/day |
-| MACRO-P | Protein target | Deterministic | `UserProfile.proteinGoal` | g/day |
-| MACRO-F | Fat target | Deterministic | `UserProfile.fatGoal` | g/day |
-| MACRO-C | Carb target | Deterministic | `UserProfile.carbsGoal` | g/day |
-| KETO-C | Keto net carbs | Heuristic | `KetoCarbRecommendationService` | g/day |
-| FCAST | Weight forecast | Deterministic | `WeightAnalysisService.compute` | kg/week |
-| ADAPT | Adaptive calorie tweak | Heuristic | `AdaptiveGoalService.apply` | kcal/day |
-| USNAVY | US Navy body fat % | Deterministic | `BodyMeasurement.usNavyBodyFatPercent` | % |
-| WHR | Waist-to-hip | Deterministic | `BodyMeasurement.waistToHipRatio` | ratio |
-| WTH | Waist-to-height | Deterministic | `BodyMeasurement.waistToHeightRatio` | ratio |
+| ID      | Name                     | Type          | Implementation                                 | Units    |
+| ------- | ------------------------ | ------------- | ---------------------------------------------- | -------- |
+| BMR-MSJ | Mifflin-St Jeor BMR      | Deterministic | `UserProfile.bmr` when no body fat %           | kcal/day |
+| BMR-KM  | Katch-McArdle BMR        | Deterministic | `UserProfile.bmr` when `bodyFatPercentage` set | kcal/day |
+| TDEE    | Activity multiplier TDEE | Deterministic | `UserProfile.tdee`                             | kcal/day |
+| ACT-EST | Estimated daily active   | Deterministic | `UserProfile.estimatedDailyActiveCalories`     | kcal/day |
+| CAL-ADJ | Goal calorie adjustment  | Deterministic | `UserProfile.calorieAdjustment`                | kcal/day |
+| MACRO-P | Protein target           | Deterministic | `UserProfile.proteinGoal`                      | g/day    |
+| MACRO-F | Fat target               | Deterministic | `UserProfile.fatGoal`                          | g/day    |
+| MACRO-C | Carb target              | Deterministic | `UserProfile.carbsGoal`                        | g/day    |
+| KETO-C  | Keto net carbs           | Heuristic     | `KetoCarbRecommendationService`                | g/day    |
+| FCAST   | Weight forecast          | Deterministic | `WeightAnalysisService.compute`                | kg/week  |
+| ADAPT   | Adaptive calorie tweak   | Heuristic     | `AdaptiveGoalService.apply`                    | kcal/day |
+| USNAVY  | US Navy body fat %       | Deterministic | `BodyMeasurement.usNavyBodyFatPercent`         | %        |
+| WHR     | Waist-to-hip             | Deterministic | `BodyMeasurement.waistToHipRatio`              | ratio    |
+| WTH     | Waist-to-height          | Deterministic | `BodyMeasurement.waistToHeightRatio`           | ratio    |
 
 ### BMR-MSJ: Mifflin-St Jeor
 
@@ -74,14 +74,14 @@ BMR = 370 + 21.6 × LBM(kg)
 TDEE = BMR × PAL multiplier
 ```
 
-| Level | Multiplier |
-|-------|------------|
-| Sedentary | 1.2 |
-| Light | 1.375 |
-| Moderate | 1.465 |
-| Active | 1.55 |
-| Very Active | 1.725 |
-| Extra Active | 1.9 |
+| Level        | Multiplier |
+| ------------ | ---------- |
+| Sedentary    | 1.2        |
+| Light        | 1.375      |
+| Moderate     | 1.465      |
+| Active       | 1.55       |
+| Very Active  | 1.725      |
+| Extra Active | 1.9        |
 
 **Note:** Moderate uses **1.465** (between common “light” and “moderate” PAL tables). Documented intentionally; finer gradation for desk-active users.
 
@@ -150,13 +150,13 @@ If body fat % set: requirement is expressed per kg total weight via lean-mass fr
 
 ### KETO-C: Net carb heuristic
 
-| Signal | Adjustment |
-|--------|------------|
-| Lose / Maintain / Gain baseline | 25 / 30 / 40 g |
-| Activity offset | −2 to +8 g by level |
-| Aggressive loss (≥0.75 kg/wk) | −5 g |
-| Body fat ≥ 30% | −3 g |
-| Final | clamp 20–50 g |
+| Signal                          | Adjustment          |
+| ------------------------------- | ------------------- |
+| Lose / Maintain / Gain baseline | 25 / 30 / 40 g      |
+| Activity offset                 | −2 to +8 g by level |
+| Aggressive loss (≥0.75 kg/wk)   | −5 g                |
+| Body fat ≥ 30%                  | −3 g                |
+| Final                           | clamp 20–50 g       |
 
 **Policy:** Conservative ketogenic range; not personalized to ketone response.
 
@@ -221,20 +221,20 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 
 ## Scientific review: policy decisions
 
-| Item | Decision | Rationale |
-|------|----------|-----------|
-| Mifflin-St Jeor | **Keep** | Well-validated population BMR; ±10% typical error acknowledged in UI |
-| Katch-McArdle when BF% known | **Keep** | Better for non-average composition; requires accurate BF input |
-| PAL multipliers | **Keep** (incl. 1.465 moderate) | FAO/WHO-aligned set; moderate tier is app-specific gradation |
-| 7,700 kcal/kg unified | **Keep / fixed** | Was 7,000 in goal math only; unified to 7,700 to match docs & forecast |
-| Protein 0.8–2.2 g/kg + cut boost | **Keep** | Matches ISSN/sports nutrition consensus |
-| Fat 0.6 g/kg | **Keep** | Practical minimum-fat heuristic; not a clinical prescription |
-| Keto carb heuristic | **Keep** | Explicit policy range; document as heuristic not medical ketosis protocol |
-| Adaptive ±150 kcal, 25 min step | **Keep** | Prevents oscillation; conservative weekly nudge |
-| Safety floor max(BMR, 1200) | **Keep** | UX guardrail; documented limitation for small users |
-| Linear regression on scale data | **Replaced with Theil–Sen** | Robust median-slope; resists outlier weigh-ins |
-| AI goal recalculation | **Keep, segregated** | Non-deterministic; audit deterministic layer separately |
-| US Navy BF% | **Keep** | Standard field estimate; tape measurement error propagates |
+| Item                             | Decision                        | Rationale                                                                 |
+| -------------------------------- | ------------------------------- | ------------------------------------------------------------------------- |
+| Mifflin-St Jeor                  | **Keep**                        | Well-validated population BMR; ±10% typical error acknowledged in UI      |
+| Katch-McArdle when BF% known     | **Keep**                        | Better for non-average composition; requires accurate BF input            |
+| PAL multipliers                  | **Keep** (incl. 1.465 moderate) | FAO/WHO-aligned set; moderate tier is app-specific gradation              |
+| 7,700 kcal/kg unified            | **Keep / fixed**                | Was 7,000 in goal math only; unified to 7,700 to match docs & forecast    |
+| Protein 0.8–2.2 g/kg + cut boost | **Keep**                        | Matches ISSN/sports nutrition consensus                                   |
+| Fat 0.6 g/kg                     | **Keep**                        | Practical minimum-fat heuristic; not a clinical prescription              |
+| Keto carb heuristic              | **Keep**                        | Explicit policy range; document as heuristic not medical ketosis protocol |
+| Adaptive ±150 kcal, 25 min step  | **Keep**                        | Prevents oscillation; conservative weekly nudge                           |
+| Safety floor max(BMR, 1200)      | **Keep**                        | UX guardrail; documented limitation for small users                       |
+| Linear regression on scale data  | **Replaced with Theil–Sen**     | Robust median-slope; resists outlier weigh-ins                            |
+| AI goal recalculation            | **Keep, segregated**            | Non-deterministic; audit deterministic layer separately                   |
+| US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
 
 ---
 
@@ -251,14 +251,14 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 
 ## Enhancement backlog (prioritized)
 
-| Priority | Item | Status |
-|----------|------|--------|
-| P1 | Golden scenario tests for all deterministic formulas | **Done:** `CalculationGoldenScenariosTest` |
-| P2 | Calendar-day intake average for forecast | **Done:** `WeightForecastMath.averageDailyIntake` |
-| P2 | Document adaptive/forecast math in Calculation Methods UI | **Done:** settings strings + Calculation Methods screen |
-| P3 | Robust regression (Theil–Sen) for weight trend | **Done:** `WeightForecastMath.theilSenSlopePerDay` |
-| P3 | Review moderate PAL 1.465 vs literature 1.55 | **Done:** kept 1.465; documented in strings + `GoalFormulaReference` |
-| P4 | AI prompt parity via shared formula reference | **Done:** `GoalFormulaReference` + unit tests |
+| Priority | Item                                                      | Status                                                               |
+| -------- | --------------------------------------------------------- | -------------------------------------------------------------------- |
+| P1       | Golden scenario tests for all deterministic formulas      | **Done:** `CalculationGoldenScenariosTest`                           |
+| P2       | Calendar-day intake average for forecast                  | **Done:** `WeightForecastMath.averageDailyIntake`                    |
+| P2       | Document adaptive/forecast math in Calculation Methods UI | **Done:** settings strings + Calculation Methods screen              |
+| P3       | Robust regression (Theil–Sen) for weight trend            | **Done:** `WeightForecastMath.theilSenSlopePerDay`                   |
+| P3       | Review moderate PAL 1.465 vs literature 1.55              | **Done:** kept 1.465; documented in strings + `GoalFormulaReference` |
+| P4       | AI prompt parity via shared formula reference             | **Done:** `GoalFormulaReference` + unit tests                        |
 
 ---
 
@@ -283,20 +283,20 @@ When changing **diary / body-metrics / meal-share / sync** wire formats: bump `f
 
 ## Key source files
 
-| Area | Path |
-|------|------|
-| Profile & macros | `android/app/src/main/java/.../models/UserProfile.kt` |
-| Home gauge math | `android/app/src/main/java/.../models/HomeDisplayPreferences.kt` |
-| Constants | `android/app/src/main/java/.../models/NutritionConstants.kt` |
-| Activity / protein | `android/app/src/main/java/.../models/ActivityLevel.kt` |
-| Forecast & adaptive | `android/app/src/main/java/.../services/WeightAnalysisService.kt` |
-| Forecast math (pure) | `android/app/src/main/java/.../services/WeightForecastMath.kt` |
-| PWA formula / forecast mirror | `web/app/src/lib/chompass-core/{formulas,forecast}.js` |
-| Shared formula goldens | `testdata/parity/formulas-expected.json` |
-| Wire-format contracts | `contracts/*.schema.json` |
-| Feature parity matrix | `docs/PARITY.md` |
-| AI formula reference | `android/.../GoalFormulaReference.kt`, `web/.../chompass-core/goal-formula-reference.js`, `testdata/parity/goal-formula-prompt-fragments.json` |
-| Keto carbs | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt` |
-| Body metrics | `android/app/src/main/java/.../models/BodyMeasurement.kt` |
-| In-app docs | `SettingsScreen.kt` + `res/values/strings.xml` |
-| Unit tests | `android/app/src/test/java/.../models/` and `.../services/` |
+| Area                          | Path                                                                                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Profile & macros              | `android/app/src/main/java/.../models/UserProfile.kt`                                                                                          |
+| Home gauge math               | `android/app/src/main/java/.../models/HomeDisplayPreferences.kt`                                                                               |
+| Constants                     | `android/app/src/main/java/.../models/NutritionConstants.kt`                                                                                   |
+| Activity / protein            | `android/app/src/main/java/.../models/ActivityLevel.kt`                                                                                        |
+| Forecast & adaptive           | `android/app/src/main/java/.../services/WeightAnalysisService.kt`                                                                              |
+| Forecast math (pure)          | `android/app/src/main/java/.../services/WeightForecastMath.kt`                                                                                 |
+| PWA formula / forecast mirror | `web/app/src/lib/chompass-core/{formulas,forecast}.js`                                                                                         |
+| Shared formula goldens        | `testdata/parity/formulas-expected.json`                                                                                                       |
+| Wire-format contracts         | `contracts/*.schema.json`                                                                                                                      |
+| Feature parity matrix         | `docs/PARITY.md`                                                                                                                               |
+| AI formula reference          | `android/.../GoalFormulaReference.kt`, `web/.../chompass-core/goal-formula-reference.js`, `testdata/parity/goal-formula-prompt-fragments.json` |
+| Keto carbs                    | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt`                                                                      |
+| Body metrics                  | `android/app/src/main/java/.../models/BodyMeasurement.kt`                                                                                      |
+| In-app docs                   | `SettingsScreen.kt` + `res/values/strings.xml`                                                                                                 |
+| Unit tests                    | `android/app/src/test/java/.../models/` and `.../services/`                                                                                    |
