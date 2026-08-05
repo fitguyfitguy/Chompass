@@ -1,206 +1,255 @@
 {{ define "main" }}
-<section class="hero" aria-labelledby="hero-brand">
-  <div class="hero__copy">
-    <p class="hero__eyebrow">PWA · Android · ad-free</p>
-    <h1 id="hero-brand" class="hero__brand">Chompass</h1>
-    <p class="hero__tagline">Private calorie tracking for Android and the browser.</p>
-    <p class="hero__support">Bring your own AI key. Optional on-device Gemma&nbsp;4 on Android. No ads, no analytics, no account. The web app runs in any modern browser; Chromium-based browsers work best.</p>
-    <div class="hero__actions">
-      <a class="btn btn--primary" href="{{ "app/" | relURL }}">Try web app</a>
-      <a class="btn btn--ghost" href="{{ .Site.Params.obtainium }}">Get on Obtainium</a>
-      <a class="btn btn--ghost" href="{{ .Site.Params.releases }}">Download APK</a>
+<main class="lander" data-page="home">
+  <div class="lander__frame">
+    <div class="lander__content">
+
+      <section class="lander__hero" aria-labelledby="hero-brand">
+        <div class="hero-banner">
+          <span class="hero-banner__badge">v{{ .Site.Params.version }}</span>
+          <div class="hero-banner__content">
+            <span class="hero-banner__text">Privacy-first calorie tracking. No ads, no analytics, no account.</span>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <h1 id="hero-brand" class="hero-brand">Chompass</h1>
+          <p class="hero-sub">
+            Private calorie tracking for Android and the browser.<br />
+            Bring your own AI key, or run Gemma&nbsp;4 on-device.
+          </p>
+        </div>
+
+        <div class="install-grid" aria-label="Get Chompass">
+          <a class="platform-card" href="{{ "app/" | relURL }}">
+            <span class="platform-card__tag">web app</span>
+            <span class="platform-card__name">Open the PWA</span>
+            <span class="platform-card__desc">Runs in any modern browser: phone, tablet, or desktop.</span>
+            <span class="platform-card__link">chompass.app/app</span>
+          </a>
+          <a class="platform-card" href="{{ .Site.Params.obtainium }}">
+            <span class="platform-card__tag">android</span>
+            <span class="platform-card__name">Get it on Obtainium</span>
+            <span class="platform-card__desc">Keeps you updated straight from Codeberg releases.</span>
+            <span class="platform-card__link">{{ .Site.Params.apkArm64Note }} arm64 APK</span>
+          </a>
+          <a class="platform-card" href="{{ .Site.Params.releases }}">
+            <span class="platform-card__tag">apk</span>
+            <span class="platform-card__name">Download the APK</span>
+            <span class="platform-card__desc">Direct install, all architectures, plus checksums.</span>
+            <span class="platform-card__link">v{{ .Site.Params.version }} · codeberg</span>
+          </a>
+          <a class="platform-card" href="https://f-droid.org/packages/org.codeberg.fitguy.chompass/">
+            <span class="platform-card__tag">f-droid</span>
+            <span class="platform-card__name">F-Droid listing</span>
+            <span class="platform-card__desc">Open-source app store, no account needed.</span>
+            <span class="platform-card__link">org.codeberg.fitguy.chompass</span>
+          </a>
+        </div>
+
+        <div class="hero-actions">
+          <a class="btn-cta" href="{{ "app/" | relURL }}">Open the web app</a>
+          <a class="btn-link" href="{{ .Site.Params.obtainium }}">Get it on Obtainium</a>
+        </div>
+      </section>
+
+      {{- $usageMp4 := fileExists "static/video/chompass-usage.mp4" -}}
+      {{- $poster := fileExists "static/video/chompass-poster.jpg" -}}
+      <section class="lander__video" aria-label="Chompass in action">
+        {{- if $usageMp4 -}}
+        <video src="{{ "video/chompass-usage.mp4" | relURL }}" autoplay muted loop playsinline preload="auto"
+          {{- if $poster }} poster="{{ "video/chompass-poster.jpg" | relURL }}"{{ end }}>
+          Your browser does not support the video tag.
+        </video>
+        {{- else -}}
+        <div class="video-fallback" aria-hidden="true">
+          <img src="{{ "screenshots/home.png" | relURL }}" alt="" width="200" height="433" />
+          <img src="{{ "screenshots/add-food.png" | relURL }}" alt="" width="200" height="433" />
+          <img src="{{ "screenshots/progress.png" | relURL }}" alt="" width="200" height="433" />
+        </div>
+        {{- end -}}
+      </section>
+
+      <section class="lander__what" aria-labelledby="what-heading">
+        <div class="section-title">
+          <h2 id="what-heading">What you get</h2>
+          <p>Food logging that stays on your device unless you choose cloud AI, plus extras that make daily use clearer.</p>
+        </div>
+        <ul class="feature-list">
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Android and browser</strong> — installable PWA and Android app share the same diary and body-metrics JSON. No cloud sync between clients.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>AI you control</strong> — bring your own cloud key, or on Android opt into on-device Gemma&nbsp;4. Analysis shows progress steps and fills fields as the model replies.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Meal components</strong> — after AI entry, expand ingredients, edit grams per row, and keep meal totals in sync.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Recipes and saved meals</strong> — save recents, favorites, and multi-ingredient recipes for one-tap logging.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Diet modes and Health Connect</strong> — keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Open data, published accuracy</strong> — FOSS barcode on Android, open export and import, and published AI accuracy notes instead of a single marketing number.</div>
+          </li>
+        </ul>
+        <a class="read-more" href="{{ "features/" | relURL }}">
+          <span>Read the full feature list</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6.5 12H17M13 16.5L17.5 12L13 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+          </svg>
+        </a>
+      </section>
+
+      <section class="lander__stats" aria-labelledby="stats-heading">
+        <div class="section-title">
+          <h2 id="stats-heading">The numbers</h2>
+          <div>
+            <span class="section-title__mark">[*]</span>
+            <p>Small app, honest claims, no marketing fluff.</p>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">arm64 APK</span>
+              <strong class="stat__value">{{ .Site.Params.apkArm64Note }}</strong>
+            </div>
+            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 42%"></div></div>
+          </div>
+          <div class="stat">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">Languages</span>
+              <strong class="stat__value">15</strong>
+            </div>
+            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 88%"></div></div>
+          </div>
+          <div class="stat">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">Typed entry within 20%</span>
+              <strong class="stat__value">~90%</strong>
+            </div>
+            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 90%"></div></div>
+          </div>
+        </div>
+        <p class="stats-note">
+          Accuracy figures come from our published
+          <a href="{{ "blog/ai-food-logging-accuracy/" | relURL }}">AI accuracy write-up</a>,
+          not a vendor claim.
+        </p>
+      </section>
+
+      <section class="lander__privacy" aria-labelledby="privacy-heading">
+        <div class="section-title">
+          <h2 id="privacy-heading">Private by design</h2>
+          <div>
+            <span class="section-title__mark">[*]</span>
+            <p>
+              No ads, no analytics SDKs, no accounts. Food logs and API keys stay on your device,
+              encrypted at rest. Learn more in the <a href="{{ "privacy/" | relURL }}">privacy policy</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="lander__faq" aria-labelledby="faq-heading">
+        <div class="section-title">
+          <h2 id="faq-heading">FAQ</h2>
+        </div>
+        <ul class="faq-list">
+          <li class="faq-item">
+            <button type="button" class="faq-item__question" aria-expanded="false">
+              <svg class="faq-item__icon faq-item__icon--plus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 11.5H19v1h-6.5V19h-1v-6.5H5v-1h6.5V5h1v6.5Z"/></svg>
+              <svg class="faq-item__icon faq-item__icon--minus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11.5h14v1H5z"/></svg>
+              <span class="faq-item__question-text">Do I need an account?</span>
+            </button>
+            <div class="faq-item__answer" hidden>
+              No. Chompass has no sign-in and no central user database. Diary, weight history, profile, and Coach chat stay on your device. Optional user-hosted WebDAV sync uses a server you configure.
+            </div>
+          </li>
+          <li class="faq-item">
+            <button type="button" class="faq-item__question" aria-expanded="false">
+              <svg class="faq-item__icon faq-item__icon--plus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 11.5H19v1h-6.5V19h-1v-6.5H5v-1h6.5V5h1v6.5Z"/></svg>
+              <svg class="faq-item__icon faq-item__icon--minus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11.5h14v1H5z"/></svg>
+              <span class="faq-item__question-text">How does the AI work?</span>
+            </button>
+            <div class="faq-item__answer" hidden>
+              Chompass is BYOK: you add your own model provider key under Settings, and food analysis goes only to that provider. On Android you can opt into On-Device (Private), which runs Gemma&nbsp;4 on the device itself with no upload.
+            </div>
+          </li>
+          <li class="faq-item">
+            <button type="button" class="faq-item__question" aria-expanded="false">
+              <svg class="faq-item__icon faq-item__icon--plus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 11.5H19v1h-6.5V19h-1v-6.5H5v-1h6.5V5h1v6.5Z"/></svg>
+              <svg class="faq-item__icon faq-item__icon--minus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11.5h14v1H5z"/></svg>
+              <span class="faq-item__question-text">Web app or Android app?</span>
+            </button>
+            <div class="faq-item__answer" hidden>
+              Both. The <a href="{{ "app/" | relURL }}">installable PWA</a> runs in any modern browser on phone, tablet, or desktop. The Android app adds Health Connect, widgets, notifications, on-device Gemma&nbsp;4, and all 15 languages. Diary and body-metrics JSON match across clients.
+            </div>
+          </li>
+          <li class="faq-item">
+            <button type="button" class="faq-item__question" aria-expanded="false">
+              <svg class="faq-item__icon faq-item__icon--plus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 11.5H19v1h-6.5V19h-1v-6.5H5v-1h6.5V5h1v6.5Z"/></svg>
+              <svg class="faq-item__icon faq-item__icon--minus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11.5h14v1H5z"/></svg>
+              <span class="faq-item__question-text">How accurate is food logging?</span>
+            </button>
+            <div class="faq-item__answer" hidden>
+              We test against labeled datasets and publish the results instead of quoting a single number. Typed entry with a stated portion lands within 20% about 90% of the time; photo entry is harder and that gap is true across the industry. Full methodology in <a href="{{ "blog/ai-food-logging-accuracy/" | relURL }}">How accurate is AI food logging?</a>
+            </div>
+          </li>
+          <li class="faq-item">
+            <button type="button" class="faq-item__question" aria-expanded="false">
+              <svg class="faq-item__icon faq-item__icon--plus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 11.5H19v1h-6.5V19h-1v-6.5H5v-1h6.5V5h1v6.5Z"/></svg>
+              <svg class="faq-item__icon faq-item__icon--minus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11.5h14v1H5z"/></svg>
+              <span class="faq-item__question-text">Can I move my data from Fud AI?</span>
+            </button>
+            <div class="faq-item__answer" hidden>
+              Yes. In Fud AI, export your diary as JSON, then import it in Chompass via Settings. Weight and body data import through the matching import option too.
+            </div>
+          </li>
+          <li class="faq-item">
+            <button type="button" class="faq-item__question" aria-expanded="false">
+              <svg class="faq-item__icon faq-item__icon--plus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 11.5H19v1h-6.5V19h-1v-6.5H5v-1h6.5V5h1v6.5Z"/></svg>
+              <svg class="faq-item__icon faq-item__icon--minus" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11.5h14v1H5z"/></svg>
+              <span class="faq-item__question-text">Is it on the Play Store?</span>
+            </button>
+            <div class="faq-item__answer" hidden>
+              No. Chompass ships from <a href="{{ .Site.Params.repo }}">Codeberg</a>: APK or <a href="{{ .Site.Params.obtainium }}">Obtainium</a> on Android, and a PWA in the browser. F-Droid listing is in progress.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="lander__cta" aria-labelledby="cta-heading">
+        <div class="cta-copy">
+          <h2 id="cta-heading">Start tracking privately</h2>
+          <p>Free, open source, and yours. Bring any AI key, or none.</p>
+          <div class="cta-platforms">
+            <span class="cta-platform">Android</span>
+            <span class="cta-platform">Browser PWA</span>
+            <span class="cta-platform">Health Connect</span>
+            <span class="cta-platform">On-device AI</span>
+          </div>
+          <a class="read-more" href="{{ "download/" | relURL }}">
+            <span>Install Chompass</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6.5 12H17M13 16.5L17.5 12L13 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
     </div>
   </div>
-  <div class="hero__visual" aria-hidden="false">
-    <img
-      class="hero__phone"
-      src="{{ "screenshots/home.png" | relURL }}"
-      alt="Chompass home screen showing calorie ring, macros, and today's meal log"
-      width="390"
-      height="844"
-      fetchpriority="high"
-    />
-  </div>
-</section>
-
-<section class="strip" aria-label="Product highlights">
-  <ul class="strip__list">
-    <li><strong>No ads</strong><span>No analytics either</span></li>
-    <li><strong>Browser PWA</strong><span>Any modern browser</span></li>
-    <li><strong>On-device AI</strong><span>Opt-in Gemma&nbsp;4 (Android)</span></li>
-    <li><strong>{{ .Site.Params.apkArm64Note }}</strong><span>arm64 APK (v{{ .Site.Params.version }})</span></li>
-  </ul>
-</section>
-
-<section class="pillars" aria-labelledby="pillars-heading">
-  <div class="section-head">
-    <h2 id="pillars-heading">What you get</h2>
-    <p>Food logging that stays on your device unless you choose cloud AI, plus extras that make daily use clearer.</p>
-  </div>
-  <ul class="pillars__list">
-    <li>
-      <h3>Android and browser</h3>
-      <p>Installable PWA and Android app share the same diary and body-metrics JSON. No cloud sync between clients.</p>
-    </li>
-    <li>
-      <h3>AI you control</h3>
-      <p>Bring your own cloud key. On Android, opt into on-device Gemma&nbsp;4. Analysis shows progress steps and fills fields as the model replies.</p>
-    </li>
-    <li>
-      <h3>Meal components</h3>
-      <p>After AI entry, expand ingredients, edit grams per row, and keep meal totals in sync.</p>
-    </li>
-    <li>
-      <h3>Recipes and saved meals</h3>
-      <p>Save recents, favorites, and multi-ingredient recipes for one-tap logging.</p>
-    </li>
-    <li>
-      <h3>Diet modes and Health Connect</h3>
-      <p>Keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration through Health Connect.</p>
-    </li>
-    <li>
-      <h3>Open data, honest accuracy</h3>
-      <p>FOSS barcode on Android, open export and import, and published AI accuracy notes instead of a single marketing number.</p>
-    </li>
-  </ul>
-</section>
-
-<section class="shots" aria-labelledby="shots-heading">
-  <div class="section-head">
-    <h2 id="shots-heading">Highlights in the app</h2>
-    <p>Material&nbsp;3 dark theme. Light theme is available in Settings.</p>
-  </div>
-  <div class="shots__grid">
-    {{ range slice
-      (dict "src" "screenshots/home.png" "alt" "Home: calorie ring and meal log" "label" "Home")
-      (dict "src" "screenshots/add-food.png" "alt" "Add food sheet with photo and AI options" "label" "Add food")
-      (dict "src" "screenshots/meal-components.png" "alt" "Meal review with editable ingredient rows" "label" "Meal components")
-      (dict "src" "screenshots/recipes.png" "alt" "Saved meals Recipes tab with multi-ingredient recipes" "label" "Recipes")
-      (dict "src" "screenshots/ai-analysis.png" "alt" "AI analysis overlay with progress steps and streaming nutrition fields" "label" "AI analysis")
-      (dict "src" "screenshots/progress.png" "alt" "Progress charts for weight and body fat" "label" "Progress")
-    }}
-    <figure class="shot">
-      <img src="{{ .src | relURL }}" alt="{{ .alt }}" width="200" height="433" loading="lazy" />
-      <figcaption>{{ .label }}</figcaption>
-    </figure>
-    {{ end }}
-  </div>
-</section>
-
-<section class="compare" aria-labelledby="compare-heading">
-  <div class="shoutout">
-    <p class="shoutout__kicker">Built on open source</p>
-    <p class="shoutout__body">
-      Chompass is based on
-      <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer"><strong>Fud&nbsp;AI</strong></a>
-      by Apoorv Darshan. Same BYOK food logging roots, plus an Android app and browser PWA on Codeberg.
-      Prefer workouts and the upstream feature set?
-      See <a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI on GitHub</a>.
-    </p>
-  </div>
-  <div class="section-head">
-    <h2 id="compare-heading">Where Chompass differs</h2>
-    <p>Compact differences. Full table lives in the <a href="{{ .Site.Params.repo }}">project README</a>.</p>
-  </div>
-  <div class="compare__scroll">
-    <table class="compare__table">
-      <thead>
-        <tr>
-          <th scope="col">Feature</th>
-          <th scope="col"><a href="{{ .Site.Params.upstream }}" rel="noopener noreferrer">Fud&nbsp;AI</a></th>
-          <th scope="col">Chompass Android</th>
-          <th scope="col"><a href="{{ "app/" | relURL }}">Chompass&nbsp;PWA</a></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Banner ads</th>
-          <td>Brief AdMob; removed in 3.0.3</td>
-          <td><strong>Never shipped</strong></td>
-          <td><strong>Never shipped</strong></td>
-        </tr>
-        <tr>
-          <th scope="row">On-device AI (Gemma&nbsp;4)</th>
-          <td>No</td>
-          <td><strong>Yes</strong> (opt-in)</td>
-          <td>No (BYOK cloud)</td>
-        </tr>
-        <tr>
-          <th scope="row">Barcode</th>
-          <td>ML Kit</td>
-          <td><strong>FOSS zxing-cpp</strong></td>
-          <td>Browser / OFF</td>
-        </tr>
-        <tr>
-          <th scope="row">Workouts library</th>
-          <td>Yes (~120&nbsp;MB APK)</td>
-          <td><strong>Omitted</strong> (~15&nbsp;MiB arm64)</td>
-          <td>Omitted</td>
-        </tr>
-        <tr>
-          <th scope="row">Keto / diet modes</th>
-          <td>No</td>
-          <td><strong>Yes</strong></td>
-          <td><strong>Yes</strong></td>
-        </tr>
-        <tr>
-          <th scope="row">Health Connect</th>
-          <td>Partial</td>
-          <td><strong>Steps, exercise, sleep, HR, hydration</strong></td>
-          <td>No</td>
-        </tr>
-        <tr>
-          <th scope="row">Widgets / notifications</th>
-          <td>Upstream set</td>
-          <td><strong>Yes</strong></td>
-          <td>No (installable PWA)</td>
-        </tr>
-        <tr>
-          <th scope="row">Languages</th>
-          <td>Upstream</td>
-          <td><strong>15</strong></td>
-          <td>EN-first</td>
-        </tr>
-        <tr>
-          <th scope="row">Distribution</th>
-          <td>Play-focused</td>
-          <td><strong>Codeberg</strong> / Obtainium / F-Droid</td>
-          <td><strong>PWA</strong> in any modern browser</td>
-        </tr>
-        <tr>
-          <th scope="row">Open diary / body JSON</th>
-          <td>Upstream formats</td>
-          <td><strong>Yes</strong></td>
-          <td><strong>Same contracts as Android</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="compare__footnote">
-    Sources:
-    <a href="{{ .Site.Params.upstreamReleases }}" rel="noopener noreferrer">Fud&nbsp;AI releases</a>,
-    <a href="{{ .Site.Params.releases }}">Chompass releases</a>.
-  </p>
-</section>
-
-<section class="pitch" aria-labelledby="pitch-heading">
-  <div class="section-head">
-    <h2 id="pitch-heading">Private food tracking</h2>
-    <p>Snap, speak, scan, share, or type. Food text and photos stay on your device unless you choose cloud AI.</p>
-  </div>
-  <div class="pitch__grid">
-    <a class="pitch-card" href="{{ "features/" | relURL }}">
-      <h3>Features</h3>
-      <p>Meal components, recipes, progressive AI feedback, keto modes, open export, and a browser PWA.</p>
-    </a>
-    <a class="pitch-card" href="{{ "download/" | relURL }}">
-      <h3>Install</h3>
-      <p>Obtainium or APK, or the installable browser PWA.</p>
-    </a>
-    <a class="pitch-card" href="{{ "privacy/" | relURL }}">
-      <h3>Privacy</h3>
-      <p>No accounts, no analytics SDKs. API keys encrypted at rest. BYOK cloud or on-device inference (Android).</p>
-    </a>
-  </div>
-</section>
+</main>
 {{ end }}
