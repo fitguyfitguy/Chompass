@@ -1,16 +1,15 @@
 <header class="site-header">
   <div class="site-header__inner">
     <a class="site-logo" href="{{ .Site.Home.RelPermalink }}">
-      <img src="{{ "img/logo.png" | relURL }}" alt="" width="36" height="36" />
+      <img src="{{ "img/logo.png" | relURL }}" alt="" width="32" height="32" />
       <span>Chompass</span>
     </a>
     <nav class="site-nav" aria-label="Primary">
       <a href="{{ "features/" | relURL }}"{{ if strings.HasSuffix .RelPermalink "/features/" }} aria-current="page"{{ end }}>Features</a>
       <a href="{{ "blog/" | relURL }}"{{ if or (eq .Section "blog") (strings.HasSuffix .RelPermalink "/blog/") }} aria-current="page"{{ end }}>Blog</a>
       <a href="{{ "download/" | relURL }}"{{ if strings.HasSuffix .RelPermalink "/download/" }} aria-current="page"{{ end }}>Download</a>
-      <a href="{{ "app/" | relURL }}">Web app</a>
       <a href="{{ "privacy/" | relURL }}"{{ if strings.HasSuffix .RelPermalink "/privacy/" }} aria-current="page"{{ end }}>Privacy</a>
-      <a href="{{ .Site.Params.repo }}" rel="noopener noreferrer">Source</a>
+      <a class="site-nav__cta" href="{{ "app/" | relURL }}">Open web app</a>
     </nav>
   </div>
 </header>

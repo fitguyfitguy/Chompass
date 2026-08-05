@@ -41,6 +41,34 @@
     }, 4200);
   }
 
+  /* --------------------------------------------------------------- FAQ items */
+
+  function initFaq(root) {
+    var items = root.querySelectorAll(".faq-item");
+    items.forEach(function (item) {
+      var q = item.querySelector(".faq-item__question");
+      var a = item.querySelector(".faq-item__answer");
+      if (!q || !a) return;
+      q.addEventListener("click", function () {
+        var open = q.getAttribute("aria-expanded") === "true";
+        q.setAttribute("aria-expanded", open ? "false" : "true");
+        a.hidden = open;
+      });
+    });
+  }
+
+  function init() {
+    var lander = document.querySelector("[data-page='home']");
+    if (!lander) return;
+    initFaq(lander);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
   document.addEventListener(
     "keydown",
     function (e) {
