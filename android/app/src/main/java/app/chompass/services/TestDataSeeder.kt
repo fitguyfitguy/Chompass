@@ -4,8 +4,10 @@ import app.chompass.AppContainer
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.MealType
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
 import app.chompass.services.health.DebugActivityDay
@@ -14,6 +16,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 
 /**
  * Dev-only helper that swaps the user's real data for a year of synthetic food + weight
@@ -115,6 +119,39 @@ class TestDataSeeder(private val container: AppContainer) {
             )
         }
         container.prefs.setHomeShowActiveCalories(true)
+    }
+
+    /** Switch the hero gauge mode directly ("static" or "add_active") without re-seeding. */
+    suspend fun setGaugeMode(value: String) {
+        val mode = when (value.lowercase()) {
+            "add_active" -> HomeCalorieDisplayMode.ADD_ACTIVE
+            else -> HomeCalorieDisplayMode.STATIC
+        }
+        container.prefs.setHomeCalorieDisplayMode(mode.storageKey)
+    }
+
+    /** Toggle the home steps card (forces the activity snapshot to load even when active calories are hidden). */
+    suspend fun setShowSteps(show: Boolean) {
+        container.prefs.setHomeShowSteps(show)
+    }
+
+    /** Insert a large food entry for today so eaten exceeds the goal (over-goal capture). */
+    suspend fun seedOverGoal() {
+        val zone = ZoneId.systemDefault()
+        val ts = LocalDate.now().atTime(LocalTime.now()).atZone(zone).toInstant()
+        container.foodRepository.addEntry(
+            FoodEntry(
+                name = "Post-dinner snack (over-goal fixture)",
+                calories = 1_500,
+                protein = 60.0,
+                carbs = 160.0,
+                fat = 55.0,
+                timestamp = ts,
+                emoji = "🍽️",
+                source = FoodSource.TEXT_INPUT,
+                mealType = MealType.SNACK,
+            )
+        )
     }
 
     /**
