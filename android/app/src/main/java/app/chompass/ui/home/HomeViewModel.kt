@@ -9,7 +9,6 @@ import app.chompass.data.disambiguateFoodName
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
-import app.chompass.models.ActiveBurnArcData
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
@@ -162,19 +161,13 @@ data class HomeUiState(
     }
     val displayActiveCalories: Int get() = resolvedActiveBurn?.calories ?: 0
     /**
-     * Today's live active burn vs its "typical" reference, for the hero's
-     * inner arc. Kept separate from [resolvedActiveBurn] (whose estimate
-     * fallback conflates live with reference); null when nothing live to draw.
+     * Today's live active burn regardless of gauge mode: measured Health Connect
+     * burn (or debug data) plus manual entries. Mode-independent — unlike
+     * [displayActiveCalories], which is 0 in STATIC mode. Feeds the hero's
+     * "N active" caption so the toggle works in STATIC too.
      */
-    val activeBurnArc: ActiveBurnArcData? get() {
-        val p = profile ?: return null
-        return HomeCalorieDisplay.activeBurnArc(
-            liveHcActive = activitySnapshot.activeCalories,
-            manualActiveCalories = manualActiveKcal,
-            healthConnectAverage = measuredActiveAverageCalories,
-            estimatedDailyActive = p.estimatedDailyActiveCalories,
-        )
-    }
+    val liveActiveBurn: Int get() =
+        activitySnapshot.activeCalories.coerceAtLeast(0) + manualActiveKcal.coerceAtLeast(0)
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
 }
 

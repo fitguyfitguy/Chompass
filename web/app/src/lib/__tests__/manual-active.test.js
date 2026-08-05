@@ -2,8 +2,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
-  activeBurnArcWeb,
-  activeBurnRampProgress,
   addActiveGaugeTarget,
   makeManualActiveEntry,
   resolveWebActiveBurn,
@@ -22,42 +20,14 @@ describe("manual active burn helpers", () => {
     const burn = resolveWebActiveBurn(400, 150);
     assert.deepEqual(burn, { calories: 550, source: "estimated" });
     assert.equal(resolveWebActiveBurn(0, 0), null);
-    assert.deepEqual(resolveWebActiveBurn(0, 220), { calories: 220, source: "manual" });
+    assert.deepEqual(resolveWebActiveBurn(0, 220), {
+      calories: 220,
+      source: "manual",
+    });
   });
 
   it("addActiveGaugeTarget falls back to full target without burn", () => {
     assert.equal(addActiveGaugeTarget(2200, 1800, null), 2200);
     assert.equal(addActiveGaugeTarget(2200, 1800, { calories: 400 }), 2200);
-  });
-
-  it("activeBurnArcWeb returns null without live burn", () => {
-    assert.equal(activeBurnArcWeb(0, 480), null);
-  });
-
-  it("activeBurnArcWeb uses estimate as typical", () => {
-    assert.deepEqual(activeBurnArcWeb(320, 480), {
-      live: 320,
-      typical: 480,
-      source: "estimated",
-    });
-  });
-
-  it("activeBurnArcWeb is manual-only when no estimate", () => {
-    assert.deepEqual(activeBurnArcWeb(220, 0), {
-      live: 220,
-      typical: 0,
-      source: "manual",
-    });
-  });
-
-  it("activeBurnRampProgress clamps to unit interval", () => {
-    assert.equal(activeBurnRampProgress(0, 540), 0);
-    assert.equal(activeBurnRampProgress(270, 540), 0.5);
-    assert.equal(activeBurnRampProgress(540, 540), 1);
-    assert.equal(activeBurnRampProgress(800, 540), 1);
-  });
-
-  it("activeBurnRampProgress no reference is full", () => {
-    assert.equal(activeBurnRampProgress(100, 0), 1);
   });
 });
