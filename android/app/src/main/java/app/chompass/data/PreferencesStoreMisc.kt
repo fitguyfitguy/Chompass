@@ -7,6 +7,7 @@ import app.chompass.services.health.DebugActivityDay
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 // -- Coach chat history ----------------------------------------------
 internal val PreferencesStore.chatHistoryImpl: Flow<List<ChatMessage>>
@@ -45,6 +46,14 @@ internal suspend fun PreferencesStore.debugActivityDayImpl(date: LocalDate): Deb
     dataStore.data.first()
         .decodeList(Keys.DEBUG_ACTIVITY_DAYS, DebugActivityDay.serializer(), json)
         .firstOrNull { it.date == date.toString() }
+
+// -- Debug resting-shade flag (home hero A/B) ---------------------------
+internal val PreferencesStore.debugShowRestingShadeImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.DEBUG_SHOW_RESTING_SHADE] ?: false }
+
+internal suspend fun PreferencesStore.setDebugShowRestingShadeImpl(show: Boolean) {
+    dataStore.edit { it[Keys.DEBUG_SHOW_RESTING_SHADE] = show }
+}
 
 // -- Wipe everything --------------------------------------------------
 internal suspend fun PreferencesStore.clearAllImpl() {

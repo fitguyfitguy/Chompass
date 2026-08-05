@@ -103,6 +103,17 @@ data class ResolvedActiveBurn(
     val source: ActiveCalorieSource,
 )
 
+/**
+ * The home hero's energy-balance shades: live active burn vs the day's active
+ * norm (measured Health Connect 14-day average, else PAL estimate). Draw-only —
+ * never feeds budget math. See [HomeCalorieDisplay.burnShadeArcEnd].
+ */
+data class ActiveBurnShade(
+    val live: Int,
+    val typical: Int,
+    val source: ActiveCalorieSource,
+)
+
 object HomeCalorieDisplay {
     fun resolveActiveBurn(
         mode: HomeCalorieDisplayMode,
@@ -180,4 +191,59 @@ object HomeCalorieDisplay {
         HomeCalorieDisplayMode.STATIC ->
             (baseGoal - eaten).coerceAtLeast(0)
     }
+
+    // ── Burn shade geometry (drawing only; never budget math) ─────────────
+
+    /**
+     * Visual arc end for the hero's burn shades: the projected daily total burn,
+     * sedentary base + the day's active norm. In ADD_ACTIVE with measured data
+     * this equals the measured TDEE (basal + 14-day active average); with the
+     * PAL estimate it equals the profile TDEE. The arc is fixed by the norm so
+     * live burn can grow past it toward the full ring on high-activity days.
+     */
+    fun burnShadeArcEnd(baseGoal: Int, typical: Int): Int =
+        (baseGoal + typical.coerceAtLeast(0)).coerceAtLeast(0)
+
+    /** Eaten fill fraction on the shade arc (single energy scale, 0..1). */
+    fun burnShadeEatenFraction(eaten: Int, baseGoal: Int, typical: Int): Float {
+        val end = burnShadeArcEnd(baseGoal, typical)
+        if (end <= 0) return 0f
+        return (eaten.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
+    }
+
+    /** Fraction of the shade arc at which the sedentary base ends (active zone starts). */
+    fun burnShadeBaseFraction(baseGoal: Int, typical: Int): Float {
+        val end = burnShadeArcEnd(baseGoal, typical)
+        if (end <= 0) return 0f
+        return (baseGoal.toFloat() / end).coerceIn(0f, 1f)
+    }
+
+    /** Fraction of the shade arc covered by the typical active zone. */
+    fun burnShadeTypicalFraction(baseGoal: Int, typical: Int): Float {
+        val end = burnShadeArcEnd(baseGoal, typical)
+        if (end <= 0) return 0f
+        return (typical.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
+    }
+
+    /** Fraction of the shade arc covered by live active burn (extends past the
+     *  typical zone toward the full ring when over-typical). */
+    fun burnShadeLiveFraction(baseGoal: Int, live: Int, typical: Int): Float {
+        val end = burnShadeArcEnd(baseGoal, typical)
+        if (end <= 0) return 0f
+        return (live.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
+    }
+
+    /** Fraction of the shade arc covered by resting (basal) burn so far. */
+    fun burnShadeRestingFraction(restingKcal: Int, baseGoal: Int, typical: Int): Float {
+        val end = burnShadeArcEnd(baseGoal, typical)
+        if (end <= 0) return 0f
+        return (restingKcal.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
+    }
+
+    /** How far live active burn is through a typical day's active burn (0..1). */
+    fun activeBurnShadeProgress(live: Int, typical: Int): Float =
+        if (typical > 0) (live.coerceAtLeast(0).toFloat() / typical).coerceIn(0f, 1f) else 0f
+
+    /** True when live active burn exceeds a typical day's active burn. */
+    fun isActiveBurnOverTypical(live: Int, typical: Int): Boolean = typical > 0 && live > typical
 }

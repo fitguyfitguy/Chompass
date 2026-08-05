@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
@@ -57,6 +58,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.success
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.WeekFields
@@ -142,6 +144,14 @@ private fun shortDay(dow: DayOfWeek): String = when (dow) {
 // ── Calorie hero ─────────────────────────────────────────────────────
 
 /**
+ * Design-experiment flag for the resting (basal) burn band in the hero arc.
+ * `false` = active shades only (estimate + live); `true` = a neutral resting
+ * band also grows from the arc's left origin. Both variants are rendered for
+ * comparison via release screenshots before one is picked.
+ */
+internal const val SHOW_RESTING_BURN_SHADE = false
+
+/**
  * Verbatim port of the calorie hero block in HomeView.body
  * (ios/calorietracker/ContentView.swift, lines ~322–362):
  *
@@ -185,6 +195,16 @@ internal fun CalorieHero(
     /** Today's live active burn (measured + manual), mode-independent — the
      *  caption number. Unlike [activeCalories] it is non-zero in STATIC mode. */
     liveActiveBurn: Int = 0,
+    /**
+     * Energy-balance shades for the arc (live active vs the day's active norm).
+     * Non-null only for ADD_ACTIVE + live measured/debug burn + the toggle on;
+     * PAL-estimate-only days keep the legacy budget tail.
+     */
+    burnShade: ActiveBurnShade? = null,
+    /** Resting (basal) burn so far, when known. Powers the optional resting shade. */
+    restingBurn: Int? = null,
+    /** When true, draw the resting/base shade band under the active shades. */
+    showRestingShade: Boolean = false,
     freezeProgress: Boolean = false,
     /** True when Settings asks for ADD_ACTIVE but today’s burn is still 0. */
     awaitingActiveBurn: Boolean = false,
@@ -193,6 +213,16 @@ internal fun CalorieHero(
     val remaining = HomeCalorieDisplay.remaining(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
+    val shade = burnShade
+    val shadesActive = shade != null && shade.typical > 0 &&
+        displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
+    // On the shade arc the eaten fill shares the burn scale (arc end = base + typical),
+    // so eaten and burn read against the same denominator.
+    val fillRatio = if (shadesActive) {
+        HomeCalorieDisplay.burnShadeEatenFraction(current, baseGoal, shade!!.typical)
+    } else {
+        ratio
+    }
     var showBudgetSheet by remember { mutableStateOf(false) }
     val goalLabel = when (displayMode) {
         HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal
@@ -200,31 +230,35 @@ internal fun CalorieHero(
     }
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
-    val animatedRatio = remember { Animatable(if (lastEpoch == epoch) ratio else 0f) }
-    LaunchedEffect(epoch, ratio) {
+    val animatedRatio = remember { Animatable(if (lastEpoch == epoch) fillRatio else 0f) }
+    LaunchedEffect(epoch, fillRatio) {
         if (freezeProgress) {
-            animatedRatio.snapTo(ratio)
+            animatedRatio.snapTo(fillRatio)
             return@LaunchedEffect
         }
         val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
         if (lastEpoch != epoch) {
             animatedRatio.snapTo(0f)
-            animatedRatio.animateTo(ratio, spec)
+            animatedRatio.animateTo(fillRatio, spec)
             lastEpoch = epoch
         } else {
-            animatedRatio.animateTo(ratio, spec)
+            animatedRatio.animateTo(fillRatio, spec)
         }
     }
     // Ring color roles, one meaning per hue across every mode:
     // - trackColor (neutral) = unfilled budget, always.
     // - progressColor (primary, opaque) = consumed/eaten. Never reused elsewhere.
-    // - tertiary = activity-earned budget, exclusively — the ADD_ACTIVE zone
-    //   (fixed tint, no thermometer) and the tertiary caption/info share it.
+    // - tertiary = activity-derived calories, exclusively — the estimate zone
+    //   (fixed tint) and the live burn shade (opaque) share it.
+    // - success = over-typical active burn.
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val progressColor = MaterialTheme.colorScheme.primary
     val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
+    val liveBurnColor = MaterialTheme.colorScheme.tertiary
+    val restingColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     val tertiary = MaterialTheme.colorScheme.tertiary
+    val successColor = MaterialTheme.colorScheme.success
 
     Box(
         modifier = Modifier
@@ -239,24 +273,111 @@ internal fun CalorieHero(
         ) {
             val stroke = 16.dp.toPx()
             val inset = stroke / 2f
-            val arcSize = Size(size.width - stroke, size.width - stroke)
-            val topLeft = Offset(inset, inset)
+            // The resting (basal) rim rides the outer sub-stroke so it stays visible
+            // even when the eaten fill covers the inner band.
+            val restingVisible = shadesActive && showRestingShade && restingBurn != null
+            val mainStroke = if (restingVisible) stroke * 0.62f else stroke
+            val restingStroke = (stroke - mainStroke).coerceAtLeast(1.dp.toPx())
+            val mainInset = inset + (stroke - mainStroke) / 2f
+            val mainArcSize = Size(size.width - mainStroke, size.width - mainStroke)
+            val mainTopLeft = Offset(mainInset, mainInset)
+            val cx = size.width / 2f
+            val cy = size.width / 2f
+            val rMid = (size.width - mainStroke) / 2f
+            val rIn = rMid - mainStroke / 2f + 2.dp.toPx()
+            val rOut = rMid + mainStroke / 2f - 2.dp.toPx()
             drawArc(
                 color = trackColor,
                 startAngle = 180f,
                 sweepAngle = 180f,
                 useCenter = false,
-                topLeft = topLeft,
-                size = arcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
+                topLeft = mainTopLeft,
+                size = mainArcSize,
+                style = Stroke(width = mainStroke, cap = StrokeCap.Round)
             )
-            // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
-            // segment on the same budget axis. The teal progress fill sweeps
-            // over it, so eaten crossing the boundary notch = dipping into the
-            // calories you burned. Fixed alpha only — no burn thermometer, no
-            // success dot; the tick at the base-goal boundary marks where your
-            // static budget ends.
-            if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
+            if (shadesActive) {
+                // Single energy scale, one meaning per shade:
+                //  - resting (basal) rim grows from the left on the outer band, neutral.
+                //  - estimated-active zone = fixed dim segment [base → base+typical].
+                //  - live-active shade = opaque, grows from the base boundary and
+                //    extends toward/past the typical zone to the full ring when over.
+                val typical = shade.typical
+                val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical)
+                val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical)
+                if (restingVisible) {
+                    val restSweep = 180f * HomeCalorieDisplay.burnShadeRestingFraction(restingBurn!!, baseGoal, typical)
+                    if (restSweep > 0f) {
+                        val restR = rMid + mainStroke / 2f + restingStroke / 2f
+                        drawArc(
+                            color = restingColor,
+                            startAngle = 180f,
+                            sweepAngle = restSweep.coerceAtMost(180f),
+                            useCenter = false,
+                            topLeft = Offset(cx - restR, cy - restR),
+                            size = Size(restR * 2f, restR * 2f),
+                            style = Stroke(width = restingStroke, cap = StrokeCap.Round)
+                        )
+                    }
+                }
+                if (typicalSweep > 0f) {
+                    drawArc(
+                        color = bonusColor,
+                        startAngle = 180f + baseAngle,
+                        sweepAngle = typicalSweep.coerceAtMost(180f - baseAngle),
+                        useCenter = false,
+                        topLeft = mainTopLeft,
+                        size = mainArcSize,
+                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                    )
+                }
+                val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, shade.live, typical)
+                val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
+                if (liveSweep > 0f) {
+                    drawArc(
+                        color = liveBurnColor,
+                        startAngle = 180f + baseAngle,
+                        sweepAngle = liveSweep.coerceAtMost(liveMaxSweep),
+                        useCenter = false,
+                        topLeft = mainTopLeft,
+                        size = mainArcSize,
+                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                    )
+                }
+                // Base-boundary notch: where your sedentary budget ends and the
+                // activity-earned zone begins.
+                val notchRad = Math.toRadians((180f + baseAngle).toDouble())
+                drawLine(
+                    color = muted,
+                    start = Offset(
+                        cx + (rIn * Math.cos(notchRad)).toFloat(),
+                        cy + (rIn * Math.sin(notchRad)).toFloat(),
+                    ),
+                    end = Offset(
+                        cx + (rOut * Math.cos(notchRad)).toFloat(),
+                        cy + (rOut * Math.sin(notchRad)).toFloat(),
+                    ),
+                    strokeWidth = 2.dp.toPx(),
+                )
+                if (HomeCalorieDisplay.isActiveBurnOverTypical(shade.live, typical)) {
+                    val tipAngle = Math.toRadians(
+                        (180f + baseAngle + liveSweep.coerceAtMost(liveMaxSweep)).toDouble(),
+                    )
+                    drawCircle(
+                        color = successColor,
+                        radius = 5.dp.toPx(),
+                        center = Offset(
+                            cx + (rMid * Math.cos(tipAngle)).toFloat(),
+                            cy + (rMid * Math.sin(tipAngle)).toFloat(),
+                        ),
+                    )
+                }
+            } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
+                // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
+                // segment on the same budget axis. The teal progress fill sweeps
+                // over it, so eaten crossing the boundary notch = dipping into the
+                // calories you burned. Fixed alpha only — no burn thermometer, no
+                // success dot; the tick at the base-goal boundary marks where your
+                // static budget ends.
                 val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
                 val tailSweep = (180f - baseSweep).coerceAtLeast(0f)
                 if (tailSweep > 0f) {
@@ -265,16 +386,11 @@ internal fun CalorieHero(
                         startAngle = 180f + baseSweep,
                         sweepAngle = tailSweep,
                         useCenter = false,
-                        topLeft = topLeft,
-                        size = arcSize,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        topLeft = mainTopLeft,
+                        size = mainArcSize,
+                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
                     )
                     val notchRad = Math.toRadians((180f + baseSweep).toDouble())
-                    val rMid = (size.width - stroke) / 2f
-                    val rIn = rMid - stroke / 2f + 2.dp.toPx()
-                    val rOut = rMid + stroke / 2f - 2.dp.toPx()
-                    val cx = size.width / 2f
-                    val cy = size.width / 2f
                     drawLine(
                         color = muted,
                         start = Offset(
@@ -292,11 +408,11 @@ internal fun CalorieHero(
             drawArc(
                 color = progressColor,
                 startAngle = 180f,
-                sweepAngle = 180f * (if (freezeProgress) ratio else animatedRatio.value),
+                sweepAngle = 180f * (if (freezeProgress) fillRatio else animatedRatio.value),
                 useCenter = false,
-                topLeft = topLeft,
-                size = arcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
+                topLeft = mainTopLeft,
+                size = mainArcSize,
+                style = Stroke(width = mainStroke, cap = StrokeCap.Round)
             )
         }
 
@@ -376,7 +492,9 @@ internal fun CalorieHero(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            if (showActiveCalories && liveActiveBurn > 0) {
+            if (shadesActive) {
+                BurnShadeCaption(burn = shade!!)
+            } else if (showActiveCalories && liveActiveBurn > 0) {
                 BurnCaption(active = liveActiveBurn)
             }
         }
@@ -387,6 +505,7 @@ internal fun CalorieHero(
             active = activeCalories,
             source = activeCalorieSource,
             awaiting = awaitingActiveBurn,
+            burnedToday = restingBurn?.let { it + liveActiveBurn },
             onDismiss = { showBudgetSheet = false },
         )
     }
@@ -416,12 +535,52 @@ private fun BurnCaption(active: Int) {
     }
 }
 
+/** Energy-balance caption: live active vs the day's active norm, plus the over-typical state. */
+@Composable
+private fun BurnShadeCaption(burn: ActiveBurnShade) {
+    val tertiary = MaterialTheme.colorScheme.tertiary
+    val success = MaterialTheme.colorScheme.success
+    val over = HomeCalorieDisplay.isActiveBurnOverTypical(burn.live, burn.typical)
+    val a11y = if (over) {
+        stringResource(R.string.home_active_burn_over_a11y, burn.live, burn.live - burn.typical)
+    } else {
+        stringResource(R.string.home_active_burn_progress_a11y, burn.live, burn.typical)
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        modifier = Modifier.semantics { contentDescription = a11y }
+    ) {
+        Icon(
+            Icons.Filled.LocalFireDepartment,
+            contentDescription = null,
+            tint = tertiary,
+            modifier = Modifier.size(11.dp)
+        )
+        Text(
+            stringResource(R.string.home_active_burn_caption_progress, burn.live, burn.typical),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = tertiary,
+        )
+        if (over) {
+            Text(
+                stringResource(R.string.home_active_burn_over, burn.live - burn.typical),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = success,
+            )
+        }
+    }
+}
+
 @Composable
 private fun BudgetExplanationDialog(
     goal: Int,
     active: Int,
     source: ActiveCalorieSource?,
     awaiting: Boolean,
+    burnedToday: Int? = null,
     onDismiss: () -> Unit,
 ) {
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
@@ -462,6 +621,14 @@ private fun BudgetExplanationDialog(
                         color = muted,
                     )
                     ActiveCalorieSource.UNAVAILABLE, null -> {}
+                }
+                if (burnedToday != null) {
+                    Text(
+                        stringResource(R.string.home_budget_burned_today, burnedToday),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             }
         }

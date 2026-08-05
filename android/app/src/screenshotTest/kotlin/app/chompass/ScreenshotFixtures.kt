@@ -15,6 +15,7 @@ import app.chompass.models.RecipeIngredient
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
 import app.chompass.services.ai.PartialFoodAnalysis
+import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.ui.coach.CoachUiState
 import app.chompass.ui.home.HomeUiState
@@ -267,10 +268,18 @@ internal object ScreenshotFixtures {
         profile = profile,
         todayEntries = foodEntries,
         homeDisplay = HomeDisplayPreferences(
-            calorieDisplayMode = HomeCalorieDisplayMode.STATIC,
+            calorieDisplayMode = HomeCalorieDisplayMode.ADD_ACTIVE,
             showSteps = false,
+            showActiveCalories = true,
         ),
-        activitySnapshot = HomeActivitySnapshot(date = snapshotDate),
+        measuredActiveAverageCalories = 560,
+        activitySnapshot = HomeActivitySnapshot(
+            date = snapshotDate,
+            steps = 6_842,
+            activeCalories = 380,
+            totalCalories = 1_250,
+            source = ActivityDataSource.HEALTH_CONNECT,
+        ),
         foodLogMacroChips = FoodLogMacroChip.DefaultSelection,
     )
 

@@ -380,6 +380,8 @@ open class MainActivity : ComponentActivity() {
         val activeTodayOverride: Int = 0,
         val setGaugeMode: String = "",
         val setShowSteps: Boolean = false,
+        /** Null = extra absent; Boolean = explicit on/off for the debug hero-arc A/B. */
+        val setShowRestingShade: Boolean? = null,
         val seedOverGoal: Boolean = false,
         val restoreRealData: Boolean = false,
         val runEntryBenchmark: Boolean = false,
@@ -408,6 +410,11 @@ open class MainActivity : ComponentActivity() {
             activeTodayOverride = intent.getIntExtra("active_today_override", 0),
             setGaugeMode = intent.getStringExtra("set_gauge_mode") ?: "",
             setShowSteps = intent.getBooleanExtra("set_show_steps", false),
+            setShowRestingShade = if (intent.hasExtra("set_show_resting_shade")) {
+                intent.getBooleanExtra("set_show_resting_shade", false)
+            } else {
+                null
+            },
             seedOverGoal = intent.getBooleanExtra("seed_over_goal", false),
             restoreRealData = intent.getBooleanExtra("restore_real_data", false),
             runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
@@ -435,6 +442,7 @@ open class MainActivity : ComponentActivity() {
         }
         if (actions.setGaugeMode.isNotEmpty()) intent.removeExtra("set_gauge_mode")
         if (actions.setShowSteps) intent.removeExtra("set_show_steps")
+        if (actions.setShowRestingShade != null) intent.removeExtra("set_show_resting_shade")
         if (actions.seedOverGoal) intent.removeExtra("seed_over_goal")
         if (actions.restoreRealData) intent.removeExtra("restore_real_data")
         if (actions.runEntryBenchmark) intent.removeExtra("run_entry_benchmark")
@@ -481,6 +489,7 @@ open class MainActivity : ComponentActivity() {
             }
             if (actions.setGaugeMode.isNotEmpty()) container.testDataSeeder.setGaugeMode(actions.setGaugeMode)
             if (actions.setShowSteps) container.testDataSeeder.setShowSteps(true)
+            actions.setShowRestingShade?.let { container.testDataSeeder.setShowRestingShade(it) }
             if (actions.seedOverGoal) container.testDataSeeder.seedOverGoal()
             if (actions.restoreRealData) container.testDataSeeder.restore()
 
