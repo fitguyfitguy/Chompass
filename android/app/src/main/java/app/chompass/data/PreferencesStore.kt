@@ -249,6 +249,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun clearDebugActivityDays() = clearDebugActivityDaysImpl()
     suspend fun debugActivityDaysJson(): String? = debugActivityDaysJsonImpl()
     suspend fun debugActivityDay(date: LocalDate): DebugActivityDay? = debugActivityDayImpl(date)
+    val debugShowRestingShade: Flow<Boolean> get() = debugShowRestingShadeImpl
+    suspend fun setDebugShowRestingShade(show: Boolean) = setDebugShowRestingShadeImpl(show)
     val syncRevisions: Flow<Map<String, SyncRevision>> get() = syncRevisionsImpl
     suspend fun setSyncRevisions(revisions: Map<String, SyncRevision>) = setSyncRevisionsImpl(revisions)
     val webDavUrl: Flow<String> get() = webDavUrlImpl

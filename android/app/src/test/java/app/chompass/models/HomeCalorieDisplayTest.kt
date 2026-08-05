@@ -3,6 +3,7 @@ package app.chompass.models
 import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
@@ -144,6 +145,63 @@ class HomeCalorieDisplayTest {
         )
         assertEquals(3, three.size)
         assertTrue(three.contains(HomeTopNutrient.PROTEIN))
+    }
+
+    @Test
+    fun burnShade_arcEndIsBasePlusTypical() {
+        assertEquals(2054, HomeCalorieDisplay.burnShadeArcEnd(baseGoal = 1494, typical = 560))
+        assertEquals(1494, HomeCalorieDisplay.burnShadeArcEnd(1494, 0))
+    }
+
+    @Test
+    fun burnShade_eatenFractionUsesArcEndScale() {
+        // 1680 eaten on a 2054 kcal arc.
+        assertEquals(0.818f, HomeCalorieDisplay.burnShadeEatenFraction(1680, 1494, 560), 0.001f)
+        assertEquals(1f, HomeCalorieDisplay.burnShadeEatenFraction(9_999, 1494, 560), 0.001f)
+        assertEquals(0f, HomeCalorieDisplay.burnShadeEatenFraction(0, 1494, 560), 0.001f)
+    }
+
+    @Test
+    fun burnShade_liveFractionExtendsPastTypicalTowardFullRing() {
+        val base = 1494
+        val typical = 560
+        // Under typical: live zone is shorter than the typical zone.
+        val under = HomeCalorieDisplay.burnShadeLiveFraction(base, live = 380, typical = typical)
+        val typicalFrac = HomeCalorieDisplay.burnShadeTypicalFraction(base, typical)
+        assertTrue(under < typicalFrac)
+        // Equal to typical: live reaches the typical zone end.
+        assertEquals(
+            typicalFrac,
+            HomeCalorieDisplay.burnShadeLiveFraction(base, live = typical, typical = typical),
+            0.001f,
+        )
+        // Over typical: live extends past the typical zone, still under the full ring.
+        val over = HomeCalorieDisplay.burnShadeLiveFraction(base, live = 900, typical = typical)
+        assertTrue(over > typicalFrac)
+        assertTrue(over < 1f)
+        // Live equal to the full arc end (base + typical) = the whole ring.
+        assertEquals(1f, HomeCalorieDisplay.burnShadeLiveFraction(base, live = base + typical, typical = typical), 0.001f)
+    }
+
+    @Test
+    fun burnShade_restingFractionGrowsFromLeft() {
+        val base = 1494
+        val typical = 560
+        val rest = HomeCalorieDisplay.burnShadeRestingFraction(restingKcal = 870, baseGoal = base, typical = typical)
+        assertEquals(0.424f, rest, 0.001f)
+        assertEquals(0f, HomeCalorieDisplay.burnShadeRestingFraction(0, base, typical), 0.001f)
+    }
+
+    @Test
+    fun burnShade_progressAndOverTypical() {
+        assertEquals(0.679f, HomeCalorieDisplay.activeBurnShadeProgress(live = 380, typical = 560), 0.001f)
+        assertEquals(0f, HomeCalorieDisplay.activeBurnShadeProgress(0, 560), 0.001f)
+        assertEquals(1f, HomeCalorieDisplay.activeBurnShadeProgress(900, 560), 0.001f)
+        assertEquals(0f, HomeCalorieDisplay.activeBurnShadeProgress(100, 0), 0.001f)
+        assertTrue(HomeCalorieDisplay.isActiveBurnOverTypical(600, 560))
+        assertFalse(HomeCalorieDisplay.isActiveBurnOverTypical(560, 560))
+        assertFalse(HomeCalorieDisplay.isActiveBurnOverTypical(300, 560))
+        assertFalse(HomeCalorieDisplay.isActiveBurnOverTypical(100, 0))
     }
 
     @Test

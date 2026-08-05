@@ -369,6 +369,9 @@ fun HomeScreen(container: AppContainer) {
                         activeCalorieSource = ui.resolvedActiveBurn?.source,
                         showActiveCalories = ui.homeDisplay.showActiveCalories,
                         liveActiveBurn = ui.liveActiveBurn,
+                        burnShade = ui.activeBurnShade,
+                        restingBurn = ui.restingBurnToday,
+                        showRestingShade = ui.showRestingBurnShade,
                         awaitingActiveBurn = ui.homeDisplay.calorieDisplayMode ==
                             HomeCalorieDisplayMode.ADD_ACTIVE &&
                             calorieMode == HomeCalorieDisplayMode.STATIC,
@@ -1025,6 +1028,7 @@ internal fun HomeScreenPreviewContent(
     ui: HomeUiState,
     weekStartsOnMonday: Boolean = true,
     freezeAnimations: Boolean = true,
+    showRestingShade: Boolean = SHOW_RESTING_BURN_SHADE,
 ) {
     val selectedDate = ui.date
     val isToday = true
@@ -1061,6 +1065,9 @@ internal fun HomeScreenPreviewContent(
                             activeCalorieSource = ui.resolvedActiveBurn?.source,
                             showActiveCalories = ui.homeDisplay.showActiveCalories,
                             liveActiveBurn = ui.liveActiveBurn,
+                            burnShade = ui.activeBurnShade,
+                            restingBurn = ui.restingBurnToday,
+                            showRestingShade = showRestingShade,
                             freezeProgress = freezeAnimations,
                         )
                         Spacer(Modifier.height(20.dp))

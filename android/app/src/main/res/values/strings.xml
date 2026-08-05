@@ -1142,6 +1142,11 @@
     <string name="home_active_calories_label">Active kcal</string>
     <string name="home_active_burn_caption">%1$d active</string>
     <string name="home_active_burn_a11y">Active burn %1$d</string>
+    <string name="home_active_burn_caption_progress">%1$d of %2$d active</string>
+    <string name="home_active_burn_progress_a11y">Active burn %1$d, %2$d typical</string>
+    <string name="home_active_burn_over">+%1$d over typical</string>
+    <string name="home_active_burn_over_a11y">Active burn %1$d, %2$d over a typical day</string>
+    <string name="home_budget_burned_today">Burned today: %1$d kcal</string>
     <string name="home_display_show_active_calories">Show active calories</string>
     <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge.</string>
     <string name="home_calories_left">%1$d left</string>

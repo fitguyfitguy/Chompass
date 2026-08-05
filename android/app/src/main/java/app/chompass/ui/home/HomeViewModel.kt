@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.data.disambiguateFoodName
+import app.chompass.models.ActiveBurnShade
+import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
@@ -31,6 +33,7 @@ import app.chompass.services.PerfLog
 import app.chompass.services.grounding.DatabaseSearchResult
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.services.ai.AiError
+import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.applyTo
@@ -49,6 +52,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -122,6 +126,8 @@ data class HomeUiState(
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     val waterTodayMl: Int = 0,
+    /** Debug-only resting-shade flag for the hero arc A/B (see [SHOW_RESTING_BURN_SHADE]). */
+    val showRestingBurnShade: Boolean = SHOW_RESTING_BURN_SHADE,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
     val progressiveMeal: ProgressiveMealDraft? = null,
     /** HomeScreen consumes this once to reopen the camera after Add next ingredient. */
@@ -168,7 +174,60 @@ data class HomeUiState(
      */
     val liveActiveBurn: Int get() =
         activitySnapshot.activeCalories.coerceAtLeast(0) + manualActiveKcal.coerceAtLeast(0)
+
+    /** True when the home activity snapshot carries live measured/debug burn for the day. */
+    val hasLiveBurn: Boolean get() {
+        val s = activitySnapshot
+        return (s.source == ActivityDataSource.HEALTH_CONNECT || s.source == ActivityDataSource.DEBUG) &&
+            s.activeCalories > 0
+    }
+
+    /** The day's active norm: measured Health Connect 14-day average, else the PAL estimate. */
+    val activeBurnTypical: Int get() {
+        val p = profile ?: return 0
+        return measuredActiveAverageCalories.takeIf { it > 0 } ?: p.estimatedDailyActiveCalories
+    }
+
+    /**
+     * Hero burn shades: only in ADD_ACTIVE when the user enabled the active-calorie
+     * toggle and live measured/debug burn exists. PAL-estimate-only days stay on the
+     * existing budget tail (no shades) so the drawing never fabricates a burn story.
+     */
+    val activeBurnShade: ActiveBurnShade? get() {
+        if (effectiveCalorieMode != HomeCalorieDisplayMode.ADD_ACTIVE) return null
+        if (!homeDisplay.showActiveCalories) return null
+        if (!hasLiveBurn) return null
+        val typical = activeBurnTypical
+        if (typical <= 0) return null
+        val source = if (measuredActiveAverageCalories > 0) {
+            ActiveCalorieSource.MEASURED
+        } else {
+            ActiveCalorieSource.ESTIMATED
+        }
+        return ActiveBurnShade(live = liveActiveBurn, typical = typical, source = source)
+    }
+
+    /**
+     * Resting (basal) burn so far: measured HC total minus active when the snapshot
+     * carries a total, else BMR prorated to the elapsed fraction of the day. Null
+     * when no live burn exists. Feeds the optional resting shade in the hero.
+     */
+    val restingBurnToday: Int? get() {
+        val s = activitySnapshot
+        return when {
+            s.totalCalories != null -> (s.totalCalories - s.activeCalories).coerceAtLeast(0)
+            hasLiveBurn && profile != null ->
+                (profile.bmr * elapsedDayFraction(date)).roundToInt()
+            else -> null
+        }
+    }
+
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
+}
+
+private fun elapsedDayFraction(day: LocalDate): Float {
+    if (!day.isEqual(LocalDate.now())) return 1f
+    return (LocalTime.now().toSecondOfDay() / 86_400f).coerceIn(0f, 1f)
 }
 
 class HomeViewModel(private val container: AppContainer) : ViewModel() {
@@ -464,6 +523,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             entries.filter { it.date == day.toString() }.sumOf { it.calories }
         }
             .onEach { total -> _ui.value = _ui.value.copy(manualActiveKcal = total) }
+            .launchIn(viewModelScope)
+
+        container.prefs.debugShowRestingShade
+            .onEach { show -> _ui.value = _ui.value.copy(showRestingBurnShade = show) }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {

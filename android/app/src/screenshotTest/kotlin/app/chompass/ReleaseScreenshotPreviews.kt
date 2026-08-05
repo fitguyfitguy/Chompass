@@ -106,6 +106,26 @@ fun HomeDarkScreenshot() {
     }
 }
 
+// Burn-shade A/B: active shades only vs active + resting (basal) rim. Pending
+// design pick — used to compare both variants, then removed in favour of one.
+@PreviewTest
+@Preview(name = "burn-shades-no-resting-dark", device = PHONE)
+@Composable
+fun BurnShadesNoRestingDark() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
+        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeUiState(), showRestingShade = false)
+    }
+}
+
+@PreviewTest
+@Preview(name = "burn-shades-with-resting-dark", device = PHONE)
+@Composable
+fun BurnShadesWithRestingDark() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
+        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeUiState(), showRestingShade = true)
+    }
+}
+
 @PreviewTest
 @Preview(name = "06-progress-dark", device = PHONE)
 @Composable

@@ -123,6 +123,8 @@ internal object Keys {
         val WIDGET_SNAPSHOT = stringPreferencesKey("widget_snapshot_v1")
         val TEST_SEED_BACKUP = stringPreferencesKey("test_seed_backup_v1")
         val DEBUG_ACTIVITY_DAYS = stringPreferencesKey("debugActivityDays")
+        /** Debug-only: show the resting (basal) burn rim in the home hero arc (A/B comparison). */
+        val DEBUG_SHOW_RESTING_SHADE = booleanPreferencesKey("debugShowRestingShade")
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")

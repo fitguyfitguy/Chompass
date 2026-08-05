@@ -135,6 +135,14 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.setHomeShowSteps(show)
     }
 
+    /**
+     * Toggle the resting (basal) burn rim in the hero arc — debug A/B comparison
+     * between the active-shades-only design and the active + resting rim design.
+     */
+    suspend fun setShowRestingShade(show: Boolean) {
+        container.prefs.setDebugShowRestingShade(show)
+    }
+
     /** Insert a large food entry for today so eaten exceeds the goal (over-goal capture). */
     suspend fun seedOverGoal() {
         val zone = ZoneId.systemDefault()
