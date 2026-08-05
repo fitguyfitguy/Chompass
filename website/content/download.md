@@ -65,18 +65,18 @@ Latest **arm64** (most phones): [Chompass-fdroid-{{< site_version >}}-arm64-v8a.
 
 All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases) (v{{< site_version >}}).
 
-| APK | Use when | Size (v{{< site_version >}}) |
-|-----|----------|----------------|
-| **arm64-v8a** | Most modern phones | {{< apk_arm64_note >}} |
-| **armeabi-v7a** | Older 32-bit devices | ~6 MiB |
-| **x86_64** | Emulators or Chromebooks | ~16 MiB |
-| **universal** | Only when unsure | {{< apk_universal_note >}} |
+| APK             | Use when                 | Size (v{{< site_version >}}) |
+| --------------- | ------------------------ | ---------------------------- |
+| **arm64-v8a**   | Most modern phones       | {{< apk_arm64_note >}}       |
+| **armeabi-v7a** | Older 32-bit devices     | ~6 MiB                       |
+| **x86_64**      | Emulators or Chromebooks | ~16 MiB                      |
+| **universal**   | Only when unsure         | {{< apk_universal_note >}}   |
 
-Package ID: `org.codeberg.fitguy.chompass`
+Package ID: `app.chompass`
 
 ## F-Droid
 
-Package `org.codeberg.fitguy.chompass` ([expected listing](https://f-droid.org/packages/org.codeberg.fitguy.chompass/) once indexed). Not on the Play Store.
+The listing is in preparation. Package `app.chompass` ([expected listing](https://f-droid.org/packages/app.chompass/)). Not on the Play Store.
 
 ## After install
 

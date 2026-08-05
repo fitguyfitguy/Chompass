@@ -2,12 +2,13 @@ Chompass is an ad-free, privacy-focused calorie tracker forked from Fud AI. Log 
 
 <b>Food logging</b>
 • Multi-photo capture, share-into-app, voice, barcode, manual entry, saved meals and recipes
-• Open Food Facts barcode lookup
+• Barcode scan with Open Food Facts lookup (4.6M+ products, cached for offline use); photo analysis can read codes from the image
 • Optional on-device AI (Gemma 4 via LiteRT-LM): one-time model download, opt-in, arm64/x86_64 with 6 GB+ RAM
 
 <b>Progress &amp; health</b>
+• Live calorie budget: the home ring grows your daily goal with the day's burn, measured via Health Connect, added manually, or estimated from your 14-day active average
 • Weight, body fat, calorie history, goals, steps and exercise
-• Health Connect sync (read/write meals, weight, body fat, height; read sleep, heart rate, hydration, energy)
+• Health Connect sync (two-way): write meals, weight, body fat, height; read sleep, heart rate, hydration, steps, energy
 • Optional local water tracking and home-screen widgets
 
 <b>Privacy</b>

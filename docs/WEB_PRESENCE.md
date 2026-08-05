@@ -27,15 +27,15 @@ Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/`
 
 ## Outreach (manual)
 
-Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **private calorie tracking on Android and in the browser** (try the PWA, or install via Obtainium). Mention meal components, recipes, and progressive AI feedback when space allows. Keep Fud AI as upstream credit, not the headline. Mention Chromium works best without claiming Chromium-only.
+Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **private calorie tracking on Android and in the browser** (try the PWA, or install via Obtainium). Keep the calorie budget and scanning details for the feature list, not the pitch: after a big run, log the burn manually in Add Food or let a wearable feed it through Health Connect; barcode scans resolve against Open Food Facts (4.6M+ products). Mention meal components, recipes, and progressive AI feedback when space allows. Keep Fud AI as upstream credit, not the headline. Mention Chromium works best without claiming Chromium-only.
 
-| Channel | Notes |
-|---------|--------|
-| [AlternativeTo](https://alternativeto.net/) | Add/claim Chompass as alternative to MyFitnessPal / Cronometer / Fud AI |
-| Lemmy (e.g. `!opensource`, Android / FOSS communities) | Short post: no ads or analytics, browser PWA or Obtainium, meal components / on-device AI |
-| Reddit `r/opensource`, `r/androidapps`, `r/fossdroid`, `r/PWA` | Same pitch; respect self-promo rules; PWA works cross-platform |
-| Mastodon / Fediverse | Link site + `/app/` or Obtainium; boost FOSS / PWA hashtags |
-| Privacy Guides-style lists / forums | Only if listing criteria fit (local storage, no analytics) |
+| Channel                                                        | Notes                                                                                     |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [AlternativeTo](https://alternativeto.net/)                    | Add/claim Chompass as alternative to MyFitnessPal / Cronometer / Fud AI                   |
+| Lemmy (e.g. `!opensource`, Android / FOSS communities)         | Short post: no ads or analytics, browser PWA or Obtainium, meal components / on-device AI |
+| Reddit `r/opensource`, `r/androidapps`, `r/fossdroid`, `r/PWA` | Same pitch; respect self-promo rules; PWA works cross-platform                            |
+| Mastodon / Fediverse                                           | Link site + `/app/` or Obtainium; boost FOSS / PWA hashtags                               |
+| Privacy Guides-style lists / forums                            | Only if listing criteria fit (local storage, no analytics)                                |
 
 ## After each release
 

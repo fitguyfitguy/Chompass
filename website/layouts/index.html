@@ -38,11 +38,11 @@
             <span class="platform-card__desc">Direct install, all architectures, plus checksums.</span>
             <span class="platform-card__link">v{{ .Site.Params.version }} · codeberg</span>
           </a>
-          <a class="platform-card" href="https://f-droid.org/packages/org.codeberg.fitguy.chompass/">
+          <a class="platform-card" href="https://f-droid.org/packages/app.chompass/">
             <span class="platform-card__tag">f-droid</span>
             <span class="platform-card__name">F-Droid listing</span>
-            <span class="platform-card__desc">Open-source app store, no account needed.</span>
-            <span class="platform-card__link">org.codeberg.fitguy.chompass</span>
+            <span class="platform-card__desc">In preparation. Open-source app store, no account needed.</span>
+            <span class="platform-card__link">app.chompass</span>
           </a>
         </div>
 
@@ -93,7 +93,15 @@
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Diet modes and Health Connect</strong> — keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration.</div>
+            <div><strong>Live calorie budget</strong> — the Android home ring grows your daily goal with the day's burn: measured by Health Connect, a manual entry after a run, or an estimate from your history.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Barcode and Open Food Facts</strong> — scan barcodes against Open Food Facts (4.6M+ products, cached offline), or let photo analysis read codes from the image.</div>
+          </li>
+          <li>
+            <span class="feature-list__mark">[*]</span>
+            <div><strong>Diet modes and Health Connect</strong> — keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration, two-way with wearables and scales.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
@@ -141,11 +149,19 @@
             </div>
             <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 90%"></div></div>
           </div>
+          <div class="stat">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">Open Food Facts products</span>
+              <strong class="stat__value">4.6M+</strong>
+            </div>
+            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 92%"></div></div>
+          </div>
         </div>
         <p class="stats-note">
           Accuracy figures come from our published
           <a href="{{ "blog/ai-food-logging-accuracy/" | relURL }}">AI accuracy write-up</a>,
-          not a vendor claim.
+          not a vendor claim. Product count as listed by Open Food Facts.
         </p>
       </section>
 
@@ -194,7 +210,7 @@
               <span class="faq-item__question-text">Web app or Android app?</span>
             </button>
             <div class="faq-item__answer" hidden>
-              Both. The <a href="{{ "app/" | relURL }}">installable PWA</a> runs in any modern browser on phone, tablet, or desktop. The Android app adds Health Connect, widgets, notifications, on-device Gemma&nbsp;4, and all 15 languages. Diary and body-metrics JSON match across clients.
+              Both. The <a href="{{ "app/" | relURL }}">installable PWA</a> runs in any modern browser on phone, tablet, or desktop. The Android app adds a live calorie budget on the home ring, Health Connect, widgets, notifications, on-device Gemma&nbsp;4, and all 15 languages. Diary and body-metrics JSON match across clients.
             </div>
           </li>
           <li class="faq-item">
@@ -224,7 +240,7 @@
               <span class="faq-item__question-text">Is it on the Play Store?</span>
             </button>
             <div class="faq-item__answer" hidden>
-              No. Chompass ships from <a href="{{ .Site.Params.repo }}">Codeberg</a>: APK or <a href="{{ .Site.Params.obtainium }}">Obtainium</a> on Android, and a PWA in the browser. F-Droid listing is in progress.
+              No. Chompass ships from <a href="{{ .Site.Params.repo }}">Codeberg</a>: APK or <a href="{{ .Site.Params.obtainium }}">Obtainium</a> on Android, and a PWA in the browser. The F-Droid listing is in preparation.
             </div>
           </li>
         </ul>
