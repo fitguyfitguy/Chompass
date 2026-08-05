@@ -46,8 +46,6 @@ import {
   updateProgressiveMealMeta,
 } from "../lib/progressive-meal.js";
 import {
-  activeBurnArcWeb,
-  activeBurnRampProgress,
   addActiveGaugeTarget,
   addManualActiveEntry,
   makeManualActiveEntry,
@@ -120,13 +118,16 @@ const DAY_NAV_CHEVRON_L = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fil
 const DAY_NAV_CHEVRON_R = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>`;
 
 /** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape (mobile). */
-function ringSvg(eaten, target, burnArc = null, baseGoal = null) {
+function ringSvg(eaten, target, baseGoal = null) {
   const width = 260;
   const stroke = 16;
   const r = (width - stroke) / 2;
   const topPad = 3;
+  const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
+  const showActive = baseFrac < 1;
+  const active = baseGoal && baseGoal < target ? Math.round(target - baseGoal) : 0;
   const baseHeight = Math.ceil(r + stroke + topPad);
-  const burnLineH = burnArc ? 22 : 0;
+  const burnLineH = showActive ? 22 : 0;
   const height = baseHeight + burnLineH;
   const cx = width / 2;
   const cy = baseHeight - stroke / 2;
@@ -140,34 +141,35 @@ function ringSvg(eaten, target, burnArc = null, baseGoal = null) {
   const arc = `M ${x1} ${y} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y}`;
   const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
 
-  // Activity-earned tail [baseGoal → target]. Its opacity is a burn thermometer
-  // (live vs typical day); a success dot marks beating the typical day.
-  const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
+  // Activity-earned zone [baseGoal → target]: a fixed-tint segment on the same
+  // budget axis. The progress fill sweeps over it, so eaten past the boundary
+  // notch = dipping into the calories you burned. No thermometer, no dot.
   let tailMarkup = "";
-  if (baseFrac < 1) {
+  if (showActive) {
     const gap = baseFrac * halfC;
     const tailLen = (1 - baseFrac) * halfC;
-    const ramp = burnArc && burnArc.typical > 0
-      ? 0.25 + 0.6 * activeBurnRampProgress(burnArc.live, burnArc.typical)
-      : 0.45;
-    const overDot = burnArc && burnArc.typical > 0 && burnArc.live > burnArc.typical
-      ? `<circle class="calorie-ring__tail-dot" cx="${(cx + r).toFixed(1)}" cy="${y}" r="6" />`
-      : "";
+    const theta = (Math.PI * (180 + 180 * baseFrac)) / 180;
+    const rIn = r - stroke / 2 + 2;
+    const rOut = r + stroke / 2 - 2;
+    const nxIn = (cx + rIn * Math.cos(theta)).toFixed(1);
+    const nyIn = (cy + rIn * Math.sin(theta)).toFixed(1);
+    const nxOut = (cx + rOut * Math.cos(theta)).toFixed(1);
+    const nyOut = (cy + rOut * Math.sin(theta)).toFixed(1);
+    const boundary =
+      `<line class="calorie-ring__boundary" x1="${nxIn}" y1="${nyIn}" x2="${nxOut}" y2="${nyOut}" />`;
     tailMarkup = `
       <path class="calorie-ring__tail" d="${arc}" fill="none"
         stroke="var(--protein)" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="${gap.toFixed(1)} 0"
-        data-dash="${gap.toFixed(1)} ${tailLen.toFixed(1)}"
-        style="opacity:${ramp.toFixed(2)}" />${overDot}`;
+        data-dash="${gap.toFixed(1)} ${tailLen.toFixed(1)}" />${boundary}`;
   }
 
   let burnMarkup = "";
   let ariaBurn = "";
-  if (burnArc && burnArc.typical > 0) {
-    const cap = `${Math.round(burnArc.live)} active · ${Math.round(burnArc.typical)} est.`;
+  if (showActive) {
     burnMarkup = `
-      <text x="50%" y="148" text-anchor="middle" class="calorie-ring__burn-label">${cap}</text>`;
-    ariaBurn = `, active burn ${Math.round(burnArc.live)} of ${Math.round(burnArc.typical)} estimated`;
+      <text x="50%" y="148" text-anchor="middle" class="calorie-ring__burn-label">${active} active</text>`;
+    ariaBurn = `, active burn ${active}`;
   }
 
   return `
@@ -188,24 +190,24 @@ function ringSvg(eaten, target, burnArc = null, baseGoal = null) {
 }
 
 /** Horizontal calorie progress bar (desktop). */
-function calorieBar(eaten, target, infoBtn = "", burnArc = null, baseGoal = null) {
+function calorieBar(eaten, target, infoBtn = "", baseGoal = null) {
   const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
   const remaining = Math.round(target - eaten);
   const over = eaten > target;
   const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
-  const burnMarkup =
-    burnArc && burnArc.typical > 0
-      ? `<span class="calorie-hero__burn">${Math.round(burnArc.live)} active · ${Math.round(burnArc.typical)} est.</span>`
-      : "";
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
+  const showActive = baseFrac < 1;
+  const active = baseGoal && baseGoal < target ? Math.round(target - baseGoal) : 0;
+  const burnMarkup = showActive
+    ? `<span class="calorie-hero__burn">${active} active</span>`
+    : "";
   let tailMarkup = "";
-  if (baseFrac < 1) {
-    const ramp = burnArc && burnArc.typical > 0
-      ? 0.25 + 0.6 * activeBurnRampProgress(burnArc.live, burnArc.typical)
-      : 0.45;
+  if (showActive) {
+    const tailLeft = (baseFrac * 100).toFixed(1);
     tailMarkup = `
-      <span class="calorie-bar__tail" style="left:${(baseFrac * 100).toFixed(1)}%;opacity:${ramp.toFixed(2)}"
-        data-width="${((1 - baseFrac) * 100).toFixed(1)}%"></span>`;
+      <span class="calorie-bar__tail" style="left:${tailLeft}%"
+        data-width="${((1 - baseFrac) * 100).toFixed(1)}%"></span>
+      <span class="calorie-bar__boundary" style="left:${tailLeft}%"></span>`;
   }
   return `
     <div class="calorie-hero calorie-hero--bar" role="img"
@@ -395,14 +397,6 @@ export class DiaryView extends HTMLElement {
 
     const targets = prof ? dailyTargets(prof) : null;
     let calorieTarget = targets?.calories ?? 0;
-    /** @type {{ live: number, typical: number, source: string }|null} */
-    let arcBurn = null;
-    if (prof && targets) {
-      arcBurn = activeBurnArcWeb(
-        manualKcal,
-        estimatedDailyActiveCalories(prof, targets.calories).estimatedDailyActive,
-      );
-    }
     /** @type {{ goal: number, active: number, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
     let gaugeInfo = null;
     if (prof && targets && appPrefs.calorieGaugeMode === "add_active") {
@@ -461,10 +455,10 @@ export class DiaryView extends HTMLElement {
       : "";
     const gaugeBaseGoal = gaugeInfo && "active" in gaugeInfo ? gaugeInfo.goal : calorieTarget;
     const gaugeMobile = targets
-      ? ringSvg(totals.calories, calorieTarget, arcBurn, gaugeBaseGoal)
+      ? ringSvg(totals.calories, calorieTarget, gaugeBaseGoal)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
     const gaugeDesktop = targets
-      ? calorieBar(totals.calories, calorieTarget, gaugeInfoBtnDesktop, arcBurn, gaugeBaseGoal)
+      ? calorieBar(totals.calories, calorieTarget, gaugeInfoBtnDesktop, gaugeBaseGoal)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
 
     const progressiveCount = progressiveMealItemCount();

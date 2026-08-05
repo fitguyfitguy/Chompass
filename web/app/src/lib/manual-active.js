@@ -41,7 +41,9 @@ export async function loadManualActiveEntries() {
  */
 export async function manualActiveKcalForDate(date) {
   const entries = await loadManualActiveEntries();
-  return entries.filter((e) => e.date === date).reduce((s, e) => s + (Number(e.calories) || 0), 0);
+  return entries
+    .filter((e) => e.date === date)
+    .reduce((s, e) => s + (Number(e.calories) || 0), 0);
 }
 
 /**
@@ -51,7 +53,10 @@ export async function addManualActiveEntry(entry) {
   if (!entry || entry.calories <= 0) return;
   const current = await loadManualActiveEntries();
   await prefs.save({
-    manualActiveEntries: [...current, { ...entry, name: entry.name.trim() || "Activity" }],
+    manualActiveEntries: [
+      ...current,
+      { ...entry, name: entry.name.trim() || "Activity" },
+    ],
   });
 }
 
@@ -81,36 +86,4 @@ export function resolveWebActiveBurn(estimatedDailyActive, manualKcal) {
 export function addActiveGaugeTarget(fullTarget, sedentaryBudget, burn) {
   if (!burn || burn.calories <= 0) return Math.max(0, fullTarget);
   return Math.max(0, sedentaryBudget) + burn.calories;
-}
-
-/**
- * Today's active burn vs a "typical" reference for the diary hero's inner
- * arc. Web has no Health Connect, so live = manual entries only and the
- * reference is always the PAL estimate. Mirrors Android
- * HomeCalorieDisplay.activeBurnArc (which additionally sources the reference
- * from the Health Connect 14-day average when available).
- * @param {number} liveManualKcal
- * @param {number} estimatedDailyActive
- */
-export function activeBurnArcWeb(liveManualKcal, estimatedDailyActive) {
-  const live = Math.max(0, Math.round(liveManualKcal) || 0);
-  if (live <= 0) return null;
-  const typical = Math.max(0, Math.round(estimatedDailyActive) || 0);
-  return {
-    live,
-    typical,
-    source: typical > 0 ? "estimated" : "manual",
-  };
-}
-
-/**
- * Burn-thermometer progress: how much of a typical day's active burn has been
- * reached, clamped to [0, 1]. Mirrors Android
- * HomeCalorieDisplay.activeBurnRampProgress.
- * @param {number} live
- * @param {number} typical
- */
-export function activeBurnRampProgress(live, typical) {
-  if (!(typical > 0)) return 1;
-  return Math.min(1, Math.max(0, live / typical));
 }
