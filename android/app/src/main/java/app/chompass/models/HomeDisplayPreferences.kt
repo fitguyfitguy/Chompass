@@ -41,6 +41,21 @@ enum class FoodLogMacroChip(val storageKey: String, val glyph: String) {
         SUGAR -> entry.sugar ?: 0.0
     }
 
+    /** Value of this chip against a meal group's combined totals. */
+    fun valueFromMeal(
+        totalProtein: Double,
+        totalCarbs: Double,
+        totalFat: Double,
+        totalFiber: Double,
+        totalSugar: Double,
+    ): Double = when (this) {
+        PROTEIN -> totalProtein
+        CARBS -> totalCarbs
+        FAT -> totalFat
+        FIBER -> totalFiber
+        SUGAR -> totalSugar
+    }
+
     companion object {
         val DefaultSelection = listOf(PROTEIN, CARBS, FAT)
         val DefaultStorageValue = DefaultSelection.joinToString(",") { it.storageKey }

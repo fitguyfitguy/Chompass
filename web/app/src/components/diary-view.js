@@ -25,6 +25,7 @@ import {
   tubeStatus,
   formatFoodChips,
   formatMacroChipLine,
+  sumMealChipValues,
   NUTRITION_DETAIL_MICROS,
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
@@ -297,16 +298,7 @@ function tile(action, label, sub, icon) {
  * @param {string[]} chipKeys
  */
 function mealCard(mealType, mealEntries, chipKeys) {
-  const totals = mealEntries.reduce(
-    (acc, e) => {
-      acc.calories += e.calories;
-      acc.proteinG += e.proteinG;
-      acc.carbsG += e.carbsG;
-      acc.fatG += e.fatG;
-      return acc;
-    },
-    { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 }
-  );
+  const totals = sumMealChipValues(mealEntries, chipKeys);
   const icon = ICONS[mealType] || ICONS.snack;
   return `
     <section class="meal-card card card--glass">
@@ -316,11 +308,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
           <h2 class="meal-card__title">${MEAL_LABELS[mealType]}</h2>
           <p class="meal-card__summary">
             <span class="meal-card__kcal">${Math.round(totals.calories)} kcal</span>
-            <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine({
-              proteinG: totals.proteinG,
-              carbsG: totals.carbsG,
-              fatG: totals.fatG,
-            }, ["proteinG", "carbsG", "fatG"])}
+            <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine(totals, chipKeys)}
           </p>
         </div>
       </header>

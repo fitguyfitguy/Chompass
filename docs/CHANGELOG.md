@@ -29,6 +29,7 @@ All notable changes to Chompass are documented here.
 
 ### Fixed
 
+- Meal-header summaries on Home now show real combined fiber (Fi) and sugar (S) values when those chips are enabled, instead of 0 (Android + PWA).
 - Health Connect availability copy no longer tells Android 14+ users to install the Play Store HC APK; status-aware messages cover update-required vs unavailable, with Open Health Connect / Play Store actions where appropriate (Android).
 
 ## [3.6.2] - 2026-08-01
