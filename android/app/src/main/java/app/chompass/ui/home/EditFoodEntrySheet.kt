@@ -339,9 +339,18 @@ fun EditFoodEntrySheet(
                 ServingQuantityCard(
                     quantityText = servingQuantityText,
                     onQuantityChange = { newValue ->
+                        val currentQuantity = if (selectedServingOption.gramsPerUnit > 0) {
+                            servingGrams / selectedServingOption.gramsPerUnit
+                        } else {
+                            servingGrams
+                        }
+                        val parsed = ServingUnitOption.applyDeltaInput(newValue, currentQuantity)
                         servingQuantityText = newValue
-                        ServingUnitOption.parseQuantity(newValue)?.takeIf { it > 0 }?.let {
-                            servingGrams = it * selectedServingOption.gramsPerUnit
+                        if (parsed != null && parsed > 0) {
+                            servingGrams = parsed * selectedServingOption.gramsPerUnit
+                            if (newValue.trim().startsWith("+") || newValue.trim().startsWith("-")) {
+                                servingQuantityText = ServingUnitOption.formatQuantity(parsed)
+                            }
                         }
                     },
                     selectedUnitId = selectedServingUnitId,
