@@ -181,6 +181,26 @@ export function sumNutrient(entries, key) {
 }
 
 /**
+ * Combined totals for the selected food-log chips across a meal group
+ * (Android FoodLogMealGroup totals — P/C/F + optional fiber/sugar).
+ * @param {FoodEntry[]} entries
+ * @param {string[]} chipKeys
+ * @returns {{calories: number, [key: string]: number}}
+ */
+export function sumMealChipValues(entries, chipKeys) {
+  const keys = chipsForFoodLogDisplay(chipKeys);
+  const totals = /** @type {{calories: number, [key: string]: number}} */ ({
+    calories: 0,
+    ...Object.fromEntries(keys.map((k) => [k, 0])),
+  });
+  for (const e of entries) {
+    totals.calories += e.calories;
+    for (const k of keys) totals[k] += entryNutrientValue(e, k);
+  }
+  return totals;
+}
+
+/**
  * @param {string} key
  * @param {DailyTargets|null|undefined} targets
  * @param {OptionalNutrientGoals|null|undefined} optionalGoals

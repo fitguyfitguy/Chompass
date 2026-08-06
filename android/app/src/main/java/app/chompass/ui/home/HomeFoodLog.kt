@@ -94,6 +94,8 @@ internal fun MealSectionHeader(
     totalProtein: Double = 0.0,
     totalCarbs: Double = 0.0,
     totalFat: Double = 0.0,
+    totalFiber: Double = 0.0,
+    totalSugar: Double = 0.0,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     // iOS layout: small dim icon + sentence-case label, regular weight ~17sp.
@@ -125,12 +127,13 @@ internal fun MealSectionHeader(
                     append(" · ")
                     macroChips.forEachIndexed { index, chip ->
                         if (index > 0) append(' ')
-                        val value = when (chip) {
-                            FoodLogMacroChip.PROTEIN -> totalProtein.roundToInt()
-                            FoodLogMacroChip.CARBS -> totalCarbs.roundToInt()
-                            FoodLogMacroChip.FAT -> totalFat.roundToInt()
-                            else -> 0
-                        }
+                        val value = chip.valueFromMeal(
+                            totalProtein,
+                            totalCarbs,
+                            totalFat,
+                            totalFiber,
+                            totalSugar,
+                        ).roundToInt()
                         val color = chip.macroKind()?.color() ?: AppColors.Calorie
                         withStyle(SpanStyle(color = color)) { append("${value}${chip.glyph}") }
                     }
@@ -204,6 +207,8 @@ internal data class FoodLogMealGroup(
     val totalProtein: Double get() = entries.sumOf { it.protein }
     val totalCarbs: Double get() = entries.sumOf { it.carbs }
     val totalFat: Double get() = entries.sumOf { it.fat }
+    val totalFiber: Double get() = entries.sumOf { it.fiber ?: 0.0 }
+    val totalSugar: Double get() = entries.sumOf { it.sugar ?: 0.0 }
 }
 
 /**

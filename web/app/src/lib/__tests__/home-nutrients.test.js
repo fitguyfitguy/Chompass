@@ -10,6 +10,7 @@ import {
   normalizeHomeTopNutrients,
   normalizeFoodLogChips,
   sumNutrient,
+  sumMealChipValues,
   nutrientGoal,
   mergeOptionalGoals,
   formatFoodChips,
@@ -62,6 +63,27 @@ test("sumNutrient_and_goal", () => {
   assert.equal(nutrientGoal("proteinG", targets, null), 150);
   assert.equal(nutrientGoal("fiberG", targets, null), 30);
   assert.equal(nutrientGoal("fiberG", targets, { fiberG: 40 }), 40);
+});
+
+test("sumMealChipValues_includesSelectedFiberAndSugar", () => {
+  const entries = [
+    { calories: 150, proteinG: 5, carbsG: 27, fatG: 3, fiberG: 4.2, sugarG: 0.8 },
+    { calories: 50, proteinG: 1, carbsG: 12, fatG: 0.3, fiberG: 2.5, sugarG: 7 },
+  ];
+  const totals = sumMealChipValues(entries, ["proteinG", "carbsG", "fatG", "fiberG", "sugarG"]);
+  assert.equal(totals.calories, 200);
+  assert.equal(totals.proteinG, 6);
+  assert.equal(totals.carbsG, 39);
+  assert.equal(totals.fatG, 3.3);
+  assert.equal(totals.fiberG, 6.7);
+  assert.equal(totals.sugarG, 7.8);
+  // Null micros on an entry count as zero.
+  const withNulls = sumMealChipValues(
+    [{ calories: 100, proteinG: 10, carbsG: 20, fatG: 5, fiberG: null, sugarG: null }],
+    ["fiberG", "sugarG"]
+  );
+  assert.equal(withNulls.fiberG, 0);
+  assert.equal(withNulls.sugarG, 0);
 });
 
 test("mergeOptionalGoals_fillsDefaults", () => {

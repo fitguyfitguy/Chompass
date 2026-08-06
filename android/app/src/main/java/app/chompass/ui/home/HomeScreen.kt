@@ -455,6 +455,8 @@ fun HomeScreen(container: AppContainer) {
                             totalProtein = group.totalProtein,
                             totalCarbs = group.totalCarbs,
                             totalFat = group.totalFat,
+                            totalFiber = group.totalFiber,
+                            totalSugar = group.totalSugar,
                             macroChips = ui.foodLogMacroChips,
                         )
                     }
@@ -1125,6 +1127,8 @@ internal fun HomeScreenPreviewContent(
                                 totalProtein = group.totalProtein,
                                 totalCarbs = group.totalCarbs,
                                 totalFat = group.totalFat,
+                                totalFiber = group.totalFiber,
+                                totalSugar = group.totalSugar,
                                 macroChips = ui.foodLogMacroChips,
                             )
                         }
