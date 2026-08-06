@@ -120,5 +120,27 @@ data class ServingUnitOption(
             normalized = normalized.replace(decimal, '.')
             return normalized.toDoubleOrNull()
         }
+
+        /**
+         * Parse a quantity-field input that may be a relative edit: a leading
+         * `+` or `-` is a delta on [current], anything else falls back to
+         * [parseQuantity]. "20" is an absolute 20; "+20" means current + 20
+         * (e.g. "I ate 50 g, then 20 g more" → type "+20"). Callers must
+         * ignore non-positive results, as they do for plain quantities.
+         * A lone sign or an empty delta returns null.
+         */
+        fun applyDeltaInput(value: String, current: Double?, locale: Locale = Locale.getDefault()): Double? {
+            val trimmed = value.trim()
+            if (trimmed.isEmpty()) return null
+            val first = trimmed.first()
+            if (first == '+' || first == '-') {
+                val rest = trimmed.substring(1).trim()
+                if (rest.isEmpty()) return null
+                val delta = parseQuantity(rest, locale) ?: return null
+                val base = current ?: 0.0
+                return if (first == '-') base - delta else base + delta
+            }
+            return parseQuantity(trimmed, locale)
+        }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,8 +25,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
 
 /**
@@ -33,6 +36,11 @@ import app.chompass.ui.theme.AppColors
  * NutritionPickerSheet exactly: title, wheel picker stepped at the requested
  * step, gradient Save button, optional "Reset to Auto-balance" link when the
  * macro is currently pinned.
+ *
+ * Also offers "Enter custom value…": swaps the wheel for a free-entry field
+ * so values outside the preset range (e.g. a therapeutic vitamin D dose of
+ * 250 mcg) are settable. Parses as a non-negative integer; falls back to the
+ * wheel selection when the text is not a number.
  */
 @Composable
 fun NutritionPickerSheet(
@@ -55,6 +63,10 @@ fun NutritionPickerSheet(
         items.minByOrNull { kotlin.math.abs(it - v) } ?: items.first()
     }
     var selected by remember(initial) { mutableStateOf(initial) }
+    var customMode by remember { mutableStateOf(false) }
+    var customText by remember { mutableStateOf("") }
+    val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)
+    val saveValue = if (customMode) parsedCustom ?: selected else selected
     Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = accentColor)
     Spacer(Modifier.height(12.dp))
     Row(
@@ -75,6 +87,35 @@ fun NutritionPickerSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }
+    if (customMode) {
+        Spacer(Modifier.height(10.dp))
+        FudGlassTextField(
+            value = customText,
+            onValueChange = { text ->
+                customText = text
+                text.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let { onValueChange?.invoke(it) }
+            },
+            placeholder = stringResource(R.string.settings_picker_custom_placeholder, unit),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            accentColor = accentColor,
+        )
+        TextButton(
+            onClick = { customMode = false; onValueChange?.invoke(selected) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                stringResource(R.string.settings_picker_use_wheel),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+    } else {
+        TextButton(
+            onClick = { customMode = true; customText = selected.toString() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.settings_picker_enter_custom), color = accentColor)
+        }
+    }
     Spacer(Modifier.height(16.dp))
     Box(
         Modifier
@@ -82,7 +123,7 @@ fun NutritionPickerSheet(
             .height(54.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(accentColor)
-            .clickable { onSave(selected) },
+            .clickable { onSave(saveValue) },
         contentAlignment = Alignment.Center
     ) {
         Text(

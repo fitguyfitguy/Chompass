@@ -6,6 +6,8 @@ All notable changes to Chompass are documented here.
 
 ### Added
 
+- **Enter custom value** for every wheel-picked goal (calories, macros, keto net carbs, optional nutrients): type any non-negative number instead of scrolling the preset range — e.g. a 10,000 IU (250 mcg) vitamin D goal (Android).
+- Serving-quantity fields accept **relative edits**: `+20` adds 20 to the current amount, `-10` subtracts (results at or below zero are ignored), in any unit — grams, slice, cup (Android).
 - Add Food **Search food** sheet (Android): type to search **Open Food Facts** (live), **USDA FoodData Central** (offline), and the **Swiss Food Composition Database** (offline, en/de/fr/it names) with per-source chips and a provenance badge on every hit. Picking a hit prefills the review sheet with full micronutrients and the source stamped on the diary entry (`search` source; `grounding.sourceKind` = `usda` / `openFoodFacts` / `swiss`).
 - Offline food databases now ship in all Android builds (~5.3 MB): the USDA Foundation+FNDDS SQLite (was debug-only) and a new Swiss SQLite built from the federal naehrwertdaten.ch CSVs (`scripts/build_swiss_food_index.py`). Grounded entry stays disabled.
 

@@ -1280,6 +1280,9 @@
     <string name="settings_calc_micro_values">Micronutrient values</string>
     <string name="settings_not_medical_advice">Not medical advice</string>
     <string name="settings_reset_autobalance">Reset to Auto-balance</string>
+    <string name="settings_picker_enter_custom">Enter custom value…</string>
+    <string name="settings_picker_use_wheel">Use wheel</string>
+    <string name="settings_picker_custom_placeholder">Value in %1$s</string>
     <string name="settings_pace_loss_format">%1$s/week loss</string>
     <string name="settings_pace_gain_format">%1$s/week gain</string>
     <string name="settings_macro_pin_hint">Pin up to 2 macros to exact grams. Unpinned ones auto-balance from remaining calories.</string>
