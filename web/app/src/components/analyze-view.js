@@ -14,8 +14,12 @@ import { createSpeechCapture } from "../lib/speech.js";
 import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
+import { runDemoAnalyze } from "../demo/mock-ai.js";
 
 const MAX_PHOTOS = 10;
+
+/** Demo hero mode (web/app/demo.html): scripted AI reply, no provider key. */
+const DEMO = typeof window !== "undefined" && Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
 
 export class AnalyzeView extends HTMLElement {
   constructor() {
@@ -36,6 +40,7 @@ export class AnalyzeView extends HTMLElement {
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
     this.mode = params.get("mode") === "note" ? "note" : "photo";
     this.providers = await listConfiguredProviders();
+    if (DEMO) this.providers = ["gemini"];
     const appPrefs = await prefs.load();
     /** @type {keyof typeof import('../lib/ai/providers.js').PROVIDERS | null} */
     this.activeProvider = null;
@@ -290,6 +295,16 @@ export class AnalyzeView extends HTMLElement {
     this.render();
 
     try {
+      if (DEMO) {
+        const estimate = await runDemoAnalyze({
+          signal: ac.signal,
+          onPhase: (phase) => this.setPhase(phase, generation),
+          onPartial: (partial) => this.setPartial(partial, generation),
+        });
+        if (generation !== this.analysisGeneration || ac.signal.aborted) return;
+        location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(estimate))}`;
+        return;
+      }
       const config = await loadProviderKey(/** @type {import('../lib/ai/key-storage.js').ProviderId} */ (this.activeProvider));
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
       if (!config) throw new Error("Provider key missing. Re-add it in Settings.");

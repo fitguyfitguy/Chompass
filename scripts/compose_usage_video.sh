@@ -6,9 +6,10 @@ set -euo pipefail
 #   website/static/video/chompass-usage.mp4     (1920x1080, x264, cinematic)
 #   website/static/video/chompass-poster.jpg    (poster frame for <video poster>)
 #
-# Cinematics per segment: slow push-in / zoom-to-action windows, a phone bezel
-# mockup with soft glow, drifting teal accent light, and lower-third callouts
-# (assets from scripts/generate_video_overlays.py). Crossfades between segments.
+# Cinematics per segment: dynamic Ken Burns (pull-back openings, drift, and a
+# final punch that ends zoomed on the calorie gauge), a phone bezel mockup with
+# soft glow, drifting teal accent light, and lower-third callouts (assets from
+# scripts/generate_video_overlays.py). Crossfades between segments.
 #
 # Requires ffmpeg; runs under `nix shell nixpkgs#ffmpeg` when missing.
 # Overlay assets: uv run --with pillow python scripts/generate_video_overlays.py
@@ -36,7 +37,7 @@ declare -A CALLOUT_MAP=(
   [ai]=callout-ai
   [barcode]=callout-barcode
   [trend]=callout-trend
-  [diary]=callout-budget
+  [diary]=callout-diary
 )
 
 mkdir -p "${WORK_DIR}" "${OUT_DIR}"
@@ -59,12 +60,13 @@ if [ ! -f "${ASSET_DIR}/phone-frame.png" ] || [ ! -f "${ASSET_DIR}/backdrop.png"
   exit 1
 fi
 
-# pick_clip <prefix> -> first raw clip whose name starts with prefix (sorted).
+# pick_clip <prefix> -> newest raw clip whose name starts with prefix.
 pick_clip() {
   local prefix="$1" clip
   for clip in $(printf '%s\n' "${CLIPS[@]}" | sort); do
-    if [[ "$(basename "$clip")" == "${prefix}-"* ]]; then echo "$clip"; return 0; fi
+    if [[ "$(basename "$clip")" == "${prefix}-"* ]]; then last="$clip"; fi
   done
+  if [ -n "${last:-}" ]; then echo "$last"; return 0; fi
   echo "" >&2 && echo "  WARNING: no clip for segment '$prefix'" >&2
   return 1
 }
@@ -72,19 +74,23 @@ pick_clip() {
 # smoothstep ease of progress p (0..1)
 ease_expr() { echo "($1)*($1)*(3-2*($1))"; }
 
-# Ken Burns window via zoompan (the only per-frame evaluator here; crop w/h are
-# config-time). Push zoom toward (tx,ty) between t0..t1; optional pull back
-# between t2..t3. Zoom factor z1; x/y pan the window center toward the target.
-# push_expr <z1> <tx> <ty> <t0> <t1> [<t2> <t3>]
-push_expr() {
-  local z1=$1 tx=$2 ty=$3 t0=$4 t1=$5 t2=${6:-999999} t3=${7:-999999} f=$FPS
+# General Ken Burns window via zoompan (the only per-frame evaluator here).
+# Zoom z0->z1 over t0..t1, then z1->z2 over t2..t3 (stage 2 skipped when
+# t3 <= t2); the viewport pans toward (tx,ty) in step with zoom progress, so a
+# late stage-2 punch ends the segment zoomed on the target.
+# zoom_expr <z0> <z1> <z2> <tx> <ty> <t0> <t1> [<t2> <t3>]
+zoom_expr() {
+  local z0=$1 z1=$2 z2=$3 tx=$4 ty=$5 t0=$6 t1=$7 t2=${8:-0} t3=${9:-0} f=$FPS
   local p1="clip((on-${t0}*${f})/((${t1}-${t0})*${f}),0,1)"
-  local p2="clip((on-${t2}*${f})/((${t3}-${t2})*${f}),0,1)"
   local s1; s1=$(ease_expr "${p1}")
-  local s2; s2=$(ease_expr "${p2}")
-  local e="(${s1}-${s2})"
-  local z="1+(${z1}-1)*${e}"
-  echo "zoompan=z='${z}':x='iw/2-(iw/zoom/2)+(${tx}-iw/2)*${e}':y='ih/2-(ih/zoom/2)+(${ty}-ih/2)*${e}':d=1:s=${WIDTH}x${HEIGHT}"
+  local s2="0"
+  if [ "$(awk -v a="$t3" -v b="$t2" 'BEGIN{print (a>b)?1:0}')" = "1" ]; then
+    local p2="clip((on-${t2}*${f})/((${t3}-${t2})*${f}),0,1)"
+    s2=$(ease_expr "${p2}")
+  fi
+  local z="(${z0}+(${z1}-${z0})*${s1}+(${z2}-${z1})*${s2})"
+  local frac="if(gt(abs(${z2}-${z0}),0.001),(${z}-${z0})/(${z2}-${z0}),${s1})"
+  echo "zoompan=z='${z}':x='iw/2-(iw/zoom/2)+(${tx}-iw/2)*${frac}':y='ih/2-(ih/zoom/2)+(${ty}-ih/2)*${frac}':d=1:s=${WIDTH}x${HEIGHT}"
 }
 
 echo "Rendering segments..."
@@ -103,10 +109,10 @@ for seg in "${SEGMENT_ORDER[@]}"; do
 
   # Zoom profile per segment.
   case "$seg" in
-    ai)      PUSH=$(push_expr 1.30 960 620 2.5 7.0 9.5 11.4) ;;
-    barcode) PUSH=$(push_expr 1.16 960 540 1.0 10.0) ;;
-    trend)   PUSH=$(push_expr 1.16 960 540 1.0 10.0) ;;
-    diary)   PUSH=$(push_expr 1.22 960 420 2.0 6.0 8.5 11.0) ;;
+    ai)      PUSH=$(zoom_expr 1.28 1.00 1.00 960 540 0 3.5) ;;
+    barcode) PUSH=$(zoom_expr 1.00 1.20 1.20 960 540 0.5 9) ;;
+    trend)   PUSH=$(zoom_expr 1.00 1.20 1.20 1020 540 1 10) ;;
+    diary)   PUSH=$(zoom_expr 1.00 1.12 1.90 960 444 0.5 4.5 5.5 11.8) ;;
     *)       PUSH="crop=${WIDTH}:${HEIGHT}:0:0" ;;
   esac
 

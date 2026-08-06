@@ -111,15 +111,17 @@ def phone_frame() -> None:
     hl = Image.new("RGBA", (fw, fh), (255, 255, 255, 0))
     hl.putalpha(edge.point(lambda v: v // 3))
     img = Image.alpha_composite(img, hl)
-    # Screen cutout (transparent) with rounded corners.
-    cut = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
-    cd = ImageDraw.Draw(cut)
-    cd.rounded_rectangle(
+    # Screen cutout: a fully transparent hole (mask = screen rectangle) so the
+    # recorded phone video shows through; the bezel ring stays opaque.
+    hole = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
+    mask = Image.new("L", (fw, fh), 0)
+    md = ImageDraw.Draw(mask)
+    md.rounded_rectangle(
         (BEZEL, BEZEL, PHONE_W + BEZEL - 1, PHONE_H + BEZEL - 1),
         radius=CORNER - 4,
-        fill=(0, 0, 0, 255),
+        fill=255,
     )
-    img = Image.composite(img, cut, cut.split()[3])
+    img = Image.composite(hole, img, mask)
     img.save(ASSET_DIR / "phone-frame.png")
     print(f"  phone-frame.png {img.size}")
 

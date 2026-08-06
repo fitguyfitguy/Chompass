@@ -4,7 +4,7 @@
 // linked from the UI — triggered by ?seed=1 on any route while developing
 // locally (see app.js's maybeSeedFromUrl call). Writes only to IndexedDB;
 // touches no network, no BYOK key storage.
-import { foodEntries, weights, profile as profileStore } from "./db.js";
+import { foodEntries, favorites, weights, profile as profileStore } from "./db.js";
 
 const MEALS = [
   { mealType: "breakfast", time: "07:30", name: "Oatmeal with banana", calories: 380, proteinG: 12, carbsG: 65, fatG: 8 },
@@ -33,9 +33,9 @@ export async function seedProfile() {
   });
 }
 
-/** @param {number} days */
-export async function seedDiaryEntries(days = 14) {
-  for (let i = 0; i < days; i++) {
+/** @param {number} [days] @param {{skipToday?: boolean}} [opts] */
+export async function seedDiaryEntries(days = 14, { skipToday = false } = {}) {
+  for (let i = skipToday ? 1 : 0; i < days; i++) {
     const date = isoDaysAgo(i);
     const jitter = () => 0.85 + Math.random() * 0.3;
     for (const meal of MEALS) {
@@ -67,6 +67,33 @@ export async function seedWeightHistory(days = 42) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     await weights.put({ id: crypto.randomUUID(), date: date.toISOString(), weightKg: Math.round(weightKg * 10) / 10 });
+  }
+}
+
+/** Favorite templates so the home Add-food sheet shows one-tap relog chips. */
+export async function seedFavorites() {
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  for (const [name, calories, proteinG, carbsG, fatG] of [
+    ["Oatmeal with banana", 380, 12, 65, 8],
+    ["Chicken burrito bowl", 640, 42, 70, 18],
+    ["Greek yogurt", 150, 15, 12, 4],
+  ]) {
+    await favorites.put({
+      id: crypto.randomUUID(),
+      name,
+      mealType: "breakfast",
+      date: new Date().toISOString().slice(0, 10),
+      time,
+      quantityG: null,
+      calories,
+      proteinG,
+      carbsG,
+      fatG,
+      source: "manual",
+      note: null,
+      grounding: null,
+    });
   }
 }
 
