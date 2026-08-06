@@ -720,6 +720,12 @@ class FoodAnalysisService(
         }
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Preparing))
+        // Debug-only: replay a scripted response when the demo_ai extra is set
+        // (usage-video capture). Phases/partials/final parse all use the real
+        // pipeline; only the provider reply is fake. Never active in release.
+        if (BuildConfig.DEBUG && prefs?.debugDemoAnalysis?.first() == true && op in DemoFoodAnalysis.ENTRY_OPS) {
+            return DemoFoodAnalysis.run(onProgress)
+        }
         // Time input/prompt assembly (includes the suspending userContext read) as
         // the "promptBuild" phase; the network round-trip itself is captured by the
         // OkHttp PerfEventListener, and JSON parse is timed at the call site.
