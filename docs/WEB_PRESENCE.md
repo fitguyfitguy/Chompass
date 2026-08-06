@@ -9,6 +9,7 @@ Maintainer checklist for discovering Chompass outside Codeberg. Canonical end-us
 - README install CTAs (Obtainium, Codeberg Releases, web app)
 - F-Droid metadata submitted (package `app.chompass`)
 - Social preview card (`website/static/img/og.png`) and sitemap
+- Hero usage video (`website/static/video/chompass-usage.mp4` + poster) on the site header
 - Browser PWA promoted from site hero (primary CTA), Download (PWA first), Features, footer, and README (3-column Fud AI / Android / PWA table). Any modern browser; Chromium works best.
 
 ## Companion PWA
@@ -20,6 +21,18 @@ Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/`
 **Parity:** feature matrix in [`PARITY.md`](PARITY.md); `devenv tasks run release:check-parity` before treating export/formula changes as done.
 
 **Public promotion:** hero primary CTA is “Try web app”; Download leads with PWA then Android; README / Features / Codeberg About (see [`DEVELOPMENT.md`](DEVELOPMENT.md) § Codeberg repo settings). Canonical URL: `chompass.app/app/`.
+
+## Hero usage video
+
+The site-header hero is a **live demo, not a video file**: `website/assets/js/hero.js` swaps the `<video>` for a phone-frame `<iframe src="/app/demo.html">` running the **real PWA** in a scripted loop (AI note → macros fill + log, barcode manual lookup against a canned product, all-time trend charts, one-tap relog). GPU-composited at any DPI, no encoding, ~a few hundred KB instead of a 6.2 MB mp4; the demo pauses offscreen/backgrounded and renders a single static frame under `prefers-reduced-motion`.
+
+- Demo shell: `web/app/demo.html` + `web/app/src/demo/` (`demo-main.js` entry, `demo-driver.js` beat sequencer, `demo-seed.js` seeding, `mock-ai.js` scripted AI reply). Runs against a throwaway `chompass-pwa-demo` IndexedDB (see `web/app/src/lib/db.js`) — never touches real user data.
+- The mp4 (`website/static/video/chompass-usage.mp4` + poster) remains as the no-JS fallback (`preload="none"`, poster only).
+- Regen the fallback mp4 (optional, needs a USB Android device — Pixel 9a coordinates are the defaults):
+  1. Install the debug build and seed the app: `./scripts/install_debug.sh && ./scripts/install_debug.sh --reseed`
+  2. Record clips (sets animation scales to 2.0 first; hold a real product barcode up at the `[3/4] barcode` step): `./scripts/capture_usage_video.sh` — retake one segment with `--only <trend|ai|barcode|diary>`; check raw clip durations ≥ ~17/27/26/20s.
+  3. Overlay assets once: `uv run --with pillow python scripts/generate_video_overlays.py`
+  4. Compose + poster: `./scripts/compose_usage_video.sh` (picks the newest clips; needs ffmpeg, auto re-execs under `nix shell nixpkgs#ffmpeg`).
 
 ## Do not pursue
 

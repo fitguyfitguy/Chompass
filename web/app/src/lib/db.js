@@ -8,7 +8,13 @@ import {
   ANDROID_PREF_DEFAULTS,
 } from "./home-nutrients.js";
 
-const DB_NAME = "chompass-pwa";
+// Marketing hero (web/app/demo.html) runs the real app shell against a throwaway
+// database (window.CHOMPASS_DEMO is set by demo.html before this module evaluates).
+// Never seed demo data over real user data.
+const DB_NAME =
+  typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
+    ? "chompass-pwa-demo"
+    : "chompass-pwa";
 const DB_VERSION = 3;
 
 /** @type {Promise<IDBDatabase>|null} */

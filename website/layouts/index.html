@@ -54,12 +54,16 @@
 
       {{- $usageMp4 := fileExists "static/video/chompass-usage.mp4" -}}
       {{- $poster := fileExists "static/video/chompass-poster.jpg" -}}
-      <section class="lander__video" aria-label="Chompass in action">
+      <section class="lander__video" aria-label="Chompass in action" data-live-hero>
         {{- if $usageMp4 -}}
-        <video src="{{ "video/chompass-usage.mp4" | relURL }}" autoplay muted loop playsinline preload="auto"
+        <video src="{{ "video/chompass-usage.mp4" | relURL }}" autoplay muted loop playsinline preload="none"
           {{- if $poster }} poster="{{ "video/chompass-poster.jpg" | relURL }}"{{ end }}>
           Your browser does not support the video tag.
         </video>
+        <template>
+          <iframe src="{{ "app/demo.html" | relURL }}" title="" aria-hidden="true" tabindex="-1"
+            loading="lazy" scrolling="no" allow="autoplay"></iframe>
+        </template>
         {{- else -}}
         <div class="video-fallback" aria-hidden="true">
           <img src="{{ "screenshots/home.png" | relURL }}" alt="" width="200" height="433" />

@@ -12,5 +12,7 @@
   {{ partial "footer.html" . }}
   {{ $siteJs := resources.Get "js/site.js" | minify | fingerprint }}
   <script src="{{ $siteJs.RelPermalink }}" defer></script>
+  {{ $heroJs := resources.Get "js/hero.js" | minify | fingerprint }}
+  <script src="{{ $heroJs.RelPermalink }}" defer></script>
 </body>
 </html>

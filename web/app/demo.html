@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Chompass demo</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="./fonts/fonts.css" />
+    <link rel="stylesheet" href="./css/main.css" />
+    <style>
+      /* Demo shell: no bottom nav, no install/update prompts; the hero phone
+       shows the app content only. Mirrors the main index.html viewport. */
+      body {
+        background: #0f0e13;
+      }
+      .view {
+        padding-bottom: 24px;
+      }
+      .bottom-nav {
+        display: none;
+      }
+    </style>
+    <!-- Must run before the module graph: db.js switches to the throwaway
+       "chompass-pwa-demo" database when this flag is set. -->
+    <script>
+      window.CHOMPASS_DEMO = true;
+    </script>
+  </head>
+  <body>
+    <main id="view" class="view"></main>
+    <script type="module" src="./src/demo/demo-main.js"></script>
+  </body>
+</html>

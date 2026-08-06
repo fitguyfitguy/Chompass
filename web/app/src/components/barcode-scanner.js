@@ -13,6 +13,23 @@ import {
   savePreferredVideoDeviceId,
 } from "../lib/media-devices.js";
 
+/** Demo hero mode (web/app/demo.html): no camera, canned product lookup. */
+const DEMO = typeof window !== "undefined" && Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
+
+/** Canned Open Food Facts-style result for the demo barcode beat. */
+const DEMO_PRODUCT = Object.freeze({
+  name: "Oat drink, vanilla",
+  brand: "Oatly",
+  calories: 130,
+  proteinG: 3,
+  carbsG: 14,
+  fatG: 6,
+  quantityG: 250,
+  servingUnitOptions: [{ unit: "serving", gramsPerUnit: 250, quantity: 1 }],
+  selectedServingUnit: "serving",
+  selectedServingQuantity: 1,
+});
+
 /**
  * Live scanning uses the native BarcodeDetector API when it works, and falls
  * back to the vendored zxing-wasm reader (lazy-loaded) when it is missing
@@ -35,6 +52,7 @@ export class BarcodeScanner extends HTMLElement {
     this.activeDeviceId = null;
     /** @type {MediaDeviceInfo[]} */
     this.videoDevices = [];
+    if (DEMO) this.supported = false;
     this.render();
     if (this.supported) this.startCamera();
   }
@@ -203,7 +221,7 @@ export class BarcodeScanner extends HTMLElement {
     const status = this.querySelector("#lookup-status");
     status.textContent = "Looking up…";
     try {
-      const prefill = await lookupBarcode(barcode);
+      const prefill = DEMO ? { ...DEMO_PRODUCT } : await lookupBarcode(barcode);
       if (!prefill) {
         status.textContent = `No product found for ${barcode}. Try manual entry, or edit portions after saving.`;
         return;
