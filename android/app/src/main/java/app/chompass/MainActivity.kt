@@ -384,6 +384,10 @@ open class MainActivity : ComponentActivity() {
         val setShowRestingShade: Boolean? = null,
         val seedOverGoal: Boolean = false,
         val restoreRealData: Boolean = false,
+        /** Debug-only: replay a scripted food-analysis response (usage-video capture). */
+        val demoAi: Boolean = false,
+        /** Debug-only: drop any pending food-analysis draft so a fresh capture segment starts clean. */
+        val clearPendingDraft: Boolean = false,
         val runEntryBenchmark: Boolean = false,
         val entryBenchmarkCount: Int = 3,
         val runOnDeviceLlmTest: Boolean = false,
@@ -417,6 +421,8 @@ open class MainActivity : ComponentActivity() {
             },
             seedOverGoal = intent.getBooleanExtra("seed_over_goal", false),
             restoreRealData = intent.getBooleanExtra("restore_real_data", false),
+            demoAi = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai", false),
+            clearPendingDraft = BuildConfig.DEBUG && intent.getBooleanExtra("clear_pending_draft", false),
             runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
             entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
             runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
@@ -445,6 +451,8 @@ open class MainActivity : ComponentActivity() {
         if (actions.setShowRestingShade != null) intent.removeExtra("set_show_resting_shade")
         if (actions.seedOverGoal) intent.removeExtra("seed_over_goal")
         if (actions.restoreRealData) intent.removeExtra("restore_real_data")
+        if (actions.demoAi) intent.removeExtra("demo_ai")
+        if (actions.clearPendingDraft) intent.removeExtra("clear_pending_draft")
         if (actions.runEntryBenchmark) intent.removeExtra("run_entry_benchmark")
         if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
         if (actions.runOnDeviceLlmTest) {
@@ -492,6 +500,11 @@ open class MainActivity : ComponentActivity() {
             actions.setShowRestingShade?.let { container.testDataSeeder.setShowRestingShade(it) }
             if (actions.seedOverGoal) container.testDataSeeder.seedOverGoal()
             if (actions.restoreRealData) container.testDataSeeder.restore()
+            if (actions.demoAi) container.prefs.setDebugDemoAnalysis(true)
+            if (actions.clearPendingDraft) {
+                container.prefs.setPendingFoodAnalysisDraft(null)
+                container.prefs.setPendingFoodInputDraft(null)
+            }
 
             // Independent of seeding/onboarding: benchmarks only need the AI provider + key.
             if (actions.runEntryBenchmark) {

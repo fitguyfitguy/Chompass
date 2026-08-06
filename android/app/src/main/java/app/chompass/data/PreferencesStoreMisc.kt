@@ -55,6 +55,14 @@ internal suspend fun PreferencesStore.setDebugShowRestingShadeImpl(show: Boolean
     dataStore.edit { it[Keys.DEBUG_SHOW_RESTING_SHADE] = show }
 }
 
+// -- Debug demo-analysis flag (demo_ai extra; scripted video capture) --------
+internal val PreferencesStore.debugDemoAnalysisImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.DEBUG_DEMO_ANALYSIS] ?: false }
+
+internal suspend fun PreferencesStore.setDebugDemoAnalysisImpl(enabled: Boolean) {
+    dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS] = enabled }
+}
+
 // -- Wipe everything --------------------------------------------------
 internal suspend fun PreferencesStore.clearAllImpl() {
     dataStore.edit { it.clear() }

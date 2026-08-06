@@ -125,6 +125,8 @@ internal object Keys {
         val DEBUG_ACTIVITY_DAYS = stringPreferencesKey("debugActivityDays")
         /** Debug-only: show the resting (basal) burn rim in the home hero arc (A/B comparison). */
         val DEBUG_SHOW_RESTING_SHADE = booleanPreferencesKey("debugShowRestingShade")
+        /** Debug-only: replay a scripted food-analysis response (demo_ai intent extra; video capture). */
+        val DEBUG_DEMO_ANALYSIS = booleanPreferencesKey("debugDemoAnalysis")
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")
