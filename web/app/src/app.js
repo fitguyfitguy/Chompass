@@ -32,9 +32,16 @@ function applyNavLabels() {
     const tab = href.replace("#/", "");
     const label = labels[tab];
     if (!label) return;
+    // Keep the M3 pill wrapper (and its icon) when relabeling the anchor.
+    const pill = a.querySelector(".nav-pill");
     const icon = a.querySelector("svg");
     a.textContent = "";
-    if (icon) a.appendChild(icon);
+    if (pill) {
+      if (icon) pill.appendChild(icon);
+      a.appendChild(pill);
+    } else if (icon) {
+      a.appendChild(icon);
+    }
     a.appendChild(document.createTextNode(` ${label}`));
   });
   if (nav) nav.setAttribute("aria-label", t("a11y.primary_nav"));
