@@ -221,7 +221,8 @@ export function nutrientGoal(key, targets, optionalGoals) {
 }
 
 /**
- * Status text for a tube (unit-aware).
+ * Status text for a tube (unit-aware; Android macro_status_left/over formats:
+ * "64g left" / "24g over" — no space between value and unit).
  * @param {number} value
  * @param {number} target
  * @param {string} unit
@@ -230,8 +231,8 @@ export function tubeStatus(value, target, unit) {
   if (target <= 0) return "—";
   if (Math.round(value) === Math.round(target)) return "goal";
   const left = Math.round(target - value);
-  if (value < target) return `${left} ${unit} left`;
-  return `+${Math.round(value - target)} ${unit}`;
+  if (value < target) return `${left}${unit} left`;
+  return `${Math.round(value - target)}${unit} over`;
 }
 
 /**
@@ -272,15 +273,17 @@ export function formatMacroChip(key, value) {
 }
 
 /**
- * Join colored macro chips with muted separators.
+ * Join colored macro chips (Android meal-header style: chips separated by a
+ * single space, no separator glyphs — e.g. "320 kcal · 24P 28C 9F").
  * @param {{[key: string]: number}|FoodEntry} values
  * @param {string[]} chipKeys
+ * @param {string} [sep] separator between chips
  */
-export function formatMacroChipLine(values, chipKeys) {
+export function formatMacroChipLine(values, chipKeys, sep = " ") {
   const keys = chipsForFoodLogDisplay(chipKeys);
   return keys
     .map((k) => formatMacroChip(k, entryNutrientValue(/** @type {FoodEntry} */ (values), k)))
-    .join('<span class="food-item__meta-sep"> · </span>');
+    .join(sep);
 }
 
 /**
@@ -290,6 +293,25 @@ export function formatMacroChipLine(values, chipKeys) {
  */
 export function formatFoodChips(entry, chipKeys) {
   return formatMacroChipLine(entry, chipKeys);
+}
+
+/**
+ * Android FoodLogMacroChipView capsules — tinted pills "P 24g" (glyph first,
+ * value with unit) on a 12% tint of the macro color.
+ * @param {FoodEntry} entry
+ * @param {string[]} chipKeys
+ */
+export function formatFoodPills(entry, chipKeys) {
+  const keys = chipsForFoodLogDisplay(chipKeys);
+  return keys
+    .map((k) => {
+      const def = nutrientDef(k);
+      const css = CHIP_CSS[k] || "protein";
+      const unit = def?.unit ?? "g";
+      const value = Math.round(entryNutrientValue(entry, k));
+      return `<span class="macro-pill macro-pill--${css}">${chipGlyph(k)} ${value}${unit}</span>`;
+    })
+    .join("");
 }
 
 /** All FoodEntry micro field keys (for OFF / AI / share carry-through). */
