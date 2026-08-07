@@ -23,8 +23,8 @@ import {
   nutrientGoal,
   nutrientDef,
   tubeStatus,
-  formatFoodChips,
   formatMacroChipLine,
+  formatFoodPills,
   sumMealChipValues,
   NUTRITION_DETAIL_MICROS,
   mergeOptionalGoals,
@@ -80,14 +80,22 @@ const ICONS = {
   snack: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99c-.84-.33-1.4-.99-1.58-1.82-.03-.15-.05-.3-.05-.46 0-.84.41-1.58 1.04-2.04C16.66 11.2 17 10.39 17 9.5c0-1.52-.98-2.81-2.34-3.28C14.21 5.91 13.14 5.75 12 5.75s-2.21.16-2.66.47C7.98 6.69 7 7.98 7 9.5c0 .89.34 1.7.99 2.17.63.46 1.04 1.2 1.04 2.04 0 .16-.02.31-.05.46-.18.83-.74 1.49-1.58 1.82C5.85 16.66 5 17.95 5 19.5V21h14v-1.5c0-1.55-.85-2.84-2.4-3.51z"/></svg>`,
 };
 
+/** Local calendar YYYY-MM-DD (avoid UTC shift from toISOString). */
+function localIsoDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return localIsoDate(new Date());
 }
 
 function shiftDate(iso, days) {
   const d = new Date(`${iso}T00:00:00`);
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return localIsoDate(d);
 }
 
 function weekDates(selectedIso, weekStartsOnMonday = true) {
@@ -121,8 +129,33 @@ function saveHomeDate(iso) {
 const DAY_NAV_CHEVRON_L = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
 const DAY_NAV_CHEVRON_R = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>`;
 
+/** Android clockTimePattern: locale-aware time, lowercased (e.g. "2:00 pm"). */
+function formatEntryTime(time) {
+  if (!time) return "";
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(time));
+  if (!m) return escapeHtml(String(time));
+  const d = new Date(2000, 0, 1, Number(m[1]), Number(m[2]));
+  return escapeHtml(d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }).toLowerCase());
+}
+
+/** Android serving grams: "24g" or "24.5g". */
+function formatGrams(g) {
+  const n = Number(g);
+  if (!Number.isFinite(n)) return "";
+  return Number.isInteger(n) ? `${n}g` : `${n.toFixed(1)}g`;
+}
+
+/** Android BurnShadeCaption: "380 of 560 active" (live of typical), else "560 active". */
+function burnCaptionText(zoneActive, burn) {
+  if (!burn) return `${zoneActive} active`;
+  if (burn.live > 0 && burn.typical > 0) return `${burn.live} of ${burn.typical} active`;
+  return `${Math.max(burn.typical, zoneActive)} active`;
+}
+
+const GAUGE_INFO_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
+
 /** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape (mobile). */
-function ringSvg(eaten, target, baseGoal = null) {
+function ringSvg(eaten, target, baseGoal = null, burn = null) {
   const width = 260;
   const stroke = 16;
   const r = (width - stroke) / 2;
@@ -137,13 +170,11 @@ function ringSvg(eaten, target, baseGoal = null) {
   const cy = baseHeight - stroke / 2;
   const halfC = Math.PI * r;
   const pct = target > 0 ? Math.min(1, eaten / target) : 0;
-  const remaining = Math.round(target - eaten);
-  const over = eaten > target;
+  const leftLabel = `${Math.max(0, Math.round(target - eaten))} left`;
   const x1 = (cx - r).toFixed(1);
   const x2 = (cx + r).toFixed(1);
   const y = cy.toFixed(1);
   const arc = `M ${x1} ${y} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y}`;
-  const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
 
   // Activity-earned zone [baseGoal → target]: a fixed-tint segment on the same
   // budget axis. The progress fill sweeps over it, so eaten past the boundary
@@ -171,9 +202,10 @@ function ringSvg(eaten, target, baseGoal = null) {
   let burnMarkup = "";
   let ariaBurn = "";
   if (showActive) {
+    const burnCaption = burnCaptionText(active, burn);
     burnMarkup = `
-      <text x="50%" y="148" text-anchor="middle" class="calorie-ring__burn-label">${active} active</text>`;
-    ariaBurn = `, active burn ${active}`;
+      <text x="50%" y="148" text-anchor="middle" class="calorie-ring__burn-label">🔥 ${burnCaption}</text>`;
+    ariaBurn = `, active burn ${burnCaption}`;
   }
 
   return `
@@ -182,28 +214,26 @@ function ringSvg(eaten, target, baseGoal = null) {
       <path d="${arc}" fill="none" stroke="var(--surface)" stroke-width="${stroke}" stroke-linecap="round" />
       ${tailMarkup}
       <path class="calorie-ring__progress" d="${arc}" fill="none"
-        stroke="${over ? "var(--over)" : "var(--teal)"}" stroke-width="${stroke}" stroke-linecap="round"
+        stroke="var(--teal)" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="0 ${halfC.toFixed(1)}"
         data-dash="${(pct * halfC).toFixed(1)} ${halfC.toFixed(1)}" />
       <text x="50%" y="58" text-anchor="middle" class="calorie-ring__caption">Calories</text>
       <text x="50%" y="88" text-anchor="middle" class="calorie-ring__label">${Math.round(eaten)}</text>
-      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">of ${Math.round(target)} kcal</text>
+      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">of ${Math.round(target)}</text>
       <text x="50%" y="128" text-anchor="middle" class="calorie-ring__left">🔥 ${leftLabel}</text>
       ${burnMarkup}
     </svg>`;
 }
 
 /** Horizontal calorie progress bar (desktop). */
-function calorieBar(eaten, target, infoBtn = "", baseGoal = null) {
+function calorieBar(eaten, target, baseGoal = null, burn = null) {
   const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
-  const remaining = Math.round(target - eaten);
-  const over = eaten > target;
-  const leftLabel = over ? `+${Math.round(eaten - target)} over` : `${Math.max(0, remaining)} left`;
+  const leftLabel = `${Math.max(0, Math.round(target - eaten))} left`;
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
   const showActive = baseFrac < 1;
   const active = baseGoal && baseGoal < target ? Math.round(target - baseGoal) : 0;
   const burnMarkup = showActive
-    ? `<span class="calorie-hero__burn">${active} active</span>`
+    ? `<span class="calorie-hero__burn">🔥 ${burnCaptionText(active, burn)}</span>`
     : "";
   let tailMarkup = "";
   if (showActive) {
@@ -220,11 +250,11 @@ function calorieBar(eaten, target, infoBtn = "", baseGoal = null) {
         <div class="calorie-hero__nums">
           <span class="calorie-hero__caption">Calories</span>
           <span class="calorie-hero__value">${Math.round(eaten)}</span>
-          <span class="calorie-hero__sub">of ${Math.round(target)} kcal</span>${infoBtn}
+          <span class="calorie-hero__sub">of ${Math.round(target)}</span>
         </div>
-        <span class="calorie-hero__left${over ? " is-over" : ""}">🔥 ${leftLabel}</span>
+        <span class="calorie-hero__left">🔥 ${leftLabel}</span>
       </div>
-      <div class="calorie-bar${over ? " is-over" : ""}" role="progressbar"
+      <div class="calorie-bar" role="progressbar"
         aria-valuemin="0" aria-valuemax="${Math.round(target)}" aria-valuenow="${Math.round(eaten)}">
         <span data-width="${pct.toFixed(1)}%"></span>
         ${tailMarkup}
@@ -237,8 +267,9 @@ function calorieBar(eaten, target, infoBtn = "", baseGoal = null) {
 function macroTube(key, label, value, target, unit = "g") {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
   const status = tubeStatus(value, target, unit);
+  const over = target > 0 && value > target;
   return `
-    <div class="macro-tube macro-tube--${key}">
+    <div class="macro-tube macro-tube--${key}${over ? " is-over" : ""}">
       <span class="macro-tube__value">${Math.round(value)}</span>
       <div class="macro-tube__track" aria-hidden="true">
         <span class="macro-tube__fill" data-height="${pct.toFixed(1)}%"></span>
@@ -252,8 +283,9 @@ function macroTube(key, label, value, target, unit = "g") {
 function macroRow(key, label, value, target, unit = "g") {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
   const status = tubeStatus(value, target, unit);
+  const over = target > 0 && value > target;
   return `
-    <div class="macro-row macro-row--${key}">
+    <div class="macro-row macro-row--${key}${over ? " is-over" : ""}">
       <div class="macro-row__meta">
         <span class="macro-row__label">${label}</span>
         <span class="macro-row__value">${Math.round(value)}</span>
@@ -325,10 +357,16 @@ function mealCard(mealType, mealEntries, chipKeys) {
             <div class="food-item">
               <button type="button" class="food-item__main" data-edit>
                 <span class="food-item__text">
-                  <span class="food-item__name">${escapeHtml(e.name)}</span>
-                  <span class="food-item__meta">${formatFoodChips(e, chipKeys)}${e.quantityG != null ? `<span class="food-item__meta-sep"> · </span>${e.quantityG}g` : ""}<span class="food-item__meta-sep"> · </span><span class="food-item__meta-time">${escapeHtml(e.time)}</span></span>
+                  <span class="food-item__top">
+                    <span class="food-item__name">${escapeHtml(e.name)}</span>
+                    ${e.time ? `<span class="food-item__meta-time">${formatEntryTime(e.time)}</span>` : ""}
+                  </span>
+                  <span class="food-item__kcalrow">
+                    <span class="food-item__cals">${Math.round(e.calories)} kcal</span>
+                    ${e.quantityG != null ? `<span class="food-item__meta-sep"> · </span><span class="food-item__serving">${formatGrams(e.quantityG)}</span>` : ""}
+                  </span>
+                  <span class="food-item__pills">${formatFoodPills(e, chipKeys)}</span>
                 </span>
-                <span class="food-item__cals">${Math.round(e.calories)}</span>
               </button>
               <button type="button" class="food-item__menu" data-menu aria-label="More actions for ${escapeAttr(e.name)}">⋮</button>
             </div>
@@ -366,12 +404,11 @@ export class DiaryView extends HTMLElement {
   }
 
   async render() {
-    const [entries, prof, waterLogs, appPrefs, weekEntryFlags, manualKcal] = await Promise.all([
+    const [entries, prof, waterLogs, appPrefs, manualKcal] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
       water.byDate(this.date),
       prefs.load(),
-      this.weekHasEntries(),
       manualActiveKcalForDate(this.date),
     ]);
 
@@ -388,14 +425,21 @@ export class DiaryView extends HTMLElement {
 
     const targets = prof ? dailyTargets(prof) : null;
     let calorieTarget = targets?.calories ?? 0;
-    /** @type {{ goal: number, active: number, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
+    /** @type {{ goal: number, active: number, live: number, typical: number, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
     let gaugeInfo = null;
     if (prof && targets && appPrefs.calorieGaugeMode === "add_active") {
       const { sedentaryBudget, estimatedDailyActive } = estimatedDailyActiveCalories(prof, targets.calories);
       const burn = resolveWebActiveBurn(estimatedDailyActive, manualKcal);
       calorieTarget = addActiveGaugeTarget(targets.calories, sedentaryBudget, burn);
       gaugeInfo = burn
-        ? { goal: sedentaryBudget, active: burn.calories, source: burn.source, awaiting: false }
+        ? {
+            goal: sedentaryBudget,
+            active: burn.calories,
+            live: Math.round(manualKcal),
+            typical: estimatedDailyActive,
+            source: burn.source,
+            awaiting: false,
+          }
         : { goal: sedentaryBudget, awaiting: true };
     }
 
@@ -430,7 +474,8 @@ export class DiaryView extends HTMLElement {
     const macrosMobile = targets
       ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
           ${renderMacros(tubeKeys, entries, targets, optionalGoals, "tube")}
-        </div>`
+        </div>
+        <button type="button" class="home-hero__more" data-nutrition-detail>${t("diary.view_more")} ›</button>`
       : "";
     const macrosDesktop = targets
       ? `<div class="macro-rows macro-rows--${tubeKeys.length}">
@@ -438,18 +483,19 @@ export class DiaryView extends HTMLElement {
         </div>`
       : "";
     const gaugeInfoLabel = t("diary.calorie_budget_info");
-    const gaugeInfoBtnMobile = gaugeInfo
-      ? `<button type="button" class="gauge-info-btn" data-gauge-info aria-label="${gaugeInfoLabel}">ⓘ</button>`
-      : "";
-    const gaugeInfoBtnDesktop = gaugeInfo
-      ? `<button type="button" class="gauge-info-btn gauge-info-btn--inline" data-gauge-info aria-label="${gaugeInfoLabel}">ⓘ</button>`
-      : "";
+    // Android keeps the info affordance in every gauge mode — it explains the budget.
+    const gaugeInfoBtnMobile = `<button type="button" class="gauge-info-btn" data-gauge-info aria-label="${gaugeInfoLabel}">${GAUGE_INFO_ICON}</button>`;
+    const gaugeInfoBtnDesktop = `<button type="button" class="gauge-info-btn gauge-info-btn--inline" data-gauge-info aria-label="${gaugeInfoLabel}">${GAUGE_INFO_ICON}</button>`;
     const gaugeBaseGoal = gaugeInfo && "active" in gaugeInfo ? gaugeInfo.goal : calorieTarget;
+    const gaugeBurn =
+      gaugeInfo && "active" in gaugeInfo
+        ? { live: gaugeInfo.live, typical: gaugeInfo.typical }
+        : null;
     const gaugeMobile = targets
-      ? ringSvg(totals.calories, calorieTarget, gaugeBaseGoal)
+      ? ringSvg(totals.calories, calorieTarget, gaugeBaseGoal, gaugeBurn)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
     const gaugeDesktop = targets
-      ? calorieBar(totals.calories, calorieTarget, gaugeInfoBtnDesktop, gaugeBaseGoal)
+      ? calorieBar(totals.calories, calorieTarget, gaugeBaseGoal, gaugeBurn)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
 
     const progressiveCount = progressiveMealItemCount();
@@ -474,14 +520,12 @@ export class DiaryView extends HTMLElement {
                     const d = new Date(`${iso}T00:00:00`);
                     const selected = iso === this.date ? " is-selected" : "";
                     const isToday = iso === today ? " is-today" : "";
-                    const has = weekEntryFlags.has(iso) ? " has-entries" : "";
                     const future = iso > today;
                     return `
-                      <button type="button" class="week-day${selected}${isToday}${has}" data-date="${iso}" role="tab"
+                      <button type="button" class="week-day${selected}${isToday}" data-date="${iso}" role="tab"
                         aria-selected="${iso === this.date}" ${future ? "disabled" : ""}>
                         <span class="week-day__dow">${d.toLocaleDateString(undefined, { weekday: "narrow" })}</span>
                         <span class="week-day__num">${d.getDate()}</span>
-                        <span class="week-day__dot" aria-hidden="true"></span>
                       </button>`;
                   })
                   .join("")}
@@ -493,7 +537,7 @@ export class DiaryView extends HTMLElement {
         <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
       </div>
 
-      <div class="card card--glass home-hero" data-day-swipe>
+      <div class="home-hero" data-day-swipe>
         <div class="home-hero--mobile">
           <div class="home-hero__day-nav">
             <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">${DAY_NAV_CHEVRON_L}</button>
@@ -508,9 +552,16 @@ export class DiaryView extends HTMLElement {
           ${macrosMobile}
         </div>
         <div class="home-hero--desktop">
-          <button type="button" class="calorie-hero--tap calorie-hero--tap-bar" data-nutrition-detail aria-label="Open nutrition detail">
-            ${gaugeDesktop}
-          </button>
+          <div class="home-hero__bar-wrap">
+            <!-- div (not button): the calorie bar contains block content; a
+                 nested button would break HTML parsing and escape this
+                 container (visible on mobile). Mobile hero uses a real button
+                 since it only wraps SVG. -->
+            <div class="calorie-hero--tap calorie-hero--tap-bar" data-nutrition-detail role="button" tabindex="0" aria-label="Open nutrition detail">
+              ${gaugeDesktop}
+            </div>
+            ${gaugeInfoBtnDesktop}
+          </div>
           ${macrosDesktop}
         </div>
       </div>
@@ -547,6 +598,7 @@ export class DiaryView extends HTMLElement {
     `;
 
     this._gaugeInfo = gaugeInfo;
+    this._gaugeGoal = calorieTarget;
     this.bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
@@ -661,7 +713,15 @@ export class DiaryView extends HTMLElement {
 
   openGaugeInfo() {
     const info = this._gaugeInfo;
-    if (!info) return;
+    if (!info) {
+      // Static mode: plain daily goal breakdown.
+      openInfo({
+        title: t("diary.calorie_budget_title"),
+        message: t("diary.calorie_budget_goal", { goal: String(this._gaugeGoal ?? 0) }),
+        doneLabel: t("action.done"),
+      });
+      return;
+    }
     if ("active" in info) {
       const sourceLine =
         info.source === "estimated"
@@ -1570,19 +1630,6 @@ export class DiaryView extends HTMLElement {
         </section>`,
     });
     void sheet;
-  }
-
-  async weekHasEntries() {
-    const appPrefs = await prefs.load();
-    const days = weekDates(this.date, appPrefs.weekStartsOnMonday !== false);
-    const flags = new Set();
-    await Promise.all(
-      days.map(async (d) => {
-        const list = await foodEntries.byDate(d);
-        if (list.length) flags.add(d);
-      })
-    );
-    return flags;
   }
 
   async addWater(amountMl) {

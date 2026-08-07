@@ -14,6 +14,7 @@ import {
   nutrientGoal,
   mergeOptionalGoals,
   formatFoodChips,
+  formatFoodPills,
   ALL_MICRO_KEYS,
 } from "../home-nutrients.js";
 import { mapProduct } from "../off-client.js";
@@ -100,6 +101,16 @@ test("formatFoodChips", () => {
   assert.match(html, /8<span class="macro-chip macro-chip--fat">F<\/span>/);
   // Fiber shows when selected (Android FoodLogMacroChip parity).
   assert.match(formatFoodChips(entry, ["proteinG", "fiberG"]), /6<span class="macro-chip macro-chip--fiber">Fi<\/span>/);
+});
+
+test("formatFoodPills_androidCapsules", () => {
+  const entry = { calories: 1, proteinG: 12.4, carbsG: 30, fatG: 8, fiberG: 5.6 };
+  const html = formatFoodPills(entry, ["proteinG", "carbsG", "fatG", "fiberG"]);
+  // Android FoodLogMacroChipView: "P 24g" — glyph first, value + unit, no space.
+  assert.match(html, /<span class="macro-pill macro-pill--protein">P 12g<\/span>/);
+  assert.match(html, /<span class="macro-pill macro-pill--carbs">C 30g<\/span>/);
+  assert.match(html, /<span class="macro-pill macro-pill--fat">F 8g<\/span>/);
+  assert.match(html, /<span class="macro-pill macro-pill--fiber">Fi 6g<\/span>/);
 });
 
 test("ALL_MICRO_KEYS_count", () => {
