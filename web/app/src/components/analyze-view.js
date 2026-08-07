@@ -17,7 +17,7 @@ import { createSpeechCapture } from "../lib/speech.js";
 import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
-import { runDemoAnalyze } from "../demo/mock-ai.js";
+import { DEMO_PLATE_ESTIMATE, runDemoAnalyze } from "../demo/mock-ai.js";
 
 const MAX_PHOTOS = 10;
 
@@ -68,8 +68,14 @@ export class AnalyzeView extends HTMLElement {
       : "";
     this.notePrefill = this.pendingNote;
 
-    // Photo deep-link: hand off to in-app camera / multi-photo flow (Android parity).
+    // Photo deep-link: hand off to in-app camera / multi-photo flow (Android
+    // parity). In demo mode the hero shows a mock plate camera instead.
     if (this.mode === "photo" && this.activeProvider) {
+      if (DEMO) {
+        this.demoPlate = true;
+        this.render();
+        return;
+      }
       this.innerHTML = `${subpageBar("Photo AI", { backHref: "#/home" })}<p class="empty-state" style="padding:1.5rem;">Opening camera…</p>`;
       bindSubpageBack(this, "#/home");
       startPhotoAiFlow({
@@ -128,6 +134,16 @@ export class AnalyzeView extends HTMLElement {
           <p style="color:var(--muted);margin:0 0 0.8rem;">Add a BYOK API key in Settings to analyze food.</p>
           <a class="btn btn--primary" href="#/settings?section=ai">Go to settings</a>
         </div>`;
+      bindSubpageBack(this, "#/home");
+      return;
+    }
+
+    // Demo-only mock plate camera: stands in for the real capture flow until
+    // the driver calls captureMockPhoto(), which runs the scripted analysis.
+    if (this.demoPlate && !this.busy && !this.error) {
+      this.innerHTML = `
+        ${subpageBar(title, { backHref: "#/home" })}
+        ${this.mockPlateCamera()}`;
       bindSubpageBack(this, "#/home");
       return;
     }
@@ -260,6 +276,55 @@ export class AnalyzeView extends HTMLElement {
     });
   }
 
+  /**
+   * Demo-only mock plate camera for the marketing hero (web/app/demo.html):
+   * a drawn plate with salmon, rice, and broccoli inside the real viewfinder,
+   * with focus corners and the animated scan line. Pure CSS/SVG — no camera,
+   * no rAF. The driver captures via captureMockPhoto(), the scripted hand
+   * that submits the note form in the note beat.
+   */
+  mockPlateCamera() {
+    return `
+      <div class="scanner-frame scanner-frame--plate" data-mock-plate>
+        <svg class="mock-plate" viewBox="0 0 320 210" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="mock-plate-rim" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fbfaf6"/>
+              <stop offset="1" stop-color="#d9d4c6"/>
+            </linearGradient>
+            <linearGradient id="mock-salmon" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f0906f"/>
+              <stop offset="1" stop-color="#d96a4f"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="160" cy="112" rx="138" ry="84" fill="url(#mock-plate-rim)"/>
+          <ellipse cx="160" cy="112" rx="112" ry="66" fill="#f5f1e8"/>
+          <ellipse cx="160" cy="112" rx="112" ry="66" fill="none" stroke="#e3dccb" stroke-width="2"/>
+          <ellipse cx="118" cy="118" rx="42" ry="26" fill="#f3e7cd" stroke="#e6d5b2" stroke-width="1"/>
+          <g fill="#7fa86a" stroke="#5f8a52" stroke-width="1">
+            <circle cx="212" cy="98" r="16"/>
+            <circle cx="226" cy="110" r="13"/>
+            <circle cx="204" cy="114" r="12"/>
+            <path d="M208 124c2 8 6 12 12 14" fill="none" stroke-width="3"/>
+          </g>
+          <path d="M96 78c18-10 40-6 52 8l-8 34c-16 8-38 4-48-10z" fill="url(#mock-salmon)"/>
+          <path d="M100 84c10-4 22-2 30 4" stroke="#f5b89f" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="plate-focus" aria-hidden="true"></div>
+        <span class="scanner-sweep" aria-hidden="true"></span>
+        <p class="scanner-status scanner-status--hud" id="plate-status">Framing your plate…</p>
+      </div>
+    `;
+  }
+
+  /** Demo-only: capture the mock plate and run the scripted analysis. */
+  async captureMockPhoto() {
+    if (this.busy) return;
+    this.demoPlate = false;
+    this.pendingNote = "Grilled salmon, rice and broccoli";
+    await this.runAnalysis(this.pendingNote);
+  }
+
   renderOverlay() {
     const phase = this.phase || ANALYSIS_PHASE.PREPARING;
     return `
@@ -333,6 +398,7 @@ export class AnalyzeView extends HTMLElement {
           signal: ac.signal,
           onPhase: (phase) => this.setPhase(phase, generation),
           onPartial: (partial) => this.setPartial(partial, generation),
+          estimate: this.mode === "photo" ? DEMO_PLATE_ESTIMATE : undefined,
         });
         if (generation !== this.analysisGeneration || ac.signal.aborted) return;
         location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(estimate))}`;

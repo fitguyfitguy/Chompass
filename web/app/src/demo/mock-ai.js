@@ -71,19 +71,85 @@ const DEMO_ESTIMATE = Object.freeze({
   omega3G: 0.1,
 });
 
+/** Scripted "Grilled salmon plate" estimate for the plate-scan beat. */
+export const DEMO_PLATE_ESTIMATE = Object.freeze({
+  name: "Grilled salmon, rice & broccoli",
+  mealType: "dinner",
+  calories: 560,
+  proteinG: 38,
+  carbsG: 46,
+  fatG: 24,
+  quantityG: 420,
+  servingUnitOptions: [{ unit: "plate", gramsPerUnit: 420, quantity: 1 }],
+  selectedServingUnit: "plate",
+  selectedServingQuantity: 1,
+  constituents: [
+    {
+      name: "Grilled salmon",
+      emoji: "🐟",
+      calories: 310,
+      protein: 34,
+      carbs: 0,
+      fat: 19,
+      serving_size_grams: 160,
+      unit_options: [],
+    },
+    {
+      name: "Steamed rice",
+      emoji: "🍚",
+      calories: 180,
+      protein: 4,
+      carbs: 40,
+      fat: 0,
+      serving_size_grams: 150,
+      unit_options: [],
+    },
+    {
+      name: "Broccoli",
+      emoji: "🥦",
+      calories: 70,
+      protein: 5,
+      carbs: 11,
+      fat: 1,
+      serving_size_grams: 110,
+      unit_options: [],
+    },
+  ],
+  note: null,
+  source: "ai_estimated",
+  fiberG: 8,
+  sugarG: 3,
+  addedSugarG: 0,
+  saturatedFatG: 4,
+  sodiumMg: 420,
+  potassiumMg: 720,
+  calciumMg: 80,
+  ironMg: 1.8,
+  vitaminCMg: 70,
+  vitaminDMcg: 9,
+  cholesterolMg: 75,
+  omega3G: 1.9,
+});
+
 /**
  * @param {Object} args
  * @param {AbortSignal} [args.signal]
  * @param {(phase: string) => void} [args.onPhase]
  * @param {(partial: import('../lib/ai/partial-json.js').PartialFoodEstimate) => void} [args.onPartial]
+ * @param {Readonly<Record<string, any>>} [args.estimate] which scripted meal to stream
  * @returns {Promise<Record<string, any>>} final estimate (analyzeFoodEntry shape)
  */
-export async function runDemoAnalyze({ signal, onPhase, onPartial }) {
+export async function runDemoAnalyze({
+  signal,
+  onPhase,
+  onPartial,
+  estimate = DEMO_ESTIMATE,
+}) {
   onPhase?.(PHASE_PREPARING);
   await demoDelay(450, signal);
   onPhase?.(PHASE_CALLING_AI);
 
-  const json = JSON.stringify(DEMO_ESTIMATE);
+  const json = JSON.stringify(estimate);
   const assembler = new FoodPartialJsonAssembler();
   const chunkSize = Math.ceil(json.length / 14);
   for (let i = 0; i < json.length; i += chunkSize) {

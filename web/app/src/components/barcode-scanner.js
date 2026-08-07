@@ -66,8 +66,10 @@ export class BarcodeScanner extends HTMLElement {
     this.innerHTML = `
       ${subpageBar("Scan barcode", { backHref: "#/home" })}
       ${
-        this.supported
-          ? `
+        DEMO
+          ? this.demoMockFeed()
+          : this.supported
+            ? `
         <div class="scanner-frame${desktopClass}">
           <video id="scanner-video" autoplay playsinline muted></video>
           <div class="scanner-frame__reticle" aria-hidden="true"></div>
@@ -75,7 +77,7 @@ export class BarcodeScanner extends HTMLElement {
         </div>
         <p id="scanner-status" class="scanner-status">Point the camera at a barcode.</p>
       `
-          : `
+            : `
         <p style="color:var(--muted);font-size:0.9rem;">
           Live barcode scanning isn't supported in this browser. Enter the number printed under the barcode instead.
           Camera access needs HTTPS (or localhost) and a browser that supports getUserMedia.
@@ -100,6 +102,42 @@ export class BarcodeScanner extends HTMLElement {
   }
 
   /**
+   * Demo-only mock camera feed for the marketing hero (web/app/demo.html):
+   * a drawn EAN-13-look barcode on a light card inside the real viewfinder,
+   * with the reticle and an animated scan line sweeping across it. Pure
+   * CSS/SVG — no getUserMedia, no rAF. Detection is triggered by the demo
+   * driver calling lookupAndPrefill() after the sweep, the same scripted
+   * hand that types into the manual form elsewhere.
+   */
+  demoMockFeed() {
+    // "G" = tall guard bar, digits = module width in drawing units.
+    const pattern = "G1G1G2131122131231121G1G1G2131132112312231G1G2G";
+    let x = 8;
+    const rects = [];
+    for (const ch of pattern) {
+      const w = ch === "G" ? 1.6 : ch === "3" ? 2.8 : ch === "2" ? 2 : 1.6;
+      const tall = ch === "G";
+      rects.push(
+        `<rect x="${x.toFixed(1)}" y="${tall ? 6 : 24}" width="${w.toFixed(1)}" height="${tall ? 92 : 66}" />`,
+      );
+      x += w + 1.4;
+    }
+    const svgW = Math.ceil(x + 8);
+    return `
+      <div class="scanner-frame scanner-frame--mock" data-mock-barcode>
+        <svg class="mock-barcode" viewBox="0 0 ${svgW} 104" aria-hidden="true">
+          <rect x="0" y="0" width="${svgW}" height="104" rx="10" fill="#fdfdfa" />
+          ${rects.join("")}
+          <text x="${svgW / 2}" y="100" text-anchor="middle" font-size="9.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#3a3a42" letter-spacing="2.5">0 0 4 9 0 0 0 0 2 8 9 1 1</text>
+        </svg>
+        <div class="scanner-frame__reticle" aria-hidden="true"></div>
+        <span class="scanner-sweep" aria-hidden="true"></span>
+        <p class="scanner-status scanner-status--hud" id="scanner-status">Point the camera at a barcode.</p>
+      </div>
+    `;
+  }
+
+  /**
    * @param {{ deviceId?: string | null }} [opts]
    * @returns {Promise<boolean>}
    */
@@ -114,7 +152,7 @@ export class BarcodeScanner extends HTMLElement {
             purpose: "barcode",
             mobileUx: this.mobileUx,
             deviceId: preferred,
-          })
+          }),
         );
       } catch (firstErr) {
         if (preferred) {
@@ -123,7 +161,7 @@ export class BarcodeScanner extends HTMLElement {
               purpose: "barcode",
               mobileUx: this.mobileUx,
               deviceId: null,
-            })
+            }),
           );
         } else {
           throw firstErr;
@@ -219,17 +257,18 @@ export class BarcodeScanner extends HTMLElement {
 
   async lookupAndPrefill(barcode) {
     const status = this.querySelector("#lookup-status");
-    status.textContent = "Looking up…";
+    if (status) status.textContent = "Looking up…";
     try {
       const prefill = DEMO ? { ...DEMO_PRODUCT } : await lookupBarcode(barcode);
       if (!prefill) {
-        status.textContent = `No product found for ${barcode}. Try manual entry, or edit portions after saving.`;
+        if (status)
+          status.textContent = `No product found for ${barcode}. Try manual entry, or edit portions after saving.`;
         return;
       }
       const q = encodeURIComponent(JSON.stringify({ ...prefill, mealType: "snack", source: "barcode" }));
       location.hash = `#/entry/new?date=${encodeURIComponent(this.date)}&prefill=${q}`;
     } catch (err) {
-      status.textContent = `Lookup failed: ${err.message}`;
+      if (status) status.textContent = `Lookup failed: ${err.message}`;
     }
   }
 }

@@ -33,8 +33,9 @@ const SCENE_LABELS = {
   "ai-stream": "AI analysis streaming — macros filling in",
   "ai-review": "entry review sheet",
   "ai-ring": "calorie ring after logging",
-  "barcode-form": "barcode manual form",
+  "barcode-scan": "mock barcode viewfinder — laser sweep",
   "barcode-card": "Open Food Facts product card",
+  "plate-scan": "mock plate camera — framing the plate",
   "trend-warp-close": "1M weight chart close-up (noisy daily readings)",
   "trend-warp": "weight chart warping 3M→6M→1Y→All",
   "trend-stats": "current/goal/net stats badges",
@@ -244,15 +245,20 @@ async function finishEntryForm({ log, sceneKey }) {
 
 async function beatAi() {
   await openAnalyzeNote("Chicken burrito bowl");
+  await streamAnalyzeOverlay();
+  await finishEntryForm({ log: true, sceneKey: "ai-review" });
+  scene("ai-ring", ".calorie-ring--semi");
+  await sleep(2400); // calorie ring rises
+}
+
+/** Shared overlay sequence for the note and plate beats: quick-cut on the
+    phase pill, then crop the partial card as the macros fill in. */
+async function streamAnalyzeOverlay() {
   await waitFor(() => document.querySelector(".analyze-overlay"), {
     label: "analyze overlay",
   });
-  // Stage 1: the overlay's spinner + phase label are visible content — crop
-  // there immediately instead of holding the now-covered form (no blank).
   scene("ai-stream", ".analyze-overlay__phase");
   await sleep(700);
-  // Stage 2: once three macros resolved, the partial card is near its final
-  // size; re-announce so the camera crops the card as the fields fill in.
   await waitFor(
     () =>
       document.querySelectorAll(".analyze-partial__macro:not(.is-pending)")
@@ -261,27 +267,47 @@ async function beatAi() {
   ).catch(() => {});
   scene("ai-stream", ".analyze-partial");
   await sleep(3200); // phases stream, fields fill, auto-navigates to review
-  await finishEntryForm({ log: true, sceneKey: "ai-review" });
-  scene("ai-ring", ".calorie-ring--semi");
-  await sleep(2400); // calorie ring rises
 }
 
 async function beatBarcode() {
   navigate("#/scan");
-  await waitFor(() => document.querySelector("#manual-barcode-form"), {
-    label: "manual barcode form",
+  await waitFor(() => document.querySelector("[data-mock-barcode]"), {
+    label: "mock barcode viewfinder",
   });
-  await sleep(800);
-  scene("barcode-form", "#manual-barcode-form");
-  const input = /** @type {HTMLInputElement | null} */ (
-    document.querySelector("#barcode")
+  await sleep(600);
+  scene("barcode-scan", ".scanner-frame--mock");
+  await sleep(2100); // a full laser sweep or two
+  const status = document.querySelector("#scanner-status");
+  if (status) status.textContent = "Scanning…";
+  await sleep(700);
+  // The mock feed has no detector — the driver plays it, the same scripted
+  // hand that types into the manual form in the pre-demo flow.
+  const scanner = /** @type {any} */ (
+    document.querySelector("barcode-scanner")
   );
-  if (input) await typeInto(input, "0049000028911", 60);
-  await sleep(400);
-  /** @type {HTMLFormElement | null} */
-  const form = document.querySelector("#manual-barcode-form");
-  form?.requestSubmit();
+  await scanner?.lookupAndPrefill("0049000028911");
   await finishEntryForm({ log: false, sceneKey: "barcode-card" });
+}
+
+async function beatPlate() {
+  navigate(
+    `#/analyze?date=${new Date().toISOString().slice(0, 10)}&mode=photo`,
+  );
+  await waitFor(() => document.querySelector("[data-mock-plate]"), {
+    label: "mock plate camera",
+  });
+  await sleep(600);
+  scene("plate-scan", ".scanner-frame--plate");
+  await sleep(2200); // framing + sweep settle
+  const status = document.querySelector("#plate-status");
+  if (status) status.textContent = "Analyzing…";
+  await sleep(700);
+  const analyze = /** @type {any} */ (document.querySelector("analyze-view"));
+  await analyze?.captureMockPhoto();
+  await streamAnalyzeOverlay();
+  await finishEntryForm({ log: true, sceneKey: "ai-review" });
+  scene("ai-ring", ".calorie-ring--semi");
+  await sleep(2400); // ring rises
 }
 
 // The weight line chart inside the first (weight) card. Shared by the warp
@@ -430,6 +456,7 @@ async function beatRelog() {
 const BEATS = [
   { name: "ai", run: beatAi },
   { name: "barcode", run: beatBarcode },
+  { name: "plate", run: beatPlate },
   { name: "trend", run: beatTrend },
   { name: "relog", run: beatRelog },
 ];

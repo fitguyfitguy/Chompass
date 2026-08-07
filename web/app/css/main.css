@@ -1355,6 +1355,140 @@ body:has(coach-view) .toast {
   text-align: center;
 }
 
+.scanner-frame--mock .mock-barcode,
+.scanner-frame--plate .mock-plate {
+  position: absolute;
+  inset: 12% 10%;
+  width: 80%;
+  height: 76%;
+}
+
+.scanner-frame--mock .mock-barcode {
+  object-fit: contain;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+}
+
+.scanner-sweep {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 14%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--kcal) 65%, #fff) 30%,
+    #fff 50%,
+    color-mix(in srgb, var(--kcal) 65%, #fff) 70%,
+    transparent
+  );
+  box-shadow:
+    0 0 10px 1px color-mix(in srgb, var(--kcal) 55%, transparent),
+    0 0 2px 0 #fff;
+  animation: scanner-sweep 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* The mock barcode card is a short horizontal band (wide EAN aspect), so its
+   laser sweeps just the card; the plate scan crosses the plate's food. */
+.scanner-frame--mock .scanner-sweep {
+  animation-name: scanner-sweep-card;
+}
+
+.scanner-frame--plate .scanner-sweep {
+  animation-name: scanner-sweep-plate;
+}
+
+@keyframes scanner-sweep {
+  0%,
+  100% {
+    top: 14%;
+  }
+  50% {
+    top: 84%;
+  }
+}
+
+@keyframes scanner-sweep-card {
+  0%,
+  100% {
+    top: 36%;
+  }
+  50% {
+    top: 64%;
+  }
+}
+
+@keyframes scanner-sweep-plate {
+  0%,
+  100% {
+    top: 30%;
+  }
+  50% {
+    top: 70%;
+  }
+}
+
+.scanner-status--hud {
+  position: absolute;
+  bottom: 0.65rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 2;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.plate-focus {
+  position: absolute;
+  inset: 12% 10%;
+  pointer-events: none;
+  animation: plate-focus-pulse 2.2s ease-in-out infinite;
+}
+
+.plate-focus::before,
+.plate-focus::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+}
+
+.plate-focus::before {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: 8px;
+}
+
+.plate-focus::after {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+  border-bottom-right-radius: 8px;
+}
+
+@keyframes plate-focus-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    inset: 14% 12%;
+  }
+  50% {
+    opacity: 1;
+    inset: 12% 10%;
+  }
+}
+
 .chart-title {
   font-size: 0.8rem;
   color: var(--muted);
@@ -1952,6 +2086,20 @@ form.entry-form > button.btn--primary,
     animation: none;
     border-top-color: var(--kcal);
     opacity: 0.85;
+  }
+
+  .scanner-sweep {
+    animation: none;
+    top: 50%;
+    opacity: 0.6;
+  }
+
+  .scanner-frame--mock .scanner-sweep {
+    top: 50%;
+  }
+
+  .plate-focus {
+    animation: none;
   }
 }
 
