@@ -65,28 +65,57 @@ export async function seedDiaryEntries(days = 14, { lightToday = false } = {}) {
 
 /**
  * @param {number} [days]
- * @param {{dailyDriftKg?: number}} [opts] daily drift (kg lost per day); the
- *   0.04 default suits short horizons — pass ~0.0045 for multi-year demo
- *   history so the trend reads as a realistic slow loss, not a plummet.
+ * @param {{dailyDriftKg?: number, lossTauDays?: number}} [opts] daily drift
+ *   (kg lost per day) as of TODAY — the past flattens out exponentially with
+ *   time constant [lossTauDays], so multi-year history reads as a realistic
+ *   journey (slow start, current focused loss phase) instead of a plummet.
+ *   0.04 with the default τ suits short horizons; pass ~0.12 (≈0.84 kg/wk,
+ *   the classic safe upper bound) for the 2y demo hero.
  */
-export async function seedWeightHistory(days = 42, { dailyDriftKg = 0.04 } = {}) {
-  let weightKg = 84;
+export async function seedWeightHistory(days = 42, { dailyDriftKg = 0.04, lossTauDays = 150 } = {}) {
+  // Realistic daily weigh-ins: slow trend + autocorrelated day-to-day
+  // water-retention noise (AR(1), φ≈0.6 → σ≈0.28 kg), rounded to the 0.1 kg
+  // a real scale reports. Noise must be added BEFORE rounding — the old
+  // seeder's drift (~0.005 kg/day) sat ~20× below the 0.1 kg resolution, so
+  // a month of readings collapsed into a straight line.
+  const noisePhi = 0.6;
+  const noiseAmpKg = 0.38; // uniform ε ∈ ±0.38 kg → σ_total ≈ 0.28 kg
+  const decay = Math.exp(-days / lossTauDays);
+  const scale = dailyDriftKg * lossTauDays * decay; // total kg lost over the span
+  let prevNoise = 0;
   for (let i = days; i >= 0; i--) {
-    weightKg -= dailyDriftKg + Math.random() * (dailyDriftKg * 0.6); // gentle downward trend, matches goal:"lose" above
+    const t = days - i; // days elapsed since the oldest reading
+    const baseline = 84 - scale * (Math.exp(t / lossTauDays) - 1);
+    const noise = noisePhi * prevNoise + (Math.random() * 2 - 1) * noiseAmpKg;
+    prevNoise = noise;
     const date = new Date();
     date.setDate(date.getDate() - i);
-    await weights.put({ id: crypto.randomUUID(), date: date.toISOString(), weightKg: Math.round(weightKg * 10) / 10 });
+    await weights.put({ id: crypto.randomUUID(), date: date.toISOString(), weightKg: Math.round((baseline + noise) * 10) / 10 });
   }
 }
 
-/** @param {number} [days] @param {{dailyDriftPct?: number}} [opts] */
-export async function seedBodyFatHistory(days = 42, { dailyDriftPct = 0.00003 } = {}) {
-  let bodyFatPct = 0.24;
+/**
+ * @param {number} [days]
+ * @param {{dailyDriftPct?: number, lossTauDays?: number}} [opts] daily drift
+ *   (body-fat fraction lost per day) as of TODAY, same exponential shape as
+ *   seedWeightHistory.
+ */
+export async function seedBodyFatHistory(days = 42, { dailyDriftPct = 0.00003, lossTauDays = 150 } = {}) {
+  // Same AR(1) treatment as weight: slow drift + autocorrelated daily
+  // fluctuation (σ≈0.33%), rounded to the 0.1% a real scale reports.
+  const noisePhi = 0.6;
+  const noiseAmpPct = 0.0045; // uniform ε ∈ ±0.45% → σ_total ≈ 0.33%
+  const decay = Math.exp(-days / lossTauDays);
+  const scale = dailyDriftPct * lossTauDays * decay;
+  let prevNoise = 0;
   for (let i = days; i >= 0; i--) {
-    bodyFatPct -= dailyDriftPct * (0.7 + Math.random() * 0.6);
+    const t = days - i;
+    const baseline = 0.24 - scale * (Math.exp(t / lossTauDays) - 1);
+    const noise = noisePhi * prevNoise + (Math.random() * 2 - 1) * noiseAmpPct;
+    prevNoise = noise;
     const date = new Date();
     date.setDate(date.getDate() - i);
-    await bodyFat.put({ id: crypto.randomUUID(), date: date.toISOString(), bodyFatPercent: Math.round(bodyFatPct * 1000) / 1000 });
+    await bodyFat.put({ id: crypto.randomUUID(), date: date.toISOString(), bodyFatPercent: Math.round((baseline + noise) * 1000) / 1000 });
   }
 }
 
