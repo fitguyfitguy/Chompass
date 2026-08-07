@@ -39,6 +39,7 @@ import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
 import app.chompass.models.MicronutrientValues
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -246,6 +247,55 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private var analysisInFlight = false
     private var analysisGeneration = 0
 
+    /**
+     * Same-day hub-chip cache so reopening the Log sheet is instant after the
+     * first open. Invalidated on every diary/favorites emission (see the init
+     * combine) so a fresh save always shows the new recents.
+     */
+    private var quickRelogCache: List<FoodEntry>? = null
+    private var quickRelogCacheDay: LocalDate? = null
+    private var quickRelogCacheEpoch = 0
+    /** Bumped on any diary/favorites change (init combine) — invalidates the cache. */
+    private var quickRelogEpoch = 0
+    /** Shared in-flight load so the FAB prefetch and the sheet LaunchedEffect never run twice. */
+    private var quickRelogLoad: CompletableDeferred<List<FoodEntry>>? = null
+
+    /** Warm hub recents while the Log sheet animates open (called from the FAB tap). */
+    fun prefetchQuickRelog() {
+        viewModelScope.launch { loadQuickRelogCached() }
+    }
+
+    /** Hub chips for the AddFoodSheet; cached per day, refreshed after any diary change. */
+    suspend fun quickRelogTemplatesCached(): List<FoodEntry> = loadQuickRelogCached()
+
+    private suspend fun loadQuickRelogCached(): List<FoodEntry> {
+        val today = LocalDate.now()
+        if (quickRelogCacheDay == today && quickRelogCacheEpoch == quickRelogEpoch) {
+            quickRelogCache?.let { return it }
+        }
+        // Dedupe concurrent loads (FAB prefetch + sheet LaunchedEffect overlap).
+        quickRelogLoad?.let { return it.await() }
+        val deferred = CompletableDeferred<List<FoodEntry>>()
+        quickRelogLoad = deferred
+        val startEpoch = quickRelogEpoch
+        viewModelScope.launch {
+            // Degrade to an empty chips row on failure — never hang the sheet.
+            val fresh = runCatching {
+                withContext(Dispatchers.Default) {
+                    container.foodRepository.quickRelogTemplates(limit = 6)
+                }
+            }.getOrDefault(emptyList())
+            quickRelogLoad = null
+            if (startEpoch == quickRelogEpoch) {
+                quickRelogCache = fresh
+                quickRelogCacheDay = today
+                quickRelogCacheEpoch = startEpoch
+            }
+            deferred.complete(fresh)
+        }
+        return deferred.await()
+    }
+
     private data class AnalysisStart(
         val generation: Int,
         val previousDraftImage: String?,
@@ -418,6 +468,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             container.prefs.foodLogSortOrder,
             _selectedDate
         ) { p, dayEntries, favKeys, sortOrder, day ->
+            // Any diary/favorites change makes the hub-chip cache stale.
+            quickRelogEpoch++
+            quickRelogCache = null
             _ui.value.copy(
                 profile = p,
                 date = day,
@@ -946,19 +999,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         },
                     )
                 )
-                // Commit the confirming AI-entry draft snapshot atomically with
-                // the diary row (one DataStore edit instead of a draft-write +
-                // entry-write pair), then a small edit clears the draft now that
-                // the row exists.
-                container.foodRepository.addEntry(
-                    entry,
-                    draft = PendingFoodAnalysisDraft(
-                        analysis = analysis,
-                        imageFilename = filename,
-                        source = entrySource,
-                    ),
-                )
-                container.prefs.setPendingFoodAnalysisDraft(null)
+                // Commit the diary row and clear the consumed pending draft in
+                // one DataStore edit (crash before the edit restores the review
+                // sheet from the pre-commit draft; crash after leaves the row and
+                // no stale draft — strictly better than the old two-edit window
+                // that could restore a review which double-logs on re-save).
+                container.foodRepository.addEntry(entry, clearDraft = true, writeHealth = false)
+                // Health Connect mirroring is the slowest save step (IPC). Run it
+                // in the background so the review sheet can dismiss as soon as the
+                // diary row is on disk instead of after the HC round-trip.
+                viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
                 _ui.value = _ui.value.copy(
                     pendingAnalysis = null,
                     pendingImageBytes = null,
@@ -1123,7 +1173,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         )
                     )
                 }
-                built.forEach { container.foodRepository.addEntry(it) }
+                // One batched DataStore edit for the whole meal instead of one
+                // full-file write per ingredient; Health Connect mirrors in the
+                // background so the sheet dismisses right after the local commit.
+                container.foodRepository.addEntries(built, writeHealth = false)
+                viewModelScope.launch {
+                    built.forEach { container.foodRepository.mirrorEntryToHealth(it) }
+                }
                 _ui.value = _ui.value.copy(
                     progressiveMeal = null,
                     showProgressiveMealSheet = false,
@@ -1319,11 +1375,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             _ui.value = _ui.value.copy(saving = true)
             try {
                 // Upstream #149 / Android 6.0: reused copies log at now + current meal
-                // (not the source entry's clock time / meal bucket).
-                entries.forEach { entry ->
-                    container.foodRepository.addEntry(
-                        entry.duplicatedForLogging(timestampForSelectedDay())
-                    )
+                // (not the source entry's clock time / meal bucket). One batched
+                // DataStore edit instead of one full-file write per copied row;
+                // Health Connect mirrors in the background.
+                val duplicated = entries.map { it.duplicatedForLogging(timestampForSelectedDay()) }
+                container.foodRepository.addEntries(duplicated, writeHealth = false)
+                viewModelScope.launch {
+                    duplicated.forEach { container.foodRepository.mirrorEntryToHealth(it) }
                 }
             } finally {
                 _ui.value = _ui.value.copy(saving = false)

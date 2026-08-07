@@ -90,7 +90,6 @@ fun HomeScreen(container: AppContainer) {
     val ui by vm.ui.collectAsState()
     val ctx = LocalContext.current
     val weekStartsOnMonday by container.prefs.weekStartsOnMonday.collectAsState(initial = true)
-    val allEntries by container.foodRepository.entries.collectAsState(initial = emptyList())
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -529,7 +528,11 @@ fun HomeScreen(container: AppContainer) {
         // bar, so the Scaffold FAB slot would sit hidden underneath it. Mirrors the iOS
         // ContentView FAB: .overlay(alignment: .bottomTrailing) + .padding(.bottom).
         FloatingActionButton(
-            onClick = { showAddFoodSheet = true },
+            onClick = {
+                // Warm the hub recents while the sheet animates open.
+                vm.prefetchQuickRelog()
+                showAddFoodSheet = true
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
@@ -586,7 +589,7 @@ fun HomeScreen(container: AppContainer) {
 
     LaunchedEffect(showAddFoodSheet) {
         if (showAddFoodSheet) {
-            hubRecentMeals = container.foodRepository.quickRelogTemplates(limit = 6)
+            hubRecentMeals = vm.quickRelogTemplatesCached()
         }
     }
 
@@ -751,8 +754,8 @@ fun HomeScreen(container: AppContainer) {
 
     if (showCopyFromDay) {
         CopyFromDaySheet(
+            container = container,
             targetDate = ui.date,
-            allEntries = allEntries,
             isSaving = ui.saving,
             onCopy = { entries ->
                 if (!ui.saving) {

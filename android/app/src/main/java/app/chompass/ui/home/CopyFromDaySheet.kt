@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
@@ -43,18 +45,28 @@ import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.theme.AppColors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CopyFromDaySheet(
+    container: AppContainer,
     targetDate: LocalDate,
-    allEntries: List<FoodEntry>,
     isSaving: Boolean = false,
     onCopy: (List<FoodEntry>) -> Unit,
     onDismiss: () -> Unit
 ) {
+    // Full-history entries load lazily on open — this sheet is the only consumer,
+    // so HomeScreen no longer keeps the whole log collected (which used to decode
+    // every month bucket on every save anywhere in the app).
+    var allEntries by remember { mutableStateOf<List<FoodEntry>?>(null) }
+    LaunchedEffect(Unit) {
+        allEntries = withContext(Dispatchers.Default) { container.foodRepository.entries.first() }
+    }
     // Dismissible by downward drag; only block while copying entries.
     val state = rememberChompassSheetState(busy = isSaving)
     var sourceDate by remember(targetDate) { mutableStateOf(targetDate.minusDays(1)) }
@@ -63,8 +75,9 @@ internal fun CopyFromDaySheet(
     val dateFmt = remember { LocaleFormat.shortDate() }
     val sourceEntries = remember(allEntries, sourceDate) {
         allEntries
-            .filter { it.timestamp.atZone(zone).toLocalDate() == sourceDate }
-            .sortedByDescending { it.timestamp }
+            ?.filter { it.timestamp.atZone(zone).toLocalDate() == sourceDate }
+            ?.sortedByDescending { it.timestamp }
+            .orEmpty()
     }
     val groups = remember(sourceEntries) {
         foodLogMealGroups(sourceEntries, FoodLogSortOrder.STANDARD)
@@ -125,7 +138,23 @@ internal fun CopyFromDaySheet(
                 }
             }
 
-            if (sourceEntries.isEmpty()) {
+            if (allEntries == null) {
+                item {
+                    SectionCardWrapper(isFirst = true, isLast = true) {
+                        Column(
+                            Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 28.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.copy_from_loading),
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
+            } else if (sourceEntries.isEmpty()) {
                 item {
                     SectionCardWrapper(isFirst = true, isLast = true) {
                         Column(
