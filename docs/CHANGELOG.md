@@ -6,6 +6,7 @@ All notable changes to Chompass are documented here.
 
 ### Added
 
+- **Website live hero demo upgrades**: wide screens get a **split stage** — the app on the left (phone-proportioned 620×1330 canvas, bigger than before), a live per-scene description panel on the right; the canvas is no longer an 826px-wide stretched layout, so the app looks like a real phone screen. The full-phone frame now appears **once per page load** (intro) instead of every loop, the home route renders immediately and seeds the demo database in the background so the stage fades in on a painted app screen (no blank first paint), and the AI-analysis beat **quick-cuts** to the analysis overlay (short camera duration instead of panning across the dark full-screen overlay) then crops the final-size partial card — eliminating the dark "blank screens" during streaming. Scenes whose targets appear late are re-resolved by the camera (sheets no longer flash into an unreadable frame), tall review sheets are framed top-first, and the Progress beat is now a **warp-speed weight sequence** — close-up on noisy daily weigh-ins that rapidly expands 1M → 3M → 6M → 1Y → All across 2 years of history, ending on the current/goal/net stats and the weight-forecast card.
 - **Enter custom value** for every wheel-picked goal (calories, macros, keto net carbs, optional nutrients): type any non-negative number instead of scrolling the preset range — e.g. a 10,000 IU (250 mcg) vitamin D goal (Android).
 - Serving-quantity fields accept **relative edits**: `+20` adds 20 to the current amount, `-10` subtracts (results at or below zero are ignored), in any unit — grams, slice, cup (Android).
 - Add Food **Search food** sheet (Android): type to search **Open Food Facts** (live), **USDA FoodData Central** (offline), and the **Swiss Food Composition Database** (offline, en/de/fr/it names) with per-source chips and a provenance badge on every hit. Picking a hit prefills the review sheet with full micronutrients and the source stamped on the diary entry (`search` source; `grounding.sourceKind` = `usda` / `openFoodFacts` / `swiss`).
@@ -211,7 +212,7 @@ All notable changes to Chompass are documented here.
 
 ### Migration from NoFUD
 
-- **Android:** the application ID changed from `org.codeberg.fitguy.nofud` to `app.chompass`, so Chompass installs as a *new app*. In NoFUD: Settings → Export (diary JSON + body metrics JSON). Install Chompass, then Settings → Import both files. Old NoFUD export files import unchanged. Uninstall NoFUD when done.
+- **Android:** the application ID changed from `org.codeberg.fitguy.nofud` to `app.chompass`, so Chompass installs as a _new app_. In NoFUD: Settings → Export (diary JSON + body metrics JSON). Install Chompass, then Settings → Import both files. Old NoFUD export files import unchanged. Uninstall NoFUD when done.
 - **PWA:** the web app moved to `https://chompass.app/app/`. Browser storage does not carry across domains — export from the old PWA, import at the new address, then remove the old installation.
 - Old `nofud://add-meal` and upstream `fudai://` share links continue to open in Chompass.
 
@@ -465,6 +466,7 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 ## [1.5.1] - 2026-07-08
 
 ### Changed
+
 - Publish both `play` and `fdroid` flavor APK assets on Codeberg releases (with `Chompass-play-*` and `Chompass-fdroid-*` filenames).
 
 ## [1.5.0] - 2026-07-08

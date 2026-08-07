@@ -2,7 +2,7 @@
 // injection, which fights the no-bundler decision for this app). Caches only
 // the static app shell, cache-first, versioned; never touches user data
 // (IndexedDB/Cache API stay cleanly separated).
-const CACHE_NAME = "chompass-shell-v7";
+const CACHE_NAME = "chompass-shell-v8";
 
 const SHELL_ASSETS = [
   "./",
@@ -70,7 +70,9 @@ const SHELL_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS)),
+  );
 });
 
 // Wait in the "waiting" state (instead of skipWaiting() on install) so an
@@ -84,8 +86,12 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((names) => Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n))))
-      .then(() => self.clients.claim())
+      .then((names) =>
+        Promise.all(
+          names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)),
+        ),
+      )
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -93,6 +99,9 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return; // never cache cross-origin (AI providers, Open Food Facts)
+  // Never cache the marketing-hero demo shell (demo.html + src/demo/*): it is
+  // regenerated with the site and cache-first here would serve a stale driver.
+  if (url.pathname.includes("/demo")) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
@@ -100,10 +109,12 @@ self.addEventListener("fetch", (event) => {
       return fetch(event.request).then((response) => {
         if (response.ok) {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          caches
+            .open(CACHE_NAME)
+            .then((cache) => cache.put(event.request, copy));
         }
         return response;
       });
-    })
+    }),
   );
 });

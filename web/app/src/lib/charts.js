@@ -22,7 +22,7 @@ export function downsamplePoints(points, maxPoints = 60) {
 
 /**
  * @param {{label: string, value: number, day?: string}[]} points chronological, ascending
- * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean, trend?: {label: string, value: number, day?: string}[]|null, trendColor?: string}} [opts]
+ * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean, trend?: {label: string, value: number, day?: string}[]|null, trendColor?: string, rangeLabel?: string|null}} [opts]
  * @returns {string} inline SVG markup
  */
 export function lineChartSvg(points, opts = {}) {
@@ -36,7 +36,10 @@ export function lineChartSvg(points, opts = {}) {
   const interactive = opts.interactive !== false;
   const series = downsamplePoints(points);
   /** @type {{label: string, value: number, day?: string}[]} */
-  const trendSeries = opts.trend && opts.trend.length ? opts.trend : [];
+  // Downsample the trend series too: callers pass per-day trend points (2y
+  // history = 700+), and mapping them onto the 60-point raw x grid without
+  // downsampling collapses them into a vertical hatched block.
+  const trendSeries = opts.trend && opts.trend.length ? downsamplePoints(opts.trend) : [];
 
   if (series.length === 0) {
     return `<svg viewBox="0 0 ${width} ${height}" class="chart-svg"><text x="${width / 2}" y="${height / 2}" text-anchor="middle" class="chart-empty">No data yet</text></svg>`;
@@ -114,7 +117,12 @@ export function lineChartSvg(points, opts = {}) {
       ${hits}
       <text x="${padding}" y="12" class="chart-label">${formatNum(max)}${unit}</text>
       <text x="${padding}" y="${height - 6}" class="chart-label">${formatNum(min)}${unit}</text>
-      <text x="${width - padding}" y="12" text-anchor="end" class="chart-label">${escapeHtml(series[0].label)} → ${escapeHtml(series[series.length - 1].label)}</text>
+      <text x="${width - padding}" y="12" text-anchor="end" class="chart-label">${escapeHtml(
+        opts.rangeLabel ||
+          (series.length >= 2
+            ? `${series[0].label} → ${series[series.length - 1].label}`
+            : ""),
+      )}</text>
     </svg>`;
 }
 

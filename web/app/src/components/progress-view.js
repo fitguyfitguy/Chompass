@@ -85,6 +85,7 @@ export class ProgressView extends HTMLElement {
         value: w.bodyFatPercent > 1 ? w.bodyFatPercent : w.bodyFatPercent * 100,
         id: w.id,
         raw: w,
+        day: w.date.slice(0, 10),
       }));
 
     const totalsByDate = new Map();
@@ -186,6 +187,7 @@ export class ProgressView extends HTMLElement {
             goal: goalWeight,
             trend: hasTrend ? trendPoints.map(({ label, value, day }) => ({ label, value, day })) : null,
             trendColor: "var(--protein)",
+            rangeLabel: yearSpanLabel(weightPoints),
           }
         )}
         ${
@@ -229,7 +231,7 @@ export class ProgressView extends HTMLElement {
         </div>
         ${lineChartSvg(
           bfPoints.map(({ label, value }) => ({ label, value })),
-          { color: "var(--fat)", unit: "%" }
+          { color: "var(--fat)", unit: "%", rangeLabel: yearSpanLabel(bfPoints) }
         )}`
         }
         <button type="button" class="btn btn--ghost" style="margin-top:0.6rem;" data-toggle-bfh>${this.showBodyFatHistory ? "Hide" : "Show"} history (${allBf.length})</button>
@@ -431,6 +433,25 @@ function shiftDate(iso, days) {
 function shortDate(iso) {
   const d = iso.includes("T") ? new Date(iso) : new Date(`${iso}T00:00:00`);
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+/**
+ * Year-inclusive range label when the plotted span crosses calendar years
+ * (e.g. the All range with 2y of history); otherwise undefined so charts keep
+ * their compact "Aug 6 → Aug 6" style.
+ * @param {{label: string, day?: string}[]} points
+ */
+function yearSpanLabel(points) {
+  const day = (p) => p.day ?? p.label;
+  if (points.length < 2) return undefined;
+  const first = day(points[0]);
+  const last = day(points[points.length - 1]);
+  if (first.slice(0, 4) === last.slice(0, 4)) return undefined;
+  const fmt = (iso) => {
+    const d = iso.includes("T") ? new Date(iso) : new Date(`${iso}T00:00:00`);
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  };
+  return `${fmt(first)} → ${fmt(last)}`;
 }
 
 function fmt(n, signed = false) {

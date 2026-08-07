@@ -397,66 +397,279 @@ a:hover {
   background: #000;
 }
 
-/* Live hero: the real PWA demo in a phone frame (replaces the video via
-   assets/js/hero.js when JS + IntersectionObserver are available). */
-.hero-phone {
+/* Live hero: the real PWA demo under a CSS camera (zooms/crops into the app
+   as the demo driver announces scenes). Replaces the video via assets/js/hero.js
+   when JS + IntersectionObserver are available. The phone canvas is a
+   phone-proportioned 620×1330 layout so every zoom stays at or below 1:1
+   raster (crisp) while looking like a real phone screen. Wide screens get a
+   split stage: the app left, a per-scene description panel right. */
+.hero-stage {
   position: relative;
-  width: min(24rem, 88%);
-  aspect-ratio: 413 / 918;
-  margin: 0 auto;
-  padding: 2.5rem 0;
-  border-radius: 2.25rem;
-  border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--bg-weak-hover), var(--bg));
-  box-shadow:
-    0 0 0 6px rgba(16, 15, 21, 0.9),
-    0 1.5rem 4rem rgba(0, 0, 0, 0.5),
-    0 0 4.5rem rgba(92, 196, 143, 0.08);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(
+      120% 90% at 50% 8%,
+      rgba(92, 196, 143, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      85% 65% at 80% 85%,
+      rgba(0, 107, 94, 0.16),
+      transparent 65%
+    ),
+    var(--bg);
   opacity: 0;
+}
+
+.hero-stage.is-ready {
   animation: hero-in 0.6s ease-out forwards;
 }
 
-.hero-phone--ready {
-  animation:
-    hero-in 0.6s ease-out forwards,
-    hero-float 9s ease-in-out 0.8s infinite;
+.hero-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 -4rem 6rem rgba(0, 0, 0, 0.55);
 }
 
-.hero-phone iframe {
+/* The camera cell: fills the stage below the split breakpoint. */
+.hero-stage__main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-camera {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transform-origin: 0 0; /* camera math (translate+scale) is relative to the top-left */
+  pointer-events: none;
+}
+
+.hero-phone-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 620px;
+  height: 1330px;
+  overflow: hidden;
+  border-radius: 2.4rem;
+}
+
+.hero-phone-canvas iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
-  border-radius: 1.8rem;
-  overflow: hidden;
+  display: block;
+  pointer-events: none; /* decorative: no clicks, no scrolling inside the demo */
+  touch-action: none;
+  user-select: none;
+}
+
+.hero-bezel {
+  position: absolute;
+  inset: 0;
+  border-radius: 2.4rem;
+  border: 1px solid var(--line);
+  box-shadow:
+    0 0 0 8px rgba(16, 15, 21, 0.92),
+    0 1.5rem 4rem rgba(0, 0, 0, 0.5),
+    inset 0 0 2.5rem rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.hero-bezel::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34%;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(16, 15, 21, 0.95);
+  border: 1px solid var(--line-weak);
+}
+
+.hero-callout {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5%;
+  transform: translateX(-50%) translateY(0.4rem);
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(15, 14, 19, 0.74);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-strong);
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+  pointer-events: none;
+}
+
+.hero-callout.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Wide screens: split stage — the app left, live scene copy right. */
+.hero-copy-panel {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .hero-stage {
+    aspect-ratio: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(19rem, 0.85fr);
+    gap: 1rem 2.5rem;
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .hero-stage__main {
+    height: min(74vh, 740px);
+    aspect-ratio: 3 / 4;
+    max-width: 100%;
+    min-width: 0;
+    justify-self: center;
+  }
+
+  .hero-callout {
+    display: none;
+  }
+
+  .hero-copy-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem 1rem 0.5rem 0;
+    align-self: center;
+  }
+
+  .hero-copy-panel__kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+  }
+
+  .hero-copy-panel__title {
+    margin: 0;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: var(--text-strong);
+  }
+
+  .hero-copy-panel__title.swap {
+    animation: copy-in 0.45s ease;
+  }
+
+  .hero-copy-panel__desc {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-weak);
+  }
+
+  .hero-copy-panel__desc.swap {
+    animation: copy-in 0.45s ease;
+  }
+
+  .hero-copy-panel__features {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .hero-copy-panel__features li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .hero-copy-panel__mark {
+    color: var(--teal);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .hero-copy-panel__cta {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: 2.6rem;
+    margin-top: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radius);
+    background: var(--bg-strong);
+    color: var(--text-inverted);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .hero-copy-panel__cta:hover {
+    background: var(--bg-strong-hover);
+    color: var(--text-inverted);
+  }
+}
+
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes hero-in {
   from {
     opacity: 0;
-    transform: translateY(0.75rem) scale(0.98);
+    transform: scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
-@keyframes hero-float {
-  0%,
-  100% {
-    transform: translateY(0);
+@media (max-width: 700px) {
+  .hero-stage {
+    aspect-ratio: 3 / 4;
   }
-  50% {
-    transform: translateY(-0.5rem);
+  .hero-callout {
+    font-size: 0.8rem;
+    bottom: 2%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-phone,
-  .hero-phone--ready {
+  .hero-stage.is-ready {
     animation: hero-in 0.3s ease-out forwards;
+  }
+  .hero-callout {
+    transition: none;
   }
 }
 

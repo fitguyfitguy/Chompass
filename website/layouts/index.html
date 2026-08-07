@@ -60,10 +60,6 @@
           {{- if $poster }} poster="{{ "video/chompass-poster.jpg" | relURL }}"{{ end }}>
           Your browser does not support the video tag.
         </video>
-        <template>
-          <iframe src="{{ "app/demo.html" | relURL }}" title="" aria-hidden="true" tabindex="-1"
-            loading="lazy" scrolling="no" allow="autoplay"></iframe>
-        </template>
         {{- else -}}
         <div class="video-fallback" aria-hidden="true">
           <img src="{{ "screenshots/home.png" | relURL }}" alt="" width="200" height="433" />
@@ -71,6 +67,31 @@
           <img src="{{ "screenshots/progress.png" | relURL }}" alt="" width="200" height="433" />
         </div>
         {{- end -}}
+        <template>
+          <div class="hero-stage">
+            <div class="hero-stage__main">
+              <div class="hero-camera">
+                <div class="hero-phone-canvas">
+                  <iframe src="{{ "app/demo.html" | relURL }}" title="" aria-hidden="true" tabindex="-1"
+                    loading="lazy" scrolling="no" allow="autoplay"></iframe>
+                  <div class="hero-bezel" aria-hidden="true"></div>
+                </div>
+              </div>
+              <p class="hero-callout" aria-hidden="true"></p>
+            </div>
+            <div class="hero-copy-panel" aria-hidden="true">
+              <p class="hero-copy-panel__kicker">Live demo</p>
+              <h3 class="hero-copy-panel__title"></h3>
+              <p class="hero-copy-panel__desc"></p>
+              <ul class="hero-copy-panel__features">
+                <li><span class="hero-copy-panel__mark" aria-hidden="true">[*]</span>Privacy-first: diary, weight, and AI keys stay on your device</li>
+                <li><span class="hero-copy-panel__mark" aria-hidden="true">[*]</span>Bring your own AI key, or run Gemma&nbsp;4 on-device (Android)</li>
+                <li><span class="hero-copy-panel__mark" aria-hidden="true">[*]</span>Same diary JSON across the Android app and this PWA</li>
+              </ul>
+              <a class="hero-copy-panel__cta" href="{{ "app/" | relURL }}">Try the web app</a>
+            </div>
+          </div>
+        </template>
       </section>
 
       <section class="lander__what" aria-labelledby="what-heading">
