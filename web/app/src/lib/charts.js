@@ -21,6 +21,20 @@ export function downsamplePoints(points, maxPoints = 60) {
 }
 
 /**
+ * Calendar epoch day (UTC) for an ISO date (yyyy-MM-dd or full timestamp).
+ * Returns null for unparseable input so callers can fall back to index space.
+ * @param {string | undefined} iso
+ * @returns {number | null}
+ */
+export function epochDay(iso) {
+  if (!iso) return null;
+  const day = String(iso).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+  const [y, m, d] = day.split("-").map(Number);
+  return Math.floor(Date.UTC(y, m - 1, d) / 86_400_000);
+}
+
+/**
  * @param {{label: string, value: number, day?: string}[]} points chronological, ascending
  * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean, trend?: {label: string, value: number, day?: string}[]|null, trendColor?: string, rangeLabel?: string|null, grid?: boolean}} [opts]
  * @returns {string} inline SVG markup
@@ -45,8 +59,8 @@ export function lineChartSvg(points, opts = {}) {
     : "";
   /** @type {{label: string, value: number, day?: string}[]} */
   // Downsample the trend series too: callers pass per-day trend points (2y
-  // history = 700+), and mapping them onto the 60-point raw x grid without
-  // downsampling collapses them into a vertical hatched block.
+  // history = 700+). x positions are date-based below, so this only bounds
+  // the path length.
   const trendSeries = opts.trend && opts.trend.length ? downsamplePoints(opts.trend) : [];
 
   if (series.length === 0) {
@@ -63,30 +77,48 @@ export function lineChartSvg(points, opts = {}) {
 
   const yFor = (v) => height - padding - ((v - min) / range) * (height - padding * 2);
 
+  // Place points on the real calendar axis when the series carries day
+  // stamps (Android maps x from timestamps: (t - tStart) / tRange). Index
+  // space is only a fallback for series without days (e.g. body-fat).
+  const dayOf = (p) => epochDay(p.day);
+  const firstDay = series.length ? dayOf(series[0]) : null;
+  const lastDay = series.length ? dayOf(series[series.length - 1]) : null;
+  const dateBased = firstDay != null && lastDay != null && lastDay > firstDay;
+  const spanDays = dateBased ? lastDay - firstDay : 0;
+  const xForDay = (day) =>
+    dateBased ? padding + ((day - firstDay) / spanDays) * (width - padding * 2) : NaN;
+
   const coords = series.map((p, i) => {
-    const x = padding + i * stepX;
-    const y = yFor(p.value);
-    return [x, y];
+    const d = dayOf(p);
+    const x = d != null && dateBased ? xForDay(d) : padding + i * stepX;
+    return [x, yFor(p.value)];
   });
 
-  // Place trend points on the same x mapping as the (possibly downsampled) raw series.
+  // Trend overlay shares the same date axis — never label/index matching:
+  // year-less labels collide across years (a 2026 "Aug 7" trend point matched
+  // the 2024 raw point, and the dashed line's last segment shot back to x=24).
   const trendCoords = [];
-  for (const p of trendSeries) {
-    let idx = -1;
-    for (let i = 0; i < series.length; i++) {
-      if (series[i].label === p.label || (p.day && series[i].day === p.day)) {
-        idx = i;
-        break;
+  for (let j = 0; j < trendSeries.length; j++) {
+    const p = trendSeries[j];
+    const d = dayOf(p);
+    let x;
+    if (d != null && dateBased) {
+      x = xForDay(d);
+    } else if (series.length > 0) {
+      // No usable days: nearest raw point by day, else even index spacing.
+      let idx = -1;
+      for (let i = 0; i < series.length; i++) {
+        if (p.day && series[i].day === p.day) { idx = i; break; }
       }
+      if (idx < 0) {
+        idx = trendSeries.length > 1
+          ? Math.round((j / Math.max(1, trendSeries.length - 1)) * (series.length - 1))
+          : 0;
+      }
+      x = padding + idx * stepX;
+    } else {
+      continue;
     }
-    if (idx < 0 && series.length > 0) {
-      // Fall back to even spacing across trend length when labels diverge after downsample.
-      idx = trendSeries.length > 1
-        ? Math.round((trendCoords.length / Math.max(1, trendSeries.length - 1)) * (series.length - 1))
-        : 0;
-    }
-    if (idx < 0) continue;
-    const x = padding + idx * stepX;
     trendCoords.push([x, yFor(p.value)]);
   }
 
