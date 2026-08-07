@@ -397,6 +397,16 @@ a:hover {
   background: #000;
 }
 
+/* Shown instead of the demo when the built page is opened via file://. */
+.hero-file-note {
+  margin: 0;
+  padding: 4rem 1.5rem;
+  text-align: center;
+  color: var(--text-weak);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
 /* Live hero: the real PWA demo under a CSS camera (zooms/crops into the app
    as the demo driver announces scenes). Replaces the video via assets/js/hero.js
    when JS + IntersectionObserver are available. The phone canvas is a

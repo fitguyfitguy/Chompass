@@ -72,7 +72,7 @@
             <div class="hero-stage__main">
               <div class="hero-camera">
                 <div class="hero-phone-canvas">
-                  <iframe src="{{ "app/demo.html" | relURL }}" title="" aria-hidden="true" tabindex="-1"
+                  <iframe src="{{ printf "%s?v=%s" ("app/demo.html" | relURL) .Site.Params.version }}" title="" aria-hidden="true" tabindex="-1"
                     loading="lazy" scrolling="no" allow="autoplay"></iframe>
                   <div class="hero-bezel" aria-hidden="true"></div>
                 </div>
@@ -92,6 +92,20 @@
             </div>
           </div>
         </template>
+        <script>
+          (function () {
+            var host = document.querySelector("[data-live-hero]");
+            if (!host || location.protocol !== "file:") return;
+            var note = document.createElement("p");
+            note.className = "hero-file-note";
+            note.style.cssText =
+              "margin:0;padding:4rem 1.5rem;text-align:center;color:#8f8a94;background:#0f0e13;font:16px/1.5 system-ui,sans-serif;";
+            note.textContent =
+              "The live demo needs a web server — open http://localhost:1313/Chompass/ instead.";
+            host.textContent = "";
+            host.appendChild(note);
+          })();
+        </script>
       </section>
 
       <section class="lander__what" aria-labelledby="what-heading">

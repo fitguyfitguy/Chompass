@@ -1,6 +1,24 @@
 (function () {
   "use strict";
 
+  // The stage embeds the PWA through absolute URLs. When the built page is
+  // opened straight from disk (file://), those resolve to file:// references
+  // the browser blocks — so short-circuit with a plain-language hint instead
+  // of letting the iframe throw "may not load or link to file:///" errors.
+  if (location.protocol === "file:") {
+    var fileHost = document.querySelector("[data-live-hero]");
+    if (fileHost && !fileHost.querySelector(".hero-file-note")) {
+      var fileVideo = fileHost.querySelector("video");
+      if (fileVideo) fileVideo.pause();
+      var note = document.createElement("p");
+      note.className = "hero-file-note";
+      note.textContent =
+        "The live demo needs a web server — open http://localhost:1313/Chompass/ instead.";
+      fileHost.appendChild(note);
+    }
+    return;
+  }
+
   // Cinematic live hero. Replaces the 6 MB usage mp4 with the real PWA demo
   // (web/app/demo.html) rendered into a phone-proportioned canvas, plus a CSS
   // "camera" that zooms/crops into the app UI as the demo driver announces
@@ -31,7 +49,7 @@
   // the title + editable fields land in frame instead of a mid-sheet crop.
   var FIT_TOP_SCENES = { "ai-review": true, "barcode-card": true };
   var RETRY_INTERVAL = 300;
-  var RETRY_MAX = 9; // ~2.7s: covers sheet transitions and slow first renders
+  var RETRY_MAX = 12; // ~3.6s: covers sheet transitions and slow first renders
   // Per-scene camera durations: the AI overlay is opaque, so the camera
   // quick-cuts to it instead of panning across darkness; ring shots settle.
   var SCENE_DURATIONS = {
@@ -316,6 +334,7 @@
     if (revealed || !heroRoot) return;
     revealed = true;
     heroRoot.classList.add("is-ready");
+    heroLog("stage revealed — demo home painted");
   }
 
   /** Reveal on the first scene, the home having painted, or a hard fallback. */
@@ -343,6 +362,17 @@
     }
   }
 
+  // Realtime tracing: [hero] lines log what the camera is actually doing for
+  // each scene the demo announces — resolved zoom, retry, or fallback to rest
+  // — so the on-screen view can be matched against the demo timeline.
+  function heroLog(msg) {
+    console.log("[hero] " + msg);
+  }
+
+  function sceneLabel(key) {
+    return CALLOUTS[key] || (key === "rest" ? "rest (hero crop)" : key);
+  }
+
   function applyScene(scene, duration) {
     if (REDUCED) {
       // Static: snap to the target without animating.
@@ -362,18 +392,35 @@
     var duration = SCENE_DURATIONS[key] || 2200;
     var scene = resolveScene(key, selector, index);
     if (scene.resolved || !selector) {
+      heroLog(
+        'scene "' +
+          sceneLabel(key) +
+          '" — camera ' +
+          scene.target.s.toFixed(2) +
+          "x",
+      );
       applyScene(scene, duration);
       return;
     }
     // The target was announced before it settled (sheet transition, slow first
     // render). Re-resolve on an interval; fall back to the hero-crop rest only
     // after the retry window so sheets never flash into an unreadable frame.
+    heroLog('scene "' + sceneLabel(key) + '" — target not ready, retrying…');
     var tries = 0;
     retryTimer = setInterval(function () {
       tries += 1;
       var retried = resolveScene(key, selector, index);
       if (retried.resolved || tries >= RETRY_MAX) {
         clearRetry();
+        if (!retried.resolved) {
+          heroLog(
+            'scene "' +
+              sceneLabel(key) +
+              '" — target missing after ' +
+              tries +
+              " tries, camera falls back to rest",
+          );
+        }
         applyScene(retried, duration);
       }
     }, RETRY_INTERVAL);
@@ -462,50 +509,58 @@
   lazy.observe(hero);
 
   // Pause the demo while scrolled away or backgrounded; resume when back.
+  // Pausing is debounced: embedded webviews (IDE previews) can report the
+  // hero as non-intersecting on flapping geometry, which would otherwise
+  // stall the demo mid-scene. Only pause after the hero has been out of
+  // view for the whole grace window.
+  var pauseTimer = null;
+  var PAUSE_GRACE_MS = 1000;
+  function sendPause() {
+    try {
+      iframe.contentWindow.postMessage(
+        { source: "chompass-hero", type: "pause" },
+        window.location.origin,
+      );
+    } catch (e) {
+      /* ignore */
+    }
+    pause();
+    heroLog("paused — hero out of view");
+  }
+  function sendResume() {
+    try {
+      iframe.contentWindow.postMessage(
+        { source: "chompass-hero", type: "play" },
+        window.location.origin,
+      );
+    } catch (e) {
+      /* ignore */
+    }
+    resume();
+    heroLog("resumed");
+  }
   var active = new IntersectionObserver(
     function (entries) {
       entries.forEach(function (entry) {
         if (!iframe) return;
-        if (entry.isIntersecting) {
-          try {
-            iframe.contentWindow.postMessage(
-              { source: "chompass-hero", type: "play" },
-              window.location.origin,
-            );
-          } catch (e) {
-            /* ignore */
-          }
-          resume();
-        } else {
-          try {
-            iframe.contentWindow.postMessage(
-              { source: "chompass-hero", type: "pause" },
-              window.location.origin,
-            );
-          } catch (e) {
-            /* ignore */
-          }
-          pause();
-        }
+        clearTimeout(pauseTimer);
+        if (entry.isIntersecting) sendResume();
+        else pauseTimer = setTimeout(sendPause, PAUSE_GRACE_MS);
       });
     },
     { threshold: 0 },
   );
   active.observe(hero);
 
+  // Tab-hidden pauses the demo too, but debounced: webviews can flap
+  // document.hidden. Real tab switches are only delayed by the grace window.
+  var visibilityTimer = null;
   document.addEventListener("visibilitychange", function () {
     if (!iframe) return;
-    var hidden = document.hidden;
-    try {
-      iframe.contentWindow.postMessage(
-        { source: "chompass-hero", type: hidden ? "pause" : "play" },
-        window.location.origin,
-      );
-    } catch (e) {
-      /* ignore */
-    }
-    if (hidden) pause();
-    else resume();
+    clearTimeout(visibilityTimer);
+    if (document.hidden)
+      visibilityTimer = setTimeout(sendPause, PAUSE_GRACE_MS);
+    else sendResume();
   });
 
   var resizeTimer = null;

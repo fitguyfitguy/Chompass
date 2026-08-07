@@ -1,5 +1,8 @@
 // @ts-check
-import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
+import {
+  listConfiguredProviders,
+  loadProviderKey,
+} from "../lib/ai/key-storage.js";
 import { fileToJpegBase64 } from "../lib/ai/image.js";
 import {
   ANALYSIS_PHASE,
@@ -19,7 +22,9 @@ import { runDemoAnalyze } from "../demo/mock-ai.js";
 const MAX_PHOTOS = 10;
 
 /** Demo hero mode (web/app/demo.html): scripted AI reply, no provider key. */
-const DEMO = typeof window !== "undefined" && Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
+const DEMO =
+  typeof window !== "undefined" &&
+  Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
 
 export class AnalyzeView extends HTMLElement {
   constructor() {
@@ -44,7 +49,10 @@ export class AnalyzeView extends HTMLElement {
     const appPrefs = await prefs.load();
     /** @type {keyof typeof import('../lib/ai/providers.js').PROVIDERS | null} */
     this.activeProvider = null;
-    if (appPrefs.primaryAiProvider && this.providers.includes(/** @type {any} */ (appPrefs.primaryAiProvider))) {
+    if (
+      appPrefs.primaryAiProvider &&
+      this.providers.includes(/** @type {any} */ (appPrefs.primaryAiProvider))
+    ) {
       this.activeProvider = /** @type {any} */ (appPrefs.primaryAiProvider);
     } else {
       this.activeProvider = this.providers[0] ?? null;
@@ -55,7 +63,9 @@ export class AnalyzeView extends HTMLElement {
     this.busy = false;
     this.error = "";
     this.phase = null;
-    this.pendingNote = params.get("prefill") ? decodeURIComponent(params.get("prefill") || "") : "";
+    this.pendingNote = params.get("prefill")
+      ? decodeURIComponent(params.get("prefill") || "")
+      : "";
     this.notePrefill = this.pendingNote;
 
     // Photo deep-link: hand off to in-app camera / multi-photo flow (Android parity).
@@ -126,7 +136,9 @@ export class AnalyzeView extends HTMLElement {
       this.innerHTML = `
         ${subpageBar(title, { backHref: "#/home" })}
         ${this.renderOverlay()}`;
-      this.querySelector(".subpage-bar")?.classList.add("subpage-bar--above-overlay");
+      this.querySelector(".subpage-bar")?.classList.add(
+        "subpage-bar--above-overlay",
+      );
       bindSubpageBack(this, "#/home");
       return;
     }
@@ -140,7 +152,10 @@ export class AnalyzeView extends HTMLElement {
       ${
         this.previewUrls.length
           ? `<div class="analyze-thumbs">${this.previewUrls
-              .map((u) => `<img class="analyze-preview" src="${u}" alt="Selected food photo" />`)
+              .map(
+                (u) =>
+                  `<img class="analyze-preview" src="${u}" alt="Selected food photo" />`,
+              )
               .join("")}</div>`
           : ""
       }
@@ -186,7 +201,7 @@ export class AnalyzeView extends HTMLElement {
                  <button type="button" data-recent='${escapeAttr(JSON.stringify(r))}' ${inputsDisabled}>
                    <strong>${escapeHtml(r.name)}</strong><br/>
                    <span class="recents-meta">${Math.round(r.calories)} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
-                 </button>`
+                 </button>`,
                  )
                  .join("")}
              </div>`
@@ -200,7 +215,9 @@ export class AnalyzeView extends HTMLElement {
       requestAnimationFrame(() => {
         /** @type {HTMLTextAreaElement | null} */
         const note = this.querySelector("#note");
-        note?.focus();
+        // preventScroll keeps focus from scrolling the marketing page when
+        // the hero demo opens this view inside its iframe.
+        note?.focus({ preventScroll: true });
       });
     }
 
@@ -215,13 +232,19 @@ export class AnalyzeView extends HTMLElement {
     });
     this.querySelector("[data-voice]")?.addEventListener("click", () => {
       if (this.busy) return;
-      const note = /** @type {HTMLTextAreaElement | null} */ (this.querySelector("#note"));
+      const note = /** @type {HTMLTextAreaElement | null} */ (
+        this.querySelector("#note")
+      );
       speech.start((text) => {
         if (note) note.value = note.value ? `${note.value} ${text}` : text;
       });
     });
-    this.querySelector("#analyze-form")?.addEventListener("submit", (ev) => this.onAnalyze(ev));
-    this.querySelector("[data-retry]")?.addEventListener("click", () => this.retryAnalysis());
+    this.querySelector("#analyze-form")?.addEventListener("submit", (ev) =>
+      this.onAnalyze(ev),
+    );
+    this.querySelector("[data-retry]")?.addEventListener("click", () =>
+      this.retryAnalysis(),
+    );
     this.querySelector("[data-discard]")?.addEventListener("click", () => {
       this.error = "";
       this.render();
@@ -256,12 +279,17 @@ export class AnalyzeView extends HTMLElement {
     ev?.preventDefault();
     if (this.busy) return;
 
-    const noteEl = /** @type {HTMLTextAreaElement | null} */ (this.querySelector("#note"));
+    const noteEl = /** @type {HTMLTextAreaElement | null} */ (
+      this.querySelector("#note")
+    );
     const text = (noteEl?.value ?? this.pendingNote).trim();
     this.pendingNote = text;
 
     if (!text && !this.files.length) {
-      this.error = this.mode === "note" ? "Add a short description." : "Add a photo or a short description.";
+      this.error =
+        this.mode === "note"
+          ? "Add a short description."
+          : "Add a photo or a short description.";
       this.render();
       return;
     }
@@ -271,11 +299,16 @@ export class AnalyzeView extends HTMLElement {
 
   async retryAnalysis() {
     if (this.busy) return;
-    const noteEl = /** @type {HTMLTextAreaElement | null} */ (this.querySelector("#note"));
+    const noteEl = /** @type {HTMLTextAreaElement | null} */ (
+      this.querySelector("#note")
+    );
     const text = (noteEl?.value ?? this.pendingNote).trim();
     this.pendingNote = text;
     if (!text && !this.files.length) {
-      this.error = this.mode === "note" ? "Add a short description." : "Add a photo or a short description.";
+      this.error =
+        this.mode === "note"
+          ? "Add a short description."
+          : "Add a photo or a short description.";
       this.render();
       return;
     }
@@ -305,22 +338,32 @@ export class AnalyzeView extends HTMLElement {
         location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(estimate))}`;
         return;
       }
-      const config = await loadProviderKey(/** @type {import('../lib/ai/key-storage.js').ProviderId} */ (this.activeProvider));
+      const config = await loadProviderKey(
+        /** @type {import('../lib/ai/key-storage.js').ProviderId} */ (
+          this.activeProvider
+        ),
+      );
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
-      if (!config) throw new Error("Provider key missing. Re-add it in Settings.");
+      if (!config)
+        throw new Error("Provider key missing. Re-add it in Settings.");
 
       const offPromise = this.files.length
-        ? (this.setPhase(ANALYSIS_PHASE.LOOKING_UP_BARCODE, generation), collectOffPromptContext(this.files))
+        ? (this.setPhase(ANALYSIS_PHASE.LOOKING_UP_BARCODE, generation),
+          collectOffPromptContext(this.files))
         : Promise.resolve("");
       const imagesPromise = (async () => {
         const images = [];
         for (const file of this.files) {
-          if (generation !== this.analysisGeneration || ac.signal.aborted) return images;
+          if (generation !== this.analysisGeneration || ac.signal.aborted)
+            return images;
           images.push(await fileToJpegBase64(file));
         }
         return images;
       })();
-      const [productContext, images] = await Promise.all([offPromise, imagesPromise]);
+      const [productContext, images] = await Promise.all([
+        offPromise,
+        imagesPromise,
+      ]);
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
 
       const estimate = await analyzeFoodEntry({
@@ -354,11 +397,21 @@ export class AnalyzeView extends HTMLElement {
 }
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
 }
 
 function escapeAttr(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/'/g, "&#39;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/'/g, "&#39;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;");
 }
 
 customElements.define("analyze-view", AnalyzeView);
