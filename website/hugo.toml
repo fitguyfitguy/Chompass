@@ -40,3 +40,6 @@ summaryLength = 20
   [[module.mounts]]
     source = '../docs/screenshots'
     target = 'static/screenshots'
+  [[module.mounts]]
+    source = '../web/app'
+    target = 'static/app'

@@ -48,7 +48,7 @@
   scripts.build-debug.exec = "cd android && ./gradlew :app:assembleDebug";
   scripts.install-debug.exec = "./scripts/install_debug.sh";
   scripts.build-release.exec = "cd android && ./gradlew :app:assembleRelease";
-  scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/";
+  scripts.site-serve.exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/ -d /tmp/chompass-hugo-public";
   scripts.site-build.exec = "hugo --minify -s website";
   scripts.site-deploy.exec = "./scripts/deploy_pages.sh";
   scripts.pwa-test.exec = "cd web && node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js";
@@ -128,8 +128,8 @@
   };
 
   tasks."site:serve" = {
-    exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/";
-    description = "Preview the Codeberg Pages Hugo site locally";
+    exec = "hugo server -D -s website --baseURL http://localhost:1313/Chompass/ -d /tmp/chompass-hugo-public";
+    description = "Preview the Codeberg Pages Hugo site locally (publishDir outside the repo so the static-app mount cannot trigger rebuild loops)";
   };
 
   tasks."site:build" = {

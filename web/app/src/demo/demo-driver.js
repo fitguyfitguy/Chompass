@@ -23,7 +23,26 @@ const ROUTES = {
   progress: "<progress-view></progress-view>",
 };
 
-const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Realtime tracing: every scene the driver announces is logged to the console
+// with a plain-language description of what the app should be showing, so the
+// hero's camera view can be matched against the demo timeline while watching.
+const SCENE_LABELS = {
+  intro: "full phone intro",
+  rest: "pull back to hero crop (rest)",
+  "ai-typing": "AI note being typed",
+  "ai-stream": "AI analysis streaming — macros filling in",
+  "ai-review": "entry review sheet",
+  "ai-ring": "calorie ring after logging",
+  "barcode-form": "barcode manual form",
+  "barcode-card": "Open Food Facts product card",
+  "trend-warp-close": "1M weight chart close-up (noisy daily readings)",
+  "trend-warp": "weight chart warping 3M→6M→1Y→All",
+  "trend-stats": "current/goal/net stats badges",
+  "trend-bodyfat": "body-fat chart",
+  "trend-forecast": "weight forecast card",
+  "relog-chips": "relog favorites sheet",
+  "relog-ring": "calorie ring after relog",
+};
 
 /** @type {boolean} */
 let paused = false;
@@ -33,6 +52,7 @@ let resumeListeners = [];
 function setPaused(next) {
   if (next === paused) return;
   paused = next;
+  console.log(next ? "[demo] ⏸ paused — sequence stalls" : "[demo] ▶ resumed");
   if (!paused) {
     const listeners = resumeListeners;
     resumeListeners = [];
@@ -63,7 +83,7 @@ function sleep(ms) {
  */
 async function waitFor(
   fn,
-  { timeout = 7000, step = 80, label = "condition" } = {},
+  { timeout = 9000, step = 80, label = "condition" } = {},
 ) {
   const start = performance.now();
   while (performance.now() - start < timeout) {
@@ -75,6 +95,7 @@ async function waitFor(
 
 /** @param {string} hash */
 function navigate(hash) {
+  console.log(`[demo] route → ${hash}`);
   if (location.hash === hash) renderRoute();
   else location.hash = hash;
 }
@@ -101,7 +122,10 @@ window.addEventListener("hashchange", renderRoute);
 
 // Register pause/play listeners at module scope: the site may send "pause"
 // before seeding finishes (e.g. the hero is scrolled away during first load).
-document.addEventListener("visibilitychange", () => setPaused(document.hidden));
+// The driver intentionally does NOT pause on its own visibilitychange —
+// embedded webviews can report the iframe as hidden while it is plainly on
+// screen (Cursor/VS Code previews do this), which would stall the sequence
+// forever. The parent page owns pause/resume via postMessage.
 window.addEventListener("message", (ev) => {
   const data = /** @type {{source?: string, type?: string}} */ (ev.data);
   if (data?.source !== "chompass-hero") return;
@@ -119,6 +143,9 @@ window.addEventListener("message", (ev) => {
  */
 function scene(key, selector, index = 0) {
   try {
+    console.log(
+      `[demo] ▶ scene ${key ?? "rest"} — ${SCENE_LABELS[key] ?? "pull back to hero crop"}`,
+    );
     parent.postMessage(
       { source: "chompass-hero", type: "scene", key, selector, index },
       "*",
@@ -140,7 +167,10 @@ function setValue(el, text) {
 
 /** Type progressively so the hero reads like real typing. */
 async function typeInto(el, text, perCharMs = 34) {
-  el.focus();
+  // preventScroll: focusing would otherwise scroll the PARENT marketing page
+  // (and the iframe) to reveal the input — the hero camera must be the only
+  // thing that moves.
+  el.focus({ preventScroll: true });
   for (const ch of text) {
     setValue(el, el.value + ch);
     await sleep(perCharMs);
@@ -275,7 +305,14 @@ function cardIndex(pred) {
 
 /** Center an element in the phone viewport so the camera crop lands on it. */
 function centerOn(el) {
-  el?.scrollIntoView({ block: "center", behavior: "auto" });
+  if (!el) return;
+  // Manual scroll of ONLY the iframe document: scrollIntoView would also
+  // scroll every ancestor scroll container — including the marketing page —
+  // jumping the hero out of the user's view during the warp beat.
+  const rect = el.getBoundingClientRect();
+  const doc = el.ownerDocument;
+  doc.documentElement.scrollTop +=
+    rect.top + rect.height / 2 - doc.documentElement.clientHeight / 2;
 }
 
 /**
@@ -287,7 +324,7 @@ async function clickRange(id) {
   const before = document.querySelector(CHART_SEL);
   clickFirst(`[data-range="${id}"]`);
   await waitFor(() => document.querySelector(CHART_SEL) !== before, {
-    timeout: 6000,
+    timeout: 9000,
     label: `range ${id} chart`,
   });
   await sleep(280); // let the new chart paint
@@ -397,23 +434,12 @@ const BEATS = [
   { name: "relog", run: beatRelog },
 ];
 
-/** Render one static, fully settled home frame (reduced-motion mode). */
-async function renderStaticFrame() {
-  navigate("#/home");
-  window.scrollTo({ top: 0 });
-  await waitFor(() => document.querySelector(".fab"), {
-    label: "home fab",
-  }).catch(() => {});
-  scene("intro");
-  await sleep(900);
-}
-
 export async function startDemo() {
-  if (REDUCED_MOTION) {
-    await renderStaticFrame();
-    return;
-  }
-
+  // Reduced motion does NOT stop the demo: the parent camera (hero.js) snaps
+  // between scenes instead of animating when the visitor prefers reduced
+  // motion (e.g. Firefox on Windows with system animations off), so the hero
+  // still tells the full story as a static slideshow. Freezing on a single
+  // frame made the hero look broken there — it never got past the intro.
   // First paint NOW: render the home route immediately, then seed the demo
   // database in the background and re-render once it lands. The marketing
   // page reveals the stage as soon as the home has painted, so the hero never
@@ -425,6 +451,7 @@ export async function startDemo() {
   await sleep(600);
   for (let loop = 0; ; loop++) {
     try {
+      console.log(`[demo] ═══ loop ${loop} start ═══`);
       await reseedDiary();
       await sleep(200);
       if (loop === 0) {
@@ -435,11 +462,14 @@ export async function startDemo() {
         scene("rest");
         await sleep(900);
       }
-      for (const beat of BEATS) {
+      for (const [beatIndex, beat] of BEATS.entries()) {
+        console.log(
+          `[demo] ▶ beat ${beat.name} (${beatIndex + 1}/${BEATS.length}) · loop ${loop}`,
+        );
         try {
           await beat.run();
         } catch (err) {
-          console.warn(`demo beat "${beat.name}" failed, skipping`, err);
+          console.warn(`[demo] ⚠ beat "${beat.name}" failed, skipping`, err);
           scene("rest");
           navigate("#/home");
           await sleep(500);
@@ -447,6 +477,9 @@ export async function startDemo() {
       }
       scene("rest");
       await sleep(2200); // camera pulls back before the next loop
+      console.log(
+        `[demo] ═══ loop ${loop} complete — rest 2.2s, next loop ═══`,
+      );
     } catch (err) {
       console.warn("demo loop aborted, restarting", err);
       await sleep(1000);
