@@ -2,16 +2,25 @@
 
 All notable changes to Chompass are documented here.
 
-## [Unreleased]
+## [3.8.0] - 2026-08-07
 
 ### Added
 
+- **Calorie hero upgrades** (Android): the Home ring now shows an **activity-earned tail** and an **active-burn arc** with ramp progress toward a typical day's burn, and a new info button opens a **calorie budget explanation dialog** that shows how today's budget is composed (also reachable from the diary gauge).
 - **Live demo hero: mock scanning viewfinders** — the barcode beat now plays a drawn EAN-style code under a sweeping laser line in the real viewfinder before the Open Food Facts product card lands, and a new **plate-scan beat** frames a drawn salmon-and-rice plate, captures it, and streams the scripted analysis (macros fill in live, review-first, ring rise). Both feeds are pure CSS/SVG inside the demo shell — no camera, no video file — and pause with the hero and freeze under reduced motion (web).
 - **Website live hero demo upgrades**: wide screens get a **split stage** — the app on the left (phone-proportioned 620×1330 canvas, bigger than before), a live per-scene description panel on the right; the canvas is no longer an 826px-wide stretched layout, so the app looks like a real phone screen. The full-phone frame now appears **once per page load** (intro) instead of every loop, the home route renders immediately and seeds the demo database in the background so the stage fades in on a painted app screen (no blank first paint), and the AI-analysis beat **quick-cuts** to the analysis overlay (short camera duration instead of panning across the dark full-screen overlay) then crops the final-size partial card — eliminating the dark "blank screens" during streaming. Scenes whose targets appear late are re-resolved by the camera (sheets no longer flash into an unreadable frame), tall review sheets are framed top-first, and the Progress beat is now a **warp-speed weight sequence** — close-up on noisy daily weigh-ins that rapidly expands 1M → 3M → 6M → 1Y → All across 2 years of history, ending on the current/goal/net stats and the weight-forecast card. The PWA source is now a **Hugo static mount** so the dev server never serves a stale `public/app/`, and opening the built page from `file://` shows a "needs a web server" hint instead of blocked-resource security errors.
 - **Enter custom value** for every wheel-picked goal (calories, macros, keto net carbs, optional nutrients): type any non-negative number instead of scrolling the preset range — e.g. a 10,000 IU (250 mcg) vitamin D goal (Android).
 - Serving-quantity fields accept **relative edits**: `+20` adds 20 to the current amount, `-10` subtracts (results at or below zero are ignored), in any unit — grams, slice, cup (Android).
 - Add Food **Search food** sheet (Android): type to search **Open Food Facts** (live), **USDA FoodData Central** (offline), and the **Swiss Food Composition Database** (offline, en/de/fr/it names) with per-source chips and a provenance badge on every hit. Picking a hit prefills the review sheet with full micronutrients and the source stamped on the diary entry (`search` source; `grounding.sourceKind` = `usda` / `openFoodFacts` / `swiss`).
 - Offline food databases now ship in all Android builds (~5.3 MB): the USDA Foundation+FNDDS SQLite (was debug-only) and a new Swiss SQLite built from the federal naehrwertdaten.ch CSVs (`scripts/build_swiss_food_index.py`). Grounded entry stays disabled.
+
+### Changed
+
+- **Faster food entry** (Android): the review sheet dismisses right after the local commit — the diary row and cleared pending draft commit in one DataStore edit and the Health Connect mirror runs in the background; progressive-meal **Log meal**, **Copy From Day**, and recipe logging batch into a single DataStore edit instead of one full-file write per row. Hub recents/frequents read the diary snapshot once, aggregate off the main thread, prefetch on the Add Food tap, and cache per day.
+
+### Fixed
+
+- **ADD_ACTIVE gauge base** (Android): with **Energy Burn Goals** on, the sedentary base split and fallback now use the measured Health Connect active average instead of the PAL estimate (`tdee − bmr`), so the Home ring and widget budget converge to the stored goal on a typical day instead of a deflated value (e.g. 1448 instead of ~1903).
 
 ## [3.7.0] - 2026-08-03
 
