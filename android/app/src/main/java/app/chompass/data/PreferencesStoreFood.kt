@@ -68,13 +68,17 @@ internal fun PreferencesStore.foodEntriesForMonthImpl(month: YearMonth): Flow<Li
      * When [draft] is non-null it is written in the same transaction, so the
      * crash-safety snapshot of a confirming AI entry commits atomically with
      * the diary row instead of costing a second full-file DataStore write.
+     * When [clearDraft] is true the pending draft key is removed in the same
+     * transaction — used at Log-commit time so clearing the consumed draft
+     * never costs a second full-file DataStore write.
      */
 internal suspend fun PreferencesStore.applyFoodEntryBucketChangesImpl(
         upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
         draft: PendingFoodAnalysisDraft? = null,
+        clearDraft: Boolean = false,
     ) {
-        if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty() && draft == null) return
+        if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty() && draft == null && !clearDraft) return
         dataStore.edit { prefs ->
             for (month in upsertsByMonth.keys + removalIdsByMonth.keys) {
                 mergeFoodEntryMonth(prefs, month, upsertsByMonth[month].orEmpty(), removalIdsByMonth[month].orEmpty())
@@ -82,6 +86,8 @@ internal suspend fun PreferencesStore.applyFoodEntryBucketChangesImpl(
             if (draft != null) {
                 prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT] =
                     json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
+            } else if (clearDraft) {
+                prefs.remove(Keys.PENDING_FOOD_ANALYSIS_DRAFT)
             }
         }
     }

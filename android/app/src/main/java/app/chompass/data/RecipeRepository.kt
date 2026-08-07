@@ -48,7 +48,8 @@ class RecipeRepository(
     suspend fun logRecipe(recipe: Recipe, logDate: Instant, mealType: MealType = recipe.mealType): List<UUID> {
         val recipeLogId = UUID.randomUUID()
         val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId) }
-        entries.forEach { foodRepository.addEntry(it) }
+        // One batched DataStore edit instead of one full-file write per ingredient.
+        foodRepository.addEntries(entries)
         return entries.map { it.id }
     }
 }

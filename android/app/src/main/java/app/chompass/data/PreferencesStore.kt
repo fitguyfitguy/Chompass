@@ -215,7 +215,8 @@ class PreferencesStore(private val appContext: Context) {
         upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
         draft: PendingFoodAnalysisDraft? = null,
-    ) = applyFoodEntryBucketChangesImpl(upsertsByMonth, removalIdsByMonth, draft)
+        clearDraft: Boolean = false,
+    ) = applyFoodEntryBucketChangesImpl(upsertsByMonth, removalIdsByMonth, draft, clearDraft)
     suspend fun replaceAllFoodEntries(entries: List<FoodEntry>) = replaceAllFoodEntriesImpl(entries)
     val favoriteKeys: Flow<Set<String>> get() = favoriteKeysImpl
     suspend fun setFavoriteKeys(keys: Set<String>) = setFavoriteKeysImpl(keys)

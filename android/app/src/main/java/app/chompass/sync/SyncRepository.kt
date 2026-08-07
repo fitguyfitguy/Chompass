@@ -153,6 +153,21 @@ class SyncRepository(
         prefs.setSyncRevisions(current)
     }
 
+    /**
+     * Batched [touch] for bulk saves (progressive-meal Log meal / Copy From
+     * Day): one revisions-map write instead of one full-file DataStore edit
+     * per entry.
+     */
+    suspend fun touchMany(updates: List<Pair<UUID, String>>) {
+        if (updates.isEmpty() || !syncConfigured()) return
+        val now = Instant.now().toString()
+        val current = prefs.syncRevisions.first().toMutableMap()
+        updates.forEach { (id, kind) ->
+            current[id.toString()] = SyncRevision(updatedAt = now, deletedAt = null, kind = kind)
+        }
+        prefs.setSyncRevisions(current)
+    }
+
     suspend fun tombstone(id: UUID, kind: String) {
         if (!syncConfigured()) return
         val now = Instant.now().toString()

@@ -77,25 +77,68 @@ class FoodRepository(
             }
         }
 
-    suspend fun addEntry(entry: FoodEntry, draft: PendingFoodAnalysisDraft? = null) {
+    suspend fun addEntry(
+        entry: FoodEntry,
+        draft: PendingFoodAnalysisDraft? = null,
+        clearDraft: Boolean = false,
+        writeHealth: Boolean = true,
+    ) {
         // Persistence commit — only this entry's month bucket is re-serialized
         // and written, not the whole food log, then the Health Connect IPC insert.
-        // An optional confirming AI-entry draft snapshot commits in the same edit
-        // so the save never costs an extra full-file DataStore write.
+        // An optional confirming AI-entry draft snapshot (or its removal via
+        // [clearDraft]) commits in the same edit so the save never costs an extra
+        // full-file DataStore write.
         PerfLog.measure("save", "dataStore", "month=${entry.month()}") {
             prefs.applyFoodEntryBucketChanges(
                 upsertsByMonth = mapOf(entry.month() to listOf(entry)),
                 draft = draft,
+                clearDraft = clearDraft,
             )
         }
         sync?.touch(entry.id, "food")
-        if (shouldSyncHealth()) {
+        if (writeHealth && shouldSyncHealth()) {
             PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
         }
         // One-time organic review moment: the first successful food log (iOS parity).
         if (!prefs.reviewPromptedAfterFirstLog.first()) {
             prefs.setReviewPromptedAfterFirstLog(true)
             ReviewPrompter.requestReview.value = true
+        }
+    }
+
+    /**
+     * Bulk add (progressive-meal Log meal / Copy From Day) in a single DataStore
+     * edit (one full-file write regardless of how many entries share the month)
+     * plus one batched sync-revision edit. Health Connect mirroring is skipped
+     * when [writeHealth] is false — callers then run [mirrorEntryToHealth] in the
+     * background after the UI has already dismissed.
+     */
+    suspend fun addEntries(entries: List<FoodEntry>, writeHealth: Boolean = true) {
+        if (entries.isEmpty()) return
+        PerfLog.measure("save", "dataStore", "count=${entries.size}") {
+            prefs.applyFoodEntryBucketChanges(upsertsByMonth = entries.groupBy { it.month() })
+        }
+        sync?.touchMany(entries.map { it.id to "food" })
+        if (writeHealth && shouldSyncHealth()) {
+            PerfLog.measure("save", "healthWrite", "count=${entries.size}") {
+                entries.forEach { health?.writeNutrition(it) }
+            }
+        }
+        // One-time organic review moment: the first successful food log (iOS parity).
+        if (!prefs.reviewPromptedAfterFirstLog.first()) {
+            prefs.setReviewPromptedAfterFirstLog(true)
+            ReviewPrompter.requestReview.value = true
+        }
+    }
+
+    /**
+     * Health Connect mirror write for a row already committed locally, gated on
+     * the user's sync toggle. Safe to run in the background — failures are
+     * swallowed by the writer (best-effort mirror, same as the inline path).
+     */
+    suspend fun mirrorEntryToHealth(entry: FoodEntry) {
+        if (shouldSyncHealth()) {
+            PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
         }
     }
 
@@ -441,14 +484,24 @@ class FoodRepository(
      * window) first, favorites soft-boosted within each bucket, then fill
      * from snacks / other recents / frequent. De-duplicated by
      * [FoodEntry.favoriteKey].
+     *
+     * Reads the diary snapshot once and reuses it for both the recents and
+     * frequents windows — the previous version decoded the full history twice
+     * (once per window), which was the slowest part of opening the Log sheet.
      */
-    suspend fun quickRelogTemplates(limit: Int = 6): List<FoodEntry> {
+    suspend fun quickRelogTemplates(limit: Int = 6): List<FoodEntry> = PerfLog.measure("hubOpen", "quickRelog", "limit=$limit") {
         migratedFavorites()
         val favorites = prefs.favoriteFoodEntries.first()
-        val recents = recent()
-        val frequents = frequent().map { it.template }
+        val all = prefs.foodEntries.first()
+        val now = Instant.now()
+        val recents = recentFoodTemplates(
+            all.filter { !it.timestamp.isBefore(now.minus(30, ChronoUnit.DAYS)) },
+        )
+        val frequents = frequentFoodGroups(
+            all.filter { !it.timestamp.isBefore(now.minus(90, ChronoUnit.DAYS)) },
+        ).map { it.template }
         val currentMeal = prefs.mealSchedule.first().mealTypeAt(LocalTime.now())
-        return quickRelogFoodTemplates(favorites, recents, frequents, currentMeal, limit = limit)
+        quickRelogFoodTemplates(favorites, recents, frequents, currentMeal, limit = limit)
     }
 }
 

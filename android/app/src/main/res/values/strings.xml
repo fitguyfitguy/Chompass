@@ -1195,6 +1195,7 @@
     <string name="copy_all">Copy All</string>
     <string name="section_source">Source</string>
     <string name="copy_no_foods_on_day">No foods logged on this day</string>
+    <string name="copy_from_loading">Loading food log…</string>
     <plurals name="copy_foods_to">
         <item quantity="one">Copy %1$d food to %2$s</item>
         <item quantity="other">Copy %1$d foods to %2$s</item>
