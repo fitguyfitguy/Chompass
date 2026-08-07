@@ -46,10 +46,9 @@
           </a>
         </div>
 
-        <div class="hero-actions">
-          <a class="btn-cta" href="{{ "app/" | relURL }}">Open the web app</a>
-          <a class="btn-link" href="{{ .Site.Params.obtainium }}">Get it on Obtainium</a>
-        </div>
+        <p class="install-note">
+          The web app installs like a native app on desktop, phone, and tablet. It covers diary, progress charts, BYOK AI, and shared JSON export. The Android app adds Health Connect, widgets, notifications, and on-device Gemma&nbsp;4.
+        </p>
       </section>
 
       {{- $usageMp4 := fileExists "static/video/chompass-usage.mp4" -}}
@@ -80,7 +79,6 @@
               <p class="hero-callout" aria-hidden="true"></p>
             </div>
             <div class="hero-copy-panel" aria-hidden="true">
-              <p class="hero-copy-panel__kicker">Live demo</p>
               <h3 class="hero-copy-panel__title"></h3>
               <p class="hero-copy-panel__desc"></p>
               <ul class="hero-copy-panel__features">
@@ -88,7 +86,6 @@
                 <li><span class="hero-copy-panel__mark" aria-hidden="true">[*]</span>Bring your own AI key, or run Gemma&nbsp;4 on-device (Android)</li>
                 <li><span class="hero-copy-panel__mark" aria-hidden="true">[*]</span>Same diary JSON across the Android app and this PWA</li>
               </ul>
-              <a class="hero-copy-panel__cta" href="{{ "app/" | relURL }}">Try the web app</a>
             </div>
           </div>
         </template>
@@ -101,7 +98,7 @@
             note.style.cssText =
               "margin:0;padding:4rem 1.5rem;text-align:center;color:#8f8a94;background:#0f0e13;font:16px/1.5 system-ui,sans-serif;";
             note.textContent =
-              "The live demo needs a web server — open http://localhost:1313/Chompass/ instead.";
+              "The demo needs a web server. Open http://localhost:1313/Chompass/ instead.";
             host.textContent = "";
             host.appendChild(note);
           })();
@@ -116,35 +113,35 @@
         <ul class="feature-list">
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Android and browser</strong> — installable PWA and Android app share the same diary and body-metrics JSON. No cloud sync between clients.</div>
+            <div><strong>Android and browser.</strong> Installable PWA and Android app share the same diary and body-metrics JSON. No cloud sync between clients.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>AI you control</strong> — bring your own cloud key, or on Android opt into on-device Gemma&nbsp;4. Analysis shows progress steps and fills fields as the model replies.</div>
+            <div><strong>AI you control.</strong> Bring your own cloud key, or on Android opt into on-device Gemma&nbsp;4. Analysis shows progress steps and fills fields as the model replies.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Meal components</strong> — after AI entry, expand ingredients, edit grams per row, and keep meal totals in sync.</div>
+            <div><strong>Meal components.</strong> After AI entry, expand ingredients, edit grams per row, and keep meal totals in sync.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Recipes and saved meals</strong> — save recents, favorites, and multi-ingredient recipes for one-tap logging.</div>
+            <div><strong>Recipes and saved meals.</strong> Save recents, favorites, and multi-ingredient recipes for one-tap logging.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Live calorie budget</strong> — the Android home ring grows your daily goal with the day's burn: measured by Health Connect, a manual entry after a run, or an estimate from your history.</div>
+            <div><strong>Live calorie budget.</strong> The Android home ring grows your daily goal with the day's burn: measured by Health Connect, a manual entry after a run, or an estimate from your history.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Barcode and Open Food Facts</strong> — scan barcodes against Open Food Facts (4.6M+ products, cached offline), or let photo analysis read codes from the image.</div>
+            <div><strong>Barcode and Open Food Facts.</strong> Scan barcodes against Open Food Facts (4.6M+ products, cached offline), or let photo analysis read codes from the image.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Diet modes and Health Connect</strong> — keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration, two-way with wearables and scales.</div>
+            <div><strong>Diet modes and Health Connect.</strong> Keto and other diet modes on both clients. Android syncs steps, exercise, sleep, heart rate, and hydration, two-way with wearables and scales.</div>
           </li>
           <li>
             <span class="feature-list__mark">[*]</span>
-            <div><strong>Open data, published accuracy</strong> — FOSS barcode on Android, open export and import, and published AI accuracy notes instead of a single marketing number.</div>
+            <div><strong>Open data, published accuracy.</strong> FOSS barcode on Android, open export and import, and published AI accuracy notes instead of a single marketing number.</div>
           </li>
         </ul>
         <a class="read-more" href="{{ "features/" | relURL }}">
