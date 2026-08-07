@@ -100,6 +100,17 @@ const SETTINGS_PARENT = {
   about: "#/settings",
 };
 
+/** Material icons for the hub rows (Android Icons.Outlined set). */
+const ICONS = {
+  person: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
+  equalizer: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`,
+  smartToy: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3zm-2 10H6V7h12v12zm-9-6c-.83 0-1.5-.67-1.5-1.5S8.17 10 9 10s1.5.67 1.5 1.5S9.83 13 9 13zm7.5-1.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5zM8 15h8v2H8z"/></svg>`,
+  folderOpen: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>`,
+  info: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`,
+  chevron: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>`,
+};
+
 export class SettingsView extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
@@ -109,18 +120,35 @@ export class SettingsView extends HTMLElement {
     this.render();
   }
 
+  /** Android SettingsHubRow: icon bubble + label/summary + chevron. */
+  hubRow(section, icon) {
+    const key = `settings.hub.${section}`;
+    const hintKey = `settings.hub.${section}_hint`;
+    return `
+      <a class="settings-hub__row" href="#/settings?section=${section}">
+        <span class="settings-hub__icon">${icon}</span>
+        <span class="settings-hub__text">
+          <strong>${t(key)}</strong>
+          <span>${t(hintKey)}</span>
+        </span>
+        <span class="settings-hub__chevron">${ICONS.chevron}</span>
+      </a>`;
+  }
+
   async render() {
     if (this.section === "hub") {
       this.innerHTML = `
         <h1 class="screen-title">${t("settings.title")}</h1>
-        <nav class="settings-nav" aria-label="${t("settings.title")}">
-          <a href="#/settings?section=personal">${t("settings.hub.personal")} <span>${t("settings.hub.personal_hint")}</span></a>
-          <a href="#/settings?section=goals">${t("settings.hub.goals")} <span>${t("settings.hub.goals_hint")}</span></a>
-          <a href="#/settings?section=app">${t("settings.hub.app")} <span>${t("settings.hub.app_hint")}</span></a>
-          <a href="#/settings?section=ai">${t("settings.hub.ai")} <span>${t("settings.hub.ai_hint")}</span></a>
-          <a href="#/settings?section=data">${t("settings.hub.data")} <span>${t("settings.hub.data_hint")}</span></a>
-          <a href="#/settings?section=about">${t("settings.hub.about")} <span>${t("settings.hub.about_hint")}</span></a>
-        </nav>
+        <div class="settings-hub">
+          ${this.hubRow("personal", ICONS.person)}
+          ${this.hubRow("goals", ICONS.equalizer)}
+          ${this.hubRow("app", ICONS.settings)}
+          ${this.hubRow("ai", ICONS.smartToy)}
+          ${this.hubRow("data", ICONS.folderOpen)}
+        </div>
+        <div class="settings-hub">
+          ${this.hubRow("about", ICONS.info)}
+        </div>
         <p class="settings-android-note">Health Connect, notifications, widgets, and on-device LLM are Android-only.</p>`;
       return;
     }

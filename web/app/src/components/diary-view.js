@@ -318,9 +318,9 @@ function renderMacros(tubeKeys, entries, targets, optionalGoals, style) {
     .join("");
 }
 
-function tile(action, label, sub, icon) {
+function tile(action, label, sub, icon, hero = false) {
   return `
-    <button type="button" class="add-food-tile" data-add="${action}">
+    <button type="button" class="add-food-tile${hero ? " add-food-tile--hero" : ""}" data-add="${action}">
       <span class="add-food-tile__icon">${icon}</span>
       <span class="add-food-tile__label">${label}</span>
       ${sub ? `<span class="add-food-tile__sub">${sub}</span>` : ""}
@@ -961,8 +961,8 @@ export class DiaryView extends HTMLElement {
     const quickRelogs = await quickRelogTemplates(6);
     const quickRelogBlock =
       quickRelogs.length > 0
-        ? `<p class="add-food-section">Log again</p>
-           <p class="add-food-hint">Favorites and past meals — faster than rescanning</p>
+        ? `<p class="add-food-section">${t("add_food.quick_relog")}</p>
+           <p class="add-food-hint">${t("add_food.quick_relog_hint")}</p>
            <div class="add-food-relog" role="list">
              ${quickRelogs
                .map(
@@ -978,34 +978,28 @@ export class DiaryView extends HTMLElement {
                )
                .join("")}
            </div>`
-        : `<p class="add-food-hint add-food-hint--empty">Favorite a meal or log one once — it will show up here for one-tap re-log</p>`;
+        : `<p class="add-food-hint add-food-hint--empty">${t("add_food.quick_relog_empty")}</p>`;
     const body = `
       <div class="add-food-heroes">
-        ${tile("photo", "Photo", "Snap a meal", ICONS.photo)}
-        ${tile("note", "Note", "Describe food", ICONS.note)}
-        ${tile("recents", "Saved", "Recents & favorites", ICONS.recents)}
+        ${tile("photo", t("add_food.hero_photo"), t("add_food.hero_photo_sub"), ICONS.photo, true)}
+        ${tile("note", t("add_food.hero_note"), t("add_food.hero_note_sub"), ICONS.note, true)}
+        ${tile("recents", t("add_food.hero_recents"), t("add_food.hero_recents_sub"), ICONS.recents, true)}
       </div>
       ${quickRelogBlock}
-      <p class="add-food-section">More</p>
-      <div class="add-food-row">
-        ${speech.supported ? tile("voice", "Voice", "", ICONS.voice) : tile("scan", "Barcode", "", ICONS.barcode)}
-        ${speech.supported ? tile("scan", "Barcode", "", ICONS.barcode) : `<span class="add-food-tile add-food-tile--spacer" aria-hidden="true"></span>`}
-      </div>
-      <div class="add-food-row">
-        ${tile("frequent", "Frequent", "", ICONS.frequent || ICONS.recents)}
-        ${tile("favorites", "Favorites", "", ICONS.favorites || ICONS.recents)}
-      </div>
-      <div class="add-food-row">
-        ${tile("manual", "Manual", "", ICONS.manual)}
+      <p class="add-food-section">${t("add_food.more_section")}</p>
+      <div class="add-food-grid">
+        ${speech.supported ? tile("voice", t("add_food.voice"), "", ICONS.voice) : `<span class="add-food-tile add-food-tile--spacer" aria-hidden="true"></span>`}
+        ${tile("scan", t("add_food.barcode"), "", ICONS.barcode)}
+        ${tile("manual", t("add_food.manual"), "", ICONS.manual)}
+        ${tile("copy", t("add_food.copy"), "", ICONS.copy)}
+        ${tile("frequent", t("add_food.frequent"), "", ICONS.frequent)}
+        ${tile("favorites", t("add_food.favorites"), "", ICONS.favorites)}
         ${tile("active", t("manual_active.title_short"), "", ICONS.active)}
-      </div>
-      <div class="add-food-row">
-        ${tile("copy", "Copy from day", "", ICONS.copy)}
         <span class="add-food-tile add-food-tile--spacer" aria-hidden="true"></span>
       </div>
       ${
         showWater
-          ? `<p class="add-food-section">Water</p>
+          ? `<p class="add-food-section">${t("diary.water")}</p>
              <div class="add-food-water">
                ${WATER_PRESETS.map((ml) => `<button type="button" class="chip" data-sheet-water="${ml}">+${ml} ml</button>`).join("")}
                <label class="add-food-water-slider">
