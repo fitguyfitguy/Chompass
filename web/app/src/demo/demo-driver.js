@@ -189,26 +189,26 @@ async function openAnalyzeNote(text) {
   navigate("#/home");
   window.scrollTo({ top: 0 });
   await waitFor(() => document.querySelector(".fab"), { label: "home fab" });
-  await sleep(1000);
+  await sleep(1200);
   /** @type {HTMLElement | null} */
   const fab = document.querySelector(".fab");
   fab?.click();
   await waitFor(() => document.querySelector('[data-add="note"]'), {
     label: "add-food note tile",
   });
-  await sleep(900);
+  await sleep(1100);
   clickFirst('[data-add="note"]');
   await waitFor(() => document.querySelector("#analyze-form #note"), {
     label: "analyze note field",
   });
-  await sleep(500);
+  await sleep(600);
   // Zoom into the note field itself: the AI prompt is where the story starts.
   scene("ai-typing", "#analyze-form #note");
   const note = /** @type {HTMLTextAreaElement | null} */ (
     document.querySelector("#analyze-form #note")
   );
   if (note) await typeInto(note, text, 45);
-  await sleep(450);
+  await sleep(600);
   /** @type {HTMLFormElement | null} */
   const form = document.querySelector("#analyze-form");
   form?.requestSubmit();
@@ -220,7 +220,7 @@ async function finishEntryForm({ log, sceneKey }) {
     label: "entry review form",
   });
   scene(sceneKey, ".entry-form--review");
-  await sleep(1200); // review screen settles; nutrition fields animate in
+  await sleep(1500); // review screen settles; nutrition fields animate in
   const submit = /** @type {HTMLButtonElement | null} */ (
     document.querySelector(
       ".entry-form--review .subpage-cta button[type='submit']",
@@ -248,7 +248,7 @@ async function beatAi() {
   await streamAnalyzeOverlay();
   await finishEntryForm({ log: true, sceneKey: "ai-review" });
   scene("ai-ring", ".calorie-ring--semi");
-  await sleep(2400); // calorie ring rises
+  await sleep(3000); // calorie ring rises
 }
 
 /** Shared overlay sequence for the note and plate beats: quick-cut on the
@@ -258,15 +258,22 @@ async function streamAnalyzeOverlay() {
     label: "analyze overlay",
   });
   scene("ai-stream", ".analyze-overlay__phase");
-  await sleep(700);
+  await sleep(900);
   await waitFor(
     () =>
       document.querySelectorAll(".analyze-partial__macro:not(.is-pending)")
         .length >= 3,
     { timeout: 5000, label: "analyze partial macros" },
   ).catch(() => {});
-  scene("ai-stream", ".analyze-partial");
-  await sleep(3200); // phases stream, fields fill, auto-navigates to review
+  // Photo mode renders a preview above the partial card, which can push the
+  // card below the phone viewport — announcing a crop the camera can never
+  // resolve made it fall back to rest mid-stream. Crop the whole overlay
+  // there; the note beat keeps the tighter partial-card crop.
+  const partial = document.querySelector(".analyze-partial");
+  const partialFits =
+    partial && partial.getBoundingClientRect().top < window.innerHeight - 8;
+  scene("ai-stream", partialFits ? ".analyze-partial" : ".analyze-overlay");
+  await sleep(3800); // phases stream, fields fill, auto-navigates to review
 }
 
 async function beatBarcode() {
@@ -274,12 +281,12 @@ async function beatBarcode() {
   await waitFor(() => document.querySelector("[data-mock-barcode]"), {
     label: "mock barcode viewfinder",
   });
-  await sleep(600);
+  await sleep(800);
   scene("barcode-scan", ".scanner-frame--mock");
-  await sleep(2100); // framing + a lock flash
+  await sleep(2600); // framing + a lock flash
   const status = document.querySelector("#scanner-status");
   if (status) status.textContent = "Scanning…";
-  await sleep(700);
+  await sleep(900);
   // The mock feed has no detector — the driver plays it, the same scripted
   // hand that types into the manual form in the pre-demo flow.
   const scanner = /** @type {any} */ (
@@ -296,18 +303,18 @@ async function beatPlate() {
   await waitFor(() => document.querySelector("[data-mock-plate]"), {
     label: "mock plate camera",
   });
-  await sleep(600);
+  await sleep(800);
   scene("plate-scan", ".scanner-frame--plate");
-  await sleep(2200); // framing + sweep settle
+  await sleep(2700); // framing + sweep settle
   const status = document.querySelector("#plate-status");
   if (status) status.textContent = "Analyzing…";
-  await sleep(700);
+  await sleep(900);
   const analyze = /** @type {any} */ (document.querySelector("analyze-view"));
   await analyze?.captureMockPhoto();
   await streamAnalyzeOverlay();
   await finishEntryForm({ log: true, sceneKey: "ai-review" });
   scene("ai-ring", ".calorie-ring--semi");
-  await sleep(2400); // ring rises
+  await sleep(3000); // ring rises
 }
 
 // The weight line chart inside the first (weight) card. Shared by the warp
@@ -362,23 +369,23 @@ async function beatTrend() {
   await waitFor(() => document.querySelector('[data-range="All"]'), {
     label: "range chips",
   });
-  await sleep(700);
+  await sleep(900);
 
   // 1) Close-up on the weight chart at 1M: noisy daily readings, mild drift.
   await clickRange("1M");
   centerOn(document.querySelector(CHART_SEL));
-  await sleep(400);
+  await sleep(500);
   scene("trend-warp-close", CHART_SEL);
-  await sleep(3400);
+  await sleep(3800);
 
   // 2) Warp: ranges widen with accelerating tempo — 2y of weigh-ins compress
   // into a few seconds. 1Y steps out to the whole card so the camera zooms out
   // while the data expands; All settles back on the full downward trend.
   const warp = [
-    { range: "3M", selector: CHART_SEL, dwell: 1300 },
-    { range: "6M", selector: CHART_SEL, dwell: 950 },
-    { range: "1Y", selector: ".card.card--glass", card: 0, dwell: 900 },
-    { range: "All", selector: CHART_SEL, dwell: 2600 },
+    { range: "3M", selector: CHART_SEL, dwell: 1600 },
+    { range: "6M", selector: CHART_SEL, dwell: 1200 },
+    { range: "1Y", selector: ".card.card--glass", card: 0, dwell: 1200 },
+    { range: "All", selector: CHART_SEL, dwell: 3000 },
   ];
   for (const step of warp) {
     await clickRange(step.range);
@@ -387,7 +394,7 @@ async function beatTrend() {
         ? cardAt((_, i) => i === step.card)
         : document.querySelector(step.selector),
     );
-    await sleep(300);
+    await sleep(500);
     scene("trend-warp", step.selector, step.card ?? 0);
     await sleep(step.dwell);
   }
@@ -395,9 +402,9 @@ async function beatTrend() {
   // 3) The important numbers: current / goal / net / average badges.
   const badges = document.querySelector(".card.card--glass .stat-badges");
   centerOn(badges);
-  await sleep(400);
+  await sleep(500);
   scene("trend-stats", ".card.card--glass .stat-badges");
-  await sleep(2600);
+  await sleep(3200);
 
   // 4) Body-fat card.
   const bfIndex = cardIndex((c) =>
@@ -405,9 +412,9 @@ async function beatTrend() {
   );
   if (bfIndex >= 0) {
     centerOn(cardAt((_, i) => i === bfIndex));
-    await sleep(400);
+    await sleep(500);
     scene("trend-bodyfat", ".card.card--glass", bfIndex);
-    await sleep(2400);
+    await sleep(2900);
   }
 
   // 5) Forecast card: predicted change, days to goal, adaptive message.
@@ -418,20 +425,20 @@ async function beatTrend() {
   );
   if (fIndex >= 0) {
     centerOn(cardAt((_, i) => i === fIndex));
-    await sleep(400);
+    await sleep(500);
     scene("trend-forecast", ".card.card--glass", fIndex);
-    await sleep(2600);
+    await sleep(3200);
   }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
-  await sleep(700);
+  await sleep(900);
 }
 
 async function beatRelog() {
   navigate("#/home");
   window.scrollTo({ top: 0 });
   await waitFor(() => document.querySelector(".fab"), { label: "home fab" });
-  await sleep(700);
+  await sleep(900);
   /** @type {HTMLElement | null} */
   const fab = document.querySelector(".fab");
   fab?.click();
@@ -442,15 +449,15 @@ async function beatRelog() {
   await waitFor(() => document.querySelector(".sheet.is-open"), {
     label: "add-food sheet open",
   });
-  await sleep(400);
+  await sleep(600);
   scene("relog-chips", ".add-food-relog");
-  await sleep(2000);
+  await sleep(2600);
   clickFirst("[data-relog]");
   await waitFor(() => document.querySelector(".fab"), {
     label: "home after relog",
   });
   scene("relog-ring", ".calorie-ring--semi");
-  await sleep(2400); // ring rises
+  await sleep(3000); // ring rises
 }
 
 const BEATS = [
@@ -484,10 +491,10 @@ export async function startDemo() {
       if (loop === 0) {
         // First impression only: the whole phone, once per page load.
         scene("intro");
-        await sleep(1300);
+        await sleep(1500);
       } else {
         scene("rest");
-        await sleep(900);
+        await sleep(1100);
       }
       for (const [beatIndex, beat] of BEATS.entries()) {
         console.log(
@@ -503,9 +510,9 @@ export async function startDemo() {
         }
       }
       scene("rest");
-      await sleep(2200); // camera pulls back before the next loop
+      await sleep(2800); // camera pulls back before the next loop
       console.log(
-        `[demo] ═══ loop ${loop} complete — rest 2.2s, next loop ═══`,
+        `[demo] ═══ loop ${loop} complete — rest 2.8s, next loop ═══`,
       );
     } catch (err) {
       console.warn("demo loop aborted, restarting", err);

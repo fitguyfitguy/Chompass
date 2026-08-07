@@ -523,8 +523,8 @@ a:hover {
   white-space: nowrap;
   opacity: 0;
   transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
+    opacity 0.35s ease,
+    transform 0.35s ease;
   pointer-events: none;
 }
 
@@ -585,7 +585,7 @@ a:hover {
   }
 
   .hero-copy-panel__title.swap {
-    animation: copy-in 0.45s ease;
+    animation: copy-in 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hero-copy-panel__desc {
@@ -596,7 +596,7 @@ a:hover {
   }
 
   .hero-copy-panel__desc.swap {
-    animation: copy-in 0.45s ease;
+    animation: copy-in 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hero-copy-panel__features {
@@ -645,7 +645,7 @@ a:hover {
 @keyframes copy-in {
   from {
     opacity: 0;
-    transform: translateY(0.25rem);
+    transform: translateY(0.2rem);
   }
   to {
     opacity: 1;
