@@ -80,8 +80,9 @@
     "ai-stream": "Macros fill in live as it thinks",
     "ai-review": "Review everything before logging",
     "ai-ring": "Budget updates in real time",
-    "barcode-form": "Scan or type any barcode",
+    "barcode-scan": "Point the camera at any package",
     "barcode-card": "Open Food Facts, instantly",
+    "plate-scan": "Point the camera at your plate",
     "trend-warp-close": "Daily weigh-ins — noisy, but trending down",
     "trend-warp": "Two years of weigh-ins, warped into seconds",
     "trend-stats": "Current, goal, and net at a glance",
@@ -113,13 +114,17 @@
       title: "Budget updates in real time",
       desc: "The calorie ring grows the moment a meal lands in the diary — and with your day's burn on Android.",
     },
-    "barcode-form": {
-      title: "Scan or type any barcode",
-      desc: "Point the camera at a package, or type the code straight in. Works offline against a cached index.",
+    "barcode-scan": {
+      title: "Point the camera at any package",
+      desc: "The viewfinder frames the code while a laser line sweeps the label. Live scanning reads it in a second — or type the digits straight in.",
     },
     "barcode-card": {
       title: "Open Food Facts, instantly",
       desc: "Barcode lookups hit Open Food Facts — 4.6M+ products — then land in the same review-first flow.",
+    },
+    "plate-scan": {
+      title: "Point the camera at your plate",
+      desc: "Photo AI frames the meal, reads it like the label of a barcode, and streams macros back before anything is saved.",
     },
     "trend-warp-close": {
       title: "Daily weigh-ins: noisy, but trending down",

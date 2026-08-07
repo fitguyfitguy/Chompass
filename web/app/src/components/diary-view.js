@@ -59,6 +59,9 @@ const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
 const WATER_PRESETS = [250, 500, 750];
 const HOME_DATE_KEY = "chompass-home-date";
 
+/** Demo hero mode (web/app/demo.html): mock plate camera instead of capture. */
+const DEMO = typeof window !== "undefined" && Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
+
 const ICONS = {
   photo: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM4 5h3.2l1.4-1.8c.2-.3.5-.4.8-.4h5.2c.3 0 .6.1.8.4L16.8 5H20c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2zm8 13c2.8 0 5-2.2 5-5s-2.2-5-5-5-5 2.2-5 5 2.2 5 5 5z"/></svg>`,
   note: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`,
@@ -978,6 +981,11 @@ export class DiaryView extends HTMLElement {
 
     sheet.body.querySelector('[data-add="photo"]')?.addEventListener("click", () => {
       sheet.close();
+      if (DEMO) {
+        // The hero demo has no real camera — the mock plate beat routes here.
+        location.hash = `#/analyze?date=${this.date}&mode=photo`;
+        return;
+      }
       startPhotoAiFlow({ date: this.date });
     });
     sheet.body.querySelector('[data-add="note"]')?.addEventListener("click", () => go(`#/analyze?date=${this.date}&mode=note`));
