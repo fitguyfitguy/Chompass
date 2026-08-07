@@ -56,6 +56,10 @@
     "ai-stream": 600,
     "ai-ring": 900,
     "relog-ring": 900,
+    // The warp beat re-announces the same scene per range step; a pan that
+    // finishes inside each dwell reads as deliberate acceleration instead of
+    // a camera that keeps getting cut off.
+    "trend-warp": 1400,
   };
 
   var heroRoot = null; // .hero-stage (grid on wide screens)
@@ -73,6 +77,12 @@
   var retryTimer = null;
   /** @type {{key: string|null, selector: string, index: number}|null} */
   var lastScene = null;
+  // Scene key currently shown in the text layer (callout / side panel). Kept
+  // separate from lastScene: the same scene is announced repeatedly (chart
+  // warp steps, stream re-crops, target retries) and the copy must NOT
+  // re-animate for those — that flashing is what made the hero feel busy.
+  var lastTextKey = null;
+  var calloutSwapTimer = null;
 
   var CALLOUTS = {
     intro: "AI that reads labels, photos, and barcodes",
@@ -308,11 +318,29 @@
   function showCallout(key) {
     if (!callout) return;
     var text = CALLOUTS[key] || "";
-    if (text) {
+    if (text && callout.textContent === text && callout.classList.contains("is-visible")) {
+      return;
+    }
+    if (calloutSwapTimer) {
+      clearTimeout(calloutSwapTimer);
+      calloutSwapTimer = null;
+    }
+    if (!text) {
+      callout.classList.remove("is-visible");
+      return;
+    }
+    if (callout.classList.contains("is-visible")) {
+      // Gentle crossfade: fade the pill out, swap the words, fade back in —
+      // no hard cut between captions.
+      callout.classList.remove("is-visible");
+      calloutSwapTimer = setTimeout(function () {
+        callout.textContent = text;
+        callout.classList.add("is-visible");
+        calloutSwapTimer = null;
+      }, 300);
+    } else {
       callout.textContent = text;
       callout.classList.add("is-visible");
-    } else {
-      callout.classList.remove("is-visible");
     }
   }
 
@@ -391,8 +419,15 @@
     if (!camera) return;
     revealStage();
     lastScene = { key: key, selector: selector, index: index };
-    showCallout(key);
-    showCopy(key);
+    // The camera re-targets on every announcement (warp steps widen the chart,
+    // stream re-crops zoom into the partial card), but the text layer only
+    // swaps when the scene key actually changes. Rest (null) keeps the current
+    // caption so pull-backs read as a calm pause instead of a text reset.
+    if (key !== lastTextKey && key !== null) {
+      lastTextKey = key;
+      showCallout(key);
+      showCopy(key);
+    }
     clearRetry();
     var duration = SCENE_DURATIONS[key] || 2200;
     var scene = resolveScene(key, selector, index);
