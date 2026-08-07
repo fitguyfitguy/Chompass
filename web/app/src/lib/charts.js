@@ -22,7 +22,7 @@ export function downsamplePoints(points, maxPoints = 60) {
 
 /**
  * @param {{label: string, value: number, day?: string}[]} points chronological, ascending
- * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean, trend?: {label: string, value: number, day?: string}[]|null, trendColor?: string, rangeLabel?: string|null}} [opts]
+ * @param {{width?: number, height?: number, color?: string, unit?: string, goal?: number|null, interactive?: boolean, trend?: {label: string, value: number, day?: string}[]|null, trendColor?: string, rangeLabel?: string|null, grid?: boolean}} [opts]
  * @returns {string} inline SVG markup
  */
 export function lineChartSvg(points, opts = {}) {
@@ -35,6 +35,14 @@ export function lineChartSvg(points, opts = {}) {
   const goal = opts.goal;
   const interactive = opts.interactive !== false;
   const series = downsamplePoints(points);
+  const gridLines = opts.grid
+    ? [0.25, 0.5, 0.75]
+        .map(
+          (f) =>
+            `<line x1="${padding}" y1="${(padding + f * (height - padding * 2)).toFixed(1)}" x2="${width - padding}" y2="${(padding + f * (height - padding * 2)).toFixed(1)}" class="chart-grid" />`,
+        )
+        .join("")
+    : "";
   /** @type {{label: string, value: number, day?: string}[]} */
   // Downsample the trend series too: callers pass per-day trend points (2y
   // history = 700+), and mapping them onto the 60-point raw x grid without
@@ -102,6 +110,7 @@ export function lineChartSvg(points, opts = {}) {
 
   return `
     <svg viewBox="0 0 ${width} ${height}" class="chart-svg chart-svg--interactive" preserveAspectRatio="none">
+      ${gridLines}
       ${
         goalY != null
           ? `<line x1="${padding}" y1="${goalY.toFixed(1)}" x2="${width - padding}" y2="${goalY.toFixed(1)}" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" />`
