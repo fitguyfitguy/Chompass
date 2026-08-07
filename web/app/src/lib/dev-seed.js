@@ -121,7 +121,8 @@ export async function seedAll() {
   await seedProfile();
   await seedDiaryEntries(14);
   await seedWeightHistory(42);
-  console.info("[chompass-dev-seed] seeded profile, 14 days of diary entries, 42 days of weight history");
+  await seedBodyFatHistory(42);
+  console.info("[chompass-dev-seed] seeded profile, 14 days of diary entries, 42 days of weight + body-fat history");
 }
 
 /**
