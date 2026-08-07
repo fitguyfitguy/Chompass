@@ -4,7 +4,7 @@
 // linked from the UI — triggered by ?seed=1 on any route while developing
 // locally (see app.js's maybeSeedFromUrl call). Writes only to IndexedDB;
 // touches no network, no BYOK key storage.
-import { foodEntries, favorites, weights, profile as profileStore } from "./db.js";
+import { foodEntries, favorites, weights, bodyFat, profile as profileStore } from "./db.js";
 
 const MEALS = [
   { mealType: "breakfast", time: "07:30", name: "Oatmeal with banana", calories: 380, proteinG: 12, carbsG: 65, fatG: 8 },
@@ -33,12 +33,16 @@ export async function seedProfile() {
   });
 }
 
-/** @param {number} [days] @param {{skipToday?: boolean}} [opts] */
-export async function seedDiaryEntries(days = 14, { skipToday = false } = {}) {
-  for (let i = skipToday ? 1 : 0; i < days; i++) {
+/** @param {number} [days] @param {{lightToday?: boolean}} [opts] */
+export async function seedDiaryEntries(days = 14, { lightToday = false } = {}) {
+  for (let i = 0; i < days; i++) {
     const date = isoDaysAgo(i);
     const jitter = () => 0.85 + Math.random() * 0.3;
-    for (const meal of MEALS) {
+    // Demo hero: today starts with breakfast + dinner so the calorie ring
+    // visibly rises as the demo logs more meals during the loop (and the home
+    // reads as a real, mostly-full day at full zoom-out).
+    const meals = i === 0 && lightToday ? [MEALS[0], MEALS[2]] : MEALS;
+    for (const meal of meals) {
       if (meal.mealType === "snack" && Math.random() < 0.4) continue; // some days skip the snack, more realistic
       await foodEntries.put({
         id: crypto.randomUUID(),
@@ -59,14 +63,30 @@ export async function seedDiaryEntries(days = 14, { skipToday = false } = {}) {
   }
 }
 
-/** @param {number} days */
-export async function seedWeightHistory(days = 42) {
+/**
+ * @param {number} [days]
+ * @param {{dailyDriftKg?: number}} [opts] daily drift (kg lost per day); the
+ *   0.04 default suits short horizons — pass ~0.0045 for multi-year demo
+ *   history so the trend reads as a realistic slow loss, not a plummet.
+ */
+export async function seedWeightHistory(days = 42, { dailyDriftKg = 0.04 } = {}) {
   let weightKg = 84;
   for (let i = days; i >= 0; i--) {
-    weightKg -= 0.03 + Math.random() * 0.02; // gentle downward trend, matches goal:"lose" above
+    weightKg -= dailyDriftKg + Math.random() * (dailyDriftKg * 0.6); // gentle downward trend, matches goal:"lose" above
     const date = new Date();
     date.setDate(date.getDate() - i);
     await weights.put({ id: crypto.randomUUID(), date: date.toISOString(), weightKg: Math.round(weightKg * 10) / 10 });
+  }
+}
+
+/** @param {number} [days] @param {{dailyDriftPct?: number}} [opts] */
+export async function seedBodyFatHistory(days = 42, { dailyDriftPct = 0.00003 } = {}) {
+  let bodyFatPct = 0.24;
+  for (let i = days; i >= 0; i--) {
+    bodyFatPct -= dailyDriftPct * (0.7 + Math.random() * 0.6);
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    await bodyFat.put({ id: crypto.randomUUID(), date: date.toISOString(), bodyFatPercent: Math.round(bodyFatPct * 1000) / 1000 });
   }
 }
 

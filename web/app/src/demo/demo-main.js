@@ -9,10 +9,11 @@ import "../components/entry-form.js";
 import "../components/barcode-scanner.js";
 import "../components/progress-view.js";
 import { setActiveLocale } from "../lib/i18n/index.js";
-import { seedDemo } from "./demo-seed.js";
 import { startDemo } from "./demo-driver.js";
 
 setActiveLocale("en");
 
-await seedDemo();
+// startDemo renders the home immediately, seeds the throwaway demo database
+// in the background, and begins the beat loop — the hero stage reveals as
+// soon as the home has painted instead of after the full seed.
 startDemo();
