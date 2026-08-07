@@ -345,6 +345,17 @@ a:hover {
   word-break: break-all;
 }
 
+.install-note {
+  max-width: 40rem;
+  margin: 1.25rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--teal);
+  background: var(--bg-weak);
+  color: var(--text-weak);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -566,15 +577,6 @@ a:hover {
     gap: 1rem;
     padding: 0.5rem 1rem 0.5rem 0;
     align-self: center;
-  }
-
-  .hero-copy-panel__kicker {
-    margin: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--teal);
   }
 
   .hero-copy-panel__title {

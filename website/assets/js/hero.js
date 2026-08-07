@@ -13,7 +13,7 @@
       var note = document.createElement("p");
       note.className = "hero-file-note";
       note.textContent =
-        "The live demo needs a web server — open http://localhost:1313/Chompass/ instead.";
+        "The demo needs a web server. Open http://localhost:1313/Chompass/ instead.";
       fileHost.appendChild(note);
     }
     return;
@@ -106,11 +106,11 @@
   var SCENES = {
     intro: {
       title: "Your food diary, on your device",
-      desc: "Log food, weight, and body metrics entirely on-device — no account, no ads, no analytics.",
+      desc: "Log food, weight, and body metrics entirely on-device. No account, no ads, no analytics."
     },
     "ai-typing": {
       title: "Type a meal, get its macros",
-      desc: "Plain language is enough — “chicken burrito bowl” works. Calories, protein, carbs, and fat come back without labels or barcodes.",
+      desc: "Plain language is enough. “Chicken burrito bowl” works. Calories, protein, carbs, and fat come back without labels or barcodes."
     },
     "ai-stream": {
       title: "Get AI macros and micros",
@@ -122,11 +122,11 @@
     },
     "ai-ring": {
       title: "Your calorie budget, updated as you log",
-      desc: "The ring shows what's left for the day the moment a meal lands — and with your day's burn on Android.",
+      desc: "The ring shows what's left for the day the moment a meal lands, and with your day's burn on Android."
     },
     "barcode-scan": {
       title: "Log any packaged food from its barcode",
-      desc: "Point the camera at the code — live scanning reads it in a second, or type the digits straight in.",
+      desc: "Point the camera at the code. Live scanning reads it in a second, or type the digits straight in."
     },
     "barcode-card": {
       title: "Product facts from Open Food Facts",
@@ -134,19 +134,19 @@
     },
     "plate-scan": {
       title: "Log a meal from a photo",
-      desc: "Snap your plate and Chompass reads it like a label — macros come back before anything is saved.",
+      desc: "Snap your plate and Chompass reads it like a label. Macros come back before anything is saved."
     },
     "trend-warp-close": {
       title: "See the real trend behind daily weigh-ins",
-      desc: "A month of daily readings looks like noise — that's normal. The trend line shows where things are actually going.",
+      desc: "A month of daily readings looks like noise, and that's normal. The trend line shows where things are actually going."
     },
     "trend-warp": {
       title: "See progress across months or years",
-      desc: "The same chart expands from one month to all time — daily noise becomes a clear trend.",
+      desc: "The same chart expands from one month to all time. Daily noise becomes a clear trend."
     },
     "trend-stats": {
       title: "Where you are against your goal",
-      desc: "Current, goal, and net sit right above the chart — the state of your week at a glance.",
+      desc: "Current, goal, and net sit right above the chart. The state of your week at a glance."
     },
     "trend-bodyfat": {
       title: "Body fat, tracked with your weight",
@@ -158,11 +158,11 @@
     },
     "relog-chips": {
       title: "Repeat a meal in one tap",
-      desc: "Favorites and past meals sit one tap away — relog without retyping or rescanning.",
+      desc: "Favorites and past meals sit one tap away. Relog without retyping or rescanning."
     },
     "relog-ring": {
       title: "Know what's left for the day",
-      desc: "The ring shows your remaining budget — relog a favorite and see the impact right away.",
+      desc: "The ring shows your remaining budget. Relog a favorite and see the impact right away."
     },
   };
 
@@ -398,8 +398,13 @@
   // Realtime tracing: [hero] lines log what the camera is actually doing for
   // each scene the demo announces — resolved zoom, retry, or fallback to rest
   // — so the on-screen view can be matched against the demo timeline.
+  // Debug tracing is disabled in production. Set DEV to true and restore the
+  // console.log under https://[hero] to surface camera/scene diagnostics.
+  var DEV = false;
   function heroLog(msg) {
-    console.log("[hero] " + msg);
+    if (DEV && msg) {
+      // console.log("[hero] " + msg);
+    }
   }
 
   function sceneLabel(key) {
