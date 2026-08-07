@@ -136,7 +136,7 @@ main.view {
 .screen-title {
   margin: 0 0 1rem;
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -2275,6 +2275,72 @@ form.entry-form > button.btn--primary,
 .settings-nav a span,
 .settings-link span { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
 
+/* Android Settings hub: one glass card, hub rows + dividers (SettingsScreen) */
+.settings-hub {
+  display: grid;
+  margin-bottom: 0.9rem;
+  padding: 0.25rem 0;
+  border-radius: 1.125rem;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+}
+
+.settings-hub__row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.settings-hub__row + .settings-hub__row {
+  border-top: 1px solid var(--line);
+}
+
+.settings-hub__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+}
+
+.settings-hub__icon svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--teal);
+}
+
+.settings-hub__text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.settings-hub__text strong {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.settings-hub__text span {
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+.settings-hub__chevron {
+  display: flex;
+  flex: none;
+}
+
+.settings-hub__chevron svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: color-mix(in srgb, var(--text) 40%, transparent);
+}
+
 .recents-list {
   display: grid;
   gap: 0.35rem;
@@ -3541,11 +3607,13 @@ body.dialog-open {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.85rem 0.4rem 0.75rem;
-  border-radius: 1rem;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 4rem;
+  padding: 0.625rem 0.25rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--surface);
   color: var(--text);
   cursor: pointer;
   text-align: center;
@@ -3558,28 +3626,64 @@ body.dialog-open {
 .add-food-tile__icon {
   display: grid;
   place-items: center;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--teal) 18%, var(--surface));
   color: var(--teal);
 }
 
 .add-food-tile__icon svg {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .add-food-tile__label {
-  font-weight: 700;
-  font-size: 0.82rem;
+  font-weight: 500;
+  font-size: 0.72rem;
   line-height: 1.2;
+  max-width: 100%;
+}
+
+/* Android AddFoodActionTile.Hero: bigger bubble, semibold label, subtitle */
+.add-food-tile--hero {
+  min-height: 6rem;
+  gap: 0.5rem;
+  padding: 0.875rem 0.4rem 0.8rem;
+  border-radius: 1rem;
+}
+
+.add-food-tile--hero .add-food-tile__icon {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
+.add-food-tile--hero .add-food-tile__icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.add-food-tile--hero .add-food-tile__label {
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
 .add-food-tile__sub {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--muted);
-  line-height: 1.2;
+  line-height: 1.25;
+}
+
+/* Android “More ways to log” compact grid: 2 rows × 4 tiles */
+.add-food-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.add-food-grid .add-food-tile--spacer {
+  visibility: hidden;
 }
 
 .add-food-row {
