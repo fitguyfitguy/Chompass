@@ -278,40 +278,142 @@ export class AnalyzeView extends HTMLElement {
 
   /**
    * Demo-only mock plate camera for the marketing hero (web/app/demo.html):
-   * a drawn plate with salmon, rice, and broccoli inside the real viewfinder,
-   * with focus corners and the animated scan line. Pure CSS/SVG — no camera,
-   * no rAF. The driver captures via captureMockPhoto(), the scripted hand
-   * that submits the note form in the note beat.
+   * a salmon, rice and broccoli plate on a warm surface inside the real
+   * viewfinder, with breathing focus corners, a periodic tap-to-focus ring
+   * and a camera HUD. Pure CSS/SVG — no camera, no rAF. The driver captures
+   * via captureMockPhoto(), the scripted hand that submits the note form in
+   * the note beat.
    */
   mockPlateCamera() {
     return `
       <div class="scanner-frame scanner-frame--plate" data-mock-plate>
-        <svg class="mock-plate" viewBox="0 0 320 210" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <linearGradient id="mock-plate-rim" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#fbfaf6"/>
-              <stop offset="1" stop-color="#d9d4c6"/>
-            </linearGradient>
-            <linearGradient id="mock-salmon" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#f0906f"/>
-              <stop offset="1" stop-color="#d96a4f"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="160" cy="112" rx="138" ry="84" fill="url(#mock-plate-rim)"/>
-          <ellipse cx="160" cy="112" rx="112" ry="66" fill="#f5f1e8"/>
-          <ellipse cx="160" cy="112" rx="112" ry="66" fill="none" stroke="#e3dccb" stroke-width="2"/>
-          <ellipse cx="118" cy="118" rx="42" ry="26" fill="#f3e7cd" stroke="#e6d5b2" stroke-width="1"/>
-          <g fill="#7fa86a" stroke="#5f8a52" stroke-width="1">
-            <circle cx="212" cy="98" r="16"/>
-            <circle cx="226" cy="110" r="13"/>
-            <circle cx="204" cy="114" r="12"/>
-            <path d="M208 124c2 8 6 12 12 14" fill="none" stroke-width="3"/>
-          </g>
-          <path d="M96 78c18-10 40-6 52 8l-8 34c-16 8-38 4-48-10z" fill="url(#mock-salmon)"/>
-          <path d="M100 84c10-4 22-2 30 4" stroke="#f5b89f" stroke-width="3" fill="none" stroke-linecap="round"/>
-        </svg>
-        <div class="plate-focus" aria-hidden="true"></div>
-        <span class="scanner-sweep" aria-hidden="true"></span>
+        <div class="mock-stage mock-stage--bob">
+          <svg class="mock-plate" viewBox="0 0 237 300" aria-hidden="true">
+            <defs>
+              <radialGradient id="plate-glow" cx="0.5" cy="0.45" r="0.7">
+                <stop offset="0" stop-color="#ffffff" stop-opacity="0.07" />
+                <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="plate-bg" x1="0" y1="0" x2="0" y2="300" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#19130e" />
+                <stop offset="0.52" stop-color="#19130e" />
+                <stop offset="0.6" stop-color="#241b13" />
+                <stop offset="0.72" stop-color="#2e2318" />
+                <stop offset="1" stop-color="#140f0a" />
+              </linearGradient>
+              <linearGradient id="plate-rim" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffffff" />
+                <stop offset="1" stop-color="#d9d3c2" />
+              </linearGradient>
+              <radialGradient id="plate-well" cx="0.45" cy="0.4" r="0.75">
+                <stop offset="0" stop-color="#f7f2e4" />
+                <stop offset="1" stop-color="#e4dcc6" />
+              </radialGradient>
+              <linearGradient id="plate-salmon" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#f49a6e" />
+                <stop offset="1" stop-color="#d4633c" />
+              </linearGradient>
+              <filter id="plate-blur" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="4" />
+              </filter>
+              <clipPath id="plate-salmon-clip">
+                <path d="M62 160c8-14 30-18 44-10l10 6c8 10 4 24-8 28-14 5-34-2-42-14z" />
+              </clipPath>
+            </defs>
+
+            <rect width="237" height="300" fill="url(#plate-bg)" />
+            <rect width="237" height="300" fill="url(#plate-glow)" />
+
+            <!-- plate shadow on the table -->
+            <ellipse cx="118" cy="186" rx="90" ry="42" fill="#000" opacity="0.55" filter="url(#plate-blur)" />
+            <ellipse cx="118" cy="178" rx="88" ry="40" fill="#000" opacity="0.18" filter="url(#plate-blur)" />
+
+            <!-- rim -->
+            <ellipse cx="118" cy="166" rx="92" ry="45" fill="url(#plate-rim)" />
+            <ellipse cx="118" cy="166" rx="92" ry="45" fill="none" stroke="#c9c2ae" stroke-width="1.2" />
+            <ellipse cx="118" cy="166" rx="83" ry="40" fill="#f2ecdb" />
+            <ellipse cx="118" cy="166" rx="83" ry="40" fill="none" stroke="#dcd5c1" stroke-width="1" />
+
+            <!-- inner well + shadow -->
+            <ellipse cx="118" cy="168" rx="67" ry="32" fill="url(#plate-well)" />
+            <ellipse cx="118" cy="171" rx="64" ry="29" fill="#000" opacity="0.07" />
+
+            <!-- salmon fillet with grill marks -->
+            <path d="M62 160c8-14 30-18 44-10l10 6c8 10 4 24-8 28-14 5-34-2-42-14z" fill="url(#plate-salmon)" />
+            <path d="M68 162c6-8 16-10 24-6" stroke="#f9c3a8" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.85" />
+            <g stroke="#b14e2a" stroke-width="2.2" opacity="0.5" stroke-linecap="round" clip-path="url(#plate-salmon-clip)">
+              <path d="M72 184 98 158" />
+              <path d="M82 188 108 162" />
+              <path d="M94 190 116 170" />
+            </g>
+
+            <!-- rice -->
+            <ellipse cx="150" cy="168" rx="24" ry="12" fill="#fbf7ea" stroke="#e7dfc8" stroke-width="0.8" />
+            <ellipse cx="168" cy="176" rx="17" ry="10" fill="#fbf7ea" stroke="#e7dfc8" stroke-width="0.8" />
+            <ellipse cx="152" cy="181" rx="15" ry="8" fill="#fbf7ea" stroke="#e7dfc8" stroke-width="0.8" />
+            <g fill="#ffffff" stroke="#e9e2cd" stroke-width="0.5">
+              <ellipse cx="144" cy="166" rx="3.4" ry="1.8" transform="rotate(-18 144 166)" />
+              <ellipse cx="153" cy="164" rx="3.4" ry="1.8" transform="rotate(10 153 164)" />
+              <ellipse cx="161" cy="167" rx="3.4" ry="1.8" transform="rotate(-8 161 167)" />
+              <ellipse cx="158" cy="174" rx="3.4" ry="1.8" transform="rotate(20 158 174)" />
+              <ellipse cx="170" cy="173" rx="3.2" ry="1.7" transform="rotate(-14 170 173)" />
+              <ellipse cx="147" cy="176" rx="3.2" ry="1.7" transform="rotate(6 147 176)" />
+              <ellipse cx="165" cy="180" rx="3.2" ry="1.7" transform="rotate(-22 165 180)" />
+            </g>
+
+            <!-- broccoli florets -->
+            <path d="M88 148c-2-9 8-15 15-11 3-6 12-6 14 1 7-3 12 4 8 10 3 5-1 10-7 10H90z" fill="#4f7d3a" />
+            <g fill="#6f9c55">
+              <circle cx="92" cy="144" r="1.6" />
+              <circle cx="100" cy="141" r="1.6" />
+              <circle cx="107" cy="145" r="1.6" />
+            </g>
+            <path d="M94 162c-2-6 6-9 10-6 2-4 8-4 9 0 5-2 8 3 5 6 2 4-3 7-7 6l-12-3z" fill="#5a8a42" />
+            <g fill="#7aa75e">
+              <circle cx="98" cy="159" r="1.4" />
+              <circle cx="106" cy="158" r="1.4" />
+            </g>
+            <rect x="96" y="168" width="6" height="10" rx="3" fill="#8fae6a" />
+            <rect x="106" y="167" width="5" height="9" rx="2.5" fill="#8fae6a" />
+
+            <!-- lemon wedge -->
+            <ellipse cx="169" cy="190" rx="11" ry="5" fill="#000" opacity="0.16" />
+            <path d="M162 187l15-10 3 13z" fill="#f9d848" stroke="#e3b92e" stroke-width="1" />
+            <g stroke="#e3b92e" stroke-width="0.8" opacity="0.7">
+              <path d="M162 187l8-5" />
+              <path d="M163 190l9-4" />
+            </g>
+
+            <!-- cherry tomato -->
+            <circle cx="177" cy="164" r="7" fill="#d94a3d" />
+            <path d="M173 159c1-2 3-3 5-2 1-2 4-2 5 0 2-1 3 1 2 3-1 2-3 3-5 3h-6c-2 0-3-2-1-4z" fill="#4f7d3a" />
+            <ellipse cx="175" cy="162" rx="2.6" ry="1.4" fill="#ff8d78" opacity="0.75" transform="rotate(-24 175 162)" />
+
+            <!-- sauce dollop + herbs -->
+            <ellipse cx="104" cy="193" rx="9" ry="5" fill="#9c5f33" opacity="0.92" />
+            <ellipse cx="102" cy="191.5" rx="3.4" ry="1.6" fill="#c98a55" opacity="0.8" />
+            <circle cx="126" cy="191" r="1.6" fill="#5f8a52" />
+            <circle cx="132" cy="187" r="1.3" fill="#5f8a52" />
+
+            <!-- pepper flecks -->
+            <g fill="#3d2f22" opacity="0.45">
+              <circle cx="84" cy="170" r="0.9" />
+              <circle cx="92" cy="176" r="0.8" />
+              <circle cx="140" cy="172" r="0.9" />
+              <circle cx="158" cy="170" r="0.8" />
+            </g>
+          </svg>
+
+          <div class="focus-corners" aria-hidden="true">
+            <span class="focus-corners__tl"></span>
+            <span class="focus-corners__tr"></span>
+            <span class="focus-corners__bl"></span>
+            <span class="focus-corners__br"></span>
+          </div>
+          <div class="focus-ring" aria-hidden="true"></div>
+        </div>
+        <div class="plate-vignette" aria-hidden="true"></div>
+        <div class="cam-hud" aria-hidden="true"><span class="cam-hud__dot"></span>Photo AI</div>
         <p class="scanner-status scanner-status--hud" id="plate-status">Framing your plate…</p>
       </div>
     `;

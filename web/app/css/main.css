@@ -1355,78 +1355,160 @@ body:has(coach-view) .toast {
   text-align: center;
 }
 
-.scanner-frame--mock .mock-barcode,
-.scanner-frame--plate .mock-plate {
+.scanner-frame--mock .mock-stage,
+.scanner-frame--plate .mock-stage {
   position: absolute;
   inset: 12% 10%;
   width: 80%;
   height: 76%;
 }
 
-.scanner-frame--mock .mock-barcode {
-  object-fit: contain;
-  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+.mock-stage svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.scanner-sweep {
+/* Gentle handheld framing bob for the mock feeds (brackets ride along, like
+   real on-device tracking). */
+.mock-stage--bob {
+  animation: mock-bob 4.6s ease-in-out infinite;
+}
+
+@keyframes mock-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Barcode "lock" brackets (demo mock): ML Kit-style corners that breathe
+   over the barcode and snap green with a check every cycle — no laser. */
+.scanner-brackets {
   position: absolute;
-  left: 10%;
-  right: 10%;
-  top: 14%;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--kcal) 65%, #fff) 30%,
-    #fff 50%,
-    color-mix(in srgb, var(--kcal) 65%, #fff) 70%,
-    transparent
-  );
-  box-shadow:
-    0 0 10px 1px color-mix(in srgb, var(--kcal) 55%, transparent),
-    0 0 2px 0 #fff;
-  animation: scanner-sweep 1.8s ease-in-out infinite;
-  pointer-events: none;
+  inset: 63% 28% 20% 28%;
+  animation:
+    bracket-breathe 2.4s ease-in-out infinite,
+    barcode-lock 2.8s ease-in-out infinite;
 }
 
-/* The mock barcode card is a short horizontal band (wide EAN aspect), so its
-   laser sweeps just the card; the plate scan crosses the plate's food. */
-.scanner-frame--mock .scanner-sweep {
-  animation-name: scanner-sweep-card;
+.scanner-brackets__tl,
+.scanner-brackets__tr,
+.scanner-brackets__bl,
+.scanner-brackets__br {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
 }
 
-.scanner-frame--plate .scanner-sweep {
-  animation-name: scanner-sweep-plate;
+.scanner-brackets__tl {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: 4px;
 }
 
-@keyframes scanner-sweep {
+.scanner-brackets__tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+  border-top-right-radius: 4px;
+}
+
+.scanner-brackets__bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+  border-bottom-left-radius: 4px;
+}
+
+.scanner-brackets__br {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+  border-bottom-right-radius: 4px;
+}
+
+.scanner-brackets__hit {
+  position: absolute;
+  inset: -6px;
+  border-radius: 6px;
+  background: rgba(52, 199, 89, 0.14);
+  box-shadow: 0 0 16px rgba(52, 199, 89, 0.28);
+  opacity: 0;
+  animation: lock-hit 2.8s ease-in-out infinite;
+}
+
+.scanner-brackets__check {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #34c759;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  opacity: 0;
+  animation: lock-check 2.8s ease-in-out infinite;
+}
+
+@keyframes bracket-breathe {
   0%,
   100% {
-    top: 14%;
+    opacity: 0.85;
   }
   50% {
-    top: 84%;
+    opacity: 1;
   }
 }
 
-@keyframes scanner-sweep-card {
+@keyframes barcode-lock {
   0%,
+  82%,
   100% {
-    top: 36%;
+    transform: scale(1);
   }
-  50% {
-    top: 64%;
+  88% {
+    transform: scale(0.965);
+  }
+  92% {
+    transform: scale(1.015);
   }
 }
 
-@keyframes scanner-sweep-plate {
+@keyframes lock-hit {
   0%,
+  82%,
   100% {
-    top: 30%;
+    opacity: 0;
   }
-  50% {
-    top: 70%;
+  86%,
+  96% {
+    opacity: 1;
+  }
+}
+
+@keyframes lock-check {
+  0%,
+  86%,
+  100% {
+    opacity: 0;
+  }
+  90%,
+  98% {
+    opacity: 1;
   }
 }
 
@@ -1445,47 +1527,146 @@ body:has(coach-view) .toast {
   white-space: nowrap;
 }
 
-.plate-focus {
+/* Plate mock camera chrome: breathing focus corners, a periodic tap-to-focus
+   ring, a top camera HUD pill, and a lens vignette. */
+.focus-corners {
   position: absolute;
-  inset: 12% 10%;
-  pointer-events: none;
-  animation: plate-focus-pulse 2.2s ease-in-out infinite;
+  inset: 37% 9% 28% 9%;
+  animation: corner-breathe 2.6s ease-in-out infinite;
 }
 
-.plate-focus::before,
-.plate-focus::after {
-  content: "";
+.focus-corners__tl,
+.focus-corners__tr,
+.focus-corners__bl,
+.focus-corners__br {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.92);
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
-.plate-focus::before {
+.focus-corners__tl {
   top: 0;
   left: 0;
   border-right: 0;
   border-bottom: 0;
-  border-top-left-radius: 8px;
+  border-top-left-radius: 5px;
 }
 
-.plate-focus::after {
+.focus-corners__tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+  border-top-right-radius: 5px;
+}
+
+.focus-corners__bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+  border-bottom-left-radius: 5px;
+}
+
+.focus-corners__br {
   bottom: 0;
   right: 0;
   border-left: 0;
   border-top: 0;
-  border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 5px;
 }
 
-@keyframes plate-focus-pulse {
+@keyframes corner-breathe {
   0%,
   100% {
-    opacity: 0.55;
-    inset: 14% 12%;
+    opacity: 0.7;
   }
   50% {
     opacity: 1;
-    inset: 12% 10%;
+  }
+}
+
+.focus-ring {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: 62px;
+  height: 62px;
+  margin: -31px 0 0 -31px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  animation: focus-ring-pulse 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes focus-ring-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  12% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  55% {
+    opacity: 0.35;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+.plate-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cam-hud {
+  position: absolute;
+  top: 0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.cam-hud__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4cd964;
+  animation: cam-dot-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes cam-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
   }
 }
 
@@ -2088,18 +2269,21 @@ form.entry-form > button.btn--primary,
     opacity: 0.85;
   }
 
-  .scanner-sweep {
+  .mock-stage--bob,
+  .scanner-brackets,
+  .focus-corners,
+  .focus-ring,
+  .cam-hud__dot {
     animation: none;
-    top: 50%;
-    opacity: 0.6;
   }
 
-  .scanner-frame--mock .scanner-sweep {
-    top: 50%;
+  .scanner-brackets__hit,
+  .scanner-brackets__check {
+    opacity: 0;
   }
 
-  .plate-focus {
-    animation: none;
+  .focus-ring {
+    opacity: 0;
   }
 }
 

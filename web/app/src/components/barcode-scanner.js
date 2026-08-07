@@ -103,35 +103,107 @@ export class BarcodeScanner extends HTMLElement {
 
   /**
    * Demo-only mock camera feed for the marketing hero (web/app/demo.html):
-   * a drawn EAN-13-look barcode on a light card inside the real viewfinder,
-   * with the reticle and an animated scan line sweeping across it. Pure
-   * CSS/SVG — no getUserMedia, no rAF. Detection is triggered by the demo
-   * driver calling lookupAndPrefill() after the sweep, the same scripted
-   * hand that types into the manual form elsewhere.
+   * a simple cereal box with an EAN-13 barcode on the front, drawn inside the
+   * real viewfinder. Pure CSS/SVG — no getUserMedia, no rAF. No laser line:
+   * like real scanner apps, corner brackets breathe over the barcode and snap
+   * green with a check when the scan "locks", on a repeating cycle. Detection
+   * is triggered by the demo driver calling lookupAndPrefill() after the
+   * lock, the same scripted hand that types into the manual form elsewhere.
    */
   demoMockFeed() {
-    // "G" = tall guard bar, digits = module width in drawing units.
+    // Barcode bars: all bars are the same height (real EAN-13); the guard
+    // bars differ by width only. Digits = module width in drawing units.
     const pattern = "G1G1G2131122131231121G1G1G2131132112312231G1G2G";
-    let x = 8;
+    let x = 0;
     const rects = [];
     for (const ch of pattern) {
-      const w = ch === "G" ? 1.6 : ch === "3" ? 2.8 : ch === "2" ? 2 : 1.6;
-      const tall = ch === "G";
-      rects.push(
-        `<rect x="${x.toFixed(1)}" y="${tall ? 6 : 24}" width="${w.toFixed(1)}" height="${tall ? 92 : 66}" />`,
-      );
-      x += w + 1.4;
+      const w = ch === "G" ? 2.2 : ch === "3" ? 2.7 : ch === "2" ? 2.2 : 1.7;
+      rects.push(`<rect x="${x.toFixed(1)}" y="0" width="${w.toFixed(1)}" height="44" />`);
+      x += w + 1.2;
     }
-    const svgW = Math.ceil(x + 8);
+    const barsSvgW = Math.ceil(x + 1);
+    // Fit the generated bars into the 100-unit-wide barcode card.
+    const scale = (100 / barsSvgW).toFixed(4);
     return `
       <div class="scanner-frame scanner-frame--mock" data-mock-barcode>
-        <svg class="mock-barcode" viewBox="0 0 ${svgW} 104" aria-hidden="true">
-          <rect x="0" y="0" width="${svgW}" height="104" rx="10" fill="#fdfdfa" />
-          ${rects.join("")}
-          <text x="${svgW / 2}" y="100" text-anchor="middle" font-size="9.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#3a3a42" letter-spacing="2.5">0 0 4 9 0 0 0 0 2 8 9 1 1</text>
-        </svg>
-        <div class="scanner-frame__reticle" aria-hidden="true"></div>
-        <span class="scanner-sweep" aria-hidden="true"></span>
+        <div class="mock-stage mock-stage--bob">
+          <svg class="mock-package" viewBox="0 0 237 300" aria-hidden="true">
+            <defs>
+              <radialGradient id="mock-stage-glow" cx="0.5" cy="0.45" r="0.7">
+                <stop offset="0" stop-color="#ffffff" stop-opacity="0.08" />
+                <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="mock-box-front" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#f8cd63" />
+                <stop offset="1" stop-color="#e3a83d" />
+              </linearGradient>
+              <linearGradient id="mock-box-side" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#c98e2f" />
+                <stop offset="1" stop-color="#b57c26" />
+              </linearGradient>
+              <linearGradient id="mock-box-top" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#fbe3a8" />
+                <stop offset="1" stop-color="#eec56b" />
+              </linearGradient>
+              <radialGradient id="mock-box-shadow" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#000" stop-opacity="0.55" />
+                <stop offset="0.75" stop-color="#000" stop-opacity="0.25" />
+                <stop offset="1" stop-color="#000" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+
+            <rect width="237" height="300" fill="url(#mock-stage-glow)" />
+            <ellipse cx="132" cy="252" rx="84" ry="14" fill="url(#mock-box-shadow)" />
+
+            <!-- side + top faces (view from above-right: recede up-right);
+                 overlap 1px under the front face to hide vertex seams -->
+            <path d="M177 68 204 60 204 238 177 246z" fill="url(#mock-box-side)" />
+            <path d="M57 68 177 68 204 60 83 60z" fill="url(#mock-box-top)" />
+            <path d="M84 60 204 60" stroke="#000" stroke-width="1" opacity="0.08" />
+
+            <!-- front face -->
+            <rect x="58" y="68" width="120" height="178" rx="2" fill="url(#mock-box-front)" />
+            <path d="M58 246h120" stroke="#b57c26" stroke-width="1" opacity="0.6" />
+
+            <!-- front panel: brand + sun/bowl graphic -->
+            <rect x="68" y="80" width="100" height="104" rx="5" fill="#fdf6e4" />
+            <text x="118" y="97" text-anchor="middle" font-size="13" font-weight="700" font-family="system-ui, sans-serif" letter-spacing="3" fill="#8a5a1e">GRAIN</text>
+            <text x="118" y="108" text-anchor="middle" font-size="6.5" font-family="system-ui, sans-serif" letter-spacing="1.5" fill="#b07f3a">OATS &amp; HONEY</text>
+            <circle cx="118" cy="136" r="22" fill="#f7a83e" />
+            <circle cx="112" cy="130" r="7" fill="#fbc96e" opacity="0.8" />
+            <path d="M97 146a21 21 0 0 1 42 0z" fill="#fff" stroke="#e8c98a" stroke-width="1.2" />
+            <g fill="#d9a441">
+              <circle cx="112" cy="141" r="2.2" />
+              <circle cx="121" cy="139" r="2.2" />
+              <circle cx="118" cy="145" r="2.2" />
+              <circle cx="127" cy="143" r="2.2" />
+            </g>
+            <text x="118" y="179" text-anchor="middle" font-size="6" font-family="system-ui, sans-serif" letter-spacing="1.2" fill="#b07f3a">NET WT 500 g</text>
+
+            <!-- gloss streak -->
+            <path d="M62 158 116 72l8 2-50 90z" fill="#fff" opacity="0.06" />
+
+            <!-- barcode card -->
+            <rect x="68" y="190" width="100" height="50" rx="4" fill="#fff" stroke="#e5dfd0" stroke-width="1" />
+            <g transform="translate(68 192) scale(${scale})">
+              ${rects.join("")}
+            </g>
+            <text x="118" y="236" text-anchor="middle" font-size="8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" letter-spacing="1.2" fill="#3a3a42">0 049000 028911 1</text>
+
+            <!-- shelf line -->
+            <path d="M70 250 168 250" stroke="#fff" stroke-width="1" opacity="0.08" />
+          </svg>
+
+          <div class="scanner-brackets" aria-hidden="true">
+            <span class="scanner-brackets__tl"></span>
+            <span class="scanner-brackets__tr"></span>
+            <span class="scanner-brackets__bl"></span>
+            <span class="scanner-brackets__br"></span>
+            <span class="scanner-brackets__hit"></span>
+            <span class="scanner-brackets__check">✓</span>
+          </div>
+        </div>
+        <div class="cam-hud" aria-hidden="true"><span class="cam-hud__dot"></span>Scan barcode</div>
         <p class="scanner-status scanner-status--hud" id="scanner-status">Point the camera at a barcode.</p>
       </div>
     `;
