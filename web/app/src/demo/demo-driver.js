@@ -33,7 +33,7 @@ const SCENE_LABELS = {
   "ai-stream": "AI analysis streaming — macros filling in",
   "ai-review": "entry review sheet",
   "ai-ring": "calorie ring after logging",
-  "barcode-scan": "mock barcode viewfinder — laser sweep",
+  "barcode-scan": "mock barcode viewfinder — cereal box + lock brackets",
   "barcode-card": "Open Food Facts product card",
   "plate-scan": "mock plate camera — framing the plate",
   "trend-warp-close": "1M weight chart close-up (noisy daily readings)",
@@ -276,7 +276,7 @@ async function beatBarcode() {
   });
   await sleep(600);
   scene("barcode-scan", ".scanner-frame--mock");
-  await sleep(2100); // a full laser sweep or two
+  await sleep(2100); // framing + a lock flash
   const status = document.querySelector("#scanner-status");
   if (status) status.textContent = "Scanning…";
   await sleep(700);
