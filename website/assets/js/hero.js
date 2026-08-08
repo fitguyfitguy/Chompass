@@ -60,6 +60,11 @@
     // finishes inside each dwell reads as deliberate acceleration instead of
     // a camera that keeps getting cut off.
     "trend-warp": 1400,
+    // The weigh-in beat: short crops on the log button, the input dialog, and
+    // the freshly extended chart so each logging step reads as a beat.
+    "trend-log": 800,
+    "trend-log-dialog": 1100,
+    "trend-logged": 1100,
   };
 
   var heroRoot = null; // .hero-stage (grid on wide screens)
@@ -93,8 +98,11 @@
     "barcode-scan": "Scan any barcode",
     "barcode-card": "Facts from Open Food Facts",
     "plate-scan": "Snap your plate, get the macros",
-    "trend-warp-close": "Daily noise, real trend",
-    "trend-warp": "Your progress over time",
+    "trend-warp-close": "The final stretch — slow and steady",
+    "trend-warp": "Watch the pace build",
+    "trend-log": "Log a weigh-in — one tap",
+    "trend-log-dialog": "Today's reading, straight to your trend",
+    "trend-logged": "Every reading extends the story",
     "trend-stats": "Where you are vs your goal",
     "trend-bodyfat": "Body-fat tracking",
     "trend-forecast": "Days to your goal",
@@ -137,12 +145,24 @@
       desc: "Snap your plate and Chompass reads it like a label. Macros come back before anything is saved."
     },
     "trend-warp-close": {
-      title: "See the real trend behind daily weigh-ins",
-      desc: "A month of daily readings looks like noise, and that's normal. The trend line shows where things are actually going."
+      title: "The final stretch looks quiet — that's the goal in reach",
+      desc: "Recent daily readings bounce around the goal weight, and that's normal. The trend stays true, creeping down."
     },
     "trend-warp": {
-      title: "See progress across months or years",
-      desc: "The same chart expands from one month to all time. Daily noise becomes a clear trend."
+      title: "Watch the pace build, then ease into the finish",
+      desc: "Widen the range and the story appears: a slow start, a confident middle, and a gentle landing at your goal."
+    },
+    "trend-log": {
+      title: "Log a weigh-in in seconds",
+      desc: "One tap opens the scale input. Chompass saves the reading and extends your trend the moment you confirm."
+    },
+    "trend-log-dialog": {
+      title: "A single reading, straight to your trend",
+      desc: "Enter today's weight and the chart updates immediately — the trend line follows every reading."
+    },
+    "trend-logged": {
+      title: "Every reading extends the story",
+      desc: "Each weigh-in lands on the chart and pulls the trend with it. Progress you can watch build, day by day."
     },
     "trend-stats": {
       title: "Where you are against your goal",
