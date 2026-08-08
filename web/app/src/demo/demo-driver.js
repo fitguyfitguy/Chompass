@@ -10,7 +10,8 @@
 // postMessage). The site's camera controller turns each scene into a smooth
 // zoom/crop over the app UI, so the presentation is driven by the same
 // timeline that runs the demo.
-import { reseedDiary, seedDemo } from "./demo-seed.js";
+import { reseedDiary, reseedWeights, seedDemo } from "./demo-seed.js";
+import { weights } from "../lib/db.js";
 
 const VIEW = document.getElementById("view");
 if (!(VIEW instanceof HTMLElement)) throw new Error("demo: #view missing");
@@ -36,8 +37,11 @@ const SCENE_LABELS = {
   "barcode-scan": "mock barcode viewfinder — cereal box + lock brackets",
   "barcode-card": "Open Food Facts product card",
   "plate-scan": "mock plate camera — framing the plate",
-  "trend-warp-close": "1M weight chart close-up (noisy daily readings)",
-  "trend-warp": "weight chart warping 3M→6M→1Y→All",
+  "trend-warp-close": "1M weight chart close-up (final stretch near goal)",
+  "trend-warp": "weight chart warping 3M→6M→1Y→All — the success arc",
+  "trend-log": "log-weight button on the weight card",
+  "trend-log-dialog": "weigh-in input dialog — 64.3 kg",
+  "trend-logged": "weight chart extended with new readings",
   "trend-stats": "current/goal/net stats badges",
   "trend-bodyfat": "body-fat chart",
   "trend-forecast": "weight forecast card",
@@ -363,7 +367,17 @@ async function clickRange(id) {
   await sleep(280); // let the new chart paint
 }
 
+/** Put a weigh-in entry directly (same store the real Log weight dialog
+ *  writes to). daysAgo 0 = today. */
+async function logWeighIn(kg, daysAgo) {
+  const date = new Date(Date.now() - daysAgo * 864e5);
+  await weights.put({ id: crypto.randomUUID(), date: date.toISOString(), weightKg: kg });
+}
+
 async function beatTrend() {
+  // Reset to the canonical 2y S-curve journey ending 3 days ago; the missing
+  // readings get logged live below, so every loop tells the same story.
+  await reseedWeights();
   navigate("#/progress");
   window.scrollTo({ top: 0 });
   await waitFor(() => document.querySelector('[data-range="All"]'), {
@@ -371,21 +385,58 @@ async function beatTrend() {
   });
   await sleep(900);
 
-  // 1) Close-up on the weight chart at 1M: noisy daily readings, mild drift.
+  // 1) Close-up on the 1M window: the final stretch — readings bounce around
+  // the goal weight while the trend creeps down.
   await clickRange("1M");
   centerOn(document.querySelector(CHART_SEL));
   await sleep(500);
   scene("trend-warp-close", CHART_SEL);
-  await sleep(3800);
+  await sleep(3200);
 
-  // 2) Warp: ranges widen with accelerating tempo — 2y of weigh-ins compress
-  // into a few seconds. 1Y steps out to the whole card so the camera zooms out
-  // while the data expands; All settles back on the full downward trend.
+  // 2) Live weigh-ins: two readings land one at a time (the chart extends at
+  // the right edge each time), then the real Log weight dialog types today's
+  // reading — the honest "logging a weigh-in" beat.
+  const last = (await weights.all()).sort((a, b) => b.date.localeCompare(a.date))[0].weightKg;
+  for (const [daysAgo, dwell] of [[2, 1100], [1, 1100]]) {
+    await logWeighIn(Math.round((last + (Math.random() * 0.6 - 0.3)) * 10) / 10, daysAgo);
+    await clickRange("1M"); // re-render shows the new reading on the chart
+    centerOn(document.querySelector(CHART_SEL));
+    await sleep(350);
+    scene("trend-logged", CHART_SEL);
+    await sleep(dwell);
+  }
+
+  scene("trend-log", "[data-log-weight]");
+  await sleep(900);
+  const before = document.querySelector(CHART_SEL);
+  clickFirst("[data-log-weight]");
+  await waitFor(() => document.querySelector(".dialog__input"), {
+    label: "log-weight dialog",
+  });
+  await sleep(500);
+  scene("trend-log-dialog", ".dialog__panel");
+  await sleep(700);
+  const input = /** @type {HTMLInputElement | null} */ (document.querySelector(".dialog__input"));
+  if (input) setValue(input, "64.3");
+  await sleep(300);
+  clickFirst(".dialog .btn--primary");
+  await waitFor(
+    () =>
+      !document.querySelector(".dialog") &&
+      document.querySelector(CHART_SEL) !== before,
+    { timeout: 9000, label: "chart after weigh-in" },
+  );
+  scene("trend-logged", CHART_SEL);
+  await sleep(2400);
+
+  // 3) Warp: ranges widen with accelerating tempo — the loss picks up pace,
+  // then eases into the goal. 1Y steps out to the whole card so the camera
+  // zooms out while the data expands; All settles on the full S-curve.
   const warp = [
-    { range: "3M", selector: CHART_SEL, dwell: 1600 },
-    { range: "6M", selector: CHART_SEL, dwell: 1200 },
+    { range: "3M", selector: CHART_SEL, dwell: 1800 },
+    { range: "6M", selector: CHART_SEL, dwell: 1400 },
     { range: "1Y", selector: ".card.card--glass", card: 0, dwell: 1200 },
-    { range: "All", selector: CHART_SEL, dwell: 3000 },
+    { range: "All", selector: CHART_SEL, dwell: 3200 },
   ];
   for (const step of warp) {
     await clickRange(step.range);
@@ -399,25 +450,34 @@ async function beatTrend() {
     await sleep(step.dwell);
   }
 
-  // 3) The important numbers: current / goal / net / average badges.
+  // 4) The important numbers: current / goal / net / average badges.
   const badges = document.querySelector(".card.card--glass .stat-badges");
   centerOn(badges);
   await sleep(500);
   scene("trend-stats", ".card.card--glass .stat-badges");
   await sleep(3200);
 
-  // 4) Body-fat card.
-  const bfIndex = cardIndex((c) =>
-    /body fat/i.test(c.querySelector("h2.chart-title")?.textContent ?? ""),
-  );
-  if (bfIndex >= 0) {
-    centerOn(cardAt((_, i) => i === bfIndex));
+  // 5) Body-fat card (behind the metric toggle — the section has no glass
+  // wrapper, so the camera crops its chart; the forecast card lives in the
+  // weight section, so toggle back before the payoff).
+  const toggleBf = document.querySelector('[data-metric="body_fat"]');
+  if (toggleBf) {
+    clickFirst('[data-metric="body_fat"]');
+    await waitFor(() => document.querySelector("[data-log-bf]"), {
+      label: "body-fat section",
+    });
+    centerOn(document.querySelector(".chart-svg"));
     await sleep(500);
-    scene("trend-bodyfat", ".card.card--glass", bfIndex);
+    scene("trend-bodyfat", ".chart-svg", 0);
     await sleep(2900);
+    clickFirst('[data-metric="weight"]');
+    await waitFor(() => document.querySelector('[data-range="All"]'), {
+      label: "weight section back",
+    });
+    await sleep(400);
   }
 
-  // 5) Forecast card: predicted change, days to goal, adaptive message.
+  // 6) Forecast card: predicted change, days to goal, adaptive message.
   const fIndex = cardIndex((c) =>
     /weight forecast/i.test(
       c.querySelector("h2.chart-title")?.textContent ?? "",
