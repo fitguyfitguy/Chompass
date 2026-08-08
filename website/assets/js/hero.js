@@ -98,11 +98,11 @@
     "barcode-scan": "Scan any barcode",
     "barcode-card": "Facts from Open Food Facts",
     "plate-scan": "Snap your plate, get the macros",
-    "trend-warp-close": "The final stretch — slow and steady",
-    "trend-warp": "Watch the pace build",
-    "trend-log": "Log a weigh-in — one tap",
-    "trend-log-dialog": "Today's reading, straight to your trend",
-    "trend-logged": "Every reading extends the story",
+    "trend-warp-close": "Daily noise, real trend",
+    "trend-warp": "Your progress over time",
+    "trend-log": "Log a weigh-in",
+    "trend-log-dialog": "Save today's weight",
+    "trend-logged": "Chart updated",
     "trend-stats": "Where you are vs your goal",
     "trend-bodyfat": "Body-fat tracking",
     "trend-forecast": "Days to your goal",
@@ -145,36 +145,28 @@
       desc: "Snap your plate and Chompass reads it like a label. Macros come back before anything is saved."
     },
     "trend-warp-close": {
-      title: "The final stretch looks quiet — that's the goal in reach",
-      desc: "Recent daily readings bounce around the goal weight, and that's normal. The trend stays true, creeping down."
+      title: "See the real trend behind daily weigh-ins"
     },
     "trend-warp": {
-      title: "Watch the pace build, then ease into the finish",
-      desc: "Widen the range and the story appears: a slow start, a confident middle, and a gentle landing at your goal."
+      title: "See progress across months or years"
     },
     "trend-log": {
-      title: "Log a weigh-in in seconds",
-      desc: "One tap opens the scale input. Chompass saves the reading and extends your trend the moment you confirm."
+      title: "Log a weigh-in"
     },
     "trend-log-dialog": {
-      title: "A single reading, straight to your trend",
-      desc: "Enter today's weight and the chart updates immediately — the trend line follows every reading."
+      title: "Save today's weight"
     },
     "trend-logged": {
-      title: "Every reading extends the story",
-      desc: "Each weigh-in lands on the chart and pulls the trend with it. Progress you can watch build, day by day."
+      title: "Chart updated"
     },
     "trend-stats": {
-      title: "Where you are against your goal",
-      desc: "Current, goal, and net sit right above the chart. The state of your week at a glance."
+      title: "Where you are against your goal"
     },
     "trend-bodyfat": {
-      title: "Body fat, tracked with your weight",
-      desc: "Body-fat readings follow the same range filters as weight, side by side with the trend.",
+      title: "Body fat, tracked with your weight"
     },
     "trend-forecast": {
-      title: "Know when you'll reach your goal",
-      desc: "Chompass projects your weekly rate, the 30-day outlook, and how many days are left to goal.",
+      title: "Know when you'll reach your goal"
     },
     "relog-chips": {
       title: "Repeat a meal in one tap",
@@ -373,7 +365,8 @@
       return;
     }
     copyTitle.textContent = info.title;
-    copyDesc.textContent = info.desc;
+    copyDesc.textContent = info.desc || "";
+    copyDesc.hidden = !info.desc;
     copyPanel.classList.add("is-visible");
     copyTitle.classList.remove("swap");
     copyDesc.classList.remove("swap");
