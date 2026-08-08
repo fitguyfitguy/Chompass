@@ -33,8 +33,15 @@ export async function seedProfile() {
   });
 }
 
-/** @param {number} [days] @param {{lightToday?: boolean}} [opts] */
-export async function seedDiaryEntries(days = 14, { lightToday = false } = {}) {
+/**
+ * @param {number} [days]
+ * @param {{lightToday?: boolean, calorieScale?: number}} [opts] calorieScale
+ *   scales every logged day's calories + macros (default 1). The demo hero
+ *   passes ~1.38 so the 90-day history sits near this profile's maintenance
+ *   intake — the forecast card then agrees with the weight series' flat tail
+ *   instead of flagging "trends disagree".
+ */
+export async function seedDiaryEntries(days = 14, { lightToday = false, calorieScale = 1 } = {}) {
   for (let i = 0; i < days; i++) {
     const date = isoDaysAgo(i);
     const jitter = () => 0.85 + Math.random() * 0.3;
@@ -51,10 +58,10 @@ export async function seedDiaryEntries(days = 14, { lightToday = false } = {}) {
         date,
         time: meal.time,
         quantityG: null,
-        calories: Math.round(meal.calories * jitter()),
-        proteinG: Math.round(meal.proteinG * jitter()),
-        carbsG: Math.round(meal.carbsG * jitter()),
-        fatG: Math.round(meal.fatG * jitter()),
+        calories: Math.round(meal.calories * jitter() * calorieScale),
+        proteinG: Math.round(meal.proteinG * jitter() * calorieScale),
+        carbsG: Math.round(meal.carbsG * jitter() * calorieScale),
+        fatG: Math.round(meal.fatG * jitter() * calorieScale),
         source: "manual",
         note: null,
         grounding: null,
@@ -65,27 +72,37 @@ export async function seedDiaryEntries(days = 14, { lightToday = false } = {}) {
 
 /**
  * @param {number} [days]
- * @param {{dailyDriftKg?: number, lossTauDays?: number}} [opts] daily drift
- *   (kg lost per day) as of TODAY — the past flattens out exponentially with
- *   time constant [lossTauDays], so multi-year history reads as a realistic
- *   journey (slow start, current focused loss phase) instead of a plummet.
- *   0.04 with the default τ suits short horizons; pass ~0.12 (≈0.84 kg/wk,
- *   the classic safe upper bound) for the 2y demo hero.
+ * @param {{initialDriftKg?: number, lossTauDays?: number, skipProbability?: number}} [opts]
+ *   [initialDriftKg] is the loss rate (kg/day) at the START of the series —
+ *   the steep part of the journey. History is a saturating exponential with
+ *   time constant [lossTauDays], so loss is front-loaded (big early drop,
+ *   then a long maintenance taper) instead of accelerating toward today.
+ *   0.04 with the default τ suits short horizons; pass ~0.13 (≈0.9 kg/wk
+ *   early, ~flat by year two) for the 2y demo hero. [skipProbability] skips
+ *   some weigh-in days the way real logs do (the 3 most recent readings are
+ *   always kept, and runs cap at 4 so the trend line never breaks).
  */
-export async function seedWeightHistory(days = 42, { dailyDriftKg = 0.04, lossTauDays = 150 } = {}) {
-  // Realistic daily weigh-ins: slow trend + autocorrelated day-to-day
-  // water-retention noise (AR(1), φ≈0.6 → σ≈0.28 kg), rounded to the 0.1 kg
-  // a real scale reports. Noise must be added BEFORE rounding — the old
-  // seeder's drift (~0.005 kg/day) sat ~20× below the 0.1 kg resolution, so
-  // a month of readings collapsed into a straight line.
+export async function seedWeightHistory(days = 42, { initialDriftKg = 0.04, lossTauDays = 150, skipProbability = 0 } = {}) {
+  // Realistic daily weigh-ins: front-loaded saturating trend + autocorrelated
+  // day-to-day water-retention noise (AR(1), φ≈0.6 → σ≈0.5 kg — up from
+  // σ≈0.28 so a month of readings looks properly noisy, like a real scale),
+  // rounded to the 0.1 kg a real scale reports. Noise must be added BEFORE
+  // rounding — the old seeder's drift (~0.005 kg/day) sat ~20× below the
+  // 0.1 kg resolution, so a month of readings collapsed into a straight line.
   const noisePhi = 0.6;
-  const noiseAmpKg = 0.38; // uniform ε ∈ ±0.38 kg → σ_total ≈ 0.28 kg
-  const decay = Math.exp(-days / lossTauDays);
-  const scale = dailyDriftKg * lossTauDays * decay; // total kg lost over the span
+  const noiseAmpKg = 0.7; // uniform ε ∈ ±0.7 kg → σ_total ≈ 0.5 kg
+  const totalLossKg = initialDriftKg * lossTauDays;
+  const endKg = 84 - totalLossKg; // series starts at 84 kg, ends near endKg
   let prevNoise = 0;
+  let skipped = 0;
   for (let i = days; i >= 0; i--) {
     const t = days - i; // days elapsed since the oldest reading
-    const baseline = 84 - scale * (Math.exp(t / lossTauDays) - 1);
+    if (i > 2 && skipProbability > 0 && skipped < 4 && Math.random() < skipProbability) {
+      skipped++;
+      continue;
+    }
+    skipped = 0;
+    const baseline = endKg + totalLossKg * Math.exp(-t / lossTauDays);
     const noise = noisePhi * prevNoise + (Math.random() * 2 - 1) * noiseAmpKg;
     prevNoise = noise;
     const date = new Date();
@@ -96,21 +113,27 @@ export async function seedWeightHistory(days = 42, { dailyDriftKg = 0.04, lossTa
 
 /**
  * @param {number} [days]
- * @param {{dailyDriftPct?: number, lossTauDays?: number}} [opts] daily drift
- *   (body-fat fraction lost per day) as of TODAY, same exponential shape as
- *   seedWeightHistory.
+ * @param {{initialDriftPct?: number, lossTauDays?: number, skipProbability?: number}} [opts]
+ *   Same front-loaded saturating shape as seedWeightHistory: [initialDriftPct]
+ *   is the body-fat drop (fraction/day) at the START of the series.
  */
-export async function seedBodyFatHistory(days = 42, { dailyDriftPct = 0.00003, lossTauDays = 150 } = {}) {
-  // Same AR(1) treatment as weight: slow drift + autocorrelated daily
+export async function seedBodyFatHistory(days = 42, { initialDriftPct = 0.00003, lossTauDays = 150, skipProbability = 0 } = {}) {
+  // Same AR(1) treatment as weight: front-loaded trend + autocorrelated daily
   // fluctuation (σ≈0.33%), rounded to the 0.1% a real scale reports.
   const noisePhi = 0.6;
   const noiseAmpPct = 0.0045; // uniform ε ∈ ±0.45% → σ_total ≈ 0.33%
-  const decay = Math.exp(-days / lossTauDays);
-  const scale = dailyDriftPct * lossTauDays * decay;
+  const totalDrop = initialDriftPct * lossTauDays;
+  const endFraction = 0.24 - totalDrop; // series starts at 24%, ends near endFraction
   let prevNoise = 0;
+  let skipped = 0;
   for (let i = days; i >= 0; i--) {
     const t = days - i;
-    const baseline = 0.24 - scale * (Math.exp(t / lossTauDays) - 1);
+    if (i > 2 && skipProbability > 0 && skipped < 4 && Math.random() < skipProbability) {
+      skipped++;
+      continue;
+    }
+    skipped = 0;
+    const baseline = endFraction + totalDrop * Math.exp(-t / lossTauDays);
     const noise = noisePhi * prevNoise + (Math.random() * 2 - 1) * noiseAmpPct;
     prevNoise = noise;
     const date = new Date();

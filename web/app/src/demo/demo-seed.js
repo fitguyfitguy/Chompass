@@ -38,6 +38,11 @@ async function clearDemoStores() {
   await prefs.save({ onboardingComplete: true, theme: "dark" });
 }
 
+/** Demo diary scale: the 90-day history sits near this profile's maintenance
+ *  intake so the weight-forecast card agrees with the weight series' flat
+ *  maintenance tail (see dev-seed seedDiaryEntries). */
+const DEMO_CALORIE_SCALE = 1.38;
+
 /** Full demo dataset: profile + 90 days diary (light today) + 2y realistic weight/body-fat + favorites. */
 export async function seedDemo() {
   if (!isDemo())
@@ -46,14 +51,16 @@ export async function seedDemo() {
   await seedProfile();
   // Demo-only goal so the Progress screen shows a real "Goal" badge + line.
   // 64 kg sits just below the ~66 kg the 2y weigh-in series ends at, so the
-  // forecast card reads as an on-track safe loss (~2–3 weeks to goal).
+  // forecast card reads as an on-track finish: the series is a front-loaded
+  // journey (fast early loss, then a long maintenance plateau), and the
+  // remaining ~2 kg to goal at ~0.2 kg/wk keeps "days to goal" alive.
   const prof = await profileStore.load();
   if (prof) {
     await profileStore.save({ ...prof, goalWeightKg: 64 });
   }
-  await seedDiaryEntries(90, { lightToday: true });
-  await seedWeightHistory(730, { dailyDriftKg: 0.12 });
-  await seedBodyFatHistory(730, { dailyDriftPct: 0.0002 });
+  await seedDiaryEntries(90, { lightToday: true, calorieScale: DEMO_CALORIE_SCALE });
+  await seedWeightHistory(730, { initialDriftKg: 0.129, lossTauDays: 140, skipProbability: 0.2 });
+  await seedBodyFatHistory(730, { initialDriftPct: 0.00025, lossTauDays: 140, skipProbability: 0.35 });
   await seedFavorites();
 }
 
@@ -64,5 +71,5 @@ export async function seedDemo() {
 export async function reseedDiary() {
   if (!isDemo()) return;
   await foodEntries.clear();
-  await seedDiaryEntries(90, { lightToday: true });
+  await seedDiaryEntries(90, { lightToday: true, calorieScale: DEMO_CALORIE_SCALE });
 }
