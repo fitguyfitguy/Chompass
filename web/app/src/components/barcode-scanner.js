@@ -1,6 +1,7 @@
 // @ts-check
-import { lookupBarcode } from "../lib/off-client.js";
-import { createDetector } from "../lib/barcode-detect.js";
+// The real barcode stack (barcode-detect, off-client) is imported lazily in
+// startCamera / lookupAndPrefill: the demo hero uses the canned DEMO_PRODUCT,
+// so the zxing-wasm chain never enters its bundle.
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import {
   buildMediaStreamConstraints,
@@ -260,6 +261,7 @@ export class BarcodeScanner extends HTMLElement {
     const status = this.querySelector("#scanner-status");
     const ok = await this.openStream({ deviceId: loadPreferredVideoDeviceId() });
     if (!ok || this.stopped) return;
+    const { createDetector } = await import("../lib/barcode-detect.js");
     this.detector = await createDetector((msg) => {
       if (status) status.textContent = msg;
     });
@@ -331,7 +333,9 @@ export class BarcodeScanner extends HTMLElement {
     const status = this.querySelector("#lookup-status");
     if (status) status.textContent = "Looking up…";
     try {
-      const prefill = DEMO ? { ...DEMO_PRODUCT } : await lookupBarcode(barcode);
+      const prefill = DEMO
+        ? { ...DEMO_PRODUCT }
+        : await (await import("../lib/off-client.js")).lookupBarcode(barcode);
       if (!prefill) {
         if (status)
           status.textContent = `No product found for ${barcode}. Try manual entry, or edit portions after saving.`;

@@ -51,6 +51,14 @@ export class Store {
     return wrapTransaction(tx);
   }
 
+  /** Bulk put in a single readwrite transaction (demo seeding). */
+  putAll(values) {
+    const tx = this.db.transaction(this.name, "readwrite");
+    const os = tx.objectStore(this.name);
+    for (const value of values) os.put(value);
+    return wrapTransaction(tx);
+  }
+
   /** @param {IDBValidKey} key */
   delete(key) {
     const tx = this.db.transaction(this.name, "readwrite");

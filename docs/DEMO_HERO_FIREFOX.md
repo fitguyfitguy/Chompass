@@ -3,6 +3,21 @@
 Status: **open** — partial fixes landed (see below); the core reload loop is
 not yet reproduced in a controlled environment.
 
+> **2024-08 update (Phase 0/3 instrumentation):** headless Firefox 153
+> (geckodriver, real site build) now runs the demo **cleanly end-to-end**: a
+> full 5-beat loop completes in ~91 s with **zero beat failures** and no
+> document reloads — so the reload loop does not reproduce under headless
+> automation (consistent with the doc note that it needs real-Firefox
+> visibility/bfcache or embedded-webview conditions). The demo now ships
+> with a driver watchdog that posts `stalled` to the parent (parent performs
+> a bounded iframe restart: 30 s gap, max 3), a `hello → state` pause/play
+> handshake that re-syncs a reloaded document, `?debug=1` lifecycle/error
+> tracing (demo iframe + parent hero), and `window.__demoStats` telemetry.
+> Repro recipe for a real session: open the deployed page, keep the hero
+> scrolled away for >1 s (pause), scroll back, and watch for `loop 0`
+> restarts in the iframe console; report whether `__demoStats.loopIndex`
+> regresses to 0 after any `pageshow` (bfcache) event.
+
 ## Symptom
 
 The live demo hero never gets past the first beat. The console shows

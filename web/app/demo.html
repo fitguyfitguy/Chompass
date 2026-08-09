@@ -39,6 +39,50 @@
       document.documentElement.dataset.theme = "dark";
       window.CHOMPASS_DEMO = true;
     </script>
+    <!-- Demo diagnostics (Phase 0): forward fatal errors to the parent hero so
+       a failure is visible instead of a silent stuck stage, and (only with
+       ?debug=1) trace lifecycle events that distinguish a document reload
+       from a frozen / bfcache-restored frame — the missing evidence for the
+       open Firefox reload bug (docs/DEMO_HERO_FIREFOX.md). -->
+    <script>
+      (function () {
+        var debug = new URLSearchParams(location.search).has("debug");
+        function diagLog() {
+          if (!debug) return;
+          var args = Array.prototype.slice.call(arguments);
+          args.unshift("[demo-diag]");
+          (console.log || function () {}).apply(console, args);
+        }
+        function forward(kind, message) {
+          try {
+            parent.postMessage(
+              { source: "chompass-hero", type: kind, message: message, ts: Math.round(performance.now()) },
+              "*",
+            );
+          } catch (e) {
+            /* cross-origin or no parent — ignore */
+          }
+        }
+        window.addEventListener("error", function (ev) {
+          forward("error", "error: " + (ev.message || ev.error || "unknown error"));
+        });
+        window.addEventListener("unhandledrejection", function (ev) {
+          var reason = ev.reason;
+          var msg = reason && reason.message ? reason.message : String(reason);
+          forward("error", "unhandled rejection: " + msg);
+        });
+        ["pagehide", "pageshow", "visibilitychange"].forEach(function (name) {
+          window.addEventListener(name, function (ev) {
+            var extra =
+              name === "pagehide" || name === "pageshow"
+                ? " persisted=" + ev.persisted
+                : " hidden=" + document.hidden;
+            diagLog("lifecycle " + name + extra + " ts=" + Math.round(performance.now()));
+          });
+        });
+        window.__demoDiag = { debug: debug, forward: forward, log: diagLog };
+      })();
+    </script>
   </head>
   <body>
     <main id="view" class="view"></main>
@@ -81,6 +125,13 @@
       </a>
     </nav>
 
-    <script type="module" src="./src/demo/demo-main.js"></script>
+    <!-- Version-aware module entry: demo.html loads with ?v=<site version>
+       (see website/layouts/index.html). Pass it down so the entry module is
+       cache-busted in lockstep with the page; inner imports revalidate by
+       ETag (Codeberg Pages: max-age=60, stale-while-revalidate=3600). -->
+    <script type="module">
+      const v = new URLSearchParams(location.search).get("v") || "dev";
+      await import(`./src/demo/demo-main.js?v=${encodeURIComponent(v)}`);
+    </script>
   </body>
 </html>

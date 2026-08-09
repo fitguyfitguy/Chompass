@@ -23,10 +23,11 @@ import {
   applyConstituentDisplayEdit,
 } from "../lib/chompass-core/constituents.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
-import { analyzeFoodEntry, ANALYSIS_PHASE, isAbortError } from "../lib/ai/food-analyze.js";
-import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
+import { ANALYSIS_PHASE, isAbortError } from "../lib/ai/analysis-phase.js";
+// The real AI request stack (food-analyze, key-storage, correct-diff) is
+// imported dynamically in onCorrectWithAi — the demo hero's review sheet
+// never triggers it. See demo/demo-main.js.
 import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
-import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 import { t } from "../lib/i18n/index.js";
 import {
   addToProgressiveMeal,
@@ -693,6 +694,9 @@ export class EntryForm extends HTMLElement {
     this.captureFormIntoSource();
     const before = { ...this.existing };
 
+    const { listConfiguredProviders, loadProviderKey } = await import(
+      "../lib/ai/key-storage.js"
+    );
     const providers = await listConfiguredProviders();
     if (!providers.length) {
       location.hash = "#/settings?section=ai";
@@ -734,6 +738,8 @@ export class EntryForm extends HTMLElement {
     const description = parts.length ? `${parts.join(", ")}. ${note}` : note;
 
     try {
+      const { analyzeFoodEntry } = await import("../lib/ai/food-analyze.js");
+      const { buildCorrectDiff } = await import("../lib/ai/correct-diff.js");
       const estimate = await analyzeFoodEntry({
         providerId: /** @type {any} */ (providerId),
         config,

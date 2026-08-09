@@ -3,7 +3,7 @@
  * Lightweight PWA i18n: catalog lookup, locale preference, Intl formatters.
  * English is the complete fallback for core surfaces.
  */
-import { CATALOGS } from "./catalogs/index.js";
+import { CATALOGS, loadCatalog } from "./catalogs/index.js";
 import { FALLBACK_LOCALE, LOCALES, detectLocaleId, getLocale, resolveLocaleId } from "./locales.js";
 
 export { LOCALES, FALLBACK_LOCALE, detectLocaleId, getLocale, resolveLocaleId };
@@ -104,12 +104,15 @@ export function formatNumber(value, options = { maximumFractionDigits: 1 }) {
 }
 
 /**
- * Resolve locale from prefs + browser and activate it.
+ * Resolve locale from prefs + browser, load its catalog, and activate it.
+ * Awaiting the catalog load is what lets the rest of the app render in the
+ * chosen language on the first frame (no English flash).
  * @param {{ uiLang?: string }} prefs
  * @param {string} [browserTag]
  */
-export function activateFromPrefs(prefs, browserTag) {
+export async function activateFromPrefs(prefs, browserTag) {
   const id = detectLocaleId(prefs?.uiLang || "", browserTag);
+  await loadCatalog(id);
   return setActiveLocale(id);
 }
 
@@ -119,11 +122,14 @@ export function englishKeys() {
 }
 
 /**
+ * Diff a locale catalog against English (used by completeness tests). Loads
+ * the catalog on demand.
  * @param {string} localeId
- * @returns {{ missing: string[], extra: string[] }}
+ * @returns {Promise<{ missing: string[], extra: string[] }>}
  */
-export function catalogDiff(localeId) {
+export async function catalogDiff(localeId) {
   const id = resolveLocaleId(localeId);
+  await loadCatalog(id);
   const base = new Set(englishKeys());
   const cat = CATALOGS[id] || {};
   const keys = new Set(Object.keys(cat));

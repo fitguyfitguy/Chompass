@@ -5,11 +5,8 @@ import { openSheet } from "./sheet.js";
 import { openCameraCapture, pickFromGallery, isLiveCameraSupported } from "./camera-capture.js";
 import { shouldUseNativeCaptureHint } from "../media-devices.js";
 import { fileToJpegBase64 } from "../ai/image.js";
-import {
-  ANALYSIS_PHASE,
-  analyzeFoodEntry,
-  isAbortError,
-} from "../ai/food-analyze.js";
+import { ANALYSIS_PHASE, isAbortError } from "../ai/analysis-phase.js";
+import { analyzeFoodEntry } from "../ai/food-analyze.js";
 import { collectOffPromptContext } from "../ai/off-prompt-context.js";
 import { listConfiguredProviders, loadProviderKey } from "../ai/key-storage.js";
 import { prefs } from "../db.js";

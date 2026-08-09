@@ -73,7 +73,7 @@ function currentRoute() {
 
 async function applyThemeAndLocale() {
   const p = await prefs.load();
-  activateFromPrefs(p);
+  await activateFromPrefs(p);
   applyNavLabels();
   const root = document.documentElement;
   if (p.theme === "system") root.removeAttribute("data-theme");
