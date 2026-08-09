@@ -238,12 +238,15 @@
   }
 
   function transformString(t) {
+    // translate3d forces a compositor layer in Firefox (2D transforms can
+    // run on the main thread there) — this is what keeps the camera pans
+    // smooth on Firefox instead of the jankier 2D form.
     return (
-      "translate(" +
+      "translate3d(" +
       t.tx.toFixed(2) +
       "px," +
       t.ty.toFixed(2) +
-      "px) scale(" +
+      "px,0) scale(" +
       t.s.toFixed(4) +
       ")"
     );
@@ -511,6 +514,7 @@
 
   function resume() {
     heroPaused = false;
+    if (staticMode) return; // frozen frame: no re-animating on flapping visibility
     if (lastScene && camera && !REDUCED) {
       playScene(lastScene.key, lastScene.selector, lastScene.index);
     }
@@ -539,7 +543,7 @@
     if (!iframe) return;
     try {
       iframe.contentWindow.postMessage(
-        { source: "chompass-hero", type: "state", paused: heroPaused },
+        { source: "chompass-hero", type: "state", paused: heroPaused, static: staticMode },
         window.location.origin,
       );
     } catch (e) {
@@ -552,6 +556,55 @@
   // never see it (DEV requires ?debug=1 on the page URL).
   var diagEl = null;
   var diagTimer = null;
+  // Restart-loop detection (Phase 3): count document loads after the first.
+  // A burst means the embedder (VS Code/Cursor preview) or browser keeps
+  // discarding/restoring the iframe — after STATIC_THRESHOLD within
+  // STATIC_WINDOW_MS, switch the demo to a single frozen frame instead of an
+  // endless restart loop.
+  var restartCount = 0;
+  var lastLoadAt = 0;
+  var staticMode = false;
+  var STATIC_THRESHOLD = 3;
+  var STATIC_WINDOW_MS = 60_000;
+
+  /** Shared load handling for the initial iframe and restarted clones. */
+  function attachLoadHandling(el) {
+    el.addEventListener("load", function () {
+      ready = true;
+      if (pendingScene) {
+        var sc = pendingScene;
+        pendingScene = null;
+        onSceneMessage(sc);
+      }
+      // Re-sync pause state on every document load: a reloaded demo must
+      // never start mid-pause (or run while the hero is away).
+      replyState();
+      var now = Date.now();
+      if (lastLoadAt > 0) {
+        if (now - lastLoadAt > STATIC_WINDOW_MS) restartCount = 0;
+        restartCount += 1;
+        if (!staticMode && restartCount >= STATIC_THRESHOLD) {
+          enterStaticMode();
+        }
+      }
+      lastLoadAt = now;
+    });
+  }
+
+  /** Freeze the hero: tell the driver to render one frame and stop. */
+  function enterStaticMode() {
+    staticMode = true;
+    heroLog("static mode: demo restart loop detected — freezing one frame");
+    try {
+      iframe.contentWindow.postMessage(
+        { source: "chompass-hero", type: "static" },
+        window.location.origin,
+      );
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   function showDiag(data) {
     if (!DEV) return;
     if (!diagEl && heroRoot) {
@@ -601,14 +654,7 @@
     iframe = fresh;
     ready = false;
     pendingScene = null;
-    iframe.addEventListener(
-      "load",
-      function () {
-        ready = true;
-        replyState();
-      },
-      { once: true },
-    );
+    attachLoadHandling(iframe);
   }
 
   var lazy = new IntersectionObserver(
@@ -635,21 +681,7 @@
         applyRest();
         startRevealWatch();
         if (iframe) {
-          iframe.addEventListener(
-            "load",
-            function () {
-              ready = true;
-              if (pendingScene) {
-                var sc = pendingScene;
-                pendingScene = null;
-                onSceneMessage(sc);
-              }
-              // Re-sync pause state on every document load: a reloaded demo
-              // must never start mid-pause (or run while the hero is away).
-              replyState();
-            },
-            { once: true },
-          );
+          attachLoadHandling(iframe);
         }
       });
     },

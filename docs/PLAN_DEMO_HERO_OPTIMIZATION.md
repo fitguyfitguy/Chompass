@@ -181,9 +181,13 @@ concrete telemetry + a repro recipe for real-Firefox sessions.
 - [x] Gate: demo graph 63→**39 modules**, 703→**389 KiB raw** (214→**114 KiB gzip**); runtime 40 modules / 415 KB; `release:check-parity`-equivalent gates green (tsc 0, 171/171 tests); real app boots in Firefox incl. German lazy catalog; demo full loop with 0 beat failures
 
 ### Phase 3 — Firefox hardening
-- [x] play/pause state handshake (`hello` → `state` reply; parent re-sends on iframe load) — landed with Phase 0
+- [x] play/pause state handshake (`hello` → `state` reply incl. `static`; parent re-sends on iframe load) — landed with Phase 0, extended for static mode
 - [x] Bounded restart protocol (backoff 30 s + cap 3 + status pill) on driver `stalled` watchdog
+- [x] **Static mode**: persistent iframe load listener counts reloads; ≥3 in 60 s → driver renders one frozen home frame and stops (restart loop → stable hero). Verified: 4 rapid reloads → frozen, 0 loop churn
+- [x] **Pause-aware `waitFor`**: pauses no longer count against the 9 s beat budget (fixes spurious `trend` beat timeouts after resume). Verified: 11 s mid-beat pause → loop completes, 0 failures
+- [x] **`translate3d` camera transforms** for Firefox compositor smoothness (2D transforms can main-thread there)
 - [x] Cache hygiene: entry module versioned off the iframe `?v=`; Codeberg Pages verified `max-age=60, stale-while-revalidate=3600` + strong `sha256` ETags on `/app/` — mixed-graph window is ≤1 h post-release and recovers via ETag revalidation; full import-map versioning documented as future option (needs deploy-pipeline change, low ROI)
+- [x] Removed `allow="autoplay"` from the demo iframe (silences the Firefox Feature Policy warning; the demo plays no media)
 
 ### Phase 4 — Page/transport
 - [x] Fallback screenshots only when JS off — wrapped in `<noscript>` (were ~450 KiB fetched eagerly on every load)

@@ -17,6 +17,29 @@ not yet reproduced in a controlled environment.
 > scrolled away for >1 s (pause), scroll back, and watch for `loop 0`
 > restarts in the iframe console; report whether `__demoStats.loopIndex`
 > regresses to 0 after any `pageshow` (bfcache) event.
+>
+> **2024-08 second report (live site):** a restart loop was reproduced on
+> the live site in the maintainer's environment (console shows VS Code
+> webview artifacts — `Cascadia Mono` font blocks at "visibility level 2",
+> `stylesheets-manager.js` — so the reloads are the embedded preview
+> discarding/restoring the iframe; the loop restarts right after
+> `route → #/home`, every ~4 s). Headless Firefox still runs clean, so the
+> reload is embedder/browser-driven rather than a page bug. Also observed on
+> Chromium: `beat "trend" failed — timeout waiting for range chips` right
+> after a `paused → resumed` cycle — `waitFor` counted wall-clock time, so a
+> pause mid-beat burned the 9 s budget. Fixed:
+> - `waitFor` now counts only unpaused time (pauses no longer cause beat
+>   failures); verified with an 11 s mid-beat pause → loop still completes
+>   with 0 failures.
+> - **Static mode:** the parent counts iframe document loads (persistent
+>   load listener, not `{once:true}`); ≥3 reloads within 60 s switches the
+>   driver to a single frozen home frame (`hello → state` now carries
+>   `static: true`, closing the boot race). A restart loop now degrades to a
+>   stable hero instead of looping forever. Verified headless: 4 rapid
+>   reloads → static frame, loop frozen.
+> - Camera transforms use `translate3d` to force a compositor layer in
+>   Firefox (2D transforms can run on the main thread there → the jank the
+>   maintainer saw vs Chromium).
 
 ## Symptom
 
