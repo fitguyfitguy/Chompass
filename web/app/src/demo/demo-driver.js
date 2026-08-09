@@ -230,6 +230,10 @@ async function runStaticMode() {
   try {
     const seedT0 = performance.now();
     await seedDemo();
+    // The 90-day diary lives in reseedDiary (the beat loop normally owns it) —
+    // seed it here too so the static hero shows a populated diary with entries,
+    // not an empty logging view.
+    await reseedDiary();
     stats.seedsMs.initial = Math.round(performance.now() - seedT0);
   } catch {
     /* ignore */
