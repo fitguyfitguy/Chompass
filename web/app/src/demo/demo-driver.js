@@ -80,8 +80,13 @@ const SCENE_LABELS = {
 
 /** @type {boolean} */
 let paused = false;
+/** @type {boolean} */
+let stopped = false; // static mode: parent detected a restart loop; stop beating
 /** @type {Array<() => void>} */
 let resumeListeners = [];
+
+/** Thrown by sleep() once the parent switches the demo to static mode. */
+const STOPPED = new Error("demo stopped (static mode)");
 
 function setPaused(next) {
   if (next === paused) return;
@@ -96,21 +101,26 @@ function setPaused(next) {
 
 /**
  * Pause-aware sleep: while paused, the timer fires but the promise resolves
- * only after a resume — total wait becomes ms + paused duration.
+ * only after a resume — total wait becomes ms + paused duration. In static
+ * mode (parent detected a restart loop) the promise rejects so the beat loop
+ * unwinds immediately.
  * @param {number} ms
  * @returns {Promise<void>}
  */
 function sleep(ms) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (paused) resumeListeners.push(resolve);
+      if (stopped) reject(STOPPED);
+      else if (paused) resumeListeners.push(resolve);
       else resolve();
     }, ms);
   });
 }
 
 /**
- * Poll for a condition with pause-aware steps.
+ * Poll for a condition with pause-aware steps. Time spent paused does NOT
+ * count against the timeout — a pause mid-beat must not burn the budget and
+ * fail the beat on resume (spurious "beat failed: timeout" warnings).
  * @param {() => unknown} fn
  * @param {{ timeout?: number, step?: number, label?: string }} [opts]
  * @returns {Promise<void>}
@@ -119,10 +129,14 @@ async function waitFor(
   fn,
   { timeout = 9000, step = 80, label = "condition" } = {},
 ) {
-  const start = performance.now();
-  while (performance.now() - start < timeout) {
+  let elapsed = 0;
+  let last = performance.now();
+  while (elapsed < timeout) {
     if (fn()) return;
     await sleep(step);
+    const now = performance.now();
+    if (!paused) elapsed += now - last;
+    last = now;
   }
   throw new Error(`demo: timeout waiting for ${label}`);
 }
@@ -164,12 +178,35 @@ window.addEventListener("hashchange", renderRoute);
 // screen (Cursor/VS Code previews do this), which would stall the sequence
 // forever. The parent page owns pause/resume via postMessage.
 window.addEventListener("message", (ev) => {
-  const data = /** @type {{source?: string, type?: string, paused?: boolean}} */ (ev.data);
+  const data = /** @type {{source?: string, type?: string, paused?: boolean, static?: boolean}} */ (ev.data);
   if (data?.source !== "chompass-hero") return;
   if (data.type === "pause") setPaused(true);
   else if (data.type === "play") setPaused(false);
-  else if (data.type === "state") setPaused(Boolean(data.paused));
+  else if (data.type === "state") {
+    setPaused(Boolean(data.paused));
+    if (data.static) runStaticMode(); // survives the boot race via the handshake
+  } else if (data.type === "static") runStaticMode();
 });
+
+/**
+ * Static mode: the parent detected a restart loop (the iframe document keeps
+ * reloading — embedded previews discard/restore it, and some Firefox builds
+ * do too). Instead of looping forever from loop 0, render a single stable
+ * home frame and stop beating, so the hero degrades gracefully.
+ * @returns {Promise<void>}
+ */
+async function runStaticMode() {
+  if (stopped) return;
+  console.warn("[demo] ⚠ static mode: parent detected a restart loop — stopping the demo");
+  try {
+    await seedDemo();
+  } catch {
+    /* ignore */
+  }
+  renderRoute();
+  stopped = true;
+  scene("intro");
+}
 
 // Handshake: tell the parent we're alive. The parent may have sent
 // pause/play before this listener existed (e.g. it resumed a reloaded
@@ -582,15 +619,22 @@ export async function startDemo() {
   // First paint NOW: render the home route immediately, then seed the demo
   // database in the background and re-render once it lands. The marketing
   // page reveals the stage as soon as the home has painted, so the hero never
-  // shows an empty canvas while the seed records are written.
+  // shows an empty canvas while the seed records are written. If the parent
+  // switches us to static mode during boot (restart loop), the STOPPED error
+  // unwinds here.
   renderRoute();
-  await sleep(200);
-  const seedT0 = performance.now();
-  await seedDemo();
-  stats.seedsMs.initial = Math.round(performance.now() - seedT0);
-  renderRoute();
-  await sleep(600);
   /** @type {any} */ (window).__demoStats = stats;
+  try {
+    await sleep(200);
+    const seedT0 = performance.now();
+    await seedDemo();
+    stats.seedsMs.initial = Math.round(performance.now() - seedT0);
+    renderRoute();
+    await sleep(600);
+  } catch (err) {
+    if (err !== STOPPED) throw err;
+    return; // static mode took over during boot
+  }
   const loop0Start = performance.now();
   let lastLoopStart = loop0Start;
   // Watchdog (Phase 0): a fresh `loop 0` can only happen if the document
@@ -616,6 +660,7 @@ export async function startDemo() {
     }
   }, 30_000);
   for (let loop = 0; ; loop++) {
+    if (stopped) break;
     stats.loopIndex = loop;
     lastLoopStart = performance.now();
     const loopT0 = performance.now();
@@ -646,6 +691,7 @@ export async function startDemo() {
         try {
           await beat.run();
         } catch (err) {
+          if (err === STOPPED) throw err; // static mode: unwind the loop
           stats.beatFailures += 1;
           stats.lastBeatFailure = `${beat.name}: ${err instanceof Error ? err.message : String(err)}`;
           console.warn(`[demo] ⚠ beat "${beat.name}" failed, skipping`, err);
@@ -666,6 +712,10 @@ export async function startDemo() {
         `[demo] ═══ loop ${loop} complete — rest 2.8s, next loop ═══`,
       );
     } catch (err) {
+      if (err === STOPPED) {
+        console.log("[demo] ═══ static mode — beat loop stopped ═══");
+        break;
+      }
       console.warn("demo loop aborted, restarting", err);
       await sleep(1000);
     }
