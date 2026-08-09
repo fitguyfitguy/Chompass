@@ -105,7 +105,7 @@
   var calloutSwapTimer = null;
 
   var CALLOUTS = {
-    intro: "AI that reads labels, photos, and barcodes",
+    intro: "AI reads labels, photos, and barcodes",
     "ai-typing": "Type a meal, get its macros",
     "ai-stream": "Your macros and micros, live",
     "ai-review": "You approve every entry",
@@ -136,7 +136,7 @@
       desc: "Plain language is enough. “Chicken burrito bowl” works. Calories, protein, carbs, and fat come back without labels or barcodes."
     },
     "ai-stream": {
-      title: "Get AI macros and micros",
+      title: "Watch the estimate fill in",
       desc: "Watch calories, protein, carbs, and fat appear as Chompass reads your note. Nothing is saved until you approve it.",
     },
     "ai-review": {
@@ -730,7 +730,7 @@
           heroRoot.classList.add("hero-stage--explorable");
           var hint = document.createElement("p");
           hint.className = "hero-explore-hint";
-          hint.textContent = "Live app — click to explore";
+          hint.textContent = "Live app: click to explore";
           heroRoot.appendChild(hint);
           setTimeout(function () {
             if (hint.parentNode) hint.classList.add("is-dismissed");

@@ -14,7 +14,7 @@ Maintainer checklist for discovering Chompass outside Codeberg. Canonical end-us
 
 ## Companion PWA
 
-PWA at [chompass.app/app/](https://chompass.app/app/). Runs in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech). Diary logging, manual/photo/barcode food entry, BYOK AI coach, progress charts, and JSON export/import compatible with the Android app. Source in [`web/`](../web/README.md); no SPA framework/bundler, hand-rolled service worker, dev-only TypeScript.
+PWA at [chompass.app/app/](https://chompass.app/app/). Runs in any modern browser (Chromium-based browsers work best for install, camera barcode, and speech). Diary logging, manual/photo/barcode food entry, AI coach with your own key, progress charts, and JSON export/import compatible with the Android app. Source in [`web/`](../web/README.md); no SPA framework/bundler, hand-rolled service worker, dev-only TypeScript.
 
 Deploy: `./scripts/deploy_pages.sh` copies `web/app/` into `website/public/app/` (via `rsync --delete`) before the same orphan-branch push used for the marketing site. No separate deploy step.
 
@@ -43,7 +43,7 @@ The site-header hero is a **cinematic live demo, not a video file**: `website/as
 
 ## Outreach (manual)
 
-Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **private calorie tracking on Android and in the browser** (try the PWA, or install via Obtainium). Keep the calorie budget and scanning details for the feature list, not the pitch: after a big run, log the burn manually in Add Food or let a wearable feed it through Health Connect; barcode scans resolve against Open Food Facts (4.6M+ products). Mention meal components, recipes, and progressive AI feedback when space allows. Keep Fud AI as upstream credit, not the headline. Mention Chromium works best without claiming Chromium-only.
+Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **private calorie tracking on Android and in the browser** (try the PWA, or install via Obtainium). Keep the calorie budget and scanning details for the feature list, not the pitch: after a big run, log the burn manually in Add Food or let a wearable feed it through Health Connect; barcode scans resolve against Open Food Facts (4.6M+ products). Mention meal components, recipes, and AI entry with your own key when space allows. Keep Fud AI as upstream credit, not the headline. Mention Chromium works best without claiming Chromium-only.
 
 | Channel                                                        | Notes                                                                                     |
 | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |

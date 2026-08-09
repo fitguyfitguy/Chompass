@@ -7,7 +7,7 @@ draft: true
 
 ## 1 Einleitung
 
-Chompass folgt dem BYOK-Prinzip: Nutzer bringen einen eigenen Cloud-KI-Schlüssel mit (oder betreiben Gemma 4 lokal auf dem Android-Gerät). Die Genauigkeit der Lebensmittelanalyse hängt daher überwiegend vom gewählten Modell ab, nicht von einer Chompass-spezifischen Eigenschaft. Wir messen die Genauigkeit gegen gelabelte Datensätze und veröffentlichen die Zahlen, anstatt eine einzelne Genauigkeitsangabe zu behaupten.
+Chompass stellt keine eigene KI bereit: Nutzer bringen einen eigenen Cloud-KI-Schlüssel mit (oder betreiben Gemma 4 lokal auf dem Android-Gerät). Die Genauigkeit der Lebensmittelanalyse hängt daher überwiegend vom gewählten Modell ab, nicht von einer Chompass-spezifischen Eigenschaft. Wir messen die Genauigkeit gegen gelabelte Datensätze und veröffentlichen die Zahlen, anstatt eine einzelne Genauigkeitsangabe zu behaupten.
 
 ## 2 Methodik
 
@@ -128,7 +128,7 @@ Zwei Ergebnisse haben die Weiterentwicklung der App unmittelbar beeinflusst.
 - **Tier A/B:** Foto plus Portionschip bzw. Notiz **mit** Mengensprache (auch vage: „große Portion“, „zwei Eier“) schlägt Titel-only und Foto allein.
 - **Tier C/D:** Nur Foto oder Foto + Mahlzeittitel ohne Menge = schneller Entwurf, keine gewogene Mahlzeit.
 - **Tier F:** Nur Markenname ohne Scan/Datenbank driftet stark — lieber Barcode oder Grammangabe.
-- Da Chompass dem BYOK-Prinzip folgt, richtet sich die Genauigkeit nach dem gewählten Modell; die Tierliste ist eingabe- und modellspezifisch, keine einzelne „Chompass-Genauigkeit“.
+- Da Chompass keine eigene KI bereitstellt, richtet sich die Genauigkeit nach dem gewählten Modell; die Tierliste ist eingabe- und modellspezifisch, keine einzelne „Chompass-Genauigkeit“.
 
 ## 8 Einschränkungen
 
