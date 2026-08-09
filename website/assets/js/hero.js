@@ -595,9 +595,15 @@
   var STATIC_THRESHOLD = 2;
   var STATIC_WINDOW_MS = 600_000; // 10 min: long, because loopsDone resets handle healthy cases
 
-  // Instant opt-out for testing / flaky embeds: ?demo=static renders the
-  // frozen home frame from the very first load (no restart loop detection).
-  if (new URLSearchParams(location.search).get("demo") === "static") {
+  // Product decision (maintainer): Firefox gets a static hero showing the
+  // seeded logging view (home/diary) — no auto-playing usage demo; Chromium-
+  // based browsers get the animated demo. Also: ?demo=static forces the
+  // static frame anywhere (testing / flaky embeds).
+  var isFirefox = /Firefox\//i.test(navigator.userAgent);
+  if (
+    isFirefox ||
+    new URLSearchParams(location.search).get("demo") === "static"
+  ) {
     staticMode = true;
   }
 
