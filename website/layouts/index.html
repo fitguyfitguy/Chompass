@@ -159,33 +159,24 @@
           <h2 id="stats-heading">The numbers</h2>
           <div>
             <span class="section-title__mark">[*]</span>
-            <p>Small app, honest claims, no marketing fluff.</p>
+            <p>
+              Small app, honest claims: <strong>15</strong> fully translated languages,
+              <strong>4.6M+</strong> Open Food Facts products cached offline,
+              <strong>~90%</strong> of typed entries with a stated portion within 20% of
+              true calories, and a <strong>~17&nbsp;MiB</strong> arm64 APK — about
+              <strong>1/7</strong> the size of upstream Fud AI. Zero ads, analytics, or
+              accounts.
+            </p>
           </div>
         </div>
         <div class="stats-grid">
           <div class="stat">
             <span class="stat__mark">[*]</span>
             <div class="stat__label">
-              <span class="stat__name">arm64 APK</span>
-              <strong class="stat__value">{{ .Site.Params.apkArm64Note }}</strong>
-            </div>
-            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 42%"></div></div>
-          </div>
-          <div class="stat">
-            <span class="stat__mark">[*]</span>
-            <div class="stat__label">
               <span class="stat__name">Languages</span>
               <strong class="stat__value">15</strong>
             </div>
-            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 88%"></div></div>
-          </div>
-          <div class="stat">
-            <span class="stat__mark">[*]</span>
-            <div class="stat__label">
-              <span class="stat__name">Typed entry within 20%</span>
-              <strong class="stat__value">~90%</strong>
-            </div>
-            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 90%"></div></div>
+            <p class="stat__desc">One shared locale contract keeps Android and web in lockstep — no partial translations.</p>
           </div>
           <div class="stat">
             <span class="stat__mark">[*]</span>
@@ -193,7 +184,31 @@
               <span class="stat__name">Open Food Facts products</span>
               <strong class="stat__value">4.6M+</strong>
             </div>
-            <div class="stat__bar" aria-hidden="true"><div class="stat__bar--fill" style="width: 92%"></div></div>
+            <p class="stat__desc">Barcode scans resolve against Open Food Facts and cache results for offline use.</p>
+          </div>
+          <div class="stat">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">Typed entry within 20%</span>
+              <strong class="stat__value">~90%</strong>
+            </div>
+            <p class="stat__desc">Measured against labeled datasets; the methodology is published, not a vendor claim.</p>
+          </div>
+          <div class="stat">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">Ads · analytics · accounts</span>
+              <strong class="stat__value">0</strong>
+            </div>
+            <p class="stat__desc">No ad SDKs, no trackers, no sign-in. Your diary and AI keys stay on your device.</p>
+          </div>
+          <div class="stat stat--wide">
+            <span class="stat__mark">[*]</span>
+            <div class="stat__label">
+              <span class="stat__name">arm64 APK vs upstream Fud AI</span>
+              <strong class="stat__value">~17&nbsp;MiB</strong>
+            </div>
+            <p class="stat__desc">Chompass is a fork of Fud AI — your diary JSON carries over. Upstream v6.1 ships one 122&nbsp;MiB universal APK; ours is 17&nbsp;MiB on arm64 (29&nbsp;MiB universal), measured from the 3.8.0 release builds.</p>
           </div>
         </div>
         <p class="stats-note">
