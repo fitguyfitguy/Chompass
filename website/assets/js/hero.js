@@ -44,6 +44,18 @@
   // page load, an exception rather than the norm.
   var HERO_CROP_H = 600;
   var REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // React live: Firefox on Windows honors the OS "Show animations" setting;
+  // if the visitor toggles it, adapt instead of staying frozen on the old
+  // choice (and re-settle the current scene when motion is re-enabled).
+  matchMedia("(prefers-reduced-motion: reduce)").addEventListener(
+    "change",
+    function (ev) {
+      REDUCED = ev.matches;
+      if (!REDUCED && camera && lastScene && !staticMode) {
+        playScene(lastScene.key, lastScene.selector, lastScene.index);
+      }
+    },
+  );
   var MAX_ZOOM = Math.min(window.devicePixelRatio || 1, 2); // crisp always
   // Tall sheets/overlays (entry review, barcode card) are framed top-first so
   // the title + editable fields land in frame instead of a mid-sheet crop.
@@ -432,8 +444,11 @@
 
   function applyScene(scene, duration) {
     if (REDUCED) {
-      // Static: snap to the target without animating.
-      camera.style.transform = transformString(scene.target);
+      // Reduced motion: a short, subtle settle instead of a hard snap. The
+      // snap read as a jumpy/broken camera on Firefox (which honors the
+      // Windows "Show animations" setting); 450ms ease-in-out is minimal
+      // motion — calm, not teleporty — while still respecting the preference.
+      animateTo(scene.target, null, Math.min(duration, 450));
       return;
     }
     animateTo(scene.target, scene.drift, duration);
