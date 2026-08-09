@@ -29,6 +29,7 @@ const stats = {
   moduleCount: 0,
   beatFailures: 0,
   lastBeatFailure: null,
+  stopped: false, // true once the parent switches us to static mode
 };
 
 /** Count JS modules + transfer bytes fetched so far (performance timeline). */
@@ -86,6 +87,25 @@ let stopped = false; // static mode: parent detected a restart loop; stop beatin
 let staticModeRan = false; // sync guard against the message + handshake race
 /** @type {Array<() => void>} */
 let resumeListeners = [];
+
+/** Completed loops survive reloads (sessionStorage) so the parent can tell a
+ *  healthy demo (which has finished a loop before the reload — the reload was
+ *  a transient, e.g. the visitor backgrounded the tab) from a genuine restart
+ *  loop (which never completes loop 0). */
+let loopsDone = 0;
+try {
+  loopsDone = Number(sessionStorage.getItem("chompass-demo-loops") || 0);
+} catch {
+  /* ignore */
+}
+
+function recordLoopCompletion(loop) {
+  try {
+    sessionStorage.setItem("chompass-demo-loops", String(loop + 1));
+  } catch {
+    /* ignore */
+  }
+}
 
 /** Thrown by sleep() once the parent switches the demo to static mode. */
 const STOPPED = new Error("demo stopped (static mode)");
@@ -216,6 +236,7 @@ async function runStaticMode() {
   }
   renderRoute();
   stopped = true;
+  stats.stopped = true;
   scene("intro");
 }
 
@@ -224,7 +245,7 @@ async function runStaticMode() {
 // iframe), so ask for the current state instead of racing it.
 try {
   parent.postMessage(
-    { source: "chompass-hero", type: "hello", loop: stats.loopIndex, ts: Math.round(performance.now()) },
+    { source: "chompass-hero", type: "hello", loop: stats.loopIndex, loopsDone, ts: Math.round(performance.now()) },
     "*",
   );
 } catch {
@@ -714,6 +735,7 @@ export async function startDemo() {
       scene("rest");
       await sleep(2800); // camera pulls back before the next loop
       stats.loops.push({ index: loop, ms: Math.round(performance.now() - loopT0) });
+      recordLoopCompletion(loop);
       sampleModuleStats();
       if (DEBUG) {
         console.table(stats.loops.slice(-3));
