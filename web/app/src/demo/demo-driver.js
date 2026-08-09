@@ -82,6 +82,8 @@ const SCENE_LABELS = {
 let paused = false;
 /** @type {boolean} */
 let stopped = false; // static mode: parent detected a restart loop; stop beating
+/** @type {boolean} */
+let staticModeRan = false; // sync guard against the message + handshake race
 /** @type {Array<() => void>} */
 let resumeListeners = [];
 
@@ -196,10 +198,19 @@ window.addEventListener("message", (ev) => {
  * @returns {Promise<void>}
  */
 async function runStaticMode() {
+  if (staticModeRan) return; // sync guard: the "static" message and the
+  staticModeRan = true; // "state" reply can both arrive (parent sends both)
   if (stopped) return;
   console.warn("[demo] ⚠ static mode: parent detected a restart loop — stopping the demo");
+  // The hash survives reloads: a previous beat may have left us on
+  // #/analyze… etc. Static mode always shows the home frame.
+  if (location.hash !== "#/home") {
+    history.replaceState(null, "", `${location.pathname}${location.search}#/home`);
+  }
   try {
+    const seedT0 = performance.now();
     await seedDemo();
+    stats.seedsMs.initial = Math.round(performance.now() - seedT0);
   } catch {
     /* ignore */
   }
