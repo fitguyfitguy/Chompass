@@ -52,6 +52,15 @@ async function store(storeName) {
   return new Store(await db(), storeName);
 }
 
+/**
+ * Raw access to a single object store's Store wrapper (bulk demo seeding,
+ * diagnostics). Prefer the typed collections above in app code.
+ * @param {string} storeName
+ */
+export async function rawStore(storeName) {
+  return store(storeName);
+}
+
 /** @type {number} */
 let revisionHooksSuppressed = 0;
 

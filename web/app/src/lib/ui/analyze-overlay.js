@@ -4,7 +4,7 @@ import {
   ANALYSIS_PHASE,
   ANALYSIS_PHASE_LABEL,
   ANALYSIS_PHASE_STEPS,
-} from "../ai/food-analyze.js";
+} from "../ai/analysis-phase.js";
 
 /**
  * @param {Object} opts

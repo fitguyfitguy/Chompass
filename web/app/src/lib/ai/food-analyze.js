@@ -12,41 +12,16 @@ import {
   reconcileConstituents,
 } from "../chompass-core/constituents.js";
 import { FoodPartialJsonAssembler } from "./partial-json.js";
+import {
+  ANALYSIS_PHASE,
+  ANALYSIS_PHASE_LABEL,
+  ANALYSIS_PHASE_STEPS,
+  isAbortError,
+} from "./analysis-phase.js";
 
-/** Shared entry analysis phases (Android EntryAnalysisPhase subset for cloud AI). */
-export const ANALYSIS_PHASE = Object.freeze({
-  PREPARING: "preparing",
-  LOOKING_UP_BARCODE: "looking_up_barcode",
-  CALLING_AI: "calling_ai",
-  PARSING: "parsing",
-});
-
-/** @type {Record<string, string>} */
-export const ANALYSIS_PHASE_LABEL = Object.freeze({
-  [ANALYSIS_PHASE.PREPARING]: "Preparing request…",
-  [ANALYSIS_PHASE.LOOKING_UP_BARCODE]: "Checking barcodes…",
-  [ANALYSIS_PHASE.CALLING_AI]: "Calling AI…",
-  [ANALYSIS_PHASE.PARSING]: "Reading result…",
-  filling_fields: "Filling in nutrition…",
-});
-
-/** Ordered steps for the analyze overlay (non-grounded). */
-export const ANALYSIS_PHASE_STEPS = Object.freeze([
-  ANALYSIS_PHASE.PREPARING,
-  ANALYSIS_PHASE.LOOKING_UP_BARCODE,
-  ANALYSIS_PHASE.CALLING_AI,
-  ANALYSIS_PHASE.PARSING,
-]);
-
-/**
- * @param {unknown} err
- * @returns {boolean}
- */
-export function isAbortError(err) {
-  if (!err || typeof err !== "object") return false;
-  const name = /** @type {{name?: string}} */ (err).name;
-  return name === "AbortError";
-}
+// Re-exported for backwards compatibility (UI overlays import the constants
+// from analysis-phase.js directly; tests and callers may still use these).
+export { ANALYSIS_PHASE, ANALYSIS_PHASE_LABEL, ANALYSIS_PHASE_STEPS, isAbortError };
 
 const SYSTEM_BASE = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
 {"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null}

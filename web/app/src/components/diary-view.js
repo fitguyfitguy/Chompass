@@ -31,8 +31,6 @@ import {
 } from "../lib/home-nutrients.js";
 import { createSpeechCapture } from "../lib/speech.js";
 import { t } from "../lib/i18n/index.js";
-import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
-import { openVoiceCaptureSheet } from "../lib/ui/voice-capture.js";
 import {
   consumeResumeProgressiveCapture,
   consumeShowProgressiveMealSheet,
@@ -58,6 +56,15 @@ const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", 
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
 const WATER_PRESETS = [250, 500, 750];
 const HOME_DATE_KEY = "chompass-home-date";
+
+/** Lazy-load the photo AI flow (camera + AI stack) only when used — the demo
+ *  hero never opens the real camera, so the whole photo-ai-flow →
+ *  camera-capture → food-analyze chain stays out of its bundle. */
+function openPhotoAiFlow(date) {
+  return import("../lib/ui/photo-ai-flow.js").then(({ startPhotoAiFlow }) =>
+    startPhotoAiFlow({ date }),
+  );
+}
 
 /** Demo hero mode (web/app/demo.html): mock plate camera instead of capture. */
 const DEMO = typeof window !== "undefined" && Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
@@ -608,7 +615,7 @@ export class DiaryView extends HTMLElement {
   /** @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs */
   afterHomeRender(appPrefs) {
     if (consumeResumeProgressiveCapture()) {
-      startPhotoAiFlow({ date: this.date });
+      openPhotoAiFlow(this.date);
       return;
     }
     if (consumeShowProgressiveMealSheet()) {
@@ -1040,7 +1047,7 @@ export class DiaryView extends HTMLElement {
         location.hash = `#/analyze?date=${this.date}&mode=photo`;
         return;
       }
-      startPhotoAiFlow({ date: this.date });
+      openPhotoAiFlow(this.date);
     });
     sheet.body.querySelector('[data-add="note"]')?.addEventListener("click", () => go(`#/analyze?date=${this.date}&mode=note`));
     sheet.body.querySelector('[data-add="recents"]')?.addEventListener("click", () => openSaved("RECENTS"));
@@ -1221,7 +1228,7 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector("[data-pm-add]")?.addEventListener("click", () => {
       syncMeta();
       sheet.close();
-      startPhotoAiFlow({ date: this.date });
+      openPhotoAiFlow(this.date);
     });
 
     sheet.body.querySelector("[data-pm-discard]")?.addEventListener("click", () => {
@@ -1232,6 +1239,7 @@ export class DiaryView extends HTMLElement {
   }
 
   async startVoiceNote() {
+    const { openVoiceCaptureSheet } = await import("../lib/ui/voice-capture.js");
     const sheet = await openVoiceCaptureSheet({
       onResult: (text) => {
         location.hash = `#/analyze?date=${this.date}&mode=note&prefill=${encodeURIComponent(text)}`;

@@ -14,6 +14,7 @@ import {
   catalogDiff,
   englishKeys,
 } from "../i18n/index.js";
+import { loadCatalog } from "../i18n/catalogs/index.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../../../../../", import.meta.url));
 const fixture = JSON.parse(readFileSync(`${REPO_ROOT}testdata/parity/locales.json`, "utf8"));
@@ -57,15 +58,16 @@ describe("i18n catalogs", () => {
     assert.ok(keys.length >= 80);
   });
 
-  it("every supported locale has a complete core catalog", () => {
+  it("every supported locale has a complete core catalog", async () => {
     for (const loc of LOCALES) {
       if (loc.id === "en") continue;
-      const { missing } = catalogDiff(loc.id);
+      const { missing } = await catalogDiff(loc.id);
       assert.equal(missing.length, 0, `${loc.id} missing: ${missing.slice(0, 5).join(", ")}`);
     }
   });
 
-  it("t() falls back to English then key", () => {
+  it("t() falls back to English then key", async () => {
+    await loadCatalog("de");
     setActiveLocale("de");
     assert.equal(t("nav.home"), "Start");
     assert.equal(t("nonexistent.key.xyz"), "nonexistent.key.xyz");

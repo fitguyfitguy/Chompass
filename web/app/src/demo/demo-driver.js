@@ -16,6 +16,35 @@ import { weights } from "../lib/db.js";
 const VIEW = document.getElementById("view");
 if (!(VIEW instanceof HTMLElement)) throw new Error("demo: #view missing");
 
+/** ?debug=1 turns on console tracing + parent-side status overlays. */
+const DEBUG = new URLSearchParams(location.search).has("debug");
+
+/** Demo telemetry: seed/beat timings + module budget (window.__demoStats). */
+const stats = {
+  loopIndex: 0,
+  loops: [],
+  seedsMs: {},
+  firstBeatMs: null,
+  moduleBytes: 0,
+  moduleCount: 0,
+  beatFailures: 0,
+  lastBeatFailure: null,
+};
+
+/** Count JS modules + transfer bytes fetched so far (performance timeline). */
+function sampleModuleStats() {
+  let bytes = 0;
+  let count = 0;
+  for (const r of performance.getEntriesByType("resource")) {
+    if (!r.name.endsWith(".js")) continue;
+    count += 1;
+    // transferSize is a ResourceTiming field (0 when served from cache).
+    bytes += (/** @type {{transferSize?: number}} */ (r)).transferSize || 0;
+  }
+  stats.moduleCount = count;
+  stats.moduleBytes = bytes;
+}
+
 const ROUTES = {
   home: "<diary-view></diary-view>",
   entry: "<entry-form></entry-form>",
@@ -100,9 +129,12 @@ async function waitFor(
 
 /** @param {string} hash */
 function navigate(hash) {
+  // Same-hash navigations are a no-op: remounting the whole view at every
+  // beat start (5×/loop) churned the diary-view for no benefit. Beats that
+  // need a fresh mount (relog after reseed) arrive via a real hash change.
+  if (location.hash === hash) return;
   console.log(`[demo] route → ${hash}`);
-  if (location.hash === hash) renderRoute();
-  else location.hash = hash;
+  location.hash = hash;
 }
 
 function routeFromHash() {
@@ -132,11 +164,24 @@ window.addEventListener("hashchange", renderRoute);
 // screen (Cursor/VS Code previews do this), which would stall the sequence
 // forever. The parent page owns pause/resume via postMessage.
 window.addEventListener("message", (ev) => {
-  const data = /** @type {{source?: string, type?: string}} */ (ev.data);
+  const data = /** @type {{source?: string, type?: string, paused?: boolean}} */ (ev.data);
   if (data?.source !== "chompass-hero") return;
   if (data.type === "pause") setPaused(true);
   else if (data.type === "play") setPaused(false);
+  else if (data.type === "state") setPaused(Boolean(data.paused));
 });
+
+// Handshake: tell the parent we're alive. The parent may have sent
+// pause/play before this listener existed (e.g. it resumed a reloaded
+// iframe), so ask for the current state instead of racing it.
+try {
+  parent.postMessage(
+    { source: "chompass-hero", type: "hello", loop: stats.loopIndex, ts: Math.round(performance.now()) },
+    "*",
+  );
+} catch {
+  /* ignore */
+}
 
 /**
  * Announce a camera scene to the site hero (see website/assets/js/hero.js).
@@ -537,20 +582,58 @@ export async function startDemo() {
   // First paint NOW: render the home route immediately, then seed the demo
   // database in the background and re-render once it lands. The marketing
   // page reveals the stage as soon as the home has painted, so the hero never
-  // shows an empty canvas while ~1,500 seed records are written.
+  // shows an empty canvas while the seed records are written.
   renderRoute();
   await sleep(200);
+  const seedT0 = performance.now();
   await seedDemo();
+  stats.seedsMs.initial = Math.round(performance.now() - seedT0);
   renderRoute();
   await sleep(600);
+  /** @type {any} */ (window).__demoStats = stats;
+  const loop0Start = performance.now();
+  let lastLoopStart = loop0Start;
+  // Watchdog (Phase 0): a fresh `loop 0` can only happen if the document
+  // reloaded — the open Firefox bug. If no loop advancement happens within
+  // ~2× the nominal loop budget (~60 s), log a distinct STALLED marker and
+  // tell the parent, instead of silently looping. This distinguishes a
+  // reload-loop from a hang (the missing evidence per docs/DEMO_HERO_FIREFOX.md).
+  const WATCHDOG_MS = 150_000;
+  setInterval(() => {
+    if (performance.now() - lastLoopStart > WATCHDOG_MS) {
+      console.warn(
+        `[demo] ⚠ STALLED: no loop advancement in ${Math.round((performance.now() - lastLoopStart) / 1000)}s`,
+      );
+      try {
+        parent.postMessage(
+          { source: "chompass-hero", type: "stalled", ms: Math.round(performance.now() - lastLoopStart) },
+          "*",
+        );
+      } catch {
+        /* ignore */
+      }
+      lastLoopStart = performance.now();
+    }
+  }, 30_000);
   for (let loop = 0; ; loop++) {
+    stats.loopIndex = loop;
+    lastLoopStart = performance.now();
+    const loopT0 = performance.now();
     try {
       console.log(`[demo] ═══ loop ${loop} start ═══`);
+      const reseedT0 = performance.now();
       await reseedDiary();
+      stats.seedsMs[`reseed:${loop}`] = Math.round(performance.now() - reseedT0);
       await sleep(200);
+      if (loop === 0) {
+        // The intro shows the whole phone: paint the reseeded home (seedDemo
+        // only boots profile/prefs/favorites now — the diary lands here).
+        renderRoute();
+      }
       if (loop === 0) {
         // First impression only: the whole phone, once per page load.
         scene("intro");
+        stats.firstBeatMs = Math.round(performance.now() - loop0Start);
         await sleep(1500);
       } else {
         scene("rest");
@@ -563,6 +646,8 @@ export async function startDemo() {
         try {
           await beat.run();
         } catch (err) {
+          stats.beatFailures += 1;
+          stats.lastBeatFailure = `${beat.name}: ${err instanceof Error ? err.message : String(err)}`;
           console.warn(`[demo] ⚠ beat "${beat.name}" failed, skipping`, err);
           scene("rest");
           navigate("#/home");
@@ -571,6 +656,12 @@ export async function startDemo() {
       }
       scene("rest");
       await sleep(2800); // camera pulls back before the next loop
+      stats.loops.push({ index: loop, ms: Math.round(performance.now() - loopT0) });
+      sampleModuleStats();
+      if (DEBUG) {
+        console.table(stats.loops.slice(-3));
+        console.log("[demo] __demoStats", JSON.stringify(stats, null, 2));
+      }
       console.log(
         `[demo] ═══ loop ${loop} complete — rest 2.8s, next loop ═══`,
       );

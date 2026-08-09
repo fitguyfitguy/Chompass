@@ -1,20 +1,12 @@
 // @ts-check
-import {
-  listConfiguredProviders,
-  loadProviderKey,
-} from "../lib/ai/key-storage.js";
-import { fileToJpegBase64 } from "../lib/ai/image.js";
-import {
-  ANALYSIS_PHASE,
-  analyzeFoodEntry,
-  isAbortError,
-} from "../lib/ai/food-analyze.js";
-import { collectOffPromptContext } from "../lib/ai/off-prompt-context.js";
+import { ANALYSIS_PHASE, isAbortError } from "../lib/ai/analysis-phase.js";
+// The real AI request stack (key-storage, food-analyze, off-prompt-context,
+// image) is imported dynamically inside runAnalysis so the demo hero — which
+// runs the scripted mock — never fetches it. See demo/demo-main.js.
 import { recentFoods } from "../lib/recent-foods.js";
 import { prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { createSpeechCapture } from "../lib/speech.js";
-import { startPhotoAiFlow } from "../lib/ui/photo-ai-flow.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
 import { DEMO_PLATE_ESTIMATE, runDemoAnalyze } from "../demo/mock-ai.js";
@@ -44,6 +36,7 @@ export class AnalyzeView extends HTMLElement {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
     this.mode = params.get("mode") === "note" ? "note" : "photo";
+    const { listConfiguredProviders } = await import("../lib/ai/key-storage.js");
     this.providers = await listConfiguredProviders();
     if (DEMO) this.providers = ["gemini"];
     const appPrefs = await prefs.load();
@@ -78,6 +71,7 @@ export class AnalyzeView extends HTMLElement {
       }
       this.innerHTML = `${subpageBar("Photo AI", { backHref: "#/home" })}<p class="empty-state" style="padding:1.5rem;">Opening camera…</p>`;
       bindSubpageBack(this, "#/home");
+      const { startPhotoAiFlow } = await import("../lib/ui/photo-ai-flow.js");
       startPhotoAiFlow({
         date: this.date,
         onCancel: () => {
@@ -506,6 +500,7 @@ export class AnalyzeView extends HTMLElement {
         location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(estimate))}`;
         return;
       }
+      const { loadProviderKey } = await import("../lib/ai/key-storage.js");
       const config = await loadProviderKey(
         /** @type {import('../lib/ai/key-storage.js').ProviderId} */ (
           this.activeProvider
@@ -517,8 +512,9 @@ export class AnalyzeView extends HTMLElement {
 
       const offPromise = this.files.length
         ? (this.setPhase(ANALYSIS_PHASE.LOOKING_UP_BARCODE, generation),
-          collectOffPromptContext(this.files))
+          (await import("../lib/ai/off-prompt-context.js")).collectOffPromptContext(this.files))
         : Promise.resolve("");
+      const { fileToJpegBase64 } = await import("../lib/ai/image.js");
       const imagesPromise = (async () => {
         const images = [];
         for (const file of this.files) {
@@ -534,6 +530,7 @@ export class AnalyzeView extends HTMLElement {
       ]);
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
 
+      const { analyzeFoodEntry } = await import("../lib/ai/food-analyze.js");
       const estimate = await analyzeFoodEntry({
         providerId: /** @type {any} */ (this.activeProvider),
         config,

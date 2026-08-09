@@ -78,6 +78,9 @@
   var anim = null;
   var ready = false;
   var revealed = false;
+  // Current pause state (hero out of view / tab hidden). The driver asks for
+  // it on load (hello → state), so a reloaded iframe never starts mid-pause.
+  var heroPaused = false;
   var pendingScene = null;
   var retryTimer = null;
   /** @type {{key: string|null, selector: string, index: number}|null} */
@@ -411,9 +414,9 @@
   // Realtime tracing: [hero] lines log what the camera is actually doing for
   // each scene the demo announces — resolved zoom, retry, or fallback to rest
   // — so the on-screen view can be matched against the demo timeline.
-  // Debug tracing is disabled in production. Set DEV to true and restore the
-  // console.log under https://[hero] to surface camera/scene diagnostics.
-  var DEV = false;
+  // Debug tracing is disabled in production. Add ?debug=1 to the page URL to
+  // surface camera/scene/diagnostics.
+  var DEV = new URLSearchParams(location.search).has("debug");
   function heroLog(msg) {
     if (DEV && msg) {
       // console.log("[hero] " + msg);
@@ -493,6 +496,7 @@
   }
 
   function pause() {
+    heroPaused = true;
     clearRetry();
     if (anim) {
       try {
@@ -506,6 +510,7 @@
   }
 
   function resume() {
+    heroPaused = false;
     if (lastScene && camera && !REDUCED) {
       playScene(lastScene.key, lastScene.selector, lastScene.index);
     }
@@ -521,7 +526,90 @@
     if (data.type === "scene") onSceneMessage(data);
     else if (data.type === "rest")
       onSceneMessage({ key: null, selector: "", index: 0 });
+    else if (data.type === "hello") replyState();
+    else if (data.type === "error") showDiag(data);
+    else if (data.type === "stalled") {
+      showDiag(data);
+      restartDemo();
+    }
   });
+
+  /** Reply with the current pause state (driver asks on load). */
+  function replyState() {
+    if (!iframe) return;
+    try {
+      iframe.contentWindow.postMessage(
+        { source: "chompass-hero", type: "state", paused: heroPaused },
+        window.location.origin,
+      );
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  // Dev-only status pill for iframe errors / stall reports (Phase 0). Keeps
+  // a broken demo visible instead of silently stuck; production visitors
+  // never see it (DEV requires ?debug=1 on the page URL).
+  var diagEl = null;
+  var diagTimer = null;
+  function showDiag(data) {
+    if (!DEV) return;
+    if (!diagEl && heroRoot) {
+      diagEl = document.createElement("p");
+      diagEl.setAttribute("role", "status");
+      diagEl.style.cssText =
+        "position:absolute;left:0.75rem;top:0.75rem;margin:0;padding:0.35rem 0.6rem;border-radius:0.5rem;background:rgba(140,24,24,0.9);color:#fff;font:12px/1.4 system-ui,sans-serif;z-index:3;max-width:70%;pointer-events:none;";
+      heroRoot.appendChild(diagEl);
+    }
+    if (diagEl) {
+      diagEl.textContent =
+        data.type === "stalled"
+          ? "demo stalled " + Math.round((data.ms || 0) / 1000) + "s"
+          : data.message || "demo error";
+      clearTimeout(diagTimer);
+      diagTimer = setTimeout(function () {
+        if (diagEl) {
+          diagEl.remove();
+          diagEl = null;
+        }
+      }, 8000);
+    }
+  }
+
+  // Bounded restart protocol (Phase 3): when the driver reports a stall
+  // (watchdog: no loop advancement in ~150 s), recreate the iframe for a
+  // fresh start — but at most 3 times with a 30 s minimum gap, so a broken
+  // loop turns into a bounded, observable recovery instead of an infinite
+  // reload loop. The new document syncs pause state via hello → state.
+  var restartCount = 0;
+  var lastRestartAt = 0;
+  var RESTART_MAX = 3;
+  var RESTART_MIN_GAP_MS = 30_000;
+  function restartDemo() {
+    if (!iframe || !heroRoot) return;
+    var now = Date.now();
+    if (now - lastRestartAt < RESTART_MIN_GAP_MS) return;
+    if (restartCount >= RESTART_MAX) {
+      heroLog("demo restart cap reached — leaving as-is");
+      return;
+    }
+    restartCount += 1;
+    lastRestartAt = now;
+    heroLog("demo restarted (n=" + restartCount + ")");
+    var fresh = iframe.cloneNode(false); // same attributes incl. src + ?v=
+    iframe.replaceWith(fresh);
+    iframe = fresh;
+    ready = false;
+    pendingScene = null;
+    iframe.addEventListener(
+      "load",
+      function () {
+        ready = true;
+        replyState();
+      },
+      { once: true },
+    );
+  }
 
   var lazy = new IntersectionObserver(
     function (entries) {
@@ -556,6 +644,9 @@
                 pendingScene = null;
                 onSceneMessage(sc);
               }
+              // Re-sync pause state on every document load: a reloaded demo
+              // must never start mid-pause (or run while the hero is away).
+              replyState();
             },
             { once: true },
           );

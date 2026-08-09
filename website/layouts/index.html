@@ -60,10 +60,12 @@
           Your browser does not support the video tag.
         </video>
         {{- else -}}
-        <div class="video-fallback" aria-hidden="true">
-          <img src="{{ "screenshots/home.png" | relURL }}" alt="" width="200" height="433" />
-          <img src="{{ "screenshots/add-food.png" | relURL }}" alt="" width="200" height="433" />
-          <img src="{{ "screenshots/progress.png" | relURL }}" alt="" width="200" height="433" />
+        <div class="video-fallback">
+          <noscript>
+            <img src="{{ "screenshots/home.png" | relURL }}" alt="" width="200" height="433" />
+            <img src="{{ "screenshots/add-food.png" | relURL }}" alt="" width="200" height="433" />
+            <img src="{{ "screenshots/progress.png" | relURL }}" alt="" width="200" height="433" />
+          </noscript>
         </div>
         {{- end -}}
         <template>
