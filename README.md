@@ -26,7 +26,7 @@ Use the [installable PWA](https://chompass.app/app/) in any modern browser (Chro
 
 ### Web app (PWA)
 
-Open [chompass.app/app/](https://chompass.app/app/) in any modern browser (phone, tablet, or desktop). It is a progressive web app you can install to the home screen or dock. Diary logging, progress, BYOK AI entry and Coach, and shared JSON export/import with the Android app.
+Open [chompass.app/app/](https://chompass.app/app/) in any modern browser (phone, tablet, or desktop). It is a progressive web app you can install to the home screen or dock. Diary logging, progress, AI entry and Coach with your own key, and shared JSON export/import with the Android app.
 
 Works in Firefox, Safari, and other engines; **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, etc.) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
@@ -90,7 +90,7 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
 Shared on the [PWA](https://chompass.app/app/) and Android app unless noted:
 
 - **Food logging**: multi-photo (up to 10), share into the app (Android), voice, barcode (FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android with cached [Open Food Facts](https://world.openfoodfacts.org/) lookup of 4.6M+ products; browser / Open Food Facts on web), text, manual entry, editable meal components, recipes and saved meals, draft recovery
-- **AI**: cloud BYOK (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use) with progress steps and streaming field preview. On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
+- **AI**: cloud, using your own key (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use) with progress steps and a live field preview. On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
 - **Live calorie budget** (Android): the home ring grows your daily goal with the day's burn in Add Active mode, from measured Health Connect energy, a manual burn entry after a run you did not log with a device, or an estimate. Without live data it falls back to your 14-day active average from Health Connect history, then to your activity-level estimate. The ring compares today's burn with a typical day; widgets use the same budget.
 - **Progress**: weight, body fat, measurements, forecast. **Health Connect** (Android): steps, exercise, wellness; two-way sync with Gadgetbridge, openScale, and other Health Connect apps
 - **Diet & extras**: keto and other diet modes, water tracking. Android: home-screen widgets, 15 languages (web is EN-first)
@@ -99,7 +99,7 @@ Shared on the [PWA](https://chompass.app/app/) and Android app unless noted:
 
 ## Why Chompass
 
-Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai) (forked in July 2026 when upstream briefly shipped AdMob banners, later removed in 3.0.3). Chompass stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds meal components, recipes, progressive AI feedback, open export/import, and Health Connect. It does not try to match upstream feature for feature.
+Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai) (forked in July 2026 when upstream briefly shipped AdMob banners, later removed in 3.0.3). Chompass stays ad-free, ships an Android app and a browser PWA, keeps a smaller APK, and adds meal components, recipes, clear analysis feedback, open export/import, and Health Connect. It does not try to match upstream feature for feature.
 
 Priorities: privacy ([PRIVACY.md](docs/PRIVACY.md)), FOSS barcode scanning, open data, wearables via Health Connect, lean F-Droid / Codeberg distribution (Play flavor disabled; see [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)), and a data-compatible [PWA](https://chompass.app/app/) for any modern browser.
 
@@ -163,7 +163,7 @@ Newer capabilities (background read, history read, and later types) are gated wi
 | Feature                 | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                          | [Chompass PWA](https://chompass.app/app/) |
 | ----------------------- | ------------------------------------------------- | ----------------------------------------- | ----------------------------------------- |
 | Banner ads              | Brief AdMob; removed in 3.0.3                     | **Never shipped**                         | **Never shipped**                         |
-| On-device AI (Gemma 4)  | No                                                | **Yes** (opt-in)                          | No (BYOK cloud)                           |
+| On-device AI (Gemma 4)  | No                                                | **Yes** (opt-in)                          | No (cloud, your key)                     |
 | Barcode                 | ML Kit                                            | **FOSS zxing-cpp**                        | Browser / OFF                             |
 | Workouts library        | Yes (~120 MB APK)                                 | **Omitted** (~15 MiB arm64)               | Omitted                                   |
 | Keto / diet modes       | No                                                | **Yes**                                   | **Yes**                                   |
@@ -177,7 +177,7 @@ Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [C
 
 ## How accurate is the AI?
 
-Chompass is BYOK, so accuracy depends on the model you pick. The app does not
+Chompass uses the model you bring, so accuracy depends on the model you pick. The app does not
 claim a single number. We benchmark against labeled datasets and publish the
 results. Typed entry is close to solved (**5.7% WMAPE, 90% within ±20%** of
 true calories). Photo estimation is hard for every vision model tested
@@ -196,7 +196,7 @@ methodology: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
 Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md). Building from source: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
-No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure (BYOK). API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
+No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure. API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 
 ## Attribution & license
 

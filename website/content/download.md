@@ -8,7 +8,7 @@ Two ways to use Chompass: the **installable browser PWA**, or the **Android app*
 
 ## Web app (PWA)
 
-Open the [Chompass web app](https://chompass.app/app/) in any modern browser on phone, tablet, or desktop. Install it to the home screen or dock for quicker access. Diary logging, progress charts, BYOK AI food entry and Coach, and shared JSON export/import with the Android app.
+Open the [Chompass web app](https://chompass.app/app/) in any modern browser on phone, tablet, or desktop. Install it to the home screen or dock for quicker access. Diary logging, progress charts, AI food entry and Coach with your own key, and shared JSON export/import with the Android app.
 
 Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, and similar) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 

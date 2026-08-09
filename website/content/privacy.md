@@ -1,6 +1,6 @@
 ---
 title: Privacy
-description: No ads, no analytics, no accounts. Food logs stay on your device. API keys are encrypted at rest. BYOK cloud AI or on-device inference on Android.
+description: No ads, no analytics, no accounts. Food logs stay on your device. API keys are encrypted at rest. Cloud AI uses the provider you choose; on Android you can run it on-device.
 layout: single
 ---
 
@@ -26,7 +26,7 @@ Encryption protects keys sitting on disk. It does not protect against malware, a
 
 ## Web app (PWA)
 
-The [Chompass PWA](https://chompass.app/app/) runs in any modern browser and stores diary data in IndexedDB. Same BYOK stance as the Android app: no account, no analytics, cloud AI only to the provider you choose. Optional user-hosted WebDAV sync (or sync JSON import/export) can keep Android and the PWA aligned. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
+The [Chompass PWA](https://chompass.app/app/) runs in any modern browser and stores diary data in IndexedDB. Same stance as the Android app: no account, no analytics, cloud AI only to the provider you choose. Optional user-hosted WebDAV sync (or sync JSON import/export) can keep Android and the PWA aligned. Chromium-based browsers generally offer the best install and media APIs; Firefox and Safari work with some gaps.
 
 ## Data on your device
 
