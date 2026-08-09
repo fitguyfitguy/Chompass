@@ -723,6 +723,19 @@
         if (iframe) {
           attachLoadHandling(iframe);
         }
+        // Firefox gets an explorable hero: the static seeded app becomes a
+        // live mini-PWA visitors can click through (diary, progress, entry
+        // flow). Chromium keeps the decorative animated demo.
+        if (isFirefox) {
+          heroRoot.classList.add("hero-stage--explorable");
+          var hint = document.createElement("p");
+          hint.className = "hero-explore-hint";
+          hint.textContent = "Live app — click to explore";
+          heroRoot.appendChild(hint);
+          setTimeout(function () {
+            if (hint.parentNode) hint.classList.add("is-dismissed");
+          }, 7000);
+        }
       });
     },
     { rootMargin: "900px" },

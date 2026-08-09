@@ -492,6 +492,49 @@ a:hover {
   user-select: none;
 }
 
+/* Explorable mode (Firefox): the phone is a live mini-PWA — real clicks. */
+.hero-stage--explorable .hero-phone-canvas iframe {
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: pan-y;
+  user-select: text;
+}
+
+.hero-stage--explorable .hero-callout {
+  display: none; /* the explore hint replaces scene captions in static mode */
+}
+
+.hero-explore-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5%;
+  transform: translateX(-50%) translateY(0.4rem);
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(15, 14, 19, 0.74);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-strong);
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+  pointer-events: none;
+}
+
+.hero-stage--explorable .hero-explore-hint {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.hero-explore-hint.is-dismissed {
+  opacity: 0;
+}
+
 .hero-bezel {
   position: absolute;
   inset: 0;
