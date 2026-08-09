@@ -12,8 +12,8 @@ summaryLength = 20
   # entry module fetch fresh (module graph still revalidates via ETag).
   # Kept separate from `version` so a demo fix never looks like a release.
   demoVersion = '3.8.0-d4'
-  apkArm64Note = '~15 MiB'
-  apkUniversalNote = '~27 MiB'
+  apkArm64Note = '~17 MiB'
+  apkUniversalNote = '~29 MiB'
   repo = 'https://codeberg.org/fitguy/chompass'
   releases = 'https://codeberg.org/fitguy/chompass/releases'
   obtainium = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fchompass'

@@ -850,6 +850,10 @@ a:hover {
   padding: var(--vpad) var(--padding);
 }
 
+.lander__stats .section-title p {
+  max-width: 40rem;
+}
+
 .stats-grid {
   display: flex;
   flex-wrap: wrap;
@@ -866,6 +870,10 @@ a:hover {
   background: var(--bg-weak);
 }
 
+.stat--wide {
+  flex-basis: 100%;
+}
+
 .stat__mark {
   color: var(--teal);
   font-weight: 700;
@@ -876,7 +884,7 @@ a:hover {
   justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
-  margin: 0.6rem 0 0.9rem;
+  margin: 0.6rem 0 0.35rem;
 }
 
 .stat__name {
@@ -891,17 +899,11 @@ a:hover {
   font-family: var(--font-display);
 }
 
-.stat__bar {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--surface);
-  overflow: hidden;
-}
-
-.stat__bar--fill {
-  height: 100%;
-  border-radius: 3px;
-  background: var(--teal);
+.stat__desc {
+  margin: 0;
+  color: var(--text-weak);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .stats-note {
