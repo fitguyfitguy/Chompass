@@ -589,8 +589,17 @@
   var restartCount = 0;
   var lastLoadAt = 0;
   var staticMode = false;
-  var STATIC_THRESHOLD = 3;
+  // 2 reloads with no completed loop is enough to recognize an embedder that
+  // keeps discarding/restoring the iframe (VS Code/Cursor preview) — waiting
+  // for 3 left the hero looking "stuck after the first scene" for ~15s.
+  var STATIC_THRESHOLD = 2;
   var STATIC_WINDOW_MS = 600_000; // 10 min: long, because loopsDone resets handle healthy cases
+
+  // Instant opt-out for testing / flaky embeds: ?demo=static renders the
+  // frozen home frame from the very first load (no restart loop detection).
+  if (new URLSearchParams(location.search).get("demo") === "static") {
+    staticMode = true;
+  }
 
   /** Shared load handling for the initial iframe and restarted clones. */
   function attachLoadHandling(el) {
