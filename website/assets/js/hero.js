@@ -434,7 +434,7 @@
   var DEV = new URLSearchParams(location.search).has("debug");
   function heroLog(msg) {
     if (DEV && msg) {
-      // console.log("[hero] " + msg);
+      console.log("[hero] " + msg);
     }
   }
 
@@ -545,7 +545,15 @@
     if (data.type === "scene") onSceneMessage(data);
     else if (data.type === "rest")
       onSceneMessage({ key: null, selector: "", index: 0 });
-    else if (data.type === "hello") replyState();
+    else if (data.type === "hello") {
+      // A boot that reports completed loops proves the demo is healthy — the
+      // reload was a transient (visitor backgrounded the tab), so reset the
+      // restart-loop counter instead of treating it as a broken loop.
+      if (typeof data.loopsDone === "number" && data.loopsDone >= 1) {
+        restartCount = 0;
+      }
+      replyState();
+    }
     else if (data.type === "error") showDiag(data);
     else if (data.type === "stalled") {
       showDiag(data);
@@ -573,14 +581,16 @@
   var diagTimer = null;
   // Restart-loop detection (Phase 3): count document loads after the first.
   // A burst means the embedder (VS Code/Cursor preview) or browser keeps
-  // discarding/restoring the iframe — after STATIC_THRESHOLD within
-  // STATIC_WINDOW_MS, switch the demo to a single frozen frame instead of an
-  // endless restart loop.
+  // discarding/restoring the iframe. The counter resets when a boot reports
+  // completed loops (healthy demo — the reload was a transient) or after the
+  // long window, so only demos that NEVER complete a loop accumulate toward
+  // static mode — this also catches slow reload loops (e.g. one reload per
+  // minute in real Firefox) that would slip under a short window.
   var restartCount = 0;
   var lastLoadAt = 0;
   var staticMode = false;
   var STATIC_THRESHOLD = 3;
-  var STATIC_WINDOW_MS = 60_000;
+  var STATIC_WINDOW_MS = 600_000; // 10 min: long, because loopsDone resets handle healthy cases
 
   /** Shared load handling for the initial iframe and restarted clones. */
   function attachLoadHandling(el) {
