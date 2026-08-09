@@ -40,6 +40,16 @@ not yet reproduced in a controlled environment.
 > - Camera transforms use `translate3d` to force a compositor layer in
 >   Firefox (2D transforms can run on the main thread there → the jank the
 >   maintainer saw vs Chromium).
+>
+> **2024-08 resolution (product decision):** the maintainer chose a
+> browser-split hero — **Firefox renders a static hero showing the seeded
+> logging view (home/diary), Chromium-based browsers get the animated usage
+> demo.** Implemented as a UA switch in `hero.js` (`/Firefox\//` →
+> `staticMode` from first load; `?demo=static` forces it anywhere). This
+> makes the open reload-loop bug moot on Firefox by design (no auto-play
+> there); Chromium keeps the animation with the 2-restart static fallback
+> for flaky embeds (VS Code/Cursor webviews). Verified headless: Firefox UA
+> → static diary frame, Chrome UA → full loop with 0 failures.
 
 ## Symptom
 
