@@ -189,6 +189,7 @@ concrete telemetry + a repro recipe for real-Firefox sessions.
 - [x] Cache hygiene: entry module versioned off the iframe `?v=`; Codeberg Pages verified `max-age=60, stale-while-revalidate=3600` + strong `sha256` ETags on `/app/` — mixed-graph window is ≤1 h post-release and recovers via ETag revalidation; full import-map versioning documented as future option (needs deploy-pipeline change, low ROI)
 - [x] Removed `allow="autoplay"` from the demo iframe (silences the Firefox Feature Policy warning; the demo plays no media)
 - [x] **Browser-split hero (product decision):** Firefox UA → static hero with the seeded logging view from first load; Chromium → animated demo (with the 2-restart static fallback for flaky embeds). `?demo=static` forces static anywhere. Verified headless: Firefox UA → static diary frame; Chrome UA → full loop, 0 failures
+- [x] **Explorable Firefox hero:** `.hero-stage--explorable` re-enables pointer events on the phone iframe; the static frame is a live mini-PWA (add-food sheet, mock AI entry, mock barcode, Progress charts), populated with the 90-day diary + relog chips; "Live app — click to explore" hint. Verified with real coordinate clicks through the camera transform
 
 ### Phase 4 — Page/transport
 - [x] Fallback screenshots only when JS off — wrapped in `<noscript>` (were ~450 KiB fetched eagerly on every load)

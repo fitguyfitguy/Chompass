@@ -50,6 +50,17 @@ not yet reproduced in a controlled environment.
 > there); Chromium keeps the animation with the 2-restart static fallback
 > for flaky embeds (VS Code/Cursor webviews). Verified headless: Firefox UA
 > → static diary frame, Chrome UA → full loop with 0 failures.
+>
+> **Follow-up: the Firefox hero is explorable.** The static frame is a live
+> mini-PWA — `.hero-stage--explorable` re-enables pointer events on the
+> phone iframe (`pointer-events: auto`, `touch-action: pan-y`) so visitors
+> click through the real components (add-food sheet, mock AI entry, mock
+> barcode, Progress charts) inside the phone; a "Live app — click to
+> explore" pill fades after 7 s. The static frame is also fully populated:
+> static mode seeds the 90-day diary (`reseedDiary`) so the logging view
+> shows real entries, the calorie ring, and relog chips. Verified with real
+> coordinate clicks through the camera transform (FAB → sheet, scrim →
+> close, nav → Progress).
 
 ## Symptom
 
