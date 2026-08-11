@@ -2,6 +2,8 @@ package app.chompass.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -317,89 +319,104 @@ internal fun WaterQuickPresetsSheet(
         }.sorted()
     }
 
-    Text(
-        stringResource(R.string.settings_water_quick_presets),
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
-    )
-    Spacer(Modifier.height(8.dp))
-    Text(
-        stringResource(R.string.settings_water_quick_presets_help),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-    )
-    Spacer(Modifier.height(16.dp))
-    presets.forEachIndexed { index, ml ->
+    Column(Modifier.fillMaxWidth()) {
         Text(
-            stringResource(R.string.settings_water_preset_label, index + 1),
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            stringResource(R.string.settings_water_quick_presets),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
         )
-        Spacer(Modifier.height(6.dp))
-        if (useMetric) {
-            val snapped = (((ml.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML) + 25) / 50) * 50)
-                .coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML)
-            var value by remember(index, ml) { mutableIntStateOf(snapped) }
-            NumericWheelPicker(
-                value = value,
-                onValueChange = {
-                    value = it
-                    updatePreset(index, it)
-                },
-                min = WaterQuickPresets.MIN_ML,
-                max = WaterQuickPresets.MAX_ML,
-                unit = stringResource(R.string.unit_ml),
-                step = 50,
-            )
-        } else {
-            val flOz = WaterAmountFormat.flOzFromMl(ml).coerceIn(1, 68)
-            var value by remember(index, ml) { mutableIntStateOf(flOz) }
-            NumericWheelPicker(
-                value = value,
-                onValueChange = {
-                    value = it
-                    updatePreset(index, WaterAmountFormat.mlFromFlOz(it))
-                },
-                min = 1,
-                max = 68,
-                unit = stringResource(R.string.unit_fl_oz),
-                step = 1,
-            )
-        }
-        Spacer(Modifier.height(12.dp))
-    }
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        if (presets.size < WaterQuickPresets.MAX_COUNT) {
-            TextButton(
-                onClick = {
-                    val next = (presets.lastOrNull() ?: 250) + 250
-                    presets = (presets + next.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML))
-                        .sorted()
-                        .distinct()
-                },
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(R.string.settings_water_add_preset))
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_water_quick_presets_help),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+        )
+        Spacer(Modifier.height(16.dp))
+        // Up to 5 wheels (~220dp each) exceed the sheet on small screens and at
+        // large font scale, which used to push Save off-screen. Wheels scroll
+        // (weight = remaining height after header + pinned footer are measured,
+        // fill=false so the sheet stays compact when only 2-3 presets fit); the
+        // add/remove row and Save stay pinned below and always reachable.
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            presets.forEachIndexed { index, ml ->
+                Text(
+                    stringResource(R.string.settings_water_preset_label, index + 1),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                )
+                Spacer(Modifier.height(6.dp))
+                if (useMetric) {
+                    val snapped = (((ml.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML) + 25) / 50) * 50)
+                        .coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML)
+                    var value by remember(index, ml) { mutableIntStateOf(snapped) }
+                    NumericWheelPicker(
+                        value = value,
+                        onValueChange = {
+                            value = it
+                            updatePreset(index, it)
+                        },
+                        min = WaterQuickPresets.MIN_ML,
+                        max = WaterQuickPresets.MAX_ML,
+                        unit = stringResource(R.string.unit_ml),
+                        step = 50,
+                    )
+                } else {
+                    val flOz = WaterAmountFormat.flOzFromMl(ml).coerceIn(1, 68)
+                    var value by remember(index, ml) { mutableIntStateOf(flOz) }
+                    NumericWheelPicker(
+                        value = value,
+                        onValueChange = {
+                            value = it
+                            updatePreset(index, WaterAmountFormat.mlFromFlOz(it))
+                        },
+                        min = 1,
+                        max = 68,
+                        unit = stringResource(R.string.unit_fl_oz),
+                        step = 1,
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
             }
         }
-        if (presets.size > WaterQuickPresets.MIN_COUNT) {
-            TextButton(
-                onClick = { presets = presets.dropLast(1) },
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(R.string.settings_water_remove_preset))
+        Spacer(Modifier.height(8.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (presets.size < WaterQuickPresets.MAX_COUNT) {
+                TextButton(
+                    onClick = {
+                        val next = (presets.lastOrNull() ?: 250) + 250
+                        presets = (presets + next.coerceIn(WaterQuickPresets.MIN_ML, WaterQuickPresets.MAX_ML))
+                            .sorted()
+                            .distinct()
+                    },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(stringResource(R.string.settings_water_add_preset))
+                }
+            }
+            if (presets.size > WaterQuickPresets.MIN_COUNT) {
+                TextButton(
+                    onClick = { presets = presets.dropLast(1) },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(stringResource(R.string.settings_water_remove_preset))
+                }
             }
         }
+        Spacer(Modifier.height(8.dp))
+        GradientSaveButton {
+            onSave(WaterQuickPresets(presets).validatedOrDefault().amountsMl)
+        }
+        Spacer(Modifier.height(8.dp))
     }
-    Spacer(Modifier.height(8.dp))
-    GradientSaveButton {
-        onSave(WaterQuickPresets(presets).validatedOrDefault().amountsMl)
-    }
-    Spacer(Modifier.height(8.dp))
 }
 
 @Composable
