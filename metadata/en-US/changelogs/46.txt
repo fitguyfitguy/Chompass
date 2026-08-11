@@ -1,0 +1,5 @@
+• Dynamic water goal + adaptive reminders (Beta, opt-in): goal from body weight, expected temperature and activity; drinking window + cup plan reminders
+• Pick the emoji or photo shown for a food entry (44 emojis, system photo picker)
+• Auto-capitalized AI food names; custom AI endpoints trust phone-installed CA certificates
+• Coach prompt caching with Anthropic (cheaper turns); Open Food Facts search retries + fallback chain, no doubled brand
+• Fixes: edit-food sheet shake/frozen list, water presets Save off-screen, search-sheet cancellation error, EXIF photo orientation
