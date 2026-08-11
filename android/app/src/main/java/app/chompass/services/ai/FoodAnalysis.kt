@@ -61,6 +61,60 @@ fun FoodAnalysis.toMicronutrients() = MicronutrientValues(
     omega3 = omega3,
 )
 
+/**
+ * Words that stay lowercase mid-name (EN + DE connector words), so
+ * "Grilled Chicken Breast with Rice" reads like a menu item. The first word
+ * is always capitalized; [AI_NAME_SHORT_FORMS] covers LLM-style all-lowercase
+ * acronyms that should stay short ("bbq").
+ */
+private val AI_NAME_MINOR_WORDS = setOf(
+    // English
+    "a", "an", "and", "as", "at", "but", "by", "for", "from", "in", "into",
+    "nor", "of", "on", "onto", "or", "per", "than", "the", "to", "up", "via",
+    "with", "without",
+    // German
+    "der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem",
+    "einer", "und", "oder", "aber", "mit", "ohne", "für", "auf", "im", "am",
+    "aus", "von", "vom", "zu", "zum", "zur", "bei", "nach", "über", "unter",
+    "zwischen", "gegen", "durch", "um", "als", "wie", "sowie",
+)
+
+/** All-lowercase short forms the LLM likes to write; uppercased for polish. */
+private val AI_NAME_SHORT_FORMS = setOf("bbq")
+
+/** Capitalizes the first letter of [word], skipping leading punctuation. */
+private fun capitalizeFirstLetter(word: String): String {
+    val idx = word.indexOfFirst { it.isLetter() }
+    if (idx < 0) return word
+    return word.substring(0, idx) + word[idx].titlecase() + word.substring(idx + 1)
+}
+
+/**
+ * Capitalizes an AI-produced food name (Codeberg #7): the first letter of the
+ * name and of every word that is neither a minor connector word (with/and/mit…)
+ * nor an acronym/short form, so "grilled chicken breast with rice" renders as
+ * "Grilled Chicken Breast with Rice" and "hähnchen mit reis" as
+ * "Hähnchen mit Reis" (German nouns get capitalized, connectors stay low).
+ * Already-capitalized words ("Coca-Cola", "McDonald's") and all-caps
+ * acronyms ("BBQ") are untouched. Applied only where the LLM wrote the name
+ * (parseFood / parseRecognition / parseLabel / parseConstituents) — never to
+ * OFF/USDA/Swiss database names, history entries, or user-typed text.
+ */
+internal fun capitalizeAiFoodName(raw: String): String {
+    val trimmed = raw.trim()
+    if (trimmed.isEmpty()) return trimmed
+    return trimmed.split(Regex("\\s+")).mapIndexed { index, word ->
+        val isFirst = index == 0
+        val lower = word.lowercase()
+        when {
+            lower in AI_NAME_SHORT_FORMS -> word.uppercase()
+            !isFirst && lower in AI_NAME_MINOR_WORDS -> word
+            word.length > 1 && word.all { !it.isLetter() || it.isUpperCase() } -> word
+            else -> capitalizeFirstLetter(word)
+        }
+    }.joinToString(" ")
+}
+
 /** Result of AI food-photo / text analysis. */
 @Serializable
 data class FoodAnalysis(
@@ -265,7 +319,9 @@ internal object FoodJsonParser {
     fun parseFood(text: String): FoodAnalysis {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
-        val name = json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse
+        val name = capitalizeAiFoodName(
+            json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse
+        )
         val servingSizeGrams = optDouble(json, "serving_size_grams") ?: 100.0
         val unitOptions = parseServingUnitOptions(json, servingSizeGrams)
         val selectedOption = unitOptions.firstOrNull()
@@ -292,14 +348,16 @@ internal object FoodJsonParser {
     fun parseRecognition(text: String): app.chompass.models.FoodRecognitionResult {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
-        val mealName = json.optString("meal_name").ifBlank {
-            json.optString("name")
-        }.takeIf { it.isNotBlank() } ?: throw AiError.InvalidResponse
+        val mealName = capitalizeAiFoodName(
+            json.optString("meal_name").ifBlank {
+                json.optString("name")
+            }.takeIf { it.isNotBlank() } ?: throw AiError.InvalidResponse
+        )
         val componentsArr = json.optJSONArray("components") ?: JSONArray()
         val components = mutableListOf<app.chompass.models.RecognizedFoodComponent>()
         for (i in 0 until componentsArr.length()) {
             val raw = componentsArr.optJSONObject(i) ?: continue
-            val name = raw.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue
+            val name = capitalizeAiFoodName(raw.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue)
             components += app.chompass.models.RecognizedFoodComponent(
                 name = name,
                 brand = raw.optString("brand").takeIf { it.isNotBlank() },
@@ -325,7 +383,9 @@ internal object FoodJsonParser {
     fun parseLabel(text: String): NutritionLabelAnalysis {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
-        val name = json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse
+        val name = capitalizeAiFoodName(
+            json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse
+        )
         fun optDouble(key: String): Double? =
             optDouble(json, key)
         val servingSizeGrams = optDouble("serving_size_grams")
@@ -448,7 +508,7 @@ internal object FoodJsonParser {
         for (i in 0 until raw.length()) {
             if (out.size >= ConstituentReconcile.MAX_CONSTITUENTS) break
             val row = raw.optJSONObject(i) ?: continue
-            val name = row.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue
+            val name = capitalizeAiFoodName(row.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue)
             val grams = optDouble(row, "serving_size_grams") ?: continue
             val calories = when (val value = row.opt("calories")) {
                 is Number -> value.toDouble().roundToInt()

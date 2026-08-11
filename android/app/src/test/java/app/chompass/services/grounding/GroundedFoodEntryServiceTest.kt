@@ -34,7 +34,7 @@ class GroundedFoodEntryServiceTest {
             }
         """.trimIndent()
         val result = app.chompass.services.ai.FoodJsonParser.parseRecognition(raw)
-        assertEquals("Eggs and toast", result.mealName)
+        assertEquals("Eggs and Toast", result.mealName)
         assertEquals(2, result.components.size)
         assertEquals(50.0, result.components[0].estimatedGrams!!, 0.001)
     }
@@ -108,6 +108,6 @@ class GroundedFoodEntryServiceTest {
         val raw = """{"meal_name":"Mystery stew","components":[]}"""
         val result = app.chompass.services.ai.FoodJsonParser.parseRecognition(raw)
         assertEquals(1, result.components.size)
-        assertEquals("Mystery stew", result.components[0].name)
+        assertEquals("Mystery Stew", result.components[0].name)
     }
 }
