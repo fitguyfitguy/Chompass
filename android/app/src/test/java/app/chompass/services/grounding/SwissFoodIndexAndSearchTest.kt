@@ -125,7 +125,10 @@ class SwissFoodIndexAndSearchTest {
         val result = DatabaseSearchResult.fromOff(hit)
         assertEquals(NutrientSourceKind.OPEN_FOOD_FACTS, result.sourceKind)
         assertEquals("7613034623230", result.sourceId)
-        assertEquals("Example Dairy Milk, skimmed", result.name)
+        // Brand stays in the subtitle badge — the name is the plain product name
+        // (joining them here double-prints "Example Dairy Example Dairy …").
+        assertEquals("Milk, skimmed", result.name)
+        assertEquals("Example Dairy", result.brand)
         assertEquals(200.0, result.servingGrams!!, 0.001)
         assertEquals(66.0, result.caloriesPerServing!!, 0.001)
         assertEquals(6.8, result.proteinPerServing!!, 0.001)
