@@ -81,6 +81,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.WindowInsets
 
 /**
  * Edit page for an existing FoodEntry. Visually identical to [FoodResultSheet]
@@ -113,9 +114,11 @@ fun EditFoodEntrySheet(
     val state = rememberChompassSheetState(busy = isReprocessing)
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
-    // Long list: block overscroll at the edges so the bottom edge does not
-    // fight the sheet's drag-to-dismiss (oscillation shows as a shake when
-    // scrolled to the bottom). Dismissal stays via the drag handle / scrim.
+    // Long list: block overscroll at the BOTTOM edge only, so the bottom
+    // edge does not fight the sheet's drag-to-dismiss (oscillation shows as
+    // a shake when scrolled to the bottom). The top edge keeps
+    // drag-from-content dismissal: downward drags on the list still follow
+    // the finger, so dismissal does not depend on the handle/scrim.
     val listState = rememberLazyListState()
 
     val entryBaseServing = currentBaseEntry.servingSizeGrams ?: 100.0
@@ -310,6 +313,13 @@ fun EditFoodEntrySheet(
         onDismiss = { if (!isReprocessing) onDismiss() },
         sheetState = state,
         containerColor = sheetSurface,
+        // Codeberg #6: zero the chrome insets — the default contentWindowInsets
+        // feeds a layout feedback loop with the footer's navigationBarsPadding/
+        // imePadding (M3 consumeWindowInsets(0,0,0,max(0,offset)) changes the
+        // consumed insets as the sheet moves -> footer padding -> content
+        // re-measure -> anchors move -> offset re-based). Removing it kills the
+        // coupling; the footer still pads itself from the raw insets.
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
         // While the note differs from what's saved, the primary button becomes
         // "Reprocess"; once reprocessed (or unchanged) it reverts to "Save".
@@ -325,14 +335,15 @@ fun EditFoodEntrySheet(
             )
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .blockSheetDragAtLazyListEdges(listState),
-                    verticalArrangement = Arrangement.spacedBy(18.dp)
-                ) {
+                WithoutOverscroll {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .blockSheetDragAtLazyListEdges(listState, blockTopEdge = false),
+                        verticalArrangement = Arrangement.spacedBy(18.dp)
+                    ) {
             // Compact hero so name / serving / macros fit the first viewport.
             // Tap it to change the emoji or photo shown for this entry.
             item {
@@ -832,6 +843,7 @@ fun EditFoodEntrySheet(
                 }
             }
         }
+        }  // WithoutOverscroll
                 if (isReprocessing) {
                     Box(
                         modifier = Modifier
