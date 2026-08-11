@@ -105,109 +105,6 @@ class ChatService(
         )
     }
 
-    // MARK: - Slim system prompt
-
-    private fun buildSystemPrompt(
-        profile: UserProfile,
-        weights: List<WeightEntry>,
-        bodyFats: List<BodyFatEntry>,
-        measurements: List<BodyMeasurement> = emptyList(),
-        foods: List<FoodEntry>,
-        heightMetric: Boolean,
-        weightMetric: Boolean
-    ): String {
-        val forecast: WeightForecast = WeightAnalysisService.compute(weights, foods, profile)
-        val zone = ZoneId.systemDefault()
-        val currentDate = LocalDate.now(zone).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        val currentTimeZone = zone.id
-
-        fun wUnit(kg: Double): String =
-            if (weightMetric) String.format(Locale.US, "%.1f kg", kg)
-            else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(kg))
-
-        fun weekly(kg: Double): String =
-            if (weightMetric) String.format(Locale.US, "%+.2f kg/week", kg)
-            else String.format(Locale.US, "%+.2f lbs/week", UnitFormat.kgToLbs(kg))
-
-        val bmrFormula = when {
-            profile.usesBodyFatForBMR -> "Katch-McArdle (uses body fat %)"
-            profile.bodyFatPercentage != null -> "Mifflin-St Jeor (user disabled the body-fat override in Settings)"
-            else -> "Mifflin-St Jeor (body fat not set)"
-        }
-
-        val lines = mutableListOf<String>()
-        lines.add("You are Coach, an AI nutrition and weight-change assistant inside a calorie tracking app. Answer in plain ${nonEnglishResponseLanguage() ?: "English"}, be specific and factual, and ground your recommendations in the user's own data. Avoid medical advice; when relevant, suggest consulting a doctor. Be concise (2-5 sentences per response unless the user asks for detail). Never use em dashes.")
-        lines.add("")
-        lines.add("## Current date")
-        lines.add("- Today: $currentDate ($currentTimeZone)")
-        lines.add("- Treat \"today\" as $currentDate when choosing tool date ranges.")
-        lines.add("")
-        lines.add("## How to use the data tools")
-        lines.add("You have access to functions that fetch the user's history on demand. The user profile + formulas + forecast below cover what's needed for most questions. Call a tool ONLY when the user asks about specific past dates, longer time ranges, individual meals, or trends that need raw data. Examples:")
-        lines.add("- \"How was my weight in March?\" → call get_weight_history(from, to)")
-        lines.add("- \"What did I eat last Tuesday?\" → call get_food_entries(from, to)")
-        lines.add("- \"What's my data range?\" → call get_data_summary")
-        lines.add("Do NOT call tools for questions you can answer from the profile/forecast below.")
-        lines.add("")
-        lines.add("## Logging on the user's behalf")
-        lines.add("If the user asks you to log/add/track food, weight, or water, call the matching propose_log_* tool. These tools NEVER save anything by themselves. They only prepare a confirmation the user must approve in the app. Call at most one propose_log_* tool per response. After calling it, briefly tell the user what you're proposing to log and that they need to confirm it.")
-        lines.add("")
-        lines.add("## User profile")
-        lines.add("- Gender: ${profile.gender.name.lowercase()}")
-        lines.add("- Age: ${profile.age}")
-        val heightStr = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
-        else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
-        lines.add("- Height: $heightStr")
-        lines.add("- Current weight: ${wUnit(profile.weightKg)}")
-        lines.add("- Activity: ${activityEnglish(profile.activityLevel)}")
-        lines.add("- Goal: ${goalEnglish(profile.goal)}")
-        lines.add("- Diet mode: ${dietModeEnglish(profile.dietMode)}")
-        if (profile.dietMode == DietMode.KETO) {
-            lines.add("- Keto carb mode: ${ketoCarbModeEnglish(profile.ketoCarbMode)}")
-            lines.add("- Keto net carbs target: ${profile.ketoActiveCarbTarget} g/day")
-        }
-        profile.goalWeightKg?.let { lines.add("- Goal weight: ${wUnit(it)}") }
-        profile.bodyFatPercentage?.let { lines.add("- Body fat: ${(it * 100).toInt()}%") }
-        profile.goalBodyFatPercentage?.let { lines.add("- Goal body fat: ${(it * 100).toInt()}%") }
-        lines.add("")
-        lines.add("## Formulas in use")
-        lines.add("- BMR: $bmrFormula. Current BMR ≈ ${profile.bmr.toInt()} kcal/day")
-        lines.add("- TDEE: BMR × activity multiplier ≈ ${profile.tdee.toInt()} kcal/day")
-        lines.add("- Calorie goal: ${profile.effectiveCalories} kcal/day")
-        lines.add("- Macro targets: ${profile.effectiveProtein}g protein, ${profile.effectiveCarbs}g carbs, ${profile.effectiveFat}g fat")
-        lines.add("")
-        lines.add("## Computed forecast (from their logged data)")
-        if (forecast.hasEnoughData) {
-            lines.add("- Days of food logged (last 90d): ${forecast.daysOfFoodData}")
-            lines.add("- Weight entries available: ${forecast.weightEntriesUsed}")
-            lines.add("- Avg daily intake: ${forecast.avgDailyCalories} kcal")
-            val balanceSign = if (forecast.dailyEnergyBalance >= 0) "+" else ""
-            lines.add("- Daily energy balance: ${balanceSign}${forecast.dailyEnergyBalance} kcal")
-            lines.add("- Predicted change (from diet): ${weekly(forecast.predictedWeeklyChangeKg)}")
-            forecast.observedWeeklyChangeKg?.let { lines.add("- Observed change (from scale): ${weekly(it)}") }
-            lines.add("- Expected weight in 30 days: ${wUnit(forecast.predictedWeight30dKg)}")
-            lines.add("- Expected weight in 60 days: ${wUnit(forecast.predictedWeight60dKg)}")
-            lines.add("- Expected weight in 90 days: ${wUnit(forecast.predictedWeight90dKg)}")
-            forecast.daysToGoal?.let { lines.add("- Days to goal at current pace: ~$it days") }
-            if (forecast.trendsDisagree) {
-                lines.add("- NOTE: Predicted and observed trends differ by >0.3 kg/week; user may be under-logging food.")
-            }
-        } else {
-            lines.add("- Not enough data yet (need ≥2 days food + ≥2 weights). Encourage the user to log more.")
-        }
-        lines.add("")
-        lines.add("## Data available")
-        lines.add("- ${weights.size} weight entries, ${bodyFats.size} body-fat readings, ${foods.size} food entries logged total. Use get_data_summary to see exact date ranges.")
-        measurements.maxByOrNull { it.date }?.promptSummary(profile.gender, profile.heightCm)?.let { summary ->
-            lines.add("")
-            lines.add("## Body measurements (latest)")
-            lines.add("- $summary")
-            lines.add("A shrinking waist alongside steady or rising weight is recomposition (fat down, muscle up). Read it that way instead of calling a flat scale a plateau. Treat the US-Navy body-fat figure as an estimate.")
-        }
-        lines.add("")
-        lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. When they ask expected weight, reference the forecast numbers above.")
-        return lines.joinToString("\n")
-    }
 
     // MARK: - OpenAI-compatible tool loop (10 of 13 providers)
 
@@ -350,7 +247,7 @@ class ChatService(
             val body = JSONObject().apply {
                 put("model", model)
                 put("max_tokens", maxTokens)
-                put("system", systemPrompt)
+                put("system", anthropicSystemBlocks(systemPrompt))
                 put("tools", toolsArr)
                 put("messages", messages)
             }
@@ -590,32 +487,6 @@ class ChatService(
     private fun base64(bytes: ByteArray): String =
         Base64.getEncoder().encodeToString(bytes)
 
-    // MARK: - English label helpers (LLM input — not localized)
-
-    private fun activityEnglish(level: ActivityLevel): String = when (level) {
-        ActivityLevel.SEDENTARY -> "Sedentary"
-        ActivityLevel.LIGHT -> "Light"
-        ActivityLevel.MODERATE -> "Moderate"
-        ActivityLevel.ACTIVE -> "Active"
-        ActivityLevel.VERY_ACTIVE -> "Very Active"
-        ActivityLevel.EXTRA_ACTIVE -> "Extra Active"
-    }
-
-    private fun goalEnglish(goal: WeightGoal): String = when (goal) {
-        WeightGoal.LOSE -> "Lose Weight"
-        WeightGoal.MAINTAIN -> "Maintain"
-        WeightGoal.GAIN -> "Gain Weight"
-    }
-
-    private fun dietModeEnglish(mode: DietMode): String = when (mode) {
-        DietMode.STANDARD -> "Standard"
-        DietMode.KETO -> "Keto (beta)"
-    }
-
-    private fun ketoCarbModeEnglish(mode: KetoCarbMode): String = when (mode) {
-        KetoCarbMode.ADAPTIVE -> "Adaptive recommendation"
-        KetoCarbMode.MANUAL -> "Manual override"
-    }
 
     @Suppress("unused")
     private fun Instant.toLocalDateInZone() = this.atZone(ZoneId.systemDefault()).toLocalDate()
@@ -627,4 +498,172 @@ class ChatService(
         private val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
         private const val MAX_TOOL_ROUNDS = 6
     }
+}
+
+// MARK: - Slim system prompt
+
+internal fun buildSystemPrompt(
+    profile: UserProfile,
+    weights: List<WeightEntry>,
+    bodyFats: List<BodyFatEntry>,
+    measurements: List<BodyMeasurement> = emptyList(),
+    foods: List<FoodEntry>,
+    heightMetric: Boolean,
+    weightMetric: Boolean
+): String {
+    val forecast: WeightForecast = WeightAnalysisService.compute(weights, foods, profile)
+    val zone = ZoneId.systemDefault()
+    val currentDate = LocalDate.now(zone).format(DateTimeFormatter.ISO_LOCAL_DATE)
+    val currentTimeZone = zone.id
+
+    fun wUnit(kg: Double): String =
+        if (weightMetric) String.format(Locale.US, "%.1f kg", kg)
+        else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(kg))
+
+    fun weekly(kg: Double): String =
+        if (weightMetric) String.format(Locale.US, "%+.2f kg/week", kg)
+        else String.format(Locale.US, "%+.2f lbs/week", UnitFormat.kgToLbs(kg))
+
+    val bmrFormula = when {
+        profile.usesBodyFatForBMR -> "Katch-McArdle (uses body fat %)"
+        profile.bodyFatPercentage != null -> "Mifflin-St Jeor (user disabled the body-fat override in Settings)"
+        else -> "Mifflin-St Jeor (body fat not set)"
+    }
+
+    val lines = mutableListOf<String>()
+    lines.add("You are Coach, an AI nutrition and weight-change assistant inside a calorie tracking app. Answer in plain ${nonEnglishResponseLanguage() ?: "English"}, be specific and factual, and ground your recommendations in the user's own data. Avoid medical advice; when relevant, suggest consulting a doctor. Be concise (2-5 sentences per response unless the user asks for detail). Never use em dashes.")
+    lines.add("")
+    lines.add("## How to use the data tools")
+    lines.add("You have access to functions that fetch the user's history on demand. The user profile + formulas + forecast below cover what's needed for most questions. Call a tool ONLY when the user asks about specific past dates, longer time ranges, individual meals, or trends that need raw data. Examples:")
+    lines.add("- \"How was my weight in March?\" → call get_weight_history(from, to)")
+    lines.add("- \"What did I eat last Tuesday?\" → call get_food_entries(from, to)")
+    lines.add("- \"What's my data range?\" → call get_data_summary")
+    lines.add("Do NOT call tools for questions you can answer from the profile/forecast below.")
+    lines.add("")
+    lines.add("## Logging on the user's behalf")
+    lines.add("If the user asks you to log/add/track food, weight, or water, call the matching propose_log_* tool. These tools NEVER save anything by themselves. They only prepare a confirmation the user must approve in the app. Call at most one propose_log_* tool per response. After calling it, briefly tell the user what you're proposing to log and that they need to confirm it.")
+    lines.add("")
+    lines.add("## User profile")
+    lines.add("- Gender: ${profile.gender.name.lowercase()}")
+    lines.add("- Age: ${profile.age}")
+    val heightStr = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
+    else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
+    lines.add("- Height: $heightStr")
+    lines.add("- Current weight: ${wUnit(profile.weightKg)}")
+    lines.add("- Activity: ${activityEnglish(profile.activityLevel)}")
+    lines.add("- Goal: ${goalEnglish(profile.goal)}")
+    lines.add("- Diet mode: ${dietModeEnglish(profile.dietMode)}")
+    if (profile.dietMode == DietMode.KETO) {
+        lines.add("- Keto carb mode: ${ketoCarbModeEnglish(profile.ketoCarbMode)}")
+        lines.add("- Keto net carbs target: ${profile.ketoActiveCarbTarget} g/day")
+    }
+    profile.goalWeightKg?.let { lines.add("- Goal weight: ${wUnit(it)}") }
+    profile.bodyFatPercentage?.let { lines.add("- Body fat: ${(it * 100).toInt()}%") }
+    profile.goalBodyFatPercentage?.let { lines.add("- Goal body fat: ${(it * 100).toInt()}%") }
+    lines.add("")
+    lines.add("## Formulas in use")
+    lines.add("- BMR: $bmrFormula. Current BMR ≈ ${profile.bmr.toInt()} kcal/day")
+    lines.add("- TDEE: BMR × activity multiplier ≈ ${profile.tdee.toInt()} kcal/day")
+    lines.add("- Calorie goal: ${profile.effectiveCalories} kcal/day")
+    lines.add("- Macro targets: ${profile.effectiveProtein}g protein, ${profile.effectiveCarbs}g carbs, ${profile.effectiveFat}g fat")
+    lines.add("")
+    lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. When they ask expected weight, reference the forecast numbers below.")
+    // --- Below this marker is the per-day / per-log volatile tail ---
+    // Everything above it must stay byte-identical between turns so the
+    // Anthropic cache breakpoint (see [anthropicSystemBlocks]) keeps hitting.
+    lines.add("")
+    lines.add("## Current date")
+    lines.add("- Today: $currentDate ($currentTimeZone)")
+    lines.add("- Treat \"today\" as $currentDate when choosing tool date ranges.")
+    lines.add("")
+    lines.add("## Computed forecast (from their logged data)")
+    if (forecast.hasEnoughData) {
+        lines.add("- Days of food logged (last 90d): ${forecast.daysOfFoodData}")
+        lines.add("- Weight entries available: ${forecast.weightEntriesUsed}")
+        lines.add("- Avg daily intake: ${forecast.avgDailyCalories} kcal")
+        val balanceSign = if (forecast.dailyEnergyBalance >= 0) "+" else ""
+        lines.add("- Daily energy balance: ${balanceSign}${forecast.dailyEnergyBalance} kcal")
+        lines.add("- Predicted change (from diet): ${weekly(forecast.predictedWeeklyChangeKg)}")
+        forecast.observedWeeklyChangeKg?.let { lines.add("- Observed change (from scale): ${weekly(it)}") }
+        lines.add("- Expected weight in 30 days: ${wUnit(forecast.predictedWeight30dKg)}")
+        lines.add("- Expected weight in 60 days: ${wUnit(forecast.predictedWeight60dKg)}")
+        lines.add("- Expected weight in 90 days: ${wUnit(forecast.predictedWeight90dKg)}")
+        forecast.daysToGoal?.let { lines.add("- Days to goal at current pace: ~$it days") }
+        if (forecast.trendsDisagree) {
+            lines.add("- NOTE: Predicted and observed trends differ by >0.3 kg/week; user may be under-logging food.")
+        }
+    } else {
+        lines.add("- Not enough data yet (need ≥2 days food + ≥2 weights). Encourage the user to log more.")
+    }
+    lines.add("")
+    lines.add("## Data available")
+    lines.add("- ${weights.size} weight entries, ${bodyFats.size} body-fat readings, ${foods.size} food entries logged total. Use get_data_summary to see exact date ranges.")
+    measurements.maxByOrNull { it.date }?.promptSummary(profile.gender, profile.heightCm)?.let { summary ->
+        lines.add("")
+        lines.add("## Body measurements (latest)")
+        lines.add("- $summary")
+        lines.add("A shrinking waist alongside steady or rising weight is recomposition (fat down, muscle up). Read it that way instead of calling a flat scale a plateau. Treat the US-Navy body-fat figure as an estimate.")
+    }
+    return lines.joinToString("\n")
+}
+
+// MARK: - Anthropic prompt caching
+
+/**
+ * Splits the coach system prompt for Anthropic's explicit prompt caching:
+ * the stable prefix (persona, tool guidance, profile, formulas — byte-
+ * identical between turns) becomes the first `system` block carrying
+ * `cache_control: ephemeral`; everything from the `## Current date` marker
+ * onward (per-day date, per-log forecast/counts, user-provided context) is
+ * a second, uncached block. Tool definitions are part of the cached prefix
+ * (Anthropic prefix order: tools → system → messages), so the breakpoint
+ * only engages when the prefix is ≥ 1024 tokens (Sonnet-class; 2048 for
+ * Haiku) — below that the API ignores it with a warning, never an error.
+ * No marker → the whole prompt is treated as stable.
+ */
+internal fun anthropicSystemBlocks(systemPrompt: String): JSONArray {
+    val volatileStart = systemPrompt.indexOf("\n## Current date")
+    val stable = if (volatileStart > 0) systemPrompt.substring(0, volatileStart).trim() else systemPrompt.trim()
+    val blocks = JSONArray()
+    blocks.put(
+        JSONObject().apply {
+            put("type", "text")
+            put("text", stable)
+            put("cache_control", JSONObject().put("type", "ephemeral"))
+        }
+    )
+    if (volatileStart > 0) {
+        blocks.put(JSONObject().apply {
+            put("type", "text")
+            put("text", systemPrompt.substring(volatileStart).trim())
+        })
+    }
+    return blocks
+}
+
+// MARK: - English label helpers (LLM input — not localized)
+
+private fun activityEnglish(level: ActivityLevel): String = when (level) {
+    ActivityLevel.SEDENTARY -> "Sedentary"
+    ActivityLevel.LIGHT -> "Light"
+    ActivityLevel.MODERATE -> "Moderate"
+    ActivityLevel.ACTIVE -> "Active"
+    ActivityLevel.VERY_ACTIVE -> "Very Active"
+    ActivityLevel.EXTRA_ACTIVE -> "Extra Active"
+}
+
+private fun goalEnglish(goal: WeightGoal): String = when (goal) {
+    WeightGoal.LOSE -> "Lose Weight"
+    WeightGoal.MAINTAIN -> "Maintain"
+    WeightGoal.GAIN -> "Gain Weight"
+}
+
+private fun dietModeEnglish(mode: DietMode): String = when (mode) {
+    DietMode.STANDARD -> "Standard"
+    DietMode.KETO -> "Keto (beta)"
+}
+
+private fun ketoCarbModeEnglish(mode: KetoCarbMode): String = when (mode) {
+    KetoCarbMode.ADAPTIVE -> "Adaptive recommendation"
+    KetoCarbMode.MANUAL -> "Manual override"
 }
