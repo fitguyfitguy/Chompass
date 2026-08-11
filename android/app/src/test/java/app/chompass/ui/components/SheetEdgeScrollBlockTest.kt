@@ -15,7 +15,6 @@ import org.junit.Test
  * drag-from-content dismissal sluggish.
  */
 class SheetEdgeScrollBlockTest {
-
     @Test
     fun blocksBottomEdge_whenListCannotScrollForward() {
         // Finger up (negative delta) at the list end must be consumed.

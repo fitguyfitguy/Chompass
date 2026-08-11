@@ -8,7 +8,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AiHttpTest {
-
     @Test
     fun userCaTrustAppliesOnlyToCustomEndpoint() {
         AIProvider.entries.forEach { provider ->
