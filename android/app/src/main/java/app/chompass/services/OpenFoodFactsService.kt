@@ -26,10 +26,17 @@ object OpenFoodFactsService {
     private const val USER_AGENT = "Chompass/Android (https://chompass.app)"
     private const val OFF_BASE_URL = "https://world.openfoodfacts.org"
 
-    /** Max attempts for the full query before falling back to shorter ones. */
+    /** Max attempts per candidate query before trying a shorter one. */
     private const val MAX_QUERY_ATTEMPTS = 3
 
-    /** Backoff between full-query retries (multiplied by the attempt number). */
+    /**
+     * One empty-but-valid response is retried once (OFF intermittently answers
+     * empty and then non-empty for the same query within seconds); a second
+     * empty moves on to the next shorter candidate.
+     */
+    private const val EMPTY_RETRY_ATTEMPTS = 1
+
+    /** Backoff between retries (multiplied by 2^attempt: 400, 800 ms). */
     private const val QUERY_RETRY_BASE_DELAY_MS = 200L
 
     class LookupException(message: String) : Exception(message)
@@ -76,10 +83,12 @@ object OpenFoodFactsService {
      * search query — never diary history. Results are not merged into USDA SQLite.
      *
      * OFF's search has no typo tolerance, ANDs every query token, and
-     * intermittently returns 503 (which the UI would otherwise show as "no
-     * foods found"). [search] rides out transient failures with a few
-     * short-retry attempts, then falls back to progressively shorter queries
-     * (dropping the brand first) when the full query comes back empty.
+     * intermittently 503s or returns empty for queries that work seconds
+     * later (which the UI would otherwise show as "no foods found").
+     * [search] rides out transient failures with retries, then walks a
+     * candidate chain — full query, without the separately-passed brand,
+     * then shorter token drops (brand-ish first token first) — so "Aldi
+     * Laugen" still surfaces Laugen products when the AND query misses.
      */
     suspend fun search(
         query: String,
@@ -94,34 +103,35 @@ object OpenFoodFactsService {
         val brandToken = brand?.trim()?.takeIf { it.isNotEmpty() }
         val terms = listOfNotNull(brandToken, q).distinct().joinToString(" ")
 
-        var hits: List<SearchHit>? = null
-        var attempt = 0
-        while (attempt < MAX_QUERY_ATTEMPTS) {
-            hits = searchOnce(terms, capped, client, baseUrl)
-            // Non-null means OFF responded (empty or not): a successful-but-
-            // empty result won't improve by retrying — fall back below instead.
-            if (hits != null) break
-            attempt++
-            if (attempt < MAX_QUERY_ATTEMPTS) delay(QUERY_RETRY_BASE_DELAY_MS * attempt)
-        }
-
-        // Only fall back to shorter queries after a successful-but-empty
-        // response — if the backend is failing (null), shorter queries won't
-        // fare better. Drop the brand token first (it is the most likely
-        // AND-miss), then the trailing food terms.
-        var lastResponseOk = hits != null
-        var shortened = terms
-        var lastAttempt: String? = null
-        while (hits.isNullOrEmpty() && lastResponseOk) {
-            shortened = if (brandToken != null && shortened == terms) {
-                q
-            } else {
-                shortened.substringBeforeLast(' ').trim()
+        // Candidate queries in order of preference: the full AND query, the
+        // query without the separately-passed brand, then progressively
+        // shorter token drops (brand-ish first token first, then the last
+        // token). Backend failures (null) and successful-but-empty responses
+        // both advance to the next candidate — OFF often answers a shorter
+        // query while the longer one 503s or AND-misses.
+        val candidates = buildList {
+            add(terms)
+            if (brandToken != null && terms != q) add(q)
+            val tokens = q.split(' ').filter { it.isNotBlank() }
+            if (tokens.size > 1) {
+                add(tokens.drop(1).joinToString(" "))
+                add(tokens.dropLast(1).joinToString(" "))
             }
-            if (shortened.isEmpty() || shortened == lastAttempt) break
-            lastAttempt = shortened
-            hits = searchOnce(shortened, capped, client, baseUrl)
-            if (hits != null) lastResponseOk = true
+        }.distinct()
+
+        var hits: List<SearchHit>? = null
+        for (candidate in candidates) {
+            var attempt = 0
+            while (attempt < MAX_QUERY_ATTEMPTS) {
+                hits = searchOnce(candidate, capped, client, baseUrl)
+                if (!hits.isNullOrEmpty()) break
+                if (hits != null && attempt >= EMPTY_RETRY_ATTEMPTS) break
+                attempt++
+                if (attempt < MAX_QUERY_ATTEMPTS) {
+                    delay(QUERY_RETRY_BASE_DELAY_MS * (1 shl attempt))
+                }
+            }
+            if (!hits.isNullOrEmpty()) break
         }
 
         val finalHits = hits.orEmpty()

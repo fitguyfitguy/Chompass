@@ -1,6 +1,7 @@
 package app.chompass.services.grounding
 
 import app.chompass.data.PreferencesStore
+import android.util.Log
 import app.chompass.models.NutrientSourceKind
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.ai.FoodAnalysis
@@ -122,14 +123,29 @@ class FoodDatabaseSearch(
         return withContext(Dispatchers.IO) {
             coroutineScope {
                 val jobs = mutableListOf<kotlinx.coroutines.Deferred<List<DatabaseSearchResult>>>()
+                // Each source is isolated: a failing source (backend outage,
+                // DB hiccup) must never hide the other sources' results, and
+                // cancellation always propagates (never swallowed).
+                fun launch(block: suspend () -> List<DatabaseSearchResult>) {
+                    jobs += async {
+                        try {
+                            block()
+                        } catch (e: kotlinx.coroutines.CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            Log.w("FoodSearch", "Source search failed for '$q'", e)
+                            emptyList()
+                        }
+                    }
+                }
                 if (Source.OPEN_FOOD_FACTS in sources) {
-                    jobs += async { offSearch(q) }
+                    launch { offSearch(q) }
                 }
                 if (Source.USDA in sources) {
-                    jobs += async { usda.search(q, limit = 6).map(DatabaseSearchResult::fromUsda) }
+                    launch { usda.search(q, limit = 6).map(DatabaseSearchResult::fromUsda) }
                 }
                 if (Source.SWISS in sources) {
-                    jobs += async {
+                    launch {
                         swiss.searchScored(q, limit = 6).map { (rec, score) ->
                             DatabaseSearchResult.fromSwiss(rec, score)
                         }
