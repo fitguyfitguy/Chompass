@@ -1,7 +1,13 @@
 package app.chompass.ui.home
 
+import androidx.compose.foundation.LocalOverscrollFactory
+import androidx.compose.foundation.OverscrollEffect
+import androidx.compose.foundation.OverscrollFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +36,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -634,6 +641,44 @@ internal fun SheetGlassDropdownMenuItem(
             )
         }
     }
+}
+
+/**
+ * No-op [OverscrollEffect]: no glow, no stretch, no animations. Used on long
+ * sheet lists whose default stretch overscroll spring can get stuck oscillating
+ * (endless bounce at the list edge after an overshooting fling until a tap
+ * cancels it) when combined with the modal sheet's nested scroll handling.
+ *
+ * [applyToScroll] must forward the delta to [consume]: the callback performs
+ * the actual scroll (nested-scroll pre/post dispatch included). Returning
+ * `Offset.Zero` without calling it silently swallows every drag/fling delta —
+ * the list never scrolls (foundation's own NoOp does the same forwarding).
+ */
+private val NoOpOverscrollEffect: OverscrollEffect = object : OverscrollEffect {
+    override fun applyToScroll(
+        delta: Offset,
+        source: androidx.compose.ui.input.nestedscroll.NestedScrollSource,
+        consume: (Offset) -> Offset,
+    ): Offset = consume(delta)
+
+    override suspend fun applyToFling(velocity: Velocity, performFling: suspend (Velocity) -> Velocity) {
+        performFling(velocity)
+    }
+
+    override val isInProgress: Boolean = false
+}
+
+/** Renders [content] with the stretch/glow overscroll effect disabled. */
+@Composable
+internal fun WithoutOverscroll(content: @Composable () -> Unit) {
+    CompositionLocalProvider(
+        LocalOverscrollFactory provides object : OverscrollFactory {
+            override fun createOverscrollEffect(): OverscrollEffect = NoOpOverscrollEffect
+            override fun equals(other: Any?): Boolean = this === other
+            override fun hashCode(): Int = System.identityHashCode(this)
+        },
+        content = content,
+    )
 }
 
 internal fun sheetMealIcon(meal: MealType): ImageVector = when (meal) {

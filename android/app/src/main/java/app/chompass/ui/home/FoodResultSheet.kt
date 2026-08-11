@@ -398,13 +398,14 @@ fun FoodResultSheet(
                 onCancel = { if (!isSaving) onDismiss() },
             )
 
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
-            ) {
+            WithoutOverscroll {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                ) {
             // Status strip while AI runs — also announces when editing unlocks.
             item {
                 Column(
@@ -874,6 +875,7 @@ fun FoodResultSheet(
             }
             } // analysisReady || analysis != null || partial has fields
             }
+            } // WithoutOverscroll
 
             SheetStickyPrimaryBar(
                 primaryLabel = busyPrimaryLabel,

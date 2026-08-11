@@ -1,8 +1,10 @@
 package app.chompass.ui.components
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -37,6 +39,12 @@ import androidx.compose.ui.unit.dp
  * [blockSheetDragAtLazyListEdges] so overscroll at list edges does not yank
  * the sheet. Do not apply that modifier to short review/edit sheets where
  * drag-from-content dismiss is expected.
+ *
+ * [contentWindowInsets] defaults to the M3 system-bars insets; sheets whose
+ * content reads the bottom insets themselves (sticky footer with
+ * navigationBarsPadding/imePadding) should pass `WindowInsets(0, 0, 0, 0)`
+ * to avoid the M3 consumeWindowInsets(0,0,0,max(0,offset)) layout feedback
+ * loop (see EditFoodEntrySheet, Codeberg #6).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +54,7 @@ fun ChompassBottomSheet(
     sheetState: SheetState = rememberChompassSheetState(),
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     shape: Shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ModalBottomSheet(
@@ -54,6 +63,7 @@ fun ChompassBottomSheet(
         sheetState = sheetState,
         containerColor = containerColor,
         shape = shape,
+        contentWindowInsets = contentWindowInsets,
         content = content,
     )
 }
@@ -94,26 +104,64 @@ fun allowsSheetHide(target: SheetValue, busy: Boolean): Boolean =
  * fight the sheet's drag-to-dismiss (visible as a shake when scrolled to the
  * bottom). Omit on genuinely short sheets where drag-from-content dismiss
  * is wanted.
+ *
+ * Blocking is per-edge so a sheet can keep drag-from-content dismissal at
+ * the top edge (finger down on content pulls the sheet) while still
+ * suppressing the bottom-edge fight:
+ *  - [blockTopEdge]: consume downward drags when the list cannot scroll back.
+ *    When on, dismissal from list content needs the handle/scrim.
+ *  - [blockBottomEdge]: consume upward drags when the list cannot scroll
+ *    forward (the bottom-edge overscroll vs drag-to-dismiss shake).
+ * Defaults preserve the original direction-blind behavior for existing
+ * sheets.
  */
 @Composable
-fun Modifier.blockSheetDragAtLazyListEdges(listState: LazyListState): Modifier {
-    val connection = remember(listState) {
+fun Modifier.blockSheetDragAtLazyListEdges(
+    listState: LazyListState,
+    blockTopEdge: Boolean = true,
+    blockBottomEdge: Boolean = true,
+): Modifier {
+    val connection = remember(listState, blockTopEdge, blockBottomEdge) {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 if (source != NestedScrollSource.UserInput) return Offset.Zero
-                val shouldBlock =
-                    (available.y > 0f && !listState.canScrollBackward) ||
-                        (available.y < 0f && !listState.canScrollForward)
+                val shouldBlock = shouldBlockSheetDrag(
+                    availableY = available.y,
+                    canScrollBackward = listState.canScrollBackward,
+                    canScrollForward = listState.canScrollForward,
+                    blockTopEdge = blockTopEdge,
+                    blockBottomEdge = blockBottomEdge,
+                )
                 return if (shouldBlock) Offset(0f, available.y) else Offset.Zero
             }
 
             override suspend fun onPreFling(available: Velocity): Velocity {
-                val shouldBlock =
-                    (available.y > 0f && !listState.canScrollBackward) ||
-                        (available.y < 0f && !listState.canScrollForward)
+                val shouldBlock = shouldBlockSheetDrag(
+                    availableY = available.y,
+                    canScrollBackward = listState.canScrollBackward,
+                    canScrollForward = listState.canScrollForward,
+                    blockTopEdge = blockTopEdge,
+                    blockBottomEdge = blockBottomEdge,
+                )
                 return if (shouldBlock) Velocity(0f, available.y) else Velocity.Zero
             }
         }
     }
     return nestedScroll(connection)
 }
+
+/**
+ * Whether a user-input vertical scroll/fling delta at a LazyColumn edge
+ * should be consumed instead of handing off to the parent sheet drag.
+ * Direction-specific: only the configured edge whose list direction is
+ * exhausted blocks.
+ */
+internal fun shouldBlockSheetDrag(
+    availableY: Float,
+    canScrollBackward: Boolean,
+    canScrollForward: Boolean,
+    blockTopEdge: Boolean,
+    blockBottomEdge: Boolean,
+): Boolean =
+    (blockTopEdge && availableY > 0f && !canScrollBackward) ||
+        (blockBottomEdge && availableY < 0f && !canScrollForward)
