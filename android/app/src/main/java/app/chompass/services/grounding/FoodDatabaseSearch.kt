@@ -41,7 +41,9 @@ data class DatabaseSearchResult(
             return DatabaseSearchResult(
                 sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
                 sourceId = hit.barcode,
-                name = listOfNotNull(hit.brand, hit.name).joinToString(" ").ifBlank { hit.name },
+                // hit.name is the plain product name; the brand rides in the
+                // subtitle badge — joining them here double-prints "Aldi Aldi…".
+                name = hit.name,
                 brand = hit.brand,
                 servingGrams = grams,
                 caloriesPerServing = p100(hit.caloriesPer100g),

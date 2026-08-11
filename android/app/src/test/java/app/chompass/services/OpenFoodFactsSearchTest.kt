@@ -1,0 +1,161 @@
+package app.chompass.services
+
+import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+/**
+ * Search-path behavior against a scripted OFF backend: transient-failure
+ * retries, brand-first query shortening, brand-less result names, scoring.
+ */
+class OpenFoodFactsSearchTest {
+    private lateinit var server: MockWebServer
+    private lateinit var client: OkHttpClient
+
+    @Before
+    fun setUp() {
+        server = MockWebServer()
+        server.start()
+        client = OkHttpClient.Builder().build()
+    }
+
+    @After
+    fun tearDown() {
+        server.shutdown()
+    }
+
+    private fun jsonResponse(body: String): MockResponse =
+        MockResponse().setResponseCode(200).setBody(body)
+
+    private val serviceUnavailable: MockResponse =
+        MockResponse().setResponseCode(503).setBody("<!DOCTYPE html><html><body>unavailable</body></html>")
+
+    private fun productsJson(vararg names: Pair<String, String>): String {
+        val items = names.map { (name, brand) ->
+            """{"code":"${name.hashCode().toLong() and 0x7fffffffL}",
+                "product_name":"$name",
+                "brands":"$brand",
+                "nutriments":{"energy-kcal_100g":200,"proteins_100g":8,"carbohydrates_100g":30,"fat_100g":5}}"""
+        }.joinToString(",")
+        return """{"count":${names.size},"products":[$items]}"""
+    }
+
+    private fun search(
+        query: String,
+        brand: String? = null,
+    ): List<OpenFoodFactsService.SearchHit> = runBlocking {
+        OpenFoodFactsService.search(query, brand = brand, client = client, baseUrl = server.url("/").toString())
+    }
+
+    private fun lastQueryParameter(name: String): String? {
+        // takeRequest(1ms) polls without the default 20s block-on-empty wait.
+        var last: String? = null
+        while (true) {
+            val request = server.takeRequest(1, java.util.concurrent.TimeUnit.MILLISECONDS) ?: break
+            last = request.requestUrl?.queryParameter(name)
+        }
+        return last
+    }
+
+    @Test
+    fun search_retriesAfter503_andReturnsHits() {
+        server.enqueue(serviceUnavailable)
+        server.enqueue(serviceUnavailable)
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+
+        val hits = search("Aldi Laugen")
+
+        assertEquals(1, hits.size)
+        assertEquals("Laugen Brezen", hits[0].name)
+        assertEquals(3, server.requestCount)
+    }
+
+    @Test
+    fun search_returnsEmpty_onPersistent503() {
+        server.enqueue(serviceUnavailable)
+        server.enqueue(serviceUnavailable)
+        server.enqueue(serviceUnavailable)
+
+        val hits = search("Aldi Laugen")
+
+        assertTrue(hits.isEmpty())
+        assertEquals(3, server.requestCount)
+    }
+
+    @Test
+    fun search_fallsBackToShorterQuery_onSuccessfulEmpty() {
+        // OFF is up but AND-misses "Aldi Laugen" → the brand token is dropped.
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+
+        val hits = search("Aldi Laugen")
+
+        assertEquals(1, hits.size)
+        assertEquals("Laugen Brezen", hits[0].name)
+        assertEquals(2, server.requestCount)
+        assertEquals("Aldi", lastQueryParameter("search_terms"))
+    }
+
+    @Test
+    fun search_dropsBrandTokenFirst_whenBrandPassedSeparately() {
+        // GroundingTools passes the brand separately: "Aldi Laugen Brezen" is
+        // tried first, then the brand is dropped before trailing food terms.
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+
+        val hits = search("Laugen Brezen", brand = "Aldi")
+
+        assertEquals(1, hits.size)
+        assertEquals(2, server.requestCount)
+        assertEquals("Laugen Brezen", lastQueryParameter("search_terms"))
+    }
+
+    @Test
+    fun search_keepsNameBrandless_andBrandSeparate() {
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+
+        val hits = search("Aldi Laugen")
+
+        assertEquals(1, hits.size)
+        // No "Aldi Aldi Laugen Brezen" — name is the plain product name.
+        assertEquals("Laugen Brezen", hits[0].name)
+        assertEquals("Aldi", hits[0].brand)
+    }
+
+    @Test
+    fun search_ranksByTokenOverlap() {
+        val body = """{"count":2,"products":[
+            {"code":"1","product_name":"Laugen Brezelino","brands":"Aldi",
+             "nutriments":{"energy-kcal_100g":200,"proteins_100g":8,"carbohydrates_100g":30,"fat_100g":5}},
+            {"code":"2","product_name":"Laugen Brioche","brands":"Aldi",
+             "nutriments":{"energy-kcal_100g":300,"proteins_100g":9,"carbohydrates_100g":40,"fat_100g":10}}
+        ]}"""
+        server.enqueue(jsonResponse(body))
+
+        val hits = search("Laugen Brezel")
+
+        assertEquals(listOf("Laugen Brezelino", "Laugen Brioche"), hits.map { it.name })
+        assertTrue(hits[0].score > hits[1].score)
+    }
+
+    @Test
+    fun search_persistsBrandlessNameThroughMapping() {
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+        val hit = search("Aldi Laugen").single()
+
+        val result = app.chompass.services.grounding.DatabaseSearchResult.fromOff(hit)
+
+        assertEquals("Laugen Brezen", result.name)
+        assertEquals("Aldi", result.brand)
+        assertNotNull(result.caloriesPerServing)
+        assertNull(result.lang)
+    }
+}

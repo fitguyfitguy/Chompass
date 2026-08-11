@@ -8,6 +8,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.FoodAnalysisService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -23,6 +24,13 @@ object OpenFoodFactsService {
     private const val SEARCH_FIELDS =
         "code,product_name,generic_name,brands,serving_size,serving_quantity,nutriments"
     private const val USER_AGENT = "Chompass/Android (https://chompass.app)"
+    private const val OFF_BASE_URL = "https://world.openfoodfacts.org"
+
+    /** Max attempts for the full query before falling back to shorter ones. */
+    private const val MAX_QUERY_ATTEMPTS = 3
+
+    /** Backoff between full-query retries (multiplied by the attempt number). */
+    private const val QUERY_RETRY_BASE_DELAY_MS = 200L
 
     class LookupException(message: String) : Exception(message)
 
@@ -66,38 +74,90 @@ object OpenFoodFactsService {
     /**
      * Live text/brand search against Open Food Facts (ODbL). Sends only the
      * search query — never diary history. Results are not merged into USDA SQLite.
+     *
+     * OFF's search has no typo tolerance, ANDs every query token, and
+     * intermittently returns 503 (which the UI would otherwise show as "no
+     * foods found"). [search] rides out transient failures with a few
+     * short-retry attempts, then falls back to progressively shorter queries
+     * (dropping the brand first) when the full query comes back empty.
      */
     suspend fun search(
         query: String,
         brand: String? = null,
         limit: Int = 6,
         client: OkHttpClient = FoodAnalysisService.defaultClient,
+        baseUrl: String = OFF_BASE_URL,
     ): List<SearchHit> = withContext(Dispatchers.IO) {
         val q = query.trim()
         if (q.isEmpty()) return@withContext emptyList()
         val capped = limit.coerceIn(1, 8)
-        val terms = listOfNotNull(brand?.trim()?.takeIf { it.isNotEmpty() }, q)
-            .distinct()
-            .joinToString(" ")
+        val brandToken = brand?.trim()?.takeIf { it.isNotEmpty() }
+        val terms = listOfNotNull(brandToken, q).distinct().joinToString(" ")
+
+        var hits: List<SearchHit>? = null
+        var attempt = 0
+        while (attempt < MAX_QUERY_ATTEMPTS) {
+            hits = searchOnce(terms, capped, client, baseUrl)
+            // Non-null means OFF responded (empty or not): a successful-but-
+            // empty result won't improve by retrying — fall back below instead.
+            if (hits != null) break
+            attempt++
+            if (attempt < MAX_QUERY_ATTEMPTS) delay(QUERY_RETRY_BASE_DELAY_MS * attempt)
+        }
+
+        // Only fall back to shorter queries after a successful-but-empty
+        // response — if the backend is failing (null), shorter queries won't
+        // fare better. Drop the brand token first (it is the most likely
+        // AND-miss), then the trailing food terms.
+        var lastResponseOk = hits != null
+        var shortened = terms
+        var lastAttempt: String? = null
+        while (hits.isNullOrEmpty() && lastResponseOk) {
+            shortened = if (brandToken != null && shortened == terms) {
+                q
+            } else {
+                shortened.substringBeforeLast(' ').trim()
+            }
+            if (shortened.isEmpty() || shortened == lastAttempt) break
+            lastAttempt = shortened
+            hits = searchOnce(shortened, capped, client, baseUrl)
+            if (hits != null) lastResponseOk = true
+        }
+
+        val finalHits = hits.orEmpty()
+        val queryTokens = terms.lowercase(Locale.US).split(Regex("\\s+")).filter { it.length > 1 }
+        finalHits
+            .map { it.withScoreAgainst(queryTokens) }
+            .sortedByDescending { it.score }
+    }
+
+    /**
+     * One search request. Returns null when the response was not usable (HTTP
+     * error / non-JSON), empty when OFF found nothing.
+     */
+    private suspend fun searchOnce(
+        terms: String,
+        capped: Int,
+        client: OkHttpClient,
+        baseUrl: String,
+    ): List<SearchHit>? {
         val encoded = URLEncoder.encode(terms, "UTF-8")
-        val url =
-            "https://world.openfoodfacts.org/cgi/search.pl" +
-                "?search_terms=$encoded&search_simple=1&action=process&json=1" +
-                "&page_size=$capped&fields=$SEARCH_FIELDS"
+        val url = "$baseUrl/cgi/search.pl" +
+            "?search_terms=$encoded&search_simple=1&action=process&json=1" +
+            "&page_size=$capped&fields=$SEARCH_FIELDS"
         val request = Request.Builder()
             .url(url)
             .addHeader("User-Agent", USER_AGENT)
             .build()
         val raw = runCatching { client.newCall(request).execute() }
-            .getOrElse { return@withContext emptyList() }
+            .getOrElse { return null }
             .use { response ->
-                if (!response.isSuccessful) return@withContext emptyList()
+                if (!response.isSuccessful) return null
                 response.body?.string().orEmpty()
             }
-        val json = runCatching { JSONObject(raw) }.getOrNull() ?: return@withContext emptyList()
-        val products = json.optJSONArray("products") ?: return@withContext emptyList()
-        val queryTokens = terms.lowercase(Locale.US).split(Regex("\\s+")).filter { it.length > 1 }
-        buildList {
+        val json = runCatching { JSONObject(raw) }.getOrNull() ?: return null
+        val products = json.optJSONArray("products") ?: return emptyList()
+        return buildList {
             for (i in 0 until products.length()) {
                 if (size >= capped) break
                 val product = products.optJSONObject(i) ?: continue
@@ -105,7 +165,13 @@ object OpenFoodFactsService {
                     product.optString("_id").trim()
                 }
                 if (code.isEmpty()) continue
-                val name = productName(product, code)
+                // Brand stays in [SearchHit.brand]; keep [SearchHit.name] the
+                // plain product name so consumers that render both don't show
+                // "Aldi Aldi Laugen Brezen".
+                val name = firstNonEmpty(
+                    product.optString("product_name"),
+                    product.optString("generic_name"),
+                ) ?: "Barcode $code"
                 val brandName = product.optString("brands")
                     .split(",")
                     .firstOrNull()
@@ -123,10 +189,6 @@ object OpenFoodFactsService {
                         ?: 0.0,
                     0.0,
                 ).takeIf { it > 0 }
-                val hay = "$brandName $name".lowercase(Locale.US)
-                val overlap = queryTokens.count { hay.contains(it) }.toDouble()
-                val score = overlap * 2.0 + maxOf(0.0, 3.0 - name.length / 40.0) +
-                    if (cal100 != null) 1.0 else 0.0
                 add(
                     SearchHit(
                         barcode = code,
@@ -138,11 +200,19 @@ object OpenFoodFactsService {
                         fatPer100g = fat100,
                         servingGrams = servingGrams,
                         incompleteEnergy = cal100 == null,
-                        score = score,
+                        score = 0.0,
                     ),
                 )
             }
-        }.sortedByDescending { it.score }
+        }
+    }
+
+    private fun SearchHit.withScoreAgainst(queryTokens: List<String>): SearchHit {
+        val hay = "$brand $name".lowercase(Locale.US)
+        val overlap = queryTokens.count { hay.contains(it) }.toDouble()
+        val score = overlap * 2.0 + maxOf(0.0, 3.0 - name.length / 40.0) +
+            if (caloriesPer100g != null) 1.0 else 0.0
+        return copy(score = score)
     }
 
     private suspend fun lookupNetwork(code: String, client: OkHttpClient): FoodAnalysis = run {
