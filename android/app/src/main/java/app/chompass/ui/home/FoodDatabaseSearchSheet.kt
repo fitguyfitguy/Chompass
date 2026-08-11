@@ -81,6 +81,9 @@ fun FoodDatabaseSearchSheet(
     LaunchedEffect(query, selectedSources) {
         val q = query.trim()
         if (q.isEmpty()) {
+            // Invalidate any in-flight search so its late result/error can't
+            // land after the field was cleared.
+            generation++
             results = emptyList()
             loading = false
             error = null
@@ -90,7 +93,16 @@ fun FoodDatabaseSearchSheet(
         error = null
         delay(300)
         val gen = ++generation
-        val outcome = runCatching { container.foodDatabaseSearch.search(q, selectedSources) }
+        val outcome = try {
+            Result.success(container.foodDatabaseSearch.search(q, selectedSources))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Query changed or the sheet closed: never swallow cancellation —
+            // writing state from a cancelled effect surfaces as
+            // "The coroutine scope left the composition".
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
         if (gen != generation) return@LaunchedEffect
         outcome.onSuccess { results = it }
             .onFailure { error = it.localizedMessage ?: searchFailedMsg }

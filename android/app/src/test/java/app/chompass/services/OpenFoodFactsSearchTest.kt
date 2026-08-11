@@ -14,7 +14,8 @@ import org.junit.Test
 
 /**
  * Search-path behavior against a scripted OFF backend: transient-failure
- * retries, brand-first query shortening, brand-less result names, scoring.
+ * retries, the full→shorter candidate chain (brand token dropped first),
+ * brand-less result names, scoring.
  */
 class OpenFoodFactsSearchTest {
     private lateinit var server: MockWebServer
@@ -80,19 +81,22 @@ class OpenFoodFactsSearchTest {
 
     @Test
     fun search_returnsEmpty_onPersistent503() {
-        server.enqueue(serviceUnavailable)
-        server.enqueue(serviceUnavailable)
-        server.enqueue(serviceUnavailable)
+        // Every candidate (full, drop-first, drop-last) gets its own retries;
+        // when the backend never answers, the search gives up empty.
+        repeat(3 * 3) { server.enqueue(serviceUnavailable) }
 
         val hits = search("Aldi Laugen")
 
         assertTrue(hits.isEmpty())
-        assertEquals(3, server.requestCount)
+        assertEquals(9, server.requestCount)
     }
 
     @Test
     fun search_fallsBackToShorterQuery_onSuccessfulEmpty() {
-        // OFF is up but AND-misses "Aldi Laugen" → the brand token is dropped.
+        // OFF is up but AND-misses "Aldi Laugen" (empty twice: one retry for
+        // OFF's intermittent empty-then-hit behavior), then the brand-ish
+        // first token is dropped — "Laugen" alone surfaces the products.
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
         server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
         server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
 
@@ -100,8 +104,8 @@ class OpenFoodFactsSearchTest {
 
         assertEquals(1, hits.size)
         assertEquals("Laugen Brezen", hits[0].name)
-        assertEquals(2, server.requestCount)
-        assertEquals("Aldi", lastQueryParameter("search_terms"))
+        assertEquals(3, server.requestCount)
+        assertEquals("Laugen", lastQueryParameter("search_terms"))
     }
 
     @Test
@@ -109,13 +113,49 @@ class OpenFoodFactsSearchTest {
         // GroundingTools passes the brand separately: "Aldi Laugen Brezen" is
         // tried first, then the brand is dropped before trailing food terms.
         server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
         server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
 
         val hits = search("Laugen Brezen", brand = "Aldi")
 
         assertEquals(1, hits.size)
-        assertEquals(2, server.requestCount)
+        assertEquals(3, server.requestCount)
         assertEquals("Laugen Brezen", lastQueryParameter("search_terms"))
+    }
+
+    @Test
+    fun search_advancesToShorterQuery_whenBackendFails() {
+        // A 503-ing full query must not end the search: the shorter
+        // "Laugen" candidate still gets a chance (OFF often answers shorter
+        // queries while the longer one fails).
+        server.enqueue(serviceUnavailable)
+        server.enqueue(serviceUnavailable)
+        server.enqueue(serviceUnavailable)
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+
+        val hits = search("Aldi Laugen")
+
+        assertEquals(1, hits.size)
+        assertEquals("Laugen Brezen", hits[0].name)
+        assertEquals(4, server.requestCount)
+        assertEquals("Laugen", lastQueryParameter("search_terms"))
+    }
+
+    @Test
+    fun search_dropsLastToken_afterFirstTokenMiss() {
+        // "aldi laugen" → "laugen" (miss) → "aldi" (brand-only flood, still
+        // better than nothing when OFF has no matching products at all).
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
+        server.enqueue(jsonResponse(productsJson("Mini Brezen" to "Aldi")))
+
+        val hits = search("Aldi Laugen")
+
+        assertEquals(1, hits.size)
+        assertEquals("Mini Brezen", hits[0].name)
+        assertEquals("Aldi", lastQueryParameter("search_terms"))
     }
 
     @Test
