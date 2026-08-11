@@ -134,6 +134,11 @@ internal fun SettingsHealthDataSection(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
                         )
                         Text(
+                            stringResource(R.string.settings_safety_water),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                        )
+                        Text(
                             stringResource(R.string.settings_accuracy_title),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,

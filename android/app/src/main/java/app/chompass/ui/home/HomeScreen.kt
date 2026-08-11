@@ -85,7 +85,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(container: AppContainer) {
+fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
     val ctx = LocalContext.current
@@ -414,6 +414,8 @@ fun HomeScreen(container: AppContainer) {
                             current = ui.waterTodayMl,
                             goal = ui.waterDailyGoalMl,
                             useMetric = ui.weightMetric,
+                            auto = ui.waterGoalDynamic,
+                            onAutoClick = onOpenSettings,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }

@@ -21,6 +21,9 @@ import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.models.UserProfile
+import app.chompass.models.ActivityLevel
+import app.chompass.models.WaterGoalBreakdown
+import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
 import app.chompass.services.ondevice.ModelCatalog
@@ -28,11 +31,13 @@ import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.models.WeightGoal
 import app.chompass.services.AndroidAppIconManager
 import app.chompass.services.KetoCarbRecommendationService
+import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppThemeColor
+import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,6 +70,16 @@ data class SettingsUiState(
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     val waterReminderEnabled: Boolean = false,
+    val waterDynamicEnabled: Boolean = false,
+    val waterBaseSource: String = WaterGoalCalculator.BASE_SOURCE_WEIGHT,
+    val waterManualTempC: Int = 25,
+    val waterUseProfileActivity: Boolean = true,
+    val waterFoodWaterEnabled: Boolean = false,
+    val waterAwakeStartMinutes: Int = 8 * 60,
+    val waterAwakeEndMinutes: Int = 21 * 60,
+    val waterCupSizeMl: Int = WaterGoalCalculator.DEFAULT_CUP_SIZE_ML,
+    /** Today's computed dynamic goal + breakdown; null while the feature is off. */
+    val waterDynamicGoalPreview: WaterGoalBreakdown? = null,
     val goalReachedNotificationsEnabled: Boolean = true,
     val appUpdateNotificationsEnabled: Boolean = true,
     val healthConnectEnabled: Boolean = false,
@@ -151,6 +166,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val waterGoal = container.prefs.waterDailyGoalMl.first()
             val waterQuickPresets = container.prefs.waterQuickPresetsMl.first()
             val waterReminder = container.prefs.waterReminderEnabled.first()
+            val waterDynamic = container.prefs.waterDynamicEnabled.first()
+            val waterBaseSource = container.prefs.waterBaseSource.first()
+            val waterTemp = container.prefs.waterManualTempC.first()
+            val waterUseActivity = container.prefs.waterUseProfileActivity.first()
+            val waterFood = container.prefs.waterFoodWaterEnabled.first()
+            val waterAwakeStart = container.prefs.waterAwakeStartHour.first() * 60 +
+                container.prefs.waterAwakeStartMinute.first()
+            val waterAwakeEnd = container.prefs.waterAwakeEndHour.first() * 60 +
+                container.prefs.waterAwakeEndMinute.first()
+            val waterCup = container.prefs.waterCupSizeMl.first()
             val goalReachedNotifications = container.prefs.goalReachedNotificationsEnabled.first()
             val appUpdateNotifications = container.prefs.appUpdateNotificationsEnabled.first()
             val hc = reconcileHealthConnectState()
@@ -218,6 +243,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 waterDailyGoalMl = waterGoal,
                 waterQuickPresetsMl = waterQuickPresets,
                 waterReminderEnabled = waterReminder,
+                waterDynamicEnabled = waterDynamic,
+                waterBaseSource = waterBaseSource,
+                waterManualTempC = waterTemp,
+                waterUseProfileActivity = waterUseActivity,
+                waterFoodWaterEnabled = waterFood,
+                waterAwakeStartMinutes = waterAwakeStart,
+                waterAwakeEndMinutes = waterAwakeEnd,
+                waterCupSizeMl = waterCup,
+                waterDynamicGoalPreview = if (waterDynamic) computeWaterGoalPreview(
+                    manualGoalMl = waterGoal,
+                    source = waterBaseSource,
+                    tempC = waterTemp,
+                    useActivity = waterUseActivity,
+                    foodWater = waterFood,
+                ) else null,
                 goalReachedNotificationsEnabled = goalReachedNotifications,
                 appUpdateNotificationsEnabled = appUpdateNotifications,
                 healthConnectEnabled = hc,
@@ -661,14 +701,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         } else {
             container.notifications.cancelBodyFatReminder()
         }
-        if (container.prefs.waterTrackingEnabled.first() && container.prefs.waterReminderEnabled.first()) {
-            container.notifications.scheduleWaterReminder(
-                container.prefs.waterReminderHour.first(),
-                container.prefs.waterReminderMinute.first(),
-            )
-        } else {
-            container.notifications.cancelWaterReminder()
-        }
+        // Water uses the adaptive chain (interval from goal ÷ cup ÷ awake window,
+        // recomputed after every entry, issue #3). rearm cancels when off.
+        WaterReminderPlanner.rearm(container)
     }
 
     fun setWaterTrackingEnabled(v: Boolean) = updateUiPref(
@@ -683,7 +718,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     )
 
     fun setWaterDailyGoalMl(v: Int) = updateUiPref(
-        { container.prefs.setWaterDailyGoalMl(v) },
+        {
+            container.prefs.setWaterDailyGoalMl(v)
+            refreshWaterDynamicPreview()
+        },
         { copy(waterDailyGoalMl = v) },
     )
 
@@ -702,6 +740,111 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         },
         { copy(waterReminderEnabled = v) },
     )
+
+    fun setWaterDynamicEnabled(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setWaterDynamicEnabled(v)
+            refreshWaterDynamicPreview()
+        },
+        { copy(waterDynamicEnabled = v) },
+    )
+
+    fun setWaterBaseSource(v: String) = updateUiPref(
+        {
+            container.prefs.setWaterBaseSource(v)
+            refreshWaterDynamicPreview()
+        },
+        { copy(waterBaseSource = v) },
+    )
+
+    fun setWaterManualTempC(v: Int) = updateUiPref(
+        {
+            container.prefs.setWaterManualTempC(v)
+            refreshWaterDynamicPreview()
+        },
+        { copy(waterManualTempC = v) },
+    )
+
+    fun setWaterUseProfileActivity(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setWaterUseProfileActivity(v)
+            refreshWaterDynamicPreview()
+        },
+        { copy(waterUseProfileActivity = v) },
+    )
+
+    fun setWaterFoodWaterEnabled(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setWaterFoodWaterEnabled(v)
+            refreshWaterDynamicPreview()
+        },
+        { copy(waterFoodWaterEnabled = v) },
+    )
+
+    fun setWaterAwakeStartMinutes(v: Int) = updateUiPref(
+        {
+            container.prefs.setWaterAwakeStartHour(v / 60)
+            container.prefs.setWaterAwakeStartMinute(v % 60)
+            syncNotificationSchedules()
+        },
+        { copy(waterAwakeStartMinutes = v) },
+    )
+
+    fun setWaterAwakeEndMinutes(v: Int) = updateUiPref(
+        {
+            container.prefs.setWaterAwakeEndHour(v / 60)
+            container.prefs.setWaterAwakeEndMinute(v % 60)
+            syncNotificationSchedules()
+        },
+        { copy(waterAwakeEndMinutes = v) },
+    )
+
+    fun setWaterCupSizeMl(v: Int) = updateUiPref(
+        {
+            container.prefs.setWaterCupSizeMl(v)
+            syncNotificationSchedules()
+        },
+        { copy(waterCupSizeMl = v) },
+    )
+
+    /** Recomputes the Settings preview of today's dynamic goal after any input change. */
+    private suspend fun refreshWaterDynamicPreview() {
+        if (!container.prefs.waterDynamicEnabled.first()) {
+            _ui.value = _ui.value.copy(waterDynamicGoalPreview = null)
+            return
+        }
+        _ui.value = _ui.value.copy(
+            waterDynamicGoalPreview = computeWaterGoalPreview(
+                manualGoalMl = container.prefs.waterDailyGoalMl.first(),
+                source = container.prefs.waterBaseSource.first(),
+                tempC = container.prefs.waterManualTempC.first(),
+                useActivity = container.prefs.waterUseProfileActivity.first(),
+                foodWater = container.prefs.waterFoodWaterEnabled.first(),
+            ),
+        )
+    }
+
+    private suspend fun computeWaterGoalPreview(
+        manualGoalMl: Int,
+        source: String,
+        tempC: Int,
+        useActivity: Boolean,
+        foodWater: Boolean,
+    ): WaterGoalBreakdown {
+        val foodGrams = container.foodRepository.entriesForDate(LocalDate.now()).first()
+            .let(WaterGoalCalculator::estimateDiaryGrams)
+        val profile = container.profileRepository.current()
+        return WaterGoalCalculator.breakdown(
+            baseSource = source,
+            weightKg = profile?.weightKg,
+            manualBaseMl = manualGoalMl,
+            expectedHighC = tempC,
+            activityLevel = profile?.activityLevel ?: ActivityLevel.SEDENTARY,
+            useProfileActivity = useActivity,
+            foodGramsToday = foodGrams,
+            foodWaterEnabled = foodWater,
+        )
+    }
 
     fun setHealthConnectEnabled(v: Boolean) {
         viewModelScope.launch {

@@ -2,7 +2,7 @@
 
 Canonical reference for nutrition and sports-science math in Chompass. In-app copy lives under **Settings → Calculation Methods**; this document is the maintainer audit trail.
 
-**Last audited:** 2026-07-09
+**Last audited:** 2026-08-11
 
 ## How goals are produced
 
@@ -42,6 +42,9 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | USNAVY  | US Navy body fat %       | Deterministic | `BodyMeasurement.usNavyBodyFatPercent`         | %        |
 | WHR     | Waist-to-hip             | Deterministic | `BodyMeasurement.waistToHipRatio`              | ratio    |
 | WTH     | Waist-to-height          | Deterministic | `BodyMeasurement.waistToHeightRatio`           | ratio    |
+| WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
+| WATER-DYN-B | Food-water subtraction   | Heuristic     | `WaterGoalCalculator.foodWaterMl` / `netGoalMl` | ml/day  |
+| WATER-DYN-C | Adaptive reminder interval | Heuristic   | `WaterGoalCalculator.liveIntervalMin`          | min      |
 
 ### BMR-MSJ: Mifflin-St Jeor
 
@@ -204,6 +207,50 @@ safetyCeiling = max(floor, maintenanceTdee × 1.25)
 
 **Measured TDEE:** 14-day Health Connect active + basal average when Energy Burn enabled.
 
+### WATER-DYN-A: Dynamic gross water goal
+
+**Android-only** (opt-in, `waterDynamicEnabled`; PWA has no water UI, so no `chompass-core` mirror yet).
+
+```
+baseMl     = round50(weightKg × 35)            // fallback: stored manual goal when no profile weight
+                                               //   (weight source selected but weightKg missing)
+tempFactor = 1 + 0.04 × max(0, Tmax°C − 25)    // clamp [1.0, 1.6]
+actFactor  = 1.0 / 1.1 / 1.2 / 1.3 / 1.4 / 1.5 // SEDENTARY…EXTRA_ACTIVE (profile ActivityLevel)
+grossMl    = round50(baseMl × tempFactor × actFactor)
+```
+
+**Evidence / rationale:**
+- **Base 35 ml/kg** sits mid-way through the commonly cited clinical range **30–40 ml/kg/day**. For a 60–80 kg adult that yields 2.1–2.8 L/day total water, between the **EFSA 2010** adequate intakes (**2.0 L/day women, 2.5 L/day men**, P95 3.1/4.0) and the **IOM 2004 / NASEM DRI** total-water AIs (**2.7 L women, 3.7 L men**). Both agencies define these AIs only for *temperate climates and low-to-moderate activity* (EFSA: “moderate environmental temperature and moderate physical activity levels (PAL 1.6)”; IOM: “healthy, sedentary people in temperate climates”). The multipliers below exist precisely because the base AI does not cover heat or activity.
+- **Temperature +4 %/°C above 25 °C, capped +60 %** is a conservative heuristic (no published single constant exists). It produces ≈ +0.5 L at 30 °C and ≈ +1.0 L at 35 °C on a 2.45 L base, matching the magnitude of extra sweat/insensible loss on hot days and the “drink more on hot days” guidance (CDC Heat & Health). Exercise sweat literature (ACSM 2007) reports 0.5–2.0 L/h; resting losses rise with ambient temperature, and the factor never reduces the goal below the base.
+- **Activity table 1.0–1.5** adds 0–50 % (≈ 0–1.2 L on a 2.45 L base). ACSM 2007 Position Stand: exercise sweat rates ≈ 0.5–2.0 L/h, with recommended intake ≈ 0.4–0.8 L/h during activity; trained individuals sweat substantially more than sedentary (one study: +123–144 %). The table is a monotone heuristic aligned to the profile’s existing `ActivityLevel` (TDEE multipliers 1.2–1.9 are BMR-relative and not reused here).
+
+**Call sites:** `WaterGoalCalculator.dailyNetGoalMl` / `breakdown`: Home ring, widget snapshot, Settings preview, `WaterReminderPlanner`.
+
+### WATER-DYN-B: Food-water subtraction (optional, coarse)
+
+```
+foodWaterMl = min(round50(foodGramsToday × 0.6), 1000)   // foodGramsToday = Σ serving grams × quantity
+netGoalMl   = max(grossMl − foodWaterMl, 1000)            // never below 1 L
+```
+
+**Evidence / rationale:** food moisture is **19–30 % of total water intake** (IOM 2004, 19 % from NHANES III; EFSA 2010 assumption 20–30 %). A mixed diet is roughly **55–75 % water by mass** (fruit/vegetables 80–95 %, meat 60–70 %, cooked grains ≈ 70 %, bread ≈ 35 %), so **60 % of diary grams** is a defensible midpoint. The **1 L cap** matches the food-moisture contribution to the agency AIs (2.5 L × 20–30 % ≈ 0.5–0.75 L; 3.7 L × 19 % ≈ 0.7 L). Opt-in and coarse by design (diary grams are estimated from serving size × quantity; entries without a serving weight contribute 0).
+
+**Call sites:** same as WATER-DYN-A when `waterFoodWaterEnabled`.
+
+### WATER-DYN-C: Adaptive reminder interval (reporter's formula)
+
+```
+cupsRemaining   = ceil(max(netGoalMl − drunkTodayMl, 0) ÷ cupSizeMl)
+windowRemaining = awakeEnd − max(now, awakeStart), minutes
+intervalMin     = clamp(round5(windowRemaining ÷ cupsRemaining), 30, 240)
+```
+
+Planning form (Settings preview): `intervalMin = clamp(round5(window ÷ ceil(netGoal ÷ cup)), 30, 240)`. Equals the live form at day start. Recalculated after **every entry** (`WaterRepository.onEntriesChanged` → `WaterReminderPlanner.rearm`); goal met or window elapsed → re-arm for tomorrow's `awakeStart`.
+
+**Evidence / rationale:** even distribution of the remaining goal over the remaining awake window (reporter's worked example: 2,500 ml ÷ 300 ml cup over 13 h → ≈ every 90 min). Behavioral pacing heuristic (“drink regularly throughout the day rather than waiting until thirsty”, CDC Heat & Health); 30–240 min clamps guard degenerate cadences. No clinical prescription claim.
+
+**Call sites:** `WaterReminderPlanner`, reminder-plan sheet preview.
+
 ### Body composition (tape measures)
 
 **US Navy (metric coefficients):**
@@ -235,6 +282,11 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 | Linear regression on scale data  | **Replaced with Theil–Sen**     | Robust median-slope; resists outlier weigh-ins                            |
 | AI goal recalculation            | **Keep, segregated**            | Non-deterministic; audit deterministic layer separately                   |
 | US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
+| Water base 35 ml/kg              | **Keep**                        | Midpoint of 30–40 ml/kg clinical range; between EFSA (2.0/2.5 L) and IOM (2.7/3.7 L) totals |
+| Temp factor +4 %/°C ≥ 25 °C, cap 1.6 | **Keep (heuristic)**         | AIs apply only to temperate climates; +0.5–1.0 L on hot days matches guidance |
+| Water activity table 1.0–1.5     | **Keep (heuristic)**            | AIs assume sedentary/PAL 1.6; ACSM exercise sweat 0.5–2.0 L/h            |
+| Food water 60 % of grams, cap 1 L | **Keep (heuristic)**           | Food moisture 19–30 % of total water intake; cap ≈ agency food-water range |
+| Reminder interval 30–240 min     | **Keep**                        | Pacing heuristic; clamps prevent degenerate cadences                     |
 
 ---
 
@@ -246,6 +298,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 4. Measured TDEE mixes device estimates with formula fallbacks.
 5. Keto carb targets do not measure blood ketones.
 6. AI meal and micronutrient estimates vary by provider and input quality.
+7. Water math is a hydration **heuristic**, not a clinical prescription; it assumes healthy adults with normal kidney function. Temperature is entered manually (no location permission by design); food-water is a coarse 60 % estimate capped at 1 L.
 
 ---
 
@@ -298,5 +351,6 @@ When changing **diary / body-metrics / meal-share / sync** wire formats: bump `f
 | AI formula reference          | `android/.../GoalFormulaReference.kt`, `web/.../chompass-core/goal-formula-reference.js`, `testdata/parity/goal-formula-prompt-fragments.json` |
 | Keto carbs                    | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt`                                                                      |
 | Body metrics                  | `android/app/src/main/java/.../models/BodyMeasurement.kt`                                                                                      |
+| Water goal + reminders        | `android/.../models/WaterGoalCalculator.kt`, `android/.../services/WaterReminderPlanner.kt`                                                    |
 | In-app docs                   | `SettingsScreen.kt` + `res/values/strings.xml`                                                                                                 |
 | Unit tests                    | `android/app/src/test/java/.../models/` and `.../services/`                                                                                    |

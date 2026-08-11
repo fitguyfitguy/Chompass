@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Percent
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.icons.outlined.TrackChanges
@@ -13,14 +14,21 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.ui.util.clockTimePattern
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
-internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel) {
+internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel, onOpenSheet: (SettingsSheet) -> Unit) {
+    val context = LocalContext.current
     Text(
         stringResource(R.string.settings_notification_types),
         style = MaterialTheme.typography.labelMedium,
@@ -63,6 +71,14 @@ internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel) {
             onChange = vm::setWaterReminderEnabled,
         )
         HorizontalDivider()
+        if (ui.waterReminderEnabled) {
+            SettingRow(
+                stringResource(R.string.settings_water_drinking_window),
+                drinkingWindowSummary(ui, context),
+                icon = Icons.Outlined.Schedule,
+            ) { onOpenSheet(SettingsSheet.WATER_REMINDER_PLAN) }
+            HorizontalDivider()
+        }
     }
     ToggleRow(
         stringResource(R.string.settings_notif_goal_alerts),
@@ -92,4 +108,17 @@ internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel) {
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
         )
     }
+}
+
+@Composable
+private fun drinkingWindowSummary(ui: SettingsUiState, context: android.content.Context): String {
+    val formatter = remember(context) {
+        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+    }
+    fun fmt(minutes: Int): String = LocalTime.of(minutes / 60, minutes % 60).format(formatter)
+    return stringResource(
+        R.string.settings_water_drinking_window_summary,
+        fmt(ui.waterAwakeStartMinutes),
+        fmt(ui.waterAwakeEndMinutes),
+    )
 }

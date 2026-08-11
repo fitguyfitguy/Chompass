@@ -810,6 +810,35 @@
     <string name="settings_water_preset_label">Preset %1$d</string>
     <string name="settings_water_add_preset">Add preset</string>
     <string name="settings_water_remove_preset">Remove last preset</string>
+    <string name="settings_water_dynamic_goal">Dynamic goal</string>
+    <string name="settings_water_dynamic_goal_help">Adapts to your weight, the temperature, your activity, and water from food. No location permission. Enter the expected high manually.</string>
+    <string name="settings_water_dynamic_base">Base goal</string>
+    <string name="settings_water_dynamic_base_weight">Body weight (35 ml/kg)</string>
+    <string name="settings_water_dynamic_base_manual">Fixed amount</string>
+    <string name="settings_water_manual_temp">Expected high today</string>
+    <string name="settings_water_manual_temp_summary">%1$d °C</string>
+    <string name="settings_water_manual_temp_help" formatted="false">The daily goal rises above 25 °C (+4 % per degree, capped at +60 %). No location permission. Set it manually.</string>
+    <string name="settings_water_use_profile_activity">Use profile activity level</string>
+    <string name="settings_water_food_water">Subtract water from food</string>
+    <string name="settings_water_food_water_help" formatted="false">Coarse estimate: 60 % of today\'s logged food weight, capped at 1 L.</string>
+    <string name="settings_water_dynamic_preview">Today\'s goal</string>
+    <string name="settings_water_dynamic_preview_breakdown">%1$d ml base × %2$s temp × %3$s activity − %4$d ml food</string>
+    <string name="settings_water_dynamic_warning_title">Beta · a suggestion, not medical advice</string>
+    <string name="settings_water_dynamic_warning_body">This target is an estimate from general hydration guidelines, not a prescription. Everyone is different: your real need depends on your kidneys, medication, health conditions, sweat, humidity, and more, so this number can be wrong for you. If you have a health condition or take medication, ask a doctor before changing how much you drink. Thirst is your best guide. Drink whenever you need to, even if it isn\'t \'time\' yet, and always drink enough on hot days or during exercise, whether the app reminds you or not.</string>
+    <string name="settings_water_reminder_note">Reminders are gentle suggestions. If you\'re thirsty, drink, even between reminders.</string>
+    <string name="settings_water_auto_badge">auto</string>
+    <string name="settings_water_drinking_window">Drinking window</string>
+    <string name="settings_water_drinking_window_summary">%1$s – %2$s</string>
+    <string name="settings_water_reminder_plan">Reminder plan</string>
+    <string name="settings_water_drinking_starts">Drinking starts</string>
+    <string name="settings_water_drinking_ends">Drinking ends</string>
+    <string name="settings_water_cup_size">Cup size</string>
+    <string name="settings_water_cup_size_summary">%1$d ml</string>
+    <string name="settings_water_reminder_interval_preview">≈ every %1$d min · %2$d cups</string>
+    <string name="settings_water_reminder_interval_help">Interval = drinking window ÷ cups needed for the goal. Recalculated after every entry.</string>
+    <string name="settings_water_restore_default_plan">Restore defaults (08:00 – 21:00, 300 ml)</string>
+    <string name="settings_water_reminder_window_too_short">The drinking window needs at least 15 minutes.</string>
+    <string name="unit_celsius">°C</string>
     <string name="settings_glass_blur">Glass blur</string>
     <string name="settings_food_log_sort">Food log sort</string>
     <string name="settings_week_starts">Week Starts On</string>
@@ -1337,6 +1366,7 @@
     <string name="notif_channel_water_desc">Daily reminder to drink and log water.</string>
     <string name="notif_water_title">Time to hydrate</string>
     <string name="notif_water_text">Have some water and log it in Chompass.</string>
+    <string name="notif_water_text_next">Have some water. Next reminder in ~%1$d min.</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
     <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals - or automatically about once a week if Adaptive Goals is on - Chompass sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your real data to estimate your true maintenance and targets.</string>
@@ -1386,10 +1416,12 @@
     <string name="settings_safety_ed">If you have a current or past eating disorder, or tracking starts increasing anxiety around food or body image, pause app use and speak with your care team.</string>
     <string name="settings_safety_low_bf">Low body-fat caution: staying very lean for long periods can carry risk. In women, very low body fat can affect hormonal and menstrual health. In men, very low body fat can affect hormones, mood, recovery, and performance.</string>
     <string name="settings_safety_escalate">If you notice fatigue, dizziness, sleep disruption, mood changes, menstrual changes, or reduced libido, get medical advice promptly.</string>
+    <string name="settings_safety_water">Hydration goals and drink reminders are estimates, not medical advice. They never replace thirst or guidance from your doctor. Drink enough even when the app does not remind you.</string>
     <string name="onboarding_safety_title">Safety notice</string>
     <string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
     <string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string>
     <string name="onboarding_safety_not_medical">This is not medical advice. Formula estimates can be off. Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, or are under 18.</string>
+    <string name="onboarding_safety_water">Hydration goals and drink reminders are rough estimates, not medical advice. Thirst is a better guide than any app, and your doctor knows what is right for you.</string>
     <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
     <string name="onboarding_accuracy_title">Accuracy disclaimer</string>
     <string name="onboarding_accuracy_body">Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only, not medical facts. Verify important numbers yourself.</string>

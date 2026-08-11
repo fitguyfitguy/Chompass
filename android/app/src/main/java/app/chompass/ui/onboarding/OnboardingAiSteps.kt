@@ -706,6 +706,11 @@ internal fun DisclaimersStep() {
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
                     )
                     Text(
+                        stringResource(R.string.onboarding_safety_water),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                    Text(
                         stringResource(R.string.onboarding_safety_settings_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
