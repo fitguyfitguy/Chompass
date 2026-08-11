@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -63,6 +64,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
@@ -74,6 +76,11 @@ import java.util.Locale
 import kotlin.math.roundToInt
 import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberFoodImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 /**
  * Edit page for an existing FoodEntry. Visually identical to [FoodResultSheet]
@@ -159,6 +166,11 @@ fun EditFoodEntrySheet(
     var loggedTime by remember(entry.id, entry.timestamp) { mutableStateOf(initialLoggedAt.toLocalTime().withSecond(0).withNano(0)) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    // Entry icon: pickable emoji and/or photo (see EditFoodIconDialog).
+    var editableEmoji by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.emoji) }
+    var editableImageFilename by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.imageFilename) }
+    var showIconPicker by remember { mutableStateOf(false) }
+    var iconPickError by remember { mutableStateOf<String?>(null) }
     val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     val context = LocalContext.current
@@ -169,6 +181,26 @@ fun EditFoodEntrySheet(
     val dismissKeyboard = {
         focusManager.clearFocus(force = true)
         keyboardController?.hide()
+    }
+
+    // Photo-picker → storeBytes (sampled decode + JPEG + 320px thumbnail). The
+    // file is `${entry.id}.jpg`, so re-picking overwrites in place — no orphans.
+    val imageStore = remember { (context.applicationContext as app.chompass.ChompassApp).container.imageStore }
+    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val bytes = runCatching {
+                    context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                }.getOrNull()
+                val filename = if (bytes == null || bytes.isEmpty()) null else imageStore.storeBytes(bytes, entry.id)
+                if (filename != null) {
+                    editableImageFilename = filename
+                    iconPickError = null
+                } else {
+                    iconPickError = context.getString(R.string.edit_icon_photo_failed)
+                }
+            }
+        }
     }
 
     fun scaledInt(v: Int) = (v * scale).roundToInt()
@@ -202,6 +234,8 @@ fun EditFoodEntrySheet(
                     editableConstituents,
                     scale,
                 ),
+                emoji = editableEmoji,
+                imageFilename = editableImageFilename,
             )
         )
 
@@ -260,6 +294,7 @@ fun EditFoodEntrySheet(
                 baseServingGrams = newAnalysis.servingSizeGrams
                 editableConstituents = newAnalysis.constituents
                 constituentsExpanded = newAnalysis.constituents.isNotEmpty()
+                editableEmoji = newAnalysis.emoji
                 changedFields = buildReprocessDiff(before, currentBaseEntry)
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
@@ -299,27 +334,17 @@ fun EditFoodEntrySheet(
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
             // Compact hero so name / serving / macros fit the first viewport.
+            // Tap it to change the emoji or photo shown for this entry.
             item {
-                val ctx = LocalContext.current
-                val container = (ctx.applicationContext as app.chompass.ChompassApp).container
-                val bitmap = rememberFoodImage(currentBaseEntry.imageFilename, container.imageStore)
-                Box(
-                    Modifier.fillMaxWidth().padding(vertical = 2.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (bitmap != null) {
-                        androidx.compose.foundation.Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                            modifier = Modifier
-                                .size(96.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                        )
-                    } else {
-                        Text(currentBaseEntry.emoji ?: "🍽", fontSize = 40.sp)
-                    }
-                }
+                EditFoodEntryHero(
+                    emoji = editableEmoji,
+                    imageFilename = editableImageFilename,
+                    enabled = !isReprocessing,
+                    onClick = {
+                        dismissKeyboard()
+                        showIconPicker = true
+                    },
+                )
             }
 
             item { SheetSectionHeader(stringResource(R.string.sheet_food_details)) }
@@ -867,6 +892,29 @@ fun EditFoodEntrySheet(
             onDismiss = { showTimePicker = false }
         )
     }
+
+    if (showIconPicker) {
+        EditFoodIconDialog(
+            hasPhoto = editableImageFilename != null,
+            errorMessage = iconPickError,
+            onPickEmoji = { emoji ->
+                editableEmoji = emoji
+                iconPickError = null
+                showIconPicker = false
+            },
+            onSetPhoto = {
+                showIconPicker = false
+                photoPicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onRemovePhoto = {
+                editableImageFilename = null
+                iconPickError = null
+            },
+            onDismiss = { showIconPicker = false },
+        )
+    }
 }
 
 @Composable
@@ -905,6 +953,117 @@ private fun EditFoodTimeDialog(
             },
             dismissText = stringResource(R.string.action_cancel),
             onDismiss = onDismiss
+        )
+    }
+}
+
+/**
+ * Pickable food emojis for the entry icon. Single-codepoint so they render
+ * uniformly across platforms.
+ */
+internal val FOOD_ENTRY_EMOJIS: List<String> = listOf(
+    "🍽", "🍎", "🍌", "🍇", "🍉", "🍓", "🍒", "🍑", "🥭", "🍍", "🍋", "🥝",
+    "🍅", "🥑", "🥦", "🥕", "🌽", "🍞", "🥐", "🥖", "🥞", "🧇", "🍳", "🥚",
+    "🥓", "🍗", "🍖", "🥩", "🍔", "🍟", "🍕", "🌮", "🥗", "🍜", "🍝", "🍣",
+    "🍦", "🍪", "🍩", "🍫", "🍰", "🥛", "☕", "🧃", "🥤", "🍺",
+)
+
+/** Hero shown at the top of the edit sheet; tap to change the emoji / photo. */
+@Composable
+internal fun EditFoodEntryHero(
+    emoji: String?,
+    imageFilename: String?,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
+    val ctx = LocalContext.current
+    // Safe-cast so previews (no ChompassApp application) render the emoji fallback.
+    val container = (ctx.applicationContext as? app.chompass.ChompassApp)?.container
+    val bitmap = if (container != null) {
+        rememberFoodImage(imageFilename, container.imageStore)
+    } else {
+        null
+    }
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp)
+            .clickable(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        if (bitmap != null) {
+            androidx.compose.foundation.Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = null,
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(14.dp))
+            )
+        } else {
+            Text(emoji ?: "🍽", fontSize = 40.sp)
+        }
+    }
+}
+
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+internal fun EditFoodIconDialog(
+    hasPhoto: Boolean,
+    errorMessage: String? = null,
+    onPickEmoji: (String) -> Unit,
+    onSetPhoto: () -> Unit,
+    onRemovePhoto: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    FudGlassDialog(onDismissRequest = onDismiss) {
+        Text(stringResource(R.string.edit_icon_picker_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(2.dp))
+        Column(
+            Modifier
+                .heightIn(max = 240.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            FOOD_ENTRY_EMOJIS.chunked(6).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                    row.forEach { emoji ->
+                        Text(
+                            emoji,
+                            fontSize = 24.sp,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { onPickEmoji(emoji) }
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                        )
+                    }
+                }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FudGlassPrimaryButton(
+                text = stringResource(R.string.edit_icon_set_photo),
+                onClick = onSetPhoto,
+                modifier = Modifier.weight(1f),
+                height = 44.dp,
+            )
+            if (hasPhoto) {
+                FudGlassPrimaryButton(
+                    text = stringResource(R.string.edit_icon_remove_photo),
+                    onClick = onRemovePhoto,
+                    modifier = Modifier.weight(1f),
+                    height = 44.dp,
+                )
+            }
+        }
+        errorMessage?.let {
+            Text(it, color = Color.Red, fontSize = 13.sp)
+        }
+        FudGlassDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = onDismiss,
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss,
         )
     }
 }

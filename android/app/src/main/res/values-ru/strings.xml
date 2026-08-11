@@ -379,6 +379,10 @@
     <string name="sheet_meal_type">Приём пищи</string>
     <string name="sheet_review_food">Проверить еду</string>
     <string name="sheet_edit_food">Изменить еду</string>
+    <string name="edit_icon_picker_title">Выберите значок</string>
+    <string name="edit_icon_set_photo">Установить фото</string>
+    <string name="edit_icon_remove_photo">Удалить фото</string>
+    <string name="edit_icon_photo_failed">Не удалось прочитать это фото</string>
 
     <string name="sheet_micro_sugar">Сахар</string>
     <string name="sheet_micro_added_sugar">Добавленный сахар</string>

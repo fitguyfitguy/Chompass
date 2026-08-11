@@ -1203,6 +1203,10 @@
     <string name="home_first_photo_saved">First photo saved</string>
     <string name="home_take_second_shot">Take the second shot</string>
     <string name="edit_reprocess_section">Ask AI to correct</string>
+    <string name="edit_icon_picker_title">Choose icon</string>
+    <string name="edit_icon_set_photo">Set photo</string>
+    <string name="edit_icon_remove_photo">Remove photo</string>
+    <string name="edit_icon_photo_failed">Couldn\'t read that photo</string>
     <string name="edit_reprocess_label">What changed?</string>
     <string name="edit_reprocess_hint">Describe the correction, e.g. large bowl, cooked in butter, oat milk instead of dairy</string>
     <string name="edit_reprocess_explain">AI will recalculate name, serving, calories, and macros from your note. Review the changes, then tap Save.</string>
