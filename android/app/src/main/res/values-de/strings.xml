@@ -378,6 +378,10 @@
     <string name="sheet_meal_type">Mahlzeit-Typ</string>
     <string name="sheet_review_food">Essen prüfen</string>
     <string name="sheet_edit_food">Lebensmittel bearbeiten</string>
+    <string name="edit_icon_picker_title">Symbol wählen</string>
+    <string name="edit_icon_set_photo">Foto festlegen</string>
+    <string name="edit_icon_remove_photo">Foto entfernen</string>
+    <string name="edit_icon_photo_failed">Dieses Foto konnte nicht gelesen werden</string>
 
     <string name="sheet_micro_sugar">Zucker</string>
     <string name="sheet_micro_added_sugar">Zugesetzter Zucker</string>
