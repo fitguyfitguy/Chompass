@@ -13,6 +13,7 @@
 #   ./scripts/install_debug.sh --reseed     # skip build/install; force-stop + seed
 #   ./scripts/install_debug.sh --2y         # also pass seed_body_metrics_2y
 #   ./scripts/install_debug.sh --universal  # prefer universal APK over arm64
+#   ./scripts/install_debug.sh --reinstall  # uninstall first (signature-mismatch installs)
 #
 # Env:
 #   ADB_BIN   adb binary (auto-detects Windows adb.exe from WSL if unset)
@@ -28,6 +29,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PACKAGE="${PACKAGE:-app.chompass.debug}"
 ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
 DEBUG_APK_DIR="${ROOT}/android/app/build/outputs/apk/debug"
+# Install only for the primary Android user (id 0), never the full multi-user
+# space (work profile, guest, etc.). Other profiles stay untouched.
+ADB_INSTALL_USER="${ADB_INSTALL_USER:-0}"
 
 DO_BUILD=1
 DO_INSTALL=1
@@ -35,6 +39,7 @@ DO_LAUNCH=1
 DO_SEED=1
 SEED_2Y=0
 PREFER_UNIVERSAL=0
+DO_REINSTALL=0
 APK_OVERRIDE="${APK:-}"
 
 while [ $# -gt 0 ]; do
@@ -43,6 +48,7 @@ while [ $# -gt 0 ]; do
     --no-seed) DO_SEED=0 ;;
     --no-launch) DO_LAUNCH=0 ;;
     --reseed) DO_BUILD=0; DO_INSTALL=0; DO_LAUNCH=1; DO_SEED=1 ;;
+    --reinstall) DO_REINSTALL=1 ;;
     --2y) SEED_2Y=1 ;;
     --universal) PREFER_UNIVERSAL=1 ;;
     -h|--help)
@@ -104,7 +110,13 @@ if [ "${DO_INSTALL}" -eq 1 ]; then
     exit 1
   fi
   echo "Installing: ${APK}"
-  "${ADB_BIN}" install -r "${APK}"
+  if [ "${DO_REINSTALL}" -eq 1 ]; then
+    # Signature mismatch (different debug keystore) blocks -r; drop the old
+    # package first. Launch seeds below recreate the sample data.
+    echo "Uninstalling ${PACKAGE} (old signature)..."
+    "${ADB_BIN}" uninstall "${PACKAGE}" || true
+  fi
+  "${ADB_BIN}" install -r --user "${ADB_INSTALL_USER}" "${APK}"
 fi
 
 if [ "${DO_LAUNCH}" -eq 0 ]; then

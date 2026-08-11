@@ -84,7 +84,7 @@ devenv shell bash -lc 'cd android && ./gradlew :app:assembleDebug'
 ```
 
 ```powershell
-adb install -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
+adb install --user 0 -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
 ```
 
 Use the **arm64-v8a** split on Pixel 9a (or the universal debug APK).
