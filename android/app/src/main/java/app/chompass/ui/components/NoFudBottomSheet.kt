@@ -89,8 +89,11 @@ fun allowsSheetHide(target: SheetValue, busy: Boolean): Boolean =
 /**
  * Consume vertical nested scroll/fling at LazyColumn edges so the parent
  * [ModalBottomSheet] does not steal the gesture when the list cannot scroll
- * further. Use on long list sheets with competing horizontal row gestures;
- * omit on short review/edit sheets.
+ * further. Use on long list sheets with competing horizontal row gestures,
+ * and on long edit/review sheets where the bottom edge would otherwise
+ * fight the sheet's drag-to-dismiss (visible as a shake when scrolled to the
+ * bottom). Omit on genuinely short sheets where drag-from-content dismiss
+ * is wanted.
  */
 @Composable
 fun Modifier.blockSheetDragAtLazyListEdges(listState: LazyListState): Modifier {

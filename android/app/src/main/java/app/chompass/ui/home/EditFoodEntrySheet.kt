@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
@@ -71,6 +72,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
+import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberFoodImage
 
 /**
@@ -104,6 +106,10 @@ fun EditFoodEntrySheet(
     val state = rememberChompassSheetState(busy = isReprocessing)
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
+    // Long list: block overscroll at the edges so the bottom edge does not
+    // fight the sheet's drag-to-dismiss (oscillation shows as a shake when
+    // scrolled to the bottom). Dismissal stays via the drag handle / scrim.
+    val listState = rememberLazyListState()
 
     val entryBaseServing = currentBaseEntry.servingSizeGrams ?: 100.0
     val servingUnitOptions = remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {
@@ -285,9 +291,11 @@ fun EditFoodEntrySheet(
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .padding(horizontal = 20.dp)
+                        .blockSheetDragAtLazyListEdges(listState),
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
             // Compact hero so name / serving / macros fit the first viewport.
