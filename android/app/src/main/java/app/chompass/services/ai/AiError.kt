@@ -37,3 +37,28 @@ internal fun friendlyMessage(status: Int, raw: String): String {
         else -> if (hasLocationUnsupportedMarker) locationUnsupported else raw
     }
 }
+
+/**
+ * Maps common connection failures on custom endpoints to actionable hints instead of raw
+ * platform exceptions. Cleartext is blocked by the release network-security-config
+ * ("CLEARTEXT communication … not permitted by network security policy", OkHttp
+ * [java.net.UnknownServiceException]); untrusted self-signed certs surface as
+ * [java.security.cert.CertPathValidatorException] wrapped in an SSLHandshakeException.
+ */
+internal fun connectionFailureMessage(cause: Throwable): String {
+    var t: Throwable? = cause
+    while (t != null) {
+        val message = t.message.orEmpty()
+        when {
+            message.contains("CLEARTEXT communication", ignoreCase = true) ||
+                message.contains("not permitted by network security policy", ignoreCase = true) ->
+                return "Cleartext HTTP is blocked in the release build. Use https:// for custom endpoints — a certificate you install on this phone is trusted — or use the debug build for plain http."
+
+            t is java.security.cert.CertPathValidatorException ||
+                message.contains("Trust anchor", ignoreCase = true) ->
+                return "The server's certificate isn't trusted. Install its CA certificate on this phone (Settings → Security → Install a certificate) and restart the app; custom endpoints trust your installed certificates."
+        }
+        t = t.cause
+    }
+    return "Network error: ${cause.localizedMessage}"
+}
