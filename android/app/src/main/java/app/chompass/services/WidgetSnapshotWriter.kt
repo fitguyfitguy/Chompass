@@ -10,12 +10,13 @@ import app.chompass.data.ProfileRepository
 import app.chompass.models.FoodEntry
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.UserProfile
+import app.chompass.models.WaterEntry
+import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WidgetNutrient
 import app.chompass.models.WidgetSnapshot
 import app.chompass.services.health.HomeActivityReader
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.widgetAccentColors
-import app.chompass.models.WaterEntry
 import app.chompass.widget.AllMetricsAppWidget
 import app.chompass.widget.CalorieAppWidget
 import app.chompass.widget.ProteinAppWidget
@@ -43,7 +44,23 @@ class WidgetSnapshotWriter(
     private val homeActivityReader: HomeActivityReader,
     private val waterRepository: app.chompass.data.WaterRepository,
 ) {
-    fun observe() = combine(
+    /** Bundled water inputs flowing through [observe]/[publish]. */
+    internal data class WaterInputs(
+        val enabled: Boolean,
+        val manualGoalMl: Int,
+        val dynamic: WaterDynamicInputs,
+        val entries: List<WaterEntry>,
+    )
+
+    internal data class WaterDynamicInputs(
+        val dynamicEnabled: Boolean,
+        val baseSource: String,
+        val tempC: Int,
+        val useProfileActivity: Boolean,
+        val foodWaterEnabled: Boolean,
+    )
+
+    internal fun observe() = combine(
         combine(
             foodRepository.entries,
             profileRepository.profile,
@@ -54,12 +71,23 @@ class WidgetSnapshotWriter(
             entries to profile
         },
         combine(
-            prefs.waterTrackingEnabled,
-            prefs.waterDailyGoalMl,
-            waterRepository.entries,
-        ) { enabled, goalMl, waterEntries ->
-            Triple(enabled, goalMl, waterEntries)
-        },
+            combine(
+                prefs.waterTrackingEnabled,
+                prefs.waterDailyGoalMl,
+                waterRepository.entries,
+            ) { enabled, goalMl, waterEntries ->
+                Triple(enabled, goalMl, waterEntries)
+            },
+            combine(
+                prefs.waterDynamicEnabled,
+                prefs.waterBaseSource,
+                prefs.waterManualTempC,
+                prefs.waterUseProfileActivity,
+                prefs.waterFoodWaterEnabled,
+            ) { dyn, source, temp, useAct, foodWater ->
+                WaterDynamicInputs(dyn, source, temp, useAct, foodWater)
+            },
+        ) { water, dynamic -> WaterInputs(water.first, water.second, dynamic, water.third) },
     ) { core, water -> Triple(core.first, core.second, water) }
         .distinctUntilChanged()
         .onEach { (entries, profile, water) -> publish(entries, profile, water) }
@@ -72,10 +100,17 @@ class WidgetSnapshotWriter(
     suspend fun refresh() {
         val entries = foodRepository.entries.first()
         val profile = profileRepository.profile.first()
-        val water = Triple(
-            prefs.waterTrackingEnabled.first(),
-            prefs.waterDailyGoalMl.first(),
-            waterRepository.entries.first(),
+        val water = WaterInputs(
+            enabled = prefs.waterTrackingEnabled.first(),
+            manualGoalMl = prefs.waterDailyGoalMl.first(),
+            dynamic = WaterDynamicInputs(
+                dynamicEnabled = prefs.waterDynamicEnabled.first(),
+                baseSource = prefs.waterBaseSource.first(),
+                tempC = prefs.waterManualTempC.first(),
+                useProfileActivity = prefs.waterUseProfileActivity.first(),
+                foodWaterEnabled = prefs.waterFoodWaterEnabled.first(),
+            ),
+            entries = waterRepository.entries.first(),
         )
         publish(entries, profile, water)
     }
@@ -83,7 +118,7 @@ class WidgetSnapshotWriter(
     private suspend fun publish(
         entries: List<FoodEntry>,
         profile: UserProfile?,
-        water: Triple<Boolean, Int, List<WaterEntry>>,
+        water: WaterInputs,
     ) {
         val todaysEntries = entries.filter {
             it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
@@ -121,9 +156,23 @@ class WidgetSnapshotWriter(
             )
             val activeCalories = burn?.calories ?: 0
             val effectiveGoal = HomeCalorieDisplay.effectiveGoal(mode, gaugeBase, activeCalories)
-            val waterTodayMl = water.third
+            val waterTodayMl = water.entries
                 .filter { it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now() }
                 .sumOf { it.milliliters }
+            val waterGoalMl = if (water.dynamic.dynamicEnabled) {
+                WaterGoalCalculator.dailyNetGoalMl(
+                    baseSource = water.dynamic.baseSource,
+                    weightKg = profile.weightKg,
+                    manualBaseMl = water.manualGoalMl,
+                    expectedHighC = water.dynamic.tempC,
+                    activityLevel = profile.activityLevel,
+                    useProfileActivity = water.dynamic.useProfileActivity,
+                    foodGramsToday = WaterGoalCalculator.estimateDiaryGrams(todaysEntries),
+                    foodWaterEnabled = water.dynamic.foodWaterEnabled,
+                )
+            } else {
+                water.manualGoalMl
+            }
             val weightUnit = prefs.weightUnit.first()
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
@@ -159,9 +208,9 @@ class WidgetSnapshotWriter(
                 activeCalorieSource = burn?.source?.storageKey,
                 stepsToday = activity.steps,
                 stepGoal = display.stepGoal,
-                waterTrackingEnabled = water.first,
+                waterTrackingEnabled = water.enabled,
                 waterCurrentMl = waterTodayMl,
-                waterGoalMl = water.second.coerceAtLeast(1),
+                waterGoalMl = waterGoalMl.coerceAtLeast(1),
                 waterUseMetric = weightUnit == "kg",
             )
             prefs.setWidgetSnapshot(snapshot)

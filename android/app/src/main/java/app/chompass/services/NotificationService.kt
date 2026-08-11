@@ -166,11 +166,26 @@ class NotificationService(private val context: Context) {
         text = context.getString(R.string.notif_body_fat_log_text)
     )
 
-    fun scheduleWaterReminder(hour: Int = 14, minute: Int = 0) = schedule(
-        REQUEST_WATER, hour, minute, CHANNEL_WATER,
-        title = context.getString(R.string.notif_water_title),
-        text = context.getString(R.string.notif_water_text)
-    )
+    /**
+     * Arms the adaptive water chain to fire at [fireAtMillis]. The receiver
+     * recomputes the next fire from live state, so the cadence always reflects
+     * the latest entries. Uses the same request code as the old fixed-time
+     * reminder, so previously armed alarms are replaced in place.
+     */
+    fun scheduleWaterReminderAt(fireAtMillis: Long) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra(EXTRA_CHANNEL, CHANNEL_WATER)
+            putExtra(EXTRA_TITLE, context.getString(R.string.notif_water_title))
+            putExtra(EXTRA_TEXT, context.getString(R.string.notif_water_text))
+            putExtra(EXTRA_REQUEST, REQUEST_WATER)
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, REQUEST_WATER, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAtMillis, pi)
+    }
 
     fun cancelStreakReminder() = cancel(REQUEST_STREAK)
     fun cancelDailySummary() = cancel(REQUEST_DAILY)
@@ -248,6 +263,22 @@ fun shouldNotifyStreak(hasFoodLoggedToday: Boolean): Boolean = !hasFoodLoggedTod
 /** Fired by the alarm. Posts the notification and re-schedules the same alarm +24h. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        // Reboot drops all alarms. Re-arm the adaptive water chain. Other daily
+        // reminders keep their existing reboot gap (out of scope; the receiver is
+        // the natural home for a follow-up that re-arms them too).
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            val pendingResult = goAsync()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val container = (context.applicationContext as? ChompassApp)?.container
+                    if (container != null) WaterReminderPlanner.rearm(container)
+                } finally {
+                    pendingResult.finish()
+                }
+            }
+            return
+        }
+
         val channel = intent.getStringExtra(NotificationService.EXTRA_CHANNEL) ?: return
         val title = intent.getStringExtra(NotificationService.EXTRA_TITLE) ?: return
         val text = intent.getStringExtra(NotificationService.EXTRA_TEXT) ?: return
@@ -256,13 +287,25 @@ class ReminderReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Water reminders recompute the cadence at fire time, so the plan
+                // reflects any entries logged since this alarm was armed.
+                val container = (context.applicationContext as? ChompassApp)?.container
+                val waterPlan = if (channel == NotificationService.CHANNEL_WATER) {
+                    container?.let { WaterReminderPlanner.next(it) }
+                } else {
+                    null
+                }
+
                 val shouldPost = if (channel == NotificationService.CHANNEL_STREAK) {
                     val hasFoodToday = runCatching {
-                        val container = (context.applicationContext as? ChompassApp)?.container
+                        val c = (context.applicationContext as? ChompassApp)?.container
                             ?: return@runCatching false
-                        container.foodRepository.entriesForDate(LocalDate.now()).first().isNotEmpty()
+                        c.foodRepository.entriesForDate(LocalDate.now()).first().isNotEmpty()
                     }.getOrDefault(false) // fail open: post if diary read fails / app not ready
                     shouldNotifyStreak(hasFoodToday)
+                } else if (channel == NotificationService.CHANNEL_WATER) {
+                    // Nothing to post when the reminder got disabled since arming.
+                    waterPlan != null
                 } else {
                     true
                 }
@@ -273,25 +316,41 @@ class ReminderReceiver : BroadcastReceiver() {
                         ChompassLaunchIntents.openApp(context),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
+                    val notifText = if (channel == NotificationService.CHANNEL_WATER &&
+                        waterPlan?.intervalMinutes != null
+                    ) {
+                        context.getString(R.string.notif_water_text_next, waterPlan.intervalMinutes)
+                    } else {
+                        text
+                    }
                     val notif = NotificationCompat.Builder(context, channel)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
-                        .setContentText(text)
+                        .setContentText(notifText)
                         .setContentIntent(open)
                         .setAutoCancel(true)
                         .build()
                     NotificationManagerCompat.from(context).notifySafely(request, notif)
                 }
 
-                // Re-arm for +24h so the reminder fires daily (even when streak was skipped).
-                val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                val nextFire = System.currentTimeMillis() + 24L * 60 * 60 * 1000
-                val reIntent = Intent(context, ReminderReceiver::class.java).apply { putExtras(intent) }
-                val pi = PendingIntent.getBroadcast(
-                    context, request, reIntent,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextFire, pi)
+                if (channel == NotificationService.CHANNEL_WATER) {
+                    // Re-arm from fresh state: next interval, or tomorrow's window start.
+                    if (waterPlan != null) {
+                        NotificationService(context).scheduleWaterReminderAt(waterPlan.nextFireMillis)
+                    } else {
+                        NotificationService(context).cancelWaterReminder()
+                    }
+                } else {
+                    // Re-arm for +24h so the reminder fires daily (even when streak was skipped).
+                    val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val nextFire = System.currentTimeMillis() + 24L * 60 * 60 * 1000
+                    val reIntent = Intent(context, ReminderReceiver::class.java).apply { putExtras(intent) }
+                    val pi = PendingIntent.getBroadcast(
+                        context, request, reIntent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                    am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextFire, pi)
+                }
             } finally {
                 pendingResult.finish()
             }

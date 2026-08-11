@@ -31,6 +31,21 @@ internal object Keys {
         val WATER_REMINDER_ENABLED = booleanPreferencesKey("waterReminderEnabled")
         val WATER_REMINDER_HOUR = intPreferencesKey("waterReminderHour")
         val WATER_REMINDER_MINUTE = intPreferencesKey("waterReminderMinute")
+        // Dynamic goal + adaptive reminders (issue #3); see docs/WATER_DYNAMIC_GOAL_DESIGN.md.
+        val WATER_DYNAMIC_ENABLED = booleanPreferencesKey("waterDynamicEnabled")
+        /** Base-goal source: WaterGoalCalculator.BASE_SOURCE_WEIGHT or _MANUAL. */
+        val WATER_BASE_SOURCE = stringPreferencesKey("waterBaseSource")
+        /** Manual expected high °C (no location permission). */
+        val WATER_MANUAL_TEMP_C = intPreferencesKey("waterManualTempC")
+        val WATER_USE_PROFILE_ACTIVITY = booleanPreferencesKey("waterUseProfileActivity")
+        val WATER_FOOD_WATER_ENABLED = booleanPreferencesKey("waterFoodWaterEnabled")
+        /** Drinking-window start/end (minutes-of-day via hour+minute pairs). */
+        val WATER_AWAKE_START_HOUR = intPreferencesKey("waterAwakeStartHour")
+        val WATER_AWAKE_START_MINUTE = intPreferencesKey("waterAwakeStartMinute")
+        val WATER_AWAKE_END_HOUR = intPreferencesKey("waterAwakeEndHour")
+        val WATER_AWAKE_END_MINUTE = intPreferencesKey("waterAwakeEndMinute")
+        /** Standard cup for the reminder-interval math (independent of quick presets). */
+        val WATER_CUP_SIZE_ML = intPreferencesKey("waterCupSizeMl")
         val WATER_QUICK_PRESETS_ML = stringPreferencesKey("waterQuickPresetsMl")
         val WATER_ENTRIES = stringPreferencesKey("waterEntries")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")

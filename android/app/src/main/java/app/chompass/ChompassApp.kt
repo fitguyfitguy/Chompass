@@ -23,6 +23,7 @@ import app.chompass.services.LauncherShortcuts
 import app.chompass.services.NotificationService
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.TestDataSeeder
+import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WidgetSnapshotWriter
 import app.chompass.services.ai.ChatService
 import app.chompass.services.ai.FoodAnalysisService
@@ -128,10 +129,7 @@ class ChompassApp : Application() {
                     container.notifications.cancelBodyFatReminder()
                 }
                 if (container.prefs.waterTrackingEnabled.first() && container.prefs.waterReminderEnabled.first()) {
-                    container.notifications.scheduleWaterReminder(
-                        container.prefs.waterReminderHour.first(),
-                        container.prefs.waterReminderMinute.first(),
-                    )
+                    WaterReminderPlanner.rearm(container)
                 } else {
                     container.notifications.cancelWaterReminder()
                 }
@@ -172,7 +170,12 @@ class AppContainer(app: ChompassApp) {
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health, syncRepository)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs, syncRepository)
     val chatRepository = ChatRepository(prefs)
-    val waterRepository = WaterRepository(prefs, syncRepository)
+    val waterRepository = WaterRepository(prefs, syncRepository).apply {
+        // Re-arm the adaptive reminder chain after every water entry so the next
+        // reminder reflects the new pace immediately (issue #3). `app.container`
+        // is lateinit but always assigned before any entry can be added.
+        onEntriesChanged = { WaterReminderPlanner.rearm(app.container) }
+    }
     val manualActiveRepository = ManualActiveRepository(prefs)
 
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)

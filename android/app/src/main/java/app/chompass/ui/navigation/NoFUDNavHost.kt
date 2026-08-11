@@ -174,7 +174,18 @@ fun ChompassNavHost(
                         }
                     })
                 }
-                composable(ChompassRoutes.HOME) { HomeScreen(container = container) }
+                composable(ChompassRoutes.HOME) {
+                    HomeScreen(
+                        container = container,
+                        onOpenSettings = {
+                            nav.navigate(ChompassRoutes.SETTINGS) {
+                                popUpTo(ChompassRoutes.HOME) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                    )
+                }
                 composable(ChompassRoutes.PROGRESS) { ProgressScreen(container = container) }
                 composable(ChompassRoutes.COACH) { CoachScreen(container = container) }
                 composable(ChompassRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }

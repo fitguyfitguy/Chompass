@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,6 +58,8 @@ fun WaterProgressRow(
     current: Int,
     goal: Int,
     useMetric: Boolean = true,
+    auto: Boolean = false,
+    onAutoClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
@@ -79,6 +82,24 @@ fun WaterProgressRow(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
             )
+            if (auto) {
+                val badgeModifier = if (onAutoClick != null) {
+                    Modifier
+                        .padding(start = 6.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable(onClick = onAutoClick)
+                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                } else {
+                    Modifier.padding(start = 6.dp)
+                }
+                Text(
+                    stringResource(R.string.settings_water_auto_badge),
+                    modifier = badgeModifier,
+                    color = AppColors.Calorie,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
             Spacer(Modifier.weight(1f))
             Text(
                 waterProgressLabel(current, goal, useMetric),

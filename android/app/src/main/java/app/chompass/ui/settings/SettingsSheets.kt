@@ -62,6 +62,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.models.WeightGoal
+import app.chompass.models.WaterGoalCalculator
 import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
@@ -490,6 +491,38 @@ internal fun SettingsSheets(
                     useMetric = ui.weightMetric,
                     onSave = {
                         vm.setWaterQuickPresetsMl(it)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.WATER_DYNAMIC_BASE -> ListSheet(
+                    title = stringResource(R.string.settings_water_dynamic_base),
+                    items = listOf(
+                        WaterGoalCalculator.BASE_SOURCE_WEIGHT to stringResource(R.string.settings_water_dynamic_base_weight),
+                        WaterGoalCalculator.BASE_SOURCE_MANUAL to stringResource(R.string.settings_water_dynamic_base_manual),
+                    ),
+                    label = { it.second },
+                    selected = { it.first == ui.waterBaseSource },
+                    onSelect = {
+                        vm.setWaterBaseSource(it.first)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.WATER_MANUAL_TEMP -> WaterManualTempSheet(
+                    current = ui.waterManualTempC,
+                    onSave = {
+                        vm.setWaterManualTempC(it)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.WATER_REMINDER_PLAN -> WaterReminderPlanSheet(
+                    currentStartMinutes = ui.waterAwakeStartMinutes,
+                    currentEndMinutes = ui.waterAwakeEndMinutes,
+                    currentCupMl = ui.waterCupSizeMl,
+                    goalMl = ui.waterDynamicGoalPreview?.netGoalMl ?: ui.waterDailyGoalMl,
+                    onSave = { start, end, cup ->
+                        vm.setWaterAwakeStartMinutes(start)
+                        vm.setWaterAwakeEndMinutes(end)
+                        vm.setWaterCupSizeMl(cup)
                         onDismiss()
                     },
                 )

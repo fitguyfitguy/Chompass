@@ -24,6 +24,8 @@ import app.chompass.models.PendingFoodInputDraft
 import app.chompass.models.ProgressiveMealDraft
 import app.chompass.models.ProgressiveMealItem
 import app.chompass.models.UserProfile
+import app.chompass.models.ActivityLevel
+import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodImageComposer
@@ -127,6 +129,8 @@ data class HomeUiState(
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     val waterTodayMl: Int = 0,
+    /** True when the goal shown comes from the dynamic calculator (issue #3). */
+    val waterGoalDynamic: Boolean = false,
     /** Debug-only resting-shade flag for the hero arc A/B (see [SHOW_RESTING_BURN_SHADE]). */
     val showRestingBurnShade: Boolean = SHOW_RESTING_BURN_SHADE,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
@@ -555,8 +559,47 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { enabled -> _ui.value = _ui.value.copy(waterTrackingEnabled = enabled) }
             .launchIn(viewModelScope)
 
-        container.prefs.waterDailyGoalMl
-            .onEach { goal -> _ui.value = _ui.value.copy(waterDailyGoalMl = goal) }
+        // Effective water goal: the stored manual goal, or the dynamic calculator's
+        // result when the feature is on (issue #3). Recomputes on any input change
+        // (profile weight/activity, temperature, food diary, dynamic toggles).
+        combine(
+            combine(
+                container.prefs.waterDailyGoalMl,
+                container.prefs.waterDynamicEnabled,
+                container.prefs.waterBaseSource,
+                container.prefs.waterManualTempC,
+                container.prefs.waterUseProfileActivity,
+            ) { manualGoal, dyn, source, temp, useAct ->
+                WaterDynamicPrefs(manualGoal, dyn, source, temp, useAct)
+            },
+            container.prefs.waterFoodWaterEnabled,
+            container.profileRepository.profile,
+            container.foodRepository.entries,
+        ) { prefs, foodWater, profile, entries ->
+            if (!prefs.dynamicEnabled) {
+                prefs.manualGoalMl to false
+            } else {
+                val todayFoodGrams = WaterGoalCalculator.estimateDiaryGrams(
+                    entries.filter {
+                        it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
+                    }
+                )
+                val goal = WaterGoalCalculator.dailyNetGoalMl(
+                    baseSource = prefs.baseSource,
+                    weightKg = profile?.weightKg,
+                    manualBaseMl = prefs.manualGoalMl,
+                    expectedHighC = prefs.tempC,
+                    activityLevel = profile?.activityLevel ?: ActivityLevel.SEDENTARY,
+                    useProfileActivity = prefs.useProfileActivity,
+                    foodGramsToday = todayFoodGrams,
+                    foodWaterEnabled = foodWater,
+                )
+                goal to true
+            }
+        }
+            .onEach { (goal, dynamic) ->
+                _ui.value = _ui.value.copy(waterDailyGoalMl = goal, waterGoalDynamic = dynamic)
+            }
             .launchIn(viewModelScope)
 
         container.prefs.waterQuickPresetsMl
@@ -1700,4 +1743,13 @@ private fun FoodEntry.toAnalysis(): FoodAnalysis = MicronutrientValues.from(this
         grounding = grounding,
         constituents = constituents,
     )
+)
+
+/** Dynamic-water inputs bundled for the nested combine in [HomeViewModel]. */
+private data class WaterDynamicPrefs(
+    val manualGoalMl: Int,
+    val dynamicEnabled: Boolean,
+    val baseSource: String,
+    val tempC: Int,
+    val useProfileActivity: Boolean,
 )
