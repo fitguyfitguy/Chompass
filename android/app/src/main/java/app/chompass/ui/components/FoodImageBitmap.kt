@@ -7,6 +7,7 @@ import androidx.compose.runtime.produceState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import app.chompass.services.FoodImageStore
+import app.chompass.services.withExifOrientation
 
 /**
  * Decodes in-memory image bytes off the composition thread. Keyed on the array
@@ -18,7 +19,9 @@ fun rememberDecodedBitmap(bytes: ByteArray?): Bitmap? {
         value = if (bytes == null) {
             null
         } else {
-            withContext(Dispatchers.Default) { BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
+            withContext(Dispatchers.Default) {
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.withExifOrientation(bytes)
+            }
         }
     }
     return state.value
