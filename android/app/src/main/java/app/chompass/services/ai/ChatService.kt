@@ -77,7 +77,7 @@ class ChatService(
 
         val provider = prefs.selectedAIProvider.first()
         val model = provider.supportedModelOrDefault(prefs.selectedAIModel.first())
-        val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() } ?: provider.baseUrl
+        val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         val apiKey = AiHttp.sanitizeApiKey(keyStore.apiKey(provider))
 
         // Coach tool-calling (Tier C) stays debug/experimental for on-device — see docs/ON_DEVICE_LLM.md.

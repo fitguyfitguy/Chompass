@@ -612,7 +612,7 @@ class FoodAnalysisService(
             throw AiError.Api("Grounded tool loop is not available for on-device models.")
         }
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
-        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() } ?: primary.baseUrl
+        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
         val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
@@ -742,7 +742,7 @@ class FoodAnalysisService(
 
         val primary = prefs!!.selectedAIProvider.first()
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
-        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() } ?: primary.baseUrl
+        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
         val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
@@ -988,7 +988,7 @@ class FoodAnalysisService(
         if (provider == primary && model == primaryModel) return null
         val key = AiHttp.sanitizeApiKey(keyStore!!.apiKey(provider))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
-        val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() } ?: provider.baseUrl
+        val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null
         return FallbackConfig(provider, model, baseUrl, key)
     }
