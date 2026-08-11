@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.LruCache
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
@@ -128,12 +129,21 @@ class FoodImageStore(context: Context) {
         return BitmapFactory.decodeFile(file.absolutePath, options)?.scaledToMaxDimension(maxDimension)
     }
 
+
+
+    /**
+     * Decodes [bytes] down to [maxDimension], then bakes the EXIF orientation in:
+     * BitmapFactory ignores it, so camera/gallery JPEGs would otherwise be stored
+     * (and shown) rotated 90°/180°.
+     */
     private fun decodeSampled(bytes: ByteArray, maxDimension: Int): Bitmap? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
         val sampleSize = sampleSizeFor(bounds.outWidth, bounds.outHeight, maxDimension)
         val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)?.scaledToMaxDimension(maxDimension)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+            ?.scaledToMaxDimension(maxDimension)
+            ?.withExifOrientation(bytes)
     }
 
     private fun sampleSizeFor(width: Int, height: Int, maxDimension: Int): Int {
@@ -171,4 +181,25 @@ class FoodImageStore(context: Context) {
         private const val THUMBNAIL_JPEG_QUALITY = 76
         private const val THUMBNAIL_CACHE_KB = 12 * 1024
     }
+}
+
+/**
+ * Rotates [Bitmap] per the EXIF orientation in [bytes] (no-op for upright
+ * images). BitmapFactory drops EXIF, so raw camera/gallery JPEGs decode
+ * rotated; baking the rotation in here keeps stored JPEGs upright.
+ */
+internal fun Bitmap.withExifOrientation(bytes: ByteArray): Bitmap = runCatching {
+    val orientation = android.media.ExifInterface(ByteArrayInputStream(bytes))
+        .getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION, android.media.ExifInterface.ORIENTATION_NORMAL)
+    when (orientation) {
+        android.media.ExifInterface.ORIENTATION_ROTATE_90 -> withRotation(90f)
+        android.media.ExifInterface.ORIENTATION_ROTATE_180 -> withRotation(180f)
+        android.media.ExifInterface.ORIENTATION_ROTATE_270 -> withRotation(270f)
+        else -> this
+    }
+}.getOrElse { this }
+
+private fun Bitmap.withRotation(degrees: Float): Bitmap {
+    val matrix = android.graphics.Matrix().apply { postRotate(degrees) }
+    return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
 }
