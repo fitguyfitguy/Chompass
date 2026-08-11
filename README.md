@@ -11,6 +11,7 @@ Bring your own AI key on either client. On the Android app you can also run Gemm
 [Website](https://chompass.app/) · [Download](https://chompass.app/download/) · [Web app](https://chompass.app/app/) · [Privacy](docs/PRIVACY.md)
 
 [![Latest release](https://img.shields.io/gitea/v/release/fitguy/Chompass?gitea_url=https://codeberg.org&style=flat-square&label=release&color=127059)](https://codeberg.org/fitguy/chompass/releases)
+[![F-Droid](https://img.shields.io/f-droid/v/app.chompass?style=flat-square&label=F-Droid&logo=F-Droid&logoColor=white&color=127059)](https://f-droid.org/packages/app.chompass/)
 [![PWA](https://img.shields.io/badge/Platform-PWA-127059?style=flat-square&logo=pwa&logoColor=white)](https://chompass.app/app/)
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/chompass)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
@@ -34,19 +35,19 @@ Step-by-step install for iOS, Android, and desktop browsers: [Download → How t
 
 ### Android app
 
-Not on the Play Store. The F-Droid listing is in preparation; until the package shows up in the F-Droid client, install from Obtainium or Codeberg Releases.
+Not on the Play Store. Install from **F-Droid**, Obtainium, or Codeberg Releases.
 
 <div align="center">
 
-[![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://codeberg.org/fitguy/chompass)
+[![Web app](https://img.shields.io/badge/Web%20app-Open%20the%20PWA-127059?style=for-the-badge&logo=pwa&logoColor=white)](https://chompass.app/app/)&nbsp;&nbsp;[![Get it on F-Droid](https://img.shields.io/badge/Get%20it%20on%20F--Droid-1976D2?style=for-the-badge&logo=F-Droid&logoColor=white)](https://f-droid.org/packages/app.chompass/)&nbsp;&nbsp;[![Get it on Obtainium](https://img.shields.io/badge/Get%20it%20on%20Obtainium-1976D2?style=for-the-badge&logo=obtainium&logoColor=white)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://codeberg.org/fitguy/chompass)
 
 [![Codeberg Releases](https://img.shields.io/badge/Download-APK%20on%20Codeberg-127059?style=for-the-badge&logo=android&logoColor=white)](https://codeberg.org/fitguy/chompass/releases)
 
 </div>
 
-- **Obtainium** _(recommended)_: tap the badge above, then confirm in Obtainium. Or paste `https://codeberg.org/fitguy/chompass` into **Add App**.
+- **F-Droid**: [app.chompass](https://f-droid.org/packages/app.chompass/) — install and auto-update from the F-Droid client.
+- **Obtainium**: tap the badge above, then confirm in Obtainium. Or paste `https://codeberg.org/fitguy/chompass` into **Add App**.
 - **Direct APK**: download from [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases). Prefer `arm64-v8a` on modern phones; use `armeabi-v7a` for older 32-bit devices, `x86_64` for emulators/Chromebooks, or universal only when unsure.
-- **F-Droid** _(in preparation)_: package `app.chompass` ([expected listing](https://f-droid.org/packages/app.chompass/)).
 
 Release package ID: `app.chompass`. Debug (from source): `app.chompass.debug`.
 
@@ -194,7 +195,7 @@ methodology: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
 ## Docs & privacy
 
-Guides, changelog, F-Droid draft metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md). Building from source: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+Guides, changelog, F-Droid listing metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md). Building from source: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure. API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 

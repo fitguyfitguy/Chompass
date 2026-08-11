@@ -48,4 +48,4 @@ Maintainer setup is WSL2 build + Windows host USB adb. If you are on **native Li
 
 - Commit secrets, keystores, diary exports, or release APKs
 - Add AI/Cursor attribution to git commits
-- Open a second F-Droid inclusion MR (see [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md))
+- Open F-Droid inclusion or update MRs (see [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md); the listing is live — F-Droid `checkupdates` handles updates)

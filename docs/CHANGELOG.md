@@ -14,6 +14,8 @@ All notable changes to Chompass are documented here.
 - Add Food **Search food** sheet (Android): type to search **Open Food Facts** (live), **USDA FoodData Central** (offline), and the **Swiss Food Composition Database** (offline, en/de/fr/it names) with per-source chips and a provenance badge on every hit. Picking a hit prefills the review sheet with full micronutrients and the source stamped on the diary entry (`search` source; `grounding.sourceKind` = `usda` / `openFoodFacts` / `swiss`).
 - Offline food databases now ship in all Android builds (~5.3 MB): the USDA Foundation+FNDDS SQLite (was debug-only) and a new Swiss SQLite built from the federal naehrwertdaten.ch CSVs (`scripts/build_swiss_food_index.py`). Grounded entry stays disabled.
 
+- **Now on F-Droid:** `app.chompass` listing is live — install and auto-update through the F-Droid client ([f-droid.org/packages/app.chompass](https://f-droid.org/packages/app.chompass/)). Website and README download options updated (F-Droid first).
+
 ### Changed
 
 - **Faster food entry** (Android): the review sheet dismisses right after the local commit — the diary row and cleared pending draft commit in one DataStore edit and the Health Connect mirror runs in the background; progressive-meal **Log meal**, **Copy From Day**, and recipe logging batch into a single DataStore edit instead of one full-file write per row. Hub recents/frequents read the diary snapshot once, aggregate off the main thread, prefetch on the Add Food tap, and cache per day.
