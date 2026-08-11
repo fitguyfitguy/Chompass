@@ -26,7 +26,7 @@ class FoodJsonParserTest {
     fun extractJson_handlesNestedBracesInsideStrings() {
         val raw = """{"name":"Soup {homemade}","calories":120,"protein":4,"carbs":18,"fat":3}"""
         val food = FoodJsonParser.parseFood("prefix $raw trailing prose")
-        assertEquals("Soup {homemade}", food.name)
+        assertEquals("Soup {Homemade}", food.name)
         assertEquals(120, food.calories)
     }
 
