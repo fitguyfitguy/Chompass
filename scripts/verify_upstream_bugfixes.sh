@@ -67,12 +67,12 @@ if [ "${DO_INSTALL}" -eq 1 ]; then
     exit 1
   fi
   echo "Installing ${APK} ..."
-  "${ADB_BIN}" install -r "${APK}"
+  "${ADB_BIN}" install -r --user 0 "${APK}"
 fi
 
 if ! "${ADB_BIN}" shell pm path "${PACKAGE}" >/dev/null 2>&1; then
   echo "ERROR: ${PACKAGE} not installed. Re-run with --install or install from PowerShell:" >&2
-  echo '  adb install -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk' >&2
+  echo '  adb install --user 0 -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk' >&2
   exit 1
 fi
 
@@ -163,8 +163,8 @@ EOF
 
 section "PowerShell equivalents (Windows host adb)"
 cat <<'EOF'
-Install debug APK from WSL path:
-  adb install -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
+Install debug APK from WSL path (primary user only):
+  adb install --user 0 -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
 
 Launch:
   adb shell am start -n app.chompass.debug/app.chompass.MainActivity
