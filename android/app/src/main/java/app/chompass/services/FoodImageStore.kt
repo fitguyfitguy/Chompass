@@ -129,8 +129,6 @@ class FoodImageStore(context: Context) {
         return BitmapFactory.decodeFile(file.absolutePath, options)?.scaledToMaxDimension(maxDimension)
     }
 
-
-
     /**
      * Decodes [bytes] down to [maxDimension], then bakes the EXIF orientation in:
      * BitmapFactory ignores it, so camera/gallery JPEGs would otherwise be stored

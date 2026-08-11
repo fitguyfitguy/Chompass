@@ -105,7 +105,6 @@ class ChatService(
         )
     }
 
-
     // MARK: - OpenAI-compatible tool loop (10 of 13 providers)
 
     private suspend fun runOpenAIToolLoop(
@@ -486,7 +485,6 @@ class ChatService(
 
     private fun base64(bytes: ByteArray): String =
         Base64.getEncoder().encodeToString(bytes)
-
 
     @Suppress("unused")
     private fun Instant.toLocalDateInZone() = this.atZone(ZoneId.systemDefault()).toLocalDate()

@@ -14,7 +14,6 @@ import org.junit.Test
  * split into a byte-stable, cacheable prefix and a per-turn volatile tail.
  */
 class AnthropicPromptCachingTest {
-
     private fun coachPrompt(foods: List<FoodEntry> = emptyList()): String = buildSystemPrompt(
         profile = UserProfile(),
         weights = emptyList(),

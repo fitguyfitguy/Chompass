@@ -5,7 +5,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EditFoodEntryIconTest {
-
     @Test
     fun foodEntryEmojis_nonBlankAndUnique() {
         assertEquals(FOOD_ENTRY_EMOJIS.size, FOOD_ENTRY_EMOJIS.toSet().size)

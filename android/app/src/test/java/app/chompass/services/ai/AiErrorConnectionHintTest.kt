@@ -9,7 +9,6 @@ import java.security.cert.CertPathValidatorException
 import javax.net.ssl.SSLHandshakeException
 
 class AiErrorConnectionHintTest {
-
     @Test
     fun cleartextFailureGetsActionableHint() {
         val e = UnknownServiceException(
