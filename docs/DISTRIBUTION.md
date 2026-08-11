@@ -1,6 +1,6 @@
 # Distribution builds
 
-Chompass ships a **single Gradle build** aimed at F-Droid, IzzyOnDroid, and direct APK downloads from [Codeberg releases](https://codeberg.org/fitguy/chompass/releases).
+Chompass ships a **single Gradle build** aimed at F-Droid and direct APK downloads from [Codeberg releases](https://codeberg.org/fitguy/chompass/releases).
 
 ## Google Play flavor (disabled)
 
@@ -38,13 +38,13 @@ APK outputs (before packaging rename):
 
 Release packaging still uses the **`Chompass-fdroid-*` filename prefix** so existing F-Droid metadata and download URLs stay stable.
 
-## F-Droid metadata
+## F-Droid
 
-Draft metadata lives in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml).
+The live listing metadata is mirrored in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml). Listing: https://f-droid.org/packages/app.chompass/.
 
 - **Tags ≤ v1.14.1:** Gradle task `fdroidRelease` (historical product flavor).
 - **Tags after the flavor removal:** Gradle metadata `yes` (runs `assembleRelease`; not a flavor name)
-- **Inclusion MR:** refresh [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) only — do not open a duplicate MR/branch while that review is open. Update `docs/fdroid/app.chompass.yml` in this repo, then apply the metadata in the GitLab web GUI. Optional local helper (maintainer-run): `./scripts/submit_fdroiddata_mr.sh`.
+- **Inclusion:** merged via [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984); the listing is live. F-Droid `checkupdates` opens version-update MRs automatically — never open an inclusion/update MR yourself. Update `docs/fdroid/app.chompass.yml` in this repo only; the maintainer may help bot MRs via the GitLab web GUI.
 - **Builds entry:** replace the previous version with the new one; set `commit:` to the full release commit hash (not `vX.Y.Z`).
 
 Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gradle.kts` (`devenv tasks run release:check-metadata`). Full workflow: [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md).
@@ -53,7 +53,7 @@ Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gra
 
 The single build intentionally omits proprietary **Google Play Core** libraries. Barcode scanning uses FOSS **zxing-cpp** (Apache-2.0).
 
-On-device LLM (`litertlm-android`) is bundled in this build; whether F-Droid accepts the runtime model fetch is still under review. See [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
+On-device LLM (`litertlm-android`) is bundled in this build and ships in the F-Droid listing; the Gemma model itself is an opt-in runtime download. See [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
 
 ## Reclaim Codeberg quota
 

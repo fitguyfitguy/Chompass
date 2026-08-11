@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# Refresh (or open once) the fdroiddata merge request for Chompass.
+# LEGACY: Chompass is live on F-Droid (inclusion MR !42984 merged); F-Droid's
+# checkupdates bot now opens version-update MRs automatically from the Builds:
+# entry in docs/fdroid/app.chompass.yml. This script should NOT be needed anymore.
+# It is kept only in case the maintainer ever has to push a manual metadata fix;
+# agents must never run it.
 #
 # Requires:
 #   - glab authenticated for gitlab.com (glab auth login)
@@ -11,11 +15,11 @@
 #   BRANCH=org.codeberg.fitguy.nofud ./scripts/submit_fdroiddata_mr.sh
 #   GITLAB_TOKEN=glpat-... ./scripts/submit_fdroiddata_mr.sh
 #
-# NEVER open a second inclusion MR while one is already open. This script:
+# NEVER open an inclusion MR — the app is already on F-Droid. This script:
 #   1. Prefers the canonical pre-inclusion MR (!42984) while it is open
 #   2. Else discovers any open fork MR that touches Chompass / NoFUD metadata
 #   3. Pushes metadata onto that MR's source_branch and exits (no new MR)
-#   4. Creates a new MR only when no open inclusion MR exists
+#   4. Creates a new MR only when no open inclusion MR exists (legacy path)
 #
 # Canonical inclusion MR (update IID/branch if GitLab replaces the MR):
 #   https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984

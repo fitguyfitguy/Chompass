@@ -159,17 +159,17 @@ Prefer the emulator over coordinate-based phone taps when automating; screen siz
 
 ## F-Droid follow-up
 
-**Canonical inclusion MR:** [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) (branch `org.codeberg.fitguy.nofud`). Refresh that MR; never open a second inclusion MR while it is open.
+**Status:** Chompass is **live on F-Droid** — https://f-droid.org/packages/app.chompass/ (inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) merged).
 
-Before / during F-Droid review:
+For each release:
 
 - Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`DISTRIBUTION.md`](DISTRIBUTION.md)
-- Keep store metadata under `metadata/en-US/`
+- Keep store metadata under `metadata/en-US/` (pushed to Codeberg `main` before F-Droid picks up the tag)
 - Keep `docs/fdroid/app.chompass.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 - In the YAML `Builds:` block: **one** current version entry, `commit:` = **full git commit hash** of the release commit (not the tag name)
-- Paste/update `docs/fdroid/app.chompass.yml` into [!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) via the GitLab web GUI. Optional local helper (maintainer-run): `./scripts/submit_fdroiddata_mr.sh`
+- F-Droid `checkupdates` opens the version-update MR automatically; do **not** open inclusion/update MRs yourself. If a bot MR needs help, reply in the GitLab web GUI.
 
-See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the checklist and fdroiddata MR body.
+See [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) for the listing checklist and build notes.
 
 ## Calculation changes
 

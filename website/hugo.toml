@@ -16,6 +16,7 @@ summaryLength = 20
   apkUniversalNote = '~29 MiB'
   repo = 'https://codeberg.org/fitguy/chompass'
   releases = 'https://codeberg.org/fitguy/chompass/releases'
+  fdroid = 'https://f-droid.org/packages/app.chompass/'
   obtainium = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fchompass'
   pwa = 'https://chompass.app/app/'
   privacyRepo = 'https://codeberg.org/fitguy/chompass/src/branch/main/docs/PRIVACY.md'

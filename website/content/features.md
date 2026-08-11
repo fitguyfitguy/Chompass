@@ -72,7 +72,7 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by *
 | Health Connect              | Partial                                                | **Steps, exercise, sleep, HR, hydration**  | No                                             |
 | Widgets / notifications     | Upstream set                                           | **Yes**                                    | No (installable PWA)                           |
 | Languages                   | Upstream                                               | **15**                                     | EN-first                                       |
-| Distribution                | Play-focused                                           | **Codeberg** / Obtainium / F-Droid         | **PWA** in any modern browser                  |
+| Distribution                | Play-focused                                           | **F-Droid** / Obtainium / Codeberg         | **PWA** in any modern browser                  |
 | Open diary / body JSON      | Upstream formats                                       | **Yes**                                    | **Same contracts as Android**                  |
 
 - **No ads, no analytics:** never shipped AdMob; no tracking SDKs

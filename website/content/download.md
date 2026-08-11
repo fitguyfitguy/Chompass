@@ -1,6 +1,6 @@
 ---
 title: Download
-description: Open the Chompass browser PWA in any modern browser, or install the Android app from Obtainium or Codeberg Releases.
+description: Open the Chompass browser PWA in any modern browser, or install the Android app from F-Droid, Obtainium, or Codeberg Releases.
 layout: single
 ---
 
@@ -53,9 +53,17 @@ DuckDuckGo does not fully support PWA install. Menu → **Add to Home** may crea
 
 Already installed? Open Chompass from the home-screen or dock icon (not a normal browser tab) for the full-screen shell. In the app: **Settings → Install app**.
 
-## Android: Obtainium (recommended)
+## Android: F-Droid (recommended)
 
-[Get it on Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fchompass). That confirms the Codeberg app source, then keeps you updated from releases.
+[![Get it on F-Droid](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/packages/app.chompass/)
+
+Package `app.chompass` ([listing](https://f-droid.org/packages/app.chompass/)). Install from the F-Droid client; updates arrive through F-Droid automatically. Not on the Play Store.
+
+## Android: Obtainium (auto-updates)
+
+[![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fadd%2Fhttps%3A%2F%2Fcodeberg.org%2Ffitguy%2Fchompass)
+
+That confirms the Codeberg app source, then keeps you updated from releases.
 
 Or paste `https://codeberg.org/fitguy/chompass` into Obtainium’s **Add App** screen.
 
@@ -73,10 +81,6 @@ All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.o
 | **universal**   | Only when unsure         | {{< apk_universal_note >}}   |
 
 Package ID: `app.chompass`
-
-## F-Droid
-
-The listing is in preparation. Package `app.chompass` ([expected listing](https://f-droid.org/packages/app.chompass/)). Not on the Play Store.
 
 ## After install
 

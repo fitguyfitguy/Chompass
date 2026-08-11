@@ -38,10 +38,10 @@
             <span class="platform-card__desc">Direct install, all architectures, plus checksums.</span>
             <span class="platform-card__link">v{{ .Site.Params.version }} · codeberg</span>
           </a>
-          <a class="platform-card" href="https://f-droid.org/packages/app.chompass/">
+          <a class="platform-card" href="{{ .Site.Params.fdroid }}">
             <span class="platform-card__tag">f-droid</span>
-            <span class="platform-card__name">F-Droid listing</span>
-            <span class="platform-card__desc">In preparation. Open-source app store, no account needed.</span>
+            <span class="platform-card__name">Get it on F-Droid</span>
+            <span class="platform-card__desc">Now live. Open-source app store, no account needed.</span>
             <span class="platform-card__link">app.chompass</span>
           </a>
         </div>
@@ -293,7 +293,7 @@
               <span class="faq-item__question-text">Is it on the Play Store?</span>
             </button>
             <div class="faq-item__answer" hidden>
-              No. Chompass ships from <a href="{{ .Site.Params.repo }}">Codeberg</a>: APK or <a href="{{ .Site.Params.obtainium }}">Obtainium</a> on Android, and a PWA in the browser. The F-Droid listing is in preparation.
+              No. Chompass is on <a href="{{ .Site.Params.fdroid }}">F-Droid</a>, and also ships from <a href="{{ .Site.Params.repo }}">Codeberg</a> (APK or <a href="{{ .Site.Params.obtainium }}">Obtainium</a>) on Android, plus a PWA in the browser.
             </div>
           </li>
         </ul>
