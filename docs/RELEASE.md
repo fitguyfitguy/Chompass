@@ -74,6 +74,19 @@ export CODEBERG_TOKEN='paste-token-here'
 # or: RELEASE_VERSION=1.0.0 devenv tasks run release:publish
 ```
 
+**Token split — use the release login, not the issue login.** The **release** token
+lives in the gitignored `.env.local` as `CODEBERG_TOKEN` (scopes `read:user` +
+`write:repository`) and is persisted to tea as the `codeberg-release` login:
+
+```bash
+nix shell nixpkgs#tea -c tea logins add -n codeberg-release -u https://codeberg.org -t "$CODEBERG_TOKEN"
+```
+
+Run the release scripts with `CODEBERG_LOGIN=codeberg-release` (both
+`publish_release.sh` and `manage_release_assets.sh` honor it). The default tea
+login `codeberg` (`~/.config/tea/config.yml`) is **issue-triage only** — it
+deliberately lacks `write:repository` and must not be used to publish.
+
 `publish_release.sh` uploads F-Droid APK assets + `SHA256SUMS`, pastes changelog notes, then runs [`deploy_pages.sh`](../scripts/deploy_pages.sh) so [chompass.app](https://chompass.app/) shows the new version. Use `--skip-pages` to skip the site step.
 
 The former **`play` flavor is disabled**; see [`DISTRIBUTION.md`](DISTRIBUTION.md).
