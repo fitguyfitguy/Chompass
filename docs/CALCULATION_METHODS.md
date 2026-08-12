@@ -247,9 +247,17 @@ intervalMin     = clamp(round5(windowRemaining ÷ cupsRemaining), 30, 240)
 
 Planning form (Settings preview): `intervalMin = clamp(round5(window ÷ ceil(netGoal ÷ cup)), 30, 240)`. Equals the live form at day start. Recalculated after **every entry** (`WaterRepository.onEntriesChanged` → `WaterReminderPlanner.rearm`); goal met or window elapsed → re-arm for tomorrow's `awakeStart`.
 
+Next-drink quantity (shown in the Home water row and the reminder notification):
+
+```
+drinkMl = min(cupSizeMl, max(netGoalMl − drunkTodayMl, 0))
+```
+
+One cup per reminder, capped by the goal remainder; a next-day fire starts fresh (`drunkTodayMl = 0`), so its amount is the first cup of the new day (the whole goal when the goal is smaller than the cup).
+
 **Evidence / rationale:** even distribution of the remaining goal over the remaining awake window (reporter's worked example: 2,500 ml ÷ 300 ml cup over 13 h → ≈ every 90 min). Behavioral pacing heuristic (“drink regularly throughout the day rather than waiting until thirsty”, CDC Heat & Health); 30–240 min clamps guard degenerate cadences. No clinical prescription claim.
 
-**Call sites:** `WaterReminderPlanner`, reminder-plan sheet preview.
+**Call sites:** `WaterReminderPlanner`, reminder-plan sheet preview, Home water row (`HomeUiState.waterNextPlan`), water notification text.
 
 ### Body composition (tape measures)
 
