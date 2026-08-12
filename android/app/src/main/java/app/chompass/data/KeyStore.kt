@@ -32,6 +32,15 @@ class KeyStore(context: Context) {
         if (key.isNullOrEmpty()) delete(storageKey) else save(storageKey, key)
     }
 
+    /** Fallback-slot API key, stored under its own prefix: a fallback that reuses the
+     *  primary provider (e.g. a second OpenAI-compatible endpoint) must not share the
+     *  primary's key — otherwise the last key entered wins for both slots. */
+    fun fallbackApiKey(provider: AIProvider): String? = load(AI_FALLBACK_PREFIX + provider.name)
+    fun setFallbackApiKey(provider: AIProvider, key: String?) {
+        val storageKey = AI_FALLBACK_PREFIX + provider.name
+        if (key.isNullOrEmpty()) delete(storageKey) else save(storageKey, key)
+    }
+
     // Speech providers
     fun speechApiKey(provider: SpeechProvider): String? = load(STT_PREFIX + provider.name)
     fun setSpeechApiKey(provider: SpeechProvider, key: String?) {
@@ -52,6 +61,7 @@ class KeyStore(context: Context) {
         private const val TAG = "FudAIKeyStore"
         private const val FILE_NAME = "fudai_keychain"
         private const val AI_PREFIX = "apikey_"
+        private const val AI_FALLBACK_PREFIX = "apikey_fallback_"
         private const val STT_PREFIX = "speechApiKey_"
         private const val WEBDAV_PASSWORD_KEY = "webdav_password"
 

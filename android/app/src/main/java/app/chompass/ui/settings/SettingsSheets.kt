@@ -239,13 +239,13 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.FALLBACK_BASE_URL -> {
                     val existing by vm.container.prefs
-                        .customBaseUrl(ui.fallbackProvider)
+                        .fallbackCustomBaseUrl(ui.fallbackProvider)
                         .collectAsState(initial = "")
                     TextFieldSheet(
                         title = stringResource(R.string.settings_custom_url_title),
                         initial = existing.orEmpty(),
                         placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                        onSave = { vm.setCustomBaseUrl(ui.fallbackProvider, it); onDismiss() }
+                        onSave = { vm.setFallbackCustomBaseUrl(ui.fallbackProvider, it); onDismiss() }
                     )
                 }
                 SettingsSheet.GENDER -> ListSheet(

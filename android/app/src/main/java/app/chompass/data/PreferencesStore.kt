@@ -196,6 +196,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSelectedAIModel(model: String) = setSelectedAIModelImpl(model)
     fun customBaseUrl(provider: AIProvider): Flow<String?> = customBaseUrlImpl(provider)
     suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlImpl(provider, url)
+    fun fallbackCustomBaseUrl(provider: AIProvider): Flow<String?> = fallbackCustomBaseUrlImpl(provider)
+    suspend fun setFallbackCustomBaseUrl(provider: AIProvider, url: String?) = setFallbackCustomBaseUrlImpl(provider, url)
     val maxResponseTokens: Flow<Int> get() = maxResponseTokensImpl
     suspend fun setMaxResponseTokens(v: Int) = setMaxResponseTokensImpl(v)
     val aiReadTimeoutSeconds: Flow<Int> get() = aiReadTimeoutSecondsImpl

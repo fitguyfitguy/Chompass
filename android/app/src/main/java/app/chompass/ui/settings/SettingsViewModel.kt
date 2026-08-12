@@ -223,7 +223,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbEnabled = container.prefs.fallbackEnabled.first()
             val fbProvider = container.prefs.selectedFallbackProvider.first()
             val fbModel = fbProvider.supportedFallbackModelOrDefault(container.prefs.selectedFallbackModel.first())
-            val fbMasked = maskKey(container.keyStore.apiKey(fbProvider))
+            val fbMasked = maskKey(container.keyStore.fallbackApiKey(fbProvider))
             val geminiGoogleSearch = container.prefs.geminiGoogleSearchEnabled.first()
             val portionClarify = container.prefs.portionClarifyEnabled.first()
             val mealConstituents = container.prefs.mealConstituentsEnabled.first()
@@ -547,7 +547,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val current = _ui.value.fallbackModel
             val newModel = p.supportedFallbackModelOrDefault(current)
             container.prefs.setSelectedFallbackModel(newModel)
-            val masked = maskKey(container.keyStore.apiKey(p))
+            val masked = maskKey(container.keyStore.fallbackApiKey(p))
             _ui.value = _ui.value.copy(fallbackProvider = p, fallbackModel = newModel, fallbackApiKeyMasked = masked)
         }
     }
@@ -564,7 +564,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val p = _ui.value.fallbackProvider
             val trimmed = raw.trim().takeIf { it.isNotEmpty() }
-            container.keyStore.setApiKey(p, trimmed)
+            container.keyStore.setFallbackApiKey(p, trimmed)
             _ui.value = _ui.value.copy(fallbackApiKeyMasked = maskKey(trimmed))
         }
     }
@@ -1394,6 +1394,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setCustomBaseUrl(provider: AIProvider, url: String) = launchPref {
         container.prefs.setCustomBaseUrl(provider, url.takeIf { it.isNotBlank() })
+    }
+
+    /** Fallback-slot base URL: stored under its own key so a fallback that reuses the
+     *  primary provider (e.g. a second OpenAI-compatible endpoint) can't clobber the
+     *  primary's URL — see customBaseURL_fallback_* in PreferencesStoreAi. */
+    fun setFallbackCustomBaseUrl(provider: AIProvider, url: String) = launchPref {
+        container.prefs.setFallbackCustomBaseUrl(provider, url.takeIf { it.isNotBlank() })
     }
 
     private fun maskKey(key: String?): String =

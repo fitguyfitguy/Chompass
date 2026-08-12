@@ -987,9 +987,9 @@ class FoodAnalysisService(
         val model = provider.supportedFallbackModelOrDefault(prefs.selectedFallbackModel.first())
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
-        val key = AiHttp.sanitizeApiKey(keyStore!!.apiKey(provider))
+        val key = AiHttp.sanitizeApiKey(keyStore!!.fallbackApiKey(provider))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
-        val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
+        val baseUrl = prefs.fallbackCustomBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null
         return FallbackConfig(provider, model, baseUrl, key)
     }
