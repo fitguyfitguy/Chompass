@@ -17,6 +17,8 @@ import {
   normalizedOptions,
   displayUnit,
   optionId,
+  applyQuantityInput,
+  isQuantityExpression,
 } from "../lib/chompass-core/serving-units.js";
 import {
   scaleAllConstituents,
@@ -125,6 +127,9 @@ export class EntryForm extends HTMLElement {
         ? ensured.selectedServingQuantity
         : this.baseGrams / (optionMatching(this.selectedServingUnit, this.servingUnitOptions).gramsPerUnit || 1)
     );
+    // Committed resolved serving grams — the source of truth that relative
+    // edits / expressions resolve against (mirrors Android servingGrams).
+    this.servingGrams = this.baseGrams;
     /** @type {Record<string, number|null>} */
     const base = {
       calories: Number(e.calories ?? 0),
@@ -150,10 +155,74 @@ export class EntryForm extends HTMLElement {
   }
 
   currentServingGrams() {
+    // Committed resolved grams (updated on every quantity edit) are the
+    // source of truth; the fallback only covers the pre-initialisation state.
+    if (this.servingGrams != null && this.servingGrams > 0) return this.servingGrams;
     const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
     const qty = parseQuantity(this.quantityText);
     if (qty == null || qty <= 0) return this.baseGrams;
     return qty * option.gramsPerUnit;
+  }
+
+  /**
+   * Resolve the current quantity text against the committed serving grams:
+   * deltas and expressions use the committed value as their base; plain
+   * numbers parse as-is. Mirrors Android ServingUnitOption.applyDeltaInput.
+   * @returns {number|null}
+   */
+  resolvedQuantity() {
+    const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+    const current = option.gramsPerUnit > 0 ? this.servingGrams / option.gramsPerUnit : this.servingGrams;
+    return applyQuantityInput(this.quantityText, current);
+  }
+
+  /**
+   * Apply a quantity-text edit: resolve against the committed grams, commit
+   * the resolved grams, refresh scale fields and the "=" preview. Deltas and
+   * expressions stay visible while typing and commit on blur (Android
+   * collapses deltas immediately; the PWA keeps them visible for parity of
+   * expression UX and to avoid mid-typing collapse swallowing digits).
+   * @param {string} text
+   * @returns {number|null}
+   */
+  applyQuantityText(text) {
+    this.quantityText = text;
+    const resolved = this.resolvedQuantity();
+    if (resolved != null && resolved > 0) {
+      const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+      this.servingGrams = resolved * option.gramsPerUnit;
+    }
+    this.applyScaleToNutritionFields();
+    this.updateQuantityPreview();
+    return resolved;
+  }
+
+  /** Live "= result" hint for pending deltas / expressions. */
+  updateQuantityPreview() {
+    const el = /** @type {HTMLElement|null} */ (this.querySelector("[data-qty-result]"));
+    if (!el) return;
+    const isDelta = /^[+\-−]/.test(this.quantityText.trim());
+    const resolved = this.resolvedQuantity();
+    if ((isQuantityExpression(this.quantityText) || isDelta) && resolved != null && resolved > 0) {
+      el.textContent = `= ${formatQuantity(resolved)}`;
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+    }
+  }
+
+  /** Collapse a pending delta / expression to its resolved number on blur. */
+  commitQuantityExpression(qtyInput) {
+    const isDelta = /^[+\-−]/.test(this.quantityText.trim());
+    if (!isQuantityExpression(this.quantityText) && !isDelta) return;
+    const resolved = this.resolvedQuantity();
+    if (resolved == null || resolved <= 0) return;
+    const formatted = formatQuantity(resolved);
+    if (formatted === this.quantityText.trim()) return;
+    this.quantityText = formatted;
+    if (qtyInput) qtyInput.value = formatted;
+    this.applyScaleToNutritionFields();
+    this.updateQuantityPreview();
   }
 
   currentScale() {
@@ -237,6 +306,15 @@ export class EntryForm extends HTMLElement {
                     .join("")}
                 </select>
               </div>
+            </div>
+            <div class="serving-quantity-card__calc">
+              ${["+", "-", "×", "÷"]
+                .map(
+                  (op) =>
+                    `<button type="button" class="serving-quantity-card__op" data-qty-op="${op}" aria-label="Insert ${op} into quantity">${op}</button>`
+                )
+                .join("")}
+              <span class="serving-quantity-card__result" data-qty-result hidden></span>
             </div>
             ${
               showTotal
@@ -601,6 +679,7 @@ export class EntryForm extends HTMLElement {
       const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
       const qty = option.gramsPerUnit > 0 ? this.baseGrams / option.gramsPerUnit : this.baseGrams;
       this.quantityText = formatQuantity(qty);
+      this.servingGrams = this.baseGrams;
     } else if (rows.length === 0) {
       this.constituentsExpanded = false;
     }
@@ -794,9 +873,22 @@ export class EntryForm extends HTMLElement {
     const nameInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#name"));
 
     qtyInput?.addEventListener("input", () => {
-      this.quantityText = qtyInput.value;
-      this.applyScaleToNutritionFields();
+      this.applyQuantityText(qtyInput.value);
     });
+
+    qtyInput?.addEventListener("focusout", () => this.commitQuantityExpression(qtyInput));
+
+    for (const chip of this.querySelectorAll("[data-qty-op]")) {
+      chip.addEventListener("click", () => {
+        const op = /** @type {string} */ (chip.getAttribute("data-qty-op"));
+        const next = this.quantityText + op;
+        this.applyQuantityText(next);
+        if (qtyInput) {
+          qtyInput.value = next;
+          qtyInput.focus();
+        }
+      });
+    }
 
     unitSelect?.addEventListener("change", () => {
       const grams = this.currentServingGrams();
@@ -913,8 +1005,8 @@ export class EntryForm extends HTMLElement {
     target.quantityG = this.currentServingGrams();
     target.servingUnitOptions = this.servingUnitOptions;
     target.selectedServingUnit = this.selectedServingUnit;
-    const qty = parseQuantity(this.quantityText);
-    target.selectedServingQuantity = qty != null && qty > 0 ? qty : null;
+    const resolvedQty = this.resolvedQuantity();
+    target.selectedServingQuantity = resolvedQty != null && resolvedQty > 0 ? resolvedQty : null;
     target.constituents = scaleAllConstituents(this.constituents, this.currentScale());
     if (this.baseNutrition) {
       const scaled = scaleNutrition(this.baseNutrition, this.currentScale());
@@ -937,7 +1029,7 @@ export class EntryForm extends HTMLElement {
     const scale = this.currentScale();
     const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
     const servingGrams = this.currentServingGrams();
-    const qty = parseQuantity(this.quantityText);
+    const qty = this.resolvedQuantity();
     const constituents = scaleAllConstituents(this.constituents, scale).filter(
       (c) => c.name.trim() && c.servingSizeGrams > 0,
     );

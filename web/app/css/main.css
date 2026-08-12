@@ -4364,6 +4364,39 @@ body.camera-open {
   font-size: 0.95rem;
 }
 
+.serving-quantity-card__calc {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.serving-quantity-card__op {
+  min-width: 2rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--surface) 94%, var(--teal) 6%);
+  color: var(--teal-deep);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.serving-quantity-card__op:hover {
+  border-color: var(--teal);
+}
+
+.serving-quantity-card__result {
+  margin-left: auto;
+  color: var(--teal-deep);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 .entry-constituents__toggle {
   display: flex;
   align-items: center;

@@ -12,6 +12,8 @@ import {
   heuristicOptions,
   scaleNutrition,
   ensureServingUnits,
+  applyQuantityInput,
+  isQuantityExpression,
   GRAMS_OPTION,
   HEURISTIC_RULES,
 } from "../serving-units.js";
@@ -121,4 +123,63 @@ test("ensureServingUnits_fillsHeuristicWhenMissing", () => {
   assert.equal(ensured.selectedServingUnit, "slice");
   assert.equal(ensured.selectedServingQuantity, 2);
   assert.equal(ensured.quantityG, 240);
+});
+
+test("applyQuantityInput_plainNumbersParseAsBefore", () => {
+  assert.equal(applyQuantityInput("20", 50), 20);
+  assert.equal(applyQuantityInput("1.5", 50), 1.5);
+  assert.equal(applyQuantityInput("20,5", 50), 20.5);
+});
+
+test("applyQuantityInput_deltasApplyToCurrent", () => {
+  assert.equal(applyQuantityInput("+20", 50), 70);
+  assert.equal(applyQuantityInput("+2.5", 50), 52.5);
+  assert.equal(applyQuantityInput("-10", 50), 40);
+  assert.equal(applyQuantityInput("-60", 50), -10);
+  assert.equal(applyQuantityInput("+20", null), 20);
+  assert.equal(applyQuantityInput("-10", null), -10);
+});
+
+test("applyQuantityInput_expressionsAreAbsoluteArithmetic", () => {
+  assert.equal(applyQuantityInput("50×2", 50), 100);
+  assert.equal(applyQuantityInput("50*2", 50), 100);
+  assert.equal(applyQuantityInput("200−30", 50), 170);
+  assert.equal(applyQuantityInput("200-30", 50), 170);
+  assert.equal(applyQuantityInput("100÷4", 50), 25);
+  assert.equal(applyQuantityInput("100/4", 50), 25);
+  assert.equal(applyQuantityInput("20+20", 50), 40);
+  assert.equal(applyQuantityInput("50×2", null), 100);
+});
+
+test("applyQuantityInput_respectsOperatorPrecedence", () => {
+  assert.equal(applyQuantityInput("2+3×4", 50), 14);
+  assert.equal(applyQuantityInput("1+9÷2", 50), 5.5);
+  assert.equal(applyQuantityInput("10−5×2", 50), 0);
+});
+
+test("applyQuantityInput_acceptsWhitespaceAndCommaDecimals", () => {
+  assert.equal(applyQuantityInput(" 50 × 2 ", 50), 100);
+  assert.equal(applyQuantityInput("50×2.5", 50), 125);
+  assert.equal(applyQuantityInput("50×2,5", 50), 125);
+});
+
+test("applyQuantityInput_malformedReturnsNull", () => {
+  assert.equal(applyQuantityInput("50×", 50), null);
+  assert.equal(applyQuantityInput("×2", 50), null);
+  assert.equal(applyQuantityInput("50××2", 50), null);
+  assert.equal(applyQuantityInput("50÷0", 50), null);
+  assert.equal(applyQuantityInput("1+×2", 50), null);
+  assert.equal(applyQuantityInput("+", 50), null);
+  assert.equal(applyQuantityInput("-", 50), null);
+  assert.equal(applyQuantityInput("", 50), null);
+  assert.equal(applyQuantityInput("   ", 50), null);
+});
+
+test("isQuantityExpression_distinguishesDeltas", () => {
+  assert.equal(isQuantityExpression("50×2"), true);
+  assert.equal(isQuantityExpression("200−30"), true);
+  assert.equal(isQuantityExpression("+20"), false);
+  assert.equal(isQuantityExpression("-20"), false);
+  assert.equal(isQuantityExpression("50"), false);
+  assert.equal(isQuantityExpression(""), false);
 });

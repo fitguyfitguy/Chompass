@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -311,6 +312,8 @@ internal fun ServingQuantityCard(
     gramUnit: String,
     isLoadingUnits: Boolean = false,
     enabled: Boolean = true,
+    /** Set false for hosts that don't resolve deltas/expressions (constituents). */
+    showQuantityCalc: Boolean = true,
 ) {
     val pickerOptions = ServingUnitOption.pickerOptions(unitOptions)
     val selectedOption = ServingUnitOption.optionMatching(selectedUnitId, unitOptions)
@@ -322,9 +325,33 @@ internal fun ServingQuantityCard(
         focusManager.clearFocus(force = true)
         keyboardController?.hide()
     }
+    // Base quantity for relative edits / expression previews: the committed
+    // serving grams converted back into the selected unit (mirrors the
+    // sheets' currentQuantity). Expressions ignore the base; only leading
+    // +/- deltas use it.
+    val currentQuantityForBase = if (selectedOption.gramsPerUnit > 0) {
+        servingSizeGrams / selectedOption.gramsPerUnit
+    } else {
+        servingSizeGrams
+    }
     val focusRequester = remember { FocusRequester() }
     var quantityFieldValue by remember {
         mutableStateOf(TextFieldValue(quantityText, selection = TextRange(quantityText.length)))
+    }
+    // Expressions stay visible while typing (with a live "=" preview); on
+    // focus loss they commit to the resolved number, like +/- deltas do
+    // immediately.
+    val commitQuantity = {
+        if (enabled && quantityText.isNotEmpty()) {
+            val resolved = ServingUnitOption.applyDeltaInput(quantityText, currentQuantityForBase)
+            if (ServingUnitOption.isQuantityExpression(quantityText) && resolved != null && resolved > 0) {
+                val formatted = ServingUnitOption.formatQuantity(resolved)
+                if (formatted != quantityText.trim()) {
+                    quantityFieldValue = TextFieldValue(formatted, selection = TextRange(formatted.length))
+                    onQuantityChange(formatted)
+                }
+            }
+        }
     }
 
     LaunchedEffect(quantityText) {
@@ -375,6 +402,7 @@ internal fun ServingQuantityCard(
                 modifier = Modifier
                     .width(80.dp)
                     .focusRequester(focusRequester)
+                    .onFocusChanged { focusState -> if (!focusState.isFocused) commitQuantity() }
             )
             if (quantityText.isNotEmpty() && enabled) {
                 Spacer(Modifier.width(6.dp))
@@ -453,6 +481,40 @@ internal fun ServingQuantityCard(
             }
         }
 
+        if (enabled && !isLoadingUnits && showQuantityCalc) {
+            SheetHairline()
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                for (op in listOf("+", "-", "×", "÷")) {
+                    QuantityOperatorChip(
+                        operator = op,
+                        contentDescription = stringResource(R.string.cd_quantity_operator, op),
+                        enabled = enabled,
+                        onClick = {
+                            val next = quantityFieldValue.text + op
+                            quantityFieldValue = TextFieldValue(next, selection = TextRange(next.length))
+                            onQuantityChange(next)
+                        }
+                    )
+                }
+                val previewResolved = ServingUnitOption.applyDeltaInput(quantityText, currentQuantityForBase)
+                if (ServingUnitOption.isQuantityExpression(quantityText) && previewResolved != null && previewResolved > 0) {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        "= ${ServingUnitOption.formatQuantity(previewResolved)}",
+                        fontSize = 15.sp,
+                        color = AppColors.Calorie,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+
         if (isLoadingUnits && unitOptions.isEmpty()) {
             SheetHairline()
             Row(
@@ -490,6 +552,26 @@ internal fun ServingQuantityCard(
             }
         }
     }
+}
+
+@Composable
+private fun QuantityOperatorChip(
+    operator: String,
+    contentDescription: String,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    Text(
+        operator,
+        fontSize = 15.sp,
+        color = if (enabled) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier
+            .clip(RoundedCornerShape(9.dp))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    )
 }
 
 @Composable
