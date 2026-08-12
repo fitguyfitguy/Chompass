@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import app.chompass.ChompassApp
 import app.chompass.R
+import app.chompass.models.WaterAmountFormat
 import java.time.LocalDate
 import java.util.Calendar
 
@@ -316,10 +317,24 @@ class ReminderReceiver : BroadcastReceiver() {
                         ChompassLaunchIntents.openApp(context),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
-                    val notifText = if (channel == NotificationService.CHANNEL_WATER &&
-                        waterPlan?.intervalMinutes != null
-                    ) {
-                        context.getString(R.string.notif_water_text_next, waterPlan.intervalMinutes)
+                    val notifText = if (channel == NotificationService.CHANNEL_WATER && waterPlan != null) {
+                        // Tell the user how much to drink: one cup (capped by the goal
+                        // remainder), in the app's own unit (ml or fl oz).
+                        val useMetric = container?.prefs?.weightUnit?.first() == "kg"
+                        val qty = if (useMetric) {
+                            context.getString(R.string.water_amount_ml, waterPlan.drinkMl)
+                        } else {
+                            context.getString(
+                                R.string.water_amount_fl_oz,
+                                WaterAmountFormat.flOzFromMl(waterPlan.drinkMl),
+                            )
+                        }
+                        val interval = waterPlan.intervalMinutes
+                        if (interval != null) {
+                            context.getString(R.string.notif_water_text_next_qty, qty, interval)
+                        } else {
+                            context.getString(R.string.notif_water_text_qty, qty)
+                        }
                     } else {
                         text
                     }
