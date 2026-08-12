@@ -2,7 +2,7 @@
 
 All notable changes to Chompass are documented here.
 
-## [Unreleased]
+## [3.10.0] - 2026-08-12
 
 ### Added
 
