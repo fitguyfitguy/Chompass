@@ -23,6 +23,7 @@ const LAZY_CATALOGS = {
   hi: () => import("./hi.js"),
   ro: () => import("./ro.js"),
   az: () => import("./az.js"),
+  uk: () => import("./uk.js"),
   "pt-BR": () => import("./pt-BR.js"),
   "zh-CN": () => import("./zh-CN.js"),
 };

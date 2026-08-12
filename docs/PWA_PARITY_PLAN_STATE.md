@@ -88,7 +88,7 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
 
 ## i18n rules (still in force)
 
-- Strings live in `web/app/src/lib/i18n/catalogs/*.js`, 15 locales (ar az de en
+- Strings live in `web/app/src/lib/i18n/catalogs/*.js`, 16 locales (ar az de en
   es fr hi it ja ko nl pt-BR ro ru zh-CN), gated by `testdata/parity/locales.json`.
 - Every EN key must exist in all 15 catalogs (`i18n.test.js`). Value changes too
   — update all catalogs, not just EN. Scripts used: `/tmp/insert_progress_keys.py`,

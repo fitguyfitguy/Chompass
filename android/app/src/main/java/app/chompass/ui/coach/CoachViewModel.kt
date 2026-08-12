@@ -12,6 +12,7 @@ import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
 import app.chompass.services.ai.AiError
+import app.chompass.services.ai.userMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -133,7 +134,7 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                     pendingWater = result.proposedWater,
                 )
             } catch (e: AiError) {
-                _ui.value = _ui.value.copy(sending = false, error = e.message)
+                _ui.value = _ui.value.copy(sending = false, error = e.userMessage(container.appContext))
             } catch (e: Throwable) {
                 _ui.value = _ui.value.copy(
                     sending = false,

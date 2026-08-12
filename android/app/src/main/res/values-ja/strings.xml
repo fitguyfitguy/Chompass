@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
     <string name="widget_calorie_label">Chompass カロリー</string>
@@ -13,18 +12,12 @@
     <string name="widget_fat">脂質</string>
     <string name="widget_kcal_left_format">残り %1$d kcal</string>
     <string name="widget_g_left_format">残り %1$dg</string>
-    <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">タンパク質 g</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
-    <string name="widget_center_small_g_format">/ %1$dg</string>
-    <string name="widget_center_large_g_format">%1$dg</string>
 
     <!-- Common buttons / actions -->
     <string name="action_save">保存</string>
     <string name="action_cancel">キャンセル</string>
     <string name="action_done">完了</string>
-    <string name="action_ok">OK</string>
     <string name="action_clear">消去</string>
     <string name="action_delete">削除</string>
     <string name="action_continue">続ける</string>
@@ -38,29 +31,8 @@
     <string name="action_pin">固定</string>
 
     <!-- Generic units / labels -->
-    <string name="unit_kcal">kcal</string>
-    <string name="unit_g">g</string>
-    <string name="unit_mg">mg</string>
-    <string name="unit_percent">%</string>
-    <string name="unit_cm">cm</string>
-    <string name="unit_kg">kg</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="kg_value_format">%1$.1f kg</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
     <string name="kg_per_week_format">%1$.2f kg/週</string>
     <string name="lbs_per_week_format">%1$.2f lbs/週</string>
-    <string name="height_cm_format">%1$d cm</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
 
     <!-- Macros / Goal labels -->
     <string name="macro_protein">タンパク質</string>
@@ -105,46 +77,17 @@
     <string name="autobalance_fat">脂質</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (ローカル)</string>
     <string name="ai_provider_custom">カスタム (OpenAI互換)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">キーは不要</string>
     <string name="ai_key_placeholder_custom">APIキー（エンドポイントが不要なら任意の文字列）</string>
 
     <!-- Speech Provider -->
     <string name="speech_provider_native">ネイティブ（オンデバイス）</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">不要</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">あなたのAssemblyAIキー</string>
 
     <string name="speech_description_native">Androidのオンデバイス音声認識。無料で、ほとんどの端末でオフライン動作し、リアルタイムで部分結果を表示します。デフォルトとしておすすめ。</string>
@@ -272,11 +215,9 @@
     <string name="onboarding_building_protein">タンパク質</string>
     <string name="onboarding_building_fats">脂質</string>
     <string name="onboarding_building_health_score">健康スコア</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">あなたのために\nすべて準備しています</string>
     <string name="onboarding_building_finalizing">結果を確定中...</string>
     <string name="onboarding_building_recommendation">1日の推奨量</string>
-    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">あなたのプラン</string>
     <string name="onboarding_plan_subtitle">値をタップして編集</string>
@@ -330,14 +271,8 @@
     <string name="home_swipe_favorite">お気に入り</string>
     <string name="home_swipe_unfavorite">お気に入り解除</string>
     <string name="home_favorited">お気に入り済み</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">食事を分析中...</string>
     <string name="home_looking_up_nutrition">栄養情報を検索中...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">食物繊維: %1$.1fg</string>
     <string name="home_sugar_format">糖質: %1$.1fg</string>
     <string name="home_sat_fat_format">飽和脂肪酸: %1$.1fg</string>
@@ -362,7 +297,6 @@
     <string name="manual_carbs">炭水化物 (g)</string>
     <string name="manual_fat">脂質 (g)</string>
     <string name="manual_fiber">食物繊維 (g)</string>
-    <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">食事タイプ</string>
 
     <string name="error_title">問題が発生しました</string>
@@ -434,7 +368,6 @@
     <string name="nutrition_label_cholesterol">コレステロール</string>
     <string name="nutrition_label_sodium">ナトリウム</string>
     <string name="nutrition_label_potassium">カリウム</string>
-    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">コーチ</string>
@@ -487,7 +420,6 @@
     <string name="progress_no_food">まだ食事が記録されていません</string>
 
     <string name="progress_macro_averages">マクロ平均</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_log_weight_title">体重を記録</string>
 
@@ -525,7 +457,6 @@
     <string name="settings_goal_weight">目標体重</string>
     <string name="settings_calories">カロリー</string>
     <string name="settings_recalculate_goals">目標を再計算</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
     <string name="settings_macro_auto_format">%1$dg · 自動</string>
     <string name="settings_macro_pinned_a11y">固定</string>
     <string name="settings_macro_auto_a11y">自動</string>
@@ -551,11 +482,9 @@
     <string name="settings_base_url">ベースURL</string>
     <string name="settings_server_url">サーバーURL</string>
     <string name="settings_tap_to_edit">タップして編集</string>
-    <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">カスタム ベースURL</string>
     <string name="settings_clear_key">キーを消去</string>
 
-    <string name="settings_health_connect">Health Connect</string>
     <string name="settings_clear_food_log">食事ログを消去</string>
     <string name="settings_delete_all_data">すべてのデータを削除</string>
 
@@ -613,7 +542,6 @@
     <string name="sheet_macros_subtitle">最大2つのマクロを正確なグラム数に固定できます。固定されていないものは残りのカロリーから自動でバランス調整されます。</string>
     <string name="sheet_macro_pinned">固定</string>
     <string name="sheet_macro_auto">自動</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
 
     <!-- About -->
     <string name="about_rate">アプリを評価</string>
@@ -622,7 +550,6 @@
     <string name="about_report_issue">問題を報告</string>
     <string name="about_request_feature">機能をリクエスト</string>
     <string name="about_privacy">プライバシーポリシー</string>
-    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Apoorv Darshan 作の Fud AI をベースに</string>
     <string name="about_share_message">食事の記録は Chompass で。写真を撮るか話すか入力するだけで、AI がカロリーを記録します。無料・オープンソースで、データは端末内に残ります。\n\nダウンロード: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass を共有</string>
@@ -686,38 +613,10 @@
     <string name="whats_new_v30_units">身長と体重の単位を別々に設定できるようになりました。</string>
     <string name="whats_new_v30_adaptive">アダプティブ目標とエネルギー消費が実験的機能を卒業し、新規インストールではデフォルトでオンに。</string>
     <string name="whats_new_v30_restore">再インストールや機種変更をしても、食事記録・体重・体脂肪がHealth Connectから自動的に復元されるようになりました。</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
-    <string name="widget_water_tracking">Water Tracking</string>
-    <string name="widget_water_enable_short">Enable in Chompass</string>
-    <string name="widget_ml_left_format">%1$d ml left</string>
-    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
-    <string name="widget_unit_left_format">%1$s%2$s left</string>
-    <string name="error_invalid_json">Invalid JSON</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_system">System default</string>
     <string name="add_food_quick_relog">再ログ</string>
     <string name="add_food_quick_relog_empty">食事をお気に入りに追加するか、一度記録してください。ワンタップで再ログできます。</string>
     <string name="add_food_quick_relog_hint">お気に入りと過去の食事。再スキャンより速い。</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="ai_provider_on_device_subtitle">非公開・オフライン。クラウドAIより精度は低い。約2〜4 GBのダウンロード</string>
     <string name="camera_scale_tip_message">ヒント: フォーク、手、またはコインを食べ物の横に入れてください。分量の推定に役立ちます。</string>
     <string name="cd_relog_meal">%1$sを再ログ</string>
@@ -728,7 +627,6 @@
     <string name="entry_analysis_busy_analyzing">分析中…</string>
     <string name="entry_analysis_busy_filling">栄養情報を入力中…</string>
     <string name="entry_analysis_busy_units">提供量単位を計算中…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_ready">確認の準備完了</string>
     <string name="entry_analysis_status_helper">写真内のバーコードを確認し、AIプロバイダーに栄養情報を問い合わせます。</string>
     <string name="entry_analysis_streaming_hint">AIの応答に合わせて値が表示されます。記録前に確認できます。</string>
@@ -783,16 +681,4 @@
     <string name="settings_photo_note_prompt">写真メモを求める</string>
     <string name="settings_photo_note_prompt_footer">オンにすると、分析前に写真入力でメモ欄が強調表示されます。メモなしでも確認して続行できます。</string>
     <string name="settings_progress_default_range">進捗のデフォルト期間</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
 </resources>

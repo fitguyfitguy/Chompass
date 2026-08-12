@@ -16,6 +16,7 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.core.content.ContextCompat
+import app.chompass.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -273,7 +274,7 @@ class NativeSpeechRecognizer(private val context: Context) {
                     trySend(
                         SttEvent.Error(
                             SpeechRecognizer.ERROR_CLIENT,
-                            e.localizedMessage ?: "Speech recognition failed to start"
+                            e.localizedMessage ?: context.getString(R.string.speech_error_start_failed)
                         )
                     )
                     close()
@@ -297,18 +298,18 @@ class NativeSpeechRecognizer(private val context: Context) {
     }.flowOn(Dispatchers.Main.immediate)
 
     private fun describeError(code: Int): String = when (code) {
-        SpeechRecognizer.ERROR_AUDIO -> "Audio capture failed"
-        SpeechRecognizer.ERROR_CLIENT -> "Speech recognition failed to start"
-        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Missing microphone permission"
-        SpeechRecognizer.ERROR_NETWORK -> "Network error"
-        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
-        SpeechRecognizer.ERROR_NO_MATCH -> "No speech recognized"
-        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy"
-        SpeechRecognizer.ERROR_SERVER -> "Server error"
-        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "No speech input"
-        ERROR_SERVER_DISCONNECTED -> "Speech service disconnected"
-        ERROR_LANGUAGE_NOT_SUPPORTED -> "Speech language is not supported on this device"
-        ERROR_LANGUAGE_UNAVAILABLE -> "Speech language is unavailable on this device"
-        else -> "Speech error ($code)"
+        SpeechRecognizer.ERROR_AUDIO -> context.getString(R.string.speech_error_audio_capture_failed)
+        SpeechRecognizer.ERROR_CLIENT -> context.getString(R.string.speech_error_start_failed)
+        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> context.getString(R.string.speech_error_missing_permission)
+        SpeechRecognizer.ERROR_NETWORK -> context.getString(R.string.speech_error_network)
+        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> context.getString(R.string.speech_error_network_timeout)
+        SpeechRecognizer.ERROR_NO_MATCH -> context.getString(R.string.speech_error_no_match)
+        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> context.getString(R.string.speech_error_recognizer_busy)
+        SpeechRecognizer.ERROR_SERVER -> context.getString(R.string.speech_error_server)
+        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> context.getString(R.string.speech_error_no_input)
+        ERROR_SERVER_DISCONNECTED -> context.getString(R.string.speech_error_server_disconnected)
+        ERROR_LANGUAGE_NOT_SUPPORTED -> context.getString(R.string.speech_error_language_not_supported)
+        ERROR_LANGUAGE_UNAVAILABLE -> context.getString(R.string.speech_error_language_unavailable)
+        else -> context.getString(R.string.speech_error_unknown_format, code)
     }
 }

@@ -131,11 +131,7 @@ fun SyncSettingsScreen(
                             lastSyncAt = container.prefs.lastSyncAt.first()
                         }
                         is SyncRepository.SyncResult.Failed -> {
-                            syncMessage = when (result.message) {
-                                "WebDAV sync failed" ->
-                                    activityContext.getString(R.string.error_webdav_sync_failed)
-                                else -> result.message
-                            }
+                            syncMessage = result.message
                         }
                     }
                 }

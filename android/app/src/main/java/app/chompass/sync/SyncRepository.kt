@@ -1,5 +1,7 @@
 package app.chompass.sync
 
+import android.content.Context
+import app.chompass.R
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -19,6 +21,7 @@ class SyncRepository(
     private val prefs: PreferencesStore,
     private val keyStore: KeyStore,
     private val webDav: WebDavClient = WebDavClient(),
+    private val appContext: Context,
 ) {
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -51,7 +54,7 @@ class SyncRepository(
             return SyncResult.Failed(
                 when (remoteParsed) {
                     is SyncDocument.ParseResult.Malformed -> remoteParsed.reason
-                    else -> "Unsupported sync file"
+                    else -> appContext.getString(R.string.sync_error_unsupported_file)
                 },
             )
         }
@@ -91,7 +94,7 @@ class SyncRepository(
         val user = prefs.webDavUsername.first().trim()
         val password = keyStore.webDavPassword().orEmpty()
         if (url.isEmpty() || user.isEmpty() || password.isEmpty()) {
-            return SyncResult.Failed("Configure WebDAV URL, username, and password first")
+            return SyncResult.Failed(appContext.getString(R.string.sync_error_configure_webdav))
         }
         return try {
             backfillRevisionsIfNeeded()
@@ -101,9 +104,9 @@ class SyncRepository(
                 localJson
             } else {
                 val localParsed = SyncDocument.parse(localJson, zone) as? SyncDocument.ParseResult.Success
-                    ?: return SyncResult.Failed("Could not build local sync document")
+                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_build_local_doc))
                 val remoteParsed = SyncDocument.parse(remote.body, zone) as? SyncDocument.ParseResult.Success
-                    ?: return SyncResult.Failed("Remote sync document is invalid")
+                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_remote_invalid))
                 json.encodeToString(
                     JsonObject.serializer(),
                     SyncDocument.mergeRawDocuments(localParsed.parsed.raw, remoteParsed.parsed.raw),
@@ -117,9 +120,9 @@ class SyncRepository(
             if (put.conflict) {
                 val again = webDav.get(url, user, password)
                 val localParsed = SyncDocument.parse(exportDocumentJson(zone), zone) as? SyncDocument.ParseResult.Success
-                    ?: return SyncResult.Failed("Local sync rebuild failed after conflict")
+                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_local_rebuild_failed))
                 val remoteParsed = SyncDocument.parse(again.body.orEmpty(), zone) as? SyncDocument.ParseResult.Success
-                    ?: return SyncResult.Failed("Remote sync document invalid after conflict")
+                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_remote_invalid_conflict))
                 val retryJson = json.encodeToString(
                     JsonObject.serializer(),
                     SyncDocument.mergeRawDocuments(localParsed.parsed.raw, remoteParsed.parsed.raw),
@@ -132,16 +135,16 @@ class SyncRepository(
                 if (put.conflict) {
                     put = webDav.put(url, user, password, retryJson, WebDavPutMode.Unconditional)
                 }
-                if (put.conflict) return SyncResult.Failed("WebDAV conflict persisted; try again")
+                if (put.conflict) return SyncResult.Failed(appContext.getString(R.string.sync_error_conflict_persisted))
                 etag = put.etag ?: again.etag
             } else {
                 etag = put.etag ?: etag
             }
             prefs.setLastSyncAt(Instant.now().toString())
             prefs.setLastSyncEtag(etag)
-            SyncResult.Success("Synced with WebDAV")
+            SyncResult.Success(appContext.getString(R.string.sync_success_synced))
         } catch (t: Throwable) {
-            SyncResult.Failed(t.localizedMessage ?: "WebDAV sync failed")
+            SyncResult.Failed(t.localizedMessage ?: appContext.getString(R.string.error_webdav_sync_failed))
         }
     }
 
@@ -217,7 +220,7 @@ class SyncRepository(
     private suspend fun applyMergedDocument(jsonText: String, zone: ZoneId): SyncResult {
         val parsed = SyncDocument.parse(jsonText, zone)
         if (parsed !is SyncDocument.ParseResult.Success) {
-            return SyncResult.Failed("Merged sync document invalid")
+            return SyncResult.Failed(appContext.getString(R.string.sync_error_merged_invalid))
         }
         val doc = parsed.parsed
         val revisionMap = mutableMapOf<String, SyncRevision>()
@@ -270,6 +273,6 @@ class SyncRepository(
         prefs.setRecipes(liveRecipes)
 
         prefs.setSyncRevisions(revisionMap)
-        return SyncResult.Success("Sync document applied")
+        return SyncResult.Success(appContext.getString(R.string.sync_success_applied))
     }
 }

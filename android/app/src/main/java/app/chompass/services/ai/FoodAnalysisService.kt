@@ -3,6 +3,7 @@ package app.chompass.services.ai
 import app.chompass.data.KeyStore
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
+import app.chompass.R
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
@@ -605,11 +606,11 @@ class FoodAnalysisService(
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): GroundedToolLoop.LoopResult {
         if (callAiDelegate != null) {
-            throw AiError.Api("Grounded tool loop requires a live AI provider.")
+            throw AiError.Api("Grounded tool loop requires a live AI provider.", messageRes = R.string.ai_error_grounded_requires_provider)
         }
         val primary = prefs!!.selectedAIProvider.first()
         if (primary.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
-            throw AiError.Api("Grounded tool loop is not available for on-device models.")
+            throw AiError.Api("Grounded tool loop is not available for on-device models.", messageRes = R.string.ai_error_grounded_on_device)
         }
         val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl

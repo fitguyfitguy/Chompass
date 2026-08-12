@@ -1,16 +1,41 @@
 package app.chompass.services.ai
 
-sealed class AiError(message: String) : Exception(message) {
-    object NoApiKey : AiError("No API key configured. Add your key in Settings → AI Provider.")
-    object ImageConversionFailed : AiError("Failed to process the image.")
-    class Network(cause: Throwable) : AiError("Network error: ${cause.localizedMessage}")
-    object InvalidResponse : AiError("Could not understand the AI response. Please try again.")
-    class Api(raw: String) : AiError(raw)
-    class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.")
-    object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.")
-    object OnDeviceUnsupportedDevice : AiError("This device doesn't meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.")
-    object OnDeviceLowMemory : AiError("Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.")
+import android.content.Context
+import androidx.annotation.StringRes
+import app.chompass.R
+
+/**
+ * User-facing AI errors. Subclasses carry a [messageRes] so the UI layer can
+ * show the user's language without threading a Context through the service
+ * stack; [message] stays English (logs / raw fallback when [messageRes] is 0,
+ * e.g. provider-supplied text in [Api]).
+ */
+sealed class AiError(
+    message: String,
+    @StringRes val messageRes: Int = 0,
+    val formatArgs: Array<out Any> = emptyArray(),
+) : Exception(message) {
+    object NoApiKey : AiError("No API key configured. Add your key in Settings → AI Provider.", messageRes = R.string.ai_error_no_api_key)
+    object ImageConversionFailed : AiError("Failed to process the image.", messageRes = R.string.ai_error_image_conversion_failed)
+    class Network(cause: Throwable) : AiError(
+        "Network error: ${cause.localizedMessage}",
+        messageRes = R.string.ai_error_network_format,
+        formatArgs = arrayOf(cause.localizedMessage.orEmpty()),
+    )
+    object InvalidResponse : AiError("Could not understand the AI response. Please try again.", messageRes = R.string.ai_error_invalid_response)
+    class Api(raw: String, @StringRes messageRes: Int = 0) : AiError(raw, messageRes = messageRes)
+    class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.", messageRes = R.string.ai_error_invalid_url)
+    object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.", messageRes = R.string.ai_error_on_device_model_not_downloaded)
+    object OnDeviceUnsupportedDevice : AiError("This device doesn't meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_unsupported_device)
+    object OnDeviceLowMemory : AiError("Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_low_memory)
 }
+
+/**
+ * Resolve an [AiError] to the user's language at the UI boundary. Falls back
+ * to the raw message (provider text) when the type carries no resource.
+ */
+fun AiError.userMessage(context: Context): String =
+    if (messageRes != 0) context.getString(messageRes, *formatArgs) else message.orEmpty()
 
 internal fun friendlyMessage(status: Int, raw: String): String {
     val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."
@@ -36,6 +61,30 @@ internal fun friendlyMessage(status: Int, raw: String): String {
         401, 403 -> keyRejected
         else -> if (hasLocationUnsupportedMarker) locationUnsupported else raw
     }
+}
+
+/**
+ * Localizable counterpart of [friendlyMessage]: maps the same status/marker
+ * rules to a string resource (0 = keep the raw provider text). The English
+ * [friendlyMessage] is kept for logs and for the raw-message fallback.
+ */
+internal fun friendlyMessageRes(status: Int, raw: String): Int = when (status) {
+    503, 529 -> R.string.ai_error_provider_overloaded
+    429 -> R.string.ai_error_rate_limit
+    400 -> when {
+        raw.contains("api key not valid", ignoreCase = true) ||
+            raw.contains("api_key_invalid", ignoreCase = true) ||
+            raw.contains("api key expired", ignoreCase = true) ||
+            raw.contains("api_key_expired", ignoreCase = true) -> R.string.ai_error_key_rejected
+        raw.contains("location is not supported", ignoreCase = true) ||
+            raw.contains("not available in your country", ignoreCase = true) -> R.string.ai_error_location_unsupported
+        else -> 0
+    }
+    401, 403 -> R.string.ai_error_key_rejected
+    else -> if (
+        raw.contains("location is not supported", ignoreCase = true) ||
+        raw.contains("not available in your country", ignoreCase = true)
+    ) R.string.ai_error_location_unsupported else 0
 }
 
 /**

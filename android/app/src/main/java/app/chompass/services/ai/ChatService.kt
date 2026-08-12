@@ -3,6 +3,7 @@ package app.chompass.services.ai
 import app.chompass.data.KeyStore
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
+import app.chompass.R
 import app.chompass.models.ActivityLevel
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
@@ -82,7 +83,7 @@ class ChatService(
 
         // Coach tool-calling (Tier C) stays debug/experimental for on-device — see docs/ON_DEVICE_LLM.md.
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
-            throw AiError.Api("Coach isn't available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.")
+            throw AiError.Api("Coach isn't available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.", messageRes = R.string.ai_error_coach_on_device)
         }
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
@@ -178,7 +179,7 @@ class ChatService(
                 parsed = retry.second
                 message = retry.first
                 if (parsed.wasTruncated) {
-                    throw AiError.Api("The AI response was truncated twice. Try a shorter question or another model.")
+                    throw AiError.Api("The AI response was truncated twice. Try a shorter question or another model.", messageRes = R.string.ai_error_truncated_twice)
                 }
             }
 
@@ -206,7 +207,7 @@ class ChatService(
             if (content.isNotEmpty()) return content.trim()
             throw AiError.InvalidResponse
         }
-        throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.")
+        throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.", messageRes = R.string.ai_error_coach_round_limit)
     }
 
     // MARK: - Anthropic tool loop
@@ -298,7 +299,7 @@ class ChatService(
             }
             throw AiError.InvalidResponse
         }
-        throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.")
+        throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.", messageRes = R.string.ai_error_coach_round_limit)
     }
 
     // MARK: - Gemini tool loop
@@ -391,7 +392,7 @@ class ChatService(
             if (combined.isNotEmpty()) return combined
             throw AiError.InvalidResponse
         }
-        throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.")
+        throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.", messageRes = R.string.ai_error_coach_round_limit)
     }
 
     // MARK: - Tool parameter schemas

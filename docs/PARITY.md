@@ -30,7 +30,7 @@ For formula / wire-format correctness (not feature lists), see:
 | Widgets / notifications | android-only | glance / NotificationService | — | |
 | On-device LLM (Gemma / LiteRT) | android-only | debug + production flag | — | See `ON_DEVICE_LLM.md` |
 | Grounded entry | wip / android | grounding services | — | Feature flag; see `GROUNDED_ENTRY.md` |
-| Full i18n pack | shared | `res/values*` | `lib/i18n/` + catalogs | Shared 15-locale contract [`testdata/parity/locales.json`](../testdata/parity/locales.json); see [`LOCALIZATION.md`](LOCALIZATION.md). PWA covers core surfaces; Android has fuller resource packs with EN fallback |
+| Full i18n pack | shared | `res/values*` | `lib/i18n/` + catalogs | Shared 16-locale contract [`testdata/parity/locales.json`](../testdata/parity/locales.json); see [`LOCALIZATION.md`](LOCALIZATION.md). PWA covers core surfaces; Android has fuller resource packs with EN fallback |
 | Service worker / installability | pwa-only | — | `sw.js`, manifest | |
 | IndexedDB local store | pwa-only | DataStore | `db.js` | Optional WebDAV sync is shared |
 | Desktop chrome (rail + wider column) | pwa-only | — | `css/main.css` `@media (min-width: 900px)` | Left nav rail, `56rem` content, content-pinned FAB/coach/banner, constrained sheets; phone shell unchanged below breakpoint |

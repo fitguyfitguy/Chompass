@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
     <string name="widget_calorie_label">Chompass Calorieën</string>
@@ -13,23 +12,16 @@
     <string name="widget_fat">Vet</string>
     <string name="widget_kcal_left_format">%1$d kcal over</string>
     <string name="widget_g_left_format">%1$dg over</string>
-    <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">eiwit g</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
-    <string name="widget_center_small_g_format">/ %1$dg</string>
-    <string name="widget_center_large_g_format">%1$dg</string>
 
     <!-- Common buttons / actions -->
     <string name="action_save">Bewaar</string>
     <string name="action_cancel">Annuleer</string>
     <string name="action_done">Klaar</string>
-    <string name="action_ok">OK</string>
     <string name="action_clear">Wissen</string>
     <string name="action_delete">Verwijder</string>
     <string name="action_continue">Ga verder</string>
     <string name="action_get_started">Aan de slag</string>
-    <string name="action_log">Log</string>
     <string name="action_analyze">Analyseren</string>
     <string name="action_discard">Verwerpen</string>
     <string name="action_reset">Resetten</string>
@@ -38,29 +30,6 @@
     <string name="action_pin">Vastzetten</string>
 
     <!-- Generic units / labels -->
-    <string name="unit_kcal">kcal</string>
-    <string name="unit_g">g</string>
-    <string name="unit_mg">mg</string>
-    <string name="unit_percent">%</string>
-    <string name="unit_cm">cm</string>
-    <string name="unit_kg">kg</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="kg_value_format">%1$.1f kg</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
-    <string name="kg_per_week_format">%1$.2f kg/wk</string>
-    <string name="lbs_per_week_format">%1$.2f lbs/wk</string>
-    <string name="height_cm_format">%1$d cm</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
 
     <!-- Macros / Goal labels -->
     <string name="macro_protein">Eiwit</string>
@@ -94,9 +63,7 @@
 
     <!-- Meal Type -->
     <string name="meal_breakfast">Ontbijt</string>
-    <string name="meal_lunch">Lunch</string>
     <string name="meal_dinner">Diner</string>
-    <string name="meal_snack">Snack</string>
     <string name="meal_other">Overig</string>
 
     <!-- AutoBalance Macro -->
@@ -105,45 +72,17 @@
     <string name="autobalance_fat">Vet</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (lokaal)</string>
     <string name="ai_provider_custom">Aangepast (OpenAI-compatibel)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">Geen sleutel nodig</string>
     <string name="ai_key_placeholder_custom">API-sleutel (of wat dan ook als endpoint er geen nodig heeft)</string>
 
     <!-- Speech Provider -->
     <string name="speech_provider_native">Native (op apparaat)</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Niet nodig</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token jouw-deepgram-sleutel</string>
     <string name="speech_key_placeholder_assemblyai">Jouw AssemblyAI-sleutel</string>
 
@@ -154,16 +93,12 @@
     <string name="speech_description_assemblyai">AssemblyAI Universal-model. Sterke nauwkeurigheid, gratis abonnement beschikbaar.</string>
 
     <!-- Bottom navigation -->
-    <string name="nav_home">Home</string>
     <string name="nav_progress">Voortgang</string>
-    <string name="nav_coach">Coach</string>
     <string name="nav_settings">Instellingen</string>
     <string name="nav_about">Over</string>
 
     <!-- Day-of-week narrow letters (for week strip) -->
-    <string name="dow_narrow_monday">M</string>
     <string name="dow_narrow_tuesday">D</string>
-    <string name="dow_narrow_wednesday">W</string>
     <string name="dow_narrow_thursday">D</string>
     <string name="dow_narrow_friday">V</string>
     <string name="dow_narrow_saturday">Z</string>
@@ -203,7 +138,6 @@
     <string name="onboarding_height">Lengte</string>
     <string name="onboarding_weight">Gewicht</string>
     <string name="onboarding_feet">Voet</string>
-    <string name="onboarding_inches">Inches</string>
 
     <string name="onboarding_activity_title">Hoe actief ben je?</string>
     <string name="onboarding_activity_subtitle">Je typische week</string>
@@ -227,7 +161,6 @@
     <string name="onboarding_pace_subtitle_gain">Snelheid van gewichtstoename per week</string>
     <string name="onboarding_pace_balanced_set">Gebalanceerd tempo ingesteld</string>
     <string name="onboarding_pace_balanced_subtitle">We houden je calorieën stabiel\nom je huidige gewicht te behouden.</string>
-    <string name="onboarding_pace_per_week">per week</string>
     <string name="onboarding_pace_slow">Langzaam</string>
     <string name="onboarding_pace_recommended">Aanbevolen</string>
     <string name="onboarding_pace_fast">Snel</string>
@@ -272,11 +205,9 @@
     <string name="onboarding_building_protein">Eiwit</string>
     <string name="onboarding_building_fats">Vetten</string>
     <string name="onboarding_building_health_score">Gezondheidsscore</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">We zetten alles\nvoor je klaar</string>
     <string name="onboarding_building_finalizing">Resultaten afronden...</string>
     <string name="onboarding_building_recommendation">Dagelijkse aanbeveling voor</string>
-    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">Jouw plan</string>
     <string name="onboarding_plan_subtitle">Tik op een waarde om te bewerken</string>
@@ -292,7 +223,6 @@
 
     <!-- Home -->
     <string name="home_add_food">Eten toevoegen</string>
-    <string name="home_menu_camera">Camera</string>
     <string name="home_menu_camera_note">Camera + notitie</string>
     <string name="home_menu_nutrition_label">Voedingslabel</string>
     <string name="home_menu_from_photos">Uit Foto\'s</string>
@@ -300,12 +230,9 @@
     <string name="home_menu_voice">Spraak</string>
     <string name="home_menu_manual_entry">Handmatige invoer</string>
     <string name="home_menu_saved_meals">Opgeslagen maaltijden</string>
-    <string name="home_menu_barcode">Barcode</string>
-    <string name="shortcut_camera_short">Camera</string>
     <string name="shortcut_camera_long">Voeding loggen met camera</string>
     <string name="shortcut_voice_short">Spraak</string>
     <string name="shortcut_voice_long">Voeding loggen met spraak</string>
-    <string name="shortcut_barcode_short">Barcode</string>
     <string name="shortcut_barcode_long">Scan een barcode</string>
     <string name="add_food_sheet_title">Voeding toevoegen</string>
     <string name="add_food_hero_photo">Foto</string>
@@ -330,20 +257,13 @@
     <string name="home_swipe_favorite">Favoriet</string>
     <string name="home_swipe_unfavorite">Verwijder favoriet</string>
     <string name="home_favorited">Favoriet gemaakt</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">Je eten analyseren...</string>
     <string name="home_looking_up_nutrition">Voeding opzoeken...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">Vezels: %1$.1fg</string>
     <string name="home_sugar_format">Suiker: %1$.1fg</string>
     <string name="home_sat_fat_format">Verzadigd vet: %1$.1fg</string>
     <string name="home_sodium_format">Natrium: %1$.1fmg</string>
     <string name="home_potassium_format">Kalium: %1$.1fmg</string>
-    <string name="home_cholesterol_format">Cholesterol: %1$.1fmg</string>
     <string name="home_serving_format">Portie: ~%1$dg</string>
     <string name="home_protein_value">Eiwit: %1$dg</string>
     <string name="home_carbs_value">Koolhydraten: %1$dg</string>
@@ -362,7 +282,6 @@
     <string name="manual_carbs">Koolhydraten (g)</string>
     <string name="manual_fat">Vet (g)</string>
     <string name="manual_fiber">Vezels (g)</string>
-    <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Maaltijdtype</string>
 
     <string name="error_title">Er ging iets mis</string>
@@ -385,7 +304,6 @@
     <string name="sheet_micro_saturated_fat">Verzadigd vet</string>
     <string name="sheet_micro_mono_fat">Enkelv. onverz. vet</string>
     <string name="sheet_micro_poly_fat">Meerv. onverz. vet</string>
-    <string name="sheet_micro_cholesterol">Cholesterol</string>
     <string name="sheet_micro_sodium">Natrium</string>
     <string name="sheet_micro_potassium">Kalium</string>
 
@@ -401,7 +319,6 @@
     <string name="voice_mic_permission_denied">Microfoonpermissie geweigerd.</string>
     <string name="voice_mic_start_failed">Kon de microfoon niet starten. Controleer permissies.</string>
     <string name="voice_transcription_failed">Transcriptie mislukt</string>
-    <string name="voice_stop">Stop</string>
     <string name="voice_record">Opnemen</string>
 
     <!-- Saved Meals sheet -->
@@ -412,7 +329,6 @@
     <string name="saved_meals_no_logs">Nog geen voedsel geregistreerd</string>
     <string name="saved_meals_no_favorites">Nog geen favorieten\nVeeg naar links op een gerecht om het toe te voegen</string>
     <string name="saved_meals_count_format">%1$d× geregistreerd</string>
-    <string name="saved_meals_log_action">Log</string>
     <string name="saved_meals_remove_favorite">Favoriet verwijderen</string>
     <string name="saved_meals_move_up">Omhoog</string>
     <string name="saved_meals_move_down">Omlaag</string>
@@ -431,13 +347,10 @@
     <string name="nutrition_label_saturated_fat">Verzadigd vet</string>
     <string name="nutrition_label_mono_fat">Enkelv. onverz. vet</string>
     <string name="nutrition_label_poly_fat">Meerv. onverz. vet</string>
-    <string name="nutrition_label_cholesterol">Cholesterol</string>
     <string name="nutrition_label_sodium">Natrium</string>
     <string name="nutrition_label_potassium">Kalium</string>
-    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
-    <string name="coach_title">Coach</string>
     <string name="coach_reset_chat_a11y">Chat resetten</string>
     <string name="coach_send_a11y">Verstuur</string>
     <string name="coach_input_voice_a11y">Spraakinvoer</string>
@@ -465,10 +378,6 @@
     <string name="coach_chip_log_advice">Advies op basis van mijn logboek?</string>
 
     <!-- Progress -->
-    <string name="progress_range_week">1W</string>
-    <string name="progress_range_month">1M</string>
-    <string name="progress_range_3m">3M</string>
-    <string name="progress_range_6m">6M</string>
     <string name="progress_range_year">1J</string>
     <string name="progress_range_all">Alles</string>
 
@@ -487,7 +396,6 @@
     <string name="progress_no_food">Nog geen eten geregistreerd</string>
 
     <string name="progress_macro_averages">Macro-gemiddelden</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_log_weight_title">Gewicht loggen</string>
 
@@ -508,7 +416,6 @@
     <string name="settings_group_goals_summary">Dieet, macro\'s, adaptieve doelen</string>
     <string name="settings_group_app_summary">Uiterlijk, home, meldingen</string>
     <string name="settings_group_ai_summary">Providers, modellen, spraak</string>
-    <string name="settings_group_data_summary">Health Connect, export, sync</string>
 
     <string name="settings_gender">Geslacht</string>
     <string name="settings_birthday">Geboortedatum</string>
@@ -525,10 +432,7 @@
     <string name="settings_goal_weight">Streefgewicht</string>
     <string name="settings_calories">Calorieën</string>
     <string name="settings_recalculate_goals">Doelen opnieuw berekenen</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
-    <string name="settings_macro_auto_format">%1$dg · auto</string>
     <string name="settings_macro_pinned_a11y">Vastgezet</string>
-    <string name="settings_macro_auto_a11y">Auto</string>
 
     <string name="settings_appearance">Weergave</string>
     <string name="settings_appearance_system">Systeem</string>
@@ -544,8 +448,6 @@
     <string name="settings_battery_opt">Batterijoptimalisatie</string>
     <string name="settings_battery_opt_value">Chompass op witte lijst</string>
 
-    <string name="settings_ai_provider">Provider</string>
-    <string name="settings_ai_model">Model</string>
     <string name="settings_ai_model_unset">(stel hieronder een in)</string>
     <string name="settings_api_key">API-sleutel</string>
     <string name="settings_base_url">Basis-URL</string>
@@ -555,7 +457,6 @@
     <string name="settings_custom_url_title">Aangepaste basis-URL</string>
     <string name="settings_clear_key">Sleutel wissen</string>
 
-    <string name="settings_health_connect">Health Connect</string>
     <string name="settings_clear_food_log">Voedingsdagboek wissen</string>
     <string name="settings_delete_all_data">Alle gegevens verwijderen</string>
 
@@ -583,7 +484,6 @@
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI-provider</string>
-    <string name="sheet_model">Model</string>
     <string name="sheet_model_footer">Of typ hieronder een aangepaste model-ID.</string>
     <string name="sheet_any_model_id">Elke model-ID</string>
     <string name="sheet_api_key_format">API-sleutel - %1$s</string>
@@ -600,7 +500,6 @@
     <string name="sheet_height">Lengte</string>
     <string name="sheet_body_fat_percent">Vetpercentage</string>
     <string name="sheet_weekly_change">Wekelijkse verandering</string>
-    <string name="sheet_weekly_change_format">%1$.1f %2$s/week %3$s</string>
     <string name="sheet_weekly_change_loss">verlies</string>
     <string name="sheet_weekly_change_gain">toename</string>
     <string name="sheet_pace_slow">Langzaam</string>
@@ -612,8 +511,6 @@
     <string name="sheet_macros">Macro\'s</string>
     <string name="sheet_macros_subtitle">Zet maximaal 2 macro\'s vast op exacte grammen. Niet-vastgezette worden automatisch berekend uit de resterende calorieën.</string>
     <string name="sheet_macro_pinned">vastgezet</string>
-    <string name="sheet_macro_auto">auto</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
 
     <!-- About -->
     <string name="about_rate">Beoordeel de app</string>
@@ -686,38 +583,10 @@
     <string name="whats_new_v30_units">Lengte- en gewichtseenheden zijn nu apart in te stellen.</string>
     <string name="whats_new_v30_adaptive">Adaptieve doelen en Energieverbruik zijn niet langer experimenteel en staan standaard aan bij nieuwe installaties.</string>
     <string name="whats_new_v30_restore">Opnieuw geïnstalleerd of een nieuwe telefoon? Je voedingslogboek, gewicht en vetpercentage worden nu automatisch hersteld uit Health Connect.</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
-    <string name="widget_water_tracking">Water Tracking</string>
-    <string name="widget_water_enable_short">Enable in Chompass</string>
-    <string name="widget_ml_left_format">%1$d ml left</string>
-    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
-    <string name="widget_unit_left_format">%1$s%2$s left</string>
-    <string name="error_invalid_json">Invalid JSON</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_system">System default</string>
     <string name="add_food_quick_relog">Opnieuw loggen</string>
     <string name="add_food_quick_relog_empty">Markeer een maaltijd als favoriet of log hem een keer. Hij verschijnt hier voor één-tik opnieuw loggen.</string>
     <string name="add_food_quick_relog_hint">Favorieten en eerdere maaltijden. Sneller dan opnieuw scannen.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="ai_provider_on_device_subtitle">Privé en offline. Minder nauwkeurig dan cloud-AI; ~2-4 GB download</string>
     <string name="camera_scale_tip_message">Tip: leg een vork, hand of munt naast je eten. Dat helpt de portiegrootte te schatten.</string>
     <string name="cd_relog_meal">%1$s opnieuw loggen</string>
@@ -728,7 +597,6 @@
     <string name="entry_analysis_busy_analyzing">Analyseren…</string>
     <string name="entry_analysis_busy_filling">Voedingswaarden invullen…</string>
     <string name="entry_analysis_busy_units">Portie-eenheden berekenen…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_ready">Klaar om te controleren</string>
     <string name="entry_analysis_status_helper">Barcodes op de foto worden gecontroleerd, daarna vraagt je AI-provider om voedingswaarden.</string>
     <string name="entry_analysis_streaming_hint">Waarden verschijnen terwijl de AI antwoordt. Je kunt ze controleren voordat je logt.</string>
@@ -783,16 +651,4 @@
     <string name="settings_photo_note_prompt">Om fotonotitie vragen</string>
     <string name="settings_photo_note_prompt_footer">Indien aan, markeert foto-invoer het notitieveld vóór Analyseren. Je kunt nog steeds bevestigen en doorgaan zonder notitie.</string>
     <string name="settings_progress_default_range">Standaardperiode voortgang</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
 </resources>

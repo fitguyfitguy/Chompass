@@ -2,8 +2,8 @@
 // Shared progressive analysis overlay markup (Android EntryAnalysisOverlay parity).
 import {
   ANALYSIS_PHASE,
-  ANALYSIS_PHASE_LABEL,
   ANALYSIS_PHASE_STEPS,
+  phaseLabel,
 } from "../ai/analysis-phase.js";
 
 /**
@@ -43,10 +43,10 @@ export function renderAnalyzeOverlayHtml({
         : `<div class="analyze-overlay__icon" aria-hidden="true">⌕</div>`;
 
   const hasFields = Boolean(partial?.hasAnyField);
-  const phaseLabel =
+  const label =
     phase === ANALYSIS_PHASE.CALLING_AI && hasFields
-      ? ANALYSIS_PHASE_LABEL.filling_fields
-      : ANALYSIS_PHASE_LABEL[phase] || ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PREPARING];
+      ? phaseLabel("filling_fields")
+      : phaseLabel(phase);
 
   const bodyHtml = hasFields
     ? progressiveCardHtml(partial)

@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
     <string name="widget_calorie_label">Chompass कैलोरी</string>
@@ -13,12 +12,7 @@
     <string name="widget_fat">फैट</string>
     <string name="widget_kcal_left_format">%1$d kcal शेष</string>
     <string name="widget_g_left_format">%1$dg शेष</string>
-    <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">प्रोटीन g</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
-    <string name="widget_center_small_g_format">/ %1$dg</string>
-    <string name="widget_center_large_g_format">%1$dg</string>
 
     <!-- Common buttons / actions -->
     <string name="action_save">सहेजें</string>
@@ -38,29 +32,8 @@
     <string name="action_pin">पिन करें</string>
 
     <!-- Generic units / labels -->
-    <string name="unit_kcal">kcal</string>
-    <string name="unit_g">g</string>
-    <string name="unit_mg">mg</string>
-    <string name="unit_percent">%</string>
-    <string name="unit_cm">cm</string>
-    <string name="unit_kg">kg</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="kg_value_format">%1$.1f kg</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
     <string name="kg_per_week_format">%1$.2f kg/सप्ताह</string>
     <string name="lbs_per_week_format">%1$.2f lbs/सप्ताह</string>
-    <string name="height_cm_format">%1$d cm</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
 
     <!-- Macros / Goal labels -->
     <string name="macro_protein">प्रोटीन</string>
@@ -105,46 +78,17 @@
     <string name="autobalance_fat">फैट</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (लोकल)</string>
     <string name="ai_provider_custom">कस्टम (OpenAI-संगत)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">कुंजी की ज़रूरत नहीं</string>
     <string name="ai_key_placeholder_custom">API कुंजी (या कुछ भी, अगर एंडपॉइंट को ज़रूरत न हो)</string>
 
     <!-- Speech Provider -->
     <string name="speech_provider_native">नेटिव (ऑन-डिवाइस)</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">ज़रूरत नहीं</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">आपकी AssemblyAI कुंजी</string>
 
     <string name="speech_description_native">Android की ऑन-डिवाइस स्पीच रिकग्निशन। मुफ़्त, अधिकांश फ़ोनों पर ऑफ़लाइन काम करती है, रियल-टाइम आंशिक परिणाम। अनुशंसित डिफ़ॉल्ट।</string>
@@ -186,9 +130,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">वापस</string>
     <string name="onboarding_logo_description">Chompass लोगो</string>
-    <string name="onboarding_welcome_line1">समझदारी से खाएँ,</string>
-    <string name="onboarding_welcome_line2">बेहतर जिएँ</string>
-    <string name="onboarding_welcome_subtitle">बस स्नैप करें, ट्रैक करें और फलें-फूलें।\nआपका पोषण, सरल बनाया गया।</string>
+    <string name="onboarding_welcome_line1">भोजन लॉग करें,</string>
+    <string name="onboarding_welcome_line2">संतुलित रहें</string>
+    <string name="onboarding_welcome_subtitle">फ़ोटो, आवाज़ या टेक्स्ट से भोजन लॉग करें।\nआपका पोषण, एक नज़र में।</string>
 
     <string name="onboarding_gender_title">आपका लिंग क्या है?</string>
     <string name="onboarding_gender_subtitle">यह आपके मेटाबॉलिज़्म की गणना में मदद करता है</string>
@@ -272,11 +216,9 @@
     <string name="onboarding_building_protein">प्रोटीन</string>
     <string name="onboarding_building_fats">फैट</string>
     <string name="onboarding_building_health_score">स्वास्थ्य स्कोर</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">हम आपके लिए सब कुछ\nसेट कर रहे हैं</string>
     <string name="onboarding_building_finalizing">परिणाम अंतिम रूप दे रहे हैं...</string>
     <string name="onboarding_building_recommendation">दैनिक अनुशंसा</string>
-    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">आपका प्लान</string>
     <string name="onboarding_plan_subtitle">संपादित करने के लिए किसी भी मान पर टैप करें</string>
@@ -330,14 +272,8 @@
     <string name="home_swipe_favorite">पसंदीदा</string>
     <string name="home_swipe_unfavorite">पसंदीदा से हटाएं</string>
     <string name="home_favorited">पसंदीदा में जोड़ा गया</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">आपके भोजन का विश्लेषण हो रहा है...</string>
     <string name="home_looking_up_nutrition">पोषण देखा जा रहा है...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">फ़ाइबर: %1$.1fg</string>
     <string name="home_sugar_format">चीनी: %1$.1fg</string>
     <string name="home_sat_fat_format">सैट. फैट: %1$.1fg</string>
@@ -362,7 +298,6 @@
     <string name="manual_carbs">कार्ब्स (g)</string>
     <string name="manual_fat">फैट (g)</string>
     <string name="manual_fiber">फ़ाइबर (g)</string>
-    <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">भोजन का प्रकार</string>
 
     <string name="error_title">कुछ गलत हो गया</string>
@@ -434,7 +369,6 @@
     <string name="nutrition_label_cholesterol">कोलेस्ट्रॉल</string>
     <string name="nutrition_label_sodium">सोडियम</string>
     <string name="nutrition_label_potassium">पोटैशियम</string>
-    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">कोच</string>
@@ -487,7 +421,6 @@
     <string name="progress_no_food">अभी तक कोई भोजन लॉग नहीं किया गया</string>
 
     <string name="progress_macro_averages">मैक्रो औसत</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_log_weight_title">वज़न लॉग करें</string>
 
@@ -525,7 +458,6 @@
     <string name="settings_goal_weight">लक्ष्य वज़न</string>
     <string name="settings_calories">कैलोरी</string>
     <string name="settings_recalculate_goals">लक्ष्य पुनः गणना करें</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
     <string name="settings_macro_auto_format">%1$dg · ऑटो</string>
     <string name="settings_macro_pinned_a11y">पिन किया गया</string>
     <string name="settings_macro_auto_a11y">ऑटो</string>
@@ -551,11 +483,9 @@
     <string name="settings_base_url">बेस URL</string>
     <string name="settings_server_url">सर्वर URL</string>
     <string name="settings_tap_to_edit">संपादित करने के लिए टैप करें</string>
-    <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">कस्टम बेस URL</string>
     <string name="settings_clear_key">कुंजी साफ़ करें</string>
 
-    <string name="settings_health_connect">Health Connect</string>
     <string name="settings_clear_food_log">खाद्य लॉग साफ़ करें</string>
     <string name="settings_delete_all_data">सभी डेटा हटाएं</string>
 
@@ -613,7 +543,6 @@
     <string name="sheet_macros_subtitle">सटीक ग्राम पर 2 मैक्रो तक पिन करें। अनपिन किए गए शेष कैलोरी से ऑटो-बैलेंस होते हैं।</string>
     <string name="sheet_macro_pinned">पिन किया गया</string>
     <string name="sheet_macro_auto">ऑटो</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
 
     <!-- About -->
     <string name="about_rate">ऐप को रेट करें</string>
@@ -686,38 +615,10 @@
     <string name="whats_new_v30_units">ऊँचाई और वज़न की इकाइयाँ अब अलग-अलग सेट होती हैं।</string>
     <string name="whats_new_v30_adaptive">Adaptive Goals और Energy Burn अब प्रयोगात्मक नहीं हैं और नए इंस्टॉल पर डिफ़ॉल्ट रूप से चालू हैं।</string>
     <string name="whats_new_v30_restore">दोबारा इंस्टॉल किया या फ़ोन बदला? आपका फ़ूड लॉग, वज़न और बॉडी फ़ैट अब Health Connect से अपने आप बहाल हो जाते हैं।</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
-    <string name="widget_water_tracking">Water Tracking</string>
-    <string name="widget_water_enable_short">Enable in Chompass</string>
-    <string name="widget_ml_left_format">%1$d ml left</string>
-    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
-    <string name="widget_unit_left_format">%1$s%2$s left</string>
-    <string name="error_invalid_json">Invalid JSON</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_system">System default</string>
     <string name="add_food_quick_relog">फिर से लॉग करें</string>
     <string name="add_food_quick_relog_empty">कोई भोजन पसंदीदा बनाएँ या एक बार लॉग करें। यह यहाँ एक-टैप पुनः-लॉग के लिए दिखेगा।</string>
     <string name="add_food_quick_relog_hint">पसंदीदा और पिछले भोजन। दोबारा स्कैन से तेज़।</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="ai_provider_on_device_subtitle">निजी और ऑफ़लाइन। क्लाउड AI से कम सटीक; ~2-4 GB डाउनलोड</string>
     <string name="camera_scale_tip_message">सुझाव: भोजन के बगल में कांटा, हाथ या सिक्का रखें। यह हिस्से का अनुमान लगाने में मदद करता है।</string>
     <string name="cd_relog_meal">%1$s फिर से लॉग करें</string>
@@ -728,7 +629,6 @@
     <string name="entry_analysis_busy_analyzing">विश्लेषण हो रहा है…</string>
     <string name="entry_analysis_busy_filling">पोषण भरा जा रहा है…</string>
     <string name="entry_analysis_busy_units">सर्विंग इकाइयाँ गिनी जा रही हैं…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_ready">समीक्षा के लिए तैयार</string>
     <string name="entry_analysis_status_helper">फ़ोटो में बारकोड जाँचे जा रहे हैं, फिर आपके AI प्रदाता से पोषण माँगा जाएगा।</string>
     <string name="entry_analysis_streaming_hint">AI जवाब देते ही मान दिखते हैं। लॉग करने से पहले उन्हें देख सकते हैं।</string>
@@ -783,16 +683,4 @@
     <string name="settings_photo_note_prompt">फ़ोटो नोट पूछें</string>
     <string name="settings_photo_note_prompt_footer">चालू होने पर फ़ोटो एंट्री विश्लेषण से पहले नोट फ़ील्ड हाइलाइट करती है। बिना नोट के भी पुष्टि और जारी रख सकते हैं।</string>
     <string name="settings_progress_default_range">प्रगति डिफ़ॉल्ट रेंज</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
 </resources>

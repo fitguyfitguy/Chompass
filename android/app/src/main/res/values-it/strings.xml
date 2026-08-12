@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
     <string name="widget_calorie_label">Calorie Chompass</string>
@@ -13,18 +12,12 @@
     <string name="widget_fat">Grassi</string>
     <string name="widget_kcal_left_format">%1$d kcal rimaste</string>
     <string name="widget_g_left_format">%1$dg rimasti</string>
-    <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">proteine g</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
-    <string name="widget_center_small_g_format">/ %1$dg</string>
-    <string name="widget_center_large_g_format">%1$dg</string>
 
     <!-- Common buttons / actions -->
     <string name="action_save">Salva</string>
     <string name="action_cancel">Annulla</string>
     <string name="action_done">Fatto</string>
-    <string name="action_ok">OK</string>
     <string name="action_clear">Cancella</string>
     <string name="action_delete">Elimina</string>
     <string name="action_continue">Continua</string>
@@ -38,29 +31,8 @@
     <string name="action_pin">Fissa</string>
 
     <!-- Generic units / labels -->
-    <string name="unit_kcal">kcal</string>
-    <string name="unit_g">g</string>
-    <string name="unit_mg">mg</string>
-    <string name="unit_percent">%</string>
-    <string name="unit_cm">cm</string>
-    <string name="unit_kg">kg</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="kg_value_format">%1$.1f kg</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
     <string name="kg_per_week_format">%1$.2f kg/sett</string>
     <string name="lbs_per_week_format">%1$.2f lbs/sett</string>
-    <string name="height_cm_format">%1$d cm</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
 
     <!-- Macros / Goal labels -->
     <string name="macro_protein">Proteine</string>
@@ -105,45 +77,17 @@
     <string name="autobalance_fat">Grassi</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Locale)</string>
     <string name="ai_provider_custom">Personalizzato (compatibile OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">Nessuna chiave necessaria</string>
     <string name="ai_key_placeholder_custom">Chiave API (o qualsiasi cosa se l\'endpoint non ne richiede una)</string>
 
     <!-- Speech Provider -->
     <string name="speech_provider_native">Nativo (sul dispositivo)</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Non necessaria</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token tua-chiave-deepgram</string>
     <string name="speech_key_placeholder_assemblyai">La tua chiave AssemblyAI</string>
 
@@ -154,9 +98,7 @@
     <string name="speech_description_assemblyai">Modello AssemblyAI Universal. Forte precisione, piano gratuito disponibile.</string>
 
     <!-- Bottom navigation -->
-    <string name="nav_home">Home</string>
     <string name="nav_progress">Progressi</string>
-    <string name="nav_coach">Coach</string>
     <string name="nav_settings">Impostazioni</string>
     <string name="nav_about">Informazioni</string>
 
@@ -166,7 +108,6 @@
     <string name="dow_narrow_wednesday">M</string>
     <string name="dow_narrow_thursday">G</string>
     <string name="dow_narrow_friday">V</string>
-    <string name="dow_narrow_saturday">S</string>
     <string name="dow_narrow_sunday">D</string>
 
     <!-- Months (full) -->
@@ -216,7 +157,6 @@
     <string name="onboarding_body_fat_title">Conosci la tua\npercentuale di grasso corporeo?</string>
     <string name="onboarding_body_fat_subtitle">Ci aiuta a calcolare il tuo metabolismo in modo più preciso</string>
     <string name="onboarding_yes">Sì</string>
-    <string name="onboarding_no">No</string>
     <string name="onboarding_body_fat_ranges">Intervalli comuni: Uomini 10-25%, Donne 18-35%</string>
     <string name="onboarding_body_fat_no_worries">Nessun problema! Useremo una formula standard\nbasata su altezza, peso ed età.</string>
 
@@ -272,11 +212,9 @@
     <string name="onboarding_building_protein">Proteine</string>
     <string name="onboarding_building_fats">Grassi</string>
     <string name="onboarding_building_health_score">Punteggio salute</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">Stiamo preparando tutto\nper te</string>
     <string name="onboarding_building_finalizing">Finalizzazione dei risultati...</string>
     <string name="onboarding_building_recommendation">Raccomandazione giornaliera per</string>
-    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">Il tuo piano</string>
     <string name="onboarding_plan_subtitle">Tocca un valore per modificarlo</string>
@@ -330,14 +268,8 @@
     <string name="home_swipe_favorite">Preferito</string>
     <string name="home_swipe_unfavorite">Rimuovi preferito</string>
     <string name="home_favorited">Preferito</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">Analisi del tuo cibo...</string>
     <string name="home_looking_up_nutrition">Ricerca dei valori nutrizionali...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">Fibra: %1$.1fg</string>
     <string name="home_sugar_format">Zuccheri: %1$.1fg</string>
     <string name="home_sat_fat_format">Grassi sat.: %1$.1fg</string>
@@ -362,7 +294,6 @@
     <string name="manual_carbs">Carboidrati (g)</string>
     <string name="manual_fat">Grassi (g)</string>
     <string name="manual_fiber">Fibra (g)</string>
-    <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Tipo di pasto</string>
 
     <string name="error_title">Qualcosa è andato storto</string>
@@ -434,10 +365,8 @@
     <string name="nutrition_label_cholesterol">Colesterolo</string>
     <string name="nutrition_label_sodium">Sodio</string>
     <string name="nutrition_label_potassium">Potassio</string>
-    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
-    <string name="coach_title">Coach</string>
     <string name="coach_reset_chat_a11y">Reimposta chat</string>
     <string name="coach_send_a11y">Invia</string>
     <string name="coach_input_voice_a11y">Input vocale</string>
@@ -466,9 +395,6 @@
 
     <!-- Progress -->
     <string name="progress_range_week">1S</string>
-    <string name="progress_range_month">1M</string>
-    <string name="progress_range_3m">3M</string>
-    <string name="progress_range_6m">6M</string>
     <string name="progress_range_year">1A</string>
     <string name="progress_range_all">Tutto</string>
 
@@ -487,7 +413,6 @@
     <string name="progress_no_food">Nessun cibo ancora registrato</string>
 
     <string name="progress_macro_averages">Medie macro</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_log_weight_title">Registra peso</string>
 
@@ -508,7 +433,6 @@
     <string name="settings_group_goals_summary">Dieta, macro, obiettivi adattivi</string>
     <string name="settings_group_app_summary">Aspetto, home, notifiche</string>
     <string name="settings_group_ai_summary">Fornitori, modelli, voce</string>
-    <string name="settings_group_data_summary">Health Connect, export, sync</string>
 
     <string name="settings_gender">Genere</string>
     <string name="settings_birthday">Data di nascita</string>
@@ -525,10 +449,7 @@
     <string name="settings_goal_weight">Peso obiettivo</string>
     <string name="settings_calories">Calorie</string>
     <string name="settings_recalculate_goals">Ricalcola obiettivi</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
-    <string name="settings_macro_auto_format">%1$dg · auto</string>
     <string name="settings_macro_pinned_a11y">Fissato</string>
-    <string name="settings_macro_auto_a11y">Auto</string>
 
     <string name="settings_appearance">Aspetto</string>
     <string name="settings_appearance_system">Sistema</string>
@@ -555,7 +476,6 @@
     <string name="settings_custom_url_title">URL base personalizzato</string>
     <string name="settings_clear_key">Cancella chiave</string>
 
-    <string name="settings_health_connect">Health Connect</string>
     <string name="settings_clear_food_log">Cancella registro cibo</string>
     <string name="settings_delete_all_data">Elimina tutti i dati</string>
 
@@ -612,8 +532,6 @@
     <string name="sheet_macros">Macro</string>
     <string name="sheet_macros_subtitle">Fissa fino a 2 macro a grammi esatti. Quelli non fissati si bilanciano automaticamente con le calorie rimanenti.</string>
     <string name="sheet_macro_pinned">fissato</string>
-    <string name="sheet_macro_auto">auto</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
 
     <!-- About -->
     <string name="about_rate">Valuta l\'app</string>
@@ -686,38 +604,10 @@
     <string name="whats_new_v30_units">Le unità di altezza e peso ora si impostano separatamente.</string>
     <string name="whats_new_v30_adaptive">Obiettivi adattivi ed Energia bruciata escono dalla fase sperimentale e sono attivi di default sulle nuove installazioni.</string>
     <string name="whats_new_v30_restore">Hai reinstallato o cambiato telefono? Diario alimentare, peso e grasso corporeo ora si ripristinano automaticamente da Health Connect.</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
-    <string name="widget_water_tracking">Water Tracking</string>
-    <string name="widget_water_enable_short">Enable in Chompass</string>
-    <string name="widget_ml_left_format">%1$d ml left</string>
-    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
-    <string name="widget_unit_left_format">%1$s%2$s left</string>
-    <string name="error_invalid_json">Invalid JSON</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_system">System default</string>
     <string name="add_food_quick_relog">Registra di nuovo</string>
     <string name="add_food_quick_relog_empty">Aggiungi un pasto ai preferiti o registralo una volta. Comparirà qui per un nuovo log con un tocco.</string>
     <string name="add_food_quick_relog_hint">Preferiti e pasti recenti. Più veloce di una nuova scansione.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="ai_provider_on_device_subtitle">Privato e offline. Meno preciso dell\'IA cloud; download di ~2-4 GB</string>
     <string name="camera_scale_tip_message">Suggerimento: includi una forchetta, la mano o una moneta accanto al cibo. Aiuta a stimare la porzione.</string>
     <string name="cd_relog_meal">Registra di nuovo %1$s</string>
@@ -728,7 +618,6 @@
     <string name="entry_analysis_busy_analyzing">Analisi in corso…</string>
     <string name="entry_analysis_busy_filling">Compilazione dati nutrizionali…</string>
     <string name="entry_analysis_busy_units">Calcolo delle porzioni…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_ready">Pronto per la revisione</string>
     <string name="entry_analysis_status_helper">Controllo codici a barre nella foto, poi richiesta nutrizionale al tuo provider IA.</string>
     <string name="entry_analysis_streaming_hint">I valori compaiono mentre l\'IA risponde. Puoi controllarli prima di registrare.</string>
@@ -783,16 +672,4 @@
     <string name="settings_photo_note_prompt">Chiedi nota per la foto</string>
     <string name="settings_photo_note_prompt_footer">Se attivo, l\'inserimento foto evidenzia il campo nota prima di Analizza. Puoi comunque confermare e continuare senza nota.</string>
     <string name="settings_progress_default_range">Intervallo predefinito Progressi</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
 </resources>

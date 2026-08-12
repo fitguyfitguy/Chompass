@@ -12,16 +12,17 @@ import {
   reconcileConstituents,
 } from "../chompass-core/constituents.js";
 import { FoodPartialJsonAssembler } from "./partial-json.js";
+import { t } from "../i18n/index.js";
 import {
   ANALYSIS_PHASE,
-  ANALYSIS_PHASE_LABEL,
   ANALYSIS_PHASE_STEPS,
   isAbortError,
+  phaseLabel,
 } from "./analysis-phase.js";
 
 // Re-exported for backwards compatibility (UI overlays import the constants
 // from analysis-phase.js directly; tests and callers may still use these).
-export { ANALYSIS_PHASE, ANALYSIS_PHASE_LABEL, ANALYSIS_PHASE_STEPS, isAbortError };
+export { ANALYSIS_PHASE, ANALYSIS_PHASE_STEPS, isAbortError, phaseLabel };
 
 const SYSTEM_BASE = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
 {"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null}
@@ -64,7 +65,7 @@ export async function analyzeFoodEntry({
 }) {
   const appPrefs = prefsOverride ?? (await prefs.load());
   const imageList = images?.length ? images : image ? [image] : [];
-  if (!text && !imageList.length) throw new Error("Provide a photo or a text description.");
+  if (!text && !imageList.length) throw new Error(t("errors.provide_photo_or_text"));
 
   try {
     return await runAnalyze(providerId, config, text, productContext, imageList, appPrefs, signal, onPhase, onPartial);
@@ -144,7 +145,7 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   if (signal?.aborted) throw abortError();
   onPhase?.(ANALYSIS_PHASE.PARSING);
   const parsed = parseJsonObject(response.text);
-  if (!parsed) throw new Error("Could not parse nutrition estimate from the model. Try again.");
+  if (!parsed) throw new Error(t("errors.parse_estimate"));
 
   const mealType = ["breakfast", "lunch", "dinner", "snack"].includes(parsed.mealType)
     ? parsed.mealType

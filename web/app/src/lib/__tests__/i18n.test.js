@@ -32,6 +32,7 @@ describe("i18n locales contract", () => {
     assert.equal(resolveLocaleId("de-DE"), "de");
     assert.equal(resolveLocaleId("pt-BR"), "pt-BR");
     assert.equal(resolveLocaleId("zh-Hans-CN"), "zh-CN");
+    assert.equal(resolveLocaleId("uk-UA"), "uk");
     assert.equal(resolveLocaleId("en-US"), "en");
     assert.equal(resolveLocaleId("xx-YY"), FALLBACK_LOCALE);
   });
@@ -63,6 +64,14 @@ describe("i18n catalogs", () => {
       if (loc.id === "en") continue;
       const { missing } = await catalogDiff(loc.id);
       assert.equal(missing.length, 0, `${loc.id} missing: ${missing.slice(0, 5).join(", ")}`);
+    }
+  });
+
+  it("no phrase-level EN-identical copies in non-EN catalogs", async () => {
+    for (const loc of LOCALES) {
+      if (loc.id === "en") continue;
+      const { copies } = await catalogDiff(loc.id);
+      assert.deepEqual(copies, [], `${loc.id} EN-identical copies: ${copies.slice(0, 5).join(", ")}`);
     }
   });
 

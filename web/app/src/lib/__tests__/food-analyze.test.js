@@ -3,10 +3,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   ANALYSIS_PHASE,
-  ANALYSIS_PHASE_LABEL,
   ANALYSIS_PHASE_STEPS,
   analyzeFoodEntry,
   isAbortError,
+  phaseLabel,
 } from "../ai/food-analyze.js";
 import { PROVIDERS } from "../ai/providers.js";
 
@@ -15,10 +15,10 @@ test("analysisPhases_matchAndroidCloudEntry", () => {
     [...ANALYSIS_PHASE_STEPS],
     ["preparing", "looking_up_barcode", "calling_ai", "parsing"]
   );
-  assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PREPARING], "Preparing request…");
-  assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.LOOKING_UP_BARCODE], "Checking barcodes…");
-  assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.CALLING_AI], "Calling AI…");
-  assert.equal(ANALYSIS_PHASE_LABEL[ANALYSIS_PHASE.PARSING], "Reading result…");
+  assert.equal(phaseLabel(ANALYSIS_PHASE.PREPARING), "Preparing request…");
+  assert.equal(phaseLabel(ANALYSIS_PHASE.LOOKING_UP_BARCODE), "Checking barcodes…");
+  assert.equal(phaseLabel(ANALYSIS_PHASE.CALLING_AI), "Calling AI…");
+  assert.equal(phaseLabel(ANALYSIS_PHASE.PARSING), "Reading result…");
 });
 
 test("isAbortError_detectsAbortErrorName", () => {

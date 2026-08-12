@@ -7,6 +7,7 @@
 import { PROVIDERS, resolveProviderModel } from "./providers.js";
 import { prefs } from "../db.js";
 import { loadProviderKey, listConfiguredProviders } from "./key-storage.js";
+import { t } from "../i18n/index.js";
 import {
   KCAL_PER_KG_BODY_MASS,
   bmr,
@@ -55,9 +56,9 @@ export function recalculatedFromFormulas(profile) {
  */
 export function parseGoalCalculation(text) {
   const json = parseJsonObject(text);
-  if (!json) throw new Error("Could not parse goal calculation from the model.");
+  if (!json) throw new Error(t("errors.parse_goal"));
   const calories = intOf(json.calories);
-  if (calories == null) throw new Error("Goal calculation missing calories.");
+  if (calories == null) throw new Error(t("errors.missing_calories"));
   /** @param {unknown} v @param {number} cap */
   const macro = (v, cap) => Math.min(cap, Math.max(0, intOf(v) ?? 0));
   const reasonRaw = json.reason != null ? String(json.reason).trim() : "";

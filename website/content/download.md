@@ -12,7 +12,7 @@ Open the [Chompass web app](https://chompass.app/app/) in any modern browser on 
 
 Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, and similar) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
-**Android-app features not on the PWA:** Health Connect, home-screen widgets, notifications, on-device Gemma 4, and the full 15-language pack.
+**Android-app features not on the PWA:** Health Connect, home-screen widgets, notifications, on-device Gemma 4, and the full 16-language pack.
 
 ### How to install
 

@@ -41,6 +41,7 @@ import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
+import app.chompass.services.ai.userMessage
 import app.chompass.models.MicronutrientValues
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -461,7 +462,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         try {
             block(start)
         } catch (e: AiError) {
-            failAnalysis(start.generation, e.message)
+            failAnalysis(start.generation, e.userMessage(container.appContext))
         } catch (e: Throwable) {
             failAnalysis(
                 start.generation,

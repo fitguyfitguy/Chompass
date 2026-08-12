@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
     <string name="widget_calorie_label">Chompass 칼로리</string>
@@ -13,12 +12,7 @@
     <string name="widget_fat">지방</string>
     <string name="widget_kcal_left_format">%1$d kcal 남음</string>
     <string name="widget_g_left_format">%1$dg 남음</string>
-    <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">단백질 g</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
-    <string name="widget_center_small_g_format">/ %1$dg</string>
-    <string name="widget_center_large_g_format">%1$dg</string>
 
     <!-- Common buttons / actions -->
     <string name="action_save">저장</string>
@@ -38,29 +32,8 @@
     <string name="action_pin">고정</string>
 
     <!-- Generic units / labels -->
-    <string name="unit_kcal">kcal</string>
-    <string name="unit_g">g</string>
-    <string name="unit_mg">mg</string>
-    <string name="unit_percent">%</string>
-    <string name="unit_cm">cm</string>
-    <string name="unit_kg">kg</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="kg_value_format">%1$.1f kg</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
     <string name="kg_per_week_format">%1$.2f kg/주</string>
     <string name="lbs_per_week_format">%1$.2f lbs/주</string>
-    <string name="height_cm_format">%1$d cm</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
 
     <!-- Macros / Goal labels -->
     <string name="macro_protein">단백질</string>
@@ -105,46 +78,17 @@
     <string name="autobalance_fat">지방</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (로컬)</string>
     <string name="ai_provider_custom">사용자 지정 (OpenAI 호환)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">키 필요 없음</string>
     <string name="ai_key_placeholder_custom">API 키 (엔드포인트가 키를 요구하지 않으면 아무 값)</string>
 
     <!-- Speech Provider -->
     <string name="speech_provider_native">기본 (기기 내장)</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">필요 없음</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">AssemblyAI 키</string>
 
     <string name="speech_description_native">Android의 기기 내장 음성 인식. 무료이며 대부분의 기기에서 오프라인으로 작동하고 실시간 부분 결과를 제공합니다. 권장 기본값.</string>
@@ -272,11 +216,9 @@
     <string name="onboarding_building_protein">단백질</string>
     <string name="onboarding_building_fats">지방</string>
     <string name="onboarding_building_health_score">건강 점수</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">모든 것을\n준비하고 있어요</string>
     <string name="onboarding_building_finalizing">결과를 마무리하는 중...</string>
     <string name="onboarding_building_recommendation">일일 권장량</string>
-    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">나의 계획</string>
     <string name="onboarding_plan_subtitle">값을 탭하여 편집</string>
@@ -330,14 +272,8 @@
     <string name="home_swipe_favorite">즐겨찾기</string>
     <string name="home_swipe_unfavorite">즐겨찾기 해제</string>
     <string name="home_favorited">즐겨찾기됨</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">음식을 분석하는 중...</string>
     <string name="home_looking_up_nutrition">영양 정보 검색 중...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">식이섬유: %1$.1fg</string>
     <string name="home_sugar_format">당류: %1$.1fg</string>
     <string name="home_sat_fat_format">포화지방: %1$.1fg</string>
@@ -362,7 +298,6 @@
     <string name="manual_carbs">탄수화물 (g)</string>
     <string name="manual_fat">지방 (g)</string>
     <string name="manual_fiber">식이섬유 (g)</string>
-    <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">식사 종류</string>
 
     <string name="error_title">문제가 발생했어요</string>
@@ -434,7 +369,6 @@
     <string name="nutrition_label_cholesterol">콜레스테롤</string>
     <string name="nutrition_label_sodium">나트륨</string>
     <string name="nutrition_label_potassium">칼륨</string>
-    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">코치</string>
@@ -487,7 +421,6 @@
     <string name="progress_no_food">아직 기록된 음식이 없어요</string>
 
     <string name="progress_macro_averages">매크로 평균</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_log_weight_title">체중 기록</string>
 
@@ -525,7 +458,6 @@
     <string name="settings_goal_weight">목표 체중</string>
     <string name="settings_calories">칼로리</string>
     <string name="settings_recalculate_goals">목표 다시 계산</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
     <string name="settings_macro_auto_format">%1$dg · 자동</string>
     <string name="settings_macro_pinned_a11y">고정됨</string>
     <string name="settings_macro_auto_a11y">자동</string>
@@ -551,11 +483,9 @@
     <string name="settings_base_url">기본 URL</string>
     <string name="settings_server_url">서버 URL</string>
     <string name="settings_tap_to_edit">탭하여 편집</string>
-    <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">사용자 지정 기본 URL</string>
     <string name="settings_clear_key">키 지우기</string>
 
-    <string name="settings_health_connect">Health Connect</string>
     <string name="settings_clear_food_log">음식 기록 지우기</string>
     <string name="settings_delete_all_data">모든 데이터 삭제</string>
 
@@ -613,7 +543,6 @@
     <string name="sheet_macros_subtitle">최대 2개의 매크로를 정확한 그램으로 고정하세요. 고정되지 않은 항목은 남은 칼로리에서 자동으로 균형이 맞춰집니다.</string>
     <string name="sheet_macro_pinned">고정됨</string>
     <string name="sheet_macro_auto">자동</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
 
     <!-- About -->
     <string name="about_rate">앱 평가하기</string>
@@ -622,7 +551,6 @@
     <string name="about_report_issue">문제 신고</string>
     <string name="about_request_feature">기능 요청</string>
     <string name="about_privacy">개인정보 처리방침</string>
-    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Apoorv Darshan의 Fud AI 기반</string>
     <string name="about_share_message">Chompass로 식단을 기록하고 있어요 - 사진을 찍거나 말하거나 입력하면 AI가 칼로리를 기록해 줍니다. 무료에 오픈소스이고, 데이터는 모두 기기 안에만 저장돼요.\n\n다운로드: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass 공유</string>
@@ -686,38 +614,10 @@
     <string name="whats_new_v30_units">키와 몸무게 단위를 이제 따로 설정할 수 있습니다.</string>
     <string name="whats_new_v30_adaptive">적응형 목표와 에너지 소모가 실험 단계를 졸업하고 새 설치에서 기본으로 켜집니다.</string>
     <string name="whats_new_v30_restore">재설치했거나 휴대폰을 바꿨나요? 이제 음식 기록, 체중, 체지방이 Health Connect에서 자동으로 복원됩니다.</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
-    <string name="widget_water_tracking">Water Tracking</string>
-    <string name="widget_water_enable_short">Enable in Chompass</string>
-    <string name="widget_ml_left_format">%1$d ml left</string>
-    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
-    <string name="widget_unit_left_format">%1$s%2$s left</string>
-    <string name="error_invalid_json">Invalid JSON</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_system">System default</string>
     <string name="add_food_quick_relog">다시 기록</string>
     <string name="add_food_quick_relog_empty">식사를 즐겨찾기하거나 한 번 기록하세요. 여기에 표시되어 한 번에 다시 기록할 수 있습니다.</string>
     <string name="add_food_quick_relog_hint">즐겨찾기와 지난 식사. 다시 스캔하는 것보다 빠릅니다.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="ai_provider_on_device_subtitle">비공개·오프라인. 클라우드 AI보다 정확도 낮음. 약 2~4 GB 다운로드</string>
     <string name="camera_scale_tip_message">팁: 포크, 손, 또는 동전을 음식 옆에 함께 찍으세요. 1인분 크기 추정에 도움이 됩니다.</string>
     <string name="cd_relog_meal">%1$s 다시 기록</string>
@@ -728,7 +628,6 @@
     <string name="entry_analysis_busy_analyzing">분석 중…</string>
     <string name="entry_analysis_busy_filling">영양 정보 입력 중…</string>
     <string name="entry_analysis_busy_units">1회 제공량 단위 계산 중…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_ready">검토 준비 완료</string>
     <string name="entry_analysis_status_helper">사진의 바코드를 확인한 뒤 AI 제공업체에 영양 정보를 요청합니다.</string>
     <string name="entry_analysis_streaming_hint">AI 응답에 따라 값이 표시됩니다. 기록 전에 검토할 수 있습니다.</string>
@@ -783,16 +682,4 @@
     <string name="settings_photo_note_prompt">사진 메모 요청</string>
     <string name="settings_photo_note_prompt_footer">켜면 분석 전에 사진 입력에서 메모 필드가 강조됩니다. 메모 없이도 확인하고 계속할 수 있습니다.</string>
     <string name="settings_progress_default_range">진행 기본 기간</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
 </resources>

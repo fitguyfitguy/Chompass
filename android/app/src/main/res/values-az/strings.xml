@@ -1,13 +1,10 @@
 <resources>
-    <string name="app_name">Chompass</string>
 
     <!-- Widgets -->
     <string name="widget_calorie_label">Chompass Kalorilər</string>
     <string name="widget_calorie_description">Bu günkü kalorilər və makroları bir baxışda görün.</string>
-    <string name="widget_protein_label">Chompass Protein</string>
     <string name="widget_protein_description">Bu günkü protein irəliləyişini bir baxışda görün.</string>
     <string name="widget_today">Bu gün</string>
-    <string name="widget_protein">Protein</string>
     <string name="widget_calories">Kalorilər</string>
     <string name="widget_carbs">Karbohidrat</string>
     <string name="widget_fat">Yağ</string>
@@ -15,8 +12,6 @@
     <string name="widget_g_left_format">%1$dq qalıb</string>
     <string name="widget_kcal">kkal</string>
     <string name="widget_protein_g">protein q</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
     <string name="widget_center_small_g_format">/ %1$dq</string>
     <string name="widget_center_large_g_format">%1$dq</string>
 
@@ -24,7 +19,6 @@
     <string name="action_save">Yadda Saxla</string>
     <string name="action_cancel">Ləğv Et</string>
     <string name="action_done">Hazır</string>
-    <string name="action_ok">OK</string>
     <string name="action_clear">Təmizlə</string>
     <string name="action_delete">Sil</string>
     <string name="action_continue">Davam Et</string>
@@ -38,32 +32,10 @@
     <string name="action_pin">Sabitlə</string>
 
     <!-- Generic units / labels -->
-    <string name="unit_kcal">kcal</string>
-    <string name="unit_g">g</string>
-    <string name="unit_mg">mg</string>
-    <string name="unit_percent">%</string>
-    <string name="unit_cm">cm</string>
-    <string name="unit_kg">kg</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="kg_value_format">%1$.1f kg</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
     <string name="kg_per_week_format">%1$.2f kg/həftə</string>
     <string name="lbs_per_week_format">%1$.2f lbs/həftə</string>
-    <string name="height_cm_format">%1$d cm</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
 
     <!-- Macros / Goal labels -->
-    <string name="macro_protein">Protein</string>
     <string name="macro_carbs">Karbohidrat</string>
     <string name="macro_fat">Yağ</string>
     <string name="macro_calories">Kalorilər</string>
@@ -100,50 +72,21 @@
     <string name="meal_other">Digər</string>
 
     <!-- AutoBalance Macro -->
-    <string name="autobalance_protein">Protein</string>
     <string name="autobalance_carbs">Karbohidrat</string>
     <string name="autobalance_fat">Yağ</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Lokal)</string>
     <string name="ai_provider_custom">Fərdi (OpenAI uyğun)</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
     <string name="ai_key_placeholder_ollama">Açar lazım deyil</string>
     <string name="ai_key_placeholder_custom">API açarı (və ya endpoint tələb etmirsə hər şey)</string>
 
     <!-- Speech Provider -->
     <string name="speech_provider_native">Yerli (Cihazda)</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Lazım deyil</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token deepgram-açarınız</string>
     <string name="speech_key_placeholder_assemblyai">AssemblyAI açarınız</string>
 
@@ -174,7 +117,6 @@
     <string name="month_february">Fevral</string>
     <string name="month_march">Mart</string>
     <string name="month_april">Aprel</string>
-    <string name="month_may">May</string>
     <string name="month_june">İyun</string>
     <string name="month_july">İyul</string>
     <string name="month_august">Avqust</string>
@@ -269,14 +211,11 @@
 
     <string name="onboarding_building_calories">Kalorilər</string>
     <string name="onboarding_building_carbs">Karbohidrat</string>
-    <string name="onboarding_building_protein">Protein</string>
     <string name="onboarding_building_fats">Yağlar</string>
     <string name="onboarding_building_health_score">Sağlamlıq Balı</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="onboarding_building_setting_up">Sizin üçün hər şeyi\nhazırlayırıq</string>
     <string name="onboarding_building_finalizing">Nəticələr tamamlanır...</string>
     <string name="onboarding_building_recommendation">Gündəlik tövsiyə</string>
-    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">Planınız</string>
     <string name="onboarding_plan_subtitle">Redaktə etmək üçün istənilən dəyərə toxunun</string>
@@ -285,7 +224,6 @@
     <string name="onboarding_plan_doctor_message">Tövsiyə olunan minimum gündə 1,200 kaloridir.</string>
 
     <string name="onboarding_plan_field_calories">Gündəlik kalorilər</string>
-    <string name="onboarding_plan_field_protein">Protein</string>
     <string name="onboarding_plan_field_carbs">Karbohidrat</string>
     <string name="onboarding_plan_field_fat">Yağ</string>
 
@@ -330,14 +268,8 @@
     <string name="home_swipe_favorite">Sevimli</string>
     <string name="home_swipe_unfavorite">Sevimlidən çıxar</string>
     <string name="home_favorited">Sevimliyə əlavə edildi</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_analyzing_food">Yeməyiniz təhlil edilir...</string>
     <string name="home_looking_up_nutrition">Qidalanma axtarılır...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
     <string name="home_fiber_format">Lif: %1$.1fg</string>
     <string name="home_sugar_format">Şəkər: %1$.1fg</string>
     <string name="home_sat_fat_format">Doymuş yağ: %1$.1fg</string>
@@ -345,7 +277,6 @@
     <string name="home_potassium_format">Kalium: %1$.1fmg</string>
     <string name="home_cholesterol_format">Xolesterin: %1$.1fmg</string>
     <string name="home_serving_format">Porsiya: ~%1$dg</string>
-    <string name="home_protein_value">Protein: %1$dg</string>
     <string name="home_carbs_value">Karbohidrat: %1$dg</string>
     <string name="home_fat_value">Yağ: %1$dg</string>
 
@@ -358,11 +289,9 @@
     <string name="manual_name">Ad</string>
     <string name="manual_name_placeholder">məs. Ev salatı</string>
     <string name="manual_calories">Kalorilər</string>
-    <string name="manual_protein">Protein (g)</string>
     <string name="manual_carbs">Karbohidrat (g)</string>
     <string name="manual_fat">Yağ (g)</string>
     <string name="manual_fiber">Lif (g)</string>
-    <string name="manual_zero_placeholder">0</string>
     <string name="manual_meal_type">Yemək Növü</string>
 
     <string name="error_title">Bir şey səhv getdi</string>
@@ -422,7 +351,6 @@
     <string name="nutrition_section_macros">Makrolar</string>
     <string name="nutrition_section_detailed">Ətraflı Qidalanma</string>
     <string name="nutrition_label_calories">Kalorilər</string>
-    <string name="nutrition_label_protein">Protein</string>
     <string name="nutrition_label_carbs">Karbohidrat</string>
     <string name="nutrition_label_fat">Yağ</string>
     <string name="nutrition_label_sugar">Şəkər</string>
@@ -434,7 +362,6 @@
     <string name="nutrition_label_cholesterol">Xolesterin</string>
     <string name="nutrition_label_sodium">Natrium</string>
     <string name="nutrition_label_potassium">Kalium</string>
-    <string name="nutrition_em_dash">-</string>
 
     <!-- Coach -->
     <string name="coach_title">Məşqçi</string>
@@ -487,7 +414,6 @@
     <string name="progress_no_food">Hələ yemək qeyd edilməyib</string>
 
     <string name="progress_macro_averages">Makro Ortalamaları</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_log_weight_title">Çəkini Qeyd Et</string>
 
@@ -525,7 +451,6 @@
     <string name="settings_goal_weight">Hədəf Çəki</string>
     <string name="settings_calories">Kalorilər</string>
     <string name="settings_recalculate_goals">Hədəfləri Yenidən Hesabla</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
     <string name="settings_macro_auto_format">%1$dg · avto</string>
     <string name="settings_macro_pinned_a11y">Sabitlənmiş</string>
     <string name="settings_macro_auto_a11y">Avto</string>
@@ -545,17 +470,13 @@
     <string name="settings_battery_opt_value">Chompass-ı ağ siyahıya əlavə et</string>
 
     <string name="settings_ai_provider">Təminatçı</string>
-    <string name="settings_ai_model">Model</string>
     <string name="settings_ai_model_unset">(aşağıda birini seçin)</string>
     <string name="settings_api_key">API Açarı</string>
     <string name="settings_base_url">Əsas URL</string>
-    <string name="settings_server_url">Server URL</string>
     <string name="settings_tap_to_edit">Redaktə etmək üçün toxunun</string>
-    <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Fərdi əsas URL</string>
     <string name="settings_clear_key">Açarı təmizlə</string>
 
-    <string name="settings_health_connect">Health Connect</string>
     <string name="settings_clear_food_log">Yemək Qeydlərini Təmizlə</string>
     <string name="settings_delete_all_data">Bütün Məlumatları Sil</string>
 
@@ -583,7 +504,6 @@
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">AI Təminatçısı</string>
-    <string name="sheet_model">Model</string>
     <string name="sheet_model_footer">Və ya aşağıda istənilən fərdi model ID-sini yazın.</string>
     <string name="sheet_any_model_id">İstənilən model ID</string>
     <string name="sheet_api_key_format">API Açarı - %1$s</string>
@@ -613,7 +533,6 @@
     <string name="sheet_macros_subtitle">Dəqiq qramlara qədər 2 makroya qədər sabitləyin. Sabitlənməmişlər qalan kalorilərdən avtomatik balanslanır.</string>
     <string name="sheet_macro_pinned">sabitlənmiş</string>
     <string name="sheet_macro_auto">avto</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
 
     <!-- About -->
     <string name="about_rate">Tətbiqi qiymətləndir</string>
@@ -622,7 +541,6 @@
     <string name="about_report_issue">Problemi Bildir</string>
     <string name="about_request_feature">Funksiya Tələb Et</string>
     <string name="about_privacy">Məxfilik Siyasəti</string>
-    <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Apoorv Darshan tərəfindən hazırlanmış Fud AI əsasında</string>
     <string name="about_share_message">Yeməklərimi Chompass ilə izləyirəm - şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nEndir: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass-ı Paylaş</string>
@@ -686,38 +604,10 @@
     <string name="whats_new_v30_units">Boy və çəki vahidləri indi ayrıca seçilir.</string>
     <string name="whats_new_v30_adaptive">Adaptiv Məqsədlər və Enerji Sərfi eksperimental mərhələdən çıxdı və yeni quraşdırmalarda defolt olaraq aktivdir.</string>
     <string name="whats_new_v30_restore">Yenidən quraşdırmısınız və ya telefonu dəyişmisiniz? Yemək jurnalınız, çəkiniz və bədən yağınız indi Health Connect-dən avtomatik bərpa olunur.</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
 
-    <string name="widget_water_tracking">Water Tracking</string>
-    <string name="widget_water_enable_short">Enable in Chompass</string>
-    <string name="widget_ml_left_format">%1$d ml left</string>
-    <string name="widget_fl_oz_left_format">%1$d fl oz left</string>
-    <string name="widget_unit_left_format">%1$s%2$s left</string>
-    <string name="error_invalid_json">Invalid JSON</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_webdav_sync_failed">WebDAV sync failed</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_system">System default</string>
     <string name="add_food_quick_relog">Yenidən qeyd et</string>
     <string name="add_food_quick_relog_empty">Bir yeməyi sevimlilərə əlavə edin və ya bir dəfə qeyd edin. Bir toxunuşla yenidən qeyd üçün burada görünəcək.</string>
     <string name="add_food_quick_relog_hint">Sevimlilər və keçmiş yeməklər. Yenidən skan etməkdən daha sürətli.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="ai_provider_on_device_subtitle">Məxfi və oflayn. Bulud AI-dan daha az dəqiq; ~2-4 GB endirmə</string>
     <string name="camera_scale_tip_message">Məsləhət: yeməyin yanına çəngəl, əl və ya sikkə qoyun. Porsiya ölçüsünü təxmin etməyə kömək edir.</string>
     <string name="cd_relog_meal">%1$s yenidən qeyd et</string>
@@ -728,7 +618,6 @@
     <string name="entry_analysis_busy_analyzing">Təhlil edilir…</string>
     <string name="entry_analysis_busy_filling">Qidalanma doldurulur…</string>
     <string name="entry_analysis_busy_units">Porsiya vahidləri hesablanır…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
     <string name="entry_analysis_ready">Yoxlamağa hazırdır</string>
     <string name="entry_analysis_status_helper">Fotodakı barkodlar yoxlanır, sonra AI provayderinizdən qidalanma soruşulur.</string>
     <string name="entry_analysis_streaming_hint">Dəyərlər AI cavab verdikcə görünür. Qeyd etmədən əvvəl yoxlaya bilərsiniz.</string>
@@ -783,16 +672,4 @@
     <string name="settings_photo_note_prompt">Foto qeydi soruş</string>
     <string name="settings_photo_note_prompt_footer">Aktiv olanda foto qeydi Təhlil etmədən əvvəl qeyd sahəsini vurğulayır. Qeyd olmadan da təsdiqləyib davam edə bilərsiniz.</string>
     <string name="settings_progress_default_range">Tərəqqi standart aralığı</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
 </resources>

@@ -22,6 +22,7 @@ export const LOCALES = Object.freeze([
   { id: "pt-BR", bcp47: "pt-BR", name: "Portuguese (Brazil)", nativeName: "Português (Brasil)", rtl: false },
   { id: "ro", bcp47: "ro", name: "Romanian", nativeName: "Română", rtl: false },
   { id: "ru", bcp47: "ru", name: "Russian", nativeName: "Русский", rtl: false },
+  { id: "uk", bcp47: "uk", name: "Ukrainian", nativeName: "Українська", rtl: false },
   { id: "zh-CN", bcp47: "zh-CN", name: "Chinese (Simplified)", nativeName: "简体中文", rtl: false },
 ]);
 
