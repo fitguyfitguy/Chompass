@@ -22,10 +22,12 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import app.chompass.AppContainer
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
@@ -38,11 +40,15 @@ import app.chompass.ui.settings.AiSettingsScreen
 import app.chompass.ui.settings.AppSettingsScreen
 import app.chompass.ui.settings.CalculationMethodsScreen
 import app.chompass.ui.settings.DataSettingsScreen
+import app.chompass.ui.settings.FoodEntrySettingsScreen
 import app.chompass.ui.settings.GoalsSettingsScreen
 import app.chompass.ui.settings.HomeDisplaySettingsScreen
+import app.chompass.ui.settings.NotificationsSettingsScreen
 import app.chompass.ui.settings.OptionalNutrientGoalsScreen
 import app.chompass.ui.settings.PersonalSettingsScreen
 import app.chompass.ui.settings.SettingsScreen
+import app.chompass.ui.settings.SyncSettingsScreen
+import app.chompass.ui.settings.WaterSettingsScreen
 
 /**
  * Increments each time the app is opened: 1 on cold launch, then +1 on every
@@ -213,13 +219,63 @@ fun ChompassNavHost(
                 composable(ChompassRoutes.SETTINGS_AI) {
                     AiSettingsScreen(
                         container = container,
+                        nav = nav,
                         onBack = { nav.popBackStack() },
                     )
                 }
                 composable(ChompassRoutes.SETTINGS_DATA) {
                     DataSettingsScreen(
                         container = container,
+                        nav = nav,
                         onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_FOOD) {
+                    FoodEntrySettingsScreen(
+                        container = container,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(
+                    route = ChompassRoutes.SETTINGS_WATER,
+                    arguments = listOf(navArgument("from") {
+                        type = NavType.StringType
+                        defaultValue = "app"
+                    }),
+                ) { entry ->
+                    WaterSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                        from = entry.arguments?.getString("from") ?: "app",
+                    )
+                }
+                composable(
+                    route = ChompassRoutes.SETTINGS_NOTIFICATIONS,
+                    arguments = listOf(navArgument("from") {
+                        type = NavType.StringType
+                        defaultValue = "app"
+                    }),
+                ) { entry ->
+                    NotificationsSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                        from = entry.arguments?.getString("from") ?: "app",
+                    )
+                }
+                composable(
+                    route = ChompassRoutes.SETTINGS_SYNC,
+                    arguments = listOf(navArgument("from") {
+                        type = NavType.StringType
+                        defaultValue = "data"
+                    }),
+                ) { entry ->
+                    SyncSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                        from = entry.arguments?.getString("from") ?: "data",
                     )
                 }
                 composable(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) {

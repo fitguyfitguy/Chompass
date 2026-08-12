@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import app.chompass.AppContainer
@@ -26,15 +27,15 @@ import app.chompass.export.BodyMetricsImportResult
 import app.chompass.export.BodyMetricsImporter
 import app.chompass.export.DiaryImportResult
 import app.chompass.export.DiaryImporter
-import app.chompass.sync.SyncRepository
-import app.chompass.sync.normalizeWebDavUrl
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.navigation.ChompassRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DataSettingsScreen(
     container: AppContainer,
+    nav: NavHostController,
     onBack: () -> Unit,
 ) {
     val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container))
@@ -47,11 +48,6 @@ fun DataSettingsScreen(
     var showBodyMetricsExportSheet by remember { mutableStateOf(false) }
     var importDiaryMessage by remember { mutableStateOf<String?>(null) }
     var importBodyMetricsMessage by remember { mutableStateOf<String?>(null) }
-    var syncMessage by remember { mutableStateOf<String?>(null) }
-    var webDavUrl by remember { mutableStateOf("") }
-    var webDavUsername by remember { mutableStateOf("") }
-    var webDavPassword by remember { mutableStateOf("") }
-    var webDavAutoSync by remember { mutableStateOf(false) }
     var lastSyncAt by remember { mutableStateOf<String?>(null) }
     var showSafetyMedicalInfo by remember { mutableStateOf(false) }
     var permissionDeniedMessage by remember { mutableStateOf<String?>(null) }
@@ -72,10 +68,6 @@ fun DataSettingsScreen(
     val backgroundSyncSupported = remember { container.health.isBackgroundReadAvailable() }
 
     LaunchedEffect(Unit) {
-        webDavUrl = container.prefs.webDavUrl.first()
-        webDavUsername = container.prefs.webDavUsername.first()
-        webDavPassword = container.keyStore.webDavPassword().orEmpty()
-        webDavAutoSync = container.prefs.webDavEnabled.first()
         lastSyncAt = container.prefs.lastSyncAt.first()
     }
 
@@ -205,29 +197,6 @@ fun DataSettingsScreen(
         }
     }
 
-    val importSyncLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        scope.launch {
-            runCatching {
-                val text = activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-                    ?: ""
-                when (val result = container.syncRepository.importDocumentJson(text)) {
-                    is SyncRepository.SyncResult.Success ->
-                        syncMessage = activityContext.getString(R.string.import_sync_success)
-                    is SyncRepository.SyncResult.Failed ->
-                        syncMessage = activityContext.getString(R.string.import_sync_failed, result.message)
-                }
-            }.onFailure { t ->
-                syncMessage = activityContext.getString(
-                    R.string.import_sync_failed,
-                    t.localizedMessage ?: activityContext.getString(R.string.error_unknown),
-                )
-            }
-        }
-    }
-
     fun showHealthAvailabilityMessage() {
         permissionDeniedMessage =
             activityContext.getString(container.health.unavailableMessageRes())
@@ -311,68 +280,9 @@ fun DataSettingsScreen(
             },
             onShowClearFoodDialog = { showClearFoodDialog = true },
             onShowDeleteDialog = { showDeleteDialog = true },
-        )
-        SettingsSyncSection(
-            webDavUrl = webDavUrl,
-            webDavUsername = webDavUsername,
-            webDavPassword = webDavPassword,
-            webDavAutoSync = webDavAutoSync,
-            lastSyncAt = lastSyncAt,
-            syncStatus = syncMessage,
-            onWebDavUrlChange = { webDavUrl = it },
-            onWebDavUsernameChange = { webDavUsername = it },
-            onWebDavPasswordChange = { webDavPassword = it },
-            onSaveWebDav = {
-                scope.launch {
-                    val normalized = normalizeWebDavUrl(webDavUrl)
-                    webDavUrl = normalized
-                    container.prefs.setWebDavUrl(normalized)
-                    container.prefs.setWebDavUsername(webDavUsername)
-                    container.keyStore.setWebDavPassword(webDavPassword)
-                    syncMessage = activityContext.getString(R.string.settings_webdav_saved)
-                }
-            },
-            onWebDavAutoSyncChange = { enabled ->
-                webDavAutoSync = enabled
-                scope.launch { container.prefs.setWebDavEnabled(enabled) }
-            },
-            onExportSync = {
-                scope.launch {
-                    runCatching {
-                        val content = container.syncRepository.exportDocumentJson()
-                        shareExportedFile(
-                            context = activityContext,
-                            fileName = "Chompass-sync.json",
-                            content = content,
-                            mimeType = "application/json",
-                            chooserTitle = activityContext.getString(R.string.export_sync_title),
-                        )
-                    }.onFailure { t ->
-                        syncMessage = activityContext.getString(
-                            R.string.export_sync_failed,
-                            t.localizedMessage ?: activityContext.getString(R.string.error_unknown),
-                        )
-                    }
-                }
-            },
-            onImportSync = { importSyncLauncher.launch(arrayOf("application/json", "text/plain")) },
-            onSyncNow = {
-                scope.launch {
-                    syncMessage = "…"
-                    when (val result = container.syncRepository.syncNow()) {
-                        is SyncRepository.SyncResult.Success -> {
-                            syncMessage = result.message
-                            lastSyncAt = container.prefs.lastSyncAt.first()
-                        }
-                        is SyncRepository.SyncResult.Failed -> {
-                            syncMessage = when (result.message) {
-                                "WebDAV sync failed" ->
-                                    activityContext.getString(R.string.error_webdav_sync_failed)
-                                else -> result.message
-                            }
-                        }
-                    }
-                }
+            onOpenSync = { nav.navigate(ChompassRoutes.syncRoute("data")) },
+            syncSummary = lastSyncAt?.let {
+                activityContext.getString(R.string.settings_last_sync, it)
             },
         )
     }

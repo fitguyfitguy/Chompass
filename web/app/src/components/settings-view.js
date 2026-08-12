@@ -786,7 +786,7 @@ export class SettingsView extends HTMLElement {
 
   async renderData() {
     this.innerHTML = `
-      ${subpageBar("Health, Data & Sync", { backHref: SETTINGS_PARENT.data })}
+      ${subpageBar("Health & Data", { backHref: SETTINGS_PARENT.data })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Formats match the Android app. Move data freely between the two.

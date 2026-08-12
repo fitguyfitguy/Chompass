@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material3.HorizontalDivider
@@ -66,6 +67,13 @@ internal fun SettingsScreenPreviewContent(
                         label = stringResource(R.string.settings_section_goals),
                         summary = stringResource(R.string.settings_group_goals_summary),
                         icon = Icons.Outlined.Equalizer,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_group_food),
+                        summary = stringResource(R.string.settings_group_food_summary),
+                        icon = Icons.Outlined.Restaurant,
                         onClick = {},
                     )
                     HorizontalDivider()

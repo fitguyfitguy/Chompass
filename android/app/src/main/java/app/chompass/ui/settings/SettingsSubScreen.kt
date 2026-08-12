@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -93,6 +94,71 @@ fun SettingsSubScreen(
             content()
 
             Spacer(Modifier.height(BottomNavScrollPadding))
+        }
+    }
+}
+
+/**
+ * Back label for cross-linked settings sub-screens, keyed by the `from` nav
+ * argument so users can retrace their path (e.g. Goals → Water → back to Goals).
+ */
+@Composable
+internal fun settingsBackLabel(from: String): String = when (from) {
+    "goals" -> stringResource(R.string.settings_section_goals)
+    "water" -> stringResource(R.string.settings_water_title)
+    "notifications" -> stringResource(R.string.settings_notifications)
+    "data" -> stringResource(R.string.settings_group_data)
+    "ai" -> stringResource(R.string.settings_group_ai)
+    "food" -> stringResource(R.string.settings_group_food)
+    else -> stringResource(R.string.nav_settings)
+}
+
+/** A related-settings link row (Rule C cross-link footer). */
+internal data class RelatedLink(
+    val label: String,
+    val onClick: () -> Unit,
+)
+
+/** "Related" footer shown at the bottom of settings sub-screens. */
+@Composable
+internal fun RelatedLinks(rows: List<RelatedLink>) {
+    Column {
+        Text(
+            stringResource(R.string.settings_related),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+        )
+        app.chompass.ui.components.FudGlassSurface(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 18.dp,
+            padding = 0.dp,
+            allowBlur = false
+        ) {
+            Column(Modifier.padding(vertical = 4.dp)) {
+                rows.forEachIndexed { index, row ->
+                    if (index > 0) HorizontalDivider()
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = row.onClick)
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            row.label,
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium,
+                        )
+                        Icon(
+                            Icons.Filled.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        )
+                    }
+                }
+            }
         }
     }
 }

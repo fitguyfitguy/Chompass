@@ -47,6 +47,11 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setOnboardingDraft(draft: app.chompass.ui.onboarding.OnboardingDraft?) = setOnboardingDraftImpl(draft)
     val hasSeenCameraScaleTip: Flow<Boolean> get() = hasSeenCameraScaleTipImpl
     suspend fun setHasSeenCameraScaleTip(value: Boolean) = setHasSeenCameraScaleTipImpl(value)
+    val firstLaunchAt: Flow<Long> get() = firstLaunchAtImpl
+    /** Idempotent seed of the first-launch timestamp; keeps the earliest value. */
+    suspend fun ensureFirstLaunchAt(nowMillis: Long = System.currentTimeMillis()) = ensureFirstLaunchAtImpl(nowMillis)
+    val dismissedSuggestionIds: Flow<Set<String>> get() = dismissedSuggestionIdsImpl
+    suspend fun setSuggestionDismissed(id: String, dismissed: Boolean = true) = setSuggestionDismissedImpl(id, dismissed)
     val notificationsEnabled: Flow<Boolean> get() = notificationsEnabledImpl
     suspend fun setNotificationsEnabled(v: Boolean) = setNotificationsEnabledImpl(v)
     val streakReminderEnabled: Flow<Boolean> get() = streakReminderEnabledImpl

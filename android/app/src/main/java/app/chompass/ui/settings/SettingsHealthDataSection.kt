@@ -10,9 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.DeleteSweep
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.MonitorWeight
+import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,11 +36,6 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
 
-import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.DeleteSweep
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.IosShare
-import androidx.compose.material.icons.outlined.Info
 @Composable
 internal fun SettingsHealthDataSection(
     ui: SettingsUiState,
@@ -48,6 +51,8 @@ internal fun SettingsHealthDataSection(
     onImportBodyMetrics: () -> Unit,
     onShowClearFoodDialog: () -> Unit,
     onShowDeleteDialog: () -> Unit,
+    onOpenSync: () -> Unit,
+    syncSummary: String?,
 ) {
     SectionCard(title = stringResource(R.string.settings_section_health)) {
                 ToggleRow(stringResource(R.string.settings_health_connect), ui.healthConnectEnabled, icon = Icons.Outlined.Favorite, onChange = onHealthConnectToggle)
@@ -205,10 +210,7 @@ internal fun SettingsHealthDataSection(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            // CSV is often reported as octet-stream by SAF providers, so accept broadly.
-                            onImportBodyMetrics()
-                        }
+                        .clickable { onImportBodyMetrics() }
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -221,6 +223,41 @@ internal fun SettingsHealthDataSection(
                     )
                 }
                 HorizontalDivider()
+                // Cross-link (Rule A): the WebDAV form lives in its own Sync screen.
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenSync() }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FudIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    Spacer(Modifier.width(14.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.settings_sync_section),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
+                        )
+                        if (syncSummary != null) {
+                            Text(
+                                syncSummary,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                            )
+                        }
+                    }
+                    Icon(
+                        Icons.Filled.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                    )
+                }
+    }
+
+    // Danger zone: destructive actions are visually separated from routine
+    // transfer actions so they can't be tapped by accident.
+    SectionCard(title = stringResource(R.string.settings_danger_zone)) {
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -256,5 +293,6 @@ internal fun SettingsHealthDataSection(
                         fontWeight = FontWeight.Medium
                     )
                 }
+                SettingFootnote(stringResource(R.string.settings_danger_zone_caption))
     }
 }

@@ -36,6 +36,7 @@ import app.chompass.services.WeightAnalysisService
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.ui.home.FoodLogSortOrder
+import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -119,15 +120,30 @@ data class SettingsUiState(
     val mealSchedule: app.chompass.models.MealSchedule = app.chompass.models.MealSchedule.Default,
     /** A goal-relevant input changed since the last Recalculate. Drives a soft nudge on the
      *  Recalculate row; the button stays tappable at all times — this never disables it. */
-    val goalsNeedRecalc: Boolean = false
+    val goalsNeedRecalc: Boolean = false,
+    /** Dismissible hub suggestions toward beneficial-but-optional setups (§6.3 of the plan). */
+    val suggestions: List<SettingsSuggestion> = emptyList(),
 ) {
     val heightMetric: Boolean get() = heightUnit == "cm"
     val weightMetric: Boolean get() = weightUnit == "kg"
 }
 
+/** One row of the Settings hub Suggestions card. */
+data class SettingsSuggestion(
+    val id: String,
+    val title: String,
+    val actionLabel: String,
+    val targetRoute: String,
+)
+
 class SettingsViewModel(val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(SettingsUiState())
     val ui: StateFlow<SettingsUiState> = _ui.asStateFlow()
+
+    /** Cached inputs for the Suggestions engine (see refreshSuggestions). */
+    private var firstLaunchAt: Long = 0L
+    private var webDavUrl: String = ""
+    private var dismissedSuggestionIds: Set<String> = emptySet()
 
     /** Goal-input fingerprint captured at the last Recalculate (or seeded on first load). */
     private var lastRecalcSignature: String? = null
@@ -292,6 +308,114 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         container.prefs.homeDisplayPreferences
             .onEach { display -> _ui.value = _ui.value.copy(homeDisplay = display) }
             .launchIn(viewModelScope)
+
+        // Suggestions engine: re-derive whenever the ui state or its inputs change.
+        viewModelScope.launch {
+            _ui.collect { refreshSuggestions() }
+        }
+        viewModelScope.launch {
+            container.prefs.firstLaunchAt.collect { firstLaunchAt = it; refreshSuggestions() }
+        }
+        viewModelScope.launch {
+            container.prefs.webDavUrl.collect { webDavUrl = it; refreshSuggestions() }
+        }
+        viewModelScope.launch {
+            container.prefs.dismissedSuggestionIds.collect {
+                dismissedSuggestionIds = it
+                refreshSuggestions()
+            }
+        }
+    }
+
+    /**
+     * Derives the hub Suggestions list (max 3, priority order). Each row is
+     * dismissible and auto-hides once its condition resolves. Gated by install
+     * age so fresh users are never nagged; nothing is enabled here — rows only
+     * navigate to the owning screen where the user taps the real toggle.
+     */
+    private fun refreshSuggestions() {
+        val state = _ui.value
+        val ageDays = if (firstLaunchAt > 0L) {
+            (System.currentTimeMillis() - firstLaunchAt) / MILLIS_PER_DAY
+        } else {
+            Long.MAX_VALUE
+        }
+        val appContext = container.appContext
+        fun suggest(
+            id: String,
+            titleRes: Int,
+            actionRes: Int,
+            route: String,
+            show: Boolean,
+        ): SettingsSuggestion? {
+            if (!show || id in dismissedSuggestionIds) return null
+            return SettingsSuggestion(
+                id = id,
+                title = appContext.getString(titleRes),
+                actionLabel = appContext.getString(actionRes),
+                targetRoute = route,
+            )
+        }
+        _ui.value = state.copy(
+            suggestions = listOfNotNull(
+                suggest(
+                    id = "water_reminders",
+                    titleRes = R.string.settings_suggestion_water_reminders,
+                    actionRes = R.string.settings_suggestion_action_setup,
+                    route = ChompassRoutes.waterRoute("app"),
+                    show = state.waterTrackingEnabled && !state.waterReminderEnabled,
+                ),
+                suggest(
+                    id = "water_tracking",
+                    titleRes = R.string.settings_suggestion_water_tracking,
+                    actionRes = R.string.settings_suggestion_action_turn_on,
+                    route = ChompassRoutes.waterRoute("app"),
+                    show = !state.waterTrackingEnabled && ageDays >= SUGGEST_WATER_TRACKING_DAYS,
+                ),
+                suggest(
+                    id = "adaptive_goals",
+                    titleRes = R.string.settings_suggestion_adaptive_goals,
+                    actionRes = R.string.settings_suggestion_action_turn_on,
+                    route = ChompassRoutes.SETTINGS_GOALS,
+                    show = !state.adaptiveGoalsEnabled && ageDays >= SUGGEST_OPTIMIZATION_DAYS &&
+                        state.profile != null,
+                ),
+                suggest(
+                    id = "health_connect",
+                    titleRes = R.string.settings_suggestion_health_connect,
+                    actionRes = R.string.settings_suggestion_action_connect,
+                    route = ChompassRoutes.SETTINGS_DATA,
+                    show = !state.healthConnectEnabled && ageDays >= SUGGEST_OPTIMIZATION_DAYS &&
+                        state.profile != null,
+                ),
+                suggest(
+                    id = "notifications",
+                    titleRes = R.string.settings_suggestion_notifications,
+                    actionRes = R.string.settings_suggestion_action_turn_on,
+                    route = ChompassRoutes.notificationsRoute("app"),
+                    show = !state.notificationsEnabled && ageDays >= SUGGEST_OPTIMIZATION_DAYS,
+                ),
+                suggest(
+                    id = "backup",
+                    titleRes = R.string.settings_suggestion_backup,
+                    actionRes = R.string.settings_suggestion_action_setup,
+                    route = ChompassRoutes.syncRoute("data"),
+                    show = webDavUrl.isBlank() && ageDays >= SUGGEST_BACKUP_DAYS,
+                ),
+            ).take(MAX_SUGGESTIONS),
+        )
+    }
+
+    fun dismissSuggestion(id: String) = viewModelScope.launch {
+        container.prefs.setSuggestionDismissed(id)
+    }
+
+    private companion object {
+        const val MILLIS_PER_DAY = 86_400_000L
+        const val SUGGEST_WATER_TRACKING_DAYS = 3L
+        const val SUGGEST_OPTIMIZATION_DAYS = 7L
+        const val SUGGEST_BACKUP_DAYS = 14L
+        const val MAX_SUGGESTIONS = 3
     }
 
     fun setHomeNutrientCardCount(count: Int) = launchPref {

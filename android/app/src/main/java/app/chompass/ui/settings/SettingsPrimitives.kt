@@ -19,12 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.LockOpen
-import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
 import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
@@ -224,9 +220,11 @@ internal fun ActivityLevelSettingRow(
 }
 
 /**
- * A goal row (calories or a macro). Tapping the row opens the value picker. The lock glyph is a
- * READ-ONLY indicator (Filled.Lock pink when locked, Outlined.LockOpen gray when not) — saving a
- * value locks it; the picker's "Reset to Auto-balance" releases it. Dimmed while Adaptive is on.
+ * A goal row (calories or a macro). Tapping the row opens the value picker. The
+ * trailing chip is a READ-ONLY status indicator: "Locked" (pink) when the user
+ * pinned a manual value, "Auto" (dimmed) while Adaptive Goals owns the targets,
+ * nothing when the value is free. Saving a value locks it; the picker's
+ * "Reset to Auto-balance" releases it.
  */
 @Composable
 internal fun LockableGoalRow(
@@ -259,17 +257,36 @@ internal fun LockableGoalRow(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
         Spacer(Modifier.width(10.dp))
-        Icon(
-            if (locked) Icons.Filled.Lock else Icons.Outlined.LockOpen,
-            contentDescription = stringResource(
-                if (locked) R.string.settings_macro_locked else R.string.settings_macro_unlocked
-            ),
-            tint = when {
-                !lockEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
-                locked -> AppColors.Calorie
-                else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
-            },
-            modifier = Modifier.size(18.dp)
+        GoalStatusChip(locked = locked, lockEnabled = lockEnabled)
+    }
+}
+
+/** Read-only status chip for [LockableGoalRow]: "Locked" / "Auto" / nothing. */
+@Composable
+internal fun GoalStatusChip(locked: Boolean, lockEnabled: Boolean) {
+    val showAuto = !lockEnabled
+    if (!locked && !showAuto) return
+    val chipText = if (showAuto) {
+        stringResource(R.string.settings_goal_auto)
+    } else {
+        stringResource(R.string.settings_macro_locked)
+    }
+    val chipColor = when {
+        showAuto -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
+        else -> AppColors.Calorie
+    }
+    Box(
+        Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(chipColor.copy(alpha = 0.14f))
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            chipText,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = chipColor,
         )
     }
 }
@@ -390,38 +407,50 @@ internal fun ToggleRowWithInfo(
     }
 }
 
+/**
+ * Toggle row with an optional busy spinner and an optional ⓘ explainer — the
+ * shared form for Adaptive Goals and Energy Burn Goals.
+ */
 @Composable
-internal fun EnergyBurnGoalsRow(
+internal fun BusyToggleRow(
+    label: String,
     checked: Boolean,
-    applying: Boolean,
-    needsHealthConnect: Boolean,
-    onInfo: () -> Unit,
-    onChange: (Boolean) -> Unit
+    icon: ImageVector,
+    busy: Boolean = false,
+    onInfo: (() -> Unit)? = null,
+    subtitle: String? = null,
+    onSubtitleClick: (() -> Unit)? = null,
+    onChange: (Boolean) -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudIconBubble(icon = Icons.Outlined.LocalFireDepartment, size = 22.dp, iconSize = 14.dp)
+        FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
         Spacer(Modifier.width(14.dp))
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
-                stringResource(R.string.settings_energy_goals),
+                label,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
             )
-            if (needsHealthConnect) {
+            if (subtitle != null) {
                 Text(
-                    stringResource(R.string.settings_needs_health_connect),
+                    subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    modifier = if (onSubtitleClick != null) {
+                        Modifier.clickable(onClick = onSubtitleClick)
+                    } else {
+                        Modifier
+                    },
                 )
             }
         }
-        if (applying) {
+        if (busy) {
             CircularProgressIndicator(
                 modifier = Modifier.size(22.dp),
                 strokeWidth = 2.dp,
@@ -429,55 +458,29 @@ internal fun EnergyBurnGoalsRow(
             )
             Spacer(Modifier.width(14.dp))
         }
-        IconButton(onClick = onInfo, modifier = Modifier.size(36.dp)) {
-            Icon(
-                Icons.Outlined.Info,
-                contentDescription = stringResource(R.string.action_info),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
-                modifier = Modifier.size(18.dp)
-            )
+        if (onInfo != null) {
+            IconButton(onClick = onInfo, modifier = Modifier.size(36.dp)) {
+                Icon(
+                    Icons.Outlined.Info,
+                    contentDescription = stringResource(R.string.action_info),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
-        Switch(checked = checked, onCheckedChange = onChange, enabled = !applying)
+        Switch(checked = checked, onCheckedChange = onChange, enabled = !busy)
     }
 }
 
+/** Standard one-line helper text under settings rows (13.sp / 55% alpha). */
 @Composable
-internal fun AdaptiveGoalsRow(
-    checked: Boolean,
-    applying: Boolean,
-    onInfo: () -> Unit,
-    onChange: (Boolean) -> Unit
-) {
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        FudIconBubble(icon = Icons.Outlined.TrackChanges, size = 22.dp, iconSize = 14.dp)
-        Spacer(Modifier.width(14.dp))
-        Text(
-            stringResource(R.string.settings_adaptive_goals),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f)
-        )
-        if (applying) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(22.dp),
-                strokeWidth = 2.dp,
-                color = AppColors.Calorie
-            )
-            Spacer(Modifier.width(14.dp))
-        }
-        IconButton(onClick = onInfo, modifier = Modifier.size(36.dp)) {
-            Icon(
-                Icons.Outlined.Info,
-                contentDescription = stringResource(R.string.action_info),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
-                modifier = Modifier.size(18.dp)
-            )
-        }
-        Switch(checked = checked, onCheckedChange = onChange, enabled = !applying)
-    }
+internal fun SettingFootnote(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+    )
 }
 
 internal fun feetInchesLabel(cm: Int): String {
