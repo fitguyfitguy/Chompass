@@ -87,6 +87,11 @@ fun GoalsSettingsScreen(
         title = stringResource(R.string.settings_section_goals),
         onBack = onBack,
     ) {
+        Text(
+            stringResource(R.string.settings_goals_intro),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+        )
         SettingsGoalsSection(
             ui = ui,
             profile = ui.profile,

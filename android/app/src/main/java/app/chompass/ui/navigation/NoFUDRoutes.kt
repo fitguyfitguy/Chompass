@@ -15,6 +15,15 @@ object ChompassRoutes {
     const val HOME_DISPLAY = "settings/home-display"
     const val CALCULATION_METHODS = "settings/calculation-methods"
     const val BODY_MEASUREMENTS = "settings/body-measurements"
+    const val SETTINGS_FOOD = "settings/food"
+    const val SETTINGS_WATER = "settings/water?from={from}"
+    const val SETTINGS_NOTIFICATIONS = "settings/notifications?from={from}"
+    const val SETTINGS_SYNC = "settings/sync?from={from}"
+
+    /** Cross-link route builders; `from` drives the sub-screen's back label. */
+    fun waterRoute(from: String) = "settings/water?from=$from"
+    fun notificationsRoute(from: String) = "settings/notifications?from=$from"
+    fun syncRoute(from: String) = "settings/sync?from=$from"
 
     val bottomTabs = listOf(HOME, PROGRESS, COACH, SETTINGS)
 }

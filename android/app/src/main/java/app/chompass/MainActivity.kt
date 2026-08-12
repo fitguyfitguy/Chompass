@@ -300,6 +300,8 @@ open class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             launchDebugIntentActions(debugActions, container, app)
 
+            container.prefs.ensureFirstLaunchAt()
+
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
             initialThemeColorKey = container.prefs.appThemeColor.first()

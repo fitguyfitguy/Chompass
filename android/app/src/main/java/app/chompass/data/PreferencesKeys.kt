@@ -3,7 +3,9 @@ package app.chompass.data
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import app.chompass.models.SpeechProvider
 import java.time.YearMonth
 
@@ -15,6 +17,10 @@ internal object Keys {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")
         val HAS_SEEN_CAMERA_SCALE_TIP = booleanPreferencesKey("hasSeenCameraScaleTip")
+        /** Epoch-millis of first app launch; gates settings Suggestions so new users aren't nagged. */
+        val FIRST_LAUNCH_AT = longPreferencesKey("firstLaunchAt")
+        /** Dismissed settings-suggestion ids ("water_tracking", "adaptive_goals", ...). */
+        val DISMISSED_SUGGESTIONS = stringSetPreferencesKey("dismissedSuggestionIds")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notificationsEnabled")
         val STREAK_ENABLED = booleanPreferencesKey("streakReminderEnabled")
         val STREAK_HOUR = intPreferencesKey("streakReminderHour")

@@ -1,6 +1,8 @@
 package app.chompass.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +17,9 @@ import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -53,6 +57,30 @@ internal fun SettingsGoalsSection(
     onShowHealthEnergyGoalsInfo: () -> Unit,
     onShowAdaptiveLockHint: () -> Unit,
 ) {
+    SectionCard(title = stringResource(R.string.settings_goals_how_title)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                stringResource(R.string.settings_goals_how_adaptive),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+            Text(
+                stringResource(R.string.settings_goals_how_energy),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+            Text(
+                stringResource(R.string.settings_goals_how_lock),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+        }
+    }
     SectionCard(title = stringResource(R.string.settings_section_goals)) {
                 profile?.let { p ->
                     SettingRow(stringResource(R.string.settings_weight_goal), stringResource(p.goal.displayNameRes), icon = Icons.Outlined.Equalizer, inlineMenu = true) { onOpenSheet(SettingsSheet.GOAL) }
@@ -98,18 +126,31 @@ internal fun SettingsGoalsSection(
                         ) { onOpenSheet(SettingsSheet.GOAL_WEIGHT) }
                     }
                     HorizontalDivider()
-                    AdaptiveGoalsRow(
+                    BusyToggleRow(
+                        label = stringResource(R.string.settings_adaptive_goals),
                         checked = ui.adaptiveGoalsEnabled,
-                        applying = ui.applyingAdaptiveGoals,
+                        icon = Icons.Outlined.TrackChanges,
+                        busy = ui.applyingAdaptiveGoals,
                         onInfo = onShowAdaptiveGoalsInfo,
                         onChange = vm::setAdaptiveGoalsEnabled
                     )
                     HorizontalDivider()
-                    EnergyBurnGoalsRow(
+                    BusyToggleRow(
+                        label = stringResource(R.string.settings_energy_goals),
                         checked = ui.healthEnergyGoalsEnabled,
-                        applying = ui.recalculatingGoals,
-                        needsHealthConnect = !ui.healthConnectEnabled,
+                        icon = Icons.Outlined.LocalFireDepartment,
+                        busy = ui.recalculatingGoals,
                         onInfo = onShowHealthEnergyGoalsInfo,
+                        subtitle = if (!ui.healthConnectEnabled) {
+                            stringResource(R.string.settings_needs_health_connect)
+                        } else {
+                            null
+                        },
+                        onSubtitleClick = if (!ui.healthConnectEnabled) {
+                            { nav.navigate(ChompassRoutes.SETTINGS_DATA) }
+                        } else {
+                            null
+                        },
                         onChange = onHealthEnergyGoalsToggle
                     )
                     HorizontalDivider()
@@ -173,6 +214,13 @@ internal fun SettingsGoalsSection(
                         optionalNutrientSummary(ui.optionalNutrientGoals),
                         icon = Icons.Outlined.DataUsage
                     ) { nav.navigate(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) }
+                    HorizontalDivider()
+                    // Cross-link (Rule A): the water goal is edited on the Water screen.
+                    SettingRow(
+                        stringResource(R.string.settings_water_goal),
+                        stringResource(R.string.settings_water_goal_summary, ui.waterDailyGoalMl),
+                        icon = Icons.Outlined.WaterDrop,
+                    ) { nav.navigate(ChompassRoutes.waterRoute("goals")) }
                     HorizontalDivider()
                     Row(
                         Modifier

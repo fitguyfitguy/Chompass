@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GraphicEq
@@ -8,8 +9,8 @@ import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.SystemUpdate
-import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.icons.outlined.TrackChanges
+import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,15 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel, onOpenSheet: (SettingsSheet) -> Unit) {
+internal fun NotificationTypeRows(
+    ui: SettingsUiState,
+    vm: SettingsViewModel,
+    onOpenSheet: (SettingsSheet) -> Unit,
+    onOpenWater: () -> Unit,
+) {
     val context = LocalContext.current
     Text(
         stringResource(R.string.settings_notification_types),
@@ -63,22 +69,34 @@ internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel, on
         onChange = vm::setBodyFatReminderEnabled
     )
     HorizontalDivider()
-    if (ui.waterTrackingEnabled) {
-        ToggleRow(
-            stringResource(R.string.settings_notif_water_reminder),
-            ui.waterReminderEnabled,
-            icon = Icons.Outlined.WaterDrop,
-            onChange = vm::setWaterReminderEnabled,
+    // Always visible: when water tracking is off this is disabled with a link to
+    // the Water screen instead of being hidden (cross-link rule: never hide a
+    // dependency — disable it and point at its owner).
+    ToggleRow(
+        stringResource(R.string.settings_notif_water_reminder),
+        ui.waterTrackingEnabled && ui.waterReminderEnabled,
+        icon = Icons.Outlined.WaterDrop,
+        enabled = ui.waterTrackingEnabled,
+        onChange = vm::setWaterReminderEnabled,
+    )
+    if (!ui.waterTrackingEnabled) {
+        Text(
+            stringResource(R.string.settings_needs_water_tracking),
+            style = MaterialTheme.typography.bodySmall,
+            color = AppColors.Calorie,
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                .clickable(onClick = onOpenWater),
         )
+    }
+    HorizontalDivider()
+    if (ui.waterReminderEnabled) {
+        SettingRow(
+            stringResource(R.string.settings_water_drinking_window),
+            drinkingWindowSummary(ui, context),
+            icon = Icons.Outlined.Schedule,
+        ) { onOpenSheet(SettingsSheet.WATER_REMINDER_PLAN) }
         HorizontalDivider()
-        if (ui.waterReminderEnabled) {
-            SettingRow(
-                stringResource(R.string.settings_water_drinking_window),
-                drinkingWindowSummary(ui, context),
-                icon = Icons.Outlined.Schedule,
-            ) { onOpenSheet(SettingsSheet.WATER_REMINDER_PLAN) }
-            HorizontalDivider()
-        }
     }
     ToggleRow(
         stringResource(R.string.settings_notif_goal_alerts),
@@ -93,20 +111,16 @@ internal fun NotificationTypeRows(ui: SettingsUiState, vm: SettingsViewModel, on
         icon = Icons.Outlined.SystemUpdate,
         onChange = vm::setAppUpdateNotificationsEnabled
     )
+    val waterReminderEffective = ui.waterTrackingEnabled && ui.waterReminderEnabled
     val noneSelected = !ui.streakReminderEnabled &&
         !ui.dailySummaryEnabled &&
         !ui.weightReminderEnabled &&
         !ui.bodyFatReminderEnabled &&
-        (!ui.waterTrackingEnabled || !ui.waterReminderEnabled) &&
+        !waterReminderEffective &&
         !ui.goalReachedNotificationsEnabled &&
         !ui.appUpdateNotificationsEnabled
     if (noneSelected) {
-        Text(
-            stringResource(R.string.settings_notif_none_selected),
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-        )
+        SettingFootnote(stringResource(R.string.settings_notif_none_selected))
     }
 }
 

@@ -1,6 +1,5 @@
 package app.chompass.ui.settings
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
@@ -8,18 +7,13 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.chompass.R
-
 import app.chompass.models.AIProvider
+
 @Composable
 internal fun SettingsFallbackSection(ui: SettingsUiState, vm: SettingsViewModel, onOpenSheet: (SettingsSheet) -> Unit) {
     SectionCard(title = stringResource(R.string.settings_section_fallback)) {
@@ -58,12 +52,7 @@ internal fun SettingsFallbackSection(ui: SettingsUiState, vm: SettingsViewModel,
                             icon = Icons.Outlined.Link
                         ) { onOpenSheet(SettingsSheet.FALLBACK_BASE_URL) }
                     }
-                    Text(
-                        stringResource(R.string.settings_fallback_footer),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                    )
+                    SettingFootnote(stringResource(R.string.settings_fallback_footer))
                 }
     }
 }

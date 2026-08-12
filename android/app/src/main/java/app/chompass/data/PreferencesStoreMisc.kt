@@ -63,6 +63,26 @@ internal suspend fun PreferencesStore.setDebugDemoAnalysisImpl(enabled: Boolean)
     dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS] = enabled }
 }
 
+// -- Settings Suggestions (hub nudge card) ---------------------------------
+internal val PreferencesStore.firstLaunchAtImpl: Flow<Long>
+    get() = dataStore.data.map { it[Keys.FIRST_LAUNCH_AT] ?: 0L }
+
+internal suspend fun PreferencesStore.ensureFirstLaunchAtImpl(nowMillis: Long) {
+    dataStore.edit { prefs ->
+        if (prefs[Keys.FIRST_LAUNCH_AT] == null) prefs[Keys.FIRST_LAUNCH_AT] = nowMillis
+    }
+}
+
+internal val PreferencesStore.dismissedSuggestionIdsImpl: Flow<Set<String>>
+    get() = dataStore.data.map { it[Keys.DISMISSED_SUGGESTIONS] ?: emptySet() }
+
+internal suspend fun PreferencesStore.setSuggestionDismissedImpl(id: String, dismissed: Boolean) {
+    dataStore.edit { prefs ->
+        val current = prefs[Keys.DISMISSED_SUGGESTIONS] ?: emptySet()
+        prefs[Keys.DISMISSED_SUGGESTIONS] = if (dismissed) current + id else current - id
+    }
+}
+
 // -- Wipe everything --------------------------------------------------
 internal suspend fun PreferencesStore.clearAllImpl() {
     dataStore.edit { it.clear() }
