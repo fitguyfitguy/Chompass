@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private const val CUSTOM_BASE_URL_PREFIX = "customBaseURL_"
+/** Fallback-slot base URLs live under their own prefix: a same-provider primary + fallback
+ *  (e.g. two OpenAI-compatible endpoints with different models) must not share one key,
+ *  or the last URL written wins and both slots hit the same server after restart. */
+private const val CUSTOM_BASE_URL_FALLBACK_PREFIX = "customBaseURL_fallback_"
 
 // -- AI Provider selection --------------------------------------------
 internal val PreferencesStore.selectedAIProviderImpl: Flow<AIProvider> get() = dataStore.data.map {
@@ -32,6 +36,17 @@ internal fun PreferencesStore.customBaseUrlImpl(provider: AIProvider): Flow<Stri
 
 internal suspend fun PreferencesStore.setCustomBaseUrlImpl(provider: AIProvider, url: String?) {
         val key = stringPreferencesKey(CUSTOM_BASE_URL_PREFIX + provider.name)
+        dataStore.edit {
+            if (url.isNullOrEmpty()) it.remove(key) else it[key] = url
+        }
+    }
+
+internal fun PreferencesStore.fallbackCustomBaseUrlImpl(provider: AIProvider): Flow<String?> = dataStore.data.map {
+        it[stringPreferencesKey(CUSTOM_BASE_URL_FALLBACK_PREFIX + provider.name)]
+    }
+
+internal suspend fun PreferencesStore.setFallbackCustomBaseUrlImpl(provider: AIProvider, url: String?) {
+        val key = stringPreferencesKey(CUSTOM_BASE_URL_FALLBACK_PREFIX + provider.name)
         dataStore.edit {
             if (url.isNullOrEmpty()) it.remove(key) else it[key] = url
         }
