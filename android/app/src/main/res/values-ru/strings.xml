@@ -729,7 +729,7 @@
     <string name="settings_rebalance_blocked_message">Калории заблокированы, и оба других макронутриента тоже, поэтому изменению некуда уйти. Разблокируйте калории или другой макронутриент и попробуйте снова.</string>
     <string name="settings_adaptive_locks_title">Включены адаптивные цели</string>
     <string name="settings_adaptive_locks_message">Отключите адаптивные цели, чтобы блокировать или задавать свои калории и макронутриенты. Пока они включены, Chompass пересчитывает их за вас каждую неделю.</string>
-    <string name="settings_health_denied">Health Connect нужны разрешения: вес, процент жира, активные калории, общие калории и запись питания. Нажмите переключатель ещё раз и предоставьте все запрошенные разрешения для синхронизации и расчёта целей по энергии.</string>
+    <string name="settings_health_denied">Health Connect нужны разрешения: вес, процент жира, активные калории, общие калории, запись питания и запись воды. Нажмите переключатель ещё раз и предоставьте все запрошенные разрешения для синхронизации и расчёта целей по энергии.</string>
     <string name="sheet_speech_language">Язык речи</string>
     <string name="speech_language_provider_auto">Автоопределение провайдером</string>
     <string name="speech_language_provider_auto_subtitle">Провайдер сам определит язык.</string>

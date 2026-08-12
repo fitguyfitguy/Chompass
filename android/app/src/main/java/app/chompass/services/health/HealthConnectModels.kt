@@ -32,7 +32,8 @@ data class HealthCapabilities(
     val heightWrite: Boolean,
     val sleepRead: Boolean,
     val restingHrRead: Boolean,
-    val hydrationRead: Boolean
+    val hydrationRead: Boolean,
+    val hydrationWrite: Boolean
 )
 
 /** Per-day energy burn from Health Connect (not persisted). */
@@ -112,6 +113,15 @@ data class ExternalBodyFat(
     val time: Instant,
     /** 0–1 fraction, matching UserProfile.bodyFatPercentage convention. */
     val bodyFatFraction: Double,
+    val clientRecordId: String?,
+    /** Stable Health Connect record id (Metadata.id) — see [ExternalWeight.recordId]. */
+    val recordId: String = ""
+)
+
+/** A HydrationRecord read back from Health Connect in the app's own unit (ml). */
+data class ExternalHydration(
+    val time: Instant,
+    val milliliters: Int,
     val clientRecordId: String?,
     /** Stable Health Connect record id (Metadata.id) — see [ExternalWeight.recordId]. */
     val recordId: String = ""

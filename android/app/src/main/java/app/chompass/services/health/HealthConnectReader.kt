@@ -118,6 +118,39 @@ internal class HealthConnectReader(
         return out
     }
 
+    /** All HydrationRecords in the range — the inverse of writeHydration. Powers
+     *  the one-shot water-log restore after a reinstall/new phone. Returns null on
+     *  any page failure (rate limit, binder error) so the caller can leave its
+     *  one-shot flag unset and retry, mirroring readNutrition. */
+    suspend fun readHydration(from: Instant, to: Instant): List<ExternalHydration>? {
+        val c = client() ?: return null
+        val out = mutableListOf<ExternalHydration>()
+        var pageToken: String? = null
+        do {
+            val response = runCatching {
+                c.readRecords(
+                    ReadRecordsRequest(
+                        recordType = HydrationRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(from, to),
+                        pageToken = pageToken
+                    )
+                )
+            }.getOrNull() ?: return null
+            response.records.forEach {
+                out.add(
+                    ExternalHydration(
+                        time = it.startTime,
+                        milliliters = it.volume.inMilliliters.roundToInt(),
+                        clientRecordId = it.metadata.clientRecordId,
+                        recordId = it.metadata.id
+                    )
+                )
+            }
+            pageToken = response.pageToken
+        } while (pageToken != null)
+        return out
+    }
+
     /** Active + total kilocalories for a single calendar day (today or past). */
     suspend fun readDailyEnergy(date: LocalDate): DailyEnergyBurn? {
         val c = client() ?: return null

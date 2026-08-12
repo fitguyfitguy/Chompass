@@ -990,7 +990,7 @@
     <string name="notif_weight_log_text">Log today\'s weight to keep your progress chart accurate.</string>
     <string name="notif_body_fat_log_title">Body fat check-in</string>
     <string name="notif_body_fat_log_text">Log today\'s body fat % to track your composition trend.</string>
-    <string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string>
+    <string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals and water you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string>
     <string name="settings_health_background_sync">Background sync</string>
     <string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default. Needs background-read permission when your Health Connect module supports it.</string>
     <string name="settings_health_background_sync_unsupported">Background sync isn\'t supported on this device\'s Health Connect module. Foreground sync still works when you open Chompass.</string>
@@ -1013,7 +1013,7 @@
     <string name="import_sync_failed">Sync import failed: %1$s</string>
     <string name="export_sync_failed">Could not export sync document: %1$s</string>
     <string name="settings_webdav_saved">WebDAV settings saved.</string>
-    <string name="settings_health_denied">Health Connect needs Weight, Body Fat, Active Calories, Total Calories, and permission to write Nutrition. Re-tap the toggle and grant all requested permissions to sync and estimate energy goals.</string>
+    <string name="settings_health_denied">Health Connect needs Weight, Body Fat, Active Calories, Total Calories, and permission to write Nutrition and Water. Re-tap the toggle and grant all requested permissions to sync and estimate energy goals.</string>
     <!-- API ≤33 only: standalone Health Connect APK via Play Store. -->
     <string name="settings_health_unavailable_install">Health Connect isn\'t installed. Install it from the Play Store, then re-tap the toggle.</string>
     <string name="settings_health_update_required_apk">Health Connect needs an update. Update it from the Play Store, then re-tap the toggle.</string>

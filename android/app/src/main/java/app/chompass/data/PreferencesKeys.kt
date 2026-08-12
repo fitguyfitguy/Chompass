@@ -61,6 +61,7 @@ internal object Keys {
         val HEALTH_CHANGES_TOKEN = stringPreferencesKey("healthChangesToken")
         val HEALTH_CHANGES_TOKEN_TYPES = stringPreferencesKey("healthChangesTokenTypes")
         val HEALTH_FOOD_RESTORE_DONE = booleanPreferencesKey("healthFoodRestoreDone")
+        val HEALTH_HYDRATION_RESTORE_DONE = booleanPreferencesKey("healthHydrationRestoreDone")
         val HEALTH_ENERGY_GOALS_ENABLED = booleanPreferencesKey("healthEnergyGoalsEnabled")
         /** Measured Health Connect active kcal/day average used to split the Energy Burn goal
          *  into a sedentary base for the ADD_ACTIVE home gauge. 0 = not available. */

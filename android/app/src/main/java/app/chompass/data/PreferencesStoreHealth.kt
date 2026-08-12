@@ -55,6 +55,14 @@ internal val PreferencesStore.healthFoodRestoreDoneImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setHealthFoodRestoreDoneImpl(v: Boolean) =
     setBoolPref(Keys.HEALTH_FOOD_RESTORE_DONE, v)
 
+/// One-shot flag for the water-log restore from Health Connect (sibling of the
+/// food one). Cleared with the rest of the store on Delete All Data / fresh
+/// install, which is exactly when the restore should be allowed to run again.
+internal val PreferencesStore.healthHydrationRestoreDoneImpl: Flow<Boolean>
+    get() = boolPref(Keys.HEALTH_HYDRATION_RESTORE_DONE, false)
+internal suspend fun PreferencesStore.setHealthHydrationRestoreDoneImpl(v: Boolean) =
+    setBoolPref(Keys.HEALTH_HYDRATION_RESTORE_DONE, v)
+
 internal val PreferencesStore.healthEnergyGoalsEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.HEALTH_ENERGY_GOALS_ENABLED, false)
 internal suspend fun PreferencesStore.setHealthEnergyGoalsEnabledImpl(v: Boolean) =

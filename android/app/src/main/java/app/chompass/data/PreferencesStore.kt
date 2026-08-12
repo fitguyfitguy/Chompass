@@ -123,6 +123,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setHealthChangesTokenTypes(types: Set<String>) = setHealthChangesTokenTypesImpl(types)
     val healthFoodRestoreDone: Flow<Boolean> get() = healthFoodRestoreDoneImpl
     suspend fun setHealthFoodRestoreDone(v: Boolean) = setHealthFoodRestoreDoneImpl(v)
+    val healthHydrationRestoreDone: Flow<Boolean> get() = healthHydrationRestoreDoneImpl
+    suspend fun setHealthHydrationRestoreDone(v: Boolean) = setHealthHydrationRestoreDoneImpl(v)
     val healthEnergyGoalsEnabled: Flow<Boolean> get() = healthEnergyGoalsEnabledImpl
     suspend fun setHealthEnergyGoalsEnabled(v: Boolean) = setHealthEnergyGoalsEnabledImpl(v)
     val healthEnergyMeasuredActive: Flow<Int> get() = healthEnergyMeasuredActiveImpl

@@ -1206,6 +1206,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         if (caps.heightWrite) {
             container.profileRepository.current()?.heightCm?.let { container.health.writeHeight(it) }
         }
+        if (caps.hydrationWrite) {
+            // Water entries are immutable (no edit path), but insertRecords doesn't
+            // dedupe on clientRecordId — delete-then-write keeps a re-connect from
+            // stacking duplicates, same as the weight backfill.
+            container.waterRepository.entries.first().forEach { entry ->
+                container.health.deleteHydration(entry.id)
+                container.health.writeHydration(entry)
+            }
+        }
     }
 
     fun deleteAllData(onComplete: () -> Unit = {}) {
