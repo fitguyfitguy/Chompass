@@ -73,6 +73,34 @@ export const DEFAULT_OPTIONAL_NUTRIENT_GOALS = /** @type {Required<OptionalNutri
   omega3G: 2,
 });
 
+/**
+ * Upper clamp for custom goal values — mirrors Android
+ * OptionalNutrient.maxCustomGoal (Vit D keeps the 10,000 IU / 250 mcg
+ * target reachable).
+ */
+export const MAX_CUSTOM_GOAL_BY_KEY = /** @type {Record<string, number>} */ ({
+  sugarG: 500,
+  addedSugarG: 300,
+  fiberG: 300,
+  saturatedFatG: 200,
+  cholesterolMg: 2000,
+  sodiumMg: 10000,
+  potassiumMg: 15000,
+  transFatG: 50,
+  calciumMg: 5000,
+  ironMg: 200,
+  magnesiumMg: 2000,
+  zincMg: 100,
+  vitaminAMcg: 5000,
+  vitaminCMg: 2000,
+  vitaminDMcg: 500,
+  vitaminB12Mcg: 100,
+  vitaminEMg: 1000,
+  vitaminKMcg: 1000,
+  folateMcg: 2000,
+  omega3G: 50,
+});
+
 export const DEFAULT_HOME_TOP = ["proteinG", "carbsG", "fatG", "fiberG"];
 export const DEFAULT_FOOD_CHIPS = ["proteinG", "carbsG", "fatG"];
 export const MIN_NUTRIENT_CARD_COUNT = 1;

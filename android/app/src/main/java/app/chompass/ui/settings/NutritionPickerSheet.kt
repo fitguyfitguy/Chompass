@@ -56,6 +56,17 @@ fun NutritionPickerSheet(
     // before Save (e.g. to convert it when a unit switcher flips).
     onValueChange: ((Int) -> Unit)? = null,
     accentColor: Color = AppColors.Calorie,
+    /**
+     * Optional per-value conversion line shown under the custom field
+     * (e.g. vitamin D mcg → IU). Receives the live custom value so the
+     * hint tracks what is being typed.
+     */
+    conversionHintFor: ((Int) -> String)? = null,
+    /**
+     * Optional upper clamp for the custom input (e.g. a nutrient's
+     * maxCustomGoal); null keeps any non-negative integer.
+     */
+    maxCustomGoal: Int? = null,
 ) {
     val items = remember(range, step) { (range.first..range.last step step).toList() }
     val snapped = (currentValue / step) * step
@@ -65,7 +76,8 @@ fun NutritionPickerSheet(
     var selected by remember(initial) { mutableStateOf(initial) }
     var customMode by remember { mutableStateOf(false) }
     var customText by remember { mutableStateOf("") }
-    val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)
+    val clampCustom: (Int) -> Int = { v -> if (maxCustomGoal != null) v.coerceAtMost(maxCustomGoal) else v }
+    val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
     val saveValue = if (customMode) parsedCustom ?: selected else selected
     Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = accentColor)
     Spacer(Modifier.height(12.dp))
@@ -93,7 +105,7 @@ fun NutritionPickerSheet(
             value = customText,
             onValueChange = { text ->
                 customText = text
-                text.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let { onValueChange?.invoke(it) }
+                text.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)?.let { onValueChange?.invoke(it) }
             },
             placeholder = stringResource(R.string.settings_picker_custom_placeholder, unit),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -115,6 +127,16 @@ fun NutritionPickerSheet(
         ) {
             Text(stringResource(R.string.settings_picker_enter_custom), color = accentColor)
         }
+    }
+    if (conversionHintFor != null && (customMode || currentValue > range.last)) {
+        Spacer(Modifier.height(6.dp))
+        Text(
+            conversionHintFor(parsedCustom ?: selected),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
     }
     Spacer(Modifier.height(16.dp))
     Box(

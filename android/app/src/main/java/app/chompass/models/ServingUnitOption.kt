@@ -122,25 +122,118 @@ data class ServingUnitOption(
         }
 
         /**
-         * Parse a quantity-field input that may be a relative edit: a leading
-         * `+` or `-` is a delta on [current], anything else falls back to
-         * [parseQuantity]. "20" is an absolute 20; "+20" means current + 20
-         * (e.g. "I ate 50 g, then 20 g more" → type "+20"). Callers must
-         * ignore non-positive results, as they do for plain quantities.
-         * A lone sign or an empty delta returns null.
+         * Parse a quantity-field input that may be a relative edit or a small
+         * arithmetic expression:
+         *
+         *  - a leading `+` / `-` (ASCII or U+2212 minus) is a delta on
+         *    [current] — "+20" means current + 20 (e.g. "I ate 50 g, then
+         *    20 g more" → type "+20");
+         *  - a string containing an infix operator (`+ - × ÷ * /`) is an
+         *    absolute expression — "50×2" → 100, "200−30" → 170, with `× ÷`
+         *    binding tighter than `+ -`;
+         *  - anything else falls back to [parseQuantity].
+         *
+         * Callers must ignore non-positive results, as they do for plain
+         * quantities. A lone sign, an empty delta, a malformed expression,
+         * or a division by zero returns null.
          */
         fun applyDeltaInput(value: String, current: Double?, locale: Locale = Locale.getDefault()): Double? {
             val trimmed = value.trim()
             if (trimmed.isEmpty()) return null
             val first = trimmed.first()
-            if (first == '+' || first == '-') {
+            if (first == '+' || first == '-' || first == MINUS_SIGN) {
                 val rest = trimmed.substring(1).trim()
                 if (rest.isEmpty()) return null
                 val delta = parseQuantity(rest, locale) ?: return null
                 val base = current ?: 0.0
-                return if (first == '-') base - delta else base + delta
+                return if (first == '-' || first == MINUS_SIGN) base - delta else base + delta
             }
+            if (isQuantityExpression(trimmed)) return evaluateExpression(trimmed, locale)
             return parseQuantity(trimmed, locale)
+        }
+
+        /**
+         * True when [value] is a plain-number input that also contains an
+         * infix operator (e.g. "50×2", "200−30") — i.e. something that
+         * [applyDeltaInput] evaluates as an arithmetic expression rather
+         * than an absolute number. A leading sign is a delta, not an
+         * expression. Callers use this to keep the typed expression visible
+         * with a live result instead of collapsing it to a number.
+         */
+        fun isQuantityExpression(value: String): Boolean {
+            val trimmed = value.trim()
+            if (trimmed.isEmpty()) return false
+            val first = trimmed.first()
+            if (first == '+' || first == '-' || first == MINUS_SIGN) return false
+            return trimmed.any { it in EXPRESSION_OPERATORS }
+        }
+
+        private const val MINUS_SIGN = '−'
+
+        private val EXPRESSION_OPERATORS = setOf('+', '-', '−', '×', '÷', '*', '/')
+
+        /**
+         * Left-to-right arithmetic with `× ÷` binding tighter than `+ −`.
+         * Tokens are locale-aware numbers ([parseQuantity]) and single-char
+         * operators. Malformed chains, empty operands, and division by zero
+         * return null.
+         */
+        private fun evaluateExpression(value: String, locale: Locale): Double? {
+            val tokens = mutableListOf<Any>()
+            val number = StringBuilder()
+            for (ch in value) {
+                if (ch in EXPRESSION_OPERATORS) {
+                    if (number.isNotEmpty()) {
+                        tokens.add(parseQuantity(number.toString(), locale) ?: return null)
+                        number.clear()
+                    }
+                    tokens.add(ch)
+                } else {
+                    number.append(ch)
+                }
+            }
+            if (number.isNotEmpty()) {
+                tokens.add(parseQuantity(number.toString(), locale) ?: return null)
+            }
+            if (tokens.isEmpty() || tokens.first() !is Double || tokens.last() !is Double) return null
+
+            val values = mutableListOf<Double>()
+            val ops = mutableListOf<Char>()
+            for (token in tokens) {
+                when (token) {
+                    is Double -> values.add(token)
+                    is Char -> ops.add(token)
+                }
+            }
+            if (values.size != ops.size + 1) return null
+
+            // Pass 1: × ÷ * / (left to right).
+            var i = 0
+            while (i < ops.size) {
+                val op = ops[i]
+                if (op == '×' || op == '*' || op == '÷' || op == '/') {
+                    val right = values[i + 1]
+                    val result = if (op == '÷' || op == '/') {
+                        if (right == 0.0) return null else values[i] / right
+                    } else {
+                        values[i] * right
+                    }
+                    values[i] = result
+                    values.removeAt(i + 1)
+                    ops.removeAt(i)
+                } else {
+                    i++
+                }
+            }
+
+            // Pass 2: + - − (left to right).
+            var acc = values.first()
+            for (j in ops.indices) {
+                val op = ops[j]
+                val right = values[j + 1]
+                acc = if (op == '-' || op == '−') acc - right else acc + right
+            }
+            return acc
         }
     }
 }

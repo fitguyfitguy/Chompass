@@ -166,6 +166,7 @@ private fun ConstituentRowCard(
             ServingQuantityCard(
                 quantityText = quantityText,
                 onQuantityChange = { applyQuantity(it) },
+                showQuantityCalc = false,
                 selectedUnitId = unitId,
                 onSelectedUnitChange = { id ->
                     unitId = id

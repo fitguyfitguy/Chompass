@@ -46,6 +46,7 @@ import {
   normalizeFoodLogChips,
   nutrientDef,
   mergeOptionalGoals,
+  MAX_CUSTOM_GOAL_BY_KEY,
 } from "../lib/home-nutrients.js";
 import { LOCALES, t } from "../lib/i18n/index.js";
 
@@ -762,7 +763,8 @@ export class SettingsView extends HTMLElement {
             ([k, label]) => `
             <div class="field">
               <label for="${k}">${label}</label>
-              <input id="${k}" name="${k}" type="number" min="0" step="1" value="${g[k] ?? ""}" />
+              <input id="${k}" name="${k}" type="number" min="0" max="${MAX_CUSTOM_GOAL_BY_KEY[k] ?? ""}" step="1" value="${g[k] ?? ""}" />
+              ${k === "vitaminDMcg" ? `<div class="field-hint" data-vitd-iu-hint>${g.vitaminDMcg} mcg ≈ ${g.vitaminDMcg * 40} IU</div>` : ""}
             </div>`
           ).join("")}
         </div>
@@ -776,7 +778,9 @@ export class SettingsView extends HTMLElement {
       for (const [k] of OPTIONAL_GOAL_FIELDS) {
         const raw = fd.get(k);
         const n = raw !== "" && raw != null ? Number(raw) : DEFAULT_OPTIONAL_NUTRIENT_GOALS[k];
-        optionalNutrientGoals[k] = Number.isFinite(n) ? Math.max(0, n) : DEFAULT_OPTIONAL_NUTRIENT_GOALS[k];
+        const cap = MAX_CUSTOM_GOAL_BY_KEY[k];
+        const clamped = Number.isFinite(n) ? Math.max(0, Math.min(n, cap ?? Number.MAX_SAFE_INTEGER)) : DEFAULT_OPTIONAL_NUTRIENT_GOALS[k];
+        optionalNutrientGoals[k] = clamped;
       }
       await prefs.save({ optionalNutrientGoals });
       location.hash = SETTINGS_PARENT.nutrients;

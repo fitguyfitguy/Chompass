@@ -134,6 +134,7 @@ fun OptionalNutrientGoalsScreen(
     }
 
     editing?.let { nutrient ->
+        val iuTemplate = stringResource(R.string.settings_picker_vitd_iu_hint)
         FudGlassDialog(onDismissRequest = { editing = null }) {
             NutritionPickerSheet(
                 label = stringResource(nutrient.displayNameRes),
@@ -142,6 +143,10 @@ fun OptionalNutrientGoalsScreen(
                 range = nutrient.goalRange,
                 step = nutrient.goalStep,
                 accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
+                maxCustomGoal = nutrient.maxCustomGoal,
+                conversionHintFor = if (nutrient == OptionalNutrient.VITAMIN_D) { v ->
+                    String.format(java.util.Locale.getDefault(), iuTemplate, v, v * 40)
+                } else null,
                 onSave = { value ->
                     vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(nutrient, value))
                     editing = null

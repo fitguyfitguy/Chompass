@@ -172,6 +172,125 @@ export function parseQuantity(value) {
   return null;
 }
 
+/**
+ * Operator characters recognised inside quantity expressions (infix only).
+ * Mirrors Android ServingUnitOption.EXPRESSION_OPERATORS.
+ */
+const EXPRESSION_OPERATORS = new Set(["+", "-", "−", "×", "÷", "*", "/"]);
+
+/**
+ * True when [value] is a plain-number input that also contains an infix
+ * operator (e.g. "50×2", "200−30") — i.e. something applyQuantityInput
+ * evaluates as an arithmetic expression rather than an absolute number.
+ * A leading sign is a delta, not an expression.
+ * @param {string} value
+ */
+export function isQuantityExpression(value) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) return false;
+  const first = trimmed.charAt(0);
+  if (first === "+" || first === "-" || first === "−") return false;
+  return [...trimmed].some((ch) => EXPRESSION_OPERATORS.has(ch));
+}
+
+/**
+ * Left-to-right arithmetic with `× ÷` binding tighter than `+ −`. Tokens
+ * are locale-ish numbers (parseQuantity) and single-char operators.
+ * Malformed chains, empty operands, and division by zero return null.
+ * @param {string} value
+ */
+function evaluateExpression(value) {
+  const tokens = [];
+  let number = "";
+  for (const ch of value) {
+    if (EXPRESSION_OPERATORS.has(ch)) {
+      if (number.length > 0) {
+        const parsed = parseQuantity(number);
+        if (parsed == null) return null;
+        tokens.push(parsed);
+        number = "";
+      }
+      tokens.push(ch);
+    } else {
+      number += ch;
+    }
+  }
+  if (number.length > 0) {
+    const parsed = parseQuantity(number);
+    if (parsed == null) return null;
+    tokens.push(parsed);
+  }
+  if (tokens.length === 0 || typeof tokens[0] !== "number" || typeof tokens[tokens.length - 1] !== "number") return null;
+
+  const values = [];
+  const ops = [];
+  for (const token of tokens) {
+    if (typeof token === "number") values.push(token);
+    else ops.push(token);
+  }
+  if (values.length !== ops.length + 1) return null;
+
+  // Pass 1: × ÷ * / (left to right).
+  let i = 0;
+  while (i < ops.length) {
+    const op = ops[i];
+    if (op === "×" || op === "*" || op === "÷" || op === "/") {
+      const right = values[i + 1];
+      let result;
+      if (op === "÷" || op === "/") {
+        if (right === 0) return null;
+        result = values[i] / right;
+      } else {
+        result = values[i] * right;
+      }
+      values[i] = result;
+      values.splice(i + 1, 1);
+      ops.splice(i, 1);
+    } else {
+      i++;
+    }
+  }
+
+  // Pass 2: + - − (left to right).
+  let acc = values[0];
+  for (let j = 0; j < ops.length; j++) {
+    const op = ops[j];
+    const right = values[j + 1];
+    acc = op === "-" || op === "−" ? acc - right : acc + right;
+  }
+  return acc;
+}
+
+/**
+ * Parse a quantity-field input that may be a relative edit or a small
+ * arithmetic expression — port of Android ServingUnitOption.applyDeltaInput:
+ *
+ *  - a leading `+` / `-` (ASCII or U+2212 minus) is a delta on [current];
+ *  - a string containing an infix operator (`+ - × ÷ * /`) is an absolute
+ *    expression ("50×2" → 100, "200−30" → 170);
+ *  - anything else parses as a plain quantity.
+ *
+ * A lone sign, empty delta, malformed expression, or division by zero
+ * returns null. Callers ignore non-positive results.
+ * @param {string} value
+ * @param {number|null|undefined} current
+ */
+export function applyQuantityInput(value, current) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) return null;
+  const first = trimmed.charAt(0);
+  if (first === "+" || first === "-" || first === "−") {
+    const rest = trimmed.slice(1).trim();
+    if (!rest) return null;
+    const delta = parseQuantity(rest);
+    if (delta == null) return null;
+    const base = current != null ? current : 0;
+    return first === "-" || first === "−" ? base - delta : base + delta;
+  }
+  if (isQuantityExpression(trimmed)) return evaluateExpression(trimmed);
+  return parseQuantity(trimmed);
+}
+
 /** @type {ServingUnitHeuristicRule[]} */
 export const HEURISTIC_RULES = [
   { id: "pizza", keywords: ["pizza"], unit: "slice", defaultGramsPerUnit: 120.0, label: "Pizza → slice" },

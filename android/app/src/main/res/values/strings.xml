@@ -1302,6 +1302,7 @@
     <string name="cd_log">Log</string>
     <string name="cd_close">Close</string>
     <string name="cd_clear_quantity">Clear quantity</string>
+    <string name="cd_quantity_operator">Insert %1$s into quantity</string>
     <string name="cd_hold_to_record">Hold to record, tap to lock</string>
     <string name="cd_cancel_recording">Cancel recording</string>
     <string name="cd_remove_image">Remove image</string>
@@ -1411,6 +1412,7 @@
     <string name="settings_picker_enter_custom">Enter custom value…</string>
     <string name="settings_picker_use_wheel">Use wheel</string>
     <string name="settings_picker_custom_placeholder">Value in %1$s</string>
+    <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
     <string name="settings_pace_loss_format">%1$s/week loss</string>
     <string name="settings_pace_gain_format">%1$s/week gain</string>
     <string name="settings_macro_pin_hint">Pin up to 2 macros to exact grams. Unpinned ones auto-balance from remaining calories.</string>
