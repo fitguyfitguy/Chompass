@@ -1,6 +1,10 @@
 package app.chompass.services
 
 import app.chompass.AppContainer
+import app.chompass.data.FoodRepository
+import app.chompass.data.PreferencesStore
+import app.chompass.data.ProfileRepository
+import app.chompass.data.WaterRepository
 import app.chompass.models.ActivityLevel
 import app.chompass.models.WaterGoalCalculator
 import java.time.Instant
@@ -21,16 +25,35 @@ object WaterReminderPlanner {
         val nextFireMillis: Long,
         /** Interval shown as "next in X min"; null → default text (day-start / next-day fire). */
         val intervalMinutes: Int?,
+        /** Amount to drink at the next fire: one cup, capped by the goal remainder. */
+        val drinkMl: Int,
     )
 
     /**
      * Next fire from current state; null when the water reminder is off or the
      * window is degenerate (end ≤ start). The window is derived from the
      * awake start/end prefs (minutes of day); the goal is the dynamic net goal
-     * when enabled, else the stored manual goal.
+     * when enabled, else the stored manual goal. Container convenience
+     * overload — the dependency form is used by callers without an
+     * [AppContainer] (e.g. the widget snapshot writer).
      */
-    suspend fun next(container: AppContainer, nowMillis: Long = System.currentTimeMillis()): Plan? {
-        val prefs = container.prefs
+    suspend fun next(container: AppContainer, nowMillis: Long = System.currentTimeMillis()): Plan? =
+        next(
+            prefs = container.prefs,
+            foodRepository = container.foodRepository,
+            profileRepository = container.profileRepository,
+            waterRepository = container.waterRepository,
+            nowMillis = nowMillis,
+        )
+
+    /** Dependency form of [next]; same plan, no container needed. */
+    suspend fun next(
+        prefs: PreferencesStore,
+        foodRepository: FoodRepository,
+        profileRepository: ProfileRepository,
+        waterRepository: WaterRepository,
+        nowMillis: Long = System.currentTimeMillis(),
+    ): Plan? {
         if (!prefs.waterTrackingEnabled.first() || !prefs.waterReminderEnabled.first()) return null
         val startMin = prefs.waterAwakeStartHour.first() * 60 + prefs.waterAwakeStartMinute.first()
         val endMin = prefs.waterAwakeEndHour.first() * 60 + prefs.waterAwakeEndMinute.first()
@@ -43,9 +66,9 @@ object WaterReminderPlanner {
 
         val goalMl = if (prefs.waterDynamicEnabled.first()) {
             val foodGrams = WaterGoalCalculator.estimateDiaryGrams(
-                container.foodRepository.entriesForDate(now.toLocalDate()).first(),
+                foodRepository.entriesForDate(now.toLocalDate()).first(),
             )
-            val profile = container.profileRepository.current()
+            val profile = profileRepository.current()
             WaterGoalCalculator.dailyNetGoalMl(
                 baseSource = prefs.waterBaseSource.first(),
                 weightKg = profile?.weightKg,
@@ -60,7 +83,7 @@ object WaterReminderPlanner {
             prefs.waterDailyGoalMl.first()
         }
 
-        val drunkToday = container.waterRepository.entries.first()
+        val drunkToday = waterRepository.entries.first()
             .filter { it.date.atZone(zone).toLocalDate() == now.toLocalDate() }
             .sumOf { it.milliliters }
 
@@ -87,7 +110,18 @@ object WaterReminderPlanner {
             nowMin < startMin -> WaterGoalCalculator.planningIntervalMin(goalMl, cupMl, endMin - startMin)
             else -> offset
         }
-        return Plan(nextFireMillis = nextFireMillis, intervalMinutes = intervalMinutes)
+        // One cup per reminder, capped by the remainder; a next-day fire starts
+        // tomorrow fresh, so its amount is the first cup of the new day.
+        val drinkMl = if (offset != null) {
+            WaterGoalCalculator.nextDrinkMl(goalMl, drunkToday, cupMl)
+        } else {
+            WaterGoalCalculator.nextDrinkMl(goalMl, 0, cupMl)
+        }
+        return Plan(
+            nextFireMillis = nextFireMillis,
+            intervalMinutes = intervalMinutes,
+            drinkMl = drinkMl,
+        )
     }
 
     /** Arms the water reminder to match current state (cancels when off). */

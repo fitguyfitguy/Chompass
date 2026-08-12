@@ -155,6 +155,23 @@ class WaterGoalCalculatorTest {
     }
 
     @Test
+    fun nextDrinkIsOneCupCappedByRemainingGoal() {
+        // Full cup available → the cup.
+        assertEquals(300, WaterGoalCalculator.nextDrinkMl(2500, 1200, 300))
+        // Exactly one cup left.
+        assertEquals(300, WaterGoalCalculator.nextDrinkMl(2000, 1700, 300))
+        // Tail smaller than a cup → the remainder (final reminder of the day).
+        assertEquals(250, WaterGoalCalculator.nextDrinkMl(2000, 1750, 300))
+        // Goal already met (or over) → nothing left to drink.
+        assertEquals(0, WaterGoalCalculator.nextDrinkMl(2000, 2000, 300))
+        assertEquals(0, WaterGoalCalculator.nextDrinkMl(2000, 2500, 300))
+        // Goal smaller than the cup → the whole goal (first cup of the day).
+        assertEquals(200, WaterGoalCalculator.nextDrinkMl(200, 0, 300))
+        // Bigger cup than goal remainder still caps at the remainder.
+        assertEquals(150, WaterGoalCalculator.nextDrinkMl(1500, 1350, 1000))
+    }
+
+    @Test
     fun planningIntervalMatchesReportersWorkedExample() {
         // Reporter: 2500 ml ÷ 300 ml cup over 13 h → ~93 min. With whole cups
         // (9) the interval is 780 ÷ 9 ≈ 87 → 85 min.

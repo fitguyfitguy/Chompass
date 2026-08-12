@@ -150,6 +150,16 @@ object WaterGoalCalculator {
         ceil(max(goalMl, 0) / cupSizeMl.coerceAtLeast(1).toDouble()).toInt()
 
     /**
+     * Amount to drink at the next reminder: one cup, capped by the goal
+     * remainder (0 once the goal is met — callers then re-arm for tomorrow).
+     * Every reminder prompts one cup so the per-cup cadence and the quantity
+     * agree; a tail smaller than a cup (e.g. 250 ml left with a 300 ml cup)
+     * becomes the final reminder's amount.
+     */
+    fun nextDrinkMl(netGoalMl: Int, drunkTodayMl: Int, cupSizeMl: Int): Int =
+        minOf(cupSizeMl, max(netGoalMl - drunkTodayMl, 0))
+
+    /**
      * Full-day planning form of the reporter's formula:
      * `window ÷ cups(goal ÷ cup)`, rounded to 5 min and clamped like the live
      * form so the Settings preview matches what the alarm chain does at day
