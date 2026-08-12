@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -356,7 +357,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             analysisInFlight = false
         }
         container.analyzingFood.value = false
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             pendingAnalysis = null,
             pendingReviewSource = null,
             analyzing = false,
@@ -365,25 +366,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             analysisPartial = null,
             inferringUnits = false,
             error = null,
-        )
+        ) }
     }
 
     private fun onFoodAnalysisProgress(generation: Int, progress: FoodAnalysisProgress) {
         if (generation != analysisGeneration) return
         when (progress) {
             is FoodAnalysisProgress.Phase -> {
-                _ui.value = _ui.value.copy(analysisPhase = progress.phase)
+                _ui.update { it.copy(analysisPhase = progress.phase) }
             }
             is FoodAnalysisProgress.Partial -> {
                 val preview = progress.partial.toPreviewAnalysis()
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     analysisPartial = progress.partial,
                     analysisPreview = preview ?: _ui.value.analysisPreview,
-                )
+                ) }
             }
             is FoodAnalysisProgress.Parsed -> {
                 if (progress.unitsPending) {
-                    _ui.value = _ui.value.copy(
+                    _ui.update { it.copy(
                         analysisPhase = null,
                         analysisPreview = progress.analysis,
                         analysisPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
@@ -393,40 +394,40 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         pendingAnalysis = progress.analysis,
                         analyzing = false,
                         inferringUnits = true,
-                    )
+                    ) }
                     container.analyzingFood.value = false
                 } else {
-                    _ui.value = _ui.value.copy(
+                    _ui.update { it.copy(
                         analysisPreview = progress.analysis,
                         analysisPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
                             progress.analysis,
                             streaming = false,
                         ),
-                    )
+                    ) }
                 }
             }
             is FoodAnalysisProgress.Complete -> {
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     pendingAnalysis = progress.analysis,
                     inferringUnits = false,
                     analysisPreview = null,
                     analysisPartial = null,
                     analysisPhase = null,
-                )
+                ) }
             }
         }
     }
 
     private fun failAnalysis(gen: Int, message: String?) {
         if (gen != analysisGeneration) return
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             analyzing = false,
             analysisPhase = null,
             analysisPreview = null,
             analysisPartial = null,
             inferringUnits = false,
             error = message,
-        )
+        ) }
     }
 
     private fun endAnalysis(gen: Int) {
@@ -503,18 +504,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.homeDisplayPreferences
             .onEach { display ->
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     homeDisplay = display,
                     homeTopNutrients = display.homeTopNutrients,
                     foodLogMacroChips = display.foodLogMacroChips,
-                )
+                ) }
                 refreshActivitySnapshot()
             }
             .launchIn(viewModelScope)
 
         container.prefs.healthEnergyMeasuredActive
             .onEach { measuredActive ->
-                _ui.value = _ui.value.copy(measuredActiveAverageCalories = measuredActive)
+                _ui.update { it.copy(measuredActiveAverageCalories = measuredActive) }
             }
             .launchIn(viewModelScope)
 
@@ -524,54 +525,54 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.optionalNutrientGoals
             .onEach { goals ->
-                _ui.value = _ui.value.copy(optionalNutrientGoals = goals)
+                _ui.update { it.copy(optionalNutrientGoals = goals) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.preferGramsByDefault
             .onEach { preferGrams ->
-                _ui.value = _ui.value.copy(preferGramsByDefault = preferGrams)
+                _ui.update { it.copy(preferGramsByDefault = preferGrams) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.portionClarifyEnabled
             .onEach { enabled ->
-                _ui.value = _ui.value.copy(portionClarifyEnabled = enabled)
+                _ui.update { it.copy(portionClarifyEnabled = enabled) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.skipPhotoNotePrompt
             .onEach { skip ->
-                _ui.value = _ui.value.copy(skipPhotoNotePrompt = skip)
+                _ui.update { it.copy(skipPhotoNotePrompt = skip) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.photoNoteSkipCount
             .onEach { count ->
-                _ui.value = _ui.value.copy(photoNoteSkipCount = count)
+                _ui.update { it.copy(photoNoteSkipCount = count) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.photoAccuracyGuideCount
             .onEach { count ->
-                _ui.value = _ui.value.copy(photoAccuracyGuideCount = count)
+                _ui.update { it.copy(photoAccuracyGuideCount = count) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.hasSeenCameraScaleTip
             .onEach { seen ->
-                _ui.value = _ui.value.copy(hasSeenCameraScaleTip = seen)
+                _ui.update { it.copy(hasSeenCameraScaleTip = seen) }
             }
             .launchIn(viewModelScope)
 
         container.prefs.weightUnit
             .onEach { unit ->
-                _ui.value = _ui.value.copy(weightMetric = unit == "kg")
+                _ui.update { it.copy(weightMetric = unit == "kg") }
             }
             .launchIn(viewModelScope)
 
         container.prefs.waterTrackingEnabled
-            .onEach { enabled -> _ui.value = _ui.value.copy(waterTrackingEnabled = enabled) }
+            .onEach { enabled -> _ui.update { it.copy(waterTrackingEnabled = enabled) } }
             .launchIn(viewModelScope)
 
         // Effective water goal: the stored manual goal, or the dynamic calculator's
@@ -613,13 +614,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
         }
             .onEach { (goal, dynamic) ->
-                _ui.value = _ui.value.copy(waterDailyGoalMl = goal, waterGoalDynamic = dynamic)
+                _ui.update { it.copy(waterDailyGoalMl = goal, waterGoalDynamic = dynamic) }
                 refreshWaterPlan()
             }
             .launchIn(viewModelScope)
 
         container.prefs.waterQuickPresetsMl
-            .onEach { presets -> _ui.value = _ui.value.copy(waterQuickPresetsMl = presets) }
+            .onEach { presets -> _ui.update { it.copy(waterQuickPresetsMl = presets) } }
             .launchIn(viewModelScope)
 
         combine(container.waterRepository.entries, _selectedDate) { entries, day ->
@@ -629,7 +630,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 .sumOf { it.milliliters }
         }
             .onEach { total ->
-                _ui.value = _ui.value.copy(waterTodayMl = total)
+                _ui.update { it.copy(waterTodayMl = total) }
                 refreshWaterPlan()
             }
             .launchIn(viewModelScope)
@@ -664,11 +665,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         combine(container.manualActiveRepository.entries, _selectedDate) { entries, day ->
             entries.filter { it.date == day.toString() }.sumOf { it.calories }
         }
-            .onEach { total -> _ui.value = _ui.value.copy(manualActiveKcal = total) }
+            .onEach { total -> _ui.update { it.copy(manualActiveKcal = total) } }
             .launchIn(viewModelScope)
 
         container.prefs.debugShowRestingShade
-            .onEach { show -> _ui.value = _ui.value.copy(showRestingBurnShade = show) }
+            .onEach { show -> _ui.update { it.copy(showRestingBurnShade = show) } }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {
@@ -702,7 +703,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      */
     private fun refreshWaterPlan() {
         viewModelScope.launch {
-            _ui.value = _ui.value.copy(waterNextPlan = WaterReminderPlanner.next(container))
+            _ui.update { it.copy(waterNextPlan = WaterReminderPlanner.next(container)) }
         }
     }
 
@@ -724,11 +725,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val needsMeasuredEnergy = display.calorieDisplayMode ==
                 HomeCalorieDisplayMode.ADD_ACTIVE && container.prefs.healthConnectEnabled.first()
             if (!needsActivitySnapshot && !needsMeasuredEnergy) {
-                _ui.value = _ui.value.copy(activitySnapshot = HomeActivitySnapshot(date = day))
+                _ui.update { it.copy(activitySnapshot = HomeActivitySnapshot(date = day)) }
                 return@launch
             }
             val snapshot = container.homeActivityReader.readForDate(day)
-            _ui.value = _ui.value.copy(activitySnapshot = snapshot)
+            _ui.update { it.copy(activitySnapshot = snapshot) }
         }
     }
 
@@ -965,7 +966,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     analysisInFlight = false
                 }
                 container.analyzingFood.value = false
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     pendingGroundedReview = PendingGroundedReview(
                         result = result,
                         description = description,
@@ -977,7 +978,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     inferringUnits = false,
                     analysisPreview = null,
                     analysisPartial = null,
-                )
+                ) }
             } else {
                 savePendingDraft(
                     result.analysis,
@@ -1020,7 +1021,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun dismissGroundedReview() {
-        _ui.value = _ui.value.copy(pendingGroundedReview = null)
+        _ui.update { it.copy(pendingGroundedReview = null) }
     }
 
     fun saveAnalysis(
@@ -1040,7 +1041,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val pendingDraftImageFilename = _ui.value.pendingDraftImageFilename
         viewModelScope.launch {
             if (_ui.value.saving) return@launch
-            _ui.value = _ui.value.copy(saving = true)
+            _ui.update { it.copy(saving = true) }
             try {
                 withContext(Dispatchers.Default) {
                 val imageBytes = _ui.value.pendingImageBytes
@@ -1110,17 +1111,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // in the background so the review sheet can dismiss as soon as the
                 // diary row is on disk instead of after the HC round-trip.
                 viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     pendingAnalysis = null,
                     pendingImageBytes = null,
                     pendingAnalysisImages = emptyList(),
                     pendingFoodSource = null,
                     pendingDraftImageFilename = null,
                     pendingReviewSource = null
-                )
+                ) }
                 }
             } finally {
-                _ui.value = _ui.value.copy(saving = false)
+                _ui.update { it.copy(saving = false) }
             }
         }
     }
@@ -1162,7 +1163,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             items = (existing?.items ?: emptyList()) + item,
         )
         val previousDraftImage = _ui.value.pendingDraftImageFilename
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             progressiveMeal = draft,
             pendingAnalysis = null,
             pendingImageBytes = null,
@@ -1172,7 +1173,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingReviewSource = null,
             resumeProgressiveCapture = resumeCapture,
             showProgressiveMealSheet = !resumeCapture,
-        )
+        ) }
         viewModelScope.launch {
             discardPendingDraft(previousDraftImage)
         }
@@ -1194,34 +1195,34 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun updateProgressiveMealMeta(name: String, mealType: MealType) {
         val draft = _ui.value.progressiveMeal ?: return
-        _ui.value = _ui.value.copy(progressiveMeal = draft.copy(name = name, mealType = mealType))
+        _ui.update { it.copy(progressiveMeal = draft.copy(name = name, mealType = mealType)) }
     }
 
     fun discardProgressiveMeal() {
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             progressiveMeal = null,
             showProgressiveMealSheet = false,
             resumeProgressiveCapture = false,
-        )
+        ) }
     }
 
     fun consumeResumeProgressiveCapture() {
         if (_ui.value.resumeProgressiveCapture) {
-            _ui.value = _ui.value.copy(resumeProgressiveCapture = false)
+            _ui.update { it.copy(resumeProgressiveCapture = false) }
         }
     }
 
     fun showProgressiveMealSheet(show: Boolean) {
-        _ui.value = _ui.value.copy(showProgressiveMealSheet = show)
+        _ui.update { it.copy(showProgressiveMealSheet = show) }
     }
 
     /** Start another capture while keeping the draft; hides the meal sheet until review. */
     fun continueProgressiveCapture() {
         if (_ui.value.progressiveMeal?.items.isNullOrEmpty()) return
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             showProgressiveMealSheet = false,
             resumeProgressiveCapture = true,
-        )
+        ) }
     }
 
     fun logProgressiveMeal() {
@@ -1229,7 +1230,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (draft.items.isEmpty() || _ui.value.saving) return
         viewModelScope.launch {
             if (_ui.value.saving) return@launch
-            _ui.value = _ui.value.copy(saving = true)
+            _ui.update { it.copy(saving = true) }
             try {
                 val recipeLogId = UUID.randomUUID()
                 val timestamp = timestampForSelectedDay()
@@ -1281,13 +1282,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 viewModelScope.launch {
                     built.forEach { container.foodRepository.mirrorEntryToHealth(it) }
                 }
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     progressiveMeal = null,
                     showProgressiveMealSheet = false,
                     resumeProgressiveCapture = false,
-                )
+                ) }
             } finally {
-                _ui.value = _ui.value.copy(saving = false)
+                _ui.update { it.copy(saving = false) }
             }
         }
     }
@@ -1310,7 +1311,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             ++analysisGeneration
             analysisInFlight = false
         }
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             pendingAnalysis = null,
             pendingImageBytes = null,
             pendingAnalysisImages = emptyList(),
@@ -1325,7 +1326,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             inferringUnits = false,
             analyzing = false,
             error = null
-        )
+        ) }
         container.analyzingFood.value = false
         viewModelScope.launch {
             discardPendingDraft(previousDraftImage)
@@ -1378,9 +1379,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             if (bytes == null) {
                 clearPendingInputDraft()
-                _ui.value = _ui.value.copy(
+                _ui.update { it.copy(
                     error = container.appContext.getString(R.string.error_failed_input_missing)
-                )
+                ) }
                 return@launch
             }
             analyzePhotoWithNote(
@@ -1394,12 +1395,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun dismissFailedInput() {
         viewModelScope.launch {
             clearPendingInputDraft()
-            _ui.value = _ui.value.copy(error = null)
+            _ui.update { it.copy(error = null) }
         }
     }
 
     fun clearError() {
-        _ui.value = _ui.value.copy(error = null)
+        _ui.update { it.copy(error = null) }
     }
 
     /**
@@ -1413,7 +1414,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val bytes = template.imageFilename?.let {
             runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
         }
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             pendingAnalysis = analysis,
             pendingImageBytes = bytes,
             pendingAnalysisImages = listOfNotNull(bytes),
@@ -1422,7 +1423,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingReviewSource = template,
             pendingPortionPreConfirmed = false,
             error = null
-        )
+        ) }
     }
 
     fun deleteEntry(entry: FoodEntry) {
@@ -1473,7 +1474,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (entries.isEmpty() || _ui.value.saving) return
         viewModelScope.launch {
             if (_ui.value.saving) return@launch
-            _ui.value = _ui.value.copy(saving = true)
+            _ui.update { it.copy(saving = true) }
             try {
                 // Upstream #149 / Android 6.0: reused copies log at now + current meal
                 // (not the source entry's clock time / meal bucket). One batched
@@ -1485,20 +1486,20 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     duplicated.forEach { container.foodRepository.mirrorEntryToHealth(it) }
                 }
             } finally {
-                _ui.value = _ui.value.copy(saving = false)
+                _ui.update { it.copy(saving = false) }
             }
         }
     }
 
     /** Remember selected diary rows for a later paste (selection-bar Copy). */
     fun setCopiedEntries(entries: List<FoodEntry>) {
-        _ui.value = _ui.value.copy(copiedEntries = entries)
+        _ui.update { it.copy(copiedEntries = entries) }
     }
 
     /** Drop the paste clipboard (chip dismiss / app state reset). */
     fun clearCopiedEntries() {
         if (_ui.value.copiedEntries.isNotEmpty()) {
-            _ui.value = _ui.value.copy(copiedEntries = emptyList())
+            _ui.update { it.copy(copiedEntries = emptyList()) }
         }
     }
 
@@ -1515,7 +1516,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (_ui.value.saving) return
         viewModelScope.launch {
             if (_ui.value.saving) return@launch
-            _ui.value = _ui.value.copy(saving = true)
+            _ui.update { it.copy(saving = true) }
             try {
                 container.foodRepository.addEntry(
                     FoodEntry(
@@ -1534,7 +1535,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     )
                 )
             } finally {
-                _ui.value = _ui.value.copy(saving = false)
+                _ui.update { it.copy(saving = false) }
             }
         }
     }
@@ -1576,7 +1577,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
         )
         if (generation != analysisGeneration) return
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             analyzing = false,
             analysisPhase = null,
             analysisPreview = null,
@@ -1592,7 +1593,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingInputConfirmedPortionGrams = null,
             pendingPortionPreConfirmed = portionPreConfirmed,
             pendingInputDraftImageFilename = null
-        )
+        ) }
     }
 
     private fun restorePendingDraft(draft: PendingFoodAnalysisDraft) {
@@ -1607,7 +1608,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     container.foodRepository.existingFoodIdentityKeys(),
                 )
             )
-            _ui.value = _ui.value.copy(
+            _ui.update { it.copy(
                 analyzing = false,
                 analysisPhase = null,
                 analysisPreview = null,
@@ -1625,7 +1626,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingPortionPreConfirmed = false,
                 pendingInputDraftImageFilename = null,
                 error = null
-            )
+            ) }
         }
     }
 
@@ -1662,30 +1663,30 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 source = source
             )
         )
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             pendingInputImageBytes = imageBytes,
             pendingInputNote = note,
             pendingInputConfirmedPortionGrams = grams,
             pendingInputDraftImageFilename = imageFilename
-        )
+        ) }
     }
 
     private suspend fun restorePendingInputDraft(draft: PendingFoodInputDraft) {
         val bytes = runCatching { container.imageStore.file(draft.imageFilename).readBytes() }.getOrNull()
         if (bytes == null) {
             clearPendingInputDraft()
-            _ui.value = _ui.value.copy(
+            _ui.update { it.copy(
                 error = container.appContext.getString(R.string.error_failed_input_missing)
-            )
+            ) }
             return
         }
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             pendingInputImageBytes = bytes,
             pendingInputNote = draft.note,
             pendingInputConfirmedPortionGrams = draft.confirmedPortionGrams?.takeIf { it > 0 },
             pendingInputDraftImageFilename = draft.imageFilename,
             error = null
-        )
+        ) }
     }
 
     private suspend fun clearPendingInputDraft() {
@@ -1693,12 +1694,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
         container.prefs.setPendingFoodInputDraft(null)
         filename?.let { container.imageStore.delete(it) }
-        _ui.value = _ui.value.copy(
+        _ui.update { it.copy(
             pendingInputImageBytes = null,
             pendingInputNote = null,
             pendingInputConfirmedPortionGrams = null,
             pendingInputDraftImageFilename = null
-        )
+        ) }
     }
 
     private suspend fun discardPendingDraft(imageFilename: String? = _ui.value.pendingDraftImageFilename) {
@@ -1743,7 +1744,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // emit progress so callers can observe streaming fields if needed.
         val result = container.foodAnalysis.analyzeFood(bytes, description) { }
             .copy(customNote = originalNote)
-        _ui.value = _ui.value.copy(pendingAnalysis = result)
+        _ui.update { it.copy(pendingAnalysis = result) }
     }
 
     suspend fun reprocessFoodEntry(

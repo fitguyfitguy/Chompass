@@ -6,7 +6,8 @@ All notable changes to Chompass are documented here.
 
 ### Added
 
-- **Copy and paste diary entries** (Android): long-press one or more food rows to enter selection mode, tap Copy in the selection bar, then tap the Paste chip to drop the entries onto the viewed day (same day or another day). Pasting duplicates the entries as new rows at the current meal slot, batched in one write with Health Connect mirroring in the background, same as Copy from Day. The clipboard is in-memory and holds until replaced or dismissed.
+- **Copy and paste diary entries** (Android): long-press one or more food rows to enter selection mode, tap Copy in the selection bar, then tap the Paste chip to drop the entries onto the viewed day (same day or another day). Pasting duplicates the entries as new rows at the current meal slot, batched in one write with Health Connect mirroring in the background, same as Copy from Day. The clipboard is in-memory and holds until replaced or dismissed. The chip is full-width with the dismiss on the right, shows a brief *Pasting…* state while a write is in flight, and pastes repeat as many times as you like.
+- **Fixed a save-state race that could freeze all logging** (Android): the home screen's reactive flows (water goal, water plan, activity snapshot) and save operations both wrote the whole UI state with a read-modify-write (`copy`), so a flow firing right after a save could resurrect a stale `saving=true` and silently block every subsequent log/paste/edit until the app restarted. All 58 state writes now go through atomic `update`, eliminating the race.
 
 ## [3.10.0] - 2026-08-12
 
