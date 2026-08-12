@@ -101,6 +101,7 @@ internal fun WaterReminderPlanSheet(
                     R.string.settings_water_reminder_interval_preview,
                     interval,
                     WaterGoalCalculator.cupsFor(goalMl, cupMl),
+                    cupMl,
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
