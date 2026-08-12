@@ -149,6 +149,12 @@ data class HomeUiState(
     /** Show [ProgressiveMealSheet] when the draft has items and capture is idle. */
     val showProgressiveMealSheet: Boolean = false,
     val manualActiveKcal: Int = 0,
+    /**
+     * Diary entries copied via the selection bar, waiting to be pasted onto
+     * the viewed day (in-memory only, cleared on app restart). Empty when the
+     * clipboard is unset.
+     */
+    val copiedEntries: List<FoodEntry> = emptyList(),
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     /** Progressive Log sheet: analysis running or a completed review is waiting. */
@@ -1481,6 +1487,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             } finally {
                 _ui.value = _ui.value.copy(saving = false)
             }
+        }
+    }
+
+    /** Remember selected diary rows for a later paste (selection-bar Copy). */
+    fun setCopiedEntries(entries: List<FoodEntry>) {
+        _ui.value = _ui.value.copy(copiedEntries = entries)
+    }
+
+    /** Drop the paste clipboard (chip dismiss / app state reset). */
+    fun clearCopiedEntries() {
+        if (_ui.value.copiedEntries.isNotEmpty()) {
+            _ui.value = _ui.value.copy(copiedEntries = emptyList())
         }
     }
 

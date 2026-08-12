@@ -2,6 +2,12 @@
 
 All notable changes to Chompass are documented here.
 
+## [Unreleased]
+
+### Added
+
+- **Copy and paste diary entries** (Android): long-press one or more food rows to enter selection mode, tap Copy in the selection bar, then tap the Paste chip to drop the entries onto the viewed day (same day or another day). Pasting duplicates the entries as new rows at the current meal slot, batched in one write with Health Connect mirroring in the background, same as Copy from Day. The clipboard is in-memory and holds until replaced or dismissed.
+
 ## [3.10.0] - 2026-08-12
 
 ### Added

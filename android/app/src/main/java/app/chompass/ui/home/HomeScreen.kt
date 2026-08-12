@@ -20,13 +20,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -78,6 +81,7 @@ import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
@@ -576,14 +580,14 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             )
         }
         val draftForChip = ui.progressiveMeal
-        if (!ui.showProgressiveMealSheet &&
+        val showProgressiveChip = !ui.showProgressiveMealSheet &&
             draftForChip != null &&
             draftForChip.items.isNotEmpty() &&
             !ui.showFoodResultSheet &&
             !ui.resumeProgressiveCapture &&
             !showCameraCapture &&
             !showMultiPhotoCapture
-        ) {
+        if (showProgressiveChip) {
             FloatingActionButton(
                 onClick = { vm.showProgressiveMealSheet(true) },
                 modifier = Modifier
@@ -600,10 +604,59 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 )
             }
         }
+        // Paste chip: diary rows copied via the selection bar, ready to be
+        // pasted onto the viewed day (same or another day). In-memory clipboard.
+        val copied = ui.copiedEntries
+        if (copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) {
+            val pasteMessage = stringResource(R.string.pasted_n_entries, copied.size)
+            val paste: () -> Unit = {
+                vm.copyEntriesToSelectedDay(copied)
+                scope.launch {
+                    snackbarHostState.showSnackbar(pasteMessage)
+                }
+            }
+            FudGlassSurface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(start = 88.dp, end = 88.dp, bottom = BottomNavDockedControlPadding + 16.dp)
+                    .clickable(onClick = paste)
+                    .zIndex(1f),
+                cornerRadius = 22.dp,
+                padding = 0.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.paste_n_entries, copied.size),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 15.sp,
+                    )
+                    IconButton(
+                        onClick = { vm.clearCopiedEntries() },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.cd_dismiss_paste),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+        }
         if (inSelectionMode) {
             SelectionActionBar(
                 selectedCount = selectedEntryIds.size,
                 onCancel = { selectedEntryIds = emptySet() },
+                onCopy = {
+                    vm.setCopiedEntries(selectedEntries)
+                    selectedEntryIds = emptySet()
+                },
                 onShare = {
                     MealShare.share(ctx, selectedEntries)
                     selectedEntryIds = emptySet()

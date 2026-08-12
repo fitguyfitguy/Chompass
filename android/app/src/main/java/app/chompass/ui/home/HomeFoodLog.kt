@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -154,6 +155,7 @@ internal fun SelectionActionBar(
     selectedCount: Int,
     onCancel: () -> Unit,
     onShare: () -> Unit,
+    onCopy: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     FudGlassSurface(
@@ -185,6 +187,14 @@ internal fun SelectionActionBar(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 modifier = Modifier.weight(1f)
             )
+            IconButton(onClick = onCopy, enabled = selectedCount > 0) {
+                Icon(
+                    imageVector = Icons.Outlined.ContentCopy,
+                    contentDescription = stringResource(R.string.cd_copy_entries),
+                    tint = if (selectedCount > 0) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
             IconButton(onClick = onShare, enabled = selectedCount > 0) {
                 Icon(
                     imageVector = Icons.Outlined.IosShare,
