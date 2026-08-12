@@ -836,7 +836,7 @@
     <string name="settings_water_drinking_ends">Drinking ends</string>
     <string name="settings_water_cup_size">Cup size</string>
     <string name="settings_water_cup_size_summary">%1$d ml</string>
-    <string name="settings_water_reminder_interval_preview">≈ every %1$d min · %2$d cups</string>
+    <string name="settings_water_reminder_interval_preview">≈ every %1$d min · %2$d cups · %3$d ml each</string>
     <string name="settings_water_reminder_interval_help">Interval = drinking window ÷ cups needed for the goal. Recalculated after every entry.</string>
     <string name="settings_water_restore_default_plan">Restore defaults (08:00 – 21:00, 300 ml)</string>
     <string name="settings_water_reminder_window_too_short">The drinking window needs at least 15 minutes.</string>
