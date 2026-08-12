@@ -44,6 +44,10 @@ docs/local/
 AGENTS.md
 CLAUDE.md
 
+# Local Codeberg issue workflow (templates + label script, not published)
+.forgejo/
+scripts/setup_codeberg_labels.sh
+
 # Release artifacts (published on Codeberg Releases)
 NoFUD-*.apk
 Chompass-*.apk
