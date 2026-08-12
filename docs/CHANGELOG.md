@@ -2,6 +2,23 @@
 
 All notable changes to Chompass are documented here.
 
+## [Unreleased]
+
+### Added
+
+- **Water log syncs to Health Connect** (Android): every logged drink is written out as a Health Connect `HydrationRecord` (tagged with the entry's UUID) when water tracking is enabled and the write permission is granted; deleting an entry deletes its record, and reconnecting backfills the whole log. After a reinstall or a new phone, the records Chompass itself wrote are read back (730-day window) and rebuilt into the local water log, recovering the original UUIDs so future deletes still match. The Progress wellness card keeps reading all hydration Health Connect holds — your own records included. Closes Codeberg [#9](https://codeberg.org/fitguy/Chompass/issues/9).
+- **Water reminders say how much to drink** (Android): the reminder planner now computes the next-drink amount (*remaining goal ÷ cup size ÷ remaining window*) and the notification tells you — "Drink 300 ml · next in ~90 min". The Home water ring and the water widget show the next planned drink ("Next 18:20 · 300 ml"), and the reminder interval preview in Settings shows the per-cup quantity ("≈ every 90 min · 5 cups · 300 ml each"). The quantity rule is documented in the water register ([`docs/CALCULATION_METHODS.md`](docs/CALCULATION_METHODS.md)).
+- **Ukrainian (uk) locale** (Android + PWA): complete 347-key catalog — Chompass's **16th language** (Android `values-uk` + PWA `uk.js`, both sides of the shared locale contract).
+
+### Changed
+
+- **Settings reorganized into per-domain screens** (Android): new **Food & Entry**, **Water**, **Notifications** and **Sync** sub-screens; App & Display shrinks from up to 24 inline rows to 7 static ones that deep-link to the domains; AI & Speech keeps provider wiring only. Settings become a **connected graph** — read-only cross-link rows navigate between related screens (Goals ↔ Water, Water ↔ Notifications, AI → Food & Entry, Data → Sync) with a `from` nav argument so the back label retraces the path; dependencies are shown disabled with a link instead of hidden (the water-reminder toggle stays visible). A new **Suggestions** card on the hub shows up to 3 dismissible nudges (water tracking, reminders, Adaptive Goals, Health Connect, notifications, WebDAV backup) gated by install age — rows only navigate, nothing is auto-enabled. Consistency pass: *Auto* chip replaces the lock glyph, shared footnote and related-links composables, danger-zone separation for Clear Food Log / Delete All Data. **No behavior, storage, or formula changes to existing settings keys.** Plan and execution log: [`docs/SETTINGS_OVERHAUL_PLAN.md`](docs/SETTINGS_OVERHAUL_PLAN.md).
+- **Localization hygiene** (Android + PWA): 1,551 verbatim English copies removed from the 15 locale packs (Russian copies translated, neutral formats and brands dropped — the Android string check now fails on phrase-level EN-identical values); hardcoded UI text moved to `strings.xml` (native speech errors, camera flash labels, WebDAV/sync messages, on-device download failure, AI provider errors); PWA catalogs gained 63 keys and the i18n test now asserts no EN copies. The onboarding tagline was rewritten to plain language ("Track meals, stay balanced") and re-translated.
+
+### Fixed
+
+- **Fallback AI provider keeps its own base URL and API key** (Android): main and fallback slots no longer share one stored URL/key per provider — a fallback that reuses the primary provider (e.g. a second OpenAI-compatible endpoint with a different model) keeps its own endpoint and key instead of silently inheriting the primary's after restart. Fallback-slot values live under separate keys (`customBaseURL_fallback_*`, `apikey_fallback_*`); existing primary values are untouched. Users with a same-provider main+fallback should re-enter the fallback URL/key once.
+
 ## [3.9.0] - 2026-08-11
 
 ### Added
