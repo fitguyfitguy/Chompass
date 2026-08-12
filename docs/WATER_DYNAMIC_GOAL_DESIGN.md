@@ -112,9 +112,12 @@ re-arm is "next computed fire" (via `WaterReminderPlanner`), not "+24 h":
    (`RECEIVE_BOOT_COMPLETED` permission already declared) and re-arms the
    water chain (other daily reminders keep their existing reboot gap; out of
    scope, but the receiver is the natural home for a follow-up).
-5. **Notification text**: "Have some water. Next reminder in ~X min."
-   (`notif_water_text_next`) when the cadence is known; the default text
-   otherwise.
+5. **Notification text**: the notification carries the **quantity to drink**
+   (`min(cup, goal − drunkToday)`, one cup per reminder, tail capped at the
+   remainder) plus the next cadence: “Drink 300 ml · next in ~90 min.”
+   (`notif_water_text_next_qty`) when the interval is known; “Drink 300 ml
+   and log it in Chompass.” (`notif_water_text_qty`) for a day-start fire.
+   Amounts follow the user's unit (ml / fl oz, same as Home).
 
 Clamps/edges: interval [30, 240] min; awake window shorter than one interval
 degenerates to one reminder at `awakeStart`; DST/timezone shifts are absorbed
@@ -155,10 +158,20 @@ reminder chain alike.
   crossing).
 - `services/NotificationService.kt`: `scheduleAdaptiveWaterReminder(nextFire)`
   alongside the existing fixed-time method; `ReminderReceiver` branches on
-  `CHANNEL_WATER` for interval re-arm + boot re-arm.
+  `CHANNEL_WATER` for interval re-arm + boot re-arm, and formats the
+  notification with the planned quantity.
 - `ui/settings/SettingsAppSection.kt` + `SettingsSheets.kt`: new rows/sheets.
 - `ui/home/HomeViewModel.kt`, `services/WidgetSnapshotWriter.kt`: read the
   computed goal instead of the raw pref when dynamic is on.
+- `ui/home/HomeViewModel.kt` additionally re-derives `waterNextPlan`
+  (`WaterReminderPlanner.Plan` with the fire time + drink amount) whenever any
+  planner input changes; `ui/home/WaterViews.kt` shows it under the progress
+  bar (“Next 300 ml · 15:24”, “tomorrow 08:00” for next-day fires).
+- `services/WidgetSnapshotWriter.kt` runs the same plan re-derivation (via the
+  dependency form of `WaterReminderPlanner.next`, no container needed) into
+  `WidgetSnapshot.waterNextFireAtMillis` / `waterNextDrinkMl`;
+  `widget/WaterAppWidget.kt` renders the line under the remaining label
+  (hidden once the fire time is in the past — the widget cannot tick).
 
 ## Settings UI
 
@@ -182,6 +195,12 @@ reminder chain alike.
 
 **Home water card**: goal ring shows the dynamic goal; small "auto" badge;
 tapping the badge opens Settings (the new water section with the breakdown).
+Below the bar, a **next-drink line** shows the upcoming reminder's amount and
+fire time (“Next 300 ml · 15:24”, “tomorrow 08:00” for next-day fires; fl oz
+for imperial users) — null (hidden) when the reminder is off, the goal is
+met, or the window is degenerate. The **water widget** shows the same line
+under its remaining label (compact 11 sp, single line; hidden once the fire
+time has passed, since a widget cannot tick).
 
 **Beta + medical disclaimer**: the dynamic-goal block is labelled **Beta** with a
 warning card. The target is an estimate from general guidelines, can be wrong
