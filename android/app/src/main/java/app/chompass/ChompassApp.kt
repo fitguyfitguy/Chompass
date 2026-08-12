@@ -170,7 +170,7 @@ class AppContainer(app: ChompassApp) {
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health, syncRepository)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs, syncRepository)
     val chatRepository = ChatRepository(prefs)
-    val waterRepository = WaterRepository(prefs, syncRepository).apply {
+    val waterRepository = WaterRepository(prefs, health, syncRepository).apply {
         // Re-arm the adaptive reminder chain after every water entry so the next
         // reminder reflects the new pace immediately (issue #3). `app.container`
         // is lateinit but always assigned before any entry can be added.
@@ -225,6 +225,7 @@ class AppContainer(app: ChompassApp) {
         foodRepository = foodRepository,
         weightRepository = weightRepository,
         bodyFatRepository = bodyFatRepository,
+        waterRepository = waterRepository,
     )
     private val adaptiveGoals = AdaptiveGoalsService(
         prefs = prefs,

@@ -3,6 +3,7 @@ package app.chompass.services.health
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.BodyFatRecord
 import androidx.health.connect.client.records.HeightRecord
+import androidx.health.connect.client.records.HydrationRecord
 import androidx.health.connect.client.records.MealType as HCMealType
 import androidx.health.connect.client.records.NutritionRecord
 import androidx.health.connect.client.records.WeightRecord
@@ -11,8 +12,10 @@ import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
 import androidx.health.connect.client.units.Percentage
+import androidx.health.connect.client.units.Volume
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.FoodEntry
+import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import java.time.Instant
 import java.util.UUID
@@ -87,6 +90,39 @@ internal class HealthConnectWriter(
             metadata = Metadata.manualEntry(clientRecordId = clientId)
         )
         return runCatching { c.insertRecords(listOf(record)) }.isSuccess
+    }
+
+    /** Push a water log entry OUT to Health Connect as a HydrationRecord, tagged
+     *  with the entry UUID so deletes and the reinstall-restore stay linked.
+     *  Future-dated entries are rejected, mirroring writeNutrition. Hydration
+     *  is an interval record — use a 1-minute span like Nutrition, since a
+     *  zero-duration interval is rejected by Health Connect. */
+    suspend fun writeHydration(entry: WaterEntry): Boolean {
+        val c = client() ?: return false
+        if (entry.milliliters <= 0) return false
+        val start = entry.date
+        if (start.isAfter(Instant.now())) return false
+        val end = start.plusSeconds(60)
+        val record = HydrationRecord(
+            startTime = start,
+            startZoneOffset = null,
+            endTime = end,
+            endZoneOffset = null,
+            volume = Volume.liters(entry.milliliters / 1000.0),
+            metadata = Metadata.manualEntry(clientRecordId = tag(entry.id))
+        )
+        return runCatching { c.insertRecords(listOf(record)) }.isSuccess
+    }
+
+    suspend fun deleteHydration(entryId: UUID): Boolean {
+        val c = client() ?: return false
+        return runCatching {
+            c.deleteRecords(
+                recordType = HydrationRecord::class,
+                recordIdsList = emptyList(),
+                clientRecordIdsList = listOf(tag(entryId))
+            )
+        }.isSuccess
     }
 
     suspend fun writeNutrition(entry: FoodEntry): Boolean {

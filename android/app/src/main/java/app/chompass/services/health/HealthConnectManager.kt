@@ -23,6 +23,7 @@ import androidx.health.connect.client.records.WeightRecord
 import app.chompass.R
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.FoodEntry
+import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import java.time.Instant
 import java.time.LocalDate
@@ -105,11 +106,12 @@ class HealthConnectManager(private val context: Context) {
     private val sleepRead = HealthPermission.getReadPermission(SleepSessionRecord::class)
     private val restingHrRead = HealthPermission.getReadPermission(RestingHeartRateRecord::class)
     private val hydrationRead = HealthPermission.getReadPermission(HydrationRecord::class)
+    private val hydrationWrite = HealthPermission.getWritePermission(HydrationRecord::class)
 
     private val corePermissions: Set<String> = setOf(
         weightRead, weightWrite, nutritionRead, nutritionWrite,
         bodyFatRead, bodyFatWrite, activeEnergyRead, totalEnergyRead,
-        stepsRead, exerciseRead, heightWrite, sleepRead, restingHrRead, hydrationRead
+        stepsRead, exerciseRead, heightWrite, sleepRead, restingHrRead, hydrationRead, hydrationWrite
     )
 
     /**
@@ -199,6 +201,7 @@ class HealthConnectManager(private val context: Context) {
     suspend fun hasEnergyRead(): Boolean = granted().let { activeEnergyRead in it && totalEnergyRead in it }
     suspend fun hasActivityRead(): Boolean = granted().let { stepsRead in it || exerciseRead in it }
     suspend fun hasHeightWrite(): Boolean = heightWrite in granted()
+    suspend fun hasHydrationWrite(): Boolean = hydrationWrite in granted()
     suspend fun hasWellnessRead(): Boolean =
         granted().let { sleepRead in it || restingHrRead in it || hydrationRead in it }
     suspend fun hasBackgroundRead(): Boolean = backgroundReadPermission in granted()
@@ -221,7 +224,8 @@ class HealthConnectManager(private val context: Context) {
             heightWrite = heightWrite in g,
             sleepRead = sleepRead in g,
             restingHrRead = restingHrRead in g,
-            hydrationRead = hydrationRead in g
+            hydrationRead = hydrationRead in g,
+            hydrationWrite = hydrationWrite in g
         )
     }
 
@@ -272,6 +276,13 @@ class HealthConnectManager(private val context: Context) {
 
     suspend fun writeHeight(heightCm: Double): Boolean = writer.writeHeight(heightCm)
 
+    suspend fun writeHydration(entry: WaterEntry): Boolean = writer.writeHydration(entry)
+
+    suspend fun deleteHydration(entryId: UUID): Boolean = writer.deleteHydration(entryId)
+
+    suspend fun readHydration(from: Instant, to: Instant): List<ExternalHydration>? =
+        reader.readHydration(from, to)
+
     suspend fun writeNutrition(entry: FoodEntry): Boolean = writer.writeNutrition(entry)
 
     suspend fun updateNutrition(entry: FoodEntry): Boolean = writer.updateNutrition(entry)
@@ -317,7 +328,8 @@ class HealthConnectManager(private val context: Context) {
          *  v4 = added NutritionRecord read permission (food-log restore).
          *  v5 = added Steps + ExerciseSession read permissions (activity card).
          *  v6 = added Height write + Sleep/RestingHeartRate/Hydration reads (wellness card).
-         *  v7 = added READ_HEALTH_DATA_HISTORY when the module supports it. */
-        const val CURRENT_TYPES_VERSION = 7
+         *  v7 = added READ_HEALTH_DATA_HISTORY when the module supports it.
+         *  v8 = added HydrationRecord write permission (water sync). */
+        const val CURRENT_TYPES_VERSION = 8
     }
 }

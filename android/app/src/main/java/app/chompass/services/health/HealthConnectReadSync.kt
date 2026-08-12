@@ -3,6 +3,7 @@ package app.chompass.services.health
 import app.chompass.data.BodyFatRepository
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
+import app.chompass.data.WaterRepository
 import app.chompass.data.WeightRepository
 import java.time.Duration
 import java.time.Instant
@@ -28,6 +29,7 @@ class HealthConnectReadSync(
     private val foodRepository: FoodRepository,
     private val weightRepository: WeightRepository,
     private val bodyFatRepository: BodyFatRepository,
+    private val waterRepository: WaterRepository,
 ) {
     @Volatile
     private var inFlight = false
@@ -37,7 +39,7 @@ class HealthConnectReadSync(
         if (!prefs.healthConnectEnabled.first()) return
         if (!health.isAvailable()) return
         val caps = health.capabilities()
-        if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
+        if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead && !caps.hydrationRead) return
 
         inFlight = true
         try {
@@ -53,6 +55,17 @@ class HealthConnectReadSync(
                 if (records != null) {
                     foodRepository.restoreFromHealthConnect(records)
                     prefs.setHealthFoodRestoreDone(true)
+                }
+            }
+            // One-shot water-log restore, sibling of the food one: our own
+            // HydrationRecords survive reinstalls in Health Connect even though
+            // the local DataStore doesn't. Ids already in the log are skipped.
+            if (caps.hydrationRead && !prefs.healthHydrationRestoreDone.first()) {
+                val now = Instant.now()
+                val records = health.readHydration(now.minus(Duration.ofDays(730)), now)
+                if (records != null) {
+                    waterRepository.restoreFromHealthConnect(records)
+                    prefs.setHealthHydrationRestoreDone(true)
                 }
             }
             if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead) return
