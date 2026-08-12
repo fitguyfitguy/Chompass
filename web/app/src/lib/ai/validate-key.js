@@ -1,5 +1,6 @@
 // @ts-check
 /** Lightweight Gemini / Google AI Studio key probe (lists models; no generateContent). */
+import { t } from "../i18n/index.js";
 
 const GEMINI_MODELS_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -13,7 +14,7 @@ const GEMINI_MODELS_URL = "https://generativelanguage.googleapis.com/v1beta/mode
  */
 export async function validateGeminiApiKey(apiKey) {
   const key = String(apiKey || "").trim();
-  if (!key) return { ok: false, message: "Paste an API key first." };
+  if (!key) return { ok: false, message: t("errors.paste_key_first") };
 
   let res;
   try {
@@ -22,7 +23,7 @@ export async function validateGeminiApiKey(apiKey) {
       headers: { "x-goog-api-key": key },
     });
   } catch {
-    return { ok: false, message: "Network error. Check your connection and try again." };
+    return { ok: false, message: t("errors.network_check") };
   }
 
   if (res.ok) return { ok: true };

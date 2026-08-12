@@ -58,6 +58,11 @@ def main() -> int:
 
     ph_errors = 0
     missing_report: list[tuple[str, int]] = []
+    copy_report: list[tuple[str, list[str]]] = []
+
+    def is_neutral_copy(value: str) -> bool:
+        """Format strings, URLs, and bare units/keys are legitimately identical."""
+        return "%" in value or value.startswith("http") or len(value) <= 3
 
     for loc in contract["locales"]:
         folder = loc["androidValues"]
@@ -70,6 +75,15 @@ def main() -> int:
         strings = load_strings(path)
         missing = sorted(k for k in en if k not in strings)
         missing_report.append((loc["id"], len(missing)))
+        # Verbatim English copies: the key is "present" but adds nothing over the
+        # EN fallback, hides the real gap, and blocks translators. Formats, URLs,
+        # and bare units are language-neutral and allowed.
+        copies = sorted(
+            k for k, text in strings.items()
+            if k in en and text == en[k] and not is_neutral_copy(text)
+        )
+        if copies:
+            copy_report.append((loc["id"], copies))
         for name, text in strings.items():
             if name not in en:
                 continue
@@ -83,9 +97,15 @@ def main() -> int:
 
     for lid, n in missing_report:
         print(f"  {lid}: {n} missing keys (fallback to EN)")
+    for lid, copies in copy_report:
+        print(f"  {lid}: {len(copies)} EN-identical copy/copies: {copies[:5]}", file=sys.stderr)
 
     if ph_errors:
         print(f"{ph_errors} placeholder mismatch(es)", file=sys.stderr)
+        return 1
+
+    if copy_report:
+        print("EN-identical copies present (translate or delete them)", file=sys.stderr)
         return 1
 
     if args.strict and any(n > 0 for _, n in missing_report):

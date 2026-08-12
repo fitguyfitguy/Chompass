@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Chompass</string>
+
 
     
     <string name="widget_calorie_label">Chompass Калории</string>
@@ -16,8 +16,8 @@
     <string name="widget_g_left_format">осталось %1$d г</string>
     <string name="widget_kcal">ккал</string>
     <string name="widget_protein_g">белок g</string>
-    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <string name="widget_center_small_format">/ %1$d</string>
+
+
     <string name="widget_center_small_g_format">/ %1$d г</string>
     <string name="widget_center_large_g_format">%1$d г</string>
 
@@ -42,26 +42,26 @@
     <string name="unit_kcal">ккал</string>
     <string name="unit_g">г</string>
     <string name="unit_mg">мг</string>
-    <string name="unit_percent">%</string>
+
     <string name="unit_cm">см</string>
     <string name="unit_kg">кг</string>
-    <string name="unit_lbs">lbs</string>
-    <string name="unit_ft">ft</string>
-    <string name="unit_in">in</string>
-    <string name="unit_ft_in">ft / in</string>
+
+
+
+
     <string name="kcal_value_format">%1$d ккал</string>
     <string name="grams_value_format">%1$d г</string>
     <string name="grams_value_decimal_format">%1$.1f г</string>
     <string name="kg_value_format">%1$.1f кг</string>
-    <string name="lbs_value_format">%1$.1f lbs</string>
+
     <string name="kg_per_week_format">%1$.2f кг/нед.</string>
     <string name="lbs_per_week_format">%1$.2f lbs/нед.</string>
     <string name="height_cm_format">%1$d см</string>
-    <string name="feet_inches_format">%1$d\' %2$d\"</string>
-    <string name="value_unit_format">%1$d %2$s</string>
-    <string name="ft_label_format">%1$d ft</string>
-    <string name="in_label_format">%1$d in</string>
-    <string name="bullet">·</string>
+
+
+
+
+
 
     
     <string name="macro_protein">Белок</string>
@@ -106,46 +106,46 @@
     <string name="autobalance_fat">Жиры</string>
 
     
-    <string name="ai_provider_gemini">Google Gemini</string>
-    <string name="ai_provider_openai">OpenAI</string>
-    <string name="ai_provider_anthropic">Anthropic Claude</string>
-    <string name="ai_provider_xai">xAI Grok</string>
-    <string name="ai_provider_openrouter">OpenRouter</string>
-    <string name="ai_provider_together">Together AI</string>
-    <string name="ai_provider_groq">Groq</string>
-    <string name="ai_provider_huggingface">Hugging Face</string>
-    <string name="ai_provider_fireworks">Fireworks AI</string>
-    <string name="ai_provider_deepinfra">DeepInfra</string>
-    <string name="ai_provider_mistral">Mistral</string>
+
+
+
+
+
+
+
+
+
+
+
     <string name="ai_provider_ollama">Ollama (локально)</string>
     <string name="ai_provider_custom">Пользовательский (OpenAI-совместимый)</string>
 
     
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
+
+
+
+
+
+
+
+
+
+
+
     <string name="ai_key_placeholder_ollama">Ключ не нужен</string>
     <string name="ai_key_placeholder_custom">Ключ API (или что угодно, если эндпоинт его не требует)</string>
 
     
     <string name="speech_provider_native">Встроенный (на устройстве)</string>
-    <string name="speech_provider_openai">OpenAI Whisper</string>
-    <string name="speech_provider_groq">Groq (Whisper)</string>
-    <string name="speech_provider_deepgram">Deepgram</string>
-    <string name="speech_provider_assemblyai">AssemblyAI</string>
+
+
+
+
 
     <string name="speech_key_placeholder_native">Не требуется</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_deepgram">Token your-deepgram-key</string>
+
+
+    <string name="speech_key_placeholder_deepgram">Токен your-deepgram-key</string>
     <string name="speech_key_placeholder_assemblyai">Ваш ключ AssemblyAI</string>
 
     <string name="speech_description_native">Распознавание речи Android прямо на устройстве. Бесплатно, работает офлайн на большинстве телефонов, в реальном времени с частичными результатами. Рекомендуется по умолчанию.</string>
@@ -187,9 +187,9 @@
     
     <string name="onboarding_back">Назад</string>
     <string name="onboarding_logo_description">Логотип Chompass</string>
-    <string name="onboarding_welcome_line1">Питайтесь умно,</string>
-    <string name="onboarding_welcome_line2">Живите лучше</string>
-    <string name="onboarding_welcome_subtitle">Просто снимите, отслеживайте и процветайте.\nВаше питание, упрощённое.</string>
+    <string name="onboarding_welcome_line1">Записывайте приёмы пищи,</string>
+    <string name="onboarding_welcome_line2">Сохраняйте баланс</string>
+    <string name="onboarding_welcome_subtitle">Записывайте еду фото, голосом или текстом.\nВаше питание — под рукой.</string>
 
     <string name="onboarding_gender_title">Какой у вас пол?</string>
     <string name="onboarding_gender_subtitle">Это поможет нам рассчитать ваш метаболизм</string>
@@ -273,11 +273,11 @@
     <string name="onboarding_building_protein">Белок</string>
     <string name="onboarding_building_fats">Жиры</string>
     <string name="onboarding_building_health_score">Балл здоровья</string>
-    <string name="onboarding_building_percent_format">%1$d%%</string>
+
     <string name="onboarding_building_setting_up">Мы готовим всё\nдля вас</string>
     <string name="onboarding_building_finalizing">Завершение обработки...</string>
     <string name="onboarding_building_recommendation">Дневная норма для</string>
-    <string name="onboarding_building_bullet">•</string>
+
 
     <string name="onboarding_plan_title">Ваш план</string>
     <string name="onboarding_plan_subtitle">Коснитесь любого значения, чтобы изменить</string>
@@ -331,14 +331,14 @@
     <string name="home_swipe_favorite">В избранное</string>
     <string name="home_swipe_unfavorite">Из избранного</string>
     <string name="home_favorited">В избранном</string>
-    <string name="home_macro_chip_format">%1$s %2$dg</string>
+
     <string name="home_analyzing_food">Анализируем вашу еду...</string>
     <string name="home_looking_up_nutrition">Ищем данные о питании...</string>
-    <string name="entry_analysis_phase_preparing">Preparing request…</string>
-    <string name="entry_analysis_phase_looking_up_barcode">Checking barcodes…</string>
-    <string name="entry_analysis_phase_calling_ai">Calling AI…</string>
-    <string name="entry_analysis_phase_parsing">Reading result…</string>
-    <string name="entry_analysis_inferring_units">Calculating serving units…</string>
+    <string name="entry_analysis_phase_preparing">Готовим запрос…</string>
+    <string name="entry_analysis_phase_looking_up_barcode">Проверяем штрих-коды…</string>
+    <string name="entry_analysis_phase_calling_ai">Вызываем ИИ…</string>
+    <string name="entry_analysis_phase_parsing">Читаем результат…</string>
+    <string name="entry_analysis_inferring_units">Рассчитываем размер порций…</string>
     <string name="home_fiber_format">Клетчатка: %1$.1fg</string>
     <string name="home_sugar_format">Сахар: %1$.1fg</string>
     <string name="home_sat_fat_format">Нас. жиры: %1$.1fg</string>
@@ -363,7 +363,7 @@
     <string name="manual_carbs">Углеводы (g)</string>
     <string name="manual_fat">Жиры (g)</string>
     <string name="manual_fiber">Клетчатка (g)</string>
-    <string name="manual_zero_placeholder">0</string>
+
     <string name="manual_meal_type">Приём пищи</string>
 
     <string name="error_title">Что-то пошло не так</string>
@@ -439,7 +439,7 @@
     <string name="nutrition_label_cholesterol">Холестерин</string>
     <string name="nutrition_label_sodium">Натрий</string>
     <string name="nutrition_label_potassium">Калий</string>
-    <string name="nutrition_em_dash">-</string>
+
 
     
     <string name="coach_title">Тренер</string>
@@ -492,7 +492,7 @@
     <string name="progress_no_food">Пока нет записей о еде</string>
 
     <string name="progress_macro_averages">Средние макросы</string>
-    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
+
 
     <string name="progress_log_weight_title">Записать вес</string>
 
@@ -530,7 +530,7 @@
     <string name="settings_goal_weight">Целевой вес</string>
     <string name="settings_calories">Калории</string>
     <string name="settings_recalculate_goals">Пересчитать цели</string>
-    <string name="settings_macro_pinned_format">%1$dg</string>
+
     <string name="settings_macro_auto_format">%1$dg · авто</string>
     <string name="settings_macro_pinned_a11y">Закреплено</string>
     <string name="settings_macro_auto_a11y">Авто</string>
@@ -556,11 +556,11 @@
     <string name="settings_base_url">Базовый URL</string>
     <string name="settings_server_url">URL сервера</string>
     <string name="settings_tap_to_edit">Коснитесь, чтобы изменить</string>
-    <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
+
     <string name="settings_custom_url_title">Свой базовый URL</string>
     <string name="settings_clear_key">Очистить ключ</string>
 
-    <string name="settings_health_connect">Health Connect</string>
+
     <string name="settings_clear_food_log">Очистить дневник питания</string>
     <string name="settings_delete_all_data">Удалить все данные</string>
 
@@ -618,7 +618,7 @@
     <string name="sheet_macros_subtitle">Закрепите до 2 макросов с точным числом граммов. Незакреплённые автоматически балансируются из оставшихся калорий.</string>
     <string name="sheet_macro_pinned">закреплено</string>
     <string name="sheet_macro_auto">авто</string>
-    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
+
 
     
     <string name="about_rate">Оценить приложение</string>
@@ -693,8 +693,8 @@
     <string name="whats_new_v30_restore">Переустановили приложение или сменили телефон? Дневник питания, вес и процент жира теперь автоматически восстанавливаются из Health Connect.</string>
     <string name="action_info">Инфо</string>
     <string name="action_what_if">А что если?</string>
-    <string name="speech_provider_gemini">Gemini Audio</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
+
+
     <string name="speech_description_gemini">Транскрипция аудио через Gemini API. Использует пакетное распознавание аудио, а не Speech-to-Text API Google Cloud в реальном времени.</string>
     <string name="what_if_title">А что если?</string>
     <string name="what_if_subtitle">Посмотрите, как это блюдо изменит сегодняшний день, прежде чем записать его.</string>
@@ -946,31 +946,31 @@
     <string name="nutrient_short_vit_a">Вит. A</string>
     <string name="nutrient_short_vit_c">Вит. C</string>
     <string name="nutrient_short_vit_d">Вит. D</string>
-    <string name="nutrient_short_b12">B12</string>
+
     <string name="nutrient_short_vit_e">Вит. E</string>
     <string name="nutrient_short_vit_k">Вит. K</string>
     <string name="nutrient_short_omega">Омега</string>
     <string name="sort_standard">Завтрак → Обед → Ужин (сначала ранние)</string>
     <string name="sort_latest_first">Сначала последние</string>
     <string name="copy_meal_format">Копировать: %1$s</string>
-    <string name="diet_mode_standard">Standard</string>
-    <string name="diet_mode_keto_beta">Keto (Beta)</string>
-    <string name="diet_mode_beta_note">Beta mode: still being tuned.</string>
-    <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
-    <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
-    <string name="settings_diet_mode">Diet Mode</string>
-    <string name="sheet_diet_mode">Diet Mode</string>
-    <string name="keto_carb_mode_adaptive">Adaptive carbs</string>
-    <string name="keto_carb_mode_manual">Manual carbs</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Recommended from your profile and goal.</string>
-    <string name="keto_carb_mode_manual_subtitle">Set your own net-carb target in grams.</string>
-    <string name="keto_carb_grams_format">%1$d g/day</string>
-    <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
-    <string name="settings_keto_carb_mode">Keto carb mode</string>
-    <string name="settings_keto_net_carbs">Keto net carbs</string>
-    <string name="sheet_keto_carb_mode">Keto carb mode</string>
-<string name="about_asset_credits">Open Source &amp; Assets</string><string name="about_upstream">Based on Fud AI (upstream)</string><string name="action_advanced">Advanced</string><string name="action_hide">Hide</string><string name="action_logging">Logging...</string><string name="action_remove">Remove</string><string name="action_retry">Retry</string><string name="action_show">Show</string><string name="add_food_water_section">Water</string><string name="error_failed_input_missing">Saved input could not be restored. Please take a new photo.</string><string name="export_body_metrics_empty">No weight, body-fat or measurement entries found to export.</string><string name="export_body_metrics_format">Format</string><string name="export_body_metrics_subtitle">Exports your weight, body-fat and body-measurement history as a shareable file.</string><string name="export_body_metrics_title">Export Weight &amp; Body Data</string><string name="home_active_calories_label">Active kcal</string><string name="home_calorie_active_estimated_a11y">Active calories estimated from your activity level</string><string name="home_calorie_mode_add_active">Добавлять активный расход к бюджету</string><string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешьте столько, сколько сжигаете. Установите уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключите Health Connect в Настройки → Здоровье для измеренного расхода.</string><string name="home_calorie_mode_static">Static goal</string><string name="home_calorie_mode_static_desc">Ваша цель по калориям остаётся фиксированной. Движение не меняет сегодняшний бюджет.</string><string name="home_calorie_of_goal">of %1$d</string><string name="home_calories_active_burn">%1$d active burned</string><string name="home_calories_goal_plus_active">Goal %1$d + %2$d active</string><string name="home_calories_label">CALORIES</string><string name="home_calories_left">%1$d left</string><string name="home_display_calorie_mode">Calorie gauge</string><string name="home_display_card_count">Cards shown</string><string name="home_display_food_log_chips">Food log macros</string><string name="home_display_needs_health">Requires Health Connect with steps permission</string><string name="home_display_nutrient_cards">Nutrient cards</string><string name="home_display_show_steps">Show step counter on home</string><string name="home_display_show_steps_desc">Optional card below the gauge. Needs Health Connect or seeded test data.</string><string name="home_display_step_goal">Daily step goal</string><string name="home_display_title">Home Display</string><string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string><string name="home_selected_count">%1$d selected</string><string name="home_share_separately">Share separately</string><string name="home_share_together">Share together</string><string name="home_steps_goal_format">Goal %1$s</string><string name="home_steps_label">Steps</string><string name="import_body_metrics_empty">This file has no weight or body-data entries to import.</string><string name="import_body_metrics_malformed">Could not read file: %1$s</string><string name="import_body_metrics_success">Imported %1$d weight, %2$d body-fat and %3$d measurement entries.</string><string name="import_body_metrics_title">Import Weight &amp; Body Data</string><string name="import_body_metrics_unsupported">Unsupported file. Supported: Chompass JSON/CSV, openScale CSV, or a generic weight CSV.</string><string name="import_diary_empty">This file has no diary entries to import.</string><string name="import_diary_failed">Import failed: %1$s</string><string name="import_diary_malformed">Invalid JSON: %1$s</string><string name="import_diary_success_count">Imported %1$d food entries.</string><string name="import_diary_title">Import Food Diary JSON</string><string name="import_diary_unsupported">Unsupported diary file: %1$s. Use JSON format 1.0 or 1.1 from Fud AI, NoFUD, or Chompass.</string><string name="macro_goal_of">of %1$d%2$s</string><string name="macro_status_goal_reached">Goal reached</string><string name="macro_status_left">%1$s%2$s left</string><string name="macro_status_no_goal">No goal</string><string name="macro_status_over">%1$s%2$s over</string><string name="meal_photo_cd">Photo %1$d</string><string name="meal_photos_add_from_library">Add photos</string><string name="meal_photos_add_photo">Add photo</string><string name="meal_photos_count">%1$d of 10 photos</string><string name="meal_photos_title">Перед анализом</string><string name="notif_channel_water">Water reminder</string><string name="notif_channel_water_desc">Daily reminder to drink and log water.</string><string name="notif_water_text">Have some water and log it in Chompass.</string><string name="notif_water_title">Time to hydrate</string><string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string><string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string><string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string><string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string><string name="onboarding_safety_not_medical">Это не медицинская рекомендация. В прогностических уравнениях есть погрешность. Перед существенными изменениями рациона проконсультируйтесь с диетологом, врачом или спортивным врачом, особенно при заболевании, беременности, грудном вскармливании или возрасте до 18 лет.</string><string name="onboarding_accuracy_title">Оговорка о точности</string><string name="onboarding_accuracy_body">Оценки по фото и расплывчатые указания количества (горсть, чашка, порция) часто неточны. Подсказки приложения и особенно вывод ИИ/LLM лишь оценки, а не медицинские факты. Важные цифры проверяйте сами.</string><string name="settings_accuracy_title">Точность оценок</string><string name="settings_accuracy_body">Оценки еды по фото и расплывчатые порции часто ошибочны. Подсказки приложения и особенно ИИ-модели не медицинские факты.</string><string name="onboarding_safety_title">Safety notice</string><string name="progress_activity_exercise_week">Exercise (7d)</string><string name="progress_activity_from_health">From Health Connect</string><string name="progress_activity_minutes_format">%1$d min</string><string name="progress_activity_section">Activity</string><string name="progress_activity_steps_avg">Avg steps (7d)</string><string name="progress_activity_steps_today">Steps today</string><string name="progress_wellness_bpm_format">%1$d bpm</string><string name="progress_wellness_hydration">Water today</string><string name="progress_wellness_hydration_format">%1$s ml</string><string name="progress_wellness_resting_hr">Resting HR (7d)</string><string name="progress_wellness_section">Wellness</string><string name="progress_wellness_sleep">Sleep</string><string name="progress_wellness_sleep_format">%1$dh %2$dm</string><string name="serving_unit_heuristics_default_value">Default: %1$s g / unit</string><string name="serving_unit_heuristics_footer">Toggle a category off to leave it in grams, or set a custom grams-per-unit (e.g. a 0.5 L beer can instead of the default 330 mL).</string><string name="serving_unit_heuristics_reset">Reset to default</string><string name="serving_unit_mode_ai_call">AI-inferred</string><string name="serving_unit_mode_ai_call_subtitle">Slowest, most accurate. Asks the AI provider for the unit when needed.</string><string name="serving_unit_mode_grams_only">Grams only</string><string name="serving_unit_mode_grams_only_subtitle">Fastest. Entries stay in grams, no extra step.</string><string name="serving_unit_mode_heuristic">Heuristic</string><string name="serving_unit_mode_heuristic_subtitle">Instant, approximate. Guesses common units (slice, ml, tbsp…) from the food name, no network call.</string><string name="settings_breakfast_starts">Breakfast starts</string><string name="settings_calc_adaptive_formula">adjustment = (targetWeeklyChange − observedWeeklyChange) × 7,700 ÷ 7\nclamped to ±150 kcal/day</string><string name="settings_calc_adaptive_name">Adaptive Goals (weekly)</string><string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins, or Health Connect energy data.</string><string name="settings_calc_body_formula">Waist-to-hip = waist ÷ hips\nWaist-to-height = waist ÷ height\nUS Navy %BF: sex-specific log equations (neck, waist, hips, height)</string><string name="settings_calc_body_name">Tape-measure derived metrics</string><string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are rough tape-measure estimates. They do not override BMR unless you separately enter a body-fat percentage on your profile.</string><string name="settings_calc_forecast_formula">predicted kg/week = (avgDailyCalories − TDEE) × 7 ÷ 7,700\nobserved kg/week = Theil–Sen slope × 7\nsparse logging: avg intake ÷ calendar days when logged days &lt; 50%% of window</string><string name="settings_calc_forecast_name">Energy-balance forecast</string><string name="settings_calc_forecast_used">Progress charts and goal ETA use your recent food logs and weigh-ins (up to 90 days). When you log on fewer than half the days in the window, intake is averaged across calendar days so occasional big-log days do not inflate the forecast. Otherwise intake is averaged across logged days only. Observed weight trend uses a robust median-slope (Theil–Sen) fit on scale entries.</string><string name="settings_calc_home_gauge_formula">estimated active = TDEE − BMR\nsedentary budget = calorie goal − estimated active\nAdd Active goal = sedentary budget + (measured or estimated active)</string><string name="settings_calc_home_gauge_name">Active burn on the home ring</string><string name="settings_calc_home_gauge_used">Home Display lets you add active burn to your goal, track net intake, or show a burn hint. Your activity-level estimate is TDEE minus BMR (the PAL multiplier portion). Add Active and Dual use that estimate when Health Connect is off; Net requires measured Health Connect burn. Add Active splits your stored goal into a sedentary base plus today\'s active layer so activity is not counted twice. With Add Active, set Activity Level to everyday non-training life; measured or estimated active covers workouts so they are not stacked on a high PAL.</string><string name="settings_calc_sec_body">Body composition estimates</string><string name="settings_calc_sec_forecast">Weight trend &amp; adaptive goals</string><string name="settings_calc_sec_home_gauge">Home calorie gauge</string><string name="settings_dinner_starts">Dinner starts</string><string name="settings_food_log_sort">Food log sort</string><string name="settings_glass_blur">Glass blur</string><string name="settings_health_background_sync">Background sync</string><string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default.</string><string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string><string name="settings_home_display">Customize Home</string><string name="settings_home_display_summary">Nutrient cards, activity, calorie gauge, food-log chips</string><string name="settings_late_snack_starts">Late snack starts</string><string name="settings_lunch_starts">Lunch starts</string><string name="settings_manage_health_access">Manage Health Connect access</string><string name="settings_meal_time_edit_format">%1$s</string><string name="settings_meal_times">Meal times</string><string name="settings_meal_times_customize">Customize</string><string name="settings_meal_times_description">Set when automatic meal selection switches to the next meal.</string><string name="settings_meal_times_help">Each meal continues until the next one starts. Late snack continues overnight until breakfast starts. You can still change the meal manually before logging.</string><string name="settings_notif_water_reminder">Water reminder</string><string name="settings_permissions">Permissions</string><string name="settings_restore_default_times">Restore default times</string><string name="settings_safety_body">Chompass helps you track food and weight, but it is not a medical device and it is not a replacement for care from a doctor, therapist, or dietitian.</string><string name="settings_safety_consult">If you are planning major diet or body-composition changes, check in with a qualified clinician first so your plan fits your health history.</string><string name="settings_safety_ed">If you have a current or past eating disorder, or tracking starts increasing anxiety around food or body image, pause app use and speak with your care team.</string><string name="settings_safety_escalate">If you notice fatigue, dizziness, sleep disruption, mood changes, menstrual changes, or reduced libido, get medical advice promptly.</string><string name="settings_safety_hide">Hide</string><string name="settings_safety_low_bf">Low body-fat caution: staying very lean for long periods can carry risk. In women, very low body fat can affect hormonal and menstrual health. In men, very low body fat can affect hormones, mood, recovery, and performance.</string><string name="settings_safety_medical">Safety &amp; Medical</string><string name="settings_safety_open">View</string><string name="settings_safety_summary">Read this before making major diet changes</string><string name="settings_safety_title">Safety</string><string name="settings_section_home_display">Home Display</string><string name="settings_serving_unit_heuristics">Customize heuristics</string><string name="settings_serving_unit_mode">Serving unit inference</string><string name="settings_water_goal">Daily water goal</string><string name="settings_water_goal_summary">%1$d ml</string><string name="settings_water_goal_wheel_help">Scroll in 50 ml steps to select a daily goal from 50 to 10,000 ml.</string><string name="settings_water_tracking">Water tracking</string><string name="sheet_serving_unit_heuristics">Customize heuristics</string><string name="sheet_serving_unit_mode">Serving unit inference</string><string name="unit_ml">ml</string><string name="water">Water</string><string name="water_add">Add water</string><string name="water_custom_amount">Custom amount</string><string name="water_how_much">How much water?</string><string name="water_log_title">Log water</string><string name="water_one_glass_amount">1 glass (~250 ml)</string><string name="water_progress">%1$d / %2$d ml</string><string name="water_three_glasses_amount">3 glasses (~750 ml)</string><string name="water_two_glasses_amount">2 glasses (~500 ml)</string><string name="widget_water_description">See today\'s water progress at a glance.</string><string name="widget_water_disabled">Enable Water Tracking in Chompass</string><string name="widget_water_label">Chompass Water</string>
+    <string name="diet_mode_standard">Стандартный</string>
+    <string name="diet_mode_keto_beta">Кето (бета)</string>
+    <string name="diet_mode_beta_note">Бета-режим: ещё дорабатывается.</string>
+    <string name="onboarding_diet_mode_title">Следуете ли вы режиму питания?</string>
+    <string name="onboarding_diet_mode_subtitle">Выберите стиль рекомендаций по умолчанию</string>
+    <string name="settings_diet_mode">Режим питания</string>
+    <string name="sheet_diet_mode">Режим питания</string>
+    <string name="keto_carb_mode_adaptive">Адаптивные углеводы</string>
+    <string name="keto_carb_mode_manual">Вручную</string>
+    <string name="keto_carb_mode_adaptive_subtitle">Рекомендуется с учётом вашего профиля и цели.</string>
+    <string name="keto_carb_mode_manual_subtitle">Задайте собственную цель чистых углеводов в граммах.</string>
+    <string name="keto_carb_grams_format">%1$d г/день</string>
+    <string name="keto_carb_setup_title">Настройка кето-углеводов</string>
+    <string name="keto_carb_manual_hint">Ручная цель ограничена 20–50 г/день чистых углеводов.</string>
+    <string name="settings_keto_carb_mode">Режим кето-углеводов</string>
+    <string name="settings_keto_net_carbs">Чистые кето-углеводы</string>
+    <string name="sheet_keto_carb_mode">Режим кето-углеводов</string>
+<string name="about_asset_credits">Открытый код и материалы</string><string name="about_upstream">На основе Fud AI (исходный проект)</string><string name="action_advanced">Дополнительно</string><string name="action_hide">Скрыть</string><string name="action_logging">Запись...</string><string name="action_remove">Удалить</string><string name="action_retry">Повторить</string><string name="action_show">Показать</string><string name="add_food_water_section">Вода</string><string name="error_failed_input_missing">Сохранённый ввод не удалось восстановить. Сделайте новое фото.</string><string name="export_body_metrics_empty">Записей о весе, жире или измерениях для экспорта не найдено.</string><string name="export_body_metrics_format">Формат</string><string name="export_body_metrics_subtitle">Экспортирует историю веса, жира и измерений тела в виде файла.</string><string name="export_body_metrics_title">Экспорт веса и данных тела</string><string name="home_active_calories_label">Активные ккал</string><string name="home_calorie_active_estimated_a11y">Активные калории оценены по вашему уровню активности</string><string name="home_calorie_mode_add_active">Добавлять активный расход к бюджету</string><string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешьте столько, сколько сжигаете. Установите уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключите Health Connect в Настройки → Здоровье для измеренного расхода.</string><string name="home_calorie_mode_static">Фиксированная цель</string><string name="home_calorie_mode_static_desc">Ваша цель по калориям остаётся фиксированной. Движение не меняет сегодняшний бюджет.</string><string name="home_calorie_of_goal">из %1$d</string><string name="home_calories_active_burn">Сожжено активных %1$d</string><string name="home_calories_goal_plus_active">Цель %1$d + %2$d активных</string><string name="home_calories_label">КАЛОРИИ</string><string name="home_calories_left">Осталось %1$d</string><string name="home_display_calorie_mode">Шкала калорий</string><string name="home_display_card_count">Отображаемые карточки</string><string name="home_display_food_log_chips">Макрос в журнале еды</string><string name="home_display_needs_health">Требуется Health Connect с доступом к шагам</string><string name="home_display_nutrient_cards">Карточки питательных веществ</string><string name="home_display_show_steps">Показывать счётчик шагов на главной</string><string name="home_display_show_steps_desc">Необязательная карточка под шкалой. Требуется Health Connect или тестовые данные.</string><string name="home_display_step_goal">Дневная цель шагов</string><string name="home_display_title">Оформление главной</string><string name="home_nutrients_pick_count">Выберите до %1$d питательных веществ для главного экрана.</string><string name="home_selected_count">Выбрано: %1$d</string><string name="home_share_separately">Поделиться раздельно</string><string name="home_share_together">Поделиться вместе</string><string name="home_steps_goal_format">Цель %1$s</string><string name="home_steps_label">Шаги</string><string name="import_body_metrics_empty">В этом файле нет записей о весе или данных тела для импорта.</string><string name="import_body_metrics_malformed">Не удалось прочитать файл: %1$s</string><string name="import_body_metrics_success">Импортировано: вес %1$d, жир %2$d, измерений %3$d.</string><string name="import_body_metrics_title">Импорт веса и данных тела</string><string name="import_body_metrics_unsupported">Неподдерживаемый файл. Поддерживаются: JSON/CSV Chompass, CSV openScale или обычный CSV веса.</string><string name="import_diary_empty">В этом файле нет записей дневника для импорта.</string><string name="import_diary_failed">Не удалось импортировать: %1$s</string><string name="import_diary_malformed">Недопустимый JSON: %1$s</string><string name="import_diary_success_count">Импортировано записей о еде: %1$d.</string><string name="import_diary_title">Импорт дневника питания (JSON)</string><string name="import_diary_unsupported">Неподдерживаемый файл дневника: %1$s. Используйте JSON версии 1.0 или 1.1 из Fud AI, NoFUD или Chompass.</string><string name="macro_goal_of">из %1$d%2$s</string><string name="macro_status_goal_reached">Цель достигнута</string><string name="macro_status_left">Осталось %1$s%2$s</string><string name="macro_status_no_goal">Цели нет</string><string name="macro_status_over">Превышение %1$s%2$s</string><string name="meal_photo_cd">Фото %1$d</string><string name="meal_photos_add_from_library">Добавить фото</string><string name="meal_photos_add_photo">Добавить фото</string><string name="meal_photos_count">%1$d из 10 фото</string><string name="meal_photos_title">Перед анализом</string><string name="notif_channel_water">Напоминание о воде</string><string name="notif_channel_water_desc">Ежедневное напоминание выпить воды и записать её.</string><string name="notif_water_text">Выпейте воды и запишите её в Chompass.</string><string name="notif_water_title">Пора попить воды</string><string name="onboarding_privacy_note">Без рекламы, аналитики и аккаунтов. Ваш журнал еды и API-ключи остаются на устройстве.</string><string name="onboarding_safety_body">Chompass — помощник по отслеживанию, а не клинический инструмент. Если у вас в прошлом было расстройство пищевого поведения — или отслеживание усиливает тревогу вокруг еды/образа тела, — сделайте паузу и поговорите с врачом или терапевтом, прежде чем продолжать.</string><string name="onboarding_safety_low_bf">Предупреждение о низком проценте жира: слишком долгое сохранение низкого процента может повлиять на гормоны, восстановление и здоровье в целом как у женщин, так и у мужчин.</string><string name="onboarding_safety_settings_hint">Полные рекомендации по безопасности и медицине можно посмотреть в настройках.</string><string name="onboarding_safety_not_medical">Это не медицинская рекомендация. В прогностических уравнениях есть погрешность. Перед существенными изменениями рациона проконсультируйтесь с диетологом, врачом или спортивным врачом, особенно при заболевании, беременности, грудном вскармливании или возрасте до 18 лет.</string><string name="onboarding_accuracy_title">Оговорка о точности</string><string name="onboarding_accuracy_body">Оценки по фото и расплывчатые указания количества (горсть, чашка, порция) часто неточны. Подсказки приложения и особенно вывод ИИ/LLM лишь оценки, а не медицинские факты. Важные цифры проверяйте сами.</string><string name="settings_accuracy_title">Точность оценок</string><string name="settings_accuracy_body">Оценки еды по фото и расплывчатые порции часто ошибочны. Подсказки приложения и особенно ИИ-модели не медицинские факты.</string><string name="onboarding_safety_title">Уведомление о безопасности</string><string name="progress_activity_exercise_week">Тренировки (7 дн.)</string><string name="progress_activity_from_health">Из Health Connect</string><string name="progress_activity_minutes_format">%1$d мин</string><string name="progress_activity_section">Активность</string><string name="progress_activity_steps_avg">Ср. шаги (7 дн.)</string><string name="progress_activity_steps_today">Шаги сегодня</string><string name="progress_wellness_bpm_format">%1$d уд/мин</string><string name="progress_wellness_hydration">Вода сегодня</string><string name="progress_wellness_resting_hr">Пульс в покое (7 дн.)</string><string name="progress_wellness_section">Самочувствие</string><string name="progress_wellness_sleep">Сон</string><string name="progress_wellness_sleep_format">%1$d ч %2$d мин</string><string name="serving_unit_heuristics_default_value">По умолчанию: %1$s г / шт.</string><string name="serving_unit_heuristics_footer">Отключите категорию, чтобы оставить граммы, или задайте свои граммы на единицу (например, банка 0,5 л вместо стандартных 330 мл).</string><string name="serving_unit_heuristics_reset">Сбросить к стандартным</string><string name="serving_unit_mode_ai_call">Определяет ИИ</string><string name="serving_unit_mode_ai_call_subtitle">Самый медленный и точный. При необходимости спрашивает единицу у ИИ-провайдера.</string><string name="serving_unit_mode_grams_only">Только граммы</string><string name="serving_unit_mode_grams_only_subtitle">Самый быстрый. Записи остаются в граммах, без лишнего шага.</string><string name="serving_unit_mode_heuristic">Эвристика</string><string name="serving_unit_mode_heuristic_subtitle">Мгновенно, приблизительно. Угадывает распространённые единицы (ломтик, мл, ст. л…) по названию продукта, без сетевого запроса.</string><string name="settings_breakfast_starts">Начало завтрака</string><string name="settings_calc_adaptive_name">Адаптивные цели (еженедельно)</string><string name="settings_calc_adaptive_used">Когда включено, Chompass сравнивает ваш наблюдаемый тренд веса с выбранным еженедельным темпом и корректирует калории до ±150 ккал/день (минимум 25 ккал). Безопасный минимум: max(BMR, 1 200 ккал). Безопасный максимум: 125%% от измеренного или формульного поддержания. Требуется не менее 4 дней с записями еды и 3 взвешиваний или данные об энергии из Health Connect.</string><string name="settings_calc_body_name">Показатели из замеров лентой</string><string name="settings_calc_body_used">Необязательные обхваты позволяют рассчитать соотношение талия/бёдра, талия/рост, процент жира по формуле ВМС США и размер запястья. Это грубые оценки по замерам. Они не заменяют BMR, если вы отдельно не указали процент жира в профиле.</string><string name="settings_calc_forecast_name">Прогноз энергетического баланса</string><string name="settings_calc_forecast_used">Графики прогресса и прогноз ETA используют ваши недавние записи еды и взвешивания (до 90 дней). Если вы записываете еду менее чем в половине дней окна, потребление усредняется по календарным дням, чтобы редкие «большие» дни не завышали прогноз. В остальных случаях потребление усредняется только по дням с записями. Тренд веса использует устойчивую медианную регрессию (Тейла–Сена) по данным взвешиваний.</string><string name="settings_calc_home_gauge_name">Активные затраты на кольце главной</string><string name="settings_calc_home_gauge_used">«Оформление главной» позволяет добавлять активные затраты к цели, отслеживать чистый приём или показывать подсказку о затратах. Оценка уровня активности — это TDEE минус BMR (часть PAL-множителя). Режимы «Добавлять активные» и «Двойной» используют эту оценку, когда Health Connect выключен; «Нетто» требует измеренных затрат из Health Connect. «Добавлять активные» разделяет сохранённую цель на базовую (сидячую) часть и сегодняшний активный слой, чтобы активность не учитывалась дважды. При режиме «Добавлять активные» установите уровень активности как повседневную жизнь без тренировок; измеренные или оценённые активные затраты покроют тренировки, чтобы они не складывались с высоким PAL.</string><string name="settings_calc_sec_body">Оценки состава тела</string><string name="settings_calc_sec_forecast">Тренд веса и адаптивные цели</string><string name="settings_calc_sec_home_gauge">Шкала калорий на главной</string><string name="settings_dinner_starts">Начало ужина</string><string name="settings_food_log_sort">Сортировка журнала еды</string><string name="settings_glass_blur">Стеклянное размытие</string><string name="settings_health_background_sync">Фоновая синхронизация</string><string name="settings_health_background_sync_desc">Check Health Connect for new data every few hours, even when Chompass is closed. Off by default.</string><string name="settings_health_companions">Syncs with anything that speaks Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band and other wearables), openScale (Bluetooth scales), Samsung Health, Fitbit and more. Weight and body fat flow in automatically; meals you log flow out, and meals from other apps flow in. Sleep, resting heart rate and hydration appear on the Progress tab.</string><string name="settings_home_display">Настроить главную</string><string name="settings_home_display_summary">Карточки питательных веществ, активность, шкала калорий, чипы журнала</string><string name="settings_late_snack_starts">Начало позднего перекуса</string><string name="settings_lunch_starts">Начало обеда</string><string name="settings_manage_health_access">Управление доступом Health Connect</string><string name="settings_meal_times">Время приёмов пищи</string><string name="settings_meal_times_customize">Настроить</string><string name="settings_meal_times_description">Задаёт, когда автоматический выбор приёма пищи переключается на следующий.</string><string name="settings_meal_times_help">Каждый приём пищи продолжается до начала следующего. Поздний перекус продолжается ночью до начала завтрака. Перед внесением вы всё равно можете сменить приём пищи вручную.</string><string name="settings_notif_water_reminder">Напоминание о воде</string><string name="settings_permissions">Разрешения</string><string name="settings_restore_default_times">Восстановить время по умолчанию</string><string name="settings_safety_body">Chompass помогает отслеживать еду и вес, но это не медицинское устройство и не замена помощи врача, терапевта или диетолога.</string><string name="settings_safety_consult">If you are planning major diet or body-composition changes, check in with a qualified clinician first so your plan fits your health history.</string><string name="settings_safety_ed">Если у вас есть или было расстройство пищевого поведения, или отслеживание усиливает тревогу вокруг еды или образа тела, сделайте паузу в использовании и обратитесь к своему лечащему специалисту.</string><string name="settings_safety_escalate">Если вы замечаете усталость, головокружение, нарушения сна, перепады настроения, изменения менструального цикла или снижение либидо — срочно обратитесь за медицинской помощью.</string><string name="settings_safety_hide">Скрыть</string><string name="settings_safety_low_bf">Предупреждение о низком проценте жира: длительное сохранение очень низкого процента может нести риск. У женщин очень низкий процент жира может влиять на гормональное и менструальное здоровье. У мужчин — на гормоны, настроение, восстановление и работоспособность.</string><string name="settings_safety_medical">Безопасность и медицина</string><string name="settings_safety_open">Открыть</string><string name="settings_safety_summary">Прочтите перед серьёзными изменениями рациона</string><string name="settings_safety_title">Безопасность</string><string name="settings_section_home_display">Оформление главной</string><string name="settings_serving_unit_heuristics">Customize heuristics</string><string name="settings_serving_unit_mode">Serving unit inference</string><string name="settings_water_goal">Дневная цель воды</string><string name="settings_water_goal_wheel_help">Прокручивайте с шагом 50 мл, чтобы выбрать цель от 50 до 10 000 мл в день.</string><string name="settings_water_tracking">Отслеживание воды</string><string name="sheet_serving_unit_heuristics">Настроить эвристику</string><string name="sheet_serving_unit_mode">Определение единицы порции</string><string name="water">Вода</string><string name="water_add">Добавить воду</string><string name="water_custom_amount">Своё количество</string><string name="water_how_much">Сколько воды?</string><string name="water_log_title">Записать воду</string><string name="water_one_glass_amount">1 стакан (~250 мл)</string><string name="water_three_glasses_amount">3 стакана (~750 мл)</string><string name="water_two_glasses_amount">2 стакана (~500 мл)</string><string name="widget_water_description">Смотрите сегодняшний прогресс воды одним взглядом.</string><string name="widget_water_disabled">Включите отслеживание воды в Chompass</string><string name="widget_water_label">Chompass Вода</string>
 
     <string name="widget_water_tracking">Учёт воды</string>
     <string name="widget_water_enable_short">Включить в Chompass</string>
@@ -985,7 +985,7 @@
     <string name="add_food_quick_relog">Записать снова</string>
     <string name="add_food_quick_relog_empty">Добавьте приём пищи в избранное или запишите его один раз. Он появится здесь для повторной записи одним касанием.</string>
     <string name="add_food_quick_relog_hint">Избранное и прошлые приёмы пищи. Быстрее, чем повторное сканирование.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d ккал</string>
     <string name="ai_provider_on_device_subtitle">Приватно и офлайн. Менее точно, чем облачный ИИ; загрузка ~2-4 ГБ</string>
     <string name="camera_scale_tip_message">Совет: положите рядом с едой вилку, руку или монету. Это помогает оценить размер порции.</string>
     <string name="cd_relog_meal">Записать %1$s снова</string>
@@ -995,7 +995,7 @@
     <string name="entry_analysis_busy_analyzing">Анализ…</string>
     <string name="entry_analysis_busy_filling">Заполнение питательности…</string>
     <string name="entry_analysis_busy_units">Расчёт порций…</string>
-    <string name="entry_analysis_placeholder_name">····</string>
+
     <string name="entry_analysis_ready">Готово к проверке</string>
     <string name="entry_analysis_status_helper">Проверка штрихкодов на фото, затем запрос питательности у вашего ИИ-провайдера.</string>
     <string name="entry_analysis_streaming_hint">Значения появляются по мере ответа ИИ. Можно проверить их перед записью.</string>
@@ -1046,16 +1046,16 @@
     <string name="settings_photo_note_prompt">Спрашивать заметку к фото</string>
     <string name="settings_photo_note_prompt_footer">Если включено, при записи по фото поле заметки выделяется перед «Анализ». Можно подтвердить и продолжить без заметки.</string>
     <string name="settings_progress_default_range">Диапазон по умолчанию в «Прогресс»</string>
-    <string name="home_menu_search_food">Search food</string>
-    <string name="food_search_sheet_title">Search food databases</string>
-    <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
-    <string name="food_search_source_off">Open Food Facts</string>
-    <string name="food_search_source_usda">USDA</string>
-    <string name="food_search_source_swiss">Swiss</string>
-    <string name="grounding_badge_swiss">Grounded · Swiss Food Composition DB</string>
-    <string name="grounding_source_swiss">Swiss</string>
-    <string name="error_search_food_failed">Could not load this food. Please try again.</string>
+    <string name="home_menu_search_food">Поиск еды</string>
+    <string name="food_search_sheet_title">Поиск в базах продуктов</string>
+    <string name="food_search_placeholder">напр. греческий йогурт, Milch, quark</string>
+    <string name="food_search_hint">Продукты из Open Food Facts, а также офлайн-базы USDA и швейцарская. Результаты имеют пометку источника.</string>
+    <string name="food_search_empty">Введите запрос для поиска продуктов</string>
+    <string name="food_search_no_results">Ничего не найдено. Попробуйте другое название.</string>
+
+
+    <string name="food_search_source_swiss">Швейцарская</string>
+    <string name="grounding_badge_swiss">Проверено · Швейцарская база</string>
+    <string name="grounding_source_swiss">Швейцарская</string>
+    <string name="error_search_food_failed">Не удалось загрузить этот продукт. Попробуйте ещё раз.</string>
 </resources>

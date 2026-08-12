@@ -125,15 +125,24 @@ export function englishKeys() {
  * Diff a locale catalog against English (used by completeness tests). Loads
  * the catalog on demand.
  * @param {string} localeId
- * @returns {Promise<{ missing: string[], extra: string[] }>}
+ * @returns {Promise<{ missing: string[], extra: string[], copies: string[] }>}
  */
 export async function catalogDiff(localeId) {
   const id = resolveLocaleId(localeId);
   await loadCatalog(id);
-  const base = new Set(englishKeys());
+  const base = new Map(englishKeys().map((k) => [k, CATALOGS.en[k]]));
   const cat = CATALOGS[id] || {};
   const keys = new Set(Object.keys(cat));
-  const missing = [...base].filter((k) => !keys.has(k));
+  const missing = [...base.keys()].filter((k) => !keys.has(k));
   const extra = [...keys].filter((k) => !base.has(k));
-  return { missing, extra };
+  // Phrase-level verbatim English copies: identical to EN and likely untranslated.
+  // Single words (loanwords), formats, URLs, and unit-like strings are allowed.
+  const copies = [...keys].filter((k) => {
+    const v = cat[k];
+    if (typeof v !== "string" || v !== base.get(k)) return false;
+    if (!v || v.includes("{") || v.includes("%") || v.includes("/") || v.startsWith("http")) return false;
+    const words = v.match(/[A-Za-z]{3,}/g) || [];
+    return words.length >= 2;
+  });
+  return { missing, extra, copies };
 }

@@ -26,7 +26,7 @@ Photo and text analysis shows clear progress steps (including barcode lookup whe
 
 The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phone, tablet, or desktop (including desktop webcams for meal photos and barcode). Install to the home screen or dock when offered. Covers diary, progress, AI entry and Coach with your own key, settings, and onboarding. Diary and body-metrics JSON match the Android app. Chromium-based browsers work best for install, camera barcode, and speech; Firefox and Safari work with some feature gaps.
 
-**Android-app extras:** Health Connect, widgets, notifications, on-device Gemma 4, and the full 15-language pack.
+**Android-app extras:** Health Connect, widgets, notifications, on-device Gemma 4, and the full 16-language pack.
 
 ## On-device AI (opt-in, Android app)
 

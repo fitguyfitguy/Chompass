@@ -3,6 +3,7 @@ import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs } 
 import { dailyTargets, bmr, tdee } from "../chompass-core/formulas.js";
 import { PROVIDERS } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
+import { t } from "../i18n/index.js";
 
 const BASE_SYSTEM = `You are the Chompass coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
 
@@ -53,7 +54,7 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
     messages.push({ role: "user", toolResults });
   }
 
-  throw new Error("Coach exceeded the tool-call iteration limit. Try rephrasing.");
+  throw new Error(t("errors.coach_tool_limit"));
 }
 
 async function executeReadTool(tc) {

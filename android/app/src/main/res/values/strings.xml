@@ -185,6 +185,21 @@
     <string name="speech_description_deepgram">Deepgram Nova. Real-time and batch modes, fast and accurate.</string>
     <string name="speech_description_assemblyai">AssemblyAI Universal model. Strong accuracy, free tier available.</string>
 
+    <!-- Native speech recognizer errors -->
+    <string name="speech_error_audio_capture_failed">Audio capture failed</string>
+    <string name="speech_error_start_failed">Speech recognition failed to start</string>
+    <string name="speech_error_missing_permission">Missing microphone permission</string>
+    <string name="speech_error_network">Network error</string>
+    <string name="speech_error_network_timeout">Network timeout</string>
+    <string name="speech_error_no_match">No speech recognized</string>
+    <string name="speech_error_recognizer_busy">Recognizer busy</string>
+    <string name="speech_error_server">Server error</string>
+    <string name="speech_error_no_input">No speech input</string>
+    <string name="speech_error_server_disconnected">Speech service disconnected</string>
+    <string name="speech_error_language_not_supported">Speech language is not supported on this device</string>
+    <string name="speech_error_language_unavailable">Speech language is unavailable on this device</string>
+    <string name="speech_error_unknown_format">Speech error (%1$d)</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_progress">Progress</string>
@@ -218,9 +233,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">Back</string>
     <string name="onboarding_logo_description">Chompass logo</string>
-    <string name="onboarding_welcome_line1">Eat Smart,</string>
-    <string name="onboarding_welcome_line2">Live Better</string>
-    <string name="onboarding_welcome_subtitle">Just snap, track, and thrive.\nYour nutrition, simplified.</string>
+    <string name="onboarding_welcome_line1">Track meals,</string>
+    <string name="onboarding_welcome_line2">Stay balanced</string>
+    <string name="onboarding_welcome_subtitle">Log meals with photos, voice, or text.\nYour nutrition, at a glance.</string>
 
     <string name="onboarding_gender_title">What\'s your gender?</string>
     <string name="onboarding_gender_subtitle">This helps us calculate your metabolism</string>
@@ -410,6 +425,9 @@
     <string name="add_food_photo_gallery">Choose from Gallery</string>
     <string name="add_food_add_label_photo">Add label photo</string>
     <string name="add_food_add_photo">Add photo</string>
+    <string name="camera_flash_on">Flash on</string>
+    <string name="camera_flash_auto">Flash auto</string>
+    <string name="camera_flash_off">Flash off</string>
     <string name="text_input_title">Describe your food</string>
     <string name="home_kcal_of_format">of %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s left</string>
@@ -935,6 +953,7 @@
     <string name="on_device_model_loaded">Model loaded. Ready to use.</string>
     <string name="on_device_model_not_loaded">Not loaded. First request after app start may take up to a minute.</string>
     <string name="on_device_model_unload">Unload model (frees memory)</string>
+    <string name="on_device_download_failed">Download failed</string>
     <string name="on_device_model_delete">Delete downloaded model</string>
     <string name="on_device_model_retry">Retry download</string>
     <string name="on_device_model_sheet_title">On-device model</string>
@@ -1128,6 +1147,40 @@
     <string name="error_invalid_json">Invalid JSON</string>
     <string name="error_unknown">Unknown error</string>
     <string name="error_webdav_sync_failed">WebDAV sync failed</string>
+
+    <!-- Sync (WebDAV / sync document) messages -->
+    <string name="sync_error_unsupported_file">Unsupported sync file</string>
+    <string name="sync_error_configure_webdav">Configure WebDAV URL, username, and password first</string>
+    <string name="sync_error_build_local_doc">Could not build local sync document</string>
+    <string name="sync_error_remote_invalid">Remote sync document is invalid</string>
+    <string name="sync_error_local_rebuild_failed">Local sync rebuild failed after conflict</string>
+    <string name="sync_error_remote_invalid_conflict">Remote sync document invalid after conflict</string>
+    <string name="sync_error_conflict_persisted">WebDAV conflict persisted; try again</string>
+    <string name="sync_error_merged_invalid">Merged sync document invalid</string>
+    <string name="sync_success_synced">Synced with WebDAV</string>
+    <string name="sync_success_applied">Sync document applied</string>
+
+    <!-- AI provider errors (resolved at the UI layer) -->
+    <string name="ai_error_no_api_key">No API key configured. Add your key in Settings → AI Provider.</string>
+    <string name="ai_error_image_conversion_failed">Failed to process the image.</string>
+    <string name="ai_error_network_format">Network error: %1$s</string>
+    <string name="ai_error_invalid_response">Could not understand the AI response. Please try again.</string>
+    <string name="ai_error_invalid_url">Invalid API URL. Check your provider settings.</string>
+    <string name="ai_error_on_device_model_not_downloaded">On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.</string>
+    <string name="ai_error_on_device_unsupported_device">This device doesn\'t meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.</string>
+    <string name="ai_error_on_device_low_memory">Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.</string>
+    <string name="ai_error_key_rejected">Your API key was rejected. Open Settings → AI Provider and re-paste a valid key.</string>
+    <string name="ai_error_location_unsupported">Gemini isn\'t available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider.</string>
+    <string name="ai_error_provider_overloaded">The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider.</string>
+    <string name="ai_error_rate_limit">Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider.</string>
+    <string name="ai_error_coach_on_device">Coach isn\'t available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.</string>
+    <string name="ai_error_coach_round_limit">Coach exceeded the tool-call round limit. Try rephrasing your question.</string>
+    <string name="ai_error_truncated_twice">The AI response was truncated twice. Try a shorter question or another model.</string>
+    <string name="ai_error_truncated_twice_description">The AI response was truncated twice. Try a shorter description or another model.</string>
+    <string name="ai_error_truncated">The AI response was truncated. Try a shorter question or a different model.</string>
+    <string name="ai_error_provider_error">The AI provider returned an error.</string>
+    <string name="ai_error_grounded_requires_provider">Grounded tool loop requires a live AI provider.</string>
+    <string name="ai_error_grounded_on_device">Grounded tool loop is not available for on-device models.</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
     <string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string>

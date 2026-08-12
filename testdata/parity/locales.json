@@ -19,11 +19,12 @@
     { "id": "pt-BR", "bcp47": "pt-BR", "androidValues": "values-pt-rBR", "name": "Portuguese (Brazil)", "nativeName": "Português (Brasil)", "rtl": false, "speechCodes": ["pt", "pt-BR"] },
     { "id": "ro", "bcp47": "ro", "androidValues": "values-ro", "name": "Romanian", "nativeName": "Română", "rtl": false, "speechCodes": ["ro", "ro-RO"] },
     { "id": "ru", "bcp47": "ru", "androidValues": "values-ru", "name": "Russian", "nativeName": "Русский", "rtl": false, "speechCodes": ["ru", "ru-RU"] },
+    { "id": "uk", "bcp47": "uk", "androidValues": "values-uk", "name": "Ukrainian", "nativeName": "Українська", "rtl": false, "speechCodes": ["uk", "uk-UA"] },
     { "id": "zh-CN", "bcp47": "zh-CN", "androidValues": "values-zh-rCN", "name": "Chinese (Simplified)", "nativeName": "简体中文", "rtl": false, "speechCodes": ["zh", "zh-CN"] }
   ],
   "speechLocales": {
     "notes": "Speech recognition language is independent of UI locale. Empty/auto uses device or provider detection.",
-    "pwa": ["", "en-US", "en-GB", "de-DE", "fr-FR", "es-ES", "it-IT", "nl-NL", "pt-BR", "hi-IN", "ja-JP", "zh-CN", "ko-KR", "sv-SE"],
+    "pwa": ["", "en-US", "en-GB", "de-DE", "fr-FR", "es-ES", "it-IT", "nl-NL", "pt-BR", "hi-IN", "ja-JP", "zh-CN", "ko-KR", "uk-UA", "sv-SE"],
     "androidSpeechLanguage": ["PROVIDER_AUTO", "DEVICE", "ENGLISH", "GERMAN", "SPANISH", "FRENCH", "ITALIAN", "PORTUGUESE", "DUTCH", "HINDI", "JAPANESE", "CHINESE", "KOREAN"]
   },
   "coreSurfaces": [

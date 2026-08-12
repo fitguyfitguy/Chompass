@@ -1,5 +1,7 @@
 package app.chompass.services.ai
 
+import app.chompass.R
+
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
@@ -75,7 +77,7 @@ object AnthropicClient {
         if (response.wasTruncated) {
             response = request(compactRetryPrompt(prompt, maxTokens))
             if (response.wasTruncated) {
-                throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.")
+                throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
             }
         }
         return response.text ?: throw AiError.InvalidResponse

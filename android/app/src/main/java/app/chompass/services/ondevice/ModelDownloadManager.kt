@@ -3,6 +3,7 @@ package app.chompass.services.ondevice
 import android.content.Context
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import app.chompass.R
 import java.io.File
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -76,7 +77,7 @@ class ModelDownloadManager(private val context: Context) {
             }
             info.state == WorkInfo.State.FAILED -> {
                 val reason = info.outputData.getString(ModelDownloadWorker.FAILURE_REASON)
-                OnDeviceDownloadState.Failed(reason ?: "Download failed")
+                OnDeviceDownloadState.Failed(reason ?: context.getString(R.string.on_device_download_failed))
             }
             info.state == WorkInfo.State.CANCELLED -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
             else -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded

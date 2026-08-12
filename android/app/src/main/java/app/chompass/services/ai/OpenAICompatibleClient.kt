@@ -8,6 +8,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import app.chompass.models.AIProvider
+import app.chompass.R
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -87,7 +88,7 @@ object OpenAICompatibleClient {
         if (response.needsCompactRetry) {
             response = request(compactRetryPrompt(prompt, maxTokens), compactRetry = true)
             if (response.wasTruncated) {
-                throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.")
+                throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
             }
         }
         return response.text ?: throw AiError.InvalidResponse
@@ -230,7 +231,7 @@ object OpenAICompatibleClient {
 
         val response = OpenAIResponseParser.parse(RetryPolicy.execute { client.newCall(builder.build()) })
         if (response.wasTruncated) {
-            throw AiError.Api("The AI response was truncated. Try a shorter question or a different model.")
+            throw AiError.Api("The AI response was truncated. Try a shorter question or a different model.", messageRes = R.string.ai_error_truncated)
         }
         return response.text ?: throw AiError.InvalidResponse
     }
@@ -279,7 +280,7 @@ internal object OpenAIResponseParser {
         val finishReason = runCatching { choice?.get("finish_reason")?.jsonPrimitive?.contentOrNull }
             .getOrNull()?.takeIf { it.isNotBlank() }
         if (finishReason == "error" || (choice == null && errorMessage != null)) {
-            throw AiError.Api(errorMessage ?: "The AI provider returned an error.")
+            throw AiError.Api(errorMessage ?: "The AI provider returned an error.", messageRes = if (errorMessage == null) R.string.ai_error_provider_error else 0)
         }
         val message = runCatching { choice?.get("message")?.jsonObject }.getOrNull()
             ?: throw AiError.InvalidResponse
