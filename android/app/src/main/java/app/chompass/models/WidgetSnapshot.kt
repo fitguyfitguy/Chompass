@@ -62,6 +62,14 @@ data class WidgetSnapshot(
     val waterGoalMl: Int = 2_000,
     /** When false, water widget labels use fl oz (matches weight unit preference). */
     val waterUseMetric: Boolean = true,
+    /**
+     * Next planned drink from the adaptive reminder chain; null when reminders
+     * are off, the goal is met, or the window is degenerate. Null in snapshots
+     * written by older builds.
+     */
+    val waterNextFireAtMillis: Long? = null,
+    /** Amount to drink at [waterNextFireAtMillis] (one cup, capped by the goal remainder); 0 when no plan. */
+    val waterNextDrinkMl: Int = 0,
 ) {
     val resolvedCalorieMode: HomeCalorieDisplayMode
         get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)
@@ -136,6 +144,10 @@ data class WidgetSnapshot(
         date = Instant.now(),
         dayStart = todayStart(),
         waterCurrentMl = 0,
+        // The day rolled over and the app has not re-published yet — drop the
+        // stale plan so the widget never shows yesterday's cadence.
+        waterNextFireAtMillis = null,
+        waterNextDrinkMl = 0,
     )
 
     fun nutrientColorHex(id: String): Int {

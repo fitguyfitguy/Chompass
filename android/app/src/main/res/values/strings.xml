@@ -401,6 +401,8 @@
     <string name="water_add">Add water</string>
     <string name="water_progress">%1$d / %2$d ml</string>
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
+    <string name="home_water_next">Next %1$s · %2$s</string>
+    <string name="home_water_next_tomorrow">Next %1$s · tomorrow %2$s</string>
     <string name="home_food_removed">Food removed</string>
     <string name="action_undo">Undo</string>
     <string name="add_food_photo_source_title">Add a photo</string>

@@ -35,6 +35,12 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WidgetSnapshot
+import app.chompass.ui.util.clockTimePattern
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class WaterAppWidget : GlanceAppWidget() {
     override val sizeMode: SizeMode = SizeMode.Exact
@@ -81,7 +87,14 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
     val size = LocalSize.current
     val contentW = size.width.value - 28f
     val contentH = size.height.value - 28f
-    val gaugeW = minOf(contentW, (contentH - 44f) / 0.58f).toInt().coerceAtLeast(80)
+    // Next planned drink, hidden once its fire time is in the past (the widget
+    // cannot tick like Home — a stale snapshot must not show an old fire).
+    val nextFireMillis = snapshot.waterNextFireAtMillis
+        ?.takeIf { it > System.currentTimeMillis() }
+    val hasNextDrink = nextFireMillis != null
+    // The extra footer row shrinks the gauge's height budget.
+    val gaugeW = minOf(contentW, (contentH - if (hasNextDrink) 62f else 44f) / 0.58f)
+        .toInt().coerceAtLeast(80)
 
     val currentLabel = if (snapshot.waterUseMetric) {
         snapshot.waterCurrentMl.toString()
@@ -97,6 +110,25 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
         context.getString(R.string.widget_ml_left_format, snapshot.waterRemaining)
     } else {
         context.getString(R.string.widget_fl_oz_left_format, WaterAmountFormat.flOzFromMl(snapshot.waterRemaining))
+    }
+    val nextDrinkLabel = nextFireMillis?.let { fireMillis ->
+        val amount = if (snapshot.waterUseMetric) {
+            context.getString(R.string.water_amount_ml, snapshot.waterNextDrinkMl)
+        } else {
+            context.getString(
+                R.string.water_amount_fl_oz,
+                WaterAmountFormat.flOzFromMl(snapshot.waterNextDrinkMl),
+            )
+        }
+        val fireZone = Instant.ofEpochMilli(fireMillis).atZone(ZoneId.systemDefault())
+        val time = fireZone.format(
+            DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault()),
+        )
+        if (fireZone.toLocalDate().isAfter(LocalDate.now())) {
+            context.getString(R.string.home_water_next_tomorrow, amount, time)
+        } else {
+            context.getString(R.string.home_water_next, amount, time)
+        }
     }
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
@@ -122,6 +154,17 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
                 fontSize = 12.sp,
             ),
         )
+        if (nextDrinkLabel != null) {
+            Text(
+                text = nextDrinkLabel,
+                style = TextStyle(
+                    color = WidgetTheme.secondaryTextProvider,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 11.sp,
+                ),
+                maxLines = 1,
+            )
+        }
     }
 }
 
