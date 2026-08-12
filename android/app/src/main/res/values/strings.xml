@@ -1298,7 +1298,7 @@
     <string name="cd_copy_entries">Copy entries</string>
     <string name="cd_dismiss_paste">Dismiss paste</string>
     <string name="paste_n_entries">Paste %1$d entries</string>
-    <string name="pasted_n_entries">Pasted %1$d entries</string>
+    <string name="paste_busy">Pasting…</string>
     <string name="cd_favorited">Favorited</string>
     <string name="cd_move_up">Move up</string>
     <string name="cd_move_down">Move down</string>

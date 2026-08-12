@@ -48,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -305,7 +306,14 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     // ad strip above this screen (TabWithBanner) now owns that inset.
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = {
+            // Custom docked bottom nav overlays the Scaffold; lift the host so
+            // snackbars (delete-undo, paste confirmation) are not hidden behind it.
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = BottomNavDockedControlPadding + 16.dp),
+            )
+        },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
         LazyColumn(
@@ -608,42 +616,47 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         // pasted onto the viewed day (same or another day). In-memory clipboard.
         val copied = ui.copiedEntries
         if (copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) {
-            val pasteMessage = stringResource(R.string.pasted_n_entries, copied.size)
+            val pasteBusy = ui.saving
             val paste: () -> Unit = {
-                vm.copyEntriesToSelectedDay(copied)
-                scope.launch {
-                    snackbarHostState.showSnackbar(pasteMessage)
-                }
+                if (!pasteBusy) vm.copyEntriesToSelectedDay(copied)
             }
             FudGlassSurface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(start = 88.dp, end = 88.dp, bottom = BottomNavDockedControlPadding + 16.dp)
-                    .clickable(onClick = paste)
+                    .padding(start = 16.dp, end = 16.dp, bottom = BottomNavDockedControlPadding + 16.dp)
+                    .fillMaxWidth()
+                    .alpha(if (pasteBusy) 0.55f else 1f)
+                    .clickable(enabled = !pasteBusy, onClick = paste)
                     .zIndex(1f),
                 cornerRadius = 22.dp,
                 padding = 0.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        stringResource(R.string.paste_n_entries, copied.size),
+                        stringResource(
+                            if (pasteBusy) R.string.paste_busy else R.string.paste_n_entries,
+                            if (pasteBusy) 0 else copied.size
+                        ),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Medium,
                         fontSize = 15.sp,
                     )
                     IconButton(
                         onClick = { vm.clearCopiedEntries() },
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(44.dp)
                     ) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = stringResource(R.string.cd_dismiss_paste),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
