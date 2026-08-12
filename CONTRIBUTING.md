@@ -44,6 +44,18 @@ Python scripts always use ephemeral `uv` (packaged in devenv): `uv run python sc
 
 Maintainer setup is WSL2 build + Windows host USB adb. If you are on **native Linux or macOS** with a USB device, use your normal `adb` on the default port and ignore `ANDROID_ADB_SERVER_PORT=5038` / Windows `adb.exe` paths in the docs.
 
+## Reporting issues
+
+File issues on [Codeberg](https://codeberg.org/fitguy/Chompass/issues). Two
+templates are available (bug report, feature request); questions can use a
+blank issue. A good report has: app version (Settings > About), phone model +
+Android version, and repro steps. Check the latest release first — the
+maintainer ships fixes in batches and many reports are already fixed. If the
+issue touches nutrition formulas, diary export/import, meal sharing, or Health
+Connect data, say so: those live in Kotlin **and** the PWA
+(`web/app/src/lib/chompass-core/`) and must change together
+([docs/PARITY.md](docs/PARITY.md)).
+
 ## Do not
 
 - Commit secrets, keystores, diary exports, or release APKs
