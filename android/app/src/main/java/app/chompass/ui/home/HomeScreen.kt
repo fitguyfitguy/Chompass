@@ -59,7 +59,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.UUID
 import app.chompass.AppContainer
 import app.chompass.MainActivity
@@ -67,6 +71,7 @@ import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.WaterAmountFormat
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
 import app.chompass.services.ShortcutEntryAction
@@ -78,6 +83,7 @@ import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
 import app.chompass.ui.components.WeekEnergyStrip
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
@@ -89,6 +95,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
     val ctx = LocalContext.current
+    val clockFormatter = remember(ctx) {
+        DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault())
+    }
     val weekStartsOnMonday by container.prefs.weekStartsOnMonday.collectAsState(initial = true)
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -410,12 +419,31 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                     }
                     if (ui.waterTrackingEnabled) {
                         Spacer(Modifier.height(12.dp))
+                        val nextDrinkLabel = ui.waterNextPlan?.let { plan ->
+                            val amount = if (ui.weightMetric) {
+                                stringResource(R.string.water_amount_ml, plan.drinkMl)
+                            } else {
+                                stringResource(
+                                    R.string.water_amount_fl_oz,
+                                    WaterAmountFormat.flOzFromMl(plan.drinkMl),
+                                )
+                            }
+                            val fireZone = Instant.ofEpochMilli(plan.nextFireMillis)
+                                .atZone(ZoneId.systemDefault())
+                            val time = fireZone.format(clockFormatter)
+                            if (fireZone.toLocalDate().isAfter(LocalDate.now())) {
+                                stringResource(R.string.home_water_next_tomorrow, amount, time)
+                            } else {
+                                stringResource(R.string.home_water_next, amount, time)
+                            }
+                        }
                         WaterProgressRow(
                             current = ui.waterTodayMl,
                             goal = ui.waterDailyGoalMl,
                             useMetric = ui.weightMetric,
                             auto = ui.waterGoalDynamic,
                             onAutoClick = onOpenSettings,
+                            nextDrinkLabel = nextDrinkLabel,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }

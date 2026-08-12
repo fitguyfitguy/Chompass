@@ -32,6 +32,7 @@ import app.chompass.services.FoodImageComposer
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
+import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.grounding.DatabaseSearchResult
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.services.ai.AiError
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -131,6 +133,12 @@ data class HomeUiState(
     val waterTodayMl: Int = 0,
     /** True when the goal shown comes from the dynamic calculator (issue #3). */
     val waterGoalDynamic: Boolean = false,
+    /**
+     * Next planned drink from the adaptive reminder chain (one cup, capped by
+     * the goal remainder, at [Plan.nextFireMillis]); null when water tracking /
+     * the reminder is off, the goal is met, or the window is degenerate.
+     */
+    val waterNextPlan: app.chompass.services.WaterReminderPlanner.Plan? = null,
     /** Debug-only resting-shade flag for the hero arc A/B (see [SHOW_RESTING_BURN_SHADE]). */
     val showRestingBurnShade: Boolean = SHOW_RESTING_BURN_SHADE,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
@@ -599,6 +607,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
             .onEach { (goal, dynamic) ->
                 _ui.value = _ui.value.copy(waterDailyGoalMl = goal, waterGoalDynamic = dynamic)
+                refreshWaterPlan()
             }
             .launchIn(viewModelScope)
 
@@ -612,8 +621,38 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 .filter { it.date.atZone(zone).toLocalDate() == day }
                 .sumOf { it.milliliters }
         }
-            .onEach { total -> _ui.value = _ui.value.copy(waterTodayMl = total) }
+            .onEach { total ->
+                _ui.value = _ui.value.copy(waterTodayMl = total)
+                refreshWaterPlan()
+            }
             .launchIn(viewModelScope)
+
+        combine(
+            combine(
+                container.prefs.waterTrackingEnabled,
+                container.prefs.waterReminderEnabled,
+                container.prefs.waterCupSizeMl,
+            ) { tracking, reminder, cup -> Triple(tracking, reminder, cup) },
+            combine(
+                container.prefs.waterAwakeStartHour,
+                container.prefs.waterAwakeStartMinute,
+                container.prefs.waterAwakeEndHour,
+                container.prefs.waterAwakeEndMinute,
+            ) { sh, sm, eh, em -> WaterWindowPrefs(sh, sm, eh, em) },
+        ) { _: Triple<Boolean, Boolean, Int>, _: WaterWindowPrefs -> Unit }
+            .onEach { refreshWaterPlan() }
+            .launchIn(viewModelScope)
+
+        // A fired reminder (or simply time passing) changes the next fire
+        // without any pref/entry emission — roll the caption over each minute
+        // (one in-memory DataStore read, same cost as the reminder chain's own
+        // fire-time recompute).
+        viewModelScope.launch {
+            while (true) {
+                delay(60_000)
+                refreshWaterPlan()
+            }
+        }
 
         combine(container.manualActiveRepository.entries, _selectedDate) { entries, day ->
             entries.filter { it.date == day.toString() }.sumOf { it.calories }
@@ -645,6 +684,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             container.waterRepository.add(
                 WaterEntry(date = timestampForSelectedDay(), milliliters = milliliters),
             )
+        }
+    }
+
+    /**
+     * Re-derives the next planned drink (quantity + fire time) from live prefs
+     * and diary — the same "pure state → plan" re-derivation the reminder
+     * chain itself performs, so the Home caption always matches the armed
+     * alarm. Cheap: the planner reads current DataStore values once.
+     */
+    private fun refreshWaterPlan() {
+        viewModelScope.launch {
+            _ui.value = _ui.value.copy(waterNextPlan = WaterReminderPlanner.next(container))
         }
     }
 
@@ -1752,4 +1803,12 @@ private data class WaterDynamicPrefs(
     val baseSource: String,
     val tempC: Int,
     val useProfileActivity: Boolean,
+)
+
+/** Drinking-window prefs bundled for the water-plan trigger combine. */
+private data class WaterWindowPrefs(
+    val startHour: Int,
+    val startMinute: Int,
+    val endHour: Int,
+    val endMinute: Int,
 )

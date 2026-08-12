@@ -60,6 +60,8 @@ fun WaterProgressRow(
     useMetric: Boolean = true,
     auto: Boolean = false,
     onAutoClick: (() -> Unit)? = null,
+    /** Preformatted "Next 300 ml · 15:24" hint under the bar; null hides it. */
+    nextDrinkLabel: String? = null,
     modifier: Modifier = Modifier,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
@@ -116,6 +118,14 @@ fun WaterProgressRow(
             color = AppColors.Calorie,
             trackColor = AppColors.Calorie.copy(alpha = 0.16f),
         )
+        if (nextDrinkLabel != null) {
+            Text(
+                nextDrinkLabel,
+                color = AppColors.Calorie,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+            )
+        }
     }
 }
 

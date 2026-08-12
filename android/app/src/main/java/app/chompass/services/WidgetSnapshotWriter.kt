@@ -49,6 +49,7 @@ class WidgetSnapshotWriter(
         val enabled: Boolean,
         val manualGoalMl: Int,
         val dynamic: WaterDynamicInputs,
+        val plan: WaterPlanInputs,
         val entries: List<WaterEntry>,
     )
 
@@ -58,6 +59,14 @@ class WidgetSnapshotWriter(
         val tempC: Int,
         val useProfileActivity: Boolean,
         val foodWaterEnabled: Boolean,
+    )
+
+    /** Adaptive reminder inputs for the next-drink plan in the snapshot. */
+    internal data class WaterPlanInputs(
+        val reminderEnabled: Boolean,
+        val awakeStartMinutes: Int,
+        val awakeEndMinutes: Int,
+        val cupSizeMl: Int,
     )
 
     internal fun observe() = combine(
@@ -87,7 +96,34 @@ class WidgetSnapshotWriter(
             ) { dyn, source, temp, useAct, foodWater ->
                 WaterDynamicInputs(dyn, source, temp, useAct, foodWater)
             },
-        ) { water, dynamic -> WaterInputs(water.first, water.second, dynamic, water.third) },
+            combine(
+                combine(
+                    prefs.waterReminderEnabled,
+                    prefs.waterCupSizeMl,
+                ) { reminder, cup -> reminder to cup },
+                combine(
+                    prefs.waterAwakeStartHour,
+                    prefs.waterAwakeStartMinute,
+                    prefs.waterAwakeEndHour,
+                    prefs.waterAwakeEndMinute,
+                ) { sh, sm, eh, em -> sh * 60 + sm to eh * 60 + em },
+            ) { reminderAndCup, window ->
+                WaterPlanInputs(
+                    reminderEnabled = reminderAndCup.first,
+                    cupSizeMl = reminderAndCup.second,
+                    awakeStartMinutes = window.first,
+                    awakeEndMinutes = window.second,
+                )
+            },
+        ) { water, dynamic, plan ->
+            WaterInputs(
+                enabled = water.first,
+                manualGoalMl = water.second,
+                dynamic = dynamic,
+                plan = plan,
+                entries = water.third,
+            )
+        },
     ) { core, water -> Triple(core.first, core.second, water) }
         .distinctUntilChanged()
         .onEach { (entries, profile, water) -> publish(entries, profile, water) }
@@ -109,6 +145,12 @@ class WidgetSnapshotWriter(
                 tempC = prefs.waterManualTempC.first(),
                 useProfileActivity = prefs.waterUseProfileActivity.first(),
                 foodWaterEnabled = prefs.waterFoodWaterEnabled.first(),
+            ),
+            plan = WaterPlanInputs(
+                reminderEnabled = prefs.waterReminderEnabled.first(),
+                awakeStartMinutes = prefs.waterAwakeStartHour.first() * 60 + prefs.waterAwakeStartMinute.first(),
+                awakeEndMinutes = prefs.waterAwakeEndHour.first() * 60 + prefs.waterAwakeEndMinute.first(),
+                cupSizeMl = prefs.waterCupSizeMl.first(),
             ),
             entries = waterRepository.entries.first(),
         )
@@ -174,6 +216,14 @@ class WidgetSnapshotWriter(
                 water.manualGoalMl
             }
             val weightUnit = prefs.weightUnit.first()
+            // Next planned drink for the widget's "Next 300 ml · 15:24" line —
+            // same re-derivation the reminder chain and Home use.
+            val waterPlan = WaterReminderPlanner.next(
+                prefs = prefs,
+                foodRepository = foodRepository,
+                profileRepository = profileRepository,
+                waterRepository = waterRepository,
+            )
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
                 dayStart = WidgetSnapshot.todayStart(),
@@ -212,6 +262,8 @@ class WidgetSnapshotWriter(
                 waterCurrentMl = waterTodayMl,
                 waterGoalMl = waterGoalMl.coerceAtLeast(1),
                 waterUseMetric = weightUnit == "kg",
+                waterNextFireAtMillis = waterPlan?.nextFireMillis,
+                waterNextDrinkMl = waterPlan?.drinkMl ?: 0,
             )
             prefs.setWidgetSnapshot(snapshot)
         }
