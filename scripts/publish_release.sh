@@ -12,7 +12,12 @@
 #   ./scripts/publish_release.sh 1.0.0 --skip-pages    # skip Codeberg Pages redeploy
 #
 # or persist a login:
-#   nix shell nixpkgs#tea -c tea logins add -n codeberg -u https://codeberg.org -t "$CODEBERG_TOKEN"
+#   nix shell nixpkgs#tea -c tea logins add -n codeberg-release -u https://codeberg.org -t "$CODEBERG_TOKEN"
+#
+# Token split: use the release login `codeberg-release` (from .env.local
+# CODEBERG_TOKEN, scopes read:user + write:repository) via
+# CODEBERG_LOGIN=codeberg-release. The default tea login `codeberg` is
+# issue-triage only (no write:repository) — never publish with it.
 #
 # After a successful asset upload, rebuilds and force-pushes the Hugo site to the
 # orphan `pages` branch (same as ./scripts/deploy_pages.sh) so fitguy.codeberg.page
