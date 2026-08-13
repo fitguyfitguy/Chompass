@@ -166,6 +166,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setProgressDefaultRangeId(v: String) = setProgressDefaultRangeIdImpl(v)
     val progressLastRangeId: Flow<String?> get() = progressLastRangeIdImpl
     suspend fun setProgressLastRangeId(v: String) = setProgressLastRangeIdImpl(v)
+    val progressMeasurementSites: Flow<Set<String>> get() = progressMeasurementSitesImpl
+    suspend fun setProgressMeasurementSites(sites: Set<String>) = setProgressMeasurementSitesImpl(sites)
     val mealSchedule: Flow<app.chompass.models.MealSchedule> get() = mealScheduleImpl
     suspend fun setMealSchedule(schedule: app.chompass.models.MealSchedule) = setMealScheduleImpl(schedule)
     val lastSavedMealsSegment: Flow<String> get() = lastSavedMealsSegmentImpl

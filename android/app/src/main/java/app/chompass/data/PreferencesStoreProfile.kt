@@ -90,6 +90,13 @@ internal suspend fun PreferencesStore.setProgressLastRangeIdImpl(v: String) {
     dataStore.edit { it[Keys.PROGRESS_LAST_RANGE_ID] = v }
 }
 
+/** Body-measurement sites with a Progress-tab trend plot; empty set = plots off. */
+internal val PreferencesStore.progressMeasurementSitesImpl: Flow<Set<String>> get() =
+    dataStore.data.map { it[Keys.PROGRESS_MEASUREMENT_SITES] ?: emptySet() }
+internal suspend fun PreferencesStore.setProgressMeasurementSitesImpl(sites: Set<String>) {
+    dataStore.edit { it[Keys.PROGRESS_MEASUREMENT_SITES] = sites }
+}
+
     /** "RECENTS" | "FREQUENT" | "FAVORITES". Mirrors iOS @AppStorage("lastRecentsSegment"). */
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }

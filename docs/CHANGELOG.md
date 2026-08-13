@@ -2,6 +2,16 @@
 
 All notable changes to Chompass are documented here.
 
+## [Unreleased]
+
+### Added
+
+- **Body-measurement trend plots** (Android): the Progress tab can now chart how each body measurement changes over time — one compact card per site with the current value, net change over the selected range, and a trend line. **Off by default**: enable sites in the new *Settings → App & Display → Customize progress* screen (which also hosts the Progress default range). Data comes from Personal Info → Body measurements; plots respect the 1W–All range chips and the cm/in unit setting. Closes Codeberg [#18](https://codeberg.org/fitguy/Chompass/issues/18).
+
+### Fixed
+
+- **"What if?" popup no longer cuts off long AI suggestions** (Android): the dialog's content now caps at 60% of the screen height and scrolls, so a long suggestion stays readable on small screens instead of being silently clipped below the fold (M3 `AlertDialog` never scrolls on its own). Also adds a deterministic `initialSuggestion` preview hook so screenshot tests render the long-text case. Closes Codeberg [#17](https://codeberg.org/fitguy/Chompass/issues/17).
+
 ## [3.11.0] - 2026-08-13
 
 ### Added

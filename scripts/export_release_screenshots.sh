@@ -70,6 +70,7 @@ declare -a README_EXPORTS=(
   "HomeDarkScreenshot_05-home-dark|home.png"
   "HomeLightScreenshot_01-home-light|home-light.png"
   "ProgressDarkScreenshot_06-progress-dark|progress.png"
+  "ProgressPlotsDarkScreenshot_progress-plots-dark|progress-plots.png"
   "AddFoodDarkScreenshot_10-add-food-dark|add-food.png"
   "CoachDarkScreenshot_08-coach-dark|coach.png"
   "SettingsDarkScreenshot_09-settings-dark|settings.png"
@@ -93,6 +94,8 @@ declare -a RELEASE_EXPORTS=(
   "MealComponentsDarkScreenshot_11-meal-components-dark|11-meal-components-dark.png"
   "RecipesDarkScreenshot_12-recipes-dark|12-recipes-dark.png"
   "AiAnalysisDarkScreenshot_13-ai-analysis-dark|13-ai-analysis-dark.png"
+  "ProgressPlotsLightScreenshot_progress-plots-light|14-progress-plots-light.png"
+  "ProgressPlotsDarkScreenshot_progress-plots-dark|15-progress-plots-dark.png"
 )
 
 find_newest_ref() {

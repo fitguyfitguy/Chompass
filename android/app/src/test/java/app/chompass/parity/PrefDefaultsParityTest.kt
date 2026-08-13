@@ -50,6 +50,8 @@ class PrefDefaultsParityTest {
             app.chompass.ui.progress.TimeRange.WEEK.storageId,
             f.getString("progressDefaultRangeId"),
         )
+        // Body-measurement plots are off by default (empty enabled-site set).
+        assertEquals(0, f.getJSONArray("progressMeasurementSites").length())
 
         val goals = f.getJSONObject("optionalNutrientGoals")
         val d = OptionalNutrientGoals.Default

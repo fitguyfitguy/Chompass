@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyMeasurement
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
@@ -144,6 +145,35 @@ internal object SampleDataGenerators {
             val noise = rng.nextDouble(-0.003, 0.003)
             val ts = day.atTime(8, rng.nextInt(0, 30)).atZone(zone).toInstant()
             out.add(BodyFatEntry(date = ts, bodyFatFraction = baseline + noise))
+        }
+        return out
+    }
+
+    /** Weekly body-measurement snapshots over [totalDays]: waist/hips/chest/neck
+     *  with linear cm trends + day-to-day noise — 4 of the 8 sites, like a real
+     *  user who logs the tape once a week. */
+    fun measurementSeries(
+        totalDays: Int = 90,
+        seed: Long,
+        today: LocalDate = LocalDate.now(),
+    ): List<BodyMeasurement> {
+        val zone = ZoneId.systemDefault()
+        val rng = Random(seed)
+        val out = mutableListOf<BodyMeasurement>()
+        for (daysAgo in (totalDays - 1) downTo 0 step 7) {
+            val day = today.minusDays(daysAgo.toLong())
+            val progress = (totalDays - 1 - daysAgo).toDouble() / (totalDays - 1)
+            fun trend(start: Double, end: Double) = start - (start - end) * progress
+            val ts = day.atTime(7, rng.nextInt(0, 60)).atZone(zone).toInstant()
+            out.add(
+                BodyMeasurement(
+                    date = ts,
+                    neckCm = trend(39.0, 38.0) + rng.nextDouble(-0.3, 0.3),
+                    waistCm = trend(88.0, 83.0) + rng.nextDouble(-0.6, 0.6),
+                    hipsCm = trend(104.0, 101.0) + rng.nextDouble(-0.5, 0.5),
+                    chestCm = trend(100.0, 97.5) + rng.nextDouble(-0.5, 0.5),
+                )
+            )
         }
         return out
     }

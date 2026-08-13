@@ -39,6 +39,7 @@ import app.chompass.ui.progress.ProgressScreen
 import app.chompass.ui.settings.AiSettingsScreen
 import app.chompass.ui.settings.AppSettingsScreen
 import app.chompass.ui.settings.CalculationMethodsScreen
+import app.chompass.ui.settings.CustomizeProgressScreen
 import app.chompass.ui.settings.DataSettingsScreen
 import app.chompass.ui.settings.FoodEntrySettingsScreen
 import app.chompass.ui.settings.GoalsSettingsScreen
@@ -283,6 +284,9 @@ fun ChompassNavHost(
                 }
                 composable(ChompassRoutes.HOME_DISPLAY) {
                     HomeDisplaySettingsScreen(container = container, onBack = { nav.popBackStack() })
+                }
+                composable(ChompassRoutes.CUSTOMIZE_PROGRESS) {
+                    CustomizeProgressScreen(container = container, onBack = { nav.popBackStack() })
                 }
                 composable(ChompassRoutes.CALCULATION_METHODS) {
                     CalculationMethodsScreen(onBack = { nav.popBackStack() })

@@ -48,6 +48,10 @@ data class ProgressUiState(
     val timeRange: TimeRange = TimeRange.WEEK,
     val filteredWeights: List<WeightEntry> = emptyList(),
     val filteredBodyFats: List<BodyFatEntry> = emptyList(),
+    /** Body-measurement snapshots inside the selected range, date-sorted (for the plot cards). */
+    val filteredMeasurements: List<BodyMeasurement> = emptyList(),
+    /** Sites with a Progress-tab trend plot enabled in Customize Progress; empty = plots off. */
+    val measurementSites: Set<BodyMeasurement.Site> = emptySet(),
     val dailyCalories: List<Pair<LocalDate, Int>> = emptyList(),
     val macroAverages: Triple<Double, Double, Double> = Triple(0.0, 0.0, 0.0),
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
@@ -59,7 +63,9 @@ private data class BaseProgressData(
     val profile: UserProfile?,
     val entries: List<WeightEntry>,
     val bodyFatEntries: List<BodyFatEntry>,
-    val bodyMeasurements: List<BodyMeasurement>
+    val bodyMeasurements: List<BodyMeasurement>,
+    /** Site storage ids with a Progress-tab plot enabled (empty = off). */
+    val measurementSites: Set<String> = emptySet()
 )
 
 class ProgressViewModel(private val container: AppContainer) : ViewModel() {
@@ -103,13 +109,15 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
             container.profileRepository.profile,
             container.weightRepository.entries,
             container.bodyFatRepository.entries,
-            container.bodyMeasurementRepository.entries
-        ) { profile, weights, bodyFats, measurements ->
+            container.bodyMeasurementRepository.entries,
+            container.prefs.progressMeasurementSites
+        ) { profile, weights, bodyFats, measurements, measurementSites ->
             BaseProgressData(
                 profile = profile,
                 entries = weights,
                 bodyFatEntries = bodyFats,
-                bodyMeasurements = measurements
+                bodyMeasurements = measurements,
+                measurementSites = measurementSites
             )
         }.let { baseData ->
             combine(
@@ -216,6 +224,11 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         .filter { it.date in rangeStart..rangeEnd }
         .sortedBy { it.date }
         .toList()
+    val filteredMeasurements = base.bodyMeasurements
+        .asSequence()
+        .filter { it.date in rangeStart..rangeEnd }
+        .sortedBy { it.date }
+        .toList()
     val foodByDay = foods.groupByLocalDateInRange(
         rangeStart = rangeStart,
         rangeEnd = rangeEnd,
@@ -244,6 +257,8 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         timeRange = selectedRange,
         filteredWeights = filteredWeights,
         filteredBodyFats = filteredBodyFats,
+        filteredMeasurements = filteredMeasurements,
+        measurementSites = base.measurementSites.mapNotNull { BodyMeasurement.Site.fromStorageId(it) }.toSet(),
         dailyCalories = dailyCalories,
         macroAverages = macroAverages,
         weightStats = filteredWeights.toWeightStats(),
@@ -308,13 +323,16 @@ internal fun buildProgressPreviewUiState(
     timeRange: TimeRange,
     anchorDate: LocalDate,
     weightUnit: String = "kg",
+    bodyMeasurements: List<BodyMeasurement> = emptyList(),
+    measurementSites: Set<BodyMeasurement.Site> = emptySet(),
 ): ProgressUiState {
     return ProgressSnapshot(
         base = BaseProgressData(
             profile = profile,
             entries = weights,
             bodyFatEntries = bodyFatEntries,
-            bodyMeasurements = emptyList(),
+            bodyMeasurements = bodyMeasurements,
+            measurementSites = measurementSites.map { it.storageId }.toSet(),
         ),
         foods = foods,
         weightUnit = weightUnit,

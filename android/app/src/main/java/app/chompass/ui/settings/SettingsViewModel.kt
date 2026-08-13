@@ -105,6 +105,8 @@ data class SettingsUiState(
     val weekStartsOnMonday: Boolean = true,
     /** Settings default Progress range id (`1W`…`All`). */
     val progressDefaultRangeId: String = "1W",
+    /** Body-measurement sites with a Progress-tab trend plot; empty = plots off. */
+    val progressMeasurementSites: Set<String> = emptySet(),
     val userContext: String = "",
     val fallbackEnabled: Boolean = true,
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
@@ -216,6 +218,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
             val weekMon = container.prefs.weekStartsOnMonday.first()
             val progressDefaultRangeId = container.prefs.progressDefaultRangeId.first()
+            val progressMeasurementSites = container.prefs.progressMeasurementSites.first()
             val userContext = container.prefs.userContext.first()
             val maxTokens = container.prefs.maxResponseTokens.first()
             val aiReadTimeout = container.prefs.aiReadTimeoutSeconds.first()
@@ -289,6 +292,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 foodLogSortOrder = foodLogSortOrder,
                 weekStartsOnMonday = weekMon,
                 progressDefaultRangeId = progressDefaultRangeId,
+                progressMeasurementSites = progressMeasurementSites,
                 userContext = userContext,
                 fallbackEnabled = fbEnabled,
                 fallbackProvider = fbProvider,
@@ -595,6 +599,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setProgressDefaultRangeId(rangeId: String) = updateUiPref(
         { container.prefs.setProgressDefaultRangeId(rangeId) },
         { copy(progressDefaultRangeId = rangeId) },
+    )
+
+    fun setProgressMeasurementSites(sites: Set<String>) = updateUiPref(
+        { container.prefs.setProgressMeasurementSites(sites) },
+        { copy(progressMeasurementSites = sites) },
     )
 
     fun setMealSchedule(schedule: app.chompass.models.MealSchedule) {

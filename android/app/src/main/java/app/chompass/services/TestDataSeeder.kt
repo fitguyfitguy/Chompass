@@ -203,6 +203,10 @@ class TestDataSeeder(private val container: AppContainer) {
         container.bodyFatRepository.replaceAll(
             SampleDataGenerators.bodyFatSeries(totalDays = 30, startFraction = 0.180, endFraction = 0.165, seed = 0xFA7)
         )
+        // Weekly tape readings so the Customize Progress plots have data to show.
+        container.bodyMeasurementRepository.replaceAll(
+            SampleDataGenerators.measurementSeries(totalDays = 90, seed = 0x7A1)
+        )
     }
 
     /**
