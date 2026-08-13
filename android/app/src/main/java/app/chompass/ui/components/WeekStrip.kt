@@ -28,13 +28,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.ui.theme.AppColors
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 /**
  * Verbatim port of struct WeekEnergyStrip in
@@ -220,13 +223,18 @@ private fun DayTile(
     }
 }
 
-/** SwiftUI's `.dateTime.weekday(.narrow)` — single-letter short day name. */
-private fun narrowDay(dow: DayOfWeek): String = when (dow) {
-    DayOfWeek.MONDAY -> "M"
-    DayOfWeek.TUESDAY -> "T"
-    DayOfWeek.WEDNESDAY -> "W"
-    DayOfWeek.THURSDAY -> "T"
-    DayOfWeek.FRIDAY -> "F"
-    DayOfWeek.SATURDAY -> "S"
-    DayOfWeek.SUNDAY -> "S"
+/**
+ * SwiftUI's `.dateTime.weekday(.narrow)` — single-letter short day name,
+ * localized (e.g. es: L M M J V S D). Recreated when the configuration
+ * locale changes.
+ */
+@Composable
+private fun narrowDay(dow: DayOfWeek): String {
+    val locale = LocalConfiguration.current.locales[0]
+    val formatter = remember(locale) { DateTimeFormatter.ofPattern("EEEEE", locale) }
+    return formatter.format(dow)
 }
+
+/** Pure equivalent of [narrowDay] for tests: narrow weekday name in [locale]. */
+internal fun narrowDayName(dow: DayOfWeek, locale: Locale = Locale.getDefault()): String =
+    DateTimeFormatter.ofPattern("EEEEE", locale).format(dow)

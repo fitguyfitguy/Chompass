@@ -1,5 +1,7 @@
 package app.chompass.models
 
+import app.chompass.ui.components.narrowDayName
+import java.time.DayOfWeek
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -24,5 +26,23 @@ class LocaleFormatTest {
     fun mediumDatePatternUsesLocale() {
         val fmt = LocaleFormat.mediumDate()
         assertEquals(Locale.getDefault(), fmt.locale)
+    }
+
+    @Test
+    fun narrowWeekdayInitialsAreLocalized() {
+        // CLDR narrow for Spanish: X = miércoles (disambiguates from martes M).
+        // Same data the PWA gets via toLocaleDateString({weekday:"narrow"}).
+        val es = listOf(
+            DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY
+        ).map { narrowDayName(it, Locale("es")) }
+        assertEquals("L M X J V S D", es.joinToString(" "))
+
+        // English stays the classic single-letter set.
+        val en = listOf(
+            DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY
+        ).map { narrowDayName(it, Locale.US) }
+        assertEquals("M T W T F S S", en.joinToString(" "))
     }
 }
