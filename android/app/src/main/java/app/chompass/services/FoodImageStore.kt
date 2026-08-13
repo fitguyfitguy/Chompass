@@ -24,7 +24,7 @@ class FoodImageStore(context: Context) {
 
     /** Writes the bitmap as JPEG under a new filename. Returns filename or null. */
     fun store(bitmap: Bitmap, entryId: UUID): String? = runCatching {
-        val filename = "${entryId}.jpg"
+        val filename = filenameFor(entryId)
         val full = bitmap.scaledToMaxDimension(FULL_IMAGE_MAX_DIMENSION)
         FileOutputStream(File(dir, filename)).use { out ->
             full.compress(Bitmap.CompressFormat.JPEG, FULL_IMAGE_JPEG_QUALITY, out)
@@ -39,7 +39,7 @@ class FoodImageStore(context: Context) {
      * originals on disk.
      */
     fun storeBytes(bytes: ByteArray, entryId: UUID): String? = runCatching {
-        val filename = "${entryId}.jpg"
+        val filename = filenameFor(entryId)
         val fullBitmap = decodeSampled(bytes, FULL_IMAGE_MAX_DIMENSION)
         if (fullBitmap != null) {
             FileOutputStream(File(dir, filename)).use { out ->
@@ -54,6 +54,29 @@ class FoodImageStore(context: Context) {
         }
         filename
     }.getOrNull()
+
+    /**
+     * Copies the stored image (full JPEG + thumbnail) of [sourceFilename] to a
+     * fresh file owned by [newEntryId] — used when a duplicated-for-logging entry
+     * carries the source row's image. Never points two entries at one file, so
+     * edits/re-picks and [pruneUnreferenced] stay independent. Returns the new
+     * filename, or null when the source has no file on disk (stale reference).
+     */
+    fun copyForEntry(sourceFilename: String, newEntryId: UUID): String? {
+        if (sourceFilename.isBlank()) return null
+        val filename = filenameFor(newEntryId)
+        val src = File(dir, sourceFilename)
+        if (!src.exists()) return null
+        return runCatching {
+            val dst = File(dir, filename)
+            if (!dst.exists()) {
+                src.copyTo(dst)
+                val srcThumb = File(thumbnailDir, sourceFilename)
+                if (srcThumb.exists()) srcThumb.copyTo(File(thumbnailDir, filename))
+            }
+            filename
+        }.getOrNull()
+    }
 
     fun load(filename: String): Bitmap? =
         runCatching { BitmapFactory.decodeFile(File(dir, filename).absolutePath) }.getOrNull()
@@ -170,6 +193,9 @@ class FoodImageStore(context: Context) {
     }
 
     companion object {
+        /** Filename convention: every entry's image lives under `<entryId>.jpg`. */
+        fun filenameFor(entryId: UUID): String = "$entryId.jpg"
+
         private const val DIR_NAME = "fudai-food-images"
         private const val THUMBNAIL_DIR_NAME = "fudai-food-thumbnails"
         /** Longest edge for stored full images (edit sheet is 240dp). */

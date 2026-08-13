@@ -83,21 +83,22 @@ class FoodRepository(
         clearDraft: Boolean = false,
         writeHealth: Boolean = true,
     ) {
+        val resolved = resolveReloggedImage(entry)
         // Persistence commit — only this entry's month bucket is re-serialized
         // and written, not the whole food log, then the Health Connect IPC insert.
         // An optional confirming AI-entry draft snapshot (or its removal via
         // [clearDraft]) commits in the same edit so the save never costs an extra
         // full-file DataStore write.
-        PerfLog.measure("save", "dataStore", "month=${entry.month()}") {
+        PerfLog.measure("save", "dataStore", "month=${resolved.month()}") {
             prefs.applyFoodEntryBucketChanges(
-                upsertsByMonth = mapOf(entry.month() to listOf(entry)),
+                upsertsByMonth = mapOf(resolved.month() to listOf(resolved)),
                 draft = draft,
                 clearDraft = clearDraft,
             )
         }
-        sync?.touch(entry.id, "food")
+        sync?.touch(resolved.id, "food")
         if (writeHealth && shouldSyncHealth()) {
-            PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
+            PerfLog.measure("save", "healthWrite") { health?.writeNutrition(resolved) }
         }
         // One-time organic review moment: the first successful food log (iOS parity).
         if (!prefs.reviewPromptedAfterFirstLog.first()) {
@@ -115,13 +116,14 @@ class FoodRepository(
      */
     suspend fun addEntries(entries: List<FoodEntry>, writeHealth: Boolean = true) {
         if (entries.isEmpty()) return
-        PerfLog.measure("save", "dataStore", "count=${entries.size}") {
-            prefs.applyFoodEntryBucketChanges(upsertsByMonth = entries.groupBy { it.month() })
+        val resolved = entries.map { resolveReloggedImage(it) }
+        PerfLog.measure("save", "dataStore", "count=${resolved.size}") {
+            prefs.applyFoodEntryBucketChanges(upsertsByMonth = resolved.groupBy { it.month() })
         }
-        sync?.touchMany(entries.map { it.id to "food" })
+        sync?.touchMany(resolved.map { it.id to "food" })
         if (writeHealth && shouldSyncHealth()) {
-            PerfLog.measure("save", "healthWrite", "count=${entries.size}") {
-                entries.forEach { health?.writeNutrition(it) }
+            PerfLog.measure("save", "healthWrite", "count=${resolved.size}") {
+                resolved.forEach { health?.writeNutrition(it) }
             }
         }
         // One-time organic review moment: the first successful food log (iOS parity).
@@ -129,6 +131,22 @@ class FoodRepository(
             prefs.setReviewPromptedAfterFirstLog(true)
             ReviewPrompter.requestReview.value = true
         }
+    }
+
+    /**
+     * #12: a duplicated-for-logging entry carries the source row's imageFilename.
+     * Copy the JPEG to the new entry's own filename on save — relogs keep the
+     * photo, while later re-picks/deletes of either row stay independent and
+     * pruneUnreferenced() never removes a file the new row still points at.
+     * Entries whose image is already stored under their own id are untouched.
+     */
+    private fun resolveReloggedImage(entry: FoodEntry): FoodEntry {
+        val filename = entry.imageFilename ?: return entry
+        val expected = FoodImageStore.filenameFor(entry.id)
+        if (filename == expected) return entry
+        val copied = imageStore?.copyForEntry(filename, entry.id)
+        return if (copied != null) entry.copy(imageFilename = copied)
+        else entry.copy(imageFilename = null) // stale reference / copy failure -> no image
     }
 
     /**

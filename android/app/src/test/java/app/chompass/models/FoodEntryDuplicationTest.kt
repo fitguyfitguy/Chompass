@@ -45,4 +45,25 @@ class FoodEntryDuplicationTest {
         )
         assertEquals(MealType.DINNER, copy.mealType)
     }
+
+    @Test
+    fun duplicatedForLogging_carriesImageFilenameForRelog() {
+        // #12: the duplicated entry must keep the source's image so the
+        // repository can copy the JPEG to the new entry's own filename on save.
+        val source = FoodEntry(
+            name = "Oats",
+            calories = 150,
+            protein = 5.0,
+            carbs = 27.0,
+            fat = 3.0,
+            source = FoodSource.SNAP_FOOD,
+            imageFilename = "11111111-2222-3333-4444-555555555555.jpg",
+            emoji = "🥣",
+        )
+        val copy = source.duplicatedForLogging(Instant.parse("2026-07-22T18:05:00Z"))
+
+        assertEquals(source.imageFilename, copy.imageFilename)
+        assertEquals(source.emoji, copy.emoji)
+        assertNotEquals(source.id, copy.id)
+    }
 }
