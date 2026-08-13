@@ -72,7 +72,12 @@ data class FoodEntry(
      */
     val favoriteKey: String get() = name.trim().lowercase()
 
-    /** New entry for the given log date (new id), copying nutrition and media from this entry. */
+    /**
+     * New entry for the given log date (new id), copying nutrition and media from this entry.
+     * The image filename is carried over; the repository copies the JPEG to the new
+     * entry's own filename on save (see FoodRepository.resolveReloggedImage) so relogs
+     * keep the photo without two entries sharing one file.
+     */
     fun duplicatedForLogging(
         logDate: Instant,
         mealType: MealType = MealType.currentMeal
@@ -84,7 +89,7 @@ data class FoodEntry(
         carbs = carbs,
         fat = fat,
         timestamp = logDate,
-        imageFilename = null, // new id -> new filename will be assigned on save
+        imageFilename = imageFilename, // copied to the new entry's filename on save
         emoji = emoji,
         source = source,
         mealType = mealType,
