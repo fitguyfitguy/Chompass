@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.BodyMeasurement
 import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
@@ -88,6 +89,8 @@ fun ProgressScreen(container: AppContainer) {
     val activity by vm.activity.collectAsState()
     val wellness by vm.wellness.collectAsState()
     val weightMetric = ui.weightUnit == "kg"
+    val heightUnit by container.prefs.heightUnit.collectAsState(initial = "cm")
+    val heightMetric = heightUnit == "cm"
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showAddBodyFatDialog by remember { mutableStateOf(false) }
@@ -162,6 +165,20 @@ fun ProgressScreen(container: AppContainer) {
                 item {
                     BodyFatHistoryLink(count = ui.bodyFatEntries.size) { showAllBodyFats = true }
                 }
+            }
+
+            if (heavySectionsReady) {
+                BodyMeasurement.Site.values()
+                    .filter { it in ui.measurementSites }
+                    .forEach { site ->
+                        item {
+                            MeasurementPlotCard(
+                                site = site,
+                                entries = ui.filteredMeasurements,
+                                useMetric = heightMetric,
+                            )
+                        }
+                    }
             }
 
             if (heavySectionsReady) {
@@ -271,8 +288,10 @@ internal fun ProgressScreenPreviewContent(
     activity: List<DailyActivity> = emptyList(),
     bodyMetric: BodyMetric = BodyMetric.WEIGHT,
     chartsImmediate: Boolean = true,
+    measurementMetric: Boolean = true,
 ) {
     val weightMetric = ui.weightUnit == "kg"
+    val heightMetric = measurementMetric
     val bodyFatAvailable = ui.bodyFatEntries.isNotEmpty()
         || ui.profile?.bodyFatPercentage != null
         || ui.profile?.goalBodyFatPercentage != null
@@ -333,6 +352,18 @@ internal fun ProgressScreenPreviewContent(
             if (ui.bodyFatEntries.isNotEmpty()) {
                 item { BodyFatHistoryLink(count = ui.bodyFatEntries.size) {} }
             }
+            BodyMeasurement.Site.values()
+                .filter { it in ui.measurementSites }
+                .forEach { site ->
+                    item {
+                        MeasurementPlotCard(
+                            site = site,
+                            entries = ui.filteredMeasurements,
+                            useMetric = heightMetric,
+                            chartsImmediate = chartsImmediate,
+                        )
+                    }
+                }
             item {
                 CardSection {
                     CalorieSection(

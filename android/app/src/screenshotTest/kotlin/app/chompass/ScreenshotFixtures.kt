@@ -1,6 +1,7 @@
 package app.chompass
 
 import app.chompass.models.ActivityLevel
+import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
@@ -296,6 +297,29 @@ internal object ScreenshotFixtures {
         foods = SampleDataGenerators.foodEntries(totalDays = 365, today = snapshotDate),
         timeRange = TimeRange.SIX_MONTHS,
         anchorDate = snapshotDate,
+        bodyMeasurements = SampleDataGenerators.measurementSeries(
+            totalDays = 180,
+            seed = 0x7A11,
+            today = snapshotDate,
+        ),
+        measurementSites = setOf(BodyMeasurement.Site.WAIST, BodyMeasurement.Site.HIPS, BodyMeasurement.Site.CHEST),
+    )
+
+    /** Progress variant with no weight/body-fat history so the enabled
+     *  measurement plot cards sit high enough to be fully visible in one shot. */
+    fun progressPlotsUiState() = buildProgressPreviewUiState(
+        profile = profile,
+        weights = emptyList(),
+        bodyFatEntries = emptyList(),
+        foods = SampleDataGenerators.foodEntries(totalDays = 365, today = snapshotDate),
+        timeRange = TimeRange.SIX_MONTHS,
+        anchorDate = snapshotDate,
+        bodyMeasurements = SampleDataGenerators.measurementSeries(
+            totalDays = 180,
+            seed = 0x7A11,
+            today = snapshotDate,
+        ),
+        measurementSites = setOf(BodyMeasurement.Site.WAIST, BodyMeasurement.Site.HIPS, BodyMeasurement.Site.CHEST),
     )
 
     fun coachUiState(): CoachUiState = CoachUiState(

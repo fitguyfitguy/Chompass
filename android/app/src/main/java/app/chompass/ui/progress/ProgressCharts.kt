@@ -251,8 +251,7 @@ internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, 
     )
 }
 
-internal fun buildBodyFatChartModel(entries: List<BodyFatEntry>, goalFraction: Double?): BodyFatChartModel {
-    val percents = entries.map { it.bodyFatFraction * 100 } + listOfNotNull(goalFraction?.let { it * 100 })
+internal fun buildBodyFatChartModel(entries: List<BodyFatEntry>, goalFraction: Double?): BodyFatChartModel {    val percents = entries.map { it.bodyFatFraction * 100 } + listOfNotNull(goalFraction?.let { it * 100 })
     val minP = percents.min()
     val maxP = percents.max()
     val pad = maxOf((maxP - minP) * 0.15, 1.0)
@@ -523,6 +522,139 @@ internal fun BodyFatChartCanvas(
             chartModel.xLabelFmt,
             secondaryColor,
             endPadding = 40.dp
+        )
+    }
+}
+
+/** Y-axis / time-range model for a body-measurement trend plot. Reuses the
+ *  weight chart model shape — trend overlay and goal rule fields stay empty.
+ *  Series values are plain cm (or inches once converted by the caller). */
+internal fun buildMeasurementChartModel(series: List<TrendPoint>): WeightChartModel {
+    if (series.isEmpty()) {
+        return WeightChartModel(
+            yMin = 0.0, yMax = 1.0, ticks = listOf(0.0),
+            tStart = 0L, tEnd = 0L, tRange = 1L,
+            singleEntry = true, showsYear = false,
+            xLabelFmt = LocaleFormat.monthOrDayZoned(false, ZoneId.systemDefault()),
+            points = emptyList(), trendPoints = emptyList(), trendSegments = emptyList(),
+            showsDots = false, goalDisplayValue = null,
+        )
+    }
+    val values = series.map { it.value }
+    val minV = values.min()
+    val maxV = values.max()
+    val pad = maxOf((maxV - minV) * 0.15, 1.0)
+    val yMin = minV - pad
+    val yMax = maxV + pad
+    val tStart = series.first().timeMs
+    val tEnd = series.last().timeMs
+    val singleEntry = series.size == 1
+    val tRange = maxOf(1L, tEnd - tStart)
+    val ticks = niceAxisTicks(yMin, yMax, count = 5)
+    val zone = ZoneId.systemDefault()
+    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
+    val showsYear = spanDays > 150 &&
+        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
+    val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
+    return WeightChartModel(
+        yMin = yMin,
+        yMax = yMax,
+        ticks = ticks,
+        tStart = tStart,
+        tEnd = tEnd,
+        tRange = tRange,
+        singleEntry = singleEntry,
+        showsYear = showsYear,
+        xLabelFmt = xLabelFmt,
+        points = downsampleTrend(series),
+        trendPoints = emptyList(),
+        trendSegments = emptyList(),
+        showsDots = series.size <= 31,
+        goalDisplayValue = null
+    )
+}
+
+/** Compact per-site circumference trend: grid, straight line, dots, x labels.
+ *  No goal rule and no dashed analytical overlay — measurement cadence is far
+ *  too sparse for either to mean anything. Mirrors the weight chart's render
+ *  phases so several plot cards don't land on the first frame. */
+@Composable
+internal fun MeasurementChartCanvas(
+    series: List<TrendPoint>,
+    immediate: Boolean = false,
+) {
+    val chartModel = remember(series) { buildMeasurementChartModel(series) }
+    val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
+    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    var chartRenderPhase by remember(series, immediate) {
+        mutableStateOf(if (immediate) 2 else 0)
+    }
+    if (!immediate) {
+        LaunchedEffect(series) {
+            chartRenderPhase = 0
+            withFrameNanos { }
+            chartRenderPhase = 1
+            withFrameNanos { }
+            chartRenderPhase = 2
+        }
+    }
+
+    Row(Modifier.fillMaxWidth().height(140.dp)) {
+        Canvas(Modifier.weight(1f).fillMaxSize()) {
+            val w = size.width; val h = size.height
+            chartModel.ticks.forEach { tick ->
+                val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+                drawLine(
+                    color = gridColor,
+                    start = Offset(0f, y), end = Offset(w, y),
+                    strokeWidth = 1f
+                )
+            }
+            for (i in 0..4) {
+                val x = (i.toFloat() / 4f) * w
+                drawLine(
+                    color = gridColor,
+                    start = Offset(x, 0f), end = Offset(x, h),
+                    strokeWidth = 1f,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
+                )
+            }
+            val offsets = chartModel.points.map { p ->
+                Offset(
+                    if (chartModel.singleEntry) w / 2f
+                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+                )
+            }
+            clipRect {
+                drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
+                if (chartRenderPhase >= 2 && chartModel.showsDots) {
+                    offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
+                }
+            }
+        }
+        Column(
+            Modifier.width(36.dp).fillMaxSize().padding(start = 4.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            chartModel.ticks.reversed().forEach { tick ->
+                Text(
+                    formatTick(tick),
+                    fontSize = 11.sp,
+                    color = secondaryColor
+                )
+            }
+        }
+    }
+    if (chartRenderPhase >= 1) {
+        TrendXAxisLabels(
+            chartModel.tStart,
+            chartModel.tEnd,
+            chartModel.showsYear,
+            chartModel.singleEntry,
+            chartModel.xLabelFmt,
+            secondaryColor,
+            endPadding = 36.dp
         )
     }
 }

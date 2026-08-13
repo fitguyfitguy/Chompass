@@ -84,6 +84,12 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
       <sub><b>Progress</b>: weight, steps, goals</sub>
     </td>
   </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="docs/screenshots/progress-plots.png" width="180" alt="Body measurement trend plots in dark theme" /><br />
+      <sub><b>Progress plots</b>: optional per-site body measurement trends</sub>
+    </td>
+  </tr>
 </table>
 
 ## Features

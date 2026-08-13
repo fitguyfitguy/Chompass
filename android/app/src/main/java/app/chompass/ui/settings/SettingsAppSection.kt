@@ -109,10 +109,18 @@ internal fun SettingsAppSection(
                 ) { onOpenSheet(SettingsSheet.WEEK_START) }
                 HorizontalDivider()
                 SettingRow(
-                    stringResource(R.string.settings_progress_default_range),
-                    stringResource(TimeRange.fromStorageId(ui.progressDefaultRangeId).labelRes),
+                    stringResource(R.string.settings_customize_progress),
+                    stringResource(
+                        R.string.settings_customize_progress_summary,
+                        stringResource(TimeRange.fromStorageId(ui.progressDefaultRangeId).labelRes),
+                        stringResource(
+                            if (ui.progressMeasurementSites.isEmpty()) R.string.settings_progress_plots_off
+                            else R.string.settings_progress_plots_count,
+                            ui.progressMeasurementSites.size
+                        )
+                    ),
                     icon = Icons.AutoMirrored.Outlined.ShowChart
-                ) { onOpenSheet(SettingsSheet.PROGRESS_DEFAULT_RANGE) }
+                ) { nav.navigate(ChompassRoutes.CUSTOMIZE_PROGRESS) }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_water_title),

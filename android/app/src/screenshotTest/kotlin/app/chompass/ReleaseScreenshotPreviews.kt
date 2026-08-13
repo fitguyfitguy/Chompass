@@ -141,6 +141,25 @@ fun ProgressDarkScreenshot() {
 }
 
 @PreviewTest
+@Preview(name = "progress-plots-light", device = PHONE)
+@Composable
+fun ProgressPlotsLightScreenshot() {
+    // Codeberg #18: the optional body-measurement trend plots (Customize Progress).
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.PROGRESS, darkTheme = false) {
+        ProgressScreenPreviewContent(ui = ScreenshotFixtures.progressPlotsUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "progress-plots-dark", device = PHONE)
+@Composable
+fun ProgressPlotsDarkScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.PROGRESS, darkTheme = true) {
+        ProgressScreenPreviewContent(ui = ScreenshotFixtures.progressPlotsUiState())
+    }
+}
+
+@PreviewTest
 @Preview(name = "07-add-food-light", device = PHONE)
 @Composable
 fun AddFoodLightScreenshot() {

@@ -904,6 +904,14 @@
     <string name="settings_week_monday">Monday</string>
     <string name="settings_week_sunday">Sunday</string>
     <string name="settings_progress_default_range">Progress default range</string>
+    <string name="settings_customize_progress">Customize progress</string>
+    <string name="settings_customize_progress_summary">%1$s · %2$s</string>
+    <string name="settings_progress_plots">Body measurement plots</string>
+    <string name="settings_progress_plots_subtitle">Show per-site circumference trends on the Progress tab. Data comes from Personal Info → Body measurements.</string>
+    <string name="settings_progress_plots_off">Plots off</string>
+    <string name="settings_progress_plots_count">%1$d plots</string>
+    <string name="settings_progress_plots_no_data">No measurements yet</string>
+    <string name="settings_progress_plots_latest">Latest: %1$s %2$s</string>
     <string name="settings_meal_times">Meal times</string>
     <string name="settings_meal_times_customize">Customize</string>
     <string name="settings_meal_times_description">Set when automatic meal selection switches to the next meal.</string>

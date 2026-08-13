@@ -130,7 +130,14 @@ data class BodyMeasurement(
         NECK("Neck", R.string.measure_neck), WAIST("Waist", R.string.measure_waist),
         HIPS("Hips", R.string.measure_hips), CHEST("Chest", R.string.measure_chest),
         UPPER_ARM("Upper Arm", R.string.measure_upper_arm), THIGH("Thigh", R.string.measure_thigh),
-        CALF("Calf", R.string.measure_calf), WRIST("Wrist", R.string.measure_wrist)
+        CALF("Calf", R.string.measure_calf), WRIST("Wrist", R.string.measure_wrist);
+
+        /** Stable storage id for prefs (`neck`, `waist`, …); unknown ids are ignored on read. */
+        val storageId: String get() = name.lowercase()
+
+        companion object {
+            fun fromStorageId(id: String?): Site? = entries.firstOrNull { it.storageId == id }
+        }
     }
 
     fun value(site: Site): Double? = when (site) {
