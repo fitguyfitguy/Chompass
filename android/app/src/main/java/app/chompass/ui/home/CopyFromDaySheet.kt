@@ -57,7 +57,7 @@ internal fun CopyFromDaySheet(
     container: AppContainer,
     targetDate: LocalDate,
     isSaving: Boolean = false,
-    onCopy: (List<FoodEntry>) -> Unit,
+    onCopy: (List<FoodEntry>, LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
     // Full-history entries load lazily on open — this sheet is the only consumer,
@@ -69,8 +69,13 @@ internal fun CopyFromDaySheet(
     }
     // Dismissible by downward drag; only block while copying entries.
     val state = rememberChompassSheetState(busy = isSaving)
+    // The destination defaults to the day being viewed (what the sheet always
+    // did), but is now pickable here — copying onto another day no longer
+    // requires leaving the sheet and switching the diary first.
+    var targetDate by remember(targetDate) { mutableStateOf(targetDate) }
     var sourceDate by remember(targetDate) { mutableStateOf(targetDate.minusDays(1)) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showTargetPicker by remember { mutableStateOf(false) }
     val zone = ZoneId.systemDefault()
     val dateFmt = remember { LocaleFormat.shortDate() }
     val sourceEntries = remember(allEntries, sourceDate) {
@@ -83,7 +88,11 @@ internal fun CopyFromDaySheet(
         foodLogMealGroups(sourceEntries, FoodLogSortOrder.STANDARD)
     }
     val listState = rememberLazyListState()
-    val targetText = if (targetDate == LocalDate.now()) "today" else targetDate.format(dateFmt)
+    val targetText = if (targetDate == LocalDate.now()) {
+        stringResource(R.string.export_range_today)
+    } else {
+        targetDate.format(dateFmt)
+    }
 
     ChompassBottomSheet(
         onDismiss = { if (!isSaving) onDismiss() },
@@ -103,7 +112,7 @@ internal fun CopyFromDaySheet(
             onCancel = { if (!isSaving) onDismiss() },
             onPrimary = {
                 if (!isSaving) {
-                    if (sourceEntries.isEmpty()) onDismiss() else onCopy(sourceEntries)
+                    if (sourceEntries.isEmpty()) onDismiss() else onCopy(sourceEntries, targetDate)
                 }
             }
         )
@@ -129,8 +138,18 @@ internal fun CopyFromDaySheet(
                         )
                     }
                     Spacer(Modifier.height(8.dp))
+                    SheetPillRow(onClick = { showTargetPicker = true }) {
+                        Text(stringResource(R.string.copy_to), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(
+                            targetText,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
                     Text(
-                        "Foods will be copied to $targetText. Original entries stay unchanged.",
+                        stringResource(R.string.copy_hint, targetText),
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                         modifier = Modifier.padding(horizontal = 18.dp)
@@ -180,7 +199,7 @@ internal fun CopyFromDaySheet(
                 item {
                     FudGlassPrimaryButton(
                         text = pluralStringResource(R.plurals.copy_foods_to, sourceEntries.size, sourceEntries.size, targetText),
-                        onClick = { if (!isSaving) onCopy(sourceEntries) },
+                        onClick = { if (!isSaving) onCopy(sourceEntries, targetDate) },
                         enabled = !isSaving,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -203,7 +222,7 @@ internal fun CopyFromDaySheet(
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .clickable(enabled = !isSaving) { if (!isSaving) onCopy(group.entries) }
+                                    .clickable(enabled = !isSaving) { if (!isSaving) onCopy(group.entries, targetDate) }
                                     .padding(horizontal = 16.dp, vertical = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
@@ -222,7 +241,7 @@ internal fun CopyFromDaySheet(
                         val isLast = index == group.entries.lastIndex
                         val rowShape = sectionCardShape(isFirst, isLast)
                         SectionCardWrapper(isFirst = isFirst, isLast = isLast, transparent = true) {
-                            Box(Modifier.clickable(enabled = !isSaving) { if (!isSaving) onCopy(listOf(entry)) }) {
+                            Box(Modifier.clickable(enabled = !isSaving) { if (!isSaving) onCopy(listOf(entry), targetDate) }) {
                                 FoodRow(entry = entry, rowShape = rowShape)
                             }
                             if (index != group.entries.lastIndex) Divider()
@@ -252,6 +271,29 @@ internal fun CopyFromDaySheet(
                 },
                 dismissText = stringResource(R.string.action_cancel),
                 onDismiss = { showDatePicker = false }
+            )
+        }
+    }
+
+    if (showTargetPicker) {
+        var pickedTarget by remember(targetDate) { mutableStateOf(targetDate) }
+        FudGlassDialog(onDismissRequest = { showTargetPicker = false }) {
+            Text(stringResource(R.string.copy_to), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            DateWheelPicker(
+                selected = pickedTarget,
+                onSelect = { pickedTarget = it },
+                minYear = LocalDate.now().year - 10,
+                maxYear = LocalDate.now().year,
+                modifier = Modifier.fillMaxWidth()
+            )
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_done),
+                onPrimary = {
+                    targetDate = pickedTarget
+                    showTargetPicker = false
+                },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { showTargetPicker = false }
             )
         }
     }

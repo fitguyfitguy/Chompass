@@ -1470,7 +1470,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun copyEntriesToSelectedDay(entries: List<FoodEntry>) {
+    /** Copy rows onto the currently viewed day (selection-bar paste). */
+    fun copyEntriesToSelectedDay(entries: List<FoodEntry>) =
+        copyEntriesToDate(entries, _selectedDate.value)
+
+    /**
+     * Copy [entries] onto [targetDate] (Copy-from-day sheet; the target is the
+     * viewed day by default but is now pickable inside the sheet).
+     */
+    fun copyEntriesToDate(entries: List<FoodEntry>, targetDate: LocalDate) {
         if (entries.isEmpty() || _ui.value.saving) return
         viewModelScope.launch {
             if (_ui.value.saving) return@launch
@@ -1480,7 +1488,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // (not the source entry's clock time / meal bucket). One batched
                 // DataStore edit instead of one full-file write per copied row;
                 // Health Connect mirrors in the background.
-                val duplicated = entries.map { it.duplicatedForLogging(timestampForSelectedDay()) }
+                val duplicated = entries.map { it.duplicatedForLogging(timestampForDate(targetDate)) }
                 container.foodRepository.addEntries(duplicated, writeHealth = false)
                 viewModelScope.launch {
                     duplicated.forEach { container.foodRepository.mirrorEntryToHealth(it) }
@@ -1545,8 +1553,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * When viewing a past or future day, combines that day with the current wall-clock
      * time so the entry shows a sensible time and lands on the correct calendar day.
      */
-    private fun timestampForSelectedDay(): Instant {
-        val day = _selectedDate.value
+    private fun timestampForSelectedDay(): Instant = timestampForDate(_selectedDate.value)
+
+    /** Same as [timestampForSelectedDay] but for an explicit day (copy target). */
+    private fun timestampForDate(day: LocalDate): Instant {
         val today = LocalDate.now()
         if (day == today) return Instant.now()
         val zone = ZoneId.systemDefault()
@@ -1573,7 +1583,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             PendingFoodAnalysisDraft(
                 analysis = uniqueAnalysis,
                 imageFilename = imageFilename,
-                source = source
+                source = source,
+                // Codeberg #16 family: keep the diary day the sheet was opened
+                // for, so a process-death restore still logs to that day.
+                targetDate = _selectedDate.value
             )
         )
         if (generation != analysisGeneration) return
@@ -1602,6 +1615,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
         // Re-check collisions: the diary may have grown since the draft was saved.
         viewModelScope.launch {
+            // Restore the diary day the draft was opened for — a fresh ViewModel
+            // starts on today, and the modal review sheet hides the day strip, so
+            // without this the Log button would silently land on today (Codeberg
+            // #16 family: "entry landed on today's log" after process death).
+            _selectedDate.value = draft.targetDate
             val unique = draft.analysis.copy(
                 name = disambiguateFoodName(
                     draft.analysis.name,
@@ -1660,7 +1678,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 imageFilename = imageFilename,
                 note = note,
                 confirmedPortionGrams = grams,
-                source = source
+                source = source,
+                // Same day-restore intent as [PendingFoodAnalysisDraft.targetDate].
+                targetDate = _selectedDate.value
             )
         )
         _ui.update { it.copy(
@@ -1672,6 +1692,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private suspend fun restorePendingInputDraft(draft: PendingFoodInputDraft) {
+        // Re-target the diary day the input sheet was opened for (same rationale
+        // as [restorePendingDraft]): the resumed Log must land on that day.
+        _selectedDate.value = draft.targetDate
         val bytes = runCatching { container.imageStore.file(draft.imageFilename).readBytes() }.getOrNull()
         if (bytes == null) {
             clearPendingInputDraft()
