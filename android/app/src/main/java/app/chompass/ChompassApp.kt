@@ -74,6 +74,11 @@ class ChompassApp : Application() {
             .onEach { CurrentMealSchedule.value = it }
             .launchIn(appScope)
         container.widgetSnapshotWriter.observe().launchIn(appScope)
+        // Widgets show "today" — roll the snapshot over just after midnight so
+        // a widget left on the home screen never displays yesterday's totals
+        // until the app happens to refresh it. Re-armed daily by the receiver;
+        // this cold-start arm covers reboots and app updates (issue #16).
+        appScope.launch { container.notifications.scheduleWidgetMidnightRefresh() }
         // Older builds removed food rows without removing their JPEGs.
         appScope.launch { container.foodRepository.pruneOrphanedImages() }
         // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
