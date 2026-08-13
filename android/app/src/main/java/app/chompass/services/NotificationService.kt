@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import app.chompass.ChompassApp
 import app.chompass.R
 import app.chompass.models.WaterAmountFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.util.Calendar
 
@@ -194,6 +195,29 @@ class NotificationService(private val context: Context) {
     fun cancelBodyFatReminder() = cancel(REQUEST_BODY_FAT)
     fun cancelWaterReminder() = cancel(REQUEST_WATER)
 
+    /**
+     * Arms a silent daily alarm for just after midnight that rewrites the
+     * widget snapshot to "today" (issue #16). The receiver re-arms the chain;
+     * ChompassApp re-arms on cold start (reboots drop alarms). No notification
+     * is ever posted — this is a data refresh only.
+     */
+    fun scheduleWidgetMidnightRefresh() {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra(EXTRA_CHANNEL, CHANNEL_WIDGET_MIDNIGHT)
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, REQUEST_WIDGET_MIDNIGHT, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val nextMidnight = nextMidnightMillis()
+        // +60s: let day-boundary writes settle; the exact instant is irrelevant
+        // as long as the widget rolls over shortly after midnight.
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMidnight + 60_000L, pi)
+    }
+
+    fun cancelWidgetMidnightRefresh() = cancel(REQUEST_WIDGET_MIDNIGHT)
+
     private fun schedule(requestCode: Int, hour: Int, minute: Int, channel: String, title: String, text: String) {
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
@@ -240,6 +264,7 @@ class NotificationService(private val context: Context) {
         const val CHANNEL_BODY_FAT_LOG = "body_fat_log_reminder"
         const val CHANNEL_APP_UPDATE = "app_update"
         const val CHANNEL_WATER = "water_reminder"
+        const val CHANNEL_WIDGET_MIDNIGHT = "widget_midnight_refresh"
         const val EXTRA_CHANNEL = "channel"
         const val EXTRA_TITLE = "title"
         const val EXTRA_TEXT = "text"
@@ -252,6 +277,7 @@ class NotificationService(private val context: Context) {
         private const val REQUEST_BODY_FAT = 1004
         private const val REQUEST_APP_UPDATE = 1005
         private const val REQUEST_WATER = 1006
+        private const val REQUEST_WIDGET_MIDNIGHT = 1007
     }
 }
 
@@ -260,6 +286,21 @@ class NotificationService(private val context: Context) {
  * food logged today (upstream #150). Non-streak channels ignore this helper.
  */
 fun shouldNotifyStreak(hasFoodLoggedToday: Boolean): Boolean = !hasFoodLoggedToday
+
+/**
+ * Pure: millis of the first instant strictly after [nowMillis]'s local
+ * midnight in [zone] — the widget-rollover arm instant (issue #16).
+ */
+internal fun nextMidnightMillis(
+    nowMillis: Long = System.currentTimeMillis(),
+    zone: java.time.ZoneId = java.time.ZoneId.systemDefault(),
+): Long = Instant.ofEpochMilli(nowMillis)
+    .atZone(zone)
+    .toLocalDate()
+    .plusDays(1)
+    .atStartOfDay(zone)
+    .toInstant()
+    .toEpochMilli()
 
 /** Fired by the alarm. Posts the notification and re-schedules the same alarm +24h. */
 class ReminderReceiver : BroadcastReceiver() {
@@ -281,6 +322,23 @@ class ReminderReceiver : BroadcastReceiver() {
         }
 
         val channel = intent.getStringExtra(NotificationService.EXTRA_CHANNEL) ?: return
+
+        // Silent midnight widget rollover: rewrite the snapshot to today's data
+        // and re-arm the chain. No notification is posted (issue #16).
+        if (channel == NotificationService.CHANNEL_WIDGET_MIDNIGHT) {
+            val pendingResult = goAsync()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val container = (context.applicationContext as? ChompassApp)?.container
+                    container?.widgetSnapshotWriter?.refresh()
+                } finally {
+                    NotificationService(context).scheduleWidgetMidnightRefresh()
+                    pendingResult.finish()
+                }
+            }
+            return
+        }
+
         val title = intent.getStringExtra(NotificationService.EXTRA_TITLE) ?: return
         val text = intent.getStringExtra(NotificationService.EXTRA_TEXT) ?: return
         val request = intent.getIntExtra(NotificationService.EXTRA_REQUEST, -1)
