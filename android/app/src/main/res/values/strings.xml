@@ -1224,6 +1224,8 @@
     <string name="settings_other_nutrient_goals">Other Nutrient Goals</string>
     <string name="settings_reset_defaults">Reset to Defaults</string>
     <string name="copy_from">Copy From</string>
+    <string name="copy_to">Copy To</string>
+    <string name="copy_hint">Foods will be copied to %1$s. Original entries stay unchanged.</string>
     <string name="macro_protein_format">Protein: %1$s</string>
     <string name="macro_carbs_format">Carbs: %1$s</string>
     <string name="macro_fat_format">Fat: %1$s</string>

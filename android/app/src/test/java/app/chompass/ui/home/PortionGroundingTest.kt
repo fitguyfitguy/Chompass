@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.models.FoodSource
+import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.services.ai.FoodAnalysis
@@ -13,6 +14,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 class PortionGroundingTest {
@@ -75,16 +77,65 @@ class PortionGroundingTest {
     }
 
     @Test
-    fun pendingFoodInputDraft_roundTripsConfirmedGrams() {
+    fun pendingFoodInputDraft_decodesLegacyJsonWithoutTargetDate() {
+        // Pre-fix drafts carry no targetDate; they must default to the
+        // decode-day (matching the old behavior of logging to today).
+        val before = LocalDate.now()
+        val legacy = """{"imageFilename":"img.jpg","note":"oats","source":"snapFood","confirmedPortionGrams":150,"createdAt":1720000000000}"""
+        val draft = json.decodeFromString(PendingFoodInputDraft.serializer(), legacy)
+        assertTrue(
+            "legacy draft should default to today, was ${draft.targetDate}",
+            draft.targetDate == before || draft.targetDate == LocalDate.now(),
+        )
+    }
+
+    @Test
+    fun pendingFoodInputDraft_roundTripsTargetDate() {
+        val target = LocalDate.of(2026, 8, 12)
         val draft = PendingFoodInputDraft(
             imageFilename = "meal.jpg",
             note = "chicken bowl",
             confirmedPortionGrams = 320.5,
+            targetDate = target,
         )
         val encoded = json.encodeToString(PendingFoodInputDraft.serializer(), draft)
         val decoded = json.decodeFromString(PendingFoodInputDraft.serializer(), encoded)
         assertEquals(320.5, decoded.confirmedPortionGrams!!, 0.0)
         assertEquals("chicken bowl", decoded.note)
+        assertEquals(target, decoded.targetDate)
+    }
+
+    @Test
+    fun pendingFoodAnalysisDraft_roundTripsTargetDate() {
+        val target = LocalDate.of(2026, 8, 11)
+        val draft = PendingFoodAnalysisDraft(
+            analysis = FoodAnalysis(
+                name = "Greek yogurt with berries",
+                calories = 295,
+                protein = 23.2,
+                carbs = 33.8,
+                fat = 6.3,
+                servingSizeGrams = 250.0,
+            ),
+            source = FoodSource.TEXT_INPUT,
+            targetDate = target,
+        )
+        val encoded = json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
+        val decoded = json.decodeFromString(PendingFoodAnalysisDraft.serializer(), encoded)
+        assertEquals("Greek yogurt with berries", decoded.analysis.name)
+        assertEquals(target, decoded.targetDate)
+    }
+
+    @Test
+    fun pendingFoodAnalysisDraft_decodesLegacyJsonWithoutTargetDate() {
+        val before = LocalDate.now()
+        val legacy = """{"analysis":{"name":"Oats","calories":200,"protein":7,"carbs":35,"fat":3,"servingSizeGrams":100},"imageFilename":null,"source":"textInput","createdAt":1720000000000}"""
+        val draft = json.decodeFromString(PendingFoodAnalysisDraft.serializer(), legacy)
+        assertTrue(
+            "legacy draft should default to today, was ${draft.targetDate}",
+            draft.targetDate == before || draft.targetDate == LocalDate.now(),
+        )
+        assertEquals("Oats", draft.analysis.name)
     }
 
     @Test

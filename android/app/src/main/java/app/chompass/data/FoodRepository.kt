@@ -480,6 +480,21 @@ class FoodRepository(
     }
 
     /**
+     * All-time diary collapse (newest row per [FoodEntry.favoriteKey]) for
+     * Saved Meals search: foods older than the 30/90-day recents/frequent
+     * windows stay findable, and re-logging them keeps the original name so
+     * the identity merges instead of producing a "Name (2)" row (search
+     * window and all-time identity set must agree).
+     *
+     * The sheet loads it once per tab open and filters in memory — same
+     * cost profile as CopyFromDaySheet's all-history load.
+     */
+    suspend fun historyTemplates(): List<FoodEntry> = recentFoodTemplates(
+        prefs.foodEntries.first(),
+        limit = Int.MAX_VALUE,
+    )
+
+    /**
      * Hub chips for one-tap re-log: meal-matched (or snacks in the snack
      * window) first, favorites soft-boosted within each bucket, then fill
      * from snacks / other recents / frequent. De-duplicated by

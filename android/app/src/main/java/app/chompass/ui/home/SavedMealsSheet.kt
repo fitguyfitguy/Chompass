@@ -77,7 +77,9 @@ import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 enum class SavedTab { RECENTS, FREQUENT, FAVORITES, RECIPES }
@@ -126,6 +128,10 @@ fun SavedMealsSheet(
     }
     var recents by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
     var frequent by remember { mutableStateOf<List<FrequentFoodGroup>>(emptyList()) }
+    // All-time diary collapse for search — lets queries surface foods older
+    // than the 30/90-day recents/frequent windows (and re-logging them keeps
+    // the original name, so the identity merges instead of a "Name (2)").
+    var historyTemplates by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
 
     // Favorites are a reactive Flow now (ordered list of FoodEntry copies),
     // so the UI updates as soon as toggleFavorite/moveFavorite writes back.
@@ -155,6 +161,30 @@ fun SavedMealsSheet(
         if (searchQuery.isBlank()) recipes
         else recipes.filter { it.name.contains(searchQuery.trim(), ignoreCase = true) }
     }
+    // Full-history matches for the current query, merged into the window lists
+    // below (deduped by identity so a recent food isn't duplicated).
+    val historyMatches = remember(historyTemplates, searchQuery) {
+        val q = searchQuery.trim()
+        if (q.isEmpty()) emptyList()
+        else historyTemplates.filter { it.name.contains(q, ignoreCase = true) }
+    }
+    val mergedFilteredRecents = remember(filteredRecents, historyMatches) {
+        if (historyMatches.isEmpty()) filteredRecents
+        else {
+            val seen = filteredRecents.mapTo(mutableSetOf()) { it.favoriteKey }
+            filteredRecents + historyMatches.filter { seen.add(it.favoriteKey) }
+        }
+    }
+    val mergedFilteredFrequent = remember(filteredFrequent, historyMatches) {
+        if (historyMatches.isEmpty()) filteredFrequent
+        else {
+            val seen = filteredFrequent.mapTo(mutableSetOf()) { it.template.favoriteKey }
+            // count 0 = match from all-time history, outside the 90-day window.
+            filteredFrequent + historyMatches
+                .filter { seen.add(it.favoriteKey) }
+                .map { FrequentFoodGroup(template = it, count = 0) }
+        }
+    }
 
     // Run the legacy → ordered favorites migration once on mount so existing
     // users see their previous favorites in the new ordered list.
@@ -162,8 +192,18 @@ fun SavedMealsSheet(
 
     LaunchedEffect(tab, favKeys) {
         when (tab) {
-            SavedTab.RECENTS -> recents = container.foodRepository.recent()
-            SavedTab.FREQUENT -> frequent = container.foodRepository.frequent()
+            SavedTab.RECENTS -> {
+                recents = container.foodRepository.recent()
+                historyTemplates = withContext(Dispatchers.Default) {
+                    container.foodRepository.historyTemplates()
+                }
+            }
+            SavedTab.FREQUENT -> {
+                frequent = container.foodRepository.frequent()
+                historyTemplates = withContext(Dispatchers.Default) {
+                    container.foodRepository.historyTemplates()
+                }
+            }
             SavedTab.FAVORITES -> Unit  // driven by `favorites` Flow above
             SavedTab.RECIPES -> Unit    // driven by `recipes` Flow above
         }
@@ -233,12 +273,12 @@ fun SavedMealsSheet(
 
             when (tab) {
                 SavedTab.RECENTS -> {
-                    if (filteredRecents.isEmpty()) {
+                    if (mergedFilteredRecents.isEmpty()) {
                         val msg = if (isSearching) stringResource(R.string.saved_meals_no_match)
                                   else stringResource(R.string.saved_meals_no_logs)
                         EmptyState(icon = if (isSearching) Icons.Outlined.Search else Icons.Outlined.Schedule, text = msg)
                     } else {
-                        SavedList(items = filteredRecents) { entry ->
+                        SavedList(items = mergedFilteredRecents) { entry ->
                             SavedMealRow(
                                 entry = entry,
                                 isFavorite = entry.favoriteKey in favKeys,
@@ -251,16 +291,21 @@ fun SavedMealsSheet(
                     }
                 }
                 SavedTab.FREQUENT -> {
-                    if (filteredFrequent.isEmpty()) {
+                    if (mergedFilteredFrequent.isEmpty()) {
                         val msg = if (isSearching) stringResource(R.string.saved_meals_no_match)
                                   else stringResource(R.string.saved_meals_no_logs)
                         EmptyState(icon = if (isSearching) Icons.Outlined.Search else Icons.Outlined.Refresh, text = msg)
                     } else {
-                        SavedList(items = filteredFrequent) { group ->
+                        SavedList(items = mergedFilteredFrequent) { group ->
                             SavedMealRow(
                                 entry = group.template,
                                 isFavorite = group.template.favoriteKey in favKeys,
-                                subtitle = stringResource(R.string.saved_meals_count_format, group.count),
+                                // count 0 = all-time history match outside the 90-day window.
+                                subtitle = if (group.count > 0) {
+                                    stringResource(R.string.saved_meals_count_format, group.count)
+                                } else {
+                                    null
+                                },
                                 imageStore = container.imageStore,
                                 onClick = { onRelogEntry(group.template); onDismiss() },
                                 onLog = { onLogEntry(group.template); onDismiss() },

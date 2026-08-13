@@ -7,7 +7,14 @@ All notable changes to Chompass are documented here.
 ### Added
 
 - **Copy and paste diary entries** (Android): long-press one or more food rows to enter selection mode, tap Copy in the selection bar, then tap the Paste chip to drop the entries onto the viewed day (same day or another day). Pasting duplicates the entries as new rows at the current meal slot, batched in one write with Health Connect mirroring in the background, same as Copy from Day. The clipboard is in-memory and holds until replaced or dismissed. The chip is full-width with the dismiss on the right, shows a brief *Pasting…* state while a write is in flight, and pastes repeat as many times as you like.
+- **Copy from Day lets you pick the destination day** (Android): the sheet now shows a *Copy To* row next to *Copy From*, so you can choose where the entries land without leaving the sheet (it still defaults to the day you're viewing). Handy for filling an old day with today's foods, or fixing a misfiled entry.
 - **Fixed a save-state race that could freeze all logging** (Android): the home screen's reactive flows (water goal, water plan, activity snapshot) and save operations both wrote the whole UI state with a read-modify-write (`copy`), so a flow firing right after a save could resurrect a stale `saving=true` and silently block every subsequent log/paste/edit until the app restarted. All 58 state writes now go through atomic `update`, eliminating the race.
+
+### Fixed
+
+- **Analyze-food sheet** (Android): no more shaking at the scroll bottom — the review sheet now zeroes the content-window insets and blocks the bottom-edge overscroll-vs-drag fight, the same fix that cured the edit-food sheet. Closes Codeberg [#14](https://codeberg.org/fitguy/Chompass/issues/14).
+- **Logging after a restart lands on the day you were viewing** (Android): if the app is killed while the food-analysis (or photo/note input) sheet is open, the recovery draft now remembers the diary day it was opened for — before, the restored sheet silently logged to today because the day selection itself was not persisted, so an entry meant for yesterday landed on today's log. The same day is restored with the draft, and Copy-from-day's target stays the viewed day. Codeberg #16 family.
+- **Saved Meals search covers your full history** (Android): searching now also matches foods older than the 30/90-day Recents/Frequent windows, so an old meal is findable again — and re-logging it keeps the original name, so it merges into the same food instead of becoming a "Name (2)".
 
 ## [3.10.0] - 2026-08-12
 

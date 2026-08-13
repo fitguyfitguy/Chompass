@@ -853,9 +853,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             container = container,
             targetDate = ui.date,
             isSaving = ui.saving,
-            onCopy = { entries ->
+            onCopy = { entries, target ->
                 if (!ui.saving) {
-                    vm.copyEntriesToSelectedDay(entries)
+                    vm.copyEntriesToDate(entries, target)
                     showCopyFromDay = false
                 }
             },

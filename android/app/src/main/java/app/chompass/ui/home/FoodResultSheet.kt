@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -158,6 +161,8 @@ fun FoodResultSheet(
         ?: EmptyFoodAnalysisPlaceholder
     val bitmap = rememberDecodedBitmap(imageBytes)
     val state = rememberChompassSheetState(busy = isSaving || !analysisReady)
+    // Codeberg #14: hoisted so the bottom-edge sheet-drag blocker can read it.
+    val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val portionClarifyFailedMessage = stringResource(R.string.sheet_portion_clarify_failed)
     // Keyed on imageBytes (stable across a reprocess call for the same photo), not analysis
@@ -348,6 +353,13 @@ fun FoodResultSheet(
         onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
         containerColor = sheetSurface,
+        // Codeberg #14: zero the chrome insets — the default contentWindowInsets
+        // feeds the same layout feedback loop with the footer's
+        // navigationBarsPadding/imePadding as #6 did on EditFoodEntrySheet
+        // (M3 consumeWindowInsets(0,0,0,max(0,offset)) -> footer padding ->
+        // content re-measure -> anchors move -> offset re-based). Removing it
+        // kills the coupling; the footer still pads itself from the raw insets.
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
         fun commitLog() {
             if (isSaving || !analysisReady || analysis == null) return
@@ -400,10 +412,15 @@ fun FoodResultSheet(
 
             WithoutOverscroll {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .padding(horizontal = 20.dp)
+                        // Codeberg #14: block bottom-edge overscroll vs sheet
+                        // drag-to-dismiss (the layer-3 shake); keep dismissal
+                        // from content at the top edge (blockTopEdge = false).
+                        .blockSheetDragAtLazyListEdges(listState, blockTopEdge = false),
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
             // Status strip while AI runs — also announces when editing unlocks.
