@@ -11,6 +11,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.data.RecipeRepository
 import app.chompass.data.WaterRepository
+import app.chompass.data.WeatherRepository
 import app.chompass.data.WeightRepository
 import app.chompass.models.AIProvider
 import app.chompass.models.CurrentMealSchedule
@@ -40,6 +41,7 @@ import app.chompass.sync.SyncRepository
 import app.chompass.services.ondevice.ModelDownloadManager
 import app.chompass.services.ondevice.OnDeviceLlmGateway
 import app.chompass.services.speech.SpeechService
+import app.chompass.services.weather.OpenMeteoClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -79,6 +81,15 @@ class ChompassApp : Application() {
         // until the app happens to refresh it. Re-armed daily by the receiver;
         // this cold-start arm covers reboots and app updates (issue #16).
         appScope.launch { container.notifications.scheduleWidgetMidnightRefresh() }
+        // Cold-start weather refresh: when the dynamic goal uses Open-Meteo,
+        // refetch today's high so the goal reflects an updated forecast (and
+        // the reminder chain re-arms on the next entry change). No-op when the
+        // cache already covers today.
+        appScope.launch {
+            if (container.prefs.weatherSource.first() == WeatherRepository.SOURCE_OPEN_METEO) {
+                container.weatherRepository.refreshOpenMeteo()
+            }
+        }
         // Older builds removed food rows without removing their JPEGs.
         appScope.launch { container.foodRepository.pruneOrphanedImages() }
         // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
@@ -183,6 +194,12 @@ class AppContainer(app: ChompassApp) {
     }
     val manualActiveRepository = ManualActiveRepository(prefs)
 
+    // Weather input for the dynamic water goal (issue #3 Phase 5): shared
+    // weather-app broadcast cache + Open-Meteo city forecast, with the manual
+    // °C as fallback. Uses the shared OkHttp client (no extra dependencies).
+    val openMeteo = OpenMeteoClient(FoodAnalysisService.defaultClient)
+    val weatherRepository = WeatherRepository(prefs, openMeteo)
+
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
     val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
@@ -221,7 +238,7 @@ class AppContainer(app: ChompassApp) {
     val chatService = ChatService(prefs, keyStore, foodAnalysis)
     val speechService = SpeechService(prefs, keyStore)
 
-    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository)
+    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository)
     val testDataSeeder = TestDataSeeder(this)
 
     private val healthConnectReadSync = HealthConnectReadSync(

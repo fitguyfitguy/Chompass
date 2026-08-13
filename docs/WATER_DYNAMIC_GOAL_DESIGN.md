@@ -53,6 +53,11 @@ grossMl    = round50(baseMl × tempFactor × actFactor)
 - Temperature input is the **manual expected high for today (°C)**; no
   location permission. Factor is +4 % per °C above 25 °C (30 °C → +20 %,
   35 °C → +40 %), clamped so a heatwave never more than +60 %.
+- **Since Phase 5 (2026-08-13)** the temperature input can also come from an
+  Open-Meteo city forecast — see
+  [WEATHER_INTEGRATION_DESIGN.md](WEATHER_INTEGRATION_DESIGN.md). The manual
+  °C stays the default and the universal fallback. (Weather-app broadcast
+  input is parked.)
 - Activity factor uses the existing `ActivityLevel` enum (already on the
   profile; the TDEE multipliers 1.2–1.9 are BMR-relative and unsuitable to
   reuse directly, hence the dedicated table).
@@ -248,7 +253,7 @@ calculation-change checklist.
 | 2 | Settings UI + strings + Home/widget wiring | ✅ done; debug build + full `testDebugUnitTest` green; needs device pass |
 | 3 | Adaptive alarm chain + boot re-arm | ✅ done; `WaterReminderPlanner` (fire-time recompute), re-arm on entry add/delete via `WaterRepository.onEntriesChanged`, `BOOT_COMPLETED` re-arm, "next in X min" text; needs device pass (cadence, reboot) |
 | 4 | Docs: `CALCULATION_METHODS.md` register, `CHANGELOG.md`, this note → complete | ✅ done; WATER-DYN-A/B/C registered w/ science audit (EFSA 2010, IOM 2004, ACSM 2007, food-moisture 19–30 %), `CHANGELOG.md` Unreleased entry; `release:check-parity` to confirm |
-| 5 (optional) | Open-Meteo: manual city name → geocode → today's high; manual temp stays the fallback; no permission | design review first |
+| 5 (optional) | Open-Meteo: manual city name → geocode → today's high; manual temp stays the fallback; no permission | ✅ done 2026-08-13 — `WeatherRepository` three→two-source resolver (`manual` default + universal fallback), Open-Meteo client + city search UI, unit + MockWebServer tests green, **device pass done** (Pixel 9a). Weather-app broadcast input (Breezy Weather) was prototyped and **parked** — see [WEATHER_INTEGRATION_DESIGN.md](WEATHER_INTEGRATION_DESIGN.md) |
 
 Feature ships opt-in (toggle default off), so existing users and the widget
 see no change until they enable it.

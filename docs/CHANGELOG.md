@@ -2,10 +2,11 @@
 
 All notable changes to Chompass are documented here.
 
-## [Unreleased]
+## [3.12.0] - 2026-08-13
 
 ### Added
 
+- **Weather input for the dynamic water goal** (Android): the expected-high temperature that drives the +4 %/°C factor can now come from two sources — the manual °C wheel (default, unchanged) or **Open-Meteo** (city search → today's forecast high; no account, no key, no location permission; attribution shown in Settings). The manual value is the universal fallback when no fresh forecast exists, so the goal, reminders, and widgets never break. Codeberg #3 Phase 5 family.
 - **Body-measurement trend plots** (Android): the Progress tab can now chart how each body measurement changes over time — one compact card per site with the current value, net change over the selected range, and a trend line. **Off by default**: enable sites in the new *Settings → App & Display → Customize progress* screen (which also hosts the Progress default range). Data comes from Personal Info → Body measurements; plots respect the 1W–All range chips and the cm/in unit setting. Closes Codeberg [#18](https://codeberg.org/fitguy/Chompass/issues/18).
 
 ### Fixed

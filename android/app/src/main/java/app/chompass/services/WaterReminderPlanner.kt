@@ -5,6 +5,7 @@ import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.data.WaterRepository
+import app.chompass.data.WeatherRepository
 import app.chompass.models.ActivityLevel
 import app.chompass.models.WaterGoalCalculator
 import java.time.Instant
@@ -43,6 +44,7 @@ object WaterReminderPlanner {
             foodRepository = container.foodRepository,
             profileRepository = container.profileRepository,
             waterRepository = container.waterRepository,
+            weatherRepository = container.weatherRepository,
             nowMillis = nowMillis,
         )
 
@@ -52,6 +54,7 @@ object WaterReminderPlanner {
         foodRepository: FoodRepository,
         profileRepository: ProfileRepository,
         waterRepository: WaterRepository,
+        weatherRepository: WeatherRepository,
         nowMillis: Long = System.currentTimeMillis(),
     ): Plan? {
         if (!prefs.waterTrackingEnabled.first() || !prefs.waterReminderEnabled.first()) return null
@@ -73,7 +76,7 @@ object WaterReminderPlanner {
                 baseSource = prefs.waterBaseSource.first(),
                 weightKg = profile?.weightKg,
                 manualBaseMl = prefs.waterDailyGoalMl.first(),
-                expectedHighC = prefs.waterManualTempC.first(),
+                expectedHighC = weatherRepository.state.first().effectiveHighC,
                 activityLevel = profile?.activityLevel ?: ActivityLevel.SEDENTARY,
                 useProfileActivity = prefs.waterUseProfileActivity.first(),
                 foodGramsToday = foodGrams,
