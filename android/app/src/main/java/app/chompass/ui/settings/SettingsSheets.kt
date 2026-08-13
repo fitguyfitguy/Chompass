@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.data.WeatherRepository
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -513,6 +514,42 @@ internal fun SettingsSheets(
                         vm.setWaterManualTempC(it)
                         onDismiss()
                     },
+                )
+                SettingsSheet.WEATHER_SOURCE -> ListSheet(
+                    title = stringResource(R.string.settings_weather_source),
+                    items = listOf(
+                        WeatherRepository.SOURCE_MANUAL to stringResource(R.string.settings_weather_source_manual),
+                        WeatherRepository.SOURCE_OPEN_METEO to stringResource(R.string.settings_weather_source_meteo),
+                    ),
+                    label = { it.second },
+                    subtitle = { option ->
+                        when (option.first) {
+                            WeatherRepository.SOURCE_MANUAL -> stringResource(R.string.settings_weather_source_manual_sub)
+                            else -> stringResource(R.string.settings_weather_source_meteo_sub)
+                        }
+                    },
+                    selected = { it.first == ui.weatherSource },
+                    onSelect = {
+                        vm.setWeatherSource(it.first)
+                        onDismiss()
+                    },
+                    footer = stringResource(R.string.settings_weather_source_help),
+                )
+                SettingsSheet.WEATHER_OM_CITY -> OpenMeteoCitySheet(
+                    currentCity = ui.weatherOmCity,
+                    currentHighC = ui.weatherOmHighC,
+                    updatedAtMillis = ui.weatherOmUpdatedAtMillis,
+                    manualHighC = ui.waterManualTempC,
+                    onSearch = { vm.searchWeatherCities(it) },
+                    onSelect = {
+                        vm.selectWeatherCity(it)
+                        onDismiss()
+                    },
+                    onRefresh = {
+                        vm.refreshWeatherNow()
+                        onDismiss()
+                    },
+                    onClose = onDismiss,
                 )
                 SettingsSheet.WATER_REMINDER_PLAN -> WaterReminderPlanSheet(
                     currentStartMinutes = ui.waterAwakeStartMinutes,

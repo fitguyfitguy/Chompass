@@ -43,6 +43,7 @@ class WidgetSnapshotWriter(
     private val profileRepository: ProfileRepository,
     private val homeActivityReader: HomeActivityReader,
     private val waterRepository: app.chompass.data.WaterRepository,
+    private val weatherRepository: app.chompass.data.WeatherRepository,
 ) {
     /** Bundled water inputs flowing through [observe]/[publish]. */
     internal data class WaterInputs(
@@ -90,11 +91,11 @@ class WidgetSnapshotWriter(
             combine(
                 prefs.waterDynamicEnabled,
                 prefs.waterBaseSource,
-                prefs.waterManualTempC,
+                weatherRepository.state,
                 prefs.waterUseProfileActivity,
                 prefs.waterFoodWaterEnabled,
-            ) { dyn, source, temp, useAct, foodWater ->
-                WaterDynamicInputs(dyn, source, temp, useAct, foodWater)
+            ) { dyn, source, weather, useAct, foodWater ->
+                WaterDynamicInputs(dyn, source, weather.effectiveHighC, useAct, foodWater)
             },
             combine(
                 combine(
@@ -142,7 +143,7 @@ class WidgetSnapshotWriter(
             dynamic = WaterDynamicInputs(
                 dynamicEnabled = prefs.waterDynamicEnabled.first(),
                 baseSource = prefs.waterBaseSource.first(),
-                tempC = prefs.waterManualTempC.first(),
+                tempC = weatherRepository.state.first().effectiveHighC,
                 useProfileActivity = prefs.waterUseProfileActivity.first(),
                 foodWaterEnabled = prefs.waterFoodWaterEnabled.first(),
             ),
@@ -223,6 +224,7 @@ class WidgetSnapshotWriter(
                 foodRepository = foodRepository,
                 profileRepository = profileRepository,
                 waterRepository = waterRepository,
+                weatherRepository = weatherRepository,
             )
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),

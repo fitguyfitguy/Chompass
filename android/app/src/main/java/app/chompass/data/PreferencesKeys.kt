@@ -52,6 +52,19 @@ internal object Keys {
         val WATER_AWAKE_END_MINUTE = intPreferencesKey("waterAwakeEndMinute")
         /** Standard cup for the reminder-interval math (independent of quick presets). */
         val WATER_CUP_SIZE_ML = intPreferencesKey("waterCupSizeMl")
+        // Weather input for the dynamic water goal (issue #3 Phase 5); see
+        // docs/WEATHER_INTEGRATION_DESIGN.md. Temperature sources: manual °C
+        // wheel or Open-Meteo (city forecast, no key/account/permission).
+        /** Temperature source: WeatherRepository.SOURCE_MANUAL / _OPEN_METEO. */
+        val WEATHER_SOURCE = stringPreferencesKey("weatherSource")
+        /** Selected Open-Meteo city (JSON of OmCity); null = none chosen yet. */
+        val WEATHER_OM_CITY = stringPreferencesKey("weatherOmCity")
+        /** Today's high °C from the last successful Open-Meteo fetch. */
+        val WEATHER_OM_HIGH_C = intPreferencesKey("weatherOmHighC")
+        /** Local date (yyyy-MM-dd) the Open-Meteo high applies to; stale when != today. */
+        val WEATHER_OM_DATE = stringPreferencesKey("weatherOmDate")
+        /** Epoch-millis of the last successful Open-Meteo fetch. */
+        val WEATHER_OM_UPDATED_AT = longPreferencesKey("weatherOmUpdatedAt")
         val WATER_QUICK_PRESETS_ML = stringPreferencesKey("waterQuickPresetsMl")
         val WATER_ENTRIES = stringPreferencesKey("waterEntries")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")

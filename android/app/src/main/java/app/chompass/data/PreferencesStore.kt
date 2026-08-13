@@ -104,6 +104,16 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setWaterAwakeEndMinute(v: Int) = setWaterAwakeEndMinuteImpl(v)
     val waterCupSizeMl: Flow<Int> get() = waterCupSizeMlImpl
     suspend fun setWaterCupSizeMl(v: Int) = setWaterCupSizeMlImpl(v)
+    val weatherSource: Flow<String> get() = weatherSourceImpl
+    suspend fun setWeatherSource(v: String) = setWeatherSourceImpl(v)
+    val weatherOmCity: Flow<String?> get() = weatherOmCityImpl
+    suspend fun setWeatherOmCity(v: String?) = setWeatherOmCityImpl(v)
+    val weatherOmHighC: Flow<Int> get() = weatherOmHighCImpl
+    suspend fun setWeatherOmHighC(v: Int) = setWeatherOmHighCImpl(v)
+    val weatherOmDate: Flow<String?> get() = weatherOmDateImpl
+    suspend fun setWeatherOmDate(v: String?) = setWeatherOmDateImpl(v)
+    val weatherOmUpdatedAt: Flow<Long> get() = weatherOmUpdatedAtImpl
+    suspend fun setWeatherOmUpdatedAt(v: Long) = setWeatherOmUpdatedAtImpl(v)
     val waterQuickPresetsMl: Flow<List<Int>> get() = waterQuickPresetsMlImpl
     suspend fun setWaterQuickPresetsMl(amountsMl: List<Int>) = setWaterQuickPresetsMlImpl(amountsMl)
     val waterEntries: Flow<List<WaterEntry>> get() = waterEntriesImpl

@@ -23,6 +23,7 @@
     <!-- Common buttons / actions -->
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
     <string name="action_done">Done</string>
     <string name="action_ok">OK</string>
     <string name="action_info">Info</string>
@@ -886,6 +887,27 @@
     <string name="settings_water_dynamic_warning_body">This target is an estimate from general hydration guidelines, not a prescription. Everyone is different: your real need depends on your kidneys, medication, health conditions, sweat, humidity, and more, so this number can be wrong for you. If you have a health condition or take medication, ask a doctor before changing how much you drink. Thirst is your best guide. Drink whenever you need to, even if it isn\'t \'time\' yet, and always drink enough on hot days or during exercise, whether the app reminds you or not.</string>
     <string name="settings_water_reminder_note">Reminders are gentle suggestions. If you\'re thirsty, drink, even between reminders.</string>
     <string name="settings_water_auto_badge">auto</string>
+    <string name="settings_weather_source">Weather source</string>
+    <string name="settings_weather_source_manual">Manual</string>
+    <string name="settings_weather_source_manual_sub">Enter the expected high yourself — no network.</string>
+    <string name="settings_weather_source_meteo">Open-Meteo (online)</string>
+    <string name="settings_weather_source_meteo_sub">Fetch a forecast for a city you choose — no account, no key, no location permission.</string>
+    <string name="settings_weather_source_help">The expected high feeds the dynamic goal (+4 % per °C above 25 °C, capped +60 %). Whenever the source has no fresh data, the manual value is used instead.</string>
+    <string name="settings_weather_city">City</string>
+    <string name="settings_weather_city_none">Choose a city</string>
+    <string name="settings_weather_city_title">Open-Meteo city</string>
+    <string name="settings_weather_city_help">Search for your city, then Chompass fetches its forecast for today. Only the city name and coordinates are sent to Open-Meteo — no account, no key, no location permission.</string>
+    <string name="settings_weather_city_search_hint">City name…</string>
+    <string name="settings_weather_city_search">Search</string>
+    <string name="settings_weather_city_search_none">No cities found. Check the name or your connection.</string>
+    <string name="settings_weather_city_selected">Selected</string>
+    <string name="settings_weather_status_label">Today\'s high</string>
+    <string name="settings_weather_status_value">%1$d °C · %2$s</string>
+    <string name="settings_weather_status_fallback">No forecast yet — uses %1$d °C (tap to refresh)</string>
+    <string name="settings_weather_updated_today">updated %1$s</string>
+    <string name="settings_weather_updated_yesterday">yesterday %1$s</string>
+    <string name="settings_weather_updated_date">%1$s %2$s</string>
+    <string name="settings_weather_attribution">Weather data © Open-Meteo (CC BY 4.0)</string>
     <string name="settings_water_drinking_window">Drinking window</string>
     <string name="settings_water_drinking_window_summary">%1$s – %2$s</string>
     <string name="settings_water_reminder_plan">Reminder plan</string>

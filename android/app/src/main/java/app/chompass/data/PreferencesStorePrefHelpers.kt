@@ -23,11 +23,25 @@ internal suspend fun PreferencesStore.setIntPref(key: Preferences.Key<Int>, valu
     dataStore.edit { it[key] = value }
 }
 
+internal fun PreferencesStore.longPref(key: Preferences.Key<Long>, default: Long): Flow<Long> =
+    dataStore.data.map { it[key] ?: default }
+
+internal suspend fun PreferencesStore.setLongPref(key: Preferences.Key<Long>, value: Long) {
+    dataStore.edit { it[key] = value }
+}
+
 internal fun PreferencesStore.stringPref(key: Preferences.Key<String>): Flow<String?> =
     dataStore.data.map { it[key] }
 
 internal suspend fun PreferencesStore.setStringPref(key: Preferences.Key<String>, value: String) {
     dataStore.edit { it[key] = value }
+}
+
+/** Writes [value], or clears the key when it is null. */
+internal suspend fun PreferencesStore.setStringPrefOrRemove(key: Preferences.Key<String>, value: String?) {
+    dataStore.edit {
+        if (value == null) it.remove(key) else it[key] = value
+    }
 }
 
 // -- JSON-backed values -----------------------------------------------

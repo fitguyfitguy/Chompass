@@ -26,6 +26,7 @@ import app.chompass.models.WaterGoalBreakdown
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
+import app.chompass.data.WeatherRepository
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.models.WeightGoal
@@ -35,6 +36,7 @@ import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
+import app.chompass.services.weather.OmCity
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
@@ -45,6 +47,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SettingsUiState(
@@ -74,6 +77,10 @@ data class SettingsUiState(
     val waterDynamicEnabled: Boolean = false,
     val waterBaseSource: String = WaterGoalCalculator.BASE_SOURCE_WEIGHT,
     val waterManualTempC: Int = 25,
+    val weatherSource: String = WeatherRepository.SOURCE_MANUAL,
+    val weatherOmCity: OmCity? = null,
+    val weatherOmHighC: Int? = null,
+    val weatherOmUpdatedAtMillis: Long? = null,
     val waterUseProfileActivity: Boolean = true,
     val waterFoodWaterEnabled: Boolean = false,
     val waterAwakeStartMinutes: Int = 8 * 60,
@@ -187,6 +194,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val waterDynamic = container.prefs.waterDynamicEnabled.first()
             val waterBaseSource = container.prefs.waterBaseSource.first()
             val waterTemp = container.prefs.waterManualTempC.first()
+            val weather = container.weatherRepository.state.first()
             val waterUseActivity = container.prefs.waterUseProfileActivity.first()
             val waterFood = container.prefs.waterFoodWaterEnabled.first()
             val waterAwakeStart = container.prefs.waterAwakeStartHour.first() * 60 +
@@ -265,6 +273,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 waterDynamicEnabled = waterDynamic,
                 waterBaseSource = waterBaseSource,
                 waterManualTempC = waterTemp,
+                weatherSource = weather.source,
+                weatherOmCity = weather.omCity,
+                weatherOmHighC = weather.omHighC,
+                weatherOmUpdatedAtMillis = weather.omUpdatedAtMillis,
                 waterUseProfileActivity = waterUseActivity,
                 waterFoodWaterEnabled = waterFood,
                 waterAwakeStartMinutes = waterAwakeStart,
@@ -312,6 +324,23 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         container.prefs.homeDisplayPreferences
             .onEach { display -> _ui.value = _ui.value.copy(homeDisplay = display) }
             .launchIn(viewModelScope)
+
+        // Weather input state (source, shared-app cache, Open-Meteo cache).
+        // Single reactive collector keeps the water preview + status rows live
+        // when a weather app broadcasts or Open-Meteo refreshes.
+        viewModelScope.launch {
+            container.weatherRepository.state.collect { weather ->
+                _ui.update {
+                    it.copy(
+                        weatherSource = weather.source,
+                        weatherOmCity = weather.omCity,
+                        weatherOmHighC = weather.omHighC,
+                        weatherOmUpdatedAtMillis = weather.omUpdatedAtMillis,
+                    )
+                }
+                refreshWaterDynamicPreview()
+            }
+        }
 
         // Suggestions engine: re-derive whenever the ui state or its inputs change.
         viewModelScope.launch {
@@ -898,6 +927,38 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(waterManualTempC = v) },
     )
 
+    fun setWeatherSource(v: String) {
+        updateUiPref(
+            {
+                container.weatherRepository.setSource(v)
+                syncNotificationSchedules()
+                refreshWaterDynamicPreview()
+            },
+            { copy(weatherSource = v) },
+        )
+    }
+
+    /** Picks an Open-Meteo city and fetches today's high immediately. */
+    fun selectWeatherCity(city: OmCity) {
+        viewModelScope.launch {
+            container.weatherRepository.selectOmCity(city)
+            syncNotificationSchedules()
+            refreshWaterDynamicPreview()
+        }
+    }
+
+    /** Re-fetches today's high from Open-Meteo and re-arms the reminder chain. */
+    fun refreshWeatherNow() {
+        viewModelScope.launch {
+            container.weatherRepository.refreshOpenMeteo()
+            syncNotificationSchedules()
+            refreshWaterDynamicPreview()
+        }
+    }
+
+    suspend fun searchWeatherCities(query: String): List<OmCity> =
+        container.openMeteo.searchCities(query)
+
     fun setWaterUseProfileActivity(v: Boolean) = updateUiPref(
         {
             container.prefs.setWaterUseProfileActivity(v)
@@ -950,7 +1011,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             waterDynamicGoalPreview = computeWaterGoalPreview(
                 manualGoalMl = container.prefs.waterDailyGoalMl.first(),
                 source = container.prefs.waterBaseSource.first(),
-                tempC = container.prefs.waterManualTempC.first(),
+                tempC = container.weatherRepository.state.first().effectiveHighC,
                 useActivity = container.prefs.waterUseProfileActivity.first(),
                 foodWater = container.prefs.waterFoodWaterEnabled.first(),
             ),

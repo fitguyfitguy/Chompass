@@ -584,10 +584,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 container.prefs.waterDailyGoalMl,
                 container.prefs.waterDynamicEnabled,
                 container.prefs.waterBaseSource,
-                container.prefs.waterManualTempC,
+                container.weatherRepository.state,
                 container.prefs.waterUseProfileActivity,
-            ) { manualGoal, dyn, source, temp, useAct ->
-                WaterDynamicPrefs(manualGoal, dyn, source, temp, useAct)
+            ) { manualGoal, dyn, source, weather, useAct ->
+                WaterDynamicPrefs(manualGoal, dyn, source, weather.effectiveHighC, useAct)
             },
             container.prefs.waterFoodWaterEnabled,
             container.profileRepository.profile,

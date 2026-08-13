@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DirectionsRun
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Scale
 import androidx.compose.material.icons.outlined.Thermostat
@@ -38,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.data.WeatherRepository
 import app.chompass.models.WaterGoalBreakdown
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.ui.components.FudIconBubble
@@ -119,10 +121,29 @@ fun WaterSettingsScreen(
                 ) { sheet = SettingsSheet.WATER_DYNAMIC_BASE }
                 HorizontalDivider()
                 SettingRow(
-                    stringResource(R.string.settings_water_manual_temp),
-                    stringResource(R.string.settings_water_manual_temp_summary, ui.waterManualTempC),
+                    stringResource(R.string.settings_weather_source),
+                    weatherSourceSummary(ui),
                     icon = Icons.Outlined.Thermostat,
-                ) { sheet = SettingsSheet.WATER_MANUAL_TEMP }
+                ) { sheet = SettingsSheet.WEATHER_SOURCE }
+                when (ui.weatherSource) {
+                    WeatherRepository.SOURCE_MANUAL -> {
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_water_manual_temp),
+                            stringResource(R.string.settings_water_manual_temp_summary, ui.waterManualTempC),
+                            icon = Icons.Outlined.Thermostat,
+                        ) { sheet = SettingsSheet.WATER_MANUAL_TEMP }
+                    }
+                    WeatherRepository.SOURCE_OPEN_METEO -> {
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_weather_city),
+                            ui.weatherOmCity?.displayName ?: stringResource(R.string.settings_weather_city_none),
+                            icon = Icons.Outlined.Place,
+                        ) { sheet = SettingsSheet.WEATHER_OM_CITY }
+                        SettingFootnote(weatherMeteoStatus(ui))
+                    }
+                }
                 HorizontalDivider()
                 ToggleRow(
                     stringResource(R.string.settings_water_use_profile_activity),
@@ -249,3 +270,19 @@ internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?) {
 }
 
 private fun factorText(factor: Double): String = String.format(Locale.getDefault(), "%.1f", factor)
+
+@Composable
+private fun weatherSourceSummary(ui: SettingsUiState): String = when (ui.weatherSource) {
+    WeatherRepository.SOURCE_OPEN_METEO -> stringResource(R.string.settings_weather_source_meteo)
+    else -> stringResource(R.string.settings_weather_source_manual)
+}
+
+@Composable
+private fun weatherMeteoStatus(ui: SettingsUiState): String {
+    val updated = updatedAtText(ui.weatherOmUpdatedAtMillis)
+    return if (ui.weatherOmHighC != null && updated != null) {
+        stringResource(R.string.settings_weather_status_value, ui.weatherOmHighC, updated)
+    } else {
+        stringResource(R.string.settings_weather_status_fallback, ui.waterManualTempC)
+    }
+}
