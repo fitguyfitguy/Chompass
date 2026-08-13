@@ -23,6 +23,7 @@ import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
 import app.chompass.models.ProgressiveMealDraft
 import app.chompass.models.ProgressiveMealItem
+import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.models.ActivityLevel
 import app.chompass.models.WaterGoalCalculator
@@ -1519,7 +1520,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         carbs: Double,
         fat: Double,
         fiber: Double? = null,
-        mealType: MealType = MealType.currentMeal
+        mealType: MealType = MealType.currentMeal,
+        servingSizeGrams: Double = 0.0,
+        servingUnitOptions: List<ServingUnitOption> = emptyList(),
+        selectedServingUnit: String? = null,
+        selectedServingQuantity: Double? = null,
     ) {
         if (_ui.value.saving) return
         viewModelScope.launch {
@@ -1539,7 +1544,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         fiber = fiber,
                         timestamp = timestampForSelectedDay(),
                         source = FoodSource.MANUAL,
-                        mealType = mealType
+                        mealType = mealType,
+                        servingSizeGrams = servingSizeGrams,
+                        servingUnitOptions = servingUnitOptions,
+                        selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingUnit,
+                        selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
                     )
                 )
             } finally {

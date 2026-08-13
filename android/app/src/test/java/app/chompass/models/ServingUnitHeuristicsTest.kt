@@ -50,4 +50,18 @@ class ServingUnitHeuristicsTest {
         assertTrue(ServingUnitHeuristics.RULES.all { it.keywords.isNotEmpty() })
         assertTrue(ServingUnitHeuristics.RULES.all { it.defaultGramsPerUnit > 0 })
     }
+
+    @Test
+    fun suggestedRuleFeedsManualEntryServingMath() {
+        // ManualEntryDialog turns the suggested rule into a ServingUnitOption
+        // and derives serving grams as quantity x gramsPerUnit (mirrors the AI
+        // heuristic path in FoodAnalysisService).
+        val rule = ServingUnitHeuristics.matchingRule("Pizza margherita")!!
+        val option = ServingUnitOption(unit = rule.unit, gramsPerUnit = rule.defaultGramsPerUnit)
+        assertEquals("slice", option.unit)
+        assertEquals(120.0, option.gramsPerUnit, 0.001)
+
+        val quantity = ServingUnitOption.parseQuantity("2")
+        assertEquals(240.0, quantity!! * option.gramsPerUnit, 0.001)
+    }
 }

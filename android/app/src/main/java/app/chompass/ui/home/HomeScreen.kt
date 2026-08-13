@@ -804,10 +804,13 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         ManualEntryDialog(
             isSaving = ui.saving,
             onDismiss = { showManual = false },
-            onSave = { name, kcal, p, c, f, fiber, meal ->
+            onSave = { name, kcal, p, c, f, fiber, meal, servingGrams, unitOptions, selUnit, selQty ->
                 if (!ui.saving) {
                     showManual = false
-                    vm.saveManualEntry(name, kcal, p, c, f, fiber, meal)
+                    vm.saveManualEntry(
+                        name, kcal, p, c, f, fiber, meal,
+                        servingGrams, unitOptions, selUnit, selQty,
+                    )
                 }
             }
         )
