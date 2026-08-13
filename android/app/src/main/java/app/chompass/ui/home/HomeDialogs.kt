@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
+import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
@@ -522,7 +523,19 @@ internal fun AnalysisResultDialog(
 internal fun ManualEntryDialog(
     isSaving: Boolean = false,
     onDismiss: () -> Unit,
-    onSave: (name: String, calories: Int, protein: Double, carbs: Double, fat: Double, fiber: Double?, mealType: MealType) -> Unit
+    onSave: (
+        name: String,
+        calories: Int,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        fiber: Double?,
+        mealType: MealType,
+        servingSizeGrams: Double,
+        servingUnitOptions: List<ServingUnitOption>,
+        selectedServingUnit: String?,
+        selectedServingQuantity: Double?,
+    ) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var calories by remember { mutableStateOf("") }
@@ -533,6 +546,38 @@ internal fun ManualEntryDialog(
     var mealType by remember { mutableStateOf(MealType.currentMeal) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
+    // Serving: unit options suggested from the entered name (same heuristics as
+    // the AI paths) + a quantity field. Macros stay “what I ate” — the serving
+    // info is stamped on the entry so the edit sheet later shows the right
+    // quantity/grams and any subsequent quantity change scales from the logged
+    // base serving (app-wide convention: stored macros == the logged serving).
+    var servingQuantityText by remember { mutableStateOf("1") }
+    var servingUnitOptions by remember { mutableStateOf(emptyList<ServingUnitOption>()) }
+    var selectedServingUnitId by remember { mutableStateOf(ServingUnitOption.grams.id) }
+    var servingMenuExpanded by remember { mutableStateOf(false) }
+    val suggestServingUnit: (String) -> Unit = { foodName ->
+        val rule = ServingUnitHeuristics.matchingRule(foodName)
+        if (rule != null) {
+            val suggested = ServingUnitOption(unit = rule.unit, gramsPerUnit = rule.defaultGramsPerUnit)
+            if (servingUnitOptions.none { it.id == suggested.id }) {
+                servingUnitOptions = listOf(suggested)
+                selectedServingUnitId = suggested.id
+            }
+        } else if (servingUnitOptions.isNotEmpty()) {
+            // Name no longer matches any rule -> back to plain grams.
+            servingUnitOptions = emptyList()
+            selectedServingUnitId = ServingUnitOption.grams.id
+        }
+    }
+    val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
+    val parsedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+    val servingGrams = if (parsedServingQuantity != null) {
+        parsedServingQuantity * selectedServingOption.gramsPerUnit
+    } else 0.0
+    // Stamp serving info only when the user engaged with it (unit suggestion
+    // or a non-default quantity) — untouched manual entries keep today's shape.
+    val servingEngaged = servingUnitOptions.isNotEmpty() || servingQuantityText.trim() != "1"
+
     val canSave = name.isNotBlank() && calories.toIntOrNull() != null && !isSaving
 
     FudGlassDialog(onDismissRequest = onDismiss) {
@@ -540,7 +585,10 @@ internal fun ManualEntryDialog(
 
                 FudGlassTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = {
+                        name = it
+                        suggestServingUnit(it)
+                    },
                     placeholder = stringResource(R.string.manual_name_placeholder),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -557,6 +605,21 @@ internal fun ManualEntryDialog(
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     NumberField(stringResource(R.string.manual_fiber), fiber, { fiber = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fiber)
                 }
+
+                // Serving — quantity + unit suggested from the name (heuristics),
+                // same card the result/edit sheets use (incl. +/−/×/÷ calc row).
+                SheetSectionHeader(stringResource(R.string.sheet_serving))
+                ServingQuantityCard(
+                    quantityText = servingQuantityText,
+                    onQuantityChange = { servingQuantityText = it },
+                    selectedUnitId = selectedServingUnitId,
+                    onSelectedUnitChange = { selectedServingUnitId = it },
+                    servingSizeGrams = servingGrams,
+                    unitOptions = servingUnitOptions,
+                    menuExpanded = servingMenuExpanded,
+                    onMenuExpandedChange = { servingMenuExpanded = it },
+                    gramUnit = stringResource(R.string.unit_g)
+                )
 
                 // Meal Type — DropdownMenu styled to match the FoodResultSheet /
                 // EditFoodEntrySheet meal pickers (icon + label, pink, anchored
@@ -622,7 +685,11 @@ internal fun ManualEntryDialog(
                                 ServingUnitOption.parseQuantity(carbs) ?: 0.0,
                                 ServingUnitOption.parseQuantity(fat) ?: 0.0,
                                 fiber.trim().takeIf { it.isNotEmpty() }?.let { ServingUnitOption.parseQuantity(it) },
-                                mealType
+                                mealType,
+                                if (servingEngaged) servingGrams else 0.0,
+                                if (servingEngaged) servingUnitOptions else emptyList(),
+                                if (servingEngaged) selectedServingOption.unit else null,
+                                if (servingEngaged) parsedServingQuantity else null,
                             )
                         }
                     },
