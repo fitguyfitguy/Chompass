@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -82,6 +83,8 @@ import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.FudGlassTextField
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 /** Exposed for JVM tests: every SNAP_FOOD photo gets the portion correction row. */
 internal fun shouldOfferPortionClarify(
@@ -1160,22 +1163,24 @@ private fun FoodEntry.whatIfTotals() = WhatIfTotals(
 )
 
 @Composable
-private fun WhatIfMealImpactDialog(
+internal fun WhatIfMealImpactDialog(
     entry: FoodEntry,
     dayEntries: List<FoodEntry>,
     profile: UserProfile?,
     onDismiss: () -> Unit,
-    onSuggest: (suspend (FoodEntry) -> String)?
+    onSuggest: (suspend (FoodEntry) -> String)?,
+    initialSuggestion: String? = null,
 ) {
     val before = remember(dayEntries) { dayEntries.whatIfTotals() }
     val after = remember(before, entry) { before + entry.whatIfTotals() }
-    var loading by remember(entry.id) { mutableStateOf(true) }
-    var suggestion by remember(entry.id) { mutableStateOf<String?>(null) }
+    var loading by remember(entry.id) { mutableStateOf(initialSuggestion == null) }
+    var suggestion by remember(entry.id) { mutableStateOf(initialSuggestion) }
     var error by remember(entry.id) { mutableStateOf<String?>(null) }
 
     val onboardingFallback = stringResource(R.string.finish_onboarding_hint)
     val suggestionError = stringResource(R.string.error_ai_suggestion)
     LaunchedEffect(entry.id) {
+        if (initialSuggestion != null) return@LaunchedEffect
         loading = true
         suggestion = null
         error = null
@@ -1195,7 +1200,16 @@ private fun WhatIfMealImpactDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Column(
+                // Codeberg #17: cap the content height so the dialog fits small
+                // screens (M3 AlertDialog never scrolls) — the content scrolls
+                // internally when the AI text is long. 60% of the screen
+                // height leaves room for title + buttons on any device.
+                modifier = Modifier
+                    .heightIn(max = (LocalConfiguration.current.screenHeightDp * 0.6f).dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
                 Text(
                     stringResource(R.string.what_if_subtitle),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),

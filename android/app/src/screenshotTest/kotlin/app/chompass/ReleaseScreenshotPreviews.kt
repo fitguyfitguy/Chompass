@@ -16,6 +16,7 @@ import app.chompass.ui.home.HomeAddFoodScreenshotContent
 import app.chompass.ui.home.HomeMealComponentsScreenshotContent
 import app.chompass.ui.home.HomeRecipesScreenshotContent
 import app.chompass.ui.home.HomeScreenPreviewContent
+import app.chompass.ui.home.WhatIfMealImpactDialog
 import app.chompass.ui.navigation.ChompassBottomNavBar
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.ProgressScreenPreviewContent
@@ -27,6 +28,10 @@ import app.chompass.ui.theme.ChompassTheme
 // Using 1080×2400 *dp* (the old value) laid out on a phone-sized canvas ~2.6× too wide,
 // which made text and controls look zoomed out in the exported PNGs.
 private const val PHONE = "spec:width=411dp,height=914dp,dpi=420"
+
+// Small-phone class (≈4.5" 320×480 dp @160 dpi, e.g. old Moto E / small Androids) —
+// the class of device where tall dialog content clips (Codeberg #17).
+private const val SMALL_PHONE = "spec:width=320dp,height=480dp,dpi=160"
 
 @Composable
 private fun ReleaseScreenshotFrame(
@@ -164,6 +169,59 @@ fun SettingsDarkScreenshot() {
         )
     }
 }
+
+@PreviewTest
+@Preview(name = "what-if-small-screen-long-suggestion", device = SMALL_PHONE)
+@Composable
+fun WhatIfSmallScreenLongSuggestionScreenshot() {
+    // Codeberg #17: long AI "What if?" suggestion on a small screen — verify the
+    // dialog content stays readable (scrollable) instead of clipping.
+    ReleaseScreenshotFrame(
+        currentRoute = ChompassRoutes.HOME,
+        darkTheme = false,
+        showNavBar = false,
+    ) {
+        WhatIfMealImpactDialog(
+            entry = ScreenshotFixtures.foodEntries[1],
+            dayEntries = ScreenshotFixtures.foodEntries,
+            profile = ScreenshotFixtures.profile,
+            onDismiss = {},
+            onSuggest = { LONG_WHAT_IF_SUGGESTION },
+            initialSuggestion = LONG_WHAT_IF_SUGGESTION,
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "what-if-standard-screen-long-suggestion", device = PHONE)
+@Composable
+fun WhatIfStandardScreenLongSuggestionScreenshot() {
+    // Control shot: same long suggestion on the standard 411×914 dp phone.
+    ReleaseScreenshotFrame(
+        currentRoute = ChompassRoutes.HOME,
+        darkTheme = false,
+        showNavBar = false,
+    ) {
+        WhatIfMealImpactDialog(
+            entry = ScreenshotFixtures.foodEntries[1],
+            dayEntries = ScreenshotFixtures.foodEntries,
+            profile = ScreenshotFixtures.profile,
+            onDismiss = {},
+            onSuggest = { LONG_WHAT_IF_SUGGESTION },
+            initialSuggestion = LONG_WHAT_IF_SUGGESTION,
+        )
+    }
+}
+
+/** Long multi-line AI suggestion (worst case: several sentences + examples). */
+private const val LONG_WHAT_IF_SUGGESTION =
+    "Logging this 540 kcal chicken rice bowl would keep you on track for today's " +
+    "goal: you'd be at 1,070 kcal of your 2,200 kcal budget, leaving 1,130 kcal " +
+    "for dinner. That's a great balance — the 42 g of protein supports your muscle " +
+    "retention goal, and the 58 g of carbs give you fuel for your afternoon workout. " +
+    "If you want to save more room for an evening meal, consider logging a lighter " +
+    "lunch option like the 320 kcal Greek yogurt bowl instead, which would leave " +
+    "you 1,350 kcal for dinner and still hit your protein target."
 
 @PreviewTest
 @Preview(name = "10-add-food-dark", device = PHONE)
