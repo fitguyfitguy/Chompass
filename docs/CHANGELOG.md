@@ -2,34 +2,52 @@
 
 All notable changes to Chompass are documented here.
 
+Style: entries follow [`docs/local/RELEASE_TEXT_STYLE.md`](docs/local/RELEASE_TEXT_STYLE.md) (user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
+
+## [Unreleased]
+
+### Added
+
+- **New default AI model**: photo and text food analysis now uses Gemini 3.7 Flash by default, with better accuracy for the same free-tier cost. Your saved model choice is untouched, and the free fallback stays the high-quota Flash-Lite model.
+- **AI model availability hints**: the model picker now flags paid-only models (Pro models need billing on your AI Studio project) and notes when free-tier availability varies by account and region. The same note appears during onboarding.
+- **Clearer AI error messages**: when a provider can't find the model you picked, the app now explains that it may be paid-only, region-restricted, or a wrong endpoint, and points to the fix, instead of showing raw provider text. The rate-limit message now points free-tier users at the Flash-Lite model.
+
+- **Custom serving sizes for any food** (Android): tap the pencil next to the serving unit in any food review or edit flow to rename it and set its weight (a 120 g pizza slice can become "big slice" at 180 g). The entry remembers the custom serving, and quantity changes scale from it like before. Available in manual entry, AI photo/text results, saved entries, and ingredient rows.
+- **More nutrients in manual entry** (Android): the manual food dialog now records the optional nutrients, not just fiber. Tap *More Nutrition* to expand the full list (sugars, fat types, cholesterol, sodium, potassium, vitamins, minerals, omega-3) and fill in the values you know; they land on the entry like any other logged nutrient.
+
+### Fixed
+
+- **Open food-entry dialogs survive rotation** (Android): rotating the phone no longer closes the in-progress text, voice, camera, or manual entry flow and discards what you typed. Captured photos and the photo review sheet already survived; now the open-sheet state and typed drafts do too.
+- **Manual entry dialog scrolls when full** (Android): with *More Nutrition* expanded, the dialog content scrolls within the screen, so Save stays reachable on small screens and at large font sizes.
+
 ## [3.12.0] - 2026-08-13
 
 ### Added
 
-- **Weather input for the dynamic water goal** (Android): the expected-high temperature that drives the +4 %/°C factor can now come from two sources — the manual °C wheel (default, unchanged) or **Open-Meteo** (city search → today's forecast high; no account, no key, no location permission; attribution shown in Settings). The manual value is the universal fallback when no fresh forecast exists, so the goal, reminders, and widgets never break. Codeberg #3 Phase 5 family.
-- **Body-measurement trend plots** (Android): the Progress tab can now chart how each body measurement changes over time — one compact card per site with the current value, net change over the selected range, and a trend line. **Off by default**: enable sites in the new *Settings → App & Display → Customize progress* screen (which also hosts the Progress default range). Data comes from Personal Info → Body measurements; plots respect the 1W–All range chips and the cm/in unit setting. Closes Codeberg [#18](https://codeberg.org/fitguy/Chompass/issues/18).
+- **Weather input for the dynamic water goal** (Android): the expected-high temperature behind the +4 %/°C factor can come from two sources: the manual °C wheel (default, unchanged) or Open-Meteo, which finds today's forecast high for a searched city. No account, no key, no location permission; attribution is shown in Settings. When no fresh forecast exists, the manual value is the fallback, so the goal, reminders, and widgets keep working.
+- **Body-measurement trend plots** (Android): the Progress tab can now chart how each body measurement changes over time, with one card per site: current value, net change over the selected range, and a trend line. Off by default: enable sites in *Settings → App & Display → Customize progress*, which also hosts the Progress default range. Data comes from Personal Info → Body measurements. Plots follow the 1W to All range chips and the cm/in unit setting. Closes Codeberg [#18](https://codeberg.org/fitguy/Chompass/issues/18) by [@dorian-grosch](https://codeberg.org/dorian-grosch).
 
 ### Fixed
 
-- **"What if?" popup no longer cuts off long AI suggestions** (Android): the dialog's content now caps at 60% of the screen height and scrolls, so a long suggestion stays readable on small screens instead of being silently clipped below the fold (M3 `AlertDialog` never scrolls on its own). Also adds a deterministic `initialSuggestion` preview hook so screenshot tests render the long-text case. Closes Codeberg [#17](https://codeberg.org/fitguy/Chompass/issues/17).
+- **"What if?" popup scrolls when the suggestion is long** (Android): the dialog now scrolls within a fixed height, so long AI suggestions stay readable on small screens and at large font sizes. Closes Codeberg [#17](https://codeberg.org/fitguy/Chompass/issues/17) by [@dorian-grosch](https://codeberg.org/dorian-grosch).
 
 ## [3.11.0] - 2026-08-13
 
 ### Added
 
-- **Manual entry with serving quantity** (Android): the manual food dialog now has a *Serving* card — quantity + unit, with the unit suggested from the food name (pizza → slice, bread → slice, coffee → ml, same heuristics the AI paths use). The chosen serving (grams/unit/quantity) is stamped on the entry, so re-opening it in the edit sheet shows the right quantity and any later quantity change scales from what you logged; macros stay exactly what you typed. Untouched entries keep the old shape.
-- **Copy and paste diary entries** (Android): long-press one or more food rows to enter selection mode, tap Copy in the selection bar, then tap the Paste chip to drop the entries onto the viewed day (same day or another day). Pasting duplicates the entries as new rows at the current meal slot, batched in one write with Health Connect mirroring in the background, same as Copy from Day. The clipboard is in-memory and holds until replaced or dismissed. The chip is full-width with the dismiss on the right, shows a brief *Pasting…* state while a write is in flight, and pastes repeat as many times as you like.
+- **Manual entry with serving quantity** (Android): the manual food dialog now has a *Serving* card with quantity and unit, and the unit is suggested from the food name (pizza suggests slice, bread suggests slice, coffee suggests ml, the same heuristics the AI paths use). The serving is saved on the entry, so the edit sheet reopens with the right quantity, and later quantity changes scale from what you logged. Macros stay exactly what you typed. Untouched entries keep the old shape.
+- **Copy and paste diary entries** (Android): long-press one or more food rows to enter selection mode, tap Copy, then tap the Paste chip to add the entries to any day you view. Pasted entries land as new rows in the current meal slot, batched into one write with Health Connect mirroring in the background, same as Copy from Day. The clipboard stays in memory until replaced or dismissed, and you can paste as often as you like. The chip shows a brief *Pasting…* state while the write runs.
 - **Copy from Day lets you pick the destination day** (Android): the sheet now shows a *Copy To* row next to *Copy From*, so you can choose where the entries land without leaving the sheet (it still defaults to the day you're viewing). Handy for filling an old day with today's foods, or fixing a misfiled entry.
-- **Fixed a save-state race that could freeze all logging** (Android): the home screen's reactive flows (water goal, water plan, activity snapshot) and save operations both wrote the whole UI state with a read-modify-write (`copy`), so a flow firing right after a save could resurrect a stale `saving=true` and silently block every subsequent log/paste/edit until the app restarted. All 58 state writes now go through atomic `update`, eliminating the race.
 
 ### Fixed
 
-- **Relog keeps the food photo** (Android): "Log again" (hub chips, Saved Meals, Copy from Day) now carries the entry's custom image over — the JPEG is copied to the new entry's own file on save, so both rows stay independent and photo re-picks/deletes of one never affect the other. Closes Codeberg [#12](https://codeberg.org/fitguy/Chompass/issues/12).
-- **Weekday initials follow the app language** (Android): the week strip's single-letter day labels come from the locale's narrow weekday names (Spanish: L M X J V S D) instead of hardcoded English M T W T F S S. Closes Codeberg [#15](https://codeberg.org/fitguy/Chompass/issues/15).
-- **Widgets roll over to today at midnight** (Android): a silent daily alarm just after midnight rewrites the widget snapshot, so a widget left on the home screen no longer shows yesterday's totals until the app happens to refresh it. Codeberg #16 family.
-- **Analyze-food sheet** (Android): no more shaking at the scroll bottom — the review sheet now zeroes the content-window insets and blocks the bottom-edge overscroll-vs-drag fight, the same fix that cured the edit-food sheet. Closes Codeberg [#14](https://codeberg.org/fitguy/Chompass/issues/14).
-- **Logging after a restart lands on the day you were viewing** (Android): if the app is killed while the food-analysis (or photo/note input) sheet is open, the recovery draft now remembers the diary day it was opened for — before, the restored sheet silently logged to today because the day selection itself was not persisted, so an entry meant for yesterday landed on today's log. The same day is restored with the draft, and Copy-from-day's target stays the viewed day. Codeberg #16 family.
-- **Saved Meals search covers your full history** (Android): searching now also matches foods older than the 30/90-day Recents/Frequent windows, so an old meal is findable again — and re-logging it keeps the original name, so it merges into the same food instead of becoming a "Name (2)".
+- **Logging no longer freezes after a quick save** (Android): a stale state could block every log, paste, and edit until the app restarted. All state writes are now atomic, so the race is gone.
+- **Relog keeps the food photo** (Android): "Log again" (hub chips, Saved Meals, Copy from Day) now carries the entry's custom image over. The JPEG is copied to the new entry's own file on save, so both rows stay independent, and re-picking or deleting a photo on one entry leaves the other untouched. Closes Codeberg [#12](https://codeberg.org/fitguy/Chompass/issues/12) by [@armishinwn](https://codeberg.org/armishinwn).
+- **Weekday initials follow the app language** (Android): the week strip's single-letter day labels come from the locale's narrow weekday names (Spanish: L M X J V S D) instead of hardcoded English M T W T F S S. Closes Codeberg [#15](https://codeberg.org/fitguy/Chompass/issues/15) by [@armishinwn](https://codeberg.org/armishinwn).
+- **Widgets roll over to today at midnight** (Android): a background daily alarm just after midnight rewrites the widget snapshot, so a widget left on the home screen no longer shows yesterday's totals until the app happens to refresh it. Closes Codeberg [#16](https://codeberg.org/fitguy/Chompass/issues/16) by [@1260er](https://codeberg.org/1260er).
+- **Analyze-food sheet** (Android): no more shaking at the scroll bottom. The same fix that cured the edit-food sheet now applies here. Closes Codeberg [#14](https://codeberg.org/fitguy/Chompass/issues/14) by [@armishinwn](https://codeberg.org/armishinwn).
+- **Logging after a restart lands on the day you were viewing** (Android): if the app is killed while the food-analysis, photo, or note sheet is open, the restored sheet now remembers the diary day it was opened for, so an entry meant for yesterday no longer lands on today's log. Closes Codeberg [#16](https://codeberg.org/fitguy/Chompass/issues/16) by [@1260er](https://codeberg.org/1260er).
+- **Saved Meals search covers your full history** (Android): searching now also matches foods older than the 30/90-day Recents and Frequent windows, so an old meal is findable again. Re-logging it keeps the original name, so it merges into the same food instead of becoming a "Name (2)".
 
 ## [3.10.0] - 2026-08-12
 

@@ -266,6 +266,12 @@ internal fun ProviderStep(
                             )
                         }
                     }
+                    Text(
+                        stringResource(R.string.onboarding_ai_free_tier_note),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                    )
                 }
             }
         }
@@ -302,6 +308,13 @@ internal fun ProviderStep(
             title = stringResource(R.string.sheet_model),
             items = provider.models,
             label = { it },
+            subtitle = { model ->
+                when (provider.modelTiers[model]) {
+                    "paid" -> stringResource(R.string.ai_model_tier_paid)
+                    "varies" -> stringResource(R.string.ai_model_tier_varies)
+                    else -> null
+                }
+            },
             selected = { it == model },
             onSelect = { onModelChange(it); selectorSheet = null },
             onDismiss = { selectorSheet = null },

@@ -1519,7 +1519,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         protein: Double,
         carbs: Double,
         fat: Double,
-        fiber: Double? = null,
+        micronutrients: MicronutrientValues = MicronutrientValues(),
         mealType: MealType = MealType.currentMeal,
         servingSizeGrams: Double = 0.0,
         servingUnitOptions: List<ServingUnitOption> = emptyList(),
@@ -1532,23 +1532,24 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             _ui.update { it.copy(saving = true) }
             try {
                 container.foodRepository.addEntry(
-                    FoodEntry(
-                        name = disambiguateFoodName(
-                            name,
-                            container.foodRepository.existingFoodIdentityKeys(),
-                        ),
-                        calories = calories,
-                        protein = protein,
-                        carbs = carbs,
-                        fat = fat,
-                        fiber = fiber,
-                        timestamp = timestampForSelectedDay(),
-                        source = FoodSource.MANUAL,
-                        mealType = mealType,
-                        servingSizeGrams = servingSizeGrams,
-                        servingUnitOptions = servingUnitOptions,
-                        selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingUnit,
-                        selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                    micronutrients.applyTo(
+                        FoodEntry(
+                            name = disambiguateFoodName(
+                                name,
+                                container.foodRepository.existingFoodIdentityKeys(),
+                            ),
+                            calories = calories,
+                            protein = protein,
+                            carbs = carbs,
+                            fat = fat,
+                            timestamp = timestampForSelectedDay(),
+                            source = FoodSource.MANUAL,
+                            mealType = mealType,
+                            servingSizeGrams = servingSizeGrams,
+                            servingUnitOptions = servingUnitOptions,
+                            selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingUnit,
+                            selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        )
                     )
                 )
             } finally {

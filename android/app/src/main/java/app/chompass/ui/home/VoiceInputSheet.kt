@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -104,12 +105,15 @@ fun VoiceInputSheet(
     val nativeUnavailableMsg = stringResource(R.string.voice_native_unavailable)
 
     var phase by remember { mutableStateOf(VoicePhase.IDLE) }
-    var transcript by remember { mutableStateOf("") }
+    // Upstream #190: the transcript/committed drafts are saveable so rotation
+    // keeps a recorded or typed transcript; runtime objects (recorder, job,
+    // phase) are not and reset to IDLE on recreation.
+    var transcript by rememberSaveable { mutableStateOf("") }
     // Native SpeechRecognizer naturally finalizes after a silence window. To
     // make recording continuous (no auto-stop), we accumulate every final
     // segment here and immediately re-arm the recognizer; the displayed
     // [transcript] is committed + the in-flight partial.
-    var committed by remember { mutableStateOf("") }
+    var committed by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     val recorder = remember(ctx) { AudioRecorder(ctx) }
     val native = remember(ctx) { NativeSpeechRecognizer(ctx) }

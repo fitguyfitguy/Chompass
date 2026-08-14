@@ -189,6 +189,15 @@ private fun ConstituentRowCard(
                 menuExpanded = unitMenuExpanded,
                 onMenuExpandedChange = { unitMenuExpanded = it },
                 gramUnit = stringResource(R.string.unit_g),
+                onUnitOptionsChange = { options, newId ->
+                    unitId = newId
+                    onChange(
+                        row.copy(
+                            servingUnitOptions = options,
+                            selectedServingUnit = ServingUnitOption.optionMatching(newId, options).unit,
+                        ),
+                    )
+                },
             )
             val kcalUnit = stringResource(R.string.unit_kcal)
             val separatorColor = MaterialTheme.colorScheme.onSurfaceVariant

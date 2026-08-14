@@ -54,7 +54,7 @@ Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SU
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
+2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section), entries per the [release-text style guide](local/RELEASE_TEXT_STYLE.md)
 3. Bump `website/hugo.toml` `params.version` (same as `versionName`)
 4. Optional: sync `docs/fdroid/app.chompass.yml` and run `devenv tasks run release:check-metadata`
 5. Commit, tag, push:

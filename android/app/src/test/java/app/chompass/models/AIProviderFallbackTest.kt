@@ -5,8 +5,8 @@ import org.junit.Test
 
 class AIProviderFallbackTest {
     @Test
-    fun geminiDefaultModelIsFlash36() {
-        assertEquals("gemini-3.6-flash", AIProvider.GEMINI.defaultModel)
+    fun geminiDefaultModelIsFlash37() {
+        assertEquals("gemini-3.7-flash", AIProvider.GEMINI.defaultModel)
     }
 
     @Test

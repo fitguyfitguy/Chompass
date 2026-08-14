@@ -69,7 +69,7 @@ data class MicronutrientValues(
     val vitaminK: Double? = null,
     val folate: Double? = null,
     val omega3: Double? = null,
-) {
+) : java.io.Serializable {
     operator fun get(field: MicronutrientField): Double? = when (field) {
         MicronutrientField.SUGAR -> sugar
         MicronutrientField.ADDED_SUGAR -> addedSugar

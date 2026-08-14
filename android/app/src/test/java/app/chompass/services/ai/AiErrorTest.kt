@@ -31,7 +31,7 @@ class AiErrorTest {
     @Test
     fun rateLimitReturnsRateLimitMessage() {
         assertEquals(
-            "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider.",
+            "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota.",
             friendlyMessage(429, "Too many requests")
         )
     }
@@ -87,6 +87,37 @@ class AiErrorTest {
         assertEquals("Internal error", friendlyMessage(500, "Internal error"))
     }
 
+    @Test
+    fun modelNotFoundOn404ReturnsGuidance() {
+        assertEquals(
+            modelUnavailable,
+            friendlyMessage(404, "404 not found: models/gemini-3.7-flash is not found for API version v1beta")
+        )
+    }
+
+    @Test
+    fun modelNotFoundOn400ReturnsGuidance() {
+        assertEquals(
+            modelUnavailable,
+            friendlyMessage(400, "MODEL_NOT_FOUND: models/gemini-2.5-pro is not found")
+        )
+    }
+
+    @Test
+    fun modelNotSupportedMarkerReturnsGuidance() {
+        assertEquals(
+            modelUnavailable,
+            friendlyMessage(400, "models/gemini-2.5-pro is not supported for generateContent")
+        )
+    }
+
+    @Test
+    fun notFoundOn404WithoutMarkerReturnsRaw() {
+        assertEquals("404 page gone", friendlyMessage(404, "404 page gone"))
+    }
+
     private val locationUnsupported =
         "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
+    private val modelUnavailable =
+        "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project."
 }

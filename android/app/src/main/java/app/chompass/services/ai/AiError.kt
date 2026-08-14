@@ -41,6 +41,8 @@ internal fun friendlyMessage(status: Int, raw: String): String {
     val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."
     val locationUnsupported =
         "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
+    val modelUnavailable =
+        "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project."
     val hasKeyInvalidMarker =
         raw.contains("api key not valid", ignoreCase = true) ||
             raw.contains("api_key_invalid", ignoreCase = true) ||
@@ -49,17 +51,27 @@ internal fun friendlyMessage(status: Int, raw: String): String {
     val hasLocationUnsupportedMarker =
         raw.contains("location is not supported", ignoreCase = true) ||
             raw.contains("not available in your country", ignoreCase = true)
+    val hasModelNotFoundMarker =
+        raw.contains("not found", ignoreCase = true) ||
+            raw.contains("model_not_found", ignoreCase = true) ||
+            raw.contains("not supported for", ignoreCase = true)
 
     return when (status) {
         503, 529 -> "The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider."
-        429 -> "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider."
+        429 -> "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota."
         400 -> when {
             hasKeyInvalidMarker -> keyRejected
             hasLocationUnsupportedMarker -> locationUnsupported
+            hasModelNotFoundMarker -> modelUnavailable
             else -> raw
         }
+        404 -> if (hasModelNotFoundMarker) modelUnavailable else raw
         401, 403 -> keyRejected
-        else -> if (hasLocationUnsupportedMarker) locationUnsupported else raw
+        else -> when {
+            hasLocationUnsupportedMarker -> locationUnsupported
+            hasModelNotFoundMarker -> modelUnavailable
+            else -> raw
+        }
     }
 }
 
@@ -78,14 +90,23 @@ internal fun friendlyMessageRes(status: Int, raw: String): Int = when (status) {
             raw.contains("api_key_expired", ignoreCase = true) -> R.string.ai_error_key_rejected
         raw.contains("location is not supported", ignoreCase = true) ||
             raw.contains("not available in your country", ignoreCase = true) -> R.string.ai_error_location_unsupported
+        modelNotFoundMarker(raw) -> R.string.ai_error_model_unavailable
         else -> 0
     }
+    404 -> if (modelNotFoundMarker(raw)) R.string.ai_error_model_unavailable else 0
     401, 403 -> R.string.ai_error_key_rejected
-    else -> if (
+    else -> when {
         raw.contains("location is not supported", ignoreCase = true) ||
-        raw.contains("not available in your country", ignoreCase = true)
-    ) R.string.ai_error_location_unsupported else 0
+            raw.contains("not available in your country", ignoreCase = true) -> R.string.ai_error_location_unsupported
+        modelNotFoundMarker(raw) -> R.string.ai_error_model_unavailable
+        else -> 0
+    }
 }
+
+private fun modelNotFoundMarker(raw: String): Boolean =
+    raw.contains("not found", ignoreCase = true) ||
+        raw.contains("model_not_found", ignoreCase = true) ||
+        raw.contains("not supported for", ignoreCase = true)
 
 /**
  * Maps common connection failures on custom endpoints to actionable hints instead of raw

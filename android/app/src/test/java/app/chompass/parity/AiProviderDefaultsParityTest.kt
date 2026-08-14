@@ -32,6 +32,22 @@ class AiProviderDefaultsParityTest {
             provider.defaultFallbackModel,
         )
         assertEquals("$label models", jsonStringList(expected.getJSONArray("models")), provider.models)
+        assertEquals(
+            "$label modelTiers",
+            jsonStringStringMap(expected.optJSONObject("modelTiers")),
+            provider.modelTiers,
+        )
+    }
+
+    private fun jsonStringStringMap(obj: org.json.JSONObject?): Map<String, String> {
+        if (obj == null) return emptyMap()
+        val out = LinkedHashMap<String, String>()
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+            val k = keys.next()
+            out[k] = obj.getString(k)
+        }
+        return out
     }
 
     private fun jsonStringList(arr: JSONArray): List<String> =

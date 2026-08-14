@@ -21,17 +21,18 @@ describe("AI provider model defaults (parity fixture)", () => {
       assert.equal(meta.defaultModel, expected.defaultModel);
       assert.equal(meta.defaultFallbackModel, expected.defaultFallbackModel);
       assert.deepEqual(meta.models, expected.models);
+      assert.deepEqual(meta.modelTiers ?? {}, expected.modelTiers ?? {});
     });
   }
 
   it("resolves blank / unknown models to defaults", () => {
-    assert.equal(resolveProviderModel("gemini", null, "primary"), "gemini-3.6-flash");
+    assert.equal(resolveProviderModel("gemini", null, "primary"), "gemini-3.7-flash");
     assert.equal(resolveProviderModel("gemini", "", "fallback"), "gemini-3.5-flash-lite");
     assert.equal(resolveProviderModel("anthropic", null, "primary"), "claude-haiku-4-5");
     assert.equal(resolveProviderModel("anthropic", "", "fallback"), "claude-sonnet-5");
     assert.equal(resolveProviderModel("openai_compatible", null, "primary"), "gpt-5.4-mini");
     assert.equal(resolveProviderModel("openai_compatible", "", "fallback"), "gpt-5.4-nano");
-    assert.equal(resolveProviderModel("gemini", "not-a-real-model", "primary"), "gemini-3.6-flash");
+    assert.equal(resolveProviderModel("gemini", "not-a-real-model", "primary"), "gemini-3.7-flash");
     assert.equal(resolveProviderModel("gemini", "gemini-2.5-pro", "primary"), "gemini-2.5-pro");
   });
 });

@@ -20,9 +20,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +54,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
+import app.chompass.models.MicronutrientField
+import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
@@ -529,7 +534,7 @@ internal fun ManualEntryDialog(
         protein: Double,
         carbs: Double,
         fat: Double,
-        fiber: Double?,
+        micronutrients: MicronutrientValues,
         mealType: MealType,
         servingSizeGrams: Double,
         servingUnitOptions: List<ServingUnitOption>,
@@ -537,13 +542,16 @@ internal fun ManualEntryDialog(
         selectedServingQuantity: Double?,
     ) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var calories by remember { mutableStateOf("") }
-    var protein by remember { mutableStateOf("") }
-    var carbs by remember { mutableStateOf("") }
-    var fat by remember { mutableStateOf("") }
-    var fiber by remember { mutableStateOf("") }
-    var mealType by remember { mutableStateOf(MealType.currentMeal) }
+    // Upstream #190: drafts are rememberSaveable so rotation keeps typed input
+    // and the serving selection; servingUnitOptions rides the Serializable
+    // ServingUnitOption list, MicronutrientValues is Serializable too.
+    var name by rememberSaveable { mutableStateOf("") }
+    var calories by rememberSaveable { mutableStateOf("") }
+    var protein by rememberSaveable { mutableStateOf("") }
+    var carbs by rememberSaveable { mutableStateOf("") }
+    var fat by rememberSaveable { mutableStateOf("") }
+    var micros by rememberSaveable { mutableStateOf(MicronutrientValues()) }
+    var mealType by rememberSaveable { mutableStateOf(MealType.currentMeal) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
     // Serving: unit options suggested from the entered name (same heuristics as
@@ -551,10 +559,11 @@ internal fun ManualEntryDialog(
     // info is stamped on the entry so the edit sheet later shows the right
     // quantity/grams and any subsequent quantity change scales from the logged
     // base serving (app-wide convention: stored macros == the logged serving).
-    var servingQuantityText by remember { mutableStateOf("1") }
-    var servingUnitOptions by remember { mutableStateOf(emptyList<ServingUnitOption>()) }
-    var selectedServingUnitId by remember { mutableStateOf(ServingUnitOption.grams.id) }
+    var servingQuantityText by rememberSaveable { mutableStateOf("1") }
+    var servingUnitOptions by rememberSaveable { mutableStateOf(emptyList<ServingUnitOption>()) }
+    var selectedServingUnitId by rememberSaveable { mutableStateOf(ServingUnitOption.grams.id) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
+    var moreNutritionExpanded by remember { mutableStateOf(false) }
     val suggestServingUnit: (String) -> Unit = { foodName ->
         val rule = ServingUnitHeuristics.matchingRule(foodName)
         if (rule != null) {
@@ -580,7 +589,7 @@ internal fun ManualEntryDialog(
 
     val canSave = name.isNotBlank() && calories.toIntOrNull() != null && !isSaving
 
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
                 Text(stringResource(R.string.manual_title), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
 
                 FudGlassTextField(
@@ -603,7 +612,41 @@ internal fun ManualEntryDialog(
                     NumberField(stringResource(R.string.manual_fat), fat, { fat = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fat)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    NumberField(stringResource(R.string.manual_fiber), fiber, { fiber = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fiber)
+                    NumberField(
+                        stringResource(R.string.manual_fiber),
+                        micros.fiber?.let { ServingUnitOption.formatQuantity(it) } ?: "",
+                        { micros = micros.with(MicronutrientField.FIBER, decimalValueOrNull(it)) },
+                        Modifier.weight(1f), decimal = true, accentColor = AppColors.Fiber,
+                    )
+                }
+
+                // "More Nutrition" — the same expandable micro editor the edit
+                // sheet uses, kept inside its own scroll so the dialog stays
+                // compact on small screens (Codeberg #17 lesson).
+                SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
+                    Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    Icon(
+                        if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
+                if (moreNutritionExpanded) {
+                    SheetPillCard {
+                        MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
+                            if (idx > 0) SheetHairline()
+                            val value = micros[field]
+                            ReviewNutritionValueRow(
+                                label = stringResource(field.labelRes),
+                                displayValue = value?.let { String.format("%.1f", it) } ?: "",
+                                editValue = value?.let { String.format("%.1f", it) }.orEmpty(),
+                                unit = stringResource(field.unitRes),
+                                unlocked = true,
+                                dim = true,
+                                onEdit = { micros = micros.with(field, decimalValueOrNull(it)) }
+                            )
+                        }
+                    }
                 }
 
                 // Serving — quantity + unit suggested from the name (heuristics),
@@ -618,7 +661,11 @@ internal fun ManualEntryDialog(
                     unitOptions = servingUnitOptions,
                     menuExpanded = servingMenuExpanded,
                     onMenuExpandedChange = { servingMenuExpanded = it },
-                    gramUnit = stringResource(R.string.unit_g)
+                    gramUnit = stringResource(R.string.unit_g),
+                    onUnitOptionsChange = { options, newId ->
+                        servingUnitOptions = options
+                        selectedServingUnitId = newId
+                    },
                 )
 
                 // Meal Type — DropdownMenu styled to match the FoodResultSheet /
@@ -684,7 +731,7 @@ internal fun ManualEntryDialog(
                                 ServingUnitOption.parseQuantity(protein) ?: 0.0,
                                 ServingUnitOption.parseQuantity(carbs) ?: 0.0,
                                 ServingUnitOption.parseQuantity(fat) ?: 0.0,
-                                fiber.trim().takeIf { it.isNotEmpty() }?.let { ServingUnitOption.parseQuantity(it) },
+                                micros,
                                 mealType,
                                 if (servingEngaged) servingGrams else 0.0,
                                 if (servingEngaged) servingUnitOptions else emptyList(),
@@ -726,6 +773,10 @@ private fun NumberField(
 
 private fun filterDecimalInput(value: String): String =
     value.filter { it.isDigit() || it == '.' || it == ',' }
+
+/** Parse a decimal text field into a non-negative Double?, null when blank/invalid. */
+private fun decimalValueOrNull(value: String): Double? =
+    value.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
 
 @Composable
 private fun MacroLine(text: String, color: Color, fontSize: androidx.compose.ui.unit.TextUnit = 16.sp) {
