@@ -347,23 +347,39 @@ internal fun ServingQuantityCard(
         mutableStateOf(TextFieldValue(quantityText, selection = TextRange(quantityText.length)))
     }
     // Per-entry custom serving: rename / re-weight the selected unit inline.
-    // Drafts reset when the selected option changes (its id is the key).
+    // Available on any unit — including plain grams — so a dish without a
+    // heuristic or analyzed unit (homemade curry, a stew, ...) can still get a
+    // named serving ("bowl" = 300 g). Drafts reset when the selected option
+    // changes (its id is the key).
     var editingServing by remember { mutableStateOf(false) }
-    val canCustomizeServing =
-        onUnitOptionsChange != null && !selectedOption.isGramUnit && pickerOptions.size > 1
+    val canCustomizeServing = onUnitOptionsChange != null
     var servingNameDraft by remember(selectedUnitId) { mutableStateOf(selectedOption.unit) }
     var servingGramsDraft by remember(selectedUnitId) {
-        mutableStateOf(ServingUnitOption.formatQuantity(selectedOption.gramsPerUnit))
+        mutableStateOf(
+            ServingUnitOption.formatQuantity(
+                if (selectedOption.isGramUnit) {
+                    // Starting from plain grams the new serving defaults to the
+                    // whole dish's grams (one bowl of the logged amount); manual
+                    // entries have no total yet, so fall back to 1.
+                    servingSizeGrams.takeIf { it > 0 } ?: 1.0
+                } else {
+                    selectedOption.gramsPerUnit
+                }
+            )
+        )
     }
     val pushServingEdit = {
         val grams = ServingUnitOption.parseQuantity(servingGramsDraft)
-        if (grams != null && grams > 0) {
-            val updated = selectedOption.copy(
-                unit = servingNameDraft.trim().ifEmpty { selectedOption.unit },
-                gramsPerUnit = grams,
-            )
-            val newOptions = unitOptions.map { if (it.id == selectedUnitId) updated else it }
-            onUnitOptionsChange?.invoke(newOptions, updated.id)
+        if (grams != null) {
+            ServingUnitOption.servingEdit(
+                selectedUnitId = selectedUnitId,
+                selectedOption = selectedOption,
+                unitOptions = unitOptions,
+                name = servingNameDraft,
+                grams = grams,
+            )?.let { result ->
+                onUnitOptionsChange?.invoke(result.options, result.updated.id)
+            }
         }
     }
     // Expressions stay visible while typing (with a live "=" preview); on
