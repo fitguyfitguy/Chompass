@@ -4,6 +4,15 @@ import kotlinx.serialization.Serializable
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
+/**
+ * Result of a per-entry serving edit (the serving-card pencil): the renamed /
+ * re-weighted [updated] option and the [options] list the host should store.
+ */
+data class ServingEditResult(
+    val updated: ServingUnitOption,
+    val options: List<ServingUnitOption>,
+)
+
 @Serializable
 data class ServingUnitOption(
     val unit: String,
@@ -64,6 +73,35 @@ data class ServingUnitOption(
 
         fun optionMatching(id: String, options: List<ServingUnitOption>): ServingUnitOption =
             pickerOptions(options).firstOrNull { it.id == id } ?: grams
+
+        /**
+         * Applies a per-entry custom serving edit (the serving-card pencil,
+         * Codeberg #10 follow-up). Starting from a non-gram unit, the selected
+         * option is renamed / re-weighted in place. Starting from plain grams,
+         * the custom serving is **added alongside** the grams unit (which keeps
+         * its 1 g identity) and a rename is required — committing a gram-named
+         * option would corrupt the grams unit. Returns null when [grams] is not
+         * positive or the edit would be a gram-named gram-unit no-op.
+         */
+        fun servingEdit(
+            selectedUnitId: String,
+            selectedOption: ServingUnitOption,
+            unitOptions: List<ServingUnitOption>,
+            name: String,
+            grams: Double,
+        ): ServingEditResult? {
+            if (grams <= 0) return null
+            val customName = name.trim().ifEmpty { selectedOption.unit }
+            val gramNamed = ServingUnitOption(customName, gramsPerUnit = 1.0).isGramUnit
+            if (selectedOption.isGramUnit && gramNamed) return null
+            val updated = selectedOption.copy(unit = customName, gramsPerUnit = grams)
+            val options = if (selectedOption.isGramUnit) {
+                unitOptions.filter { !it.isGramUnit && it.id != updated.id } + updated
+            } else {
+                unitOptions.map { if (it.id == selectedUnitId) updated else it }
+            }
+            return ServingEditResult(updated, options)
+        }
 
         fun initialUnitId(
             preferredUnit: String?,

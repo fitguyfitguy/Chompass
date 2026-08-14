@@ -564,18 +564,23 @@ internal fun ManualEntryDialog(
     var selectedServingUnitId by rememberSaveable { mutableStateOf(ServingUnitOption.grams.id) }
     var servingMenuExpanded by remember { mutableStateOf(false) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
+    var servingCustomized by rememberSaveable { mutableStateOf(false) }
     val suggestServingUnit: (String) -> Unit = { foodName ->
-        val rule = ServingUnitHeuristics.matchingRule(foodName)
-        if (rule != null) {
-            val suggested = ServingUnitOption(unit = rule.unit, gramsPerUnit = rule.defaultGramsPerUnit)
-            if (servingUnitOptions.none { it.id == suggested.id }) {
-                servingUnitOptions = listOf(suggested)
-                selectedServingUnitId = suggested.id
+        // A pencil-customized serving (name/weight) wins over heuristics: name
+        // changes no longer override the user's choice.
+        if (!servingCustomized) {
+            val rule = ServingUnitHeuristics.matchingRule(foodName)
+            if (rule != null) {
+                val suggested = ServingUnitOption(unit = rule.unit, gramsPerUnit = rule.defaultGramsPerUnit)
+                if (servingUnitOptions.none { it.id == suggested.id }) {
+                    servingUnitOptions = listOf(suggested)
+                    selectedServingUnitId = suggested.id
+                }
+            } else if (servingUnitOptions.isNotEmpty()) {
+                // Name no longer matches any rule -> back to plain grams.
+                servingUnitOptions = emptyList()
+                selectedServingUnitId = ServingUnitOption.grams.id
             }
-        } else if (servingUnitOptions.isNotEmpty()) {
-            // Name no longer matches any rule -> back to plain grams.
-            servingUnitOptions = emptyList()
-            selectedServingUnitId = ServingUnitOption.grams.id
         }
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
@@ -665,6 +670,7 @@ internal fun ManualEntryDialog(
                     onUnitOptionsChange = { options, newId ->
                         servingUnitOptions = options
                         selectedServingUnitId = newId
+                        servingCustomized = true
                     },
                 )
 
