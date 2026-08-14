@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow [`docs/local/RELEASE_TEXT_STYLE.md`](docs/local/RELEASE_TEXT_STYLE.md) (user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [3.13.0] - 2026-08-14
 
 ### Added
 
@@ -12,7 +12,7 @@ Style: entries follow [`docs/local/RELEASE_TEXT_STYLE.md`](docs/local/RELEASE_TE
 - **AI model availability hints**: the model picker now flags paid-only models (Pro models need billing on your AI Studio project) and notes when free-tier availability varies by account and region. The same note appears during onboarding.
 - **Clearer AI error messages**: when a provider can't find the model you picked, the app now explains that it may be paid-only, region-restricted, or a wrong endpoint, and points to the fix, instead of showing raw provider text. The rate-limit message now points free-tier users at the Flash-Lite model.
 
-- **Custom serving sizes for any food** (Android): tap the pencil next to the serving unit in any food review or edit flow to rename it and set its weight (a 120 g pizza slice can become "big slice" at 180 g). Works from plain grams too — a dish without a suggested unit (a homemade curry, a stew) can get a named serving like "bowl" at 300 g, and the serving survives later name edits. The entry remembers the custom serving, and quantity changes scale from it like before. Available in manual entry, AI photo/text results, saved entries, and ingredient rows.
+- **Custom serving sizes for any food** (Android): tap the pencil next to the serving unit in any food review or edit flow to rename it and set its weight (a 120 g pizza slice can become "big slice" at 180 g). Works from plain grams too: a dish without a suggested unit (a homemade curry, a stew) can get a named serving like "bowl" at 300 g, and the serving survives later name edits. The entry remembers the custom serving, and quantity changes scale from it like before. Available in manual entry, AI photo/text results, saved entries, and ingredient rows.
 - **More nutrients in manual entry** (Android): the manual food dialog now records the optional nutrients, not just fiber. Tap *More Nutrition* to expand the full list (sugars, fat types, cholesterol, sodium, potassium, vitamins, minerals, omega-3) and fill in the values you know; they land on the entry like any other logged nutrient.
 
 ### Fixed
