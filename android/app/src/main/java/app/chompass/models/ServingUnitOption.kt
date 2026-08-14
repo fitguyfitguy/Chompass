@@ -9,7 +9,7 @@ data class ServingUnitOption(
     val unit: String,
     val gramsPerUnit: Double,
     val quantity: Double? = null
-) {
+) : java.io.Serializable {
     val id: String get() = normalizedUnit
 
     val normalizedUnit: String

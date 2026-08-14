@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
@@ -113,30 +114,35 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    var showText by remember { mutableStateOf(false) }
-    var showVoiceLocal by remember { mutableStateOf(false) }
-    var showManual by remember { mutableStateOf(false) }
-    var savedMealsTab by remember { mutableStateOf<SavedTab?>(null) }
-    var showBarcodeScannerLocal by remember { mutableStateOf(false) }
-    var showCopyFromDay by remember { mutableStateOf(false) }
-    var showAddFoodSheet by remember { mutableStateOf(false) }
+    // Upstream #190: sheet-open flags are rememberSaveable so Activity recreation
+    // (rotation, theme change) keeps the open dialog/sheet instead of dropping
+    // the user back to the diary. Complex values (entries, recipes, recent list)
+    // are not Bundle-saveable and stay plain remember; photo bytes already live
+    // app-scoped in FoodPhotoSession, never in saveable state.
+    var showText by rememberSaveable { mutableStateOf(false) }
+    var showVoiceLocal by rememberSaveable { mutableStateOf(false) }
+    var showManual by rememberSaveable { mutableStateOf(false) }
+    var savedMealsTab by rememberSaveable { mutableStateOf<SavedTab?>(null) }
+    var showBarcodeScannerLocal by rememberSaveable { mutableStateOf(false) }
+    var showCopyFromDay by rememberSaveable { mutableStateOf(false) }
+    var showAddFoodSheet by rememberSaveable { mutableStateOf(false) }
     var hubRecentMeals by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
-    var showCustomWaterLog by remember { mutableStateOf(false) }
-    var showManualActive by remember { mutableStateOf(false) }
-    var showGroundedEntry by remember { mutableStateOf(false) }
-    var showFoodSearch by remember { mutableStateOf(false) }
+    var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
+    var showManualActive by rememberSaveable { mutableStateOf(false) }
+    var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
+    var showFoodSearch by rememberSaveable { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
-    var showNutritionDetail by remember { mutableStateOf(false) }
+    var showNutritionDetail by rememberSaveable { mutableStateOf(false) }
 
-    var showCameraCapture by remember { mutableStateOf(false) }
+    var showCameraCapture by rememberSaveable { mutableStateOf(false) }
     /** When true, next capture/gallery pick appends into an in-flight analysis re-run. */
-    var appendPhotoForReanalyze by remember { mutableStateOf(false) }
-    var appendReanalyzeNote by remember { mutableStateOf<String?>(null) }
-    var appendReanalyzeGrams by remember { mutableStateOf<Double?>(null) }
-    var showAppendPhotoChooser by remember { mutableStateOf(false) }
+    var appendPhotoForReanalyze by rememberSaveable { mutableStateOf(false) }
+    var appendReanalyzeNote by rememberSaveable { mutableStateOf<String?>(null) }
+    var appendReanalyzeGrams by rememberSaveable { mutableStateOf<Double?>(null) }
+    var showAppendPhotoChooser by rememberSaveable { mutableStateOf(false) }
     /** When true, camera opens without clearing staged photos (Add label / Add photo). */
-    var appendToStagedPhotos by remember { mutableStateOf(false) }
+    var appendToStagedPhotos by rememberSaveable { mutableStateOf(false) }
     val photoSession = container.foodPhotoSession
     val stagedPhotoBytes by photoSession.stagedImages.collectAsState()
     val showMultiPhotoCapture by photoSession.reviewOpen.collectAsState()
@@ -804,11 +810,11 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         ManualEntryDialog(
             isSaving = ui.saving,
             onDismiss = { showManual = false },
-            onSave = { name, kcal, p, c, f, fiber, meal, servingGrams, unitOptions, selUnit, selQty ->
+            onSave = { name, kcal, p, c, f, micros, meal, servingGrams, unitOptions, selUnit, selQty ->
                 if (!ui.saving) {
                     showManual = false
                     vm.saveManualEntry(
-                        name, kcal, p, c, f, fiber, meal,
+                        name, kcal, p, c, f, micros, meal,
                         servingGrams, unitOptions, selUnit, selQty,
                     )
                 }

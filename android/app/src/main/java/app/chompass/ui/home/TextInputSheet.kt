@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,9 +70,10 @@ fun TextInputSheet(
         stringResource(R.string.text_input_placeholder_3),
         stringResource(R.string.text_input_placeholder_4)
     )
-    var input by remember { mutableStateOf("") }
-    var placeholderIdx by remember { mutableIntStateOf(0) }
-    var submitted by remember { mutableStateOf(false) }
+    // Upstream #190: saveable so rotation keeps the typed draft and the busy state.
+    var input by rememberSaveable { mutableStateOf("") }
+    var placeholderIdx by rememberSaveable { mutableIntStateOf(0) }
+    var submitted by rememberSaveable { mutableStateOf(false) }
     val busy = isSubmitting || submitted
     val sheetState = rememberChompassSheetState(busy = busy)
 

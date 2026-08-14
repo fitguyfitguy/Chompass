@@ -110,6 +110,13 @@ internal fun SettingsSheets(
                     title = stringResource(R.string.sheet_model),
                     items = ui.selectedAI.models,
                     label = { it },
+                    subtitle = { model ->
+                        when (ui.selectedAI.modelTiers[model]) {
+                            "paid" -> stringResource(R.string.ai_model_tier_paid)
+                            "varies" -> stringResource(R.string.ai_model_tier_varies)
+                            else -> null
+                        }
+                    },
                     selected = { it == ui.selectedModel },
                     onSelect = { vm.selectModel(it); onDismiss() },
                     footer = if (ui.selectedAI.supportsCustomModelName) stringResource(R.string.sheet_model_footer) else null,

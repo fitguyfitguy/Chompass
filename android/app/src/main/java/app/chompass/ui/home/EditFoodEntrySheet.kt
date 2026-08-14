@@ -122,8 +122,9 @@ fun EditFoodEntrySheet(
     val listState = rememberLazyListState()
 
     val entryBaseServing = currentBaseEntry.servingSizeGrams ?: 100.0
-    val servingUnitOptions = remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {
-        ServingUnitOption.normalizedOptions(currentBaseEntry.servingUnitOptions, entryBaseServing)
+    // var so per-entry serving edits (custom unit name / grams) persist to save.
+    var servingUnitOptions by remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {
+        mutableStateOf(ServingUnitOption.normalizedOptions(currentBaseEntry.servingUnitOptions, entryBaseServing))
     }
     var name by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.name) }
     val initialServingUnit = if (preferGramsByDefault) {
@@ -408,7 +409,11 @@ fun EditFoodEntrySheet(
                     unitOptions = servingUnitOptions,
                     menuExpanded = servingMenuExpanded,
                     onMenuExpandedChange = { servingMenuExpanded = it },
-                    gramUnit = stringResource(R.string.unit_g)
+                    gramUnit = stringResource(R.string.unit_g),
+                    onUnitOptionsChange = { options, newId ->
+                        servingUnitOptions = options
+                        selectedServingUnitId = newId
+                    },
                 )
             }
 

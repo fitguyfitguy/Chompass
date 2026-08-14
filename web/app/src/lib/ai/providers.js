@@ -151,6 +151,19 @@ export function anthropicMessage(m) {
   return { role: m.role, content };
 }
 
+const MODEL_NOT_FOUND_MARKERS = ["not found", "model_not_found", "not supported for"];
+const MODEL_UNAVAILABLE_MSG =
+  "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings, or enable billing on your AI Studio project.";
+
+/** Mirrors Android AiError.kt model-not-found mapping for Gemini responses. */
+function friendlyProviderError(status, text) {
+  const lower = String(text).toLowerCase();
+  const modelNotFound = MODEL_NOT_FOUND_MARKERS.some((m) => lower.includes(m));
+  if (status === 404 && modelNotFound) return MODEL_UNAVAILABLE_MSG;
+  if (status === 400 && modelNotFound) return MODEL_UNAVAILABLE_MSG;
+  return text;
+}
+
 /**
  * @param {{apiKey: string, model?: string}} config
  * @param {AiRequest} req
@@ -177,7 +190,10 @@ export async function geminiSend(config, req) {
     body: JSON.stringify(body),
     signal: req.signal,
   });
-  if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await safeText(res)}`);
+  if (!res.ok) {
+    const text = await safeText(res);
+    throw new Error(`Gemini API error ${res.status}: ${friendlyProviderError(res.status, text)}`);
+  }
   const data = await res.json();
   const parts = data.candidates?.[0]?.content?.parts ?? [];
   const text = parts.filter((p) => p.text).map((p) => p.text).join("");
@@ -209,7 +225,10 @@ async function geminiSendStreaming(config, req) {
     body: JSON.stringify(body),
     signal: req.signal,
   });
-  if (!res.ok) throw new Error(`Gemini API error ${res.status}: ${await safeText(res)}`);
+  if (!res.ok) {
+    const text = await safeText(res);
+    throw new Error(`Gemini API error ${res.status}: ${friendlyProviderError(res.status, text)}`);
+  }
   let text = "";
   await readSse(res, (payload) => {
     let json;
@@ -392,6 +411,7 @@ async function readSse(res, onData) {
  * @property {string} defaultModel
  * @property {string} [defaultFallbackModel]
  * @property {string[]} models
+ * @property {Object<string, string>} [modelTiers] Free-tier availability per model ("paid" | "varies"; missing = free)
  * @property {boolean} [supportsCustomModel]
  */
 
@@ -413,9 +433,10 @@ export const PROVIDERS = {
   gemini: {
     label: "Google (Gemini)",
     send: geminiSend,
-    defaultModel: "gemini-3.6-flash",
+    defaultModel: "gemini-3.7-flash",
     defaultFallbackModel: "gemini-3.5-flash-lite",
     models: [
+      "gemini-3.7-flash",
       "gemini-3.6-flash",
       "gemini-3.5-flash-lite",
       "gemini-3.5-flash",
@@ -424,6 +445,11 @@ export const PROVIDERS = {
       "gemini-2.5-flash",
       "gemini-2.5-pro",
     ],
+    modelTiers: {
+      "gemini-3.7-flash": "varies",
+      "gemini-3.1-pro-preview": "paid",
+      "gemini-2.5-pro": "paid",
+    },
   },
   openai_compatible: {
     label: "OpenAI-compatible",
@@ -462,8 +488,14 @@ export function modelSelectOptionsHtml(providerId, selected, role = "primary") {
   const meta = PROVIDERS[providerId];
   if (!meta) return "";
   const current = resolveProviderModel(providerId, selected, role);
+  const tierTag = (id) => {
+    const tier = meta.modelTiers?.[id];
+    if (tier === "paid") return " (paid-only)";
+    if (tier === "varies") return " (free tier varies)";
+    return "";
+  };
   const opts = meta.models.map(
-    (id) => `<option value="${id}" ${id === current ? "selected" : ""}>${id}</option>`
+    (id) => `<option value="${id}" ${id === current ? "selected" : ""}>${id}${tierTag(id)}</option>`
   );
   if (meta.supportsCustomModel && selected && !meta.models.includes(selected)) {
     opts.push(`<option value="${escapeAttr(selected)}" selected>${escapeAttr(selected)} (custom)</option>`);

@@ -60,10 +60,12 @@ enum class AIProvider {
 
     /**
      * Only models that are currently in service AND accept image input + return structured text.
-     * Lineups verified against provider docs on 2026-07-22. Mirrors iOS AIProvider.swift.
+     * Lineups verified against provider docs on 2026-08-14 (Gemini 3.7 Flash added 2026-08-13;
+     * 3.5 Flash-Lite is still the newest lite model — 3.7 came without a lite bump). Mirrors iOS AIProvider.swift.
      */
     val models: List<String> get() = when (this) {
         GEMINI -> listOf(
+            "gemini-3.7-flash",
             "gemini-3.6-flash",
             "gemini-3.5-flash-lite",
             "gemini-3.5-flash",
@@ -136,6 +138,21 @@ enum class AIProvider {
         CUSTOM_OPENAI -> emptyList()
         // Downloadable on-device models — see services/ondevice/ModelCatalog.kt.
         ON_DEVICE -> listOf("gemma-4-E2B-it", "gemma-4-E4B-it")
+    }
+
+    /**
+     * BYOK free-tier availability per lineup model; values mirror the parity
+     * fixture strings ("free" = missing). Gemini: Pro models left the API free
+     * tier on 2026-04-01; 3.7 Flash is on the free tier but availability varies
+     * by account/region (verify in AI Studio).
+     */
+    val modelTiers: Map<String, String> get() = when (this) {
+        GEMINI -> mapOf(
+            "gemini-3.7-flash" to "varies",
+            "gemini-3.1-pro-preview" to "paid",
+            "gemini-2.5-pro" to "paid",
+        )
+        else -> emptyMap()
     }
 
     val defaultModel: String get() = models.firstOrNull() ?: ""

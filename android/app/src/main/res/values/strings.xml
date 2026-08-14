@@ -322,6 +322,7 @@
     <string name="onboarding_provider_step_2">Sign in with Google and create an API key</string>
     <string name="onboarding_provider_step_3">Paste it below and tap Test key</string>
     <string name="onboarding_provider_footer">All providers supported. Your key stays on\nthis device, encrypted. You can change this in Settings.</string>
+    <string name="onboarding_ai_free_tier_note">Free tier covers the Flash models; Pro models need billing on your AI Studio project.</string>
     <string name="onboarding_skip_ai">Skip for now</string>
     <string name="onboarding_skip_ai_title">Continue without a cloud key?</string>
     <string name="onboarding_skip_ai_body">On-device AI runs privately on your phone, but it is much less accurate than Google AI Studio or other cloud models. Expect wrong calories, missed items, or weak photo reads. You can add a free AI Studio key anytime in Settings.</string>
@@ -952,6 +953,8 @@
     <string name="settings_ai_model">Model</string>
     <string name="settings_speech_language">Language</string>
     <string name="settings_ai_model_unset">(set one below)</string>
+    <string name="ai_model_tier_paid">Paid-only model (free tier no longer includes Pro)</string>
+    <string name="ai_model_tier_varies">Free-tier availability varies by account and region</string>
     <string name="settings_api_key">API Key</string>
     <string name="settings_base_url">Base URL</string>
     <string name="settings_server_url">Server URL</string>
@@ -1202,7 +1205,8 @@
     <string name="ai_error_key_rejected">Your API key was rejected. Open Settings → AI Provider and re-paste a valid key.</string>
     <string name="ai_error_location_unsupported">Gemini isn\'t available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider.</string>
     <string name="ai_error_provider_overloaded">The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider.</string>
-    <string name="ai_error_rate_limit">Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider.</string>
+    <string name="ai_error_rate_limit">Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota.</string>
+    <string name="ai_error_model_unavailable">Your provider couldn\'t find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project.</string>
     <string name="ai_error_coach_on_device">Coach isn\'t available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.</string>
     <string name="ai_error_coach_round_limit">Coach exceeded the tool-call round limit. Try rephrasing your question.</string>
     <string name="ai_error_truncated_twice">The AI response was truncated twice. Try a shorter question or another model.</string>
@@ -1338,6 +1342,10 @@
     <string name="cd_log">Log</string>
     <string name="cd_close">Close</string>
     <string name="cd_clear_quantity">Clear quantity</string>
+    <string name="cd_edit_serving">Edit serving</string>
+    <string name="cd_apply_serving_edit">Apply serving edit</string>
+    <string name="sheet_serving_custom_name">Unit name</string>
+    <string name="sheet_serving_custom_grams">Grams per unit</string>
     <string name="cd_quantity_operator">Insert %1$s into quantity</string>
     <string name="cd_hold_to_record">Hold to record, tap to lock</string>
     <string name="cd_cancel_recording">Cancel recording</string>

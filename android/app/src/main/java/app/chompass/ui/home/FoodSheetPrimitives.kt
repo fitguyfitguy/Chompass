@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Restaurant
@@ -314,6 +315,13 @@ internal fun ServingQuantityCard(
     enabled: Boolean = true,
     /** Set false for hosts that don't resolve deltas/expressions (constituents). */
     showQuantityCalc: Boolean = true,
+    /**
+     * Opt-in per-entry serving customization (Codeberg #10 follow-up): renames /
+     * re-weights the selected unit right in the card. Receives the updated option
+     * list plus the new selected unit id (the normalized id follows the name).
+     * Hosts without editable options pass null to hide the affordance.
+     */
+    onUnitOptionsChange: ((List<ServingUnitOption>, String) -> Unit)? = null,
 ) {
     val pickerOptions = ServingUnitOption.pickerOptions(unitOptions)
     val selectedOption = ServingUnitOption.optionMatching(selectedUnitId, unitOptions)
@@ -337,6 +345,26 @@ internal fun ServingQuantityCard(
     val focusRequester = remember { FocusRequester() }
     var quantityFieldValue by remember {
         mutableStateOf(TextFieldValue(quantityText, selection = TextRange(quantityText.length)))
+    }
+    // Per-entry custom serving: rename / re-weight the selected unit inline.
+    // Drafts reset when the selected option changes (its id is the key).
+    var editingServing by remember { mutableStateOf(false) }
+    val canCustomizeServing =
+        onUnitOptionsChange != null && !selectedOption.isGramUnit && pickerOptions.size > 1
+    var servingNameDraft by remember(selectedUnitId) { mutableStateOf(selectedOption.unit) }
+    var servingGramsDraft by remember(selectedUnitId) {
+        mutableStateOf(ServingUnitOption.formatQuantity(selectedOption.gramsPerUnit))
+    }
+    val pushServingEdit = {
+        val grams = ServingUnitOption.parseQuantity(servingGramsDraft)
+        if (grams != null && grams > 0) {
+            val updated = selectedOption.copy(
+                unit = servingNameDraft.trim().ifEmpty { selectedOption.unit },
+                gramsPerUnit = grams,
+            )
+            val newOptions = unitOptions.map { if (it.id == selectedUnitId) updated else it }
+            onUnitOptionsChange?.invoke(newOptions, updated.id)
+        }
     }
     // Expressions stay visible while typing (with a live "=" preview); on
     // focus loss they commit to the resolved number, like +/- deltas do
@@ -479,6 +507,21 @@ internal fun ServingQuantityCard(
                         .clickable { dismissKeyboard() }
                 )
             }
+            if (canCustomizeServing && !editingServing) {
+                Spacer(Modifier.width(4.dp))
+                Icon(
+                    Icons.Filled.Edit,
+                    contentDescription = stringResource(R.string.cd_edit_serving),
+                    tint = AppColors.Calorie,
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            dismissKeyboard()
+                            editingServing = true
+                        }
+                )
+            }
         }
 
         if (enabled && !isLoadingUnits && showQuantityCalc) {
@@ -537,7 +580,80 @@ internal fun ServingQuantityCard(
             }
         }
 
-        if (!selectedOption.isGramUnit) {
+        if (canCustomizeServing && editingServing) {
+            SheetHairline()
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.sheet_serving_custom_name),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.width(92.dp)
+                    )
+                    BasicTextField(
+                        value = servingNameDraft,
+                        onValueChange = {
+                            servingNameDraft = it
+                            pushServingEdit()
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 16.sp,
+                        ),
+                        cursorBrush = SolidColor(AppColors.Calorie),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.sheet_serving_custom_grams),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.width(92.dp)
+                    )
+                    BasicTextField(
+                        value = servingGramsDraft,
+                        onValueChange = {
+                            servingGramsDraft = it.filter { c -> c.isDigit() || c == '.' || c == ',' }
+                            pushServingEdit()
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 16.sp,
+                        ),
+                        cursorBrush = SolidColor(AppColors.Calorie),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        stringResource(R.string.unit_g),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = stringResource(R.string.cd_apply_serving_edit),
+                        tint = AppColors.Calorie,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                dismissKeyboard()
+                                editingServing = false
+                            }
+                    )
+                }
+            }
+        } else if (!selectedOption.isGramUnit) {
             SheetHairline()
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),

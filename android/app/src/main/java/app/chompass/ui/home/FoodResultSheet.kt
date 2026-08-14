@@ -179,8 +179,9 @@ fun FoodResultSheet(
         !portionChipDismissed &&
         shouldOfferPortionClarify(source, portionPreConfirmed)
     var name by remember { mutableStateOf(effectiveAnalysis.name) }
-    val servingUnitOptions = remember(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams) {
-        ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams)
+    // var so per-entry serving edits (custom unit name / grams) persist to save.
+    var servingUnitOptions by remember(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams) {
+        mutableStateOf(ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams))
     }
     val initialServingUnit = if (preferGramsByDefault) {
         ServingUnitOption.grams.unit
@@ -311,6 +312,7 @@ fun FoodResultSheet(
             carbs = scaledMacro(editableCarbs),
             fat = scaledMacro(editableFat),
             servingSizeGrams = servingGrams,
+            servingUnitOptions = servingUnitOptions,
             grounding = effectiveAnalysis.grounding?.copy(userCorrected = true),
             constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
                 editableConstituents,
@@ -331,7 +333,7 @@ fun FoodResultSheet(
             source = source,
             mealType = mealType,
             servingSizeGrams = servingGrams,
-            servingUnitOptions = effectiveAnalysis.servingUnitOptions,
+            servingUnitOptions = servingUnitOptions,
             selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
             selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
             constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
@@ -656,6 +658,10 @@ fun FoodResultSheet(
                     gramUnit = stringResource(R.string.unit_g),
                     isLoadingUnits = inferringUnits,
                     enabled = analysisReady,
+                    onUnitOptionsChange = { options, newId ->
+                        servingUnitOptions = options
+                        selectedServingUnitId = newId
+                    },
                 )
             }
 
