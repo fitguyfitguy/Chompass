@@ -1,0 +1,6 @@
+• New default AI model: Gemini 3.7 Flash for photo and text food analysis, better accuracy at the same free-tier cost; your saved model choice is untouched
+• AI model availability hints: paid-only models flagged in the picker and during onboarding
+• Clearer AI error messages: explains paid-only, region-restricted, or wrong endpoint instead of raw provider text; rate-limit hint points free-tier users at Flash-Lite
+• Custom serving sizes for any food: rename a serving and set its weight (a 120 g slice becomes "big slice" at 180 g), also from plain grams
+• More nutrients in manual entry: full optional-nutrient list beyond fiber (sugars, fat types, cholesterol, sodium, potassium, vitamins, minerals, omega-3)
+• Fixes: open entry dialogs survive rotation, manual entry dialog scrolls when full

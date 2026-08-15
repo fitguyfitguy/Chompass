@@ -1,0 +1,4 @@
+• Manual entry with serving quantity: unit suggested from the food name (pizza → slice, coffee → ml)
+• Copy and paste diary entries: long-press to select, paste into any day
+• Copy from Day lets you pick the destination day
+• Fixes: logging no longer freezes after a quick save, relog keeps the food photo, weekday initials follow the app language, widgets roll over to today at midnight, analyze-food sheet stops shaking, logging after a restart lands on the day you were viewing, Saved Meals search covers your full history
