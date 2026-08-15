@@ -30,7 +30,7 @@
     <string name="action_clear">Clear</string>
     <string name="action_delete">Delete</string>
     <string name="action_continue">Continue</string>
-    <string name="action_get_started">Get Started</string>
+    <string name="action_get_started">Get started</string>
     <string name="action_log">Log</string>
     <string name="action_logging">Logging...</string>
     <string name="action_what_if">What if?</string>
@@ -101,10 +101,10 @@
     <string name="activity_very_active">Very Active</string>
     <string name="activity_extra_active">Extra Active</string>
     <string name="activity_sedentary_subtitle">Little or no exercise.\nApprox. step guide: under 5,000 steps/day.</string>
-    <string name="activity_light_subtitle">Exercise 1–3 times / week.\nApprox. step guide: 5,000–7,499 steps/day.</string>
-    <string name="activity_moderate_subtitle">Exercise 4–5 times / week.\nApprox. step guide: 7,500–9,999 steps/day.</string>
-    <string name="activity_active_subtitle">Daily exercise or intense 3–4x / week.\nApprox. step guide: 10,000–12,499 steps/day.</string>
-    <string name="activity_very_active_subtitle">Intense exercise 6–7 times / week.\nApprox. step guide: 12,500–14,999 steps/day.</string>
+    <string name="activity_light_subtitle">Exercise 1 to 3 times / week.\nApprox. step guide: 5,000 to 7,499 steps/day.</string>
+    <string name="activity_moderate_subtitle">Exercise 4 to 5 times / week.\nApprox. step guide: 7,500 to 9,999 steps/day.</string>
+    <string name="activity_active_subtitle">Daily exercise or intense 3 to 4x / week.\nApprox. step guide: 10,000 to 12,499 steps/day.</string>
+    <string name="activity_very_active_subtitle">Intense exercise 6 to 7 times / week.\nApprox. step guide: 12,500 to 14,999 steps/day.</string>
     <string name="activity_extra_active_subtitle">Very intense daily, or physical job.\nApprox. step guide: 15,000+ steps/day.</string>
 
     <!-- Weight Goal -->
@@ -147,7 +147,7 @@
     <string name="ai_provider_ollama">Ollama (Local)</string>
     <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
     <string name="ai_provider_on_device">On-Device (Private)</string>
-    <string name="ai_provider_on_device_subtitle">Private and offline. Less accurate than cloud AI; ~2-4 GB download</string>
+    <string name="ai_provider_on_device_subtitle">Private and offline. Less accurate than cloud AI; ~2 to 4 GB download</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="ai_key_placeholder_gemini">AIza...</string>
@@ -261,7 +261,7 @@
     <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
     <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>
     <string name="keto_carb_setup_title">Keto carb setup</string>
-    <string name="keto_carb_manual_hint">Manual target is clamped to 20-50 g/day net carbs.</string>
+    <string name="keto_carb_manual_hint">Manual target is clamped between 20 and 50 g/day net carbs.</string>
 
     <string name="onboarding_desired_weight_title">What\'s your\ndesired weight?</string>
 
@@ -269,7 +269,7 @@
     <string name="onboarding_body_fat_subtitle">Helps us calculate your metabolism more accurately</string>
     <string name="onboarding_yes">Yes</string>
     <string name="onboarding_no">No</string>
-    <string name="onboarding_body_fat_ranges">Common ranges: Men 10-25%, Women 18-35%</string>
+    <string name="onboarding_body_fat_ranges">Common ranges: Men 10 to 25%, Women 18 to 35%</string>
     <string name="onboarding_body_fat_no_worries">That\'s fine. We\'ll use a standard formula\nbased on your height, weight, and age.</string>
     <string name="onboarding_goal_optional">Goal (optional)</string>
     <string name="onboarding_goal_set_later">You can set this later in Settings.</string>
@@ -299,7 +299,7 @@
     <string name="onboarding_pace_caption_recommended">The most balanced pace, motivating and sustainable.</string>
 
     <string name="onboarding_notifications_title">Be reminded to\nlog meals</string>
-    <string name="onboarding_notifications_subtitle">Get gentle reminders at meal times\nso you never forget to track.</string>
+    <string name="onboarding_notifications_subtitle">Get gentle reminders at meal times\nso you don\'t forget to track.</string>
     <string name="onboarding_notifications_enabled">Reminders enabled</string>
     <string name="onboarding_notifications_allow">Allow Notifications</string>
     <string name="onboarding_notifications_change_anytime">You can change this anytime in Settings.</string>
@@ -325,7 +325,7 @@
     <string name="onboarding_ai_free_tier_note">Free tier covers the Flash models; Pro models need billing on your AI Studio project.</string>
     <string name="onboarding_skip_ai">Skip for now</string>
     <string name="onboarding_skip_ai_title">Continue without a cloud key?</string>
-    <string name="onboarding_skip_ai_body">On-device AI runs privately on your phone, but it is much less accurate than Google AI Studio or other cloud models. Expect wrong calories, missed items, or weak photo reads. You can add a free AI Studio key anytime in Settings.</string>
+    <string name="onboarding_skip_ai_body">On-device AI is private but less accurate than cloud models; expect wrong calories or missed items. Add a free AI Studio key in Settings anytime.</string>
     <string name="onboarding_skip_ai_later_body">Food photo AI and coach need an API key or an on-device model. You can set either up anytime in Settings.</string>
     <string name="onboarding_skip_ai_confirm">Continue anyway</string>
     <string name="onboarding_api_key_test">Test key</string>
@@ -757,8 +757,8 @@
 
     <string name="progress_log_weight_title">Log Weight</string>
 
-    <string name="progress_goal_reached_title">Congratulations! 🎉</string>
-    <string name="progress_goal_reached_message">You\'ve reached your goal weight! Head to Settings to switch your goal and tap Recalculate Goals to refresh your targets.</string>
+    <string name="progress_goal_reached_title">Goal reached 🎉</string>
+    <string name="progress_goal_reached_message">You\'ve reached your goal weight. Head to Settings to switch your goal and tap Recalculate Goals to refresh your targets.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">Personal Info</string>
@@ -798,7 +798,7 @@
     <string name="settings_goals_how_title">How your targets work</string>
     <string name="settings_goals_how_adaptive">Adaptive Goals recalculates your calorie and macro targets about once a week.</string>
     <string name="settings_goals_how_energy">Energy Burn anchors targets on your measured burn from Health Connect.</string>
-    <string name="settings_goals_how_lock">Lock a target to keep your own value — Recalculate and Adaptive Goals leave it untouched.</string>
+    <string name="settings_goals_how_lock">Lock a target to keep your own value. Recalculate and Adaptive Goals leave it untouched.</string>
     <string name="settings_danger_zone">Danger zone</string>
     <string name="settings_danger_zone_caption">These actions permanently delete data and cannot be undone.</string>
     <string name="settings_suggestions">Suggestions</string>
@@ -822,7 +822,7 @@
     <string name="settings_body_fat">Body Fat</string>
     <string name="settings_goal_body_fat">Goal Body Fat</string>
     <string name="settings_use_body_fat_bmr">Use Body Fat for BMR</string>
-    <string name="settings_use_body_fat_bmr_subtitle">On = Katch-McArdle (uses lean mass for a more accurate BMR). Off = Mifflin-St Jeor (height/weight/age only). Turn off if your body-fat reading is outdated.</string>
+    <string name="settings_use_body_fat_bmr_subtitle">On uses Katch-McArdle, which uses lean mass for a more accurate BMR. Off uses Mifflin-St Jeor with height, weight, and age only. Turn off if your body-fat reading is outdated.</string>
     <string name="settings_not_set">Not set</string>
     <string name="settings_birthday_age_format">%1$s (age %2$d)</string>
 
@@ -892,27 +892,27 @@
     <string name="settings_water_auto_badge">auto</string>
     <string name="settings_weather_source">Weather source</string>
     <string name="settings_weather_source_manual">Manual</string>
-    <string name="settings_weather_source_manual_sub">Enter the expected high yourself — no network.</string>
+    <string name="settings_weather_source_manual_sub">Enter the expected high yourself. No network.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (online)</string>
-    <string name="settings_weather_source_meteo_sub">Fetch a forecast for a city you choose — no account, no key, no location permission.</string>
+    <string name="settings_weather_source_meteo_sub">Fetch a forecast for a city you choose. No account, no key, no location permission.</string>
     <string name="settings_weather_source_help">The expected high feeds the dynamic goal (+4 % per °C above 25 °C, capped +60 %). Whenever the source has no fresh data, the manual value is used instead.</string>
     <string name="settings_weather_city">City</string>
     <string name="settings_weather_city_none">Choose a city</string>
     <string name="settings_weather_city_title">Open-Meteo city</string>
-    <string name="settings_weather_city_help">Search for your city, then Chompass fetches its forecast for today. Only the city name and coordinates are sent to Open-Meteo — no account, no key, no location permission.</string>
+    <string name="settings_weather_city_help">Search for your city, then Chompass fetches its forecast for today. Only the city name and coordinates are sent to Open-Meteo. No account, no key, no location permission.</string>
     <string name="settings_weather_city_search_hint">City name…</string>
     <string name="settings_weather_city_search">Search</string>
     <string name="settings_weather_city_search_none">No cities found. Check the name or your connection.</string>
     <string name="settings_weather_city_selected">Selected</string>
     <string name="settings_weather_status_label">Today\'s high</string>
     <string name="settings_weather_status_value">%1$d °C · %2$s</string>
-    <string name="settings_weather_status_fallback">No forecast yet — uses %1$d °C (tap to refresh)</string>
+    <string name="settings_weather_status_fallback">No forecast yet. Uses %1$d °C (tap to refresh)</string>
     <string name="settings_weather_updated_today">updated %1$s</string>
     <string name="settings_weather_updated_yesterday">yesterday %1$s</string>
     <string name="settings_weather_updated_date">%1$s %2$s</string>
     <string name="settings_weather_attribution">Weather data © Open-Meteo (CC BY 4.0)</string>
     <string name="settings_water_drinking_window">Drinking window</string>
-    <string name="settings_water_drinking_window_summary">%1$s – %2$s</string>
+    <string name="settings_water_drinking_window_summary">%1$s to %2$s</string>
     <string name="settings_water_reminder_plan">Reminder plan</string>
     <string name="settings_water_drinking_starts">Drinking starts</string>
     <string name="settings_water_drinking_ends">Drinking ends</string>
@@ -920,7 +920,7 @@
     <string name="settings_water_cup_size_summary">%1$d ml</string>
     <string name="settings_water_reminder_interval_preview">≈ every %1$d min · %2$d cups · %3$d ml each</string>
     <string name="settings_water_reminder_interval_help">Interval = drinking window ÷ cups needed for the goal. Recalculated after every entry.</string>
-    <string name="settings_water_restore_default_plan">Restore defaults (08:00 – 21:00, 300 ml)</string>
+    <string name="settings_water_restore_default_plan">Restore defaults (08:00 to 21:00, 300 ml)</string>
     <string name="settings_water_reminder_window_too_short">The drinking window needs at least 15 minutes.</string>
     <string name="unit_celsius">°C</string>
     <string name="settings_glass_blur">Glass blur</string>
@@ -966,7 +966,7 @@
     <string name="settings_ai_model_unset">(set one below)</string>
     <string name="ai_model_tier_paid">Paid-only model (free tier no longer includes Pro)</string>
     <string name="ai_model_tier_varies">Free-tier availability varies by account and region</string>
-    <string name="settings_api_key">API Key</string>
+    <string name="settings_api_key">API key</string>
     <string name="settings_base_url">Base URL</string>
     <string name="settings_server_url">Server URL</string>
     <string name="settings_tap_to_edit">Tap to edit</string>
@@ -980,7 +980,7 @@
     <string name="settings_gemini_google_search">Google Search grounding</string>
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this. On Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
     <string name="settings_portion_clarify">Portion size check</string>
-    <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction (rescale without another AI call) plus optional size chips (small/regular/large/restaurant-size) that re-analyze with your answer.</string>
+    <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction that rescales without another AI call, plus size chips (small, regular, large, restaurant-size) that re-analyze with your answer.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>
     <string name="settings_meal_constituents_footer">When enabled, the AI may split composite meals into editable ingredients with grams and units. Works best with stronger cloud models; turn off for cheaper or smaller models if results look inconsistent.</string>
     <string name="settings_meal_constituents_footer_on_device">Unavailable for on-device Gemma: ingredient breakdown needs a stronger model. Switch to a cloud provider to enable this.</string>
@@ -1005,22 +1005,22 @@
     <!-- Custom AI Instructions + Fallback Provider (v1.0.6) -->
     <string name="settings_section_custom_instructions">Custom AI Instructions</string>
     <string name="settings_custom_instructions_placeholder">e.g. I live in Germany, assume European portion sizes, prefer ALDI/REWE brands. I\'m on a bodybuilding cut.</string>
-    <string name="settings_custom_instructions_footer">Optional context sent with every AI request - region, diet, athletic goals, anything you\'d otherwise repeat each time. Leave empty to disable.</string>
+    <string name="settings_custom_instructions_footer">Optional context sent with every AI request: region, diet, athletic goals, anything you\'d otherwise repeat each time. Leave empty to disable.</string>
     <string name="settings_save">Save</string>
     <string name="settings_saved">Saved</string>
 
     <string name="settings_section_fallback">Fallback Provider</string>
     <string name="settings_enable_fallback">Enable Fallback</string>
-    <string name="settings_fallback_footer">If your primary provider fails (overload, rate limit, network error), the app retries automatically with this fallback. Same provider as primary is allowed - just pick a different model.</string>
+    <string name="settings_fallback_footer">If your primary provider fails (overload, rate limit, network error), the app retries automatically with this fallback. Same provider as primary is allowed. Just pick a different model.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Manage Health Connect access</string>
     <string name="settings_permissions">Permissions</string>
     <string name="settings_energy_goals">Energy Burn Goals</string>
     <string name="settings_needs_health_connect">Needs Health Connect</string>
-    <string name="settings_energy_goals_info">When on, Chompass uses your measured calories burned from Health Connect - a 14-day average of active + basal energy - as your maintenance anchor when calculating goals, instead of the formula estimate. No AI is used to read your burn. Requires Health Connect. Works with the Recalculate button and with Adaptive Goals.</string>
+    <string name="settings_energy_goals_info">When on, Chompass uses your measured calories burned from Health Connect (a 14-day average of active + basal energy) as your maintenance anchor when calculating goals, instead of the formula estimate. It does not use AI to read your burn. Requires Health Connect. Works with the Recalculate button and with Adaptive Goals.</string>
     <string name="settings_adaptive_goals">Adaptive Goals</string>
-    <string name="settings_adaptive_goals_info">About once a week when you open the app, Chompass automatically re-runs the full goal calculation - the same one the Recalculate button uses - from your profile, recent logged food, and weight trend. If Energy Burn is on, it uses your measured burn as the maintenance anchor. It skips silently if the AI is unavailable. Turning this off restores the targets from before Adaptive Goals first changed them. This is not medical advice.</string>
+    <string name="settings_adaptive_goals_info">About once a week when you open the app, Chompass automatically re-runs the full goal calculation (the same one the Recalculate button uses) from your profile, recent logged food, and weight trend. If Energy Burn is on, it uses your measured burn as the maintenance anchor. It skips the recalculation if the AI is unavailable. Turning this off restores the targets from before Adaptive Goals first changed them. This is not medical advice.</string>
     <string name="settings_refresh_energy_goals">Refresh Energy Burn Goals</string>
     <string name="settings_clear_food_log">Clear Food Log</string>
     <string name="settings_delete_all_data">Delete All Data</string>
@@ -1094,8 +1094,8 @@
     <string name="sheet_model">Model</string>
     <string name="sheet_model_footer">Or type any custom model ID below.</string>
     <string name="sheet_any_model_id">Any model ID</string>
-    <string name="sheet_api_key_format">API Key - %1$s</string>
-    <string name="sheet_speech_api_key_format">Speech API Key - %1$s</string>
+    <string name="sheet_api_key_format">API key: %1$s</string>
+    <string name="sheet_speech_api_key_format">Speech API key: %1$s</string>
     <string name="sheet_speech_engine">Speech Engine</string>
     <string name="sheet_gender">Gender</string>
     <string name="sheet_activity_level">Activity level</string>
@@ -1162,7 +1162,7 @@
     <string name="about_privacy">Privacy Policy</string>
     <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Based on Fud AI by Apoorv Darshan</string>
-    <string name="about_share_message">I\'ve been tracking my meals with Chompass - an ad-free fork of Fud AI. Snap a photo, speak it, or type it, and the AI logs the calories. Open source, and your data stays on your device.\n\nSource: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">I\'ve been tracking my meals with Chompass, an ad-free fork of Fud AI. Snap a photo, speak it, or type it, and the AI logs the calories. Open source, and your data stays on your device.\n\nSource: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Share Chompass</string>
 
     <!-- Notifications -->
@@ -1173,7 +1173,7 @@
     <string name="notif_channel_weight_goal">Weight Goal</string>
     <string name="notif_channel_weight_goal_desc">Celebration when you reach your goal weight.</string>
     <string name="notif_streak_title">Don\'t forget to log your meals</string>
-    <string name="notif_streak_text">Keep your streak going - log something from today.</string>
+    <string name="notif_streak_text">Keep your streak going. Log something from today.</string>
     <string name="notif_summary_title">Today\'s summary is ready</string>
     <string name="notif_summary_text">Tap to see how today\'s macros lined up.</string>
 
@@ -1219,7 +1219,7 @@
     <string name="ai_error_rate_limit">Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota.</string>
     <string name="ai_error_model_unavailable">Your provider couldn\'t find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project.</string>
     <string name="ai_error_coach_on_device">Coach isn\'t available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.</string>
-    <string name="ai_error_coach_round_limit">Coach exceeded the tool-call round limit. Try rephrasing your question.</string>
+    <string name="ai_error_coach_round_limit">Coach could not answer. Try rephrasing your question.</string>
     <string name="ai_error_truncated_twice">The AI response was truncated twice. Try a shorter question or another model.</string>
     <string name="ai_error_truncated_twice_description">The AI response was truncated twice. Try a shorter description or another model.</string>
     <string name="ai_error_truncated">The AI response was truncated. Try a shorter question or a different model.</string>
@@ -1229,8 +1229,8 @@
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
     <string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string>
-    <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log - turn off Adaptive Goals in Settings to keep it fixed.</string>
-    <string name="onboarding_feature_snap">Snap a photo - AI logs it</string>
+    <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log. Turn off Adaptive Goals in Settings to keep it fixed.</string>
+    <string name="onboarding_feature_snap">Snap a photo. AI logs it.</string>
     <string name="onboarding_feature_coach">Coach that knows your data</string>
     <string name="onboarding_feature_library">Health Connect for scales and wearables</string>
     <string name="onboarding_feature_widgets">Home screen widgets</string>
@@ -1238,14 +1238,14 @@
     <string name="whats_new_v30_coach_voice">Ask Coach by voice with the new inline recorder.</string>
     <string name="whats_new_v30_share">Share any meal as a link that opens straight in Chompass on iPhone or Android.</string>
     <string name="whats_new_v30_export">Export your food diary as JSON, Markdown, or CSV from Settings.</string>
-    <string name="whats_new_v30_reprocess">Reprocess a logged meal with AI - adjust its name, serving, or note and re-analyze.</string>
+    <string name="whats_new_v30_reprocess">Reprocess a logged meal with AI: adjust its name, serving, or note and re-analyze.</string>
     <string name="whats_new_v30_camera">Camera + Camera keeps both shots, stitched side by side.</string>
     <string name="whats_new_v30_colors">10 new theme colors, now picked inline in Settings.</string>
     <string name="whats_new_v30_bodyfat">Body fat history: review and delete individual entries, just like weight.</string>
     <string name="whats_new_v30_workouts">Workouts tab was removed.</string>
     <string name="whats_new_v30_units">Height and weight units can now be set independently.</string>
-    <string name="whats_new_v30_adaptive">Adaptive Goals and Energy Burn left Experimental and are on by default for new installs.</string>
-    <string name="whats_new_v30_restore">Reinstalled or switched phones? Your food log, weight, and body fat now restore automatically from Health Connect.</string>
+    <string name="whats_new_v30_adaptive">Adaptive Goals and Energy Burn are no longer experimental and are on by default for new installs.</string>
+    <string name="whats_new_v30_restore">After reinstalling or switching phones, your food log, weight, and body fat restore automatically from Health Connect.</string>
     <string name="export_diary_title">Export Food Diary</string>
     <string name="export_body_metrics_title">Export Weight &amp; Body Data</string>
     <string name="export_body_metrics_subtitle">Exports your weight, body-fat and body-measurement history as a shareable file.</string>
@@ -1293,7 +1293,7 @@
     <string name="home_display_nutrient_cards">Nutrient cards</string>
     <string name="home_display_card_count">Cards shown</string>
     <string name="home_display_show_steps">Show step counter on home</string>
-    <string name="home_display_show_steps_desc">Optional card below the gauge. Needs Health Connect or seeded test data.</string>
+    <string name="home_display_show_steps_desc">Optional card below the gauge. Needs Health Connect.</string>
     <string name="home_display_step_goal">Daily step goal</string>
     <string name="home_display_calorie_mode">Calorie gauge</string>
     <string name="home_display_food_log_chips">Food log macros</string>
@@ -1304,7 +1304,7 @@
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active burn to budget</string>
     <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. Movement does not change today’s budget.</string>
-    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Connect Health Connect under Settings → Health for measured burn.</string>
+    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Turn on Health Connect under Settings → Health for measured burn.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: enable Health Connect to use watch/phone active calories instead of the activity-level estimate.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>
@@ -1336,7 +1336,7 @@
     <string name="measurement_history">Measurement History</string>
     <string name="body_measurements_title">Body Measurements</string>
     <string name="label_derived">Derived</string>
-    <string name="notif_goal_weight_title">Congratulations! 🎉</string>
+    <string name="notif_goal_weight_title">Goal reached 🎉</string>
     <string name="notif_goal_weight_text">You reached your goal weight.</string>
     <string name="cd_selected">Selected</string>
     <string name="cd_add_food">Add food</string>
@@ -1456,7 +1456,7 @@
     <string name="settings_notif_water_reminder">Water reminder</string>
     <string name="settings_notif_goal_alerts">Goal reached alerts</string>
     <string name="settings_notif_app_updates">App updates</string>
-    <string name="settings_notif_none_selected">No notification type is selected. You can leave notifications allowed and keep every app reminder off.</string>
+    <string name="settings_notif_none_selected">No notification type is selected. You can keep notifications allowed and all reminders off.</string>
     <string name="settings_calc_calorie_target">Calorie target for goal</string>
     <string name="settings_calc_maintenance">Maintenance &amp; goal adjustment</string>
     <string name="settings_calc_macro_split">Macronutrient split</string>
@@ -1511,7 +1511,7 @@
     <string name="notif_channel_body_fat">Body Fat Log Reminder</string>
     <string name="notif_channel_body_fat_desc">Daily reminder to log a body-fat reading.</string>
     <string name="notif_channel_updates">App Updates</string>
-    <string name="notif_channel_updates_desc">A new version of Chompass is available on the Play Store.</string>
+    <string name="notif_channel_updates_desc">A new version of Chompass is available.</string>
     <string name="notif_channel_water">Water reminder</string>
     <string name="notif_channel_water_desc">Daily reminder to drink and log water.</string>
     <string name="notif_water_title">Time to hydrate</string>
@@ -1520,7 +1520,7 @@
     <string name="notif_water_text_next_qty">Drink %1$s · next in ~%2$d min</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
-    <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals - or automatically about once a week if Adaptive Goals is on - Chompass sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your real data to estimate your true maintenance and targets.</string>
+    <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals, or automatically about once a week if Adaptive Goals is on, Chompass sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your data to estimate your maintenance and targets.</string>
     <string name="settings_calc_sec_bmr">Resting metabolism (BMR)</string>
     <string name="settings_calc_sec_tdee">Daily energy expenditure (TDEE)</string>
     <string name="settings_calc_mifflin_name">Mifflin-St Jeor equation</string>
@@ -1537,7 +1537,7 @@
     <string name="settings_calc_home_gauge_used">Home Display lets you add active burn to your goal, track net intake, or show a burn hint. Your activity-level estimate is TDEE minus BMR (the PAL multiplier portion). Add Active and Dual use that estimate when Health Connect is off; Net requires measured Health Connect burn. Add Active splits your stored goal into a sedentary base plus today\'s active layer so activity is not counted twice. With Add Active, set Activity Level to everyday non-training life; measured or estimated active covers workouts so they are not stacked on a high PAL.</string>
     <string name="settings_calc_home_gauge_formula">estimated active = TDEE − BMR\nsedentary budget = calorie goal − estimated active\nAdd Active goal = sedentary budget + (measured or estimated active)</string>
     <string name="settings_calc_target_name">Maintenance &amp;amp; goal adjustment</string>
-    <string name="settings_calc_target_used">Maintenance starts from your TDEE - or, when Energy Burn is on, your measured Health Connect burn (a 14-day Active + Basal average) instead of the formula estimate. The AI refines maintenance against your logged intake and weight trend, then applies your goal: a weekly weight-change rate becomes a daily calorie deficit (Lose) or surplus (Gain).</string>
+    <string name="settings_calc_target_used">Maintenance starts from your TDEE. With Energy Burn on, it starts from your measured Health Connect burn (a 14-day Active + Basal average) instead. The AI refines maintenance against your logged intake and weight trend, then applies your goal: a weekly weight-change rate becomes a daily calorie deficit (Lose) or surplus (Gain).</string>
     <string name="settings_calc_target_formula">1 lb of body fat ≈ 3,500 kcal · 1 kg ≈ 7,700 kcal\nYour weekly rate ÷ 7 is subtracted from (Lose) or added to (Gain) maintenance to set the daily calorie target.</string>
     <string name="settings_calc_split_name">Protein, carbs, fat targets</string>
     <string name="settings_calc_split_used">The AI fits protein, carbs, and fat to your calorie target, using these references as a guide. Protein scales with your activity level (and is based on lean body mass when a body fat %% is set); fat is set from bodyweight; carbs fill the rest. You can lock any value or edit it yourself in Settings.</string>
@@ -1556,7 +1556,7 @@
     <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are rough tape-measure estimates. They do not override BMR unless you separately enter a body-fat percentage on your profile.</string>
     <string name="settings_calc_body_formula">Waist-to-hip = waist ÷ hips\nWaist-to-height = waist ÷ height\nUS Navy %BF: sex-specific log equations (neck, waist, hips, height)</string>
     <string name="settings_not_medical_title">Not medical advice</string>
-    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Formula estimates can be off (often around ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
+    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Formula estimates can be off (often around ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes, especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
     <string name="settings_safety_medical">Safety &amp; Medical</string>
     <string name="settings_safety_summary">Read this before making major diet changes</string>
     <string name="settings_safety_open">View</string>
@@ -1569,9 +1569,9 @@
     <string name="settings_safety_escalate">If you notice fatigue, dizziness, sleep disruption, mood changes, menstrual changes, or reduced libido, get medical advice promptly.</string>
     <string name="settings_safety_water">Hydration goals and drink reminders are estimates, not medical advice. They never replace thirst or guidance from your doctor. Drink enough even when the app does not remind you.</string>
     <string name="onboarding_safety_title">Safety notice</string>
-    <string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating - or tracking increases stress around food/body image - pause and talk with a doctor or therapist before continuing.</string>
+    <string name="onboarding_safety_body">Chompass is a tracking helper, not a clinical tool. If you have a history of disordered eating, or tracking increases stress around food or body image, pause and talk with a doctor or therapist before continuing.</string>
     <string name="onboarding_safety_low_bf">Low body-fat caution: staying too lean for too long can affect hormones, recovery, and overall health in both women and men.</string>
-    <string name="onboarding_safety_not_medical">This is not medical advice. Formula estimates can be off. Consult a registered dietitian, physician, or sports medicine professional before significant diet changes - especially if you have a medical condition, are pregnant or breastfeeding, or are under 18.</string>
+    <string name="onboarding_safety_not_medical">This is not medical advice. Formula estimates can be off. Consult a registered dietitian, physician, or sports medicine professional before significant diet changes, especially if you have a medical condition, are pregnant or breastfeeding, or are under 18.</string>
     <string name="onboarding_safety_water">Hydration goals and drink reminders are rough estimates, not medical advice. Thirst is a better guide than any app, and your doctor knows what is right for you.</string>
     <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
     <string name="onboarding_accuracy_title">Accuracy disclaimer</string>
