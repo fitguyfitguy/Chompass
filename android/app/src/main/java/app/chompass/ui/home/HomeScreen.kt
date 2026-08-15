@@ -75,7 +75,6 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
-import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.WaterAmountFormat
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
@@ -398,10 +397,6 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         burnShade = ui.activeBurnShade,
                         restingBurn = ui.restingBurnToday,
                         showRestingShade = ui.showRestingBurnShade,
-                        awaitingActiveBurn = ui.homeDisplay.calorieDisplayMode ==
-                            HomeCalorieDisplayMode.ADD_ACTIVE &&
-                            (calorieMode == HomeCalorieDisplayMode.STATIC ||
-                                ui.displayActiveCalories == 0),
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))

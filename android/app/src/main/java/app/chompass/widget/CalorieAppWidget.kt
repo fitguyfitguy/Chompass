@@ -100,7 +100,7 @@ private fun CalorieSmall(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.resolvedEffectiveCalorieGoal}"
+                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}"
             )
         }
         Text(
@@ -132,7 +132,7 @@ private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.resolvedEffectiveCalorieGoal}"
+                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}"
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
@@ -143,6 +143,22 @@ private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
                     fontSize = 12.sp
                 )
             )
+            val typical = snapshot.activeBurnTypical
+            if (typical != null && typical > 0 && snapshot.displayGoalTarget != null) {
+                Spacer(modifier = GlanceModifier.height(1.dp))
+                Text(
+                    text = context.getString(
+                        R.string.home_active_burn_caption_progress,
+                        snapshot.activeCaloriesToday ?: 0,
+                        typical,
+                    ),
+                    style = TextStyle(
+                        color = WidgetTheme.secondaryTextProvider,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 11.sp
+                    )
+                )
+            }
         }
         Spacer(modifier = GlanceModifier.width(10.dp))
         Box(modifier = GlanceModifier.defaultWeight()) {

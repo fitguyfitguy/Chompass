@@ -8,6 +8,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Home ring spans your whole expected day** (Android): with *Add Active* on, the calorie ring now runs from zero to your projected daily burn, sedentary goal plus your usual active burn, instead of starting at the base goal in the morning. The goal line reads against that expected total, and the caption shows how much of your usual active burn you have covered so far, turning a different color once you burn more than usual. The calorie widget shows the same expected goal and remaining.
+
 - **Reasoning effort for OpenRouter models** (Android + PWA): a new *Reasoning effort* option under Settings → AI & Speech controls the thinking budget of reasoning-capable models. Auto keeps the app default; Low to High trade speed and token cost for accuracy on hard photos or logs. Closes upstream [#194](https://github.com/apoorvdarshan/fud-ai/issues/194).
 
 - **A separate model for photos** (Android + PWA): *Vision model* under Settings → AI & Speech lets photos use a different model than text, per provider. Leave it on *same as Model* for today's behavior, or set a vision-capable model when your main model is text-only. Closes upstream [#195](https://github.com/apoorvdarshan/fud-ai/issues/195).
@@ -15,6 +17,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Morning budget no longer includes a guessed active burn** (Android): with *Add Active* on, the home ring and widget now use the active calories actually recorded so far, zero until your first workout or sync of the day, instead of substituting a whole-day estimate that inflated the budget and then dropped when the first measurement landed. The estimate still applies when no activity source is connected at all.
+
+- **Active calories match the day you're viewing** (Android): with Health Connect connected and *Add Active* on, the home ring's active burn and budget no longer show a previous day's value after switching days or reopening the app. Closes Codeberg [#22](https://codeberg.org/fitguy/Chompass/issues/22) by [@HattDroid](https://codeberg.org/HattDroid).
 
 ## [3.13.0] - 2026-08-14
 

@@ -199,6 +199,19 @@ class HomeCalorieDisplayTest {
     fun burnShade_arcEndIsBasePlusTypical() {
         assertEquals(2054, HomeCalorieDisplay.burnShadeArcEnd(baseGoal = 1494, typical = 560))
         assertEquals(1494, HomeCalorieDisplay.burnShadeArcEnd(1494, 0))
+        // Grow rule: once live burn exceeds the norm, the arc end becomes base + live.
+        assertEquals(2054, HomeCalorieDisplay.burnShadeArcEnd(1494, 560, live = 380))
+        assertEquals(2394, HomeCalorieDisplay.burnShadeArcEnd(1494, 560, live = 900))
+    }
+
+    @Test
+    fun expectedTarget_growsOnlyPastTypical() {
+        assertEquals(2054, HomeCalorieDisplay.expectedTarget(baseGoal = 1494, typical = 560, live = 0))
+        assertEquals(2054, HomeCalorieDisplay.expectedTarget(1494, 560, live = 380))
+        assertEquals(2394, HomeCalorieDisplay.expectedTarget(1494, 560, live = 900))
+        assertEquals(1494, HomeCalorieDisplay.expectedTarget(1494, 0, 0))
+        // The measured-0 morning still shows the projected day: base + typical.
+        assertEquals(2600, HomeCalorieDisplay.expectedTarget(1800, 800, 0))
     }
 
     @Test
@@ -207,6 +220,8 @@ class HomeCalorieDisplayTest {
         assertEquals(0.818f, HomeCalorieDisplay.burnShadeEatenFraction(1680, 1494, 560), 0.001f)
         assertEquals(1f, HomeCalorieDisplay.burnShadeEatenFraction(9_999, 1494, 560), 0.001f)
         assertEquals(0f, HomeCalorieDisplay.burnShadeEatenFraction(0, 1494, 560), 0.001f)
+        // Over-typical live burn grows the scale, so the same eaten amount reads lower.
+        assertEquals(0.702f, HomeCalorieDisplay.burnShadeEatenFraction(1680, 1494, 560, live = 900), 0.001f)
     }
 
     @Test
@@ -223,12 +238,19 @@ class HomeCalorieDisplayTest {
             HomeCalorieDisplay.burnShadeLiveFraction(base, live = typical, typical = typical),
             0.001f,
         )
-        // Over typical: live extends past the typical zone, still under the full ring.
+        // Over typical: the arc end grows with live, so the live tip lands exactly
+        // at the (grown) ring end while the typical zone shrinks relative to it.
         val over = HomeCalorieDisplay.burnShadeLiveFraction(base, live = 900, typical = typical)
-        assertTrue(over > typicalFrac)
+        val overTypicalFrac = HomeCalorieDisplay.burnShadeTypicalFraction(base, typical, live = 900)
+        assertTrue(over > overTypicalFrac)
         assertTrue(over < 1f)
-        // Live equal to the full arc end (base + typical) = the whole ring.
-        assertEquals(1f, HomeCalorieDisplay.burnShadeLiveFraction(base, live = base + typical, typical = typical), 0.001f)
+        // Live equal to the old fixed arc end (base + typical) no longer fills the
+        // ring: the end has grown past it to base + live.
+        assertEquals(
+            2054f / 3548f,
+            HomeCalorieDisplay.burnShadeLiveFraction(base, live = base + typical, typical = typical),
+            0.001f,
+        )
     }
 
     @Test

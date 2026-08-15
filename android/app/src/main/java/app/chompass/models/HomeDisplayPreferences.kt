@@ -220,47 +220,58 @@ object HomeCalorieDisplay {
     // ── Burn shade geometry (drawing only; never budget math) ─────────────
 
     /**
-     * Visual arc end for the hero's burn shades: the projected daily total burn,
-     * sedentary base + the day's active norm. In ADD_ACTIVE with measured data
-     * this equals the measured TDEE (basal + 14-day active average); with the
-     * PAL estimate it equals the profile TDEE. The arc is fixed by the norm so
-     * live burn can grow past it toward the full ring on high-activity days.
+     * Display-only expected-day target for ADD_ACTIVE: the sedentary base plus
+     * the larger of the day's active norm (typical) and the live burn. The hero
+     * arc end, goal line, and remaining all read against this, so a morning
+     * with no measured burn yet shows the projected day (base + typical) and
+     * the target grows only when live burn exceeds typical. The budget
+     * (base + live) is unchanged; in STATIC the target is the base goal.
      */
-    fun burnShadeArcEnd(baseGoal: Int, typical: Int): Int =
-        (baseGoal + typical.coerceAtLeast(0)).coerceAtLeast(0)
+    fun expectedTarget(baseGoal: Int, typical: Int, live: Int): Int =
+        (baseGoal + maxOf(typical, live).coerceAtLeast(0)).coerceAtLeast(0)
+
+    /**
+     * Visual arc end for the hero's burn shades: the expected-day target
+     * [expectedTarget]. With measured data the typical is the 14-day active
+     * average (basal + average = measured TDEE); with the PAL estimate it is
+     * the profile TDEE. The arc end grows with live burn once it exceeds the
+     * norm, so the live tip always lands at the ring end on high-activity days.
+     */
+    fun burnShadeArcEnd(baseGoal: Int, typical: Int, live: Int = 0): Int =
+        expectedTarget(baseGoal, typical, live)
 
     /** Eaten fill fraction on the shade arc (single energy scale, 0..1). */
-    fun burnShadeEatenFraction(eaten: Int, baseGoal: Int, typical: Int): Float {
-        val end = burnShadeArcEnd(baseGoal, typical)
+    fun burnShadeEatenFraction(eaten: Int, baseGoal: Int, typical: Int, live: Int = 0): Float {
+        val end = burnShadeArcEnd(baseGoal, typical, live)
         if (end <= 0) return 0f
         return (eaten.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     }
 
     /** Fraction of the shade arc at which the sedentary base ends (active zone starts). */
-    fun burnShadeBaseFraction(baseGoal: Int, typical: Int): Float {
-        val end = burnShadeArcEnd(baseGoal, typical)
+    fun burnShadeBaseFraction(baseGoal: Int, typical: Int, live: Int = 0): Float {
+        val end = burnShadeArcEnd(baseGoal, typical, live)
         if (end <= 0) return 0f
         return (baseGoal.toFloat() / end).coerceIn(0f, 1f)
     }
 
     /** Fraction of the shade arc covered by the typical active zone. */
-    fun burnShadeTypicalFraction(baseGoal: Int, typical: Int): Float {
-        val end = burnShadeArcEnd(baseGoal, typical)
+    fun burnShadeTypicalFraction(baseGoal: Int, typical: Int, live: Int = 0): Float {
+        val end = burnShadeArcEnd(baseGoal, typical, live)
         if (end <= 0) return 0f
         return (typical.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     }
 
-    /** Fraction of the shade arc covered by live active burn (extends past the
-     *  typical zone toward the full ring when over-typical). */
+    /** Fraction of the shade arc covered by live active burn: the tip lands at
+     *  the ring end exactly when live burn reaches the (grown) arc end. */
     fun burnShadeLiveFraction(baseGoal: Int, live: Int, typical: Int): Float {
-        val end = burnShadeArcEnd(baseGoal, typical)
+        val end = burnShadeArcEnd(baseGoal, typical, live)
         if (end <= 0) return 0f
         return (live.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     }
 
     /** Fraction of the shade arc covered by resting (basal) burn so far. */
-    fun burnShadeRestingFraction(restingKcal: Int, baseGoal: Int, typical: Int): Float {
-        val end = burnShadeArcEnd(baseGoal, typical)
+    fun burnShadeRestingFraction(restingKcal: Int, baseGoal: Int, typical: Int, live: Int = 0): Float {
+        val end = burnShadeArcEnd(baseGoal, typical, live)
         if (end <= 0) return 0f
         return (restingKcal.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     }

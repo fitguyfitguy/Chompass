@@ -54,6 +54,16 @@ data class WidgetSnapshot(
     val gaugeBaseCalorieGoal: Int? = null,
     /** [ActiveCalorieSource.storageKey] for today's active burn layer. */
     val activeCalorieSource: String? = null,
+    /**
+     * Display-only expected-day target in ADD_ACTIVE (base + the larger of the
+     * active norm and live burn), mirroring the hero's goal line. Null when the
+     * presentation is inactive: STATIC mode, estimate/manual-only days without
+     * a measured source, and snapshots written by older builds (fall back to
+     * [resolvedEffectiveCalorieGoal]).
+     */
+    val displayGoalTarget: Int? = null,
+    /** The day's active norm backing [displayGoalTarget] (14-day measured average, else PAL estimate). */
+    val activeBurnTypical: Int? = null,
     val stepsToday: Long? = null,
     val stepGoal: Int? = null,
     /** Defaults preserve decoding of snapshots written before the Water widget. */
@@ -95,24 +105,22 @@ data class WidgetSnapshot(
     val resolvedEffectiveCalorieGoal: Int
         get() = effectiveCalorieGoal ?: calorieGoal
 
+    val resolvedDisplayGoalTarget: Int
+        get() = displayGoalTarget ?: resolvedEffectiveCalorieGoal
+
     val caloriesRemaining: Int
-        get() = HomeCalorieDisplay.remaining(
-            resolvedEffectiveCalorieMode,
-            calories,
-            resolvedGaugeBaseGoal,
-            activeCaloriesToday ?: 0
-        )
+        get() = (resolvedDisplayGoalTarget - calories).coerceAtLeast(0)
 
     val proteinRemaining: Double get() = maxOf(0.0, proteinGoal.toDouble() - protein)
     val carbsRemaining: Double get() = maxOf(0.0, carbsGoal.toDouble() - carbs)
     val fatRemaining: Double get() = maxOf(0.0, fatGoal.toDouble() - fat)
+
     val calorieProgress: Double
-        get() = HomeCalorieDisplay.progressRatio(
-            resolvedEffectiveCalorieMode,
-            calories,
-            resolvedGaugeBaseGoal,
-            activeCaloriesToday ?: 0
-        ).toDouble()
+        get() {
+            val goal = resolvedDisplayGoalTarget
+            if (goal <= 0) return 0.0
+            return (calories.toDouble() / goal).coerceIn(0.0, 1.0)
+        }
     val proteinProgress: Double get() = if (proteinGoal > 0) minOf(1.0, protein / proteinGoal) else 0.0
     val carbsProgress: Double get() = if (carbsGoal > 0) minOf(1.0, carbs / carbsGoal) else 0.0
     val fatProgress: Double get() = if (fatGoal > 0) minOf(1.0, fat / fatGoal) else 0.0

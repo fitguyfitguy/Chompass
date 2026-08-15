@@ -379,9 +379,13 @@ open class MainActivity : ComponentActivity() {
         val seedBodyMetricsTwoYears: Boolean = false,
         val seedKetoSettings: Boolean = false,
         val seedActiveCalories: Boolean = false,
-        val activeTodayOverride: Int = 0,
+        /** Null = extra absent; Int = explicit today override (0 = measured-zero morning). */
+        val activeTodayOverride: Int? = null,
         val setGaugeMode: String = "",
         val setShowSteps: Boolean = false,
+        /** Null = extra absent; Boolean = explicit on/off for the STATIC active caption. */
+        val setShowActiveCalories: Boolean? = null,
+        val clearDebugActivity: Boolean = false,
         /** Null = extra absent; Boolean = explicit on/off for the debug hero-arc A/B. */
         val setShowRestingShade: Boolean? = null,
         val seedOverGoal: Boolean = false,
@@ -413,9 +417,16 @@ open class MainActivity : ComponentActivity() {
             seedBodyMetricsTwoYears = intent.getBooleanExtra("seed_body_metrics_2y", false),
             seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
             seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
-            activeTodayOverride = intent.getIntExtra("active_today_override", 0),
+            activeTodayOverride = intent.getIntExtra("active_today_override", Int.MIN_VALUE)
+                .takeIf { it != Int.MIN_VALUE },
             setGaugeMode = intent.getStringExtra("set_gauge_mode") ?: "",
             setShowSteps = intent.getBooleanExtra("set_show_steps", false),
+            setShowActiveCalories = if (intent.hasExtra("set_show_active_calories")) {
+                intent.getBooleanExtra("set_show_active_calories", false)
+            } else {
+                null
+            },
+            clearDebugActivity = intent.getBooleanExtra("clear_debug_activity", false),
             setShowRestingShade = if (intent.hasExtra("set_show_resting_shade")) {
                 intent.getBooleanExtra("set_show_resting_shade", false)
             } else {
@@ -450,6 +461,8 @@ open class MainActivity : ComponentActivity() {
         }
         if (actions.setGaugeMode.isNotEmpty()) intent.removeExtra("set_gauge_mode")
         if (actions.setShowSteps) intent.removeExtra("set_show_steps")
+        if (actions.setShowActiveCalories != null) intent.removeExtra("set_show_active_calories")
+        if (actions.clearDebugActivity) intent.removeExtra("clear_debug_activity")
         if (actions.setShowRestingShade != null) intent.removeExtra("set_show_resting_shade")
         if (actions.seedOverGoal) intent.removeExtra("seed_over_goal")
         if (actions.restoreRealData) intent.removeExtra("restore_real_data")
@@ -483,6 +496,7 @@ open class MainActivity : ComponentActivity() {
         app: ChompassApp,
     ) {
         if (actions == DebugIntentActions()) return
+        Log.d(PHOTO_IMPORT_TAG, "Debug extras: $actions")
         lifecycleScope.launch {
             if (actions.resetOnboarding) {
                 app.container.prefs.setOnboardingCompleted(false)
@@ -493,12 +507,22 @@ open class MainActivity : ComponentActivity() {
             if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
             if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
             if (actions.seedActiveCalories) {
-                container.testDataSeeder.seedActiveCalories(
-                    actions.activeTodayOverride.takeIf { it > 0 }
-                )
+                runCatching { container.testDataSeeder.seedActiveCalories(actions.activeTodayOverride) }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedActiveCalories failed", it) }
             }
-            if (actions.setGaugeMode.isNotEmpty()) container.testDataSeeder.setGaugeMode(actions.setGaugeMode)
+            if (actions.setGaugeMode.isNotEmpty()) {
+                runCatching { container.testDataSeeder.setGaugeMode(actions.setGaugeMode) }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "setGaugeMode failed", it) }
+            }
             if (actions.setShowSteps) container.testDataSeeder.setShowSteps(true)
+            actions.setShowActiveCalories?.let {
+                runCatching { container.testDataSeeder.setShowActiveCalories(it) }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "setShowActiveCalories failed", it) }
+            }
+            if (actions.clearDebugActivity) {
+                runCatching { container.testDataSeeder.clearDebugActivity() }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "clearDebugActivity failed", it) }
+            }
             actions.setShowRestingShade?.let { container.testDataSeeder.setShowRestingShade(it) }
             if (actions.seedOverGoal) container.testDataSeeder.seedOverGoal()
             if (actions.restoreRealData) container.testDataSeeder.restore()
@@ -536,6 +560,7 @@ open class MainActivity : ComponentActivity() {
                     container.health,
                 )
             }
+            Log.d(PHOTO_IMPORT_TAG, "debug actions complete")
         }
     }
 }

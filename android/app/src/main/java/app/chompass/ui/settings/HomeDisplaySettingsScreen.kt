@@ -151,20 +151,25 @@ fun HomeDisplaySettingsScreen(
                 }
             }
 
-            item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
-                    Column {
-                        ToggleRow(
-                            label = stringResource(R.string.home_display_show_active_calories),
-                            checked = display.showActiveCalories,
-                            onChange = vm::setHomeShowActiveCalories,
-                        )
-                        Text(
-                            stringResource(R.string.home_display_show_active_calories_desc),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                        )
+            // With Add Active the burn presentation is intrinsic to the gauge
+            // (expected-day arc, caption, budget sheet), so this toggle only
+            // controls the STATIC "N active" caption.
+            if (display.calorieDisplayMode == HomeCalorieDisplayMode.STATIC) {
+                item {
+                    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
+                        Column {
+                            ToggleRow(
+                                label = stringResource(R.string.home_display_show_active_calories),
+                                checked = display.showActiveCalories,
+                                onChange = vm::setHomeShowActiveCalories,
+                            )
+                            Text(
+                                stringResource(R.string.home_display_show_active_calories_desc),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                            )
+                        }
                     }
                 }
             }
