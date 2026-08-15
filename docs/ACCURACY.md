@@ -33,7 +33,7 @@ Those “image + short note” trials are **mixed**: on JFB with free Gemma, tit
 ingredient names (no quantities) did **not** beat photo-only (~42–46% WMAPE vs ~42%
 image-only). On Nutrition5k and ACETADA with Flash Lite, **specific item names**
 helped (N5k 37.4% → 30.6%; ACETADA research-only L2 reached 15.0% WMAPE / 87% ±20%).
-A dedicated **vague quantity note** condition (**Lq** — e.g. “large plate of …”,
+A dedicated **vague quantity note** condition (**Lq**: e.g. “large plate of …”,
 “a couple eggs…”, no exact grams) on Flash Lite clearly beats image-only on both
 JFB-50 (**35.9% → 25.3%** WMAPE, ±20% **40% → 52%**) and N5k-50 (**32.6% → 27.6%**).
 Meal-title-only L1 stays weak. Qualitative size chips (bucket) on N5k help modestly
@@ -41,7 +41,7 @@ but do not beat Lq. The same Lq strings scored as **typed text only** (no photo)
 match image+Lq within noise on Flash Lite (**24.9%** / **52%**); a multi-model
 bake-off puts Gemini 3.6 Flash at **22.7%** / **68%** and DeepSeek (text-only
 model) at **23.5%** / **62%**. Quantity language is the lever; the photo adds
-almost nothing once it is present — still far from typed grams (~6% WMAPE). See
+almost nothing once it is present: still far from typed grams (~6% WMAPE). See
 [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md)
 § Photo-adjacent entry matrix and § Text-only vague-quantity bake-off.
 Native video input on a Nutrition5k turntable subset also lost to a still image
@@ -81,7 +81,7 @@ The production prompts in [`FoodAnalysisService.kt`](../android/app/src/main/jav
 were rewritten and re-benchmarked (2026-07-24) after the harness found the old
 wording never reliably elicited a `grams_per_unit` value for typed entries.
 Without that, AI-suggested serving units (e.g. "2 slices") were silently unusable
-on essentially every text-entry response. The rewritten prompt fixes that (40/41
+on nearly every text-entry response. The rewritten prompt fixes that (40/41
 usable in the eval), keeps the same macro accuracy, and does it in about half
 the prompt size.
 
@@ -89,7 +89,7 @@ A **portion clarification** feature is in progress based on a simulated eval:
 injecting a ground-truth portion answer into the photo prompt (as a stand-in for
 a one-tap "how much was on the plate?" chip) cut photo WMAPE by **15 percentage
 points** (35.9% → 22.8%) and raised the ±20%-accurate rate by 12 points, on the
-same 50-photo set. That result is why the portion-chip UX is next — quantity in
+same 50-photo set. That result is why the portion-chip UX is next: quantity in
 the input is what moves macros, whether typed grams or a tapped chip.
 
 ## Caveats
@@ -98,8 +98,8 @@ the input is what moves macros, whether typed grams or a tapped chip.
   a live production accuracy monitor. Actual results vary by model, photo
   quality, and food type.
 - The strong text numbers are portioned FNDDS strings; photo numbers are mostly
-  JFB plated meals; image+note also covers Nutrition5k and research-only ACETADA
-  — not the same meal typed two ways.
+  JFB plated meals; image+note also covers Nutrition5k and research-only ACETADA;
+  not the same meal typed two ways.
 - BYOK means your accuracy depends on which provider or model you choose. The
   figures above are per-model, not a single "Chompass accuracy" number.
 - On-device Gemma 4 (Android, opt-in) is smaller than cloud models and generally

@@ -100,7 +100,7 @@ partial composite, not a true total).
 | `reasoning_tokens` | From `usage.completion_tokens_details` when present |
 | `cost` | OpenRouter credit cost for the request (when present) |
 | `sum_*` / `mean_*` / `cache_hit_rate` | Aggregated into `summary.csv` / `summary.json` (`cache_hit_rate` = sum cached / sum prompt) |
-| `micro_wmape` | Weighted MAPE across all micronutrients with GT present (separate sum from macro `wmape` — mixing mg/mcg/g-scale nutrients into one blended number would be meaningless) |
+| `micro_wmape` | Weighted MAPE across all micronutrients with GT present (separate sum from macro `wmape`: mixing mg/mcg/g-scale nutrients into one blended number would be meaningless) |
 | `mae_micro_<field>` / `mape_micro_<field>` / `n_micro_<field>` | Per-nutrient MAE/MAPE and sample count (only samples with non-null GT *and* non-null prediction count) |
 | `presence_rate_<field>` | Fraction of parsed samples where the model returned a non-null value for that nutrient, independent of GT availability |
 
@@ -124,7 +124,7 @@ Paired manifests share the same IDs; only user `text` differs. Shared helper:
 | Level | User `text` | JFB | Nutrition5k | NutritionVerse-Real | ACETADA |
 |-------|-------------|-----|-------------|---------------------|---------|
 | L0 | absent (image only) | `jfb.jsonl` | `n5k.jsonl` | `nvreal.jsonl` | `acetada.jsonl` |
-| L1 | meal title / coarse label | meal name | *(none — dish IDs only)* | synthesized from food types | `meal_type` (Breakfast/Lunch/Dinner) |
+| L1 | meal title / coarse label | meal name | *(none: dish IDs only)* | synthesized from food types | `meal_type` (Breakfast/Lunch/Dinner) |
 | L2 | ingredient / item names, no qty | ingredient names | ingredient names | food-type names | dietitian food-item names |
 
 ```bash
@@ -142,7 +142,7 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --out docs/benchmarks/food_accuracy/results/image_text_ab/l1_meal_name
 ```
 
-Compare L0 vs L1 vs L2 with `compare_runs.py`. **ACETADA / NutritionVerse are non-commercial** — research numbers only, not product accuracy claims.
+Compare L0 vs L1 vs L2 with `compare_runs.py`. **ACETADA / NutritionVerse are non-commercial**: research numbers only, not product accuracy claims.
 
 Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatically.
 
@@ -161,8 +161,8 @@ Loads `OPENROUTER_TOKEN` from repo-root [`.env.local`](../.env.local) automatica
 
 | When | Behavior |
 |------|----------|
-| **New process / `run_eval.py` start** | Yes — pools are built from a **fresh** OpenRouter models list. Newly published free models appear; cancelled / non-free / removed models drop out. |
-| **Mid-run (same process)** | No refresh — the pool is cached for the lifetime of that provider instance. A multi-hour eval will not pick up catalog changes until you restart (or call `refresh_pools()`). |
+| **New process / `run_eval.py` start** | Yes: pools are built from a **fresh** OpenRouter models list. Newly published free models appear; cancelled / non-free / removed models drop out. |
+| **Mid-run (same process)** | No refresh: the pool is cached for the lifetime of that provider instance. A multi-hour eval will not pick up catalog changes until you restart (or call `refresh_pools()`). |
 | **Inspect anytime** | `list_nofud_free_pool.py` always hits the live API. |
 
 So: **yes, it finds newly added free models and drops cancelled ones across runs**; it does **not** continuously re-poll during a single long eval.
@@ -180,7 +180,7 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --manifest docs/benchmarks/food_accuracy/manifest/eval_text.jsonl \
   --limit 10
 
-# Stock OpenRouter free router — not for accuracy benches
+# Stock OpenRouter free router: not for accuracy benches
 uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model openrouter/free ...
 ```
@@ -238,7 +238,7 @@ See also [`docs/benchmarks/food_accuracy/README.md`](benchmarks/food_accuracy/RE
 
 ### Nutrition5k
 
-`download_nutrition5k.py` always fetches dish metadata CSVs from the GitHub repo. With `--limit N` and `gsutil` on PATH, it downloads overhead RGB frames for test-split dishes into `data/nutrition5k/imagery/realsense_overhead/` and writes `data/manifests/n5k.jsonl` plus **`n5k_image_text_l2.jsonl`** (ingredient names only — no natural meal titles, so no L1).
+`download_nutrition5k.py` always fetches dish metadata CSVs from the GitHub repo. With `--limit N` and `gsutil` on PATH, it downloads overhead RGB frames for test-split dishes into `data/nutrition5k/imagery/realsense_overhead/` and writes `data/manifests/n5k.jsonl` plus **`n5k_image_text_l2.jsonl`** (ingredient names only: no natural meal titles, so no L1).
 
 Full Nutrition5k archive is ~181 GB; do not commit images.
 
@@ -248,9 +248,9 @@ fetches the aligned 16-bit RealSense `depth_raw.png` (mm) from the same overhead
 as the RGB still; `--with-video[=CAMERA]` fetches one fixed turntable camera's raw
 `camera_{A..D}.h264` clip from `imagery/side_angles/{dish_id}/` (decode with
 `ffmpeg -i camera_A.h264 frame_%03d.jpeg`). Both attach a repo-relative path into the
-sample's `extra` dict (`depth_path`, `video_path` — see
+sample's `extra` dict (`depth_path`, `video_path`: see
 `docs/benchmarks/food_accuracy/manifest/schema.md`). No camera calibration/intrinsics
-file is published for this dataset — `depth_volume_eval.py` uses a nominal RealSense
+file is published for this dataset: `depth_volume_eval.py` uses a nominal RealSense
 D435 640x480 calibration as a documented approximation, not per-dish calibration.
 
 ```bash
@@ -269,7 +269,7 @@ uv run python docs/benchmarks/food_accuracy/download_nutritionverse_real.py \
   --data-dir docs/benchmarks/food_accuracy/data/nutritionverse_real --limit 50
 ```
 
-Writes `nvreal.jsonl` + L1/L2. **CC BY-NC-SA 4.0** — research only. Default keeps one
+Writes `nvreal.jsonl` + L1/L2. **CC BY-NC-SA 4.0**: research only. Default keeps one
 camera angle per dish (`--all-angles` to include every view).
 
 ### ACETADA
@@ -281,7 +281,7 @@ uv run python docs/benchmarks/food_accuracy/download_acetada.py --limit 50
 Pulls the HF CSV via HTTP range from the public ~4.9 GB ZIP (no full archive
 required), then selectively extracts before-meal JPEGs for the limited split.
 Macros are **served (before-meal)** amounts rescaled from dietitian consumed
-labels. L1 = `meal_type`; L2 = food-item names. **CC BY-NC 4.0** — research only.
+labels. L1 = `meal_type`; L2 = food-item names. **CC BY-NC 4.0**: research only.
 
 ### FNDDS text (expand seed set)
 
@@ -295,16 +295,16 @@ Requires downloading FNDDS CSV from USDA (script uses the public zip URL).
 
 ## License notes
 
-- **Nutrition5k, JFB:** CC BY 4.0 — OK for research and commercial adaptation with attribution.
-- **ACETADA, NutritionVerse-Real, MM-Food:** Non-commercial — do not use for product accuracy claims.
-- **Open Food Facts:** ODbL — share-alike if you redistribute derived DB.
+- **Nutrition5k, JFB:** CC BY 4.0: OK for research and commercial adaptation with attribution.
+- **ACETADA, NutritionVerse-Real, MM-Food:** Non-commercial: do not use for product accuracy claims.
+- **Open Food Facts:** ODbL: share-alike if you redistribute derived DB.
 - **USDA FNDDS:** Public domain / US government work.
 
 ## Out of scope (v1)
 
 - On-device LiteRT scoring (phase 2: export winning image subset to debug fixtures)
 - Nutrition-label OCR eval track
-- Micronutrient scoring for **image** datasets (JFB / Nutrition5k) — neither
+- Micronutrient scoring for **image** datasets (JFB / Nutrition5k): neither
   has micronutrient values in its source data; deriving approximate GT via
   ingredient-name matching to USDA/OFF is a distinct, larger follow-up, not
   attempted here. Text (FNDDS) micronutrient scoring is implemented.

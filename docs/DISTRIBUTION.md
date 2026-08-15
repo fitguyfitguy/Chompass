@@ -44,7 +44,7 @@ The live listing metadata is mirrored in [`fdroid/app.chompass.yml`](fdroid/app.
 
 - **Tags ≤ v1.14.1:** Gradle task `fdroidRelease` (historical product flavor).
 - **Tags after the flavor removal:** Gradle metadata `yes` (runs `assembleRelease`; not a flavor name)
-- **Inclusion:** merged via [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984); the listing is live. F-Droid `checkupdates` opens version-update MRs automatically — never open an inclusion/update MR yourself. Update `docs/fdroid/app.chompass.yml` in this repo only; the maintainer may help bot MRs via the GitLab web GUI.
+- **Inclusion:** merged via [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984); the listing is live. F-Droid `checkupdates` opens version-update MRs automatically: never open an inclusion/update MR yourself. Update `docs/fdroid/app.chompass.yml` in this repo only; the maintainer may help bot MRs via the GitLab web GUI.
 - **Builds entry:** replace the previous version with the new one; set `commit:` to the full release commit hash (not `vX.Y.Z`).
 
 Keep `CurrentVersion` / `CurrentVersionCode` in sync with `android/app/build.gradle.kts` (`devenv tasks run release:check-metadata`). Full workflow: [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md).

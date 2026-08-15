@@ -30,7 +30,7 @@ docs/benchmarks/food_accuracy/
 ## Constituents gate (research)
 
 ```bash
-# Candidate prompt only — do not ship until score_constituents.py passes
+# Candidate prompt only: do not ship until score_constituents.py passes
 uv run --with httpx python docs/benchmarks/food_accuracy/run_eval.py \
   --manifest docs/benchmarks/food_accuracy/manifest/eval_constituents_text.jsonl \
   --prompt production_text_constituents \
@@ -62,9 +62,9 @@ uv run python docs/benchmarks/food_accuracy/compare_runs.py \
 
 ## Grounded metrics (identity / source / portion)
 
-See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md) (**WIP — not production**; UI disabled until readiness checklist).
+See [`docs/GROUNDED_ENTRY.md`](../../docs/GROUNDED_ENTRY.md) (**WIP: not production**; UI disabled until readiness checklist).
 
-Latest text-42 Flash Lite tool-loop (2026-07-22 post-roadmap): WMAPE **12.8%** / ±20% **78.6%** / parse **100%** — better than the prior ~18% grounded run, still far behind single-shot (~4.8–5.7% WMAPE). Keep treating as research only.
+Latest text-42 Flash Lite tool-loop (2026-07-22 post-roadmap): WMAPE **12.8%** / ±20% **78.6%** / parse **100%**: better than the prior ~18% grounded run, still far behind single-shot (~4.8–5.7% WMAPE). Keep treating as research only.
 
 **Smoke (no network):**
 
@@ -135,7 +135,7 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
 | File | Items | Modality |
 |------|-------|----------|
 | `manifest/eval_text.jsonl` | 42 | Text (FNDDS seed + composites) |
-| `data/manifests/jfb.jsonl` | 50 default | Image L0 — no user text (after `download_jfb.py`) |
+| `data/manifests/jfb.jsonl` | 50 default | Image L0: no user text (after `download_jfb.py`) |
 | `data/manifests/jfb_image_text_l1.jsonl` | 50 | Image + meal title as user note |
 | `data/manifests/jfb_image_text_l2.jsonl` | 50 | Image + ingredient names as user note |
 | `data/manifests/jfb_image_text_lq.jsonl` | 50 | Image + vague quantity note (`build_image_text_lq.py`) |
@@ -197,7 +197,7 @@ uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --manifest docs/benchmarks/food_accuracy/data/manifests/jfb_image_text_lq.jsonl \
   --out docs/benchmarks/food_accuracy/results/entry_matrix/jfb_lq_flashlite
 
-# Bucket chips (N5k — requires mass_g)
+# Bucket chips (N5k: requires mass_g)
 uv run python docs/benchmarks/food_accuracy/run_eval.py \
   --provider openrouter --model google/gemini-3.5-flash-lite \
   --prompt compact_clarify_portion_bucket --sleep 2 --retries 2 \
@@ -233,11 +233,11 @@ uv run python docs/benchmarks/food_accuracy/compare_runs.py \
   docs/benchmarks/food_accuracy/results/image_text_ab/l1_meal_name/summary.csv
 ```
 
-**Latest results (2026-07-22):** Best plate so far — `google/gemini-3.6-flash` L0 **32.3%** WMAPE / **50%** ±20%. Then gpt-4o-mini **34.5%**, Gemini 3.5 Flash-Lite **35.9%**, free Gemma/nofud ~**41–42%**. No `3.6-flash-lite` on OpenRouter (Lite = 3.5). See [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md).
+**Latest results (2026-07-22):** Best plate so far: `google/gemini-3.6-flash` L0 **32.3%** WMAPE / **50%** ±20%. Then gpt-4o-mini **34.5%**, Gemini 3.5 Flash-Lite **35.9%**, free Gemma/nofud ~**41–42%**. No `3.6-flash-lite` on OpenRouter (Lite = 3.5). See [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md).
 
 ## Image baseline
 
-Wide free-router image run on JFB (prefer **`nofud/free`** — no content-safety):
+Wide free-router image run on JFB (prefer **`nofud/free`**: no content-safety):
 
 ```bash
 uv run python docs/benchmarks/food_accuracy/download_jfb.py --limit 50
