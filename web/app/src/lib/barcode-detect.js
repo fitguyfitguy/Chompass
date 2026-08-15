@@ -12,7 +12,9 @@
  *   3. null — caller falls back to manual digit entry.
  */
 
-export const FORMATS = ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"];
+import { normalizeBarcodeCode } from "./chompass-core/barcode-code.js";
+
+export const FORMATS = ["ean_13", "ean_8", "upc_a", "upc_e", "code_128", "qr_code", "data_matrix"];
 
 /** Native format name → zxing-wasm BarcodeFormat name. */
 export const ZXING_FORMAT_MAP = {
@@ -21,7 +23,21 @@ export const ZXING_FORMAT_MAP = {
   upc_a: "UPCA",
   upc_e: "UPCE",
   code_128: "Code128",
+  qr_code: "QRCode",
+  data_matrix: "DataMatrix",
 };
+
+/**
+ * Prefer the first decoded text that normalizes to a product code (GTIN).
+ * Detector result order is unspecified; a frame may hold both an EAN and a 2D
+ * code (e.g. jar with EAN-13 + internal factory DataMatrix) — the normalizable
+ * one is the one OFF can resolve.
+ * @param {string[]} texts
+ * @returns {string | null}
+ */
+function pickNormalizable(texts) {
+  return texts.find((t) => normalizeBarcodeCode(t) != null) ?? texts[0] ?? null;
+}
 
 // Bump when the probe logic changes to invalidate cached verdicts.
 const PROBE_CACHE_KEY = "chompass.barcodeDetectorProbe.v2";
@@ -158,7 +174,7 @@ async function createWasmDetector() {
       ctx.drawImage(video, 0, 0);
       const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const results = await readBarcodes(image, { formats });
-      return results.length > 0 ? results[0].text : null;
+      return pickNormalizable(results.map((r) => r.text));
     },
   };
 }
@@ -215,7 +231,7 @@ export async function createDetector(onStatus = () => {}) {
         failures = 0;
         if (codes.length > 0) {
           emptySince = null;
-          return codes[0].rawValue;
+          return pickNormalizable(codes.map((c) => c.rawValue));
         }
         // Empty (no throw): Brave/Shields often stays here forever. Demote after
         // a grace period of ready video frames so aiming time isn't punished.
@@ -251,7 +267,7 @@ export async function detectFromImageData(imageData) {
   try {
     const engine = await ensureWasmReader();
     const results = await engine.readBarcodes(imageData, { formats: engine.formats });
-    return results.length > 0 ? results[0].text : null;
+    return pickNormalizable(results.map((r) => r.text));
   } catch {
     return null;
   }

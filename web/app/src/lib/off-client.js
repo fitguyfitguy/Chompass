@@ -4,20 +4,24 @@
 // size — mirrors Android OpenFoodFactsService.
 
 import { ensureServingUnits, normalizedOptions, heuristicOptions } from "./chompass-core/serving-units.js";
+import { normalizeBarcodeCode } from "./chompass-core/barcode-code.js";
 
 /**
- * @param {string} barcode
- * @returns {Promise<Record<string, unknown>|null>}
+ * @param {string} barcode raw decoded text (may be a GS1 / QR / URL form)
+ * @returns {Promise<Record<string, unknown>|null>} null when the text is not a
+ *   product code or the product is not in OFF (callers already handle null).
  */
 export async function lookupBarcode(barcode) {
+  const code = normalizeBarcodeCode(barcode);
+  if (!code) return null;
   const fields = "product_name,generic_name,brands,quantity,serving_size,serving_quantity,nutriments";
   const res = await fetch(
-    `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=${fields}`
+    `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${fields}`
   );
   if (!res.ok) throw new Error(`Open Food Facts lookup failed (${res.status})`);
   const data = await res.json();
   if (data.status !== 1 || !data.product) return null;
-  return mapProduct(data.product, barcode);
+  return mapProduct(data.product, code);
 }
 
 /**

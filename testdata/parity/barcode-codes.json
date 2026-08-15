@@ -1,0 +1,15 @@
+{
+  "cases": [
+    { "raw": "(01)09400597028233(15)260821(10)96735717", "expected": "9400597028233" },
+    { "raw": "0109400597028233152608211096735717", "expected": "9400597028233" },
+    { "raw": "9400597028233", "expected": "9400597028233" },
+    { "raw": "9339687206605", "expected": "9339687206605" },
+    { "raw": "9421011990608", "expected": "9421011990608" },
+    { "raw": "https://id.gs1.org/01/09400597028233?17=260821", "expected": "9400597028233" },
+    { "raw": "https://world.openfoodfacts.org/product/3017620422003", "expected": "3017620422003" },
+    { "raw": "1111201I", "expected": null },
+    { "raw": "https://brand.example.com/recipes", "expected": null },
+    { "raw": "", "expected": null },
+    { "raw": "9400597028234", "expected": null }
+  ]
+}

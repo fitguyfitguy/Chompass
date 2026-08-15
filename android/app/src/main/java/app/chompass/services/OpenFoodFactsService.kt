@@ -83,8 +83,12 @@ object OpenFoodFactsService {
         client: OkHttpClient = FoodAnalysisService.defaultClient,
         baseUrl: String = OFF_BASE_URL,
     ): FoodAnalysis = withContext(Dispatchers.IO) {
-        val code = barcode.trim()
-        if (code.isEmpty()) throw LookupException("That barcode could not be read. Try scanning it again.")
+        // 2D matrix codes (QR / DataMatrix) decode to GS1 / URL text, not a bare
+        // EAN: normalize before the cache check so all callers (camera, photo
+        // entry, grounded-entry tools) resolve 2D codes the same way. null = not
+        // a product code (internal factory codes, brand URLs) — no network call.
+        val code = BarcodeCodeNormalizer.normalize(barcode)
+            ?: throw LookupException("That barcode could not be read. Try scanning it again.")
 
         prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
 
