@@ -35,7 +35,7 @@
     printf 'sdk.dir=%s\n' "$ANDROID_HOME" > android/local.properties
     # Avoid hanging adb commands when Windows also runs adb on the shared WSL localhost.
     export ANDROID_ADB_SERVER_PORT=5038
-    # Reject Cursor/AI commit trailers (Co-authored-by: Cursor, Made-with: Cursor, …).
+    # Reject AI attribution commit trailers (Co-authored-by, Made-with, …).
     # Pin Codeberg maintainer identity for this clone (do not use global personal identity).
     if [[ -d .git ]]; then
       chmod +x scripts/git-hooks/* 2>/dev/null || true
@@ -156,7 +156,7 @@
       ls -lh "$OUT"
       echo "Backup: $OUT (local-only state; never committed)"
     '';
-    description = "Tar the local-only agent/triage state (docs/local, .cursor, .claude, .opencode, AGENTS.md, CLAUDE.md) into ~/chompass-backups; set BACKUP_DIR to override";
+    description = "Tar the local-only maintainer state (gitignored config dirs + notes) into ~/chompass-backups; set BACKUP_DIR to override";
   };
 
   tasks."benchmark:food-accuracy-smoke" = {
