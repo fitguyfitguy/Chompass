@@ -30,9 +30,11 @@ status is missing or stale, fix it (release checklist step 3).
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | devenv/Nix setup, SDK, first-time build |
 | [`RELEASE.md`](RELEASE.md) | Tag/publish runbook, token split, quota policy |
 | [`DISTRIBUTION.md`](DISTRIBUTION.md) | Single F-Droid/Codeberg build; `play` flavor disabled |
-| [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) | F-Droid listing (`app.chompass`): keep `docs/fdroid/app.chompass.yml` in sync |
+| [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) | F-Droid listing (`app.chompass`): keep [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) in sync |
 | [`PERFORMANCE.md`](PERFORMANCE.md) | Perf baseline capture (Windows adb) |
 | [`WEB_PRESENCE.md`](WEB_PRESENCE.md) | chompass.app site + outreach checklist |
+| [`fdroid/`](fdroid/) | F-Droid build metadata (`app.chompass.yml`), mirror of the live listing |
+| [`screenshots/`](screenshots/README.md) | Published feature screenshots (README, dark only) |
 
 ## Design & current state (read the Status line first)
 

@@ -1,7 +1,7 @@
 # Plan: demo hero: load optimization + Firefox reliability
 
 Status: **complete**; all phases landed and verified (2024-08). Living doc; re-open for follow-ups.
-Related: [`docs/DEMO_HERO_FIREFOX.md`](DEMO_HERO_FIREFOX.md) (open Firefox reload bug, now instrumented), [`docs/PERFORMANCE.md`](PERFORMANCE.md).
+Related: [`DEMO_HERO_FIREFOX.md`](../DEMO_HERO_FIREFOX.md) (open Firefox reload bug, now instrumented), [`PERFORMANCE.md`](../PERFORMANCE.md).
 
 ## Execution log
 
