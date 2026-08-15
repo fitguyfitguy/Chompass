@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.AlertDialog
@@ -285,6 +286,19 @@ internal fun ProviderStep(
         Spacer(Modifier.height(8.dp))
         Text(
             stringResource(R.string.onboarding_privacy_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(
+                when (provider) {
+                    AIProvider.ON_DEVICE -> R.string.onboarding_privacy_note_ondevice
+                    AIProvider.OLLAMA -> R.string.onboarding_privacy_note_ollama
+                    else -> R.string.onboarding_privacy_note_cloud
+                }
+            ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -725,6 +739,68 @@ internal fun DisclaimersStep() {
                     )
                     Text(
                         stringResource(R.string.onboarding_safety_settings_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                Modifier.padding(14.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        stringResource(R.string.onboarding_privacy_title),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        stringResource(R.string.onboarding_privacy_cloud_title),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                    Text(
+                        stringResource(R.string.onboarding_privacy_cloud_lead),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                    listOf(
+                        R.string.onboarding_privacy_cloud_food,
+                        R.string.onboarding_privacy_cloud_whatif,
+                        R.string.onboarding_privacy_cloud_coach,
+                        R.string.onboarding_privacy_cloud_goals
+                    ).forEach { res ->
+                        Text(
+                            stringResource(res),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        )
+                    }
+                    Text(
+                        stringResource(R.string.onboarding_privacy_ondevice_title),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
+                    Text(
+                        stringResource(R.string.onboarding_privacy_ondevice_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
                     )
