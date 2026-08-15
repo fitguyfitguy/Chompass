@@ -1,0 +1,3 @@
+• Weather input for the dynamic water goal: Open-Meteo city forecast as a second temperature source, no account or location permission; manual °C stays the fallback
+• Body-measurement trend plots on Progress: one card per site with current value, net change, and trend line; off by default, enable in Customize progress
+• Fixes: "What if?" popup scrolls when the suggestion is long

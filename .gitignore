@@ -58,7 +58,6 @@ release-screenshots/
 # Local dev screenshots (adb captures, not published)
 /screenshots/
 .env.local
-scripts/capture_android_perf_baseline.sh
 Fud-Food-Diary-2026-04-27_to_2026-07-08.json
 FudAI-Weight-Import.csv
 FudAI-Weight-Import.json
@@ -94,4 +93,3 @@ Fud-Food-Diary-2026-04-27_to_2026-07-22.cleaned.json
 # literal cwd-relative directories (e.g. C:\Users\...\lighthouse.*)
 /C\:\\*/
 scripts/_tmp_finish_3_6_0_publish.sh
-examples/*
