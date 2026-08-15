@@ -48,6 +48,13 @@ CLAUDE.md
 .forgejo/
 scripts/setup_codeberg_labels.sh
 
+# Local agent/triage workflow scripts (stay unversioned; docs/local + .cursor reference them)
+scripts/apply_codeberg_labels.sh
+scripts/fetch_codeberg_delta.sh
+scripts/fetch_upstream_delta.sh
+scripts/post_issue_reply.sh
+scripts/sync_agent_configs.sh
+
 # Release artifacts (published on Codeberg Releases)
 NoFUD-*.apk
 Chompass-*.apk
