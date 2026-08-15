@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONObject
 import java.net.URLEncoder
 import java.util.Locale
@@ -38,6 +39,19 @@ object OpenFoodFactsService {
 
     /** Backoff between retries (multiplied by 2^attempt: 400, 800 ms). */
     private const val QUERY_RETRY_BASE_DELAY_MS = 200L
+
+    /** Max attempts for a barcode lookup (OFF intermittently 503s, see #24). */
+    private const val LOOKUP_MAX_ATTEMPTS = 3
+
+    /** Backoff between barcode-lookup retries (multiplied by 2^attempt: 200, 400, 800 ms). */
+    private const val LOOKUP_RETRY_BASE_DELAY_MS = 200L
+
+    private const val NOT_FOUND_MESSAGE =
+        "Product not found in Open Food Facts. Scan the nutrition label instead."
+    private const val TROUBLE_MESSAGE =
+        "Open Food Facts is having trouble right now. Try again in a moment."
+    private const val UNEXPECTED_RESPONSE_MESSAGE =
+        "Open Food Facts returned an unexpected response."
 
     class LookupException(message: String) : Exception(message)
 
@@ -66,14 +80,15 @@ object OpenFoodFactsService {
     suspend fun lookup(
         barcode: String,
         prefs: PreferencesStore,
-        client: OkHttpClient = FoodAnalysisService.defaultClient
+        client: OkHttpClient = FoodAnalysisService.defaultClient,
+        baseUrl: String = OFF_BASE_URL,
     ): FoodAnalysis = withContext(Dispatchers.IO) {
         val code = barcode.trim()
         if (code.isEmpty()) throw LookupException("That barcode could not be read. Try scanning it again.")
 
         prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
 
-        val result = lookupNetwork(code, client)
+        val result = lookupNetwork(code, client, baseUrl)
         prefs.cacheBarcodeLookup(code, result)
         result
     }
@@ -225,30 +240,66 @@ object OpenFoodFactsService {
         return copy(score = score)
     }
 
-    private suspend fun lookupNetwork(code: String, client: OkHttpClient): FoodAnalysis = run {
+    /**
+     * Live barcode lookup against Open Food Facts (ODbL). Retries transient
+     * failures (429/5xx, network) with backoff; a 404 (product not in the
+     * database) and other 4xx are definitive and fail immediately with a
+     * distinct message, so "not found" no longer reads as a generic error
+     * (Codeberg #24).
+     */
+    internal suspend fun lookupNetwork(
+        code: String,
+        client: OkHttpClient,
+        baseUrl: String = OFF_BASE_URL,
+    ): FoodAnalysis = run {
         val encodedCode = URLEncoder.encode(code, "UTF-8")
-        val url = "https://world.openfoodfacts.org/api/v2/product/$encodedCode.json?fields=$FIELDS"
+        val url = "$baseUrl/api/v2/product/$encodedCode.json?fields=$FIELDS"
         val request = Request.Builder()
             .url(url)
             .addHeader("User-Agent", USER_AGENT)
             .build()
 
-        val raw = runCatching { client.newCall(request).execute() }
-            .getOrElse { throw LookupException("Barcode lookup failed: ${it.localizedMessage ?: "network error"}") }
-            .use { response ->
-                if (!response.isSuccessful) {
-                    throw LookupException("Open Food Facts returned an unexpected response.")
-                }
-                response.body?.string().orEmpty()
+        var lastNetworkError: String? = null
+        var attempt = 0
+        while (attempt < LOOKUP_MAX_ATTEMPTS) {
+            val outcome = runCatching { client.newCall(request).execute() }
+            val error = outcome.exceptionOrNull()
+            if (error == null) {
+                val parsed = outcome.getOrThrow().use { response -> parseLookupResponse(response, code) }
+                if (parsed != null) return@run parsed
+            } else {
+                lastNetworkError = error.localizedMessage ?: "network error"
             }
+            attempt++
+            if (attempt < LOOKUP_MAX_ATTEMPTS) {
+                delay(LOOKUP_RETRY_BASE_DELAY_MS * (1 shl attempt))
+            }
+        }
+        throw LookupException(
+            if (lastNetworkError != null) "Barcode lookup failed: $lastNetworkError"
+            else TROUBLE_MESSAGE
+        )
+    }
 
+    /**
+     * One lookup response. Returns the analysis on success, null when the
+     * response was transiently unusable (429/5xx, retry). 404 and other 4xx
+     * are definitive errors.
+     */
+    private fun parseLookupResponse(response: Response, code: String): FoodAnalysis? {
+        when {
+            response.code == 404 -> throw LookupException(NOT_FOUND_MESSAGE)
+            response.code == 429 || response.code >= 500 -> return null
+            !response.isSuccessful -> throw LookupException(UNEXPECTED_RESPONSE_MESSAGE)
+        }
+        val raw = response.body?.string().orEmpty()
         val json = runCatching { JSONObject(raw) }.getOrNull()
-            ?: throw LookupException("Open Food Facts returned an unexpected response.")
+            ?: throw LookupException(UNEXPECTED_RESPONSE_MESSAGE)
         val product = json.optJSONObject("product")
         if (json.optInt("status", 0) == 0 || product == null) {
-            throw LookupException("Product not found in Open Food Facts. Scan the nutrition label instead.")
+            throw LookupException(NOT_FOUND_MESSAGE)
         }
-        analysis(product, code)
+        return analysis(product, code)
     }
 
     /** Maps an Open Food Facts `product` object to [FoodAnalysis] (serving-scaled). */
