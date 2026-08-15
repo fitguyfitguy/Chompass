@@ -1,0 +1,32 @@
+# Commit hygiene guard: reject AI attribution trailers in pushed commit messages.
+# Mirrors scripts/git-hooks/commit-msg so commits made without the local hook
+# (web UI edits, machines without devenv) are caught at push time.
+name: Commit hygiene
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-attribution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reject AI attribution trailers
+        run: |
+          set -euo pipefail
+          RANGE="origin/main..HEAD"
+          if git log "$RANGE" --format='%b' 2>/dev/null | grep -qiE \
+            -e '^[[:space:]]*Co-authored-by:[[:space:]].*(Cursor|Claude|ChatGPT|Copilot|OpenAI|Anthropic)' \
+            -e '^[[:space:]]*Made-with:[[:space:]]*Cursor' \
+            -e '^[[:space:]]*Made with Cursor' \
+            -e '^[[:space:]]*Generated-by:[[:space:]].*(Cursor|Claude|Copilot)' \
+            -e '^[[:space:]]*Generated with (Cursor|Claude|Copilot)'
+          then
+            echo "::error::AI attribution trailer found in commit message(s) in range $RANGE"
+            echo "Remove Co-authored-by: <AI tool> / Made-with: <AI tool> trailers and retry."
+            exit 1
+          fi
+          echo "No AI attribution trailers in $RANGE"
