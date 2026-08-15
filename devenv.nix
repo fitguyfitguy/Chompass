@@ -122,6 +122,28 @@
     description = "List Codeberg release attachments and estimated total size";
   };
 
+  tasks."triage:status" = {
+    exec = ''
+      set -u
+      for pair in "own-tracker:docs/local/issue-triage-state.json" "upstream:docs/local/upstream-triage-state.json"; do
+        name="''${pair%%:*}"; file="''${pair#*:}"
+        if [[ ! -f "$file" ]]; then
+          echo "$name: no state file ($file) — never run?"
+          continue
+        fi
+        last=$(jq -r '.last_run // "?"' "$file")
+        if [[ -z "$last" || "$last" == "?" ]]; then
+          echo "$name: last run unknown ($file)"
+          continue
+        fi
+        days=$(( ( $(date -d "$last" +%s) - $(date +%s) ) / 86400 ))
+        if (( days < 0 )); then days=$(( -days )); fi
+        echo "$name: last run $last ($days day(s) ago)"
+      done
+    '';
+    description = "Report last issue/upstream triage run from docs/local state files (freshness check); use --show-output";
+  };
+
   tasks."benchmark:food-accuracy-smoke" = {
     exec = "./scripts/check_food_accuracy_smoke.sh";
     description = "Deterministic food-accuracy smoke (stub eval + grounded metrics + retrieval golden)";
