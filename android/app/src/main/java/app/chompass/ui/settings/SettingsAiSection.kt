@@ -34,6 +34,15 @@ internal fun SettingsAiSection(
 ) {
     SectionCard(title = stringResource(R.string.settings_section_ai)) {
                 SettingRow(stringResource(R.string.settings_ai_provider), stringResource(ui.selectedAI.displayNameRes), icon = Icons.Outlined.SmartToy) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
+                // Privacy disclosure per provider: cloud providers receive food/chat/
+                // profile data; only on-device Gemma 4 keeps everything local.
+                SettingFootnote(
+                    when (ui.selectedAI) {
+                        AIProvider.ON_DEVICE -> stringResource(R.string.settings_ai_privacy_ondevice)
+                        AIProvider.OLLAMA -> stringResource(R.string.settings_ai_privacy_ollama)
+                        else -> stringResource(R.string.settings_ai_privacy_cloud)
+                    }
+                )
                 HorizontalDivider()
                 SettingRow(stringResource(R.string.settings_ai_model), ui.selectedModel.ifEmpty { stringResource(R.string.settings_ai_model_unset) }, icon = Icons.Outlined.Tune) { onOpenSheet(SettingsSheet.AI_MODEL) }
                 // Vision-model slot: OpenAI-compatible hosts are where text-only

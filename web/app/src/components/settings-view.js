@@ -969,6 +969,9 @@ export class SettingsView extends HTMLElement {
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
           Keys are encrypted at rest with Web Crypto (AES-GCM) in IndexedDB, then sent only from your browser to the provider you choose. Not a Chompass server.
         </p>
+        <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
+          With a cloud provider, food photos, meal notes, Coach chat (including your profile and recent logs), and your profile when AI estimates goals (plan and adaptive goals) are sent to that provider. Only the on-device Gemma 4 models (Android) guarantee that nothing leaves your device; the web app always uses a cloud provider.
+        </p>
         <form class="entry-form" id="ai-key-form">
           <div class="field">
             <label for="ai-provider">Provider</label>

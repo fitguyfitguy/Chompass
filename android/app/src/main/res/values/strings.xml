@@ -977,6 +977,9 @@
     <string name="settings_on_device_model_ready">Downloaded</string>
     <string name="settings_on_device_model_not_downloaded">Not downloaded</string>
     <string name="settings_on_device_accuracy_footer">On-device models run locally for privacy. They are much smaller than cloud models (Gemini, GPT, Claude, etc.) and often misread portions, brand names, and photos. Enable Fallback Provider so a cloud model can retry when on-device fails.</string>
+    <string name="settings_ai_privacy_cloud">Food photos, notes, chat, and profile data are sent to this provider. Only the on-device Gemma 4 models keep everything on your phone.</string>
+    <string name="settings_ai_privacy_ondevice">Fully private: food analysis, “What if?”, and goal estimates run on this device. Nothing is sent to a server.</string>
+    <string name="settings_ai_privacy_ollama">Ollama runs on your own computer. Nothing is sent to a cloud provider.</string>
     <string name="settings_gemini_google_search">Google Search grounding</string>
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this. On Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
     <string name="settings_portion_clarify">Portion size check</string>
@@ -1229,6 +1232,9 @@
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System default</string>
     <string name="onboarding_privacy_note">No ads, no analytics, no accounts. Your food log and API keys stay on your device.</string>
+    <string name="onboarding_privacy_note_cloud">With a cloud provider, food photos, meal notes, chat, and profile data are sent to that provider. Only the on-device Gemma 4 models keep everything on your phone.</string>
+    <string name="onboarding_privacy_note_ondevice">Gemma 4 runs entirely on this device. Nothing you type or photograph is sent to a server.</string>
+    <string name="onboarding_privacy_note_ollama">Ollama runs on your own computer. Nothing is sent to a cloud provider.</string>
     <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log. Turn off Adaptive Goals in Settings to keep it fixed.</string>
     <string name="onboarding_feature_snap">Snap a photo. AI logs it.</string>
     <string name="onboarding_feature_coach">Coach that knows your data</string>
@@ -1576,6 +1582,15 @@
     <string name="onboarding_safety_settings_hint">You can review full Safety &amp; Medical guidance in Settings.</string>
     <string name="onboarding_accuracy_title">Accuracy disclaimer</string>
     <string name="onboarding_accuracy_body">Photo estimates and vague quantity labels (handful, cup, serving) are often inaccurate. App suggestions and especially AI/LLM output are estimates only, not medical facts. Verify important numbers yourself.</string>
+    <string name="onboarding_privacy_title">Privacy &amp; your AI provider</string>
+    <string name="onboarding_privacy_cloud_title">Cloud providers (Gemini, OpenAI, Claude, …)</string>
+    <string name="onboarding_privacy_cloud_lead">With a cloud provider, this data leaves your device to that provider:</string>
+    <string name="onboarding_privacy_cloud_food">Food photos and meal notes (food analysis)</string>
+    <string name="onboarding_privacy_cloud_whatif">“What if?” meal impact, including today’s logged diary totals</string>
+    <string name="onboarding_privacy_cloud_coach">Coach chat, including your profile and recent logs</string>
+    <string name="onboarding_privacy_cloud_goals">Your profile when AI estimates goals (plan, recalculate, adaptive goals)</string>
+    <string name="onboarding_privacy_ondevice_title">On-device Gemma 4 (fully private)</string>
+    <string name="onboarding_privacy_ondevice_body">Food analysis, “What if?”, and goal estimates run on this phone; nothing leaves it. Coach isn’t available on-device yet. The model download comes from Hugging Face.</string>
     <string name="settings_accuracy_title">Accuracy of estimates</string>
     <string name="settings_accuracy_body">Photo food estimates and vague portion labels are often wrong. Suggestions from the app and especially from AI models are not medical facts.</string>
     <string name="settings_waist_cm_format">Waist %1$.0f cm</string>

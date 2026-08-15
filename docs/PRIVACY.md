@@ -8,8 +8,8 @@ Chompass is an ad-free calorie tracker forked from [Fud AI](https://github.com/a
 - **No analytics** - No usage tracking, crash analytics, or telemetry SDKs are bundled.
 - **No accounts** - There is no sign-in or central user database. Optional **user-hosted sync** (WebDAV / sync JSON) is configured by you against your own server; Chompass does not operate a sync backend.
 - **Local storage** - Food logs, weight history, profile, and Coach chat are stored on your device (or in the browser for the PWA).
-- **Bring your own AI key** - API keys are encrypted at rest on your device before storage. Food analysis and Coach requests go from your device to the AI provider you choose, not through a Chompass server.
-- **On-Device (Private)** - On Android, optional Gemma 4 keeps food text and photo analysis on the device; nothing is uploaded for that path.
+- **Bring your own AI key** - API keys are encrypted at rest on your device before storage. AI requests go from your device to the provider you choose, not through a Chompass server. What each feature sends is listed in [AI data sharing by feature](#ai-data-sharing-by-feature).
+- **On-Device (Private)** - On Android, optional Gemma 4 is the **only fully private configuration**: food analysis, "What if?", and goal estimates run on the device and nothing is uploaded for those paths.
 
 ## API keys
 
@@ -41,7 +41,7 @@ Chompass may contact external services only when you use a feature that requires
 
 | Feature | What is sent | Where |
 |---------|----------------|-------|
-| AI food analysis / Coach | Meal text, images, or chat context you submit | Your configured AI provider |
+| AI features (see [AI data sharing by feature](#ai-data-sharing-by-feature)) | Food photos, meal text, chat context, profile, and diary totals, depending on the feature | Your configured AI provider |
 | Barcode scan | Scanned barcode | Open Food Facts public API |
 | Health Connect | Nutrition, weight, body fat, height (write); sleep, resting heart rate, hydration, steps, energy (read) if you enable sync | Google Health Connect **on-device** (Android 14+: system module; Android 13 and lower: optional Play Store APK). No Chompass cloud. |
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
@@ -51,6 +51,25 @@ Optional **Health Connect background sync** (off by default) only reads from Hea
 
 On Android 14+, Health Connect is a system/Mainline module. Chompass never requires installing the old Play Store Health Connect APK on those versions, and does not require sandboxed Play. If your ROM does not expose the Health Connect service to apps, use diary / body-metrics export/import (or WebDAV) instead.
 Chompass does not sell or share your health data for advertising.
+
+## AI data sharing by feature
+
+Chompass routes all AI features to the provider you choose in **Settings → AI Provider**. With a **cloud provider** (Gemini, OpenAI, Anthropic, xAI, OpenRouter, Together AI, Groq, Hugging Face, Fireworks, DeepInfra, Mistral, Ollama pointed at a remote server, or a custom OpenAI-compatible endpoint), the following data leaves your device when you use each feature:
+
+| Feature | What is sent to the cloud provider |
+|---------|-------------------------------------|
+| Food analysis (photo or note) | The food photo(s) and/or meal text you submit |
+| "What if?" meal impact | The meal being reviewed, today's logged diary totals before/after, and your profile |
+| Coach chat | Your message, chat history, your profile, and recent food/weight/body-fat logs the Coach reads to answer |
+| AI goal estimation (onboarding plan, Settings → Recalculate, weekly Adaptive Goals) | Your profile (gender, age, weight, height, body fat, activity, goal, diet mode) and logged food/weight trends |
+| Optional nutrient goals | Your profile |
+| Gemini Google Search (if enabled) | The AI request context is additionally sent to Google Search |
+
+Your API key goes only to the provider you configured; Chompass has no server in between. Providers' own privacy policies govern how they store or train on data you send them.
+
+**On-device Gemma 4 (Android) is the only fully private configuration.** Food analysis, "What if?", and goal estimates run on your phone and nothing is uploaded for those paths. Coach, meal ingredient breakdown, and grounded entry are not available on-device yet. The model file itself is downloaded from Hugging Face, a third-party host.
+
+If you enable the **Fallback Provider** setting, failed requests are retried with a second provider, and the same data goes to whichever provider actually answers. Local Ollama (localhost) sends requests to your own machine, not a cloud provider.
 
 ## Meal sharing
 

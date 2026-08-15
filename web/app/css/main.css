@@ -3912,6 +3912,31 @@ body.dialog-open {
   text-align: center;
 }
 
+.onboarding-ai-privacy {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--muted, #666) 30%, transparent);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.onboarding-ai-privacy summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.onboarding-ai-privacy p {
+  margin: 0.5rem 0 0;
+}
+
+.onboarding-ai-privacy ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
 .onboarding-ai-howto ol {
   margin: 0.5rem 0 0;
   padding-left: 1.2rem;

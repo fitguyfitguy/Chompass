@@ -515,7 +515,17 @@ export class OnboardingView extends HTMLElement {
             <span id="ob-ai-test-status" class="${testClass}" role="status" aria-live="polite">${escapeAttr(this.aiDraft.testMessage)}</span>
           </div>
         </div>
-        <p class="onboarding-ai-footer">${t("onboarding.ai.footer")}</p>`;
+        <p class="onboarding-ai-footer">${t("onboarding.ai.footer")}</p>
+        <details class="onboarding-ai-privacy">
+          <summary>${t("onboarding.ai.privacy_summary")}</summary>
+          <p>${t("onboarding.ai.privacy_lead")}</p>
+          <ul>
+            <li>${t("onboarding.ai.privacy_food")}</li>
+            <li>${t("onboarding.ai.privacy_coach")}</li>
+            <li>${t("onboarding.ai.privacy_goals")}</li>
+          </ul>
+          <p>${t("onboarding.ai.privacy_private")}</p>
+        </details>`;
     }
     if (id === "building") {
       const doneCount = Math.min(BUILD_ITEM_KEYS.length, Math.floor((this.buildPct / 100) * BUILD_ITEM_KEYS.length));
