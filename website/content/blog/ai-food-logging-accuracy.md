@@ -1,7 +1,7 @@
 ---
 title: Wie genau ist KI-gestütztes Food-Logging?
 date: 2026-07-28
-description: Tierliste der Eingabemethoden nach Benchmark-Genauigkeit: Text mit Menge oben, Tellerfotos ohne Maßstab unten. Gemessen an gelabelten Datensätzen.
+description: "Tierliste der Eingabemethoden nach Benchmark-Genauigkeit: Text mit Menge oben, Tellerfotos ohne Maßstab unten. Gemessen an gelabelten Datensätzen."
 draft: true
 ---
 
