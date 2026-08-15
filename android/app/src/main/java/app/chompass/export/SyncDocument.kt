@@ -240,7 +240,7 @@ object SyncDocument {
                 "water",
                 buildJsonArray {
                     for (w in water) {
-                        val day = LocalDate.ofInstant(w.date, zone).toString()
+                        val day = w.date.atZone(zone).toLocalDate().toString()
                         val meta = metaFor(w.id.toString(), revisions, "${day}T00:00:00Z")
                         add(
                             buildJsonObject {
@@ -385,8 +385,8 @@ object SyncDocument {
         zone: ZoneId,
     ): JsonArray = buildJsonArray {
         for (e in entries) {
-            val localDate = LocalDate.ofInstant(e.timestamp, zone)
-            val localTime = LocalTime.ofInstant(e.timestamp, zone)
+            val localDate = e.timestamp.atZone(zone).toLocalDate()
+            val localTime = e.timestamp.atZone(zone).toLocalTime()
             val fallback = "${localDate}T${localTime.withSecond(0).withNano(0)}Z"
             val meta = metaFor(e.id.toString(), revisions, fallback)
             add(foodToWire(e, meta.updatedAt, meta.deletedAt, zone))
@@ -399,8 +399,8 @@ object SyncDocument {
         deletedAt: String?,
         zone: ZoneId,
     ): JsonObject {
-        val localDate = LocalDate.ofInstant(e.timestamp, zone)
-        val localTime = LocalTime.ofInstant(e.timestamp, zone)
+        val localDate = e.timestamp.atZone(zone).toLocalDate()
+        val localTime = e.timestamp.atZone(zone).toLocalTime()
         return buildJsonObject {
             put("id", e.id.toString())
             put("updated_at", updatedAt)

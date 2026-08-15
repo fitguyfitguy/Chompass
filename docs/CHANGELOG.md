@@ -4,7 +4,17 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [3.15.0] - 2026-08-15
+
+### Added
+
+- **Onboarding explains what goes to your AI provider** (Android + PWA): during setup and under Settings → AI & Speech, the app now spells out which data leaves the device for each provider: food photos and meal notes for food analysis, "What if?" impact with today's diary totals, coach chat with your profile and recent logs, and your profile when AI estimates goals. Only the on-device Gemma 4 models keep everything on your phone; Ollama runs on your own computer. The web app always uses a cloud provider and says so in its onboarding. The Privacy Policy gains a data-sharing table.
+
+### Fixed
+
+- **WebDAV sync no longer crashes on some Huawei phones** (Android): on older Huawei EMUI builds based on Android 10, saving your diary to a WebDAV server stopped with an error and the sync never completed. Closes Codeberg [#23](https://codeberg.org/fitguy/Chompass/issues/23).
+
+- **Plainer English wording** (Android + PWA): dialogs and settings copy reworded for clarity. Other languages are unaffected.
 
 ## [3.14.0] - 2026-08-15
 

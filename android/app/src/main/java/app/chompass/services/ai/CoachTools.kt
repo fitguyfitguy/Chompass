@@ -280,10 +280,10 @@ class CoachTools(
     private fun parseRange(args: JSONObject): Pair<Instant, Instant> {
         val zone = ZoneId.systemDefault()
         val to = args.optString("to").takeIf { it.isNotBlank() }?.let { parseDate(it) } ?: Instant.now()
-        val toEnd = LocalDate.ofInstant(to, zone).atTime(23, 59, 59).atZone(zone).toInstant()
+        val toEnd = to.atZone(zone).toLocalDate().atTime(23, 59, 59).atZone(zone).toInstant()
         val from = args.optString("from").takeIf { it.isNotBlank() }?.let { parseDate(it) }
             ?: to.minusSeconds(30 * 86_400L)
-        val fromStart = LocalDate.ofInstant(from, zone).atStartOfDay(zone).toInstant()
+        val fromStart = from.atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
         return fromStart to toEnd
     }
 
