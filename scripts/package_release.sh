@@ -113,12 +113,13 @@ declare -a ASSETS=(
 )
 
 declare -a DEST_FILES=()
-echo "==> Copying APKs to repo root"
+echo "==> Copying APKs to releases/"
+mkdir -p "$ROOT/releases"
 MISSING=0
 for entry in "${ASSETS[@]}"; do
   IFS='|' read -r _abi src rel <<<"$entry"
   src_path="$ROOT/$src"
-  dest_path="$ROOT/$rel"
+  dest_path="$ROOT/releases/$rel"
   if [[ ! -f "$src_path" ]]; then
     echo "Missing $src_path" >&2
     MISSING=1
@@ -135,9 +136,9 @@ if [[ "$MISSING" -ne 0 ]]; then
   exit 1
 fi
 
-CHECKSUMS="$ROOT/SHA256SUMS"
+CHECKSUMS="$ROOT/releases/SHA256SUMS"
 echo "==> Writing SHA256SUMS"
-sha256sum "${DEST_FILES[@]}" | sed "s|$ROOT/||" > "$CHECKSUMS"
+sha256sum "${DEST_FILES[@]}" | sed "s|$ROOT/releases/||" > "$CHECKSUMS"
 cat "$CHECKSUMS"
 
 if [[ "$CHECK_METADATA" -eq 1 ]]; then

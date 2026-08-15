@@ -69,13 +69,13 @@ done
 
 VERSION="${POSITIONAL[0]:-1.0.0}"
 TAG="v${VERSION}"
-CHECKSUMS="$ROOT/SHA256SUMS"
+CHECKSUMS="$ROOT/releases/SHA256SUMS"
 SCREENSHOT_DIR="$ROOT/release-screenshots"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 
 # Quota policy: universal APK only (no per-ABI splits).
 FDROID_ASSETS=(
-  "$ROOT/Chompass-fdroid-${VERSION}.apk"
+  "$ROOT/releases/Chompass-fdroid-${VERSION}.apk"
 )
 CHECKSUM_ASSETS=("$CHECKSUMS")
 SCREENSHOT_ASSETS=()
