@@ -26,6 +26,7 @@ import app.chompass.models.WaterGoalBreakdown
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
+import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceCapability
@@ -53,6 +54,8 @@ import kotlinx.coroutines.launch
 data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
     val selectedModel: String = AIProvider.GEMINI.defaultModel,
+    /** Resolved vision-model slot for [selectedAI]; empty = primary model handles images too (#195). */
+    val visionModel: String = "",
     val maxResponseTokens: Int = 1024,
     val aiReadTimeoutSeconds: Int = app.chompass.data.DEFAULT_AI_READ_TIMEOUT_SECONDS,
     val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
@@ -120,6 +123,7 @@ data class SettingsUiState(
     val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
     val fallbackApiKeyMasked: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
+    val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val portionClarifyEnabled: Boolean = false,
     val mealConstituentsEnabled: Boolean = true,
     /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */
@@ -177,6 +181,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val provider = container.prefs.selectedAIProvider.first()
             val model = provider.supportedModelOrDefault(container.prefs.selectedAIModel.first())
+            val vision = container.prefs.visionModel(provider).first()
+                ?.takeIf { it.isNotBlank() }
+                ?.let { provider.supportedModelOrDefault(it) }
+                .orEmpty()
             val speech = container.prefs.selectedSpeechProvider.first()
             val speechLanguage = container.prefs.selectedSpeechLanguage(speech).first()
             val heightUnit = container.prefs.heightUnit.first()
@@ -236,6 +244,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val fbModel = fbProvider.supportedFallbackModelOrDefault(container.prefs.selectedFallbackModel.first())
             val fbMasked = maskKey(container.keyStore.fallbackApiKey(fbProvider))
             val geminiGoogleSearch = container.prefs.geminiGoogleSearchEnabled.first()
+            val reasoningEffort = container.prefs.openRouterReasoningEffort.first()
             val portionClarify = container.prefs.portionClarifyEnabled.first()
             val mealConstituents = container.prefs.mealConstituentsEnabled.first()
             val skipPhotoNote = container.prefs.skipPhotoNotePrompt.first()
@@ -252,6 +261,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             _ui.value = SettingsUiState(
                 selectedAI = provider,
                 selectedModel = model,
+                visionModel = vision,
                 maxResponseTokens = maxTokens,
                 aiReadTimeoutSeconds = aiReadTimeout,
                 servingUnitInferenceMode = servingUnitInferenceMode,
@@ -311,6 +321,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 fallbackModel = fbModel,
                 fallbackApiKeyMasked = fbMasked,
                 geminiGoogleSearchEnabled = geminiGoogleSearch,
+                openRouterReasoningEffort = reasoningEffort,
                 portionClarifyEnabled = portionClarify,
                 mealConstituentsEnabled = mealConstituents,
                 skipPhotoNotePrompt = skipPhotoNote,
@@ -515,6 +526,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(geminiGoogleSearchEnabled = v) },
     )
 
+    fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = updateUiPref(
+        { container.prefs.setOpenRouterReasoningEffort(e) },
+        { copy(openRouterReasoningEffort = e) },
+    )
+
     fun setPortionClarifyEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setPortionClarifyEnabled(v) },
         { copy(portionClarifyEnabled = v) },
@@ -653,7 +669,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.prefs.setSelectedAIProvider(p)
             container.prefs.setSelectedAIModel(p.defaultModel)
             val masked = maskKey(container.keyStore.apiKey(p))
-            _ui.value = _ui.value.copy(selectedAI = p, selectedModel = p.defaultModel, apiKeyMasked = masked)
+            val vision = container.prefs.visionModel(p).first()
+                ?.takeIf { it.isNotBlank() }
+                ?.let { p.supportedModelOrDefault(it) }
+                .orEmpty()
+            _ui.value = _ui.value.copy(selectedAI = p, selectedModel = p.defaultModel, apiKeyMasked = masked, visionModel = vision)
         }
     }
 
@@ -699,6 +719,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 container.onDeviceLlmGateway.unload()
             }
             _ui.value = _ui.value.copy(selectedModel = model)
+        }
+    }
+
+    /** Sets the per-provider vision-model slot; null/blank clears it back to "same as Model". */
+    fun selectVisionModel(m: String?) {
+        viewModelScope.launch {
+            val provider = _ui.value.selectedAI
+            val model = m?.takeIf { it.isNotBlank() }?.let { provider.supportedModelOrDefault(it) }
+            container.prefs.setVisionModel(provider, model)
+            _ui.value = _ui.value.copy(visionModel = model.orEmpty())
         }
     }
 

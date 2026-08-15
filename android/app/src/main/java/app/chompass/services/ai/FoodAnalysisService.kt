@@ -1,6 +1,7 @@
 package app.chompass.services.ai
 
 import app.chompass.data.KeyStore
+import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.R
@@ -8,6 +9,7 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.resolveModelForRequest
 import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.NutritionConstants
@@ -612,7 +614,12 @@ class FoodAnalysisService(
         if (primary.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             throw AiError.Api("Grounded tool loop is not available for on-device models.", messageRes = R.string.ai_error_grounded_on_device)
         }
-        val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
+        val primaryModel = resolveModelForRequest(
+            provider = primary,
+            selectedModel = prefs!!.selectedAIModel.first(),
+            visionModel = prefs.visionModel(primary).first(),
+            hasImages = imageBytesList.any { it.isNotEmpty() },
+        )
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
         val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
@@ -641,10 +648,16 @@ class FoodAnalysisService(
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
             val fallbackClient = AiHttp.clientForProvider(okHttp, fallback.provider, readTimeoutSeconds)
+            val fallbackModel = resolveModelForRequest(
+                provider = fallback.provider,
+                selectedModel = fallback.model,
+                visionModel = prefs!!.visionModel(fallback.provider).first(),
+                hasImages = imageBytesList.any { it.isNotEmpty() },
+            )
             GroundedToolLoop.run(
                 client = fallbackClient,
                 provider = fallback.provider,
-                model = fallback.model,
+                model = fallbackModel,
                 baseUrl = fallback.baseUrl,
                 apiKey = fallback.apiKey,
                 maxTokens = maxTokens,
@@ -742,7 +755,12 @@ class FoodAnalysisService(
         }
 
         val primary = prefs!!.selectedAIProvider.first()
-        val primaryModel = primary.supportedModelOrDefault(prefs.selectedAIModel.first())
+        val primaryModel = resolveModelForRequest(
+            provider = primary,
+            selectedModel = prefs.selectedAIModel.first(),
+            visionModel = prefs.visionModel(primary).first(),
+            hasImages = imageBytesList.any { it.isNotEmpty() },
+        )
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
         val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
@@ -758,6 +776,7 @@ class FoodAnalysisService(
         }
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
+        val reasoningEffort = prefs!!.openRouterReasoningEffort.first()
         val streamProgress: (FoodAnalysisProgress) -> Unit =
             if (reportPhases) onProgress else ({})
         return try {
@@ -766,14 +785,22 @@ class FoodAnalysisService(
                 maxTokens, geminiGoogleSearch, readTimeoutSeconds,
                 onProgress = streamProgress,
                 preferStreaming = reportPhases,
+                reasoningEffort = reasoningEffort,
             )
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
+            val fallbackModel = resolveModelForRequest(
+                provider = fallback.provider,
+                selectedModel = fallback.model,
+                visionModel = prefs!!.visionModel(fallback.provider).first(),
+                hasImages = imageBytesList.any { it.isNotEmpty() },
+            )
             dispatch(
-                fallback.provider, fallback.model, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages,
+                fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages,
                 maxTokens, geminiGoogleSearch, readTimeoutSeconds,
                 onProgress = streamProgress,
                 preferStreaming = reportPhases,
+                reasoningEffort = reasoningEffort,
             )
         }
     }
@@ -926,6 +953,7 @@ class FoodAnalysisService(
         readTimeoutSeconds: Int,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
         preferStreaming: Boolean = false,
+        reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     ): String {
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
@@ -943,7 +971,7 @@ class FoodAnalysisService(
                 AIProvider.ApiFormat.ANTHROPIC ->
                     AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens)
                 AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                    OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens)
+                    OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort)
                 AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
             }
         }
@@ -972,7 +1000,7 @@ class FoodAnalysisService(
                 )
             AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
                 OpenAICompatibleClient.analyzeStreaming(
-                    httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens, onDelta,
+                    httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens, onDelta, reasoningEffort,
                 )
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }

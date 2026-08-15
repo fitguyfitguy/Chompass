@@ -74,7 +74,7 @@ export function parseGoalCalculation(text) {
 /**
  * @param {Object} args
  * @param {keyof typeof PROVIDERS} args.providerId
- * @param {{apiKey: string, model?: string, baseUrl?: string}} args.config
+ * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} args.config
  * @param {UserProfile} args.profile
  * @param {WeightForecast|null} [args.forecast]
  * @param {boolean} [args.heightMetric]

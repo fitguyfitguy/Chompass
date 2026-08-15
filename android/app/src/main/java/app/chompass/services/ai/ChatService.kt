@@ -1,6 +1,7 @@
 package app.chompass.services.ai
 
 import app.chompass.data.KeyStore
+import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.R
@@ -30,6 +31,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Base64
 import java.util.Locale
 import app.chompass.models.UnitFormat
+import app.chompass.models.resolveModelForRequest
 
 /**
  * Multi-turn coach chat with **tool calling** — Coach can fetch any slice of
@@ -77,7 +79,12 @@ class ChatService(
         val tools = CoachTools(weights = weights, bodyFats = bodyFats, foods = foods, foodAnalysisService = foodAnalysisService)
 
         val provider = prefs.selectedAIProvider.first()
-        val model = provider.supportedModelOrDefault(prefs.selectedAIModel.first())
+        val model = resolveModelForRequest(
+            provider = provider,
+            selectedModel = prefs.selectedAIModel.first(),
+            visionModel = prefs.visionModel(provider).first(),
+            hasImages = imageBytes != null,
+        )
         val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         val apiKey = AiHttp.sanitizeApiKey(keyStore.apiKey(provider))
 
@@ -95,7 +102,7 @@ class ChatService(
         val reply = when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch)
             AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
-            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(httpClient, baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens)
+            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(httpClient, baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens, prefs.openRouterReasoningEffort.first())
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable — guarded above")
         }
         return ChatResult(
@@ -119,7 +126,8 @@ class ChatService(
         provider: AIProvider,
         tools: CoachTools,
         imageBytes: ByteArray?,
-        maxTokens: Int
+        maxTokens: Int,
+        reasoningEffort: OpenRouterReasoningEffort
     ): String {
         val url = "$baseUrl/chat/completions"
         // OpenAI tool schema: {type:function, function:{name, description, parameters}}
@@ -152,8 +160,8 @@ class ChatService(
                     put("tools", toolsArr)
                     put("tool_choice", "auto")
                     put(OpenAICompatibleClient.tokenLimitParameter(provider, model), maxTokens)
-                    if (provider == AIProvider.OPENROUTER && compactRetry) {
-                        put("reasoning", JSONObject().put("effort", "low").put("exclude", true))
+                    if (provider == AIProvider.OPENROUTER) {
+                        OpenAICompatibleClient.reasoningBody(reasoningEffort, compactRetry)?.let { put("reasoning", it) }
                     }
                 }
                 val builder = Request.Builder()

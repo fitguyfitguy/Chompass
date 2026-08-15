@@ -4,6 +4,14 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow [`docs/local/RELEASE_TEXT_STYLE.md`](docs/local/RELEASE_TEXT_STYLE.md) (user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Reasoning effort for OpenRouter models** (Android + PWA): a new *Reasoning effort* option under Settings → AI & Speech controls the thinking budget of reasoning-capable models. Auto keeps the app default; Low to High trade speed and token cost for accuracy on hard photos or logs. Closes upstream [#194](https://github.com/apoorvdarshan/fud-ai/issues/194).
+
+- **A separate model for photos** (Android + PWA): *Vision model* under Settings → AI & Speech lets photos use a different model than text, per provider. Leave it on *same as Model* for today's behavior, or set a vision-capable model when your main model is text-only. Closes upstream [#195](https://github.com/apoorvdarshan/fud-ai/issues/195).
+
 ## [3.13.0] - 2026-08-14
 
 ### Added

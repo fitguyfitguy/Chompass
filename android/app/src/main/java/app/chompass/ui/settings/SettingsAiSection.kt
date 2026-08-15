@@ -36,6 +36,27 @@ internal fun SettingsAiSection(
                 SettingRow(stringResource(R.string.settings_ai_provider), stringResource(ui.selectedAI.displayNameRes), icon = Icons.Outlined.SmartToy) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
                 HorizontalDivider()
                 SettingRow(stringResource(R.string.settings_ai_model), ui.selectedModel.ifEmpty { stringResource(R.string.settings_ai_model_unset) }, icon = Icons.Outlined.Tune) { onOpenSheet(SettingsSheet.AI_MODEL) }
+                // Vision-model slot: OpenAI-compatible hosts are where text-only
+                // ids can be picked/typed; curated Gemini/OpenAI/Anthropic lineups
+                // are all multimodal (#195).
+                if (ui.selectedAI.apiFormat == AIProvider.ApiFormat.OPENAI_COMPATIBLE) {
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_ai_vision_model),
+                        ui.visionModel.ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.VISION_MODEL) }
+                }
+                val showReasoningEffort = ui.selectedAI == AIProvider.OPENROUTER ||
+                    (ui.fallbackEnabled && ui.fallbackProvider == AIProvider.OPENROUTER)
+                if (showReasoningEffort) {
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_ai_reasoning_effort),
+                        stringResource(ui.openRouterReasoningEffort.displayNameRes),
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.OPENROUTER_REASONING) }
+                }
                 if (ui.selectedAI.requiresApiKey) {
                     HorizontalDivider()
                     SettingRow(stringResource(R.string.settings_api_key), ui.apiKeyMasked.ifEmpty { stringResource(R.string.settings_not_set) }, icon = Icons.Outlined.Key) { onOpenSheet(SettingsSheet.API_KEY) }

@@ -1,7 +1,7 @@
 // @ts-check
 // Diary-oriented food analysis (photo or text) — separate from Coach chat.
 // Always returns a proposal object for entry-form review; never writes.
-import { PROVIDERS, resolveProviderModel } from "./providers.js";
+import { PROVIDERS, resolveProviderModel, resolveVisionModel } from "./providers.js";
 import { prefs } from "../db.js";
 import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
@@ -41,7 +41,7 @@ function mealConstituentsEnabled(appPrefs) {
 /**
  * @param {Object} args
  * @param {keyof typeof PROVIDERS} args.providerId
- * @param {{apiKey: string, model?: string, baseUrl?: string}} args.config
+ * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} args.config
  * @param {string} [args.text]
  * @param {string} [args.productContext] OFF barcode soft context for the user message
  * @param {{mimeType: string, base64: string}} [args.image]
@@ -85,7 +85,7 @@ export async function analyzeFoodEntry({
 
 /**
  * @param {keyof typeof PROVIDERS} providerId
- * @param {{apiKey: string, model?: string, baseUrl?: string}} config
+ * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} config
  * @param {string|undefined} text
  * @param {string|undefined} productContext
  * @param {{mimeType: string, base64: string}[]} imageList
@@ -99,6 +99,12 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
   if (signal?.aborted) throw abortError();
   config = { ...config, model: resolveProviderModel(providerId, config.model, "primary") };
+  if (providerId === "openai_compatible") {
+    config.reasoningEffort = appPrefs.openrouterReasoningEffort || "auto";
+  }
+  if (imageList.length) {
+    config.model = resolveVisionModel(providerId, config.visionModel, config.model);
+  }
   let systemPrompt = mealConstituentsEnabled(appPrefs) ? SYSTEM_CONSTITUENTS : SYSTEM_BASE;
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;

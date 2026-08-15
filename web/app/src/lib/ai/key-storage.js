@@ -63,7 +63,7 @@ async function getOrCreateMasterKey() {
 /**
  * @param {ProviderId} provider
  * @param {string} apiKey
- * @param {{model?: string, baseUrl?: string}} [extra] extra non-secret config (model id, custom base URL for openai_compatible)
+ * @param {{model?: string, baseUrl?: string, visionModel?: string}} [extra] extra non-secret config (model id, custom base URL for openai_compatible, vision-model slot)
  */
 export async function saveProviderKey(provider, apiKey, extra = {}) {
   const cryptoKey = await getOrCreateMasterKey();
@@ -82,7 +82,7 @@ export async function saveProviderKey(provider, apiKey, extra = {}) {
   });
 }
 
-/** @param {ProviderId} provider @returns {Promise<{apiKey: string, provider: ProviderId, model?: string, baseUrl?: string}|null>} */
+/** @param {ProviderId} provider @returns {Promise<{apiKey: string, provider: ProviderId, model?: string, baseUrl?: string, visionModel?: string}|null>} */
 export async function loadProviderKey(provider) {
   const record = await keysStore.get(`provider:${provider}`);
   if (!record) return null;

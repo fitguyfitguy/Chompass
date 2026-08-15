@@ -4,6 +4,7 @@
   "showWater": false,
   "waterGoalMl": 2000,
   "aiFallbackEnabled": true,
+  "openrouterReasoningEffort": "auto",
   "fallbackAiProvider": "gemini",
   "fallbackAiModel": "gemini-3.5-flash-lite",
   "homeTopNutrients": ["protein", "carbs", "fat", "fiber"],

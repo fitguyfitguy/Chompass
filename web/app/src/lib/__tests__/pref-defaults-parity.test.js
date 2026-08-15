@@ -32,6 +32,7 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(ANDROID_PREF_DEFAULTS.aiFallbackEnabled, fixture.aiFallbackEnabled);
     assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiProvider, fixture.fallbackAiProvider);
     assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiModel, fixture.fallbackAiModel);
+    assert.equal(ANDROID_PREF_DEFAULTS.openrouterReasoningEffort, fixture.openrouterReasoningEffort);
   });
 
   it("home tubes / chips / card count match fixture", () => {

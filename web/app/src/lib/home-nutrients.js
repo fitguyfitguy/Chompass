@@ -114,6 +114,7 @@ export const ANDROID_PREF_DEFAULTS = {
   aiFallbackEnabled: true,
   fallbackAiProvider: "gemini",
   fallbackAiModel: "gemini-3.5-flash-lite",
+  openrouterReasoningEffort: "auto",
 };
 
 /** @type {Map<string, NutrientDef>} */

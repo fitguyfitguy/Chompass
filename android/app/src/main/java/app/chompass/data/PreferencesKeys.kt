@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import app.chompass.models.AIProvider
 import app.chompass.models.SpeechProvider
 import java.time.YearMonth
 
@@ -117,6 +118,9 @@ internal object Keys {
         val OPTIONAL_NUTRIENT_GOALS = stringPreferencesKey("optionalNutrientGoals")
         val SELECTED_AI_PROVIDER = stringPreferencesKey("selectedAIProvider")
         val SELECTED_AI_MODEL = stringPreferencesKey("selectedAIModel")
+        /** Per-provider vision-model slot (upstream #195); empty = primary model handles images too. */
+        fun visionModel(provider: AIProvider): Preferences.Key<String> =
+            stringPreferencesKey("visionModel_${provider.name}")
         val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
         val AI_READ_TIMEOUT_SECONDS = intPreferencesKey("aiReadTimeoutSeconds")
         val SERVING_UNIT_INFERENCE_MODE = stringPreferencesKey("servingUnitInferenceMode")
@@ -126,6 +130,8 @@ internal object Keys {
         val FALLBACK_PROVIDER = stringPreferencesKey("selectedFallbackAIProvider")
         val FALLBACK_MODEL = stringPreferencesKey("selectedFallbackAIModel")
         val GEMINI_GOOGLE_SEARCH_ENABLED = booleanPreferencesKey("geminiGoogleSearchEnabled")
+        /** OpenRouter reasoning-effort setting; missing = AUTO (current behavior). */
+        val OPENROUTER_REASONING_EFFORT = stringPreferencesKey("openrouterReasoningEffort")
         val PORTION_CLARIFY_ENABLED = booleanPreferencesKey("portionClarifyEnabled")
         /**
          * When true, photo staging does not require a text note before Analyze

@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.clickable
@@ -122,6 +123,33 @@ internal fun SettingsSheets(
                     footer = if (ui.selectedAI.supportsCustomModelName) stringResource(R.string.sheet_model_footer) else null,
                     customField = if (ui.selectedAI.supportsCustomModelName) {
                         { m -> vm.selectModel(m); onDismiss() }
+                    } else null
+                )
+                SettingsSheet.OPENROUTER_REASONING -> ListSheet(
+                    title = stringResource(R.string.settings_ai_reasoning_effort),
+                    items = OpenRouterReasoningEffort.entries,
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.openRouterReasoningEffort },
+                    onSelect = { vm.setOpenRouterReasoningEffort(it); onDismiss() },
+                    footer = stringResource(R.string.settings_ai_reasoning_effort_footer),
+                )
+                SettingsSheet.VISION_MODEL -> ListSheet(
+                    title = stringResource(R.string.settings_ai_vision_model),
+                    items = listOf("") + ui.selectedAI.models,
+                    label = { if (it.isEmpty()) stringResource(R.string.settings_ai_vision_model_unset) else it },
+                    subtitle = { model ->
+                        if (model.isEmpty()) null
+                        else when (ui.selectedAI.modelTiers[model]) {
+                            "paid" -> stringResource(R.string.ai_model_tier_paid)
+                            "varies" -> stringResource(R.string.ai_model_tier_varies)
+                            else -> null
+                        }
+                    },
+                    selected = { it == ui.visionModel },
+                    onSelect = { vm.selectVisionModel(it.ifEmpty { null }); onDismiss() },
+                    footer = stringResource(R.string.settings_ai_vision_model_footer),
+                    customField = if (ui.selectedAI.supportsCustomModelName) {
+                        { m -> vm.selectVisionModel(m); onDismiss() }
                     } else null
                 )
                 SettingsSheet.API_KEY -> ApiKeySheet(
