@@ -30,6 +30,61 @@ class AppThemeColorLauncherTest {
     }
 
     @Test
+    fun launcherIconThemeFor_nearGrayWallpaperAccentFallsBackToTeal() {
+        // Light wallpapers yield low-chroma Material You primaries; the launcher
+        // icon must stay the brand teal, never the gray Graphite one (#13).
+        assertEquals(
+            AppThemeColor.TEAL,
+            launcherIconThemeFor(Color(0xFF8E8E93)),
+        )
+    }
+
+    @Test
+    fun launcherIconThemeFor_saturatedAccentStillMapsByHue() {
+        assertEquals(
+            AppThemeColor.BLUE,
+            launcherIconThemeFor(Color(0xFF0A84FF)),
+        )
+    }
+
+    @Test
+    fun resolveLauncherIconTheme_fixedIconAlwaysTeal() {
+        // Opt-in workaround (#21): no theme color or wallpaper may move the alias.
+        assertEquals(
+            AppThemeColor.TEAL,
+            AppThemeColor.BLUE.resolveLauncherIconTheme(Color(0xFF0A84FF), fixedIcon = true),
+        )
+        assertEquals(
+            AppThemeColor.TEAL,
+            AppThemeColor.SYSTEM.resolveLauncherIconTheme(Color(0xFF0A84FF), fixedIcon = true),
+        )
+    }
+
+    @Test
+    fun resolveLauncherIconTheme_fixedColorMapsOneToOneIgnoringAccent() {
+        assertEquals(
+            AppThemeColor.BLUE,
+            AppThemeColor.BLUE.resolveLauncherIconTheme(Color(0xFF8E8E93)),
+        )
+    }
+
+    @Test
+    fun resolveLauncherIconTheme_systemGrayAccentFallsBackToTeal() {
+        assertEquals(
+            AppThemeColor.TEAL,
+            AppThemeColor.SYSTEM.resolveLauncherIconTheme(Color(0xFF8E8E93)),
+        )
+    }
+
+    @Test
+    fun resolveLauncherIconTheme_systemSaturatedAccentMapsByHue() {
+        assertEquals(
+            AppThemeColor.BLUE,
+            AppThemeColor.SYSTEM.resolveLauncherIconTheme(Color(0xFF0A84FF)),
+        )
+    }
+
+    @Test
     fun nearestLauncherIconTheme_mapsTealMaterialYouPrimaryToTeal() {
         // Typical Material You teal/cyan primary — must not collapse onto pink.
         assertEquals(

@@ -170,6 +170,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setAppThemeColor(v: String) = setAppThemeColorImpl(v)
     val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl
     suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
+    val fixedLauncherIcon: Flow<Boolean> get() = fixedLauncherIconImpl
+    suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
     val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
     suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
     val progressDefaultRangeId: Flow<String> get() = progressDefaultRangeIdImpl

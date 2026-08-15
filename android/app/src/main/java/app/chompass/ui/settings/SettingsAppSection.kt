@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -101,6 +102,13 @@ internal fun SettingsAppSection(
                         }
                     }
                 }
+                HorizontalDivider()
+                BusyToggleRow(
+                    label = stringResource(R.string.settings_fixed_launcher_icon),
+                    checked = ui.fixedLauncherIcon,
+                    icon = Icons.Outlined.Star,
+                    subtitle = stringResource(R.string.settings_fixed_launcher_icon_subtitle),
+                ) { vm.setFixedLauncherIcon(it) }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_week_starts),

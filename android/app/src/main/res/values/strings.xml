@@ -846,6 +846,8 @@
     <string name="settings_appearance_light">Light</string>
     <string name="settings_appearance_dark">Dark</string>
     <string name="settings_theme_color">Theme Color</string>
+    <string name="settings_fixed_launcher_icon">Fixed Launcher Icon</string>
+    <string name="settings_fixed_launcher_icon_subtitle">Keeps the launcher icon teal. It stops following the theme color and wallpaper.</string>
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main accent used for buttons, charts, and progress indicators.</string>
     <string name="theme_color_system">System</string>

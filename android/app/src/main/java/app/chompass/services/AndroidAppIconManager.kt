@@ -9,8 +9,15 @@ import app.chompass.ui.theme.resolveLauncherIconTheme
 object AndroidAppIconManager {
     private const val MANIFEST_NAMESPACE = "app.chompass"
 
-    fun apply(context: Context, themeColor: AppThemeColor) {
-        val resolved = themeColor.resolveLauncherIconTheme(context)
+    /**
+     * @param fixedIcon when true the brand teal alias is always used and no aliases
+     *   ever move (opt-in workaround for launchers that misbehave on alias swaps, #21).
+     *   Call only when the activity is not in the foreground: disabling the alias a
+     *   running task was launched through makes some launchers tear the task down or
+     *   force-stop the app (#13). [MainActivity] defers calls to [android.app.Activity.onStop].
+     */
+    fun apply(context: Context, themeColor: AppThemeColor, fixedIcon: Boolean = false) {
+        val resolved = themeColor.resolveLauncherIconTheme(context, fixedIcon)
         val pm = context.packageManager
         val currentlyEnabled = AppThemeColor.iconSelectableColors().firstOrNull { color ->
             isAliasEnabled(pm, context, color)

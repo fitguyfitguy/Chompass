@@ -31,7 +31,6 @@ import app.chompass.data.WeatherRepository
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.models.WeightGoal
-import app.chompass.services.AndroidAppIconManager
 import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WeightAnalysisService
@@ -111,6 +110,8 @@ data class SettingsUiState(
     val appearanceMode: String = "system",
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
     val glassBlurEnabled: Boolean = false,
+    /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
+    val fixedLauncherIcon: Boolean = false,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     /** Settings default Progress range id (`1W`…`All`). */
@@ -231,6 +232,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val appearance = container.prefs.appearanceMode.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
             val glassBlurEnabled = container.prefs.glassBlurEnabled.first()
+            val fixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
             val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
             val weekMon = container.prefs.weekStartsOnMonday.first()
             val progressDefaultRangeId = container.prefs.progressDefaultRangeId.first()
@@ -311,6 +313,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 appearanceMode = appearance,
                 appThemeColor = appThemeColor,
                 glassBlurEnabled = glassBlurEnabled,
+                fixedLauncherIcon = fixedLauncherIcon,
                 foodLogSortOrder = foodLogSortOrder,
                 weekStartsOnMonday = weekMon,
                 progressDefaultRangeId = progressDefaultRangeId,
@@ -624,11 +627,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     )
 
     fun setAppThemeColor(themeColor: AppThemeColor) = updateUiPref(
-        {
-            container.prefs.setAppThemeColor(themeColor.key)
-            AndroidAppIconManager.apply(container.appContext, themeColor)
-        },
+        { container.prefs.setAppThemeColor(themeColor.key) },
         { copy(appThemeColor = themeColor) },
+    )
+
+    fun setFixedLauncherIcon(enabled: Boolean) = updateUiPref(
+        { container.prefs.setFixedLauncherIcon(enabled) },
+        { copy(fixedLauncherIcon = enabled) },
     )
 
     fun setGlassBlurEnabled(enabled: Boolean) = updateUiPref(

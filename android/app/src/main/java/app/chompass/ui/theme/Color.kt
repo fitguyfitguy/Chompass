@@ -95,6 +95,9 @@ private val LauncherIconAccents: List<LauncherIconAccent> = listOf(
 
 private data class Hsl(val h: Float, val s: Float, val l: Float)
 
+/** Below this saturation a Material You accent reads as gray (light wallpapers). */
+private const val GRAY_ACCENT_MAX_SATURATION = 0.12f
+
 private fun Color.toHsl(): Hsl {
     val r = red
     val g = green
@@ -127,7 +130,7 @@ fun nearestLauncherIconTheme(accent: Color): AppThemeColor {
     return LauncherIconAccents.minBy { candidate ->
         val c = candidate.accent.toHsl()
         // Near-gray accents: match on saturation + lightness (and RGB), not hue.
-        if (target.s < 0.12f) {
+        if (target.s < GRAY_ACCENT_MAX_SATURATION) {
             val ds = target.s - c.s
             val dl = target.l - c.l
             val dr = accent.red - candidate.accent.red
@@ -142,13 +145,30 @@ fun nearestLauncherIconTheme(accent: Color): AppThemeColor {
         dh * dh * 5f + ds * ds + dl * dl * 0.35f
     }.theme
 }
-/** Theme color used for the home-screen launcher icon. */
-fun AppThemeColor.resolveLauncherIconTheme(context: Context): AppThemeColor {
+
+/**
+ * Launcher icon theme for a Material You / wallpaper accent.
+ * Near-gray accents (common on light wallpapers) resolve to the brand teal icon
+ * instead of the gray Graphite one, so a light wallpaper never turns the launcher
+ * icon gray (#13). Saturated accents still map by hue via [nearestLauncherIconTheme].
+ */
+fun launcherIconThemeFor(accent: Color): AppThemeColor =
+    if (accent.toHsl().s < GRAY_ACCENT_MAX_SATURATION) AppThemeColor.TEAL else nearestLauncherIconTheme(accent)
+
+/**
+ * Pure launcher-icon decision: fixed icon wins, fixed theme colors map 1:1, and
+ * System resolves the wallpaper accent via [launcherIconThemeFor]. Context-free so
+ * the whole decision is JVM-testable (see AppThemeColorLauncherTest).
+ */
+fun AppThemeColor.resolveLauncherIconTheme(accent: Color, fixedIcon: Boolean = false): AppThemeColor {
+    if (fixedIcon) return AppThemeColor.TEAL
     if (!usesSystemPalette) return this
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return AppThemeColor.TEAL
-    val (accent, _) = widgetAccentColors(context)
-    return nearestLauncherIconTheme(accent)
+    return launcherIconThemeFor(accent)
 }
+
+/** Context-based wrapper used by [AndroidAppIconManager] (reads the Material You accent). */
+fun AppThemeColor.resolveLauncherIconTheme(context: Context, fixedIcon: Boolean = false): AppThemeColor =
+    resolveLauncherIconTheme(widgetAccentColors(context).first, fixedIcon)
 
 /** Accent colors for widgets and other non-Compose surfaces. */
 fun AppThemeColor.widgetAccentColors(context: Context): Pair<Color, Color> {

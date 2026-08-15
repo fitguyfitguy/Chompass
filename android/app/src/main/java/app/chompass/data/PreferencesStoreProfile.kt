@@ -72,6 +72,10 @@ internal suspend fun PreferencesStore.setAppThemeColorImpl(v: String) { dataStor
 internal val PreferencesStore.glassBlurEnabledImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.GLASS_BLUR_ENABLED] ?: false }
 internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) { dataStore.edit { it[Keys.GLASS_BLUR_ENABLED] = v } }
 
+    /** When ON the launcher icon stays teal and never swaps activity aliases (launcher workaround, #21). */
+internal val PreferencesStore.fixedLauncherIconImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FIXED_LAUNCHER_ICON] ?: false }
+internal suspend fun PreferencesStore.setFixedLauncherIconImpl(v: Boolean) { dataStore.edit { it[Keys.FIXED_LAUNCHER_ICON] = v } }
+
     /** false = Sunday, true = Monday (default). Mirrors iOS @AppStorage("weekStartsOnMonday"). */
 internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.WEEK_STARTS_MONDAY] ?: true }
 internal suspend fun PreferencesStore.setWeekStartsOnMondayImpl(v: Boolean) { dataStore.edit { it[Keys.WEEK_STARTS_MONDAY] = v } }
