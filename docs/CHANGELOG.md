@@ -4,25 +4,19 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [3.15.0] - 2026-08-15
 
 ### Added
 
 - **Barcode scanning reads QR and Data Matrix codes** (Android + PWA): the square matrix codes printed on many packages now scan like a barcode, and products found in the Open Food Facts database log the same way. Codes that only carry an internal number are ignored. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
+- **Onboarding explains what goes to your AI provider** (Android + PWA): during setup and under Settings → AI & Speech, the app now spells out which data leaves the device for each provider: food photos and meal notes for food analysis, "What if?" impact with today's diary totals, coach chat with your profile and recent logs, and your profile when AI estimates goals. Only the on-device Gemma 4 models keep everything on your phone; Ollama runs on your own computer. The web app always uses a cloud provider and says so in its onboarding. The Privacy Policy gains a data-sharing table.
 
 ### Fixed
 
 - **Barcode scan now says why it failed** (Android): scanning a product that is not in the Open Food Facts database now shows a clear "product not found" message instead of "something went wrong", and temporary Open Food Facts hiccups are retried automatically before giving up. Closes Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
 
 - **Fixing a food's weight no longer changes its nutrition** (Android): for foods that came from other apps (diary import) and have no recorded serving, correcting the weight in the edit screen used to rescale the macros, which were already correct. The weight can now be corrected freely, and only counts as a serving once you set it yourself. Follow-up to Codeberg [#10](https://codeberg.org/fitguy/Chompass/issues/10) by [@felixbrucker](https://codeberg.org/felixbrucker).
-
-## [3.15.0] - 2026-08-15
-
-### Added
-
-- **Onboarding explains what goes to your AI provider** (Android + PWA): during setup and under Settings → AI & Speech, the app now spells out which data leaves the device for each provider: food photos and meal notes for food analysis, "What if?" impact with today's diary totals, coach chat with your profile and recent logs, and your profile when AI estimates goals. Only the on-device Gemma 4 models keep everything on your phone; Ollama runs on your own computer. The web app always uses a cloud provider and says so in its onboarding. The Privacy Policy gains a data-sharing table.
-
-### Fixed
 
 - **WebDAV sync no longer crashes on some Huawei phones** (Android): on older Huawei EMUI builds based on Android 10, saving your diary to a WebDAV server stopped with an error and the sync never completed. Closes Codeberg [#23](https://codeberg.org/fitguy/Chompass/issues/23).
 
