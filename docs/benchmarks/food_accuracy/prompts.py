@@ -43,6 +43,44 @@ for a single undivided food.
 """.strip()
 
 
+# Excursory research variant: per-constituent rows carry the full macro + micro
+# breakdown (all 21 schema.MICRO_FIELDS), not just macros. Micro sums are
+# allowed a looser ±20% band than the ±5% grams/macro gate — micros are
+# noisier per-item, and the meal total still wins after client reconcile.
+CONSTITUENTS_MICRO_JSON_SCHEMA = (
+    '{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,'
+    '"serving_size_grams":0.0,"emoji":"<single specific food emoji>",'
+    '"sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,'
+    '"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,'
+    '"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,'
+    '"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,'
+    '"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,'
+    '"folate":0.0,"omega_3":0.0,"unit_options":[],'
+    '"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,'
+    '"fat":0.0,"serving_size_grams":0.0,"emoji":"...",'
+    '"sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,'
+    '"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,'
+    '"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,'
+    '"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,'
+    '"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,'
+    '"folate":0.0,"omega_3":0.0,"unit_options":[]}]}'
+)
+
+CONSTITUENTS_MICRO_RULE = """
+constituents is optional. For multi-item meals, list each distinct edible item
+(egg, toast, butter, drink, side) with its own FULL macro and micronutrient
+breakdown (all the same fields as the meal level: protein, carbs, fat, sugars,
+fiber, fats, cholesterol, sodium, potassium, calcium, iron, magnesium, zinc,
+vitamins A/C/D/E/K/B12, folate, omega-3), serving_size_grams, and unit_options
+when a non-gram unit is obvious. Keep top-level fields as the meal total.
+Constituent grams MUST sum to serving_size_grams within ±5%. Constituent
+calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%.
+Each constituent micronutrient MUST sum to the matching meal total within ±20%.
+Include every named or clearly implied edible item; do not invent extras. Use []
+for a single undivided food.
+""".strip()
+
+
 COMPACT_JSON_SCHEMA = (
     '{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,'
     '"serving_size_grams":0.0}'
@@ -239,6 +277,19 @@ For "emoji" pick the single most specific food emoji for this dish. Use null for
 """.strip()
 
 
+def production_text_constituents_micro_prompt(description: str) -> str:
+    """Excursory: constituents carry the full macro + micro breakdown."""
+    units = _lean_unit_line("v2")
+    return f"""
+Estimate the nutritional content for: {description}
+Respond ONLY with JSON:
+{CONSTITUENTS_MICRO_JSON_SCHEMA}
+{LEAN_NUTRIENT_UNITS}{units}
+{CONSTITUENTS_MICRO_RULE}
+For "emoji" pick the single most specific food emoji for this dish. Use null for any nutrient you cannot estimate.
+""".strip()
+
+
 def fewshot_image_prompt(*, description: str | None = None) -> str:
     return production_image_prompt(description=description) + "\n\n" + FEWSHOT_UNITS
 
@@ -316,6 +367,11 @@ PROMPT_BUILDERS = {
     # P1 constituents gate candidate — text only; falls back to production_text for images.
     "production_text_constituents": lambda sample: (
         production_text_constituents_prompt(sample.text or "")
+        if sample.modality == "text"
+        else _build_image_prompt(sample, production_image_prompt)
+    ),
+    "production_text_constituents_micro": lambda sample: (
+        production_text_constituents_micro_prompt(sample.text or "")
         if sample.modality == "text"
         else _build_image_prompt(sample, production_image_prompt)
     ),
