@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Barcode scanning reads QR and Data Matrix codes** (Android + PWA): the square matrix codes printed on many packages now scan like a barcode, and products found in the Open Food Facts database log the same way. Codes that only carry an internal number are ignored. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
 ### Fixed
 
 - **Barcode scan now says why it failed** (Android): scanning a product that is not in the Open Food Facts database now shows a clear "product not found" message instead of "something went wrong", and temporary Open Food Facts hiccups are retried automatically before giving up. Closes Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).

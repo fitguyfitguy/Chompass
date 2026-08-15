@@ -21,7 +21,11 @@ object BarcodeImageDecoder {
     private val reader by lazy {
         BarcodeReader(
             BarcodeReader.Options().apply {
-                formats = setOf(BarcodeReader.Format.EAN_UPC)
+                formats = setOf(
+                    BarcodeReader.Format.EAN_UPC,
+                    BarcodeReader.Format.QR_CODE,
+                    BarcodeReader.Format.DATA_MATRIX,
+                )
                 tryHarder = true
                 tryRotate = true
                 tryInvert = true

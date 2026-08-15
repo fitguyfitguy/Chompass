@@ -41,6 +41,7 @@ import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import app.chompass.R
+import app.chompass.services.BarcodeCodeNormalizer
 import app.chompass.ui.theme.AppColors
 import zxingcpp.BarcodeReader
 
@@ -61,7 +62,11 @@ internal fun BarcodeScannerContent(
     val reader = remember {
         BarcodeReader(
             BarcodeReader.Options().apply {
-                formats = setOf(BarcodeReader.Format.EAN_UPC)
+                formats = setOf(
+                    BarcodeReader.Format.EAN_UPC,
+                    BarcodeReader.Format.QR_CODE,
+                    BarcodeReader.Format.DATA_MATRIX,
+                )
                 tryHarder = true
                 tryRotate = true
                 textMode = BarcodeReader.TextMode.PLAIN
@@ -88,8 +93,13 @@ internal fun BarcodeScannerContent(
                         }
                         val value = runCatching {
                             imageProxy.use { proxy ->
-                                reader.read(proxy)
-                                    .firstNotNullOfOrNull { it.text?.trim()?.takeIf(String::isNotEmpty) }
+                                val texts = reader.read(proxy)
+                                    .mapNotNull { it.text?.trim()?.takeIf(String::isNotEmpty) }
+                                // zxing result order is unspecified; when a frame holds
+                                // both an EAN and a 2D code (jar case), prefer the one
+                                // that normalizes to a product code.
+                                texts.firstOrNull { BarcodeCodeNormalizer.normalize(it) != null }
+                                    ?: texts.firstOrNull()
                             }
                         }.getOrNull()
                         if (value != null && hasScanned.compareAndSet(false, true)) {
