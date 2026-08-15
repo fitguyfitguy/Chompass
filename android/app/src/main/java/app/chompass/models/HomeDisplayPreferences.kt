@@ -130,14 +130,21 @@ data class ActiveBurnShade(
 )
 
 object HomeCalorieDisplay {
+    /**
+     * Resolve today's active burn for the gauge. Measured Health Connect (or
+     * debug) active wins even at 0: once a live measured-energy source exists,
+     * a morning with no wearable data yet shows the sedentary budget plus 0
+     * instead of substituting the whole estimated day. The PAL estimate is
+     * used only when no live measured source exists at all.
+     */
     fun resolveActiveBurn(
         mode: HomeCalorieDisplayMode,
         snapshot: HomeActivitySnapshot,
         estimatedDailyActive: Int,
         manualActiveCalories: Int = 0,
     ): ResolvedActiveBurn? {
-        val measured = if (snapshot.energyAvailable) {
-            ResolvedActiveBurn(snapshot.activeCalories, ActiveCalorieSource.MEASURED)
+        val measured = if (snapshot.energyLive) {
+            ResolvedActiveBurn(snapshot.activeCalories.coerceAtLeast(0), ActiveCalorieSource.MEASURED)
         } else {
             null
         }
@@ -150,7 +157,10 @@ object HomeCalorieDisplay {
         val manual = manualActiveCalories.coerceAtLeast(0)
         if (mode == HomeCalorieDisplayMode.STATIC) return null
         val total = (core?.calories ?: 0) + manual
-        if (total <= 0) return null
+        // A measured 0 is a valid "no activity yet" burn: keep ADD_ACTIVE so
+        // the gauge stays on the sedentary budget instead of jumping to the
+        // full goal at the first measurement.
+        if (total <= 0 && core?.source != ActiveCalorieSource.MEASURED) return null
         val source = when {
             core?.source == ActiveCalorieSource.MEASURED -> ActiveCalorieSource.MEASURED
             core != null -> core.source
@@ -163,7 +173,7 @@ object HomeCalorieDisplay {
         when (requested) {
             HomeCalorieDisplayMode.STATIC -> HomeCalorieDisplayMode.STATIC
             HomeCalorieDisplayMode.ADD_ACTIVE ->
-                if (burn != null && burn.calories > 0) requested else HomeCalorieDisplayMode.STATIC
+                if (burn != null) requested else HomeCalorieDisplayMode.STATIC
         }
 
     fun gaugeBaseGoal(

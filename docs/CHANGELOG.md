@@ -12,6 +12,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **A separate model for photos** (Android + PWA): *Vision model* under Settings → AI & Speech lets photos use a different model than text, per provider. Leave it on *same as Model* for today's behavior, or set a vision-capable model when your main model is text-only. Closes upstream [#195](https://github.com/apoorvdarshan/fud-ai/issues/195).
 
+### Fixed
+
+- **Morning budget no longer includes a guessed active burn** (Android): with *Add Active* on, the home ring and widget now use the active calories actually recorded so far, zero until your first workout or sync of the day, instead of substituting a whole-day estimate that inflated the budget and then dropped when the first measurement landed. The estimate still applies when no activity source is connected at all.
+
 ## [3.13.0] - 2026-08-14
 
 ### Added
