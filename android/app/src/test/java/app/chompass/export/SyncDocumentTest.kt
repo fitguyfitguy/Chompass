@@ -1,10 +1,19 @@
 package app.chompass.export
 
+import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
+import app.chompass.models.MealType
+import app.chompass.models.WaterEntry
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import app.chompass.parity.ParityFixtures
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 class SyncDocumentTest {
@@ -43,5 +52,44 @@ class SyncDocumentTest {
         val remote = (SyncDocument.parse(desktop, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
         val merged = SyncDocument.mergeRawDocuments(local, remote)
         assertEquals(2, merged["food_entries"]!!.jsonArray.size)
+    }
+
+    @Test
+    fun buildRoundTripsDatesInZone() {
+        // EMUI java.time defect: LocalDate/LocalTime.ofInstant are missing on some
+        // Android 10 ROMs. buildJson must use atZone(...).toLocalDate()/toLocalTime()
+        // so sync export works there; this pins the equivalent output.
+        val zone = ZoneId.of("Europe/Berlin")
+        val food = FoodEntry(
+            name = "Oats",
+            calories = 300,
+            protein = 10.0,
+            carbs = 50.0,
+            fat = 5.0,
+            timestamp = Instant.parse("2026-08-15T22:30:00Z"),
+            source = FoodSource.MANUAL,
+            mealType = MealType.BREAKFAST,
+        )
+        val water = WaterEntry(date = Instant.parse("2026-08-15T23:00:00Z"), milliliters = 250)
+        val json = SyncDocument.buildJson(
+            foodEntries = listOf(food),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = listOf(water),
+            recipes = emptyList(),
+            zone = zone,
+        )
+        val result = SyncDocument.parse(json, zone)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        // The wire date/time are exactly what the atZone(...) conversion emits.
+        val root = Json.parseToJsonElement(json).jsonObject
+        val foodWire = root["food_entries"]!!.jsonArray.single().jsonObject
+        // 22:30Z in Europe/Berlin (UTC+2 in August) is 2026-08-16 00:30 local.
+        assertEquals("2026-08-16", foodWire["date"]!!.jsonPrimitive.content)
+        assertEquals("00:30", foodWire["time"]!!.jsonPrimitive.content)
+        val waterWire = root["water"]!!.jsonArray.single().jsonObject
+        assertEquals("2026-08-16", waterWire["date"]!!.jsonPrimitive.content)
     }
 }
