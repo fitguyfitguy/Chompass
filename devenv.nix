@@ -144,6 +144,21 @@
     description = "Report last issue/upstream triage run from docs/local state files (freshness check); use --show-output";
   };
 
+  tasks."backup:local-notes" = {
+    exec = ''
+      set -euo pipefail
+      DEST="''${BACKUP_DIR:-$HOME/chompass-backups}"
+      mkdir -p "$DEST"
+      OUT="$DEST/local-notes-$(date +%Y%m%d-%H%M%S).tar.gz"
+      tar -czf "$OUT" \
+        docs/local .cursor .claude .opencode \
+        AGENTS.md CLAUDE.md opencode.json 2>/dev/null || true
+      ls -lh "$OUT"
+      echo "Backup: $OUT (local-only state; never committed)"
+    '';
+    description = "Tar the local-only agent/triage state (docs/local, .cursor, .claude, .opencode, AGENTS.md, CLAUDE.md) into ~/chompass-backups; set BACKUP_DIR to override";
+  };
+
   tasks."benchmark:food-accuracy-smoke" = {
     exec = "./scripts/check_food_accuracy_smoke.sh";
     description = "Deterministic food-accuracy smoke (stub eval + grounded metrics + retrieval golden)";
