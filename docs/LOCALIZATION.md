@@ -30,7 +30,7 @@ Validate resource completeness:
 uv run python scripts/check_android_strings.py
 ```
 
-The checker fails on **verbatim EN copies** — a translated pack entry whose value
+The checker fails on **verbatim EN copies**: a translated pack entry whose value
 is identical to English (formats, URLs, and bare units/loanwords are exempt).
 Copies silently duplicate the EN fallback, hide the real gap from the
 missing-key report, and block translators, so they must be translated or
@@ -66,7 +66,7 @@ node --test web/app/src/lib/__tests__/i18n.test.js
 | de, es, fr | complete | partial (~600 / 1,420 present) |
 | ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | partial (~560–590 / 1,420 present); EN fallback for missing keys |
 
-Second phase: all locale files were swept for verbatim EN copies — they were
+Second phase: all locale files were swept for verbatim EN copies: they were
 translated (ru) or removed so they fall back to EN honestly (all other packs),
 and `check_android_strings.py` now enforces zero copies. ru additionally
 received translations for the settings/water/safety/import keys that were

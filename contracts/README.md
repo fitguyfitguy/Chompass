@@ -19,7 +19,7 @@ Item / food-record fields (diary & sync use **snake_case**; meal-share keeps **c
 
 | Diary / sync | Meal-share | Purpose |
 |--------------|------------|---------|
-| `serving_unit_options` | `servingUnitOptions` | `[{unit, grams_per_unit\|gramsPerUnit, quantity?}]` — enough to reconstruct grams |
+| `serving_unit_options` | `servingUnitOptions` | `[{unit, grams_per_unit\|gramsPerUnit, quantity?}]`: enough to reconstruct grams |
 | `selected_serving_unit` | `selectedServingUnit` | Active non-gram unit id |
 | `selected_serving_quantity` | `selectedServingQuantity` | Quantity in that unit |
 | `constituents` | `constituents` | Embedded multi-row meal breakdown on **one** diary entry (not separate rows). Empty `[]` = indivisible food. |

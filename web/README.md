@@ -1,6 +1,6 @@
 # Chompass PWA (dev notes)
 
-Companion web app for Chompass — diary logging, manual/photo/barcode food entry,
+Companion web app for Chompass: diary logging, manual/photo/barcode food entry,
 AI coach, progress, onboarding, settings. Data-interoperable with the Android
 app's JSON diary/body-metrics export format. Parity work targets daily-driver
 UX (Home / Progress / Settings) while staying a no-bundler Web Components app.
@@ -11,7 +11,7 @@ UX (Home / Progress / Settings) while staying a no-bundler Web Components app.
 
 ## Stack
 
-No SPA framework, no bundler — native Web Components + a hash router, served
+No SPA framework, no bundler: native Web Components + a hash router, served
 as plain ES modules (`<script type="module">`). TypeScript is dev-time only
 (`tsc --checkJs` over JSDoc-annotated `.js`), not a build or runtime
 dependency; deploy is "copy files."
@@ -38,18 +38,18 @@ cd web && tsc --checkJs --noEmit -p tsconfig.json
 
 ## Layout
 
-- `app/` — the deployed PWA (index.html, manifest, sw.js, css/, src/, vendor/, icons/)
-- `app/src/lib/chompass-core/` — data-compatibility layer (formulas, FCAST/ADAPT forecast,
+- `app/`: the deployed PWA (index.html, manifest, sw.js, css/, src/, vendor/, icons/)
+- `app/src/lib/chompass-core/`: data-compatibility layer (formulas, FCAST/ADAPT forecast,
   diary/body-metrics export format, shared models), golden-tested against
   [`testdata/parity/`](../testdata/parity/) (and schemas in [`contracts/`](../contracts/)).
-  If Android's formula register changes, mirror here — see
+  If Android's formula register changes, mirror here: see
   `docs/CALCULATION_METHODS.md`'s change checklist and `docs/PARITY.md`.
-- `app/src/lib/ai/` — BYOK AI coach + diary food analysis (`food-analyze.js`),
+- `app/src/lib/ai/`: BYOK AI coach + diary food analysis (`food-analyze.js`),
   encrypted key storage, providers, tools.
-- `app/src/lib/off-client.js` + `barcode-scanner.js` — Open Food Facts + camera
+- `app/src/lib/off-client.js` + `barcode-scanner.js`: Open Food Facts + camera
   (`BarcodeDetector`, zxing-wasm fallback via `lib/barcode-detect.js`) with
   manual digit fallback.
-- `serve.mjs` — zero-dependency static file server for local testing.
+- `serve.mjs`: zero-dependency static file server for local testing.
 
 ## Status (Android parity track)
 
@@ -92,7 +92,7 @@ manifest `orientation` is `any` so desktop landscape works.
 ### Manual PWA audit checklist
 
 - Manifest: use `manifest.json` (not `.webmanifest`) so Codeberg
-  git-pages serves `application/json` — Go/`mime.TypeByExtension` does not
+  git-pages serves `application/json`: Go/`mime.TypeByExtension` does not
   know `.webmanifest` (falls back to sniff → `text/plain` + `nosniff`).
   After a rename, also change file bytes (e.g. add `"id"`) so git-pages does
   not reuse the old blob’s stored Content-Type by hash. Fields: `id` /
@@ -109,10 +109,10 @@ manifest `orientation` is `any` so desktop landscape works.
 the browser menu → **Add to Home screen** / **Install app**. After redeploy,
 confirm live `Content-Type` for `/app/manifest.json` is `application/json`.
 
-**Firefox Android:** no `beforeinstallprompt` — use menu → **Add to Home
+**Firefox Android:** no `beforeinstallprompt`: use menu → **Add to Home
 screen**. If that does nothing, check Default apps → Home app is set.
 **DuckDuckGo Android:** no full PWA install; menu shortcut may be a bookmark
-only or a no-op on some launchers — prefer Chrome/Brave for install. The
+only or a no-op on some launchers: prefer Chrome/Brave for install. The
 in-app Install / Add to Home Screen control opens browser-specific help when
 the Chromium install prompt is unavailable.
 
@@ -124,8 +124,7 @@ Known trade-offs:
   desktop so the OS dialog stays a normal file chooser.
 - Barcode scanning is tiered: native `BarcodeDetector` when a startup canvas
   probe confirms it works; otherwise the vendored zxing-wasm reader
-  (`app/vendor/zxing/`, ~1 MB wasm, lazy-loaded only on the fallback path —
-  covers Firefox/Safari and Brave/degoogled Android where the API exists but
+  (`app/vendor/zxing/`, ~1 MB wasm, lazy-loaded only on the fallback path: covers Firefox/Safari and Brave/degoogled Android where the API exists but
   detection is broken); manual digit entry as last resort. See
   `app/src/lib/barcode-detect.js`.
 - Diary/body exports prefer Web Share (`files`) when available (Safari/iOS
