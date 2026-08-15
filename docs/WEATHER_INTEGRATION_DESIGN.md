@@ -1,11 +1,10 @@
 # Design: Weather input for the dynamic water goal
 
-Status: **Implemented (2026-08-13), unreleased — Open-Meteo only.** Issue #3
-Phase 5 — real temperature input for WATER-DYN-A from a free API, while
+Status: **Shipped in 3.13.0 (2026-08-14): Open-Meteo only.** Issue #3
+Phase 5: real temperature input for WATER-DYN-A from a free API, while
 keeping Chompass's privacy stance (no location permission, no account, no
 key). The manual °C wheel stays the default and the universal fallback.
-Weather-app broadcast input (Breezy Weather etc.) is documented but parked —
-see Sources below.
+Weather-app broadcast input (Breezy Weather etc.) is documented but parked; see Sources below.
 
 Related: [Codeberg #3](https://codeberg.org/fitguy/Chompass/issues/3),
 [`docs/WATER_DYNAMIC_GOAL_DESIGN.md`](WATER_DYNAMIC_GOAL_DESIGN.md) (Phases 1–4),
@@ -14,14 +13,14 @@ Related: [Codeberg #3](https://codeberg.org/fitguy/Chompass/issues/3),
 ## Problem statement
 
 Phase 1–4 of the dynamic water goal used a **manual "expected high today" (°C)**
-as the temperature input — privacy-clean but static: a user who doesn't update
+as the temperature input; privacy-clean but static: a user who doesn't update
 the wheel gets the same goal in a heatwave as in a cold snap. This phase adds
 real temperature input from two families of sources:
 
-1. **Free weather APIs** — Open-Meteo (no key, no account, CC BY 4.0 data) as a
-   direct fetch for a manually chosen city. (Weather apps as inputs were
-evaluated — Breezy Weather/QuickWeather share a standard broadcast — but are
-parked for now; see Sources below.)
+1. **Free weather APIs**: Open-Meteo (no key, no account, CC BY 4.0 data) as a
+   direct fetch for a manually chosen city. Weather apps as inputs were
+evaluated (Breezy Weather/QuickWeather share a standard broadcast) but are
+parked for now; see Sources below.
 
 ## Sources and contracts (verified)
 
@@ -33,13 +32,13 @@ parked for now; see Sources below.)
   → `daily.temperature_2m_max[0]` (°C, already Celsius).
 - No API key, no account, no tracking; free for non-commercial use; data
   CC BY 4.0 (attribution shown in Settings). Only the manually typed city name
-  + its coordinates are ever sent — no location permission.
+  + its coordinates are ever sent: no location permission.
 - **Device-verified 2026-08-13** (Pixel 9a, debug build): city search, forecast
   fetch, goal preview + Home ring update, fallback behavior.
 
 ### Parked (not shipped): weather-app broadcast
 
-The de-facto FOSS standard is the **Gadgetbridge weather broadcast** — action
+The de-facto FOSS standard is the **Gadgetbridge weather broadcast**: action
 `nodomain.freeyourgadget.gadgetbridge.ACTION_GENERIC_WEATHER` with
 `WeatherJson`/`WeatherSecondaryJson`/gzip `WeatherGz` extras of `WeatherSpec`
 JSON (temperatures in **Kelvin**). **Breezy Weather** (F-Droid) ships opt-in
@@ -47,22 +46,22 @@ JSON (temperatures in **Kelvin**). **Breezy Weather** (F-Droid) ships opt-in
 `queryBroadcastReceivers` and sends **explicit** broadcasts
 (`setPackage` + `FLAG_INCLUDE_STOPPED_PACKAGES`), so a Chompass manifest
 receiver would receive them even while Chompass is not running; **QuickWeather**
-conforms too. **Decision (2026-08-13): not shipped for now** — Open-Meteo
+conforms too. **Decision (2026-08-13): not shipped for now.** Open-Meteo
 covers the need with zero extra apps, and the broadcast path adds an
-unverifiable-here surface (sender display is impossible — Android does not
-expose the sender UID — plus spoofability and per-app setup). The contract is
+unverifiable surface: sender display is impossible (Android does not
+expose the sender UID), plus spoofability and per-app setup. The contract is
 kept documented here for a future revisit; a re-implementation is a
 manifest receiver + `WeatherSpec` parser + a `SOURCE_APP` branch in
 `WeatherRepository` (cache trusted only while it arrived today).
 
-**Breezy's newer ContentProvider** (v6.1.0+, experimental) is richer but needs
-a per-app permission grant via their data-sharing library and is pre-1.0 —
-also parked.
+**Breezy's newer ContentProvider** (v6.1.0+, experimental) is richer but
+requires a per-app permission grant via their data-sharing library and is
+pre-1.0; also parked.
 
 ## Architecture
 
 ```
-WeatherShareReceiver (parked — not shipped; see Sources above)
+WeatherShareReceiver (parked: not shipped; see Sources above)
         │  WeatherSpec JSON / gz → WeatherSpecParser
         ▼
 WeatherRepository ── state: Flow<WeatherState> ──► effectiveHighC: Int
@@ -86,7 +85,7 @@ Sources (`weatherSource` pref, default `manual`):
 
 `effectiveHighC` is a pure derivation on `WeatherState` (unit-tested); the
 reminder chain / widget / Home all consume the same value, so the goal never
-breaks when the source is missing or stale — it silently uses the manual °C.
+breaks when the source is missing or stale: it silently uses the manual °C.
 
 ## Persistence (new keys in `PreferencesKeys` + `PreferencesStoreWeather`)
 
@@ -128,14 +127,14 @@ is gated by `testdata/parity/locales.json`, not key coverage).
 - **Open-Meteo gets only the city name + coordinates** of the user's chosen
   city; no account, no key, no device identifiers.
 - (Parked app-source note: a broadcast receiver would need to be exported for
-  sharing apps to discover it — any app could then spoof a payload. Blast
+  sharing apps to discover it; any app could then spoof a payload. Blast
   radius is a cache pref feeding only the water-goal math of an opted-in
   user, but it is one more reason the path stays parked.)
 
 ## Parity
 
 Android-only (PWA has no water UI), and WATER-DYN-A's formula register is
-unchanged — the temperature *input source* is a pure Android concern. No
+unchanged: the temperature *input source* is a pure Android concern. No
 `contracts/` or `testdata/parity/` changes. `CALCULATION_METHODS.md`
 WATER-DYN-A gains a note about the input sources.
 
@@ -159,7 +158,7 @@ WATER-DYN-A gains a note about the input sources.
 | 5 | Docs (this file, WATER_DYNAMIC_GOAL_DESIGN Phase 5, CALCULATION_METHODS note, CHANGELOG) | ✅ release:check-parity |
 
 Follow-ups (parked): weather-app broadcast input (`ACTION_GENERIC_WEATHER`,
-Breezy Weather/QuickWeather — contract above); sender package display (needs
+Breezy Weather/QuickWeather: contract above); sender package display (needs
 an API that exposes the broadcast sender); Breezy ContentProvider integration
 once tagged; multi-location picker; Open-Meteo-compatible custom endpoint for
 self-hosters.

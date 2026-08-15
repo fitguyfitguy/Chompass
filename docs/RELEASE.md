@@ -55,17 +55,18 @@ Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SU
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section), entries per the [release-text style guide](local/RELEASE_TEXT_STYLE.md)
-3. Bump `website/hugo.toml` `params.version` (same as `versionName`)
-4. Optional: sync `docs/fdroid/app.chompass.yml` and run `devenv tasks run release:check-metadata`
-5. Commit, tag, push:
+2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section), entries per the release-text style guide (maintainer-local, not published)
+3. **Update design-doc status lines** for features shipping in this release: `Status: shipped in <x.y.z> (date)` in the affected design docs (`docs/*_DESIGN.md`) (convention documented in [`docs/README.md`](README.md)); archive executed `docs/` root plans to `docs/archive/` leaving a stub
+4. Bump `website/hugo.toml` `params.version` (same as `versionName`)
+5. Optional: sync `docs/fdroid/app.chompass.yml` and run `devenv tasks run release:check-metadata`
+6. Commit, tag, push:
 
 ```bash
 git tag -a v1.0.0 -m "Chompass 1.0.0 - initial public release"
 git push origin v1.0.0
 ```
 
-6. Publish APKs and redeploy the project site:
+7. Publish APKs and redeploy the project site:
 
 ```bash
 # One-time: create a token at https://codeberg.org/user/settings/applications
@@ -75,7 +76,7 @@ export CODEBERG_TOKEN='paste-token-here'
 # or: RELEASE_VERSION=1.0.0 devenv tasks run release:publish
 ```
 
-**Token split — use the release login, not the issue login.** The **release** token
+**Token split: use the release login, not the issue login.** The **release** token
 lives in the gitignored `.env.local` as `CODEBERG_TOKEN` (scopes `read:user` +
 `write:repository`) and is persisted to tea as the `codeberg-release` login:
 
@@ -85,7 +86,7 @@ nix shell nixpkgs#tea -c tea logins add -n codeberg-release -u https://codeberg.
 
 Run the release scripts with `CODEBERG_LOGIN=codeberg-release` (both
 `publish_release.sh` and `manage_release_assets.sh` honor it). The default tea
-login `codeberg` (`~/.config/tea/config.yml`) is **issue-triage only** — it
+login `codeberg` (`~/.config/tea/config.yml`) is **issue-triage only**: it
 deliberately lacks `write:repository` and must not be used to publish.
 
 `publish_release.sh` uploads F-Droid APK assets + `SHA256SUMS`, pastes changelog notes, then runs [`deploy_pages.sh`](../scripts/deploy_pages.sh) so [chompass.app](https://chompass.app/) shows the new version. Use `--skip-pages` to skip the site step.
@@ -173,7 +174,7 @@ Prefer the emulator over coordinate-based phone taps when automating; screen siz
 
 ## F-Droid follow-up
 
-**Status:** Chompass is **live on F-Droid** — https://f-droid.org/packages/app.chompass/ (inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) merged).
+**Status:** Chompass is **live on F-Droid**: https://f-droid.org/packages/app.chompass/ (inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) merged).
 
 For each release:
 

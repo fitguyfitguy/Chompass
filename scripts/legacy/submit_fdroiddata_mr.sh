@@ -3,7 +3,7 @@
 # checkupdates bot now opens version-update MRs automatically from the Builds:
 # entry in docs/fdroid/app.chompass.yml. This script should NOT be needed anymore.
 # It is kept only in case the maintainer ever has to push a manual metadata fix;
-# agents must never run it.
+# it is not part of the release flow.
 #
 # Requires:
 #   - glab authenticated for gitlab.com (glab auth login)

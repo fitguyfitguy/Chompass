@@ -1,7 +1,11 @@
 # Design: Dynamic water goal + adaptive reminders (issue #3)
 
-Status: **Beta. Phases 1–4 implemented; device pass outstanding.** Opt-in feature, default off. Ships with a medical disclaimer (estimate, not advice) in Settings next to the feature, in the Safety &amp; Medical notices, and in the onboarding safety card.
-Related: [Codeberg #3](https://codeberg.org/fitguy/Chompass/issues/3), [`docs/local/ISSUE_BACKLOG.md`](local/ISSUE_BACKLOG.md), [`docs/CALCULATION_METHODS.md`](CALCULATION_METHODS.md)
+Status: **Shipped in 3.13.0 (2026-08-14) as opt-in Beta: default off.** Phases 1–4
+implemented; the weather-input phase (5) ships in the same release. Reminder
+verification ask still open with the reporter on [Codeberg #3](https://codeberg.org/fitguy/Chompass/issues/3). Ships with a medical
+disclaimer (estimate, not advice) in Settings next to the feature, in the Safety
+&amp; Medical notices, and in the onboarding safety card.
+Related: [Codeberg #3](https://codeberg.org/fitguy/Chompass/issues/3), [`docs/CALCULATION_METHODS.md`](CALCULATION_METHODS.md)
 
 ## Problem statement
 
@@ -54,7 +58,7 @@ grossMl    = round50(baseMl × tempFactor × actFactor)
   location permission. Factor is +4 % per °C above 25 °C (30 °C → +20 %,
   35 °C → +40 %), clamped so a heatwave never more than +60 %.
 - **Since Phase 5 (2026-08-13)** the temperature input can also come from an
-  Open-Meteo city forecast — see
+  Open-Meteo city forecast: see
   [WEATHER_INTEGRATION_DESIGN.md](WEATHER_INTEGRATION_DESIGN.md). The manual
   °C stays the default and the universal fallback. (Weather-app broadcast
   input is parked.)
@@ -176,7 +180,7 @@ reminder chain alike.
   dependency form of `WaterReminderPlanner.next`, no container needed) into
   `WidgetSnapshot.waterNextFireAtMillis` / `waterNextDrinkMl`;
   `widget/WaterAppWidget.kt` renders the line under the remaining label
-  (hidden once the fire time is in the past — the widget cannot tick).
+  (hidden once the fire time is in the past: the widget cannot tick).
 
 ## Settings UI
 
@@ -202,7 +206,7 @@ reminder chain alike.
 tapping the badge opens Settings (the new water section with the breakdown).
 Below the bar, a **next-drink line** shows the upcoming reminder's amount and
 fire time (“Next 300 ml · 15:24”, “tomorrow 08:00” for next-day fires; fl oz
-for imperial users) — null (hidden) when the reminder is off, the goal is
+for imperial users): null (hidden) when the reminder is off, the goal is
 met, or the window is degenerate. The **water widget** shows the same line
 under its remaining label (compact 11 sp, single line; hidden once the fire
 time has passed, since a widget cannot tick).
@@ -218,7 +222,7 @@ Feature stays **off by default** (`waterDynamicEnabled` default false).
 
 All new copy goes to `res/values/strings.xml` (locale contract
 `testdata/parity/locales.json` gates the *locale list*, not key coverage.
-translated packs get the usual pass, no parity break).
+Translated packs get the usual pass, no parity break).
 
 ## Parity
 
@@ -253,7 +257,7 @@ calculation-change checklist.
 | 2 | Settings UI + strings + Home/widget wiring | ✅ done; debug build + full `testDebugUnitTest` green; needs device pass |
 | 3 | Adaptive alarm chain + boot re-arm | ✅ done; `WaterReminderPlanner` (fire-time recompute), re-arm on entry add/delete via `WaterRepository.onEntriesChanged`, `BOOT_COMPLETED` re-arm, "next in X min" text; needs device pass (cadence, reboot) |
 | 4 | Docs: `CALCULATION_METHODS.md` register, `CHANGELOG.md`, this note → complete | ✅ done; WATER-DYN-A/B/C registered w/ science audit (EFSA 2010, IOM 2004, ACSM 2007, food-moisture 19–30 %), `CHANGELOG.md` Unreleased entry; `release:check-parity` to confirm |
-| 5 (optional) | Open-Meteo: manual city name → geocode → today's high; manual temp stays the fallback; no permission | ✅ done 2026-08-13 — `WeatherRepository` three→two-source resolver (`manual` default + universal fallback), Open-Meteo client + city search UI, unit + MockWebServer tests green, **device pass done** (Pixel 9a). Weather-app broadcast input (Breezy Weather) was prototyped and **parked** — see [WEATHER_INTEGRATION_DESIGN.md](WEATHER_INTEGRATION_DESIGN.md) |
+| 5 (optional) | Open-Meteo: manual city name → geocode → today's high; manual temp stays the fallback; no permission | ✅ done 2026-08-13: `WeatherRepository` three→two-source resolver (`manual` default + universal fallback), Open-Meteo client + city search UI, unit + MockWebServer tests green, **device pass done** (Pixel 9a). Weather-app broadcast input (Breezy Weather) was prototyped and **parked**: see [WEATHER_INTEGRATION_DESIGN.md](WEATHER_INTEGRATION_DESIGN.md) |
 
 Feature ships opt-in (toggle default off), so existing users and the widget
 see no change until they enable it.

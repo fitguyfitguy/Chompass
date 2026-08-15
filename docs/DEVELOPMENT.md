@@ -77,7 +77,7 @@ install-debug                         # same, inside devenv shell
 ./scripts/install_debug.sh --reseed   # skip build/install; force-stop + seed again
 ```
 
-**Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split — ignore them if your device is visible to local `adb devices`.
+**Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split: ignore them if your device is visible to local `adb devices`.
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
 
@@ -166,7 +166,7 @@ Edit the SVG (or regenerate it from the CC0 needle via `uv run python scripts/as
 
 ## On-device LLM smoke test (debug only)
 
-Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validated on Pixel 9a / GrapheneOS). Not integrated into production AI dispatch.
+Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validated on Pixel 9a / GrapheneOS). Tier A (text) and Tier B (photo) are wired into production dispatch behind a default-off Settings toggle; Tier C (coach) stays debug-only.
 
 Full workflow: model push, intent extras, GPU/CPU backends, latency results, known issues:
 

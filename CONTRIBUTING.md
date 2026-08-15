@@ -1,14 +1,14 @@
 # Contributing to Chompass
 
-Android is the product of record; the PWA under `web/` stays data-compatible via shared fixtures. Full agent conventions: [`AGENTS.md`](AGENTS.md). Environment setup: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+Android is the product of record; the PWA under `web/` stays data-compatible via shared fixtures. Environment setup: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## Contributor tiers
 
 | Tier | Touch | Day-1 commands |
 |------|--------|----------------|
-| **A — Android only** | `android/` | `devenv shell` → `build-debug` or `devenv tasks run build:debug`; unit tests: `./gradlew :app:testDebugUnitTest` |
-| **B — Shared domain** | Kotlin + `web/app/src/lib/chompass-core/` + `testdata/parity/` ± `contracts/` | After A: `devenv tasks run ci:verify` (or `release:check-parity`) |
-| **C — Release / site / F-Droid** | `docs/CHANGELOG.md`, `website/`, `docs/fdroid/`, metadata | [`docs/RELEASE.md`](docs/RELEASE.md); do **not** push fdroiddata from agents |
+| **A: Android only** | `android/` | `devenv shell` → `build-debug` or `devenv tasks run build:debug`; unit tests: `./gradlew :app:testDebugUnitTest` |
+| **B: Shared domain** | Kotlin + `web/app/src/lib/chompass-core/` + `testdata/parity/` ± `contracts/` | After A: `devenv tasks run ci:verify` (or `release:check-parity`) |
+| **C: Release / site / F-Droid** | `docs/CHANGELOG.md`, `website/`, `docs/fdroid/`, metadata | [`docs/RELEASE.md`](docs/RELEASE.md); do **not** push fdroiddata |
 
 Most UI bugs are Tier A. Formula, export JSON, AI defaults, or locale-contract changes are Tier B.
 
@@ -25,7 +25,7 @@ Most UI bugs are Tier A. Formula, export JSON, AI defaults, or locale-contract c
 
 Canonical automation is **`devenv tasks`**. Thin shell aliases (`build-debug`, `pwa-test`, …) stay for daily typing; prefer tasks in docs and CI mental models.
 
-Agent shells often skip direnv:
+Automated shells (CI, editors, scripts) often skip direnv:
 
 ```bash
 devenv shell bash -lc 'cd android && ./gradlew :app:assembleDebug'
@@ -49,7 +49,7 @@ Maintainer setup is WSL2 build + Windows host USB adb. If you are on **native Li
 File issues on [Codeberg](https://codeberg.org/fitguy/Chompass/issues). Two
 templates are available (bug report, feature request); questions can use a
 blank issue. A good report has: app version (Settings > About), phone model +
-Android version, and repro steps. Check the latest release first — the
+Android version, and repro steps. Check the latest release first: the
 maintainer ships fixes in batches and many reports are already fixed. If the
 issue touches nutrition formulas, diary export/import, meal sharing, or Health
 Connect data, say so: those live in Kotlin **and** the PWA
@@ -60,4 +60,4 @@ Connect data, say so: those live in Kotlin **and** the PWA
 
 - Commit secrets, keystores, diary exports, or release APKs
 - Add AI/Cursor attribution to git commits
-- Open F-Droid inclusion or update MRs (see [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md); the listing is live — F-Droid `checkupdates` handles updates)
+- Open F-Droid inclusion or update MRs (see [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md); the listing is live: F-Droid `checkupdates` handles updates)

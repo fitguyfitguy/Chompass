@@ -1,9 +1,9 @@
 # F-Droid listing
 
-Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-droid.org/packages/app.chompass/) — package `app.chompass`. This page is the maintainer reference for keeping the listing healthy.
+Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-droid.org/packages/app.chompass/) (package `app.chompass`). This page is the maintainer reference for keeping the listing healthy.
 
 **Application ID:** `app.chompass`  
-**Current version:** 3.8.0 (versionCode 45)  
+**Current version:** 3.13.0 (versionCode 50)  
 **Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256 (upstream):** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf` (F-Droid signs its own builds)
 
@@ -12,8 +12,8 @@ Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-d
 ## Status
 
 - Inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) was **merged**; the listing is live and F-Droid clients install / auto-update `app.chompass` directly.
-- **Updates:** F-Droid's `checkupdates` opens update MRs automatically from the `Builds:` entry in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml). No manual inclusion MR is needed — and **none should be opened** (duplicates review work).
-- **Agents / maintainers:** update `docs/fdroid/app.chompass.yml` in this repo only — do **not** push to the fdroiddata repo. The maintainer may help bot update MRs via the GitLab web GUI when needed. `scripts/submit_fdroiddata_mr.sh` is legacy (from the submission era) and is no longer part of the release flow.
+- **Updates:** F-Droid's `checkupdates` opens update MRs automatically from the `Builds:` entry in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml). No manual inclusion MR is needed, and **none should be opened** (duplicates review work).
+- **Maintainer:** update `docs/fdroid/app.chompass.yml` in this repo only; do **not** push to the fdroiddata repo. The maintainer may assist bot update MRs via the GitLab web GUI when needed. `scripts/legacy/submit_fdroiddata_mr.sh` is legacy (from the submission era) and is no longer part of the release flow.
 
 ## Per-release checklist (now that the listing is live)
 
@@ -32,7 +32,7 @@ Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-d
 - **Gradle:** `yes` (`assembleRelease`)
 - **Props:** `-PreleaseAbi=arm64-v8a` (via `gradleprops:`)
 - **Output:** `build/outputs/apk/release/app-release-unsigned.apk` under `subdir` (no `output:` needed)
-- **FOSS scanner notes:** no Play Core; barcode via FOSS **zxing-cpp** (Apache-2.0); on-device LLM runtime (`litertlm-android`) ships in the build — the model itself is an opt-in runtime download, and F-Droid accepted the listing.
+- **FOSS scanner notes:** no Play Core; barcode via FOSS **zxing-cpp** (Apache-2.0); on-device LLM runtime (`litertlm-android`) ships in the build: the model itself is an opt-in runtime download, and F-Droid accepted the listing.
 - Store metadata lives in upstream `metadata/en-US/` (Fastlane/Triple-T).
 
 ## Privacy & network use
@@ -53,11 +53,11 @@ No bundled analytics, ads, Firebase, or Google Play Services.
 
 Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, resting HR, hydration, energy burn when user grants permissions. Optional background sync is **off by default** and only offered when the device’s Health Connect module supports background reads.
 
-**Delivery:** Android 13 and lower use the Play Store Health Connect APK; Android 14+ uses the system/Mainline module. Chompass talks to both through Jetpack `connect-client` and does not require sandboxed Play. De-Googled ROMs that omit the binder service will report HC unavailable — file import/export remains the fallback.
+**Delivery:** Android 13 and lower use the Play Store Health Connect APK; Android 14+ uses the system/Mainline module. Chompass talks to both through Jetpack `connect-client` and does not require sandboxed Play. De-Googled ROMs that omit the binder service will report HC unavailable: file import/export remains the fallback.
 
 ## Archived: inclusion MR body (merged via !42984)
 
-Kept for reference and for the legacy `scripts/submit_fdroiddata_mr.sh` (which extracts the first fenced block below):
+Kept for reference and for the legacy `scripts/legacy/submit_fdroiddata_mr.sh` (which extracts the first fenced block below):
 
 ```markdown
 ## Required
@@ -84,14 +84,14 @@ Kept for reference and for the legacy `scripts/submit_fdroiddata_mr.sh` (which e
 
 ## Summary
 
-**New app:** Chompass — ad-free, privacy-focused Android calorie and macro tracker.
+**New app:** Chompass: ad-free, privacy-focused Android calorie and macro tracker.
 
 - **Application ID:** `app.chompass`
 - **License:** MIT
 - **Upstream:** https://codeberg.org/fitguy/chompass
 - **Category:** Sports & Health, Diet
 
-Chompass is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds — no ML Kit / proprietary scanner split. The app was originally proposed as *NoFUD* (`org.codeberg.fitguy.nofud`) and renamed to **Chompass** (`app.chompass`) before first inclusion; the old ID never shipped on F-Droid.
+Chompass is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds: no ML Kit / proprietary scanner split. The app was originally proposed as *NoFUD* (`org.codeberg.fitguy.nofud`) and renamed to **Chompass** (`app.chompass`) before first inclusion; the old ID never shipped on F-Droid.
 ```
 
-**Latest release (2026-08-07):** v3.8.0 — calorie hero upgrades, demo-hero scanning viewfinders, food search, faster food entry. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.8.0
+**Latest release (2026-08-07):** v3.8.0: calorie hero upgrades, demo-hero scanning viewfinders, food search, faster food entry. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.8.0
