@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Barcode scan now says why it failed** (Android): scanning a product that is not in the Open Food Facts database now shows a clear "product not found" message instead of "something went wrong", and temporary Open Food Facts hiccups are retried automatically before giving up. Closes Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
 ## [3.15.0] - 2026-08-15
 
 ### Added
