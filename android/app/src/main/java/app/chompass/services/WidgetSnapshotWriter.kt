@@ -9,6 +9,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.models.FoodEntry
 import app.chompass.models.HomeCalorieDisplay
+import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.UserProfile
 import app.chompass.models.WaterEntry
 import app.chompass.models.WaterGoalCalculator
@@ -199,6 +200,17 @@ class WidgetSnapshotWriter(
             )
             val activeCalories = burn?.calories ?: 0
             val effectiveGoal = HomeCalorieDisplay.effectiveGoal(mode, gaugeBase, activeCalories)
+            // Expected-day target mirroring the hero: base + the larger of the active
+            // norm and live burn. Written only when a live measured source exists
+            // (Health Connect energy or debug data, even at 0 in the morning);
+            // estimate/manual-only days keep the effective goal, which equals the
+            // target there, and no active-burn caption in the widget.
+            val liveStory = activity.energyLive
+            val displayGoalTarget = if (mode == HomeCalorieDisplayMode.ADD_ACTIVE && liveStory) {
+                HomeCalorieDisplay.expectedTarget(gaugeBase, estimatedActive, activeCalories)
+            } else {
+                null
+            }
             val waterTodayMl = water.entries
                 .filter { it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now() }
                 .sumOf { it.milliliters }
@@ -258,6 +270,8 @@ class WidgetSnapshotWriter(
                 activeCaloriesToday = activeCalories,
                 gaugeBaseCalorieGoal = gaugeBase,
                 activeCalorieSource = burn?.source?.storageKey,
+                displayGoalTarget = displayGoalTarget,
+                activeBurnTypical = displayGoalTarget?.let { estimatedActive },
                 stepsToday = activity.steps,
                 stepGoal = display.stepGoal,
                 waterTrackingEnabled = water.enabled,

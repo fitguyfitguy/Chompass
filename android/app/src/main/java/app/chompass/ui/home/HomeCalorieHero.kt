@@ -197,8 +197,9 @@ internal fun CalorieHero(
     liveActiveBurn: Int = 0,
     /**
      * Energy-balance shades for the arc (live active vs the day's active norm).
-     * Non-null only for ADD_ACTIVE + live measured/debug burn + the toggle on;
-     * PAL-estimate-only days keep the legacy budget tail.
+     * Non-null for ADD_ACTIVE with a live measured source (Health Connect or
+     * debug), including the measured-0 morning; PAL-estimate/manual-only days
+     * keep the legacy budget tail.
      */
     burnShade: ActiveBurnShade? = null,
     /** Resting (basal) burn so far, when known. Powers the optional resting shade. */
@@ -206,26 +207,33 @@ internal fun CalorieHero(
     /** When true, draw the resting/base shade band under the active shades. */
     showRestingShade: Boolean = false,
     freezeProgress: Boolean = false,
-    /** True when Settings asks for ADD_ACTIVE but today’s burn is still 0. */
-    awaitingActiveBurn: Boolean = false,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
-    val remaining = HomeCalorieDisplay.remaining(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
     val shade = burnShade
     val shadesActive = shade != null && shade.typical > 0 &&
         displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
-    // On the shade arc the eaten fill shares the burn scale (arc end = base + typical),
+    // Expected-day target (display-only): sedentary base + the larger of the
+    // active norm and live burn. The arc end, goal line, and remaining read
+    // against it; the budget (base + live) is unchanged.
+    val target = if (shadesActive) {
+        HomeCalorieDisplay.expectedTarget(baseGoal, shade!!.typical, shade.live)
+    } else {
+        effectiveGoal
+    }
+    val remaining = (target - current).coerceAtLeast(0)
+    // On the shade arc the eaten fill shares the burn scale (arc end = target),
     // so eaten and burn read against the same denominator.
     val fillRatio = if (shadesActive) {
-        HomeCalorieDisplay.burnShadeEatenFraction(current, baseGoal, shade!!.typical)
+        HomeCalorieDisplay.burnShadeEatenFraction(current, baseGoal, shade!!.typical, shade.live)
     } else {
         ratio
     }
     var showBudgetSheet by remember { mutableStateOf(false) }
-    val goalLabel = when (displayMode) {
-        HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal
+    val goalLabel = when {
+        shadesActive -> target
+        displayMode == HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal
         else -> baseGoal
     }
     val epoch = LocalLaunchFillEpoch.current
@@ -299,13 +307,16 @@ internal fun CalorieHero(
                 // Single energy scale, one meaning per shade:
                 //  - resting (basal) rim grows from the left on the outer band, neutral.
                 //  - estimated-active zone = fixed dim segment [base → base+typical].
-                //  - live-active shade = opaque, grows from the base boundary and
-                //    extends toward/past the typical zone to the full ring when over.
+                //  - live-active shade = opaque, grows from the base boundary through
+                //    the typical zone; the over-typical stretch turns success color.
+                //  The arc end is the expected-day target and grows with live burn
+                //  once it exceeds typical, so the live tip lands at the ring end.
                 val typical = shade.typical
-                val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical)
-                val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical)
+                val live = shade.live
+                val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical, live)
+                val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical, live)
                 if (restingVisible) {
-                    val restSweep = 180f * HomeCalorieDisplay.burnShadeRestingFraction(restingBurn!!, baseGoal, typical)
+                    val restSweep = 180f * HomeCalorieDisplay.burnShadeRestingFraction(restingBurn!!, baseGoal, typical, live)
                     if (restSweep > 0f) {
                         val restR = rMid + mainStroke / 2f + restingStroke / 2f
                         drawArc(
@@ -330,13 +341,26 @@ internal fun CalorieHero(
                         style = Stroke(width = mainStroke, cap = StrokeCap.Round)
                     )
                 }
-                val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, shade.live, typical)
+                val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
                 val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
-                if (liveSweep > 0f) {
+                val withinTypicalSweep = liveSweep.coerceAtMost(typicalSweep)
+                if (withinTypicalSweep > 0f) {
                     drawArc(
                         color = liveBurnColor,
                         startAngle = 180f + baseAngle,
-                        sweepAngle = liveSweep.coerceAtMost(liveMaxSweep),
+                        sweepAngle = withinTypicalSweep.coerceAtMost(liveMaxSweep),
+                        useCenter = false,
+                        topLeft = mainTopLeft,
+                        size = mainArcSize,
+                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                    )
+                }
+                val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
+                if (overTypicalSweep > 0f) {
+                    drawArc(
+                        color = successColor,
+                        startAngle = 180f + baseAngle + typicalSweep,
+                        sweepAngle = overTypicalSweep.coerceAtMost((liveMaxSweep - typicalSweep).coerceAtLeast(0f)),
                         useCenter = false,
                         topLeft = mainTopLeft,
                         size = mainArcSize,
@@ -358,19 +382,6 @@ internal fun CalorieHero(
                     ),
                     strokeWidth = 2.dp.toPx(),
                 )
-                if (HomeCalorieDisplay.isActiveBurnOverTypical(shade.live, typical)) {
-                    val tipAngle = Math.toRadians(
-                        (180f + baseAngle + liveSweep.coerceAtMost(liveMaxSweep)).toDouble(),
-                    )
-                    drawCircle(
-                        color = successColor,
-                        radius = 5.dp.toPx(),
-                        center = Offset(
-                            cx + (rMid * Math.cos(tipAngle)).toFloat(),
-                            cy + (rMid * Math.sin(tipAngle)).toFloat(),
-                        ),
-                    )
-                }
             } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
                 // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
                 // segment on the same budget axis. The teal progress fill sweeps
@@ -435,19 +446,18 @@ internal fun CalorieHero(
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
             )
-            // Decluttered goal line: "of <budget>". In ADD_ACTIVE the budget already includes
-            // today's active burn, so the ⓘ affordance opens a sheet that explains the breakdown
-            // instead of jamming the active figure into this one-line caption.
-            val explainsBudget = integratesBurn || awaitingActiveBurn
+            // Decluttered goal line: "of <expected day>". The ⓘ affordance opens a sheet that
+            // explains the breakdown (expected day, burned today, source) instead of jamming
+            // the active figures into this one-line caption. The a11y keeps the budget truth
+            // (base + live burn); the burn caption carries the live-vs-typical read.
+            val explainsBudget = displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
             val goalDescription = when {
-                awaitingActiveBurn -> stringResource(R.string.home_calorie_of_goal, goalLabel) +
-                    ". " + stringResource(R.string.home_calorie_budget_sheet_awaiting)
+                !explainsBudget -> null
                 integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED ->
-                    stringResource(R.string.home_calorie_budget_a11y, goalLabel, baseGoal, activeCalories) +
+                    stringResource(R.string.home_calorie_budget_a11y, effectiveGoal, baseGoal, activeCalories) +
                         ". " + stringResource(R.string.home_calorie_active_estimated_a11y)
-                integratesBurn ->
-                    stringResource(R.string.home_calorie_budget_a11y, goalLabel, baseGoal, activeCalories)
-                else -> null
+                else ->
+                    stringResource(R.string.home_calorie_budget_a11y, effectiveGoal, baseGoal, activeCalories)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -503,8 +513,8 @@ internal fun CalorieHero(
         BudgetExplanationDialog(
             goal = baseGoal,
             active = activeCalories,
+            typical = shade?.typical,
             source = activeCalorieSource,
-            awaiting = awaitingActiveBurn,
             burnedToday = restingBurn?.let { it + liveActiveBurn },
             onDismiss = { showBudgetSheet = false },
         )
@@ -578,8 +588,8 @@ private fun BurnShadeCaption(burn: ActiveBurnShade) {
 private fun BudgetExplanationDialog(
     goal: Int,
     active: Int,
+    typical: Int? = null,
     source: ActiveCalorieSource?,
-    awaiting: Boolean,
     burnedToday: Int? = null,
     onDismiss: () -> Unit,
 ) {
@@ -591,45 +601,40 @@ private fun BudgetExplanationDialog(
             fontWeight = FontWeight.Bold,
         )
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (awaiting) {
+            // Expected day: sedentary base + the usual active burn (typical). On
+            // estimate-only days typical is null and the row falls back to the
+            // effective budget, which equals the target there.
+            Text(
+                stringResource(R.string.home_calories_goal_plus_active, goal, typical ?: active),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.tertiary,
+            )
+            when (source) {
+                ActiveCalorieSource.MEASURED -> Text(
+                    stringResource(R.string.home_calorie_budget_source_measured),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                ActiveCalorieSource.ESTIMATED -> Text(
+                    stringResource(R.string.home_calorie_active_estimated_a11y),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                ActiveCalorieSource.MANUAL -> Text(
+                    stringResource(R.string.home_calorie_budget_source_manual),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                ActiveCalorieSource.UNAVAILABLE, null -> {}
+            }
+            if (burnedToday != null) {
                 Text(
-                    stringResource(R.string.home_calorie_budget_sheet_awaiting),
-                    fontSize = 14.sp,
+                    stringResource(R.string.home_budget_burned_today, burnedToday),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-            } else {
-                Text(
-                    stringResource(R.string.home_calories_goal_plus_active, goal, active),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
-                when (source) {
-                    ActiveCalorieSource.MEASURED -> Text(
-                        stringResource(R.string.home_calorie_budget_source_measured),
-                        fontSize = 13.sp,
-                        color = muted,
-                    )
-                    ActiveCalorieSource.ESTIMATED -> Text(
-                        stringResource(R.string.home_calorie_active_estimated_a11y),
-                        fontSize = 13.sp,
-                        color = muted,
-                    )
-                    ActiveCalorieSource.MANUAL -> Text(
-                        stringResource(R.string.home_calorie_budget_source_manual),
-                        fontSize = 13.sp,
-                        color = muted,
-                    )
-                    ActiveCalorieSource.UNAVAILABLE, null -> {}
-                }
-                if (burnedToday != null) {
-                    Text(
-                        stringResource(R.string.home_budget_burned_today, burnedToday),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
             }
         }
         FudGlassDialogActions(

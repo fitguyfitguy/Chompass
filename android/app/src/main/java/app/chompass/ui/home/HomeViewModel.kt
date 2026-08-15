@@ -211,14 +211,17 @@ data class HomeUiState(
     }
 
     /**
-     * Hero burn shades: only in ADD_ACTIVE when the user enabled the active-calorie
-     * toggle and live measured/debug burn exists. PAL-estimate-only days stay on the
-     * existing budget tail (no shades) so the drawing never fabricates a burn story.
+     * Hero burn shades: only in ADD_ACTIVE when the day's active norm is known
+     * and a live measured source exists (Health Connect energy, or debug data)
+     * — including the measured-0 morning, so the projected day (base + typical)
+     * is visible before the first sync. Manual-only and PAL-estimate-only days
+     * stay on the legacy budget tail so the drawing never fabricates a burn
+     * story. Intrinsic to ADD_ACTIVE: not gated by the "show active calories"
+     * toggle, which now only controls the STATIC caption.
      */
     val activeBurnShade: ActiveBurnShade? get() {
         if (effectiveCalorieMode != HomeCalorieDisplayMode.ADD_ACTIVE) return null
-        if (!homeDisplay.showActiveCalories) return null
-        if (!hasLiveBurn) return null
+        if (!activitySnapshot.energyLive) return null
         val typical = activeBurnTypical
         if (typical <= 0) return null
         val source = if (measuredActiveAverageCalories > 0) {
@@ -745,8 +748,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val day = _selectedDate.value
             val display = _ui.value.homeDisplay
             val needsActivitySnapshot = display.showSteps || display.showActiveCalories
+            // Debug activity days are a live measured source like Health Connect
+            // energy: when present the hero must read them even with HC disabled
+            // (the seeder turns HC off), or the seeded burn never reaches the gauge.
             val needsMeasuredEnergy = display.calorieDisplayMode ==
-                HomeCalorieDisplayMode.ADD_ACTIVE && container.prefs.healthConnectEnabled.first()
+                HomeCalorieDisplayMode.ADD_ACTIVE &&
+                (container.prefs.healthConnectEnabled.first() ||
+                    !container.prefs.debugActivityDaysJson().isNullOrEmpty())
             if (!needsActivitySnapshot && !needsMeasuredEnergy) {
                 if (activitySnapshotGuard.isCurrent(gen)) {
                     _ui.update { it.copy(activitySnapshot = HomeActivitySnapshot(date = day)) }

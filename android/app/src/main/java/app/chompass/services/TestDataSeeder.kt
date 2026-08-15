@@ -93,15 +93,16 @@ class TestDataSeeder(private val container: AppContainer) {
 
     /**
      * seed_test_data + the hero burn thermometer enabled. [overrideTodayActive]
-     * optionally replaces today's debug active burn (e.g. > the PAL estimate to
-     * exercise the over-typical success state):
+     * optionally replaces today's debug active burn; 0 exercises the measured-0
+     * morning (projected-day arc, "0 of Y active" caption):
      *
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_active_calories true
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_active_calories true --ei active_today_override 1200
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_active_calories true --ei active_today_override 0
      */
     suspend fun seedActiveCalories(overrideTodayActive: Int? = null) {
         seedYear()
-        if (overrideTodayActive != null && overrideTodayActive > 0) {
+        if (overrideTodayActive != null) {
             val today = LocalDate.now().toString()
             val days = container.prefs.debugActivityDaysJson()?.let {
                 runCatching {
@@ -128,6 +129,19 @@ class TestDataSeeder(private val container: AppContainer) {
             else -> HomeCalorieDisplayMode.STATIC
         }
         container.prefs.setHomeCalorieDisplayMode(mode.storageKey)
+    }
+
+    /**
+     * Force the "Show active calories" toggle on/off. In STATIC mode it gates
+     * the "N active" caption; in ADD_ACTIVE the burn presentation is intrinsic.
+     */
+    suspend fun setShowActiveCalories(show: Boolean) {
+        container.prefs.setHomeShowActiveCalories(show)
+    }
+
+    /** Drop all debug activity days so the snapshot has no live source (estimate-only path). */
+    suspend fun clearDebugActivity() {
+        container.prefs.setDebugActivityDays(emptyList())
     }
 
     /** Toggle the home steps card (forces the activity snapshot to load even when active calories are hidden). */
