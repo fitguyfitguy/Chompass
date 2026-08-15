@@ -32,7 +32,7 @@ class OpenFoodFactsMappingTest {
 
         val food = OpenFoodFactsService.analysis(product, "3017620422003")
         assertEquals("Acme Greek Yogurt", food.name)
-        assertEquals(150.0, food.servingSizeGrams, 0.001)
+        assertEquals(150.0, food.servingSizeGrams!!, 0.001)
         assertEquals(120, food.calories)
         assertEquals(12.0, food.protein, 0.001)
         assertEquals(9.0, food.carbs, 0.001)
@@ -94,7 +94,7 @@ class OpenFoodFactsMappingTest {
         )
 
         val food = OpenFoodFactsService.analysis(product, "123")
-        assertEquals(60.0, food.servingSizeGrams, 0.001)
+        assertEquals(60.0, food.servingSizeGrams!!, 0.001)
         assertEquals(150, food.calories)
     }
 

@@ -270,7 +270,7 @@ private fun ProgressiveIngredientRow(
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(analysis.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1)
             Text(
-                "${analysis.calories} kcal · ${analysis.servingSizeGrams.roundToIntSafe()} g",
+                "${analysis.calories} kcal · ${(analysis.servingSizeGrams ?: 0.0).roundToIntSafe()} g",
                 fontSize = 13.sp,
                 color = AppColors.Calorie,
             )

@@ -179,7 +179,7 @@ class OnDeviceLlmSmokeTest(
                                     systemPrompt = "",
                                     userPrompt = inferServingUnitPrompt(
                                         name = analysis.name,
-                                        servingSizeGrams = analysis.servingSizeGrams,
+                                        servingSizeGrams = analysis.servingSizeGrams ?: 100.0,
                                         description = description,
                                     ),
                                 )

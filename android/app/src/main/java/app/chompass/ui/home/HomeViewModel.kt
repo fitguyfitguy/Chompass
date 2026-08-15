@@ -1872,7 +1872,10 @@ private fun FoodEntry.toAnalysis(): FoodAnalysis = MicronutrientValues.from(this
         protein = protein,
         carbs = carbs,
         fat = fat,
-        servingSizeGrams = servingSizeGrams ?: 100.0,
+        // Null when the entry never recorded a serving: the review sheet then
+        // treats macros as absolute portion totals (no scaling on weight edits,
+        // Codeberg #10 follow-up) instead of inventing a 100 g base.
+        servingSizeGrams = servingSizeGrams,
         emoji = emoji,
         servingUnitOptions = servingUnitOptions,
         selectedServingUnit = selectedServingUnit,

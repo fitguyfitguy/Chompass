@@ -121,7 +121,8 @@ fun EditFoodEntrySheet(
     // the finger, so dismissal does not depend on the handle/scrim.
     val listState = rememberLazyListState()
 
-    val entryBaseServing = currentBaseEntry.servingSizeGrams ?: 100.0
+    val recordedServing = currentBaseEntry.servingSizeGrams
+    val entryBaseServing = recordedServing ?: 100.0
     // var so per-entry serving edits (custom unit name / grams) persist to save.
     var servingUnitOptions by remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {
         mutableStateOf(ServingUnitOption.normalizedOptions(currentBaseEntry.servingUnitOptions, entryBaseServing))
@@ -137,6 +138,10 @@ fun EditFoodEntrySheet(
     }
     var servingGrams by remember(currentBaseEntry, entryBaseServing) { mutableStateOf(entryBaseServing) }
     var baseServingGrams by remember(currentBaseEntry, entryBaseServing) { mutableStateOf(entryBaseServing) }
+    // True once the user changed the serving (weight/quantity) on an entry that
+    // had no recorded serving: the corrected weight then records as the new
+    // serving without scaling macros (Codeberg #10 follow-up).
+    var servingTouched by remember(currentBaseEntry, entryBaseServing) { mutableStateOf(false) }
     var editableConstituents by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.constituents) }
     var constituentsExpanded by remember(currentBaseEntry) {
         mutableStateOf(currentBaseEntry.constituents.isNotEmpty())
@@ -153,7 +158,7 @@ fun EditFoodEntrySheet(
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
-    val scale = if (baseServingGrams > 0) servingGrams / baseServingGrams else 1.0
+    val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
@@ -230,7 +235,7 @@ fun EditFoodEntrySheet(
                 timestamp = loggedDate.atTime(loggedTime).atZone(zone).toInstant(),
                 mealType = mealType,
                 customNote = noteText.trim().takeIf { it.isNotEmpty() },
-                servingSizeGrams = servingGrams,
+                servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
                 servingUnitOptions = servingUnitOptions,
                 selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
                 selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
@@ -294,8 +299,8 @@ fun EditFoodEntrySheet(
                 editableFat = newAnalysis.fat
                 editableMicros = newAnalysis.toMicronutrients()
                 name = newAnalysis.name
-                servingGrams = newAnalysis.servingSizeGrams
-                baseServingGrams = newAnalysis.servingSizeGrams
+                servingGrams = newAnalysis.servingSizeGrams ?: 100.0
+                baseServingGrams = newAnalysis.servingSizeGrams ?: 100.0
                 editableConstituents = newAnalysis.constituents
                 constituentsExpanded = newAnalysis.constituents.isNotEmpty()
                 editableEmoji = newAnalysis.emoji
@@ -393,6 +398,7 @@ fun EditFoodEntrySheet(
                         servingQuantityText = newValue
                         if (parsed != null && parsed > 0) {
                             servingGrams = parsed * selectedServingOption.gramsPerUnit
+                            servingTouched = true
                             if (newValue.trim().startsWith("+") || newValue.trim().startsWith("-")) {
                                 servingQuantityText = ServingUnitOption.formatQuantity(parsed)
                             }
@@ -589,6 +595,7 @@ fun EditFoodEntrySheet(
                         if (serving > 0) {
                             baseServingGrams = serving
                             servingGrams = serving
+                            servingTouched = true
                             servingQuantityText = ServingUnitOption.formatQuantity(
                                 if (selectedServingOption.gramsPerUnit > 0) {
                                     serving / selectedServingOption.gramsPerUnit

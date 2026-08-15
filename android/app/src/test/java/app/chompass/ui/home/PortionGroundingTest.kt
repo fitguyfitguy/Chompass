@@ -151,7 +151,7 @@ class PortionGroundingTest {
             fiber = 8.0,
         )
         val confirmedGrams = 100.0
-        val scale = confirmedGrams / analysis.servingSizeGrams
+        val scale = confirmedGrams / analysis.servingSizeGrams!!
         assertEquals(0.5, scale, 0.0)
         assertEquals(200, (analysis.calories * scale).roundToInt())
         assertEquals(15.0, analysis.protein * scale, 0.001)

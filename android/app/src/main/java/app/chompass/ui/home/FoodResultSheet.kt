@@ -99,7 +99,7 @@ private val EmptyFoodAnalysisPlaceholder = FoodAnalysis(
     protein = 0.0,
     carbs = 0.0,
     fat = 0.0,
-    servingSizeGrams = 100.0,
+    servingSizeGrams = null,
 )
 
 /**
@@ -133,7 +133,7 @@ fun FoodResultSheet(
     onAddPhoto: ((note: String?, confirmedPortionGrams: Double?) -> Unit)? = null,
     onSave: (
         name: String,
-        servingGrams: Double,
+        servingGrams: Double?,
         scale: Double,
         mealType: MealType,
         selectedServingUnit: String?,
@@ -146,7 +146,7 @@ fun FoodResultSheet(
      */
     onAddToProgressiveMeal: ((
         name: String,
-        servingGrams: Double,
+        servingGrams: Double?,
         scale: Double,
         mealType: MealType,
         selectedServingUnit: String?,
@@ -179,9 +179,12 @@ fun FoodResultSheet(
         !portionChipDismissed &&
         shouldOfferPortionClarify(source, portionPreConfirmed)
     var name by remember { mutableStateOf(effectiveAnalysis.name) }
+    // The entry's recorded serving, if any: null means macros are absolute
+    // portion totals and weight edits must not scale them (Codeberg #10 follow-up).
+    val recordedServing = effectiveAnalysis.servingSizeGrams
     // var so per-entry serving edits (custom unit name / grams) persist to save.
     var servingUnitOptions by remember(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams) {
-        mutableStateOf(ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams))
+        mutableStateOf(ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams ?: 100.0))
     }
     val initialServingUnit = if (preferGramsByDefault) {
         ServingUnitOption.grams.unit
@@ -191,8 +194,12 @@ fun FoodResultSheet(
     var selectedServingUnitId by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
     }
-    var servingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams) }
-    var baseServingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams) }
+    var servingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams ?: 100.0) }
+    var baseServingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams ?: 100.0) }
+    // True once the user changed the serving (weight/quantity): on an entry
+    // without a recorded serving the corrected weight then records as the new
+    // serving without scaling macros (Codeberg #10 follow-up).
+    var servingTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
     var editableConstituents by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.constituents) }
     var constituentsExpanded by remember(effectiveAnalysis) {
         mutableStateOf(effectiveAnalysis.constituents.isNotEmpty())
@@ -200,7 +207,7 @@ fun FoodResultSheet(
     var servingQuantityText by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(
             ServingUnitOption.initialQuantityText(
-                totalGrams = effectiveAnalysis.servingSizeGrams,
+                totalGrams = effectiveAnalysis.servingSizeGrams ?: 100.0,
                 selectedUnitId = selectedServingUnitId,
                 selectedQuantity = effectiveAnalysis.selectedServingQuantity,
                 options = servingUnitOptions
@@ -209,7 +216,7 @@ fun FoodResultSheet(
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
-    val scale = if (baseServingGrams > 0) servingGrams / baseServingGrams else 1.0
+    val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
     var mealType by remember { mutableStateOf(MealType.currentMeal) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
@@ -229,8 +236,8 @@ fun FoodResultSheet(
     LaunchedEffect(analysis, partial) {
         val sourceAnalysis = analysis ?: partial?.toPreviewAnalysis() ?: return@LaunchedEffect
         name = sourceAnalysis.name
-        servingGrams = sourceAnalysis.servingSizeGrams
-        baseServingGrams = sourceAnalysis.servingSizeGrams
+        servingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
+        baseServingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
         editableConstituents = sourceAnalysis.constituents
         editableCalories = sourceAnalysis.calories
         editableProtein = sourceAnalysis.protein
@@ -239,14 +246,14 @@ fun FoodResultSheet(
         editableMicros = sourceAnalysis.toMicronutrients()
         val options = ServingUnitOption.normalizedOptions(
             sourceAnalysis.servingUnitOptions,
-            sourceAnalysis.servingSizeGrams,
+            sourceAnalysis.servingSizeGrams ?: 100.0,
         )
         selectedServingUnitId = ServingUnitOption.initialUnitId(
             if (preferGramsByDefault) ServingUnitOption.grams.unit else sourceAnalysis.selectedServingUnit,
             options,
         )
         servingQuantityText = ServingUnitOption.initialQuantityText(
-            totalGrams = sourceAnalysis.servingSizeGrams,
+            totalGrams = sourceAnalysis.servingSizeGrams ?: 100.0,
             selectedUnitId = selectedServingUnitId,
             selectedQuantity = sourceAnalysis.selectedServingQuantity,
             options = options,
@@ -270,7 +277,7 @@ fun FoodResultSheet(
         if (!inferringUnits && effectiveAnalysis.servingUnitOptions.isNotEmpty()) {
             val options = ServingUnitOption.normalizedOptions(
                 effectiveAnalysis.servingUnitOptions,
-                effectiveAnalysis.servingSizeGrams,
+                effectiveAnalysis.servingSizeGrams ?: 100.0,
             )
             if (selectedServingUnitId !in options.map { it.id }) {
                 selectedServingUnitId = ServingUnitOption.initialUnitId(effectiveAnalysis.selectedServingUnit, options)
@@ -311,7 +318,7 @@ fun FoodResultSheet(
             protein = scaledMacro(editableProtein),
             carbs = scaledMacro(editableCarbs),
             fat = scaledMacro(editableFat),
-            servingSizeGrams = servingGrams,
+            servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
             servingUnitOptions = servingUnitOptions,
             grounding = effectiveAnalysis.grounding?.copy(userCorrected = true),
             constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
@@ -332,7 +339,7 @@ fun FoodResultSheet(
             emoji = effectiveAnalysis.emoji,
             source = source,
             mealType = mealType,
-            servingSizeGrams = servingGrams,
+            servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
             servingUnitOptions = servingUnitOptions,
             selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
             selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
@@ -368,10 +375,11 @@ fun FoodResultSheet(
     ) {
         fun commitLog() {
             if (isSaving || !analysisReady || analysis == null) return
+            val persistedServing = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams)
             if (progressiveMealActive && onAddToProgressiveMeal != null) {
                 onAddToProgressiveMeal(
                     name.trim().ifEmpty { analysis.name },
-                    servingGrams,
+                    persistedServing,
                     scale,
                     mealType,
                     if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
@@ -382,7 +390,7 @@ fun FoodResultSheet(
             } else {
                 onSave(
                     name.trim().ifEmpty { analysis.name },
-                    servingGrams,
+                    persistedServing,
                     scale,
                     mealType,
                     if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
@@ -395,7 +403,7 @@ fun FoodResultSheet(
             if (isSaving || !analysisReady || analysis == null || onAddToProgressiveMeal == null) return
             onAddToProgressiveMeal(
                 name.trim().ifEmpty { analysis.name },
-                servingGrams,
+                ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
                 scale,
                 mealType,
                 if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
@@ -638,6 +646,7 @@ fun FoodResultSheet(
                         servingQuantityText = newValue
                         if (parsed != null && parsed > 0) {
                             servingGrams = parsed * selectedServingOption.gramsPerUnit
+                            servingTouched = true
                             if (newValue.trim().startsWith("+") || newValue.trim().startsWith("-")) {
                                 servingQuantityText = ServingUnitOption.formatQuantity(parsed)
                             }
@@ -790,12 +799,13 @@ fun FoodResultSheet(
             if (showPortionClarify) {
                 item {
                     PortionClarifyRow(
-                        estimatedGrams = effectiveAnalysis.servingSizeGrams,
+                        estimatedGrams = effectiveAnalysis.servingSizeGrams ?: 100.0,
                         isLoading = isReprocessingPortion,
                         error = portionClarifyError,
                         showQualitativeChips = onReprocessPortion != null,
                         onApplyExactGrams = { grams ->
                             servingGrams = grams
+                            servingTouched = true
                             selectedServingUnitId = ServingUnitOption.grams.unit
                             servingQuantityText = ServingUnitOption.formatQuantity(grams)
                             portionChipDismissed = true

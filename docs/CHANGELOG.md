@@ -10,6 +10,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Barcode scan now says why it failed** (Android): scanning a product that is not in the Open Food Facts database now shows a clear "product not found" message instead of "something went wrong", and temporary Open Food Facts hiccups are retried automatically before giving up. Closes Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
 
+- **Fixing a food's weight no longer changes its nutrition** (Android): for foods that came from other apps (diary import) and have no recorded serving, correcting the weight in the edit screen used to rescale the macros, which were already correct. The weight can now be corrected freely, and only counts as a serving once you set it yourself. Follow-up to Codeberg [#10](https://codeberg.org/fitguy/Chompass/issues/10) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
 ## [3.15.0] - 2026-08-15
 
 ### Added

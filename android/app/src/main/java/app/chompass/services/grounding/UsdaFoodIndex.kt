@@ -408,7 +408,8 @@ object NutrientScaling {
             protein = parts.sumOf { it.protein },
             carbs = parts.sumOf { it.carbs },
             fat = parts.sumOf { it.fat },
-            servingSizeGrams = parts.sumOf { it.servingSizeGrams },
+            servingSizeGrams = parts.mapNotNull { it.servingSizeGrams }
+                .takeIf { it.size == parts.size }?.sum() ?: 100.0,
             emoji = emoji,
             sugar = sumD { it.sugar },
             addedSugar = sumD { it.addedSugar },

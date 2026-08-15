@@ -28,17 +28,18 @@ object ConstituentReconcile {
             .filter { it.protein >= 0 && it.carbs >= 0 && it.fat >= 0 }
             .take(MAX_CONSTITUENTS)
             .toList()
-        if (rows.isEmpty() || analysis.servingSizeGrams <= 0) {
+        if (rows.isEmpty() || analysis.servingSizeGrams == null || analysis.servingSizeGrams <= 0) {
             return analysis.copy(constituents = emptyList())
         }
 
+        val mealServing = analysis.servingSizeGrams
         val sumG = rows.sumOf { it.servingSizeGrams }
         val sumCal = rows.sumOf { it.calories.toDouble() }
         val sumP = rows.sumOf { it.protein }
         val sumC = rows.sumOf { it.carbs }
         val sumF = rows.sumOf { it.fat }
 
-        val gErr = relError(sumG, analysis.servingSizeGrams)
+        val gErr = relError(sumG, mealServing)
         val mErr = macroRelError(
             sumCal, sumP, sumC, sumF,
             analysis.calories.toDouble(), analysis.protein, analysis.carbs, analysis.fat,
@@ -89,7 +90,8 @@ object ConstituentReconcile {
     )
 
     private fun scaleRows(rows: List<FoodConstituent>, meal: FoodAnalysis): List<FoodConstituent> {
-        val grams = scaleDoubles(rows.map { it.servingSizeGrams }, meal.servingSizeGrams)
+        val mealServing = meal.servingSizeGrams ?: return rows
+        val grams = scaleDoubles(rows.map { it.servingSizeGrams }, mealServing)
         val cals = scaleInts(rows.map { it.calories }, meal.calories)
         val protein = scaleDoubles(rows.map { it.protein }, meal.protein)
         val carbs = scaleDoubles(rows.map { it.carbs }, meal.carbs)
@@ -118,10 +120,11 @@ object ConstituentReconcile {
         meal: FoodAnalysis,
     ): List<FoodConstituent> {
         if (rows.isEmpty()) return rows
+        val mealServing = meal.servingSizeGrams ?: return rows
         val head = rows.dropLast(1)
         val last = rows.last()
         return head + last.copy(
-            servingSizeGrams = round1(meal.servingSizeGrams - head.sumOf { it.servingSizeGrams }),
+            servingSizeGrams = round1(mealServing - head.sumOf { it.servingSizeGrams }),
             protein = round1(meal.protein - head.sumOf { it.protein }),
             carbs = round1(meal.carbs - head.sumOf { it.carbs }),
             fat = round1(meal.fat - head.sumOf { it.fat }),

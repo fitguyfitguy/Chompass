@@ -31,7 +31,7 @@ class NutrientScalingAndHistoryTest {
         assertEquals(178, scaled.calories)
         assertEquals(2.2, scaled.protein, 0.001)
         assertEquals(45.6, scaled.carbs, 0.001)
-        assertEquals(200.0, scaled.servingSizeGrams, 0.001)
+        assertEquals(200.0, scaled.servingSizeGrams!!, 0.001)
     }
 
     @Test
@@ -42,7 +42,7 @@ class NutrientScalingAndHistoryTest {
         assertEquals(150, sum.calories)
         assertEquals(9.0, sum.protein, 0.001)
         assertEquals(14.5, sum.carbs, 0.001)
-        assertEquals(78.0, sum.servingSizeGrams, 0.001)
+        assertEquals(78.0, sum.servingSizeGrams!!, 0.001)
         assertEquals("🍳", sum.emoji)
     }
 
