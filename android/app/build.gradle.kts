@@ -49,12 +49,19 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            // Robolectric (AndroidAppIconManager tests) needs merged resources/manifest.
+            isIncludeAndroidResources = true
+        }
+    }
+
     defaultConfig {
         applicationId = "app.chompass"
         minSdk = 26
         targetSdk = 36
-        versionCode = 50
-        versionName = "3.13.0"
+        versionCode = 51
+        versionName = "3.14.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         if (releaseAbi != null) {
@@ -209,6 +216,7 @@ dependencies {
     implementation(libs.vico.compose.m3)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     testImplementation("org.json:json:20240303")
     testImplementation(libs.mockwebserver)
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -39,5 +39,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 3.13.0
-CurrentVersionCode: 50
+CurrentVersion: 3.14.0
+CurrentVersionCode: 51

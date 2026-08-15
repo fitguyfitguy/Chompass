@@ -94,6 +94,8 @@ internal object Keys {
         val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
+        /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
+        val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")
         val WEEK_STARTS_MONDAY = booleanPreferencesKey("weekStartsOnMonday")
         /** Factory / Settings default for Progress tab range chips (`1W`…`All`). */
         val PROGRESS_DEFAULT_RANGE_ID = stringPreferencesKey("progressDefaultRangeId")

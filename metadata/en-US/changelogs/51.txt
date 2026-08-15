@@ -1,0 +1,5 @@
+• Home ring spans your whole expected day with Add Active on: the calorie ring runs from zero to your projected daily burn (sedentary goal plus your usual active burn) instead of starting at the base goal in the morning, and the calorie widget shows the same expected goal and remaining
+• Reasoning effort for OpenRouter models: a new option under Settings → AI & Speech controls the thinking budget of reasoning-capable models
+• A separate model for photos: the Vision model setting lets photos use a different model than text, per provider
+• Fixed launcher icon option: a new switch in Settings keeps the launcher icon teal and stops it from following the theme color or wallpaper
+• Fixes: changing the theme no longer closes the app on some Xiaomi and Samsung devices, the morning budget uses measured active burn instead of a guessed estimate, active calories match the day you're viewing

@@ -20,7 +20,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -29,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import app.chompass.models.FoodEntry
 import app.chompass.services.AndroidAppIconManager
@@ -209,6 +209,22 @@ open class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         unregisterWallpaperColorsListener()
+        // Launcher-icon alias swaps must not run while the task is in the foreground:
+        // disabling the alias the current task was launched through makes some launchers
+        // (MIUI, One UI) tear the task down or force-stop the app (#13, #21). Swap only
+        // when leaving for real (skip config-change recreation) and off the main thread,
+        // so the icon is already updated when the user looks at the launcher. If the
+        // process dies before the swap lands, the next cold start applies it anyway.
+        if (!isChangingConfigurations) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val container = (application as ChompassApp).container
+                val themeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
+                val fixedIcon = container.prefs.fixedLauncherIcon.first()
+                // Re-check we are still backgrounded before touching any alias.
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return@launch
+                AndroidAppIconManager.apply(this@MainActivity, themeColor, fixedIcon)
+            }
+        }
         super.onStop()
     }
 
@@ -218,9 +234,11 @@ open class MainActivity : ComponentActivity() {
     }
 
     /**
-     * When Theme Color is System, re-read Material You primary, refresh the Compose
-     * theme (via [systemPaletteEpoch]), re-map the launcher icon, and rewrite widgets
-     * if the primary hex changed.
+     * When Theme Color is System, re-read Material You primary and refresh the Compose
+     * theme (via [systemPaletteEpoch]) plus the widgets if the primary hex changed.
+     * The launcher icon is not remapped here: alias swaps are deferred to [onStop]
+     * (see there) so a running task is never torn down by launchers that react to
+     * component changes (#13).
      */
     private fun refreshSystemPalette() {
         if (systemPaletteRefreshJob?.isActive == true) return
@@ -239,7 +257,6 @@ open class MainActivity : ComponentActivity() {
                     systemPaletteEpoch++
                     container.widgetSnapshotWriter.refresh()
                 }
-                AndroidAppIconManager.apply(this@MainActivity, themeColor)
             } finally {
                 systemPaletteRefreshJob = null
             }
@@ -306,7 +323,12 @@ open class MainActivity : ComponentActivity() {
             initialAppearance = container.prefs.appearanceMode.first()
             initialThemeColorKey = container.prefs.appThemeColor.first()
             initialGlassBlurEnabled = container.prefs.glassBlurEnabled.first()
-            AndroidAppIconManager.apply(this@MainActivity, AppThemeColor.fromKey(initialThemeColorKey))
+            val initialFixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
+            AndroidAppIconManager.apply(
+                this@MainActivity,
+                AppThemeColor.fromKey(initialThemeColorKey),
+                initialFixedLauncherIcon,
+            )
             startOnboarding = resolvedStartOnboarding
             if (!resolvedStartOnboarding) {
                 container.profileRepository.profile.first { it != null }
@@ -325,9 +347,6 @@ open class MainActivity : ComponentActivity() {
                 "light" -> false
                 "dark" -> true
                 else -> systemDark
-            }
-            LaunchedEffect(themeColorKey) {
-                AndroidAppIconManager.apply(this@MainActivity, themeColor)
             }
             val paletteEpoch = systemPaletteEpoch
             key(themeColorKey, paletteEpoch) {
