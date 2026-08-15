@@ -23,7 +23,8 @@ cp keystore.properties.template keystore.properties
 ## Build and package
 
 One command runs Android unit tests, **cross-app parity** (PWA tests + typecheck +
-contract schemas), builds release APKs, copies the **universal** APK to the repo root, and writes `SHA256SUMS`:
+contract schemas), builds release APKs, copies the **universal** APK into
+`releases/`, and writes `SHA256SUMS`:
 
 ```bash
 devenv tasks run release:package

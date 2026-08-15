@@ -52,6 +52,7 @@ scripts/setup_codeberg_labels.sh
 NoFUD-*.apk
 Chompass-*.apk
 SHA256SUMS
+releases/
 release-screenshots/
 
 # Local dev screenshots (adb captures, not published)
