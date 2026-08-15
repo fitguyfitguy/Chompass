@@ -97,7 +97,7 @@ estimatedDailyActive = round(TDEE − BMR)
 sedentaryBudget = effectiveCalories − estimatedDailyActive
 ```
 
-**When:** Home calorie gauge modes (Add Active, Dual) when Health Connect active burn is unavailable. The PAL multiplier portion of TDEE is surfaced as today's estimated active layer.
+**When:** Home calorie gauge modes (Add Active, Dual) when **no live measured-energy source exists** (Health Connect energy permission not granted, or HC off). With a live source, measured-so-far wins even at 0: a morning before the first wearable sync shows the sedentary budget plus 0, and the estimate is never substituted for today's measured value.
 
 **Call sites:** `UserProfile.estimatedDailyActiveCalories`, `HomeCalorieDisplay.resolveActiveBurn`, home ring + widgets.
 
@@ -110,7 +110,7 @@ sedentaryBudget = effectiveCalories − estimatedDailyActive
 | Net        | Falls back to Static                | Net intake (eaten − active) vs fixed goal |
 | Dual       | Burn hint arc uses estimated active | Burn hint arc uses measured active        |
 
-Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied. With Add Active, set **Activity Level** to everyday non-training life (not peak training days); measured Health Connect burn (or the PAL estimate when HC is off) covers workouts so they are not stacked on a high PAL.
+Add Active decomposes the stored goal so activity is not double-counted: the sedentary budget strips the PAL estimate before today's active layer is applied. With Add Active, set **Activity Level** to everyday non-training life (not peak training days); measured Health Connect burn (or the PAL estimate when HC is off) covers workouts so they are not stacked on a high PAL. With a live Health Connect source the measured value is used as-is for the whole day, morning zeros included, so the estimate is never mixed into a measured day.
 
 When **Energy Burn Goals** is on, the stored goal is the _measured_ Health Connect TDEE (basal + active), so the PAL strip would double-subtract activity. In that case the sedentary budget uses the **measured active average** (`HealthEnergySummary.activeAverageCalories`, persisted as `healthEnergyMeasuredActiveCalories`) instead of the PAL estimate: `sedentaryBudget = effectiveCalories − measuredActiveAverage`, and the ADD_ACTIVE goal converges back to `effectiveCalories` on a typical day. The measured override applies to the home ring and widgets (`HomeUiState.gaugeBaseCalorieGoal`, `WidgetSnapshotWriter`); the shared `chompass-core` formula is unchanged (PWA has no Health Connect).
 

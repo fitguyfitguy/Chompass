@@ -87,6 +87,7 @@ class HomeCalorieDisplayTest {
             date = LocalDate.now(),
             activeCalories = 500,
             source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
         )
         val burn = HomeCalorieDisplay.resolveActiveBurn(
             HomeCalorieDisplayMode.ADD_ACTIVE,
@@ -114,6 +115,7 @@ class HomeCalorieDisplayTest {
             date = LocalDate.now(),
             activeCalories = 500,
             source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
         )
         val burn = HomeCalorieDisplay.resolveActiveBurn(
             HomeCalorieDisplayMode.ADD_ACTIVE,
@@ -123,6 +125,52 @@ class HomeCalorieDisplayTest {
         )
         assertEquals(ActiveCalorieSource.MEASURED, burn?.source)
         assertEquals(650, burn?.calories)
+    }
+
+    @Test
+    fun resolveActiveBurn_measuredZero_morningKeepsAddActiveBudget() {
+        // Live HC energy source, wearable has recorded nothing yet: measured 0
+        // wins over the estimate, so the morning budget stays on the sedentary
+        // base instead of substituting the whole estimated day (the old bug:
+        // base + full estimate, collapsing at the first measurement).
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 0,
+            source = ActivityDataSource.UNAVAILABLE,
+            energyLive = true,
+        )
+        val burn = HomeCalorieDisplay.resolveActiveBurn(
+            HomeCalorieDisplayMode.ADD_ACTIVE,
+            snapshot,
+            estimatedDailyActive = 800,
+        )
+        assertEquals(ActiveCalorieSource.MEASURED, burn?.source)
+        assertEquals(0, burn?.calories)
+        val mode = HomeCalorieDisplay.effectiveMode(HomeCalorieDisplayMode.ADD_ACTIVE, burn)
+        assertEquals(HomeCalorieDisplayMode.ADD_ACTIVE, mode)
+        // No budget jump: sedentary + 0 in the morning, then sedentary + first
+        // measurement once activity lands.
+        val sedentary = 1800
+        assertEquals(sedentary, HomeCalorieDisplay.effectiveGoal(mode, sedentary, burn!!.calories))
+        assertEquals(sedentary + 50, HomeCalorieDisplay.effectiveGoal(mode, sedentary, 50))
+    }
+
+    @Test
+    fun resolveActiveBurn_measuredZero_addsManualOnTop() {
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 0,
+            source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
+        )
+        val burn = HomeCalorieDisplay.resolveActiveBurn(
+            HomeCalorieDisplayMode.ADD_ACTIVE,
+            snapshot,
+            estimatedDailyActive = 400,
+            manualActiveCalories = 150,
+        )
+        assertEquals(ActiveCalorieSource.MEASURED, burn?.source)
+        assertEquals(150, burn?.calories)
     }
 
     @Test

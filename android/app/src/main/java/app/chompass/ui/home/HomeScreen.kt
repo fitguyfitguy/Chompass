@@ -400,7 +400,8 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         showRestingShade = ui.showRestingBurnShade,
                         awaitingActiveBurn = ui.homeDisplay.calorieDisplayMode ==
                             HomeCalorieDisplayMode.ADD_ACTIVE &&
-                            calorieMode == HomeCalorieDisplayMode.STATIC,
+                            (calorieMode == HomeCalorieDisplayMode.STATIC ||
+                                ui.displayActiveCalories == 0),
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
