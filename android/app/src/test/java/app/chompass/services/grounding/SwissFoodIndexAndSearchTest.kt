@@ -52,7 +52,7 @@ class SwissFoodIndexAndSearchTest {
         assertEquals((408.0 * 0.6).roundToInt(), analysis.calories)
         assertEquals(27.0 * 0.6, analysis.protein, 0.001)
         assertEquals(32.0 * 0.6, analysis.fat, 0.001)
-        assertEquals(60.0, analysis.servingSizeGrams, 0.001)
+        assertEquals(60.0, analysis.servingSizeGrams!!, 0.001)
         assertEquals(84.0 * 0.6, analysis.cholesterol!!, 0.001)
         assertEquals(0.5 * 0.6, analysis.vitaminD!!, 0.001)
         // Micros round to one decimal on scaling.

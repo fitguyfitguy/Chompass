@@ -181,7 +181,7 @@ class GroundingTools(
             }.toString()
         }
         rememberSourceId(raw)
-        val grams = off.servingSizeGrams.takeIf { it > 0 } ?: 100.0
+        val grams = off.servingSizeGrams?.takeIf { it > 0 } ?: 100.0
         val scale = 100.0 / grams
         return JSONObject().apply {
             put("found", true)

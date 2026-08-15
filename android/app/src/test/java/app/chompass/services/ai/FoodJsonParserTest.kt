@@ -40,7 +40,7 @@ class FoodJsonParserTest {
         assertEquals(5.0, food.protein, 0.001)
         assertEquals(27.0, food.carbs, 0.001)
         assertEquals(3.0, food.fat, 0.001)
-        assertEquals(100.0, food.servingSizeGrams, 0.001)
+        assertEquals(100.0, food.servingSizeGrams!!, 0.001)
         assertEquals("🥣", food.emoji)
     }
 
@@ -61,7 +61,7 @@ class FoodJsonParserTest {
             }
             """.trimIndent(),
         )
-        assertEquals(120.0, food.servingSizeGrams, 0.001)
+        assertEquals(120.0, food.servingSizeGrams!!, 0.001)
         assertEquals(2.5, food.fiber!!, 0.001)
         assertEquals(480.0, food.sodium!!, 0.001)
         assertEquals(1, food.servingUnitOptions.size)
@@ -107,7 +107,7 @@ class FoodJsonParserTest {
         assertEquals("Yogurt", scaled.name)
         assertEquals(120, scaled.calories)
         assertEquals(6.0, scaled.protein, 0.001)
-        assertEquals(150.0, scaled.servingSizeGrams, 0.001)
+        assertEquals(150.0, scaled.servingSizeGrams!!, 0.001)
     }
 
     @Test

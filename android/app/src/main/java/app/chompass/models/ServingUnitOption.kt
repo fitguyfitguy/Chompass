@@ -75,6 +75,34 @@ data class ServingUnitOption(
             pickerOptions(options).firstOrNull { it.id == id } ?: grams
 
         /**
+         * Serving-scaling rule (Codeberg #10 follow-up): an entry without a
+         * recorded serving has macros that are absolute portion totals, so
+         * weight edits must never scale them. Only entries with a recorded
+         * serving scale from it.
+         */
+        fun servingScale(
+            recordedServingGrams: Double?,
+            servingGrams: Double,
+            baseServingGrams: Double,
+        ): Double =
+            if (recordedServingGrams == null || baseServingGrams <= 0) 1.0
+            else servingGrams / baseServingGrams
+
+        /**
+         * Serving to persist (Codeberg #10 follow-up): correcting the weight on
+         * an entry without a recorded serving records it (macros stay
+         * untouched); leaving it alone keeps the entry serving-less, so a later
+         * edit cannot corrupt macros either. Entries with a recorded serving
+         * persist the edited weight as before.
+         */
+        fun persistedServingGrams(
+            recordedServingGrams: Double?,
+            servingTouched: Boolean,
+            servingGrams: Double,
+        ): Double? =
+            if (recordedServingGrams != null || servingTouched) servingGrams else null
+
+        /**
          * Applies a per-entry custom serving edit (the serving-card pencil,
          * Codeberg #10 follow-up). Starting from a non-gram unit, the selected
          * option is renamed / re-weighted in place. Starting from plain grams,

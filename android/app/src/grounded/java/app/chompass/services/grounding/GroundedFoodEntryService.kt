@@ -544,7 +544,7 @@ class GroundedFoodEntryService(
                 val portion = PortionResolver.resolve(
                     component = component,
                     gramOverride = gramOverride,
-                    candidateServingGrams = off.servingSizeGrams.takeIf { it > 0 },
+                    candidateServingGrams = off.servingSizeGrams?.takeIf { it > 0 },
                 )
                 if (!portion.isResolved) {
                     val candidate = GroundingCandidate(
@@ -568,8 +568,9 @@ class GroundedFoodEntryService(
                     )
                 }
                 val grams = PortionResolver.roundGrams(portion.grams!!)
-                val scaled = if (grams != off.servingSizeGrams && off.servingSizeGrams > 0) {
-                    val scale = grams / off.servingSizeGrams
+                val offServing = off.servingSizeGrams
+                val scaled = if (offServing != null && grams != offServing && offServing > 0) {
+                    val scale = grams / offServing
                     off.copy(
                         calories = (off.calories * scale).roundToInt(),
                         protein = off.protein * scale,
@@ -585,17 +586,17 @@ class GroundedFoodEntryService(
                     sourceId = barcode,
                     displayName = off.name,
                     score = 100.0,
-                    caloriesPer100g = if (off.servingSizeGrams > 0) {
-                        off.calories * 100.0 / off.servingSizeGrams
+                    caloriesPer100g = if (offServing != null && offServing > 0) {
+                        off.calories * 100.0 / offServing
                     } else null,
-                    proteinPer100g = if (off.servingSizeGrams > 0) {
-                        off.protein * 100.0 / off.servingSizeGrams
+                    proteinPer100g = if (offServing != null && offServing > 0) {
+                        off.protein * 100.0 / offServing
                     } else null,
-                    carbsPer100g = if (off.servingSizeGrams > 0) {
-                        off.carbs * 100.0 / off.servingSizeGrams
+                    carbsPer100g = if (offServing != null && offServing > 0) {
+                        off.carbs * 100.0 / offServing
                     } else null,
-                    fatPer100g = if (off.servingSizeGrams > 0) {
-                        off.fat * 100.0 / off.servingSizeGrams
+                    fatPer100g = if (offServing != null && offServing > 0) {
+                        off.fat * 100.0 / offServing
                     } else null,
                     servingSizeGrams = grams,
                     matchedBy = "barcode",
@@ -897,7 +898,7 @@ class GroundedFoodEntryService(
             protein = analysis.protein,
             carbs = analysis.carbs,
             fat = analysis.fat,
-            servingGrams = analysis.servingSizeGrams,
+            servingGrams = analysis.servingSizeGrams ?: 0.0,
             sodiumMg = analysis.sodium,
         )
         val notes = buildList {
@@ -955,18 +956,21 @@ class GroundedFoodEntryService(
                     selectedServingUnit = only.selectedServingUnit,
                     selectedServingQuantity = only.selectedServingQuantity,
                 )
-            } else if (result.servingSizeGrams > 0) {
-                result = result.copy(
-                    servingUnitOptions = listOf(
-                        ServingUnitOption(
-                            unit = "serving",
-                            gramsPerUnit = result.servingSizeGrams,
-                            quantity = 1.0,
-                        )
-                    ),
-                    selectedServingUnit = "serving",
-                    selectedServingQuantity = 1.0,
-                )
+            } else {
+                val serving = result.servingSizeGrams
+                if (serving != null && serving > 0) {
+                    result = result.copy(
+                        servingUnitOptions = listOf(
+                            ServingUnitOption(
+                                unit = "serving",
+                                gramsPerUnit = serving,
+                                quantity = 1.0,
+                            )
+                        ),
+                        selectedServingUnit = "serving",
+                        selectedServingQuantity = 1.0,
+                    )
+                }
             }
         }
         return result

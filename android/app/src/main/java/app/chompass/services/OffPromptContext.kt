@@ -75,7 +75,7 @@ Do not invent conflicting macros for the matched packaged item when this data is
             ProductHit(
                 barcode = barcode,
                 name = analysis.name,
-                servingGrams = analysis.servingSizeGrams,
+                servingGrams = analysis.servingSizeGrams ?: 100.0,
                 calories = analysis.calories,
                 proteinG = analysis.protein,
                 carbsG = analysis.carbs,

@@ -123,7 +123,8 @@ data class FoodAnalysis(
     val protein: Double,
     val carbs: Double,
     val fat: Double,
-    val servingSizeGrams: Double,
+    /** Recorded serving grams; null = macros are portion totals without a known serving (imports). */
+    val servingSizeGrams: Double?,
     val emoji: String? = null,
     val sugar: Double? = null,
     val addedSugar: Double? = null,

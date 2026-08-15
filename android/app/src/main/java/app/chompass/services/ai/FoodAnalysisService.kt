@@ -834,13 +834,14 @@ class FoodAnalysisService(
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         if (analysis.servingUnitOptions.isNotEmpty()) return analysis
-        val options = servingUnitFallbackOptions(analysis.name, analysis.servingSizeGrams, imageBytes, description)
+        val servingSizeGrams = analysis.servingSizeGrams ?: return analysis
+        val options = servingUnitFallbackOptions(analysis.name, servingSizeGrams, imageBytes, description)
         if (options.isEmpty()) return analysis
         val selected = options.first()
         return analysis.copy(
             servingUnitOptions = options,
             selectedServingUnit = selected.unit,
-            selectedServingQuantity = selected.quantityFor(analysis.servingSizeGrams)
+            selectedServingQuantity = selected.quantityFor(servingSizeGrams)
         )
     }
 
