@@ -28,9 +28,9 @@ Artifacts are written under:
 
 ## Current Baseline Status
 
-- Capture attempted in an environment without `adb` on PATH.
-- Blocker: `adb` is not installed/available in this runtime.
-- Next step: run the script on a machine with Android platform tools and a connected device/emulator.
+- Capture requires the device; run via the WSL2 build + Windows adb split (see
+  [DEVELOPMENT.md](DEVELOPMENT.md)) or `ADB_BIN` pointing at a Windows `adb.exe`.
+- Artifacts land in `android/build/perf-baseline/<timestamp>/` (gitignored).
 
 ## Validation Cadence
 

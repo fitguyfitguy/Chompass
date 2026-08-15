@@ -45,7 +45,7 @@ Not on the Play Store. Install from **F-Droid**, Obtainium, or Codeberg Releases
 
 </div>
 
-- **F-Droid**: [app.chompass](https://f-droid.org/packages/app.chompass/) — install and auto-update from the F-Droid client.
+- **F-Droid**: [app.chompass](https://f-droid.org/packages/app.chompass/): install and auto-update from the F-Droid client.
 - **Obtainium**: tap the badge above, then confirm in Obtainium. Or paste `https://codeberg.org/fitguy/chompass` into **Add App**.
 - **Direct APK**: download from [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases). Prefer `arm64-v8a` on modern phones; use `armeabi-v7a` for older 32-bit devices, `x86_64` for emulators/Chromebooks, or universal only when unsure.
 
@@ -201,7 +201,7 @@ methodology: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
 ## Docs & privacy
 
-Guides, changelog, F-Droid listing metadata, and food-accuracy benchmarks live under [`docs/`](docs/). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md). Building from source: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+Guides, changelog, F-Droid listing metadata, and food-accuracy benchmarks live under [`docs/`](docs/): full index: [`docs/README.md`](docs/README.md). Accuracy stats: [`docs/ACCURACY.md`](docs/ACCURACY.md). Building from source: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure. API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 

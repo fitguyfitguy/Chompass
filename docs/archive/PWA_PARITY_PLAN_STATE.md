@@ -1,4 +1,4 @@
-# PWA ↔ Android visual parity plan — state
+# PWA ↔ Android visual parity plan: state
 
 Last updated: 2026-08-07 (Phases 1–6 done, committed, pushed to `origin/main`).
 
@@ -8,7 +8,7 @@ Bring the Chompass PWA UI (`web/app/`) to visual parity with the Android native
 app (`android/app/`). Android is the product of record; the PWA must stay
 data-interoperable (shared JSON contracts) and a no-bundler Web Components app.
 Keep PWA-only structural features (desktop rail, install banner, day-nav
-chevrons, per-row ⋮ menu, Frequent/Favorites tiles) — restyle, don't remove.
+chevrons, per-row ⋮ menu, Frequent/Favorites tiles): restyle, don't remove.
 
 ## Phase status
 
@@ -38,10 +38,10 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
   Chromium); macro tubes `64g left`/`24g over`; "View More ›"; meal headers
   `436 kcal · 13P 74C 7F`; food rows name + lowercase locale time, teal kcal +
   `· 24g` serving, tinted macro pills. Desktop hero tap-bar is a
-  `<div role="button" tabindex="0">` (buttons can't wrap block content — the
+  `<div role="button" tabindex="0">` (buttons can't wrap block content: the
   nested-`<button>` bug escaped the mobile container as ghost bars).
 - **P3 (nav):** `.nav-pill` 64×32dp radius 999px (`--nav-pill` secondaryContainer
-  active), single filled Material icons (Android renders filled always — no
+  active), single filled Material icons (Android renders filled always: no
   outline swap), `--nav-h` 5rem, no border-top, `--nav-bar` = exact Android
   surfaceContainer (#211f26 dark / #f3edf7 light, both `prefers-color-scheme`
   and `[data-theme]` blocks), desktop rail restyled to M3 NavigationRail
@@ -53,16 +53,15 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
   boxless `.stat-badge` 4-col (Current/Goal/Net Change/Average, units + signed
   net); `.chart-legend` dot + dashed swatch + "needs at least 2 weigh-in days"
   hint; `charts.js` `lineChartSvg` gained `grid` option (3 horizontal
-  `.chart-grid` lines); `.history-link` rows (teal ListAlt icon, NO bubble —
-  Android `FudIconBubble` is bare) + chevron; Calories card `Avg: N kcal`;
-  `.macro-progress` 3 rows (Protein/Carbs/Fat — no Fiber) "100g / 147g" + 8dp
+  `.chart-grid` lines); `.history-link` rows (teal ListAlt icon, NO bubble: Android `FudIconBubble` is bare) + chevron; Calories card `Avg: N kcal`;
+  `.macro-progress` 3 rows (Protein/Carbs/Fat: no Fiber) "100g / 147g" + 8dp
   track/fill; fixed `toISOString()` UTC-shift bug in `todayIso`/`shiftDate`
-  (Europe/Berlin rendered Sat-start weeks) — `localIsoDate(d)` helper, same fix
+  (Europe/Berlin rendered Sat-start weeks): `localIsoDate(d)` helper, same fix
   as diary-view. New keys: `progress.log_weight`, `progress.stat_*`,
   `progress.*_history`, `progress.history_count_format`, `progress.avg_format`,
   `progress.macro_averages`, `progress.macro_progress_format`,
   `progress.log_first_*`, `progress.no_food`, `progress.metric_body_fat`
-  ("Body Fat" — Android title case, used for toggle + BF card title).
+  ("Body Fat": Android title case, used for toggle + BF card title).
   `dev-seed.js` `seedAll()` now also seeds 42d body fat (Android
   `seed_body_metrics` parity).
 - **P5 (settings hub):** `.screen-title` → 1.75rem (28sp); `.settings-hub` glass
@@ -71,7 +70,7 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
   Goals & Nutrition, App & Display, AI & Speech, Health, Data & Sync) + second
   card for About; Android-exact summaries ("Diet, macros, adaptive goals",
   "Appearance, home, notifications"); `settings.hub.data_hint` = "Export, sync,
-  backup" (deliberately NOT "Health Connect, export, sync" — HC is Android-only).
+  backup" (deliberately NOT "Health Connect, export, sync": HC is Android-only).
   Icons = Android `Icons.Outlined` paths (person/equalizer/settings/smartToy/
   folderOpen/info). Subpages unchanged.
 - **P6 (add-food sheet, diary-view.js):** hero tiles i18n'd Android-exact:
@@ -82,7 +81,7 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
   Android string; "More ways to log" `.add-food-grid` 4-col compact (64dp min,
   12dp radius, 20dp bubble): Voice/Barcode/Manual/Copy from day +
   Frequent/Favorites/Active burn + spacer (Frequent/Favorites are PWA-only,
-  kept). Tiles are solid `var(--surface)`, **`border: 0`** — removing the old
+  kept). Tiles are solid `var(--surface)`, **`border: 0`**: removing the old
   border exposed the UA `2px outset` button default. New keys: 16 ×
   `add_food.*`. `tile()` gained a `hero` param.
 
@@ -90,8 +89,7 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
 
 - Strings live in `web/app/src/lib/i18n/catalogs/*.js`, 16 locales (ar az de en
   es fr hi it ja ko nl pt-BR ro ru zh-CN), gated by `testdata/parity/locales.json`.
-- Every EN key must exist in all 15 catalogs (`i18n.test.js`). Value changes too
-  — update all catalogs, not just EN. Scripts used: `/tmp/insert_progress_keys.py`,
+- Every EN key must exist in all 15 catalogs (`i18n.test.js`); value changes must update all catalogs, not just EN. Scripts used: `/tmp/insert_progress_keys.py`,
   `/tmp/add_food_keys.py`, `/tmp/data_hint.py` (pattern: regex-replace value or
   insert after an anchor key, then `node -e
   "import('./web/app/src/lib/i18n/catalogs/index.js').then(m =>
@@ -101,13 +99,13 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
 
 ## Environment gotchas (learned the hard way)
 
-- **Port 8787 is NOT chompass** — a `chompass-demo-weighin` dev server holds it.
+- **Port 8787 is NOT chompass**: a `chompass-demo-weighin` dev server holds it.
   Chompass PWA dev server: `PORT=8788 nohup node web/serve.mjs` (serve.mjs
   serves `web/app/`, so URLs are `/src/...`, hash routes `#/...`).
-- **Always use unique `--user-data-dir` per run** — the SW serves cache-first
+- **Always use unique `--user-data-dir` per run**: the SW serves cache-first
   and stale `index.html`/`app.js` masked fixes twice. Also: if two runs share a
   `--remote-debugging-port`, the second script silently connects to the FIRST
-  (stale) browser — kill leftovers (`pkill -f "remote-debugging-port=9"`) or
+  (stale) browser: kill leftovers (`pkill -f "remote-debugging-port=9"`) or
   bump the port.
 - CLI `--screenshot` fires before async render; use CDP with ~9s waits after
   seed/navigation. Seed via `#/home?seed=1` first (fresh profile lands on
@@ -123,7 +121,7 @@ release:check-parity` green, fresh-profile screenshot + vision diff vs
   app/src/lib/__tests__/*.test.js'` (171 tests), then `devenv tasks run
   release:check-parity`.
 
-## Phase 7 — Coach shell (next)
+## Phase 7: Coach shell (next)
 
 Android sources: `android/app/src/main/java/app/chompass/ui/coach/`
 (`CoachScreen.kt`, `CoachInputBar.kt`, `CoachMessageBubble.kt`,
@@ -135,7 +133,7 @@ Per the plan: persistent header + reset icon, outlined suggestion chips, pill
 input with circular send button. Keep PWA-only features (install banner,
 rail). Coach is text-only for the PWA (on-device LLM is Android-only).
 
-## Phase 8 — Final verification
+## Phase 8: Final verification
 
 - i18n catalog sync re-check (all keys in all 15 catalogs).
 - Full gate: tsc + 171 tests + `release:check-parity`.
@@ -145,7 +143,5 @@ rail). Coach is text-only for the PWA (on-device LLM is Android-only).
 
 ## Environment / server note
 
-The maintainer committed each phase's work as `fitguy` (commit-msg hook rejects
-AI trailers — never add `Co-authored-by: Cursor` etc.). Work is pushed to
-`origin/main` (Codeberg). `docs/local/` is the right home for stateful docs
-like this one.
+The maintainer committed each phase's work as `fitguy`. Work is pushed to
+`origin/main` (Codeberg).

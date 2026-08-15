@@ -6,6 +6,8 @@ Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developer
 
 **Device coverage note:** all validation above, plus the production integration's device-capability gate ([`OnDeviceCapability.kt`](../android/app/src/main/java/app/chompass/services/ondevice/OnDeviceCapability.kt), 6GB RAM floor), is based on **Pixel 9a only**. The production plan's Phase 0 called for a second, lower/mid-tier non-Tensor device to validate the CPU-backend fallback path before shipping; that pass was explicitly skipped for this integration. The RAM floor and CPU-fallback latency are provisional until a second device is tested. Settings surfaces this via a note in the on-device model download sheet ("Tested on Pixel 9a (GrapheneOS)...").
 
+**Summary:** Gemma 4 E2B-it on-device via LiteRT-LM. Tier A (text) + Tier B (photo) are production-wired as `AIProvider.ON_DEVICE` behind a default-off Settings toggle; Tier C (coach) stays debug-only. Smoke-validated on Pixel 9a / GrapheneOS, GPU backend; recommended daily preset `preset=daily`. A second non-Tensor device pass is still outstanding (CPU fallback provisional). Debug extras: `run_ondevice_llm_test` + `ondevice_llm_*` intents: see § Debug hooks below.
+
 ## Production integration (Milestone 1: Tier A)
 
 | Piece | File |
@@ -39,7 +41,7 @@ Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developer
 | Field | Value |
 |-------|--------|
 | Model | **Gemma 4 E2B-it** (instruction-tuned, ~2B params) |
-| Format | **`.litertlm`** (LiteRT-LM native/mobile bundle (**not** `.task`, not web/WASM builds) |
+| Format | **`.litertlm`** (LiteRT-LM native/mobile bundle, **not** `.task` or web/WASM builds) |
 | Quantization | int4 (filename convention: `gemma-e2b-int4.litertlm`) |
 | Source | [Hugging Face `litert-community`](https://huggingface.co/litert-community); use the **native/mobile** artifact for Gemma 4 E2B-it |
 | On-device path | `filesDir/models/gemma-e2b-int4.litertlm` |
@@ -216,7 +218,7 @@ uv run --with pillow --with pillow-heif python scripts/prepare_ondevice_llm_fixt
 
 Only the converted JPEGs ship in the debug APK. Keep license/attribution for stock photos you download.
 
-After the four fixtures, a **multi-turn stability check** sends `food_plate` then `pizza_slices` in one conversation (validates no 2nd-image crash on GPU vision (LiteRT-LM [#2056](https://github.com/google-ai-edge/LiteRT-LM/issues/2056)).
+After the four fixtures, a **multi-turn stability check** sends `food_plate` then `pizza_slices` in one conversation, validating no 2nd-image crash on GPU vision (LiteRT-LM [#2056](https://github.com/google-ai-edge/LiteRT-LM/issues/2056)).
 
 ### Daily usage matrix (`tier=daily`)
 
@@ -440,7 +442,7 @@ GPU is roughly **3× faster** than CPU on Tier A for this harness. Target of 2�
 7. **Not production:** No UI, no provider toggle, no model management; release APKs do not include LiteRT native libs.
 8. **FunctionGemma (skipped for Chompass):** HF [functiongemma-270m-ft-mobile-actions](https://huggingface.co/litert-community/functiongemma-270m-ft-mobile-actions) is not a fit: `*_Google_Tensor_G5.litertlm` fails on OpenCL GPU (`Input tensor not found`); `mobile_actions_q8_ekv1024.litertlm` is fine-tuned for Google’s **Mobile Actions** demo intents, not Chompass Coach tools. Tier C stays on **Gemma 4 E2B-it**.
 9. **Vision backend:** `visionBackend` must be **GPU** for image input. CPU vision crashes on the 2nd image turn ([#2056](https://github.com/google-ai-edge/LiteRT-LM/issues/2056)). GPU+GPU vision OOM-kills the process on E4B (observed on Pixel 9a, real-world food photo). Production now handles this: `OnDeviceCapability.preferredBackend` (`android/app/src/main/java/app/chompass/services/ondevice/OnDeviceCapability.kt`) forces `backend=cpu` (text) + GPU vision for E4B+vision specifically, and `OnDeviceCapability.hasEnoughAvailableMemoryForVision` runs a preflight `ActivityManager.MemoryInfo.availMem` check before every vision call, throwing a catchable `AiError.OnDeviceLowMemory` instead of risking a silent OS kill. Not yet device-validated beyond that one Pixel 9a repro.
-10. **Vision + MTP:** **Validated on Pixel 9a (2026-07-14 PM):** run 4 (`preset=daily`, MTP on) (Tier B 4/4 json ok with `unitOptions`; multi-turn ok; Tier B fixture median **~18 s** vs **~26 s** without MTP (tier=b standalone). No JSON truncation observed. If cold MTP init (~36 s) is unacceptable on first app open, use MTP only after warm cache or Tier-A-only MTP in production.
+10. **Vision + MTP:** **Validated on Pixel 9a (2026-07-14 PM):** run 4 (`preset=daily`, MTP on): Tier B 4/4 json ok with `unitOptions`; multi-turn ok; Tier B fixture median **~18 s** vs **~26 s** without MTP (tier=b standalone). No JSON truncation observed. If cold MTP init (~36 s) is unacceptable on first app open, use MTP only after warm cache or Tier-A-only MTP in production.
 
 ---
 
@@ -450,7 +452,7 @@ GPU is roughly **3× faster** than CPU on Tier A for this harness. Target of 2�
 - **Other models (experiments closed):**
   - **Gemma 4 E4B-it:** optional quality rung; not run (E2B sufficient for Tier A/C smoke test)
   - **FunctionGemma-270m:** **skipped:** no OpenCL-compatible `.litertlm` with Coach-relevant fine-tuning (Tensor G5 build needs NPU; mobile-actions build is a different task/domain)
-- **Production path (future):** Would need `ApiFormat.ON_DEVICE`, Settings UX, model file checks, and wiring `FoodAnalysisService` / `ChatService` dispatch (separate from this smoke test.
+- **Production path (future):** Would need `ApiFormat.ON_DEVICE`, Settings UX, model file checks, and wiring `FoodAnalysisService` / `ChatService` dispatch, separate from this smoke test.
 
 ---
 
