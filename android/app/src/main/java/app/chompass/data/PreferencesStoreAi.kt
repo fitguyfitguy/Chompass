@@ -2,6 +2,8 @@ package app.chompass.data
 
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.annotation.StringRes
+import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.ServingUnitInferenceMode
@@ -32,6 +34,18 @@ internal suspend fun PreferencesStore.setSelectedAIModelImpl(model: String) {
 
 internal fun PreferencesStore.customBaseUrlImpl(provider: AIProvider): Flow<String?> = dataStore.data.map {
         it[stringPreferencesKey(CUSTOM_BASE_URL_PREFIX + provider.name)]
+    }
+
+/** Vision-model slot for [provider] (upstream #195); null/blank = use the primary model for images too. */
+internal fun PreferencesStore.visionModelImpl(provider: AIProvider): Flow<String?> = dataStore.data.map {
+        it[Keys.visionModel(provider)]
+    }
+
+internal suspend fun PreferencesStore.setVisionModelImpl(provider: AIProvider, model: String?) {
+        val key = Keys.visionModel(provider)
+        dataStore.edit {
+            if (model.isNullOrBlank()) it.remove(key) else it[key] = AIProvider.normalizeModelId(model)
+        }
     }
 
 internal suspend fun PreferencesStore.setCustomBaseUrlImpl(provider: AIProvider, url: String?) {
@@ -68,6 +82,36 @@ internal val PreferencesStore.aiReadTimeoutSecondsImpl: Flow<Int> get() = dataSt
 internal suspend fun PreferencesStore.setAiReadTimeoutSecondsImpl(v: Int) {
         dataStore.edit { it[Keys.AI_READ_TIMEOUT_SECONDS] = clampAiReadTimeoutSeconds(v) }
     }
+
+/** Reasoning-effort control for OpenRouter reasoning-capable models (upstream #194).
+ *  AUTO keeps the app's historical behavior: `exclude: true` always, `effort: "low"`
+ *  on compact retries only. Explicit efforts are sent with every OpenRouter request. */
+enum class OpenRouterReasoningEffort(val storageKey: String, val requestValue: String?) {
+    AUTO("auto", null),
+    LOW("low", "low"),
+    MEDIUM("medium", "medium"),
+    HIGH("high", "high");
+
+    @get:StringRes
+    val displayNameRes: Int get() = when (this) {
+        AUTO -> R.string.ai_reasoning_effort_auto
+        LOW -> R.string.ai_reasoning_effort_low
+        MEDIUM -> R.string.ai_reasoning_effort_medium
+        HIGH -> R.string.ai_reasoning_effort_high
+    }
+
+    companion object {
+        fun fromStorage(raw: String?): OpenRouterReasoningEffort =
+            entries.firstOrNull { it.storageKey == raw } ?: AUTO
+    }
+}
+
+internal val PreferencesStore.openRouterReasoningEffortImpl: Flow<OpenRouterReasoningEffort> get() =
+    dataStore.data.map { OpenRouterReasoningEffort.fromStorage(it[Keys.OPENROUTER_REASONING_EFFORT]) }
+
+internal suspend fun PreferencesStore.setOpenRouterReasoningEffortImpl(e: OpenRouterReasoningEffort) {
+    dataStore.edit { it[Keys.OPENROUTER_REASONING_EFFORT] = e.storageKey }
+}
 
 internal const val MIN_MAX_RESPONSE_TOKENS = 256
 internal const val MAX_MAX_RESPONSE_TOKENS = 8192

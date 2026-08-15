@@ -8,6 +8,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import app.chompass.models.AIProvider
+import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.R
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -30,6 +31,27 @@ import java.util.Locale
 object OpenAICompatibleClient {
     private val jsonMedia = "application/json; charset=utf-8".toMediaType()
 
+    /**
+     * OpenRouter `reasoning` request body (upstream #194). Returns null when the
+     * caller is not on OpenRouter. AUTO preserves the historical behavior:
+     * reasoning is excluded from the response always, with a low effort budget on
+     * compact retries only. Explicit efforts apply to every request.
+     */
+    internal fun reasoningBody(
+        effort: OpenRouterReasoningEffort?,
+        compactRetry: Boolean,
+    ): JSONObject? {
+        if (effort == null) return null
+        val body = JSONObject().put("exclude", true)
+        val effortValue = if (effort == OpenRouterReasoningEffort.AUTO) {
+            if (compactRetry) "low" else null
+        } else {
+            effort.requestValue
+        }
+        if (effortValue != null) body.put("effort", effortValue)
+        return body
+    }
+
     suspend fun analyze(
         client: OkHttpClient,
         baseUrl: String,
@@ -38,7 +60,8 @@ object OpenAICompatibleClient {
         prompt: String,
         imageBytesList: List<ByteArray>,
         provider: AIProvider,
-        maxTokens: Int
+        maxTokens: Int,
+        reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     ): String {
         val url = "$baseUrl/chat/completions"
 
@@ -62,12 +85,7 @@ object OpenAICompatibleClient {
                 .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", content)))
                 .put(tokenLimitParameter(provider, model), maxTokens)
             if (provider == AIProvider.OPENROUTER) {
-                body.put(
-                    "reasoning",
-                    JSONObject()
-                        .put("exclude", true)
-                        .apply { if (compactRetry) put("effort", "low") }
-                )
+                reasoningBody(reasoningEffort, compactRetry)?.let { body.put("reasoning", it) }
             }
 
             val builder = Request.Builder()
@@ -109,6 +127,7 @@ object OpenAICompatibleClient {
         provider: AIProvider,
         maxTokens: Int,
         onDelta: (String) -> Unit,
+        reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     ): String {
         val url = "$baseUrl/chat/completions"
 
@@ -133,12 +152,7 @@ object OpenAICompatibleClient {
                 .put(tokenLimitParameter(provider, model), maxTokens)
                 .put("stream", true)
             if (provider == AIProvider.OPENROUTER) {
-                body.put(
-                    "reasoning",
-                    JSONObject()
-                        .put("exclude", true)
-                        .apply { if (compactRetry) put("effort", "low") }
-                )
+                reasoningBody(reasoningEffort, compactRetry)?.let { body.put("reasoning", it) }
             }
 
             val builder = Request.Builder()

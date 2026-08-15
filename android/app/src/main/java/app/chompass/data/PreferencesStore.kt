@@ -206,6 +206,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSelectedAIProvider(p: AIProvider) = setSelectedAIProviderImpl(p)
     val selectedAIModel: Flow<String?> get() = selectedAIModelImpl
     suspend fun setSelectedAIModel(model: String) = setSelectedAIModelImpl(model)
+    fun visionModel(provider: AIProvider): Flow<String?> = visionModelImpl(provider)
+    suspend fun setVisionModel(provider: AIProvider, model: String?) = setVisionModelImpl(provider, model)
     fun customBaseUrl(provider: AIProvider): Flow<String?> = customBaseUrlImpl(provider)
     suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlImpl(provider, url)
     fun fallbackCustomBaseUrl(provider: AIProvider): Flow<String?> = fallbackCustomBaseUrlImpl(provider)
@@ -230,6 +232,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSelectedFallbackModel(model: String) = setSelectedFallbackModelImpl(model)
     val geminiGoogleSearchEnabled: Flow<Boolean> get() = geminiGoogleSearchEnabledImpl
     suspend fun setGeminiGoogleSearchEnabled(v: Boolean) = setGeminiGoogleSearchEnabledImpl(v)
+    val openRouterReasoningEffort: Flow<OpenRouterReasoningEffort> get() = openRouterReasoningEffortImpl
+    suspend fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = setOpenRouterReasoningEffortImpl(e)
     val portionClarifyEnabled: Flow<Boolean> get() = portionClarifyEnabledImpl
     suspend fun setPortionClarifyEnabled(v: Boolean) = setPortionClarifyEnabledImpl(v)
     val skipPhotoNotePrompt: Flow<Boolean> get() = skipPhotoNotePromptImpl

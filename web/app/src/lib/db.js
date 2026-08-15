@@ -322,6 +322,7 @@ export const profile = {
  * @property {string} [fallbackAiProvider]
  * @property {string} [fallbackAiModel]
  * @property {string} [primaryAiProvider]
+ * @property {string} [openrouterReasoningEffort] "auto"|"low"|"medium"|"high" — OpenRouter thinking budget (auto = omit param)
  * @property {boolean} [mealConstituentsEnabled] Ask AI for optional meal ingredient rows (default true)
  * @property {"gramsOnly"|"heuristic"|"aiCall"} [servingUnitInferenceMode] How to fill non-gram units when AI omits them
  * @property {Array<{id: string, date: string, name: string, calories: number}>} [manualActiveEntries] Local-only active burn logs
@@ -358,6 +359,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   fallbackAiProvider: ANDROID_PREF_DEFAULTS.fallbackAiProvider,
   fallbackAiModel: ANDROID_PREF_DEFAULTS.fallbackAiModel,
   primaryAiProvider: "gemini",
+  openrouterReasoningEffort: ANDROID_PREF_DEFAULTS.openrouterReasoningEffort,
   mealConstituentsEnabled: true,
   servingUnitInferenceMode: "gramsOnly",
   manualActiveEntries: [],

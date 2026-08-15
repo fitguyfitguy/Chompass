@@ -951,6 +951,15 @@
 
     <string name="settings_ai_provider">Provider</string>
     <string name="settings_ai_model">Model</string>
+    <string name="settings_ai_reasoning_effort">Reasoning effort</string>
+    <string name="settings_ai_reasoning_effort_footer">Controls the thinking budget for reasoning-capable OpenRouter models. Auto keeps the app default; higher effort is slower and costs more tokens.</string>
+    <string name="ai_reasoning_effort_auto">Auto</string>
+    <string name="ai_reasoning_effort_low">Low</string>
+    <string name="ai_reasoning_effort_medium">Medium</string>
+    <string name="ai_reasoning_effort_high">High</string>
+    <string name="settings_ai_vision_model">Vision model</string>
+    <string name="settings_ai_vision_model_unset">(same as Model)</string>
+    <string name="settings_ai_vision_model_footer">Photos use this model; text uses the main model. Leave unset to use the main model for everything.</string>
     <string name="settings_speech_language">Language</string>
     <string name="settings_ai_model_unset">(set one below)</string>
     <string name="ai_model_tier_paid">Paid-only model (free tier no longer includes Pro)</string>

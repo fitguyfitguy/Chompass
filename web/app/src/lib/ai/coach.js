@@ -1,7 +1,7 @@
 // @ts-check
 import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs } from "../db.js";
 import { dailyTargets, bmr, tdee } from "../chompass-core/formulas.js";
-import { PROVIDERS } from "./providers.js";
+import { PROVIDERS, resolveVisionModel, resolveProviderModel } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 import { t } from "../i18n/index.js";
 
@@ -18,7 +18,7 @@ const MAX_TOOL_ITERATIONS = 4;
 /**
  * @param {Object} args
  * @param {keyof typeof PROVIDERS} args.providerId
- * @param {{apiKey: string, model?: string, baseUrl?: string}} args.config
+ * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} args.config
  * @param {import('./providers.js').AiMessage[]} args.history
  * @param {string} args.userText
  * @param {{mimeType: string, base64: string}} [args.image]
@@ -28,6 +28,15 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
 
   const appPrefs = await prefs.load();
+  if (providerId === "openai_compatible") {
+    config = { ...config, reasoningEffort: appPrefs.openrouterReasoningEffort || "auto" };
+  }
+  if (image) {
+    config = {
+      ...config,
+      model: resolveVisionModel(providerId, config.visionModel, resolveProviderModel(providerId, config.model, "primary")),
+    };
+  }
   let systemPrompt = BASE_SYSTEM;
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;

@@ -18,7 +18,7 @@ import {
   exportBodyMetricsCsv,
   filterDiaryRange,
 } from "../lib/chompass-core/export-text.js";
-import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
+import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel, visionModelOptionsHtml } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import {
@@ -996,6 +996,29 @@ export class SettingsView extends HTMLElement {
               </select>
               <input id="ai-model-custom" name="modelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
             </div>
+            <div class="field" id="ai-reasoning-field" style="display:${initialProvider === "openai_compatible" ? "" : "none"}">
+              <label for="ai-reasoning">Reasoning effort (OpenRouter)</label>
+              <select id="ai-reasoning" name="reasoningEffort">
+                ${["auto", "low", "medium", "high"]
+                  .map(
+                    (v) =>
+                      `<option value="${v}" ${(p.openrouterReasoningEffort || "auto") === v ? "selected" : ""}>${
+                        v === "auto" ? "Auto" : v[0].toUpperCase() + v.slice(1)
+                      }</option>`
+                  )
+                  .join("")}
+              </select>
+            </div>
+          </div>
+          <div class="field-row field-row--2">
+            <div class="field" id="ai-vision-field" style="display:${initialProvider === "openai_compatible" ? "" : "none"}">
+              <label for="ai-vision-model">Vision model (photos)</label>
+              <select id="ai-vision-model" name="visionModel">
+                <option value="">(same as Model)</option>
+                ${visionModelOptionsHtml(initialProvider, saved?.visionModel, primaryModel)}
+              </select>
+              <input id="ai-vision-model-custom" name="visionModelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
+            </div>
             <div class="field">
               <label for="ai-base-url">Base URL (openai-compatible)</label>
               <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" value="${escapeAttr(saved?.baseUrl || "")}" />
@@ -1116,8 +1139,18 @@ export class SettingsView extends HTMLElement {
 
     providerSel.addEventListener("change", () => {
       void refreshPrimaryModels();
+      const isOpenAiCompatible = providerSel.value === "openai_compatible";
+      const reasoningField = /** @type {HTMLElement|null} */ (this.querySelector("#ai-reasoning-field"));
+      if (reasoningField) reasoningField.style.display = isOpenAiCompatible ? "" : "none";
+      const visionField = /** @type {HTMLElement|null} */ (this.querySelector("#ai-vision-field"));
+      if (visionField) visionField.style.display = isOpenAiCompatible ? "" : "none";
     });
     modelSel.addEventListener("change", () => syncCustomVisibility(modelSel, modelCustom));
+    const visionModelSel = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ai-vision-model"));
+    const visionModelCustom = /** @type {HTMLInputElement|null} */ (this.querySelector("#ai-vision-model-custom"));
+    if (visionModelSel && visionModelCustom) {
+      visionModelSel.addEventListener("change", () => syncCustomVisibility(visionModelSel, visionModelCustom));
+    }
     fallbackProviderSel.addEventListener("change", () => refreshFallbackModels());
     fallbackModelSel.addEventListener("change", () => syncCustomVisibility(fallbackModelSel, fallbackModelCustom));
 
@@ -1265,9 +1298,18 @@ export class SettingsView extends HTMLElement {
     let model = String(fd.get("model") || "").trim();
     if (model === "__custom__") model = String(fd.get("modelCustom") || "").trim();
     model = resolveProviderModel(provider, model || existing?.model, "primary");
+    let visionModel = String(fd.get("visionModel") || "").trim();
+    if (visionModel === "__custom__") visionModel = String(fd.get("visionModelCustom") || "").trim();
     const baseUrl = String(fd.get("baseUrl") || "").trim();
-    await saveProviderKey(provider, apiKey, { model: model || undefined, baseUrl: baseUrl || undefined });
-    await prefs.save({ primaryAiProvider: provider });
+    await saveProviderKey(provider, apiKey, {
+      model: model || undefined,
+      baseUrl: baseUrl || undefined,
+      visionModel: visionModel || undefined,
+    });
+    await prefs.save({
+      primaryAiProvider: provider,
+      openrouterReasoningEffort: String(fd.get("reasoningEffort") || "auto"),
+    });
     this._aiFlash = typed ? "API key saved." : "Provider settings updated (existing key kept).";
     this.render();
   }

@@ -262,7 +262,20 @@ export function geminiContent(m) {
 }
 
 /**
- * @param {{apiKey: string, model?: string, baseUrl?: string}} config
+ * OpenRouter `reasoning` request body (upstream #194). "auto" = omit the
+ * parameter entirely (the PWA's historical behavior). Explicit efforts exclude
+ * reasoning from the response for stable JSON parsing — mirrors Android's
+ * OpenAICompatibleClient.reasoningBody.
+ * @param {string|undefined} effort "auto"|"low"|"medium"|"high"
+ * @returns {{effort: string, exclude: boolean}|undefined}
+ */
+export function openRouterReasoningBody(effort) {
+  if (!effort || effort === "auto") return undefined;
+  return { effort, exclude: true };
+}
+
+/**
+ * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} config
  * @param {AiRequest} req
  * @returns {Promise<AiResponse>}
  */
@@ -281,6 +294,8 @@ export async function openAiCompatibleSend(config, req) {
     messages,
     tools: req.tools.length ? req.tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.inputSchema } })) : undefined,
   };
+  const reasoning = openRouterReasoningBody(config.reasoningEffort);
+  if (reasoning) body.reasoning = reasoning;
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${config.apiKey}` },
@@ -295,7 +310,7 @@ export async function openAiCompatibleSend(config, req) {
 }
 
 /**
- * @param {{apiKey: string, model?: string, baseUrl?: string}} config
+ * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} config
  * @param {AiRequest} req
  * @returns {Promise<AiResponse>}
  */
@@ -307,6 +322,8 @@ async function openAiCompatibleSendStreaming(config, req) {
     messages,
     stream: true,
   };
+  const reasoning = openRouterReasoningBody(config.reasoningEffort);
+  if (reasoning) body.reasoning = reasoning;
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
     headers: {
@@ -477,6 +494,40 @@ export function resolveProviderModel(providerId, model, role = "primary") {
   if (meta.supportsCustomModel) return trimmed;
   if (meta.models.includes(trimmed)) return trimmed;
   return preferred;
+}
+
+/**
+ * Resolve the vision-model slot (upstream #195). Blank/unknown ids fall back
+ * to the primary model — "same as Model" is the default behavior.
+ * @param {keyof typeof PROVIDERS|string} providerId
+ * @param {string|null|undefined} visionModel
+ * @param {string} primaryModel already-resolved primary model id
+ */
+export function resolveVisionModel(providerId, visionModel, primaryModel) {
+  const meta = PROVIDERS[providerId];
+  const trimmed = (visionModel || "").trim();
+  if (!trimmed || !meta) return primaryModel;
+  if (meta.supportsCustomModel) return trimmed;
+  if (meta.models.includes(trimmed)) return trimmed;
+  return primaryModel;
+}
+
+/**
+ * `<option>` list for the vision-model select (blank = same as Model).
+ * @param {keyof typeof PROVIDERS|string} providerId
+ * @param {string|null|undefined} visionModel
+ * @param {string} primaryModel
+ */
+export function visionModelOptionsHtml(providerId, visionModel, primaryModel) {
+  const meta = PROVIDERS[providerId];
+  if (!meta) return "";
+  const current = resolveVisionModel(providerId, visionModel, primaryModel);
+  const opts = meta.models.map((id) => `<option value="${id}" ${id === current ? "selected" : ""}>${id}</option>`);
+  if (meta.supportsCustomModel && visionModel && !meta.models.includes(visionModel)) {
+    opts.push(`<option value="${escapeAttr(visionModel)}" selected>${escapeAttr(visionModel)} (custom)</option>`);
+  }
+  if (meta.supportsCustomModel) opts.push(`<option value="__custom__">Custom…</option>`);
+  return opts.join("");
 }
 
 /**

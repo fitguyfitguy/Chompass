@@ -8,7 +8,7 @@ import {
   isAbortError,
   phaseLabel,
 } from "../ai/food-analyze.js";
-import { PROVIDERS } from "../ai/providers.js";
+import { PROVIDERS, openRouterReasoningBody, resolveVisionModel } from "../ai/providers.js";
 
 test("analysisPhases_matchAndroidCloudEntry", () => {
   assert.deepEqual(
@@ -361,5 +361,72 @@ test("analyzeFoodEntry_dropsFarConstituentsKeepsMicros", async () => {
     assert.equal(result.sodiumMg, 500);
   } finally {
     PROVIDERS.gemini.send = original;
+  }
+});
+
+test("openRouterReasoningBody_omitsOnAuto_effortsExclude", () => {
+  assert.equal(openRouterReasoningBody(undefined), undefined);
+  assert.equal(openRouterReasoningBody("auto"), undefined);
+  assert.deepEqual(openRouterReasoningBody("low"), { effort: "low", exclude: true });
+  assert.deepEqual(openRouterReasoningBody("medium"), { effort: "medium", exclude: true });
+  assert.deepEqual(openRouterReasoningBody("high"), { effort: "high", exclude: true });
+});
+
+test("openaiCompatible_runAnalyze_threadsReasoningEffortPref", async () => {
+  const original = PROVIDERS.openai_compatible.send;
+  /** @type {any[]} */
+  const seen = [];
+  PROVIDERS.openai_compatible.send = async (config, req) => {
+    seen.push(config);
+    return {
+      text: JSON.stringify({ name: "Oatmeal", mealType: "breakfast", calories: 300, proteinG: 10, carbsG: 50, fatG: 8 }),
+      toolCalls: [],
+    };
+  };
+  try {
+    await analyzeFoodEntry({
+      providerId: "openai_compatible",
+      config: { apiKey: "test-key" },
+      text: "oatmeal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false, openrouterReasoningEffort: "high" }),
+    });
+    assert.equal(seen.length, 1);
+    assert.equal(seen[0].reasoningEffort, "high");
+  } finally {
+    PROVIDERS.openai_compatible.send = original;
+  }
+});
+
+test("resolveVisionModel_fallsBackToPrimary", () => {
+  assert.equal(resolveVisionModel("openai_compatible", undefined, "gpt-5.4-mini"), "gpt-5.4-mini");
+  assert.equal(resolveVisionModel("openai_compatible", "  ", "gpt-5.4-mini"), "gpt-5.4-mini");
+  assert.equal(resolveVisionModel("gemini", "not-a-model", "gemini-3.7-flash"), "gemini-3.7-flash");
+  // Custom-capable hosts accept arbitrary ids.
+  assert.equal(resolveVisionModel("openai_compatible", "deepseek/deepseek-v4", "gpt-5.4-mini"), "deepseek/deepseek-v4");
+});
+
+test("openaiCompatible_imageRequest_usesVisionModel", async () => {
+  const original = PROVIDERS.openai_compatible.send;
+  /** @type {any[]} */
+  const seen = [];
+  PROVIDERS.openai_compatible.send = async (config) => {
+    seen.push(config);
+    return {
+      text: JSON.stringify({ name: "Oatmeal", mealType: "breakfast", calories: 300, proteinG: 10, carbsG: 50, fatG: 8 }),
+      toolCalls: [],
+    };
+  };
+  try {
+    await analyzeFoodEntry({
+      providerId: "openai_compatible",
+      config: { apiKey: "test-key", visionModel: "deepseek/deepseek-v4" },
+      text: "oatmeal",
+      image: { mimeType: "image/jpeg", base64: "abc" },
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.equal(seen.length, 1);
+    assert.equal(seen[0].model, "deepseek/deepseek-v4");
+  } finally {
+    PROVIDERS.openai_compatible.send = original;
   }
 });
