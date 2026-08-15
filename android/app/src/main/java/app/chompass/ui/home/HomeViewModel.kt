@@ -252,6 +252,25 @@ private fun elapsedDayFraction(day: LocalDate): Float {
     return (LocalTime.now().toSecondOfDay() / 86_400f).coerceIn(0f, 1f)
 }
 
+/**
+ * Last-requested-wins guard for [HomeViewModel.refreshActivitySnapshot].
+ * Health Connect reads are slow and day-dependent (one aggregate call per day
+ * back), so an older day's read can land after a newer one and overwrite the
+ * snapshot — the "active calories of the previous day stick" bug (Codeberg
+ * #22). Each refresh calls [begin]; only the read holding the current token
+ * may write the snapshot ([isCurrent]). Mirrors the analysisGeneration idiom
+ * used for food analysis.
+ */
+internal class ActivitySnapshotRefreshGuard {
+    private var generation = 0
+
+    /** Claims the current generation for a new refresh; invalidates prior ones. */
+    fun begin(): Int = ++generation
+
+    /** True only for the most recently begun refresh. */
+    fun isCurrent(gen: Int): Boolean = gen == generation
+}
+
 class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(HomeUiState())
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
@@ -267,6 +286,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     @Volatile
     private var analysisInFlight = false
     private var analysisGeneration = 0
+    /** Last-requested-wins guard for [refreshActivitySnapshot] (Codeberg #22). */
+    private val activitySnapshotGuard = ActivitySnapshotRefreshGuard()
 
     /**
      * Same-day hub-chip cache so reopening the Log sheet is instant after the
@@ -719,6 +740,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun refreshActivitySnapshot() {
+        val gen = activitySnapshotGuard.begin()
         viewModelScope.launch {
             val day = _selectedDate.value
             val display = _ui.value.homeDisplay
@@ -726,11 +748,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val needsMeasuredEnergy = display.calorieDisplayMode ==
                 HomeCalorieDisplayMode.ADD_ACTIVE && container.prefs.healthConnectEnabled.first()
             if (!needsActivitySnapshot && !needsMeasuredEnergy) {
-                _ui.update { it.copy(activitySnapshot = HomeActivitySnapshot(date = day)) }
+                if (activitySnapshotGuard.isCurrent(gen)) {
+                    _ui.update { it.copy(activitySnapshot = HomeActivitySnapshot(date = day)) }
+                }
                 return@launch
             }
             val snapshot = container.homeActivityReader.readForDate(day)
-            _ui.update { it.copy(activitySnapshot = snapshot) }
+            if (activitySnapshotGuard.isCurrent(gen)) {
+                _ui.update { it.copy(activitySnapshot = snapshot) }
+            }
         }
     }
 
