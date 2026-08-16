@@ -1,5 +1,8 @@
 package app.chompass.services
 
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -156,6 +159,42 @@ class OpenFoodFactsSearchTest {
         assertEquals(1, hits.size)
         assertEquals("Mini Brezen", hits[0].name)
         assertEquals("Aldi", lastQueryParameter("search_terms"))
+    }
+
+    @Test
+    fun search_cancelledMidFlight_cancelsTheCallInsteadOfBlocking() {
+        // Backend stalls the body for 3 s; the search is cancelled 300 ms in.
+        // The in-flight call must be cancelled with the coroutine (returns
+        // promptly) and no retry or shorter candidate may fire afterwards.
+        // Before the cancellation-aware request (Codeberg #26) the call would
+        // ride out the stall and then keep retrying, holding an IO thread for
+        // 9+ s per abandoned keystroke. Called directly (no nested runBlocking):
+        // the sheet's LaunchedEffect cancels the same way. The stall is kept
+        // under MockWebServer's shutdown wait so tearDown stays clean.
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBodyDelay(3, java.util.concurrent.TimeUnit.SECONDS)
+                .setBody("""{"count":0,"products":[]}""")
+        )
+        runBlocking {
+            val job = launch {
+                OpenFoodFactsService.search(
+                    "Aldi Laugen",
+                    client = client,
+                    baseUrl = server.url("/").toString(),
+                )
+            }
+            delay(300)
+            val start = System.nanoTime()
+            job.cancelAndJoin()
+            val elapsedMs = (System.nanoTime() - start) / 1_000_000
+            assertTrue(
+                "cancelled search returned in ${elapsedMs}ms, expected < 5000",
+                elapsedMs < 5_000,
+            )
+        }
+        assertEquals(1, server.requestCount)
     }
 
     @Test

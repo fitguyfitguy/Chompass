@@ -1,6 +1,7 @@
 package app.chompass.services.grounding
 
 import app.chompass.data.PreferencesStore
+import android.os.SystemClock
 import android.util.Log
 import app.chompass.models.NutrientSourceKind
 import app.chompass.services.OpenFoodFactsService
@@ -8,6 +9,8 @@ import app.chompass.services.ai.FoodAnalysis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.math.round
 
@@ -106,6 +109,15 @@ class FoodDatabaseSearch(
     private val usda: UsdaFoodIndex,
     private val swiss: SwissFoodIndex,
 ) {
+    /**
+     * Serializes the offline SQLite queries (USDA + Swiss). They run in
+     * parallel `async` blocks today; a shared mutex bounds concurrent
+     * CursorWindow allocations and keeps the offline phase deterministic
+     * under fast typing (Codeberg #26). `withLock` is cancellation-safe:
+     * a cancelled search releases the lock and propagates.
+     */
+    private val offlineMutex = Mutex()
+
     enum class Source {
         OPEN_FOOD_FACTS,
         USDA,
@@ -120,41 +132,56 @@ class FoodDatabaseSearch(
     ): List<DatabaseSearchResult> {
         val q = query.trim()
         if (q.isEmpty()) return emptyList()
+        // Phase logs ride logcat so a post-crash `adb logcat -d` shows which
+        // source was in flight when the process died (Codeberg #26; logcat
+        // survives process death). Same tag the per-source failure log uses.
+        Log.i("FoodSearch", "search start '$q' sources=$sources")
         return withContext(Dispatchers.IO) {
             coroutineScope {
                 val jobs = mutableListOf<kotlinx.coroutines.Deferred<List<DatabaseSearchResult>>>()
                 // Each source is isolated: a failing source (backend outage,
                 // DB hiccup) must never hide the other sources' results, and
                 // cancellation always propagates (never swallowed).
-                fun launch(block: suspend () -> List<DatabaseSearchResult>) {
+                fun launch(label: String, block: suspend () -> List<DatabaseSearchResult>) {
                     jobs += async {
+                        val t0 = SystemClock.elapsedRealtime()
                         try {
-                            block()
+                            val results = block()
+                            Log.d(
+                                "FoodSearch",
+                                "$label: ${results.size} hits for '$q' in " +
+                                    "${SystemClock.elapsedRealtime() - t0} ms",
+                            )
+                            results
                         } catch (e: kotlinx.coroutines.CancellationException) {
                             throw e
                         } catch (e: Exception) {
-                            Log.w("FoodSearch", "Source search failed for '$q'", e)
+                            Log.w("FoodSearch", "$label search failed for '$q'", e)
                             emptyList()
                         }
                     }
                 }
                 if (Source.OPEN_FOOD_FACTS in sources) {
-                    launch { offSearch(q) }
+                    launch("off") { offSearch(q) }
                 }
                 if (Source.USDA in sources) {
-                    launch { usda.search(q, limit = 6).map(DatabaseSearchResult::fromUsda) }
-                }
-                if (Source.SWISS in sources) {
-                    launch {
-                        swiss.searchScored(q, limit = 6).map { (rec, score) ->
-                            DatabaseSearchResult.fromSwiss(rec, score)
-                        }
+                    launch("usda") {
+                        val rows = offlineMutex.withLock { usda.search(q, limit = 6) }
+                        rows.map(DatabaseSearchResult::fromUsda)
                     }
                 }
-                jobs.flatMap { it.await() }
+                if (Source.SWISS in sources) {
+                    launch("swiss") {
+                        val rows = offlineMutex.withLock { swiss.searchScored(q, limit = 6) }
+                        rows.map { (rec, score) -> DatabaseSearchResult.fromSwiss(rec, score) }
+                    }
+                }
+                val merged = jobs.flatMap { it.await() }
                     .map { it.withNormalizedScore() }
                     .sortedByDescending { it.matchScore }
                     .take(limit)
+                Log.d("FoodSearch", "search end '$q': ${merged.size} results")
+                merged
             }
         }
     }
