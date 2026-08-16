@@ -43,7 +43,17 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
             FilterChip(
                 selected = range == selected,
                 onClick = { onSelect(range) },
-                label = { Text(stringResource(range.labelRes)) },
+                // Single line, sized to fit the 6-chip row at max font scale
+                // (PLAN_UI_STRING_FIT: "Alle" wrapped to "All/e" at 1.3×).
+                label = {
+                    Text(
+                        stringResource(range.labelRes),
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Clip,
+                        fontSize = 12.sp,
+                    )
+                },
                 modifier = Modifier.weight(1f),
             )
         }

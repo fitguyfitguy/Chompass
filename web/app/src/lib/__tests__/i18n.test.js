@@ -18,6 +18,13 @@ import { loadCatalog } from "../i18n/catalogs/index.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../../../../../", import.meta.url));
 const fixture = JSON.parse(readFileSync(`${REPO_ROOT}testdata/parity/locales.json`, "utf8"));
+const compactFixture = JSON.parse(readFileSync(`${REPO_ROOT}testdata/parity/compact_strings.json`, "utf8"));
+
+// CJK ideographs, kana, fullwidth forms: narrow glyphs count at 0.5.
+const CJK_RE = /[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]/;
+const effectiveLen = (value) =>
+  [...value].reduce((sum, ch) => sum + (CJK_RE.test(ch) ? 0.5 : 1.0), 0);
+const cjkCount = (value) => [...value].filter((ch) => CJK_RE.test(ch)).length;
 
 describe("i18n locales contract", () => {
   it("LOCALES matches parity fixture ids", () => {
@@ -97,5 +104,39 @@ describe("i18n catalogs", () => {
     const n = formatNumber(12.5, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     assert.match(n, /12[,.]5/);
     setActiveLocale("en");
+  });
+});
+
+describe("compact labels (PLAN_UI_STRING_FIT)", () => {
+  const budget = compactFixture.budgetChars;
+  const cjkBudget = compactFixture.budgetCjkChars;
+  const overrides = compactFixture.perKeyOverrides || {};
+  const pwaKeyMap = compactFixture.pwaKeyMap || {};
+
+  it("registry maps Android keys to PWA keys that exist in the English catalog", () => {
+    const en = englishKeys();
+    for (const pwaKey of Object.values(pwaKeyMap)) {
+      assert.ok(en.includes(pwaKey), `pwaKeyMap references missing EN key ${pwaKey}`);
+    }
+  });
+
+  it("rendered compact labels stay within budget in every locale", async () => {
+    const violations = [];
+    for (const loc of LOCALES) {
+      await loadCatalog(loc.id);
+      for (const [androidKey, pwaKey] of Object.entries(pwaKeyMap)) {
+        const value = t(pwaKey, {}, loc.id); // catalog value or EN fallback
+        const ov = overrides[androidKey] || {};
+        const maxChars = ov.maxChars ?? budget;
+        const eff = effectiveLen(value);
+        if (eff > maxChars) {
+          violations.push(`${loc.id}/${pwaKey}: ${JSON.stringify(value)} (${eff} > ${maxChars})`);
+        }
+        if (cjkCount(value) > cjkBudget) {
+          violations.push(`${loc.id}/${pwaKey}: ${JSON.stringify(value)} (${cjkCount(value)} CJK > ${cjkBudget})`);
+        }
+      }
+    }
+    assert.deepEqual(violations, [], `compact-label violations:\n${violations.join("\n")}`);
   });
 });

@@ -294,3 +294,105 @@ fun AiAnalysisDarkScreenshot() {
         )
     }
 }
+
+// Locale-fit screenshots (docs/local/PLAN_UI_STRING_FIT.md): de + ru are the two
+// representative long-string locales (German = deepest word-length inflation,
+// Russian = prefix-form macro status lines). These turn "does the label fit?"
+// into a regression test: a translation that truncates or overflows changes the
+// rendered reference and fails validateDebugScreenshotTest.
+
+@PreviewTest
+@Preview(name = "14-home-over-goal-de", device = PHONE, locale = "de")
+@Composable
+fun HomeOverGoalDeScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
+        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeOverGoalUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "15-home-over-goal-ru", device = PHONE, locale = "ru")
+@Composable
+fun HomeOverGoalRuScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
+        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeOverGoalUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "16-progress-de", device = PHONE, locale = "de")
+@Composable
+fun ProgressDeScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.PROGRESS, darkTheme = false) {
+        ProgressScreenPreviewContent(ui = ScreenshotFixtures.progressUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "17-progress-ru", device = PHONE, locale = "ru")
+@Composable
+fun ProgressRuScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.PROGRESS, darkTheme = false) {
+        ProgressScreenPreviewContent(ui = ScreenshotFixtures.progressUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "18-saved-meals-tabs-de", device = PHONE, locale = "de")
+@Composable
+fun SavedMealsTabsDeScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
+        HomeRecipesScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            recipes = ScreenshotFixtures.demoRecipes,
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "19-saved-meals-tabs-ru", device = PHONE, locale = "ru")
+@Composable
+fun SavedMealsTabsRuScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
+        HomeRecipesScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            recipes = ScreenshotFixtures.demoRecipes,
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "20-settings-de", device = PHONE, locale = "de")
+@Composable
+fun SettingsDeScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.SETTINGS, darkTheme = false) {
+        SettingsScreenPreviewContent(
+            ui = ScreenshotFixtures.settingsUiState(),
+            latestMeasurementWaistCm = 84.0,
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "21-settings-ru", device = PHONE, locale = "ru")
+@Composable
+fun SettingsRuScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.SETTINGS, darkTheme = false) {
+        SettingsScreenPreviewContent(
+            ui = ScreenshotFixtures.settingsUiState(),
+            latestMeasurementWaistCm = 84.0,
+        )
+    }
+}
+
+@PreviewTest
+@Preview(name = "22-home-long-status-ru-maxfont", device = PHONE, locale = "ru", fontScale = 1.3f)
+@Composable
+fun HomeLongStatusRuMaxFontScreenshot() {
+    // Max-font-scale regression guard for the macro status line: a long value +
+    // long suffix (ru "268g осталось") must auto-shrink, not clip (device found
+    // "91,5g осталось" clipped at 1.3×). Reference locks in the fitted render.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
+        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeLongStatusUiState())
+    }
+}

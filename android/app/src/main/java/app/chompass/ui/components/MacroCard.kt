@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -132,6 +133,9 @@ fun MacroCard(
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
                 maxLines = 1,
+                // Shrink to fit the card at max font scale: long values + long
+                // suffixes (ru "91,5g осталось") clipped at 1.3× without this.
+                autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
             )
         }
     }
