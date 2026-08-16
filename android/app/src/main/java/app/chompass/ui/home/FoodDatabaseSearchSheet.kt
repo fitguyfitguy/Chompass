@@ -314,8 +314,15 @@ private fun resultSourceSubtitle(result: DatabaseSearchResult): String {
     ).joinToString(" · ")
 }
 
-private fun resultMacroLine(result: DatabaseSearchResult): String {
-    fun v(x: Double?) = x?.let { it.roundToInt().toString() }
-    val macros = listOfNotNull(v(result.proteinPerServing), v(result.carbsPerServing), v(result.fatPerServing))
-    return if (macros.isEmpty()) "P · C · F" else "P ${macros[0]} · C ${macros[1]} · F ${macros[2]}"
+internal fun resultMacroLine(result: DatabaseSearchResult): String {
+    fun v(x: Double?) = x?.let { it.roundToInt().toString() } ?: "—"
+    val macros = listOf(
+        v(result.proteinPerServing),
+        v(result.carbsPerServing),
+        v(result.fatPerServing),
+    )
+    // Always a 3-element list: OFF hits routinely lack one or two macros
+    // (incompleteEnergy), and a fixed `macros[2]` on a shorter list crashed
+    // the sheet with IndexOutOfBoundsException while rendering (Codeberg #26).
+    return if (macros.all { it == "—" }) "P · C · F" else "P ${macros[0]} · C ${macros[1]} · F ${macros[2]}"
 }
