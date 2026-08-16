@@ -2,11 +2,12 @@
 # Inspect and prune Codeberg release assets (APK attachments).
 #
 # Codeberg applies a combined quota for releases, packages, LFS, and attachments
-# (default 1.5 GiB per user/org). Policy: keep only the latest release, and ship
+# (default 1.5 GiB per user/org). Policy: keep the last 3 to 5 releases, and ship
 # the universal APK (+ SHA256SUMS) — not per-ABI splits.
 #
 # Usage:
 #   ./scripts/manage_release_assets.sh list
+#   ./scripts/manage_release_assets.sh keep-n 5 -y
 #   ./scripts/manage_release_assets.sh keep-latest -y
 #   ./scripts/manage_release_assets.sh keep-latest --keep v1.14.10 --dry-run
 #   ./scripts/manage_release_assets.sh prune-abi-splits v1.14.10 -y
@@ -117,7 +118,9 @@ Quota notes:
   - Request more: https://codeberg.org/Codeberg-e.V./requests
   - Prune old ABI splits (keep universal APKs + SHA256SUMS):
       ./scripts/manage_release_assets.sh prune-abi-splits --before v1.6.0 -y
-  - Keep only the latest release (delete older release pages + assets):
+  - Keep the last 3 to 5 releases (delete older release pages + assets):
+      ./scripts/manage_release_assets.sh keep-n 5 -y
+  - Keep only the latest release (emergency quota squeeze):
       ./scripts/manage_release_assets.sh keep-latest -y
   - Remove disabled play-flavor APKs (keep fdroid/universal + SHA256SUMS):
       ./scripts/manage_release_assets.sh prune-play-assets --dry-run
@@ -360,6 +363,123 @@ EOF
   echo "Deleted ${#to_delete[@]} release(s). Kept $keep."
 }
 
+cmd_keep_n() {
+  ensure_login
+  local dry_run=0
+  local assume_yes=0
+  local delete_tags=0
+  local n=5
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run)
+        dry_run=1
+        shift
+        ;;
+      -y|--yes)
+        assume_yes=1
+        shift
+        ;;
+      --delete-tags)
+        delete_tags=1
+        shift
+        ;;
+      -h|--help)
+        cat <<'EOF'
+Usage:
+  manage_release_assets.sh keep-n [N] [options]
+
+Options:
+  N              Number of most recent releases to keep (default: 5)
+  --delete-tags  Also delete git tags for removed releases
+  --dry-run      Print deletions without applying them
+  -y, --yes      Skip confirmation prompt
+
+Deletes every Codeberg release older than the N most recent (attachments +
+release page). Quota policy: keep the last 3 to 5 releases.
+EOF
+        exit 0
+        ;;
+      *)
+        if [[ "$1" =~ ^[0-9]+$ ]]; then
+          n="$1"
+          shift
+        else
+          echo "Unknown argument: $1" >&2
+          exit 1
+        fi
+        ;;
+    esac
+  done
+
+  if [[ "$n" -lt 1 ]]; then
+    echo "keep-n requires a positive number of releases to keep." >&2
+    exit 1
+  fi
+
+  local -a all_tags=()
+  while IFS= read -r tag; do
+    [[ -z "$tag" ]] && continue
+    all_tags+=("$tag")
+  done < <(list_release_tags)
+
+  if [[ ${#all_tags[@]} -eq 0 ]]; then
+    echo "No releases found on $CODEBERG_REPO."
+    exit 0
+  fi
+
+  local -a to_delete=()
+  local count=0
+  for tag in "${all_tags[@]}"; do
+    count=$((count + 1))
+    if [[ $count -le $n ]]; then
+      continue
+    fi
+    to_delete+=("$tag")
+  done
+
+  if [[ ${#to_delete[@]} -eq 0 ]]; then
+    echo "Already at most $n release(s). Nothing to delete."
+    exit 0
+  fi
+
+  echo "Keeping the $n most recent release(s):"
+  local start=$(( ${#all_tags[@]} - n ))
+  for ((i = start; i < ${#all_tags[@]}; i++)); do
+    echo "  ${all_tags[$i]}"
+  done
+  echo "Deleting ${#to_delete[@]} older release(s):"
+  for tag in "${to_delete[@]}"; do
+    echo "  $tag"
+  done
+  if [[ "$delete_tags" -eq 1 ]]; then
+    echo "(also deleting git tags for those releases)"
+  fi
+
+  if [[ "$dry_run" -eq 1 ]]; then
+    echo
+    echo "Dry run — no releases deleted."
+    exit 0
+  fi
+
+  if [[ "$assume_yes" -ne 1 ]]; then
+    echo
+    read -r -p "Delete these releases? [y/N] " confirm
+    if [[ "$confirm" != [yY] ]]; then
+      echo "Aborted."
+      exit 1
+    fi
+  fi
+
+  local -a delete_args=(--login "$LOGIN" --repo "$CODEBERG_REPO" -y)
+  if [[ "$delete_tags" -eq 1 ]]; then
+    delete_args+=(--delete-tag)
+  fi
+  # tea accepts multiple tags per invocation
+  run_tea releases delete "${delete_args[@]}" "${to_delete[@]}"
+  echo "Deleted ${#to_delete[@]} release(s). Kept the $n most recent."
+}
+
 cmd_prune_play_assets() {
   ensure_login
   local dry_run=0
@@ -474,6 +594,7 @@ Usage: manage_release_assets.sh <command> [options]
 Commands:
   list                         List release attachments and estimated total size
   keep-latest [options]        Delete all releases except the latest (or --keep)
+  keep-n [N] [options]         Delete all releases except the N most recent (default 5)
   prune-abi-splits [options]   Delete per-ABI APK splits; keep universal APKs + SHA256SUMS
   prune-play-assets [options]  Delete Chompass-play-*.apk attachments (disabled flavor)
 
@@ -492,6 +613,9 @@ main() {
       ;;
     keep-latest|keep)
       cmd_keep_latest "$@"
+      ;;
+    keep-n|keepn)
+      cmd_keep_n "$@"
       ;;
     prune-abi-splits|prune)
       cmd_prune_abi_splits "$@"

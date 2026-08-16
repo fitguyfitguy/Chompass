@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [3.16.1] - 2026-08-16
+
+### Fixed
+
+- **German and Russian labels fit at large font sizes** (Android): compact labels in German are shortened (for example "Mittag" instead of "Mittagessen"), Russian macro status lines use the shorter suffix form, and the macro card's status line shrinks to fit long values. Chips, tabs, buttons, meal slots, and bottom-nav labels no longer truncate or overflow.
+
 ## [3.16.0] - 2026-08-16
 
 ### Added
