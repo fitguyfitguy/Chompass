@@ -348,6 +348,10 @@ open class MainActivity : ComponentActivity() {
                 "dark" -> true
                 else -> systemDark
             }
+            // Codeberg #28: log the resolved theme inputs on every composition so
+            // a device pass can tell a stale appearance value from a ROM that
+            // delivers uiMode without recreating the activity.
+            Log.d("ChompassTheme", "appearance=$appearance systemDark=$systemDark darkTheme=$darkTheme themeColor=$themeColorKey")
             val paletteEpoch = systemPaletteEpoch
             key(themeColorKey, paletteEpoch) {
                 ChompassTheme(
