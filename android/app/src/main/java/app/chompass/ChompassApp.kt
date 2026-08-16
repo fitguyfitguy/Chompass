@@ -289,6 +289,13 @@ class AppContainer(app: ChompassApp) {
      */
     val shortcutEntryInbox: MutableStateFlow<ShortcutEntryAction?> = MutableStateFlow(null)
 
+    /**
+     * Notification open destination (Codeberg #27): set by [MainActivity] when a
+     * `chompass://go/<dest>` tap lands; the nav host navigates and clears it.
+     * Single-slot is enough — the newest tap wins.
+     */
+    val launchDestinationInbox: MutableStateFlow<String?> = MutableStateFlow(null)
+
     /** See [HealthConnectReadSync.sync]. */
     suspend fun syncHealthConnectReads() = healthConnectReadSync.sync()
 

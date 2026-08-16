@@ -117,10 +117,25 @@ open class MainActivity : ComponentActivity() {
             Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE -> handleSharedImages(intent)
             else -> {
                 val uri = intent.data ?: return
-                if (!MealShare.handles(uri)) return
+                if (!MealShare.handles(uri)) {
+                    handleLaunchDestination(uri, intent)
+                    return
+                }
                 MealShare.meals(uri)?.let { pendingSharedMeals = it }
             }
         }
+    }
+
+    /**
+     * Notification tap destination (Codeberg #27): `chompass://go/<dest>` set by
+     * [ChompassLaunchIntents.openApp]. Consumed here so a later [Activity.recreate]
+     * or resume does not re-navigate; the nav host routes it once.
+     */
+    private fun handleLaunchDestination(uri: android.net.Uri, intent: Intent) {
+        if (uri.scheme != "chompass" || uri.host != "go") return
+        val dest = uri.path?.removePrefix("/")?.takeIf { it.isNotBlank() } ?: return
+        intent.data = null // consume: one navigation per tap
+        (application as ChompassApp).container.launchDestinationInbox.value = dest
     }
 
     /**

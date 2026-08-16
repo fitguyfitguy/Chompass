@@ -100,9 +100,9 @@ class NotificationService(private val context: Context) {
     }
 
     fun showGoalReached() {
-        val intent = ChompassLaunchIntents.openApp(context)
+        val intent = ChompassLaunchIntents.openApp(context, destination = DESTINATION_PROGRESS)
         val content = PendingIntent.getActivity(
-            context, 0, intent,
+            context, REQUEST_GOAL, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val notif = NotificationCompat.Builder(context, CHANNEL_WEIGHT_GOAL)
@@ -265,6 +265,18 @@ class NotificationService(private val context: Context) {
         const val CHANNEL_APP_UPDATE = "app_update"
         const val CHANNEL_WATER = "water_reminder"
         const val CHANNEL_WIDGET_MIDNIGHT = "widget_midnight_refresh"
+
+        /** Notification tap destinations (Codeberg #27); also openable via `chompass://go/<dest>`. */
+        const val DESTINATION_PROGRESS = "progress"
+
+        /**
+         * Where a notification tap should land, by channel. Weight/body-fat/goal
+         * reminders open the Progress tab; everything else stays on the Home tab.
+         */
+        fun destinationForChannel(channel: String): String? = when (channel) {
+            CHANNEL_WEIGHT_GOAL, CHANNEL_WEIGHT_LOG, CHANNEL_BODY_FAT_LOG -> DESTINATION_PROGRESS
+            else -> null
+        }
         const val EXTRA_CHANNEL = "channel"
         const val EXTRA_TITLE = "title"
         const val EXTRA_TEXT = "text"
@@ -278,6 +290,7 @@ class NotificationService(private val context: Context) {
         private const val REQUEST_APP_UPDATE = 1005
         private const val REQUEST_WATER = 1006
         private const val REQUEST_WIDGET_MIDNIGHT = 1007
+        private const val REQUEST_GOAL = 1008
     }
 }
 
@@ -371,8 +384,8 @@ class ReminderReceiver : BroadcastReceiver() {
 
                 if (shouldPost) {
                     val open = PendingIntent.getActivity(
-                        context, 0,
-                        ChompassLaunchIntents.openApp(context),
+                        context, request,
+                        ChompassLaunchIntents.openApp(context, destination = NotificationService.destinationForChannel(channel)),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                     val notifText = if (channel == NotificationService.CHANNEL_WATER && waterPlan != null) {

@@ -122,6 +122,29 @@ fun ChompassNavHost(
             }
         }
     }
+    // Notification tap destination (Codeberg #27): navigate once, clear the inbox.
+    val launchDestination by container.launchDestinationInbox.collectAsState()
+    LaunchedEffect(launchDestination, lifecycleOwner) {
+        val dest = launchDestination ?: return@LaunchedEffect
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            if (container.launchDestinationInbox.value != dest) return@repeatOnLifecycle
+            val route = nav.currentBackStackEntry?.destination?.route
+            // Onboarding has no HOME on the stack yet; ignore the tap there.
+            if (route == null || route == ChompassRoutes.ONBOARDING) return@repeatOnLifecycle
+            if (route != ChompassRoutes.HOME && route != dest) {
+                nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+            }
+            if (container.launchDestinationInbox.value != dest) return@repeatOnLifecycle
+            if (route != dest) {
+                nav.navigate(dest) {
+                    popUpTo(ChompassRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            container.launchDestinationInbox.value = null
+        }
+    }
 
     // App-open epoch for the Home fill-from-zero reveal. Bumped only on ON_START
     // that follows an ON_STOP (a genuine background -> foreground return), so
