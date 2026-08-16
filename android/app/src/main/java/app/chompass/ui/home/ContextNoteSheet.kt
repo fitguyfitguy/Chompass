@@ -326,8 +326,7 @@ fun MultiPhotoCaptureSheet(
 
     fun requestAnalyze() {
         val trimmed = note.trim()
-        val sparse = trimmed.isEmpty() || imageBytesList.size < 2
-        if (sparse) {
+        if (needsAnalyzeConfirm(requireNote, trimmed.isEmpty(), imageBytesList.size)) {
             pendingConfirm = true
         } else {
             commitAnalyze()
@@ -575,6 +574,15 @@ fun MultiPhotoCaptureSheet(
 /** Parse a user-entered grams string; blank or non-positive → null. */
 internal fun parsePositiveGrams(text: String): Double? =
     text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it > 0.0 }
+
+/**
+ * Analyze gate for the photo staging sheet. Turning off the “Ask for a photo
+ * note” setting also disables the empty-note / single-photo confirmation, so
+ * Analyze runs straight through. With the setting on, the confirmation still
+ * appears for a blank note and/or a single photo.
+ */
+internal fun needsAnalyzeConfirm(requireNote: Boolean, noteBlank: Boolean, imageCount: Int): Boolean =
+    requireNote && (noteBlank || imageCount < 2)
 
 private fun decodePreviewBitmap(bytes: ByteArray): android.graphics.Bitmap? {
     val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
