@@ -57,7 +57,7 @@ After uploading assets, redeploys the Hugo site (scripts/deploy_pages.sh) unless
 Uploads the universal APK + SHA256SUMS. Resume with --assets-only after freeing
 space:
   ./scripts/manage_release_assets.sh list
-  ./scripts/manage_release_assets.sh keep-latest -y
+  ./scripts/manage_release_assets.sh keep-n 5 -y
 EOF
       exit 0
       ;;
@@ -120,8 +120,8 @@ Codeberg release attachment quota exceeded.
 1. Inspect current attachments:
      ./scripts/manage_release_assets.sh list
 
-2. Free space (keep only the latest release, or prune ABI/play leftovers):
-     ./scripts/manage_release_assets.sh keep-latest -y
+2. Free space (keep the last 3 to 5 releases, or prune ABI/play leftovers):
+     ./scripts/manage_release_assets.sh keep-n 5 -y
      ./scripts/manage_release_assets.sh prune-abi-splits --before vX.Y.Z -y
 
 3. Resume this publish (uploads only missing assets):

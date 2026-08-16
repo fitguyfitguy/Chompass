@@ -101,15 +101,15 @@ Stable download URL pattern: `https://codeberg.org/fitguy/chompass/releases/down
 
 Codeberg applies a combined quota for **releases, packages, LFS, and attachments** (default **1.5 GiB** per user/org, separate from the 750 MiB git-repo limit).
 
-**Policy:** keep **only the latest** Codeberg release, and attach **universal APK + `SHA256SUMS` only** (no per-ABI splits, no release screenshots by default).
+**Policy:** keep the **last 3 to 5** Codeberg releases (each with universal APK + `SHA256SUMS` only, no per-ABI splits, no release screenshots by default). Older releases are pruned only when quota demands it; the release notes stay visible for recent versions.
 
 **Symptoms:** `quota exceeded` from `tea`, or a release page with only some APKs attached.
 
-**Before publishing**, check attachment usage and drop older releases:
+**Before publishing**, check attachment usage and drop releases older than the last 5:
 
 ```bash
 ./scripts/manage_release_assets.sh list
-./scripts/manage_release_assets.sh keep-latest -y
+./scripts/manage_release_assets.sh keep-n 5 -y
 ```
 
 **On the kept release**, drop leftover ABI splits / play-flavor APKs if any:
