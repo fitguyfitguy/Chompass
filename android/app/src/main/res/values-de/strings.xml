@@ -1273,17 +1273,17 @@ für dich ein</string>
 
     <string name="coach_chip_log_advice">Gibt es Ratschläge basierend auf meinem Protokoll?</string>
 
-    <string name="progress_range_week">1 Woche</string>
+    <string name="progress_range_week">1W</string>
 
-    <string name="progress_range_month">1 Monat</string>
+    <string name="progress_range_month">1M</string>
 
-    <string name="progress_range_3m">3 Monate</string>
+    <string name="progress_range_3m">3M</string>
 
-    <string name="progress_range_6m">6 Monate</string>
+    <string name="progress_range_6m">6M</string>
 
-    <string name="progress_range_year">1 Jahr</string>
+    <string name="progress_range_year">1J</string>
 
-    <string name="progress_range_all">Gesamt</string>
+    <string name="progress_range_all">Alle</string>
 
     <string name="progress_weight_section">Gewicht</string>
 

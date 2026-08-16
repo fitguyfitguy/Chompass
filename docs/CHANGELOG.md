@@ -4,18 +4,6 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
-
-### Added
-
-- **The app is now fully translated into German** (Android): the whole German pack is complete, from onboarding and settings to analysis and AI error messages, in one consistent informal voice. Community full-pack translation contributed by [@1260er](https://codeberg.org/1260er).
-
-### Fixed
-
-- **Turning off the "Ask for a Photo Note" setting no longer asks before analyzing** (Android): with the setting off, analyzing a food photo with no note runs straight through instead of asking "continue without a note?" every time. Reported by [@1260er](https://codeberg.org/1260er).
-
-- **Searching for food no longer closes the app on incomplete products** (Android): a search hit missing one of the three macros (some Open Food Facts products only list some) used to crash the results list while it drew, closing the app to the home screen with no message. It now shows a dash for the missing value instead. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
-
 ## [3.16.0] - 2026-08-16
 
 ### Added
@@ -23,6 +11,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Reminder notifications open the right tab** (Android): tapping a weight or body-fat reminder now lands on the Progress tab instead of the main page; other reminders still open the main page. Closes Codeberg [#27](https://codeberg.org/fitguy/Chompass/issues/27) by [@DontBlameMe](https://codeberg.org/DontBlameMe).
 
 - **Hide the coach tab** (Android): a new switch under Settings → AI &amp; Speech removes the coach tab from the bottom bar. The coach feature itself stays enabled; a full AI-off switch is planned. Part 1 of Codeberg [#20](https://codeberg.org/fitguy/Chompass/issues/20) by [@HattDroid](https://codeberg.org/HattDroid).
+
+- **The app is now fully translated into German** (Android): the whole German pack is complete, from onboarding and settings to analysis and AI error messages, in one consistent informal voice. Community full-pack translation contributed by [@1260er](https://codeberg.org/1260er).
 
 ### Fixed
 
@@ -33,6 +23,18 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Searching for food no longer closes the app while you type** (Android): a food search that is replaced by a new one now stops cleanly instead of piling up background requests, and offline food-database lookups no longer run at the same time, so the search sheet stays stable. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
 
 - **Barcode scanning keeps trying until it reads the code** (Android + PWA): a half-read or unreadable frame no longer stops the scan with an error; the camera keeps scanning until the full code is read, so products scan more reliably. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
+- **Turning off the "Ask for a Photo Note" setting no longer asks before analyzing** (Android): with the setting off, analyzing a food photo with no note runs straight through instead of asking "continue without a note?" every time. Reported by [@1260er](https://codeberg.org/1260er).
+
+- **Searching for food no longer closes the app on incomplete products** (Android): a search hit missing one of the three macros (some Open Food Facts products only list some) used to crash the results list while it drew, closing the app to the home screen with no message. It now shows a dash for the missing value instead. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
+- **The calorie ring's base marker stays visible** (Android): with Add Active on, the tick where your sedentary budget ends and the activity-earned zone begins no longer disappears once you eat past the base budget. The boundary now draws on top of the eaten fill.
+
+- **Release builds ignore debug-only test commands** (Android): the extras that seed sample data, reset onboarding, or restore a test snapshot now only work in debug builds. On release builds, any app could previously fire them and overwrite your diary with sample data.
+
+- **Malformed links and oversized images no longer crash the app** (Android): a `chompass://` link with an unknown destination is ignored instead of crashing, and sharing a very large image skips it instead of running out of memory.
+
+- **AI results are checked before they are saved** (Android): food values from AI that are missing, negative, or absurd are clamped or dropped instead of landing in your diary as-is.
 
 ## [3.15.0] - 2026-08-15
 
