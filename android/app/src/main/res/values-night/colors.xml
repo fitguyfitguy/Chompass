@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Codeberg #28: only the splash background may follow the system night
+         mode. The window chrome colors (chompass_background, status/nav bar,
+         primary accents) deliberately do NOT get night variants: the XML theme
+         is mode-neutral light so the window layer can never contradict the
+         in-app Appearance setting (Light/Dark/System). The Compose theme draws
+         the actual mode; this file only feeds the pre-Compose splash. -->
     <color name="app_splash_background">#FF1C1B1F</color>
-
-    <color name="chompass_primary">#FF4DB6AC</color>
-    <color name="chompass_on_primary">#FF003731</color>
-    <color name="chompass_primary_dark">#FF006B5E</color>
-    <color name="chompass_secondary">#FFCAC4D0</color>
-    <color name="chompass_on_secondary">#FF1C1B1F</color>
-    <color name="chompass_background">#FF1C1B1F</color>
-    <color name="chompass_on_background">#FFE6E1E5</color>
-    <color name="chompass_surface">#FF1C1B1F</color>
-    <color name="chompass_on_surface">#FFE6E1E5</color>
-    <color name="chompass_accent">#FFD0BCFF</color>
-    <color name="chompass_error">#FFF2B8B5</color>
 </resources>
