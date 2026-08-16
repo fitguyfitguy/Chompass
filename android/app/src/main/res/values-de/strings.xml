@@ -1,706 +1,3002 @@
 <resources>
 
-    <!-- Widgets -->
+    <string name="app_name">Chompass</string>
+
     <string name="widget_calorie_label">Chompass Kalorien</string>
+
     <string name="widget_calorie_description">Sieh dir die heutigen Kalorien und Makros auf einen Blick an.</string>
+
+    <string name="widget_protein_label">Chompass-Protein</string>
+
     <string name="widget_protein_description">Sieh dir den heutigen Protein-Fortschritt auf einen Blick an.</string>
+
     <string name="widget_today">Heute</string>
+
+    <string name="widget_protein">Protein</string>
+
     <string name="widget_calories">Kalorien</string>
+
     <string name="widget_carbs">Kohlenhydrate</string>
+
     <string name="widget_fat">Fett</string>
-    <string name="widget_kcal_left_format">%1$d kcal übrig</string>
-    <string name="widget_g_left_format">%1$dg übrig</string>
+
+    <string name="widget_kcal_left_format">%1$d kcal verbleiben</string>
+
+    <string name="widget_g_left_format">%1$d g verbleiben</string>
+
+    <string name="widget_kcal">kcal</string>
+
     <string name="widget_protein_g">Protein g</string>
 
-    <!-- Common buttons / actions -->
+    <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
+
+    <string name="widget_center_small_format">/ %1$d</string>
+
+    <string name="widget_center_small_g_format">/ %1$dg</string>
+
+    <string name="widget_center_large_g_format">%1$dg</string>
+
     <string name="action_save">Speichern</string>
+
     <string name="action_cancel">Abbrechen</string>
+
+    <string name="action_close">Schließen</string>
+
     <string name="action_done">Fertig</string>
+
+    <string name="action_ok">OK</string>
+
+    <string name="action_info">Info</string>
+
     <string name="action_clear">Leeren</string>
+
     <string name="action_delete">Löschen</string>
+
     <string name="action_continue">Weiter</string>
+
     <string name="action_get_started">Loslegen</string>
+
+    <string name="action_log">Protokoll</string>
+
+    <string name="action_logging">Protokollierung...</string>
+
+    <string name="action_what_if">Was wäre, wenn?</string>
+
     <string name="action_analyze">Analysieren</string>
+
     <string name="action_discard">Verwerfen</string>
+
     <string name="action_reset">Zurücksetzen</string>
+
     <string name="action_keep_going">Weitermachen</string>
+
     <string name="action_send">Senden</string>
+
     <string name="action_pin">Anheften</string>
 
-    <!-- Generic units / labels -->
-    <string name="kg_per_week_format">%1$.2f kg/Woche</string>
-    <string name="lbs_per_week_format">%1$.2f lbs/Woche</string>
+    <string name="action_retry">Erneut versuchen</string>
 
-    <!-- Macros / Goal labels -->
+    <string name="action_show">Anzeigen</string>
+
+    <string name="action_hide">Ausblenden</string>
+
+    <string name="action_advanced">Erweitert</string>
+
+    <string name="unit_kcal">kcal</string>
+
+    <string name="unit_g">g</string>
+
+    <string name="unit_ml">ml</string>
+
+    <string name="unit_mg">mg</string>
+
+    <string name="unit_percent">%</string>
+
+    <string name="unit_cm">cm</string>
+
+    <string name="unit_kg">kg</string>
+
+    <string name="unit_lbs">lbs</string>
+
+    <string name="unit_ft">ft</string>
+
+    <string name="unit_in">in</string>
+
+    <string name="unit_ft_in">ft / in</string>
+
+    <string name="kcal_value_format">%1$d kcal</string>
+
+    <string name="grams_value_format">%1$dg</string>
+
+    <string name="grams_value_decimal_format">%1$.1fg</string>
+
+    <string name="kg_value_format">%1$.1f kg</string>
+
+    <string name="lbs_value_format">%1$.1f lbs</string>
+
+    <string name="kg_per_week_format">%1$.2f kg/wk</string>
+
+    <string name="lbs_per_week_format">%1$.2f lbs/wk</string>
+
+    <string name="height_cm_format">%1$d cm</string>
+
+    <string name="feet_inches_format">%1$d\' %2$d\"</string>
+
+    <string name="value_unit_format">%1$d %2$s</string>
+
+    <string name="ft_label_format">%1$d ft</string>
+
+    <string name="in_label_format">%1$d in</string>
+
+    <string name="bullet">·</string>
+
+    <string name="macro_protein">Protein</string>
+
+    <string name="protein_target_mode_label">Proteinziel</string>
+
+    <string name="protein_target_mode_grams">Gramm pro Tag</string>
+
+    <string name="protein_target_mode_g_per_kg_total">g/kg Körpergewicht</string>
+
+    <string name="protein_target_mode_g_per_kg_lbm">g/kg fettfreie Masse</string>
+
+    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/Tag</string>
+
+    <string name="protein_target_lbm_missing_hint">Körperfettanteil %% nicht festgelegt. Es wird das Gesamtgewicht verwendet, bis der Körperfettanteil %% erfasst ist.</string>
+
     <string name="macro_carbs">Kohlenhydrate</string>
+
     <string name="macro_fat">Fett</string>
+
     <string name="macro_calories">Kalorien</string>
 
-    <!-- Gender -->
+    <string name="macro_goal_of">von %1$d%2$s</string>
+
+    <string name="macro_status_left">%1$s%2$s übrig</string>
+
+    <string name="macro_status_over">%1$s%2$s überschritten</string>
+
+    <string name="macro_status_goal_reached">Ziel erreicht</string>
+
+    <string name="macro_status_no_goal">Kein Ziel</string>
+
     <string name="gender_male">Männlich</string>
+
     <string name="gender_female">Weiblich</string>
-    <string name="gender_other">Andere</string>
 
-    <!-- Activity Level -->
+    <string name="gender_other">Sonstiges</string>
+
     <string name="activity_sedentary">Sitzend</string>
+
     <string name="activity_light">Leicht</string>
+
     <string name="activity_moderate">Moderat</string>
+
     <string name="activity_active">Aktiv</string>
+
     <string name="activity_very_active">Sehr aktiv</string>
+
     <string name="activity_extra_active">Extrem aktiv</string>
-    <string name="activity_sedentary_subtitle">Wenig oder kein Sport</string>
-    <string name="activity_light_subtitle">Sport 1-3 Mal / Woche</string>
-    <string name="activity_moderate_subtitle">Sport 4-5 Mal / Woche</string>
-    <string name="activity_active_subtitle">Täglich Sport oder intensiv 3-4x / Woche</string>
-    <string name="activity_very_active_subtitle">Intensiv 6-7 Mal / Woche</string>
-    <string name="activity_extra_active_subtitle">Sehr intensiv täglich oder körperliche Arbeit</string>
 
-    <!-- Weight Goal -->
-    <string name="goal_lose">Abnehmen / Cutting</string>
-    <string name="goal_maintain">Halten / Recomp</string>
-    <string name="goal_gain">Zunehmen / Bulking</string>
+    <string name="activity_sedentary_subtitle">Wenig oder keine Bewegung.\nUngefähre Schrittzahl: unter 5.000 Schritte/Tag.</string>
 
-    <!-- Meal Type -->
+    <string name="activity_light_subtitle">1–3 Mal pro Woche Sport treiben.\ nUngefährer Richtwert für Schritte: 5.000–7.499 Schritte/Tag.</string>
+
+    <string name="activity_moderate_subtitle">4–5 Mal pro Woche Bewegung.\nUngefährer Richtwert für Schritte: 7.500–9.999 Schritte/Tag.</string>
+
+    <string name="activity_active_subtitle">Tägliche Bewegung oder intensives Training 3–4 Mal pro Woche.\nUngefähre Schrittzahl: 10.000–12.499 Schritte pro Tag.</string>
+
+    <string name="activity_very_active_subtitle">Intensives Training 6–7 Mal pro Woche.\nUngefähre Schrittzahl: 12.500–14.999 Schritte pro Tag.</string>
+
+    <string name="activity_extra_active_subtitle">Täglich sehr intensives Training oder körperlich anstrengende Arbeit.\nUngefähre Schrittzahl: 15.000+ Schritte/Tag.</string>
+
+    <string name="goal_lose">Abnehmen / Definieren</string>
+
+    <string name="goal_maintain">Gewicht halten / Körperzusammensetzung optimieren</string>
+
+    <string name="goal_gain">Zunehmen / Muskelaufbau</string>
+
+    <string name="diet_mode_standard">Standard</string>
+
+    <string name="diet_mode_keto_beta">Keto (Beta)</string>
+
+    <string name="diet_mode_beta_note">Beta-Modus: wird noch optimiert.</string>
+
+    <string name="keto_carb_mode_adaptive">Adaptive Kohlenhydrate</string>
+
+    <string name="keto_carb_mode_manual">Manuelle Kohlenhydrate</string>
+
+    <string name="keto_carb_mode_adaptive_subtitle">Empfohlen basierend auf deinem Profil und deinem Ziel.</string>
+
+    <string name="keto_carb_mode_manual_subtitle">Leg dein eigenes Netto-Kohlenhydrat-Ziel in Gramm fest.</string>
+
+    <string name="keto_carb_grams_format">%1$d g/Tag</string>
+
     <string name="meal_breakfast">Frühstück</string>
-    <string name="meal_lunch">Mittagessen</string>
-    <string name="meal_dinner">Abendessen</string>
-    <string name="meal_other">Andere</string>
 
-    <!-- AutoBalance Macro -->
+    <string name="meal_lunch">Mittagessen</string>
+
+    <string name="meal_dinner">Abendessen</string>
+
+    <string name="meal_snack">Snack</string>
+
+    <string name="meal_other">Sonstiges</string>
+
+    <string name="autobalance_protein">Protein</string>
+
     <string name="autobalance_carbs">Kohlenhydrate</string>
+
     <string name="autobalance_fat">Fett</string>
 
-    <!-- AI Provider names -->
-    <string name="ai_provider_ollama">Ollama (Lokal)</string>
+    <string name="ai_provider_gemini">Google Gemini</string>
+
+    <string name="ai_provider_openai">OpenAI</string>
+
+    <string name="ai_provider_anthropic">Anthropic Claude</string>
+
+    <string name="ai_provider_xai">xAI Grok</string>
+
+    <string name="ai_provider_openrouter">OpenRouter</string>
+
+    <string name="ai_provider_together">Together AI</string>
+
+    <string name="ai_provider_groq">Groq</string>
+
+    <string name="ai_provider_huggingface">Hugging Face</string>
+
+    <string name="ai_provider_fireworks">Fireworks AI</string>
+
+    <string name="ai_provider_deepinfra">DeepInfra</string>
+
+    <string name="ai_provider_mistral">Mistral</string>
+
+    <string name="ai_provider_ollama">Ollama (lokal)</string>
+
     <string name="ai_provider_custom">Benutzerdefiniert (OpenAI-kompatibel)</string>
 
-    <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_ollama">Kein Schlüssel nötig</string>
-    <string name="ai_key_placeholder_custom">API-Schlüssel (oder beliebig, falls Endpunkt keinen braucht)</string>
+    <string name="ai_provider_on_device">Auf dem Gerät (privat)</string>
 
-    <!-- Speech Provider -->
-    <string name="speech_provider_native">Nativ (Auf dem Gerät)</string>
+    <string name="ai_provider_on_device_subtitle">Privat und offline. Geringere Genauigkeit als Cloud-KI; ~2–4 GB Download</string>
+
+    <string name="ai_key_placeholder_gemini">AIza...</string>
+
+    <string name="ai_key_placeholder_openai">sk-...</string>
+
+    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
+
+    <string name="ai_key_placeholder_xai">xai-...</string>
+
+    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
+
+    <string name="ai_key_placeholder_together">...</string>
+
+    <string name="ai_key_placeholder_groq">gsk_... </string>
+
+    <string name="ai_key_placeholder_huggingface">hf_...</string>
+
+    <string name="ai_key_placeholder_fireworks">fw_...</string>
+
+    <string name="ai_key_placeholder_deepinfra">...</string>
+
+    <string name="ai_key_placeholder_mistral">...</string>
+
+    <string name="ai_key_placeholder_ollama">Kein Schlüssel erforderlich</string>
+
+    <string name="ai_key_placeholder_custom">API-Schlüssel (oder beliebiger Wert, falls der Endpunkt keinen benötigt)</string>
+
+    <string name="speech_provider_native">Nativ (geräteintern)</string>
+
+    <string name="speech_provider_gemini">Gemini Audio</string>
+
+    <string name="speech_provider_openai">OpenAI Whisper</string>
+
+    <string name="speech_provider_groq">Groq (Whisper)</string>
+
+    <string name="speech_provider_deepgram">Deepgram</string>
+
+    <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Nicht erforderlich</string>
-    <string name="speech_key_placeholder_deepgram">Token dein-deepgram-key</string>
+
+    <string name="speech_key_placeholder_gemini">AIza...</string>
+
+    <string name="speech_key_placeholder_openai">sk-...</string>
+
+    <string name="speech_key_placeholder_groq">gsk_...</string>
+
+    <string name="speech_key_placeholder_deepgram">Token „dein-deepgram-Schlüssel“</string>
+
     <string name="speech_key_placeholder_assemblyai">Dein AssemblyAI-Schlüssel</string>
 
-    <string name="speech_description_native">Androids Spracherkennung auf dem Gerät. Kostenlos, funktioniert offline auf den meisten Telefonen, Echtzeit-Teilergebnisse. Empfohlene Standardeinstellung.</string>
-    <string name="speech_description_openai">OpenAI Whisper API. Hohe Genauigkeit, 99+ Sprachen, kostenpflichtig pro Minute.</string>
-    <string name="speech_description_groq">Whisper Large v3 von Groq. Sehr schnelle Inferenz, mit kostenloser Stufe.</string>
+    <string name="speech_description_native">Verwendet den Android-Spracherkennungsdienst des Geräts, sofern dieser in diesem Profil verfügbar ist. Kostenlos, mit Teilergebnissen in Echtzeit. Erfordert eine systemeigene STT-Engine (Apps, die ausschließlich „Assist“ nutzen, zählen nicht).</string>
+
+    <string name="speech_description_gemini">Audio-Transkription über die Gemini-API. Nutzt die Batch-Audioverarbeitung, nicht die Echtzeit-Speech-to-Text-API von Google Cloud.</string>
+
+    <string name="speech_description_openai">OpenAI Whisper-API. Hohe Genauigkeit, über 99 Sprachen, Abrechnung pro Minute.</string>
+
+    <string name="speech_description_groq">Von Groq gehostetes „Whisper Large v3“. Sehr schnelle Inferenz, verfügt über eine kostenlose Stufe.</string>
+
     <string name="speech_description_deepgram">Deepgram Nova. Echtzeit- und Batch-Modus, schnell und genau.</string>
-    <string name="speech_description_assemblyai">AssemblyAI Universal-Modell. Hohe Genauigkeit, kostenlose Stufe verfügbar.</string>
 
-    <!-- Bottom navigation -->
-    <string name="nav_home">Start</string>
+    <string name="speech_description_assemblyai">AssemblyAI Universal-Modell. Hohe Genauigkeit, kostenlose Nutzungsstufe verfügbar.</string>
+
+    <string name="speech_error_audio_capture_failed">Audioaufnahme fehlgeschlagen</string>
+
+    <string name="speech_error_start_failed">Spracherkennung konnte nicht gestartet werden</string>
+
+    <string name="speech_error_missing_permission">Mikrofonberechtigung fehlt</string>
+
+    <string name="speech_error_network">Netzwerkfehler</string>
+
+    <string name="speech_error_network_timeout">Netzwerk-Timeout</string>
+
+    <string name="speech_error_no_match">Keine Sprache erkannt</string>
+
+    <string name="speech_error_recognizer_busy">Erkennungsmodul belegt</string>
+
+    <string name="speech_error_server">Serverfehler</string>
+
+    <string name="speech_error_no_input">Keine Spracheingabe</string>
+
+    <string name="speech_error_server_disconnected">Verbindung zum Sprachdienst unterbrochen</string>
+
+    <string name="speech_error_language_not_supported">Die Sprachsprache wird auf diesem Gerät nicht unterstützt</string>
+
+    <string name="speech_error_language_unavailable">Die Sprachsprache ist auf diesem Gerät nicht verfügbar</string>
+
+    <string name="speech_error_unknown_format">Sprachfehler (%1$d)</string>
+
+    <string name="nav_home">Startseite</string>
+
     <string name="nav_progress">Fortschritt</string>
+
+    <string name="nav_coach">Trainer</string>
+
     <string name="nav_settings">Einstellungen</string>
-    <string name="nav_about">Info</string>
 
-    <!-- Day-of-week narrow letters (for week strip) -->
-    <string name="dow_narrow_tuesday">D</string>
-    <string name="dow_narrow_wednesday">M</string>
-    <string name="dow_narrow_thursday">D</string>
+    <string name="nav_about">Über</string>
 
-    <!-- Months (full) -->
+    <string name="dow_narrow_monday">M</string>
+
+    <string name="dow_narrow_tuesday">T</string>
+
+    <string name="dow_narrow_wednesday">W</string>
+
+    <string name="dow_narrow_thursday">T</string>
+
+    <string name="dow_narrow_friday">F</string>
+
+    <string name="dow_narrow_saturday">S</string>
+
+    <string name="dow_narrow_sunday">S</string>
+
     <string name="month_january">Januar</string>
+
     <string name="month_february">Februar</string>
+
     <string name="month_march">März</string>
+
+    <string name="month_april">April</string>
+
     <string name="month_may">Mai</string>
+
     <string name="month_june">Juni</string>
+
     <string name="month_july">Juli</string>
+
+    <string name="month_august">August</string>
+
+    <string name="month_september">September</string>
+
     <string name="month_october">Oktober</string>
+
+    <string name="month_november">November</string>
+
     <string name="month_december">Dezember</string>
 
-    <!-- Onboarding -->
     <string name="onboarding_back">Zurück</string>
-    <string name="onboarding_logo_description">Chompass Logo</string>
-    <string name="onboarding_welcome_line1">Mahlzeiten erfassen,</string>
-    <string name="onboarding_welcome_line2">Im Gleichgewicht bleiben</string>
-    <string name="onboarding_welcome_subtitle">Mahlzeiten per Foto, Stimme oder Text erfassen.\nDeine Ernährung auf einen Blick.</string>
 
-    <string name="onboarding_gender_title">Was ist dein Geschlecht?</string>
+    <string name="onboarding_logo_description">Chompass-Logo</string>
+
+    <string name="onboarding_welcome_line1">Mahlzeiten erfassen,</string>
+
+    <string name="onboarding_welcome_line2">ausgewogen bleiben</string>
+
+    <string name="onboarding_welcome_subtitle">Erfasse Mahlzeiten mit Fotos, Sprachbefehlen oder Text.\nDeine Ernährung auf einen Blick.</string>
+
+    <string name="onboarding_gender_title">Welches Geschlecht hast du?</string>
+
     <string name="onboarding_gender_subtitle">Das hilft uns, deinen Stoffwechsel zu berechnen</string>
 
     <string name="onboarding_birthday_title">Wann hast du Geburtstag?</string>
-    <string name="onboarding_birthday_subtitle">Wird verwendet, um deinen Tagesbedarf zu berechnen</string>
+
+    <string name="onboarding_birthday_subtitle">Wird zur Berechnung deines täglichen Bedarfs verwendet</string>
 
     <string name="onboarding_height_weight_title">Größe &amp; Gewicht</string>
-    <string name="onboarding_height_weight_subtitle">Wir behandeln das vertraulich</string>
+
+    <string name="onboarding_height_weight_subtitle">Diese Angaben werden vertraulich behandelt</string>
+
+    <string name="onboarding_imperial">Imperial</string>
+
     <string name="onboarding_metric">Metrisch</string>
-    <string name="onboarding_height">Größe</string>
+
+    <string name="onboarding_height">Körpergröße</string>
+
     <string name="onboarding_weight">Gewicht</string>
+
     <string name="onboarding_feet">Fuß</string>
+
     <string name="onboarding_inches">Zoll</string>
 
-    <string name="onboarding_activity_title">Wie aktiv bist du?</string>
+    <string name="onboarding_activity_title">Wie aktiv bist Du?</string>
+
     <string name="onboarding_activity_subtitle">Deine typische Woche</string>
 
     <string name="onboarding_goal_title">Was ist dein Ziel?</string>
-    <string name="onboarding_goal_subtitle">Du kannst das jederzeit ändern</string>
 
-    <string name="onboarding_desired_weight_title">Was ist dein\nWunschgewicht?</string>
+    <string name="onboarding_goal_subtitle">Du kannst dies jederzeit ändern</string>
 
-    <string name="onboarding_body_fat_title">Kennst du deinen\nKörperfett-Anteil?</string>
-    <string name="onboarding_body_fat_subtitle">Hilft uns, deinen Stoffwechsel genauer zu berechnen</string>
+    <string name="onboarding_diet_mode_title">Befolgst du einen Ernährungsmodus?</string>
+
+    <string name="onboarding_diet_mode_subtitle">Wähle deinen Standard-Coaching-Stil</string>
+
+    <string name="keto_carb_setup_title">Keto-Kohlenhydrat-Einstellung</string>
+
+    <string name="keto_carb_manual_hint">Der manuelle Zielwert ist auf 20–50 g Netto-Kohlenhydrate pro Tag begrenzt.</string>
+
+    <string name="onboarding_desired_weight_title">Was ist dein\nZielgewicht?</string>
+
+    <string name="onboarding_body_fat_title">Kennst du deinen\nKörperfettanteil?</string>
+
+    <string name="onboarding_body_fat_subtitle">Das hilft uns, deinen Stoffwechsel genauer zu berechnen</string>
+
     <string name="onboarding_yes">Ja</string>
+
     <string name="onboarding_no">Nein</string>
-    <string name="onboarding_body_fat_ranges">Üblicher Bereich: Männer 10-25 %, Frauen 18-35 %</string>
-    <string name="onboarding_body_fat_no_worries">Kein Problem! Wir verwenden eine Standardformel\nbasierend auf Größe, Gewicht und Alter.</string>
+
+    <string name="onboarding_body_fat_ranges">Übliche Werte: Männer 10–25 %, Frauen 18–35 %</string>
+
+    <string name="onboarding_body_fat_no_worries">Das ist in Ordnung. Wir verwenden eine Standardformel\nbasierend auf deiner Größe, deinem Gewicht und deinem Alter.</string>
+
+    <string name="onboarding_goal_optional">Ziel (optional)</string>
+
+    <string name="onboarding_goal_set_later">Du kannst dies später in den Einstellungen festlegen.</string>
+
+    <string name="progress_metric_weight">Gewicht</string>
+
+    <string name="progress_metric_body_fat">Körperfett</string>
+
+    <string name="progress_log_body_fat">Körperfett erfassen</string>
+
+    <string name="progress_log_first_body_fat">Erfasse deinen ersten Körperfettanteil, um Trends zu erkennen</string>
+
+    <string name="progress_log_body_fat_title">Körperfett erfassen</string>
+
+    <string name="saved_meals_search_placeholder">Gespeicherte Lebensmittel suchen</string>
+
+    <string name="saved_meals_no_match">Keine passenden Lebensmittel gefunden</string>
 
     <string name="onboarding_pace_title_maintain">Dein Tempo</string>
-    <string name="onboarding_pace_subtitle_maintain">Wir stellen einen ausgewogenen Plan ein</string>
-    <string name="onboarding_pace_title_change">Wie schnell willst du\ndein Ziel erreichen?</string>
-    <string name="onboarding_pace_subtitle_lose">Tempo des Gewichtsverlusts pro Woche</string>
-    <string name="onboarding_pace_subtitle_gain">Tempo der Gewichtszunahme pro Woche</string>
-    <string name="onboarding_pace_balanced_set">Ausgewogenes Tempo eingestellt</string>
-    <string name="onboarding_pace_balanced_subtitle">Wir halten deine Kalorien stabil,\num dein aktuelles Gewicht zu halten.</string>
+
+    <string name="onboarding_pace_subtitle_maintain">Wir erstellen einen ausgewogenen Plan</string>
+
+    <string name="onboarding_pace_title_change">Wie schnell möchtest du\nIhr Ziel erreichen?</string>
+
+    <string name="onboarding_pace_subtitle_lose">Gewichtsabnahme pro Woche</string>
+
+    <string name="onboarding_pace_subtitle_gain">Gewichtszunahme pro Woche</string>
+
+    <string name="onboarding_pace_balanced_set">Ausgewogenes Tempo festlegen</string>
+
+    <string name="onboarding_pace_balanced_subtitle">Wir halten deine Kalorienzufuhr konstant,\num dein aktuelles Gewicht zu halten.</string>
+
     <string name="onboarding_pace_per_week">pro Woche</string>
+
     <string name="onboarding_pace_slow">Langsam</string>
+
     <string name="onboarding_pace_recommended">Empfohlen</string>
+
     <string name="onboarding_pace_fast">Schnell</string>
+
     <string name="onboarding_pace_reach_prefix">Du erreichst dein Ziel in </string>
+
     <string name="onboarding_pace_days_format">%1$d Tagen</string>
+
     <string name="onboarding_pace_caption_slow">Sanft und nachhaltig. Ideal für langfristige Gewohnheiten.</string>
-    <string name="onboarding_pace_caption_fast">Aggressiv, aber machbar. Erfordert starke Disziplin.</string>
+
+    <string name="onboarding_pace_caption_fast">Ambitioniert, aber machbar. Erfordert starke Disziplin.</string>
+
     <string name="onboarding_pace_caption_recommended">Das ausgewogenste Tempo, motivierend und nachhaltig.</string>
 
-    <string name="onboarding_notifications_title">Werde an deine\nMahlzeiten erinnert</string>
-    <string name="onboarding_notifications_subtitle">Erhalte sanfte Erinnerungen zu den Mahlzeiten,\ndamit du nie vergisst, zu tracken.</string>
+    <string name="onboarding_notifications_title">Erinnerung zum\nErfassen von Mahlzeiten</string>
+
+    <string name="onboarding_notifications_subtitle">Erhalte sanfte Erinnerungen zu den Mahlzeiten,\ndamit du nie vergisst, deine Mahlzeiten zu erfassen.</string>
+
     <string name="onboarding_notifications_enabled">Erinnerungen aktiviert</string>
-    <string name="onboarding_notifications_allow">Mitteilungen erlauben</string>
+
+    <string name="onboarding_notifications_allow">Benachrichtigungen zulassen</string>
+
     <string name="onboarding_notifications_change_anytime">Du kannst dies jederzeit in den Einstellungen ändern.</string>
 
-    <string name="onboarding_health_title">Mit Health Connect\nverbinden</string>
-    <string name="onboarding_health_subtitle">Halte deine Ernährungs- und Körpermessdaten\nautomatisch synchron.</string>
+    <string name="onboarding_health_title">Mit\nHealth Connect verbinden</string>
+
+    <string name="onboarding_health_subtitle">Synchronisiere deine Ernährungsdaten und Körpermaße automatisch.</string>
+
     <string name="onboarding_health_feature_nutrition">Ernährungsdaten</string>
-    <string name="onboarding_health_feature_weight">Gewichts-Sync</string>
-    <string name="onboarding_health_feature_body">Körpermessungen</string>
+
+    <string name="onboarding_health_feature_weight">Gewichtssynchronisierung</string>
+
+    <string name="onboarding_health_feature_body">Körpermaße</string>
+
     <string name="onboarding_health_unavailable">Health Connect nicht verfügbar</string>
+
     <string name="onboarding_health_connected">Verbunden</string>
+
     <string name="onboarding_health_connect">Verbinden</string>
 
-    <string name="onboarding_provider_title">Eigene KI verwenden</string>
-    <string name="onboarding_provider_subtitle">Optionaler API-Schlüssel für Essensfotos und Coach.\nGoogle AI Studio ist kostenlos und empfohlen.</string>
+    <string name="onboarding_provider_title">Bring deine eigene KI mit</string>
+
+    <string name="onboarding_provider_subtitle">Optionaler API-Schlüssel für Lebensmittel-Fotos und Coach.\nGoogle AI Studio ist kostenlos und wird empfohlen.</string>
+
     <string name="onboarding_provider_recommended_title">Empfohlen: Google AI Studio</string>
-    <string name="onboarding_provider_recommended_subtitle">Kostenlos und hochwertig. Am besten für Essensfotos.</string>
-    <string name="onboarding_provider_howto_title">So bekommst du einen kostenlosen Google-AI-Studio-Schlüssel</string>
-    <string name="onboarding_provider_step_1">Öffne aistudio.google.com/apikey (tippen zum Öffnen)</string>
-    <string name="onboarding_provider_step_2">Melde dich mit Google an und erstelle einen API-Schlüssel</string>
-    <string name="onboarding_provider_step_3">Unten einfügen und auf Schlüssel testen tippen</string>
-    <string name="onboarding_provider_footer">Alle Anbieter unterstützt. Dein Schlüssel bleibt\nverschlüsselt auf diesem Gerät. Später in den Einstellungen änderbar.</string>
-    <string name="onboarding_skip_ai">Vorerst überspringen</string>
+
+    <string name="onboarding_provider_recommended_subtitle">Kostenlos und hochwertig. Am besten geeignet für Fotos von Lebensmitteln.</string>
+
+    <string name="onboarding_provider_howto_title">So erhältst du einen kostenlosen Google AI Studio-Schlüssel</string>
+
+    <string name="onboarding_provider_step_1">Öffne aistudio.google.com/apikey (zum Öffnen antippen)</string>
+
+    <string name="onboarding_provider_step_2">Melde dich bei Google an und erstelle einen API-Schlüssel</string>
+
+    <string name="onboarding_provider_step_3">Füge ihn unten ein und tippe auf „Schlüssel testen“</string>
+
+    <string name="onboarding_provider_footer">Alle Anbieter werden unterstützt. Dein Schlüssel verbleibt verschlüsselt auf\ndiesem Gerät. Du kannst dies in den Einstellungen ändern.</string>
+
+    <string name="onboarding_ai_free_tier_note">Der Gratis-Tarif deckt die Flash-Modelle ab; Pro-Modelle benötigen Abrechnung in deinem AI-Studio-Projekt.</string>
+
+    <string name="onboarding_skip_ai">Jetzt überspringen</string>
+
     <string name="onboarding_skip_ai_title">Ohne Cloud-Schlüssel fortfahren?</string>
-    <string name="onboarding_skip_ai_body">On-Device-KI läuft privat auf dem Telefon, ist aber deutlich ungenauer als Google AI Studio oder andere Cloud-Modelle. Rechne mit falschen Kalorien, fehlenden Einträgen oder schwachen Fotolesungen. Einen kostenlosen AI-Studio-Schlüssel kannst du jederzeit in den Einstellungen hinzufügen.</string>
-    <string name="onboarding_skip_ai_later_body">Essensfoto-KI und Coach brauchen einen API-Schlüssel oder ein On-Device-Modell. Beides kannst du jederzeit in den Einstellungen einrichten.</string>
+
+    <string name="onboarding_skip_ai_body">Die geräteinterne KI läuft privat auf deinem Smartphone, ist jedoch weitaus ungenauer als Google AI Studio oder andere Cloud-Modelle. Rechne mit falschen Kalorienangaben, fehlenden Lebensmitteln oder ungenauen Fotoerkennungen. Du kannst jederzeit in den Einstellungen einen kostenlosen AI Studio-Schlüssel hinzufügen.</string>
+
+    <string name="onboarding_skip_ai_later_body">Die KI zur Erkennung von Lebensmittelfotos und der Coach benötigen einen API-Schlüssel oder ein gerätebasiertes Modell. Beides kannst du jederzeit in den Einstellungen einrichten.</string>
+
     <string name="onboarding_skip_ai_confirm">Trotzdem fortfahren</string>
 
+    <string name="onboarding_api_key_test">Schlüssel testen</string>
+
+    <string name="onboarding_api_key_testing">Wird getestet…</string>
+
+    <string name="onboarding_api_key_works">Schlüssel funktioniert</string>
+
+    <string name="onboarding_api_key_empty">Füge zuerst einen API-Schlüssel ein</string>
+
+    <string name="onboarding_api_key_network">Netzwerkfehler. Überprüfe deine Verbindung und versuche es erneut.</string>
+
+    <string name="onboarding_api_key_rejected">Dieser API-Schlüssel wurde abgelehnt. Erstelle einen neuen Schlüssel in AI Studio und füge ihn erneut ein.</string>
+
+    <string name="onboarding_api_key_non_gemini_ok">Bereit. Der Schnelltest ist nur für Gemini verfügbar</string>
+
     <string name="onboarding_building_calories">Kalorien</string>
+
     <string name="onboarding_building_carbs">Kohlenhydrate</string>
+
+    <string name="onboarding_building_protein">Protein</string>
+
     <string name="onboarding_building_fats">Fette</string>
+
     <string name="onboarding_building_health_score">Gesundheitswert</string>
-    <string name="onboarding_building_setting_up">Wir richten alles\nfür dich ein</string>
-    <string name="onboarding_building_finalizing">Ergebnisse werden abgeschlossen...</string>
-    <string name="onboarding_building_recommendation">Tagesempfehlung für</string>
+
+    <string name="onboarding_building_percent_format">%1$d%%</string>
+
+    <string name="onboarding_building_setting_up">Wir richten alles
+für dich ein</string>
+
+    <string name="onboarding_building_finalizing">Ergebnisse werden finalisiert...</string>
+
+    <string name="onboarding_building_recommendation">Tägliche Empfehlung für</string>
+
+    <string name="onboarding_building_bullet">•</string>
 
     <string name="onboarding_plan_title">Dein Plan</string>
-    <string name="onboarding_plan_subtitle">Tippe auf einen Wert, um ihn zu bearbeiten</string>
+
+    <string name="onboarding_plan_subtitle">Tippe auf einen beliebigen Wert, um ihn zu bearbeiten</string>
+
     <string name="onboarding_plan_daily_calories">tägliche Kalorien</string>
+
     <string name="onboarding_plan_doctor_title">Bitte konsultiere einen Arzt</string>
-    <string name="onboarding_plan_doctor_message">Die Mindestempfehlung beträgt 1.200 Kalorien pro Tag.</string>
+
+    <string name="onboarding_plan_doctor_message">Die empfohlene Mindestmenge beträgt 1.200 Kalorien pro Tag.</string>
+
+    <string name="onboarding_disclaimers_title">Bevor du beginnst</string>
+
+    <string name="onboarding_disclaimers_subtitle">Bitte lies diese wichtigen Hinweise</string>
 
     <string name="onboarding_plan_field_calories">Tägliche Kalorien</string>
+
+    <string name="onboarding_plan_field_protein">Protein</string>
+
     <string name="onboarding_plan_field_carbs">Kohlenhydrate</string>
+
     <string name="onboarding_plan_field_fat">Fett</string>
 
+    <string name="home_add_food">Lebensmittel hinzufügen</string>
 
-    <!-- Home -->
-    <string name="home_add_food">Essen hinzufügen</string>
     <string name="home_menu_camera">Kamera</string>
+
     <string name="home_menu_camera_note">Kamera + Notiz</string>
-    <string name="home_menu_nutrition_label">Nährwertkennzeichnung</string>
+
+    <string name="home_menu_nutrition_label">Nährwertangaben</string>
+
     <string name="home_menu_from_photos">Aus Fotos</string>
+
     <string name="home_menu_text_input">Texteingabe</string>
-    <string name="home_menu_voice">Stimme</string>
+
+    <string name="home_menu_voice">Sprache</string>
+
     <string name="home_menu_manual_entry">Manuelle Eingabe</string>
+
     <string name="home_menu_saved_meals">Gespeicherte Mahlzeiten</string>
+
+    <string name="home_menu_barcode">Barcode</string>
+
+    <string name="home_menu_grounded">Geerdet</string>
+
+    <string name="home_menu_search_food">Lebensmittel suchen</string>
+
+    <string name="food_search_sheet_title">Lebensmitteldatenbanken durchsuchen</string>
+
+    <string name="food_search_placeholder">z. B. griechischer Joghurt, Milch, Quark</string>
+
+    <string name="food_search_hint">Verpackte Lebensmittel aus Open Food Facts sowie Offline-Datenbanken des USDA und der Schweiz. Die Ergebnisse sind mit einem Quellen-Symbol gekennzeichnet.</string>
+
+    <string name="food_search_empty">Gib einen Suchbegriff ein, um nach verpackten und generischen Lebensmitteln zu suchen</string>
+
+    <string name="food_search_no_results">Keine Lebensmittel gefunden. Versuche es mit einem anderen Namen.</string>
+
+    <string name="food_search_source_off">Open Food Facts</string>
+
+    <string name="food_search_source_usda">USDA</string>
+
+    <string name="food_search_source_swiss">Schweiz</string>
+
     <string name="shortcut_camera_short">Kamera</string>
-    <string name="shortcut_camera_long">Essen mit Kamera loggen</string>
+
+    <string name="shortcut_camera_long">Lebensmittel mit der Kamera erfassen</string>
+
     <string name="shortcut_voice_short">Sprache</string>
-    <string name="shortcut_voice_long">Essen per Sprache loggen</string>
+
+    <string name="shortcut_voice_long">Lebensmittel per Spracheingabe erfassen</string>
+
+    <string name="shortcut_barcode_short">Barcode</string>
+
     <string name="shortcut_barcode_long">Barcode scannen</string>
+
     <string name="add_food_sheet_title">Essen hinzufügen</string>
+
     <string name="add_food_hero_photo">Foto</string>
+
     <string name="add_food_hero_photo_sub">Kamera oder Galerie</string>
+
     <string name="add_food_hero_note">Notiz</string>
+
     <string name="add_food_hero_note_sub">Beschreibe, was du gegessen hast</string>
+
     <string name="add_food_hero_saved">Gespeichert</string>
-    <string name="add_food_hero_saved_sub">Zuletzt &amp; Favoriten</string>
-    <string name="add_food_more_section">Weitere Erfassungsarten</string>
+
+    <string name="add_food_hero_saved_sub">Zuletzt verwendet &amp; Favoriten</string>
+
+    <string name="add_food_more_section">Weitere Möglichkeiten zum Erfassen</string>
+
+    <string name="add_food_quick_relog">Erneut eintragen</string>
+
+    <string name="add_food_quick_relog_hint">Favoriten und frühere Mahlzeiten. Schneller als erneutes Scannen.</string>
+
+    <string name="add_food_quick_relog_empty">Füge eine Mahlzeit zu den Favoriten hinzu oder erfasse sie einmal. Sie wird hier angezeigt, damit du sie mit einem Fingertipp erneut erfassen kannst.</string>
+
+    <string name="add_food_relog_kcal">%1$d kcal</string>
+
+    <string name="cd_relog_meal">%1$s erneut eintragen</string>
+
+    <string name="add_food_water_section">Wasser</string>
+
+    <string name="water_amount_ml">%1$d ml</string>
+
+    <string name="water_amount_fl_oz">%1$d fl oz</string>
+
+    <string name="unit_fl_oz">fl oz</string>
+
+    <string name="water_custom_short">Benutzerdefiniert</string>
+
+    <string name="cd_log_water">Wasser protokollieren</string>
+
+    <string name="water">Wasser</string>
+
+    <string name="water_log_title">Wasser protokollieren</string>
+
+    <string name="water_how_much">Wie viel Wasser?</string>
+
+    <string name="water_one_glass_amount">1 Glas (~250 ml)</string>
+
+    <string name="water_two_glasses_amount">2 Gläser (~500 ml)</string>
+
+    <string name="water_three_glasses_amount">3 Gläser (~750 ml)</string>
+
+    <string name="water_custom_amount">Benutzerdefinierte Menge</string>
+
+    <string name="water_add">Wasser hinzufügen</string>
+
+    <string name="water_progress">%1$d / %2$d ml</string>
+
+    <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
+
+    <string name="home_water_next">Nächstes %1$s · %2$s</string>
+
+    <string name="home_water_next_tomorrow">Nächstes %1$s · morgen %2$s</string>
+
+    <string name="home_food_removed">Lebensmittel entfernt</string>
+
+    <string name="action_undo">Rückgängig machen</string>
+
     <string name="add_food_photo_source_title">Foto hinzufügen</string>
+
     <string name="add_food_photo_camera">Foto aufnehmen</string>
-    <string name="add_food_photo_gallery">Aus Galerie wählen</string>
-    <string name="add_food_add_label_photo">Etikett-Foto hinzufügen</string>
+
+    <string name="add_food_photo_gallery">Aus Galerie auswählen</string>
+
+    <string name="add_food_add_label_photo">Foto als Etikett hinzufügen</string>
+
     <string name="add_food_add_photo">Foto hinzufügen</string>
+
+    <string name="camera_flash_on">Blitz ein</string>
+
+    <string name="camera_flash_auto">Blitz automatisch</string>
+
+    <string name="camera_flash_off">Blitz aus</string>
+
     <string name="text_input_title">Beschreibe dein Essen</string>
-    <string name="home_kcal_of_format">von %1$s kcal</string>
+
+    <string name="home_kcal_of_format">%1$s kcal</string>
+
     <string name="home_kcal_left_format">%1$s übrig</string>
+
     <string name="home_view_more">Mehr anzeigen</string>
-    <string name="home_todays_food">Heutiges Essen</string>
-    <string name="home_no_foods_logged">Keine Lebensmittel erfasst</string>
+
+    <string name="home_todays_food">Das heutige Essen</string>
+
+    <string name="home_no_foods_logged">Keine Mahlzeiten erfasst</string>
+
     <string name="home_swipe_delete">Löschen</string>
-    <string name="home_swipe_favorite">Favorit</string>
-    <string name="home_swipe_unfavorite">Aus Favoriten entfernen</string>
-    <string name="home_favorited">Favorisiert</string>
-    <string name="home_analyzing_food">Dein Essen wird analysiert...</string>
-    <string name="home_looking_up_nutrition">Nährwerte werden gesucht...</string>
+
+    <string name="home_swipe_favorite">Zu den Favoriten hinzufügen</string>
+
+    <string name="home_swipe_unfavorite">Aus den Favoriten entfernen</string>
+
+    <string name="home_favorited">Zu den Favoriten hinzugefügt</string>
+
+    <string name="home_macro_chip_format">%1$s %2$dg</string>
+
+    <string name="home_analyzing_food">Deine Lebensmittel werden analysiert...</string>
+
+    <string name="home_looking_up_nutrition">Nährwerte werden abgerufen...</string>
+
+    <string name="entry_analysis_phase_preparing">Anfrage wird vorbereitet…</string>
+
+    <string name="entry_analysis_phase_looking_up_barcode">Barcodes werden überprüft…</string>
+
+    <string name="entry_analysis_phase_calling_ai">KI wird aufgerufen…</string>
+
+    <string name="entry_analysis_phase_filling_fields">Nährwerte werden eingegeben…</string>
+
+    <string name="entry_analysis_phase_parsing">Ergebnis wird gelesen…</string>
+
+    <string name="entry_analysis_phase_recognizing">Lebensmittel werden erkannt…</string>
+
+    <string name="entry_analysis_phase_searching_history">Dein Verlauf wird überprüft…</string>
+
+    <string name="entry_analysis_phase_searching_usda">USDA-Lebensmittel werden nachgeschlagen…</string>
+
+    <string name="entry_analysis_phase_resolving">Nährwerte werden ermittelt…</string>
+
+    <string name="grounded_entry_title">Fundierter Eintrag</string>
+
+    <string name="grounded_entry_subtitle">Beschreibe und/oder fotografiere eine Mahlzeit. Die Nährwerte stammen von der USDA, Open Food Facts oder deinem bestätigten Verlauf, nicht aus frei formulierten Schätzungen.</string>
+
+    <string name="grounded_entry_placeholder">z. B. 2 Rühreier und eine Banane</string>
+
+    <string name="grounded_entry_add_photo">Foto hinzufügen</string>
+
+    <string name="grounded_entry_analyze">Nährwerte berechnen</string>
+
+    <string name="grounded_review_title">Übereinstimmungen bestätigen</string>
+
+    <string name="grounded_review_subtitle">Wähle für jedes Lebensmittel vor der Erfassung die beste Übereinstimmung aus der Datenbank und die richtige Portionsgröße aus.</string>
+
+    <string name="grounded_review_grams">Gramm</string>
+
+    <string name="grounded_review_continue">Weiter zur Überprüfung</string>
+
+    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+
+    <string name="grounding_source_usda">USDA</string>
+
+    <string name="grounding_source_off">Open Food Facts</string>
+
+    <string name="grounding_source_swiss">Schweiz</string>
+
+    <string name="grounding_source_history">Dein Verlauf</string>
+
+    <string name="grounding_source_label">Nährwertangaben</string>
+
+    <string name="grounding_source_estimate">AI-Schätzung</string>
+
+    <string name="grounding_badge_usda">Verifiziert · USDA</string>
+
+    <string name="grounding_badge_off">Verifiziert · Open Food Facts</string>
+
+    <string name="grounding_badge_swiss">Verifiziert · Schweizer Lebensmittelzusammensetzungsdatenbank</string>
+
+    <string name="grounding_badge_history">Verifiziert · dein Verlauf</string>
+
+    <string name="grounding_badge_label">Abgestimmt · Etikett</string>
+
+    <string name="grounding_badge_estimate">Schätzung · kein Datenbanktreffer</string>
+
+    <string name="grounding_confidence_summary">Konfidenz: Identität %1$d%% · Portion %2$d%% · Quelle %3$d%%</string>
+
+    <string name="grounding_validation_notes">Anmerkungen: %1$s</string>
+
+    <string name="grounded_on_device_unavailable">Für den „Grounded“-Eintrag ist ein Cloud-KI-Anbieter erforderlich. Geräteinterne Modelle verwenden stattdessen „Foto“/„Notiz“.</string>
+
+    <string name="grounded_review_unit">Einheit</string>
+
+    <string name="entry_analysis_inferring_units">Berechnung der Portionsgrößen…</string>
+
+    <string name="entry_analysis_waiting_response">Warten auf die Antwort der KI…</string>
+
+    <string name="entry_analysis_status_helper">Barcodes auf dem Foto werden überprüft, anschließend werden die Nährwertangaben bei deinem KI-Anbieter abgefragt.</string>
+
+    <string name="entry_analysis_busy_analyzing">Wird analysiert…</string>
+
+    <string name="entry_analysis_busy_filling">Nährwertangaben werden eingegeben…</string>
+
+    <string name="entry_analysis_busy_units">Portionsgrößen werden berechnet…</string>
+
+    <string name="entry_analysis_ready">Bereit zur Überprüfung</string>
+
+    <string name="entry_analysis_tip_cta">Tipp für die KI hinzufügen (optional)</string>
+
+    <string name="entry_analysis_tip_apply">Mit Tipp neu analysieren</string>
+
+    <string name="entry_analysis_add_photo">Foto hinzufügen</string>
+
+    <string name="entry_analysis_placeholder_name">····</string>
+
+    <string name="entry_analysis_field_pending">Portionsgröße steht noch aus…</string>
+
+    <string name="entry_analysis_micros_found">%d weitere Nährstoffe gefunden</string>
+
+    <string name="entry_analysis_units_found">Portionseinheiten gefunden</string>
+
+    <string name="entry_analysis_streaming_hint">Die Werte werden angezeigt, sobald die KI antwortet. Du kannst sie vor der Erfassung überprüfen.</string>
+
     <string name="home_fiber_format">Ballaststoffe: %1$.1fg</string>
+
     <string name="home_sugar_format">Zucker: %1$.1fg</string>
-    <string name="home_sat_fat_format">Ges. Fett: %1$.1fg</string>
+
+    <string name="home_sat_fat_format">Gesättigte Fettsäuren: %1$.1fg</string>
+
     <string name="home_sodium_format">Natrium: %1$.1fmg</string>
+
     <string name="home_potassium_format">Kalium: %1$.1fmg</string>
+
     <string name="home_cholesterol_format">Cholesterin: %1$.1fmg</string>
+
     <string name="home_serving_format">Portion: ~%1$dg</string>
+
+    <string name="home_protein_value">Protein: %1$dg</string>
+
     <string name="home_carbs_value">Kohlenhydrate: %1$dg</string>
+
     <string name="home_fat_value">Fett: %1$dg</string>
 
     <string name="text_input_placeholder_1">2 Eier, Toast mit Butter und ein Kaffee</string>
-    <string name="text_input_placeholder_2">Chipotle Burrito-Bowl mit Hähnchen und Reis</string>
-    <string name="text_input_placeholder_3">Domino\'s Pepperoni-Pizza, 2 Stücke</string>
-    <string name="text_input_placeholder_4">Griechischer Joghurt mit Granola und Heidelbeeren</string>
+
+    <string name="text_input_placeholder_2">Chipotle-Burrito-Bowl mit Hähnchen und Reis</string>
+
+    <string name="text_input_placeholder_3">Pepperoni-Pizza von Domino’s, 2 Stücke</string>
+
+    <string name="text_input_placeholder_4">Griechischer Joghurt mit Müsli und Heidelbeeren</string>
 
     <string name="manual_title">Manuelle Eingabe</string>
-    <string name="manual_name_placeholder">z. B. Hausgemachter Salat</string>
+
+    <string name="manual_name">Name</string>
+
+    <string name="manual_name_placeholder">z. B. Selbstgemachter Salat</string>
+
     <string name="manual_calories">Kalorien</string>
+
+    <string name="manual_protein">Protein (g)</string>
+
     <string name="manual_carbs">Kohlenhydrate (g)</string>
+
     <string name="manual_fat">Fett (g)</string>
+
     <string name="manual_fiber">Ballaststoffe (g)</string>
-    <string name="manual_meal_type">Mahlzeit-Typ</string>
 
-    <string name="error_title">Etwas ist schiefgelaufen</string>
+    <string name="manual_zero_placeholder">0</string>
 
-    <!-- Food sheets shared primitives -->
-    <string name="sheet_food_details">Essensdetails</string>
+    <string name="manual_meal_type">Mahlzeitentyp</string>
+
+    <string name="error_title">Es ist ein Fehler aufgetreten</string>
+
+    <string name="sheet_food_details">Lebensmitteldetails</string>
+
     <string name="sheet_serving">Portion</string>
-    <string name="sheet_nutrition">Ernährung</string>
+
+    <string name="sheet_constituents">Zutaten</string>
+
+    <string name="sheet_constituents_count">Zutaten (%1$d)</string>
+
+    <string name="sheet_constituents_add">Zutat hinzufügen</string>
+
+    <string name="sheet_constituents_remove">Zutat entfernen</string>
+
+    <string name="sheet_portion_clarify_prompt">Portion bestätigen?</string>
+
+    <string name="sheet_portion_clarify_weight_label">Genaues Gewicht</string>
+
+    <string name="sheet_portion_clarify_weight_placeholder">Gramm</string>
+
+    <string name="sheet_portion_clarify_weight_apply">Übernehmen</string>
+
+    <string name="sheet_portion_clarify_weight_hint">Gib das gesamte essbare Gewicht ein, um Kalorien und Makronährstoffe ohne weiteren KI-Aufruf neu zu berechnen.</string>
+
+    <string name="sheet_portion_clarify_weight_invalid">Gib ein Gewicht größer als 0 g ein</string>
+
+    <string name="sheet_portion_clarify_small">Klein</string>
+
+    <string name="sheet_portion_clarify_regular">Normal</string>
+
+    <string name="sheet_portion_clarify_large">Groß</string>
+
+    <string name="sheet_portion_clarify_restaurant">Restaurantportion</string>
+
+    <string name="sheet_portion_clarify_updating">Schätzung wird aktualisiert…</string>
+
+    <string name="sheet_portion_clarify_failed">Die Schätzung konnte nicht aktualisiert werden</string>
+
+    <string name="sheet_portion_clarify_dismiss">Überspringen</string>
+
+    <string name="sheet_nutrition">Nährwerte</string>
+
     <string name="sheet_meal">Mahlzeit</string>
+
     <string name="sheet_more_nutrition">Weitere Nährwerte</string>
+
+    <string name="sheet_name">Name</string>
+
     <string name="sheet_quantity">Menge</string>
-    <string name="sheet_meal_type">Mahlzeit-Typ</string>
-    <string name="sheet_review_food">Essen prüfen</string>
+
+    <string name="sheet_meal_type">Mahlzeitentyp</string>
+
+    <string name="sheet_review_food">Lebensmittel überprüfen</string>
+
     <string name="sheet_edit_food">Lebensmittel bearbeiten</string>
-    <string name="edit_icon_picker_title">Symbol wählen</string>
-    <string name="edit_icon_set_photo">Foto festlegen</string>
-    <string name="edit_icon_remove_photo">Foto entfernen</string>
-    <string name="edit_icon_photo_failed">Dieses Foto konnte nicht gelesen werden</string>
+
+    <string name="what_if_title">Was wäre, wenn?</string>
+
+    <string name="what_if_subtitle">Sieh dir vorab an, wie sich diese Mahlzeit heute verändert, bevor du sie erfasst.</string>
+
+    <string name="what_if_ai_suggestion">KI-Vorschlag</string>
+
+    <string name="what_if_loading">Auswirkungen werden geprüft...</string>
+
+    <string name="what_if_no_suggestion">Kein Vorschlag verfügbar.</string>
+
+    <string name="nutrition_unlock_editing">Bearbeitung der Nährwerte freischalten</string>
+
+    <string name="nutrition_lock_editing">Bearbeitung der Nährwerte sperren</string>
 
     <string name="sheet_micro_sugar">Zucker</string>
+
     <string name="sheet_micro_added_sugar">Zugesetzter Zucker</string>
+
     <string name="sheet_micro_fiber">Ballaststoffe</string>
-    <string name="sheet_micro_saturated_fat">Gesättigtes Fett</string>
-    <string name="sheet_micro_mono_fat">Einfach unges. Fett</string>
-    <string name="sheet_micro_poly_fat">Mehrfach unges. Fett</string>
+
+    <string name="sheet_micro_saturated_fat">Gesättigte Fettsäuren</string>
+
+    <string name="sheet_micro_mono_fat">Einfach ungesättigte Fettsäuren</string>
+
+    <string name="sheet_micro_poly_fat">Mehrfach ungesättigte Fettsäuren</string>
+
     <string name="sheet_micro_cholesterol">Cholesterin</string>
+
     <string name="sheet_micro_sodium">Natrium</string>
+
     <string name="sheet_micro_potassium">Kalium</string>
 
-    <!-- Context note sheet -->
-        <string name="context_note_title">Foto prüfen</string>
-    <string name="context_note_section">Notiz hinzufügen (optional)</string>
-    <string name="context_note_placeholder">z. B. 2 Eier in Butter gerührt, Chipotle-Bowl mit extra Öl, gegrilltes Hähnchen ohne Sauce</string>
+    <string name="context_note_title">Foto überprüfen</string>
 
-    <!-- Voice input sheet -->
-    <string name="voice_listening">Hört zu...</string>
-    <string name="voice_tap_to_start">Tippe auf das Mikrofon, um zu starten</string>
+    <string name="context_note_section">Sag der KI, was das ist (optional)</string>
+
+    <string name="context_note_placeholder">z. B. 2 Rühreier in Butter, Chipotle-Bowl mit extra Öl, gegrilltes Hähnchen ohne Soße</string>
+
+    <string name="context_note_hint">Sei konkret: Mengen, Marken, Öle oder Dressings und wie es zubereitet wurde.</string>
+
+    <string name="photo_accuracy_guide_title">Tipps für eine bessere Schätzung</string>
+
+    <string name="photo_accuracy_guide_body">Fotos lassen vieles außer Acht. Füge nach Möglichkeit eine kurze Notiz hinzu:\n\n• Sei konkret: Mengen, Marken und was auf dem Teller liegt\n• Weise auf Öle, Dressings und ölige Soßen hin (die oft nicht sichtbar sind)\n• Erwähne die Zubereitungsart, wenn sie wichtig ist: gebraten, gegrillt, gedämpft, hausgemacht\n• Genaue Grammangaben oder ein Foto der Nährwertangaben helfen am meisten</string>
+
+    <string name="photo_accuracy_guide_dismiss">Verstanden</string>
+
+    <string name="photo_accuracy_guide_cd">So verbesserst du die Genauigkeit deiner Fotos</string>
+
+    <string name="context_note_weight_section">Gesamtgewicht (optional)</string>
+
+    <string name="context_note_weight_hint">Wenn du die Portion gewogen hast, gib hier das Gewicht in Gramm ein. Das genaue Gewicht verbessert die Genauigkeit mehr als nur ein Titel oder eine Zutatenliste.</string>
+
+    <string name="context_note_weight_placeholder">z. B. 280</string>
+
+    <string name="context_note_weight_unit">g</string>
+
+    <string name="camera_scale_tip_message">Tipp: Halte eine Gabel, eine Hand oder eine Münze neben dein Essen. Das hilft bei der Schätzung der Portionsgröße.</string>
+
+    <string name="camera_scale_tip_dismiss">Verstanden</string>
+
+    <string name="meal_photos_title">Vor der Analyse</string>
+
+    <string name="meal_photos_subtitle">Füge eine kurze Notiz und optional ein zweites Foto (z. B. Nährwertangaben) hinzu und tippe dann auf „Analysieren“. Die KI startet erst, nachdem du bestätigt hast.</string>
+
+    <string name="meal_photos_subtitle_note_optional">Füge nach Belieben ein weiteres Foto oder einen Hinweis hinzu und tippe dann auf „Analysieren“. Die KI startet erst, nachdem du bestätigt hast.</string>
+
+    <string name="meal_photos_count">%1$d von 10 Fotos</string>
+
+    <string name="meal_photos_add_photo">Foto hinzufügen</string>
+
+    <string name="meal_photos_add_label">Beschriftung hinzufügen</string>
+
+    <string name="meal_photos_add_from_library">Fotos hinzufügen</string>
+
+    <string name="meal_photos_note_section">Was ist das?</string>
+
+    <string name="meal_photos_skip_note">Notiz überspringen und analysieren</string>
+
+    <string name="meal_photos_dont_ask_note">Nicht erneut nach einer Notiz fragen</string>
+
+    <string name="meal_photos_confirm_title">Jetzt analysieren?</string>
+
+    <string name="meal_photos_confirm_no_note">Noch keine Notiz. Ohne Mengenangaben oder eine Beschreibung sind die Schätzungen der KI weniger genau. Trotzdem fortfahren?</string>
+
+    <string name="meal_photos_confirm_one_photo">Nur ein Foto. Eine zweite Aufnahme (aus einem anderen Blickwinkel oder die Nährwertangaben) hilft oft. Mit einem Foto fortfahren?</string>
+
+    <string name="meal_photos_confirm_sparse">Keine Notiz und nur ein Foto. Füge einen Hinweis oder ein Foto der Nährwertangaben hinzu, um eine bessere Schätzung zu erhalten, oder möchtest du trotzdem fortfahren?</string>
+
+    <string name="meal_photos_confirm_continue">Trotzdem analysieren</string>
+
+    <string name="meal_photos_confirm_back">Weiter bearbeiten</string>
+
+    <string name="settings_photo_note_prompt">Nach Fotonotiz fragen</string>
+
+    <string name="settings_photo_note_prompt_footer">Wenn aktiv, wird beim Foto-Eintrag das Notizfeld vor der Analyse hervorgehoben. Du kannst trotzdem bestätigen und ohne Notiz fortfahren.</string>
+
+    <string name="meal_photo_cd">Foto %1$d</string>
+
+    <string name="action_remove">Entfernen</string>
+
+    <string name="voice_listening">Wird zugehört...</string>
+
+    <string name="voice_tap_to_start">Zum Starten auf das Mikrofon tippen</string>
+
     <string name="voice_transcribing_format">Transkription über %1$s...</string>
-    <string name="voice_mic_permission_denied">Mikrofon-Berechtigung verweigert.</string>
-    <string name="voice_mic_start_failed">Mikrofon konnte nicht gestartet werden. Berechtigungen prüfen.</string>
+
+    <string name="voice_mic_permission_denied">Mikrofonberechtigung verweigert. </string>
+
+    <string name="voice_mic_start_failed">Das Mikrofon konnte nicht gestartet werden. Überprüfe die Berechtigungen.</string>
+
+    <string name="voice_native_unavailable">In diesem Profil ist kein verwendbarer Spracherkennungsdienst verfügbar. Wähle in den Einstellungen eine Cloud-Sprach-Engine aus (Whisper, Groq, Gemini, …) oder installiere hier eine Sprach-zu-Text-App, die den Android RecognitionService bereitstellt. </string>
+
     <string name="voice_transcription_failed">Transkription fehlgeschlagen</string>
+
     <string name="voice_stop">Stopp</string>
+
     <string name="voice_record">Aufnehmen</string>
 
-    <!-- Saved Meals sheet -->
     <string name="saved_meals_title">Gespeicherte Mahlzeiten</string>
-    <string name="saved_meals_tab_recents">Zuletzt</string>
-    <string name="saved_meals_tab_frequent">Häufig</string>
-    <string name="saved_meals_tab_favorites">Favoriten</string>
-    <string name="saved_meals_no_logs">Noch keine Lebensmittel erfasst</string>
-    <string name="saved_meals_no_favorites">Noch keine Favoriten\nWische bei einem Lebensmittel nach links, um es hinzuzufügen</string>
-    <string name="saved_meals_count_format">%1$d× erfasst</string>
-    <string name="saved_meals_remove_favorite">Favorit entfernen</string>
-    <string name="saved_meals_move_up">Nach oben</string>
-    <string name="saved_meals_move_down">Nach unten</string>
 
-    <!-- Nutrition detail sheet -->
+    <string name="saved_meals_tab_recents">Zuletzt verwendet</string>
+
+    <string name="saved_meals_tab_frequent">Häufig verwendet</string>
+
+    <string name="saved_meals_tab_favorites">Favoriten</string>
+
+    <string name="saved_meals_no_logs">Noch keine Mahlzeiten erfasst</string>
+
+    <string name="saved_meals_no_favorites">Noch keine Favoriten\nWische bei einer beliebigen Mahlzeit nach links, um sie hinzuzufügen</string>
+
+    <string name="saved_meals_count_format">%1$d× erfasst</string>
+
+    <string name="saved_meals_log_action">Erfassen</string>
+
+    <string name="saved_meals_remove_favorite">Aus den Favoriten entfernen</string>
+
+    <string name="saved_meals_move_up">Nach oben verschieben</string>
+
+    <string name="saved_meals_move_down">Nach unten verschieben</string>
+
+    <string name="saved_meals_tab_recipes">Rezepte</string>
+
+    <string name="saved_meals_no_recipes">Noch keine Rezepte\nTippe auf +, um aus mehreren Zutaten ein Rezept zu erstellen</string>
+
+    <string name="recipe_builder_title_new">Neues Rezept</string>
+
+    <string name="recipe_builder_title_edit">Rezept bearbeiten</string>
+
+    <string name="recipe_builder_name_placeholder">Rezeptname</string>
+
+    <string name="recipe_builder_add_ingredient">Zutat hinzufügen</string>
+
+    <string name="recipe_builder_add_from_favorites">Aus den Favoriten</string>
+
+    <string name="recipe_builder_add_manual">Manuelle Eingabe</string>
+
+    <string name="recipe_builder_no_ingredients">Noch keine Zutaten</string>
+
+    <string name="recipe_builder_save">Speichern</string>
+
+    <string name="recipe_builder_log_now">Jetzt protokollieren</string>
+
+    <string name="recipe_builder_remove_ingredient">Zutat entfernen</string>
+
+    <string name="recipe_builder_scale_format">%1$.2fx</string>
+
+    <string name="progressive_meal_title">Mahlzeit erstellen</string>
+
+    <string name="progressive_meal_name_placeholder">Name der Mahlzeit (optional)</string>
+
+    <string name="progressive_meal_add_next">Nächste Zutat hinzufügen</string>
+
+    <string name="progressive_meal_add_to_meal">Zur Mahlzeit hinzufügen</string>
+
+    <string name="progressive_meal_add_another">Eine weitere hinzufügen</string>
+
+    <string name="progressive_meal_log">Mahlzeit protokollieren</string>
+
+    <string name="progressive_meal_discard">Mahlzeit verwerfen</string>
+
+    <string name="progressive_meal_ingredient_count">%1$d Zutaten</string>
+
+    <string name="progressive_meal_empty">Noch keine Zutaten</string>
+
+    <string name="progressive_meal_remove">Zutat entfernen</string>
+
+    <string name="progressive_meal_scale_tip">Tipp: Notiere das Gewicht auf der Waage (z. B. 180 g), bevor du die Analyse startest</string>
+
+    <string name="progressive_meal_continue">Mahlzeit fortsetzen (%1$d)</string>
+
+    <string name="progressive_meal_totals">Gesamtwerte der Mahlzeit</string>
+
+    <string name="recipe_ingredient_count_format">%1$d Zutaten</string>
+
+    <string name="cd_new_recipe">Neues Rezept</string>
+
+    <string name="cd_edit_recipe">Rezept bearbeiten</string>
+
     <string name="nutrition_details_title">Nährwertangaben</string>
-    <string name="nutrition_section_macros">Makros</string>
-    <string name="nutrition_section_detailed">Detaillierte Nährwerte</string>
+
+    <string name="nutrition_section_macros">Makronährstoffe</string>
+
+    <string name="nutrition_section_detailed">Detaillierte Nährwertangaben</string>
+
     <string name="nutrition_label_calories">Kalorien</string>
+
+    <string name="nutrition_label_protein">Protein</string>
+
     <string name="nutrition_label_carbs">Kohlenhydrate</string>
+
     <string name="nutrition_label_fat">Fett</string>
+
     <string name="nutrition_label_sugar">Zucker</string>
+
     <string name="nutrition_label_added_sugar">Zugesetzter Zucker</string>
+
     <string name="nutrition_label_fiber">Ballaststoffe</string>
-    <string name="nutrition_label_saturated_fat">Gesättigtes Fett</string>
-    <string name="nutrition_label_mono_fat">Einfach unges. Fett</string>
-    <string name="nutrition_label_poly_fat">Mehrfach unges. Fett</string>
+
+    <string name="nutrition_label_saturated_fat">Gesättigte Fettsäuren</string>
+
+    <string name="nutrition_label_mono_fat">Einfach ungesättigte Fettsäuren</string>
+
+    <string name="nutrition_label_poly_fat">Mehrfach ungesättigte Fettsäuren</string>
+
     <string name="nutrition_label_cholesterol">Cholesterin</string>
+
     <string name="nutrition_label_sodium">Natrium</string>
+
     <string name="nutrition_label_potassium">Kalium</string>
 
-    <!-- Coach -->
+    <string name="nutrition_em_dash">-</string>
+
+    <string name="coach_title">Coach</string>
+
     <string name="coach_reset_chat_a11y">Chat zurücksetzen</string>
+
     <string name="coach_send_a11y">Senden</string>
+
     <string name="coach_input_voice_a11y">Spracheingabe</string>
-    <string name="coach_input_placeholder">Coach fragen...</string>
+
+    <string name="coach_input_placeholder">Frag den Coach...</string>
+
     <string name="coach_empty_title">Frag deinen Coach</string>
-    <string name="coach_empty_subtitle">Dein Coach sieht dein Gewichtsverlauf, deine Kalorien und Ziele. Frag nach erwartetem Gewicht, was du essen solltest oder wie du dein Ziel erreichst.</string>
+
+    <string name="coach_empty_subtitle">Dein Coach kann deinen Gewichtsverlauf, dein Kalorienprotokoll und deine Ziele einsehen. Frag ihn nach deinem voraussichtlichen Gewicht, was du essen solltest oder wie du dein Ziel erreichen kannst.</string>
+
     <string name="coach_reset_dialog_title">Chat zurücksetzen</string>
-    <string name="coach_reset_dialog_message">Alle Nachrichten löschen und neu beginnen? Das kann nicht rückgängig gemacht werden.</string>
+
+    <string name="coach_reset_dialog_message">Alle Nachrichten löschen und neu beginnen? Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
+
     <string name="coach_reset_confirm">Zurücksetzen</string>
-    <string name="coach_no_profile_error">Noch kein Profil. Beende zuerst das Onboarding.</string>
+
+    <string name="coach_no_profile_error">Noch kein Profil. Schließe zuerst die Ersteinrichtung ab.</string>
+
     <string name="coach_chat_failed">Chat fehlgeschlagen</string>
 
-    <string name="coach_chip_predict_30_days">Wie viel werde ich in 30 Tagen wiegen?</string>
-    <string name="coach_chip_lose_faster">Wie nehme ich schneller und sicher ab?</string>
-    <string name="coach_chip_eating_too_much">Esse ich zu viel?</string>
-    <string name="coach_chip_what_dinner">Was soll ich zum Abendessen essen?</string>
-    <string name="coach_chip_gain_healthy">Wie nehme ich gesund zu?</string>
-    <string name="coach_chip_eating_enough">Esse ich genug?</string>
-    <string name="coach_chip_high_protein">Eiweißreiche Lebensmittel zum Hinzufügen?</string>
-    <string name="coach_chip_holding_weight">Halte ich mein Gewicht?</string>
-    <string name="coach_chip_average_intake">Wie hoch ist meine durchschnittliche Aufnahme?</string>
-    <string name="coach_chip_macro_suggestions">Makro-Vorschläge?</string>
-    <string name="coach_chip_trend">Wie ist mein Trend?</string>
-    <string name="coach_chip_doing_this_week">Wie läuft es diese Woche?</string>
-    <string name="coach_chip_log_advice">Tipps basierend auf meinem Log?</string>
+    <string name="coach_confirm_log_food_title">Diese Mahlzeit eintragen?</string>
 
-    <!-- Progress -->
-    <string name="progress_range_year">1J</string>
-    <string name="progress_range_all">Alle</string>
+    <string name="coach_confirm_log_weight_title">Dieses Gewicht erfassen?</string>
+
+    <string name="coach_confirm_log_water_title">Diese Wassermenge erfassen?</string>
+
+    <string name="coach_chip_predict_30_days">Wie viel werde ich in 30 Tagen wiegen?</string>
+
+    <string name="coach_chip_lose_faster">Wie kann ich sicher schneller abnehmen?</string>
+
+    <string name="coach_chip_eating_too_much">Esse ich zu viel?</string>
+
+    <string name="coach_chip_what_dinner">Was soll ich zum Abendessen essen?</string>
+
+    <string name="coach_chip_gain_healthy">Wie nehme ich gesund zu?</string>
+
+    <string name="coach_chip_eating_enough">Esse ich genug?</string>
+
+    <string name="coach_chip_high_protein">Proteinreiche Lebensmittel, die ich zu meiner Ernährung hinzufügen kann?</string>
+
+    <string name="coach_chip_holding_weight">Halte ich mein Gewicht?</string>
+
+    <string name="coach_chip_average_intake">Wie hoch ist meine durchschnittliche Kalorienaufnahme?</string>
+
+    <string name="coach_chip_macro_suggestions">Vorschläge für Makronährstoffe?</string>
+
+    <string name="coach_chip_trend">Wie sieht mein Trend aus?</string>
+
+    <string name="coach_chip_doing_this_week">Wie läuft es diese Woche?</string>
+
+    <string name="coach_chip_log_advice">Gibt es Ratschläge basierend auf meinem Protokoll?</string>
+
+    <string name="progress_range_week">1 Woche</string>
+
+    <string name="progress_range_month">1 Monat</string>
+
+    <string name="progress_range_3m">3 Monate</string>
+
+    <string name="progress_range_6m">6 Monate</string>
+
+    <string name="progress_range_year">1 Jahr</string>
+
+    <string name="progress_range_all">Gesamt</string>
 
     <string name="progress_weight_section">Gewicht</string>
-    <string name="progress_log_weight">Gewicht erfassen</string>
+
+    <string name="progress_log_weight">Gewicht eintragen</string>
+
     <string name="progress_stat_current">Aktuell</string>
+
     <string name="progress_stat_goal">Ziel</string>
-    <string name="progress_log_first_weight">Erfasse dein erstes Gewicht, um Trends zu sehen</string>
+
+    <string name="progress_stat_net_change">Nettoveränderung</string>
+
+    <string name="progress_stat_average">Durchschnitt</string>
+
+    <string name="progress_log_first_weight">Trage dein erstes Gewicht ein, um Trends zu erkennen</string>
+
+    <string name="progress_weight_trend_legend">7-Tage-Trend</string>
+
+    <string name="progress_weight_trend_need_more">Für den 7-Tage-Trend sind mindestens 2 Wiegetage erforderlich</string>
+
+    <string name="progress_weight_raw_legend">Tägliche Gewichtsmessungen</string>
 
     <string name="progress_weight_history">Gewichtsverlauf</string>
+
     <string name="progress_body_fat_history">Körperfettverlauf</string>
-    <string name="progress_history_count_format">%1$d Einträge · tippen zum Anzeigen oder Löschen</string>
+
+    <string name="progress_history_count_format">%1$d Einträge · zum Anzeigen oder Löschen antippen</string>
 
     <string name="progress_calories_section">Kalorien</string>
-    <string name="progress_avg_format">Ø: %1$d kcal</string>
-    <string name="progress_no_food">Noch kein Essen erfasst</string>
 
-    <string name="progress_macro_averages">Makro-Durchschnitt</string>
+    <string name="progress_avg_format">Durchschnitt: %1$d kcal</string>
 
-    <string name="progress_log_weight_title">Gewicht erfassen</string>
+    <string name="progress_no_food">Noch keine Mahlzeiten erfasst</string>
+
+    <string name="progress_macro_averages">Makro-Durchschnittswerte</string>
+
+    <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
+
+    <string name="progress_activity_section">Aktivität</string>
+
+    <string name="progress_activity_from_health">Aus Health Connect</string>
+
+    <string name="progress_activity_steps_today">Schritte heute</string>
+
+    <string name="progress_activity_steps_avg">Durchschnittliche Schritte (7 Tage)</string>
+
+    <string name="progress_activity_exercise_week">Training (7 Tage)</string>
+
+    <string name="progress_activity_minutes_format">%1$d Min.</string>
+
+    <string name="progress_wellness_section">Wellness</string>
+
+    <string name="progress_wellness_sleep">Schlaf</string>
+
+    <string name="progress_wellness_sleep_format">%1$dh %2$dm</string>
+
+    <string name="progress_wellness_resting_hr">Ruheherzfrequenz (7 Tage)</string>
+
+    <string name="progress_wellness_bpm_format">%1$d Schläge pro Minute</string>
+
+    <string name="progress_wellness_hydration">Wasser heute</string>
+
+    <string name="progress_wellness_hydration_format">%1$s ml</string>
+
+    <string name="progress_log_weight_title">Gewicht eintragen</string>
 
     <string name="progress_goal_reached_title">Herzlichen Glückwunsch! 🎉</string>
-    <string name="progress_goal_reached_message">Du hast dein Zielgewicht erreicht! Gehe zu den Einstellungen, um dein Ziel zu ändern, und tippe auf „Ziele neu berechnen“, um deine Zielwerte zu aktualisieren.</string>
 
-    <!-- Settings -->
+    <string name="progress_goal_reached_message">Du hast dein Zielgewicht erreicht! Gehe zu „Einstellungen“, um dein Ziel zu ändern, und tippe auf „Ziele neu berechnen“, um deine Zielwerte zu aktualisieren.</string>
+
     <string name="settings_section_personal">Persönliche Daten</string>
+
     <string name="settings_section_goals">Ziele &amp; Ernährung</string>
+
     <string name="settings_section_app">App-Einstellungen</string>
-    <string name="settings_section_ai">KI-Anbieter</string>
-    <string name="settings_section_speech">Spracherkennung</string>
+
+    <string name="settings_section_ai">KI &amp; Sprache</string>
+
+    <string name="settings_section_speech">Sprach-zu-Text</string>
+
     <string name="settings_section_health">Gesundheit &amp; Daten</string>
+
     <string name="settings_group_app_display">App &amp; Anzeige</string>
+
     <string name="settings_group_ai">KI &amp; Sprache</string>
-    <string name="settings_group_data">Gesundheit, Daten &amp; Sync</string>
-    <string name="settings_group_personal_summary">Geschlecht, Größe, Gewicht, Maße</string>
+
+    <string name="settings_group_data">Gesundheit &amp; Daten</string>
+
+    <string name="settings_group_food">Ernährung &amp; Erfassung</string>
+
+    <string name="settings_group_personal_summary">Geschlecht, Größe, Gewicht, Körpermaße</string>
+
     <string name="settings_group_goals_summary">Ernährung, Makros, adaptive Ziele</string>
-    <string name="settings_group_app_summary">Erscheinungsbild, Startseite, Benachrichtigungen</string>
+
+    <string name="settings_group_food_summary">Erfassung, Portionsgrößen, Fotoanalyse</string>
+
+    <string name="settings_group_app_summary">Darstellung, Startseite, Wasser, Benachrichtigungen</string>
+
     <string name="settings_group_ai_summary">Anbieter, Modelle, Sprache</string>
-    <string name="settings_group_data_summary">Health Connect, Export, Sync</string>
+
+    <string name="settings_group_data_summary">Health Connect, Export, Synchronisierung</string>
+
+    <string name="settings_water_title">Wasser</string>
+
+    <string name="settings_water_intro">Halte deine Trinkmenge fest, lege ein Tagesziel fest und lass es an Gewicht, Wetter und Aktivität anpassen.</string>
+
+    <string name="settings_water_section_goal">Ziel</string>
+
+    <string name="settings_water_section_dynamic">Dynamisches Ziel</string>
+
+    <string name="settings_water_section_reminders">Erinnerungen</string>
+
+    <string name="settings_water_reminders">Trink-Erinnerungen</string>
+
+    <string name="settings_notifications_intro">Wähle aus, welche Erinnerungen Chompass sendet und wann sie angezeigt werden.</string>
+
+    <string name="settings_section_notifications">Erinnerungen</string>
+
+    <string name="settings_food_intro">So funktionieren Einträge: Einheiten, Essenszeiten, Fotoanalyse und Erkennung der Portionsgröße.</string>
+
+    <string name="settings_food_section_logging">Erfassung</string>
+
+    <string name="settings_food_section_photo">Fotoanalyse</string>
+
+    <string name="settings_food_section_serving">Portionsgröße</string>
+
+    <string name="settings_related">Verwandte Themen</string>
+
+    <string name="settings_on">Ein</string>
+
+    <string name="settings_off">Aus</string>
+
+    <string name="settings_needs_water_tracking">Wasser-Tracking erforderlich</string>
+
+    <string name="settings_goal_auto">Automatisch</string>
+
+    <string name="settings_goals_how_title">So funktionieren deine Ziele</string>
+
+    <string name="settings_goals_how_adaptive">Adaptive Ziele berechnen deine Kalorien- und Makro-Ziele etwa einmal pro Woche neu.</string>
+
+    <string name="settings_goals_how_energy">„Energieverbrauch“ richtet die Ziele nach deinem gemessenen Energieverbrauch aus Health Connect aus.</string>
+
+    <string name="settings_goals_how_lock">Ein Ziel sperren, um deinen eigenen Wert beizubehalten – bei „Neuberechnung“ und „Adaptive Ziele“ bleibt es unverändert.</string>
+
+    <string name="settings_danger_zone">Gefahrenzone</string>
+
+    <string name="settings_danger_zone_caption">Diese Aktionen löschen Daten dauerhaft und können nicht rückgängig gemacht werden.</string>
+
+    <string name="settings_suggestions">Vorschläge</string>
+
+    <string name="settings_suggestions_dismiss">Schließen</string>
+
+    <string name="settings_suggestion_water_reminders">Richte einen Erinnerungsplan für Trinkzeiten ein, damit du am Ball bleibst</string>
+
+    <string name="settings_suggestion_water_tracking">Erfasse deine Wasseraufnahme, um dein Trinkziel zu erreichen</string>
+
+    <string name="settings_suggestion_adaptive_goals">Mit „Adaptive Goals“ werden deine Kalorien- und Makro-Ziele jede Woche aktualisiert</string>
+
+    <string name="settings_suggestion_health_connect">Synchronisiere Gewicht und Körperfett automatisch über Health Connect</string>
+
+    <string name="settings_suggestion_notifications">Aktiviere Erinnerungen für Serien und Ziele</string>
+
+    <string name="settings_suggestion_backup">Sichere dein Tagebuch mit der WebDAV-Synchronisierung</string>
+
+    <string name="settings_suggestion_action_turn_on">Aktivieren</string>
+
+    <string name="settings_suggestion_action_connect">Verbinden</string>
+
+    <string name="settings_suggestion_action_setup">Einrichten</string>
+
+    <string name="settings_personal_intro">Die grundlegenden Angaben, anhand derer Chompass deinen Energiebedarf und deine Ziele schätzt.</string>
+
+    <string name="settings_goals_intro">Deine täglichen Kalorien- und Makro-Ziele und worauf diese basieren.</string>
 
     <string name="settings_gender">Geschlecht</string>
+
     <string name="settings_birthday">Geburtstag</string>
-    <string name="settings_height">Größe</string>
+
+    <string name="settings_height">Körpergröße</string>
+
     <string name="settings_weight">Gewicht</string>
+
     <string name="settings_body_fat">Körperfett</string>
+
+    <string name="settings_goal_body_fat">Ziel-Körperfettanteil</string>
+
+    <string name="settings_use_body_fat_bmr">Körperfett für den Grundumsatz verwenden</string>
+
+    <string name="settings_use_body_fat_bmr_subtitle">Ein = Katch-McArdle (verwendet die fettfreie Masse für einen genaueren Grundumsatz). Aus = Mifflin-St Jeor (nur Größe/Gewicht/Alter). Deaktiviere diese Option, wenn deine Körperfettmessung veraltet ist.</string>
+
     <string name="settings_not_set">Nicht festgelegt</string>
+
     <string name="settings_birthday_age_format">%1$s (Alter %2$d)</string>
 
     <string name="settings_weight_goal">Gewichtsziel</string>
-    <string name="settings_activity_level">Aktivitätslevel</string>
-    <string name="settings_weekly_change">Wöchentliche Änderung</string>
+
+    <string name="settings_diet_mode">Diätmodus</string>
+
+    <string name="settings_keto_carb_mode">Keto-Kohlenhydratmodus</string>
+
+    <string name="settings_keto_net_carbs">Keto-Netto-Kohlenhydrate</string>
+
+    <string name="settings_activity_level">Aktivitätsniveau</string>
+
+    <string name="settings_weekly_change">Wöchentliche Veränderung</string>
+
     <string name="settings_weekly_default">0,50 kg/Woche</string>
+
     <string name="settings_goal_weight">Zielgewicht</string>
+
     <string name="settings_calories">Kalorien</string>
+
     <string name="settings_recalculate_goals">Ziele neu berechnen</string>
+
+    <string name="settings_macro_pinned_format">%1$dg</string>
+
+    <string name="settings_macro_auto_format">%1$dg · automatisch</string>
+
     <string name="settings_macro_pinned_a11y">Angeheftet</string>
 
+    <string name="settings_macro_auto_a11y">Automatisch</string>
+
     <string name="settings_appearance">Darstellung</string>
+
+    <string name="settings_appearance_system">System</string>
+
     <string name="settings_appearance_light">Hell</string>
+
     <string name="settings_appearance_dark">Dunkel</string>
+
+    <string name="settings_theme_color">Designfarbe</string>
+
+    <string name="settings_fixed_launcher_icon">Feste Launcher-Ikone</string>
+
+    <string name="settings_fixed_launcher_icon_subtitle">Behält die Launcher-Ikone in Petrol. Sie folgt nicht mehr der Akzentfarbe oder dem Hintergrundbild.</string>
+
+    <string name="sheet_theme_color">Designfarbe</string>
+
+    <string name="sheet_theme_color_footer">Ändert die Hauptakzentfarbe, die für Schaltflächen, Diagramme und Fortschrittsanzeigen verwendet wird.</string>
+
+    <string name="theme_color_system">System</string>
+
+    <string name="theme_color_teal">Türkis</string>
+
+    <string name="theme_color_blue">Blau</string>
+
+    <string name="theme_color_green">Grün</string>
+
+    <string name="theme_color_purple">Lila</string>
+
+    <string name="theme_color_pink">Rosa</string>
+
+    <string name="theme_color_orange">Orange</string>
+
+    <string name="theme_color_indigo">Indigo</string>
+
+    <string name="theme_color_neutral">Neutral</string>
+
     <string name="settings_metric_units">Metrische Einheiten</string>
-    <string name="settings_height_unit">Größeneinheit</string>
-    <string name="settings_weight_unit">Gewichtseinheit</string>
-    <string name="settings_week_starts">Wochenbeginn</string>
+
+    <string name="settings_height_unit">Grössen-Einheit</string>
+
+    <string name="settings_weight_unit">Gewichts-Einheit</string>
+
+    <string name="settings_default_to_grams">Standardmäßig in Gramm</string>
+
+    <string name="settings_default_to_grams_info">Neue Lebensmittel-Erfassungsbögen werden standardmäßig mit der Einheit „Gramm“ geöffnet. Du kannst vor der Erfassung weiterhin zu „Portion“, „Scheibe“, „Tasse“ oder einer anderen erkannten Einheit wechseln.</string>
+
+    <string name="settings_water_tracking">Wasser-Tracking</string>
+
+    <string name="settings_water_goal">Tägliches Wasserziel</string>
+
+    <string name="settings_water_goal_summary">%1$d ml</string>
+
+    <string name="settings_water_goal_wheel_help">Scrolle in Schritten von 50 ml, um ein tägliches Ziel zwischen 50 und 10.000 ml auszuwählen.</string>
+
+    <string name="settings_water_quick_presets">Voreinstellungen für die Schnellprotokollierung</string>
+
+    <string name="settings_water_quick_presets_help">Rastpunkte auf dem Schieberegler „Wasser hinzufügen“. Gespeichert in Millilitern; bei Verwendung imperialer Einheiten in Flüssigunzen angezeigt.</string>
+
+    <string name="settings_water_preset_label">Voreinstellung %1$d</string>
+
+    <string name="settings_water_add_preset">Voreinstellung hinzufügen</string>
+
+    <string name="settings_water_remove_preset">Letzte Voreinstellung entfernen</string>
+
+    <string name="settings_water_dynamic_goal">Dynamisches Ziel</string>
+
+    <string name="settings_water_dynamic_goal_help">Passt sich deinem Gewicht, der Temperatur, deiner Aktivität und der Wasseraufnahme über die Nahrung an. Keine Standortberechtigung erforderlich. Gib den erwarteten Höchstwert manuell ein.</string>
+
+    <string name="settings_water_dynamic_base">Basisziel</string>
+
+    <string name="settings_water_dynamic_base_weight">Körpergewicht (35 ml/kg)</string>
+
+    <string name="settings_water_dynamic_base_manual">Feste Menge</string>
+
+    <string name="settings_water_manual_temp">Erwartete Höchsttemperatur heute</string>
+
+    <string name="settings_water_manual_temp_summary">%1$d °C</string>
+
+    <string name="settings_water_manual_temp_help" formatted="false">Das Tagesziel steigt bei Temperaturen über 25 °C an (+4 % pro Grad, begrenzt auf +60 %). Keine Standortberechtigung. Manuell einstellen.</string>
+
+    <string name="settings_water_use_profile_activity">Aktivitätsniveau des Nutzungsprofils verwenden</string>
+
+    <string name="settings_water_food_water">Wasser aus der Nahrung abziehen</string>
+
+    <string name="settings_water_food_water_help" formatted="false">Grobe Schätzung: 60 % des heute erfassten Lebensmittelgewichts, begrenzt auf 1 l.</string>
+
+    <string name="settings_water_dynamic_preview">Das heutige Ziel</string>
+
+    <string name="settings_water_dynamic_preview_breakdown">%1$d ml Grundbedarf × %2$s Temperatur × %3$s Aktivität − %4$d ml Nahrung</string>
+
+    <string name="settings_water_dynamic_warning_title">Beta · ein Vorschlag, keine medizinische Empfehlung</string>
+
+    <string name="settings_water_dynamic_warning_body">Dieses Ziel ist eine Schätzung auf der Grundlage allgemeiner Trinkempfehlungen und keine ärztliche Anweisung. Jeder Mensch ist anders: dein tatsächlicher Bedarf hängt von deinen Nieren, deiner Medikamenteneinnahme, deinem Gesundheitszustand, deinem Schweißverlust, der Luftfeuchtigkeit und weiteren Faktoren ab, sodass dieser Wert für dich möglicherweise nicht zutreffend ist. Wenn du unter einer Erkrankung leidest oder Medikamente einnimmst, frage einen Arzt, bevor du deine Trinkmenge änderst. Durst ist dein bester Anhaltspunkt. Trink, wann immer du das Bedürfnis dazu hast, auch wenn es noch nicht „Zeit“ ist, und trink an heißen Tagen oder beim Sport immer ausreichend, unabhängig davon, ob die App dich daran erinnert oder nicht.</string>
+
+    <string name="settings_water_reminder_note">Erinnerungen sind nur sanfte Vorschläge. Wenn du Durst hast, trink etwas, auch zwischen den Erinnerungen.</string>
+
+    <string name="settings_water_auto_badge">auto</string>
+
+    <string name="settings_weather_source">Wetterquelle</string>
+
+    <string name="settings_weather_source_manual">Manuell</string>
+
+    <string name="settings_weather_source_manual_sub">Gib die erwartete Höchsttemperatur selbst ein – keine Netzwerkverbindung erforderlich.</string>
+
+    <string name="settings_weather_source_meteo">Open-Meteo (online)</string>
+
+    <string name="settings_weather_source_meteo_sub">Rufe eine Vorhersage für eine Stadt deiner Wahl ab – kein Konto, kein Schlüssel, keine Standortberechtigung erforderlich.</string>
+
+    <string name="settings_weather_source_help">Die erwartete Höchsttemperatur fließt in das dynamische Ziel ein (+4 % pro °C über 25 °C, begrenzt auf +60 %). Wenn die Quelle keine aktuellen Daten bereitstellt, wird stattdessen der manuell eingegebene Wert verwendet.</string>
+
+    <string name="settings_weather_city">Stadt</string>
+
+    <string name="settings_weather_city_none">Wähle eine Stadt aus</string>
+
+    <string name="settings_weather_city_title">Open-Meteo-Stadt</string>
+
+    <string name="settings_weather_city_help">Suche nach deiner Stadt, dann ruft Chompass die Vorhersage für heute ab. Nur der Name und die Koordinaten der Stadt werden an Open-Meteo gesendet – kein Konto, kein Schlüssel, keine Standortberechtigung.</string>
+
+    <string name="settings_weather_city_search_hint">Name der Stadt…</string>
+
+    <string name="settings_weather_city_search">Suchen</string>
+
+    <string name="settings_weather_city_search_none">Keine Städte gefunden. Überprüfe den Namen oder deine Verbindung.</string>
+
+    <string name="settings_weather_city_selected">Ausgewählt</string>
+
+    <string name="settings_weather_status_label">Höchsttemperatur heute</string>
+
+    <string name="settings_weather_status_value">%1$d °C · %2$s</string>
+
+    <string name="settings_weather_status_fallback">Noch keine Vorhersage – es wird %1$d °C verwendet (zum Aktualisieren antippen)</string>
+
+    <string name="settings_weather_updated_today">heute aktualisiert %1$s</string>
+
+    <string name="settings_weather_updated_yesterday">gestern %1$s</string>
+
+    <string name="settings_weather_updated_date">%1$s %2$s</string>
+
+    <string name="settings_weather_attribution">Wetterdaten © Open-Meteo (CC BY 4.0)</string>
+
+    <string name="settings_water_drinking_window">Trinkfenster</string>
+
+    <string name="settings_water_drinking_window_summary">%1$s – %2$s</string>
+
+    <string name="settings_water_reminder_plan">Erinnerungsplan</string>
+
+    <string name="settings_water_drinking_starts">Trinken beginnt</string>
+
+    <string name="settings_water_drinking_ends">Trinken endet</string>
+
+    <string name="settings_water_cup_size">Bechergröße</string>
+
+    <string name="settings_water_cup_size_summary">%1$d ml</string>
+
+    <string name="settings_water_reminder_interval_preview">≈ alle %1$d Min. · %2$d Tassen · jeweils %3$d ml</string>
+
+    <string name="settings_water_reminder_interval_help">Intervall = Trinkzeitfenster ÷ für das Ziel benötigte Tassen. Wird nach jeder Eingabe neu berechnet.</string>
+
+    <string name="settings_water_restore_default_plan">Standardeinstellungen wiederherstellen (08:00 – 21:00 Uhr, 300 ml)</string>
+
+    <string name="settings_water_reminder_window_too_short">Das Trinkfenster muss mindestens 15 Minuten betragen.</string>
+
+    <string name="unit_celsius">°C</string>
+
+    <string name="settings_glass_blur">Glas-Unschärfe</string>
+
+    <string name="settings_food_log_sort">Sortierung des Ernährungsprotokolls</string>
+
+    <string name="settings_week_starts">Die Woche beginnt am</string>
+
     <string name="settings_week_monday">Montag</string>
+
     <string name="settings_week_sunday">Sonntag</string>
-    <string name="settings_notifications">Mitteilungen</string>
-    <string name="settings_battery_opt">Akku-Optimierung</string>
-    <string name="settings_battery_opt_value">Chompass auf Whitelist setzen</string>
+
+    <string name="settings_progress_default_range">Standardbereich für den Fortschritt</string>
+
+    <string name="settings_customize_progress">Fortschritt anpassen</string>
+
+    <string name="settings_customize_progress_summary">%1$s · %2$s</string>
+
+    <string name="settings_progress_plots">Diagramme zu Körpermaßen</string>
+
+    <string name="settings_progress_plots_subtitle">Zeigt auf der Registerkarte „Fortschritt“ die Entwicklung der Umfangsmaße pro Messstelle an. Die Daten stammen aus „Persönliche Daten“ → „Körpermaße“.</string>
+
+    <string name="settings_progress_plots_off">Diagramme deaktiviert</string>
+
+    <string name="settings_progress_plots_count">%1$d Diagramme</string>
+
+    <string name="settings_progress_plots_no_data">Noch keine Messwerte</string>
+
+    <string name="settings_progress_plots_latest">Aktuellste: %1$s %2$s</string>
+
+    <string name="settings_meal_times">Essenszeiten</string>
+
+    <string name="settings_meal_times_customize">Anpassen</string>
+
+    <string name="settings_meal_times_description">Leg fest, wann die automatische Mahlzeitenauswahl zur nächsten Mahlzeit wechselt.</string>
+
+    <string name="settings_breakfast_starts">Das Frühstück beginnt</string>
+
+    <string name="settings_lunch_starts">Das Mittagessen beginnt</string>
+
+    <string name="settings_dinner_starts">Das Abendessen beginnt</string>
+
+    <string name="settings_late_snack_starts">Der späte Snack beginnt</string>
+
+    <string name="settings_meal_times_help">Jede Mahlzeit dauert so lange, bis die nächste beginnt. Der späte Snack dauert über Nacht an, bis das Frühstück beginnt. Du kannst die Mahlzeit vor dem Einloggen noch manuell ändern.</string>
+
+    <string name="settings_meal_time_edit_format">%1$s</string>
+
+    <string name="settings_restore_default_times">Standardzeiten wiederherstellen</string>
+
+    <string name="settings_notifications">Benachrichtigungen</string>
+
+    <string name="settings_battery_opt">Akkuoptimierung</string>
+
+    <string name="settings_battery_opt_value">Chompass auf die Ausnahmeliste setzen</string>
 
     <string name="settings_ai_provider">Anbieter</string>
+
     <string name="settings_ai_model">Modell</string>
-    <string name="settings_ai_model_unset">(unten festlegen)</string>
+
+    <string name="settings_ai_reasoning_effort">Denkaufwand</string>
+
+    <string name="settings_ai_reasoning_effort_footer">Steuert das Denkbudget für reasoning-fähige OpenRouter-Modelle. Automatisch behält die App-Standardeinstellung; höherer Aufwand ist langsamer und kostet mehr Token.</string>
+
+    <string name="ai_reasoning_effort_auto">Automatisch</string>
+
+    <string name="ai_reasoning_effort_low">Niedrig</string>
+
+    <string name="ai_reasoning_effort_medium">Mittel</string>
+
+    <string name="ai_reasoning_effort_high">Hoch</string>
+
+    <string name="settings_ai_vision_model">Vision-Modell</string>
+
+    <string name="settings_ai_vision_model_unset">(gleich wie Modell)</string>
+
+    <string name="settings_ai_vision_model_footer">Fotos verwenden dieses Modell; Text verwendet das Hauptmodell. Ohne Auswahl wird für alles das Hauptmodell verwendet.</string>
+
+    <string name="settings_speech_language">Sprache</string>
+
+    <string name="settings_ai_model_unset">(bitte unten eine Option auswählen)</string>
+
+    <string name="ai_model_tier_paid">Nur mit kostenpflichtigem Tarif (der Gratis-Tarif enthält Pro nicht mehr)</string>
+
+    <string name="ai_model_tier_varies">Die Verfügbarkeit im Gratis-Tarif variiert je nach Konto und Region</string>
+
     <string name="settings_api_key">API-Schlüssel</string>
+
     <string name="settings_base_url">Basis-URL</string>
+
     <string name="settings_server_url">Server-URL</string>
-    <string name="settings_tap_to_edit">Zum Bearbeiten tippen</string>
-    <string name="settings_custom_url_placeholder">https://dein-endpunkt.com/v1</string>
+
+    <string name="settings_tap_to_edit">Zum Bearbeiten antippen</string>
+
+    <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
+
     <string name="settings_custom_url_title">Benutzerdefinierte Basis-URL</string>
+
     <string name="settings_clear_key">Schlüssel löschen</string>
 
-    <string name="settings_clear_food_log">Ernährungstagebuch löschen</string>
+    <string name="settings_on_device_model">Modelldatei</string>
+
+    <string name="settings_on_device_model_ready">Heruntergeladen</string>
+
+    <string name="settings_on_device_model_not_downloaded">Nicht heruntergeladen</string>
+
+    <string name="settings_on_device_accuracy_footer">Gerätebasierte Modelle werden aus Datenschutzgründen lokal ausgeführt. Sie sind wesentlich kleiner als Cloud-Modelle (Gemini, GPT, Claude usw.) und interpretieren Textabschnitte, Markennamen und Fotos oft falsch. Aktiviere den Fallback-Anbieter, damit ein Cloud-Modell einen erneuten Versuch unternehmen kann, wenn das gerätebasierte Modell fehlschlägt.</string>
+
+    <string name="settings_ai_privacy_cloud">Lebensmittelfotos, Notizen, Chat und Profildaten werden an diesen Anbieter gesendet. Nur die On-Device-Gemma-4-Modelle behalten alles auf deinem Gerät.</string>
+
+    <string name="settings_ai_privacy_ondevice">Vollständig privat: Lebensmittelanalyse, „Was wäre wenn?“ und Ziele-Schätzungen laufen auf diesem Gerät. Es wird nichts an einen Server gesendet.</string>
+
+    <string name="settings_ai_privacy_ollama">Ollama läuft auf deinem eigenen Computer. Es wird nichts an einen Cloud-Anbieter gesendet.</string>
+
+    <string name="settings_gemini_google_search">Google-Suche als Grundlage</string>
+
+    <string name="settings_gemini_google_search_footer">Wenn diese Option aktiviert ist, kann Gemini das Web durchsuchen, wenn dies zur Beantwortung einer Eingabeaufforderung hilfreich ist. Suchanfragen werden an Google gesendet. Google stellt deinem Gemini-API-Projekt dies in Rechnung. Bei Gemini-3-Modellen wird jede ausgeführte Suchanfrage auf die Nutzung angerechnet; bei Gemini 2.5 und älteren Versionen erfolgt die Abrechnung pro Eingabeaufforderung, die eine Suche nutzt.</string>
+
+    <string name="settings_show_coach_tab">Coach-Tab anzeigen</string>
+
+    <string name="settings_show_coach_tab_footer">Entfernt den Coach-Tab aus der unteren Leiste. Die Coach-Funktion selbst bleibt aktiviert; ein vollständiger KI-Schalter ist geplant.</string>
+
+    <string name="settings_portion_clarify">Überprüfung der Portionsgröße</string>
+
+    <string name="settings_portion_clarify_footer">Wenn diese Option aktiviert ist, bietet jeder Fotoeintrag eine Korrektur des genauen Gewichts (Neuskalierung ohne weiteren KI-Aufruf) sowie optionale Größenangaben (klein/normal/groß/Restaurantgröße), die anhand deiner Antwort neu analysiert werden.</string>
+
+    <string name="settings_meal_constituents">Aufschlüsselung der Mahlzeitbestandteile</string>
+
+    <string name="settings_meal_constituents_footer">Wenn diese Funktion aktiviert ist, kann die KI zusammengesetzte Mahlzeiten in bearbeitbare Zutaten mit Grammangaben und Einheiten aufschlüsseln. Funktioniert am besten mit leistungsstärkeren Cloud-Modellen; deaktiviere die Funktion bei kostengünstigeren oder kleineren Modellen, wenn die Ergebnisse inkonsistent erscheinen.</string>
+
+    <string name="settings_meal_constituents_footer_on_device">Nicht verfügbar für Gemma auf dem Gerät: Die Aufschlüsselung der Zutaten erfordert ein leistungsfähigeres Modell. Wechsle zu einem Cloud-Anbieter, um diese Funktion zu aktivieren.</string>
+
+    <string name="on_device_model_privacy_notice">Wird vollständig auf diesem Gerät ausgeführt. Nichts, was du eingibst oder fotografierst, wird an einen Server gesendet. Beim Herunterladen wird die Modelldatei direkt von Hugging Face (%1$s) abgerufen, einem Drittanbieter-Host, der von dieser App ansonsten nicht genutzt wird.</string>
+
+    <string name="on_device_model_device_notice">Getestet auf Pixel 9a (GrapheneOS). Andere Geräte, insbesondere solche der unteren Preisklasse oder ohne Tensor-Hardware, wurden noch nicht getestet und können langsamer sein oder nicht unterstützt werden; in diesem Fall ist ein Cloud-Anbieter die sicherere Standardwahl.</string>
+
+    <string name="on_device_model_accuracy_notice">Diese Modelle sind nicht so genau wie in der Cloud gehostete KI. Rechne mit falschen Kalorienangaben, fehlenden Lebensmitteln oder ungenauen Fotoanalysen, insbesondere beim kleineren E2B-Modell. Cloud-Anbieter bleiben die empfohlene Standardeinstellung für eine zuverlässige Protokollierung.</string>
+
+    <string name="on_device_model_e4b_notice">Größer und langsamer als E2B, liefert jedoch möglicherweise bessere Lebensmittelbeschreibungen. Die Fotoanalyse wird aus Stabilitätsgründen auf CPU und GPU aufgeteilt, sodass sie spürbar langsamer sein kann als die reine Textverarbeitung. Wähle „E2B“ unter „Einstellungen“ → „Modell“, wenn du schnellere Antworten bevorzugst.</string>
+
+    <string name="on_device_model_storage_short">Nicht genügend freier Speicherplatz. Mindestens %1$s frei erforderlich (verfügbar: %2$s).</string>
+
+    <string name="on_device_model_wifi_only">Download nur über WLAN</string>
+
+    <string name="on_device_model_download">Herunterladen</string>
+
+    <string name="on_device_model_downloading">Wird heruntergeladen… %1$d%%</string>
+
+    <string name="on_device_model_verifying">Download wird überprüft…</string>
+
+    <string name="on_device_model_ready">Heruntergeladen und bereit.</string>
+
+    <string name="on_device_model_loaded">Modell geladen. Einsatzbereit.</string>
+
+    <string name="on_device_model_not_loaded">Nicht geladen. Die erste Anfrage nach dem Start der App kann bis zu einer Minute dauern.</string>
+
+    <string name="on_device_model_unload">Modell entladen (gibt Speicher frei)</string>
+
+    <string name="on_device_download_failed">Download fehlgeschlagen</string>
+
+    <string name="on_device_model_delete">Heruntergeladenes Modell löschen</string>
+
+    <string name="on_device_model_retry">Download wiederholen</string>
+
+    <string name="on_device_model_sheet_title">Geräte-Modell</string>
+
+    <string name="settings_section_custom_instructions">Benutzerdefinierte KI-Anweisungen</string>
+
+    <string name="settings_custom_instructions_placeholder">z. B. Ich lebe in Deutschland, gehe von europäischen Portionsgrößen aus, bevorzuge Marken von ALDI/REWE. Ich bin gerade auf einer Bodybuilding-Diät.</string>
+
+    <string name="settings_custom_instructions_footer">Optionaler Kontext, der mit jeder KI-Anfrage gesendet wird – Region, Ernährungsweise, sportliche Ziele, alles, was du sonst jedes Mal wiederholen müsstest. Leer lassen, um die Funktion zu deaktivieren.</string>
+
+    <string name="settings_save">Speichern</string>
+
+    <string name="settings_saved">Gespeichert</string>
+
+    <string name="settings_section_fallback">Fallback-Anbieter</string>
+
+    <string name="settings_enable_fallback">Fallback aktivieren</string>
+
+    <string name="settings_fallback_footer">Sollte dein primärer Anbieter ausfallen (Überlastung, Ratenbegrenzung, Netzwerkfehler), versucht die App es automatisch erneut mit diesem Fallback-Anbieter. Der gleiche Anbieter wie der primäre ist zulässig – wähle einfach ein anderes Modell aus.</string>
+
+    <string name="settings_health_connect">Health Connect</string>
+
+    <string name="settings_manage_health_access">Health Connect-Zugriff verwalten</string>
+
+    <string name="settings_permissions">Berechtigungen</string>
+
+    <string name="settings_energy_goals">Energieverbrauchs-Ziele</string>
+
+    <string name="settings_needs_health_connect">Erfordert Health Connect</string>
+
+    <string name="settings_energy_goals_info">Wenn diese Option aktiviert ist, verwendet Chompass bei der Berechnung der Ziele deinen von Health Connect gemessenen Kalorienverbrauch – einen 14-Tage-Durchschnitt aus aktivem und basalem Energieverbrauch – als Referenzwert für den Erhaltungsbedarf anstelle der geschätzten Formelwerte. Es wird keine KI verwendet, um deinen Kalorienverbrauch zu ermitteln. Erfordert Health Connect. Funktioniert mit der Schaltfläche „Neu berechnen“ und mit adaptiven Zielen.</string>
+
+    <string name="settings_adaptive_goals">Adaptive Ziele</string>
+
+    <string name="settings_adaptive_goals_info">Etwa einmal pro Woche, wenn du die App öffnest, führt Chompass automatisch die vollständige Zielberechnung – dieselbe, die auch die Schaltfläche „Neu berechnen“ verwendet – anhand deines Profils, der zuletzt erfassten Mahlzeiten und deines Gewichtsverlaufs erneut durch. Wenn „Energieverbrauch“ aktiviert ist, wird dein gemessener Energieverbrauch als Referenzwert für den Erhaltungsbedarf verwendet. Die Funktion wird stillschweigend übersprungen, wenn die KI nicht verfügbar ist. Durch Deaktivieren dieser Funktion werden die Zielwerte wiederhergestellt, die vor der ersten Anpassung durch die adaptiven Ziele galten. Dies stellt keine medizinische Beratung dar.</string>
+
+    <string name="settings_refresh_energy_goals">Energieverbrauchs-Ziele aktualisieren</string>
+
+    <string name="settings_clear_food_log">Ernährungsprotokoll löschen</string>
+
     <string name="settings_delete_all_data">Alle Daten löschen</string>
 
-    <!-- Settings dialogs -->
-    <string name="settings_clear_food_title">Ernährungstagebuch löschen?</string>
-    <string name="settings_clear_food_message">Löscht alle Lebensmitteleinträge und Fotos. Profil, Gewichte und Einstellungen bleiben.</string>
+    <string name="settings_clear_food_title">Ernährungsprotokoll löschen?</string>
+
+    <string name="settings_clear_food_message">Löscht alle Ernährungseinträge und Fotos. Profil, Gewichtsdaten und Einstellungen bleiben erhalten.</string>
+
     <string name="settings_delete_all_title">Alle lokalen Daten löschen?</string>
-    <string name="settings_delete_all_message">Löscht Profil, Ernährungstagebuch, Gewichtsverlauf, Chat und API-Schlüssel und führt dich zurück zum Onboarding. Health-Connect-Daten bleiben unangetastet.</string>
-    <string name="settings_max_pinned_title">Max. 2 angeheftet</string>
-    <string name="settings_max_pinned_message">Es können maximal 2 Makros gleichzeitig angeheftet werden. Löse zuerst ein anderes Makro, indem du es öffnest und auf „Auf Auto-Balance zurücksetzen“ tippst.</string>
+
+    <string name="settings_delete_all_message">Löscht Profil, Ernährungsprotokoll, Gewichtsverlauf, Chat und API-Schlüssel und leitet dich anschließend zurück zur Ersteinrichtung. Health Connect-Daten bleiben erhalten.</string>
+
+    <string name="settings_max_pinned_title">Maximal 2 Makros gesperrt</string>
+
+    <string name="settings_max_pinned_message">Es können höchstens 2 Makros gleichzeitig gesperrt werden, damit eines frei bleibt, um den Ausgleich zu gewährleisten. Entsperre zuerst ein anderes Makro (tippe auf das Schloss-Symbol).</string>
+
+    <string name="settings_macro_locked">Gesperrt</string>
+
+    <string name="settings_macro_unlocked">Entsperrt</string>
+
+    <string name="settings_rebalance_blocked_title">Neubalancierung nicht möglich</string>
+
+    <string name="settings_rebalance_blocked_message">Kalorien sind gesperrt und beide anderen Makros sind gesperrt, sodass nichts übrig bleibt, um diese Änderung auszugleichen. Entsperre die Kalorien oder ein anderes Makro und versuche es dann erneut.“</string>
+
+    <string name="settings_adaptive_locks_title">Adaptive Ziele sind aktiviert</string>
+
+    <string name="settings_adaptive_locks_message">Deaktiviere die adaptiven Ziele, um deine Kalorien und Makros zu sperren oder selbst festzulegen. Solange diese Funktion aktiviert ist, berechnet Chompass sie jede Woche neu für dich.“</string>
+
     <string name="settings_recalc_title">Ziele neu berechnen?</string>
-    <string name="settings_recalc_message">Setzt Kalorien und Makros auf die Formel-Standards basierend auf Größe/Gewicht/Aktivität/Ziel zurück. Alle angehefteten Makros werden gelöst.</string>
+
+    <string name="settings_recalc_message">Setzt Kalorien und Makros auf die Standardwerte der Formel zurück, basierend auf deiner Größe, deinem Gewicht, deiner Aktivität und deinem Ziel. Alle festgelegten Makros werden gelöscht.</string>
+
     <string name="settings_recalc_confirm">Neu berechnen</string>
-    <string name="settings_invalid_goal_title">Zielgewicht passt nicht zu deinem Ziel</string>
-    <string name="settings_invalid_goal_lose">Ein Abnehm-Ziel braucht einen Wert unter deinem aktuellen Gewicht.</string>
-    <string name="settings_invalid_goal_gain">Ein Zunehm-Ziel braucht einen Wert über deinem aktuellen Gewicht.</string>
+
+    <string name="settings_invalid_goal_title">Das Zielgewicht stimmt nicht mit deinem Ziel überein</string>
+
+    <string name="settings_invalid_goal_lose">Ein Abnehmziel erfordert ein Zielgewicht unter deinem aktuellen Gewicht.</string>
+
+    <string name="settings_invalid_goal_gain">Ein Zunahmeziel erfordert ein Zielgewicht über deinem aktuellen Gewicht.</string>
+
     <string name="settings_permission_title">Berechtigung erforderlich</string>
 
-    <string name="settings_notifications_denied">Mitteilungs-Berechtigung verweigert. Aktiviere sie unter Systemeinstellungen → Apps → Chompass → Mitteilungen, um Erinnerungen zu erhalten.</string>
+    <string name="settings_notifications_denied">Berechtigung für Benachrichtigungen verweigert. Aktiviere sie unter „Systemeinstellungen“ → „Apps“ → „Chompass“ → „Benachrichtigungen“, um Erinnerungen zu erhalten.</string>
 
-    <!-- Notification copy -->
     <string name="notif_weight_log_title">Zeit zum Wiegen</string>
-    <string name="notif_weight_log_text">Erfasse dein heutiges Gewicht, damit dein Verlaufsdiagramm genau bleibt.</string>
-    <string name="settings_health_background_sync_unsupported">Hintergrund-Sync wird von diesem Health-Connect-Modul nicht unterstützt. Vordergrund-Sync funktioniert weiter, wenn du Chompass öffnest.</string>
-    <string name="settings_health_background_denied">Hintergrund-Sync braucht die Berechtigung, Health Connect zu lesen, während Chompass geschlossen ist. Tippe erneut auf den Schalter und erteile sie.</string>
-    <string name="settings_health_unavailable_install">Health Connect ist nicht installiert. Installiere es aus dem Play Store und tippe dann erneut auf den Schalter.</string>
-    <string name="settings_health_update_required_apk">Health Connect braucht ein Update. Aktualisiere es im Play Store und tippe dann erneut auf den Schalter.</string>
-    <string name="settings_health_unavailable_platform">Health Connect ist für Apps auf diesem Gerät nicht verfügbar. Ab Android 14 ist es ein Systemmodul. Wenn die Einstellungen Health Connect zeigen, Chompass aber nicht verbinden kann, stellt dein ROM den Health-Connect-Dienst möglicherweise nicht bereit (häufig bei de-Googled Builds). Chompass braucht weder Play Store noch Sandbox-Play. Nutze stattdessen Tagebuch- und Körperdaten-Export/Import oder optional WebDAV.</string>
-    <string name="settings_health_update_required">Health Connect braucht ein System-Update. Installiere ein Google-Play-Systemupdate (oder das Äquivalent deines ROMs) und tippe dann erneut auf den Schalter. Unter Android 14+ musst du keine separate Health-Connect-App installieren.</string>
-    <string name="settings_health_manage_failed">Health-Connect-Einstellungen konnten auf diesem Gerät nicht geöffnet werden.</string>
-    <string name="settings_health_open_settings">Health Connect öffnen</string>
-    <string name="settings_health_open_play_store">Play Store öffnen</string>
-    <string name="settings_health_unavailable">Health Connect ist auf diesem Gerät nicht verfügbar. Ab Android 14 gehört es zum System. Nutze Datei-Export/Import, wenn dein ROM es nicht bereitstellt. Chompass verlangt auf Android 14+ keine Play-Store-Health-Connect-App.</string>
 
-    <!-- Settings sheets / pickers -->
+    <string name="notif_weight_log_text">Trage dein heutiges Gewicht ein, damit deine Fortschrittsgrafik korrekt bleibt.</string>
+
+    <string name="notif_body_fat_log_title">Körperfett-Check</string>
+
+    <string name="notif_body_fat_log_text">Trage deinen heutigen Körperfettanteil ein, um die Entwicklung deiner Körperzusammensetzung zu verfolgen.</string>
+
+    <string name="settings_health_companions">Synchronisiert sich mit allen Geräten, die Health Connect unterstützen: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band und andere Wearables), openScale (Bluetooth-Waagen), Samsung Health, Fitbit und mehr. Gewicht und Körperfett werden automatisch importiert; von dir erfasste Mahlzeiten und Wasseraufnahme werden exportiert, und Mahlzeiten aus anderen Apps werden importiert. Schlaf, Ruhepuls und Flüssigkeitszufuhr werden auf dem Reiter „Fortschritt“ angezeigt.</string>
+
+    <string name="settings_health_background_sync">Hintergrundsynchronisierung</string>
+
+    <string name="settings_health_background_sync_desc">Überprüft Health Connect alle paar Stunden auf neue Daten, auch wenn Chompass geschlossen ist. Standardmäßig deaktiviert. Benötigt die Berechtigung zum Lesen im Hintergrund, sofern das Health Connect-Modul deines Geräts dies unterstützt.</string>
+
+    <string name="settings_health_background_sync_unsupported">Die Hintergrundsynchronisierung wird vom Health Connect-Modul dieses Geräts nicht unterstützt. Die Synchronisierung im Vordergrund funktioniert weiterhin, wenn du Chompass öffnest.</string>
+
+    <string name="settings_health_background_denied">Für die Hintergrundsynchronisierung ist die Berechtigung zum Lesen von Health Connect erforderlich, während Chompass geschlossen ist. Tippe erneut auf den Schalter und erteile die Berechtigung.</string>
+
+    <string name="settings_sync_section">Synchronisierung</string>
+
+    <string name="settings_sync_blurb">Optionale, vom Nutzer gehostete Synchronisierung. Verweise Android und die PWA auf dieselbe WebDAV-Datei (z. B. Nextcloud) oder gib eine Synchronisierungs-JSON-Datei frei. Chompass betreibt keinen Synchronisierungsserver. API-Schlüssel und Fotos von Lebensmitteln sind nicht enthalten.</string>
+
+    <string name="settings_webdav_url">WebDAV-Datei-URL</string>
+
+    <string name="settings_webdav_url_hint">https://uXXXXX.your-storagebox.de/sync.json</string>
+
+    <string name="settings_webdav_username">Benutzername</string>
+
+    <string name="settings_webdav_password">Passwort</string>
+
+    <string name="settings_webdav_save">WebDAV-Einstellungen speichern</string>
+
+    <string name="settings_webdav_auto_sync">Beim Öffnen synchronisieren</string>
+
+    <string name="settings_webdav_auto_sync_desc">Einmal täglich beim Öffnen der App, sofern WebDAV konfiguriert ist. Standardmäßig deaktiviert. Die manuelle Synchronisierung funktioniert weiterhin jederzeit.</string>
+
+    <string name="export_sync_title">Synchronisierungs-JSON exportieren</string>
+
+    <string name="import_sync_title">Synchronisierungs-JSON importieren</string>
+
+    <string name="settings_sync_now">Jetzt synchronisieren</string>
+
+    <string name="settings_last_sync">Letzte Synchronisierung: %1$s</string>
+
+    <string name="settings_not_synced">Noch nicht synchronisiert</string>
+
+    <string name="import_sync_success">Synchronisierungsdokument importiert.</string>
+
+    <string name="import_sync_failed">Import der Synchronisierung fehlgeschlagen: %1$s</string>
+
+    <string name="export_sync_failed">Synchronisierungsdokument konnte nicht exportiert werden: %1$s</string>
+
+    <string name="settings_webdav_saved">WebDAV-Einstellungen gespeichert.</string>
+
+    <string name="settings_health_denied">Health Connect benötigt Daten zu Gewicht, Körperfett, aktivem Kalorienverbrauch, Gesamtkalorien sowie die Berechtigung zum Schreiben von Ernährungs- und Wasserdaten. Tippe erneut auf den Schalter und erteile alle angeforderten Berechtigungen, um die Daten zu synchronisieren und die Energieziele zu schätzen.</string>
+
+    <string name="settings_health_unavailable_install">Health Connect ist nicht installiert. Installiere die App aus dem Play Store und tippe anschließend erneut auf den Schalter.</string>
+
+    <string name="settings_health_update_required_apk">Health Connect muss aktualisiert werden. Aktualisiere die App über den Play Store und tippe anschließend erneut auf den Schalter.</string>
+
+    <string name="settings_health_unavailable_platform">Health Connect steht für Apps auf diesem Gerät nicht zur Verfügung. Unter Android 14 und höher handelt es sich um ein Systemmodul. Wenn Health Connect in den Einstellungen angezeigt wird, Chompass jedoch keine Verbindung herstellen kann, stellt dein ROM den Health Connect-Dienst möglicherweise nicht bereit (häufig bei einigen „De-Googled“-Builds). Chompass benötigt weder den Play Store noch „Sandboxed Play“. Verwende stattdessen den Export/Import von Tagebuchdaten und Körperwerten oder optional WebDAV.</string>
+
+    <string name="settings_health_update_required">Health Connect benötigt ein System-Update. Installiere ein Google Play-System-Update (oder das entsprechende Update deines ROMs) und tippe anschließend erneut auf den Schalter. Auf Android 14+ musst du keine separate Health Connect-App installieren.</string>
+
+    <string name="settings_health_manage_failed">Die Health Connect-Einstellungen konnten auf diesem Gerät nicht geöffnet werden.</string>
+
+    <string name="settings_health_open_settings">Health Connect öffnen</string>
+
+    <string name="settings_health_open_play_store">Play Store öffnen</string>
+
+    <string name="settings_health_unavailable">Health Connect ist auf diesem Gerät nicht verfügbar. Ab Android 14 ist es systemseitig integriert. Verwende den Datei-Export/Import, falls dein ROM es nicht bereitstellt. Chompass benötigt auf Android 14+ niemals die Health Connect-App aus dem Play Store.</string>
+
     <string name="sheet_ai_provider">KI-Anbieter</string>
+
     <string name="sheet_model">Modell</string>
-    <string name="sheet_model_footer">Oder gib unten eine beliebige Modell-ID ein.</string>
+
+    <string name="sheet_model_footer">Oder gib unten eine beliebige benutzerdefinierte Modell-ID ein.</string>
+
     <string name="sheet_any_model_id">Beliebige Modell-ID</string>
-    <string name="sheet_api_key_format">API-Schlüssel - %1$s</string>
-    <string name="sheet_speech_api_key_format">Sprach-API-Schlüssel - %1$s</string>
+
+    <string name="sheet_api_key_format">API-Schlüssel – %1$s</string>
+
+    <string name="sheet_speech_api_key_format">Sprach-API-Schlüssel – %1$s</string>
+
     <string name="sheet_speech_engine">Sprach-Engine</string>
+
     <string name="sheet_gender">Geschlecht</string>
-    <string name="sheet_activity_level">Aktivitätslevel</string>
+
+    <string name="sheet_activity_level">Aktivitätsniveau</string>
+
     <string name="sheet_goal">Ziel</string>
+
+    <string name="sheet_diet_mode">Diätmodus</string>
+
+    <string name="sheet_keto_carb_mode">Keto-Kohlenhydrat-Modus</string>
+
     <string name="sheet_target_weight">Zielgewicht</string>
+
     <string name="sheet_weight">Gewicht</string>
+
     <string name="sheet_birthday">Geburtstag</string>
-    <string name="sheet_appearance">Darstellung</string>
-    <string name="sheet_week_starts">Wochenbeginn</string>
-    <string name="sheet_height">Größe</string>
-    <string name="sheet_body_fat_percent">Körperfett %</string>
-    <string name="sheet_weekly_change">Wöchentliche Änderung</string>
+
+    <string name="sheet_appearance">Aussehen</string>
+
+    <string name="sheet_week_starts">Die Woche beginnt am</string>
+
+    <string name="sheet_height">Körpergröße</string>
+
+    <string name="sheet_body_fat_percent">Körperfettanteil in %</string>
+
+    <string name="sheet_goal_body_fat">Körperfettziel</string>
+
+    <string name="sheet_goal_body_fat_currently">Derzeit %1$d%%</string>
+
+    <string name="action_remove_goal">Ziel entfernen</string>
+
+    <string name="sheet_weekly_change">Wöchentliche Veränderung</string>
+
     <string name="sheet_weekly_change_format">%1$.1f %2$s/Woche %3$s</string>
-    <string name="sheet_weekly_change_loss">Verlust</string>
+
+    <string name="sheet_weekly_change_loss">Abnahme</string>
+
     <string name="sheet_weekly_change_gain">Zunahme</string>
+
     <string name="sheet_pace_slow">Langsam</string>
+
     <string name="sheet_pace_recommended">Empfohlen</string>
+
     <string name="sheet_pace_fast">Schnell</string>
+
     <string name="sheet_selected_a11y">Ausgewählt</string>
-    <string name="sheet_reset_to_auto">Auf Auto-Balance zurücksetzen</string>
+
+    <string name="sheet_reset_to_auto">Auf automatischen Ausgleich zurücksetzen</string>
 
     <string name="sheet_macros">Makros</string>
-    <string name="sheet_macros_subtitle">Hefte bis zu 2 Makros auf exakte Gramm an. Nicht angeheftete werden automatisch aus den verbleibenden Kalorien ausgeglichen.</string>
-    <string name="sheet_macro_pinned">angeheftet</string>
 
-    <!-- About -->
+    <string name="sheet_macros_subtitle">Bis zu 2 Makros auf genaue Grammzahlen festlegen. Nicht festgelegte Makros werden automatisch anhand der verbleibenden Kalorien ausgeglichen.</string>
+
+    <string name="sheet_macro_pinned">festgelegt</string>
+
+    <string name="sheet_macro_auto">automatisch</string>
+
+    <string name="sheet_macro_label_format">%1$s (%2$s)</string>
+
+    <string name="sheet_speech_language">Sprache der Sprachausgabe</string>
+
+    <string name="speech_language_provider_auto">Anbieter automatisch</string>
+
+    <string name="speech_language_provider_auto_subtitle">Lass den Anbieter die Sprache erkennen.</string>
+
+    <string name="speech_language_device">Gerätesprache verwenden</string>
+
+    <string name="speech_language_device_subtitle">Aktuelle Sprache dieses Telefons verwenden.</string>
+
+    <string name="speech_language_english">Englisch</string>
+
+    <string name="speech_language_german">Deutsch</string>
+
+    <string name="speech_language_spanish">Spanisch</string>
+
+    <string name="speech_language_french">Französisch</string>
+
+    <string name="speech_language_italian">Italienisch</string>
+
+    <string name="speech_language_portuguese">Portugiesisch</string>
+
+    <string name="speech_language_dutch">Niederländisch</string>
+
+    <string name="speech_language_hindi">Hindi</string>
+
+    <string name="speech_language_japanese">Japanisch</string>
+
+    <string name="speech_language_chinese">Chinesisch</string>
+
+    <string name="speech_language_korean">Koreanisch</string>
+
+    <string name="about_update_checking">Nach Updates suchen</string>
+
+    <string name="about_update_available">Update verfügbar</string>
+
+    <string name="about_update_details_format">Aktuelle Version %1$s –&gt; Neueste Version %2$s</string>
+
+    <string name="about_update_action">Aktualisieren</string>
+
+    <string name="about_check_updates">Nach Updates suchen</string>
+
+    <string name="about_app_version">App-Version</string>
+
+    <string name="about_version_format">Version %1$s</string>
+
     <string name="about_rate">App bewerten</string>
+
     <string name="about_share">App teilen</string>
-    <string name="about_open_source">Open Source (MIT)</string>
-    <string name="about_report_issue">Problem melden</string>
+
+    <string name="about_open_source">Quellcode (MIT)</string>
+
+    <string name="about_asset_credits">Open Source &amp; Assets</string>
+
+    <string name="about_upstream">Basierend auf Fud AI (Upstream)</string>
+
+    <string name="about_report_issue">Ein Problem melden</string>
+
     <string name="about_request_feature">Funktion vorschlagen</string>
-    <string name="about_privacy">Datenschutzrichtlinie</string>
+
+    <string name="about_privacy">Datenschutzerklärung</string>
+
     <string name="about_made_by">Chompass von fitguy</string>
-    <string name="about_with_care">Basiert auf Fud AI von Apoorv Darshan</string>
-    <string name="about_share_message">Ich tracke meine Mahlzeiten mit Chompass - fotografieren, einsprechen oder eintippen, die KI erfasst die Kalorien. Kostenlos, Open Source, alle Daten bleiben auf deinem Gerät.\n\nHerunterladen: https://codeberg.org/fitguy/chompass</string>
+
+    <string name="about_with_care">Basierend auf Fud AI von Apoorv Darshan</string>
+
+    <string name="about_share_message">Ich protokolliere meine Mahlzeiten mit Chompass – einem werbefreien Fork von Fud AI. Mach ein Foto, sprich es ein oder gib es ein, und die KI erfasst die Kalorien. Open Source, und deine Daten bleiben auf deinem Gerät.\n\nQuelle: https://codeberg.org/fitguy/chompass</string>
+
     <string name="about_share_chooser">Chompass teilen</string>
 
-    <!-- Notifications -->
-    <string name="notif_channel_streak">Serien-Erinnerung</string>
-    <string name="notif_channel_streak_desc">Tägliche Erinnerung, eine Mahlzeit zu erfassen und deine Serie zu halten.</string>
-    <string name="notif_channel_daily">Tageszusammenfassung</string>
-    <string name="notif_channel_daily_desc">Tagesabschluss-Zusammenfassung deiner Kalorien + Makros.</string>
+    <string name="notif_channel_streak">Erinnerung an die Serie</string>
+
+    <string name="notif_channel_streak_desc">Tägliche Erinnerung, eine Mahlzeit zu erfassen und deine Serie aufrechtzuerhalten.</string>
+
+    <string name="notif_channel_daily">Tägliche Zusammenfassung</string>
+
+    <string name="notif_channel_daily_desc">Tägliche Zusammenfassung deiner Kalorien und Makronährstoffe am Ende des Tages.</string>
+
     <string name="notif_channel_weight_goal">Gewichtsziel</string>
-    <string name="notif_channel_weight_goal_desc">Glückwunsch, wenn du dein Zielgewicht erreichst.</string>
-    <string name="notif_streak_title">Vergiss nicht, deine Mahlzeiten zu erfassen</string>
-    <string name="notif_streak_text">Halte deine Serie aufrecht - erfasse etwas von heute.</string>
-    <string name="notif_summary_title">Die heutige Zusammenfassung ist bereit</string>
-    <string name="notif_summary_text">Tippe, um zu sehen, wie deine heutigen Makros aussahen.</string>
 
-    <string name="onboarding_goal_optional">Ziel (optional)</string>
-    <string name="onboarding_goal_set_later">Du kannst dies später in den Einstellungen festlegen.</string>
-    <string name="settings_goal_body_fat">Ziel-Körperfett</string>
-    <string name="settings_use_body_fat_bmr">Körperfett für BMR verwenden</string>
-    <string name="settings_use_body_fat_bmr_subtitle">An = Katch-McArdle (nutzt fettfreie Masse für genaueren BMR). Aus = Mifflin-St Jeor (nur Größe/Gewicht/Alter). Ausschalten, wenn dein Körperfettwert veraltet ist.</string>
-    <string name="sheet_goal_body_fat">Körperfett-Ziel</string>
-    <string name="sheet_goal_body_fat_currently">Aktuell %1$d%%</string>
-    <string name="action_remove_goal">Ziel entfernen</string>
-    <string name="progress_metric_weight">Gewicht</string>
-    <string name="progress_metric_body_fat">Körperfett</string>
-    <string name="progress_log_body_fat">Körperfett protokollieren</string>
-    <string name="progress_log_first_body_fat">Erfasse deinen ersten Körperfettwert, um Trends zu sehen</string>
-    <string name="progress_log_body_fat_title">Körperfett protokollieren</string>
-    <string name="notif_body_fat_log_title">Körperfett-Check</string>
-    <string name="notif_body_fat_log_text">Erfasse heute dein Körperfett, um deinen Verlauf zu verfolgen.</string>
-    <string name="saved_meals_search_placeholder">Gespeicherte Mahlzeiten durchsuchen</string>
-    <string name="saved_meals_no_match">Keine passenden Mahlzeiten</string>
-    <string name="settings_section_custom_instructions">Eigene KI-Anweisungen</string>
-    <string name="settings_custom_instructions_placeholder">z. B. Ich lebe in Deutschland, gehe von europäischen Portionsgrößen aus, bevorzuge ALDI/REWE-Marken. Ich bin in einer Bodybuilding-Diätphase.</string>
-    <string name="settings_custom_instructions_footer">Optionaler Kontext, der bei jeder KI-Anfrage mitgesendet wird - Region, Ernährung, sportliche Ziele, alles, was du sonst jedes Mal wiederholen müsstest. Leer lassen, um zu deaktivieren.</string>
-    <string name="settings_save">Speichern</string>
-    <string name="settings_saved">Gespeichert</string>
-    <string name="settings_section_fallback">Fallback-Anbieter</string>
-    <string name="settings_enable_fallback">Fallback aktivieren</string>
-    <string name="settings_fallback_footer">Wenn dein primärer Anbieter ausfällt (Überlastung, Rate-Limit, Netzwerkfehler), versucht die App es automatisch erneut mit diesem Fallback. Derselbe Anbieter wie der primäre ist erlaubt - wähle einfach ein anderes Modell.</string>
+    <string name="notif_channel_weight_goal_desc">Feier, wenn du dein Zielgewicht erreichst.</string>
+
+    <string name="notif_streak_title">Vergiss nicht, deine Mahlzeiten einzutragen</string>
+
+    <string name="notif_streak_text">Halte deine Serie aufrecht – trage etwas von heute ein.</string>
+
+    <string name="notif_summary_title">Die heutige Zusammenfassung ist fertig</string>
+
+    <string name="notif_summary_text">Tippe darauf, um zu sehen, wie sich die Makros heute verteilt haben.</string>
+
     <string name="widget_all_metrics_label">Chompass Heute</string>
-    <string name="widget_all_metrics_description">Sieh Kalorien, Protein, Kohlenhydrate und Fett von heute in einem Widget.</string>
-    <string name="settings_needs_health_connect">Benötigt Health Connect</string>
-    <string name="settings_energy_goals_info">Wenn aktiviert, verwendet Chompass deinen gemessenen Kalorienverbrauch aus Health Connect - einen 14-Tage-Durchschnitt aus aktiver + basaler Energie - als Erhaltungs-Anker (TDEE) bei der Zielberechnung, statt der Formel-Schätzung. Zum Auslesen deines Verbrauchs wird keine KI verwendet. Erfordert Health Connect. Funktioniert mit der Schaltfläche „Neu berechnen“ und mit Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Etwa einmal pro Woche führt Chompass beim Öffnen der App automatisch die vollständige Zielberechnung erneut aus - dieselbe wie die Schaltfläche „Neu berechnen“ - auf Basis deines Profils, deiner zuletzt protokollierten Mahlzeiten und deines Gewichtstrends. Wenn Energy Burn aktiviert ist, dient dein gemessener Verbrauch als Erhaltungs-Anker. Ist die KI nicht verfügbar, wird der Lauf still übersprungen. Beim Ausschalten werden die Ziele von vor der ersten Änderung durch diese Funktion wiederhergestellt. Dies ist keine medizinische Beratung.</string>
-    <string name="onboarding_plan_adaptive_note">Dein Plan passt sich wöchentlich an, während du loggst - deaktiviere Adaptive Goals in den Einstellungen, um ihn fest zu lassen.</string>
-    <string name="onboarding_feature_snap">Foto knipsen - die KI loggt es</string>
-    <string name="onboarding_feature_coach">Coach, der deine Daten kennt</string>
-    <string name="onboarding_feature_library">Health Connect für Waagen und Wearables</string>
-    <string name="onboarding_feature_widgets">Startbildschirm-Widgets</string>
-    <string name="whats_new_v30_workouts">Der Workouts-Tab wurde entfernt.</string>
-    <string name="whats_new_v30_home">Home-Redesign: Tacho-Kalorienanzeige, vertikale Makro-Balken, vier Nährstoffkarten und ein schwebender Hinzufügen-Button.</string>
-    <string name="whats_new_v30_coach_voice">Frag den Coach per Sprache mit dem neuen Inline-Rekorder.</string>
-    <string name="whats_new_v30_share">Teile jede Mahlzeit als Link, der direkt in Chompass öffnet - auf iPhone oder Android.</string>
-    <string name="whats_new_v30_export">Exportiere dein Ernährungstagebuch als JSON, Markdown oder CSV in den Einstellungen.</string>
-    <string name="whats_new_v30_reprocess">Verarbeite eine geloggte Mahlzeit neu mit KI - passe Name, Portion oder Notiz an und analysiere erneut.</string>
-    <string name="whats_new_v30_camera">Kamera + Kamera behält beide Aufnahmen, Seite an Seite zusammengefügt.</string>
-    <string name="whats_new_v30_colors">10 neue Themenfarben, jetzt direkt in den Einstellungen wählbar.</string>
-    <string name="whats_new_v30_bodyfat">Körperfett-Verlauf: einzelne Einträge ansehen und löschen, genau wie beim Gewicht.</string>
-    <string name="whats_new_v30_units">Größen- und Gewichtseinheiten lassen sich jetzt unabhängig einstellen.</string>
-    <string name="whats_new_v30_adaptive">Adaptive Ziele und Energieverbrauch sind nicht mehr experimentell und bei Neuinstallationen standardmäßig aktiv.</string>
-    <string name="whats_new_v30_restore">Neu installiert oder neues Handy? Ernährungstagebuch, Gewicht und Körperfett werden jetzt automatisch aus Health Connect wiederhergestellt.</string>
 
-    <string name="grounded_entry_title">Datenbank-Eintrag</string>
-    <string name="grounded_entry_subtitle">Beschreibe und/oder fotografiere eine Mahlzeit. Nährwerte kommen aus USDA, Open Food Facts oder deiner bestätigten Historie, nicht aus freien Schätzungen.</string>
-    <string name="grounded_entry_placeholder">z. B. 2 Rühreier und eine Banane</string>
-    <string name="grounded_entry_add_photo">Foto hinzufügen</string>
-    <string name="grounded_entry_analyze">Nährwerte zuordnen</string>
-    <string name="grounded_review_title">Treffer bestätigen</string>
-    <string name="grounded_review_subtitle">Wähle den besten Datenbanktreffer und die Portion für jedes Lebensmittel.</string>
-    <string name="grounded_review_grams">Gramm</string>
-    <string name="grounded_review_continue">Weiter zur Prüfung</string>
-    <string name="grounding_source_history">Deine Historie</string>
-    <string name="grounding_source_label">Nährwertetikett</string>
-    <string name="grounding_source_estimate">KI-Schätzung</string>
-    <string name="grounding_badge_usda">Zugeordnet · USDA</string>
-    <string name="grounding_badge_off">Zugeordnet · Open Food Facts</string>
-    <string name="grounding_badge_history">Zugeordnet · Deine Historie</string>
-    <string name="grounding_badge_label">Zugeordnet · Etikett</string>
-    <string name="grounding_badge_estimate">Schätzung · nicht datenbankzugeordnet</string>
-    <string name="grounding_confidence_summary">Konfidenz: Identität %1$d%% · Portion %2$d%% · Quelle %3$d%%</string>
-    <string name="grounding_validation_notes">Hinweise: %1$s</string>
-    <string name="grounded_on_device_unavailable">Datenbank-Eintrag braucht einen Cloud-KI-Anbieter. On-Device-Modelle nutzen Foto/Notiz.</string>
-    <string name="grounded_review_unit">Einheit</string>
+    <string name="widget_all_metrics_description">Sieh dir die heutigen Kalorien, Proteine, Kohlenhydrate und Fette in einem Widget an.</string>
+
+    <string name="widget_water_label">Chompass Wasser</string>
+
+    <string name="widget_water_description">Sieh dir deinen heutigen Wasserverbrauch auf einen Blick an.</string>
+
+    <string name="widget_water_disabled">Wasser-Tracking in Chompass aktivieren</string>
 
     <string name="widget_water_tracking">Wasser-Tracking</string>
+
     <string name="widget_water_enable_short">In Chompass aktivieren</string>
-    <string name="widget_ml_left_format">Noch %1$d ml</string>
-    <string name="widget_fl_oz_left_format">Noch %1$d fl oz</string>
-    <string name="widget_unit_left_format">Noch %1$s%2$s</string>
+
+    <string name="widget_ml_left_format">%1$d ml übrig</string>
+
+    <string name="widget_fl_oz_left_format">%1$d fl oz übrig</string>
+
+    <string name="widget_unit_left_format">%1$s%2$s übrig</string>
+
     <string name="error_invalid_json">Ungültiges JSON</string>
+
     <string name="error_unknown">Unbekannter Fehler</string>
-    <string name="error_webdav_sync_failed">WebDAV-Sync fehlgeschlagen</string>
+
+    <string name="error_webdav_sync_failed">WebDAV-Synchronisierung fehlgeschlagen</string>
+
+    <string name="sync_error_unsupported_file">Nicht unterstützte Synchronisierungsdatei</string>
+
+    <string name="sync_error_configure_webdav">Konfiguriere zunächst die WebDAV-URL, den Benutzernamen und das Passwort</string>
+
+    <string name="sync_error_build_local_doc">Lokales Synchronisierungsdokument konnte nicht erstellt werden</string>
+
+    <string name="sync_error_remote_invalid">Remote-Synchronisierungsdokument ist ungültig</string>
+
+    <string name="sync_error_local_rebuild_failed">Neuer Aufbau des lokalen Synchronisierungsdokuments nach Konflikt fehlgeschlagen</string>
+
+    <string name="sync_error_remote_invalid_conflict">Remote-Synchronisierungsdokument nach Konflikt ungültig</string>
+
+    <string name="sync_error_conflict_persisted">WebDAV-Konflikt besteht weiterhin; bitte erneut versuchen</string>
+
+    <string name="sync_error_merged_invalid">Zusammengeführtes Synchronisierungsdokument ungültig</string>
+
+    <string name="sync_success_synced">Mit WebDAV synchronisiert</string>
+
+    <string name="sync_success_applied">Synchronisierungsdokument angewendet</string>
+
+    <string name="ai_error_no_api_key">Es ist kein API-Schlüssel konfiguriert. Füge deinen Schlüssel unter „Einstellungen“ → „KI-Anbieter“ hinzu.</string>
+
+    <string name="ai_error_image_conversion_failed">Die Verarbeitung des Bildes ist fehlgeschlagen.</string>
+
+    <string name="ai_error_network_format">Netzwerkfehler: %1$s</string>
+
+    <string name="ai_error_invalid_response">Die KI-Antwort konnte nicht verstanden werden. Bitte versuche es erneut.</string>
+
+    <string name="ai_error_timeout">Der KI-Anbieter hat zu lange gebraucht, um zu antworten. Versuch es erneut oder erhöhe das Zeitlimit unter Einstellungen → KI &amp; Sprache.</string>
+
+    <string name="ai_error_invalid_url">Ungültige API-URL. Überprüfe deine Anbietereinstellungen.</string>
+
+    <string name="ai_error_on_device_model_not_downloaded">Das geräteinterne Modell wurde noch nicht heruntergeladen. Öffne „Einstellungen“ → „KI-Anbieter“ → „Modell“, um es herunterzuladen.</string>
+
+    <string name="ai_error_on_device_unsupported_device">Dieses Gerät erfüllt nicht die Anforderungen für geräteinterne KI. Wähle in „Einstellungen“ → „AI-Anbieter“ einen Cloud-Anbieter aus.</string>
+
+    <string name="ai_error_on_device_low_memory">Derzeit ist nicht genügend freier Speicher für die gerätebasierte Fotoanalyse verfügbar. Versuche es mit dem kleineren E2B-Modell, schließe andere Apps oder wechsle in „Einstellungen“ → „AI-Anbieter“ den Anbieter.</string>
+
+    <string name="ai_error_key_rejected">Dein API-Schlüssel wurde abgelehnt. Öffne „Einstellungen“ → „KI-Anbieter“ und füge einen gültigen Schlüssel erneut ein.</string>
+
+    <string name="ai_error_location_unsupported">Gemini ist von diesem Netzwerkstandort (Land/IP) aus nicht verfügbar. Wenn du ein VPN verwendest, deaktiviere es oder wechsle zu einem privaten Ausgangspunkt. IP-Adressen von Rechenzentren oder nicht-privaten VPNs werden häufig blockiert. Oder aktiviere die Abrechnung für das Google AI Studio-Projekt, probiere ein anderes Netzwerk aus oder wechsle unter „Einstellungen“ → „KI-Anbieter“ den Anbieter.</string>
+
+    <string name="ai_error_provider_overloaded">Der KI-Anbieter ist derzeit überlastet. Wir haben es mehrmals erneut versucht. Bitte versuche es in einer Minute erneut oder wechsle unter „Einstellungen“ → „KI-Anbieter“ zu einem anderen Anbieter/Modell.</string>
+
+    <string name="ai_error_rate_limit">Die Ratenbegrenzung für deinen API-Schlüssel wurde erreicht. Warte eine Minute oder wechsle unter „Einstellungen“ → „KI-Anbieter“ zu einem anderen Anbieter.</string>
+
+    <string name="ai_error_model_unavailable">Dein Anbieter hat dieses Modell nicht gefunden. Es könnte im Gratis-Tarif kostenpflichtig sein, in deiner Region gesperrt sein oder der Endpunkt könnte falsch sein. Wechsle unter Einstellungen → KI-Anbieter zum Standard-Flash-Modell oder aktiviere die Abrechnung in deinem AI-Studio-Projekt.</string>
+
+    <string name="ai_error_coach_on_device">„Coach“ ist beim On-Device-Anbieter noch nicht verfügbar. Wechsle unter „Einstellungen“ → „KI-Anbieter“ zu einem Cloud-Anbieter.</string>
+
+    <string name="ai_error_coach_round_limit">Der Coach hat das Limit für die Anzahl der Tool-Aufrufe überschritten. Formuliere deine Frage bitte um.</string>
+
+    <string name="ai_error_truncated_twice">Die KI-Antwort wurde zweimal gekürzt. Versuche es mit einer kürzeren Frage oder einem anderen Modell.</string>
+
+    <string name="ai_error_truncated_twice_description">Die KI-Antwort wurde zweimal gekürzt. Versuche es mit einer kürzeren Beschreibung oder einem anderen Modell.</string>
+
+    <string name="ai_error_truncated">Die KI-Antwort wurde gekürzt. Versuche es mit einer kürzeren Frage oder einem anderen Modell.</string>
+
+    <string name="ai_error_provider_error">Der KI-Anbieter hat einen Fehler zurückgegeben. </string>
+
+    <string name="ai_error_grounded_requires_provider">Der „Grounded“-Tool-Loop erfordert einen aktiven KI-Anbieter.</string>
+
+    <string name="ai_error_grounded_on_device">Der „Grounded“-Tool-Loop ist für gerätebasierte Modelle nicht verfügbar.</string>
+
     <string name="settings_language_title">Sprache</string>
+
     <string name="settings_language_system">Systemstandard</string>
-    <string name="add_food_quick_relog">Erneut eintragen</string>
-    <string name="add_food_quick_relog_empty">Markiere eine Mahlzeit als Favorit oder trage sie einmal ein. Sie erscheint hier für Ein-Tipp-Neueintrag.</string>
-    <string name="add_food_quick_relog_hint">Favoriten und vergangene Mahlzeiten. Schneller als erneut scannen.</string>
-    <string name="ai_provider_on_device_subtitle">Privat und offline. Weniger genau als Cloud-KI; ~2-4 GB Download</string>
-    <string name="camera_scale_tip_message">Tipp: Lege Gabel, Hand oder Münze neben das Essen. Das hilft bei der Portionsgröße.</string>
-    <string name="cd_relog_meal">%1$s erneut eintragen</string>
-    <string name="context_note_hint">Sei konkret: Mengen, Marken, Öle oder Dressings und wie es zubereitet wurde.</string>
-    <string name="edit_reprocess_diff_unchanged">Keine Felder geändert. Passe deine Notiz an und versuche es erneut.</string>
-    <string name="edit_reprocess_hint">Beschreibe die Korrektur, z. B. große Schüssel, in Butter gekocht, Hafermilch statt Milch</string>
-    <string name="entry_analysis_add_photo">Foto hinzufügen</string>
-    <string name="entry_analysis_busy_analyzing">Analysiere…</string>
-    <string name="entry_analysis_busy_filling">Ergänze Nährwerte…</string>
-    <string name="entry_analysis_busy_units">Berechne Portionseinheiten…</string>
-    <string name="entry_analysis_ready">Bereit zur Überprüfung</string>
-    <string name="entry_analysis_status_helper">Barcodes im Foto werden geprüft, dann fragt dein KI-Anbieter nach Nährwerten.</string>
-    <string name="entry_analysis_streaming_hint">Werte erscheinen, während die KI antwortet. Du kannst sie vor dem Eintragen prüfen.</string>
-    <string name="entry_analysis_tip_apply">Mit Tipp neu analysieren</string>
-    <string name="entry_analysis_tip_cta">Tipp für KI hinzufügen (optional)</string>
-    <string name="home_calorie_mode_add_active">Aktive Verbrennung zum Budget addieren</string>
-    <string name="home_calorie_mode_add_active_desc">Aktive Kalorien aus Health Connect (oder deiner Aktivitätsstufen-Schätzung) werden zum heutigen Kalorienbudget addiert. Iss zurück, was du verbrennst. Setze Aktivitätsstufe auf Alltags-Baseline, damit Workouts nicht doppelt gezählt werden. Verbinde Health Connect unter Einstellungen → Gesundheit für gemessene Verbrennung.</string>
-    <string name="home_calorie_mode_add_active_hc_hint">Tipp: Aktiviere Health Connect, um aktive Kalorien von Uhr/Telefon statt der Aktivitätsstufen-Schätzung zu nutzen.</string>
-    <string name="home_calorie_mode_static_desc">Dein Kalorienziel bleibt fest. Bewegung ändert das heutige Budget nicht.</string>
-    <string name="home_menu_manual_active">Aktive Verbrennung</string>
+
+    <string name="onboarding_privacy_note">Keine Werbung, keine Analysen, keine Konten. Dein Ernährungsprotokoll und deine API-Schlüssel bleiben auf deinem Gerät.</string>
+
+    <string name="onboarding_privacy_note_cloud">Mit einem Cloud-Anbieter werden Lebensmittelfotos, Essensnotizen, Chat- und Profildaten an diesen Anbieter gesendet. Nur die On-Device-Gemma-4-Modelle behalten alles auf deinem Gerät.</string>
+
+    <string name="onboarding_privacy_note_ondevice">Gemma 4 läuft vollständig auf diesem Gerät. Nichts, was du eintippst oder fotografierst, wird an einen Server gesendet.</string>
+
+    <string name="onboarding_privacy_note_ollama">Ollama läuft auf deinem eigenen Computer. Es wird nichts an einen Cloud-Anbieter gesendet.</string>
+
+    <string name="onboarding_plan_adaptive_note">Dein Plan passt sich wöchentlich automatisch an, während du Einträge vornimmst – deaktiviere „Adaptive Ziele“ in den Einstellungen, um ihn unverändert zu lassen. </string>
+
+    <string name="onboarding_feature_snap">Mach ein Foto – die KI erfasst es</string>
+
+    <string name="onboarding_feature_coach">Ein Coach, der deine Daten kennt</string>
+
+    <string name="onboarding_feature_library">Health Connect für Waagen und Wearables</string>
+
+    <string name="onboarding_feature_widgets">Widgets für den Startbildschirm</string>
+
+    <string name="whats_new_v30_home">Neugestaltung des Startbildschirms: Kalorienanzeige im Tachometer-Stil, vertikale Makro-Balken, vier Nährstoffkarten und eine schwebende Schaltfläche zum Hinzufügen.</string>
+
+    <string name="whats_new_v30_coach_voice">Frage den Coach per Spracheingabe mit dem neuen Inline-Recorder. </string>
+
+    <string name="whats_new_v30_share">Teile jede Mahlzeit als Link, der direkt in Chompass auf dem iPhone oder Android-Gerät geöffnet wird.</string>
+
+    <string name="whats_new_v30_export">Exportiere dein Ernährungstagebuch in den Formaten JSON, Markdown oder CSV über die Einstellungen.</string>
+
+    <string name="whats_new_v30_reprocess">Verarbeite eine protokollierte Mahlzeit mit KI neu – passe den Namen, die Portionsgröße oder die Notiz an und lass sie erneut analysieren.</string>
+
+    <string name="whats_new_v30_camera">„Kamera + Kamera“ speichert beide Aufnahmen und fügt sie nebeneinander zusammen.</string>
+
+    <string name="whats_new_v30_colors">10 neue Designfarben, die nun direkt in den Einstellungen ausgewählt werden können.</string>
+
+    <string name="whats_new_v30_bodyfat">Körperfettverlauf: Einzelne Einträge können genau wie beim Gewicht überprüft und gelöscht werden.</string>
+
+    <string name="whats_new_v30_workouts">Der Reiter „Workouts“ wurde entfernt. </string>
+
+    <string name="whats_new_v30_units">Einheiten für Größe und Gewicht können nun unabhängig voneinander festgelegt werden.</string>
+
+    <string name="whats_new_v30_adaptive">„Adaptive Ziele“ und „Energieverbrauch“ sind nicht mehr im experimentellen Modus und bei Neuinstallationen standardmäßig aktiviert.</string>
+
+    <string name="whats_new_v30_restore">Hast du dein Smartphone neu installiert oder gewechselt? dein Ernährungstagebuch, dein Gewicht und dein Körperfettanteil werden nun automatisch aus Health Connect wiederhergestellt.</string>
+
+    <string name="export_diary_title">Ernährungstagebuch exportieren</string>
+
+    <string name="export_body_metrics_title">Gewichts- und Körperdaten exportieren</string>
+
+    <string name="export_body_metrics_subtitle">Exportiert deinen Verlauf zu Gewicht, Körperfett und Körpermaßen als Datei, die du teilen kannst.</string>
+
+    <string name="export_body_metrics_empty">Es wurden keine Einträge zu Gewicht, Körperfett oder Körpermaßen zum Exportieren gefunden.</string>
+
+    <string name="export_body_metrics_format">Format</string>
+
+    <string name="import_body_metrics_title">Gewichts- und Körperdaten importieren</string>
+
+    <string name="import_body_metrics_success">%1$d Einträge zu Gewicht, %2$d Einträge zu Körperfett und %3$d Einträge zu Körpermaßen wurden importiert.</string>
+
+    <string name="import_body_metrics_empty">Diese Datei enthält keine Einträge zu Gewicht oder Körperdaten, die importiert werden können.</string>
+
+    <string name="import_body_metrics_unsupported">Nicht unterstützte Datei. Unterstützt werden: Chompass JSON/CSV, openScale CSV oder eine generische Gewichts-CSV-Datei.</string>
+
+    <string name="import_body_metrics_malformed">Datei konnte nicht gelesen werden: %1$s</string>
+
+    <string name="import_diary_title">JSON-Datei des Ernährungstagebuchs importieren</string>
+
+    <string name="import_diary_success_count">%1$d Ernährungseinträge wurden importiert.</string>
+
+    <string name="import_diary_empty">Diese Datei enthält keine Tagebucheinträge zum Importieren.</string>
+
+    <string name="import_diary_unsupported">Nicht unterstützte Tagebuchdatei: %1$s. Verwende das JSON-Format 1.0 oder 1.1 von Fud AI, NoFUD oder Chompass.</string>
+
+    <string name="import_diary_malformed">Ungültiges JSON: %1$s</string>
+
+    <string name="import_diary_failed">Import fehlgeschlagen: %1$s</string>
+
+    <string name="export_range">Bereich</string>
+
+    <string name="export_format">Format</string>
+
+    <string name="export_action">Exportieren</string>
+
+    <string name="settings_other_nutrients">Sonstige Nährstoffe</string>
+
+    <string name="settings_other_nutrient_goals">Ziele für sonstige Nährstoffe</string>
+
+    <string name="settings_reset_defaults">Auf Standardwerte zurücksetzen</string>
+
+    <string name="copy_from">Kopieren von</string>
+
+    <string name="copy_to">Kopieren nach</string>
+
+    <string name="copy_hint">Die Lebensmittel werden nach %1$s kopiert. Die ursprünglichen Einträge bleiben unverändert.</string>
+
+    <string name="macro_protein_format">Protein: %1$s</string>
+
+    <string name="macro_carbs_format">Kohlenhydrate: %1$s</string>
+
+    <string name="macro_fat_format">Fett: %1$s</string>
+
+    <string name="nutrient_fiber_format">Ballaststoffe: %1$sg</string>
+
+    <string name="nutrient_sugar_format">Zucker: %1$sg</string>
+
+    <string name="nutrient_sat_fat_format">Gesättigte Fettsäuren: %1$sg</string>
+
+    <string name="nutrient_sodium_format">Natrium: %1$smg</string>
+
+    <string name="nutrient_potassium_format">Kalium: %1$smg</string>
+
+    <string name="nutrient_cholesterol_format">Cholesterin: %1$smg</string>
+
+    <string name="label_date">Datum</string>
+
+    <string name="label_time">Uhrzeit</string>
+
+    <string name="share_meal">Mahlzeit teilen</string>
+
+    <string name="label_total">Gesamt</string>
+
+    <string name="home_nutrient_cards">Nährwertkarten für zu Hause</string>
+
+    <string name="home_nutrients">Nährstoffe zu Hause</string>
+
+    <string name="settings_section_home_display">Startseite anzeigen</string>
+
+    <string name="settings_home_display">Startseite anpassen</string>
+
+    <string name="settings_home_display_summary">Nährstoffkarten, Aktivität, Kalorienanzeige, Chips für das Ernährungstagebuch</string>
+
+    <string name="home_display_title">Startbildschirm-Anzeige</string>
+
+    <string name="home_display_nutrient_cards">Nährstoffkarten</string>
+
+    <string name="home_display_card_count">Angezeigte Karten</string>
+
+    <string name="home_display_show_steps">Schrittzähler auf dem Startbildschirm anzeigen</string>
+
+    <string name="home_display_show_steps_desc">Optionale Karte unterhalb der Anzeige. Erfordert Health Connect oder vorinstallierte Testdaten.</string>
+
+    <string name="home_display_step_goal">Tägliches Schrittziel</string>
+
+    <string name="home_display_calorie_mode">Kalorienanzeige</string>
+
+    <string name="home_display_food_log_chips">Makros im Ernährungstagebuch</string>
+
+    <string name="home_display_needs_health">Erfordert Health Connect mit Schritt-Berechtigung</string>
+
+    <string name="home_calories_label">KALORIEN</string>
+
+    <string name="home_calorie_of_goal">von %1$d</string>
+
+    <string name="home_calorie_active_estimated_a11y">Aktive Kalorien, geschätzt anhand deines Aktivitätsniveaus</string>
+
+    <string name="home_calorie_mode_static">Statisches Ziel</string>
+
+    <string name="home_calorie_mode_add_active">Aktiven Kalorienverbrauch zum Budget hinzufügen</string>
+
+    <string name="home_calorie_mode_static_desc">Dein Kalorienziel bleibt unverändert. Bewegung hat keinen Einfluss auf das heutige Kalorienbudget.</string>
+
+    <string name="home_calorie_mode_add_active_desc">Aktive Kalorien aus Health Connect (oder deine geschätzte Aktivitätsstufe) werden zum heutigen Kalorienbudget hinzugefügt. Nimm so viel zu dir, wie du verbrennst. Stelle das Aktivitätsniveau auf den täglichen Grundwert ein, damit Trainingseinheiten nicht doppelt gezählt werden. Verbinde Health Connect unter „Einstellungen“ → „Gesundheit“, um den gemessenen Kalorienverbrauch zu erfassen.</string>
+
+    <string name="home_calorie_mode_add_active_hc_hint">Tipp: Aktiviere Health Connect, um die aktiven Kalorien der Uhr/des Smartphones anstelle der geschätzten Aktivität zu verwenden.</string>
+
+    <string name="home_nutrients_pick_count">Wähle bis zu %1$d Nährstoffe für den Startbildschirm aus.</string>
+
+    <string name="home_steps_label">Schritte</string>
+
+    <string name="home_steps_goal_format">Ziel %1$s</string>
+
+    <string name="home_active_calories_label">Aktive kcal</string>
+
+    <string name="home_active_burn_caption">%1$d aktiv</string>
+
+    <string name="home_active_burn_a11y">Aktiver Kalorienverbrauch %1$d</string>
+
+    <string name="home_active_burn_caption_progress">%1$d von %2$d aktiv</string>
+
+    <string name="home_active_burn_progress_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d</string>
+
+    <string name="home_active_burn_over">+%1$d über dem typischen Wert</string>
+
+    <string name="home_active_burn_over_a11y">Aktiver Kalorienverbrauch %1$d, %2$d mehr als an einem typischen Tag</string>
+
+    <string name="home_budget_burned_today">Heute verbrannt: %1$d kcal</string>
+
+    <string name="home_display_show_active_calories">Aktive Kalorien anzeigen</string>
+
+    <string name="home_display_show_active_calories_desc">Zeige den heutigen Aktivitätsverbrauch in der Kalorienanzeige an.</string>
+
+    <string name="home_calories_left">%1$d verbleiben</string>
+
+    <string name="home_calorie_budget_sheet_title">Das heutige Kalorienbudget</string>
+
+    <string name="home_calorie_budget_source_measured">Aktive Kalorien aus Health Connect</string>
+
+    <string name="home_calorie_budget_source_manual">Kalorien, die du manuell erfasst hast</string>
+
+    <string name="home_calorie_budget_info">So wird das heutige Budget berechnet</string>
+
+    <string name="home_calorie_budget_a11y">Budget %1$d: %2$d Ziel plus %3$d Kalorien durch körperliche Aktivität</string>
+
+    <string name="manual_active_title">Kalorienverbrauch durch körperliche Aktivität erfassen</string>
+
+    <string name="manual_active_subtitle">Füge Kalorien hinzu, die du beim Spazierengehen, Radfahren oder beim Training verbrannt hast. Sie erhöhen das heutige Budget, wenn „Aktiven Kalorienverbrauch hinzufügen“ aktiviert ist.</string>
+
+    <string name="manual_active_name_hint">Name der Aktivität (optional)</string>
+
     <string name="manual_active_kcal_hint">Verbrannte Kalorien</string>
-    <string name="manual_active_name_hint">Aktivitätsname (optional)</string>
+
     <string name="manual_active_save">Zum Budget hinzufügen</string>
-    <string name="manual_active_subtitle">Füge verbrannte Kalorien von Spaziergang, Fahrt oder Workout hinzu. Sie erweitern das heutige Budget, wenn „Aktive Verbrennung addieren“ aktiv ist.</string>
-    <string name="manual_active_title">Aktive Verbrennung eintragen</string>
-    <string name="meal_photos_add_label">Etikett hinzufügen</string>
-    <string name="meal_photos_confirm_back">Weiter bearbeiten</string>
-    <string name="meal_photos_confirm_continue">Trotzdem analysieren</string>
-    <string name="meal_photos_confirm_no_note">Noch keine Notiz. KI-Schätzungen sind ohne Mengen oder Beschreibung weniger genau. Trotzdem fortfahren?</string>
-    <string name="meal_photos_confirm_one_photo">Nur ein Foto. Ein zweites (anderer Winkel oder Nährwertetikett) hilft oft. Mit einem Foto fortfahren?</string>
-    <string name="meal_photos_confirm_sparse">Keine Notiz und nur ein Foto. Füge einen Tipp oder ein Etikett-Foto für eine bessere Schätzung hinzu, oder trotzdem fortfahren?</string>
-    <string name="meal_photos_confirm_title">Jetzt analysieren?</string>
-    <string name="meal_photos_dont_ask_note">Nicht mehr nach Notiz fragen</string>
-    <string name="meal_photos_note_section">Was ist das?</string>
-    <string name="meal_photos_skip_note">Notiz überspringen &amp; analysieren</string>
-    <string name="meal_photos_subtitle">Füge eine kurze Notiz und optional ein zweites Foto hinzu (z. B. Nährwertetikett), dann tippe auf Analysieren. KI startet erst nach deiner Bestätigung.</string>
-    <string name="meal_photos_subtitle_note_optional">Füge bei Bedarf ein weiteres Foto oder einen Tipp hinzu, dann Analysieren. KI startet erst nach deiner Bestätigung.</string>
-    <string name="meal_photos_title">Vor der Analyse</string>
-    <string name="on_device_model_accuracy_notice">Diese Modelle sind nicht so genau wie Cloud-KI. Rechne mit falschen Kalorien, fehlenden Einträgen oder schwachen Fotolesungen, besonders mit dem kleineren E2B-Modell. Cloud-Anbieter bleiben die empfohlene Standardeinstellung für zuverlässiges Protokollieren.</string>
-    <string name="on_device_model_device_notice">Getestet auf Pixel 9a (GrapheneOS). Andere Geräte, besonders günstigere oder ohne Tensor-Hardware, wurden noch nicht validiert und können langsamer sein oder nicht unterstützt werden; ein Cloud-Anbieter ist dort die sicherere Wahl.</string>
-    <string name="on_device_model_loaded">Modell geladen. Einsatzbereit.</string>
-    <string name="on_device_model_not_loaded">Nicht geladen. Erste Anfrage nach App-Start kann bis zu einer Minute dauern.</string>
-    <string name="on_device_model_privacy_notice">Läuft vollständig auf diesem Gerät. Nichts, was du tippst oder fotografierst, wird an einen Server gesendet. Beim Download wird die Modelldatei direkt von Hugging Face (%1$s) geladen, einem Drittanbieter-Host, den diese App sonst nicht nutzt.</string>
-    <string name="onboarding_api_key_non_gemini_ok">Bereit. Schnelltest ist nur für Gemini</string>
-    <string name="photo_accuracy_guide_body">Fotos lassen vieles aus. Füge wenn möglich eine kurze Notiz hinzu:\n\n• Sei konkret: Mengen, Marken und was auf dem Teller ist\n• Erwähne Öle, Dressings und fettige Saucen (oft unsichtbar)\n• Nenne die Zubereitung, wenn es wichtig ist: frittiert, gegrillt, gedämpft, hausgemacht\n• Exakte Gramm oder ein Nährwertetikett-Foto helfen am meisten</string>
-    <string name="photo_accuracy_guide_cd">So verbesserst du die Fotogenauigkeit</string>
-    <string name="photo_accuracy_guide_dismiss">Verstanden</string>
-    <string name="photo_accuracy_guide_title">Tipps für eine bessere Schätzung</string>
+
+    <string name="home_menu_manual_active">Aktiver Kalorienverbrauch</string>
+
+    <string name="home_calories_active_burn">%1$d aktiv verbrannt</string>
+
+    <string name="home_calories_goal_plus_active">Ziel %1$d + %2$d aktiv</string>
+
+    <string name="measurement_history">Messverlauf</string>
+
+    <string name="body_measurements_title">Körpermaße</string>
+
+    <string name="label_derived">Abgeleitet</string>
+
+    <string name="notif_goal_weight_title">Herzlichen Glückwunsch! 🎉</string>
+
+    <string name="notif_goal_weight_text">Du hast dein Zielgewicht erreicht.</string>
+
+    <string name="cd_selected">Ausgewählt</string>
+
+    <string name="cd_add_food">Lebensmittel hinzufügen</string>
+
+    <string name="cd_share_meal">Mahlzeit teilen</string>
+
+    <string name="cd_copy_entries">Einträge kopieren</string>
+
+    <string name="cd_dismiss_paste">Einfügen abbrechen</string>
+
+    <string name="paste_n_entries">%1$d Einträge einfügen</string>
+
+    <string name="paste_busy">Einfügen…</string>
+
+    <string name="cd_favorited">Als Favorit markiert</string>
+
+    <string name="cd_move_up">Nach oben verschieben</string>
+
+    <string name="cd_move_down">Nach unten verschieben</string>
+
+    <string name="cd_unfavorite">Als Favorit entfernen</string>
+
+    <string name="cd_log">Protokoll</string>
+
+    <string name="cd_close">Schließen</string>
+
+    <string name="cd_clear_quantity">Menge löschen</string>
+
+    <string name="cd_edit_serving">Portion bearbeiten</string>
+
+    <string name="cd_apply_serving_edit">Portionsbearbeitung übernehmen</string>
+
+    <string name="sheet_serving_custom_name">Name der Einheit</string>
+
+    <string name="sheet_serving_custom_grams">Gramm pro Einheit</string>
+
+    <string name="cd_quantity_operator">%1$s in die Menge einfügen</string>
+
+    <string name="cd_hold_to_record">Zum Aufnehmen gedrückt halten, zum Sperren antippen</string>
+
+    <string name="cd_cancel_recording">Aufnahme abbrechen</string>
+
+    <string name="cd_remove_image">Bild entfernen</string>
+
+    <string name="cd_add_image">Bild hinzufügen</string>
+
+    <string name="cd_open_camera">Kamera öffnen</string>
+
+    <string name="cd_close_camera">Kamera schließen</string>
+
+    <string name="cd_open_gallery">Galerie öffnen</string>
+
+    <string name="unit_mcg">mcg</string>
+
+    <string name="home_food_log">Ernährungsprotokoll</string>
+
+    <string name="home_menu_copy_from_day">Aus Tag kopieren</string>
+
+    <string name="home_menu_from_photos_note">Aus Fotos + Notiz</string>
+
+    <string name="copy_all">Alle kopieren</string>
+
+    <string name="section_source">Quelle</string>
+
+    <string name="copy_no_foods_on_day">An diesem Tag wurden keine Mahlzeiten erfasst</string>
+
+    <string name="copy_from_loading">Lebensmittelprotokoll wird geladen…</string>
+
+    <plurals name="copy_foods_to">
+        <item quantity="one">%1$d Lebensmittel nach %2$s kopieren</item>
+        <item quantity="other">%1$d Lebensmittel nach %2$s kopieren</item>
+    </plurals>
+
+    <string name="home_first_photo_saved">Erstes Foto gespeichert</string>
+
+    <string name="home_take_second_shot">Zweites Foto aufnehmen</string>
+
+    <string name="edit_reprocess_section">KI bitten, zu korrigieren</string>
+
+    <string name="edit_icon_picker_title">Symbol auswählen</string>
+
+    <string name="edit_icon_set_photo">Foto festlegen</string>
+
+    <string name="edit_icon_remove_photo">Foto entfernen</string>
+
+    <string name="edit_icon_photo_failed">Das Foto konnte nicht gelesen werden</string>
+
+    <string name="edit_reprocess_label">Was hat sich geändert?</string>
+
+    <string name="edit_reprocess_hint">Beschreibe die Korrektur, z. B. große Schüssel, in Butter gekocht, Hafermilch statt Kuhmilch</string>
+
+    <string name="edit_reprocess_explain">Die KI berechnet anhand deiner Notiz den Namen, die Portionsgröße, die Kalorien und die Makronährstoffe neu. Überprüfe die Änderungen und tippe anschließend auf „Speichern“.</string>
+
+    <string name="edit_reprocess_context">Aktueller Eintrag</string>
+
+    <string name="edit_reprocess_chip_portion">Kleinere Portion</string>
+
+    <string name="edit_reprocess_chip_larger">Größere Portion</string>
+
+    <string name="edit_reprocess_chip_oil">Zusätzliches Öl/Butter</string>
+
+    <string name="edit_reprocess_chip_brand">Andere Marke</string>
+
+    <string name="edit_reprocess_chip_prep">Andere Zubereitung</string>
+
+    <string name="edit_reprocess">Mit KI korrigieren</string>
+
+    <string name="edit_reprocessing">Wird korrigiert…</string>
+
+    <string name="edit_reprocessing_failed">Korrektur fehlgeschlagen</string>
+
+    <string name="edit_reprocess_diff_title">Was hat sich geändert?</string>
+
+    <string name="edit_reprocess_diff_unchanged">Es wurden keine Felder geändert. Passe deine Notiz an und versuche es erneut.</string>
+
+    <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
+
+    <string name="edit_reprocess_review_hint">Überprüfe die oben angezeigten aktualisierten Werte und tippe anschließend auf „Speichern“, um sie zu übernehmen.</string>
+
+    <string name="section_date_time">Datum und Uhrzeit</string>
+
+    <string name="section_share">Teilen</string>
+
+    <string name="placeholder_hour">Stunde</string>
+
+    <string name="placeholder_minute">Minute</string>
+
+    <string name="nutrition_label_trans_fat">Transfette</string>
+
+    <string name="nutrition_label_calcium">Kalzium</string>
+
+    <string name="nutrition_label_iron">Eisen</string>
+
+    <string name="nutrition_label_magnesium">Magnesium</string>
+
+    <string name="nutrition_label_zinc">Zink</string>
+
+    <string name="nutrition_label_vitamin_a">Vitamin A</string>
+
+    <string name="nutrition_label_vitamin_c">Vitamin C</string>
+
+    <string name="nutrition_label_vitamin_d">Vitamin D</string>
+
+    <string name="nutrition_label_vitamin_b12">Vitamin B12</string>
+
+    <string name="nutrition_label_vitamin_e">Vitamin E</string>
+
+    <string name="nutrition_label_vitamin_k">Vitamin K</string>
+
+    <string name="nutrition_label_folate">Folsäure</string>
+
+    <string name="nutrition_label_omega3">Omega-3</string>
+
+    <string name="nutrition_section_home_cards">Startseite-Karten</string>
+
+    <string name="home_nutrients_pick_four">Wähle genau vier Nährstoffe für die Übersichtszeile „Startseite“ aus.</string>
+
+    <string name="error_analysis_failed">Analyse fehlgeschlagen</string>
+
+    <string name="error_failed_input_missing">Die gespeicherte Eingabe konnte nicht wiederhergestellt werden. Bitte mache ein neues Foto.</string>
+
+    <string name="error_barcode_lookup_failed">Barcode-Suche fehlgeschlagen</string>
+
+    <string name="error_search_food_failed">Dieses Lebensmittel konnte nicht geladen werden. Bitte versuche es erneut.</string>
+
+    <string name="error_ai_suggestion">Der KI-Vorschlag konnte nicht geladen werden.</string>
+
+    <string name="finish_onboarding_hint">Schließe zuerst die Ersteinrichtung ab, um diese Mahlzeit mit deinen Tageszielen zu vergleichen.</string>
+
+    <string name="export_from">Von</string>
+
+    <string name="export_to">Bis</string>
+
+    <string name="export_no_meals">Im ausgewählten Zeitraum sind keine Mahlzeiten erfasst.</string>
+
+    <string name="export_failed">Export fehlgeschlagen.</string>
+
+    <string name="settings_tap_to_update">Zum Aktualisieren antippen</string>
+
+    <string name="settings_calc_methods">Berechnungsmethoden</string>
+
+    <string name="settings_max_tokens">Maximale Antwortlänge</string>
+
+    <string name="settings_ai_read_timeout">Zeitlimit für das Auslesen der KI</string>
+
+    <string name="settings_ai_read_timeout_value">%1$d s</string>
+
+    <string name="settings_serving_unit_mode">Erkennung der Portionsgröße</string>
+
+    <string name="settings_serving_unit_heuristics">Regeln für die Portionsgröße</string>
+
+    <string name="sheet_serving_unit_mode">Inferenz der Portionseinheit</string>
+
+    <string name="sheet_serving_unit_heuristics">Heuristiken anpassen</string>
+
+    <string name="serving_unit_mode_grams_only">Nur Gramm</string>
+
+    <string name="serving_unit_mode_grams_only_subtitle">Am schnellsten. Eingaben bleiben in Gramm, kein zusätzlicher Schritt.</string>
+
+    <string name="serving_unit_mode_heuristic">Heuristik</string>
+
+    <string name="serving_unit_mode_heuristic_subtitle">Sofort, ungefähr. Ermittelt gängige Einheiten (Scheibe, ml, EL…) anhand des Lebensmittelnamens, kein Netzwerkaufruf.</string>
+
+    <string name="serving_unit_mode_ai_call">Durch KI abgeleitet</string>
+
+    <string name="serving_unit_mode_ai_call_subtitle">Am langsamsten, am genauesten. Fragt bei Bedarf den KI-Anbieter nach der Einheit.</string>
+
+    <string name="serving_unit_heuristics_footer">Deaktiviere eine Kategorie, um die Angabe in Gramm beizubehalten, oder lege einen benutzerdefinierten Wert in Gramm pro Einheit fest (z. B. eine 0,5-Liter-Bierdose anstelle der Standardangabe von 330 ml).</string>
+
+    <string name="serving_unit_heuristics_reset">Auf Standard zurücksetzen</string>
+
+    <string name="serving_unit_heuristics_default_value">Standard: %1$s g / Einheit</string>
+
+    <string name="settings_notification_types">Benachrichtigungstypen</string>
+
+    <string name="settings_notif_food_reminders">Erinnerungen zum Ernährungstagebuch</string>
+
+    <string name="settings_notif_daily_summary">Tägliche Zusammenfassung</string>
+
+    <string name="settings_notif_weight_reminder">Erinnerung zur Gewichtserfassung</string>
+
+    <string name="settings_notif_body_fat_reminder">Erinnerung zum Körperfett</string>
+
+    <string name="settings_notif_water_reminder">Erinnerung zum Wassertrinken</string>
+
+    <string name="settings_notif_goal_alerts">Benachrichtigungen bei Erreichen des Ziels</string>
+
+    <string name="settings_notif_app_updates">App-Updates</string>
+
+    <string name="settings_notif_none_selected">Es ist kein Benachrichtigungstyp ausgewählt. Du kannst die Benachrichtigungen zulassen und alle App-Erinnerungen deaktiviert lassen.</string>
+
+    <string name="settings_calc_calorie_target">Kalorienziel für das Ziel</string>
+
+    <string name="settings_calc_maintenance">Erhalt und Zielanpassung</string>
+
+    <string name="settings_calc_macro_split">Makronährstoffverteilung</string>
+
+    <string name="settings_calc_micro_values">Mikronährstoffwerte</string>
+
+    <string name="settings_not_medical_advice">Keine medizinische Beratung</string>
+
+    <string name="settings_reset_autobalance">Auf „Auto-Balance“ zurücksetzen</string>
+
+    <string name="settings_picker_enter_custom">Benutzerdefinierten Wert eingeben…</string>
+
+    <string name="settings_picker_use_wheel">Rad verwenden</string>
+
+    <string name="settings_picker_custom_placeholder">Wert in %1$s</string>
+
+    <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IE</string>
+
+    <string name="settings_pace_loss_format">%1$s/Woche Verlust</string>
+
+    <string name="settings_pace_gain_format">%1$s/Woche Zuwachs</string>
+
+    <string name="settings_macro_pin_hint">Bis zu 2 Makronährstoffe auf das genaue Gramm genau festlegen. Nicht festgelegte Makros werden automatisch anhand der verbleibenden Kalorien ausgeglichen.</string>
+
+    <string name="settings_macro_pinned_label_format">%1$s (festgelegt)</string>
+
+    <string name="settings_macro_auto_label_format">%1$s (automatisch)</string>
+
+    <string name="vm_health_connect_needed">Health Connect erforderlich</string>
+
+    <string name="vm_not_enough_energy">Nicht genügend Energiedaten</string>
+
+    <string name="vm_adaptive_on_message">Adaptive Ziele sind aktiviert. Chompass führt einmal pro Woche eine Überprüfung durch, sobald genügend Daten zu Ernährung und Gewicht vorliegen.</string>
+
+    <string name="vm_goals_recalculated">Ziele neu berechnet</string>
+
+    <plurals name="import_add_meals_title">
+        <item quantity="one">Gemeinsame Mahlzeit hinzufügen</item>
+        <item quantity="other">%1$d gemeinsame Mahlzeiten hinzufügen</item>
+    </plurals>
+
+    <string name="import_note">Fügt deinem Protokoll die genauen Nährwerte des Absenders hinzu. Es wird kein Foto hinzugefügt.</string>
+
+    <string name="import_add_to_log">Zum Protokoll hinzufügen</string>
+
+    <string name="import_add_to_log_many_format">%1$d zum Protokoll hinzufügen · %2$d kcal</string>
+
+    <string name="voice_release_to_cancel">Zum Abbrechen loslassen</string>
+
+    <string name="voice_slide_to_cancel">‹ Zum Abbrechen wischen</string>
+
+    <string name="camera_error_open">Kamera konnte nicht geöffnet werden</string>
+
+    <string name="camera_error_save">Foto konnte nicht gespeichert werden</string>
+
+    <string name="camera_error_capture">Foto konnte nicht aufgenommen werden</string>
+
     <string name="photo_import_failed">Foto konnte nicht importiert werden</string>
-    <string name="progress_weight_raw_legend">Tägliche Wiegungen</string>
-    <string name="progress_weight_trend_legend">7-Tage-Trend</string>
-    <string name="progress_weight_trend_need_more">7-Tage-Trend braucht mindestens 2 Wiegetage</string>
-    <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/Tag</string>
-    <string name="protein_target_lbm_missing_hint">Kein Körperfett-%% gesetzt. Es wird Gesamtgewicht verwendet, bis BF%% eingetragen ist.</string>
-    <string name="protein_target_mode_g_per_kg_lbm">g/kg Magermasse</string>
-    <string name="protein_target_mode_g_per_kg_total">g/kg Körpergewicht</string>
-    <string name="protein_target_mode_grams">Gramm pro Tag</string>
-    <string name="protein_target_mode_label">Proteinziel</string>
-    <string name="settings_gemini_google_search_footer">Wenn aktiviert, kann Gemini im Web suchen, wenn es bei einer Anfrage hilft. Suchanfragen gehen an Google. Google berechnet dies deinem Gemini-API-Projekt. Bei Gemini-3-Modellen zählt jede ausgeführte Suchanfrage zum Verbrauch; bei Gemini 2.5 und älter wird pro Anfrage mit Suche abgerechnet.</string>
-    <string name="settings_meal_constituents_footer_on_device">Nicht verfügbar für On-Device-Gemma: Zutatenaufschlüsselung braucht ein stärkeres Modell. Wechsle zu einem Cloud-Anbieter, um dies zu aktivieren.</string>
-    <string name="settings_photo_note_prompt">Nach Fotonotiz fragen</string>
-    <string name="settings_photo_note_prompt_footer">Wenn aktiv, wird beim Foto-Eintrag das Notizfeld vor Analysieren hervorgehoben. Du kannst trotzdem bestätigen und ohne Notiz fortfahren.</string>
-    <string name="settings_progress_default_range">Standard-Zeitraum Fortschritt</string>
-    <string name="home_menu_search_food">Lebensmittel suchen</string>
-    <string name="food_search_sheet_title">Lebensmitteldatenbanken durchsuchen</string>
-    <string name="food_search_placeholder">z. B. griechischer Joghurt, Milch, Quark</string>
-    <string name="food_search_hint">Verpackte Lebensmittel von Open Food Facts sowie offline USDA- und Schweizer Datenbanken. Ergebnisse tragen eine Quellen-Kennzeichnung.</string>
-    <string name="food_search_empty">Tippe, um verpackte und generische Lebensmittel zu suchen</string>
-    <string name="food_search_no_results">Keine Lebensmittel gefunden. Versuche einen anderen Namen.</string>
-    <string name="food_search_source_swiss">Schweiz</string>
-    <string name="grounding_badge_swiss">Zugeordnet · Schweizer Nährwertdatenbank</string>
-    <string name="grounding_source_swiss">Schweiz</string>
-    <string name="error_search_food_failed">Dieses Lebensmittel konnte nicht geladen werden. Bitte erneut versuchen.</string>
+
+    <string name="barcode_hint">Richte die Kamera auf den Barcode</string>
+
+    <string name="barcode_off_note">Verpackte Lebensmittel verwenden Open Food Facts, sofern verfügbar.</string>
+
+    <string name="measure_neck">Hals</string>
+
+    <string name="measure_waist">Taille</string>
+
+    <string name="measure_hips">Hüften</string>
+
+    <string name="measure_chest">Brust</string>
+
+    <string name="measure_upper_arm">Oberarm</string>
+
+    <string name="measure_thigh">Oberschenkel</string>
+
+    <string name="measure_calf">Wade</string>
+
+    <string name="measure_wrist">Handgelenk</string>
+
+    <string name="derived_waist_to_hip">Verhältnis von Taille zu Hüfte</string>
+
+    <string name="derived_waist_to_height">Verhältnis von Taille zu Körpergröße</string>
+
+    <string name="derived_body_fat">Körperfett</string>
+
+    <string name="derived_frame">Körperbau</string>
+
+    <string name="frame_small">Klein</string>
+
+    <string name="frame_medium">Mittel</string>
+
+    <string name="frame_large">Groß</string>
+
+    <string name="notif_channel_weight_log">Erinnerung zur Gewichtserfassung</string>
+
+    <string name="notif_channel_weight_log_desc">Tägliche Erinnerung, sich zu wiegen und das Gewicht einzutragen.</string>
+
+    <string name="notif_channel_body_fat">Erinnerung zur Körperfettmessung</string>
+
+    <string name="notif_channel_body_fat_desc">Tägliche Erinnerung, den Körperfettwert einzutragen.</string>
+
+    <string name="notif_channel_updates">App-Updates</string>
+
+    <string name="notif_channel_updates_desc">Eine neue Version von Chompass ist im Play Store verfügbar.</string>
+
+    <string name="notif_channel_water">Erinnerung zum Wassertrinken</string>
+
+    <string name="notif_channel_water_desc">Tägliche Erinnerung, Wasser zu trinken und zu erfassen.</string>
+
+    <string name="notif_water_title">Zeit zum Trinken</string>
+
+    <string name="notif_water_text">Trink etwas Wasser und erfasse es in Chompass.</string>
+
+    <string name="notif_water_text_qty">Trink %1$s und trage es in Chompass ein.</string>
+
+    <string name="notif_water_text_next_qty">Trink %1$s · das nächste Mal in ~%2$d Min.</string>
+
+    <string name="notif_update_title">Update verfügbar</string>
+
+    <string name="notif_update_text">Eine neue Version von Chompass ist verfügbar. Zum Aktualisieren antippen.</string>
+
+    <string name="settings_calc_intro">Deine täglichen Kalorien- und Makro-Ziele werden von einer KI festgelegt. Wenn du auf „Ziele neu berechnen“ tippst – oder automatisch etwa einmal pro Woche, wenn „Adaptive Ziele“ aktiviert ist –, sendet Chompass dein Profil, die unten aufgeführten Referenzgleichungen, deine zuletzt erfassten Mahlzeiten und deinen Gewichtsverlauf an deinen KI-Anbieter. Ausgehend von diesen wissenschaftlich geprüften Formeln passt der KI-Anbieter diese an deine tatsächlichen Daten an, um deinen tatsächlichen Erhaltungsbedarf und deine Ziele zu schätzen.“</string>
+
+    <string name="settings_calc_sec_bmr">Grundumsatz (BMR)</string>
+
+    <string name="settings_calc_sec_tdee">Täglicher Energieverbrauch (TDEE)</string>
+
+    <string name="settings_calc_mifflin_name">Mifflin-St-Jeor-Formel</string>
+
+    <string name="settings_calc_mifflin_used">Standardformel für den Ruheumsatz. Wird verwendet, wenn du keinen Körperfettanteil eingegeben hast.</string>
+
+    <string name="settings_calc_mifflin_formula">Männer: 10 × Gewicht (kg) + 6,25 × Körpergröße (cm) − 5 × Alter + 5\nFrauen: 10 × Gewicht (kg) + 6,25 × Körpergröße (cm) − 5 × Alter − 161</string>
+
+    <string name="settings_calc_katch_name">Katch-McArdle-Gleichung</string>
+
+    <string name="settings_calc_katch_used">Wird automatisch verwendet, wenn du einen Körperfettanteil eingegeben hast. Genauere Berechnung für schlanke und sportliche Nutzer, da der Grundumsatz (BMR) aus der fettfreien Körpermasse statt aus dem Gesamtgewicht abgeleitet wird.</string>
+
+    <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM (kg)\nLBM = Gewicht × (1 − Körperfettanteil in %)</string>
+
+    <string name="settings_calc_tdee_name">Methode mit Aktivitätsmultiplikator</string>
+
+    <string name="settings_calc_tdee_used">TDEE = BMR × Aktivitätsmultiplikator. Der Multiplikator entspricht dem von dir gewählten Aktivitätsniveau. „Mäßig“ verwendet den Wert 1,465 (zwischen den FAO/WHO-Werten „leicht“ 1,375 und „mäßig“ 1,55) für Nutzer mit sitzender Tätigkeit, die mehrmals pro Woche Sport treiben. Dies ist der Ausgangswert für den Erhaltungsbedarf, von dem die KI ausgeht (es sei denn, „Energy Burn“ liefert einen gemessenen Wert).</string>
+
+    <string name="settings_calc_tdee_formula">Sitzend: 1,2 · Leicht: 1,375 · Mäßig: 1,465 · Aktiv: 1,55 · Sehr aktiv: 1,725 · Besonders aktiv: 1,9</string>
+
+    <string name="settings_calc_sec_home_gauge">Kalorienanzeige zu Hause</string>
+
+    <string name="settings_calc_home_gauge_name">Aktiver Kalorienverbrauch auf dem Ring zu Hause</string>
+
+    <string name="settings_calc_home_gauge_used">Mit der Anzeige zu Hause kannst du den aktiven Kalorienverbrauch zu deinem Ziel hinzufügen, die Nettoaufnahme verfolgen oder einen Kalorienverbrauch-Hinweis anzeigen. Deine geschätzte Aktivitätsstufe entspricht dem TDEE abzüglich des BMR (dem PAL-Multiplikatoranteil). „Aktive Kalorien hinzufügen“ und „Dual“ verwenden diese Schätzung, wenn Health Connect deaktiviert ist; „Netto“ erfordert den gemessenen Kalorienverbrauch über Health Connect. „Aktive Kalorien hinzufügen“ teilt dein gespeichertes Ziel in eine sitzende Basis und die heutige aktive Komponente auf, damit die Aktivität nicht doppelt gezählt wird. Stell bei „Aktive Kalorien hinzufügen“ die Aktivitätsstufe auf den alltäglichen Lebensstil ohne Training ein; „Gemessene“ oder „Geschätzte aktive Kalorien“ decken Trainingseinheiten ab, damit diese nicht auf einen hohen PAL-Wert aufgeschlagen werden.</string>
+
+    <string name="settings_calc_home_gauge_formula">geschätzte Aktivität = TDEE − BMR\nsitzendes Budget = Kalorienziel − geschätzte Aktivität\n„Add Active“-Ziel = sitzendes Budget + (gemessene oder geschätzte Aktivität)</string>
+
+    <string name="settings_calc_target_name">Erhaltung &amp;amp; Zielanpassung</string>
+
+    <string name="settings_calc_target_used">Der Erhaltungsbedarf wird anhand deines TDEE ermittelt – oder, wenn „Energieverbrauch“ aktiviert ist, anhand deines gemessenen Health Connect-Verbrauchs (ein 14-tägiger Durchschnitt aus Aktiv- und Grundumsatz) anstelle der Formelschätzung. Die KI verfeinert die Erhaltungsberechnung anhand deiner protokollierten Nahrungsaufnahme und deines Gewichtsverlaufs und wendet dann dein Ziel an: Aus einer wöchentlichen Gewichtsveränderungsrate wird ein tägliches Kaloriendefizit (Abnehmen) oder ein Kalorienüberschuss (Zunehmen).</string>
+
+    <string name="settings_calc_target_formula">1 lb Körperfett ≈ 3.500 kcal · 1 kg ≈ 7.700 kcal\nDeine wöchentliche Rate ÷ 7 wird vom Erhaltungsbedarf abgezogen (Abnehmen) oder diesem hinzugefügt (Zunehmen), um das tägliche Kalorienziel festzulegen.</string>
+
+    <string name="settings_calc_split_name">Zielwerte für Protein, Kohlenhydrate und Fett</string>
+
+    <string name="settings_calc_split_used">Die KI passt die Mengen an Protein, Kohlenhydraten und Fett an dein Kalorienziel an und orientiert sich dabei an diesen Richtwerten. Die Proteinmenge richtet sich nach deinem Aktivitätsniveau (und basiert auf der fettfreien Körpermasse, wenn ein Körperfettanteil %% festgelegt ist); die Fettmenge wird anhand des Körpergewichts festgelegt; Kohlenhydrate füllen den Rest aus. Du kannst jeden Wert sperren oder in den Einstellungen selbst bearbeiten.</string>
+
+    <string name="settings_calc_split_formula">Protein: ~0,8–2,2 g pro kg je nach Aktivitätsniveau (bei Gewichtsabnahme leicht erhöht)\nFett: ~0,6 g pro kg Körpergewicht\nKohlenhydrate: verbleibende Kalorien ÷ 4 kcal/g</string>
+
+    <string name="settings_calc_micro_name">Schätzwerte pro Mahlzeit</string>
+
+    <string name="settings_calc_micro_used">Die pro Mahlzeit angezeigten Werte für Kalorien, Makronährstoffe, Ballaststoffe, Zucker, gesättigte Fettsäuren, Cholesterin, Natrium, Kalium und andere Mikronährstoffe sind KI-generierte Schätzwerte, die anhand des von dir ausgewählten KI-Anbieters aus dem Lebensmittelbild, der Sprachaufzeichnung oder der Textbeschreibung ermittelt werden.</string>
+
+    <string name="settings_calc_sec_forecast">Gewichtsverlauf und adaptive Ziele</string>
+
+    <string name="settings_calc_forecast_name">Prognose zur Energiebilanz</string>
+
+    <string name="settings_calc_forecast_used">Fortschrittsdiagramme und die voraussichtliche Zielerreichungszeit basieren auf deinen letzten Ernährungsprotokollen und Gewichtsmessungen (bis zu 90 Tage). Wenn du an weniger als der Hälfte der Tage innerhalb dieses Zeitraums Einträge vornimmst, wird die Nahrungsaufnahme über die Kalendertage gemittelt, damit gelegentliche Tage mit besonders vielen Einträgen die Prognose nicht verzerren. Andernfalls wird die Kalorienaufnahme nur über die erfassten Tage gemittelt. Der beobachtete Gewichtsverlauf basiert auf einer robusten Median-Steigung (Theil–Sen)-Anpassung der Waageneinträge.</string>
+
+    <string name="settings_calc_forecast_formula">prognostizierte kg/Woche = (durchschnittliche tägliche Kalorien − TDEE) × 7 ÷ 7.700\nbeobachtete kg/Woche = Theil–Sen-Steigung × 7\nLückenhafte Erfassung: durchschnittliche Kalorienaufnahme ÷ Kalendertage, wenn die erfassten Tage &lt; 50 % des Zeitraums betragen</string>
+
+    <string name="settings_calc_adaptive_name">Adaptive Ziele (wöchentlich)</string>
+
+    <string name="settings_calc_adaptive_used">Wenn diese Funktion aktiviert ist, vergleicht Chompass deinen beobachteten Gewichtsverlauf mit deinem ausgewählten wöchentlichen Tempo und passt die Kalorienzufuhr um bis zu ±150 kcal/Tag an (Mindeständerung 25 kcal). Sicherheitsuntergrenze: max(BMR, 1.200 kcal). Sicherheitsobergrenze: 125 % des gemessenen oder nach der Formel berechneten Erhaltungsbedarfs. Erfordert mindestens 4 Tage mit erfassten Mahlzeiten und 3 Wiegetermine oder Energiedaten von Health Connect.</string>
+
+    <string name="settings_calc_adaptive_formula">Anpassung = (Ziel-Wochenänderung − beobachtete Wochenänderung) × 7.700 ÷ 7\nbegrenzt auf ±150 kcal/Tag</string>
+
+    <string name="settings_calc_sec_body">Schätzungen zur Körperzusammensetzung</string>
+
+    <string name="settings_calc_body_name">Aus Maßbandmessungen abgeleitete Werte</string>
+
+    <string name="settings_calc_body_used">Anhand optionaler Umfangsmessewerte lassen sich das Verhältnis von Taillen- zu Hüftumfang, das Verhältnis von Taillen- zu Körpergröße, der Körperfettanteil nach US-Navy-Standard sowie die Handgelenkgröße berechnen. Hierbei handelt es sich um grobe Schätzwerte, die mit einem Maßband ermittelt wurden. Sie haben keinen Vorrang vor dem Grundumsatz (BMR), es sei denn, du gibst in deinem Profil separat einen Körperfettanteil ein.</string>
+
+    <string name="settings_calc_body_formula">Taillen-Hüft-Verhältnis = Taillenumfang ÷ Hüftumfang\nTaillen-Körpergrößen-Verhältnis = Taillenumfang ÷ Körpergröße\nKörperfettanteil nach US-Navy: geschlechtsspezifische logarithmische Gleichungen (Halsumfang, Taillenumfang, Hüftumfang, Körpergröße)</string>
+
+    <string name="settings_not_medical_title">Keine medizinische Beratung</string>
+
+    <string name="settings_not_medical_body">Chompass ist ein Schätztool, kein klinisches Instrument. Die Schätzwerte der Formeln können abweichen (oft um ±10 % beim BMR). Konsultiere einen zugelassenen Ernährungsberater, Arzt oder Sportmediziner, bevor du wesentliche Ernährungsumstellungen vornimmst – insbesondere, wenn du unter einer Erkrankung leidest, schwanger bist oder stillst, unter 18 Jahre alt bist oder eine Essstörung behandeln lässt.</string>
+
+    <string name="settings_safety_medical">Sicherheit &amp; Medizin</string>
+
+    <string name="settings_safety_summary">Lies dies, bevor du größere Ernährungsumstellungen vornimmst</string>
+
+    <string name="settings_safety_open">Anzeigen</string>
+
+    <string name="settings_safety_hide">Ausblenden</string>
+
+    <string name="settings_safety_title">Sicherheit</string>
+
+    <string name="settings_safety_body">Chompass hilft dir dabei, deine Ernährung und dein Gewicht zu verfolgen, ist jedoch kein medizinisches Gerät und kein Ersatz für die Betreuung durch einen Arzt, Therapeuten oder Ernährungsberater.</string>
+
+    <string name="settings_safety_consult">Wenn du größere Änderungen deiner Ernährung oder deiner Körperzusammensetzung planst, sprich zunächst mit einem Arzt oder Ernährungsberater, damit dein Plan zu deiner Krankengeschichte passt.</string>
+
+    <string name="settings_safety_ed">Wenn du aktuell oder in der Vergangenheit an einer Essstörung leidest oder die Erfassung deine Ängste in Bezug auf Essen oder dein Körperbild verstärkt, unterbrich die Nutzung der App und sprich mit deinem Betreuungsteam.</string>
+
+    <string name="settings_safety_low_bf">Warnung bei niedrigem Körperfettanteil: Über einen längeren Zeitraum sehr schlank zu bleiben, kann Risiken bergen. Bei Frauen kann ein sehr niedriger Körperfettanteil die hormonelle Gesundheit und den Menstruationszyklus beeinträchtigen. Bei Männern kann ein sehr niedriger Körperfettanteil Hormone, Stimmung, Regeneration und Leistungsfähigkeit beeinträchtigen.</string>
+
+    <string name="settings_safety_escalate">Wenn du Müdigkeit, Schwindel, Schlafstörungen, Stimmungsschwankungen, Veränderungen im Menstruationszyklus oder eine verminderte Libido bemerkst, suche umgehend ärztlichen Rat auf.</string>
+
+    <string name="settings_safety_water">Flüssigkeitsziele und Trink-Erinnerungen sind Schätzwerte und stellen keine medizinische Beratung dar. Sie ersetzen niemals das Durstgefühl oder die Anweisungen deines Arztes. Trink ausreichend, auch wenn die App dich nicht daran erinnert.</string>
+
+    <string name="onboarding_safety_title">Sicherheitshinweis</string>
+
+    <string name="onboarding_safety_body">Chompass ist ein Hilfsmittel zur Nachverfolgung, kein klinisches Instrument. Wenn du in der Vergangenheit unter Essstörungen gelitten hast – oder wenn das Erfassen von Daten den Stress in Bezug auf Essen und Körperbild verstärkt –, halte inne und sprich mit einem Arzt oder Therapeuten, bevor du fortfährst.</string>
+
+    <string name="onboarding_safety_low_bf">Warnhinweis bei niedrigem Körperfettanteil: Ein zu langer Zustand mit zu geringem Körperfettanteil kann sowohl bei Frauen als auch bei Männern den Hormonhaushalt, die Regeneration und die allgemeine Gesundheit beeinträchtigen.</string>
+
+    <string name="onboarding_safety_not_medical">Dies ist kein medizinischer Rat. Die in der Formel angegebenen Schätzwerte können abweichen. Konsultiere vor wesentlichen Ernährungsumstellungen einen zugelassenen Ernährungsberater, Arzt oder Sportmediziner – insbesondere, wenn du unter einer Erkrankung leidest, schwanger bist oder stillst oder unter 18 Jahre alt bist.</string>
+
+    <string name="onboarding_safety_water">Trinkziele und Trink-Erinnerungen sind grobe Schätzungen und stellen keine medizinische Beratung dar. Durst ist ein besserer Anhaltspunkt als jede App, und dein Arzt weiß, was für dich richtig ist.</string>
+
+    <string name="onboarding_safety_settings_hint">Die vollständigen Sicherheits- und medizinischen Hinweise kannst du in den Einstellungen einsehen.</string>
+
+    <string name="onboarding_accuracy_title">Haftungsausschluss zur Genauigkeit</string>
+
+    <string name="onboarding_accuracy_body">Schätzungen anhand von Fotos und vage Mengenangaben (Handvoll, Tasse, Portion) sind oft ungenau. App-Vorschläge und insbesondere AI/LLM-Ergebnisse sind lediglich Schätzungen, keine medizinischen Fakten. Überprüfe wichtige Zahlen selbst.</string>
+
+    <string name="onboarding_privacy_title">Datenschutz &amp; dein KI-Anbieter</string>
+
+    <string name="onboarding_privacy_cloud_title">Cloud-Anbieter (Gemini, OpenAI, Claude, …)</string>
+
+    <string name="onboarding_privacy_cloud_lead">Mit einem Cloud-Anbieter verlassen diese Daten dein Gerät zu diesem Anbieter:</string>
+
+    <string name="onboarding_privacy_cloud_food">Lebensmittelfotos und Essensnotizen (Lebensmittelanalyse)</string>
+
+    <string name="onboarding_privacy_cloud_whatif">„Was wäre wenn?“-Auswirkung einer Mahlzeit, einschließlich der heutigen erfassten Tagebuchwerte</string>
+
+    <string name="onboarding_privacy_cloud_coach">Coach-Chat, einschließlich deines Profils und deiner letzten Einträge</string>
+
+    <string name="onboarding_privacy_cloud_goals">Dein Profil, wenn die KI Ziele schätzt (Plan, Neuberechnung, adaptive Ziele)</string>
+
+    <string name="onboarding_privacy_ondevice_title">On-Device Gemma 4 (vollständig privat)</string>
+
+    <string name="onboarding_privacy_ondevice_body">Lebensmittelanalyse, „Was wäre wenn?“ und Ziele-Schätzungen laufen auf diesem Gerät; nichts verlässt es. Der Coach ist on-device noch nicht verfügbar. Der Modelldownload kommt von Hugging Face.</string>
+
+    <string name="settings_accuracy_title">Genauigkeit der Schätzungen</string>
+
+    <string name="settings_accuracy_body">Schätzungen anhand von Fotos und vage Portionsangaben sind oft falsch. Vorschläge der App und insbesondere von KI-Modellen stellen keine medizinischen Fakten dar.</string>
+
+    <string name="settings_waist_cm_format">Taillenumfang %1$.0f cm</string>
+
+    <string name="settings_waist_in_format">Taillenumfang %1$.0f in</string>
+
+    <string name="export_range_today">Heute</string>
+
+    <string name="export_range_week">Diese Woche</string>
+
+    <string name="export_range_month">Dieser Monat</string>
+
+    <string name="export_range_all">Gesamter Zeitraum</string>
+
+    <string name="export_range_custom">Benutzerdefiniert</string>
+
+    <string name="vm_health_connect_needed_msg">Erlaube Chompass, deine aktiven und gesamten Kalorien in Health Connect auszulesen, und aktiviere anschließend den Energieverbrauch wieder.</string>
+
+    <string name="vm_not_enough_energy_msg">Chompass benötigt mindestens die Energiedaten der letzten 3 Tage aus Health Connect, bevor es deinen gemessenen Energieverbrauch verwenden kann.</string>
+
+    <string name="nutrient_short_sat_fat">Gesättigte Fettsäuren</string>
+
+    <string name="nutrient_short_vit_a">Vitamin A</string>
+
+    <string name="nutrient_short_vit_c">Vitamin C</string>
+
+    <string name="nutrient_short_vit_d">Vitamin D</string>
+
+    <string name="nutrient_short_b12">B12</string>
+
+    <string name="nutrient_short_vit_e">Vitamin E</string>
+
+    <string name="nutrient_short_vit_k">Vitamin K</string>
+
+    <string name="nutrient_short_omega">Omega</string>
+
+    <string name="sort_standard">Frühstück → Mittagessen → Abendessen (neueste zuletzt)</string>
+
+    <string name="sort_latest_first">Neueste Mahlzeiten zuerst</string>
+
+    <string name="home_selected_count">%1$d ausgewählt</string>
+
+    <string name="home_share_together">Gemeinsam teilen</string>
+
+    <string name="home_share_separately">Getrennt teilen</string>
+
+    <string name="copy_meal_format">%1$s kopieren</string>
+
 </resources>

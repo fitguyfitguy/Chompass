@@ -19,6 +19,7 @@ from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCALES_JSON = ROOT / "testdata" / "parity" / "locales.json"
+COPY_EXEMPTIONS_JSON = ROOT / "testdata" / "parity" / "copy_exemptions.json"
 RES = ROOT / "android" / "app" / "src" / "main" / "res"
 PLACEHOLDER_RE = re.compile(r"%(\d+\$)?[sdif]")
 
@@ -64,6 +65,24 @@ def main() -> int:
         """Format strings, URLs, and bare units/keys are legitimately identical."""
         return "%" in value or value.startswith("http") or len(value) <= 3
 
+    def load_copy_exemptions() -> tuple[set[str], dict[str, set[str]]]:
+        """Curated per-locale exemption values (see testdata/parity/copy_exemptions.json)."""
+        data = json.loads(COPY_EXEMPTIONS_JSON.read_text(encoding="utf-8"))
+        shared = set(data.get("shared", []))
+        per_locale = {
+            k: set(v) for k, v in data.items() if k not in ("version", "notes", "shared")
+        }
+        return shared, per_locale
+
+    shared_exempt, locale_exempt = load_copy_exemptions()
+
+    def is_exempt_copy(locale_id: str, value: str) -> bool:
+        return (
+            is_neutral_copy(value)
+            or value in shared_exempt
+            or value in locale_exempt.get(locale_id, set())
+        )
+
     for loc in contract["locales"]:
         folder = loc["androidValues"]
         path = RES / folder / "strings.xml"
@@ -80,7 +99,7 @@ def main() -> int:
         # and bare units are language-neutral and allowed.
         copies = sorted(
             k for k, text in strings.items()
-            if k in en and text == en[k] and not is_neutral_copy(text)
+            if k in en and text == en[k] and not is_exempt_copy(loc["id"], text)
         )
         if copies:
             copy_report.append((loc["id"], copies))

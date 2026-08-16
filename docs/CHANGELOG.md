@@ -6,7 +6,13 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **The app is now fully translated into German** (Android): the whole German pack is complete, from onboarding and settings to analysis and AI error messages, in one consistent informal voice. Community full-pack translation contributed by [@1260er](https://codeberg.org/1260er).
+
 ### Fixed
+
+- **Turning off the "Ask for a Photo Note" setting no longer asks before analyzing** (Android): with the setting off, analyzing a food photo with no note runs straight through instead of asking "continue without a note?" every time. Reported by [@1260er](https://codeberg.org/1260er).
 
 - **Searching for food no longer closes the app on incomplete products** (Android): a search hit missing one of the three macros (some Open Food Facts products only list some) used to crash the results list while it drew, closing the app to the home screen with no message. It now shows a dash for the missing value instead. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
 

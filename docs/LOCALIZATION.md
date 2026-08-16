@@ -63,14 +63,18 @@ node --test web/app/src/lib/__tests__/i18n.test.js
 | en | complete | complete (source) |
 | ru | complete | most complete non-EN (1,044 / 1,420 present) |
 | uk | complete (new, translated from scratch) | 673 keys translated; EN fallback for the rest |
-| de, es, fr | complete | partial (~600 / 1,420 present) |
+| de, es, fr | complete | **de: complete (1,494 / 1,494 + 2 plurals, community pack by 1260er, style-reviewed 2026-08-16)**; es, fr: partial (~600 / 1,420 present) |
 | ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | partial (~560–590 / 1,420 present); EN fallback for missing keys |
 
 Second phase: all locale files were swept for verbatim EN copies: they were
 translated (ru) or removed so they fall back to EN honestly (all other packs),
-and `check_android_strings.py` now enforces zero copies. ru additionally
+and `check_android_strings.py` now enforces zero copies (with a curated
+per-locale exemption list for loanwords/proper nouns in
+`testdata/parity/copy_exemptions.json`). ru additionally
 received translations for the settings/water/safety/import keys that were
-previously English-only. All hardcoded Kotlin user-facing strings (speech
+previously English-only. German joined ru at full coverage 2026-08-16 (a
+community full-pack translation, normalized to the app's informal du voice
+and the shared Protein term, reviewed against `UI_COPY_STYLE.md`). All hardcoded Kotlin user-facing strings (speech
 errors, camera flash labels, sync messages, AI provider errors) now live in
 `values/strings.xml`; `AiError` carries a `@StringRes` resolved at the UI
 layer, so provider errors show in the app language without threading a
