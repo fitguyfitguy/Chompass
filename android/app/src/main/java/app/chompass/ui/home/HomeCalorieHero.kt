@@ -303,6 +303,10 @@ internal fun CalorieHero(
                 size = mainArcSize,
                 style = Stroke(width = mainStroke, cap = StrokeCap.Round)
             )
+            // Base-boundary notch angle (degrees from the arc's left origin),
+            // when a boundary exists. Drawn after the eaten fill so the boundary
+            // stays visible even when the fill covers it.
+            var notchAngle: Float? = null
             if (shadesActive) {
                 // Single energy scale, one meaning per shade:
                 //  - resting (basal) rim grows from the left on the outer band, neutral.
@@ -367,21 +371,9 @@ internal fun CalorieHero(
                         style = Stroke(width = mainStroke, cap = StrokeCap.Round)
                     )
                 }
-                // Base-boundary notch: where your sedentary budget ends and the
-                // activity-earned zone begins.
-                val notchRad = Math.toRadians((180f + baseAngle).toDouble())
-                drawLine(
-                    color = muted,
-                    start = Offset(
-                        cx + (rIn * Math.cos(notchRad)).toFloat(),
-                        cy + (rIn * Math.sin(notchRad)).toFloat(),
-                    ),
-                    end = Offset(
-                        cx + (rOut * Math.cos(notchRad)).toFloat(),
-                        cy + (rOut * Math.sin(notchRad)).toFloat(),
-                    ),
-                    strokeWidth = 2.dp.toPx(),
-                )
+                // The base boundary is drawn after the eaten fill (see below),
+                // so it stays visible even when the fill covers it.
+                notchAngle = 180f + baseAngle
             } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
                 // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
                 // segment on the same budget axis. The teal progress fill sweeps
@@ -401,19 +393,7 @@ internal fun CalorieHero(
                         size = mainArcSize,
                         style = Stroke(width = mainStroke, cap = StrokeCap.Round)
                     )
-                    val notchRad = Math.toRadians((180f + baseSweep).toDouble())
-                    drawLine(
-                        color = muted,
-                        start = Offset(
-                            cx + (rIn * Math.cos(notchRad)).toFloat(),
-                            cy + (rIn * Math.sin(notchRad)).toFloat(),
-                        ),
-                        end = Offset(
-                            cx + (rOut * Math.cos(notchRad)).toFloat(),
-                            cy + (rOut * Math.sin(notchRad)).toFloat(),
-                        ),
-                        strokeWidth = 2.dp.toPx(),
-                    )
+                    notchAngle = 180f + baseSweep
                 }
             }
             drawArc(
@@ -425,6 +405,25 @@ internal fun CalorieHero(
                 size = mainArcSize,
                 style = Stroke(width = mainStroke, cap = StrokeCap.Round)
             )
+            // Base-boundary notch, drawn on top of the eaten fill: where your
+            // sedentary budget ends and the activity-earned zone begins. Riding
+            // above the fill keeps the boundary readable even when eaten crosses
+            // it — the fill visibly extends past the notch into the activity zone.
+            notchAngle?.let { angle ->
+                val notchRad = Math.toRadians(angle.toDouble())
+                drawLine(
+                    color = muted,
+                    start = Offset(
+                        cx + (rIn * Math.cos(notchRad)).toFloat(),
+                        cy + (rIn * Math.sin(notchRad)).toFloat(),
+                    ),
+                    end = Offset(
+                        cx + (rOut * Math.cos(notchRad)).toFloat(),
+                        cy + (rOut * Math.sin(notchRad)).toFloat(),
+                    ),
+                    strokeWidth = 2.dp.toPx(),
+                )
+            }
         }
 
         Column(
