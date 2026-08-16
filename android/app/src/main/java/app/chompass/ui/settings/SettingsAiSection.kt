@@ -2,6 +2,7 @@ package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Numbers
@@ -33,6 +34,16 @@ internal fun SettingsAiSection(
     onOpenSheet: (SettingsSheet) -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_section_ai)) {
+                // Phase 1 of the master AI-off switch (Codeberg #20): hide the
+                // coach tab wholesale without touching any data path.
+                ToggleRow(
+                    stringResource(R.string.settings_show_coach_tab),
+                    ui.coachTabEnabled,
+                    icon = Icons.Outlined.Forum,
+                    onChange = { vm.setCoachTabEnabled(it) }
+                )
+                SettingFootnote(stringResource(R.string.settings_show_coach_tab_footer))
+                HorizontalDivider()
                 SettingRow(stringResource(R.string.settings_ai_provider), stringResource(ui.selectedAI.displayNameRes), icon = Icons.Outlined.SmartToy) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
                 // Privacy disclosure per provider: cloud providers receive food/chat/
                 // profile data; only on-device Gemma 4 keeps everything local.

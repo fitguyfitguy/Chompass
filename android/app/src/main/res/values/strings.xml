@@ -982,6 +982,8 @@
     <string name="settings_ai_privacy_ollama">Ollama runs on your own computer. Nothing is sent to a cloud provider.</string>
     <string name="settings_gemini_google_search">Google Search grounding</string>
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this. On Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
+    <string name="settings_show_coach_tab">Show the coach tab</string>
+    <string name="settings_show_coach_tab_footer">Hides the coach tab from the bottom bar. The coach feature itself stays enabled; a full AI-off switch is planned.</string>
     <string name="settings_portion_clarify">Portion size check</string>
     <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction that rescales without another AI call, plus size chips (small, regular, large, restaurant-size) that re-analyze with your answer.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>

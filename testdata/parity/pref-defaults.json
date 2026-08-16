@@ -2,6 +2,7 @@
   "version": 1,
   "notes": "Shared semantic preference defaults (not a portable prefs export). Storage key spellings differ (Android protein vs PWA proteinG; addActive vs add_active). Accent default is system on both; PWA primaryAiProvider defaults to gemini; food-row chips may include fiber when selected.",
   "showWater": false,
+  "coachTabEnabled": true,
   "waterGoalMl": 2000,
   "aiFallbackEnabled": true,
   "openrouterReasoningEffort": "auto",

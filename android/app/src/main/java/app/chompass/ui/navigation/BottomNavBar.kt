@@ -36,6 +36,10 @@ val BottomTabs = listOf(
     BottomTab(ChompassRoutes.SETTINGS, Icons.Filled.Settings, R.string.nav_settings),
 )
 
+/** Codeberg #20 phase 1: drops the coach tab when the user hides it. */
+fun bottomTabs(showCoachTab: Boolean = true): List<BottomTab> =
+    if (showCoachTab) BottomTabs else BottomTabs.filter { it.route != ChompassRoutes.COACH }
+
 /** Content padding above the standard M3 navigation bar. */
 val BottomNavScrollPadding = 80.dp
 
@@ -45,9 +49,11 @@ val BottomNavDockedControlPadding = 72.dp
 fun ChompassBottomNavBar(
     currentRoute: String?,
     showAboutBadge: Boolean = false,
+    showCoachTab: Boolean = true,
     onTap: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val tabs = bottomTabs(showCoachTab)
     NavigationBar(
         modifier = modifier
             .fillMaxWidth()
@@ -55,7 +61,7 @@ fun ChompassBottomNavBar(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = 0.dp,
     ) {
-        BottomTabs.forEach { tab ->
+        tabs.forEach { tab ->
             val selected = tab.route == currentRoute
             val label = stringResource(tab.labelRes)
             NavigationBarItem(
