@@ -36,22 +36,19 @@ class FoodImageStore(context: Context) {
     /**
      * Persists [bytes] as a capped JPEG plus a 320px thumbnail. Camera/gallery
      * shots are downscaled on write so the log does not retain multi-megapixel
-     * originals on disk.
+     * originals on disk. Returns null when [bytes] cannot be decoded — raw
+     * undecodable bytes are NEVER persisted (an attacker-shared corrupt/hostile
+     * image must not fill disk or be re-run through decoders later).
      */
     fun storeBytes(bytes: ByteArray, entryId: UUID): String? = runCatching {
+        if (bytes.isEmpty()) return@runCatching null
         val filename = filenameFor(entryId)
         val fullBitmap = decodeSampled(bytes, FULL_IMAGE_MAX_DIMENSION)
-        if (fullBitmap != null) {
-            FileOutputStream(File(dir, filename)).use { out ->
-                fullBitmap.compress(Bitmap.CompressFormat.JPEG, FULL_IMAGE_JPEG_QUALITY, out)
-            }
-            runCatching { writeThumbnail(filename, fullBitmap) }
-        } else {
-            File(dir, filename).writeBytes(bytes)
-            runCatching {
-                decodeSampled(bytes, THUMBNAIL_MAX_DIMENSION)?.let { writeThumbnail(filename, it) }
-            }
+        if (fullBitmap == null) return@runCatching null
+        FileOutputStream(File(dir, filename)).use { out ->
+            fullBitmap.compress(Bitmap.CompressFormat.JPEG, FULL_IMAGE_JPEG_QUALITY, out)
         }
+        runCatching { writeThumbnail(filename, fullBitmap) }
         filename
     }.getOrNull()
 

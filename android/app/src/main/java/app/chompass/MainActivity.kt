@@ -79,10 +79,18 @@ open class MainActivity : ComponentActivity() {
             val remaining = session.remainingSlots()
             if (remaining == 0) return@registerForActivityResult
             lifecycleScope.launch(Dispatchers.IO) {
-                val imported = uris.take(remaining).mapNotNull { uri ->
-                    runCatching {
-                        contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                    }.getOrNull()?.takeIf { it.isNotEmpty() }
+                val imported = mutableListOf<ByteArray>()
+                var batchBytes = 0L
+                for (uri in uris.take(remaining)) {
+                    if (batchBytes >= MAX_IMPORT_BATCH_BYTES) break
+                    val bytes = runCatching {
+                        contentResolver.openInputStream(uri)
+                            ?.use { readBytesCapped(it, MAX_IMPORT_IMAGE_BYTES) }
+                    }.getOrNull() ?: continue
+                    if (bytes.isNotEmpty()) {
+                        imported += bytes
+                        batchBytes += bytes.size
+                    }
                 }
                 withContext(Dispatchers.Main) {
                     if (imported.isEmpty()) {
@@ -193,15 +201,42 @@ open class MainActivity : ComponentActivity() {
         }.distinct().take(10)
         if (uris.isEmpty()) return
         lifecycleScope.launch(Dispatchers.IO) {
-            val images = uris.mapNotNull { uri ->
-                runCatching {
-                    contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                }.getOrNull()?.takeIf { it.isNotEmpty() }
+            val images = mutableListOf<ByteArray>()
+            var batchBytes = 0L
+            for (uri in uris) {
+                if (batchBytes >= MAX_IMPORT_BATCH_BYTES) break
+                val bytes = runCatching {
+                    contentResolver.openInputStream(uri)
+                        ?.use { readBytesCapped(it, MAX_IMPORT_IMAGE_BYTES) }
+                }.getOrNull() ?: continue
+                if (bytes.isNotEmpty()) {
+                    images += bytes
+                    batchBytes += bytes.size
+                }
             }
             if (images.isNotEmpty()) {
                 (application as ChompassApp).container.sharedImageInbox.value = images
             }
         }
+    }
+
+    /**
+     * Reads up to [maxBytes] from [input]; null when the stream exceeds the cap.
+     * Attacker-supplied image bytes (share sheet, any app) must not be read into
+     * memory unbounded — 10 × multi-hundred-MB files would OOM the process.
+     */
+    private fun readBytesCapped(input: java.io.InputStream, maxBytes: Int): ByteArray? {
+        val out = java.io.ByteArrayOutputStream()
+        val buffer = ByteArray(16 * 1024)
+        var total = 0L
+        while (true) {
+            val read = input.read(buffer)
+            if (read == -1) break
+            total += read
+            if (total > maxBytes) return null
+            out.write(buffer, 0, read)
+        }
+        return out.toByteArray().takeIf { it.isNotEmpty() }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -410,6 +445,10 @@ open class MainActivity : ComponentActivity() {
     private companion object {
         const val FOREGROUND_SYNC_MIN_INTERVAL_MS = 60_000L
         const val PHOTO_IMPORT_TAG = "Chompass"
+        /** Per-image ingest cap (bytes) for share-in / gallery photos. */
+        const val MAX_IMPORT_IMAGE_BYTES = 25 * 1024 * 1024
+        /** Total staging cap for one share/gallery batch (10 photos ÷ cap each). */
+        const val MAX_IMPORT_BATCH_BYTES = 150 * 1024 * 1024
     }
 
     /** Handles debug extras from cold start ([onCreate]) or warm relaunch ([onNewIntent]). */
