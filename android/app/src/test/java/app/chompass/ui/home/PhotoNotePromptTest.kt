@@ -23,10 +23,18 @@ class PhotoNotePromptTest {
 
     @Test
     fun analyzeConfirm_whenSparseInput() {
-        assertTrue(needsAnalyzeConfirm(noteBlank = true, imageCount = 1))
-        assertTrue(needsAnalyzeConfirm(noteBlank = true, imageCount = 2))
-        assertTrue(needsAnalyzeConfirm(noteBlank = false, imageCount = 1))
-        assertFalse(needsAnalyzeConfirm(noteBlank = false, imageCount = 2))
+        assertTrue(needsAnalyzeConfirm(requireNote = true, noteBlank = true, imageCount = 1))
+        assertTrue(needsAnalyzeConfirm(requireNote = true, noteBlank = true, imageCount = 2))
+        assertTrue(needsAnalyzeConfirm(requireNote = true, noteBlank = false, imageCount = 1))
+        assertFalse(needsAnalyzeConfirm(requireNote = true, noteBlank = false, imageCount = 2))
+    }
+
+    @Test
+    fun analyzeConfirm_skippedWhenPhotoNotePromptOff() {
+        assertFalse(needsAnalyzeConfirm(requireNote = false, noteBlank = true, imageCount = 1))
+        assertFalse(needsAnalyzeConfirm(requireNote = false, noteBlank = true, imageCount = 2))
+        assertFalse(needsAnalyzeConfirm(requireNote = false, noteBlank = false, imageCount = 1))
+        assertFalse(needsAnalyzeConfirm(requireNote = false, noteBlank = false, imageCount = 2))
     }
 
     @Test
@@ -48,9 +56,6 @@ class PhotoNotePromptTest {
 
     private fun showDontAskAgain(skipPrompt: Boolean, skipCount: Int): Boolean =
         !skipPrompt && skipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD
-
-    private fun needsAnalyzeConfirm(noteBlank: Boolean, imageCount: Int): Boolean =
-        noteBlank || imageCount < 2
 
     private fun showTipStripDuringAnalysis(analysisReady: Boolean): Boolean = analysisReady
 
