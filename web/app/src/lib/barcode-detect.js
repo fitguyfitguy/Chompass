@@ -28,15 +28,19 @@ export const ZXING_FORMAT_MAP = {
 };
 
 /**
- * Prefer the first decoded text that normalizes to a product code (GTIN).
+ * First decoded text that normalizes to a product code (GTIN), else null.
  * Detector result order is unspecified; a frame may hold both an EAN and a 2D
  * code (e.g. jar with EAN-13 + internal factory DataMatrix) — the normalizable
- * one is the one OFF can resolve.
+ * one is the one OFF can resolve. `null` means "no lookable code in this
+ * frame": live scanning must keep going — a junk or half-read frame can never
+ * resolve via OFF, and stopping on one turns a single bad frame into a hard
+ * scan failure. Mirror of Android `pickFirstNormalizable`
+ * (`BarcodeScannerContent.kt`).
  * @param {string[]} texts
  * @returns {string | null}
  */
-function pickNormalizable(texts) {
-  return texts.find((t) => normalizeBarcodeCode(t) != null) ?? texts[0] ?? null;
+export function pickNormalizable(texts) {
+  return texts.find((t) => normalizeBarcodeCode(t) != null) ?? null;
 }
 
 // Bump when the probe logic changes to invalidate cached verdicts.

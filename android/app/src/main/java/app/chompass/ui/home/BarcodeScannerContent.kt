@@ -95,11 +95,14 @@ internal fun BarcodeScannerContent(
                             imageProxy.use { proxy ->
                                 val texts = reader.read(proxy)
                                     .mapNotNull { it.text?.trim()?.takeIf(String::isNotEmpty) }
-                                // zxing result order is unspecified; when a frame holds
-                                // both an EAN and a 2D code (jar case), prefer the one
-                                // that normalizes to a product code.
-                                texts.firstOrNull { BarcodeCodeNormalizer.normalize(it) != null }
-                                    ?: texts.firstOrNull()
+                                // Keep scanning until a frame yields a code that
+                                // normalizes to a product code: a junk or half-read
+                                // frame (internal factory codes, partial EANs) can
+                                // never resolve via OFF, and stopping on one turned
+                                // a single bad frame into a hard scan failure.
+                                // Mixed frames (EAN + internal DataMatrix, jar
+                                // case) still prefer the normalizable code.
+                                pickFirstNormalizable(texts)
                             }
                         }.getOrNull()
                         if (value != null && hasScanned.compareAndSet(false, true)) {
@@ -185,3 +188,14 @@ internal fun BarcodeScannerContent(
         }
     }
 }
+
+/**
+ * First decoded text that normalizes to a product code (GTIN/EAN family),
+ * else null. `null` means "no lookable code in this frame" — the live scanner
+ * must keep scanning and never hand a non-normalizable text to the OFF lookup
+ * (it would fail with "could not be read" and end the scan).
+ *
+ * Mirrored in the PWA (`web/app/src/lib/barcode-detect.js` `pickNormalizable`).
+ */
+internal fun pickFirstNormalizable(texts: List<String>): String? =
+    texts.firstOrNull { BarcodeCodeNormalizer.normalize(it) != null }

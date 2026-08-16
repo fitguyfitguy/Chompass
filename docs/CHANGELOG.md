@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Barcode scanning keeps trying until it reads the code** (Android + PWA): a half-read or unreadable frame no longer stops the scan with an error; the camera keeps scanning until the full code is read, so products scan more reliably. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
 ## [3.15.0] - 2026-08-15
 
 ### Added
