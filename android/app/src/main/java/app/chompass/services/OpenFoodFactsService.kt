@@ -10,13 +10,18 @@ import app.chompass.services.ai.FoodAnalysisService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
+import java.io.IOException
 import java.net.URLEncoder
 import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -178,12 +183,19 @@ object OpenFoodFactsService {
             .url(url)
             .addHeader("User-Agent", USER_AGENT)
             .build()
-        val raw = runCatching { client.newCall(request).execute() }
-            .getOrElse { return null }
-            .use { response ->
-                if (!response.isSuccessful) return null
-                response.body?.string().orEmpty()
-            }
+        // Cancellation-aware request: an abandoned search (new keystroke, sheet
+        // closed) must die with its coroutine instead of blocking an IO thread
+        // for the full 20 s connect / 60 s read timeout (Codeberg #26).
+        // [cancellableExecute] cancels the call on cancellation, so the blocking
+        // execute()/body read aborts promptly; cancellation then surfaces as
+        // CancellationException from the caller's next suspension point (the
+        // retry backoff `delay`), stopping the candidate/attempt loops.
+        val call = client.newCall(request)
+        val raw = try {
+            cancellableExecute(call)
+        } catch (e: IOException) {
+            return null
+        } ?: return null
         val json = runCatching { JSONObject(raw) }.getOrNull() ?: return null
         val products = json.optJSONArray("products") ?: return emptyList()
         return buildList {
@@ -235,6 +247,31 @@ object OpenFoodFactsService {
             }
         }
     }
+
+    /**
+     * Executes [call] and reads its body as a string; null when the HTTP
+     * status was not successful. Cancellation-aware (Codeberg #26): [Call.cancel]
+     * is registered on the continuation, so an abandoned search (new keystroke,
+     * sheet closed) closes the socket and the blocking read aborts promptly
+     * instead of occupying an IO thread for the full 20 s connect / 60 s read
+     * timeout. Runs on the caller's context — the search sheet's [search] already
+     * executes on [Dispatchers.IO]. Network failures throw [IOException];
+     * cancellation completes the caller with CancellationException.
+     */
+    private suspend fun cancellableExecute(call: Call): String? =
+        suspendCancellableCoroutine { cont ->
+            cont.invokeOnCancellation { call.cancel() }
+            try {
+                val response = call.execute()
+                val raw = response.use {
+                    if (!it.isSuccessful) return@use null
+                    it.body?.string().orEmpty()
+                }
+                cont.resume(raw)
+            } catch (e: IOException) {
+                cont.resumeWithException(e)
+            }
+        }
 
     private fun SearchHit.withScoreAgainst(queryTokens: List<String>): SearchHit {
         val hay = "$brand $name".lowercase(Locale.US)
