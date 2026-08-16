@@ -284,6 +284,33 @@ internal object ScreenshotFixtures {
         foodLogMacroChips = FoodLogMacroChip.DefaultSelection,
     )
 
+    /**
+     * Home variant where the logged macros exceed their goals, so the macro
+     * cards render the "over" status line (macro_status_over) — the surface
+     * that overflowed in German ("überschritten") and used the prefix form in
+     * Russian ("Превышение …"). Used by the de/ru locale screenshot tests.
+     */
+    fun homeOverGoalUiState(): HomeUiState = homeUiState().copy(
+        profile = profile.copy(
+            customProtein = 100,
+            customCarbs = 100,
+            customFat = 50,
+        ),
+    )
+
+    /**
+     * Home variant with a long macro status line (large left/over difference) —
+     * the ru "91,5g осталось" case that clipped at max font scale. Used by the
+     * max-font-scale locale screenshot test (auto-size regression guard).
+     */
+    fun homeLongStatusUiState(): HomeUiState = homeUiState().copy(
+        profile = profile.copy(
+            customProtein = 100,
+            customCarbs = 400, // carbs 132 < 400 → "268g осталось" (long left line)
+            customFat = 50,
+        ),
+    )
+
     fun progressUiState() = buildProgressPreviewUiState(
         profile = profile,
         weights = SampleDataGenerators.yearWeights(today = snapshotDate),

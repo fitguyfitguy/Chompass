@@ -56,9 +56,9 @@
 
     <string name="action_get_started">Loslegen</string>
 
-    <string name="action_log">Protokoll</string>
+    <string name="action_log">Erfassen</string>
 
-    <string name="action_logging">Protokollierung...</string>
+    <string name="action_logging">Erfasse...</string>
 
     <string name="action_what_if">Was wäre, wenn?</string>
 
@@ -74,7 +74,7 @@
 
     <string name="action_pin">Anheften</string>
 
-    <string name="action_retry">Erneut versuchen</string>
+    <string name="action_retry">Erneut</string>
 
     <string name="action_show">Anzeigen</string>
 
@@ -154,7 +154,7 @@
 
     <string name="macro_status_left">%1$s%2$s übrig</string>
 
-    <string name="macro_status_over">%1$s%2$s überschritten</string>
+    <string name="macro_status_over">%1$s%2$s drüber</string>
 
     <string name="macro_status_goal_reached">Ziel erreicht</string>
 
@@ -214,9 +214,9 @@
 
     <string name="meal_breakfast">Frühstück</string>
 
-    <string name="meal_lunch">Mittagessen</string>
+    <string name="meal_lunch">Mittag</string>
 
-    <string name="meal_dinner">Abendessen</string>
+    <string name="meal_dinner">Abend</string>
 
     <string name="meal_snack">Snack</string>
 
@@ -346,7 +346,7 @@
 
     <string name="speech_error_unknown_format">Sprachfehler (%1$d)</string>
 
-    <string name="nav_home">Startseite</string>
+    <string name="nav_home">Start</string>
 
     <string name="nav_progress">Fortschritt</string>
 
@@ -707,7 +707,7 @@ für dich ein</string>
 
     <string name="unit_fl_oz">fl oz</string>
 
-    <string name="water_custom_short">Benutzerdefiniert</string>
+    <string name="water_custom_short">Eigene</string>
 
     <string name="cd_log_water">Wasser protokollieren</string>
 
@@ -737,7 +737,7 @@ für dich ein</string>
 
     <string name="home_food_removed">Lebensmittel entfernt</string>
 
-    <string name="action_undo">Rückgängig machen</string>
+    <string name="action_undo">Rückgängig</string>
 
     <string name="add_food_photo_source_title">Foto hinzufügen</string>
 
@@ -1105,9 +1105,9 @@ für dich ein</string>
 
     <string name="saved_meals_title">Gespeicherte Mahlzeiten</string>
 
-    <string name="saved_meals_tab_recents">Zuletzt verwendet</string>
+    <string name="saved_meals_tab_recents">Zuletzt</string>
 
-    <string name="saved_meals_tab_frequent">Häufig verwendet</string>
+    <string name="saved_meals_tab_frequent">Häufig</string>
 
     <string name="saved_meals_tab_favorites">Favoriten</string>
 
