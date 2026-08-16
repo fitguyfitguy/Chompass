@@ -16,6 +16,7 @@
 <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} · {{ .Site.Title }}{{ end }}" />
 <meta name="twitter:description" content="{{ $desc }}" />
 <meta name="twitter:image" content="{{ $ogImage }}" />
+<link rel="icon" type="image/x-icon" href="{{ "favicon.ico" | relURL }}" />
 <link rel="icon" type="image/png" href="{{ "img/logo.png" | relURL }}" />
 <link rel="stylesheet" href="{{ "fonts/fonts.css" | relURL }}" />
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
