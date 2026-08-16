@@ -8,6 +8,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Hide the coach tab** (Android): a new switch under Settings → AI &amp; Speech removes the coach tab from the bottom bar. The coach feature itself stays enabled — a full AI-off switch is planned. Part 1 of Codeberg [#20](https://codeberg.org/fitguy/Chompass/issues/20) by [@HattDroid](https://codeberg.org/HattDroid).
+
 - **Food analysis no longer gets stuck on "Analyzing..."** (Android): food photos and notes now stop with a clear message when the AI provider stalls instead of finishing, and a result that arrived but never closed is kept instead of being left waiting forever. Closes Codeberg [#25](https://codeberg.org/fitguy/Chompass/issues/25).
 
 - **The window no longer fights the light theme choice** (Android): the window behind the app (splash aside) used to follow the system dark setting even when you picked Light in the app. It now stays neutral and lets the app's own setting decide the look, so toggling dark on the phone can't leave a dark frame around the light app. Follow-up to Codeberg [#28](https://codeberg.org/fitguy/Chompass/issues/28) by [@DontBlameMe](https://codeberg.org/DontBlameMe).

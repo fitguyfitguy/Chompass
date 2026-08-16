@@ -62,6 +62,10 @@ internal suspend fun PreferencesStore.setPreferGramsByDefaultImpl(v: Boolean) { 
 internal val PreferencesStore.appearanceModeImpl: Flow<String> get() = dataStore.data.map { it[Keys.APPEARANCE_MODE] ?: "system" }
 internal suspend fun PreferencesStore.setAppearanceModeImpl(v: String) { dataStore.edit { it[Keys.APPEARANCE_MODE] = v } }
 
+    /** Codeberg #20 (phase 1): show the coach tab in the bottom bar; default ON. */
+internal val PreferencesStore.coachTabEnabledImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.COACH_TAB_ENABLED] ?: true }
+internal suspend fun PreferencesStore.setCoachTabEnabledImpl(v: Boolean) { dataStore.edit { it[Keys.COACH_TAB_ENABLED] = v } }
+
     /** User-selected accent; legacy keys are migrated to the curated 8-color set. */
 internal val PreferencesStore.appThemeColorImpl: Flow<String> get() = dataStore.data.map {
         AppThemeColor.migrateKey(it[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY)

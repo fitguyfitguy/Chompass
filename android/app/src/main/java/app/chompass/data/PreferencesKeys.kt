@@ -92,6 +92,8 @@ internal object Keys {
         val WEIGHT_UNIT = stringPreferencesKey("weightUnit")
         val PREFER_GRAMS_BY_DEFAULT = booleanPreferencesKey("foodMeasurementPreferGramsByDefault")
         val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
+        /** Codeberg #20 (phase 1): View-only coach-tab toggle; default ON. */
+        val COACH_TAB_ENABLED = booleanPreferencesKey("coachTabEnabled")
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */

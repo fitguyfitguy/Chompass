@@ -141,12 +141,16 @@ fun ChompassNavHost(
     }
 
     CompositionLocalProvider(LocalLaunchFillEpoch provides launchFillEpoch) {
+    // Codeberg #20 phase 1: hide the coach tab (View-only) without touching any
+    // data path; the master AI-off switch will gate callAi later.
+    val coachTabEnabled by container.prefs.coachTabEnabled.collectAsState(initial = true)
     Scaffold(
         bottomBar = {
             if (showTabs) {
                 ChompassBottomNavBar(
                     currentRoute = currentRoute,
                     showAboutBadge = updateAvailable,
+                    showCoachTab = coachTabEnabled,
                     onTap = { target ->
                         if (target == currentRoute) return@ChompassBottomNavBar
                         // Tapping HOME (the start destination) needs popBackStack
@@ -194,7 +198,19 @@ fun ChompassNavHost(
                     )
                 }
                 composable(ChompassRoutes.PROGRESS) { ProgressScreen(container = container) }
-                composable(ChompassRoutes.COACH) { CoachScreen(container = container) }
+                composable(ChompassRoutes.COACH) {
+                    if (coachTabEnabled) {
+                        CoachScreen(container = container)
+                    } else {
+                        // Deep link or stale back stack with the tab off: land Home.
+                        LaunchedEffect(Unit) {
+                            nav.navigate(ChompassRoutes.HOME) {
+                                popUpTo(ChompassRoutes.HOME) { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+                }
                 composable(ChompassRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
                 composable(ChompassRoutes.SETTINGS_PERSONAL) {
                     PersonalSettingsScreen(

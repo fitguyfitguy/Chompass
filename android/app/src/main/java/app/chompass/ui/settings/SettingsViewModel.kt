@@ -108,6 +108,8 @@ data class SettingsUiState(
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
     val onDeviceAvailable: Boolean = false,
     val appearanceMode: String = "system",
+    /** Codeberg #20 phase 1: show the coach tab in the bottom bar; default ON. */
+    val coachTabEnabled: Boolean = true,
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
     val glassBlurEnabled: Boolean = false,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
@@ -230,6 +232,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val masked = maskKey(container.keyStore.apiKey(provider))
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val appearance = container.prefs.appearanceMode.first()
+            val coachTabEnabled = container.prefs.coachTabEnabled.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
             val glassBlurEnabled = container.prefs.glassBlurEnabled.first()
             val fixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
@@ -311,6 +314,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 speechApiKeyMasked = speechMasked,
                 onDeviceAvailable = onDeviceAvailable,
                 appearanceMode = appearance,
+                coachTabEnabled = coachTabEnabled,
                 appThemeColor = appThemeColor,
                 glassBlurEnabled = glassBlurEnabled,
                 fixedLauncherIcon = fixedLauncherIcon,
@@ -624,6 +628,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAppearanceMode(mode: String) = updateUiPref(
         { container.prefs.setAppearanceMode(mode) },
         { copy(appearanceMode = mode) },
+    )
+
+    fun setCoachTabEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setCoachTabEnabled(v) },
+        { copy(coachTabEnabled = v) },
     )
 
     fun setAppThemeColor(themeColor: AppThemeColor) = updateUiPref(
