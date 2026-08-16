@@ -47,6 +47,7 @@ status is missing or stale, fix it (release checklist step 3).
 | [`LOCAL_ENDPOINT_TRUST_DESIGN.md`](LOCAL_ENDPOINT_TRUST_DESIGN.md) | Shipped 3.9.0 (cleartext + user-CA trust) |
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | Gemma on-device: production Tiers A/B + debug extras |
 | [`DEMO_HERO_FIREFOX.md`](DEMO_HERO_FIREFOX.md) | **OPEN**: Firefox/embedded demo reload loop |
+| [`SECURITY_HARDENING_PLAN.md`](SECURITY_HARDENING_PLAN.md) | Implemented 2026-08-16: security/privacy audit + hardening (debug-extras gate, deep-link caps, image bounds, prompt-injection delimiters, PWA CSP); rehearsal checklist § 5 |
 
 ## Benchmarks
 
