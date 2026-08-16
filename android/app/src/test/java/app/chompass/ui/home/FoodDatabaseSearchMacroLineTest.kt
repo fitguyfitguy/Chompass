@@ -13,7 +13,6 @@ import org.junit.Test
  * LazyColumn drew the row, closing the app to the launcher with no dialog.
  */
 class FoodDatabaseSearchMacroLineTest {
-
     private fun result(
         protein: Double? = null,
         carbs: Double? = null,
