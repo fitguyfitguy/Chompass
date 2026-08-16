@@ -27,4 +27,31 @@ object ChompassRoutes {
     fun syncRoute(from: String) = "settings/sync?from=$from"
 
     val bottomTabs = listOf(HOME, PROGRESS, COACH, SETTINGS)
+
+    /**
+     * Destinations reachable via `chompass://go/<dest>` (notification taps, deep
+     * links). Only exactly these plain routes: arg-routed sub-screens
+     * (`settings/water?from=…`) cannot be built from a path-only `go` link, and an
+     * arbitrary string passed to `nav.navigate()` throws — so unknown destinations
+     * are ignored instead of navigated (any app can fire a VIEW intent).
+     */
+    fun isGoDestination(dest: String): Boolean = dest in GO_DESTINATIONS
+
+    private val GO_DESTINATIONS = setOf(
+        HOME,
+        PROGRESS,
+        COACH,
+        SETTINGS,
+        SETTINGS_PERSONAL,
+        SETTINGS_GOALS,
+        SETTINGS_APP,
+        SETTINGS_AI,
+        SETTINGS_DATA,
+        OPTIONAL_NUTRIENT_GOALS,
+        HOME_DISPLAY,
+        CUSTOMIZE_PROGRESS,
+        CALCULATION_METHODS,
+        BODY_MEASUREMENTS,
+        SETTINGS_FOOD,
+    )
 }

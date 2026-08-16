@@ -32,6 +32,13 @@ object MealShare {
     /** Versions accepted on decode. New encodes always stamp [VERSION]. */
     private val SUPPORTED_IMPORT_VERSIONS = setOf(1, 2)
 
+    // Import caps: a `d` payload is attacker-controlled (any app / web page can
+    // fire a VIEW intent), so bound decode size and row counts before parsing.
+    const val MAX_ENCODED_PAYLOAD = 64 * 1024
+    const val MAX_MEALS = 50
+    const val MAX_CONSTITUENTS = 20
+    const val MAX_SERVING_OPTIONS = 8
+
     fun link(entries: List<FoodEntry>): String {
         val meals = JSONArray()
         entries.forEach { meals.put(mealJson(it)) }
@@ -146,6 +153,9 @@ object MealShare {
     fun meals(uri: Uri): List<FoodEntry>? {
         if (!handles(uri)) return null
         val encoded = uri.getQueryParameter("d") ?: return null
+        // Bound the payload before decoding: a crafted link must not force a
+        // multi-MB Base64 decode + parse (ANR/OOM on the caller).
+        if (encoded.length > MAX_ENCODED_PAYLOAD) return null
         val json = runCatching {
             val bytes = Base64.getUrlDecoder().decode(encoded)
             JSONObject(String(bytes, Charsets.UTF_8))
@@ -153,7 +163,7 @@ object MealShare {
         val version = json.optInt("v", 1)
         if (version !in SUPPORTED_IMPORT_VERSIONS) return null
         val mealsArr = json.optJSONArray("meals") ?: return null
-        val entries = (0 until mealsArr.length()).mapNotNull { i ->
+        val entries = (0 until mealsArr.length().coerceAtMost(MAX_MEALS)).mapNotNull { i ->
             mealsArr.optJSONObject(i)?.let(::entryFrom)
         }
         return entries.ifEmpty { null }
@@ -163,67 +173,96 @@ object MealShare {
         if (arr == null) return emptyList()
         return (0 until arr.length()).mapNotNull { i ->
             val o = arr.optJSONObject(i) ?: return@mapNotNull null
-            val unit = o.optString("unit").takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+            val unit = InputSanitizer.text(o.optString("unit"), InputSanitizer.MAX_UNIT_LENGTH)
+                ?: return@mapNotNull null
             if (!o.has("gramsPerUnit")) return@mapNotNull null
-            val grams = o.optDouble("gramsPerUnit")
+            val grams = InputSanitizer.gramsPerUnit(o.optDouble("gramsPerUnit"))
+                ?: return@mapNotNull null
             if (grams <= 0) return@mapNotNull null
             ServingUnitOption(
                 unit = unit,
                 gramsPerUnit = grams,
-                quantity = if (o.has("quantity") && !o.isNull("quantity")) o.optDouble("quantity") else null,
+                quantity = if (o.has("quantity") && !o.isNull("quantity")) {
+                    InputSanitizer.quantity(o.optDouble("quantity"))
+                } else {
+                    null
+                },
             )
-        }
+        }.take(MAX_SERVING_OPTIONS)
     }
 
     private fun parseConstituents(arr: JSONArray?): List<FoodConstituent> {
         if (arr == null) return emptyList()
         return (0 until arr.length()).mapNotNull { i ->
             val d = arr.optJSONObject(i) ?: return@mapNotNull null
-            val name = d.optString("name").takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+            val name = InputSanitizer.text(d.optString("name"), InputSanitizer.MAX_NAME_LENGTH)
+                ?: return@mapNotNull null
             fun dbl(k: String): Double? = if (d.has(k) && !d.isNull(k)) d.optDouble(k) else null
             FoodConstituent(
                 name = name,
-                calories = d.optInt("calories"),
-                protein = d.optDouble("protein", 0.0),
-                carbs = d.optDouble("carbs", 0.0),
-                fat = d.optDouble("fat", 0.0),
-                servingSizeGrams = d.optDouble("servingSizeGrams", 0.0),
-                emoji = if (d.has("emoji")) d.optString("emoji") else null,
+                calories = InputSanitizer.calories(d.optInt("calories")),
+                protein = InputSanitizer.nutrient(dbl("protein")) ?: 0.0,
+                carbs = InputSanitizer.nutrient(dbl("carbs")) ?: 0.0,
+                fat = InputSanitizer.nutrient(dbl("fat")) ?: 0.0,
+                servingSizeGrams = InputSanitizer.servingGrams(dbl("servingSizeGrams")) ?: 0.0,
+                emoji = if (d.has("emoji")) InputSanitizer.emoji(d.optString("emoji")) else null,
                 servingUnitOptions = parseServingUnits(d.optJSONArray("servingUnitOptions")),
-                selectedServingUnit = if (d.has("selectedServingUnit")) d.optString("selectedServingUnit") else null,
-                selectedServingQuantity = dbl("selectedServingQuantity"),
+                selectedServingUnit = if (d.has("selectedServingUnit")) {
+                    InputSanitizer.text(d.optString("selectedServingUnit"), InputSanitizer.MAX_UNIT_LENGTH)
+                } else {
+                    null
+                },
+                selectedServingQuantity = InputSanitizer.quantity(dbl("selectedServingQuantity")),
             )
-        }
+        }.take(MAX_CONSTITUENTS)
     }
 
     private fun entryFrom(d: JSONObject): FoodEntry? {
-        val name = d.optString("name").takeIf { it.isNotEmpty() } ?: return null
+        val name = InputSanitizer.text(d.optString("name"), InputSanitizer.MAX_NAME_LENGTH)
+            ?: return null
         if (!d.has("calories")) return null
         fun dbl(k: String): Double? = if (d.has(k) && !d.isNull(k)) d.optDouble(k) else null
         val meal = runCatching { MealType.valueOf(d.optString("mealType").uppercase()) }
             .getOrDefault(MealType.currentMeal)
         return FoodEntry(
             name = name,
-            calories = d.optInt("calories"),
-            protein = d.optDouble("protein", 0.0),
-            carbs = d.optDouble("carbs", 0.0),
-            fat = d.optDouble("fat", 0.0),
-            emoji = if (d.has("emoji")) d.optString("emoji") else null,
+            calories = InputSanitizer.calories(d.optInt("calories")),
+            protein = InputSanitizer.nutrient(dbl("protein")) ?: 0.0,
+            carbs = InputSanitizer.nutrient(dbl("carbs")) ?: 0.0,
+            fat = InputSanitizer.nutrient(dbl("fat")) ?: 0.0,
+            emoji = if (d.has("emoji")) InputSanitizer.emoji(d.optString("emoji")) else null,
             source = FoodSource.MANUAL,
             mealType = meal,
-            sugar = dbl("sugar"), addedSugar = dbl("addedSugar"), fiber = dbl("fiber"),
-            saturatedFat = dbl("saturatedFat"), monounsaturatedFat = dbl("monounsaturatedFat"),
-            polyunsaturatedFat = dbl("polyunsaturatedFat"), cholesterol = dbl("cholesterol"),
-            sodium = dbl("sodium"), potassium = dbl("potassium"), transFat = dbl("transFat"),
-            calcium = dbl("calcium"), iron = dbl("iron"), magnesium = dbl("magnesium"), zinc = dbl("zinc"),
-            vitaminA = dbl("vitaminA"), vitaminC = dbl("vitaminC"), vitaminD = dbl("vitaminD"),
-            vitaminB12 = dbl("vitaminB12"), vitaminE = dbl("vitaminE"), vitaminK = dbl("vitaminK"),
-            folate = dbl("folate"), omega3 = dbl("omega3"),
-            servingSizeGrams = dbl("servingSizeGrams"),
+            sugar = InputSanitizer.micro(dbl("sugar")), addedSugar = InputSanitizer.micro(dbl("addedSugar")),
+            fiber = InputSanitizer.micro(dbl("fiber")),
+            saturatedFat = InputSanitizer.micro(dbl("saturatedFat")),
+            monounsaturatedFat = InputSanitizer.micro(dbl("monounsaturatedFat")),
+            polyunsaturatedFat = InputSanitizer.micro(dbl("polyunsaturatedFat")),
+            cholesterol = InputSanitizer.micro(dbl("cholesterol")),
+            sodium = InputSanitizer.micro(dbl("sodium")), potassium = InputSanitizer.micro(dbl("potassium")),
+            transFat = InputSanitizer.micro(dbl("transFat")),
+            calcium = InputSanitizer.micro(dbl("calcium")), iron = InputSanitizer.micro(dbl("iron")),
+            magnesium = InputSanitizer.micro(dbl("magnesium")), zinc = InputSanitizer.micro(dbl("zinc")),
+            vitaminA = InputSanitizer.micro(dbl("vitaminA")),
+            vitaminC = InputSanitizer.micro(dbl("vitaminC")),
+            vitaminD = InputSanitizer.micro(dbl("vitaminD")),
+            vitaminB12 = InputSanitizer.micro(dbl("vitaminB12")),
+            vitaminE = InputSanitizer.micro(dbl("vitaminE")),
+            vitaminK = InputSanitizer.micro(dbl("vitaminK")),
+            folate = InputSanitizer.micro(dbl("folate")), omega3 = InputSanitizer.micro(dbl("omega3")),
+            servingSizeGrams = InputSanitizer.servingGrams(dbl("servingSizeGrams")),
             servingUnitOptions = parseServingUnits(d.optJSONArray("servingUnitOptions")),
-            selectedServingUnit = if (d.has("selectedServingUnit")) d.optString("selectedServingUnit") else null,
-            selectedServingQuantity = dbl("selectedServingQuantity"),
-            customNote = if (d.has("customNote")) d.optString("customNote") else null,
+            selectedServingUnit = if (d.has("selectedServingUnit")) {
+                InputSanitizer.text(d.optString("selectedServingUnit"), InputSanitizer.MAX_UNIT_LENGTH)
+            } else {
+                null
+            },
+            selectedServingQuantity = InputSanitizer.quantity(dbl("selectedServingQuantity")),
+            customNote = if (d.has("customNote")) {
+                InputSanitizer.text(d.optString("customNote"), InputSanitizer.MAX_NOTE_LENGTH)
+            } else {
+                null
+            },
             constituents = parseConstituents(d.optJSONArray("constituents")),
         )
     }
