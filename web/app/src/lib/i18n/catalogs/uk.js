@@ -135,7 +135,7 @@ export const uk = Object.freeze({
   "progress.range_3m": "3М",
   "progress.range_6m": "6М",
   "progress.range_1y": "1Р",
-  "progress.range_all": "Увесь час",
+  "progress.range_all": "Все",
   "progress.weight_raw_legend": "Щоденні зважування",
   "progress.weight_trend_legend": "Тренд за 7 днів",
   "progress.weight_trend_need_more": "Для тренду за 7 днів потрібно щонайменше 2 дні зважувань",

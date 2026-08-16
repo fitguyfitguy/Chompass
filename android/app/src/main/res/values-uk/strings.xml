@@ -418,7 +418,7 @@
     <string name="coach_chip_doing_this_week">Як у мене справи цього тижня?</string>
     <string name="coach_chip_log_advice">Порада на основі мого журналу?</string>
     <string name="progress_range_year">1Р</string>
-    <string name="progress_range_all">Увесь час</string>
+    <string name="progress_range_all">Все</string>
     <string name="progress_weight_section">Вага</string>
     <string name="progress_log_weight">Внести вагу</string>
     <string name="progress_stat_current">Поточна</string>

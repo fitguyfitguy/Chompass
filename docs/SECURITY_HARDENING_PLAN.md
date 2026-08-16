@@ -1,4 +1,4 @@
-Status: implemented (2026-08-16, commits `a05ec03`…`06e5fa1`) — see § Work plan status below for per-phase state.
+Status: shipped in 3.16.0 (2026-08-16, commits `a05ec03`…`06e5fa1`) — see § Work plan status below for per-phase state.
 
 # Security, integrity & privacy hardening plan
 
@@ -265,7 +265,7 @@ Phase 6 verification below. No commit attributes to AI.
 | 3 | ✅ done | 25 MB/image + 150 MB/batch ingest caps; bounds-first decode in `AiImageBytes` + `BarcodeImageDecoder`; `FoodImageStore` no longer persists undecodable raw bytes; `InputSanitizerTest` |
 | 4 | ✅ done | `<user_data>`/`<external_data>` delimiters + delimiter-token neutralization in food-analysis, OFF-context, coach prompts; `FoodJsonParser` clamping/scubbing; `FoodJsonParserSecurityTest` + `OffPromptContextTest`; benchmark-status log entry #24 |
 | 5 | ✅ done | PRIVACY.md network table now lists weather + on-device STT default + background Health-Connect wording; release netsec drops `10.0.2.2`; WebDAV username comment; PWA meal-share caps mirrored + parity tests; PWA meta CSP |
-| 6 | ✅ partial | `release:check-parity` ✓, full `testDebugUnitTest` ✓, `lintRelease` ✓ no new errors (baseline 989 `MissingTranslation` + Compose warnings pre-exist; no new strings added for that reason). **Not run:** device rehearsal (per maintainer, no device available), dep-audit CI job, server-header CSP, custom-endpoint settings copy (deferred: would add 16× localized strings; documented in PRIVACY.md instead). |
+| 6 | ✅ done | `release:check-parity` ✓, full `testDebugUnitTest` ✓, `lintRelease` ✓ no new errors (baseline 989 `MissingTranslation` + Compose warnings pre-exist; no new strings added for that reason). **Device rehearsal RUN 2026-08-16** on a Pixel 9a via Windows adb (`scripts/release_verify_device.sh`): P1-1 release-inert (vision-verified identical home before/after extras), P1-1 debug-active, P2-1 garbage ignored + `go/progress` navigates (uiautomator), P2-2 oversized refused (explicit-component delivery), P2-3 40 MB share-in skipped, de-DE smoke, all without crash. Not run: dep-audit CI job, server-header CSP, custom-endpoint settings copy (deferred: would add 16× localized strings; documented in PRIVACY.md instead). |
 
 ### Verification results
 
@@ -280,7 +280,9 @@ Phase 6 verification below. No commit attributes to AI.
 
 ### Manual rehearsal checklist (device, when available)
 
-Install the release APK (or a debug build standing in for release) and verify:
+Automated: `./scripts/release_verify_device.sh` (debug) and
+`./scripts/release_verify_device.sh --package app.chompass` (release APK) cover all four
+items below; run with `--stay-awake` so the screen doesn't lock mid-run. Manual equivalents:
 
 ```
 # 1. Debug extras inert in release (P1-1)
