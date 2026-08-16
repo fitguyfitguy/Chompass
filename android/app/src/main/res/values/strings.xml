@@ -1212,6 +1212,7 @@
     <string name="ai_error_image_conversion_failed">Failed to process the image.</string>
     <string name="ai_error_network_format">Network error: %1$s</string>
     <string name="ai_error_invalid_response">Could not understand the AI response. Please try again.</string>
+    <string name="ai_error_timeout">The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI &amp; Speech.</string>
     <string name="ai_error_invalid_url">Invalid API URL. Check your provider settings.</string>
     <string name="ai_error_on_device_model_not_downloaded">On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.</string>
     <string name="ai_error_on_device_unsupported_device">This device doesn\'t meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.</string>

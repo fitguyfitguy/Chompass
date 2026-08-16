@@ -1,13 +1,13 @@
 package app.chompass.services.ai
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Retries transient overload (503/529) with 1s/2s/4s exponential backoff (same as iOS).
@@ -71,9 +71,12 @@ object RetryPolicy {
     }
 }
 
-private suspend fun Call.await(): Response = suspendCoroutine { cont ->
+private suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
     enqueue(object : okhttp3.Callback {
         override fun onFailure(call: Call, e: IOException) = cont.resumeWithException(e)
         override fun onResponse(call: Call, response: Response) = cont.resume(response)
     })
+    // Abort the socket when the caller cancels (watchdog timeout, sheet dismiss)
+    // so a stalled stream does not keep an IO thread or connection alive.
+    cont.invokeOnCancellation { cancel() }
 }
