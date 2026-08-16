@@ -1,5 +1,6 @@
 package app.chompass.services
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,6 +17,9 @@ import zxingcpp.BarcodeReader
  */
 object BarcodeImageDecoder {
     private const val MAX_IMAGES = 10
+    /** Decode cap: barcodes do not need more resolution; bounds-first sampling
+     *  prevents a hostile huge-dimension image from being fully decoded (OOM). */
+    private const val BARCODE_MAX_DIMENSION = 4096
     private val readerMutex = Mutex()
 
     private val reader by lazy {
@@ -54,9 +58,8 @@ object BarcodeImageDecoder {
     suspend fun decodeOne(imageBytes: ByteArray): List<String> {
         if (imageBytes.isEmpty()) return emptyList()
         return runCatching {
-            val bitmap = withContext(Dispatchers.Default) {
-                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-            } ?: return emptyList()
+            val bitmap = withContext(Dispatchers.Default) { decodeSampled(imageBytes) }
+                ?: return emptyList()
             try {
                 readerMutex.withLock {
                     reader.read(bitmap)
@@ -67,5 +70,22 @@ object BarcodeImageDecoder {
                 bitmap.recycle()
             }
         }.getOrElse { emptyList() }
+    }
+
+    /** Bounds-first sampled decode — never full-decodes an oversized image. */
+    private fun decodeSampled(imageBytes: ByteArray): Bitmap? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, bounds)
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+        val longest = maxOf(bounds.outWidth, bounds.outHeight)
+        if (longest <= BARCODE_MAX_DIMENSION) {
+            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        }
+        var sample = 1
+        while (longest / (sample * 2) >= BARCODE_MAX_DIMENSION) {
+            sample *= 2
+        }
+        val options = BitmapFactory.Options().apply { inSampleSize = sample }
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, options)
     }
 }
