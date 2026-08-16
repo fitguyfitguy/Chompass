@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.AppContainer
+import app.chompass.BuildConfig
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
@@ -25,6 +26,11 @@ import java.time.ZoneId
  * MainActivity:
  *   adb shell am start -n app.chompass/.MainActivity --ez seed_test_data true
  *   adb shell am start -n app.chompass/.MainActivity --ez restore_real_data true
+ *
+ * All entry points are dead in release builds (the intent extras are gated on
+ * BuildConfig.DEBUG in MainActivityDebugExtras, and [snapshotRealDataIfNeeded] /
+ * [restore] no-op here at the data layer too) — an unprivileged app must never be
+ * able to overwrite the diary via exported-activity extras.
  *
  * `seed` snapshots the live state into a single backup blob, disables Health Connect so the
  * synthetic entries can't sync upstream, then writes 365 days of food + weights + body fat +
@@ -260,6 +266,7 @@ class TestDataSeeder(private val container: AppContainer) {
      *  Re-seeds (e.g. switching from the 30-day to the 2-year dataset) must not
      *  overwrite the original backup, or restore would put seed data back. */
     private suspend fun snapshotRealDataIfNeeded() {
+        if (!BuildConfig.DEBUG) return
         if (container.prefs.testSeedBackupJson.first() != null) return
         val backup = SeedBackup(
             entriesJson = json.encodeToString(
@@ -285,6 +292,9 @@ class TestDataSeeder(private val container: AppContainer) {
     }
 
     suspend fun restore() {
+        // Never reachable from release builds (extras gated upstream); belt-and-
+        // suspenders so the real-diary restore primitive cannot run in a release APK.
+        if (!BuildConfig.DEBUG) return
         val raw = container.prefs.testSeedBackupJson.first() ?: return
         val backup = runCatching {
             json.decodeFromString(SeedBackup.serializer(), raw)
