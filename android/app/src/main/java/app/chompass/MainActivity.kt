@@ -43,6 +43,7 @@ import app.chompass.services.InAppReview
 import app.chompass.services.health.HealthConnectDiagnostics
 import app.chompass.ui.home.ImportSharedMealSheet
 import app.chompass.ui.navigation.ChompassNavHost
+import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.ChompassTheme
 import app.chompass.ui.theme.widgetAccentColors
@@ -120,7 +121,12 @@ open class MainActivity : ComponentActivity() {
                     handleLaunchDestination(uri, intent)
                     return
                 }
-                MealShare.meals(uri)?.let { pendingSharedMeals = it }
+                // Decode off the main thread: `d` is attacker-controlled (any app
+                // can fire a VIEW intent), so a crafted link must not block
+                // onCreate/onNewIntent. MealShare caps payload size + row counts.
+                lifecycleScope.launch(Dispatchers.Default) {
+                    MealShare.meals(uri)?.let { pendingSharedMeals = it }
+                }
             }
         }
     }
@@ -133,6 +139,10 @@ open class MainActivity : ComponentActivity() {
     private fun handleLaunchDestination(uri: android.net.Uri, intent: Intent) {
         if (uri.scheme != "chompass" || uri.host != "go") return
         val dest = uri.path?.removePrefix("/")?.takeIf { it.isNotBlank() } ?: return
+        // Whitelist only known routes: `nav.navigate(dest)` throws for unknown
+        // destinations and arg-routed subscreens can't be built from a path-only
+        // link — an attacker firing `chompass://go/<garbage>` must not crash us.
+        if (!ChompassRoutes.isGoDestination(dest)) return
         intent.data = null // consume: one navigation per tap
         (application as ChompassApp).container.launchDestinationInbox.value = dest
     }
