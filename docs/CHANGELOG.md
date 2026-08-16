@@ -8,6 +8,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Food analysis no longer gets stuck on "Analyzing..."** (Android): food photos and notes now stop with a clear message when the AI provider stalls instead of finishing, and a result that arrived but never closed is kept instead of being left waiting forever. Closes Codeberg [#25](https://codeberg.org/fitguy/Chompass/issues/25).
+
 - **Searching for food no longer closes the app while you type** (Android): a food search that is replaced by a new one now stops cleanly instead of piling up background requests, and offline food-database lookups no longer run at the same time, so the search sheet stays stable. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
 
 - **Barcode scanning keeps trying until it reads the code** (Android + PWA): a half-read or unreadable frame no longer stops the scan with an error; the camera keeps scanning until the full code is read, so products scan more reliably. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).

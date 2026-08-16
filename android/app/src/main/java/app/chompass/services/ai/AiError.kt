@@ -23,6 +23,10 @@ sealed class AiError(
         formatArgs = arrayOf(cause.localizedMessage.orEmpty()),
     )
     object InvalidResponse : AiError("Could not understand the AI response. Please try again.", messageRes = R.string.ai_error_invalid_response)
+    object Timeout : AiError(
+        "The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI & Speech.",
+        messageRes = R.string.ai_error_timeout,
+    )
     class Api(raw: String, @StringRes messageRes: Int = 0) : AiError(raw, messageRes = messageRes)
     class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.", messageRes = R.string.ai_error_invalid_url)
     object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.", messageRes = R.string.ai_error_on_device_model_not_downloaded)

@@ -28,6 +28,9 @@ class FoodPartialJsonAssembler {
 
     fun current(): PartialFoodAnalysis? = lastEmitted
 
+    /** Full raw text buffered so far — used to recover a parseable response when a stream stalls. */
+    fun snapshotText(): String = buffer.toString()
+
     internal fun extract(text: String): PartialFoodAnalysis? {
         val jsonSpan = FoodJsonParser.extractJson(text)
         if (jsonSpan.isBlank() || !jsonSpan.contains('{')) return null

@@ -26,8 +26,10 @@ import app.chompass.ui.home.EntryAnalysisPhase
 import app.chompass.ui.home.FoodAnalysisProgress
 import app.chompass.services.health.HealthEnergySummary
 import app.chompass.services.ondevice.OnDeviceLlmGateway
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import java.util.Locale
@@ -77,9 +79,12 @@ class FoodAnalysisService(
     private val onDeviceGateway: OnDeviceLlmGateway? = null,
     internal val callAiDelegate: (suspend (prompt: String, imageBytesList: List<ByteArray>, op: String) -> String)? = null,
     internal val inferenceModeForTest: ServingUnitInferenceMode? = null,
+    internal val watchdogSecondsOverride: Int? = null,
+    /** Test seam: supplies provider API keys without a real encrypted KeyStore. */
+    internal val keyLookup: ((AIProvider) -> String?)? = null,
 ) {
     init {
-        require((prefs != null && keyStore != null) || callAiDelegate != null) {
+        require((prefs != null && (keyStore != null || keyLookup != null)) || callAiDelegate != null) {
             "FoodAnalysisService requires prefs and keyStore unless callAiDelegate is provided"
         }
     }
@@ -621,7 +626,8 @@ class FoodAnalysisService(
             hasImages = imageBytesList.any { it.isNotEmpty() },
         )
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
-        val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
+        val primaryKey = keyLookup?.invoke(primary)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
@@ -762,7 +768,8 @@ class FoodAnalysisService(
             hasImages = imageBytesList.any { it.isNotEmpty() },
         )
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
-        val primaryKey = AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
+        val primaryKey = keyLookup?.invoke(primary)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
@@ -779,29 +786,55 @@ class FoodAnalysisService(
         val reasoningEffort = prefs!!.openRouterReasoningEffort.first()
         val streamProgress: (FoodAnalysisProgress) -> Unit =
             if (reportPhases) onProgress else ({})
+        // Codeberg #25: a provider stream that trickles (chunks inside the read
+        // timeout) can stall forever without an error. Cap the whole attempt
+        // chain (primary + fallback) with a wall-clock watchdog; recover a
+        // parseable partial instead of leaving the review sheet busy, else
+        // surface a friendly timeout.
+        val assembler = FoodPartialJsonAssembler()
+        var partialsEmitted = false
+        val trackedProgress: (FoodAnalysisProgress) -> Unit = { p ->
+            if (p is FoodAnalysisProgress.Partial) partialsEmitted = true
+            streamProgress(p)
+        }
+        val timeoutMs = watchdogSecondsOverride?.times(1000L)
+            ?: analysisWatchdogMillis(readTimeoutSeconds)
         return try {
-            dispatch(
-                primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages,
-                maxTokens, geminiGoogleSearch, readTimeoutSeconds,
-                onProgress = streamProgress,
-                preferStreaming = reportPhases,
-                reasoningEffort = reasoningEffort,
-            )
-        } catch (primaryError: Throwable) {
-            val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
-            val fallbackModel = resolveModelForRequest(
-                provider = fallback.provider,
-                selectedModel = fallback.model,
-                visionModel = prefs!!.visionModel(fallback.provider).first(),
-                hasImages = imageBytesList.any { it.isNotEmpty() },
-            )
-            dispatch(
-                fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages,
-                maxTokens, geminiGoogleSearch, readTimeoutSeconds,
-                onProgress = streamProgress,
-                preferStreaming = reportPhases,
-                reasoningEffort = reasoningEffort,
-            )
+            withTimeout(timeoutMs) {
+                try {
+                    dispatch(
+                        primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages,
+                        maxTokens, geminiGoogleSearch, readTimeoutSeconds,
+                        onProgress = trackedProgress,
+                        preferStreaming = reportPhases,
+                        reasoningEffort = reasoningEffort,
+                        assembler = assembler,
+                    )
+                } catch (primaryError: Throwable) {
+                    // Never retry a different provider once content already
+                    // streamed: the fallback restarts the whole response and
+                    // doubles the wait (#25).
+                    if (partialsEmitted) throw primaryError
+                    val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
+                    val fallbackModel = resolveModelForRequest(
+                        provider = fallback.provider,
+                        selectedModel = fallback.model,
+                        visionModel = prefs!!.visionModel(fallback.provider).first(),
+                        hasImages = imageBytesList.any { it.isNotEmpty() },
+                    )
+                    assembler.reset()
+                    dispatch(
+                        fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, finalPrompt, aiImages,
+                        maxTokens, geminiGoogleSearch, readTimeoutSeconds,
+                        onProgress = trackedProgress,
+                        preferStreaming = reportPhases,
+                        reasoningEffort = reasoningEffort,
+                        assembler = assembler,
+                    )
+                }
+            }
+        } catch (e: TimeoutCancellationException) {
+            return recoverFromStalledStream(assembler)
         }
     }
 
@@ -955,6 +988,7 @@ class FoodAnalysisService(
         onProgress: (FoodAnalysisProgress) -> Unit = {},
         preferStreaming: Boolean = false,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
+        assembler: FoodPartialJsonAssembler? = null,
     ): String {
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
@@ -977,9 +1011,12 @@ class FoodAnalysisService(
             }
         }
 
-        val assembler = FoodPartialJsonAssembler()
+        // The caller (callAi) owns the assembler when streaming so its watchdog
+        // can recover the buffered text on timeout; standalone calls keep a
+        // private one.
+        val partialAssembler = assembler ?: FoodPartialJsonAssembler()
         val onDelta: (String) -> Unit = { piece ->
-            val partial = assembler.push(piece)
+            val partial = partialAssembler.push(piece)
             if (partial != null) {
                 onProgress(
                     FoodAnalysisProgress.Partial(
@@ -1016,7 +1053,8 @@ class FoodAnalysisService(
         val model = provider.supportedFallbackModelOrDefault(prefs.selectedFallbackModel.first())
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
-        val key = AiHttp.sanitizeApiKey(keyStore!!.fallbackApiKey(provider))
+        val key = keyLookup?.invoke(provider)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.fallbackApiKey(provider))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
         val baseUrl = prefs.fallbackCustomBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null
@@ -1031,6 +1069,31 @@ class FoodAnalysisService(
     )
 
     companion object {
+        /**
+         * Watchdog recovery (Codeberg #25): a stalled stream that already
+         * delivered a complete, parseable JSON object is worth keeping — the
+         * model finished writing even though the transport never closed.
+         * Anything else surfaces a friendly timeout instead of a busy sheet
+         * forever.
+         */
+        internal fun recoverFromStalledStream(assembler: FoodPartialJsonAssembler): String {
+            val snapshot = assembler.snapshotText()
+            if (snapshot.isNotBlank()) {
+                val recovered = runCatching { FoodJsonParser.parseFood(snapshot) }.getOrNull()
+                if (recovered != null) return snapshot
+            }
+            throw AiError.Timeout
+        }
+
+        /**
+         * Wall-clock cap for one AI analysis (primary attempt chain + fallback).
+         * Twice the user's read timeout, floor 120 s: a trickling stream can stay
+         * under the per-read timeout indefinitely (Codeberg #25), so a total cap
+         * is the only guarantee the busy state clears.
+         */
+        internal fun analysisWatchdogMillis(readTimeoutSeconds: Int): Long =
+            (maxOf(readTimeoutSeconds * 2, 120) * 1000L)
+
         internal val defaultClient: OkHttpClient by lazy {
             OkHttpClient.Builder()
                 // Debug-only: capture per-call network latency phases (DNS/connect/
