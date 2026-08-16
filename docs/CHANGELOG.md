@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **Searching for food no longer closes the app on incomplete products** (Android): a search hit missing one of the three macros (some Open Food Facts products only list some) used to crash the results list while it drew, closing the app to the home screen with no message. It now shows a dash for the missing value instead. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
 ## [3.16.0] - 2026-08-16
 
 ### Added
