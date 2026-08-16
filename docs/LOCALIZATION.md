@@ -16,6 +16,22 @@ Canonical list: [`testdata/parity/locales.json`](../testdata/parity/locales.json
 | Persistence | Android: OS. PWA: IndexedDB `prefs.uiLang` (`""` = auto) |
 | Speech vs UI | Independent. Speech settings do not change UI catalogs |
 
+## Parent languages
+
+Chompass has **two parent languages** with distinct roles (see
+[`TRANSLATION_GUIDE.md`](TRANSLATION_GUIDE.md)):
+
+| Language | Role |
+|----------|------|
+| **English (en)** | **Semantic parent**: meaning, keys, fallback. Every translation is written from the English string. |
+| **German (de)** | **Fit + voice parent**: layout-fit canary and house-voice model. German is the first complete, style-reviewed pack (informal du, DIN ISO 24495-1, compact labels within budget). |
+
+- German is **never a pivot for meaning**: it models voice and fit, it does
+  not supply meaning. English wins on disagreement.
+- **Russian is not a reference language at this time**: the ru pack is
+  complete but not style-reviewed the way German was. The de + ru
+  screenshot tests stay as regression guards (tests, not references).
+
 ## Android
 
 - Source of truth: [`android/app/src/main/res/values/strings.xml`](../android/app/src/main/res/values/strings.xml)
@@ -92,6 +108,10 @@ node --test web/app/src/lib/__tests__/i18n.test.js
 ```
 
 ## Contributor workflow
+
+Start at [`TRANSLATION_GUIDE.md`](TRANSLATION_GUIDE.md): parent languages,
+house voice, compact-label budgets, collision and warning rules, and the
+full-pack checklist. Then:
 
 1. Add English keys first (Android `values/strings.xml` and/or PWA `catalogs/en.js`)
 2. Translate core surfaces for every locale in the fixture (or leave explicit EN fallback for out-of-scope keys)

@@ -19,6 +19,7 @@ status is missing or stale, fix it (release checklist step 3).
 | [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md) | Formula register (BMR/TDEE/goals/water), scientific audit, **calculation-change checklist** (dual Kotlin + PWA) |
 | [`PARITY.md`](PARITY.md) | Android ↔ PWA feature matrix + shared/Android-only/PWA-only scope |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | Shared 16-locale contract, PWA `lib/i18n/`, Android `values-*` |
+| [`TRANSLATION_GUIDE.md`](TRANSLATION_GUIDE.md) | Translator-facing guide: parent languages (EN semantic, DE fit + voice), voice, compact-label budgets, collisions, validation |
 | [`ACCURACY.md`](ACCURACY.md) | User-facing accuracy explainer (what the AI numbers mean) |
 | [`PRIVACY.md`](PRIVACY.md) | Privacy stance: no ads/analytics, local-first, API-key handling |
 | [`ASSET_CREDITS.md`](ASSET_CREDITS.md) / [`NOTICE.md`](NOTICE.md) | Asset provenance, licenses |
