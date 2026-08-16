@@ -3,10 +3,12 @@
     <!-- Default: HTTPS only. Cloud provider base URLs are hard-coded HTTPS. -->
     <base-config cleartextTrafficPermitted="false" />
     <!-- Emulator / loopback Ollama defaults (http://localhost:11434). LAN HTTP is
-         allowed in debug builds via src/debug/res/xml/network_security_config.xml. -->
+         allowed in debug builds via src/debug/res/xml/network_security_config.xml.
+         Note: with cleartext restricted to the device's own loopback, a release
+         build cannot reach a LAN HTTP endpoint; users pointed at a remote Ollama
+         or custom HTTP server must use the debug build (dev) or an HTTPS proxy. -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
-        <domain includeSubdomains="true">10.0.2.2</domain>
     </domain-config>
 </network-security-config>

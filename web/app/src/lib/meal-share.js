@@ -67,6 +67,7 @@ function servingUnitsFromShare(arr) {
       gramsPerUnit: grams,
       quantity: o?.quantity != null ? Number(o.quantity) : null,
     });
+    if (out.length >= 8) break; // parity: Android MealShare.MAX_SERVING_OPTIONS
   }
   return out;
 }
@@ -118,6 +119,7 @@ function constituentsFromShare(arr) {
       selectedServingUnit: d.selectedServingUnit ? String(d.selectedServingUnit) : null,
       selectedServingQuantity: d.selectedServingQuantity != null ? Number(d.selectedServingQuantity) : null,
     });
+    if (out.length >= 20) break; // parity: Android MealShare.MAX_CONSTITUENTS
   }
   return out;
 }
@@ -177,6 +179,14 @@ export function decodeMealShare(linkOrHash) {
     return null;
   }
   if (!encoded) return null;
+  // Parity caps with Android MealShare.MAX_ENCODED_PAYLOAD / MAX_MEALS
+  // (docs/SECURITY_HARDENING_PLAN.md P2-2): a hostile link must not force a
+  // large atob/parse or flood the diary.
+  const MAX_ENCODED_PAYLOAD = 64 * 1024;
+  const MAX_MEALS = 50;
+  const MAX_NAME = 120;
+  const MAX_NOTE = 500;
+  if (encoded.length > MAX_ENCODED_PAYLOAD) return null;
   try {
     const padded = encoded.replace(/-/g, "+").replace(/_/g, "/");
     const json = decodeURIComponent(escape(atob(padded)));
@@ -184,30 +194,46 @@ export function decodeMealShare(linkOrHash) {
     const version = Number(doc.v ?? 1);
     if (!MEAL_SHARE_IMPORT_VERSIONS.has(version)) return null;
     const meals = Array.isArray(doc.meals) ? doc.meals : [];
+    // Mirrors Android InputSanitizer: clamp finite numbers, strip control + bidi
+    // override chars, cap text length. NaN/Infinity become null/0.
+    const ctrlRe = /[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/g;
+    const clamp = (v, max) => {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return null;
+      return Math.min(Math.max(n, 0), max);
+    };
+    const clampInt = (v, max) => Math.round(clamp(v, max) ?? 0);
+    const clean = (v, max) => {
+      const s = String(v ?? "").replace(ctrlRe, "").trim();
+      return s ? s.slice(0, max) : null;
+    };
     return meals
+      .slice(0, MAX_MEALS)
       .map((d) => {
         if (!d?.name || d.calories == null) return null;
         const mealType = ["breakfast", "lunch", "dinner", "snack"].includes(String(d.mealType).toLowerCase())
           ? String(d.mealType).toLowerCase()
           : "snack";
+        const name = clean(d.name, MAX_NAME);
+        if (!name) return null;
         /** @type {Record<string, unknown>} */
         const entry = {
-          name: String(d.name),
-          calories: Math.round(Number(d.calories) || 0),
-          proteinG: Number(d.protein) || 0,
-          carbsG: Number(d.carbs) || 0,
-          fatG: Number(d.fat) || 0,
-          quantityG: d.servingSizeGrams != null ? Number(d.servingSizeGrams) : null,
+          name,
+          calories: clampInt(d.calories, 10000),
+          proteinG: clamp(d.protein, 2000) ?? 0,
+          carbsG: clamp(d.carbs, 2000) ?? 0,
+          fatG: clamp(d.fat, 2000) ?? 0,
+          quantityG: d.servingSizeGrams != null ? clamp(d.servingSizeGrams, 5000) : null,
           mealType,
-          note: d.customNote ? String(d.customNote) : null,
+          note: clean(d.customNote, MAX_NOTE),
           source: "manual",
           servingUnitOptions: servingUnitsFromShare(d.servingUnitOptions),
-          selectedServingUnit: d.selectedServingUnit ? String(d.selectedServingUnit) : null,
-          selectedServingQuantity: d.selectedServingQuantity != null ? Number(d.selectedServingQuantity) : null,
+          selectedServingUnit: clean(d.selectedServingUnit, 40),
+          selectedServingQuantity: d.selectedServingQuantity != null ? clamp(d.selectedServingQuantity, 100000) : null,
           constituents: constituentsFromShare(d.constituents),
         };
         for (const [shareKey, entryKey] of Object.entries(SHARE_TO_ENTRY)) {
-          entry[entryKey] = d[shareKey] != null ? Number(d[shareKey]) : null;
+          entry[entryKey] = d[shareKey] != null ? clamp(d[shareKey], 100000) : null;
         }
         return entry;
       })

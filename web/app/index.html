@@ -3,6 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!--
+    CSP (meta form; server-side header would also work — see
+    docs/SECURITY_HARDENING_PLAN.md P3-5). 'unsafe-inline' styles are required
+    by the inline style= attributes in view templates; connect-src must allow
+    user-configured BYOK/WebDAV endpoints (the app has no fixed API origin).
+  -->
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http: https:; object-src 'none'; base-uri 'self'"
+  />
   <title>Chompass</title>
   <meta name="description" content="Ad-free calorie tracker. Installable PWA for any modern browser (Chromium works best)." />
   <meta name="theme-color" content="#006b5e" />

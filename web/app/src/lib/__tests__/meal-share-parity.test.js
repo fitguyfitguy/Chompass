@@ -74,3 +74,44 @@ test("decode accepts legacy meal-share v1", () => {
   assert.equal(decoded[0].name, "Toast");
   assert.deepEqual(decoded[0].constituents, []);
 });
+
+test("decode rejects oversized payloads (Android MealShare cap)", () => {
+  const big = { v: 2, meals: [{ name: "x".repeat(200_000), calories: 1, protein: 1, carbs: 1, fat: 1 }] };
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(big))))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  assert.equal(decodeMealShare(`#/add-meal?d=${b64}`), null);
+});
+
+test("decode caps meal count and clamps hostile numbers (Android parity)", () => {
+  const meals = Array.from({ length: 120 }, (_, i) => ({
+    name: `meal-${i}`,
+    calories: i === 0 ? 999999999 : 200,
+    protein: i === 0 ? -5 : 10,
+    sodium: i === 1 ? 9999999 : null,
+  }));
+  const payload = JSON.stringify({ v: 2, meals });
+  const b64 = btoa(unescape(encodeURIComponent(payload)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  const decoded = decodeMealShare(`#/add-meal?d=${b64}`);
+  assert.equal(decoded.length, 50); // Android MealShare.MAX_MEALS
+  assert.equal(decoded[0].calories, 10000); // clamped, not absurd
+  assert.equal(decoded[0].proteinG, 0); // negative clamped to 0
+  assert.equal(decoded[1].sodiumMg, 100000); // micro clamp
+});
+
+test("decode strips control/bidi chars and caps name length (Android parity)", () => {
+  const payload = JSON.stringify({
+    v: 2,
+    meals: [{ name: "evil\u0000name\u202e", calories: 100, protein: 1, carbs: 1, fat: 1 }],
+  });
+  const b64 = btoa(unescape(encodeURIComponent(payload)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  const decoded = decodeMealShare(`#/add-meal?d=${b64}`);
+  assert.equal(decoded[0].name, "evilname");
+});

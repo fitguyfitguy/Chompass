@@ -42,6 +42,9 @@ internal val PreferencesStore.webDavUsernameImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.WEBDAV_USERNAME].orEmpty() }
 
 internal suspend fun PreferencesStore.setWebDavUsernameImpl(username: String) {
+    // The username rides in the plaintext DataStore (like the URL): it is
+    // not the secret. The WebDAV password lives in the encrypted keychain
+    // (KeyStore.webDavPassword / fudai_keychain, excluded from backups).
     dataStore.edit { it[Keys.WEBDAV_USERNAME] = username.trim() }
 }
 
