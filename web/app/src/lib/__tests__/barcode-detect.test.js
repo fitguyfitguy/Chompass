@@ -6,6 +6,7 @@ import {
   ZXING_FORMAT_MAP,
   chooseStrategy,
   ean13Modules,
+  pickNormalizable,
   shouldDemoteNative,
   NATIVE_FAILURE_LIMIT,
   NATIVE_EMPTY_DEMOTE_MS,
@@ -70,6 +71,33 @@ test("ean13Modules_knownDigitEncoding", () => {
 test("ean13Modules_rejectsInvalidInput", () => {
   assert.throws(() => ean13Modules("123"));
   assert.throws(() => ean13Modules("abcdefghijklm"));
+});
+
+test("pickNormalizable_junkOnlyReturnsNull", () => {
+  // Regression for the Bolognese repro (#24 follow-up): a frame with only
+  // non-normalizable decodes used to stop the scan with a lookup error.
+  assert.equal(pickNormalizable(["1111201I", "https://brand.example.com/recipes"]), null);
+});
+
+test("pickNormalizable_prefersNormalizableOverJunk", () => {
+  // Jar case: EAN-13 + internal DataMatrix in the same frame.
+  assert.equal(pickNormalizable(["1111201I", "9339687206605"]), "9339687206605");
+  assert.equal(pickNormalizable(["9339687206605", "1111201I"]), "9339687206605");
+});
+
+test("pickNormalizable_gs1PrefixedReturnsRawText", () => {
+  // The raw decoded text is passed on; lookupBarcode re-normalizes (idempotent).
+  const raw = "(01)09400597028233(15)260821(10)96735717";
+  assert.equal(pickNormalizable([raw]), raw);
+});
+
+test("pickNormalizable_firstNormalizableWins", () => {
+  assert.equal(pickNormalizable(["9339687206605", "9421011990608"]), "9339687206605");
+});
+
+test("pickNormalizable_emptyReturnsNull", () => {
+  assert.equal(pickNormalizable([]), null);
+  assert.equal(pickNormalizable(["  "]), null);
 });
 
 test("detectFromBlob_emptyReturnsNull", async () => {
