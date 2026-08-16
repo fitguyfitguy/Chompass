@@ -6,6 +6,7 @@ import app.chompass.models.GroundingConfidence
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.services.InputSanitizer
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
 import org.json.JSONObject
@@ -320,23 +321,29 @@ internal object FoodJsonParser {
     fun parseFood(text: String): FoodAnalysis {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
-        val name = capitalizeAiFoodName(
-            json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse
-        )
-        val servingSizeGrams = optDouble(json, "serving_size_grams") ?: 100.0
+        // Sanitize BEFORE persistence: the model reply is untrusted output that a
+        // hostile description / OFF name / shared-meal note can steer; clamp
+        // numbers, drop NaN/Infinity, scrub text (InputSanitizer policy).
+        val name = InputSanitizer.text(
+            capitalizeAiFoodName(
+                json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse,
+            ),
+            InputSanitizer.MAX_NAME_LENGTH,
+        ) ?: throw AiError.InvalidResponse
+        val servingSizeGrams = InputSanitizer.servingGrams(optDouble(json, "serving_size_grams")) ?: 100.0
         val unitOptions = parseServingUnitOptions(json, servingSizeGrams)
         val selectedOption = unitOptions.firstOrNull()
         fun optDouble(key: String): Double? =
-            optDouble(json, key)
+            InputSanitizer.micro(optDouble(json, key))
         val parsed = MicronutrientValues.fromJson(::optDouble).applyTo(
             FoodAnalysis(
                 name = name,
-                calories = json.optInt("calories"),
-                protein = optDouble("protein") ?: 0.0,
-                carbs = optDouble("carbs") ?: 0.0,
-                fat = optDouble("fat") ?: 0.0,
+                calories = InputSanitizer.calories(json.optInt("calories")),
+                protein = InputSanitizer.nutrient(optDouble("protein")) ?: 0.0,
+                carbs = InputSanitizer.nutrient(optDouble("carbs")) ?: 0.0,
+                fat = InputSanitizer.nutrient(optDouble("fat")) ?: 0.0,
                 servingSizeGrams = servingSizeGrams,
-                emoji = json.optString("emoji").takeIf { it.isNotEmpty() },
+                emoji = InputSanitizer.emoji(json.optString("emoji").takeIf { it.isNotEmpty() }),
                 servingUnitOptions = unitOptions,
                 selectedServingUnit = selectedOption?.unit,
                 selectedServingQuantity = selectedOption?.quantityFor(servingSizeGrams),
@@ -349,25 +356,31 @@ internal object FoodJsonParser {
     fun parseRecognition(text: String): app.chompass.models.FoodRecognitionResult {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
-        val mealName = capitalizeAiFoodName(
-            json.optString("meal_name").ifBlank {
-                json.optString("name")
-            }.takeIf { it.isNotBlank() } ?: throw AiError.InvalidResponse
-        )
+        val mealName = InputSanitizer.text(
+            capitalizeAiFoodName(
+                json.optString("meal_name").ifBlank {
+                    json.optString("name")
+                }.takeIf { it.isNotBlank() } ?: throw AiError.InvalidResponse,
+            ),
+            InputSanitizer.MAX_NAME_LENGTH,
+        ) ?: throw AiError.InvalidResponse
         val componentsArr = json.optJSONArray("components") ?: JSONArray()
         val components = mutableListOf<app.chompass.models.RecognizedFoodComponent>()
         for (i in 0 until componentsArr.length()) {
             val raw = componentsArr.optJSONObject(i) ?: continue
-            val name = capitalizeAiFoodName(raw.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue)
+            val name = InputSanitizer.text(
+                capitalizeAiFoodName(raw.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue),
+                InputSanitizer.MAX_NAME_LENGTH,
+            ) ?: continue
             components += app.chompass.models.RecognizedFoodComponent(
                 name = name,
-                brand = raw.optString("brand").takeIf { it.isNotBlank() },
-                preparation = raw.optString("preparation").takeIf { it.isNotBlank() },
-                estimatedGrams = optDouble(raw, "estimated_grams"),
-                portionHint = raw.optString("portion_hint").takeIf { it.isNotBlank() },
+                brand = InputSanitizer.text(raw.optString("brand"), InputSanitizer.MAX_NAME_LENGTH),
+                preparation = InputSanitizer.text(raw.optString("preparation"), InputSanitizer.MAX_NOTE_LENGTH),
+                estimatedGrams = InputSanitizer.servingGrams(optDouble(raw, "estimated_grams")),
+                portionHint = InputSanitizer.text(raw.optString("portion_hint"), InputSanitizer.MAX_NOTE_LENGTH),
                 barcode = raw.optString("barcode").filter { it.isDigit() }.takeIf { it.length >= 8 },
-                quantity = optDouble(raw, "quantity"),
-                unit = raw.optString("unit").takeIf { it.isNotBlank() },
+                quantity = InputSanitizer.quantity(optDouble(raw, "quantity")),
+                unit = InputSanitizer.text(raw.optString("unit"), InputSanitizer.MAX_UNIT_LENGTH),
             )
         }
         if (components.isEmpty()) {
@@ -384,9 +397,12 @@ internal object FoodJsonParser {
     fun parseLabel(text: String): NutritionLabelAnalysis {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
-        val name = capitalizeAiFoodName(
-            json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse
-        )
+        val name = InputSanitizer.text(
+            capitalizeAiFoodName(
+                json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse,
+            ),
+            InputSanitizer.MAX_NAME_LENGTH,
+        ) ?: throw AiError.InvalidResponse
         fun optDouble(key: String): Double? =
             optDouble(json, key)
         val servingSizeGrams = optDouble("serving_size_grams")
@@ -441,7 +457,7 @@ internal object FoodJsonParser {
                     is String -> value.toDoubleOrNull()?.roundToInt()
                     else -> null
                 }
-            }?.coerceAtLeast(0) ?: fallback
+            }?.let { value -> value.coerceIn(0, InputSanitizer.MAX_MICRO_UNITS.toInt()) } ?: fallback
         return OptionalNutrientGoals(
             sugar = optInt("sugar", "sugar_g", fallback = OptionalNutrientGoals.Default.sugar),
             addedSugar = optInt("added_sugar", "addedSugar", "added_sugar_g", fallback = OptionalNutrientGoals.Default.addedSugar),
@@ -509,17 +525,21 @@ internal object FoodJsonParser {
         for (i in 0 until raw.length()) {
             if (out.size >= ConstituentReconcile.MAX_CONSTITUENTS) break
             val row = raw.optJSONObject(i) ?: continue
-            val name = capitalizeAiFoodName(row.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue)
-            val grams = optDouble(row, "serving_size_grams") ?: continue
-            val calories = when (val value = row.opt("calories")) {
+            val name = InputSanitizer.text(
+                capitalizeAiFoodName(row.optString("name").trim().takeIf { it.isNotEmpty() } ?: continue),
+                InputSanitizer.MAX_NAME_LENGTH,
+            ) ?: continue
+            val grams = InputSanitizer.servingGrams(optDouble(row, "serving_size_grams")) ?: continue
+            val rawCalories = when (val value = row.opt("calories")) {
                 is Number -> value.toDouble().roundToInt()
                 is String -> value.toDoubleOrNull()?.roundToInt()
                 else -> null
             } ?: continue
+            val calories = InputSanitizer.calories(rawCalories)
             val protein = optDouble(row, "protein") ?: continue
             val carbs = optDouble(row, "carbs") ?: continue
             val fat = optDouble(row, "fat") ?: continue
-            if (grams <= 0 || calories < 0 || protein < 0 || carbs < 0 || fat < 0) continue
+            if (grams <= 0 || protein < 0 || carbs < 0 || fat < 0) continue
             if (!grams.isFinite() || !protein.isFinite() || !carbs.isFinite() || !fat.isFinite()) continue
             val unitOptions = parseServingUnitOptions(row, grams)
             val selected = unitOptions.firstOrNull()
@@ -530,7 +550,7 @@ internal object FoodJsonParser {
                 carbs = carbs,
                 fat = fat,
                 servingSizeGrams = grams,
-                emoji = row.optString("emoji").takeIf { it.isNotBlank() && it != "null" },
+                emoji = InputSanitizer.emoji(row.optString("emoji").takeIf { it.isNotBlank() && it != "null" }),
                 servingUnitOptions = unitOptions,
                 selectedServingUnit = selected?.unit,
                 selectedServingQuantity = selected?.quantityFor(grams),
@@ -550,11 +570,12 @@ internal object FoodJsonParser {
         val options = mutableListOf<ServingUnitOption>()
         for (i in 0 until rawOptions.length()) {
             val raw = rawOptions.optJSONObject(i) ?: continue
-            val unit = raw.optString("unit").takeIf { it.isNotBlank() } ?: continue
-            val gramsPerUnit = optDouble(raw, "grams_per_unit")
-                ?: optDouble(raw, "gramsPerUnit")
+            val unit = InputSanitizer.text(raw.optString("unit"), InputSanitizer.MAX_UNIT_LENGTH)
                 ?: continue
-            val quantity = optDouble(raw, "quantity")
+            val gramsPerUnit = InputSanitizer.gramsPerUnit(
+                optDouble(raw, "grams_per_unit") ?: optDouble(raw, "gramsPerUnit"),
+            ) ?: continue
+            val quantity = InputSanitizer.quantity(optDouble(raw, "quantity"))
             val option = ServingUnitOption(
                 unit = unit,
                 gramsPerUnit = gramsPerUnit,
