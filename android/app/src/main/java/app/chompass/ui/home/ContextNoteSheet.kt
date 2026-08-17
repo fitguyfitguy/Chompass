@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,6 +110,11 @@ fun ContextNoteSheet(
         onDismiss = { if (!busy) onDismiss() },
         sheetState = state,
         containerColor = MaterialTheme.colorScheme.surface,
+        // Codeberg #6/#14: zero the chrome insets — the default M3
+        // consumeWindowInsets(0,0,0,max(0,offset)) plus the sticky footer's own
+        // imePadding/navigationBarsPadding loops while the keyboard is open
+        // (visible as a wiggly/jumpy sheet). The footer pads itself.
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
         Column(
             Modifier
@@ -368,6 +374,10 @@ fun MultiPhotoCaptureSheet(
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = state,
+        // Codeberg #6/#14: zero the chrome insets (sticky bar pads itself;
+        // default M3 insets + SheetStickyPrimaryBar imePadding loop while the
+        // keyboard is open = wiggly/jumpy sheet).
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
         Column(
             Modifier
