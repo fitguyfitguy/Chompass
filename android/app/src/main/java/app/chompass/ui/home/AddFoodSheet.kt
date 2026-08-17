@@ -90,6 +90,7 @@ fun AddFoodSheet(
     onGrounded: () -> Unit = {},
     onSearch: () -> Unit = {},
     onDismiss: () -> Unit,
+    aiFeaturesEnabled: Boolean = true,
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
     waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
@@ -112,6 +113,7 @@ fun AddFoodSheet(
             onManualActive = { onDismiss(); onManualActive() },
             onGrounded = { onDismiss(); onGrounded() },
             onSearch = { onDismiss(); onSearch() },
+            aiFeaturesEnabled = aiFeaturesEnabled,
             barcodeEnabled = barcodeEnabled,
             waterTrackingEnabled = waterTrackingEnabled,
             waterQuickPresetsMl = waterQuickPresetsMl,
@@ -138,6 +140,9 @@ internal fun AddFoodSheetContent(
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
     onSearch: () -> Unit = {},
+    /** Codeberg #20 phase 2: false hides the AI logging tiles (photo/note/voice);
+     *  barcode, search, manual, recents, copy-from-day and water all stay. */
+    aiFeaturesEnabled: Boolean = true,
     barcodeEnabled: Boolean = true,
     waterTrackingEnabled: Boolean = false,
     waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
@@ -165,23 +170,25 @@ internal fun AddFoodSheetContent(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            AddFoodActionTile(
-                label = stringResource(R.string.add_food_hero_photo),
-                subtitle = stringResource(R.string.add_food_hero_photo_sub),
-                icon = Icons.Filled.PhotoCamera,
-                size = AddFoodTileSize.Hero,
-                emphasis = true,
-                modifier = Modifier.weight(1.2f),
-                onClick = onPhoto,
-            )
-            AddFoodActionTile(
-                label = stringResource(R.string.add_food_hero_note),
-                subtitle = stringResource(R.string.add_food_hero_note_sub),
-                icon = Icons.Filled.Edit,
-                size = AddFoodTileSize.Hero,
-                modifier = Modifier.weight(1f),
-                onClick = onNote,
-            )
+            if (aiFeaturesEnabled) {
+                AddFoodActionTile(
+                    label = stringResource(R.string.add_food_hero_photo),
+                    subtitle = stringResource(R.string.add_food_hero_photo_sub),
+                    icon = Icons.Filled.PhotoCamera,
+                    size = AddFoodTileSize.Hero,
+                    emphasis = true,
+                    modifier = Modifier.weight(1.2f),
+                    onClick = onPhoto,
+                )
+                AddFoodActionTile(
+                    label = stringResource(R.string.add_food_hero_note),
+                    subtitle = stringResource(R.string.add_food_hero_note_sub),
+                    icon = Icons.Filled.Edit,
+                    size = AddFoodTileSize.Hero,
+                    modifier = Modifier.weight(1f),
+                    onClick = onNote,
+                )
+            }
             AddFoodActionTile(
                 label = stringResource(R.string.saved_meals_tab_recents),
                 subtitle = stringResource(R.string.add_food_hero_saved_sub),
@@ -236,13 +243,15 @@ internal fun AddFoodSheetContent(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                AddFoodActionTile(
-                    label = stringResource(R.string.home_menu_voice),
-                    icon = Icons.Filled.Mic,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onVoice,
-                )
+                if (aiFeaturesEnabled) {
+                    AddFoodActionTile(
+                        label = stringResource(R.string.home_menu_voice),
+                        icon = Icons.Filled.Mic,
+                        size = AddFoodTileSize.Compact,
+                        modifier = Modifier.weight(1f),
+                        onClick = onVoice,
+                    )
+                }
                 if (barcodeEnabled) {
                     AddFoodActionTile(
                         label = stringResource(R.string.home_menu_barcode),

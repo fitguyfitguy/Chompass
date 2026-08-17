@@ -209,6 +209,19 @@ class FoodAnalysisService(
         measuredTdee: Int? = null,
         measurement: BodyMeasurement? = null
     ): GoalCalculation {
+        // Codeberg #20 phase 2: with the master AI switch off, return the
+        // deterministic formula targets directly — the AI prompt below anchors on
+        // exactly these values, so nothing is lost except the observed-data
+        // refinement. Onboarding, Settings recalc, and adaptive goals keep working.
+        if (prefs?.aiFeaturesEnabled?.first() == false) {
+            return GoalCalculation(
+                calories = profile.dailyCalories,
+                protein = profile.proteinGoal,
+                carbs = profile.carbsGoal,
+                fat = profile.fatGoal,
+                reason = "Calculated from the built-in formulas.",
+            )
+        }
         val weight = if (weightMetric) String.format(Locale.US, "%.1f kg", profile.weightKg)
             else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
         val height = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
@@ -769,6 +782,11 @@ class FoodAnalysisService(
             return delegate(prompt, imageBytesList, op)
         }
 
+        // Codeberg #20 phase 2: the master AI-features switch gates every LLM
+        // call in this service BEFORE any prompt build, key read, or network
+        // request — a missed UI path can never send data while the switch is off.
+        if (prefs?.aiFeaturesEnabled?.first() == false) throw AiError.Disabled
+
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Preparing))
         // Debug-only: replay a scripted response when the demo_ai extra is set
         // (usage-video capture). Phases/partials/final parse all use the real
@@ -879,6 +897,10 @@ class FoodAnalysisService(
     private suspend fun servingUnitInferenceMode(): ServingUnitInferenceMode {
         val mode = inferenceModeForTest ?: prefs!!.servingUnitInferenceMode.first()
         if (mode != ServingUnitInferenceMode.AI_CALL) return mode
+        // Codeberg #20 phase 2: with the master AI switch off there are no AI
+        // calls at all, so the serving-unit fallback stays local (same rule as
+        // the on-device provider below).
+        if (prefs?.aiFeaturesEnabled?.first() == false) return ServingUnitInferenceMode.HEURISTIC
         val provider = prefs?.selectedAIProvider?.first()
         // Second AI call for units is too unreliable on local Gemma — use heuristics.
         return if (provider == AIProvider.ON_DEVICE) ServingUnitInferenceMode.HEURISTIC else mode

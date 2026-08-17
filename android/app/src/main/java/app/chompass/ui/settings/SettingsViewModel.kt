@@ -110,6 +110,8 @@ data class SettingsUiState(
     val appearanceMode: String = "system",
     /** Codeberg #20 phase 1: show the coach tab in the bottom bar; default ON. */
     val coachTabEnabled: Boolean = true,
+    /** Codeberg #20 phase 2: master AI-features switch; default ON. */
+    val aiFeaturesEnabled: Boolean = true,
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
     val glassBlurEnabled: Boolean = false,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
@@ -233,6 +235,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val appearance = container.prefs.appearanceMode.first()
             val coachTabEnabled = container.prefs.coachTabEnabled.first()
+            val aiFeaturesEnabled = container.prefs.aiFeaturesEnabled.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
             val glassBlurEnabled = container.prefs.glassBlurEnabled.first()
             val fixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
@@ -315,6 +318,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 onDeviceAvailable = onDeviceAvailable,
                 appearanceMode = appearance,
                 coachTabEnabled = coachTabEnabled,
+                aiFeaturesEnabled = aiFeaturesEnabled,
                 appThemeColor = appThemeColor,
                 glassBlurEnabled = glassBlurEnabled,
                 fixedLauncherIcon = fixedLauncherIcon,
@@ -633,6 +637,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setCoachTabEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setCoachTabEnabled(v) },
         { copy(coachTabEnabled = v) },
+    )
+
+    /** Codeberg #20 phase 2: master AI-features switch. Off = no data to any LLM provider. */
+    fun setAiFeaturesEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setAiFeaturesEnabled(v) },
+        { copy(aiFeaturesEnabled = v) },
     )
 
     fun setAppThemeColor(themeColor: AppThemeColor) = updateUiPref(

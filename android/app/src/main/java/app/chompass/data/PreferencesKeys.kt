@@ -94,6 +94,9 @@ internal object Keys {
         val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
         /** Codeberg #20 (phase 1): View-only coach-tab toggle; default ON. */
         val COACH_TAB_ENABLED = booleanPreferencesKey("coachTabEnabled")
+        /** Codeberg #20 (phase 2): master AI-features switch; default ON. When off,
+         *  no data is sent to any LLM provider and AI entry points are hidden. */
+        val AI_FEATURES_ENABLED = booleanPreferencesKey("aiFeaturesEnabled")
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */

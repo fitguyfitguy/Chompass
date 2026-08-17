@@ -80,6 +80,7 @@ export function parseGoalCalculation(text) {
  * @param {boolean} [args.heightMetric]
  * @param {boolean} [args.weightMetric]
  * @param {AbortSignal} [args.signal]
+ * @param {import('../db.js').AppPrefs} [args.prefsOverride] test hook
  * @returns {Promise<GoalCalculation>}
  */
 export async function calculateGoalsWithAi({
@@ -90,10 +91,23 @@ export async function calculateGoalsWithAi({
   heightMetric = true,
   weightMetric = true,
   signal,
+  prefsOverride,
 }) {
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
-  const appPrefs = await prefs.load();
+  const appPrefs = prefsOverride ?? (await prefs.load());
+  // Codeberg #20 phase 2: with the master AI switch off, return the
+  // deterministic formula targets (same anchor the prompt uses) — no request.
+  if (appPrefs.aiFeaturesEnabled === false) {
+    const t = dailyTargets(profile);
+    return {
+      calories: t.calories,
+      protein: t.proteinG,
+      carbs: t.carbsG,
+      fat: t.fatG,
+      reason: "Calculated from the built-in formulas.",
+    };
+  }
   config = { ...config, model: resolveProviderModel(providerId, config.model, "primary") };
 
   const prompt = buildCalculateGoalsPrompt(profile, forecast, heightMetric, weightMetric);

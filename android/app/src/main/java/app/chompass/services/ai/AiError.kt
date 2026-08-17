@@ -16,6 +16,8 @@ sealed class AiError(
     val formatArgs: Array<out Any> = emptyArray(),
 ) : Exception(message) {
     object NoApiKey : AiError("No API key configured. Add your key in Settings → AI Provider.", messageRes = R.string.ai_error_no_api_key)
+    /** Codeberg #20 phase 2: the master AI-features switch is off; no data may leave. */
+    object Disabled : AiError("AI features are turned off in Settings → AI & Speech.", messageRes = R.string.ai_error_disabled)
     object ImageConversionFailed : AiError("Failed to process the image.", messageRes = R.string.ai_error_image_conversion_failed)
     class Network(cause: Throwable) : AiError(
         "Network error: ${cause.localizedMessage}",

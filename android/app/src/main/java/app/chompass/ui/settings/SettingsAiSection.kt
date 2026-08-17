@@ -34,16 +34,30 @@ internal fun SettingsAiSection(
     onOpenSheet: (SettingsSheet) -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_section_ai)) {
-                // Phase 1 of the master AI-off switch (Codeberg #20): hide the
-                // coach tab wholesale without touching any data path.
+                // Phase 2 of Codeberg #20: the master AI-features switch. When
+                // off, nothing is sent to any LLM provider (gated at the service
+                // choke points) and every AI entry point is hidden.
                 ToggleRow(
-                    stringResource(R.string.settings_show_coach_tab),
-                    ui.coachTabEnabled,
-                    icon = Icons.Outlined.Forum,
-                    onChange = { vm.setCoachTabEnabled(it) }
+                    stringResource(R.string.settings_ai_features_master),
+                    ui.aiFeaturesEnabled,
+                    icon = Icons.Outlined.SmartToy,
+                    onChange = { vm.setAiFeaturesEnabled(it) }
                 )
-                SettingFootnote(stringResource(R.string.settings_show_coach_tab_footer))
+                SettingFootnote(stringResource(R.string.settings_ai_features_master_footer))
                 HorizontalDivider()
+                // Phase 1 of the master AI-off switch (Codeberg #20): hide the
+                // coach tab wholesale without touching any data path. The master
+                // switch above covers it too, so the row only shows while AI is on.
+                if (ui.aiFeaturesEnabled) {
+                    ToggleRow(
+                        stringResource(R.string.settings_show_coach_tab),
+                        ui.coachTabEnabled,
+                        icon = Icons.Outlined.Forum,
+                        onChange = { vm.setCoachTabEnabled(it) }
+                    )
+                    SettingFootnote(stringResource(R.string.settings_show_coach_tab_footer))
+                    HorizontalDivider()
+                }
                 SettingRow(stringResource(R.string.settings_ai_provider), stringResource(ui.selectedAI.displayNameRes), icon = Icons.Outlined.SmartToy) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
                 // Privacy disclosure per provider: cloud providers receive food/chat/
                 // profile data; only on-device Gemma 4 keeps everything local.

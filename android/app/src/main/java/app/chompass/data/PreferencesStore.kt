@@ -168,6 +168,9 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setAppearanceMode(v: String) = setAppearanceModeImpl(v)
     val coachTabEnabled: Flow<Boolean> get() = coachTabEnabledImpl
     suspend fun setCoachTabEnabled(v: Boolean) = setCoachTabEnabledImpl(v)
+    /** Codeberg #20 phase 2: master AI-features switch; default ON. */
+    val aiFeaturesEnabled: Flow<Boolean> get() = aiFeaturesEnabledImpl
+    suspend fun setAiFeaturesEnabled(v: Boolean) = setAiFeaturesEnabledImpl(v)
     val appThemeColor: Flow<String> get() = appThemeColorImpl
     suspend fun setAppThemeColor(v: String) = setAppThemeColorImpl(v)
     val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl

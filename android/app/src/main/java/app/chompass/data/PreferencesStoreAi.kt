@@ -18,6 +18,17 @@ private const val CUSTOM_BASE_URL_PREFIX = "customBaseURL_"
  *  or the last URL written wins and both slots hit the same server after restart. */
 private const val CUSTOM_BASE_URL_FALLBACK_PREFIX = "customBaseURL_fallback_"
 
+// -- Master AI-features switch (Codeberg #20 phase 2) -------------------
+/** When false, no data is sent to any LLM provider: AI entry points are hidden
+ *  and [app.chompass.services.ai.FoodAnalysisService] / ChatService throw
+ *  AiError.Disabled. Default ON. */
+internal val PreferencesStore.aiFeaturesEnabledImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.AI_FEATURES_ENABLED] ?: true
+    }
+internal suspend fun PreferencesStore.setAiFeaturesEnabledImpl(v: Boolean) {
+        dataStore.edit { it[Keys.AI_FEATURES_ENABLED] = v }
+    }
+
 // -- AI Provider selection --------------------------------------------
 internal val PreferencesStore.selectedAIProviderImpl: Flow<AIProvider> get() = dataStore.data.map {
         val raw = it[Keys.SELECTED_AI_PROVIDER]

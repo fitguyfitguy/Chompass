@@ -22,12 +22,16 @@ const MAX_TOOL_ITERATIONS = 4;
  * @param {import('./providers.js').AiMessage[]} args.history
  * @param {string} args.userText
  * @param {{mimeType: string, base64: string}} [args.image]
+ * @param {import('../db.js').AppPrefs} [args.prefsOverride] test hook
  */
-export async function runCoachTurn({ providerId, config, history, userText, image }) {
+export async function runCoachTurn({ providerId, config, history, userText, image, prefsOverride }) {
   const provider = PROVIDERS[providerId];
   if (!provider) throw new Error(`Unknown AI provider "${providerId}"`);
 
-  const appPrefs = await prefs.load();
+  const appPrefs = prefsOverride ?? (await prefs.load());
+  // Codeberg #20 phase 2: the master AI-features switch gates the coach
+  // before the system prompt (profile + diary) is assembled.
+  if (appPrefs.aiFeaturesEnabled === false) throw new Error(t("errors.ai_features_disabled"));
   if (providerId === "openai_compatible") {
     config = { ...config, reasoningEffort: appPrefs.openrouterReasoningEffort || "auto" };
   }

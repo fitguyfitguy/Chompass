@@ -46,10 +46,18 @@ import app.chompass.models.resolveModelForRequest
  */
 class ChatService(
     private val prefs: PreferencesStore,
-    private val keyStore: KeyStore,
+    private val keyStore: KeyStore? = null,
     private val foodAnalysisService: FoodAnalysisService,
-    private val okHttp: OkHttpClient = FoodAnalysisService.defaultClient
+    private val okHttp: OkHttpClient = FoodAnalysisService.defaultClient,
+    /** Test seam: supplies provider API keys without a real encrypted KeyStore
+     *  (Robolectric has no AndroidKeyStore — same pattern as FoodAnalysisService). */
+    private val keyLookup: ((AIProvider) -> String?)? = null,
 ) {
+    init {
+        require(keyStore != null || keyLookup != null) {
+            "ChatService requires keyStore or keyLookup"
+        }
+    }
     /** Result of a coach turn: the assistant's reply text, plus at most one pending
      *  write action the model proposed (via a `propose_log_*` tool) awaiting user
      *  confirmation — see [CoachProposal]. Nothing is persisted at this point. */
@@ -72,6 +80,9 @@ class ChatService(
         weightMetric: Boolean,
         imageBytes: ByteArray? = null
     ): ChatResult {
+        // Codeberg #20 phase 2: the master AI-features switch gates the coach
+        // BEFORE the system prompt (profile + diary) is even assembled.
+        if (!prefs.aiFeaturesEnabled.first()) throw AiError.Disabled
         val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric)
         val userContext = prefs.userContext.first()
         val systemPrompt = if (userContext.isNotBlank()) {
@@ -92,7 +103,8 @@ class ChatService(
             hasImages = imageBytes != null,
         )
         val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
-        val apiKey = AiHttp.sanitizeApiKey(keyStore.apiKey(provider))
+        val apiKey = keyLookup?.invoke(provider)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(provider))
 
         // Coach tool-calling (Tier C) stays debug/experimental for on-device — see docs/ON_DEVICE_LLM.md.
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {

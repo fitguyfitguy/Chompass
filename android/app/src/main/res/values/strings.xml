@@ -982,8 +982,10 @@
     <string name="settings_ai_privacy_ollama">Ollama runs on your own computer. Nothing is sent to a cloud provider.</string>
     <string name="settings_gemini_google_search">Google Search grounding</string>
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this. On Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
+    <string name="settings_ai_features_master">AI features</string>
+    <string name="settings_ai_features_master_footer">Turns off everything that sends data to an AI provider: the coach, photo/text/voice logging, “What if?”, and AI goal suggestions. Barcode, food search, manual entry, saved meals, water, sync, and Health Connect keep working normally.</string>
     <string name="settings_show_coach_tab">Show the coach tab</string>
-    <string name="settings_show_coach_tab_footer">Hides the coach tab from the bottom bar. The coach feature itself stays enabled; a full AI-off switch is planned.</string>
+    <string name="settings_show_coach_tab_footer">Hides the coach tab from the bottom bar. The coach feature itself stays enabled; the AI features switch above turns everything off.</string>
     <string name="settings_portion_clarify">Portion size check</string>
     <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction that rescales without another AI call, plus size chips (small, regular, large, restaurant-size) that re-analyze with your answer.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>
@@ -1215,6 +1217,7 @@
     <string name="ai_error_network_format">Network error: %1$s</string>
     <string name="ai_error_invalid_response">Could not understand the AI response. Please try again.</string>
     <string name="ai_error_timeout">The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI &amp; Speech.</string>
+    <string name="ai_error_disabled">AI features are turned off in Settings → AI &amp; Speech.</string>
     <string name="ai_error_invalid_url">Invalid API URL. Check your provider settings.</string>
     <string name="ai_error_on_device_model_not_downloaded">On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.</string>
     <string name="ai_error_on_device_unsupported_device">This device doesn\'t meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.</string>

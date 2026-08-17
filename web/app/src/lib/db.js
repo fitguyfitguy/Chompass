@@ -304,6 +304,8 @@ export const profile = {
  * @property {"kg"|"lb"} [weightUnit]
  * @property {"cm"|"in"} [heightUnit]
  * @property {boolean} [showWater]
+ * @property {boolean} [coachTabEnabled] Hide the coach tab (Android parity; default true)
+ * @property {boolean} [aiFeaturesEnabled] Master AI-features switch; off = no data to any LLM provider (default true)
  * @property {"static"|"add_active"} [calorieGaugeMode]
  * @property {number} [waterGoalMl]
  * @property {boolean} [adaptiveGoals]
@@ -341,6 +343,8 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   weightUnit: "kg",
   heightUnit: "cm",
   showWater: ANDROID_PREF_DEFAULTS.showWater,
+  coachTabEnabled: true,
+  aiFeaturesEnabled: true,
   calorieGaugeMode: "static",
   waterGoalMl: ANDROID_PREF_DEFAULTS.waterGoalMl,
   adaptiveGoals: false,

@@ -750,6 +750,7 @@
     <string name="ai_error_provider_overloaded">Le fournisseur d\'IA est surchargé pour le moment. Nous avons réessayé plusieurs fois. Réessayez dans une minute ou changez de fournisseur ou de modèle dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_rate_limit">Limite de débit atteinte sur votre clé API. Attendez une minute ou changez de fournisseur dans Réglages → Fournisseur d\'IA. Dans l\'offre gratuite, le modèle Flash-Lite a le quota le plus élevé.</string>
     <string name="ai_error_timeout">Le fournisseur d\'IA a mis trop de temps à répondre. Réessayez ou augmentez le délai dans Réglages → IA et voix.</string>
+    <string name="ai_error_disabled">Les fonctions IA sont désactivées dans Réglages → IA et voix.</string>
     <string name="ai_error_truncated">La réponse de l\'IA a été tronquée. Essayez une question plus courte ou un autre modèle.</string>
     <string name="ai_error_truncated_twice">La réponse de l\'IA a été tronquée deux fois. Essayez une question plus courte ou un autre modèle.</string>
     <string name="ai_error_truncated_twice_description">La réponse de l\'IA a été tronquée deux fois. Essayez une description plus courte ou un autre modèle.</string>
@@ -1359,8 +1360,10 @@
     <string name="settings_section_notifications">Rappels</string>
     <string name="settings_serving_unit_heuristics">Règles de taille de portion</string>
     <string name="settings_serving_unit_mode">Détection de la taille de portion</string>
+    <string name="settings_ai_features_master">Fonctions IA</string>
+    <string name="settings_ai_features_master_footer">Désactive tout ce qui envoie des données à un fournisseur d\'IA : le Coach, la saisie par photo/texte/voix, « Et si... ? » et les suggestions d\'objectifs par IA. Le code-barres, la recherche d\'aliments, la saisie manuelle, les repas enregistrés, l\'eau, la synchronisation et Health Connect continuent de fonctionner normalement.</string>
     <string name="settings_show_coach_tab">Afficher l\'onglet Coach</string>
-    <string name="settings_show_coach_tab_footer">Masque l\'onglet Coach de la barre inférieure. La fonction Coach reste activée ; un interrupteur pour désactiver complètement l\'IA est prévu.</string>
+    <string name="settings_show_coach_tab_footer">Masque l\'onglet Coach de la barre inférieure. La fonction Coach reste activée ; l\'interrupteur des fonctions IA ci-dessus désactive tout.</string>
     <string name="settings_speech_language">Langue</string>
     <string name="settings_suggestion_action_connect">Connecter</string>
     <string name="settings_suggestion_action_setup">Configurer</string>
