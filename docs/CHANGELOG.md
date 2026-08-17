@@ -12,6 +12,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Long settings labels no longer break apart** (Android): a settings row with a long label and a long value, for example the food log sort order in German, used to squeeze the label until every letter sat on its own line. Labels now wrap naturally and values end with an ellipsis.
+
+- **The result sheet's side-by-side actions fit** (Android): when both the tip and the add-photo action are shown with long labels, the second button no longer collapses letter by letter; both truncate cleanly.
+
+- **"Add next ingredient" is translated** (Android): the add-to-meal action on the result sheet now shows in Arabic, Azerbaijani, Hindi, Italian, Japanese, Korean, Dutch, Brazilian Portuguese, Romanian, Russian, Ukrainian and Chinese instead of English.
+
 - **The photo entry sheet no longer shakes when swiping** (Android): the sheet that shows a photo before analysis stays steady while scrolling and with the keyboard open.
 
 - **A photo with a barcode no longer fails when AI cannot run** (Android): when food analysis is unavailable, the app now shows the product from the barcode or QR code in the photo instead of an error. The product data was already being read for the AI; it now doubles as the fallback.
