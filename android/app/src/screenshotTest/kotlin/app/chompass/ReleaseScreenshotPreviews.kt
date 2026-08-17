@@ -22,6 +22,7 @@ import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.ProgressScreenPreviewContent
 import app.chompass.ui.settings.SettingsScreenPreviewContent
 import app.chompass.ui.settings.SettingRowStressPreviewContent
+import app.chompass.ui.settings.SettingRowAlignmentPreviewContent
 import app.chompass.ui.home.ResultSheetTipStripStressPreviewContent
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.ChompassTheme
@@ -62,6 +63,15 @@ private fun ReleaseScreenshotFrame(
                 }
             }
         }
+    }
+}
+
+@PreviewTest
+@Preview(name = "26-settings-row-alignment", device = PHONE, locale = "de")
+@Composable
+fun SettingsRowAlignmentScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.SETTINGS, darkTheme = true, showNavBar = false) {
+        SettingRowAlignmentPreviewContent()
     }
 }
 

@@ -6,6 +6,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [3.17.1] - 2026-08-17
+
+### Fixed
+
+- **Settings values line up on the right again** (Android): values and their arrows sit at the right edge of each row again. Long labels still wrap instead of stacking letter by letter.
+
 ## [3.17.0] - 2026-08-17
 
 ### Added
