@@ -11,10 +11,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.outlined.Height
+import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SmartToy
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -64,6 +68,63 @@ internal fun SettingRowStressPreviewContent() {
                 SettingRow(
                     label = stringResource(R.string.home_display_nutrient_cards),
                     value = stringResource(R.string.home_display_show_active_calories_desc),
+                ) {}
+            }
+        }
+    }
+}
+
+/**
+ * SettingRow alignment guard for release screenshot previews: real personal + AI
+ * rows with different label lengths. Locks in the rule that the value + trailing
+ * icon are pinned to the row's right edge and line up at the same x across rows
+ * (no mid-row floating after the dac1d20 label-wrap change).
+ */
+@Composable
+internal fun SettingRowAlignmentPreviewContent() {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        FudGlassSurface(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 18.dp,
+            padding = 0.dp,
+            allowBlur = false,
+        ) {
+            Column(Modifier.padding(vertical = 4.dp)) {
+                SettingRow(
+                    label = stringResource(R.string.settings_gender),
+                    value = "Männlich",
+                    icon = Icons.Outlined.Person,
+                    inlineMenu = true,
+                ) {}
+                HorizontalDivider()
+                SettingRow(
+                    label = stringResource(R.string.settings_height),
+                    value = "194 cm",
+                    icon = Icons.Outlined.Height,
+                ) {}
+                HorizontalDivider()
+                SettingRow(
+                    label = stringResource(R.string.settings_weight),
+                    value = "93.4 kg",
+                    icon = Icons.Outlined.MonitorWeight,
+                ) {}
+                HorizontalDivider()
+                SettingRow(
+                    label = stringResource(R.string.settings_ai_model),
+                    value = "gemini-2.5-flash",
+                    icon = Icons.Outlined.Tune,
+                ) {}
+                HorizontalDivider()
+                SettingRow(
+                    label = stringResource(R.string.settings_api_key),
+                    value = "••••••••••••",
+                    icon = Icons.Outlined.Key,
                 ) {}
             }
         }

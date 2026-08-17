@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -157,32 +158,44 @@ internal fun SettingRow(
             FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
             Spacer(Modifier.width(14.dp))
         }
-        // Label keeps its natural width (fill = false) so a long sibling value
-        // can never squeeze it to zero width (letter-by-letter vertical stacking);
-        // the value fills the remainder, right-aligned and ellipsized.
+        // Label keeps its natural width (no weight) so a long sibling value can
+        // never squeeze it to zero width (letter-by-letter vertical stacking); it
+        // wraps at 2 lines and ellipsizes. The flexible spacer absorbs ALL leftover
+        // space, so the value + trailing icon stay pinned to the row's right edge.
+        // The value lives in a trailing Box with a fixed-size icon: the icon can
+        // never collapse, and the value ellipsizes against whatever width the label
+        // leaves behind. widthIn(max) only caps the label in the extreme small-phone
+        // + max-font-scale case so the icon always keeps its 24dp slot.
         Text(
             label,
-            modifier = Modifier.weight(1f, fill = false),
+            modifier = Modifier.widthIn(max = 180.dp),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            value,
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.End,
-        )
-        Icon(
-            if (inlineMenu) Icons.Filled.UnfoldMore else Icons.Filled.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-            modifier = if (inlineMenu) Modifier.size(18.dp) else Modifier
-        )
+        Spacer(Modifier.weight(1f))
+        Box {
+            Icon(
+                if (inlineMenu) Icons.Filled.UnfoldMore else Icons.Filled.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(if (inlineMenu) 18.dp else 24.dp)
+            )
+            Text(
+                value,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = if (inlineMenu) 18.dp else 24.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.End,
+            )
+        }
     }
 }
 
