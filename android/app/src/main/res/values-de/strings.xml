@@ -1785,9 +1785,12 @@ für dich ein</string>
 
     <string name="settings_gemini_google_search_footer">Wenn diese Option aktiviert ist, kann Gemini das Web durchsuchen, wenn dies zur Beantwortung einer Eingabeaufforderung hilfreich ist. Suchanfragen werden an Google gesendet. Google stellt deinem Gemini-API-Projekt dies in Rechnung. Bei Gemini-3-Modellen wird jede ausgeführte Suchanfrage auf die Nutzung angerechnet; bei Gemini 2.5 und älteren Versionen erfolgt die Abrechnung pro Eingabeaufforderung, die eine Suche nutzt.</string>
 
+    <string name="settings_ai_features_master">KI-Funktionen</string>
+    <string name="settings_ai_features_master_footer">Schaltet alles aus, was Daten an einen KI-Anbieter sendet: Coach, Foto-/Text-/Sprachprotokollierung, „Was wäre wenn?“ und KI-Zielvorschläge. Barcode, Lebensmittelsuche, manuelle Eingabe, gespeicherte Mahlzeiten, Wasser, Synchronisierung und Health Connect funktionieren weiterhin normal.</string>
+
     <string name="settings_show_coach_tab">Coach-Tab anzeigen</string>
 
-    <string name="settings_show_coach_tab_footer">Entfernt den Coach-Tab aus der unteren Leiste. Die Coach-Funktion selbst bleibt aktiviert; ein vollständiger KI-Schalter ist geplant.</string>
+    <string name="settings_show_coach_tab_footer">Entfernt den Coach-Tab aus der unteren Leiste. Die Coach-Funktion selbst bleibt aktiviert; der KI-Funktionen-Schalter oben schaltet alles aus.</string>
 
     <string name="settings_portion_clarify">Überprüfung der Portionsgröße</string>
 
@@ -2200,6 +2203,7 @@ für dich ein</string>
     <string name="ai_error_invalid_response">Die KI-Antwort konnte nicht verstanden werden. Bitte versuche es erneut.</string>
 
     <string name="ai_error_timeout">Der KI-Anbieter hat zu lange gebraucht, um zu antworten. Versuch es erneut oder erhöhe das Zeitlimit unter Einstellungen → KI &amp; Sprache.</string>
+    <string name="ai_error_disabled">KI-Funktionen sind unter Einstellungen → KI &amp; Sprache deaktiviert.</string>
 
     <string name="ai_error_invalid_url">Ungültige API-URL. Überprüfe deine Anbietereinstellungen.</string>
 

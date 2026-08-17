@@ -44,4 +44,25 @@ class CoachTabToggleTest {
         prefs.setCoachTabEnabled(true)
         assertTrue(prefs.coachTabEnabled.first())
     }
+
+    // Codeberg #20 phase 2: the master AI-features switch defaults ON and hides
+    // the coach tab as well (combined with coachTabEnabled in NoFUDNavHost).
+    // The DataStore is a process-wide singleton, so reset to the default first
+    // (the pristine-default assertion lives in AiFeaturesGateTest).
+    @Test
+    fun aiFeaturesEnabled_persistsAndHidesCoach() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        prefs.setAiFeaturesEnabled(true)
+        assertTrue(prefs.aiFeaturesEnabled.first())
+
+        prefs.setAiFeaturesEnabled(false)
+        assertFalse(prefs.aiFeaturesEnabled.first())
+
+        prefs.setAiFeaturesEnabled(true)
+        assertTrue(prefs.aiFeaturesEnabled.first())
+
+        // Master off hides the coach tab regardless of the tab toggle
+        // (NoFUDNavHost combines both: showCoachTab = coachTabEnabled && aiFeaturesEnabled).
+        assertFalse(bottomTabs(showCoachTab = true && false).any { it.route == ChompassRoutes.COACH })
+    }
 }

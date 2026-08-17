@@ -75,6 +75,10 @@ async function applyThemeAndLocale() {
   const p = await prefs.load();
   await activateFromPrefs(p);
   applyNavLabels();
+  // Codeberg #20: coach tab hidden when the tab toggle or the master
+  // AI-features switch is off; the route redirect below lands on Home.
+  const coachLink = document.getElementById("nav-coach");
+  if (coachLink) coachLink.hidden = p.coachTabEnabled === false || p.aiFeaturesEnabled === false;
   const root = document.documentElement;
   if (p.theme === "system") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", p.theme);
@@ -108,6 +112,15 @@ async function render() {
   if (!ok && currentRoute() !== "onboarding") return;
 
   const route = currentRoute();
+  // Codeberg #20: with the coach tab or AI features off, a stale #/coach
+  // deep link (or tab hidden mid-session) lands on Home like on Android.
+  if (route === "coach") {
+    const p = await prefs.load();
+    if (p.coachTabEnabled === false || p.aiFeaturesEnabled === false) {
+      location.hash = "#/home";
+      return;
+    }
+  }
   document.body.classList.toggle("hide-nav", HIDE_NAV.has(route));
   view.innerHTML = ROUTES[route]();
   navLinks().forEach((a) => {

@@ -974,6 +974,13 @@ export class SettingsView extends HTMLElement {
         </p>
         <form class="entry-form" id="ai-key-form">
           <div class="field">
+            <label class="checkbox-row">
+              <input type="checkbox" name="aiFeaturesEnabled" value="true" ${p.aiFeaturesEnabled !== false ? "checked" : ""} />
+              <span>${escapeHtml(t("settings.ai.ai_features"))}</span>
+            </label>
+            <p class="field-hint">${escapeHtml(t("settings.ai.ai_features_hint"))}</p>
+          </div>
+          <div class="field">
             <label for="ai-provider">Provider</label>
             <select id="ai-provider" name="provider">
               ${Object.entries(PROVIDERS)
@@ -1171,6 +1178,7 @@ export class SettingsView extends HTMLElement {
       if (fbModel === "__custom__") fbModel = String(fd.get("fallbackAiModelCustom") || "").trim();
       const fbProvider = String(fd.get("fallbackAiProvider") || "gemini");
       await prefs.save({
+        aiFeaturesEnabled: fd.get("aiFeaturesEnabled") === "true",
         userContext: String(fd.get("userContext") || ""),
         mealConstituentsEnabled: fd.get("mealConstituentsEnabled") === "true",
         servingUnitInferenceMode: /** @type {any} */ (String(fd.get("servingUnitInferenceMode") || "gramsOnly")),

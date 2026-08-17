@@ -41,6 +41,11 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(DEFAULT_NUTRIENT_CARD_COUNT, fixture.homeNutrientCardCount);
   });
 
+  it("DEFAULT_PREFS coach tab / AI-features defaults match fixture", () => {
+    assert.equal(DEFAULT_PREFS.coachTabEnabled, fixture.coachTabEnabled);
+    assert.equal(DEFAULT_PREFS.aiFeaturesEnabled, fixture.aiFeaturesEnabled);
+  });
+
   it("DEFAULT_PREFS schedule / gauge / week start match fixture", () => {
     assert.equal(DEFAULT_PREFS.calorieGaugeMode, fixture.calorieGaugeMode);
     assert.equal(DEFAULT_PREFS.weekStartsOnMonday, fixture.weekStartsOnMonday);

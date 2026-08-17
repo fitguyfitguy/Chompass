@@ -755,6 +755,7 @@
     <string name="ai_error_provider_overloaded">El proveedor de IA está sobrecargado ahora mismo. Lo hemos reintentado varias veces. Inténtalo de nuevo en un minuto o cambia de proveedor o modelo en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_rate_limit">Se alcanzó el límite de uso de tu clave API. Espera un minuto o cambia a otro proveedor en Ajustes → Proveedor de IA. En el plan gratuito, el modelo Flash-Lite tiene la cuota más alta.</string>
     <string name="ai_error_timeout">El proveedor de IA tardó demasiado en responder. Inténtalo de nuevo o aumenta el tiempo de espera en Ajustes → IA y voz.</string>
+    <string name="ai_error_disabled">Las funciones de IA están desactivadas en Ajustes → IA y voz.</string>
     <string name="ai_error_truncated">La respuesta de la IA se truncó. Prueba con una pregunta más corta o un modelo distinto.</string>
     <string name="ai_error_truncated_twice">La respuesta de la IA se truncó dos veces. Prueba con una pregunta más corta u otro modelo.</string>
     <string name="ai_error_truncated_twice_description">La respuesta de la IA se truncó dos veces. Prueba con una descripción más corta u otro modelo.</string>
@@ -1362,8 +1363,10 @@
     <string name="settings_section_notifications">Recordatorios</string>
     <string name="settings_serving_unit_heuristics">Reglas de tamaño de porción</string>
     <string name="settings_serving_unit_mode">Detección del tamaño de porción</string>
+    <string name="settings_ai_features_master">Funciones de IA</string>
+    <string name="settings_ai_features_master_footer">Desactiva todo lo que envía datos a un proveedor de IA: el Coach, el registro por foto/texto/voz, «¿Qué pasaría si...?» y las sugerencias de objetivos con IA. El código de barras, la búsqueda de alimentos, la entrada manual, las comidas guardadas, el agua, la sincronización y Health Connect siguen funcionando con normalidad.</string>
     <string name="settings_show_coach_tab">Mostrar la pestaña del Coach</string>
-    <string name="settings_show_coach_tab_footer">Oculta la pestaña del Coach de la barra inferior. La función del Coach sigue activada; está previsto un interruptor para desactivar la IA por completo.</string>
+    <string name="settings_show_coach_tab_footer">Oculta la pestaña del Coach de la barra inferior. La función del Coach sigue activada; el interruptor de funciones de IA de arriba lo desactiva todo.</string>
     <string name="settings_speech_language">Idioma</string>
     <string name="settings_suggestion_action_connect">Conectar</string>
     <string name="settings_suggestion_action_setup">Configurar</string>

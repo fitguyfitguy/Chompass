@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import java.io.File
+import kotlinx.coroutines.flow.first
 import java.io.IOException
 import java.security.MessageDigest
 import okhttp3.Request
@@ -28,6 +29,9 @@ class ModelDownloadWorker(
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val container = (applicationContext as? ChompassApp)?.container
+        // Codeberg #20 phase 2: with the master AI switch off, downloading a
+        // model (Gemma is on-device but still an AI feature) is pointless.
+        if (container?.prefs?.aiFeaturesEnabled?.first() == false) return Result.success()
         val entry = ModelCatalog.forVersion(inputData.getString(MODEL_VERSION)) ?: ModelCatalog.default
         val modelsDir = File(applicationContext.filesDir, "models").apply { mkdirs() }
         val target = File(modelsDir, entry.filename)

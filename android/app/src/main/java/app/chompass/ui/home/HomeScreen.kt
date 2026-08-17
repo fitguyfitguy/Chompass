@@ -104,6 +104,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault())
     }
     val weekStartsOnMonday by container.prefs.weekStartsOnMonday.collectAsState(initial = true)
+    // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
+    // and the What-if row, and ignores the camera/voice launcher shortcuts.
+    val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -205,9 +208,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             container.shortcutEntryInbox.value = null
         }
     }
-    val showVoice =
-        showVoiceLocal ||
-            (shortcutEntry == ShortcutEntryAction.VOICE && !ui.isEntryAnalysisBusy)
+    val showVoice = aiFeaturesEnabled &&
+        (showVoiceLocal ||
+            (shortcutEntry == ShortcutEntryAction.VOICE && !ui.isEntryAnalysisBusy))
     // Barcode needs CAMERA permission before the sheet is useful — drive visibility
     // from the local flag only; the sticky inbox re-triggers openBarcodeScanner
     // after a remount until dismiss clears it.
@@ -279,14 +282,19 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 
     // Drive Camera / Barcode openers from the sticky inbox. Voice is derived
     // above (no opener needed). Do not clear here — clear on dismiss/submit.
-    LaunchedEffect(shortcutEntry, ui.isEntryAnalysisBusy, lifecycleOwner) {
+    LaunchedEffect(shortcutEntry, ui.isEntryAnalysisBusy, aiFeaturesEnabled, lifecycleOwner) {
         if (shortcutEntry == null) return@LaunchedEffect
         if (ui.isEntryAnalysisBusy) return@LaunchedEffect
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             when (container.shortcutEntryInbox.value) {
-                ShortcutEntryAction.CAMERA -> openCamera()
+                // AI logging is off: camera/voice shortcuts are no-ops (cleared so
+                // they cannot re-fire after a remount); barcode stays (OFF lookup).
+                ShortcutEntryAction.CAMERA ->
+                    if (aiFeaturesEnabled) openCamera() else clearShortcut(ShortcutEntryAction.CAMERA)
                 ShortcutEntryAction.BARCODE -> openBarcodeScanner()
-                ShortcutEntryAction.VOICE, null -> return@repeatOnLifecycle
+                ShortcutEntryAction.VOICE ->
+                    if (aiFeaturesEnabled) return@repeatOnLifecycle else clearShortcut(ShortcutEntryAction.VOICE)
+                null -> return@repeatOnLifecycle
             }
         }
     }
@@ -693,6 +701,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 
     if (showAddFoodSheet) {
         AddFoodSheet(
+            aiFeaturesEnabled = aiFeaturesEnabled,
             waterTrackingEnabled = ui.waterTrackingEnabled,
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
@@ -1067,7 +1076,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             portionPreConfirmed = ui.pendingPortionPreConfirmed,
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
             onReprocessPortion = { answer -> vm.reprocessPendingAnalysis(answer) },
-            onWhatIfSuggestion = vm::suggestMealWhatIf,
+            onWhatIfSuggestion = if (aiFeaturesEnabled) vm::suggestMealWhatIf else null,
             onReanalyzeWithTip = if (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty()) {
                 { note, grams -> vm.reanalyzeWithTip(note, grams) }
             } else {

@@ -64,6 +64,9 @@ export async function analyzeFoodEntry({
   prefsOverride,
 }) {
   const appPrefs = prefsOverride ?? (await prefs.load());
+  // Codeberg #20 phase 2: the master AI-features switch gates food analysis
+  // before any provider request; barcode/offline search + manual stay.
+  if (appPrefs.aiFeaturesEnabled === false) throw new Error(t("errors.ai_features_disabled"));
   const imageList = images?.length ? images : image ? [image] : [];
   if (!text && !imageList.length) throw new Error(t("errors.provide_photo_or_text"));
 
