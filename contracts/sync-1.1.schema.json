@@ -107,6 +107,7 @@
           "type": "object",
           "properties": {
             "name": { "type": "string" },
+            "emoji": { "type": ["string", "null"] },
             "date": { "type": "string" },
             "time": { "type": "string" },
             "meal_type": { "type": "string" },

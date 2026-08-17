@@ -199,6 +199,7 @@ export function foodEntryToSyncWire(item, updatedAt, deletedAt = null) {
     updated_at: updatedAt,
     deleted_at: deletedAt,
     name: item.name,
+    emoji: item.emoji ?? null,
     date: item.date,
     time: item.time,
     meal_type: item.mealType,
@@ -231,6 +232,7 @@ export function foodEntryFromSyncWire(wire) {
   const entry = {
     id: String(wire.id),
     name: String(wire.name ?? ""),
+    emoji: wire.emoji ?? null,
     quantityG: wire.quantity_g ?? null,
     calories: Number(wire.calories) || 0,
     proteinG: Number(wire.protein_g) || 0,
