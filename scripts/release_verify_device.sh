@@ -233,7 +233,7 @@ if want p2-1; then
     else
       PROGRESS_TEXT="$(ui_text)"
       if app_alive && ! logcat_has_fatal && \
-         grep -qE "1 Woche|1W|1 Monat|1M|3 Monate|3M|6 Monate|6M|1 Jahr|1Y|Gewicht eintragen|Log weight" <<< "${PROGRESS_TEXT}"; then
+         grep -qE "1 Woche|1W|1 Monat|1M|3 Monate|3M|6 Monate|6M|1 Jahr|1Y|Gewicht eintragen|Log weight|1Н|1М|3М|6М|1Г|Записать вес" <<< "${PROGRESS_TEXT}"; then
         ok "known dest 'chompass://go/progress' navigated to Progress tab"
       else
         bad "known go-destination did not navigate to Progress (UI: ${PROGRESS_TEXT:0:120})"
