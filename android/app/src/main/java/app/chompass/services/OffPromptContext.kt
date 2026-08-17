@@ -96,14 +96,15 @@ Do not invent conflicting macros for the matched packaged item when this data is
 
     /**
      * Decode barcodes from [imageBytesList], look up OFF (cache/network), return
-     * prompt block or null. Fail-soft: never throws; timeout/miss → null.
+     * prompt block + resolved analyses or null. Fail-soft: never throws;
+     * timeout/miss → null.
      */
     suspend fun collectFromImages(
         imageBytesList: List<ByteArray>,
         prefs: PreferencesStore?,
-    ): String? {
+    ): OffContextResult? {
         if (prefs == null || imageBytesList.isEmpty()) return null
-        val codes = BarcodeImageDecoder.decodeAll(imageBytesList)
+        val codes = BarcodeImageDecoder.decodeAll(imageBytesList).distinct()
         if (codes.isEmpty()) return null
         val analyses = withTimeoutOrNull(LOOKUP_TIMEOUT_MS) {
             coroutineScope {
@@ -115,7 +116,31 @@ Do not invent conflicting macros for the matched packaged item when this data is
             }
         }.orEmpty()
         if (analyses.isEmpty()) return null
-        return formatFromAnalyses(analyses).takeIf { it.isNotBlank() }
+        return OffContextResult(
+            promptBlock = formatFromAnalyses(analyses).takeIf { it.isNotBlank() },
+            analyses = analyses,
+        )
+    }
+
+    /**
+     * OFF products resolved from a photo's barcodes: the formatted AI prompt
+     * block plus the raw analyses, so a photo whose AI analysis fails
+     * completely can fall back to the barcode lookup result.
+     */
+    data class OffContextResult(
+        val promptBlock: String?,
+        val analyses: List<FoodAnalysis>,
+    ) {
+        /**
+         * Exactly one distinct OFF product (deduped by source id) — the only
+         * unambiguous fallback. Multiple different products → null (keep the
+         * AI error; picking one could log the wrong meal).
+         */
+        val singleDistinctAnalysis: FoodAnalysis?
+            get() = analyses
+                .filter { it.grounding?.sourceId != null }
+                .distinctBy { it.grounding?.sourceId }
+                .singleOrNull()
     }
 
     private fun per100Line(hit: ProductHit): String? {
