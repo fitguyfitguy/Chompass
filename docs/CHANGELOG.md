@@ -12,6 +12,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **The photo entry sheet no longer shakes when swiping** (Android): the sheet that shows a photo before analysis stays steady while scrolling and with the keyboard open.
+
+- **A photo with a barcode no longer fails when AI cannot run** (Android): when food analysis is unavailable, the app now shows the product from the barcode or QR code in the photo instead of an error. The product data was already being read for the AI; it now doubles as the fallback.
+
 - **Log Weight and Log Body Fat popups scroll when full** (Android): the Advanced date and time section and the Save button stay reachable on small screens and at large font sizes. Closes Codeberg [#29](https://codeberg.org/fitguy/Chompass/issues/29) by [@tuxMode](https://codeberg.org/tuxMode).
 
 - **Adding a search result no longer fails on some products** (Android): some products found in the food search could not be added because their code does not pass the standard check digit, even though Open Food Facts lists them. They now add normally. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
