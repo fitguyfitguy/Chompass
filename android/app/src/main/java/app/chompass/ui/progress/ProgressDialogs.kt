@@ -51,7 +51,7 @@ internal fun AddWeightDialog(
     var pickedDate by remember { mutableStateOf(LocalDate.now()) }
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
         Text(stringResource(R.string.progress_log_weight_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
         UnitToggle(stringResource(R.string.unit_kg), stringResource(R.string.unit_lbs), metric, { metric = it; onUnitChange(it) }, Modifier.fillMaxWidth())
@@ -154,7 +154,7 @@ internal fun AddBodyFatDialog(
     var pickedDate by remember { mutableStateOf(LocalDate.now()) }
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
         Text(stringResource(R.string.progress_log_body_fat_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         DecimalWheelPicker(
             value = pct.coerceIn(3.0, 60.0),
