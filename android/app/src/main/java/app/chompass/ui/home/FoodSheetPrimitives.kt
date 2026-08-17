@@ -326,7 +326,11 @@ internal fun ServingQuantityCard(
     val pickerOptions = ServingUnitOption.pickerOptions(unitOptions)
     val selectedOption = ServingUnitOption.optionMatching(selectedUnitId, unitOptions)
     val parsedQuantity = ServingUnitOption.parseQuantity(quantityText)
-    val selectedUnitLabel = selectedOption.displayUnit(parsedQuantity)
+    // App-generated "serving" unit (OFF barcode / AI fallback) is English in the
+    // model; display the localized label(s) instead (unit_serving / _plural).
+    val servingLabel = stringResource(R.string.unit_serving)
+    val servingPluralLabel = stringResource(R.string.unit_serving_plural)
+    val selectedUnitLabel = selectedOption.displayUnit(parsedQuantity, servingLabel, servingPluralLabel)
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val dismissKeyboard = {
@@ -499,7 +503,9 @@ internal fun ServingQuantityCard(
                     ) {
                         for (option in pickerOptions) {
                             val optionLabel = option.displayUnit(
-                                if (option.id == selectedUnitId) parsedQuantity else null
+                                if (option.id == selectedUnitId) parsedQuantity else null,
+                                servingLabel,
+                                servingPluralLabel,
                             )
                             SheetGlassDropdownMenuItem(
                                 label = optionLabel,

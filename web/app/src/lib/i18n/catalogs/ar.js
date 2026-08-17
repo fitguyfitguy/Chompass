@@ -261,6 +261,8 @@ export const ar = Object.freeze({
   "entry.constituents.unit": "الوحدة",
   "entry.constituents.item_fallback": "مكون",
   "entry.constituents.macros": "{calories} سعرة · ب {protein} · ك {carbs} · د {fat}",
+  "unit.serving": "حصة",
+  "unit.serving_plural": "حصص",
   "a11y.open_menu": "فتح القائمة",
   "a11y.close_sheet": "إغلاق اللوحة",
   "a11y.add_food": "إضافة طعام",

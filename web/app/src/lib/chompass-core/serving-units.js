@@ -27,6 +27,9 @@ export const GRAMS_OPTION = { unit: "g", gramsPerUnit: 1.0 };
 
 const GRAM_UNITS = new Set(["g", "gram", "grams"]);
 
+/** App-generated "serving" unit ids (OFF barcode lookup / AI fallback). */
+const SERVING_UNITS = new Set(["serving", "servings"]);
+
 /** @param {ServingUnitOption} option */
 export function normalizedUnit(option) {
   return String(option.unit ?? "")
@@ -61,10 +64,18 @@ export function quantityFor(option, totalGrams) {
 /**
  * @param {ServingUnitOption} option
  * @param {number|null|undefined} quantity
+ * @param {string} [servingLabel] localized "serving" label (app-generated unit)
+ * @param {string} [servingPluralLabel] localized plural form
  */
-export function displayUnit(option, quantity) {
-  if (quantity == null || Math.abs(quantity - 1.0) <= 0.0001) return option.unit;
+export function displayUnit(option, quantity, servingLabel, servingPluralLabel) {
   const id = normalizedUnit(option);
+  // App-generated "serving" option (OFF barcode / AI fallback): the raw unit
+  // string is English, so the UI passes the localized label(s).
+  if (SERVING_UNITS.has(id) && servingLabel) {
+    const singular = quantity == null || Math.abs(quantity - 1.0) <= 0.0001;
+    return singular ? servingLabel : (servingPluralLabel || servingLabel);
+  }
+  if (quantity == null || Math.abs(quantity - 1.0) <= 0.0001) return option.unit;
   if (GRAM_UNITS.has(id) || id === "kg" || id === "mg" || id === "ml" || id === "l" || id === "oz" || id === "fl oz" || id === "tbsp" || id === "tsp") {
     return option.unit;
   }

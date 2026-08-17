@@ -57,6 +57,8 @@
     <string name="unit_ft">ft</string>
     <string name="unit_in">in</string>
     <string name="unit_ft_in">ft / in</string>
+    <string name="unit_serving">serving</string>
+    <string name="unit_serving_plural">servings</string>
     <string name="kcal_value_format">%1$d kcal</string>
     <string name="grams_value_format">%1$dg</string>
     <string name="grams_value_decimal_format">%1$.1fg</string>

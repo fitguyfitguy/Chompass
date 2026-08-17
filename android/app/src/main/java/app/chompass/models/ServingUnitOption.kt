@@ -35,7 +35,17 @@ data class ServingUnitOption(
         return if (gramsPerUnit > 0) totalGrams / gramsPerUnit else totalGrams
     }
 
-    fun displayUnit(quantity: Double?): String {
+    fun displayUnit(
+        quantity: Double?,
+        servingLabel: String? = null,
+        servingPluralLabel: String? = null,
+    ): String {
+        // App-generated "serving" option (OFF barcode / AI fallback): the raw
+        // unit string is English, so the UI passes the localized label(s).
+        if (normalizedUnit in SERVING_UNITS && servingLabel != null) {
+            val singular = quantity == null || kotlin.math.abs(quantity - 1.0) <= 0.0001
+            return if (singular) servingLabel else (servingPluralLabel ?: servingLabel)
+        }
         if (quantity == null || kotlin.math.abs(quantity - 1.0) <= 0.0001) return unit
         return when (normalizedUnit) {
             "g", "gram", "grams", "kg", "mg", "ml", "l", "oz", "fl oz", "tbsp", "tsp" -> unit
@@ -45,6 +55,9 @@ data class ServingUnitOption(
     }
 
     companion object {
+        /** App-generated "serving" unit ids (OFF barcode lookup / AI fallback). */
+        private val SERVING_UNITS = setOf("serving", "servings")
+
         val grams = ServingUnitOption(unit = "g", gramsPerUnit = 1.0)
 
         fun normalizedOptions(options: List<ServingUnitOption>, totalGrams: Double): List<ServingUnitOption> {

@@ -45,6 +45,8 @@
 
     <string name="unit_cm">см</string>
     <string name="unit_kg">кг</string>
+    <string name="unit_serving">порция</string>
+    <string name="unit_serving_plural">порции</string>
 
 
 

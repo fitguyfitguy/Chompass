@@ -1560,6 +1560,8 @@
     <string name="unit_mg">mg</string>
     <string name="unit_ml">ml</string>
     <string name="unit_percent">%</string>
+    <string name="unit_serving">portion</string>
+    <string name="unit_serving_plural">portions</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="vm_adaptive_on_message">Les Objectifs adaptatifs sont activés. Chompass vérifiera une fois par semaine une fois que suffisamment de données alimentaires et de poids existeront.</string>
     <string name="vm_goals_recalculated">Objectifs recalculés</string>

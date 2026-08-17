@@ -261,6 +261,8 @@ export const ro = Object.freeze({
   "entry.constituents.unit": "Unitate",
   "entry.constituents.item_fallback": "Ingredient",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · G {fat}",
+  "unit.serving": "porție",
+  "unit.serving_plural": "porții",
   "a11y.open_menu": "Deschide meniul",
   "a11y.close_sheet": "Închide panoul",
   "a11y.add_food": "Adaugă mâncare",

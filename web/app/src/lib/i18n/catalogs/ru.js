@@ -261,6 +261,8 @@ export const ru = Object.freeze({
   "entry.constituents.unit": "Единица",
   "entry.constituents.item_fallback": "Ингредиент",
   "entry.constituents.macros": "{calories} ккал · Б {protein} · У {carbs} · Ж {fat}",
+  "unit.serving": "порция",
+  "unit.serving_plural": "порции",
   "a11y.open_menu": "Открыть меню",
   "a11y.close_sheet": "Закрыть панель",
   "a11y.add_food": "Добавить еду",
