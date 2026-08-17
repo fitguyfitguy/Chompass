@@ -61,6 +61,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -944,7 +945,7 @@ fun FoodResultSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EntryAnalysisTipStrip(
+internal fun EntryAnalysisTipStrip(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     note: String,
@@ -963,20 +964,30 @@ private fun EntryAnalysisTipStrip(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (canOfferTip) {
-                TextButton(onClick = { onExpandedChange(!expanded) }) {
+                TextButton(
+                    onClick = { onExpandedChange(!expanded) },
+                    modifier = Modifier.weight(1f, fill = false),
+                ) {
                     Text(
                         stringResource(R.string.entry_analysis_tip_cta),
                         color = AppColors.Calorie,
                         fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
             if (canAddPhoto) {
-                TextButton(onClick = onAddPhoto) {
+                TextButton(
+                    onClick = onAddPhoto,
+                    modifier = Modifier.weight(1f, fill = false),
+                ) {
                     Text(
                         stringResource(R.string.entry_analysis_add_photo),
                         color = AppColors.Calorie,
                         fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -1464,5 +1475,28 @@ private fun PortionClarifyRow(
             Spacer(Modifier.height(4.dp))
             Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
         }
+    }
+}
+
+/**
+ * Stress layout for screenshot previews: the two side-by-side result-sheet
+ * actions (tip CTA + add-photo) with long localized labels must ellipsize,
+ * never squeeze the second button to zero width (letter-by-letter stacking).
+ */
+@Composable
+internal fun ResultSheetTipStripStressPreviewContent() {
+    Column(Modifier.padding(12.dp)) {
+        EntryAnalysisTipStrip(
+            expanded = false,
+            onExpandedChange = {},
+            note = "",
+            onNoteChange = {},
+            weightText = "",
+            onWeightChange = {},
+            canOfferTip = true,
+            canAddPhoto = true,
+            onApplyTip = {},
+            onAddPhoto = {},
+        )
     }
 }
