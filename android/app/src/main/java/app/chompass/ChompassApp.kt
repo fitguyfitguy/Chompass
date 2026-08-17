@@ -257,6 +257,7 @@ class AppContainer(app: ChompassApp) {
         weightRepository = weightRepository,
         bodyMeasurementRepository = bodyMeasurementRepository,
         foodAnalysis = foodAnalysis,
+        strings = appContext::getString,
     )
 
     /**

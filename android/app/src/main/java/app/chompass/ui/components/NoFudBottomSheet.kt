@@ -2,6 +2,8 @@ package app.chompass.ui.components
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
@@ -165,3 +167,46 @@ internal fun shouldBlockSheetDrag(
 ): Boolean =
     (blockTopEdge && availableY > 0f && !canScrollBackward) ||
         (blockBottomEdge && availableY < 0f && !canScrollForward)
+
+/**
+ * LazyColumn for sheet content with the sheet-drag edge blocking applied by
+ * default.
+ *
+ * The recurring sheet-shake class (edit-food, review, photo sheets) came from
+ * LazyColumn overscroll at list edges fighting the ModalBottomSheet
+ * drag-to-dismiss gesture. The fix was an opt-in modifier
+ * ([blockSheetDragAtLazyListEdges]) applied per sheet, so every new sheet
+ * re-hit the bug. Use this wrapper for new sheet lists: it applies the
+ * blocking automatically. Opt out per edge only when the sheet genuinely
+ * wants drag-from-content dismissal at that edge (e.g. short review sheets
+ * keep [blockTopEdge] = false so a finger on content still pulls the sheet).
+ *
+ * @param listState the list state (remembered by the caller so it can scroll
+ *   programmatically, e.g. to a selected item).
+ * @param blockTopEdge consume downward drags at the list start (default on;
+ *   set false to keep drag-from-content dismissal at the top edge).
+ * @param blockBottomEdge consume upward drags at the list end (default on;
+ *   suppresses the bottom-edge overscroll vs drag-to-dismiss shake).
+ */
+@Composable
+fun ChompassSheetLazyColumn(
+    listState: LazyListState,
+    modifier: Modifier = Modifier,
+    blockTopEdge: Boolean = true,
+    blockBottomEdge: Boolean = true,
+    verticalArrangement: androidx.compose.foundation.layout.Arrangement.Vertical = androidx.compose.foundation.layout.Arrangement.Top,
+    horizontalAlignment: androidx.compose.ui.Alignment.Horizontal = androidx.compose.ui.Alignment.Start,
+    content: LazyListScope.() -> Unit,
+) {
+    LazyColumn(
+        state = listState,
+        modifier = modifier.blockSheetDragAtLazyListEdges(
+            listState,
+            blockTopEdge = blockTopEdge,
+            blockBottomEdge = blockBottomEdge,
+        ),
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment,
+        content = content,
+    )
+}

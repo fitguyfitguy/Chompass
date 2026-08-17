@@ -1617,7 +1617,7 @@ für dich ein</string>
 
     <string name="settings_weather_source_meteo_sub">Rufe eine Vorhersage für eine Stadt deiner Wahl ab – kein Konto, kein Schlüssel, keine Standortberechtigung erforderlich.</string>
 
-    <string name="settings_weather_source_help">Die erwartete Höchsttemperatur fließt in das dynamische Ziel ein (+4 % pro °C über 25 °C, begrenzt auf +60 %). Wenn die Quelle keine aktuellen Daten bereitstellt, wird stattdessen der manuell eingegebene Wert verwendet.</string>
+    <string name="settings_weather_source_help" formatted="false">Die erwartete Höchsttemperatur fließt in das dynamische Ziel ein (+4 % pro °C über 25 °C, begrenzt auf +60 %). Wenn die Quelle keine aktuellen Daten bereitstellt, wird stattdessen der manuell eingegebene Wert verwendet.</string>
 
     <string name="settings_weather_city">Stadt</string>
 
@@ -2739,6 +2739,10 @@ für dich ein</string>
     <string name="vm_not_enough_energy">Nicht genügend Energiedaten</string>
 
     <string name="vm_adaptive_on_message">Adaptive Ziele sind aktiviert. Chompass führt einmal pro Woche eine Überprüfung durch, sobald genügend Daten zu Ernährung und Gewicht vorliegen.</string>
+
+    <string name="vm_adaptive_updated">Aktualisiert auf %1$d kcal auf Basis deiner neuesten Daten.</string>
+    <string name="vm_goals_updated">Aktualisiert auf %1$d kcal.</string>
+    <string name="progress_chart_loading">Diagramm wird geladen…</string>
 
     <string name="vm_goals_recalculated">Ziele neu berechnet</string>
 

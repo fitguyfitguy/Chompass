@@ -75,6 +75,27 @@ enum class FoodLogSortOrder(val storageValue: String, val displayName: String, v
     }
 }
 
+/**
+ * Whether the home hero needs a Health Connect activity snapshot (steps or
+ * active calories shown). Pure decision extracted from [HomeViewModel] so the
+ * refresh path is unit-testable (Codeberg #22 race family).
+ */
+internal fun needsActivitySnapshotFor(display: HomeDisplayPreferences): Boolean =
+    display.showSteps || display.showActiveCalories
+
+/**
+ * Whether the hero needs a measured energy read (ADD_ACTIVE mode with a live
+ * measured source). Debug activity days count as a live source even when
+ * Health Connect is off, so seeded demo days still reach the gauge.
+ */
+internal fun needsMeasuredEnergyFor(
+    display: HomeDisplayPreferences,
+    healthConnectEnabled: Boolean,
+    hasDebugActivityDays: Boolean,
+): Boolean =
+    display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE &&
+        (healthConnectEnabled || hasDebugActivityDays)
+
 data class HomeUiState(
     val date: LocalDate = LocalDate.now(),
     val profile: UserProfile? = null,
@@ -747,14 +768,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val day = _selectedDate.value
             val display = _ui.value.homeDisplay
-            val needsActivitySnapshot = display.showSteps || display.showActiveCalories
-            // Debug activity days are a live measured source like Health Connect
-            // energy: when present the hero must read them even with HC disabled
-            // (the seeder turns HC off), or the seeded burn never reaches the gauge.
-            val needsMeasuredEnergy = display.calorieDisplayMode ==
-                HomeCalorieDisplayMode.ADD_ACTIVE &&
-                (container.prefs.healthConnectEnabled.first() ||
-                    !container.prefs.debugActivityDaysJson().isNullOrEmpty())
+            val needsActivitySnapshot = needsActivitySnapshotFor(display)
+            val needsMeasuredEnergy = needsMeasuredEnergyFor(
+                display = display,
+                healthConnectEnabled = container.prefs.healthConnectEnabled.first(),
+                hasDebugActivityDays = !container.prefs.debugActivityDaysJson().isNullOrEmpty(),
+            )
             if (!needsActivitySnapshot && !needsMeasuredEnergy) {
                 if (activitySnapshotGuard.isCurrent(gen)) {
                     _ui.update { it.copy(activitySnapshot = HomeActivitySnapshot(date = day)) }

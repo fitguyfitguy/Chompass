@@ -220,6 +220,30 @@ def main() -> int:
             print(f"locales over --max-missing {args.max_missing}: {bad}", file=sys.stderr)
             return 1
 
+    # Per-locale caps from the parity contract (locales.json maxMissing):
+    # complete locales (de/es/fr) must stay at 0; the rest carry a cap set to
+    # the current debt + a small buffer, so adding English strings without
+    # translations fails the parity gate instead of silently growing the gap.
+    # Bump caps down as translations land; bump up only when English grows.
+    over_cap = []
+    for loc in contract["locales"]:
+        if loc["id"] == "en":
+            continue
+        cap = loc.get("maxMissing")
+        if cap is None:
+            continue
+        n = next((n for lid, n in missing_report if lid == loc["id"]), 0)
+        if n > cap:
+            over_cap.append((loc["id"], n, cap))
+    if over_cap:
+        for lid, n, cap in over_cap:
+            print(
+                f"{lid}: {n} missing keys exceeds contract cap {cap} "
+                "(translate new strings or bump maxMissing in testdata/parity/locales.json)",
+                file=sys.stderr,
+            )
+        return 1
+
     print("Android string check OK")
     return 0
 

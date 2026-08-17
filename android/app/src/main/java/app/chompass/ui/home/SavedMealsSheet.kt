@@ -1,7 +1,7 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -429,12 +428,11 @@ private fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
 @Composable
 private fun <T> SavedList(items: List<T>, row: @Composable (T) -> Unit) {
     val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
+    ChompassSheetLazyColumn(
+        listState = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .heightConstraint()
-            .blockSheetDragAtLazyListEdges(listState),
+            .heightConstraint(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(items) { row(it) }
@@ -462,12 +460,11 @@ private fun FavoritesReorderableList(
 ) {
     val listState = rememberLazyListState()
     val lastIndex = favorites.lastIndex
-    LazyColumn(
-        state = listState,
+    ChompassSheetLazyColumn(
+        listState = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .heightConstraint()
-            .blockSheetDragAtLazyListEdges(listState),
+            .heightConstraint(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(

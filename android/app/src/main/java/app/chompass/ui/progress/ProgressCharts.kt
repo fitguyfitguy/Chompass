@@ -1,6 +1,7 @@
 package app.chompass.ui.progress
 
 import app.chompass.models.LocaleFormat
+import app.chompass.R
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -809,7 +811,7 @@ internal fun ChartPlaceholder(height: Dp = 180.dp) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Loading chart...",
+            text = stringResource(R.string.progress_chart_loading),
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
         )

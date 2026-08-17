@@ -5,9 +5,9 @@ import app.chompass.R
 import app.chompass.models.NutrientSourceKind
 import app.chompass.services.grounding.DatabaseSearchResult
 import app.chompass.services.grounding.FoodDatabaseSearch
+import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.FudGlassTextField
-import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.theme.AppColors
@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -192,11 +191,10 @@ fun FoodDatabaseSearchSheet(
                 }
 
                 else -> {
-                    LazyColumn(
-                        state = listState,
+                    ChompassSheetLazyColumn(
+                        listState = listState,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .blockSheetDragAtLazyListEdges(listState),
+                            .fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(results, key = { "${it.sourceKind}:${it.sourceId}" }) { result ->
