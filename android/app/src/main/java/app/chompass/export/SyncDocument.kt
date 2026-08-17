@@ -406,6 +406,7 @@ object SyncDocument {
             put("updated_at", updatedAt)
             putNullable("deleted_at", deletedAt)
             put("name", e.name)
+            putNullable("emoji", e.emoji)
             put("date", localDate.toString())
             put("time", String.format("%02d:%02d", localTime.hour, localTime.minute))
             put("meal_type", e.mealType.name.lowercase())
@@ -512,6 +513,7 @@ object SyncDocument {
         val entry = FoodEntry(
             id = runCatching { UUID.fromString(id) }.getOrElse { UUID.nameUUIDFromBytes(id.toByteArray()) },
             name = name,
+            emoji = o["emoji"]?.asString()?.takeIf { it.isNotBlank() },
             calories = o["calories"]?.asInt() ?: 0,
             protein = o["protein_g"]?.asDouble() ?: 0.0,
             carbs = o["carbs_g"]?.asDouble() ?: 0.0,

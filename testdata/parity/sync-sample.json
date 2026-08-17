@@ -11,6 +11,7 @@
       "updated_at": "2026-07-24T12:00:00Z",
       "deleted_at": null,
       "name": "Chicken salad",
+      "emoji": "\ud83e\udd57",
       "date": "2026-07-24",
       "time": "12:30",
       "meal_type": "lunch",

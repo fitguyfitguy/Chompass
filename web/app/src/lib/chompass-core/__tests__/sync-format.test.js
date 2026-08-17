@@ -36,6 +36,7 @@ test("exportSyncDocument round-trips food id", () => {
       {
         id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
         name: "Egg",
+        emoji: "🥚",
         calories: 70,
         proteinG: 6,
         carbsG: 0.5,
@@ -57,6 +58,7 @@ test("exportSyncDocument round-trips food id", () => {
   const parsed = parseSyncDocument(doc);
   assert.equal(parsed.export.format_version, "1.1");
   assert.equal(parsed.food_entries[0].id, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
+  assert.equal(parsed.food_entries[0].emoji, "🥚");
   assert.equal(parsed.food_entries[0].source, "manually_edited");
   assert.equal(parsed.food_entries[0].selected_serving_unit, "piece");
   assert.equal(parsed.food_entries[0].serving_unit_options[0].grams_per_unit, 50);

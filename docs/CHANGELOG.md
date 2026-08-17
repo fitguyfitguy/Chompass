@@ -6,6 +6,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [3.17.2] - 2026-08-17
+
+### Fixed
+
+- **WebDAV sync and sync-file import no longer drop food photos and emoji** (Android + web): after a successful sync or import, food photos were replaced by the default picture and emoji were lost. Photos are still kept out of the backup file on purpose, but they now stay in place locally, and emoji are part of the backup again. Fixes Codeberg [#34](https://codeberg.org/fitguy/Chompass/issues/34) by [@tuxMode](https://codeberg.org/tuxMode).
+
 ## [3.17.1] - 2026-08-17
 
 ### Fixed

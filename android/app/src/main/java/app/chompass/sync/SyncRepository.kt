@@ -9,6 +9,7 @@ import app.chompass.data.KeyStore
 import app.chompass.data.PreferencesStore
 import app.chompass.data.SyncRevision
 import app.chompass.export.SyncDocument
+import app.chompass.models.FoodEntry
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -229,15 +230,23 @@ class SyncRepository(
             revisionMap[id] = SyncRevision(updatedAt, deletedAt, kind)
         }
 
+        // Photos are excluded from the wire format on purpose (see SyncDocument),
+        // so the re-parsed rows carry no imageFilename. Emoji only ride the wire
+        // since this fix, so rows merged from older exports lack them too.
+        // Re-attach the local visual fields before replacing, otherwise a
+        // sync/import drops every food photo and emoji (#34).
+        val localFood = prefs.foodEntries.first().associateBy { it.id }
+        val localFavorites = prefs.favoriteFoodEntries.first().associateBy { it.id }
+
         val liveFood = doc.foodEntries.mapNotNull { wire ->
             track(wire.id, wire.updatedAt, wire.deletedAt, "food")
-            wire.entry
+            wire.entry?.let { reattachLocalFields(it, localFood) }
         }
         prefs.replaceAllFoodEntries(liveFood)
 
         val liveFavorites = doc.favorites.mapNotNull { wire ->
             track(wire.id, wire.updatedAt, wire.deletedAt, "favorite")
-            wire.entry
+            wire.entry?.let { reattachLocalFields(it, localFavorites) }
         }
         prefs.setFavoriteFoodEntries(liveFavorites)
         prefs.setFavoriteKeys(liveFavorites.map { it.favoriteKey }.toSet())
@@ -275,4 +284,19 @@ class SyncRepository(
         prefs.setSyncRevisions(revisionMap)
         return SyncResult.Success(appContext.getString(R.string.sync_success_applied))
     }
+}
+
+/**
+ * The sync wire never carries photos, and only carries entry emoji since the
+ * #34 fix, so a merged row is usually parsed without them. Keep the local
+ * visual fields (the wire never overwrites one either; the emoji picker only
+ * sets, never removes) so applying a merged document cannot drop food photos
+ * or emoji (#34).
+ */
+internal fun reattachLocalFields(entry: FoodEntry, local: Map<UUID, FoodEntry>): FoodEntry {
+    val localEntry = local[entry.id] ?: return entry
+    return entry.copy(
+        imageFilename = entry.imageFilename ?: localEntry.imageFilename,
+        emoji = entry.emoji ?: localEntry.emoji,
+    )
 }
