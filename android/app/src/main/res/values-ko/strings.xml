@@ -262,6 +262,7 @@
     <string name="add_food_photo_gallery">갤러리에서 선택</string>
     <string name="add_food_add_label_photo">라벨 사진 추가</string>
     <string name="add_food_add_photo">사진 추가</string>
+    <string name="progressive_meal_add_next">다음 재료 추가</string>
     <string name="text_input_title">먹은 것을 설명하세요</string>
     <string name="home_kcal_of_format">/ %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s 남음</string>
