@@ -1,7 +1,7 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.components.blockSheetDragAtLazyListEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -117,11 +116,10 @@ internal fun CopyFromDaySheet(
             }
         )
 
-        LazyColumn(
-            state = listState,
+        ChompassSheetLazyColumn(
+            listState = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .blockSheetDragAtLazyListEdges(listState)
                 .padding(bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {

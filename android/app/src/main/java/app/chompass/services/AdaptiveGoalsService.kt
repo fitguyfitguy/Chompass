@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.data.BodyMeasurementRepository
+import app.chompass.R
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
@@ -24,6 +25,7 @@ class AdaptiveGoalsService(
     private val weightRepository: WeightRepository,
     private val bodyMeasurementRepository: BodyMeasurementRepository,
     private val foodAnalysis: FoodAnalysisService,
+    private val strings: (Int, Array<out Any>) -> String,
 ) {
     private var refreshInFlight = false
 
@@ -97,7 +99,7 @@ class AdaptiveGoalsService(
                 profile = next,
                 changed = true,
                 updatedCalories = result.calories,
-                message = "Updated to ${result.calories} kcal from your latest data." +
+                message = strings(R.string.vm_adaptive_updated, arrayOf(result.calories)) +
                     (result.reason?.let { " $it" } ?: "")
             )
         } finally {

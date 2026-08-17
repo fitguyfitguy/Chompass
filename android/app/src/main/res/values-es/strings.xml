@@ -1564,6 +1564,10 @@
     <string name="unit_serving_plural">raciones</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="vm_adaptive_on_message">Los Objetivos adaptativos están activados. Chompass hará la comprobación una vez por semana cuando existan suficientes datos de comida y peso.</string>
+
+    <string name="vm_adaptive_updated">Actualizado a %1$d kcal según tus datos más recientes.</string>
+    <string name="vm_goals_updated">Actualizado a %1$d kcal.</string>
+    <string name="progress_chart_loading">Cargando el gráfico…</string>
     <string name="vm_goals_recalculated">Objetivos recalculados</string>
     <string name="vm_health_connect_needed">Se necesita Health Connect</string>
     <string name="vm_health_connect_needed_msg">Permite que Chompass lea tus Calorías activas y totales en Health Connect y vuelve a activar Quema de energía.</string>

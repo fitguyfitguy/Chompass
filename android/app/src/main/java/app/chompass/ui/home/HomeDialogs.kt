@@ -620,7 +620,7 @@ internal fun ManualEntryDialog(
                     NumberField(
                         stringResource(R.string.manual_fiber),
                         micros.fiber?.let { ServingUnitOption.formatQuantity(it) } ?: "",
-                        { micros = micros.with(MicronutrientField.FIBER, decimalValueOrNull(it)) },
+                        { micros = micros.with(MicronutrientField.FIBER, parseDecimalValue(it)) },
                         Modifier.weight(1f), decimal = true, accentColor = AppColors.Fiber,
                     )
                 }
@@ -648,7 +648,7 @@ internal fun ManualEntryDialog(
                                 unit = stringResource(field.unitRes),
                                 unlocked = true,
                                 dim = true,
-                                onEdit = { micros = micros.with(field, decimalValueOrNull(it)) }
+                                onEdit = { micros = micros.with(field, parseDecimalValue(it)) }
                             )
                         }
                     }
@@ -779,10 +779,6 @@ private fun NumberField(
 
 private fun filterDecimalInput(value: String): String =
     value.filter { it.isDigit() || it == '.' || it == ',' }
-
-/** Parse a decimal text field into a non-negative Double?, null when blank/invalid. */
-private fun decimalValueOrNull(value: String): Double? =
-    value.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it >= 0.0 }
 
 @Composable
 private fun MacroLine(text: String, color: Color, fontSize: androidx.compose.ui.unit.TextUnit = 16.sp) {

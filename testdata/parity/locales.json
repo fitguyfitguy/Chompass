@@ -1,40 +1,260 @@
 {
-  "version": 1,
-  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en).",
-  "defaultLocale": "en",
-  "fallbackLocale": "en",
-  "pwaPrefKey": "uiLang",
-  "locales": [
-    { "id": "en", "bcp47": "en", "androidValues": "values", "name": "English", "nativeName": "English", "rtl": false, "speechCodes": ["en", "en-US", "en-GB"] },
-    { "id": "ar", "bcp47": "ar", "androidValues": "values-ar", "name": "Arabic", "nativeName": "العربية", "rtl": true, "speechCodes": ["ar"] },
-    { "id": "az", "bcp47": "az", "androidValues": "values-az", "name": "Azerbaijani", "nativeName": "Azərbaycan", "rtl": false, "speechCodes": ["az"] },
-    { "id": "de", "bcp47": "de", "androidValues": "values-de", "name": "German", "nativeName": "Deutsch", "rtl": false, "speechCodes": ["de", "de-DE"] },
-    { "id": "es", "bcp47": "es", "androidValues": "values-es", "name": "Spanish", "nativeName": "Español", "rtl": false, "speechCodes": ["es", "es-ES"] },
-    { "id": "fr", "bcp47": "fr", "androidValues": "values-fr", "name": "French", "nativeName": "Français", "rtl": false, "speechCodes": ["fr", "fr-FR"] },
-    { "id": "hi", "bcp47": "hi", "androidValues": "values-hi", "name": "Hindi", "nativeName": "हिन्दी", "rtl": false, "speechCodes": ["hi", "hi-IN"] },
-    { "id": "it", "bcp47": "it", "androidValues": "values-it", "name": "Italian", "nativeName": "Italiano", "rtl": false, "speechCodes": ["it", "it-IT"] },
-    { "id": "ja", "bcp47": "ja", "androidValues": "values-ja", "name": "Japanese", "nativeName": "日本語", "rtl": false, "speechCodes": ["ja", "ja-JP"] },
-    { "id": "ko", "bcp47": "ko", "androidValues": "values-ko", "name": "Korean", "nativeName": "한국어", "rtl": false, "speechCodes": ["ko", "ko-KR"] },
-    { "id": "nl", "bcp47": "nl", "androidValues": "values-nl", "name": "Dutch", "nativeName": "Nederlands", "rtl": false, "speechCodes": ["nl", "nl-NL"] },
-    { "id": "pt-BR", "bcp47": "pt-BR", "androidValues": "values-pt-rBR", "name": "Portuguese (Brazil)", "nativeName": "Português (Brasil)", "rtl": false, "speechCodes": ["pt", "pt-BR"] },
-    { "id": "ro", "bcp47": "ro", "androidValues": "values-ro", "name": "Romanian", "nativeName": "Română", "rtl": false, "speechCodes": ["ro", "ro-RO"] },
-    { "id": "ru", "bcp47": "ru", "androidValues": "values-ru", "name": "Russian", "nativeName": "Русский", "rtl": false, "speechCodes": ["ru", "ru-RU"] },
-    { "id": "uk", "bcp47": "uk", "androidValues": "values-uk", "name": "Ukrainian", "nativeName": "Українська", "rtl": false, "speechCodes": ["uk", "uk-UA"] },
-    { "id": "zh-CN", "bcp47": "zh-CN", "androidValues": "values-zh-rCN", "name": "Chinese (Simplified)", "nativeName": "简体中文", "rtl": false, "speechCodes": ["zh", "zh-CN"] }
-  ],
-  "speechLocales": {
-    "notes": "Speech recognition language is independent of UI locale. Empty/auto uses device or provider detection.",
-    "pwa": ["", "en-US", "en-GB", "de-DE", "fr-FR", "es-ES", "it-IT", "nl-NL", "pt-BR", "hi-IN", "ja-JP", "zh-CN", "ko-KR", "uk-UA", "sv-SE"],
-    "androidSpeechLanguage": ["PROVIDER_AUTO", "DEVICE", "ENGLISH", "GERMAN", "SPANISH", "FRENCH", "ITALIAN", "PORTUGUESE", "DUTCH", "HINDI", "JAPANESE", "CHINESE", "KOREAN"]
+ "version": 1,
+ "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en).",
+ "defaultLocale": "en",
+ "fallbackLocale": "en",
+ "pwaPrefKey": "uiLang",
+ "locales": [
+  {
+   "id": "en",
+   "bcp47": "en",
+   "androidValues": "values",
+   "name": "English",
+   "nativeName": "English",
+   "rtl": false,
+   "speechCodes": [
+    "en",
+    "en-US",
+    "en-GB"
+   ]
   },
-  "coreSurfaces": [
-    "shell_nav",
-    "onboarding",
-    "diary_home",
-    "progress",
-    "settings_hub",
-    "dialogs",
-    "errors",
-    "a11y"
+  {
+   "id": "ar",
+   "bcp47": "ar",
+   "androidValues": "values-ar",
+   "name": "Arabic",
+   "nativeName": "العربية",
+   "rtl": true,
+   "speechCodes": [
+    "ar"
+   ],
+   "maxMissing": 921
+  },
+  {
+   "id": "az",
+   "bcp47": "az",
+   "androidValues": "values-az",
+   "name": "Azerbaijani",
+   "nativeName": "Azərbaycan",
+   "rtl": false,
+   "speechCodes": [
+    "az"
+   ],
+   "maxMissing": 932
+  },
+  {
+   "id": "de",
+   "bcp47": "de",
+   "androidValues": "values-de",
+   "name": "German",
+   "nativeName": "Deutsch",
+   "rtl": false,
+   "speechCodes": [
+    "de",
+    "de-DE"
+   ],
+   "maxMissing": 0
+  },
+  {
+   "id": "es",
+   "bcp47": "es",
+   "androidValues": "values-es",
+   "name": "Spanish",
+   "nativeName": "Español",
+   "rtl": false,
+   "speechCodes": [
+    "es",
+    "es-ES"
+   ],
+   "maxMissing": 0
+  },
+  {
+   "id": "fr",
+   "bcp47": "fr",
+   "androidValues": "values-fr",
+   "name": "French",
+   "nativeName": "Français",
+   "rtl": false,
+   "speechCodes": [
+    "fr",
+    "fr-FR"
+   ],
+   "maxMissing": 0
+  },
+  {
+   "id": "hi",
+   "bcp47": "hi",
+   "androidValues": "values-hi",
+   "name": "Hindi",
+   "nativeName": "हिन्दी",
+   "rtl": false,
+   "speechCodes": [
+    "hi",
+    "hi-IN"
+   ],
+   "maxMissing": 921
+  },
+  {
+   "id": "it",
+   "bcp47": "it",
+   "androidValues": "values-it",
+   "name": "Italian",
+   "nativeName": "Italiano",
+   "rtl": false,
+   "speechCodes": [
+    "it",
+    "it-IT"
+   ],
+   "maxMissing": 932
+  },
+  {
+   "id": "ja",
+   "bcp47": "ja",
+   "androidValues": "values-ja",
+   "name": "Japanese",
+   "nativeName": "日本語",
+   "rtl": false,
+   "speechCodes": [
+    "ja",
+    "ja-JP"
+   ],
+   "maxMissing": 923
+  },
+  {
+   "id": "ko",
+   "bcp47": "ko",
+   "androidValues": "values-ko",
+   "name": "Korean",
+   "nativeName": "한국어",
+   "rtl": false,
+   "speechCodes": [
+    "ko",
+    "ko-KR"
+   ],
+   "maxMissing": 922
+  },
+  {
+   "id": "nl",
+   "bcp47": "nl",
+   "androidValues": "values-nl",
+   "name": "Dutch",
+   "nativeName": "Nederlands",
+   "rtl": false,
+   "speechCodes": [
+    "nl",
+    "nl-NL"
+   ],
+   "maxMissing": 953
+  },
+  {
+   "id": "pt-BR",
+   "bcp47": "pt-BR",
+   "androidValues": "values-pt-rBR",
+   "name": "Portuguese (Brazil)",
+   "nativeName": "Português (Brasil)",
+   "rtl": false,
+   "speechCodes": [
+    "pt",
+    "pt-BR"
+   ],
+   "maxMissing": 934
+  },
+  {
+   "id": "ro",
+   "bcp47": "ro",
+   "androidValues": "values-ro",
+   "name": "Romanian",
+   "nativeName": "Română",
+   "rtl": false,
+   "speechCodes": [
+    "ro",
+    "ro-RO"
+   ],
+   "maxMissing": 931
+  },
+  {
+   "id": "ru",
+   "bcp47": "ru",
+   "androidValues": "values-ru",
+   "name": "Russian",
+   "nativeName": "Русский",
+   "rtl": false,
+   "speechCodes": [
+    "ru",
+    "ru-RU"
+   ],
+   "maxMissing": 462
+  },
+  {
+   "id": "uk",
+   "bcp47": "uk",
+   "androidValues": "values-uk",
+   "name": "Ukrainian",
+   "nativeName": "Українська",
+   "rtl": false,
+   "speechCodes": [
+    "uk",
+    "uk-UA"
+   ],
+   "maxMissing": 835
+  },
+  {
+   "id": "zh-CN",
+   "bcp47": "zh-CN",
+   "androidValues": "values-zh-rCN",
+   "name": "Chinese (Simplified)",
+   "nativeName": "简体中文",
+   "rtl": false,
+   "speechCodes": [
+    "zh",
+    "zh-CN"
+   ],
+   "maxMissing": 920
+  }
+ ],
+ "speechLocales": {
+  "notes": "Speech recognition language is independent of UI locale. Empty/auto uses device or provider detection.",
+  "pwa": [
+   "",
+   "en-US",
+   "en-GB",
+   "de-DE",
+   "fr-FR",
+   "es-ES",
+   "it-IT",
+   "nl-NL",
+   "pt-BR",
+   "hi-IN",
+   "ja-JP",
+   "zh-CN",
+   "ko-KR",
+   "uk-UA",
+   "sv-SE"
+  ],
+  "androidSpeechLanguage": [
+   "PROVIDER_AUTO",
+   "DEVICE",
+   "ENGLISH",
+   "GERMAN",
+   "SPANISH",
+   "FRENCH",
+   "ITALIAN",
+   "PORTUGUESE",
+   "DUTCH",
+   "HINDI",
+   "JAPANESE",
+   "CHINESE",
+   "KOREAN"
   ]
+ },
+ "coreSurfaces": [
+  "shell_nav",
+  "onboarding",
+  "diary_home",
+  "progress",
+  "settings_hub",
+  "dialogs",
+  "errors",
+  "a11y"
+ ]
 }

@@ -897,7 +897,7 @@
     <string name="settings_weather_source_manual_sub">Enter the expected high yourself. No network.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (online)</string>
     <string name="settings_weather_source_meteo_sub">Fetch a forecast for a city you choose. No account, no key, no location permission.</string>
-    <string name="settings_weather_source_help">The expected high feeds the dynamic goal (+4 % per °C above 25 °C, capped +60 %). Whenever the source has no fresh data, the manual value is used instead.</string>
+    <string name="settings_weather_source_help" formatted="false">The expected high feeds the dynamic goal (+4 % per °C above 25 °C, capped +60 %). Whenever the source has no fresh data, the manual value is used instead.</string>
     <string name="settings_weather_city">City</string>
     <string name="settings_weather_city_none">Choose a city</string>
     <string name="settings_weather_city_title">Open-Meteo city</string>
@@ -1388,6 +1388,7 @@
     <string name="section_source">Source</string>
     <string name="copy_no_foods_on_day">No foods logged on this day</string>
     <string name="copy_from_loading">Loading food log…</string>
+    <string name="progress_chart_loading">Loading chart…</string>
     <plurals name="copy_foods_to">
         <item quantity="one">Copy %1$d food to %2$s</item>
         <item quantity="other">Copy %1$d foods to %2$s</item>
@@ -1489,6 +1490,8 @@
     <string name="vm_health_connect_needed">Health Connect Needed</string>
     <string name="vm_not_enough_energy">Not Enough Energy Data</string>
     <string name="vm_adaptive_on_message">Adaptive Goals is on. Chompass will check once per week after enough food and weight data exists.</string>
+    <string name="vm_adaptive_updated">Updated to %1$d kcal from your latest data.</string>
+    <string name="vm_goals_updated">Updated to %1$d kcal.</string>
     <string name="vm_goals_recalculated">Goals Recalculated</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Add shared meal</item>

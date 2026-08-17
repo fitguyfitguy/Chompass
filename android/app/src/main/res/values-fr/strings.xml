@@ -1564,6 +1564,10 @@
     <string name="unit_serving_plural">portions</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="vm_adaptive_on_message">Les Objectifs adaptatifs sont activés. Chompass vérifiera une fois par semaine une fois que suffisamment de données alimentaires et de poids existeront.</string>
+
+    <string name="vm_adaptive_updated">Mis à jour à %1$d kcal d\'après vos dernières données.</string>
+    <string name="vm_goals_updated">Mis à jour à %1$d kcal.</string>
+    <string name="progress_chart_loading">Chargement du graphique…</string>
     <string name="vm_goals_recalculated">Objectifs recalculés</string>
     <string name="vm_health_connect_needed">Health Connect requis</string>
     <string name="vm_health_connect_needed_msg">Autorisez Chompass à lire vos Calories actives et totales dans Health Connect, puis réactivez Énergie brûlée.</string>

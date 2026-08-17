@@ -6,9 +6,13 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [3.17.0] - 2026-08-17
+
 ### Added
 
 - **Turn off all AI features** (Android + web): a new switch under Settings → AI &amp; Speech (Android) and AI &amp; Speech (web) turns off everything that sends data to an AI provider: the coach, photo/text/voice food logging, "What if?" and AI goal suggestions. The app keeps working without AI: barcode scanning, food search, manual entry, saved meals, water, sync and Health Connect all stay on, and goal calculations fall back to the built-in formulas. Part 2 of Codeberg [#20](https://codeberg.org/fitguy/Chompass/issues/20) by [@HattDroid](https://codeberg.org/HattDroid).
+
+- **The app is now fully translated into Spanish and French** (Android): the whole Spanish and French packs are complete, from onboarding and settings to analysis and AI error messages, in one consistent voice: informal Spanish, formal French.
 
 ### Fixed
 
@@ -27,6 +31,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Adding a search result no longer fails on some products** (Android): some products found in the food search could not be added because their code does not pass the standard check digit, even though Open Food Facts lists them. They now add normally. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
 
 - **Barcode scanning prefers the retail barcode on mixed labels** (Android + PWA): when a label carries both a barcode and a QR or Data Matrix code, the scan now uses the barcode, which is the code the food database lists. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
+- **The serving unit on barcode and AI entries is translated** (Android + PWA): products added from a barcode or food analysis used to show the unit "serving" in English even in other languages. It now shows in the app language.
+
+- **App-generated messages are translated** (Android): the adaptive-goals update message, the goal update message, and the chart loading label now show in the app language instead of English.
 
 ## [3.16.1] - 2026-08-16
 
