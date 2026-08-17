@@ -261,6 +261,8 @@ export const zh_CN = Object.freeze({
   "entry.constituents.unit": "单位",
   "entry.constituents.item_fallback": "食材",
   "entry.constituents.macros": "{calories} 千卡 · 蛋白 {protein} · 碳水 {carbs} · 脂肪 {fat}",
+  "unit.serving": "份",
+  "unit.serving_plural": "份",
   "a11y.open_menu": "打开菜单",
   "a11y.close_sheet": "关闭面板",
   "a11y.add_food": "添加食物",

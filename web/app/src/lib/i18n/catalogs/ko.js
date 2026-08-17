@@ -261,6 +261,8 @@ export const ko = Object.freeze({
   "entry.constituents.unit": "단위",
   "entry.constituents.item_fallback": "재료",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+  "unit.serving": "인분",
+  "unit.serving_plural": "인분",
   "a11y.open_menu": "메뉴 열기",
   "a11y.close_sheet": "시트 닫기",
   "a11y.add_food": "음식 추가",

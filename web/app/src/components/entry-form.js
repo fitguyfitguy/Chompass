@@ -257,6 +257,10 @@ export class EntryForm extends HTMLElement {
     const qtyNum = parseQuantity(this.quantityText);
     const showTotal = !isGramUnit(selectedOption);
     const servingGrams = this.currentServingGrams();
+    // App-generated "serving" unit (OFF barcode / AI fallback) is English in the
+    // model; display the localized label(s) instead (unit.serving / _plural).
+    const servingLabel = t("unit.serving");
+    const servingPluralLabel = t("unit.serving_plural");
 
     const numVal = (v, step = false) => {
       if (v == null || v === "") return "";
@@ -300,7 +304,7 @@ export class EntryForm extends HTMLElement {
                   ${picker
                     .map((opt) => {
                       const id = optionId(opt);
-                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null);
+                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null, servingLabel, servingPluralLabel);
                       return `<option value="${escapeAttr(id)}" ${id === this.selectedServingUnit ? "selected" : ""}>${escapeHtml(label)}</option>`;
                     })
                     .join("")}
@@ -488,6 +492,10 @@ export class EntryForm extends HTMLElement {
           : row.servingSizeGrams;
     const qtyText = formatQuantity(qty);
     const showTotal = !isGramUnit(option);
+    // App-generated "serving" unit (OFF barcode / AI fallback) is English in the
+    // model; display the localized label(s) instead (unit.serving / _plural).
+    const servingLabel = t("unit.serving");
+    const servingPluralLabel = t("unit.serving_plural");
     return `
       <div class="entry-constituent-card" data-constituent-index="${index}">
         <div class="entry-constituent-card__head">
@@ -521,7 +529,7 @@ export class EntryForm extends HTMLElement {
                 ${picker
                   .map((opt) => {
                     const id = optionId(opt);
-                    const label = displayUnit(opt, id === unitId ? qty : null);
+                    const label = displayUnit(opt, id === unitId ? qty : null, servingLabel, servingPluralLabel);
                     return `<option value="${escapeAttr(id)}" ${id === unitId ? "selected" : ""}>${escapeHtml(label)}</option>`;
                   })
                   .join("")}

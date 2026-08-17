@@ -104,6 +104,10 @@
 
     <string name="unit_ft_in">ft / in</string>
 
+    <string name="unit_serving">Portion</string>
+
+    <string name="unit_serving_plural">Portionen</string>
+
     <string name="kcal_value_format">%1$d kcal</string>
 
     <string name="grams_value_format">%1$dg</string>

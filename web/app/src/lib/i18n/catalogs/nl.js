@@ -261,6 +261,8 @@ export const nl = Object.freeze({
   "entry.constituents.unit": "Eenheid",
   "entry.constituents.item_fallback": "Ingrediënt",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+  "unit.serving": "portie",
+  "unit.serving_plural": "porties",
   "a11y.open_menu": "Menu openen",
   "a11y.close_sheet": "Sheet sluiten",
   "a11y.add_food": "Eten toevoegen",

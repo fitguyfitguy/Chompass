@@ -14,9 +14,28 @@ import {
   ensureServingUnits,
   applyQuantityInput,
   isQuantityExpression,
+  displayUnit,
   GRAMS_OPTION,
   HEURISTIC_RULES,
 } from "../serving-units.js";
+
+test("displayUnit_localizesAppGeneratedServingUnit", () => {
+  const serving = { unit: "serving", gramsPerUnit: 250, quantity: 1 };
+  // Localized labels win over the raw English unit.
+  assert.equal(displayUnit(serving, 1, "Portion", "Portionen"), "Portion");
+  assert.equal(displayUnit(serving, 2, "Portion", "Portionen"), "Portionen");
+  assert.equal(displayUnit(serving, 1.5, "Portion", "Portionen"), "Portionen");
+  // Null quantity (non-selected dropdown item) reads as singular.
+  assert.equal(displayUnit(serving, null, "Portion", "Portionen"), "Portion");
+  // "servings" id maps too.
+  assert.equal(displayUnit({ unit: "servings", gramsPerUnit: 250 }, 3, "Portion", "Portionen"), "Portionen");
+  // Without labels the raw English pluralization is preserved.
+  assert.equal(displayUnit(serving, 1), "serving");
+  assert.equal(displayUnit(serving, 2), "servings");
+  // Non-serving units ignore the labels.
+  const slice = { unit: "slice", gramsPerUnit: 30 };
+  assert.equal(displayUnit(slice, 2, "Portion", "Portionen"), "slices");
+});
 
 test("formatQuantity_integersAndDecimals", () => {
   assert.equal(formatQuantity(2), "2");

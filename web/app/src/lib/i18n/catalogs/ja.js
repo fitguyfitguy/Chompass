@@ -261,6 +261,8 @@ export const ja = Object.freeze({
   "entry.constituents.unit": "単位",
   "entry.constituents.item_fallback": "材料",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+  "unit.serving": "食分",
+  "unit.serving_plural": "食分",
   "a11y.open_menu": "メニューを開く",
   "a11y.close_sheet": "シートを閉じる",
   "a11y.add_food": "食事を追加",

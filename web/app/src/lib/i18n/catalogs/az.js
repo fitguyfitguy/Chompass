@@ -261,6 +261,8 @@ export const az = Object.freeze({
   "entry.constituents.unit": "Vahid",
   "entry.constituents.item_fallback": "İnqredient",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+  "unit.serving": "porsiya",
+  "unit.serving_plural": "porsiyalar",
   "a11y.open_menu": "Menyunu aç",
   "a11y.close_sheet": "Paneli bağla",
   "a11y.add_food": "Yemək əlavə et",

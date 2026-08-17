@@ -304,6 +304,10 @@ export const en = Object.freeze({
   "entry.constituents.item_fallback": "Ingredient",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
 
+  // Serving unit label (app-generated "serving" option from OFF / heuristics)
+  "unit.serving": "serving",
+  "unit.serving_plural": "servings",
+
   // A11y
   "a11y.open_menu": "Open menu",
   "a11y.close_sheet": "Close sheet",

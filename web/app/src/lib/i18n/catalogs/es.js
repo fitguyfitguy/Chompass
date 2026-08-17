@@ -261,6 +261,8 @@ export const es = Object.freeze({
   "entry.constituents.unit": "Unidad",
   "entry.constituents.item_fallback": "Ingrediente",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+  "unit.serving": "ración",
+  "unit.serving_plural": "raciones",
   "a11y.open_menu": "Abrir menú",
   "a11y.close_sheet": "Cerrar panel",
   "a11y.add_food": "Añadir comida",

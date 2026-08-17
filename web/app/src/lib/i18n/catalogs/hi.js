@@ -261,6 +261,8 @@ export const hi = Object.freeze({
   "entry.constituents.unit": "इकाई",
   "entry.constituents.item_fallback": "सामग्री",
   "entry.constituents.macros": "{calories} kcal · P {protein} · C {carbs} · F {fat}",
+  "unit.serving": "सर्विंग",
+  "unit.serving_plural": "सर्विंग",
   "a11y.open_menu": "मेनू खोलें",
   "a11y.close_sheet": "शीट बंद करें",
   "a11y.add_food": "खाना जोड़ें",
