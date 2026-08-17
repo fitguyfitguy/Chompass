@@ -456,10 +456,16 @@ class FoodAnalysisService(
             If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
             ${entryResponseBlock()}
         """.trimIndent()
-        prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
-        val raw = callAi(prompt, imageBytes, op = "analyzeAuto", onProgress = onProgress)
-        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
+        off?.promptBlock?.let { prompt = "$prompt\n\n$it" }
+        val analysis = try {
+            val raw = callAi(prompt, imageBytes, op = "analyzeAuto", onProgress = onProgress)
+            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+            PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        } catch (e: AiError) {
+            off?.singleDistinctAnalysis?.let { return it }
+            throw e
+        }
         return finalizeAnalysis(analysis, imageBytes = imageBytes, description = null, onProgress = onProgress)
     }
 
@@ -486,10 +492,19 @@ class FoodAnalysisService(
             """.trimIndent()
         }
         prompt = appendUserMealContext(prompt, description, confirmedPortionGrams)
-        prompt = appendOffBarcodeContext(prompt, listOf(imageBytes), onProgress)
-        val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
-        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
+        off?.promptBlock?.let { prompt = "$prompt\n\n$it" }
+        val analysis = try {
+            val raw = callAi(prompt, imageBytes, op = "analyzeFood", onProgress = onProgress)
+            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+            PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        } catch (e: AiError) {
+            // LLM path failed completely (no key / timeout / unparseable): a photo
+            // that decoded exactly one distinct OFF product falls back to the
+            // grounded barcode lookup instead of surfacing the error.
+            off?.singleDistinctAnalysis?.let { return it }
+            throw e
+        }
         return finalizeAnalysis(analysis, imageBytes = imageBytes, description = description, onProgress = onProgress)
     }
 
@@ -529,10 +544,16 @@ class FoodAnalysisService(
         prompt = appendUserMealContext(prompt, description, confirmedPortionGrams)
         val images = imageBytesList.filter { it.isNotEmpty() }
         if (images.isEmpty()) throw AiError.InvalidResponse
-        prompt = appendOffBarcodeContext(prompt, images, onProgress)
-        val raw = callAi(prompt, images, op = "analyzeFoodMulti", onProgress = onProgress)
-        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        val analysis = PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        val off = collectOffBarcodeContext(images, onProgress)
+        off?.promptBlock?.let { prompt = "$prompt\n\n$it" }
+        val analysis = try {
+            val raw = callAi(prompt, images, op = "analyzeFoodMulti", onProgress = onProgress)
+            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+            PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        } catch (e: AiError) {
+            off?.singleDistinctAnalysis?.let { return it }
+            throw e
+        }
         return finalizeAnalysis(analysis, imageBytes = images.first(), description = description, onProgress = onProgress)
     }
 
@@ -569,15 +590,16 @@ class FoodAnalysisService(
     /**
      * Best-effort still-image barcode → Open Food Facts → soft prompt context.
      * Never blocks analysis on miss/timeout; images are still sent to the model.
+     * The resolved OFF analyses double as a fallback: when the LLM path fails
+     * completely, a photo that decoded exactly one distinct product returns
+     * that grounded analysis instead of an error (see the analyzeFood sites).
      */
-    private suspend fun appendOffBarcodeContext(
-        prompt: String,
+    private suspend fun collectOffBarcodeContext(
         imageBytesList: List<ByteArray>,
         onProgress: (FoodAnalysisProgress) -> Unit,
-    ): String {
+    ): OffPromptContext.OffContextResult? {
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.LookingUpBarcode))
-        val offContext = OffPromptContext.collectFromImages(imageBytesList, prefs) ?: return prompt
-        return "$prompt\n\n$offContext"
+        return OffPromptContext.collectFromImages(imageBytesList, prefs)
     }
 
     /**
