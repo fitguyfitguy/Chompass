@@ -4,6 +4,14 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Adding a search result no longer fails on some products** (Android): some products found in the food search could not be added because their code does not pass the standard check digit, even though Open Food Facts lists them. They now add normally. Follow-up to Codeberg [#26](https://codeberg.org/fitguy/Chompass/issues/26) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
+- **Barcode scanning prefers the retail barcode on mixed labels** (Android + PWA): when a label carries both a barcode and a QR or Data Matrix code, the scan now uses the barcode, which is the code the food database lists. Follow-up to Codeberg [#24](https://codeberg.org/fitguy/Chompass/issues/24) by [@felixbrucker](https://codeberg.org/felixbrucker).
+
 ## [3.16.1] - 2026-08-16
 
 ### Fixed

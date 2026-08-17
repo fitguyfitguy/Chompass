@@ -7,6 +7,7 @@ import {
   chooseStrategy,
   ean13Modules,
   pickNormalizable,
+  pickPreferredCode,
   shouldDemoteNative,
   NATIVE_FAILURE_LIMIT,
   NATIVE_EMPTY_DEMOTE_MS,
@@ -98,6 +99,56 @@ test("pickNormalizable_firstNormalizableWins", () => {
 test("pickNormalizable_emptyReturnsNull", () => {
   assert.equal(pickNormalizable([]), null);
   assert.equal(pickNormalizable(["  "]), null);
+});
+
+test("pickPreferredCode_mixedFramePrefersEanOverQr", () => {
+  // Jar case (#24 follow-up): a GS1 Digital Link QR (case-level GTIN) and the
+  // EAN-13 in the same frame — the retail 1D code is the one OFF indexes.
+  const qr = { text: "https://id.gs1.org/01/19300645111122", format: "QRCode" };
+  const ean = { text: "9300645111125", format: "EAN13" };
+  assert.equal(pickPreferredCode([qr, ean]), "9300645111125");
+  assert.equal(pickPreferredCode([ean, qr]), "9300645111125");
+});
+
+test("pickPreferredCode_qrOnlyFrameUsesQrGtin", () => {
+  // 2D-only frames keep working (e.g. the mince DataMatrix from #24). The raw
+  // GS1 text is returned; lookupBarcode normalizes it to the GTIN.
+  const raw = "https://id.gs1.org/01/19300645111122";
+  assert.equal(pickPreferredCode([{ text: raw, format: "QRCode" }]), raw);
+});
+
+test("pickPreferredCode_junkPlusEanPrefersEan", () => {
+  // Regression from the 3.16.0 fix: junk-only frames still return null.
+  assert.equal(
+    pickPreferredCode([
+      { text: "1111201I", format: "DataMatrix" },
+      { text: "9300645111125", format: "EAN13" },
+    ]),
+    "9300645111125"
+  );
+  assert.equal(pickPreferredCode([{ text: "1111201I", format: "DataMatrix" }]), null);
+});
+
+test("pickPreferredCode_twoEansFirstWins", () => {
+  // Order preserved within a tier.
+  assert.equal(
+    pickPreferredCode([
+      { text: "9339687206605", format: "EAN13" },
+      { text: "9421011990608", format: "EAN13" },
+    ]),
+    "9339687206605"
+  );
+});
+
+test("pickPreferredCode_nativeFormatNames", () => {
+  // Native BarcodeDetector uses snake_case format names; both spellings work.
+  assert.equal(
+    pickPreferredCode([
+      { text: "https://id.gs1.org/01/19300645111122", format: "qr_code" },
+      { text: "9300645111125", format: "ean_13" },
+    ]),
+    "9300645111125"
+  );
 });
 
 test("detectFromBlob_emptyReturnsNull", async () => {

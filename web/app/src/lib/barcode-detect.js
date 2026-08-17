@@ -43,6 +43,39 @@ export function pickNormalizable(texts) {
   return texts.find((t) => normalizeBarcodeCode(t) != null) ?? null;
 }
 
+/** Retail 1D formats OFF indexes by default; preferred over 2D in a mixed frame. */
+const RETAIL_1D_FORMATS = new Set([
+  // Native BarcodeDetector names.
+  "ean_13",
+  "ean_8",
+  "upc_a",
+  "upc_e",
+  // zxing-wasm names.
+  "EAN13",
+  "EAN8",
+  "UPCA",
+  "UPCE",
+]);
+
+/**
+ * Format-aware frame picking: prefer the retail 1D family (EAN-8/13, UPC-A/E)
+ * over 2D (QR/DataMatrix) when a frame yields several normalizable codes;
+ * otherwise keep today's behavior (first normalizable code). The 1D retail
+ * code is the canonical product identifier OFF indexes; a 2D code in the same
+ * frame is usually a GS1 Digital Link / case-level GTIN that OFF may not index.
+ * Pure-local heuristic — no network in the scan loop. Mirror of Android
+ * `pickPreferredCode` (`BarcodeScannerContent.kt`).
+ * @param {{ text: string, format?: string }[]} codes
+ * @returns {string | null}
+ */
+export function pickPreferredCode(codes) {
+  const preferred = codes.find(
+    (c) => RETAIL_1D_FORMATS.has(c.format) && normalizeBarcodeCode(c.text) != null
+  );
+  if (preferred) return preferred.text;
+  return pickNormalizable(codes.map((c) => c.text));
+}
+
 // Bump when the probe logic changes to invalidate cached verdicts.
 const PROBE_CACHE_KEY = "chompass.barcodeDetectorProbe.v2";
 const PROBE_TIMEOUT_MS = 2000;
@@ -178,7 +211,7 @@ async function createWasmDetector() {
       ctx.drawImage(video, 0, 0);
       const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const results = await readBarcodes(image, { formats });
-      return pickNormalizable(results.map((r) => r.text));
+      return pickPreferredCode(results.map((r) => ({ text: r.text, format: r.format })));
     },
   };
 }
@@ -235,7 +268,7 @@ export async function createDetector(onStatus = () => {}) {
         failures = 0;
         if (codes.length > 0) {
           emptySince = null;
-          return pickNormalizable(codes.map((c) => c.rawValue));
+          return pickPreferredCode(codes.map((c) => ({ text: c.rawValue, format: c.format })));
         }
         // Empty (no throw): Brave/Shields often stays here forever. Demote after
         // a grace period of ready video frames so aiming time isn't punished.
@@ -271,7 +304,7 @@ export async function detectFromImageData(imageData) {
   try {
     const engine = await ensureWasmReader();
     const results = await engine.readBarcodes(imageData, { formats: engine.formats });
-    return pickNormalizable(results.map((r) => r.text));
+    return pickPreferredCode(results.map((r) => ({ text: r.text, format: r.format })));
   } catch {
     return null;
   }
