@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -156,17 +157,25 @@ internal fun SettingRow(
             FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
             Spacer(Modifier.width(14.dp))
         }
+        // Label keeps its natural width (fill = false) so a long sibling value
+        // can never squeeze it to zero width (letter-by-letter vertical stacking);
+        // the value fills the remainder, right-aligned and ellipsized.
         Text(
             label,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f, fill = false),
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
         Text(
             value,
+            modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.End,
         )
         Icon(
             if (inlineMenu) Icons.Filled.UnfoldMore else Icons.Filled.ChevronRight,

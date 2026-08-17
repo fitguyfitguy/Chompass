@@ -21,6 +21,8 @@ import app.chompass.ui.navigation.ChompassBottomNavBar
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.ProgressScreenPreviewContent
 import app.chompass.ui.settings.SettingsScreenPreviewContent
+import app.chompass.ui.settings.SettingRowStressPreviewContent
+import app.chompass.ui.home.ResultSheetTipStripStressPreviewContent
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.ChompassTheme
 
@@ -394,5 +396,37 @@ fun HomeLongStatusRuMaxFontScreenshot() {
     // "91,5g осталось" clipped at 1.3×). Reference locks in the fitted render.
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
         HomeScreenPreviewContent(ui = ScreenshotFixtures.homeLongStatusUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "23-settings-row-stress-de-maxfont", device = SMALL_PHONE, locale = "de", fontScale = 1.3f)
+@Composable
+fun SettingsRowStressDeMaxFontScreenshot() {
+    // Regression guard for SettingRow letter-stacking: the German food-log sort
+    // row (long label + long value + icon) on a small phone at max font scale
+    // must wrap the label and ellipsize the value, never stack vertically.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.SETTINGS, darkTheme = false, showNavBar = false) {
+        SettingRowStressPreviewContent()
+    }
+}
+
+@PreviewTest
+@Preview(name = "24-settings-row-stress-ru-maxfont", device = SMALL_PHONE, locale = "ru", fontScale = 1.3f)
+@Composable
+fun SettingsRowStressRuMaxFontScreenshot() {
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.SETTINGS, darkTheme = false, showNavBar = false) {
+        SettingRowStressPreviewContent()
+    }
+}
+
+@PreviewTest
+@Preview(name = "25-result-tip-strip-ru-maxfont", device = SMALL_PHONE, locale = "ru", fontScale = 1.3f)
+@Composable
+fun ResultTipStripRuMaxFontScreenshot() {
+    // Regression guard for the result sheet's side-by-side actions: long ru
+    // labels must ellipsize, not squeeze the second button to zero width.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false, showNavBar = false) {
+        ResultSheetTipStripStressPreviewContent()
     }
 }
