@@ -10,6 +10,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import zxingcpp.BarcodeReader
+import app.chompass.ui.home.pickPreferredCode
 
 /**
  * Still-image barcode decode for AI photo inputs (not the live camera scanner).
@@ -62,9 +63,13 @@ object BarcodeImageDecoder {
                 ?: return emptyList()
             try {
                 readerMutex.withLock {
-                    reader.read(bitmap)
-                        .mapNotNull { it.text?.trim()?.takeIf(String::isNotEmpty) }
-                        .distinct()
+                    val preferred = pickPreferredCode(
+                        reader.read(bitmap).mapNotNull { result ->
+                            result.text?.trim()?.takeIf(String::isNotEmpty)
+                                ?.let { result.format to it }
+                        }
+                    )
+                    if (preferred != null) listOf(preferred) else emptyList()
                 }
             } finally {
                 bitmap.recycle()

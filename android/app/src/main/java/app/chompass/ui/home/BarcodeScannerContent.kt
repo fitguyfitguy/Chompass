@@ -93,16 +93,22 @@ internal fun BarcodeScannerContent(
                         }
                         val value = runCatching {
                             imageProxy.use { proxy ->
-                                val texts = reader.read(proxy)
-                                    .mapNotNull { it.text?.trim()?.takeIf(String::isNotEmpty) }
+                                val entries = reader.read(proxy)
+                                    .mapNotNull { result ->
+                                        result.text?.trim()?.takeIf(String::isNotEmpty)
+                                            ?.let { result.format to it }
+                                    }
                                 // Keep scanning until a frame yields a code that
                                 // normalizes to a product code: a junk or half-read
                                 // frame (internal factory codes, partial EANs) can
                                 // never resolve via OFF, and stopping on one turned
                                 // a single bad frame into a hard scan failure.
-                                // Mixed frames (EAN + internal DataMatrix, jar
-                                // case) still prefer the normalizable code.
-                                pickFirstNormalizable(texts)
+                                // Mixed frames prefer the retail 1D code (EAN/UPC)
+                                // over a 2D code (QR/DataMatrix): a jar's GS1
+                                // Digital Link QR usually carries a case-level GTIN
+                                // OFF does not index, while the EAN-13 in the same
+                                // frame resolves.
+                                pickPreferredCode(entries)
                             }
                         }.getOrNull()
                         if (value != null && hasScanned.compareAndSet(false, true)) {
@@ -195,7 +201,36 @@ internal fun BarcodeScannerContent(
  * must keep scanning and never hand a non-normalizable text to the OFF lookup
  * (it would fail with "could not be read" and end the scan).
  *
+ * Thin wrapper over [pickPreferredCode] with no format info (tier 2 only).
  * Mirrored in the PWA (`web/app/src/lib/barcode-detect.js` `pickNormalizable`).
  */
 internal fun pickFirstNormalizable(texts: List<String>): String? =
-    texts.firstOrNull { BarcodeCodeNormalizer.normalize(it) != null }
+    pickPreferredCode(texts.map { BarcodeReader.Format.NONE to it })
+
+/** Retail 1D formats OFF indexes by default; preferred over 2D in a mixed frame. */
+private val RETAIL_1D_FORMATS = setOf(
+    BarcodeReader.Format.EAN_UPC,
+    BarcodeReader.Format.EAN_13,
+    BarcodeReader.Format.EAN_8,
+    BarcodeReader.Format.UPC_A,
+    BarcodeReader.Format.UPC_E,
+)
+
+/**
+ * Format-aware frame picking: prefer the retail 1D family (EAN-8/13, UPC-A/E)
+ * over 2D (QR/DataMatrix) when a frame yields several normalizable codes;
+ * otherwise keep today's behavior (first normalizable code). The 1D retail
+ * code is the canonical product identifier OFF indexes; a 2D code in the same
+ * frame is usually a GS1 Digital Link / case-level GTIN that OFF may not index.
+ * Pure-local heuristic — no network in the scan loop.
+ *
+ * Mirrored in the PWA (`web/app/src/lib/barcode-detect.js` `pickPreferredCode`).
+ */
+internal fun pickPreferredCode(entries: List<Pair<BarcodeReader.Format, String>>): String? {
+    entries.firstOrNull { (format, text) ->
+        format in RETAIL_1D_FORMATS && BarcodeCodeNormalizer.normalize(text) != null
+    }?.let { return it.second }
+    return entries.firstOrNull { (_, text) ->
+        BarcodeCodeNormalizer.normalize(text) != null
+    }?.second
+}

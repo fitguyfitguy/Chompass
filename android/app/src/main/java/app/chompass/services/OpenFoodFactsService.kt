@@ -95,6 +95,25 @@ object OpenFoodFactsService {
         val code = BarcodeCodeNormalizer.normalize(barcode)
             ?: throw LookupException("That barcode could not be read. Try scanning it again.")
 
+        lookupByCode(code, prefs, client, baseUrl)
+    }
+
+    /**
+     * Looks up an OFF product code that is already authoritative — a search
+     * hit's `code`/`_id` straight from OFF's search API — without re-validating
+     * it through the scanner normalizer. OFF product codes are not guaranteed to
+     * satisfy the GTIN check-digit / digit-shape rules (OFF indexes products
+     * with codes that fail the check digit, carry letters, or use non-standard
+     * lengths), so the normalizer gate must not apply here: the code is used
+     * as-is for the cache key and the network call (OFF accepts any code
+     * string; [URLEncoder] handles non-numeric shapes).
+     */
+    suspend fun lookupByCode(
+        code: String,
+        prefs: PreferencesStore,
+        client: OkHttpClient = FoodAnalysisService.defaultClient,
+        baseUrl: String = OFF_BASE_URL,
+    ): FoodAnalysis = withContext(Dispatchers.IO) {
         prefs.barcodeCache.first()[code]?.let { return@withContext it.analysis }
 
         val result = lookupNetwork(code, client, baseUrl)

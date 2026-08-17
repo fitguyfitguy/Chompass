@@ -3,6 +3,7 @@ package app.chompass.services.grounding
 import android.app.Application
 import app.chompass.data.PreferencesStore
 import app.chompass.models.NutrientSourceKind
+import app.chompass.services.ai.FoodAnalysis
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -69,5 +70,28 @@ class FoodDatabaseSearchTest {
             sources = setOf(FoodDatabaseSearch.Source.USDA, FoodDatabaseSearch.Source.SWISS),
         )
         assertTrue(results.isEmpty())
+    }
+
+    @Test
+    fun toAnalysis_offBranch_passesSourceIdToLookupByCode() = runBlocking {
+        // OFF search hits carry the product code straight from OFF's search API;
+        // the branch must not re-validate it through the scanner normalizer (a
+        // code that fails the GTIN check digit would throw "could not be read"
+        // under lookup()). The extracted branch passes the id through as-is.
+        val nonNormalizable = "1234567890123"
+        var seen: String? = null
+        val analysis = offToAnalysis(nonNormalizable) { code ->
+            seen = code
+            FoodAnalysis(
+                name = "Test Product",
+                calories = 100,
+                protein = 5.0,
+                carbs = 10.0,
+                fat = 2.0,
+                servingSizeGrams = 100.0,
+            )
+        }
+        assertEquals(nonNormalizable, seen)
+        assertEquals("Test Product", analysis.name)
     }
 }

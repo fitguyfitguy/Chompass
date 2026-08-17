@@ -192,7 +192,7 @@ class FoodDatabaseSearch(
      */
     suspend fun toAnalysis(result: DatabaseSearchResult): FoodAnalysis = when (result.sourceKind) {
         NutrientSourceKind.OPEN_FOOD_FACTS ->
-            OpenFoodFactsService.lookup(result.sourceId, prefs)
+            offToAnalysis(result.sourceId) { OpenFoodFactsService.lookupByCode(it, prefs) }
         NutrientSourceKind.USDA -> {
             val record = result.sourceId.toLongOrNull()
                 ?.let { usda.getByFdcId(it) }
@@ -247,3 +247,16 @@ class FoodDatabaseSearch(
 
 private fun DatabaseSearchResult.withNormalizedScore(): DatabaseSearchResult =
     copy(matchScore = FoodDatabaseSearch.normalizedMatchScore(sourceKind, matchScore))
+
+/**
+ * OFF branch of [FoodDatabaseSearch.toAnalysis], extracted so the lookup can be
+ * injected in unit tests (the Robolectric suite has no network seam). The
+ * source id is an OFF product code straight from OFF's search API and must not
+ * be re-validated through the scanner normalizer — OFF codes are not guaranteed
+ * to satisfy the GTIN check-digit / digit-shape rules — so the branch uses
+ * [OpenFoodFactsService.lookupByCode] (no normalizer gate).
+ */
+internal suspend fun offToAnalysis(
+    sourceId: String,
+    lookup: suspend (String) -> FoodAnalysis,
+): FoodAnalysis = lookup(sourceId)
