@@ -257,6 +257,7 @@
     <string name="add_food_photo_gallery">Escolher da galeria</string>
     <string name="add_food_add_label_photo">Adicionar foto do rótulo</string>
     <string name="add_food_add_photo">Adicionar foto</string>
+    <string name="progressive_meal_add_next">Adicionar próximo ingrediente</string>
     <string name="text_input_title">Descreva sua comida</string>
     <string name="home_kcal_of_format">de %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s restantes</string>

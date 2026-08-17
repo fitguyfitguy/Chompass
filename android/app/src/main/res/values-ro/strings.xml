@@ -257,6 +257,7 @@
     <string name="add_food_photo_gallery">Alege din galerie</string>
     <string name="add_food_add_label_photo">Adaugă foto etichetă</string>
     <string name="add_food_add_photo">Adaugă foto</string>
+    <string name="progressive_meal_add_next">Adaugă următorul ingredient</string>
     <string name="text_input_title">Descrie mâncarea</string>
     <string name="home_kcal_of_format">din %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s rămase</string>

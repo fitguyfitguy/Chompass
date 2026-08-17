@@ -245,6 +245,7 @@
     <string name="add_food_photo_gallery">Обрати з галереї</string>
     <string name="add_food_add_label_photo">Додати фото етикетки</string>
     <string name="add_food_add_photo">Додати фото</string>
+    <string name="progressive_meal_add_next">Додати наступний інгредієнт</string>
     <string name="camera_flash_on">Спалах увімкнено</string>
     <string name="camera_flash_auto">Спалах: авто</string>
     <string name="camera_flash_off">Спалах вимкнено</string>

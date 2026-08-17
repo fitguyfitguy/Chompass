@@ -262,6 +262,7 @@
     <string name="add_food_photo_gallery">اختيار من المعرض</string>
     <string name="add_food_add_label_photo">إضافة صورة الملصق</string>
     <string name="add_food_add_photo">إضافة صورة</string>
+    <string name="progressive_meal_add_next">إضافة المكوّن التالي</string>
     <string name="text_input_title">صف طعامك</string>
     <string name="home_kcal_of_format">من %1$s kcal</string>
     <string name="home_kcal_left_format">%1$s متبقية</string>
