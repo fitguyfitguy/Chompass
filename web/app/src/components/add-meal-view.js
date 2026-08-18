@@ -3,6 +3,7 @@ import { foodEntries, prefs } from "../lib/db.js";
 import { decodeMealShare } from "../lib/meal-share.js";
 import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { formatNumber } from "../lib/i18n/index.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 
 /** Import shared meals from `#/add-meal?d=` (Android MealShare bridge). */
@@ -36,7 +37,7 @@ export class AddMealView extends HTMLElement {
             <label class="copy-select__row">
               <input type="checkbox" data-idx="${i}" checked />
               <span><strong>${escapeHtml(m.name)}</strong><br/>
-              <span class="recents-meta">${Math.round(m.calories)} kcal · ${Math.round(m.proteinG)}P / ${Math.round(m.carbsG)}C / ${Math.round(m.fatG)}F · ${m.mealType}</span></span>
+              <span class="recents-meta">${formatNumber(Math.round(m.calories))} kcal · ${Math.round(m.proteinG)}P / ${Math.round(m.carbsG)}C / ${Math.round(m.fatG)}F · ${m.mealType}</span></span>
             </label>`
             )
             .join("")}

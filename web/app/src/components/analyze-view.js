@@ -9,6 +9,7 @@ import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { createSpeechCapture } from "../lib/speech.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
+import { formatNumber } from "../lib/i18n/index.js";
 import { DEMO_PLATE_ESTIMATE, runDemoAnalyze } from "../demo/mock-ai.js";
 
 const MAX_PHOTOS = 10;
@@ -210,7 +211,7 @@ export class AnalyzeView extends HTMLElement {
                    (r) => `
                  <button type="button" data-recent='${escapeAttr(JSON.stringify(r))}' ${inputsDisabled}>
                    <strong>${escapeHtml(r.name)}</strong><br/>
-                   <span class="recents-meta">${Math.round(r.calories)} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
+                   <span class="recents-meta">${formatNumber(Math.round(r.calories))} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
                  </button>`,
                  )
                  .join("")}

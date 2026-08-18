@@ -30,7 +30,7 @@ import {
   mergeOptionalGoals,
 } from "../lib/home-nutrients.js";
 import { createSpeechCapture } from "../lib/speech.js";
-import { t } from "../lib/i18n/index.js";
+import { t, formatNumber } from "../lib/i18n/index.js";
 import {
   consumeResumeProgressiveCapture,
   consumeShowProgressiveMealSheet,
@@ -1285,20 +1285,20 @@ export class DiaryView extends HTMLElement {
       if (segment === "RECENTS") {
         rows = (await recentFoodTemplates(30, 40)).map((e) => ({
           label: e.name,
-          meta: `${Math.round(e.calories)} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+          meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
           entry: e,
         }));
       } else if (segment === "FREQUENT") {
         rows = (await frequentFoodGroups(90)).map((g) => ({
           label: g.template.name,
-          meta: `${g.count}× · ${Math.round(g.template.calories)} kcal`,
+          meta: `${g.count}× · ${formatNumber(Math.round(g.template.calories))} kcal`,
           entry: g.template,
           count: g.count,
         }));
       } else if (segment === "FAVORITES") {
         rows = (await listFavorites()).map((e) => ({
           label: e.name,
-          meta: `${Math.round(e.calories)} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+          meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
           entry: e,
         }));
       } else {
