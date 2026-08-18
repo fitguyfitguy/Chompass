@@ -37,6 +37,7 @@ import app.chompass.models.FoodConstituent
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.ConstituentReconcile
+import app.chompass.ui.components.kcalText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import kotlin.math.roundToInt
@@ -199,12 +200,11 @@ private fun ConstituentRowCard(
                     )
                 },
             )
-            val kcalUnit = stringResource(R.string.unit_kcal)
             val separatorColor = MaterialTheme.colorScheme.onSurfaceVariant
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
-                        append("${row.calories} $kcalUnit")
+                        append(kcalText(row.calories))
                     }
                     withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
                     withStyle(SpanStyle(color = MacroKind.PROTEIN.color(), fontWeight = FontWeight.Medium)) {

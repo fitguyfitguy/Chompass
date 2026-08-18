@@ -67,6 +67,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
@@ -303,7 +304,12 @@ fun EditFoodEntrySheet(
                 editableConstituents = newAnalysis.constituents
                 constituentsExpanded = newAnalysis.constituents.isNotEmpty()
                 editableEmoji = newAnalysis.emoji
-                changedFields = buildReprocessDiff(before, currentBaseEntry)
+                changedFields = buildReprocessDiff(
+                    before,
+                    currentBaseEntry,
+                    context.getString(R.string.unit_kcal),
+                    context.getString(R.string.unit_g),
+                )
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
@@ -679,7 +685,7 @@ fun EditFoodEntrySheet(
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                "${currentBaseEntry.calories} kcal · " +
+                                "${kcalText(currentBaseEntry.calories)} · " +
                                     MacroValueFormatter.withUnit(currentBaseEntry.protein) + " P · " +
                                     MacroValueFormatter.withUnit(currentBaseEntry.carbs) + " C · " +
                                     MacroValueFormatter.withUnit(currentBaseEntry.fat) + " F",
@@ -1154,18 +1160,23 @@ internal data class ReprocessDiffRow(
     val after: String,
 )
 
-internal fun buildReprocessDiff(before: FoodEntry, after: FoodEntry): List<ReprocessDiffRow> {
+internal fun buildReprocessDiff(
+    before: FoodEntry,
+    after: FoodEntry,
+    kcalUnit: String,
+    gUnit: String,
+): List<ReprocessDiffRow> {
     val rows = mutableListOf<ReprocessDiffRow>()
     fun add(label: String, a: String, b: String) {
         if (a != b) rows += ReprocessDiffRow(label, a, b)
     }
     add("Name", before.name, after.name)
-    add("Calories", "${before.calories} kcal", "${after.calories} kcal")
+    add("Calories", "${LocaleFormat.integer(before.calories)} $kcalUnit", "${LocaleFormat.integer(after.calories)} $kcalUnit")
     add("Protein", MacroValueFormatter.withUnit(before.protein), MacroValueFormatter.withUnit(after.protein))
     add("Carbs", MacroValueFormatter.withUnit(before.carbs), MacroValueFormatter.withUnit(after.carbs))
     add("Fat", MacroValueFormatter.withUnit(before.fat), MacroValueFormatter.withUnit(after.fat))
-    val beforeG = before.servingSizeGrams?.let { "${it.toInt()} g" } ?: "—"
-    val afterG = after.servingSizeGrams?.let { "${it.toInt()} g" } ?: "—"
+    val beforeG = before.servingSizeGrams?.let { "${LocaleFormat.integer(it.toInt())} $gUnit" } ?: "—"
+    val afterG = after.servingSizeGrams?.let { "${LocaleFormat.integer(it.toInt())} $gUnit" } ?: "—"
     add("Serving", beforeG, afterG)
     return rows
 }

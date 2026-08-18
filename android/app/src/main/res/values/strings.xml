@@ -59,9 +59,9 @@
     <string name="unit_ft_in">ft / in</string>
     <string name="unit_serving">serving</string>
     <string name="unit_serving_plural">servings</string>
-    <string name="kcal_value_format">%1$d kcal</string>
-    <string name="grams_value_format">%1$dg</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
+    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="grams_value_format">%1$sg</string>
+    <string name="grams_value_decimal_format">%1$sg</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
     <string name="kg_per_week_format">%1$.2f kg/wk</string>

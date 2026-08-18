@@ -38,8 +38,10 @@ import app.chompass.R
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.LocaleFormat
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.gramsText
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
 import java.util.Locale
@@ -163,7 +165,7 @@ internal fun SettingsGoalsSection(
                     }
                     LockableGoalRow(
                         label = stringResource(R.string.settings_calories),
-                        value = stringResource(R.string.kcal_value_format, p.effectiveCalories),
+                        value = stringResource(R.string.kcal_value_format, LocaleFormat.integer(p.effectiveCalories)),
                         icon = Icons.Outlined.LocalFireDepartment,
                         locked = p.caloriesLocked,
                         lockEnabled = lockEnabled,
@@ -179,7 +181,7 @@ internal fun SettingsGoalsSection(
                                     p.proteinGramsPerKg!!,
                                     p.effectiveProtein,
                                 )
-                            else -> "${p.effectiveProtein}g"
+                            else -> gramsText(p.effectiveProtein.toDouble())
                         },
                         icon = Icons.Outlined.DataUsage,
                         iconTint = AppColors.Protein,
@@ -191,7 +193,7 @@ internal fun SettingsGoalsSection(
                     HorizontalDivider()
                     LockableGoalRow(
                         label = stringResource(R.string.macro_carbs),
-                        value = "${p.effectiveCarbs}g",
+                        value = gramsText(p.effectiveCarbs.toDouble()),
                         icon = Icons.Outlined.DataUsage,
                         iconTint = AppColors.Carbs,
                         locked = p.isMacroLocked(AutoBalanceMacro.CARBS),
@@ -201,7 +203,7 @@ internal fun SettingsGoalsSection(
                     HorizontalDivider()
                     LockableGoalRow(
                         label = stringResource(R.string.macro_fat),
-                        value = "${p.effectiveFat}g",
+                        value = gramsText(p.effectiveFat.toDouble()),
                         icon = Icons.Outlined.DataUsage,
                         iconTint = AppColors.Fat,
                         locked = p.isMacroLocked(AutoBalanceMacro.FAT),

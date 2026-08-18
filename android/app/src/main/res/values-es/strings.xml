@@ -916,8 +916,8 @@
     <string name="frame_medium">Medio</string>
     <string name="frame_small">Pequeño</string>
     <string name="ft_label_format">%1$d ft</string>
-    <string name="grams_value_decimal_format">%1$.1fg</string>
-    <string name="grams_value_format">%1$dg</string>
+    <string name="grams_value_decimal_format">%1$sg</string>
+    <string name="grams_value_format">%1$sg</string>
     <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
     <string name="grounding_source_off">Open Food Facts</string>
     <string name="grounding_source_usda">USDA</string>
@@ -990,7 +990,7 @@
     <string name="import_sync_success">Documento de sincronización importado.</string>
     <string name="import_sync_title">Importar JSON de sincronización</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
+    <string name="kcal_value_format">%1$s kcal</string>
     <string name="keto_carb_grams_format">%1$d g/día</string>
     <string name="keto_carb_manual_hint">El objetivo manual se limita entre 20 y 50 g/día de carbohidratos netos.</string>
     <string name="keto_carb_mode_adaptive">Carbohidratos adaptativos</string>
