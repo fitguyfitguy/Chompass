@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **Edit Food Entry shows no AI controls when AI is off** (Android): with AI features turned off, the edit sheet now only shows a plain note field and a Save button. The note on a logged entry stays editable, and no AI call can be started from anywhere in the app.
+
 ## [3.17.2] - 2026-08-17
 
 ### Fixed

@@ -2550,6 +2550,8 @@ für dich ein</string>
 
     <string name="home_take_second_shot">Zweites Foto aufnehmen</string>
 
+    <string name="edit_note_section">Notiz</string>
+    <string name="edit_note_placeholder">Notiz (optional)</string>
     <string name="edit_reprocess_section">KI bitten, zu korrigieren</string>
 
     <string name="edit_icon_picker_title">Symbol auswählen</string>

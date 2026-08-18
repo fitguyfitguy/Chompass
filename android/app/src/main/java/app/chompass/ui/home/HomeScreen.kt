@@ -1010,6 +1010,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         EditFoodEntrySheet(
             entry = entry,
             preferGramsByDefault = ui.preferGramsByDefault,
+            aiFeaturesEnabled = aiFeaturesEnabled,
             onReprocess = { updatedNote, onProgress ->
                 vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },
@@ -1073,17 +1074,21 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             source = ui.pendingReviewSource?.source
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
-            portionClarifyEnabled = ui.portionClarifyEnabled,
+            portionClarifyEnabled = ui.portionClarifyEnabled && aiFeaturesEnabled,
             portionPreConfirmed = ui.pendingPortionPreConfirmed,
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
-            onReprocessPortion = { answer -> vm.reprocessPendingAnalysis(answer) },
+            onReprocessPortion = if (aiFeaturesEnabled) { answer -> vm.reprocessPendingAnalysis(answer) } else null,
             onWhatIfSuggestion = if (aiFeaturesEnabled) vm::suggestMealWhatIf else null,
-            onReanalyzeWithTip = if (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty()) {
+            onReanalyzeWithTip = if (
+                aiFeaturesEnabled &&
+                (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty())
+            ) {
                 { note, grams -> vm.reanalyzeWithTip(note, grams) }
             } else {
                 null
             },
             onAddPhoto = if (
+                aiFeaturesEnabled &&
                 (ui.pendingImageBytes != null || ui.pendingAnalysisImages.isNotEmpty()) &&
                 ui.pendingAnalysisImages.size < FoodPhotoSession.MAX_IMAGES
             ) {
