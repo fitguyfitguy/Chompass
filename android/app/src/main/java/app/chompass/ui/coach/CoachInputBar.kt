@@ -1,6 +1,5 @@
 package app.chompass.ui.coach
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,6 +52,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
@@ -127,7 +127,7 @@ internal fun InputBar(
             .padding(start = 4.dp, end = 5.dp, top = 4.dp, bottom = 4.dp),
     ) {
         attachedImageBytes?.let { bytes ->
-            val bitmap = rememberDecodedBitmap(bytes) { BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
+            val bitmap = rememberDecodedBitmap(bytes) { decodeSampledBitmap(bytes) }
             if (bitmap != null) {
                 Box(
                     modifier = Modifier

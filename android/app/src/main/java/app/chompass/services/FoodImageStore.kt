@@ -154,34 +154,8 @@ class FoodImageStore(context: Context) {
      * BitmapFactory ignores it, so camera/gallery JPEGs would otherwise be stored
      * (and shown) rotated 90°/180°.
      */
-    private fun decodeSampled(bytes: ByteArray, maxDimension: Int): Bitmap? {
-        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
-        val sampleSize = sampleSizeFor(bounds.outWidth, bounds.outHeight, maxDimension)
-        val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-            ?.scaledToMaxDimension(maxDimension)
-            ?.withExifOrientation(bytes)
-    }
-
-    private fun sampleSizeFor(width: Int, height: Int, maxDimension: Int): Int {
-        val largest = max(width, height)
-        if (largest <= maxDimension || largest <= 0) return 1
-        var sampleSize = 1
-        while (largest / (sampleSize * 2) >= maxDimension) {
-            sampleSize *= 2
-        }
-        return sampleSize
-    }
-
-    private fun Bitmap.scaledToMaxDimension(maxDimension: Int): Bitmap {
-        val largest = max(width, height)
-        if (largest <= maxDimension || largest <= 0) return this
-        val scale = maxDimension.toFloat() / largest.toFloat()
-        val targetWidth = (width * scale).toInt().coerceAtLeast(1)
-        val targetHeight = (height * scale).toInt().coerceAtLeast(1)
-        return Bitmap.createScaledBitmap(this, targetWidth, targetHeight, true)
-    }
+    private fun decodeSampled(bytes: ByteArray, maxDimension: Int): Bitmap? =
+        decodeSampledBitmap(bytes, maxDimension)
 
     private fun evictThumbnails(filename: String) {
         for (key in thumbnailCache.snapshot().keys) {
@@ -202,6 +176,45 @@ class FoodImageStore(context: Context) {
         private const val THUMBNAIL_JPEG_QUALITY = 76
         private const val THUMBNAIL_CACHE_KB = 12 * 1024
     }
+}
+
+/**
+ * Decodes [bytes] with bounds-sampling capped at [maxDimension], then bakes
+ * the EXIF orientation in. Share-in/gallery bytes are capped at 25 MB each,
+ * which can still be a 48 MP camera frame: decoding that at full size needs
+ * ~192 MB of bitmap memory. In-memory preview decoders use this so they never
+ * materialize more than a [maxDimension] square regardless of the source.
+ */
+fun decodeSampledBitmap(
+    bytes: ByteArray,
+    maxDimension: Int = FoodImageStore.FULL_IMAGE_MAX_DIMENSION,
+): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+    val sampleSize = sampleSizeFor(bounds.outWidth, bounds.outHeight, maxDimension)
+    val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+        ?.scaledToMaxDimension(maxDimension)
+        ?.withExifOrientation(bytes)
+}
+
+internal fun sampleSizeFor(width: Int, height: Int, maxDimension: Int): Int {
+    val largest = max(width, height)
+    if (largest <= maxDimension || largest <= 0) return 1
+    var sampleSize = 1
+    while (largest / (sampleSize * 2) >= maxDimension) {
+        sampleSize *= 2
+    }
+    return sampleSize
+}
+
+internal fun Bitmap.scaledToMaxDimension(maxDimension: Int): Bitmap {
+    val largest = max(width, height)
+    if (largest <= maxDimension || largest <= 0) return this
+    val scale = maxDimension.toFloat() / largest.toFloat()
+    val targetWidth = (width * scale).toInt().coerceAtLeast(1)
+    val targetHeight = (height * scale).toInt().coerceAtLeast(1)
+    return Bitmap.createScaledBitmap(this, targetWidth, targetHeight, true)
 }
 
 /**
