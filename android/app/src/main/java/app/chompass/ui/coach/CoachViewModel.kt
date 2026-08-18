@@ -8,6 +8,7 @@ import app.chompass.R
 import app.chompass.data.disambiguateFoodName
 import app.chompass.models.ChatMessage
 import app.chompass.models.FoodEntry
+import app.chompass.models.LocaleFormat
 import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
@@ -167,7 +168,7 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.weightRepository.addEntry(entry)
             container.chatRepository.append(
-                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged weight: ${String.format(java.util.Locale.US, "%.1f", entry.weightKg)} kg.")
+                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged weight: ${LocaleFormat.decimal(entry.weightKg, 1)} kg.")
             )
             _ui.value = _ui.value.copy(pendingWeight = null)
         }

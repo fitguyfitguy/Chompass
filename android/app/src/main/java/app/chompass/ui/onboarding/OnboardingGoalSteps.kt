@@ -45,13 +45,13 @@ import app.chompass.R
 import app.chompass.models.ActivityLevel
 import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.LocaleFormat
 import app.chompass.models.WeightGoal
 import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
-import java.util.Locale
 import app.chompass.models.UnitFormat
 
 @Composable
@@ -269,8 +269,8 @@ internal fun GoalSpeedStep(
                 else -> 1
             }
             val unit = if (useMetric) stringResource(R.string.unit_kg) else stringResource(R.string.unit_lbs)
-            val display = if (useMetric) String.format(Locale.US, "%.1f", weeklyKg)
-                          else String.format(Locale.US, "%.1f", UnitFormat.kgToLbs(weeklyKg))
+            val display = if (useMetric) LocaleFormat.decimal(weeklyKg, 1)
+                          else LocaleFormat.decimal(UnitFormat.kgToLbs(weeklyKg), 1)
             val diffKg = kotlin.math.abs(targetKg - currentKg)
             val estimatedDays = if (weeklyKg > 0) (diffKg / weeklyKg * 7).toInt() else 0
             Spacer(Modifier.weight(1f))

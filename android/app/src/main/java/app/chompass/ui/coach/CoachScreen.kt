@@ -61,13 +61,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.io.ByteArrayOutputStream
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
-import java.util.Locale
+import kotlin.math.roundToInt
 
 /**
  * Verbatim port of struct ChatView in
@@ -283,8 +284,8 @@ fun CoachScreen(container: AppContainer) {
         FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_food_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                "${entry.name}: ${entry.calories} kcal (${String.format(Locale.US, "%.0f", entry.protein)}g protein, " +
-                    "${String.format(Locale.US, "%.0f", entry.carbs)}g carbs, ${String.format(Locale.US, "%.0f", entry.fat)}g fat)",
+                "${entry.name}: ${LocaleFormat.integer(entry.calories)} kcal (${LocaleFormat.integer(entry.protein.roundToInt())}g protein, " +
+                    "${LocaleFormat.integer(entry.carbs.roundToInt())}g carbs, ${LocaleFormat.integer(entry.fat.roundToInt())}g fat)",
                 style = MaterialTheme.typography.bodyMedium
             )
             FudGlassDialogActions(
@@ -299,7 +300,7 @@ fun CoachScreen(container: AppContainer) {
     ui.pendingWeight?.let { entry ->
         FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_weight_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Text("${String.format(Locale.US, "%.1f", entry.weightKg)} kg", style = MaterialTheme.typography.bodyMedium)
+            Text("${LocaleFormat.decimal(entry.weightKg, 1)} kg", style = MaterialTheme.typography.bodyMedium)
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_log),
                 onPrimary = { vm.confirmPendingWeight() },
