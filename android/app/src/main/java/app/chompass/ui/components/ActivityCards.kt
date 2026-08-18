@@ -28,6 +28,7 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 @Composable
 fun StepsCard(
     steps: Long,
@@ -67,7 +68,7 @@ fun StepsCard(
         Text(
             text = stringResource(R.string.home_steps_goal_format, LocaleFormat.integer(goal)),
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
 }

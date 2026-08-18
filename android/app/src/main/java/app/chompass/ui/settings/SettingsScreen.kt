@@ -45,6 +45,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 @Composable
 fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container))
@@ -150,7 +151,7 @@ private fun SuggestionsCard(
             Text(
                 stringResource(R.string.settings_suggestions),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.padding(start = 16.dp, top = 10.dp, end = 16.dp),
             )
             suggestions.forEachIndexed { index, suggestion ->
@@ -177,7 +178,7 @@ private fun SuggestionsCard(
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = stringResource(R.string.settings_suggestions_dismiss),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                             modifier = Modifier.size(16.dp),
                         )
                     }

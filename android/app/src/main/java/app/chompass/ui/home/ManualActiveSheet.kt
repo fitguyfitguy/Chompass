@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +43,7 @@ fun ManualActiveSheet(
         Text(
             stringResource(R.string.manual_active_subtitle),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(14.dp))
         FudGlassTextField(

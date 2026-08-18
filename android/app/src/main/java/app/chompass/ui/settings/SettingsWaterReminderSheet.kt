@@ -27,6 +27,7 @@ import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -119,7 +120,7 @@ internal fun WaterReminderPlanSheet(
         Text(
             stringResource(R.string.settings_water_reminder_note),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
         GradientSaveButton { onSave(startMinutes, endMinutes, cupMl) }
@@ -233,7 +234,7 @@ internal fun WaterManualTempSheet(current: Int, onSave: (Int) -> Unit) {
         Text(
             stringResource(R.string.settings_water_manual_temp_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
         NumericWheelPicker(

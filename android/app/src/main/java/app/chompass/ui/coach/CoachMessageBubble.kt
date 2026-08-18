@@ -68,6 +68,7 @@ import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun EmptyState(modifier: Modifier = Modifier) {
@@ -108,7 +109,7 @@ internal fun EmptyState(modifier: Modifier = Modifier) {
         Text(
             stringResource(R.string.coach_empty_subtitle),
             fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = TextAlign.Center,
             lineHeight = 21.sp
         )

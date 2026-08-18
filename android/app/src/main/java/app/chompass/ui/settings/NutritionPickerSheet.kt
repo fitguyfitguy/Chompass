@@ -31,6 +31,7 @@ import app.chompass.R
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 /**
  * Wheel-picker sheet for a single macro / calorie target. Mirrors iOS
  * NutritionPickerSheet exactly: title, wheel picker stepped at the requested
@@ -96,7 +97,7 @@ fun NutritionPickerSheet(
         Text(
             unit,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
     if (customMode) {
@@ -117,7 +118,7 @@ fun NutritionPickerSheet(
         ) {
             Text(
                 stringResource(R.string.settings_picker_use_wheel),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
     } else {
@@ -133,7 +134,7 @@ fun NutritionPickerSheet(
         Text(
             conversionHintFor(parsedCustom ?: selected),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.fillMaxWidth(),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
@@ -163,7 +164,7 @@ fun NutritionPickerSheet(
         ) {
             Text(
                 resetLabel ?: stringResource(R.string.settings_reset_autobalance),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
     }

@@ -54,6 +54,7 @@ import app.chompass.ui.components.kcalText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Bottom sheet for building/editing a [Recipe]: a name, a meal type, and an
@@ -183,7 +184,7 @@ fun RecipeBuilderSheet(
                     Text(
                         stringResource(R.string.recipe_builder_no_ingredients),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                 }
@@ -346,7 +347,7 @@ private fun FavoritesIngredientPickerSheet(
             Text(
                 stringResource(R.string.saved_meals_no_favorites),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)
             )
         } else {

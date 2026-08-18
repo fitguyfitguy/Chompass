@@ -78,6 +78,7 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -683,11 +684,11 @@ private fun SavedMealRow(
                     color = AppColors.Calorie
                 )
                 if (subtitle != null) {
-                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     Text(
                         subtitle,
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -756,11 +757,11 @@ private fun RecipeRow(
             Text(recipe.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(kcalText(recipe.totalCalories), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
-                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                 Text(
                     stringResource(R.string.recipe_ingredient_count_format, recipe.ingredients.size),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -836,7 +837,7 @@ private fun EmptyState(icon: ImageVector, text: String) {
             Text(
                 text,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }

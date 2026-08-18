@@ -44,6 +44,7 @@ import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 
 @Composable
@@ -85,7 +86,7 @@ internal fun WelcomeStep() {
         Text(
             stringResource(R.string.onboarding_welcome_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(24.dp))
@@ -249,7 +250,7 @@ internal fun BodyFatStep(
             Text(
                 stringResource(R.string.onboarding_body_fat_ranges),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
@@ -289,7 +290,7 @@ internal fun BodyFatStep(
                 Text(
                     stringResource(R.string.onboarding_goal_set_later),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Faint)
                 )
             }
         } else {
@@ -301,13 +302,13 @@ internal fun BodyFatStep(
                 Text(
                     "ƒ(x)",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.onboarding_body_fat_no_worries),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }

@@ -51,6 +51,7 @@ import app.chompass.AppContainer
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
 
 private const val CODEBERG_REPO = "https://codeberg.org/fitguy/chompass"
@@ -126,12 +127,12 @@ fun AboutSettingsRows(container: AppContainer) {
                 stringResource(R.string.about_made_by),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
             )
             Text(
                 stringResource(R.string.about_with_care),
                 fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled)
             )
         }
     }
@@ -180,7 +181,7 @@ private fun UpdateRow(
                 Text(
                     state.current,
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             },
             onClick = onRefresh
@@ -237,14 +238,14 @@ private fun AboutRow(
                 Text(
                     subtitle,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
             if (!note.isNullOrBlank()) {
                 Text(
                     note,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         }

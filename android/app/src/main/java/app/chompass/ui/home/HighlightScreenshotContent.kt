@@ -40,6 +40,7 @@ import app.chompass.ui.components.kcalText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Home with a static meal-review sheet showing editable constituents
@@ -242,11 +243,11 @@ private fun ScreenshotRecipeRow(
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Calorie,
                 )
-                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                 Text(
                     stringResource(R.string.recipe_ingredient_count_format, recipe.ingredients.size),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {

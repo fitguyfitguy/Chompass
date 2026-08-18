@@ -28,6 +28,7 @@ import app.chompass.R
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceDownloadState
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.LocaleFormat
 
 private fun gb(bytes: Long): String = "${LocaleFormat.decimal(bytes / 1_073_741_824.0, 1)} GB"
@@ -100,7 +101,7 @@ internal fun OnDeviceModelSheet(
                 Text(
                     stringResource(R.string.on_device_model_device_notice),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
                 Spacer(Modifier.height(12.dp))
                 if (!hasEnoughSpace) {

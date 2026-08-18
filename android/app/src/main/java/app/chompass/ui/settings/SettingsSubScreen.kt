@@ -37,6 +37,7 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 /**
  * Shared scaffold for settings drill-down screens: back chip, large title,
  * then a vertically scrolling column of section cards.
@@ -126,7 +127,7 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
         Text(
             stringResource(R.string.settings_related),
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         app.chompass.ui.components.FudGlassSurface(
@@ -154,7 +155,7 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
                         Icon(
                             Icons.Filled.ChevronRight,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                         )
                     }
                 }
@@ -189,13 +190,13 @@ internal fun SettingsHubRow(
             Text(
                 summary,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
         }
         Icon(
             Icons.Filled.ChevronRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
         )
     }
 }

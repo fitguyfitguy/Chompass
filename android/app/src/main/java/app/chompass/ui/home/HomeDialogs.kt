@@ -66,6 +66,7 @@ import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
@@ -141,7 +142,7 @@ internal fun EntryAnalysisOverlay(
                             Text(
                                 stringResource(R.string.entry_analysis_waiting_response),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                             )
                         }
@@ -306,21 +307,21 @@ internal fun ProgressiveAnalysisCard(
                 Text(
                     stringResource(R.string.entry_analysis_micros_found, partial.micronutrientCount),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
             if (partial.hasUnitOptions) {
                 Text(
                     stringResource(R.string.entry_analysis_units_found),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
             if (partial.streaming) {
                 Text(
                     stringResource(R.string.entry_analysis_streaming_hint),
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                 )
             }
         }
@@ -375,7 +376,7 @@ private fun ProgressiveNutritionRow(
         Text(
             text = unit,
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.width(36.dp),
         )
     }
@@ -633,7 +634,7 @@ internal fun ManualEntryDialog(
                     Icon(
                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
                 if (moreNutritionExpanded) {

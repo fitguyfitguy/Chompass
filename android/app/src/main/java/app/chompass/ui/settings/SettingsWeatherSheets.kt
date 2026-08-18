@@ -36,6 +36,7 @@ import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -99,7 +100,7 @@ internal fun OpenMeteoCitySheet(
         Text(
             stringResource(R.string.settings_weather_city_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(12.dp))
         FudGlassTextField(
@@ -129,7 +130,7 @@ internal fun OpenMeteoCitySheet(
             searched && results.isNullOrEmpty() -> Text(
                 stringResource(R.string.settings_weather_city_search_none),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             !results.isNullOrEmpty() -> LazyColumn(
                 Modifier.fillMaxWidth().heightIn(max = 260.dp),
@@ -185,7 +186,7 @@ internal fun OpenMeteoCitySheet(
         Text(
             stringResource(R.string.settings_weather_attribution),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(14.dp))
         FudGlassTextButton(

@@ -31,6 +31,7 @@ import app.chompass.R
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Food & Entry settings: how logging behaves (units, sort, meal times) and how
@@ -55,7 +56,7 @@ fun FoodEntrySettingsScreen(
         Text(
             stringResource(R.string.settings_food_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
 
         SectionCard(title = stringResource(R.string.settings_food_section_logging)) {

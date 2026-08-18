@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.LocaleFormat
 import java.time.Instant
 
@@ -172,7 +173,7 @@ internal fun SettingsSyncSection(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
         }

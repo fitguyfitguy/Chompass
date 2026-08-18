@@ -35,6 +35,7 @@ import app.chompass.models.WeightEntry
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
 import java.time.ZoneId
 
@@ -74,7 +75,7 @@ internal fun WeightSection(
                 Text(
                     stringResource(R.string.progress_log_first_weight),
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         } else {
@@ -133,7 +134,7 @@ private fun WeightChartLegend(hasTrend: Boolean) {
             Text(
                 stringResource(R.string.progress_weight_trend_need_more),
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
         }
     }
@@ -189,13 +190,13 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
                 Text(
                     stringResource(R.string.progress_history_count_format, count),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
             Icon(
                 Icons.Filled.ChevronRight,
                 null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -223,13 +224,13 @@ internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
                 Text(
                     stringResource(R.string.progress_history_count_format, count),
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
             Icon(
                 Icons.Filled.ChevronRight,
                 null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier.size(18.dp)
             )
         }

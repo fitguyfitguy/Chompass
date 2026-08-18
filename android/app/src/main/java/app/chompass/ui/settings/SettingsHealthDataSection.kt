@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 
 @Composable
@@ -243,14 +244,14 @@ internal fun SettingsHealthDataSection(
                             Text(
                                 syncSummary,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                             )
                         }
                     }
                     Icon(
                         Icons.Filled.ChevronRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                     )
                 }
     }

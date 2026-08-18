@@ -44,6 +44,7 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
 
 @Composable
@@ -235,7 +236,7 @@ internal fun SettingsGoalsSection(
                         Text(
                             stringResource(R.string.settings_recalculate_goals),
                             color = if (ui.recalculatingGoals) {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.42f)
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
                             } else {
                                 AppColors.Calorie
                             },

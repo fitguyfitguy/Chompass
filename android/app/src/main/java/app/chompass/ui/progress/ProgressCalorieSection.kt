@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import java.time.LocalDate
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun CalorieSection(dailyCalories: List<Pair<LocalDate, Int>>, calorieGoal: Int) {
@@ -31,7 +32,7 @@ internal fun CalorieSection(dailyCalories: List<Pair<LocalDate, Int>>, calorieGo
                     stringResource(R.string.progress_avg_format, avg),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         }
@@ -40,7 +41,7 @@ internal fun CalorieSection(dailyCalories: List<Pair<LocalDate, Int>>, calorieGo
                 Text(
                     stringResource(R.string.progress_no_food),
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         } else {

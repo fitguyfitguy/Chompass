@@ -54,6 +54,7 @@ import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun ActivityStep(selected: ActivityLevel, onSelect: (ActivityLevel) -> Unit) {
@@ -164,7 +165,7 @@ internal fun DietModeStep(
                 Text(
                     stringResource(R.string.keto_carb_manual_hint),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         }
@@ -258,7 +259,7 @@ internal fun GoalSpeedStep(
                 Text(
                     stringResource(R.string.onboarding_pace_balanced_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }
@@ -285,7 +286,7 @@ internal fun GoalSpeedStep(
                 Text(
                     stringResource(R.string.onboarding_pace_per_week),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                 )
             }
             Spacer(Modifier.height(20.dp))
@@ -350,7 +351,7 @@ internal fun GoalSpeedStep(
                             else -> stringResource(R.string.onboarding_pace_caption_recommended)
                         },
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -366,7 +367,7 @@ private fun PaceIcon(icon: ImageVector, label: String, selected: Boolean) {
             imageVector = icon,
             contentDescription = null,
             tint = if (selected) AppColors.Calorie
-                   else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                   else MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(28.dp)
         )
         Spacer(Modifier.height(4.dp))
@@ -375,7 +376,7 @@ private fun PaceIcon(icon: ImageVector, label: String, selected: Boolean) {
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Medium,
             color = if (selected) AppColors.Calorie
-                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                    else MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
         )
     }
 }

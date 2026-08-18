@@ -46,6 +46,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 @Composable
 internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
     // iOS notificationsStep: centered bell.badge.fill in pink + big headline
@@ -75,7 +76,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
         Text(
             stringResource(R.string.onboarding_notifications_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(28.dp))
@@ -107,7 +108,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
         Text(
             stringResource(R.string.onboarding_notifications_change_anytime),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
         )
     }
 }
@@ -153,7 +154,7 @@ internal fun HealthConnectStep(container: AppContainer, enabled: Boolean, onTogg
         Text(
             stringResource(R.string.onboarding_health_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(18.dp))
@@ -213,7 +214,7 @@ private fun HealthFeatureRow(icon: ImageVector, label: String) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.size(22.dp)
         )
         Spacer(Modifier.width(14.dp))

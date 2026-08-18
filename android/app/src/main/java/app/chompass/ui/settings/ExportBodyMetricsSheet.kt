@@ -28,6 +28,7 @@ import app.chompass.export.BodyMetricsExporter
 import app.chompass.export.BodyMetricsFormat
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -67,7 +68,7 @@ fun ExportBodyMetricsSheet(
                 stringResource(R.string.export_body_metrics_format),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
             ExportFormatChipRow(
                 options = BodyMetricsFormat.values(),

@@ -50,6 +50,7 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Review sheet for an in-progress weigh-as-you-go meal: list of reviewed
@@ -118,7 +119,7 @@ fun ProgressiveMealSheet(
                     Text(
                         stringResource(R.string.progressive_meal_ingredient_count, draft.items.size),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
                 }
             }
@@ -175,7 +176,7 @@ fun ProgressiveMealSheet(
                     Text(
                         stringResource(R.string.progressive_meal_empty),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         modifier = Modifier.padding(horizontal = 20.dp),
                     )
                 }
@@ -198,7 +199,7 @@ fun ProgressiveMealSheet(
                         Text(
                             stringResource(R.string.progressive_meal_totals),
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         )
                         Text(
                             kcalText(draft.totalCalories),

@@ -51,6 +51,7 @@ import app.chompass.services.speech.AudioRecorder
 import app.chompass.services.speech.NativeSpeechRecognizer
 import app.chompass.services.speech.SttEvent
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -367,7 +368,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
             },
             fontSize = 15.sp,
             color = if (armed) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
             maxLines = 1,
             modifier = Modifier.weight(1f, fill = false)
         )

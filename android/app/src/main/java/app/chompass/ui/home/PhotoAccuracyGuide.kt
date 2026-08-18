@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 /**
  * Progressive accuracy guidance for photo entry: a dismissible tip card for early
  * entries, otherwise a compact Info control that opens the same body in a dialog.
@@ -104,7 +105,7 @@ fun PhotoAccuracyTipCard(
                 Icon(
                     Icons.Outlined.Close,
                     contentDescription = stringResource(R.string.photo_accuracy_guide_dismiss),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier.size(18.dp),
                 )
             }

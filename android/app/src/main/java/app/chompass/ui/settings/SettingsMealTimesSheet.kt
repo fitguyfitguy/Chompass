@@ -29,6 +29,7 @@ import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 private enum class MealBoundary {
     BREAKFAST, LUNCH, DINNER, SNACK
@@ -76,7 +77,7 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
         Text(
             stringResource(R.string.settings_meal_times_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
         GradientSaveButton { onSave(schedule) }

@@ -33,6 +33,7 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.progress.TimeRange
 import java.util.Locale
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Settings → App & Display → Customize progress. Groups everything that tunes the
@@ -84,7 +85,7 @@ fun CustomizeProgressScreen(
                     stringResource(R.string.settings_progress_plots),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                 )
                 BodyMeasurement.Site.values().forEachIndexed { index, site ->
@@ -114,7 +115,7 @@ fun CustomizeProgressScreen(
         Text(
             stringResource(R.string.settings_progress_plots_subtitle),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.padding(horizontal = 4.dp),
         )
     }
@@ -153,7 +154,7 @@ private fun MeasurementSiteToggleRow(
             Text(
                 subtitle,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
         }
         Spacer(Modifier.padding(start = 8.dp))
