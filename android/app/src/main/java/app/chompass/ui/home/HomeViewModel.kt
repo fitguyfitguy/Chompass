@@ -63,6 +63,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.util.Locale
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -1327,7 +1328,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     val analysis = item.analysis
                     val resolvedName = run {
                         val resolved = disambiguateFoodName(analysis.name, knownKeys)
-                        knownKeys.add(resolved.lowercase())
+                        knownKeys.add(resolved.lowercase(Locale.ROOT))
                         resolved
                     }
                     analysis.toMicronutrients().applyTo(
@@ -1749,7 +1750,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      */
     private suspend fun resolveNewFoodName(rawName: String, relogTemplate: FoodEntry?): String {
         val trimmed = rawName.trim()
-        if (relogTemplate != null && trimmed.lowercase() == relogTemplate.favoriteKey) {
+        if (relogTemplate != null && trimmed.lowercase(Locale.ROOT) == relogTemplate.favoriteKey) {
             return trimmed.ifEmpty { rawName }
         }
         return disambiguateFoodName(rawName, container.foodRepository.existingFoodIdentityKeys())

@@ -52,6 +52,7 @@ import app.chompass.models.UserProfile
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
+import java.util.Locale
 import kotlin.math.roundToInt
 
 /**
@@ -243,7 +244,7 @@ private fun Card(content: @Composable () -> Unit) {
 @Composable
 private fun NutritionSheetSectionHeader(title: String) {
     Text(
-        title.uppercase(),
+        title.uppercase(Locale.getDefault()),
         fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),

@@ -535,7 +535,7 @@ internal fun FoodRow(
                     }
                 }
                 Text(
-                    timeFmt.format(entry.timestamp).lowercase(),
+                    timeFmt.format(entry.timestamp).lowercase(Locale.getDefault()),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
                 )

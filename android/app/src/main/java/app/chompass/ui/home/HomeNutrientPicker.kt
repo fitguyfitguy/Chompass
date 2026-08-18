@@ -45,6 +45,7 @@ import androidx.compose.foundation.shape.CircleShape
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
+import java.util.Locale
 
 @Composable
 fun HomeTopNutrientPickerDialog(
@@ -133,7 +134,7 @@ fun FoodLogMacroChipPickerDialog(
                 val accent = kind?.color() ?: AppColors.Calorie
                 NutrientPickerRow(
                     label = chip.glyph,
-                    unit = kind?.name?.lowercase()?.replaceFirstChar { it.titlecase() } ?: "Sugar",
+                    unit = kind?.name?.lowercase(Locale.ROOT)?.replaceFirstChar { it.titlecase() } ?: "Sugar",
                     checked = chip in draft,
                     accentColor = accent,
                     onClick = { toggle(chip) }
