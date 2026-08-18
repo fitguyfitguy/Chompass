@@ -722,6 +722,7 @@
     <string name="about_update_available">Actualización disponible</string>
     <string name="about_update_checking">Buscando actualizaciones</string>
     <string name="about_update_details_format">Actual %1$s -&gt; Última %2$s</string>
+    <string name="about_update_fdroid_note">Las actualizaciones llegan a través de F-Droid</string>
     <string name="about_upstream">Basado en Fud AI (upstream)</string>
     <string name="about_version_format">Versión %1$s</string>
     <string name="action_advanced">Avanzado</string>

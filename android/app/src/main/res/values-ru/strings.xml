@@ -752,6 +752,7 @@
     <string name="about_update_checking">Проверка обновлений</string>
     <string name="about_update_available">Доступно обновление</string>
     <string name="about_update_details_format">Текущая %1$s -&gt; Новая %2$s</string>
+    <string name="about_update_fdroid_note">Обновления приходят через F-Droid</string>
     <string name="about_update_action">Обновить</string>
     <string name="about_check_updates">Проверить обновления</string>
     <string name="about_app_version">Версия приложения</string>

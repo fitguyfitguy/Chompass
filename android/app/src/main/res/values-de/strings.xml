@@ -2099,6 +2099,7 @@ für dich ein</string>
     <string name="about_update_available">Update verfügbar</string>
 
     <string name="about_update_details_format">Aktuelle Version %1$s –&gt; Neueste Version %2$s</string>
+    <string name="about_update_fdroid_note">Updates werden über F-Droid verteilt</string>
 
     <string name="about_update_action">Aktualisieren</string>
 

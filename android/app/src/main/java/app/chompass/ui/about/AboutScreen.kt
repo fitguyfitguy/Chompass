@@ -97,7 +97,6 @@ fun AboutSettingsRows(container: AppContainer) {
             state = updateState,
             currentVersion = currentVersion,
             onRefresh = ::refreshUpdateState,
-            onOpenStore = {}
         )
         Hairline()
         AboutRow(Icons.Filled.Share, stringResource(R.string.about_share), onClick = ::share)
@@ -143,7 +142,6 @@ private fun UpdateRow(
     state: AndroidUpdateState,
     currentVersion: String,
     onRefresh: () -> Unit,
-    onOpenStore: () -> Unit
 ) {
     when (state) {
         AndroidUpdateState.Checking -> AboutRow(
@@ -156,14 +154,18 @@ private fun UpdateRow(
                     color = AppColors.Calorie
                 )
             },
-            onClick = {}
+            onClick = null
         )
         is AndroidUpdateState.Available -> AboutRow(
             icon = Icons.Filled.SystemUpdate,
             label = stringResource(R.string.about_update_available),
             subtitle = stringResource(R.string.about_update_details_format, state.current, state.latest),
+            // F-Droid delivers updates through its own client, so this row is
+            // informational: the dot marks the new version, the note says where
+            // it comes from. No in-app tap target to dead-end into.
+            note = stringResource(R.string.about_update_fdroid_note),
             showDot = true,
-            onClick = onOpenStore
+            onClick = null
         )
         is AndroidUpdateState.Failed -> AboutRow(
             icon = Icons.Filled.Sync,
@@ -197,14 +199,17 @@ private fun AboutRow(
     icon: ImageVector,
     label: String,
     subtitle: String? = null,
+    /** Second muted line under [subtitle]; informational rows only. */
+    note: String? = null,
     showDot: Boolean = false,
     trailing: (@Composable () -> Unit)? = null,
-    onClick: () -> Unit
+    /** Null renders the row without a click target (no ripple, no TalkBack action). */
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -231,6 +236,13 @@ private fun AboutRow(
             if (!subtitle.isNullOrBlank()) {
                 Text(
                     subtitle,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                )
+            }
+            if (!note.isNullOrBlank()) {
+                Text(
+                    note,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                 )

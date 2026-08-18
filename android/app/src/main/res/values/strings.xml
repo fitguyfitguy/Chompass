@@ -1157,6 +1157,7 @@
     <string name="about_update_checking">Checking for Updates</string>
     <string name="about_update_available">Update Available</string>
     <string name="about_update_details_format">Current %1$s -&gt; Latest %2$s</string>
+    <string name="about_update_fdroid_note">Updates are delivered through F-Droid</string>
     <string name="about_update_action">Update</string>
     <string name="about_check_updates">Check for Updates</string>
     <string name="about_app_version">App Version</string>
