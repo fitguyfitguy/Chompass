@@ -69,7 +69,6 @@ import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
-import kotlin.math.roundToInt
 import app.chompass.ui.theme.AppTextOpacity
 
 /**

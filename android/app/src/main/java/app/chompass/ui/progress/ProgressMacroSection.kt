@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
