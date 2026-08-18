@@ -121,6 +121,18 @@ fun EditFoodEntrySheet(
     // touch-consuming overlay below). Never permanently reject Hidden.
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
+    // Hoisted out of the reprocess coroutine so the diff labels come from
+    // stringResource, not context.getString (lint LocalContextGetResourceValueCall).
+    val reprocessLabels = ReprocessDiffLabels(
+        name = stringResource(R.string.manual_name),
+        calories = stringResource(R.string.macro_calories),
+        protein = stringResource(R.string.macro_protein),
+        carbs = stringResource(R.string.macro_carbs),
+        fat = stringResource(R.string.macro_fat),
+        serving = stringResource(R.string.sheet_serving),
+    )
+    val reprocessKcalUnit = stringResource(R.string.unit_kcal)
+    val reprocessGUnit = stringResource(R.string.unit_g)
     // Long list: block overscroll at the BOTTOM edge always (the bottom edge
     // must not fight the sheet's drag-to-dismiss, visible as a shake when
     // scrolled to the bottom). The top edge is gated (Codeberg #30): blocked
@@ -310,16 +322,9 @@ fun EditFoodEntrySheet(
                 changedFields = buildReprocessDiff(
                     before,
                     currentBaseEntry,
-                    ReprocessDiffLabels(
-                        name = context.getString(R.string.manual_name),
-                        calories = context.getString(R.string.macro_calories),
-                        protein = context.getString(R.string.macro_protein),
-                        carbs = context.getString(R.string.macro_carbs),
-                        fat = context.getString(R.string.macro_fat),
-                        serving = context.getString(R.string.sheet_serving),
-                    ),
-                    context.getString(R.string.unit_kcal),
-                    context.getString(R.string.unit_g),
+                    reprocessLabels,
+                    reprocessKcalUnit,
+                    reprocessGUnit,
                 )
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
