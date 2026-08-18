@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,10 @@ fun TextInputSheet(
     val isDark = isDarkTheme()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    // Codeberg #30: hoisted so the sheet-drag blocker can read it. This sheet
+    // has no lazy list (blockSheetDragAtLazyListEdges never applied), so every
+    // downward drag used to dismiss it mid-note.
+    val scrollState = rememberScrollState()
 
     // Keep the input composable stable so rotating placeholder examples do not drop IME focus.
     val placeholders = listOf(
@@ -105,6 +110,11 @@ fun TextInputSheet(
             Modifier
                 .fillMaxWidth()
                 .imePadding()
+                // Codeberg #30: block drag-from-content dismissal outright. No
+                // lazy list here, so a top-edge pull has no scroll to justify
+                // it; #14's bottom-edge concern does not apply. Dismissal stays
+                // on the handle, the scrim and Cancel.
+                .blockSheetDragAtScrollEdges(scrollState)
         ) {
             Row(
                 Modifier
@@ -137,7 +147,7 @@ fun TextInputSheet(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

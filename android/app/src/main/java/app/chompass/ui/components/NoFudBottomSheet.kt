@@ -1,5 +1,6 @@
 package app.chompass.ui.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
@@ -167,6 +168,52 @@ internal fun shouldBlockSheetDrag(
 ): Boolean =
     (blockTopEdge && availableY > 0f && !canScrollBackward) ||
         (blockBottomEdge && availableY < 0f && !canScrollForward)
+
+/**
+ * Same edge-blocking as [blockSheetDragAtLazyListEdges] for plain
+ * [androidx.compose.foundation.verticalScroll] columns (sheets without a lazy
+ * list, e.g. TextInputSheet). Without it every downward drag on such a sheet
+ * dismisses it, because there is no LazyColumn for
+ * [blockSheetDragAtLazyListEdges] to attach to. Block both edges to reject
+ * drag-from-content dismissal outright: a short non-lazy column gives no
+ * scrollable justification for a top-edge pull, and #14's bottom-edge
+ * shake concern does not apply without a lazy list. Dismissal stays on the
+ * handle, the scrim and in-sheet actions.
+ */
+@Composable
+fun Modifier.blockSheetDragAtScrollEdges(
+    scrollState: ScrollState,
+    blockTopEdge: Boolean = true,
+    blockBottomEdge: Boolean = true,
+): Modifier {
+    val connection = remember(scrollState, blockTopEdge, blockBottomEdge) {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (source != NestedScrollSource.UserInput) return Offset.Zero
+                val shouldBlock = shouldBlockSheetDrag(
+                    availableY = available.y,
+                    canScrollBackward = scrollState.canScrollBackward,
+                    canScrollForward = scrollState.canScrollForward,
+                    blockTopEdge = blockTopEdge,
+                    blockBottomEdge = blockBottomEdge,
+                )
+                return if (shouldBlock) Offset(0f, available.y) else Offset.Zero
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                val shouldBlock = shouldBlockSheetDrag(
+                    availableY = available.y,
+                    canScrollBackward = scrollState.canScrollBackward,
+                    canScrollForward = scrollState.canScrollForward,
+                    blockTopEdge = blockTopEdge,
+                    blockBottomEdge = blockBottomEdge,
+                )
+                return if (shouldBlock) Velocity(0f, available.y) else Velocity.Zero
+            }
+        }
+    }
+    return nestedScroll(connection)
+}
 
 /**
  * LazyColumn for sheet content with the sheet-drag edge blocking applied by
