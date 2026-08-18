@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -38,7 +39,7 @@ internal fun NotificationTypeRows(
     Text(
         stringResource(R.string.settings_notification_types),
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
     ToggleRow(

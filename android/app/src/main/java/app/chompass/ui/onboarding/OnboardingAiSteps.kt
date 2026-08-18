@@ -67,6 +67,7 @@ import app.chompass.ui.components.OptionPickerSheet
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun ProviderStep(
@@ -122,7 +123,7 @@ internal fun ProviderStep(
         Text(
             stringResource(R.string.onboarding_provider_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(18.dp))
@@ -165,7 +166,7 @@ internal fun ProviderStep(
                     Text(
                         stringResource(R.string.onboarding_provider_recommended_subtitle),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -195,7 +196,7 @@ internal fun ProviderStep(
                             imageVector = Icons.Outlined.KeyboardArrowDown,
                             contentDescription = null,
                             modifier = Modifier.size(22.dp),
-                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                         )
                     }
                     if (howtoExpanded) {
@@ -262,7 +263,7 @@ internal fun ProviderStep(
                                 color = when (apiKeyTestOk) {
                                     true -> AppColors.SuccessLight
                                     false -> MaterialTheme.colorScheme.error
-                                    null -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                                    null -> MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                                 },
                                 modifier = Modifier.weight(1f)
                             )
@@ -271,7 +272,7 @@ internal fun ProviderStep(
                     Text(
                         stringResource(R.string.onboarding_ai_free_tier_note),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                     )
                 }
@@ -281,14 +282,14 @@ internal fun ProviderStep(
         Text(
             stringResource(R.string.onboarding_provider_footer),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
         Text(
             stringResource(R.string.onboarding_privacy_note),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
@@ -301,7 +302,7 @@ internal fun ProviderStep(
                 }
             ),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
     }
@@ -405,7 +406,7 @@ private fun OnboardingSelectorRow(label: String, value: String, onClick: () -> U
         Icon(
             imageVector = Icons.Outlined.KeyboardArrowDown,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(20.dp)
         )
     }
@@ -493,7 +494,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
         Text(
             stringResource(R.string.onboarding_building_finalizing),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
         )
         Spacer(Modifier.height(28.dp))
         Column(
@@ -511,7 +512,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         stringResource(R.string.onboarding_building_bullet),
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                     )
                     Spacer(Modifier.width(10.dp))
                     Text(label, style = MaterialTheme.typography.bodyLarge)
@@ -549,7 +550,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
         Text(
             stringResource(R.string.onboarding_plan_adaptive_note),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
         )
@@ -575,7 +576,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
             Text(
                 stringResource(R.string.onboarding_plan_daily_calories),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
             )
         }
         Spacer(Modifier.height(28.dp))
@@ -672,7 +673,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                         Text(
                             stringResource(R.string.onboarding_plan_doctor_message),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                         )
                     }
                 }

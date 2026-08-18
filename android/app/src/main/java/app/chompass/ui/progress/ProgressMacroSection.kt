@@ -26,6 +26,7 @@ import app.chompass.R
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun MacroAveragesSection(
@@ -50,7 +51,7 @@ internal fun MacroProgressRow(label: String, current: Double, goal: Int, accentC
             Text(
                 "${macroGramsText(current)} / ${macroGramsText(goal.toDouble())}",
                 fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
         BoxWithConstraints(Modifier.fillMaxWidth().height(8.dp)) {

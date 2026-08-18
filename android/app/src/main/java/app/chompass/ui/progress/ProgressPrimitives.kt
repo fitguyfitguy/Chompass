@@ -31,6 +31,7 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 enum class BodyMetric { WEIGHT, BODY_FAT }
 
 @Composable
@@ -107,7 +108,7 @@ internal fun StatBadge(label: String, value: String, modifier: Modifier = Modifi
             label,
             modifier = Modifier.fillMaxWidth(),
             fontSize = 11.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,

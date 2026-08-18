@@ -36,6 +36,7 @@ import app.chompass.models.WeightEntry
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AllWeightHistorySheet(
@@ -78,13 +79,13 @@ internal fun AllWeightHistorySheet(
                             Column(Modifier.weight(1f)) {
                                 Text(formatWeight(entry.weightKg, useMetric), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
-                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
+                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                             }
                             IconButton(onClick = { onDelete(entry.id) }) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = stringResource(R.string.action_delete),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.42f),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -139,13 +140,13 @@ internal fun AllBodyFatHistorySheet(
                             Column(Modifier.weight(1f)) {
                                 Text("${LocaleFormat.decimal(entry.bodyFatPercent, 1)}${stringResource(R.string.unit_percent)}", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
-                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
+                                Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                             }
                             IconButton(onClick = { onDelete(entry.id) }) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = stringResource(R.string.action_delete),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.42f),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                                     modifier = Modifier.size(18.dp)
                                 )
                             }

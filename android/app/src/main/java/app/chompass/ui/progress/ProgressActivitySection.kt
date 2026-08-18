@@ -19,6 +19,7 @@ import app.chompass.R
 import app.chompass.services.health.DailyActivity
 import app.chompass.services.health.DailyWellness
 import java.text.NumberFormat
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun ActivitySection(days: List<DailyActivity>) {
@@ -33,7 +34,7 @@ internal fun ActivitySection(days: List<DailyActivity>) {
             Text(
                 stringResource(R.string.progress_activity_from_health),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
         StatBadgeRow(
@@ -89,7 +90,7 @@ internal fun WellnessSection(days: List<DailyWellness>) {
             Text(
                 stringResource(R.string.progress_activity_from_health),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
         StatBadgeRow(badges)

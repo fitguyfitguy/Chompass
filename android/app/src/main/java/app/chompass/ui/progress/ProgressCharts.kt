@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
 import java.time.Instant
 import java.time.LocalDate
@@ -329,7 +330,7 @@ internal fun WeightChartCanvas(
     }
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     var chartRenderPhase by remember(entries, goalKg, useMetric, immediate) {
         mutableStateOf(if (immediate) 2 else 0)
     }
@@ -443,7 +444,7 @@ internal fun BodyFatChartCanvas(
     }
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     var chartRenderPhase by remember(entries, goalFraction, immediate) {
         mutableStateOf(if (immediate) 2 else 0)
     }
@@ -586,7 +587,7 @@ internal fun MeasurementChartCanvas(
 ) {
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     var chartRenderPhase by remember(series, immediate) {
         mutableStateOf(if (immediate) 2 else 0)
     }
@@ -669,7 +670,7 @@ internal fun CalorieBarChart(dailyCalories: List<Pair<LocalDate, Int>>, goal: In
     val overColorSoft = overColor.copy(alpha = 0.75f)
     val goalColor = AppColors.Calorie.copy(alpha = 0.4f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     val density = LocalDensity.current
     val ticks = niceAxisTicks(0.0, maxValue, count = 5)
     val yTop = ticks.last().coerceAtLeast(maxValue)
@@ -812,7 +813,7 @@ internal fun ChartPlaceholder(height: Dp = 180.dp) {
         Text(
             text = stringResource(R.string.progress_chart_loading),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
 }

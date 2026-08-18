@@ -33,6 +33,7 @@ import app.chompass.R
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Notifications settings: master toggle (with system permission handling),
@@ -109,7 +110,7 @@ fun NotificationsSettingsScreen(
         Text(
             stringResource(R.string.settings_notifications_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
 
         SectionCard(title = stringResource(R.string.settings_section_notifications)) {

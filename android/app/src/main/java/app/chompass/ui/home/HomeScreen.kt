@@ -93,6 +93,7 @@ import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
 import kotlinx.coroutines.launch
 
@@ -510,7 +511,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             Text(
                                 stringResource(R.string.home_no_foods_logged),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                             )
                         }
                     }
@@ -687,7 +688,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = stringResource(R.string.cd_dismiss_paste),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -1335,7 +1336,7 @@ internal fun HomeScreenPreviewContent(
                                 Text(
                                     stringResource(R.string.home_no_foods_logged),
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 )
                             }
                         }

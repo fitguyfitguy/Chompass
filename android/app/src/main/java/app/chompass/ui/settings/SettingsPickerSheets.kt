@@ -57,6 +57,7 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.Instant
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.material3.Icon
@@ -113,7 +114,7 @@ internal fun <T> ListSheet(
                         Text(
                             sub,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )
                     }
                 }
@@ -131,7 +132,7 @@ internal fun <T> ListSheet(
     if (customField != null) {
         footer?.let {
             Spacer(Modifier.height(8.dp))
-            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
         }
         var custom by remember { mutableStateOf("") }
         Spacer(Modifier.height(8.dp))
@@ -260,7 +261,7 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
         Text(
             stringResource(R.string.sheet_goal_body_fat_currently, (currentBodyFat * 100).toInt()),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
     Spacer(Modifier.height(12.dp))
@@ -290,7 +291,7 @@ internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit) {
     Text(
         stringResource(R.string.settings_water_goal_wheel_help),
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
     )
     Spacer(Modifier.height(16.dp))
     GradientSaveButton { onSave(goal) }
@@ -330,7 +331,7 @@ internal fun WaterQuickPresetsSheet(
         Text(
             stringResource(R.string.settings_water_quick_presets_help),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
         // Up to 5 wheels (~220dp each) exceed the sheet on small screens and at
@@ -460,7 +461,7 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
                     Text(
                         subtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
                 if (isSel) {

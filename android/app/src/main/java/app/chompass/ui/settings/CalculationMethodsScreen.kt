@@ -35,6 +35,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 
@@ -218,7 +219,7 @@ fun CalculationMethodsScreen(
                     Text(
                         stringResource(R.string.settings_not_medical_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -287,12 +288,12 @@ internal fun CalcFormulaCard(
                 Text(
                     "SOURCE",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
                 )
                 Text(
                     citation,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
                 if (url != null) {
                     Text(

@@ -43,6 +43,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.macroAccentColor
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 fun OptionalNutrientGoalsScreen(
@@ -127,7 +128,7 @@ fun OptionalNutrientGoalsScreen(
                 Text(
                     "Separate from calorie, protein, carb, and fat goals.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier.padding(start = 4.dp, top = 4.dp)
                 )
             }

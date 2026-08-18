@@ -55,6 +55,7 @@ import app.chompass.R
 import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.isDarkTheme
 
 /**
@@ -176,7 +177,7 @@ internal fun InputBar(
                         Text(
                             stringResource(R.string.coach_input_placeholder),
                             fontSize = 17.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
                         )
                     }
                     BasicTextField(
@@ -318,7 +319,7 @@ internal fun CoachInputBarPreviewStub(value: String, sending: Boolean) {
             modifier = Modifier.weight(1f),
             fontSize = 17.sp,
             color = if (value.isEmpty()) {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
             } else {
                 MaterialTheme.colorScheme.onSurface
             },

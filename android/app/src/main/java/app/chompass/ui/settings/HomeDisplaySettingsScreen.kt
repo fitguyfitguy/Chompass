@@ -46,6 +46,7 @@ import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 @Composable
 fun HomeDisplaySettingsScreen(
     container: AppContainer,
@@ -166,7 +167,7 @@ fun HomeDisplaySettingsScreen(
                             Text(
                                 stringResource(R.string.home_display_show_active_calories_desc),
                                 fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                             )
                         }
@@ -190,14 +191,14 @@ fun HomeDisplaySettingsScreen(
                                 }
                             ),
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                         )
                         if (display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
                             Text(
                                 stringResource(R.string.home_calorie_mode_add_active_hc_hint),
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
                             )
                         }

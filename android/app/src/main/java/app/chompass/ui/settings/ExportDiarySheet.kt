@@ -44,6 +44,7 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.flow.first
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
@@ -83,7 +84,7 @@ fun ExportDiarySheet(
             Text(stringResource(R.string.export_diary_title), fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
             Text(stringResource(R.string.export_range), fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 DiaryRange.values().forEach { r ->
                     FilterChip(
@@ -104,7 +105,7 @@ fun ExportDiarySheet(
             }
 
             Text(stringResource(R.string.export_format), fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
             ExportFormatChipRow(
                 options = DiaryFormat.values(),
                 selected = format,

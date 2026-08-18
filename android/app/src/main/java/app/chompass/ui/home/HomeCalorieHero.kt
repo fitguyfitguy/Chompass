@@ -54,6 +54,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
 
 // ── Calorie hero ─────────────────────────────────────────────────────
@@ -168,7 +169,7 @@ internal fun CalorieHero(
     val progressColor = MaterialTheme.colorScheme.primary
     val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
     val liveBurnColor = MaterialTheme.colorScheme.tertiary
-    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     val tertiary = MaterialTheme.colorScheme.tertiary
     val successColor = MaterialTheme.colorScheme.success
 
@@ -479,7 +480,7 @@ private fun BudgetExplanationDialog(
     burnedToday: Int? = null,
     onDismiss: () -> Unit,
 ) {
-    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(
             stringResource(R.string.home_calorie_budget_sheet_title),

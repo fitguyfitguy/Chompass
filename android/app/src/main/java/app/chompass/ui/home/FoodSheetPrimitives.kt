@@ -81,6 +81,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.MacroValueFormatter
 
 // Shared visual primitives for the food review/edit sheets. Names are
@@ -249,7 +250,7 @@ internal fun SheetSectionHeader(title: String) {
         title,
         fontSize = 14.sp,
         fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         modifier = Modifier.padding(start = 18.dp, top = 8.dp, bottom = 4.dp)
     )
 }
@@ -458,7 +459,7 @@ internal fun ServingQuantityCard(
                 Icon(
                     Icons.Filled.Cancel,
                     contentDescription = stringResource(R.string.cd_clear_quantity),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier
                         .size(20.dp)
                         .clip(CircleShape)
@@ -524,7 +525,7 @@ internal fun ServingQuantityCard(
                 Text(
                     gramUnit,
                     fontSize = 17.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier
                         .width(24.dp)
                         .clickable { dismissKeyboard() }
@@ -615,7 +616,7 @@ internal fun ServingQuantityCard(
                     Text(
                         stringResource(R.string.sheet_serving_custom_name),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         modifier = Modifier.width(92.dp)
                     )
                     BasicTextField(
@@ -637,7 +638,7 @@ internal fun ServingQuantityCard(
                     Text(
                         stringResource(R.string.sheet_serving_custom_grams),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         modifier = Modifier.width(92.dp)
                     )
                     BasicTextField(
@@ -659,7 +660,7 @@ internal fun ServingQuantityCard(
                     Text(
                         stringResource(R.string.unit_g),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                     Spacer(Modifier.width(10.dp))
                     Icon(
@@ -686,7 +687,7 @@ internal fun ServingQuantityCard(
                 Text(
                     "~${MacroValueFormatter.string(servingSizeGrams)} $gramUnit",
                     fontSize = 17.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         }
@@ -703,7 +704,7 @@ private fun QuantityOperatorChip(
     Text(
         operator,
         fontSize = 15.sp,
-        color = if (enabled) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
+        color = if (enabled) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier
             .clip(RoundedCornerShape(9.dp))
@@ -724,7 +725,7 @@ internal fun SheetNutritionRow(
     val labelColor = accentColor?.let {
         if (dim) it.copy(alpha = 0.72f) else it
     } ?: if (dim) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     } else {
         MaterialTheme.colorScheme.onSurface
     }
@@ -749,7 +750,7 @@ internal fun SheetNutritionRow(
         Text(
             unit,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.width(36.dp)
         )
     }

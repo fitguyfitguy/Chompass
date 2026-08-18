@@ -74,6 +74,7 @@ import app.chompass.ui.components.gramsText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -115,7 +116,7 @@ internal fun MealSectionHeader(
         Icon(
             mealIcon(meal),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.size(16.dp)
         )
         Spacer(Modifier.width(8.dp))
@@ -562,7 +563,7 @@ internal fun FoodRow(
                 Text(
                     timeFmt.format(entry.timestamp).lowercase(Locale.getDefault()),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
                 )
             }
 
@@ -578,12 +579,12 @@ internal fun FoodRow(
                     color = MaterialTheme.colorScheme.primary
                 )
                 entry.servingSizeGrams?.takeIf { it > 0 }?.let { grams ->
-                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     val servingText = gramsText(grams)
                     Text(
                         servingText,
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }

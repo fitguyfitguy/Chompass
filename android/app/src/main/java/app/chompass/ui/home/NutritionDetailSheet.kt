@@ -52,6 +52,7 @@ import app.chompass.models.UserProfile
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -247,7 +248,7 @@ private fun NutritionSheetSectionHeader(title: String) {
         title.uppercase(Locale.getDefault()),
         fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         letterSpacing = 0.sp,
         modifier = Modifier.padding(start = 14.dp, top = 6.dp, bottom = 4.dp)
     )
@@ -272,13 +273,13 @@ private fun HomeCardsRow(
             Text(
                 selected.map { stringResource(it.displayNameRes) }.joinToString(", "),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
         Icon(
             Icons.Filled.ChevronRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(20.dp)
         )
     }
@@ -324,13 +325,13 @@ private fun DetailRow(
         Text(label, fontSize = 17.sp, modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(value, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
-            Text(unit, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            Text(unit, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
         }
         goal?.let {
             Text(
                 "/ $it",
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier.padding(start = 6.dp)
             )
         }

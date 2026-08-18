@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import kotlin.math.roundToInt
 
 /**
@@ -70,7 +71,7 @@ fun ImportSharedMealSheet(
                         Text(
                             "${meal.protein.roundToInt()}P · ${meal.carbs.roundToInt()}C · ${meal.fat.roundToInt()}F",
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         )
                     }
                     Text(
@@ -85,7 +86,7 @@ fun ImportSharedMealSheet(
             Text(
                 stringResource(R.string.import_note),
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
 
             Box(

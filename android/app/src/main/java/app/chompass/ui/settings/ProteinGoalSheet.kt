@@ -18,6 +18,7 @@ import app.chompass.R
 import app.chompass.models.ProteinTargetMode
 import app.chompass.models.UserProfile
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -35,7 +36,7 @@ internal fun ProteinGoalSheet(
     Text(
         stringResource(R.string.protein_target_mode_label),
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
     )
     Spacer(Modifier.height(6.dp))
     FlowRow(
@@ -56,7 +57,7 @@ internal fun ProteinGoalSheet(
         Text(
             stringResource(R.string.protein_target_lbm_missing_hint),
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
     }
     if (mode.usesRate && rate != null) {
@@ -64,7 +65,7 @@ internal fun ProteinGoalSheet(
         Text(
             stringResource(R.string.protein_target_g_per_kg_format, rate, grams),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
     }
     Spacer(Modifier.height(4.dp))

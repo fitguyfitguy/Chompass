@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.BodyFatEntry
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
 
 internal fun formatPercent(fraction: Double): String =
@@ -64,7 +65,7 @@ internal fun BodyFatSection(
                 Text(
                     stringResource(R.string.progress_log_first_body_fat),
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
         } else {

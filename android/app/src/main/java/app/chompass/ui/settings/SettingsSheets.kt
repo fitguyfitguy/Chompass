@@ -70,6 +70,7 @@ import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.macroAccentColor
 import java.time.Instant
 
@@ -683,7 +684,7 @@ internal fun ServingUnitHeuristicsSheet(
     Text(
         stringResource(R.string.serving_unit_heuristics_footer),
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     )
     Spacer(Modifier.height(8.dp))
     LazyColumn(
@@ -786,7 +787,7 @@ internal fun OptionalNutrientGoalsSheet(
     Text(
         "Separate from calorie, protein, carbs, and fat targets.",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     )
     Spacer(Modifier.height(12.dp))
     LazyColumn(
@@ -805,7 +806,7 @@ internal fun OptionalNutrientGoalsSheet(
         onClick = { onChange(OptionalNutrientGoals.Default) },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(stringResource(R.string.settings_reset_defaults), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+        Text(stringResource(R.string.settings_reset_defaults), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
     }
 }
 
@@ -840,20 +841,20 @@ internal fun OptionalNutrientGoalRow(
             Text(
                 stringResource(nutrient.unitRes),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.48f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
             )
         }
         Text(
             "$value${nutrient.unit}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = accent?.copy(alpha = 0.85f) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = accent?.copy(alpha = 0.85f) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
         Spacer(Modifier.width(8.dp))
         Icon(
             Icons.Filled.ChevronRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(18.dp)
         )
     }

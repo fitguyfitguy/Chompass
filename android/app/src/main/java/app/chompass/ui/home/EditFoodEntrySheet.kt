@@ -73,6 +73,7 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -539,7 +540,7 @@ fun EditFoodEntrySheet(
                             if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
                             else Icons.Filled.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )
                     }
                 }
@@ -665,7 +666,7 @@ fun EditFoodEntrySheet(
                         placeholder = {
                             Text(
                                 stringResource(R.string.edit_note_placeholder),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
                             )
                         },
                         shape = RoundedCornerShape(20.dp),
@@ -680,7 +681,7 @@ fun EditFoodEntrySheet(
                         stringResource(R.string.edit_reprocess_context),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
                     SheetPillCard {
                         Column(
@@ -706,7 +707,7 @@ fun EditFoodEntrySheet(
                                 Text(
                                     stringResource(R.string.home_serving_format, grams.toInt()),
                                     fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 )
                             }
                         }
@@ -720,7 +721,7 @@ fun EditFoodEntrySheet(
                     Text(
                         stringResource(R.string.edit_reprocess_explain),
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         lineHeight = 18.sp,
                     )
 
@@ -763,7 +764,7 @@ fun EditFoodEntrySheet(
                         placeholder = {
                             Text(
                                 stringResource(R.string.edit_reprocess_hint),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
                             )
                         },
                         shape = RoundedCornerShape(20.dp),
@@ -832,7 +833,7 @@ fun EditFoodEntrySheet(
                                 Text(
                                     stringResource(R.string.edit_reprocess_review_hint),
                                     fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 )
                             }
                         }

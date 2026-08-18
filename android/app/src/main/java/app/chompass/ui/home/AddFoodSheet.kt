@@ -68,6 +68,7 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
 
@@ -204,13 +205,13 @@ internal fun AddFoodSheetContent(
                 stringResource(R.string.add_food_quick_relog),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 stringResource(R.string.add_food_quick_relog_hint),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.42f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
             )
             Spacer(Modifier.height(6.dp))
             Row(
@@ -232,7 +233,7 @@ internal fun AddFoodSheetContent(
             Text(
                 stringResource(R.string.add_food_quick_relog_empty),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.48f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
             )
         }
         Spacer(Modifier.height(16.dp))
@@ -474,7 +475,7 @@ private fun AddFoodWaterQuickRow(
             Icon(
                 Icons.Filled.DriveFileRenameOutline,
                 contentDescription = stringResource(R.string.water_custom_short),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.size(18.dp),
             )
         }

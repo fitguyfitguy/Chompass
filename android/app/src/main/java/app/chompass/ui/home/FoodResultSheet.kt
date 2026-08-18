@@ -81,6 +81,7 @@ import app.chompass.services.ai.toMicronutrients
 import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
@@ -489,7 +490,7 @@ fun FoodResultSheet(
                             Text(
                                 stringResource(R.string.entry_analysis_status_helper),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 textAlign = TextAlign.Center,
                             )
                         }
@@ -499,7 +500,7 @@ fun FoodResultSheet(
                             stringResource(R.string.entry_analysis_ready),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                         )
                     }
                 }
@@ -887,7 +888,7 @@ fun FoodResultSheet(
                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
                         else Icons.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -920,7 +921,7 @@ fun FoodResultSheet(
                         Icon(
                             Icons.Filled.KeyboardArrowRight,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )
                     }
                 }
@@ -1016,7 +1017,7 @@ internal fun EntryAnalysisTipStrip(
                 Text(
                     stringResource(R.string.context_note_hint),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier.weight(1f),
                 )
                 var showGuide by remember { mutableStateOf(false) }
@@ -1085,7 +1086,7 @@ internal fun SheetSectionHeaderWithLock(
             title,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.weight(1f)
         )
         IconButton(
@@ -1099,7 +1100,7 @@ internal fun SheetSectionHeaderWithLock(
                     else R.string.nutrition_unlock_editing
                 ),
                 tint = if (unlocked) AppColors.Calorie
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -1124,7 +1125,7 @@ internal fun ReviewNutritionValueRow(
     val labelColor = accentColor?.let {
         if (dim) it.copy(alpha = 0.72f) else it
     } ?: if (dim) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     } else {
         MaterialTheme.colorScheme.onSurface
     }
@@ -1170,7 +1171,7 @@ internal fun ReviewNutritionValueRow(
         Text(
             unit,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.width(36.dp)
         )
     }
@@ -1409,7 +1410,7 @@ private fun PortionClarifyRow(
         Text(
             stringResource(R.string.sheet_portion_clarify_weight_hint),
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(8.dp))
         Row(
@@ -1484,7 +1485,7 @@ private fun PortionClarifyRow(
             Text(
                 stringResource(R.string.sheet_portion_clarify_updating),
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
         }
         (localError ?: error)?.let {

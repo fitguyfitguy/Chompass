@@ -41,6 +41,7 @@ import app.chompass.models.HomeTopNutrient
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
 import androidx.compose.foundation.shape.CircleShape
 import app.chompass.ui.components.MacroChip
@@ -211,7 +212,7 @@ private fun NutrientPickerRow(
             Text(
                 unit,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
     }

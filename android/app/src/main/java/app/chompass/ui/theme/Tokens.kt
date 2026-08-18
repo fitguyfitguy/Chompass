@@ -21,14 +21,16 @@ object AppRadii {
 
 /**
  * Text-opacity tokens for on-surface/on-background text and icon tints. Canonical
- * values are the dominant existing alphas (0.55 / 0.45 / 0.4); per-screen migration
- * canonicalizes stray values (0.5/0.58 → [Muted], 0.42/0.48 → [Faint], 0.35 →
+ * values: [Muted] follows iOS `.secondary` (0.6, the app's design source of truth);
+ * [Faint] and [Disabled] are the dominant existing alphas. Per-screen migration
+ * canonicalizes stray values (0.5/0.55/0.58 → [Muted], 0.42/0.48 → [Faint], 0.35 →
  * [Disabled]) in batches with screenshot-diff review (see Phase 2.1 in the UI audit
- * plan). Scrim/overlay alphas (0.06–0.3) are intentionally not tokens.
+ * plan). Scrim/overlay alphas (0.06–0.3) and emphasis tones (0.62–0.94) are
+ * intentionally not tokens.
  */
 object AppTextOpacity {
-    /** Secondary/helper text — footnotes, captions, section subtitles (iOS `.secondary`-adjacent). */
-    const val Muted = 0.55f
+    /** Secondary/helper text — captions, footnotes, icon tints (iOS `.secondary`). */
+    const val Muted = 0.6f
 
     /** Tertiary/de-emphasized labels. */
     const val Faint = 0.45f

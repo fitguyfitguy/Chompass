@@ -40,6 +40,7 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
 
@@ -56,7 +57,7 @@ internal fun StepHeader(title: String, subtitle: String? = null) {
             Text(
                 it,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
             )
         }
         Spacer(Modifier.height(32.dp))
@@ -108,7 +109,7 @@ internal fun SelectionCard(
                     Text(
                         it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -177,7 +178,7 @@ internal fun ChoiceRow(label: String, subtitle: String? = null, selected: Boolea
                     Text(
                         it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
             }
@@ -204,7 +205,7 @@ internal fun ToggleCard(label: String, subtitle: String, enabled: Boolean, onTog
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                 )
             }
             Switch(checked = enabled, onCheckedChange = onToggle)
@@ -222,7 +223,7 @@ internal fun WheeledColumn(
         Text(
             label,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             fontWeight = FontWeight.Medium
         )
         Spacer(Modifier.height(4.dp))

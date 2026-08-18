@@ -46,6 +46,7 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -150,7 +151,7 @@ internal fun CopyFromDaySheet(
                     Text(
                         stringResource(R.string.copy_hint, targetText),
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         modifier = Modifier.padding(horizontal = 18.dp)
                     )
                 }
@@ -167,7 +168,7 @@ internal fun CopyFromDaySheet(
                             Text(
                                 stringResource(R.string.copy_from_loading),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                             )
                         }
                     }
@@ -189,7 +190,7 @@ internal fun CopyFromDaySheet(
                             Text(
                                 stringResource(R.string.copy_no_foods_on_day),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                             )
                         }
                     }

@@ -45,6 +45,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
@@ -75,7 +76,7 @@ fun WaterSettingsScreen(
         Text(
             stringResource(R.string.settings_water_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
 
         SectionCard(title = stringResource(R.string.settings_water_section_goal)) {
@@ -178,7 +179,7 @@ fun WaterSettingsScreen(
                     Text(
                         stringResource(R.string.settings_water_dynamic_warning_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                     )
                 }
             }
@@ -259,7 +260,7 @@ internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?) {
                     preview.foodWaterMl,
                 ),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
         }
         Text(

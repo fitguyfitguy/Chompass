@@ -66,6 +66,7 @@ import app.chompass.services.speech.NativeSpeechRecognizer
 import app.chompass.services.speech.SttEvent
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -305,7 +306,7 @@ fun VoiceInputSheet(
                             Text(
                                 stringResource(R.string.voice_transcribing_format, stringResource(provider.displayNameRes)),
                                 fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                             )
                         }
                     }
@@ -329,7 +330,7 @@ fun VoiceInputSheet(
                         Text(
                             if (phase == VoicePhase.RECORDING) stringResource(R.string.voice_listening) else stringResource(R.string.voice_tap_to_start),
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
                         )
                     }
                 }

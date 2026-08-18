@@ -73,6 +73,7 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import app.chompass.models.UnitFormat
@@ -123,7 +124,7 @@ internal fun SectionCard(title: String, content: @Composable () -> Unit) {
         Text(
             title,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         FudGlassSurface(
@@ -180,7 +181,7 @@ internal fun SettingRow(
             Icon(
                 if (inlineMenu) Icons.Filled.UnfoldMore else Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .size(if (inlineMenu) 18.dp else 24.dp)
@@ -191,7 +192,7 @@ internal fun SettingRow(
                     .align(Alignment.CenterEnd)
                     .padding(end = if (inlineMenu) 18.dp else 24.dp),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
@@ -230,14 +231,14 @@ internal fun ActivityLevelSettingRow(
         Text(
             stringResource(level.displayNameRes),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.58f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Icon(
             Icons.Filled.UnfoldMore,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(18.dp)
         )
     }
@@ -278,7 +279,7 @@ internal fun LockableGoalRow(
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
         Spacer(Modifier.width(10.dp))
         GoalStatusChip(locked = locked, lockEnabled = lockEnabled)
@@ -296,7 +297,7 @@ internal fun GoalStatusChip(locked: Boolean, lockEnabled: Boolean) {
         stringResource(R.string.settings_macro_locked)
     }
     val chipColor = when {
-        showAuto -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
+        showAuto -> MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
         else -> AppColors.Calorie
     }
     Box(
@@ -352,13 +353,13 @@ internal fun CustomInstructionsBlock(
             Icon(
                 Icons.Filled.Check,
                 contentDescription = null,
-                tint = if (hasChanges) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                tint = if (hasChanges) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(8.dp))
             Text(
                 stringResource(R.string.settings_save),
-                color = if (hasChanges) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                color = if (hasChanges) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -389,7 +390,7 @@ internal fun ToggleRow(
             color = if (enabled) {
                 MaterialTheme.colorScheme.onSurface
             } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
             },
         )
         Switch(checked = checked, onCheckedChange = onChange, enabled = enabled)
@@ -465,7 +466,7 @@ internal fun BusyToggleRow(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = if (onSubtitleClick != null) {
                         Modifier.clickable(onClick = onSubtitleClick)
                     } else {
@@ -496,13 +497,13 @@ internal fun BusyToggleRow(
     }
 }
 
-/** Standard one-line helper text under settings rows (13.sp / 55% alpha). */
+/** Standard one-line helper text under settings rows (13.sp / AppTextOpacity.Muted). */
 @Composable
 internal fun SettingFootnote(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         modifier = modifier.padding(horizontal = 16.dp, vertical = 10.dp)
     )
 }

@@ -40,6 +40,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 private val ITEM_HEIGHT = 44.dp
 private const val VISIBLE_ITEMS = 5
@@ -278,7 +279,7 @@ fun NumericWheelPicker(
             Text(
                 unit,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.width(if (compactUnit) 30.dp else 48.dp).padding(start = 4.dp),
                 maxLines = 1,
                 softWrap = false
@@ -365,7 +366,7 @@ fun SplitDecimalWheelPicker(
         Text(
             decimalSeparator.toString(),
             style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.padding(horizontal = 4.dp)
         )
         WheelPicker(
@@ -379,7 +380,7 @@ fun SplitDecimalWheelPicker(
             Text(
                 unit,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.width(48.dp).padding(start = 4.dp)
             )
         }
@@ -421,7 +422,7 @@ fun DecimalWheelPicker(
             Text(
                 unit,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.width(48.dp).padding(start = 4.dp)
             )
         }
