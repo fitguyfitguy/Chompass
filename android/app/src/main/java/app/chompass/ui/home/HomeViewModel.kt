@@ -165,8 +165,6 @@ data class HomeUiState(
      * the reminder is off, the goal is met, or the window is degenerate.
      */
     val waterNextPlan: app.chompass.services.WaterReminderPlanner.Plan? = null,
-    /** Debug-only resting-shade flag for the hero arc A/B (see [SHOW_RESTING_BURN_SHADE]). */
-    val showRestingBurnShade: Boolean = SHOW_RESTING_BURN_SHADE,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
     val progressiveMeal: ProgressiveMealDraft? = null,
     /** HomeScreen consumes this once to reopen the camera after Add next ingredient. */
@@ -745,10 +743,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             entries.filter { it.date == day.toString() }.sumOf { it.calories }
         }
             .onEach { total -> _ui.update { it.copy(manualActiveKcal = total) } }
-            .launchIn(viewModelScope)
-
-        container.prefs.debugShowRestingShade
-            .onEach { show -> _ui.update { it.copy(showRestingBurnShade = show) } }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {

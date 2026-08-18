@@ -113,7 +113,6 @@ data class SettingsUiState(
     /** Codeberg #20 phase 2: master AI-features switch; default ON. */
     val aiFeaturesEnabled: Boolean = true,
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
-    val glassBlurEnabled: Boolean = false,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
     val fixedLauncherIcon: Boolean = false,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
@@ -237,7 +236,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val coachTabEnabled = container.prefs.coachTabEnabled.first()
             val aiFeaturesEnabled = container.prefs.aiFeaturesEnabled.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
-            val glassBlurEnabled = container.prefs.glassBlurEnabled.first()
             val fixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
             val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
             val weekMon = container.prefs.weekStartsOnMonday.first()
@@ -320,7 +318,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 coachTabEnabled = coachTabEnabled,
                 aiFeaturesEnabled = aiFeaturesEnabled,
                 appThemeColor = appThemeColor,
-                glassBlurEnabled = glassBlurEnabled,
                 fixedLauncherIcon = fixedLauncherIcon,
                 foodLogSortOrder = foodLogSortOrder,
                 weekStartsOnMonday = weekMon,
@@ -659,11 +656,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setFixedLauncherIcon(enabled: Boolean) = updateUiPref(
         { container.prefs.setFixedLauncherIcon(enabled) },
         { copy(fixedLauncherIcon = enabled) },
-    )
-
-    fun setGlassBlurEnabled(enabled: Boolean) = updateUiPref(
-        { container.prefs.setGlassBlurEnabled(enabled) },
-        { copy(glassBlurEnabled = enabled) },
     )
 
     fun setWeekStartsOnMonday(monday: Boolean) = updateUiPref(

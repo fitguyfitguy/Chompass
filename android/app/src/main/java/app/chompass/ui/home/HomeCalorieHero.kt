@@ -3,8 +3,6 @@ package app.chompass.ui.home
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
@@ -39,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -59,97 +55,8 @@ import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.success
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.temporal.WeekFields
-import java.util.Locale
-
-// ── Week strip (iOS port) ────────────────────────────────────────────
-
-@Composable
-internal fun WeekStripSection(selectedDate: LocalDate, onSelect: (LocalDate) -> Unit) {
-    val firstDow = remember { WeekFields.of(Locale.getDefault()).firstDayOfWeek }
-    val weekStart = remember(selectedDate, firstDow) {
-        val offset = ((selectedDate.dayOfWeek.value - firstDow.value) + 7) % 7
-        selectedDate.minusDays(offset.toLong())
-    }
-    val today = remember { LocalDate.now() }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        for (i in 0..6) {
-            val date = weekStart.plusDays(i.toLong())
-            val isSel = date == selectedDate
-            val isTdy = date == today
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { onSelect(date) }
-                    )
-            ) {
-                Text(
-                    shortDay(date.dayOfWeek),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (isSel) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-                Spacer(Modifier.height(6.dp))
-                Box(
-                    Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isSel) AppColors.CalorieGradient
-                            else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
-                        )
-                        .then(
-                            if (isTdy && !isSel) Modifier.border(1.5.dp, AppColors.Calorie.copy(alpha = 0.35f), CircleShape)
-                            else Modifier
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        date.dayOfMonth.toString(),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = when {
-                            isSel -> Color.White
-                            isTdy -> AppColors.Calorie
-                            else -> MaterialTheme.colorScheme.onSurface
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-private fun shortDay(dow: DayOfWeek): String = when (dow) {
-    DayOfWeek.MONDAY -> "M"
-    DayOfWeek.TUESDAY -> "T"
-    DayOfWeek.WEDNESDAY -> "W"
-    DayOfWeek.THURSDAY -> "T"
-    DayOfWeek.FRIDAY -> "F"
-    DayOfWeek.SATURDAY -> "S"
-    DayOfWeek.SUNDAY -> "S"
-}
 
 // ── Calorie hero ─────────────────────────────────────────────────────
-
-/**
- * Design-experiment flag for the resting (basal) burn band in the hero arc.
- * `false` = active shades only (estimate + live); `true` = a neutral resting
- * band also grows from the arc's left origin. Both variants are rendered for
- * comparison via release screenshots before one is picked.
- */
-internal const val SHOW_RESTING_BURN_SHADE = false
 
 /**
  * Verbatim port of the calorie hero block in HomeView.body
@@ -202,10 +109,8 @@ internal fun CalorieHero(
      * keep the legacy budget tail.
      */
     burnShade: ActiveBurnShade? = null,
-    /** Resting (basal) burn so far, when known. Powers the optional resting shade. */
+    /** Resting (basal) burn so far, when known. Feeds the budget sheet's burned-today total. */
     restingBurn: Int? = null,
-    /** When true, draw the resting/base shade band under the active shades. */
-    showRestingShade: Boolean = false,
     freezeProgress: Boolean = false,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
@@ -263,7 +168,6 @@ internal fun CalorieHero(
     val progressColor = MaterialTheme.colorScheme.primary
     val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
     val liveBurnColor = MaterialTheme.colorScheme.tertiary
-    val restingColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     val tertiary = MaterialTheme.colorScheme.tertiary
     val successColor = MaterialTheme.colorScheme.success
@@ -281,19 +185,13 @@ internal fun CalorieHero(
         ) {
             val stroke = 16.dp.toPx()
             val inset = stroke / 2f
-            // The resting (basal) rim rides the outer sub-stroke so it stays visible
-            // even when the eaten fill covers the inner band.
-            val restingVisible = shadesActive && showRestingShade && restingBurn != null
-            val mainStroke = if (restingVisible) stroke * 0.62f else stroke
-            val restingStroke = (stroke - mainStroke).coerceAtLeast(1.dp.toPx())
-            val mainInset = inset + (stroke - mainStroke) / 2f
-            val mainArcSize = Size(size.width - mainStroke, size.width - mainStroke)
-            val mainTopLeft = Offset(mainInset, mainInset)
+            val mainArcSize = Size(size.width - stroke, size.width - stroke)
+            val mainTopLeft = Offset(inset, inset)
             val cx = size.width / 2f
             val cy = size.width / 2f
-            val rMid = (size.width - mainStroke) / 2f
-            val rIn = rMid - mainStroke / 2f + 2.dp.toPx()
-            val rOut = rMid + mainStroke / 2f - 2.dp.toPx()
+            val rMid = (size.width - stroke) / 2f
+            val rIn = rMid - stroke / 2f + 2.dp.toPx()
+            val rOut = rMid + stroke / 2f - 2.dp.toPx()
             drawArc(
                 color = trackColor,
                 startAngle = 180f,
@@ -301,7 +199,7 @@ internal fun CalorieHero(
                 useCenter = false,
                 topLeft = mainTopLeft,
                 size = mainArcSize,
-                style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
             // Base-boundary notch angle (degrees from the arc's left origin),
             // when a boundary exists. Drawn after the eaten fill so the boundary
@@ -309,7 +207,6 @@ internal fun CalorieHero(
             var notchAngle: Float? = null
             if (shadesActive) {
                 // Single energy scale, one meaning per shade:
-                //  - resting (basal) rim grows from the left on the outer band, neutral.
                 //  - estimated-active zone = fixed dim segment [base → base+typical].
                 //  - live-active shade = opaque, grows from the base boundary through
                 //    the typical zone; the over-typical stretch turns success color.
@@ -319,21 +216,6 @@ internal fun CalorieHero(
                 val live = shade.live
                 val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical, live)
                 val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical, live)
-                if (restingVisible) {
-                    val restSweep = 180f * HomeCalorieDisplay.burnShadeRestingFraction(restingBurn!!, baseGoal, typical, live)
-                    if (restSweep > 0f) {
-                        val restR = rMid + mainStroke / 2f + restingStroke / 2f
-                        drawArc(
-                            color = restingColor,
-                            startAngle = 180f,
-                            sweepAngle = restSweep.coerceAtMost(180f),
-                            useCenter = false,
-                            topLeft = Offset(cx - restR, cy - restR),
-                            size = Size(restR * 2f, restR * 2f),
-                            style = Stroke(width = restingStroke, cap = StrokeCap.Round)
-                        )
-                    }
-                }
                 if (typicalSweep > 0f) {
                     drawArc(
                         color = bonusColor,
@@ -342,7 +224,7 @@ internal fun CalorieHero(
                         useCenter = false,
                         topLeft = mainTopLeft,
                         size = mainArcSize,
-                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                        style = Stroke(width = stroke, cap = StrokeCap.Round)
                     )
                 }
                 val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
@@ -356,7 +238,7 @@ internal fun CalorieHero(
                         useCenter = false,
                         topLeft = mainTopLeft,
                         size = mainArcSize,
-                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                        style = Stroke(width = stroke, cap = StrokeCap.Round)
                     )
                 }
                 val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
@@ -368,7 +250,7 @@ internal fun CalorieHero(
                         useCenter = false,
                         topLeft = mainTopLeft,
                         size = mainArcSize,
-                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                        style = Stroke(width = stroke, cap = StrokeCap.Round)
                     )
                 }
                 // The base boundary is drawn after the eaten fill (see below),
@@ -391,7 +273,7 @@ internal fun CalorieHero(
                         useCenter = false,
                         topLeft = mainTopLeft,
                         size = mainArcSize,
-                        style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                        style = Stroke(width = stroke, cap = StrokeCap.Round)
                     )
                     notchAngle = 180f + baseSweep
                 }
@@ -403,7 +285,7 @@ internal fun CalorieHero(
                 useCenter = false,
                 topLeft = mainTopLeft,
                 size = mainArcSize,
-                style = Stroke(width = mainStroke, cap = StrokeCap.Round)
+                style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
             // Base-boundary notch, drawn on top of the eaten fill: where your
             // sedentary budget ends and the activity-earned zone begins. Riding

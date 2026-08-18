@@ -8,8 +8,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.lerp
@@ -80,17 +78,11 @@ private fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
     onErrorContainer = Color(0xFFF9DEDC),
 )
 
-/**
- * Deprecated — glass blur is no longer used visually; kept for one-release pref compat.
- */
-val LocalGlassBlurEnabled = staticCompositionLocalOf { false }
-
 @Composable
 fun ChompassTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     themeColor: AppThemeColor = AppThemeColor.SYSTEM,
     useDynamicColor: Boolean = true,
-    glassBlurEnabled: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -139,12 +131,10 @@ fun ChompassTheme(
             }
         }
     }
-    CompositionLocalProvider(LocalGlassBlurEnabled provides glassBlurEnabled) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = Typography,
-            shapes = Shapes,
-            content = content
-        )
-    }
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        shapes = Shapes,
+        content = content
+    )
 }

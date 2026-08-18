@@ -256,15 +256,6 @@ class HomeCalorieDisplayTest {
     }
 
     @Test
-    fun burnShade_restingFractionGrowsFromLeft() {
-        val base = 1494
-        val typical = 560
-        val rest = HomeCalorieDisplay.burnShadeRestingFraction(restingKcal = 870, baseGoal = base, typical = typical)
-        assertEquals(0.424f, rest, 0.001f)
-        assertEquals(0f, HomeCalorieDisplay.burnShadeRestingFraction(0, base, typical), 0.001f)
-    }
-
-    @Test
     fun burnShade_progressAndOverTypical() {
         assertEquals(0.679f, HomeCalorieDisplay.activeBurnShadeProgress(live = 380, typical = 560), 0.001f)
         assertEquals(0f, HomeCalorieDisplay.activeBurnShadeProgress(0, 560), 0.001f)
