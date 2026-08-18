@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.services.weather.OmCity
-import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.FudGlassTextField
@@ -110,7 +109,7 @@ internal fun OpenMeteoCitySheet(
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
-        FudGlassPrimaryButton(
+        GradientSaveButton(
             text = stringResource(R.string.settings_weather_city_search),
             onClick = {
                 scope.launch {
