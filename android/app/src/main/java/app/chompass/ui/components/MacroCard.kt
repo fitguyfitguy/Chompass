@@ -89,7 +89,10 @@ fun MacroCard(
                     .clip(CircleShape)
                     .background(accentColor.copy(alpha = 0.16f)),
             )
-            val fillHeight = (74.dp * animated).coerceAtLeast(16.dp)
+            // Empty macros (0 g, or no goal) render as the bare track: the 16 dp
+            // minimum fill only applies once there is progress to show, otherwise
+            // an empty card would read as ~22 % full.
+            val fillHeight = if (animated > 0f) (74.dp * animated).coerceAtLeast(16.dp) else 0.dp
             Box(
                 Modifier
                     .width(16.dp)
