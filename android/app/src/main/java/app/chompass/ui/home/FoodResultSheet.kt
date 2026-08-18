@@ -164,7 +164,6 @@ fun FoodResultSheet(
         ?: partial?.toPreviewAnalysis()
         ?: EmptyFoodAnalysisPlaceholder
     val bitmap = rememberDecodedBitmap(imageBytes)
-    val state = rememberChompassSheetState(busy = isSaving || !analysisReady)
     // Codeberg #14: hoisted so the bottom-edge sheet-drag blocker can read it.
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -356,16 +355,25 @@ fun FoodResultSheet(
 
     // Codeberg #30: block top-edge drag dismissal only while the user is
     // editing typed input: focus, or name/tip-note content that differs from
-    // the analysis. Read-only scrolls keep #14's drag-from-content dismissal.
-    // The maintainer device pass decides whether this gate stays or becomes
-    // a permanent flip.
+    // the analysis. Read-only scrolls keep drag-from-content dismissal, but
+    // the sheet's raised thresholds (maintainer decision 2026-08-18) make
+    // that a deliberate pull/flick, not a scroll gesture.
     var inputFocused by remember { mutableStateOf(false) }
     val typedContentChanged = name.trim() != effectiveAnalysis.name.trim() ||
         tipNote.isNotBlank()
 
     ChompassBottomSheet(
         onDismiss = { if (!isSaving) onDismiss() },
-        sheetState = state,
+        sheetState = rememberChompassSheetState(
+            busy = isSaving || !analysisReady,
+            // Maintainer decision 2026-08-18: stock m3 1.4 thresholds dismiss
+            // on a gentle swipe (velocity 125 dp/s). Raised twice on device:
+            // a read-only scroll gesture must spring back; dismissal needs a
+            // ~65% pull or a firm flick. Typing is still fully protected by
+            // the gate.
+            positionalThreshold = 300.dp,
+            velocityThreshold = 1200.dp,
+        ),
         containerColor = sheetSurface,
         // Codeberg #14: zero the chrome insets — the default contentWindowInsets
         // feeds the same layout feedback loop with the footer's
@@ -436,7 +444,7 @@ fun FoodResultSheet(
                     // Codeberg #14: block bottom-edge overscroll vs sheet
                     // drag-to-dismiss (the layer-3 shake); the top edge is
                     // gated (Codeberg #30): blocked while editing, else
-                    // drag-from-content dismissal stays.
+                    // drag-from-content dismissal stays (raised thresholds).
                     blockTopEdge = inputFocused || typedContentChanged,
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {

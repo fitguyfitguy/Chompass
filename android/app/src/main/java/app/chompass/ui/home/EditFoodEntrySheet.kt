@@ -115,13 +115,14 @@ fun EditFoodEntrySheet(
     var changedFields by remember { mutableStateOf<List<ReprocessDiffRow>>(emptyList()) }
     // Dismissible by downward drag; only block while reprocessing (matches the
     // touch-consuming overlay below). Never permanently reject Hidden.
-    val state = rememberChompassSheetState(busy = isReprocessing)
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
     // Long list: block overscroll at the BOTTOM edge always (the bottom edge
     // must not fight the sheet's drag-to-dismiss, visible as a shake when
     // scrolled to the bottom). The top edge is gated (Codeberg #30): blocked
-    // while typing, else drag-from-content dismissal stays (Codeberg #14).
+    // while typing, else drag-from-content dismissal stays — but with raised
+    // sheet thresholds (maintainer decision 2026-08-18) so a read-only scroll
+    // gesture cannot dismiss; only a decisive pull/flick can.
     val listState = rememberLazyListState()
 
     val recordedServing = currentBaseEntry.servingSizeGrams
@@ -316,15 +317,25 @@ fun EditFoodEntrySheet(
     // Codeberg #30: block top-edge drag dismissal only while the user is
     // editing typed input. Focus covers active typing; the content diff
     // covers typed-but-blurred fields (name/note). Read-only scrolls keep
-    // #14's drag-from-content dismissal. The maintainer device pass decides
-    // whether this gate stays or becomes a permanent flip.
+    // drag-from-content dismissal, but the sheet's raised thresholds
+    // (maintainer decision 2026-08-18) make that a deliberate pull/flick,
+    // not a scroll gesture.
     var inputFocused by remember { mutableStateOf(false) }
     val typedContentChanged = name.trim() != currentBaseEntry.name.trim() ||
         noteText != (currentBaseEntry.customNote ?: "")
 
     ChompassBottomSheet(
         onDismiss = { if (!isReprocessing) onDismiss() },
-        sheetState = state,
+        sheetState = rememberChompassSheetState(
+            busy = isReprocessing,
+            // Maintainer decision 2026-08-18: stock m3 1.4 thresholds dismiss
+            // on a gentle swipe (velocity 125 dp/s). Raised twice on device:
+            // a read-only scroll gesture must spring back; dismissal needs a
+            // ~65% pull or a firm flick. Typing is still fully protected by
+            // the gate.
+            positionalThreshold = 300.dp,
+            velocityThreshold = 1200.dp,
+        ),
         containerColor = sheetSurface,
         // Codeberg #6: zero the chrome insets — the default contentWindowInsets
         // feeds a layout feedback loop with the footer's navigationBarsPadding/
