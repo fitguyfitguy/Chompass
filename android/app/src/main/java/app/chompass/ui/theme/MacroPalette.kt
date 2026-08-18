@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrient
+import java.util.Locale
 
 /** Core nutrients that share a per-theme palette (P / C / F / fiber). */
 enum class MacroKind {
@@ -39,7 +40,7 @@ fun AutoBalanceMacro.toMacroKind(): MacroKind = when (this) {
     AutoBalanceMacro.FAT -> MacroKind.FAT
 }
 
-fun macroKindFromGlyph(glyph: String): MacroKind? = when (glyph.uppercase()) {
+fun macroKindFromGlyph(glyph: String): MacroKind? = when (glyph.uppercase(Locale.ROOT)) {
     "P" -> MacroKind.PROTEIN
     "C" -> MacroKind.CARBS
     "F" -> MacroKind.FAT

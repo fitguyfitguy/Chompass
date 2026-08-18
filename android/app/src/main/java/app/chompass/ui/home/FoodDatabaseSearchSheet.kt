@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
@@ -308,7 +309,7 @@ private fun resultSourceSubtitle(result: DatabaseSearchResult): String {
     return listOfNotNull(
         result.brand,
         source,
-        result.lang?.takeIf { it != "en" }?.uppercase(),
+        result.lang?.takeIf { it != "en" }?.uppercase(Locale.ROOT),
     ).joinToString(" · ")
 }
 
