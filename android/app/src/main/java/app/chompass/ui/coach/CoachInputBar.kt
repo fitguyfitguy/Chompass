@@ -324,31 +324,9 @@ internal fun CoachInputBarPreviewStub(value: String, sending: Boolean) {
                 MaterialTheme.colorScheme.onSurface
             },
         )
-        Box(
-            modifier = Modifier
-                .size(34.dp)
-                .clip(CircleShape)
-                .background(
-                    if (value.isNotBlank() && !sending) {
-                        Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
-                    } else {
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                            ),
-                        )
-                    },
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                Icons.Filled.ArrowUpward,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(18.dp),
-            )
-        }
+        // Same production send button (audit 2.8: the stub used to re-paint a
+        // gradient capsule that drifted from the real M3 FilledIconButton).
+        SendButton(canSend = value.isNotBlank() && !sending, onClick = {})
     }
 }
 
