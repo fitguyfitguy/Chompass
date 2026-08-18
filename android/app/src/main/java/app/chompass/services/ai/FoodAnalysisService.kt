@@ -26,6 +26,7 @@ import app.chompass.ui.home.AnalysisPreviewSource
 import app.chompass.ui.home.EntryAnalysisPhase
 import app.chompass.ui.home.FoodAnalysisProgress
 import app.chompass.services.health.HealthEnergySummary
+import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceLlmGateway
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
@@ -78,6 +79,8 @@ class FoodAnalysisService(
     private val keyStore: KeyStore? = null,
     private val okHttp: OkHttpClient = defaultClient,
     private val onDeviceGateway: OnDeviceLlmGateway? = null,
+    /** Test/DI seam: reports whether an on-device model id is downloaded. */
+    private val onDeviceModelDownloaded: ((String) -> Boolean)? = null,
     internal val callAiDelegate: (suspend (prompt: String, imageBytesList: List<ByteArray>, op: String) -> String)? = null,
     internal val inferenceModeForTest: ServingUnitInferenceMode? = null,
     internal val watchdogSecondsOverride: Int? = null,
@@ -1135,6 +1138,15 @@ class FoodAnalysisService(
         val model = provider.supportedFallbackModelOrDefault(prefs.selectedFallbackModel.first())
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
+        if (provider == AIProvider.ON_DEVICE) {
+            // On-device fallback is keyless: resolution requires the fallback
+            // model to be downloaded. (OnDeviceLlmGateway.isModelDownloaded()
+            // resolves the *primary* selected model, so look up the fallback
+            // id explicitly via ModelCatalog.)
+            val entry = ModelCatalog.forModelId(model)
+            if (onDeviceModelDownloaded?.invoke(entry.modelId) != true) return null
+            return FallbackConfig(provider, model, baseUrl = "", apiKey = null)
+        }
         val key = keyLookup?.invoke(provider)
             ?: AiHttp.sanitizeApiKey(keyStore!!.fallbackApiKey(provider))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null

@@ -243,9 +243,11 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.FALLBACK_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_ai_provider),
-                    // ON_DEVICE is never resolved as a fallback target (currentFallbackConfig
-                    // needs a real baseUrl) — cloud is the fallback direction, not the reverse.
-                    items = AIProvider.values().filter { it != AIProvider.ON_DEVICE },
+                    // ON_DEVICE is a valid fallback target when the feature is
+                    // available (mirror the primary picker gate); resolution in
+                    // currentFallbackConfig additionally requires the model file
+                    // to be downloaded, so the list stays honest.
+                    items = AIProvider.values().filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable },
                     label = { stringResource(it.displayNameRes) },
                     selected = { it == ui.fallbackProvider },
                     onSelect = { vm.selectFallbackProvider(it); onDismiss() }

@@ -30,6 +30,8 @@ import app.chompass.export.DiaryImporter
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.models.LocaleFormat
+import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -281,8 +283,11 @@ fun DataSettingsScreen(
             onShowClearFoodDialog = { showClearFoodDialog = true },
             onShowDeleteDialog = { showDeleteDialog = true },
             onOpenSync = { nav.navigate(ChompassRoutes.syncRoute("data")) },
-            syncSummary = lastSyncAt?.let {
-                activityContext.getString(R.string.settings_last_sync, it)
+            syncSummary = lastSyncAt?.let { raw ->
+                val formatted = runCatching {
+                    LocaleFormat.mediumDateTimeZoned().format(Instant.parse(raw))
+                }.getOrNull() ?: raw
+                activityContext.getString(R.string.settings_last_sync, formatted)
             },
         )
     }

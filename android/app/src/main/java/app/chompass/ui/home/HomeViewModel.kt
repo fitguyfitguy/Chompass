@@ -13,6 +13,7 @@ import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.DietMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
@@ -229,6 +230,37 @@ data class HomeUiState(
     val activeBurnTypical: Int get() {
         val p = profile ?: return 0
         return measuredActiveAverageCalories.takeIf { it > 0 } ?: p.estimatedDailyActiveCalories
+    }
+
+    /**
+     * The hero ring's displayed calorie goal — ADD_ACTIVE: base + active burn,
+     * growing to the expected-day target when live burn exceeds the norm;
+     * STATIC: the base goal. Macro cards scale against this so they can never
+     * disagree with the ring (#38).
+     */
+    val heroCalorieGoal: Int get() {
+        val base = gaugeBaseCalorieGoal
+        val mode = effectiveCalorieMode
+        val shade = activeBurnShade
+        return if (mode == HomeCalorieDisplayMode.ADD_ACTIVE && shade != null && shade.typical > 0) {
+            HomeCalorieDisplay.expectedTarget(base, shade.typical, shade.live)
+        } else {
+            HomeCalorieDisplay.effectiveGoal(mode, base, displayActiveCalories)
+        }
+    }
+
+    /**
+     * Display scale for P/C/F goals (#38): 1 on typical days (the ring shows
+     * the stored base), >1 only when the ring projects above the base
+     * (over-typical live burn, or manual kcal on top of the estimate). Keto is
+     * excluded — its macro targets are fixed by design.
+     */
+    val macroGoalScale: Float get() {
+        val p = profile ?: return 1f
+        if (p.dietMode == DietMode.KETO) return 1f
+        val base = p.effectiveCalories
+        if (base <= 0) return 1f
+        return (heroCalorieGoal.toFloat() / base).coerceAtLeast(1f)
     }
 
     /**

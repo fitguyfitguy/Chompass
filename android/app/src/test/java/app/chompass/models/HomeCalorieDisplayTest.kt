@@ -2,11 +2,13 @@ package app.chompass.models
 
 import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
+import app.chompass.ui.home.HomeUiState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
+import kotlin.math.roundToInt
 
 class HomeCalorieDisplayTest {
     private val emptySnapshot = HomeActivitySnapshot(date = LocalDate.now())
@@ -277,5 +279,108 @@ class HomeCalorieDisplayTest {
     @Test
     fun foodLogMacroChips_defaultsToPcf() {
         assertEquals(FoodLogMacroChip.DefaultSelection, FoodLogMacroChip.fromStorage(null))
+    }
+
+    // --- #38: macro goals scale with the ring's projected day ---
+
+    @Test
+    fun homeTopNutrient_goal_scalesPcfOnly() {
+        val profile = UserProfile(customCalories = 2607)
+        val goals = OptionalNutrientGoals.Default
+        val scaled = 1.2f
+        assertEquals((profile.effectiveProtein * scaled).roundToInt(), HomeTopNutrient.PROTEIN.goal(profile, goals, scaled))
+        assertEquals((profile.effectiveCarbs * scaled).roundToInt(), HomeTopNutrient.CARBS.goal(profile, goals, scaled))
+        assertEquals((profile.effectiveFat * scaled).roundToInt(), HomeTopNutrient.FAT.goal(profile, goals, scaled))
+        // Optional micronutrients are fixed daily targets — never scaled.
+        assertEquals(goals.fiber, HomeTopNutrient.FIBER.goal(profile, goals, scaled))
+        assertEquals(goals.sugar, HomeTopNutrient.SUGAR.goal(profile, goals, scaled))
+        // Scale ≤ 1 (and the default) keep the stored goals untouched.
+        assertEquals(profile.effectiveProtein, HomeTopNutrient.PROTEIN.goal(profile, goals))
+        assertEquals(profile.effectiveProtein, HomeTopNutrient.PROTEIN.goal(profile, goals, 1f))
+        assertEquals(profile.effectiveProtein, HomeTopNutrient.PROTEIN.goal(profile, goals, 0.9f))
+    }
+
+    @Test
+    fun macroGoalScale_estimatePlusManual_tracksRingTarget() {
+        // ADD_ACTIVE, PAL estimate only: the ring = base + estimate + manual,
+        // i.e. the stored goal plus the manual kcal — the cards scale to match.
+        val profile = UserProfile(customCalories = 2607)
+        val state = HomeUiState(
+            profile = profile,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.ADD_ACTIVE),
+            manualActiveKcal = 300,
+        )
+        assertEquals(2607 + 300, state.heroCalorieGoal)
+        assertEquals((2607 + 300).toFloat() / 2607f, state.macroGoalScale, 0.001f)
+    }
+
+    @Test
+    fun macroGoalScale_typicalDay_isOne() {
+        // Estimate-only day with no manual kcal: the ring converges to the
+        // stored goal, so the cards never move.
+        val profile = UserProfile(customCalories = 2607)
+        val state = HomeUiState(
+            profile = profile,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.ADD_ACTIVE),
+        )
+        assertEquals(2607, state.heroCalorieGoal)
+        assertEquals(1f, state.macroGoalScale, 0.001f)
+    }
+
+    @Test
+    fun macroGoalScale_static_isOne() {
+        val profile = UserProfile(customCalories = 2607)
+        val state = HomeUiState(
+            profile = profile,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.STATIC),
+            manualActiveKcal = 300,
+        )
+        assertEquals(2607, state.heroCalorieGoal)
+        assertEquals(1f, state.macroGoalScale, 0.001f)
+    }
+
+    @Test
+    fun macroGoalScale_overTypicalLiveBurn_scalesUp() {
+        // Live measured burn above the day's norm grows the ring arc end; the
+        // macro cards follow that projection.
+        val profile = UserProfile(customCalories = 2607)
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 1200,
+            source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
+        )
+        val state = HomeUiState(
+            profile = profile,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.ADD_ACTIVE),
+            activitySnapshot = snapshot,
+        )
+        val typical = state.activeBurnTypical
+        assertTrue("typical burn should be known", typical > 0)
+        val expectedTarget = HomeCalorieDisplay.expectedTarget(state.gaugeBaseCalorieGoal, typical, 1200)
+        assertEquals(expectedTarget, state.heroCalorieGoal)
+        assertEquals(expectedTarget.toFloat() / 2607f, state.macroGoalScale, 0.001f)
+        assertTrue(state.macroGoalScale > 1f)
+    }
+
+    @Test
+    fun macroGoalScale_keto_staysOne() {
+        // Keto macro targets are fixed by design (clamped net carbs, protein
+        // floor, fat fills remaining) — never scaled with the ring.
+        val profile = UserProfile(customCalories = 2607, dietMode = DietMode.KETO)
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 1200,
+            source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
+        )
+        val state = HomeUiState(
+            profile = profile,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.ADD_ACTIVE),
+            activitySnapshot = snapshot,
+            manualActiveKcal = 300,
+        )
+        assertTrue(state.heroCalorieGoal > 2607)
+        assertEquals(1f, state.macroGoalScale, 0.001f)
     }
 }

@@ -38,6 +38,7 @@ import app.chompass.services.health.HealthConnectReadSync
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.health.HomeActivityReader
 import app.chompass.sync.SyncRepository
+import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.ModelDownloadManager
 import app.chompass.services.ondevice.OnDeviceLlmGateway
 import app.chompass.services.speech.SpeechService
@@ -202,7 +203,14 @@ class AppContainer(app: ChompassApp) {
 
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
-    val foodAnalysis = FoodAnalysisService(prefs, keyStore, onDeviceGateway = onDeviceLlmGateway)
+    val foodAnalysis = FoodAnalysisService(
+        prefs,
+        keyStore,
+        onDeviceGateway = onDeviceLlmGateway,
+        onDeviceModelDownloaded = { modelId ->
+            onDeviceModelDownloadManager.isDownloaded(ModelCatalog.forModelId(modelId))
+        },
+    )
     /**
      * Offline food-database indexes + the gated grounded orchestrator.
      * USDA (CC0) and Swiss (federal open data) SQLite assets ship in all build

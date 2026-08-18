@@ -3,6 +3,7 @@ package app.chompass.services.ai
 import android.app.Application
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
+import app.chompass.services.ondevice.ModelCatalog
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -55,7 +56,10 @@ class FoodAnalysisWatchdogTest {
     private fun errorJson(message: String): String =
         """{"error":{"message":"$message"}}"""
 
-    private fun newService(watchdogSeconds: Int = 1): FoodAnalysisService =
+    private fun newService(
+        watchdogSeconds: Int = 1,
+        onDeviceModelDownloaded: ((String) -> Boolean)? = null,
+    ): FoodAnalysisService =
         FoodAnalysisService(
             prefs = prefs,
             okHttp = OkHttpClient.Builder()
@@ -63,6 +67,7 @@ class FoodAnalysisWatchdogTest {
                 .readTimeout(2, TimeUnit.SECONDS)
                 .build(),
             watchdogSecondsOverride = watchdogSeconds,
+            onDeviceModelDownloaded = onDeviceModelDownloaded,
             keyLookup = { provider ->
                 // Any non-null key satisfies GEMINI's requiresApiKey check; the
                 // fallback slot returns a key only when the test configured one.
@@ -173,25 +178,42 @@ class FoodAnalysisWatchdogTest {
     }
 
     @Test
-    fun preContentFailure_stillFallsBackToSecondProvider() {
+    fun onDeviceFallback_modelNotDownloaded_surfacesPrimaryError() {
         runBlocking {
             prefs.setFallbackEnabled(true)
-            prefs.setFallbackCustomBaseUrl(AIProvider.GEMINI, server.url("/").toString())
+            prefs.setSelectedFallbackProvider(AIProvider.ON_DEVICE)
+            prefs.setSelectedFallbackModel(ModelCatalog.default.modelId)
         }
-        fallbackKey = "fallback-key"
-        // Response 1: primary fails before any content (400, not retried).
+        // Primary fails before any content (400, not retried).
         server.enqueue(MockResponse().setResponseCode(400).setBody(errorJson("boom")))
-        // Response 2: the fallback provider answers normally.
-        server.enqueue(MockResponse().setResponseCode(200).setBody(sse(foodJson)))
 
-        val analysis = runBlocking { newService().analyzeText("eggs") }
+        val ex = runCatching {
+            runBlocking { newService(onDeviceModelDownloaded = { false }).analyzeText("eggs") }
+        }.exceptionOrNull()
 
-        assertEquals("Eggs", analysis.name)
-        assertEquals(232, analysis.calories)
-        assertEquals(2, server.requestCount)
-        val primaryUrl = server.takeRequest().path!!
-        val fallbackUrl = server.takeRequest().path!!
-        assertTrue("expected primary model in $primaryUrl", primaryUrl.contains("gemini-3.7-flash"))
-        assertTrue("expected fallback model in $fallbackUrl", fallbackUrl.contains("gemini-3.5-flash-lite"))
+        assertTrue("expected an AiError, got $ex", ex is AiError)
+        // Only the primary attempt hit the wire — the fallback stayed unresolved.
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun onDeviceFallback_modelDownloaded_dispatchesToOnDevice() {
+        runBlocking {
+            prefs.setFallbackEnabled(true)
+            prefs.setSelectedFallbackProvider(AIProvider.ON_DEVICE)
+            prefs.setSelectedFallbackModel(ModelCatalog.default.modelId)
+        }
+        // Primary fails before any content (400, not retried).
+        server.enqueue(MockResponse().setResponseCode(400).setBody(errorJson("boom")))
+
+        val ex = runCatching {
+            runBlocking { newService(onDeviceModelDownloaded = { true }).analyzeText("eggs") }
+        }.exceptionOrNull()
+
+        // Fallback resolved keylessly and dispatched to the on-device path; with
+        // no real gateway in this harness the call stops at the gateway check —
+        // proving resolution itself works (Codeberg #37).
+        assertTrue("expected OnDeviceModelNotDownloaded, got $ex", ex is AiError.OnDeviceModelNotDownloaded)
+        assertEquals(1, server.requestCount)
     }
 }

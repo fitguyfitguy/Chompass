@@ -432,7 +432,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             MacroCard(
                                 label = stringResource(nutrient.displayNameRes),
                                 current = nutrient.current(ui.todayEntries),
-                                goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals),
+                                goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                 unit = nutrient.unit,
                                 accentColor = AppColors.nutrientColor(nutrient),
                                 modifier = Modifier.weight(1f),
@@ -1027,6 +1027,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             profile = ui.profile,
             homeTopNutrients = ui.homeTopNutrients,
             optionalGoals = ui.optionalNutrientGoals,
+            macroScale = ui.macroGoalScale,
             onHomeTopNutrientsChange = vm::setHomeTopNutrients,
             onDismiss = { showNutritionDetail = false }
         )
@@ -1201,7 +1202,7 @@ internal fun HomeScreenPreviewContent(
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
                                     current = nutrient.current(ui.todayEntries),
-                                    goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals),
+                                    goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                     unit = nutrient.unit,
                                     accentColor = AppColors.nutrientColor(nutrient),
                                     modifier = Modifier.weight(1f),
