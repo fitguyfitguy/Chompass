@@ -364,7 +364,6 @@ open class MainActivity : ComponentActivity() {
         var startOnboarding by mutableStateOf<Boolean?>(null)
         var initialAppearance by mutableStateOf("system")
         var initialThemeColorKey by mutableStateOf(AppThemeColor.DEFAULT_KEY)
-        var initialGlassBlurEnabled by mutableStateOf(false)
 
         // Hold the splash on screen until the saved profile has loaded from
         // DataStore so Home doesn't briefly render its 2000/150/220/70 fallback
@@ -381,7 +380,6 @@ open class MainActivity : ComponentActivity() {
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
             initialThemeColorKey = container.prefs.appThemeColor.first()
-            initialGlassBlurEnabled = container.prefs.glassBlurEnabled.first()
             val initialFixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
             AndroidAppIconManager.apply(
                 this@MainActivity,
@@ -399,7 +397,6 @@ open class MainActivity : ComponentActivity() {
             val resolvedStartOnboarding = startOnboarding ?: return@setContent
             val appearance by container.prefs.appearanceMode.collectAsState(initial = initialAppearance)
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
-            val glassBlurEnabled by container.prefs.glassBlurEnabled.collectAsState(initial = initialGlassBlurEnabled)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
             val systemDark = isSystemInDarkTheme()
             val darkTheme = when (appearance) {
@@ -416,7 +413,6 @@ open class MainActivity : ComponentActivity() {
                 ChompassTheme(
                     darkTheme = darkTheme,
                     themeColor = themeColor,
-                    glassBlurEnabled = glassBlurEnabled
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),

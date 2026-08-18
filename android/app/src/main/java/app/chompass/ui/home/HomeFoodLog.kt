@@ -443,8 +443,6 @@ private fun BoxScope.SwipeBackground(offsetPx: Float, isFavorite: Boolean) {
     }
 }
 
-private data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
-
 @Composable
 internal fun FoodRow(
     entry: FoodEntry,

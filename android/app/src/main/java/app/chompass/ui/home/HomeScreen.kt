@@ -421,7 +421,6 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         liveActiveBurn = ui.liveActiveBurn,
                         burnShade = ui.activeBurnShade,
                         restingBurn = ui.restingBurnToday,
-                        showRestingShade = ui.showRestingBurnShade,
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
@@ -1253,7 +1252,6 @@ internal fun HomeScreenPreviewContent(
     ui: HomeUiState,
     weekStartsOnMonday: Boolean = true,
     freezeAnimations: Boolean = true,
-    showRestingShade: Boolean = SHOW_RESTING_BURN_SHADE,
 ) {
     val selectedDate = ui.date
     val isToday = true
@@ -1292,7 +1290,6 @@ internal fun HomeScreenPreviewContent(
                             liveActiveBurn = ui.liveActiveBurn,
                             burnShade = ui.activeBurnShade,
                             restingBurn = ui.restingBurnToday,
-                            showRestingShade = showRestingShade,
                             freezeProgress = freezeAnimations,
                         )
                         Spacer(Modifier.height(20.dp))

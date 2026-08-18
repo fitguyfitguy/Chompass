@@ -269,13 +269,6 @@ object HomeCalorieDisplay {
         return (live.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
     }
 
-    /** Fraction of the shade arc covered by resting (basal) burn so far. */
-    fun burnShadeRestingFraction(restingKcal: Int, baseGoal: Int, typical: Int, live: Int = 0): Float {
-        val end = burnShadeArcEnd(baseGoal, typical, live)
-        if (end <= 0) return 0f
-        return (restingKcal.coerceAtLeast(0).toFloat() / end).coerceIn(0f, 1f)
-    }
-
     /** How far live active burn is through a typical day's active burn (0..1). */
     fun activeBurnShadeProgress(live: Int, typical: Int): Float =
         if (typical > 0) (live.coerceAtLeast(0).toFloat() / typical).coerceIn(0f, 1f) else 0f
