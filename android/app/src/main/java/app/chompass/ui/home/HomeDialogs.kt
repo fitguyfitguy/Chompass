@@ -58,6 +58,7 @@ import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitOption
+import app.chompass.ui.theme.AppColors
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.ui.components.FudGlassDialog
@@ -65,9 +66,9 @@ import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextField
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
+import app.chompass.ui.components.ExpandableMacroPicker
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
 
@@ -547,10 +548,10 @@ internal fun ManualEntryDialog(
     // and the serving selection; servingUnitOptions rides the Serializable
     // ServingUnitOption list, MicronutrientValues is Serializable too.
     var name by rememberSaveable { mutableStateOf("") }
-    var calories by rememberSaveable { mutableStateOf("") }
-    var protein by rememberSaveable { mutableStateOf("") }
-    var carbs by rememberSaveable { mutableStateOf("") }
-    var fat by rememberSaveable { mutableStateOf("") }
+    var calories by rememberSaveable { mutableStateOf(0) }
+    var protein by rememberSaveable { mutableStateOf(0.0) }
+    var carbs by rememberSaveable { mutableStateOf(0.0) }
+    var fat by rememberSaveable { mutableStateOf(0.0) }
     var micros by rememberSaveable { mutableStateOf(MicronutrientValues()) }
     var mealType by rememberSaveable { mutableStateOf(MealType.currentMeal) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
@@ -593,7 +594,7 @@ internal fun ManualEntryDialog(
     // or a non-default quantity) — untouched manual entries keep today's shape.
     val servingEngaged = servingUnitOptions.isNotEmpty() || servingQuantityText.trim() != "1"
 
-    val canSave = name.isNotBlank() && calories.toIntOrNull() != null && !isSaving
+    val canSave = name.isNotBlank() && calories > 0 && !isSaving
 
     FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
                 Text(stringResource(R.string.manual_title), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
@@ -609,14 +610,62 @@ internal fun ManualEntryDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    NumberField(stringResource(R.string.manual_calories), calories, { calories = it.filter(Char::isDigit) }, Modifier.weight(1f), accentColor = AppColors.Calorie)
-                    NumberField(stringResource(R.string.manual_protein), protein, { protein = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Protein)
+                // Expandable macro pickers — tap to open wheel
+                var caloriesExpanded by remember { mutableStateOf(false) }
+                var proteinExpanded by remember { mutableStateOf(false) }
+                var carbsExpanded by remember { mutableStateOf(false) }
+                var fatExpanded by remember { mutableStateOf(false) }
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ExpandableMacroPicker(
+                        label = stringResource(R.string.manual_calories),
+                        value = calories,
+                        onValueChange = { calories = it },
+                        min = 0,
+                        max = 5000,
+                        step = 2,
+                        unit = stringResource(R.string.unit_kcal),
+                        accentColor = AppColors.Calorie,
+                        expanded = caloriesExpanded,
+                        onExpandChange = { caloriesExpanded = it }
+                    )
+                    ExpandableMacroPicker(
+                        label = stringResource(R.string.manual_protein),
+                        value = (protein * 10).toInt(),
+                        onValueChange = { protein = it / 10.0 },
+                        min = 0,
+                        max = 5000,
+                        step = 1,
+                        unit = stringResource(R.string.unit_g),
+                        accentColor = AppColors.Protein,
+                        expanded = proteinExpanded,
+                        onExpandChange = { proteinExpanded = it }
+                    )
+                    ExpandableMacroPicker(
+                        label = stringResource(R.string.manual_carbs),
+                        value = (carbs * 10).toInt(),
+                        onValueChange = { carbs = it / 10.0 },
+                        min = 0,
+                        max = 5000,
+                        step = 1,
+                        unit = stringResource(R.string.unit_g),
+                        accentColor = AppColors.Carbs,
+                        expanded = carbsExpanded,
+                        onExpandChange = { carbsExpanded = it }
+                    )
+                    ExpandableMacroPicker(
+                        label = stringResource(R.string.manual_fat),
+                        value = (fat * 10).toInt(),
+                        onValueChange = { fat = it / 10.0 },
+                        min = 0,
+                        max = 5000,
+                        step = 1,
+                        unit = stringResource(R.string.unit_g),
+                        accentColor = AppColors.Fat,
+                        expanded = fatExpanded,
+                        onExpandChange = { fatExpanded = it }
+                    )
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    NumberField(stringResource(R.string.manual_carbs), carbs, { carbs = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Carbs)
-                    NumberField(stringResource(R.string.manual_fat), fat, { fat = filterDecimalInput(it) }, Modifier.weight(1f), decimal = true, accentColor = AppColors.Fat)
-                }
+
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     NumberField(
                         stringResource(R.string.manual_fiber),
@@ -734,10 +783,10 @@ internal fun ManualEntryDialog(
                         if (!isSaving) {
                             onSave(
                                 name.trim(),
-                                calories.toIntOrNull() ?: 0,
-                                ServingUnitOption.parseQuantity(protein) ?: 0.0,
-                                ServingUnitOption.parseQuantity(carbs) ?: 0.0,
-                                ServingUnitOption.parseQuantity(fat) ?: 0.0,
+                                calories,
+                                protein,
+                                carbs,
+                                fat,
                                 micros,
                                 mealType,
                                 if (servingEngaged) servingGrams else 0.0,

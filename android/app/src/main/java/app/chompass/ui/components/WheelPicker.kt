@@ -2,9 +2,14 @@ package app.chompass.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,11 +17,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,12 +38,15 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.res.stringResource
 import app.chompass.R
+import app.chompass.models.ServingUnitOption
 import app.chompass.models.LocaleFormat
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
@@ -41,6 +54,7 @@ import java.time.YearMonth
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppColors
 
 private val ITEM_HEIGHT = 44.dp
 private const val VISIBLE_ITEMS = 5
@@ -416,6 +430,307 @@ fun DecimalWheelPicker(
             onSelect = { onValueChange(it.toDouble() / scaled) },
             label = { String.format("%.1f", it.toDouble() / scaled) },
             modifier = Modifier.weight(1f)
+        )
+        if (unit != null) {
+            Spacer(Modifier.size(8.dp))
+            Text(
+                unit,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.width(48.dp).padding(start = 4.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Time wheel picker — single column with 15-minute steps, locale-aware 12h/24h format.
+ * Used for meal time boundaries (breakfast/lunch/dinner/snack start times).
+ */
+@Composable
+fun TimeWheelPicker(
+    minutes: Int,
+    onChange: (Int) -> Unit,
+    is24Hour: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    val items = remember { (0..1439 step 15).toList() }
+    val formatter = remember(is24Hour) {
+        java.time.format.DateTimeFormatter.ofPattern(
+            if (is24Hour) "HH:mm" else "h:mm a",
+            java.util.Locale.getDefault()
+        )
+    }
+    val clampedMinutes = minutes.coerceIn(0, 1439)
+    val snapped = ((clampedMinutes + 7) / 15) * 15
+    val selected = snapped.coerceIn(0, 1439)
+
+    WheelPicker(
+        items = items,
+        selected = selected,
+        onSelect = onChange,
+        label = { m ->
+            val time = java.time.LocalTime.of(m / 60, m % 60)
+            time.format(formatter)
+        },
+        modifier = modifier
+    )
+}
+
+/**
+ * Macro wheel picker — NumericWheelPicker with an accent color for the unit label
+ * and selected row highlight. Used in 2x2 grid for Calories/Protein/Carbs/Fat.
+ */
+@Composable
+fun MacroWheelPicker(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    min: Int,
+    max: Int,
+    unit: String,
+    accentColor: androidx.compose.ui.graphics.Color,
+    step: Int = 1,
+    modifier: Modifier = Modifier
+) {
+    val items = remember(min, max, step) { (min..max step step).toList() }
+    val snapped = value.coerceIn(min, max)
+    val clamped = (snapped - min) / step * step + min
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        WheelPicker(
+            items = items,
+            selected = clamped,
+            onSelect = onValueChange,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            unit,
+            style = MaterialTheme.typography.titleMedium,
+            color = accentColor.copy(alpha = 0.85f),
+            modifier = Modifier.width(48.dp).padding(start = 4.dp)
+        )
+    }
+}
+
+/**
+ * Expandable macro picker — shows a summary row with label, current value, and unit.
+ * On tap, expands to show a full-width wheel picker with the macro name as title.
+ */
+@Composable
+fun ExpandableMacroPicker(
+    label: String,
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    min: Int,
+    max: Int,
+    unit: String,
+    accentColor: androidx.compose.ui.graphics.Color,
+    step: Int = 1,
+    expanded: Boolean,
+    onExpandChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val items = remember(min, max, step) { (min..max step step).toList() }
+    val snapped = value.coerceIn(min, max)
+    val clamped = (snapped - min) / step * step + min
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        // Summary row - tap to expand/collapse
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 12.dp)
+                .clickable { onExpandChange(!expanded) }
+                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Label with accent color indicator
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(accentColor)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    label,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            // Current value + unit
+            Text(
+                "$value $unit",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = accentColor
+            )
+            Spacer(Modifier.width(8.dp))
+            val rotation by animateFloatAsState(
+                targetValue = if (expanded) 180f else 0f,
+                animationSpec = spring(dampingRatio = 0.75f)
+            )
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                modifier = Modifier
+                    .graphicsLayer { rotationZ = rotation }
+            )
+        }
+
+        // Expanded wheel picker
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 16.dp)
+            ) {
+                // Macro name as title
+                Text(
+                    label,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = accentColor,
+                    modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
+                )
+                WheelPicker(
+                    items = items,
+                    selected = clamped,
+                    onSelect = onValueChange,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Unit wheel picker — for selecting serving units (g, serving, slice, etc.)
+ */
+@Composable
+fun UnitWheelPicker(
+    options: List<app.chompass.models.ServingUnitOption>,
+    selectedId: String,
+    onSelect: (String) -> Unit,
+    expanded: Boolean,
+    onExpandChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val pickerOptions = app.chompass.models.ServingUnitOption.pickerOptions(options)
+    val labels = pickerOptions.map { it.unit }.toList()
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        // Summary row
+        val selectedOption = app.chompass.models.ServingUnitOption.optionMatching(selectedId, options)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 12.dp)
+                .clickable { onExpandChange(!expanded) }
+                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                stringResource(R.string.sheet_quantity),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                selectedOption.unit,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = AppColors.Calorie
+            )
+            Spacer(Modifier.width(8.dp))
+            val rotation by animateFloatAsState(
+                targetValue = if (expanded) 180f else 0f,
+                animationSpec = spring(dampingRatio = 0.75f)
+            )
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                modifier = Modifier
+                    .graphicsLayer { rotationZ = rotation }
+            )
+        }
+
+        // Expanded wheel picker
+        if (expanded) {
+            val selectedLabel = selectedOption.unit
+            WheelPicker(
+                items = labels,
+                selected = selectedLabel,
+                onSelect = { label ->
+                    val idx = labels.indexOf(label)
+                    if (idx >= 0) onSelect(pickerOptions[idx].id)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 16.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Split integer picker — thousands wheel + remainder wheel.
+ * For large integer ranges like calories (0-5000). Much faster than single 5000-row wheel.
+ */
+@Composable
+fun SplitIntegerWheelPicker(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    max: Int = 5000,
+    unit: String? = null,
+    modifier: Modifier = Modifier
+) {
+    val thousands = value / 1000
+    val remainder = value % 1000
+    val maxThousands = max / 1000
+    val thousandItems = remember(maxThousands) { (0..maxThousands).toList() }
+    val remainderItems = remember { (0..999).toList() }
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        WheelPicker(
+            items = thousandItems,
+            selected = thousands,
+            onSelect = { newThousand -> onValueChange(newThousand * 1000 + remainder) },
+            label = { "${it}K" },
+            modifier = Modifier.weight(0.5f)
+        )
+        Text(
+            ",",
+            style = MaterialTheme.typography.displaySmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+        WheelPicker(
+            items = remainderItems,
+            selected = remainder,
+            onSelect = { newRemainder -> onValueChange(thousands * 1000 + newRemainder) },
+            modifier = Modifier.weight(0.7f)
         )
         if (unit != null) {
             Spacer(Modifier.size(8.dp))

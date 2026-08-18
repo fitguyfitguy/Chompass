@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DataUsage
@@ -35,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -60,14 +59,14 @@ import app.chompass.models.ProteinTargetMode
 import app.chompass.models.ServingUnitHeuristicRule
 import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitInferenceMode
-import app.chompass.models.ServingUnitOption
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.models.WeightGoal
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.services.KetoCarbRecommendationService
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -179,22 +178,36 @@ internal fun SettingsSheets(
                     onSetOverWifiOnly = vm::setOnDeviceDownloadOverWifiOnly,
                 )
                 SettingsSheet.MAX_TOKENS -> {
-                    TextFieldSheet(
-                        title = stringResource(R.string.settings_max_tokens),
-                        initial = ui.maxResponseTokens.toString(),
-                        placeholder = "1024",
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onSave = { it.trim().toIntOrNull()?.let(vm::setMaxResponseTokens); onDismiss() }
+                    var value by remember(ui.maxResponseTokens) { mutableIntStateOf(ui.maxResponseTokens) }
+                    Text(stringResource(R.string.settings_max_tokens), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(12.dp))
+                    NumericWheelPicker(
+                        value = value,
+                        onValueChange = { value = it },
+                        min = 50,
+                        max = 8000,
+                        step = 50,
+                        unit = stringResource(R.string.settings_max_tokens_unit),
                     )
+                    Spacer(Modifier.height(16.dp))
+                    GradientSaveButton { vm.setMaxResponseTokens(value); onDismiss() }
+                    Spacer(Modifier.height(8.dp))
                 }
                 SettingsSheet.AI_READ_TIMEOUT -> {
-                    TextFieldSheet(
-                        title = stringResource(R.string.settings_ai_read_timeout),
-                        initial = ui.aiReadTimeoutSeconds.toString(),
-                        placeholder = "60",
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onSave = { it.trim().toIntOrNull()?.let(vm::setAiReadTimeoutSeconds); onDismiss() }
+                    var value by remember(ui.aiReadTimeoutSeconds) { mutableIntStateOf(ui.aiReadTimeoutSeconds) }
+                    Text(stringResource(R.string.settings_ai_read_timeout), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(12.dp))
+                    NumericWheelPicker(
+                        value = value,
+                        onValueChange = { value = it },
+                        min = 1,
+                        max = 300,
+                        step = 1,
+                        unit = stringResource(R.string.settings_ai_read_timeout_unit),
                     )
+                    Spacer(Modifier.height(16.dp))
+                    GradientSaveButton { vm.setAiReadTimeoutSeconds(value); onDismiss() }
+                    Spacer(Modifier.height(8.dp))
                 }
                 SettingsSheet.SERVING_UNIT_MODE -> ListSheet(
                     title = stringResource(R.string.sheet_serving_unit_mode),
@@ -710,37 +723,26 @@ internal fun ServingUnitHeuristicRuleRow(
     onGramsPerUnitChange: (Double?) -> Unit
 ) {
     val enabled = override?.enabled ?: true
-    var text by remember(rule.id, override?.gramsPerUnit) {
-        mutableStateOf(
-            (override?.gramsPerUnit ?: rule.defaultGramsPerUnit).let {
-                if (it == it.toLong().toDouble()) it.toLong().toString() else it.toString()
-            }
-        )
-    }
+    val currentGrams = override?.gramsPerUnit ?: rule.defaultGramsPerUnit
+    var grams by remember(rule.id, currentGrams) { mutableStateOf(currentGrams) }
     Column(Modifier.fillMaxWidth()) {
         ToggleRow(label = rule.label, checked = enabled, onChange = onToggle)
         if (enabled) {
-            Row(
-                Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FudGlassTextField(
-                    value = text,
-                    onValueChange = { new ->
-                        text = new
-                        val parsed = new.trim().replace(',', '.').toDoubleOrNull()
-                        onGramsPerUnitChange(if (parsed != null && parsed > 0) parsed else null)
-                    },
-                    placeholder = stringResource(
-                        R.string.serving_unit_heuristics_default_value,
-                        ServingUnitOption.formatQuantity(rule.defaultGramsPerUnit)
-                    ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.weight(1f)
-                )
-                if (override?.gramsPerUnit != null) {
-                    Spacer(Modifier.width(8.dp))
-                    TextButton(onClick = { text = ""; onGramsPerUnitChange(null) }) {
+            DecimalWheelPicker(
+                value = grams,
+                onValueChange = { grams = it; onGramsPerUnitChange(it) },
+                min = 0.1,
+                max = 1000.0,
+                step = 0.1,
+                unit = stringResource(R.string.unit_g),
+            )
+            if (override?.gramsPerUnit != null) {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { grams = rule.defaultGramsPerUnit; onGramsPerUnitChange(null) }) {
                         Text(stringResource(R.string.serving_unit_heuristics_reset), fontSize = 12.sp)
                     }
                 }

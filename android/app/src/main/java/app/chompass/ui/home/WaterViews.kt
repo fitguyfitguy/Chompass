@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
@@ -21,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,12 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.WaterAmountFormat
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.components.NumericWheelPicker
 
 @Composable
 private fun waterProgressLabel(currentMl: Int, goalMl: Int, useMetric: Boolean): String =
@@ -137,12 +135,8 @@ fun WaterCustomAmountSheet(
     onAdd: (Int) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var customAmount by remember { mutableStateOf("") }
-    val amountMl = if (useMetric) {
-        customAmount.toIntOrNull()?.takeIf { it > 0 }
-    } else {
-        customAmount.toIntOrNull()?.takeIf { it > 0 }?.let(WaterAmountFormat::mlFromFlOz)
-    }
+    var amountMl by remember { mutableStateOf(if (useMetric) 250 else 8) }
+    val amountFlOz = WaterAmountFormat.flOzFromMl(amountMl)
 
     ChompassBottomSheet(
         onDismiss = onDismiss,
@@ -172,19 +166,26 @@ fun WaterCustomAmountSheet(
                 fontSize = 18.sp,
             )
 
-            OutlinedTextField(
-                value = customAmount,
-                onValueChange = { customAmount = it.filter(Char::isDigit).take(4) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.water_custom_amount)) },
-                suffix = {
-                    Text(
-                        stringResource(if (useMetric) R.string.unit_ml else R.string.unit_fl_oz)
-                    )
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
+            if (useMetric) {
+                NumericWheelPicker(
+                    value = amountMl,
+                    onValueChange = { amountMl = it },
+                    min = 50,
+                    max = 5000,
+                    step = 50,
+                    unit = stringResource(R.string.unit_ml),
+                )
+            } else {
+                var flOz by remember(amountFlOz) { mutableStateOf(amountFlOz) }
+                NumericWheelPicker(
+                    value = flOz,
+                    onValueChange = { flOz = it; amountMl = WaterAmountFormat.mlFromFlOz(it) },
+                    min = 1,
+                    max = 169,
+                    step = 1,
+                    unit = stringResource(R.string.unit_fl_oz),
+                )
+            }
 
             Button(
                 onClick = {

@@ -62,6 +62,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.services.FoodPhotoSession
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudGlassPrimaryButton
+import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -210,24 +211,16 @@ fun ContextNoteSheet(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    FudGlassTextField(
-                        value = weightText,
-                        onValueChange = { if (!busy) weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' } },
-                        placeholder = stringResource(R.string.context_note_weight_placeholder),
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        stringResource(R.string.context_note_weight_unit),
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    )
-                }
+                var weightGrams by remember(weightText) { mutableStateOf(weightText.replace(',', '.').toDoubleOrNull()?.toInt() ?: 0) }
+                NumericWheelPicker(
+                    value = weightGrams,
+                    onValueChange = { if (!busy) { weightGrams = it; weightText = it.toString() } },
+                    min = 0,
+                    max = 5000,
+                    step = 5,
+                    unit = stringResource(R.string.context_note_weight_unit),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
 
             Spacer(Modifier.height(12.dp))
@@ -524,26 +517,16 @@ fun MultiPhotoCaptureSheet(
                             stringResource(R.string.context_note_weight_section),
                             fontWeight = FontWeight.SemiBold,
                         )
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            FudGlassTextField(
-                                value = weightText,
-                                onValueChange = {
-                                    weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
-                                },
-                                placeholder = stringResource(R.string.context_note_weight_placeholder),
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                stringResource(R.string.context_note_weight_unit),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            )
-                        }
+                        var weightGrams by remember(weightText) { mutableStateOf(weightText.replace(',', '.').toDoubleOrNull()?.toInt() ?: 0) }
+                        NumericWheelPicker(
+                            value = weightGrams,
+                            onValueChange = { weightGrams = it; weightText = it.toString() },
+                            min = 0,
+                            max = 5000,
+                            step = 5,
+                            unit = stringResource(R.string.context_note_weight_unit),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                         if (showDontAskAgain) {
                             Row(
                                 Modifier.fillMaxWidth(),

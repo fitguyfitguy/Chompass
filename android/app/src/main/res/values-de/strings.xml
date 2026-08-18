@@ -2661,7 +2661,11 @@ für dich ein</string>
 
     <string name="settings_max_tokens">Maximale Antwortlänge</string>
 
+    <string name="settings_max_tokens_unit">Tokens</string>
+
     <string name="settings_ai_read_timeout">Zeitlimit für das Auslesen der KI</string>
+
+    <string name="settings_ai_read_timeout_unit">s</string>
 
     <string name="settings_ai_read_timeout_value">%1$d s</string>
 

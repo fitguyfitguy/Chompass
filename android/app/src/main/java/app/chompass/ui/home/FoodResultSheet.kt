@@ -1,8 +1,18 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.DecimalWheelPicker
+import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -19,7 +29,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -43,12 +52,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -59,7 +67,6 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -79,9 +86,11 @@ import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
 import app.chompass.ui.theme.AppColors
-import kotlin.math.roundToInt
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import kotlin.math.roundToInt
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.asImageBitmap
 import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
@@ -1119,6 +1128,7 @@ internal fun ReviewNutritionValueRow(
     onEdit: (String) -> Unit
 ) {
     var draft by remember { mutableStateOf(editValue) }
+    var expanded by remember { mutableStateOf(false) }
     LaunchedEffect(unlocked) {
         if (unlocked) draft = editValue
     }
@@ -1130,50 +1140,115 @@ internal fun ReviewNutritionValueRow(
         MaterialTheme.colorScheme.onSurface
     }
     val valueColor = accentColor ?: MaterialTheme.colorScheme.onSurface
-    val cursorColor = accentColor ?: AppColors.Calorie
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            label,
-            fontSize = 16.sp,
-            color = labelColor,
-            modifier = Modifier.weight(1f)
-        )
-        if (unlocked) {
-            BasicTextField(
-                value = draft,
-                onValueChange = {
-                    draft = it
-                    onEdit(it)
-                },
-                singleLine = true,
-                textStyle = TextStyle(
-                    color = valueColor,
+    val currentValue = draft.replace(',', '.').toDoubleOrNull() ?: 0.0
+    // Use split integer wheel for calories (kcal) — faster for 0-5000 range
+    val isCalories = unit == stringResource(R.string.unit_kcal) || label.contains("Calorie", ignoreCase = true)
+
+    Column(Modifier.fillMaxWidth()) {
+        // Summary row - tap to expand/collapse when unlocked
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 12.dp)
+                .clickable(enabled = unlocked) { expanded = !expanded }
+                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                label,
+                fontSize = 16.sp,
+                color = labelColor,
+                modifier = Modifier.weight(1f)
+            )
+            if (unlocked) {
+                Text(
+                    String.format("%.1f %s", currentValue, unit),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.End
-                ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                cursorBrush = androidx.compose.ui.graphics.SolidColor(cursorColor),
-                modifier = Modifier.width(92.dp)
-            )
-        } else {
-            Text(
-                displayValue,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = valueColor
-            )
+                    color = valueColor
+                )
+                Spacer(Modifier.width(8.dp))
+                val rotation by animateFloatAsState(
+                    targetValue = if (expanded) 180f else 0f,
+                    animationSpec = spring(dampingRatio = 0.75f)
+                )
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    modifier = Modifier
+                        .graphicsLayer { rotationZ = rotation }
+                )
+            } else {
+                Text(
+                    displayValue,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = valueColor
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    unit,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.width(36.dp)
+                )
+            }
         }
-        Spacer(Modifier.width(6.dp))
-        Text(
-            unit,
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            modifier = Modifier.width(36.dp)
-        )
+
+        // Expanded wheel picker
+        AnimatedVisibility(
+            visible = expanded && unlocked,
+            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 16.dp)
+            ) {
+                Text(
+                    label,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = accentColor ?: AppColors.Calorie,
+                    modifier = Modifier.padding(start = 4.dp).padding(bottom = 8.dp)
+                )
+                if (isCalories) {
+                    // Unified calorie picker: single wheel with 2 kcal step
+                    val calorieItems = remember { (0..5000 step 2).toList() }
+                    val currentCalories = currentValue.roundToInt()
+                    val clampedCalories = currentCalories.coerceIn(0, 5000)
+                    val snappedCalories = (clampedCalories / 2) * 2
+                    WheelPicker(
+                        items = calorieItems,
+                        selected = snappedCalories,
+                        onSelect = { newVal ->
+                            val formatted = newVal.toString()
+                            draft = formatted
+                            onEdit(formatted)
+                        },
+                        label = { "${it} kcal" },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    DecimalWheelPicker(
+                        value = currentValue,
+                        onValueChange = { newVal ->
+                            val formatted = String.format("%.1f", newVal)
+                            draft = formatted
+                            onEdit(formatted)
+                        },
+                        min = 0.0,
+                        max = 999.9,
+                        step = 0.1,
+                        unit = unit,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
     }
 }
 
