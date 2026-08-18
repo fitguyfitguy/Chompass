@@ -864,6 +864,8 @@
     <string name="edit_reprocess_explain">La IA recalculará el nombre, la porción, las calorías y los macros a partir de tu nota. Revisa los cambios y toca Guardar.</string>
     <string name="edit_reprocess_label">¿Qué cambió?</string>
     <string name="edit_reprocess_review_hint">Revisa los valores actualizados de arriba y toca Guardar para conservarlos.</string>
+    <string name="edit_note_section">Nota</string>
+    <string name="edit_note_placeholder">Nota (opcional)</string>
     <string name="edit_reprocess_section">Pedir a la IA que corrija</string>
     <string name="edit_reprocessing">Corrigiendo…</string>
     <string name="edit_reprocessing_failed">La corrección falló</string>

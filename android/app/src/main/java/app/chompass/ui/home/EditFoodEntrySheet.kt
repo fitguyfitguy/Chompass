@@ -95,6 +95,10 @@ import androidx.compose.foundation.layout.WindowInsets
 fun EditFoodEntrySheet(
     entry: FoodEntry,
     preferGramsByDefault: Boolean = false,
+    /** Codeberg #20 phase 2: with the master AI switch off, the Ask-AI-to-correct
+     *  section is hidden and the stored note is a plain editable field (Save
+     *  only — never Reprocess). */
+    aiFeaturesEnabled: Boolean = true,
     onReprocess: suspend (
         updatedNote: String,
         onProgress: (FoodAnalysisProgress) -> Unit,
@@ -242,6 +246,9 @@ fun EditFoodEntrySheet(
     // Re-run the AI on this entry with the edited note and overwrite the fields in
     // place; marking customNote as the current note flips the primary button back to Save.
     fun reprocess() {
+        // Unreachable via UI when the master switch is off (button says Save,
+        // section is hidden); belt-and-braces against a stale callback.
+        if (!aiFeaturesEnabled) return
         scope.launch {
             isReprocessing = true
             errorText = null
@@ -320,7 +327,9 @@ fun EditFoodEntrySheet(
     ) {
         // While the note differs from what's saved, the primary button becomes
         // "Reprocess"; once reprocessed (or unchanged) it reverts to "Save".
-        val noteChanged = noteText.trim() != (currentBaseEntry.customNote ?: "")
+        // With the master AI switch off the note is a plain stored field, so the
+        // button is always "Save" (no AI path exists to flip it).
+        val noteChanged = shouldOfferReprocess(aiFeaturesEnabled, noteText, currentBaseEntry.customNote)
         Column(
             Modifier
                 .fillMaxWidth()
@@ -605,7 +614,29 @@ fun EditFoodEntrySheet(
                 )
             }
 
-            item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }
+            if (aiFeaturesEnabled) {
+                item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }
+            } else {
+                // Master AI switch off (Codeberg #20): no Ask-AI-to-correct section.
+                // The stored note stays editable as a plain field so notes on
+                // logged entries remain visible/editable without any AI.
+                item { SheetSectionHeader(stringResource(R.string.edit_note_section)) }
+                item {
+                    OutlinedTextField(
+                        value = noteText,
+                        onValueChange = { noteText = it },
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.edit_note_placeholder),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                            )
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
+                    )
+                }
+            }
+            if (aiFeaturesEnabled) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
@@ -779,6 +810,7 @@ fun EditFoodEntrySheet(
                     }
                 }
             }
+            } // aiFeaturesEnabled
 
             item { SheetSectionHeader(stringResource(R.string.section_date_time)) }
             item {
@@ -931,6 +963,18 @@ fun EditFoodEntrySheet(
         )
     }
 }
+
+/**
+ * Primary-button decision for the edit sheet: a note edit flips Save →
+ * "Correct with AI" only while AI features are on. With the master switch
+ * off (Codeberg #20) the note is a plain stored field — Save is the only
+ * primary action, so the AI path is unreachable from this sheet.
+ */
+internal fun shouldOfferReprocess(
+    aiFeaturesEnabled: Boolean,
+    noteText: String,
+    savedNote: String?,
+): Boolean = aiFeaturesEnabled && noteText.trim() != (savedNote ?: "")
 
 @Composable
 private fun EditFoodTimeDialog(

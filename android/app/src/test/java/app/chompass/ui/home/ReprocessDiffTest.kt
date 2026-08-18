@@ -4,6 +4,7 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
@@ -50,5 +51,26 @@ class ReprocessDiffTest {
             servingSizeGrams = 180.0,
         )
         assertTrue(buildReprocessDiff(entry, entry).isEmpty())
+    }
+
+    // Codeberg #20 phase 2: with the master AI switch off, a note edit must
+    // never flip the edit sheet's primary button to "Correct with AI" — the
+    // stored note stays editable and Save is the only primary action.
+    @Test
+    fun shouldOfferReprocess_falseWhenAiOff_evenWithEditedNote() {
+        assertFalse(shouldOfferReprocess(aiFeaturesEnabled = false, noteText = "large bowl", savedNote = null))
+        assertFalse(shouldOfferReprocess(aiFeaturesEnabled = false, noteText = "large bowl", savedNote = "small bowl"))
+    }
+
+    @Test
+    fun shouldOfferReprocess_trueWhenAiOn_andNoteDiffers() {
+        assertTrue(shouldOfferReprocess(aiFeaturesEnabled = true, noteText = "large bowl", savedNote = null))
+        assertTrue(shouldOfferReprocess(aiFeaturesEnabled = true, noteText = " large bowl ", savedNote = "small bowl"))
+    }
+
+    @Test
+    fun shouldOfferReprocess_falseWhenAiOn_butNoteUnchanged() {
+        assertFalse(shouldOfferReprocess(aiFeaturesEnabled = true, noteText = "small bowl", savedNote = "small bowl"))
+        assertFalse(shouldOfferReprocess(aiFeaturesEnabled = true, noteText = "  ", savedNote = null))
     }
 }

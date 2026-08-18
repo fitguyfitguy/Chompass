@@ -726,6 +726,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun startOnDeviceModelDownload() {
         viewModelScope.launch {
+            // Codeberg #20 phase 2: with the master AI switch off, don't even
+            // schedule the model download (the worker skips it as a backstop).
+            if (container.prefs.aiFeaturesEnabled.first() == false) return@launch
             val entry = ModelCatalog.forModelId(_ui.value.selectedModel)
             val overWifiOnly = container.prefs.onDeviceDownloadOverWifiOnly.first()
             container.onDeviceModelDownloadManager.startDownload(entry, overWifiOnly)
