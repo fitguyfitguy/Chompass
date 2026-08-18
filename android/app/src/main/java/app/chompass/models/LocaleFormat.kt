@@ -2,6 +2,7 @@ package app.chompass.models
 
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 /**
@@ -47,4 +48,8 @@ object LocaleFormat {
 
     fun integer(value: Long): String =
         String.format(displayLocale(), "%,d", value)
+
+    /** Decimal-mark character for the display locale (e.g. '.' en, ',' de). */
+    fun decimalSeparator(): Char =
+        DecimalFormatSymbols.getInstance(displayLocale()).decimalSeparator
 }
