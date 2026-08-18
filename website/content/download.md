@@ -95,4 +95,8 @@ Package ID: `app.chompass`
 
 Weight and body data also import via **Settings → Import Weight & Body Data** (Chompass JSON/CSV, openScale CSV, and common weight CSVs).
 
+## Support the project
+
+Chompass is free, ad-free, and open source. If it helps you reach your goals, you can [buy fitguy a yogurt](https://ko-fi.com/fitguy) on Ko-fi. Every yogurt keeps the project going.
+
 Source and issues: [codeberg.org/fitguy/chompass](https://codeberg.org/fitguy/chompass).

@@ -205,6 +205,10 @@ Guides, changelog, F-Droid listing metadata, and food-accuracy benchmarks live u
 
 No ads, analytics, or tracking SDKs. Food logs, body metrics, and Coach chat stay on-device unless you export them or sync through Health Connect. Cloud AI requests go only to the provider you configure. API keys are encrypted at rest (Android Keystore / EncryptedSharedPreferences on Android; Web Crypto AES-GCM in the PWA) and are not sent to a Chompass server. **On-Device (Private)** keeps food analysis on the device. See [PRIVACY.md](docs/PRIVACY.md).
 
+## Support
+
+Chompass is free, ad-free, and open source. If you'd like to say thanks, you can [buy fitguy a yogurt](https://ko-fi.com/fitguy) on Ko-fi.
+
 ## Attribution & license
 
 Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).

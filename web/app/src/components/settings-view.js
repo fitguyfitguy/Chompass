@@ -1270,6 +1270,9 @@ export class SettingsView extends HTMLElement {
         <p style="margin:0 0 0.6rem;">Chompass browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
         <p style="margin:0;"><a href="#/settings?section=install">How to install</a> this app on your phone or computer.</p>
       </div>
+      <div class="card">
+        <p style="margin:0;">Chompass is free and open source. If you'd like to say thanks, <a href="https://ko-fi.com/fitguy" target="_blank" rel="noopener noreferrer">buy fitguy a yogurt</a> on Ko-fi.</p>
+      </div>
       <div class="card methods-card">
         <h2 class="chart-title">Calculation methods</h2>
         <dl class="methods-list">
