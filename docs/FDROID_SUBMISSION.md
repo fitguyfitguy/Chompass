@@ -14,6 +14,7 @@ Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-d
 - Inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) was **merged**; the listing is live and F-Droid clients install / auto-update `app.chompass` directly.
 - **Updates:** F-Droid's `checkupdates` opens update MRs automatically from the `Builds:` entry in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml). No manual inclusion MR is needed, and **none should be opened** (duplicates review work).
 - **Maintainer:** update `docs/fdroid/app.chompass.yml` in this repo only; do **not** push to the fdroiddata repo. The maintainer may assist bot update MRs via the GitLab web GUI when needed. `scripts/legacy/submit_fdroiddata_mr.sh` is legacy (from the submission era) and is no longer part of the release flow.
+- **Pending (2026-08-19):** the live listing's `Donate:` field still points at the Codeberg repo. The mirror (`fdroid/app.chompass.yml`) now points at Ko-fi (`https://ko-fi.com/fitguy`); applying it to the live fdroiddata `metadata/app.chompass.yml` (line 10) needs a one-off MR (fork → edit → MR) or direct access, because F-Droid's `checkupdates` bot does not touch top-level metadata fields. See Codeberg issue #36.
 
 ## Per-release checklist (now that the listing is live)
 

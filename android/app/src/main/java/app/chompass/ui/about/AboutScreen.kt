@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
@@ -55,6 +56,7 @@ import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
 
 private const val CODEBERG_REPO = "https://codeberg.org/fitguy/chompass"
+private const val DONATE_URL = "https://ko-fi.com/fitguy"
 private const val UPSTREAM_REPO = "https://github.com/apoorvdarshan/fud-ai"
 private const val PRIVACY_URL = "https://codeberg.org/fitguy/chompass/src/branch/main/docs/PRIVACY.md"
 private const val ASSET_CREDITS_URL = "https://codeberg.org/fitguy/chompass/src/branch/main/docs/ASSET_CREDITS.md"
@@ -117,6 +119,8 @@ fun AboutSettingsRows(container: AppContainer) {
         }
         Hairline()
         AboutRow(Icons.Filled.Lock, stringResource(R.string.about_privacy)) { open(PRIVACY_URL) }
+        Hairline()
+        AboutRow(Icons.Filled.Favorite, stringResource(R.string.about_donate)) { open(DONATE_URL) }
 
         Column(
             Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 8.dp),

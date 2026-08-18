@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [3.20.0] - unreleased
+
+### Added
+
+- **Buy fitguy a yogurt** (Android + web): a Ko-fi donation link now appears in the app's About screen, the website footer and download page, the PWA About screen, and the README. The F-Droid listing's donation link points to Ko-fi instead of the repository. Closes Codeberg [#36](https://codeberg.org/fitguy/Chompass/issues/36) by [@tpapastylianou](https://codeberg.org/tpapastylianou).
+
 ## [3.19.0] - 2026-08-18
 
 ### Fixed

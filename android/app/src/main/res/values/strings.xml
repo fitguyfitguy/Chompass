@@ -1172,6 +1172,7 @@
     <string name="about_report_issue">Report an Issue</string>
     <string name="about_request_feature">Request a Feature</string>
     <string name="about_privacy">Privacy Policy</string>
+    <string name="about_donate">Buy me a yogurt</string>
     <string name="about_made_by">Chompass by fitguy</string>
     <string name="about_with_care">Based on Fud AI by Apoorv Darshan</string>
     <string name="about_share_message">I\'ve been tracking my meals with Chompass, an ad-free fork of Fud AI. Snap a photo, speak it, or type it, and the AI logs the calories. Open source, and your data stays on your device.\n\nSource: https://codeberg.org/fitguy/chompass</string>
