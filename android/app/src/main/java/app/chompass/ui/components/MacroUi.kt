@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.ui.theme.MacroKind
-import app.chompass.models.MacroValueFormatter
 
 @Composable
 fun MacroChip(
@@ -28,7 +27,7 @@ fun MacroChip(
             .padding(horizontal = 8.dp, vertical = 3.dp)
     ) {
         Text(
-            "${kind.glyph} ${MacroValueFormatter.withUnit(value)}",
+            "${kind.glyph} ${macroGramsText(value)}",
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             color = color,

@@ -55,6 +55,7 @@ import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import java.time.Instant
 import java.time.LocalDate
@@ -444,7 +445,7 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
+                    .clip(RoundedCornerShape(AppRadii.Field))
                     .background(
                         if (isSel) AppColors.Calorie.copy(alpha = 0.13f)
                         else if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)

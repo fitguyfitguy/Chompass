@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.theme.AppRadii
 
 /**
  * SettingRow stress layout for release screenshot previews: long label + long
@@ -49,7 +50,7 @@ internal fun SettingRowStressPreviewContent() {
     ) {
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 18.dp,
+            cornerRadius = AppRadii.Container,
             padding = 0.dp,
             allowBlur = false,
         ) {
@@ -91,7 +92,7 @@ internal fun SettingRowAlignmentPreviewContent() {
     ) {
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 18.dp,
+            cornerRadius = AppRadii.Container,
             padding = 0.dp,
             allowBlur = false,
         ) {
@@ -155,7 +156,7 @@ internal fun SettingsScreenPreviewContent(
 
             FudGlassSurface(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 18.dp,
+                cornerRadius = AppRadii.Container,
                 padding = 0.dp,
                 allowBlur = false,
             ) {

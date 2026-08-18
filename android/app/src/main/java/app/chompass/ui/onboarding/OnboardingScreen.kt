@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.services.ondevice.OnDeviceCapability
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -194,7 +195,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(AppRadii.Field))
                             .background(
                                 Brush.horizontalGradient(
                                     listOf(AppColors.CalorieStart, AppColors.CalorieEnd)

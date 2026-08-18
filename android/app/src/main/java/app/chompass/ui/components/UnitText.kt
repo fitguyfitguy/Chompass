@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.chompass.R
 import app.chompass.models.LocaleFormat
+import app.chompass.models.MacroValueFormatter
 
 /**
  * Display helpers for value + unit rows (UI-audit 2.2/2.3): group numbers with
@@ -23,3 +24,8 @@ internal fun gramsText(value: Double): String {
     val formatted = if (isWhole) LocaleFormat.integer(value.toInt()) else LocaleFormat.decimal(value, 1)
     return stringResource(res, formatted)
 }
+
+/** "30g" — macro chips/totals keep the no-space form; unit comes from resources (UI-audit 2.3). */
+@Composable
+internal fun macroGramsText(value: Double): String =
+    "${MacroValueFormatter.string(value)}${stringResource(R.string.unit_g)}"

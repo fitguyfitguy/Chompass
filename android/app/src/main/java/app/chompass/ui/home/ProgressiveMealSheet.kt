@@ -47,6 +47,7 @@ import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 
@@ -112,7 +113,7 @@ fun ProgressiveMealSheet(
                         singleLine = true,
                         enabled = !isSaving,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(AppRadii.Field),
                     )
                     Text(
                         stringResource(R.string.progressive_meal_ingredient_count, draft.items.size),

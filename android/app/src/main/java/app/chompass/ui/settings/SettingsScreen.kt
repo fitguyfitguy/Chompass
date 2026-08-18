@@ -43,6 +43,7 @@ import app.chompass.ui.about.AboutSettingsRows
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -76,7 +77,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
 
             FudGlassSurface(
                 modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 18.dp,
+                cornerRadius = AppRadii.Container,
                 padding = 0.dp,
                 allowBlur = false,
             ) {
@@ -142,7 +143,7 @@ private fun SuggestionsCard(
 ) {
     FudGlassSurface(
         modifier = Modifier.fillMaxWidth(),
-        cornerRadius = 18.dp,
+        cornerRadius = AppRadii.Container,
         padding = 0.dp,
         allowBlur = false,
     ) {

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 enum class BodyMetric { WEIGHT, BODY_FAT }
@@ -120,7 +121,7 @@ internal fun StatBadge(label: String, value: String, modifier: Modifier = Modifi
 internal fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Unit) {
     val labelWeight = stringResource(R.string.progress_metric_weight)
     val labelBodyFat = stringResource(R.string.progress_metric_body_fat)
-    val shape = RoundedCornerShape(18.dp)
+    val shape = RoundedCornerShape(AppRadii.Container)
     val isDark = isDarkTheme()
     val trackFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 /**
@@ -131,7 +132,7 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
         )
         app.chompass.ui.components.FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 18.dp,
+            cornerRadius = AppRadii.Container,
             padding = 0.dp,
             allowBlur = false
         ) {

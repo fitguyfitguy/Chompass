@@ -51,6 +51,7 @@ import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.models.UnitFormat
 
@@ -315,7 +316,7 @@ internal fun GoalSpeedStep(
             Spacer(Modifier.height(16.dp))
             // Estimated days card
             Card(
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(AppRadii.Field),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 modifier = Modifier.fillMaxWidth()
             ) {

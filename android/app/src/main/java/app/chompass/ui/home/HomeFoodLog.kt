@@ -68,6 +68,7 @@ import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.gramsText
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import java.time.ZoneId
@@ -162,7 +163,7 @@ internal fun SelectionActionBar(
 ) {
     FudGlassSurface(
         modifier = modifier.fillMaxWidth(),
-        cornerRadius = 22.dp,
+        cornerRadius = AppRadii.SectionCard,
         padding = 0.dp
     ) {
         Row(
@@ -298,9 +299,9 @@ private fun mealIcon(meal: MealType): ImageVector = when (meal) {
 internal fun sectionCardShape(isFirst: Boolean, isLast: Boolean): RoundedCornerShape {
     // 22dp corners on the meal card matches the softer iOS look (was 14dp).
     return when {
-        isFirst && isLast -> RoundedCornerShape(22.dp)
-        isFirst -> RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
-        isLast -> RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp)
+        isFirst && isLast -> RoundedCornerShape(AppRadii.SectionCard)
+        isFirst -> RoundedCornerShape(topStart = AppRadii.SectionCard, topEnd = AppRadii.SectionCard)
+        isLast -> RoundedCornerShape(bottomStart = AppRadii.SectionCard, bottomEnd = AppRadii.SectionCard)
         else -> RoundedCornerShape(0.dp)
     }
 }
@@ -449,7 +450,7 @@ private fun BoxScope.SwipeBackground(offsetPx: Float, isFavorite: Boolean) {
 internal fun FoodRow(
     entry: FoodEntry,
     isFavorite: Boolean = false,
-    rowShape: RoundedCornerShape = RoundedCornerShape(22.dp),
+    rowShape: RoundedCornerShape = RoundedCornerShape(AppRadii.SectionCard),
     isSelected: Boolean = false,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
@@ -483,7 +484,7 @@ internal fun FoodRow(
         Box(
             Modifier
                 .size(76.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(AppRadii.Field))
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
             contentAlignment = Alignment.Center
         ) {
@@ -492,7 +493,7 @@ internal fun FoodRow(
                     bitmap = bitmap.asImageBitmap(),
                     contentDescription = entry.name,
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(14.dp))
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(AppRadii.Field))
                 )
                 entry.emoji != null -> Text(entry.emoji ?: "", fontSize = 36.sp)
                 else -> Icon(

@@ -68,7 +68,9 @@ import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
 import java.time.LocalTime
@@ -307,6 +309,14 @@ fun EditFoodEntrySheet(
                 changedFields = buildReprocessDiff(
                     before,
                     currentBaseEntry,
+                    ReprocessDiffLabels(
+                        name = context.getString(R.string.manual_name),
+                        calories = context.getString(R.string.macro_calories),
+                        protein = context.getString(R.string.macro_protein),
+                        carbs = context.getString(R.string.macro_carbs),
+                        fat = context.getString(R.string.macro_fat),
+                        serving = context.getString(R.string.sheet_serving),
+                    ),
                     context.getString(R.string.unit_kcal),
                     context.getString(R.string.unit_g),
                 )
@@ -686,9 +696,9 @@ fun EditFoodEntrySheet(
                             )
                             Text(
                                 "${kcalText(currentBaseEntry.calories)} · " +
-                                    MacroValueFormatter.withUnit(currentBaseEntry.protein) + " P · " +
-                                    MacroValueFormatter.withUnit(currentBaseEntry.carbs) + " C · " +
-                                    MacroValueFormatter.withUnit(currentBaseEntry.fat) + " F",
+                                    macroGramsText(currentBaseEntry.protein) + " P · " +
+                                    macroGramsText(currentBaseEntry.carbs) + " C · " +
+                                    macroGramsText(currentBaseEntry.fat) + " F",
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                             )
@@ -1084,7 +1094,7 @@ internal fun EditFoodEntryHero(
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                 modifier = Modifier
                     .size(96.dp)
-                    .clip(RoundedCornerShape(14.dp))
+                    .clip(RoundedCornerShape(AppRadii.Field))
             )
         } else {
             Text(emoji ?: "🍽", fontSize = 40.sp)
@@ -1154,6 +1164,15 @@ internal fun EditFoodIconDialog(
     }
 }
 
+internal data class ReprocessDiffLabels(
+    val name: String,
+    val calories: String,
+    val protein: String,
+    val carbs: String,
+    val fat: String,
+    val serving: String,
+)
+
 internal data class ReprocessDiffRow(
     val label: String,
     val before: String,
@@ -1163,6 +1182,7 @@ internal data class ReprocessDiffRow(
 internal fun buildReprocessDiff(
     before: FoodEntry,
     after: FoodEntry,
+    labels: ReprocessDiffLabels,
     kcalUnit: String,
     gUnit: String,
 ): List<ReprocessDiffRow> {
@@ -1170,13 +1190,14 @@ internal fun buildReprocessDiff(
     fun add(label: String, a: String, b: String) {
         if (a != b) rows += ReprocessDiffRow(label, a, b)
     }
-    add("Name", before.name, after.name)
-    add("Calories", "${LocaleFormat.integer(before.calories)} $kcalUnit", "${LocaleFormat.integer(after.calories)} $kcalUnit")
-    add("Protein", MacroValueFormatter.withUnit(before.protein), MacroValueFormatter.withUnit(after.protein))
-    add("Carbs", MacroValueFormatter.withUnit(before.carbs), MacroValueFormatter.withUnit(after.carbs))
-    add("Fat", MacroValueFormatter.withUnit(before.fat), MacroValueFormatter.withUnit(after.fat))
+    fun macro(v: Double) = "${MacroValueFormatter.string(v)}$gUnit"
+    add(labels.name, before.name, after.name)
+    add(labels.calories, "${LocaleFormat.integer(before.calories)} $kcalUnit", "${LocaleFormat.integer(after.calories)} $kcalUnit")
+    add(labels.protein, macro(before.protein), macro(after.protein))
+    add(labels.carbs, macro(before.carbs), macro(after.carbs))
+    add(labels.fat, macro(before.fat), macro(after.fat))
     val beforeG = before.servingSizeGrams?.let { "${LocaleFormat.integer(it.toInt())} $gUnit" } ?: "—"
     val afterG = after.servingSizeGrams?.let { "${LocaleFormat.integer(it.toInt())} $gUnit" } ?: "—"
-    add("Serving", beforeG, afterG)
+    add(labels.serving, beforeG, afterG)
     return rows
 }

@@ -64,6 +64,7 @@ import app.chompass.models.AIProvider
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.OptionPickerSheet
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
 
@@ -586,18 +587,21 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 label = stringResource(R.string.macro_protein),
                 value = profile.effectiveProtein,
                 color = AppColors.Protein,
+                unitRes = PlanField.PROTEIN.unitRes,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.PROTEIN }
             )
             MacroCard(
                 label = stringResource(R.string.macro_carbs),
                 value = profile.effectiveCarbs,
                 color = AppColors.Carbs,
+                unitRes = PlanField.CARBS.unitRes,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.CARBS }
             )
             MacroCard(
                 label = stringResource(R.string.macro_fat),
                 value = profile.effectiveFat,
                 color = AppColors.Fat,
+                unitRes = PlanField.FAT.unitRes,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.FAT }
             )
         }
@@ -849,11 +853,12 @@ private fun MacroCard(
     label: String,
     value: Int,
     color: Color,
+    unitRes: Int,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(AppRadii.Field))
             .background(color.copy(alpha = 0.10f))
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
@@ -875,7 +880,7 @@ private fun MacroCard(
                 )
                 Spacer(Modifier.width(2.dp))
                 Text(
-                    "g",
+                    stringResource(unitRes),
                     style = MaterialTheme.typography.bodySmall,
                     color = color.copy(alpha = 0.7f),
                     fontWeight = FontWeight.Medium

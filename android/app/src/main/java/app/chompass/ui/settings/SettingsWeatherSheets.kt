@@ -34,6 +34,7 @@ import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import java.time.Instant
@@ -169,7 +170,7 @@ internal fun OpenMeteoCitySheet(
         // Current selection + status + manual refresh.
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 18.dp,
+            cornerRadius = AppRadii.Container,
             padding = 0.dp,
         ) {
             Column {

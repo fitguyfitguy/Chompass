@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
 import java.time.YearMonth
 import app.chompass.models.UnitFormat
+import app.chompass.ui.theme.AppRadii
 
 private val ITEM_HEIGHT = 44.dp
 private const val VISIBLE_ITEMS = 5
@@ -230,7 +231,7 @@ fun DateWheelPicker(
 private fun WheelSelectionHighlight(modifier: Modifier = Modifier) {
     // Material3 tonal indicator — same secondaryContainer band BottomNavBar
     // uses for its selected-tab pill, instead of a translucent glass capsule.
-    val shape = RoundedCornerShape(14.dp)
+    val shape = RoundedCornerShape(AppRadii.Field)
     Box(
         modifier
             .fillMaxWidth()

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.MacroValueFormatter
+import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -47,7 +48,7 @@ internal fun MacroProgressRow(label: String, current: Double, goal: Int, accentC
             Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = accentColor)
             Spacer(Modifier.weight(1f))
             Text(
-                "${MacroValueFormatter.string(current)}g / ${goal}g",
+                "${macroGramsText(current)} / ${macroGramsText(goal.toDouble())}",
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )

@@ -42,6 +42,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import app.chompass.R
 import app.chompass.services.BarcodeCodeNormalizer
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import zxingcpp.BarcodeReader
 
@@ -155,7 +156,7 @@ internal fun BarcodeScannerContent(
                     .align(Alignment.TopStart)
                     .padding(18.dp)
                     .size(44.dp)
-                    .clip(RoundedCornerShape(22.dp))
+                    .clip(RoundedCornerShape(AppRadii.SectionCard))
                     .background(Color.Black.copy(alpha = 0.45f))
             ) {
                 Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_close), tint = Color.White)

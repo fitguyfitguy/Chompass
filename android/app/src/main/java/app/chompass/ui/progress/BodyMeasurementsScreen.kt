@@ -58,6 +58,7 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.settings.NutritionPickerSheet
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -120,7 +121,7 @@ private fun BodyMeasurementsHistorySheet(
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }
             Spacer(Modifier.height(12.dp))
-            FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp) {
+            FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                 LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 560.dp).padding(vertical = 4.dp)) {
                     items(entries, key = { it.id }) { entry ->
                         Row(
@@ -214,7 +215,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 )
             }
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     Column {
                         BodyMeasurement.Site.values().forEachIndexed { index, site ->
                             Row(
@@ -240,7 +241,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 val derived = derivedMetricList(context, latest, gender, heightCm)
                 if (derived.isNotEmpty()) {
                     item {
-                        FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 16.dp) {
+                        FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 16.dp) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(stringResource(R.string.label_derived), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
                                 derived.forEach { (label, value) ->

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -83,7 +84,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(AppRadii.Field))
                 .background(
                     Brush.horizontalGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
                 )
@@ -170,7 +171,7 @@ internal fun HealthConnectStep(container: AppContainer, enabled: Boolean, onTogg
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(AppRadii.Field))
                 .background(
                     if (available)
                         Brush.horizontalGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))

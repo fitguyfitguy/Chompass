@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -37,7 +38,7 @@ fun StepsCard(
 ) {
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(AppRadii.Container))
             .fillMaxWidth()
             .padding(horizontal = 10.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.Center

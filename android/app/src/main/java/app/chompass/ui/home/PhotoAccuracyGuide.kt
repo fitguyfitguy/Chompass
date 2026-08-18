@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 /**
@@ -84,7 +85,7 @@ fun PhotoAccuracyTipCard(
             .fillMaxWidth()
             .background(
                 AppColors.Calorie.copy(alpha = 0.10f),
-                RoundedCornerShape(14.dp),
+                RoundedCornerShape(AppRadii.Field),
             )
             .padding(start = 14.dp, end = 4.dp, top = 10.dp, bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),

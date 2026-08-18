@@ -78,6 +78,7 @@ import androidx.compose.material.icons.filled.WbTwilight
 import app.chompass.R
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.models.MacroValueFormatter
@@ -773,7 +774,7 @@ internal fun SheetGlassDropdownMenu(
     menuWidth: Dp? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(18.dp)
+    val shape = RoundedCornerShape(AppRadii.Container)
     val sizedModifier = if (menuWidth != null) modifier.width(menuWidth) else modifier
     val isDark = isDarkTheme()
     val menuContainer = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
@@ -807,7 +808,7 @@ internal fun SheetGlassDropdownMenuItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 7.dp, vertical = 1.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(AppRadii.Field))
             .clickable(onClick = onClick)
             // ~48dp tap target per row (Material menu guidance), matching the
             // roomier iOS add-menu rows instead of the old cramped ~36dp.

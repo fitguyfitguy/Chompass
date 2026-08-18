@@ -51,6 +51,7 @@ import app.chompass.models.RecipeIngredient
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.kcalText
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 
@@ -112,7 +113,7 @@ fun RecipeBuilderSheet(
                         placeholder = { Text(stringResource(R.string.recipe_builder_name_placeholder)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp)
+                        shape = RoundedCornerShape(AppRadii.Field)
                     )
                 }
             }
@@ -357,7 +358,7 @@ private fun FavoritesIngredientPickerSheet(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(AppRadii.Field))
                             .clickable { onPick(entry) }
                             .padding(horizontal = 12.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween

@@ -37,6 +37,7 @@ import app.chompass.models.Recipe
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.kcalText
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 
@@ -206,9 +207,9 @@ private fun ScreenshotRecipeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(AppRadii.Container))
             .background(rowFill)
-            .border(0.5.dp, rowBorder, RoundedCornerShape(18.dp))
+            .border(0.5.dp, rowBorder, RoundedCornerShape(AppRadii.Container))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
