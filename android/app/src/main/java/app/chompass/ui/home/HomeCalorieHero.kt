@@ -47,6 +47,7 @@ import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.LocaleFormat
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
@@ -318,7 +319,7 @@ internal fun CalorieHero(
                 color = muted
             )
             Text(
-                "$current",
+                LocaleFormat.integer(current),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -339,7 +340,7 @@ internal fun CalorieHero(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    stringResource(R.string.home_calorie_of_goal, goalLabel),
+                    stringResource(R.string.home_calorie_of_goal, LocaleFormat.integer(goalLabel)),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = muted,
@@ -374,7 +375,7 @@ internal fun CalorieHero(
                     modifier = Modifier.size(13.dp)
                 )
                 Text(
-                    stringResource(R.string.home_calories_left, remaining),
+                    stringResource(R.string.home_calories_left, LocaleFormat.integer(remaining)),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
@@ -483,7 +484,11 @@ private fun BudgetExplanationDialog(
             // estimate-only days typical is null and the row falls back to the
             // effective budget, which equals the target there.
             Text(
-                stringResource(R.string.home_calories_goal_plus_active, goal, typical ?: active),
+                stringResource(
+                    R.string.home_calories_goal_plus_active,
+                    LocaleFormat.integer(goal),
+                    LocaleFormat.integer(typical ?: active),
+                ),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.tertiary,

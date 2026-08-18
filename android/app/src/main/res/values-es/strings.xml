@@ -937,11 +937,11 @@
     <string name="home_calorie_budget_source_manual">Calorías que registraste manualmente</string>
     <string name="home_calorie_budget_source_measured">Calorías activas de Health Connect</string>
     <string name="home_calorie_mode_static">Objetivo estático</string>
-    <string name="home_calorie_of_goal">de %1$d</string>
+    <string name="home_calorie_of_goal">de %1$s</string>
     <string name="home_calories_active_burn">%1$d activas quemadas</string>
-    <string name="home_calories_goal_plus_active">Objetivo %1$d + %2$d activas</string>
+    <string name="home_calories_goal_plus_active">Objetivo %1$s + %2$s activas</string>
     <string name="home_calories_label">CALORÍAS</string>
-    <string name="home_calories_left">%1$d restantes</string>
+    <string name="home_calories_left">%1$s restantes</string>
     <string name="home_display_calorie_mode">Medidor de calorías</string>
     <string name="home_display_card_count">Tarjetas mostradas</string>
     <string name="home_display_food_log_chips">Macros del registro de comida</string>

@@ -1314,7 +1314,7 @@
     <string name="home_display_food_log_chips">Food log macros</string>
     <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
     <string name="home_calories_label">CALORIES</string>
-    <string name="home_calorie_of_goal">of %1$d</string>
+    <string name="home_calorie_of_goal">of %1$s</string>
     <string name="home_calorie_active_estimated_a11y">Active calories estimated from your activity level</string>
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active burn to budget</string>
@@ -1334,7 +1334,7 @@
     <string name="home_budget_burned_today">Burned today: %1$d kcal</string>
     <string name="home_display_show_active_calories">Show active calories</string>
     <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge.</string>
-    <string name="home_calories_left">%1$d left</string>
+    <string name="home_calories_left">%1$s left</string>
     <string name="home_calorie_budget_sheet_title">Today’s calorie budget</string>
     <string name="home_calorie_budget_source_measured">Active calories from Health Connect</string>
     <string name="home_calorie_budget_source_manual">Calories you logged manually</string>
@@ -1347,7 +1347,7 @@
     <string name="manual_active_save">Add to budget</string>
     <string name="home_menu_manual_active">Active burn</string>
     <string name="home_calories_active_burn">%1$d active burned</string>
-    <string name="home_calories_goal_plus_active">Goal %1$d + %2$d active</string>
+    <string name="home_calories_goal_plus_active">Goal %1$s + %2$s active</string>
     <string name="measurement_history">Measurement History</string>
     <string name="body_measurements_title">Body Measurements</string>
     <string name="label_derived">Derived</string>
