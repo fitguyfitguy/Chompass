@@ -170,7 +170,7 @@
     <string name="onboarding_pace_slow">Lent</string>
     <string name="onboarding_pace_recommended">Recomandat</string>
     <string name="onboarding_pace_fast">Rapid</string>
-    <string name="onboarding_pace_reach_prefix">Îți vei atinge obiectivul în </string>
+    <string name="onboarding_pace_reach_prefix">Îți vei atinge obiectivul în\ </string>
     <string name="onboarding_pace_days_format">%1$d zile</string>
     <string name="onboarding_pace_caption_slow">Blând și sustenabil. Excelent pentru obiceiuri pe termen lung.</string>
     <string name="onboarding_pace_caption_fast">Agresiv, dar realizabil. Necesită disciplină puternică.</string>
