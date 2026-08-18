@@ -931,11 +931,11 @@
     <string name="home_calorie_budget_source_manual">Calories que vous avez enregistrées manuellement</string>
     <string name="home_calorie_budget_source_measured">Calories actives de Health Connect</string>
     <string name="home_calorie_mode_static">Objectif statique</string>
-    <string name="home_calorie_of_goal">sur %1$d</string>
+    <string name="home_calorie_of_goal">sur %1$s</string>
     <string name="home_calories_active_burn">%1$d actives brûlées</string>
-    <string name="home_calories_goal_plus_active">Objectif %1$d + %2$d actives</string>
+    <string name="home_calories_goal_plus_active">Objectif %1$s + %2$s actives</string>
     <string name="home_calories_label">CALORIES</string>
-    <string name="home_calories_left">%1$d restantes</string>
+    <string name="home_calories_left">%1$s restantes</string>
     <string name="home_display_calorie_mode">Jauge de calories</string>
     <string name="home_display_card_count">Cartes affichées</string>
     <string name="home_display_food_log_chips">Macros du journal</string>

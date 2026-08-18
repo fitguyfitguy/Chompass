@@ -46,7 +46,6 @@ private fun ReleaseScreenshotFrame(
     ChompassTheme(
         darkTheme = darkTheme,
         themeColor = AppThemeColor.TEAL,
-        glassBlurEnabled = false,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -123,25 +122,8 @@ fun HomeDarkScreenshot() {
     }
 }
 
-// Burn-shade A/B: active shades only vs active + resting (basal) rim. Pending
-// design pick — used to compare both variants, then removed in favour of one.
-@PreviewTest
-@Preview(name = "burn-shades-no-resting-dark", device = PHONE)
-@Composable
-fun BurnShadesNoRestingDark() {
-    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
-        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeUiState(), showRestingShade = false)
-    }
-}
-
-@PreviewTest
-@Preview(name = "burn-shades-with-resting-dark", device = PHONE)
-@Composable
-fun BurnShadesWithRestingDark() {
-    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
-        HomeScreenPreviewContent(ui = ScreenshotFixtures.homeUiState(), showRestingShade = true)
-    }
-}
+// Burn-shade A/B previews removed with the SHOW_RESTING_BURN_SHADE experiment
+// (phase-1 dead-code cleanup); the resting-band design was not shipped.
 
 @PreviewTest
 @Preview(name = "06-progress-dark", device = PHONE)

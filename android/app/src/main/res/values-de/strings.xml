@@ -2396,7 +2396,7 @@ für dich ein</string>
 
     <string name="home_calories_label">KALORIEN</string>
 
-    <string name="home_calorie_of_goal">von %1$d</string>
+    <string name="home_calorie_of_goal">von %1$s</string>
 
     <string name="home_calorie_active_estimated_a11y">Aktive Kalorien, geschätzt anhand deines Aktivitätsniveaus</string>
 
@@ -2436,7 +2436,7 @@ für dich ein</string>
 
     <string name="home_display_show_active_calories_desc">Zeige den heutigen Aktivitätsverbrauch in der Kalorienanzeige an.</string>
 
-    <string name="home_calories_left">%1$d verbleiben</string>
+    <string name="home_calories_left">%1$s verbleiben</string>
 
     <string name="home_calorie_budget_sheet_title">Das heutige Kalorienbudget</string>
 
@@ -2462,7 +2462,7 @@ für dich ein</string>
 
     <string name="home_calories_active_burn">%1$d aktiv verbrannt</string>
 
-    <string name="home_calories_goal_plus_active">Ziel %1$d + %2$d aktiv</string>
+    <string name="home_calories_goal_plus_active">Ziel %1$s + %2$s aktiv</string>
 
     <string name="measurement_history">Messverlauf</string>
 
