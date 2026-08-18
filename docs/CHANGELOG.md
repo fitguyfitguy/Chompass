@@ -14,7 +14,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **Typed entries no longer close by accident** (Android): a downward drag on the note sheet, or on an entry sheet while typing, no longer dismisses the sheet mid-entry. Dismissal stays on the handle, the scrim and the cancel button. Reopening Add food lands on the last tool you used, and backing out of it returns to the grid. Closes Codeberg [#30](https://codeberg.org/fitguy/Chompass/issues/30) by [@dpile103](https://codeberg.org/dpile103).
+- **Typed entries no longer close by accident** (Android): a downward drag on the note sheet, or on an entry sheet while typing, no longer dismisses the sheet mid-entry. Dismissal stays on the handle, the scrim and the cancel button. Backing out of an Add food tool returns to the grid. Closes Codeberg [#30](https://codeberg.org/fitguy/Chompass/issues/30) by [@dpile103](https://codeberg.org/dpile103).
+
+- **The onboarding pace line keeps its spacing** (Android): the estimated-days line on the goal-pace screen no longer runs the number into the word before it ("in30 Tagen" in German).
 
 - **Duplicate weight rows no longer appear after WebDAV sync** (Android + web): rows with the same date and weight, written by the app or the web app, now merge into one row instead of piling up with every sync. Closes Codeberg [#39](https://codeberg.org/fitguy/Chompass/issues/39) by [@tuxMode](https://codeberg.org/tuxMode).
 
