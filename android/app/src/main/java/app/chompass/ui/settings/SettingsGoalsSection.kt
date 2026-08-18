@@ -44,7 +44,6 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
-import java.util.Locale
 import app.chompass.models.UnitFormat
 
 @Composable
@@ -112,8 +111,8 @@ internal fun SettingsGoalsSection(
                         SettingRow(
                             stringResource(R.string.settings_weekly_change),
                             p.weeklyChangeKg?.let {
-                                if (ui.weightMetric) String.format(Locale.US, "%.2f kg/wk", it)
-                                else String.format(Locale.US, "%.2f lbs/wk", UnitFormat.kgToLbs(it))
+                                if (ui.weightMetric) stringResource(R.string.kg_per_week_format, it)
+                                else stringResource(R.string.lbs_per_week_format, UnitFormat.kgToLbs(it))
                             } ?: stringResource(R.string.settings_weekly_default),
                             icon = Icons.Outlined.Speed
                         ) { onOpenSheet(SettingsSheet.GOAL_SPEED) }
@@ -121,8 +120,8 @@ internal fun SettingsGoalsSection(
                         SettingRow(
                             stringResource(R.string.settings_goal_weight),
                             p.goalWeightKg?.let {
-                                if (ui.weightMetric) String.format(Locale.US, "%.1f kg", it)
-                                else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(it))
+                                if (ui.weightMetric) stringResource(R.string.kg_value_format, it)
+                                else stringResource(R.string.lbs_value_format, UnitFormat.kgToLbs(it))
                             } ?: stringResource(R.string.settings_not_set),
                             icon = Icons.AutoMirrored.Outlined.TrendingUp
                         ) { onOpenSheet(SettingsSheet.GOAL_WEIGHT) }

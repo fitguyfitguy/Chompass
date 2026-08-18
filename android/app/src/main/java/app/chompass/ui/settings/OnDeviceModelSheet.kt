@@ -28,9 +28,9 @@ import app.chompass.R
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.OnDeviceDownloadState
 import app.chompass.ui.theme.AppColors
-import java.util.Locale
+import app.chompass.models.LocaleFormat
 
-private fun gb(bytes: Long): String = String.format(Locale.US, "%.1f GB", bytes / 1_073_741_824.0)
+private fun gb(bytes: Long): String = "${LocaleFormat.decimal(bytes / 1_073_741_824.0, 1)} GB"
 
 /**
  * Model download/management sheet for [SettingsSheet.ON_DEVICE_MODEL]. Shows

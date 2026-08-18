@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.R
 import app.chompass.ui.navigation.ChompassRoutes
-import java.util.Locale
 import app.chompass.models.UnitFormat
 
 @Composable
@@ -42,8 +41,8 @@ internal fun SettingsPersonalSection(
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_weight),
-                        if (ui.weightMetric) String.format(Locale.US, "%.1f kg", p.weightKg)
-                        else String.format(Locale.US, "%.1f lbs", UnitFormat.kgToLbs(p.weightKg)),
+                        if (ui.weightMetric) stringResource(R.string.kg_value_format, p.weightKg)
+                        else stringResource(R.string.lbs_value_format, UnitFormat.kgToLbs(p.weightKg)),
                         icon = Icons.Outlined.MonitorWeight
                     ) { onOpenSheet(SettingsSheet.WEIGHT) }
                     HorizontalDivider()

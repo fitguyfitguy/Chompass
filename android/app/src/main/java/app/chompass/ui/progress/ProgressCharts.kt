@@ -49,7 +49,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import app.chompass.models.UnitFormat
 
 /** One plotted point on a trend chart — either a raw entry or the average of
@@ -170,9 +169,9 @@ internal fun niceAxisTicks(min: Double, max: Double, count: Int): List<Double> {
 }
 
 internal fun formatTick(value: Double): String =
-    if (value >= 1000) String.format(Locale.US, "%,d", value.toInt())
+    if (value >= 1000) LocaleFormat.integer(value.toInt())
     else if (value == value.toInt().toDouble()) value.toInt().toString()
-    else String.format(Locale.US, "%.1f", value)
+    else LocaleFormat.decimal(value, 1)
 
 /** Format a body-fat tick value for the Y-axis label (e.g. 17.5 → "17.5%"
  *  when the tick has a fractional part, otherwise "18%" — keeps short ticks
@@ -180,7 +179,7 @@ internal fun formatTick(value: Double): String =
 internal fun formatPercentTick(value: Double): String {
     val rounded = (value * 10).toInt() / 10.0
     return if (rounded == rounded.toInt().toDouble()) "${rounded.toInt()}%"
-    else String.format(Locale.US, "%.1f%%", rounded)
+    else "${LocaleFormat.decimal(rounded, 1)}%"
 }
 
 /** Pick at most [maxLabels] evenly-spaced bar indices for x-axis labelling. */

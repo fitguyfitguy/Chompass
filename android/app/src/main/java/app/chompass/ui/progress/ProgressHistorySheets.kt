@@ -35,7 +35,6 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.theme.AppColors
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,7 +137,7 @@ internal fun AllBodyFatHistorySheet(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(Modifier.weight(1f)) {
-                                Text(String.format(Locale.US, "%.1f%%", entry.bodyFatPercent), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                                Text("${LocaleFormat.decimal(entry.bodyFatPercent, 1)}${stringResource(R.string.unit_percent)}", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
                                 Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
                             }

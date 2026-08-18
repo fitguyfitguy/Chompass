@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.LocaleFormat
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WeightGoal
@@ -434,9 +435,9 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         for ((kg, title, displayKg) in options) {
             val displayAmount = if (useMetric) {
-                String.format(java.util.Locale.US, "%.1f", displayKg)
+                LocaleFormat.decimal(displayKg, 1)
             } else {
-                String.format(java.util.Locale.US, "%.1f", UnitFormat.kgToLbs(displayKg))
+                LocaleFormat.decimal(UnitFormat.kgToLbs(displayKg), 1)
             }
             val subtitle = stringResource(paceRes, "$displayAmount $wUnit")
             val isSel = kotlin.math.abs(kg - current) < 0.01
