@@ -113,6 +113,8 @@ internal object Keys {
         val MEAL_DINNER_START = intPreferencesKey("mealDinnerStart")
         val MEAL_SNACK_START = intPreferencesKey("mealSnackStart")
         val LAST_SAVED_MEALS_SEGMENT = stringPreferencesKey("lastRecentsSegment")
+        /** Codeberg #30: last add-food destination tile; "" = the tool grid. */
+        val LAST_ADD_FOOD_TOOL = stringPreferencesKey("lastAddFoodTool")
         val FOOD_LOG_SORT_ORDER = stringPreferencesKey("foodLogSortOrder")
         val HOME_TOP_NUTRIENTS = stringPreferencesKey("homeTopNutrients")
         val HOME_NUTRIENT_CARD_COUNT = intPreferencesKey("homeNutrientCardCount")

@@ -107,6 +107,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
     // and the What-if row, and ignores the camera/voice launcher shortcuts.
     val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
+    // Codeberg #30: last add-food destination tile ("" = the grid). "+"
+    // restores it directly; backing out of the destination returns to the grid.
+    val lastAddFoodTool by container.prefs.lastAddFoodTool.collectAsState(initial = "")
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -136,6 +139,12 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
     var showNutritionDetail by rememberSaveable { mutableStateOf(false) }
+    // Codeberg #30: add-food flow. Tapping a tile (or the "+" FAB restoring
+    // the last tool) marks the flow active; backing out of a flow-launched
+    // destination reopens the grid instead of closing the whole flow.
+    // Shortcut/share/gallery-launched sheets never enter the flow, so their
+    // dismissals close normally.
+    var addFoodFlowActive by rememberSaveable { mutableStateOf(false) }
 
     var showCameraCapture by rememberSaveable { mutableStateOf(false) }
     /** When true, next capture/gallery pick appends into an in-flight analysis re-run. */
@@ -225,6 +234,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             showCameraCapture = true
         } else {
             clearShortcut(ShortcutEntryAction.CAMERA)
+            addFoodFlowActive = false
         }
     }
 
@@ -267,6 +277,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             showBarcodeScannerLocal = true
         } else {
             clearShortcut(ShortcutEntryAction.BARCODE)
+            addFoodFlowActive = false
         }
     }
 
@@ -314,6 +325,34 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val scope = rememberCoroutineScope()
     val foodRemovedMessage = stringResource(R.string.home_food_removed)
     val undoLabel = stringResource(R.string.action_undo)
+
+    // Codeberg #30: add-food flow helpers. launchAddFoodTool persists the
+    // tool id so the next "+" skips the grid (photo excluded — reopening it
+    // would re-prompt the camera permission), then opens the destination.
+    fun launchAddFoodTool(tool: AddFoodTool) {
+        if (tool.persists) {
+            scope.launch { container.prefs.setLastAddFoodTool(tool.storageId) }
+        }
+        addFoodFlowActive = true
+        when (tool) {
+            AddFoodTool.PHOTO -> openCamera()
+            AddFoodTool.NOTE -> showText = true
+            AddFoodTool.SAVED_RECENTS -> savedMealsTab = SavedTab.RECENTS
+            AddFoodTool.VOICE -> showVoiceLocal = true
+            AddFoodTool.BARCODE -> openBarcodeScanner()
+            AddFoodTool.MANUAL -> showManual = true
+            AddFoodTool.COPY_FROM_DAY -> showCopyFromDay = true
+            AddFoodTool.SEARCH -> showFoodSearch = true
+            AddFoodTool.MANUAL_ACTIVE -> showManualActive = true
+            AddFoodTool.GROUNDED -> if (GroundedEntryFeature.ENABLED) showGroundedEntry = true
+        }
+    }
+
+    /** Back from a flow-launched destination: reopen the grid. No-op when the
+     *  destination came from outside the flow (shortcut, share, gallery). */
+    fun returnToAddFoodGrid() {
+        if (addFoodFlowActive) showAddFoodSheet = true
+    }
 
     // No topBar: the empty TopAppBar used to act as the status-bar spacer, but the
     // ad strip above this screen (TabWithBanner) now owns that inset.
@@ -583,7 +622,16 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onClick = {
                 // Warm the hub recents while the sheet animates open.
                 vm.prefetchQuickRelog()
-                showAddFoodSheet = true
+                // Codeberg #30: "+" reopens the last add-food tool directly
+                // (grid skipped). Unavailable or never-used tools fall back to
+                // the grid; backing out of the destination returns here.
+                val restore = resolveAddFoodRestoreTool(lastAddFoodTool, aiFeaturesEnabled)
+                if (restore != null) {
+                    launchAddFoodTool(restore)
+                } else {
+                    addFoodFlowActive = true
+                    showAddFoodSheet = true
+                }
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -706,35 +754,38 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
             recentMeals = hubRecentMeals,
-            onPhoto = { openCamera() },
-            onNote = { showText = true },
-            onSavedRecents = { savedMealsTab = SavedTab.RECENTS },
-            onVoice = { showVoiceLocal = true },
-            onBarcode = { openBarcodeScanner() },
-            onManual = { showManual = true },
-            onCopyFromDay = { showCopyFromDay = true },
-            onManualActive = { showManualActive = true },
-            onGrounded = {
-                if (GroundedEntryFeature.ENABLED) {
-                    showGroundedEntry = true
-                }
-            },
-            onSearch = { showFoodSearch = true },
+            onPhoto = { launchAddFoodTool(AddFoodTool.PHOTO) },
+            onNote = { launchAddFoodTool(AddFoodTool.NOTE) },
+            onSavedRecents = { launchAddFoodTool(AddFoodTool.SAVED_RECENTS) },
+            onVoice = { launchAddFoodTool(AddFoodTool.VOICE) },
+            onBarcode = { launchAddFoodTool(AddFoodTool.BARCODE) },
+            onManual = { launchAddFoodTool(AddFoodTool.MANUAL) },
+            onCopyFromDay = { launchAddFoodTool(AddFoodTool.COPY_FROM_DAY) },
+            onManualActive = { launchAddFoodTool(AddFoodTool.MANUAL_ACTIVE) },
+            onGrounded = { launchAddFoodTool(AddFoodTool.GROUNDED) },
+            onSearch = { launchAddFoodTool(AddFoodTool.SEARCH) },
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
             onRelogRecent = { vm.relogMeal(it) },
             onReviewRecent = { vm.reviewSavedMeal(it) },
-            onDismiss = { showAddFoodSheet = false }
+            onDismiss = {
+                showAddFoodSheet = false
+                addFoodFlowActive = false
+            }
         )
     }
 
     if (GroundedEntryFeature.ENABLED && showGroundedEntry) {
         GroundedEntrySheet(
-            onDismiss = { showGroundedEntry = false },
+            onDismiss = {
+                showGroundedEntry = false
+                returnToAddFoodGrid()
+            },
             isSubmitting = ui.isEntryAnalysisBusy,
             onSubmit = { description, imageBytes ->
                 if (!ui.isEntryAnalysisBusy) {
                     showGroundedEntry = false
+                    addFoodFlowActive = false
                     vm.analyzeGrounded(description, imageBytes)
                 }
             },
@@ -759,9 +810,13 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             container = container,
             onSelect = { result ->
                 showFoodSearch = false
+                addFoodFlowActive = false
                 vm.selectFoodSearchResult(result)
             },
-            onDismiss = { showFoodSearch = false },
+            onDismiss = {
+                showFoodSearch = false
+                returnToAddFoodGrid()
+            },
         )
     }
 
@@ -775,18 +830,28 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 
     if (showManualActive) {
         ManualActiveSheet(
-            onSave = { name, kcal -> vm.addManualActive(name, kcal) },
-            onDismiss = { showManualActive = false },
+            onSave = { name, kcal ->
+                vm.addManualActive(name, kcal)
+                addFoodFlowActive = false
+            },
+            onDismiss = {
+                showManualActive = false
+                returnToAddFoodGrid()
+            },
         )
     }
 
     if (showText) {
         TextInputSheet(
-            onDismiss = { showText = false },
+            onDismiss = {
+                showText = false
+                returnToAddFoodGrid()
+            },
             isSubmitting = ui.isEntryAnalysisBusy,
             onSubmit = {
                 if (!ui.isEntryAnalysisBusy) {
                     showText = false
+                    addFoodFlowActive = false
                     vm.analyzeText(it)
                 }
             }
@@ -799,12 +864,14 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onDismiss = {
                 showVoiceLocal = false
                 clearShortcut(ShortcutEntryAction.VOICE)
+                returnToAddFoodGrid()
             },
             isSubmitting = ui.isEntryAnalysisBusy,
             onSubmit = {
                 if (!ui.isEntryAnalysisBusy) {
                     showVoiceLocal = false
                     clearShortcut(ShortcutEntryAction.VOICE)
+                    addFoodFlowActive = false
                     vm.analyzeText(it)
                 }
             }
@@ -814,10 +881,14 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     if (showManual) {
         ManualEntryDialog(
             isSaving = ui.saving,
-            onDismiss = { showManual = false },
+            onDismiss = {
+                showManual = false
+                returnToAddFoodGrid()
+            },
             onSave = { name, kcal, p, c, f, micros, meal, servingGrams, unitOptions, selUnit, selQty ->
                 if (!ui.saving) {
                     showManual = false
+                    addFoodFlowActive = false
                     vm.saveManualEntry(
                         name, kcal, p, c, f, micros, meal,
                         servingGrams, unitOptions, selUnit, selQty,
@@ -831,15 +902,34 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         SavedMealsSheet(
             container = container,
             initialTab = tab,
-            onDismiss = { savedMealsTab = null },
+            onDismiss = {
+                savedMealsTab = null
+                returnToAddFoodGrid()
+            },
             // Tapping a Saved Meals row opens the FoodResultSheet for review
             // instead of logging immediately — same UX as the photo flow.
-            onRelogEntry = { vm.reviewSavedMeal(it) },
-            onLogEntry = { vm.relogMeal(it) },
-            onLogRecipe = { vm.logRecipe(it) },
-            onEditRecipe = { recipe -> savedMealsTab = null; editingRecipe = recipe },
+            // The sheet dismisses itself after every action, so each one ends
+            // the flow: only a plain back (no action) returns to the grid.
+            onRelogEntry = { entry ->
+                addFoodFlowActive = false
+                vm.reviewSavedMeal(entry)
+            },
+            onLogEntry = { entry ->
+                addFoodFlowActive = false
+                vm.relogMeal(entry)
+            },
+            onLogRecipe = { recipe ->
+                addFoodFlowActive = false
+                vm.logRecipe(recipe)
+            },
+            onEditRecipe = { recipe ->
+                savedMealsTab = null
+                addFoodFlowActive = false
+                editingRecipe = recipe
+            },
             onCreateRecipe = {
                 savedMealsTab = null
+                addFoodFlowActive = false
                 editingRecipe = app.chompass.models.Recipe(name = "")
             }
         )
@@ -871,9 +961,13 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 if (!ui.saving) {
                     vm.copyEntriesToDate(entries, target)
                     showCopyFromDay = false
+                    addFoodFlowActive = false
                 }
             },
-            onDismiss = { showCopyFromDay = false }
+            onDismiss = {
+                showCopyFromDay = false
+                returnToAddFoodGrid()
+            }
         )
     }
 
@@ -882,11 +976,13 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onBarcode = { barcode ->
                 showBarcodeScannerLocal = false
                 clearShortcut(ShortcutEntryAction.BARCODE)
+                addFoodFlowActive = false
                 vm.lookupBarcode(barcode)
             },
             onDismiss = {
                 showBarcodeScannerLocal = false
                 clearShortcut(ShortcutEntryAction.BARCODE)
+                returnToAddFoodGrid()
             }
         )
     }
@@ -963,6 +1059,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 appendReanalyzeNote = null
                 appendReanalyzeGrams = null
                 photoSession.openReviewIfStaged()
+                returnToAddFoodGrid()
             }
         )
     }
@@ -997,11 +1094,13 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 val images = photoSession.stagedImages.value
                 photoSession.clear()
                 if (!ui.isEntryAnalysisBusy) {
+                    addFoodFlowActive = false
                     vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain)
                 }
             },
             onDismiss = {
                 photoSession.clear()
+                returnToAddFoodGrid()
             },
         )
     }
@@ -1295,4 +1394,67 @@ private fun Context.findComponentActivity(): ComponentActivity? {
         current = current.baseContext
     }
     return current as? ComponentActivity
+}
+
+/**
+ * Codeberg #30: add-food destinations. Tapping a tile (or the "+" FAB
+ * restoring the last tool) opens the destination; the id persists in
+ * PreferencesStore so the next "+" skips the grid. Water quick actions are
+ * not destinations and never persist.
+ */
+enum class AddFoodTool(val storageId: String) {
+    PHOTO("photo"),
+    NOTE("note"),
+    SAVED_RECENTS("savedRecents"),
+    VOICE("voice"),
+    BARCODE("barcode"),
+    MANUAL("manual"),
+    COPY_FROM_DAY("copyFromDay"),
+    SEARCH("search"),
+    MANUAL_ACTIVE("manualActive"),
+    GROUNDED("grounded"),
+    ;
+
+    /**
+     * Destinations that remember their selection. Photo is excluded: reopening
+     * it would re-prompt the camera permission. Water quick actions are not
+     * tools and never reach this enum.
+     */
+    val persists: Boolean
+        get() = this != PHOTO
+
+    companion object {
+        fun fromStorageId(id: String): AddFoodTool? =
+            entries.firstOrNull { it.storageId == id }
+    }
+}
+
+/**
+ * Whether the tool can be restored on "+": AI-off hides photo/note/voice and
+ * grounded stays behind its feature gate. Mirrors the AddFoodSheet tile
+ * visibility rules.
+ */
+internal fun AddFoodTool.isAvailable(
+    aiFeaturesEnabled: Boolean,
+    groundedEnabled: Boolean = GroundedEntryFeature.ENABLED,
+): Boolean = when (this) {
+    AddFoodTool.PHOTO, AddFoodTool.NOTE, AddFoodTool.VOICE -> aiFeaturesEnabled
+    AddFoodTool.GROUNDED -> groundedEnabled
+    else -> true
+}
+
+/**
+ * Codeberg #30: restore decision for the "+" FAB. Returns null (grid) when
+ * nothing was persisted, the stored id is unknown, or the tool is currently
+ * unavailable (e.g. AI-off hides photo/note/voice) — the same runCatching
+ * fallback style as SavedMealsSheet's segment restore.
+ */
+internal fun resolveAddFoodRestoreTool(
+    stored: String?,
+    aiFeaturesEnabled: Boolean,
+    groundedEnabled: Boolean = GroundedEntryFeature.ENABLED,
+): AddFoodTool? {
+    if (stored.isNullOrBlank()) return null
+    return AddFoodTool.fromStorageId(stored)
+        ?.takeIf { it.isAvailable(aiFeaturesEnabled, groundedEnabled) }
 }
