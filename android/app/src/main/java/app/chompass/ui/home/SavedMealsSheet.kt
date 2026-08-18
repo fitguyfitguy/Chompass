@@ -72,6 +72,7 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.Recipe
 import app.chompass.services.FoodImageStore
 import app.chompass.ui.components.MacroChip
+import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
@@ -675,7 +676,7 @@ private fun SavedMealRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    "${entry.calories} kcal",
+                    kcalText(entry.calories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Calorie
@@ -753,7 +754,7 @@ private fun RecipeRow(
         Column(verticalArrangement = Arrangement.spacedBy(3.dp), modifier = Modifier.weight(1f)) {
             Text(recipe.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("${recipe.totalCalories} kcal", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+                Text(kcalText(recipe.totalCalories), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
                 Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
                 Text(
                     stringResource(R.string.recipe_ingredient_count_format, recipe.ingredients.size),

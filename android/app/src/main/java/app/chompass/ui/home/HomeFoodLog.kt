@@ -66,6 +66,8 @@ import app.chompass.models.MealType
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.gramsText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import java.time.ZoneId
@@ -123,7 +125,7 @@ internal fun MealSectionHeader(
         if (totalCalories != null) {
             Spacer(Modifier.weight(1f))
             val summary = buildAnnotatedString {
-                append("$totalCalories kcal")
+                append(kcalText(totalCalories))
                 if (macroChips.isNotEmpty()) {
                     append(" · ")
                     macroChips.forEachIndexed { index, chip ->
@@ -545,17 +547,16 @@ internal fun FoodRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    "${entry.calories} kcal",
+                    kcalText(entry.calories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 entry.servingSizeGrams?.takeIf { it > 0 }?.let { grams ->
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
-                    val gramsText = if (grams == grams.toInt().toDouble()) "${grams.toInt()}g"
-                                    else String.format("%.1fg", grams)
+                    val servingText = gramsText(grams)
                     Text(
-                        gramsText,
+                        servingText,
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )

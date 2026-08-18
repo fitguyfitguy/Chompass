@@ -31,8 +31,8 @@
     <string name="action_pin">Épingler</string>
 
     <!-- Generic units / labels -->
-    <string name="grams_value_format">%1$d g</string>
-    <string name="grams_value_decimal_format">%1$.1f g</string>
+    <string name="grams_value_format">%1$s g</string>
+    <string name="grams_value_decimal_format">%1$s g</string>
     <string name="kg_per_week_format">%1$.2f kg/sem.</string>
     <string name="lbs_per_week_format">%1$.2f lbs/sem.</string>
 
@@ -983,7 +983,7 @@
     <string name="import_sync_success">Document de synchronisation importé.</string>
     <string name="import_sync_title">Importer le JSON de synchronisation</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$d kcal</string>
+    <string name="kcal_value_format">%1$s kcal</string>
     <string name="keto_carb_grams_format">%1$d g/jour</string>
     <string name="keto_carb_manual_hint">L\'objectif manuel est plafonné entre 20 et 50 g/jour de glucides nets.</string>
     <string name="keto_carb_mode_adaptive">Glucides adaptatifs</string>

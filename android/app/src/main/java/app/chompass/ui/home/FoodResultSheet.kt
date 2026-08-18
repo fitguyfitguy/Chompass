@@ -68,6 +68,7 @@ import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MacroValueFormatter
+import app.chompass.models.LocaleFormat
 import app.chompass.models.MealType
 import app.chompass.models.MicronutrientField
 import app.chompass.models.ServingUnitOption
@@ -82,6 +83,7 @@ import kotlin.math.roundToInt
 import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
+import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.FudGlassTextField
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
@@ -1256,9 +1258,10 @@ internal fun WhatIfMealImpactDialog(
                 SheetPillCard {
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_calories),
-                        added = "+${entry.calories} kcal",
-                        total = profile?.let { "${after.calories} / ${it.effectiveCalories} kcal" }
-                            ?: "${after.calories} kcal",
+                        added = "+${kcalText(entry.calories)}",
+                        total = profile?.let {
+                            "${LocaleFormat.integer(after.calories)} / ${LocaleFormat.integer(it.effectiveCalories)} ${stringResource(R.string.unit_kcal)}"
+                        } ?: kcalText(after.calories),
                         accentColor = AppColors.Calorie
                     )
                     SheetHairline()

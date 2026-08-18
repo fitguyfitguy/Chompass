@@ -51,9 +51,9 @@
 
 
 
-    <string name="kcal_value_format">%1$d ккал</string>
-    <string name="grams_value_format">%1$d г</string>
-    <string name="grams_value_decimal_format">%1$.1f г</string>
+    <string name="kcal_value_format">%1$s ккал</string>
+    <string name="grams_value_format">%1$s г</string>
+    <string name="grams_value_decimal_format">%1$s г</string>
     <string name="kg_value_format">%1$.1f кг</string>
 
     <string name="kg_per_week_format">%1$.2f кг/нед.</string>

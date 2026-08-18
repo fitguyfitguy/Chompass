@@ -2,6 +2,7 @@ package app.chompass.ui.home
 
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.kcalText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,7 +74,7 @@ fun ImportSharedMealSheet(
                         )
                     }
                     Text(
-                        "${meal.calories} kcal",
+                        kcalText(meal.calories),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = AppColors.Calorie,

@@ -9,6 +9,7 @@ import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.theme.AppColors
 import androidx.compose.foundation.background
@@ -284,7 +285,7 @@ private fun SearchResultRow(
         Spacer(Modifier.width(12.dp))
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                "${result.displayCalories} kcal",
+                kcalText(result.displayCalories),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.Calorie,

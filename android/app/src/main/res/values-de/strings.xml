@@ -108,11 +108,11 @@
 
     <string name="unit_serving_plural">Portionen</string>
 
-    <string name="kcal_value_format">%1$d kcal</string>
+    <string name="kcal_value_format">%1$s kcal</string>
 
-    <string name="grams_value_format">%1$dg</string>
+    <string name="grams_value_format">%1$sg</string>
 
-    <string name="grams_value_decimal_format">%1$.1fg</string>
+    <string name="grams_value_decimal_format">%1$sg</string>
 
     <string name="kg_value_format">%1$.1f kg</string>
 
