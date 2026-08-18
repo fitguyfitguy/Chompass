@@ -67,4 +67,23 @@ paths link here). Shipped records live in the CHANGELOG, not here.
 
 [`docs/local/`](local/): maintainer-only state and notes: triage backlogs,
 idea mines, reply/style guides, in-flight plans. Not published; published docs
-deliberately do not link into it.
+deliberately do not link into it. Top level stays small (12 live files):
+shipped plans, old reply ledgers (`archive/ledgers/`), and closed index rows
+move to [`docs/local/archive/`](local/archive/) at the release that ships them
+(see `releases.mdc` step 3).
+
+## Work artifacts (anti-bloat convention)
+
+- **Most fixes produce zero artifacts**: a `PLAN_*.md` exists only when the
+  work needs multiple commits, cross-app (Android+PWA) changes, wire/contract
+  changes, or a device pass. Single-fix/single-commit items are recorded by
+  commit + CHANGELOG line + backlog index row. If it fits in a commit message,
+  it does not get a plan doc.
+- **Batch plans, not per-item plans**: releases get one `PLAN_*_BATCH` with
+  sections per item, never per-item plans inside a batch.
+- **Script bins** (decided at the release that ships the work): wired/recurring
+  and recipe scripts stay in `scripts/`; one-shot scripts are deleted (git
+  history is the archive; `scripts/legacy/` only for referenced-but-dead).
+- **Never archived**: CHANGELOG (shipped record), backlog index rows (triage
+  state + reply IDs), style guides, formula/contract docs. Archive holds the
+  *how-we-did-it*; CHANGELOG + backlog are the *what-shipped* record.

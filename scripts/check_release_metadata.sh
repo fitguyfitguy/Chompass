@@ -49,9 +49,9 @@ if [[ "$HUGO_VERSION" != "$VERSION_NAME" ]]; then
   exit 1
 fi
 
-# Compact-label gate (docs/local/PLAN_UI_STRING_FIT.md): fixed-width chips/tabs/
-# status lines/buttons must stay within the budget in every locale. Warnings in
-# the normal parity run; the release checklist fails on violations.
+# Compact-label gate (UI string-fit rule): fixed-width chips/tabs/status lines/
+# buttons must stay within the budget in every locale. Warnings in the normal
+# parity run; the release checklist fails on violations.
 uv run python "$ROOT/scripts/check_android_strings.py" --strict-compact
 
 echo "Release metadata is consistent for ${VERSION_NAME} (${VERSION_CODE})."
