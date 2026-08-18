@@ -506,20 +506,22 @@ internal fun SettingFootnote(text: String, modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
 internal fun feetInchesLabel(cm: Int): String {
     // Round to the nearest inch — truncating shows 5'6" for a 170 cm / 5'7" pick.
     val totalInches = UnitFormat.cmToInchesRounded(cm)
     val feet = totalInches / 12
     val inches = totalInches % 12
-    return "$feet' $inches\""
+    return stringResource(R.string.feet_inches_format, feet, inches)
 }
 
 internal val birthdayFormatter: DateTimeFormatter =
     LocaleFormat.mediumDate()
 
+@Composable
 internal fun birthdayDisplay(profile: UserProfile): String {
     val date = profile.birthday.atZone(ZoneId.systemDefault()).toLocalDate()
-    return "${date.format(birthdayFormatter)} (age ${profile.age})"
+    return stringResource(R.string.settings_birthday_age_format, date.format(birthdayFormatter), profile.age)
 }
 
 // Closest Material mappings for the iOS SF Symbols used in picker rows.

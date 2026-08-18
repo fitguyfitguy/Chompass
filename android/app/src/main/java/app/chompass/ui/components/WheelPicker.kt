@@ -32,6 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import app.chompass.R
+import app.chompass.models.LocaleFormat
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
 import java.time.YearMonth
@@ -52,7 +55,7 @@ fun <T> WheelPicker(
     selected: T,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
-    label: (T) -> String = { it.toString() },
+    label: @Composable (T) -> String = { it.toString() },
     /**
      * When false, the wheel does NOT paint its own selected-row capsule. Useful
      * when several WheelPickers sit in a Row and the parent overlays a single
@@ -311,7 +314,7 @@ fun FeetInchesWheelPicker(
                 val newTotal = f * 12 + inches
                 onValueChange(UnitFormat.inchesToCmRounded(newTotal))
             },
-            label = { "$it ft" },
+            label = { stringResource(R.string.ft_label_format, it) },
             modifier = Modifier.weight(1f)
         )
         WheelPicker(
@@ -321,7 +324,7 @@ fun FeetInchesWheelPicker(
                 val newTotal = feet * 12 + i
                 onValueChange(UnitFormat.inchesToCmRounded(newTotal))
             },
-            label = { "$it in" },
+            label = { stringResource(R.string.in_label_format, it) },
             modifier = Modifier.weight(1f)
         )
     }
@@ -345,6 +348,7 @@ fun SplitDecimalWheelPicker(
     val tenthsPart = ((clampedValue - intPart) * 10).toInt().coerceIn(0, 9)
     val ints = remember(min, max) { (min..max).toList() }
     val tenths = remember { (0..9).toList() }
+    val decimalSeparator = remember { LocaleFormat.decimalSeparator() }
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -358,7 +362,7 @@ fun SplitDecimalWheelPicker(
             modifier = Modifier.weight(1f)
         )
         Text(
-            ".",
+            decimalSeparator.toString(),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             modifier = Modifier.padding(horizontal = 4.dp)
