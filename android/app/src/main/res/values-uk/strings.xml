@@ -159,7 +159,7 @@
     <string name="onboarding_pace_slow">Повільний</string>
     <string name="onboarding_pace_recommended">Рекомендований</string>
     <string name="onboarding_pace_fast">Швидкий</string>
-    <string name="onboarding_pace_reach_prefix">Ви досягнете цілі за </string>
+    <string name="onboarding_pace_reach_prefix">Ви досягнете цілі за\ </string>
     <string name="onboarding_pace_days_format">%1$d дн.</string>
     <string name="onboarding_pace_caption_slow">М\'який і стабільний. Чудово для довготривалих звичок.</string>
     <string name="onboarding_pace_caption_fast">Агресивний, але реальний. Потребує самодисципліни.</string>

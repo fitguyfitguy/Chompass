@@ -175,7 +175,7 @@
     <string name="onboarding_pace_slow">धीमा</string>
     <string name="onboarding_pace_recommended">अनुशंसित</string>
     <string name="onboarding_pace_fast">तेज़</string>
-    <string name="onboarding_pace_reach_prefix">आप अपने लक्ष्य तक पहुँचेंगे </string>
+    <string name="onboarding_pace_reach_prefix">आप अपने लक्ष्य तक पहुँचेंगे\ </string>
     <string name="onboarding_pace_days_format">%1$d दिनों में</string>
     <string name="onboarding_pace_caption_slow">सौम्य और टिकाऊ। दीर्घकालिक आदतों के लिए बढ़िया।</string>
     <string name="onboarding_pace_caption_fast">तीव्र लेकिन संभव। मज़बूत अनुशासन की ज़रूरत है।</string>

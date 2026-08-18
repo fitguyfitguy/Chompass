@@ -35,7 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -318,16 +321,24 @@ internal fun GoalSpeedStep(
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Row {
+                        // Codeberg #30 follow-up (maintainer device pass
+                        // 2026-08-18): the prefix used to be a separate Text
+                        // whose trailing space is not rendered by Compose
+                        // (trailing whitespace at a line end is dropped), so
+                        // German read "in30 Tagen". Render one AnnotatedString
+                        // so the space is mid-sentence and shows in every
+                        // locale.
+                        val reachPrefix = stringResource(R.string.onboarding_pace_reach_prefix)
+                        val reachDays = stringResource(R.string.onboarding_pace_days_format, estimatedDays)
                         Text(
-                            stringResource(R.string.onboarding_pace_reach_prefix),
+                            buildAnnotatedString {
+                                append(reachPrefix)
+                                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = AppColors.Calorie)) {
+                                    append(reachDays)
+                                }
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            stringResource(R.string.onboarding_pace_days_format, estimatedDays),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = AppColors.Calorie
                         )
                     }
                     Spacer(Modifier.height(4.dp))

@@ -171,7 +171,7 @@
     <string name="onboarding_pace_slow">Lento</string>
     <string name="onboarding_pace_recommended">Recomendado</string>
     <string name="onboarding_pace_fast">Rápido</string>
-    <string name="onboarding_pace_reach_prefix">Alcanzarás tu objetivo en </string>
+    <string name="onboarding_pace_reach_prefix">Alcanzarás tu objetivo en\ </string>
     <string name="onboarding_pace_days_format">%1$d días</string>
     <string name="onboarding_pace_caption_slow">Suave y sostenible. Ideal para hábitos a largo plazo.</string>
     <string name="onboarding_pace_caption_fast">Agresivo pero alcanzable. Requiere una fuerte disciplina.</string>

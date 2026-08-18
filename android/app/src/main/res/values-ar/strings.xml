@@ -175,7 +175,7 @@
     <string name="onboarding_pace_slow">بطيء</string>
     <string name="onboarding_pace_recommended">موصى به</string>
     <string name="onboarding_pace_fast">سريع</string>
-    <string name="onboarding_pace_reach_prefix">ستصل إلى هدفك خلال </string>
+    <string name="onboarding_pace_reach_prefix">ستصل إلى هدفك خلال\ </string>
     <string name="onboarding_pace_days_format">%1$d يومًا</string>
     <string name="onboarding_pace_caption_slow">لطيف ومستدام. رائع للعادات طويلة المدى.</string>
     <string name="onboarding_pace_caption_fast">حازم لكنه قابل للتنفيذ. يتطلب انضباطًا قويًا.</string>

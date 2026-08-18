@@ -502,7 +502,7 @@
 
     <string name="onboarding_pace_fast">Schnell</string>
 
-    <string name="onboarding_pace_reach_prefix">Du erreichst dein Ziel in </string>
+    <string name="onboarding_pace_reach_prefix">Du erreichst dein Ziel in\ </string>
 
     <string name="onboarding_pace_days_format">%1$d Tagen</string>
 
