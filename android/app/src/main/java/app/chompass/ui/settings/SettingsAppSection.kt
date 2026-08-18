@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Star
@@ -62,6 +63,15 @@ internal fun SettingsAppSection(
                     },
                     icon = Icons.Outlined.Brightness6
                 ) { onOpenSheet(SettingsSheet.APPEARANCE) }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_language_title),
+                    when (ui.appLanguage) {
+                        "" -> stringResource(R.string.settings_language_system)
+                        else -> ui.appLanguage
+                    },
+                    icon = Icons.Outlined.Language
+                ) { onOpenSheet(SettingsSheet.LANGUAGE) }
                 HorizontalDivider()
                 var themeMenuExpanded by remember { mutableStateOf(false) }
                 Box {

@@ -447,6 +447,8 @@
     <string name="settings_appearance_system">Système</string>
     <string name="settings_appearance_light">Clair</string>
     <string name="settings_appearance_dark">Sombre</string>
+    <string name="settings_language_title">Langue</string>
+    <string name="settings_language_system">Système</string>
     <string name="settings_metric_units">Unités métriques</string>
     <string name="settings_height_unit">Unité de taille</string>
     <string name="settings_weight_unit">Unité de poids</string>
@@ -507,6 +509,9 @@
     <string name="sheet_weight">Poids</string>
     <string name="sheet_birthday">Date de naissance</string>
     <string name="sheet_appearance">Apparence</string>
+
+    <string name="sheet_language">Langue</string>
+
     <string name="sheet_week_starts">La semaine commence le</string>
     <string name="sheet_height">Taille</string>
     <string name="sheet_body_fat_percent">% de graisse corporelle</string>
@@ -625,8 +630,6 @@
     <string name="error_invalid_json">JSON invalide</string>
     <string name="error_unknown">Erreur inconnue</string>
     <string name="error_webdav_sync_failed">Échec de la synchronisation WebDAV</string>
-    <string name="settings_language_title">Langue</string>
-    <string name="settings_language_system">Par défaut du système</string>
     <string name="add_food_quick_relog">Enregistrer à nouveau</string>
     <string name="add_food_quick_relog_empty">Ajoutez un repas aux favoris ou enregistrez-le une fois. Il apparaîtra ici pour une ré-enregistrement en un tap.</string>
     <string name="add_food_quick_relog_hint">Favoris et repas passés. Plus rapide qu\'un nouveau scan.</string>

@@ -92,6 +92,7 @@ internal object Keys {
         val WEIGHT_UNIT = stringPreferencesKey("weightUnit")
         val PREFER_GRAMS_BY_DEFAULT = booleanPreferencesKey("foodMeasurementPreferGramsByDefault")
         val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
+        val APP_LANGUAGE = stringPreferencesKey("appLanguage")
         /** Codeberg #20 (phase 1): View-only coach-tab toggle; default ON. */
         val COACH_TAB_ENABLED = booleanPreferencesKey("coachTabEnabled")
         /** Codeberg #20 (phase 2): master AI-features switch; default ON. When off,

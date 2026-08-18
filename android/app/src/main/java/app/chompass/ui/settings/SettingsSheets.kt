@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Tune
@@ -499,6 +500,31 @@ internal fun SettingsSheets(
                     selected = { it.first == ui.appearanceMode },
                     onSelect = { vm.setAppearanceMode(it.first); onDismiss() },
                     icon = { appearanceIcon(it.first) }
+                )
+                SettingsSheet.LANGUAGE -> ListSheet(
+                    title = stringResource(R.string.sheet_language),
+                    items = listOf(
+                        "" to stringResource(R.string.settings_language_system),
+                        "ar" to "Arabic (العربية)",
+                        "az" to "Azerbaijani (Azərbaycan)",
+                        "de" to "German (Deutsch)",
+                        "es" to "Spanish (Español)",
+                        "fr" to "French (Français)",
+                        "hi" to "Hindi (हिन्दी)",
+                        "it" to "Italian (Italiano)",
+                        "ja" to "Japanese (日本語)",
+                        "ko" to "Korean (한국어)",
+                        "nl" to "Dutch (Nederlands)",
+                        "pt-BR" to "Portuguese (Português)",
+                        "ro" to "Romanian (Română)",
+                        "ru" to "Russian (Русский)",
+                        "uk" to "Ukrainian (Українська)",
+                        "zh-CN" to "Chinese (简体中文)"
+                    ),
+                    label = { it.second },
+                    selected = { it.first == ui.appLanguage },
+                    onSelect = { vm.setAppLanguage(it.first); onDismiss() },
+                    icon = { Icons.Outlined.Language }
                 )
                 SettingsSheet.FOOD_LOG_SORT -> ListSheet(
                     title = stringResource(R.string.settings_food_log_sort),

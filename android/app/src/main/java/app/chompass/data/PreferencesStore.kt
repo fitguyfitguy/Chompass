@@ -166,6 +166,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setPreferGramsByDefault(v: Boolean) = setPreferGramsByDefaultImpl(v)
     val appearanceMode: Flow<String> get() = appearanceModeImpl
     suspend fun setAppearanceMode(v: String) = setAppearanceModeImpl(v)
+    val appLanguage: Flow<String> get() = appLanguageImpl
+    suspend fun setAppLanguage(v: String) = setAppLanguageImpl(v)
     val coachTabEnabled: Flow<Boolean> get() = coachTabEnabledImpl
     suspend fun setCoachTabEnabled(v: Boolean) = setCoachTabEnabledImpl(v)
     /** Codeberg #20 phase 2: master AI-features switch; default ON. */

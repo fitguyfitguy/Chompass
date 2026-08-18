@@ -62,6 +62,10 @@ internal suspend fun PreferencesStore.setPreferGramsByDefaultImpl(v: Boolean) { 
 internal val PreferencesStore.appearanceModeImpl: Flow<String> get() = dataStore.data.map { it[Keys.APPEARANCE_MODE] ?: "system" }
 internal suspend fun PreferencesStore.setAppearanceModeImpl(v: String) { dataStore.edit { it[Keys.APPEARANCE_MODE] = v } }
 
+    /** "" = system default, or locale tag (e.g. "de", "zh-CN"). */
+internal val PreferencesStore.appLanguageImpl: Flow<String> get() = dataStore.data.map { it[Keys.APP_LANGUAGE] ?: "" }
+internal suspend fun PreferencesStore.setAppLanguageImpl(v: String) { dataStore.edit { it[Keys.APP_LANGUAGE] = v } }
+
     /** Codeberg #20 (phase 1): show the coach tab in the bottom bar; default ON. */
 internal val PreferencesStore.coachTabEnabledImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.COACH_TAB_ENABLED] ?: true }
 internal suspend fun PreferencesStore.setCoachTabEnabledImpl(v: Boolean) { dataStore.edit { it[Keys.COACH_TAB_ENABLED] = v } }
