@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,9 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -55,9 +50,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,13 +59,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
 import app.chompass.R
@@ -83,6 +74,8 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.MacroValueFormatter
+import app.chompass.ui.components.SplitDecimalWheelPicker
+import app.chompass.ui.components.UnitWheelPicker
 
 // Shared visual primitives for the food review/edit sheets. Names are
 // `Sheet*`-prefixed so they don't collide with the look-alike privates in
@@ -348,10 +341,6 @@ internal fun ServingQuantityCard(
     } else {
         servingSizeGrams
     }
-    val focusRequester = remember { FocusRequester() }
-    var quantityFieldValue by remember {
-        mutableStateOf(TextFieldValue(quantityText, selection = TextRange(quantityText.length)))
-    }
     // Per-entry custom serving: rename / re-weight the selected unit inline.
     // Available on any unit — including plain grams — so a dish without a
     // heuristic or analyzed unit (homemade curry, a stew, ...) can still get a
@@ -388,30 +377,6 @@ internal fun ServingQuantityCard(
             }
         }
     }
-    // Expressions stay visible while typing (with a live "=" preview); on
-    // focus loss they commit to the resolved number, like +/- deltas do
-    // immediately.
-    val commitQuantity = {
-        if (enabled && quantityText.isNotEmpty()) {
-            val resolved = ServingUnitOption.applyDeltaInput(quantityText, currentQuantityForBase)
-            if (ServingUnitOption.isQuantityExpression(quantityText) && resolved != null && resolved > 0) {
-                val formatted = ServingUnitOption.formatQuantity(resolved)
-                if (formatted != quantityText.trim()) {
-                    quantityFieldValue = TextFieldValue(formatted, selection = TextRange(formatted.length))
-                    onQuantityChange(formatted)
-                }
-            }
-        }
-    }
-
-    LaunchedEffect(quantityText) {
-        if (quantityText != quantityFieldValue.text) {
-            quantityFieldValue = TextFieldValue(
-                text = quantityText,
-                selection = TextRange(quantityText.length)
-            )
-        }
-    }
 
     SheetPillCard {
         Row(
@@ -430,97 +395,42 @@ internal fun ServingQuantityCard(
                     .weight(1f)
                     .clickable { dismissKeyboard() }
             )
-            BasicTextField(
-                value = quantityFieldValue,
-                onValueChange = { newValue ->
-                    if (!enabled) return@BasicTextField
-                    quantityFieldValue = newValue.copy(
-                        selection = TextRange(newValue.text.length)
-                    )
-                    onQuantityChange(newValue.text)
-                },
-                singleLine = true,
-                enabled = enabled,
-                readOnly = !enabled,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.55f),
-                    fontSize = 17.sp,
-                    textAlign = TextAlign.End
-                ),
-                cursorBrush = SolidColor(AppColors.Calorie),
-                modifier = Modifier
-                    .width(80.dp)
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focusState -> if (!focusState.isFocused) commitQuantity() }
-            )
-            if (quantityText.isNotEmpty() && enabled) {
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    Icons.Filled.Cancel,
-                    contentDescription = stringResource(R.string.cd_clear_quantity),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            quantityFieldValue = TextFieldValue("", selection = TextRange.Zero)
-                            onQuantityChange("")
-                            focusRequester.requestFocus()
-                        }
-                )
+            // Wheel picker for quantity — max depends on unit type
+            val maxQuantity = when (selectedOption.normalizedUnit) {
+                "g", "gram", "grams", "mg" -> 2000.0
+                "kg" -> 5.0
+                "ml", "l" -> 2000.0
+                "oz", "fl oz", "fl. oz" -> 64.0
+                "lb", "lbs", "pound" -> 10.0
+                "tbsp" -> 50.0
+                "tsp" -> 100.0
+                "piece", "pieces", "pc", "pcs" -> 20.0
+                "cup", "cups", "c" -> 10.0
+                "serving", "servings" -> 10.0
+                else -> 100.0
             }
+            val currentQty = parsedQuantity ?: 1.0
+            SplitDecimalWheelPicker(
+                value = currentQty.coerceIn(0.1, maxQuantity),
+                onValueChange = { newVal ->
+                    val formatted = ServingUnitOption.formatQuantity(newVal)
+                    onQuantityChange(formatted)
+                },
+                min = 0,
+                max = maxQuantity.toInt(),
+                unit = selectedUnitLabel,
+                modifier = Modifier.width(140.dp)
+            )
             Spacer(Modifier.width(6.dp))
             if (pickerOptions.size > 1) {
-                Box {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable(enabled = enabled && !isLoadingUnits) {
-                                dismissKeyboard()
-                                onMenuExpandedChange(true)
-                            }
-                            .padding(horizontal = 4.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            selectedUnitLabel,
-                            fontSize = 17.sp,
-                            color = AppColors.Calorie,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.widthIn(min = 32.dp, max = 88.dp)
-                        )
-                        Icon(
-                            Icons.Filled.UnfoldMore,
-                            contentDescription = null,
-                            tint = AppColors.Calorie
-                        )
-                    }
-                    SheetGlassDropdownMenu(
-                        expanded = menuExpanded,
-                        onDismissRequest = { onMenuExpandedChange(false) },
-                        menuWidth = 150.dp
-                    ) {
-                        for (option in pickerOptions) {
-                            val optionLabel = option.displayUnit(
-                                if (option.id == selectedUnitId) parsedQuantity else null,
-                                servingLabel,
-                                servingPluralLabel,
-                            )
-                            SheetGlassDropdownMenuItem(
-                                label = optionLabel,
-                                selected = option.id == selectedUnitId,
-                                reserveSelectionSlot = true,
-                                onClick = {
-                                    onSelectedUnitChange(option.id)
-                                    onMenuExpandedChange(false)
-                                }
-                            )
-                        }
-                    }
-                }
+                var unitExpanded by remember { mutableStateOf(false) }
+                UnitWheelPicker(
+                    options = unitOptions,
+                    selectedId = selectedUnitId,
+                    onSelect = { onSelectedUnitChange(it); unitExpanded = false },
+                    expanded = unitExpanded,
+                    onExpandChange = { unitExpanded = it }
+                )
             } else {
                 Text(
                     gramUnit,
@@ -545,40 +455,6 @@ internal fun ServingQuantityCard(
                             editingServing = true
                         }
                 )
-            }
-        }
-
-        if (enabled && !isLoadingUnits && showQuantityCalc) {
-            SheetHairline()
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                for (op in listOf("+", "-", "×", "÷")) {
-                    QuantityOperatorChip(
-                        operator = op,
-                        contentDescription = stringResource(R.string.cd_quantity_operator, op),
-                        enabled = enabled,
-                        onClick = {
-                            val next = quantityFieldValue.text + op
-                            quantityFieldValue = TextFieldValue(next, selection = TextRange(next.length))
-                            onQuantityChange(next)
-                        }
-                    )
-                }
-                val previewResolved = ServingUnitOption.applyDeltaInput(quantityText, currentQuantityForBase)
-                if (ServingUnitOption.isQuantityExpression(quantityText) && previewResolved != null && previewResolved > 0) {
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        "= ${ServingUnitOption.formatQuantity(previewResolved)}",
-                        fontSize = 15.sp,
-                        color = AppColors.Calorie,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
             }
         }
 

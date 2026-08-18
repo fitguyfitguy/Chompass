@@ -63,4 +63,8 @@ object LocaleFormat {
     /** Decimal-mark character for the display locale (e.g. '.' en, ',' de). */
     fun decimalSeparator(): Char =
         DecimalFormatSymbols.getInstance(displayLocale()).decimalSeparator
+
+    /** Whether the display locale uses 24-hour clock (honors Android 24-hour setting). */
+    fun is24Hour(context: android.content.Context): Boolean =
+        android.text.format.DateFormat.is24HourFormat(context)
 }

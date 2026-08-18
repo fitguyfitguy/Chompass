@@ -1452,7 +1452,9 @@
     <string name="settings_tap_to_update">Tap to update</string>
     <string name="settings_calc_methods">Calculation Methods</string>
     <string name="settings_max_tokens">Max response length</string>
+    <string name="settings_max_tokens_unit">tokens</string>
     <string name="settings_ai_read_timeout">AI read timeout</string>
+    <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_serving_unit_mode">Serving size detection</string>
     <string name="settings_serving_unit_heuristics">Serving size rules</string>

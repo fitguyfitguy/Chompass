@@ -1196,6 +1196,7 @@
     <string name="settings_ai_privacy_ollama">Ollama se ejecuta en tu propio ordenador. No se envía nada a un proveedor en la nube.</string>
     <string name="settings_ai_privacy_ondevice">Totalmente privado: el análisis de alimentos, «¿Y si…?» y las estimaciones de objetivos se ejecutan en este dispositivo. No se envía nada a un servidor.</string>
     <string name="settings_ai_read_timeout">Tiempo de espera de lectura de IA</string>
+    <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_ai_reasoning_effort">Esfuerzo de razonamiento</string>
     <string name="settings_ai_reasoning_effort_footer">Controla el presupuesto de pensamiento de los modelos OpenRouter con razonamiento. Automático mantiene el valor predeterminado de la app; más esfuerzo es más lento y cuesta más tokens.</string>
@@ -1299,6 +1300,7 @@
     <string name="settings_macro_unlocked">Desfijado</string>
     <string name="settings_manage_health_access">Gestionar acceso a Health Connect</string>
     <string name="settings_max_tokens">Longitud máxima de respuesta</string>
+
     <string name="settings_meal_constituents">Desglose de ingredientes de la comida</string>
     <string name="settings_meal_constituents_footer">Cuando está activado, la IA puede dividir comidas compuestas en ingredientes editables con gramos y unidades. Funciona mejor con modelos en la nube potentes; desactívalo para modelos más baratos o pequeños si los resultados parecen inconsistentes.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>

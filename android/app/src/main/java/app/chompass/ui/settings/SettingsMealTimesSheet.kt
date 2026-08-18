@@ -18,16 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.models.MealSchedule
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
-import app.chompass.ui.components.WheelPicker
+import app.chompass.ui.components.TimeWheelPicker
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -40,9 +37,7 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
     var schedule by remember(current) { mutableStateOf(current.validatedOrDefault()) }
     var editing by remember { mutableStateOf<MealBoundary?>(null) }
     val context = LocalContext.current
-    val formatter = remember(context) { DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault()) }
-    fun formattedTime(minutes: Int): String =
-        LocalTime.of(minutes / 60, minutes % 60).format(formatter)
+    val is24Hour = LocaleFormat.is24Hour(context)
 
     val selectedBoundary = editing
     if (selectedBoundary == null) {
@@ -67,7 +62,7 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
                 MealBoundary.entries.forEachIndexed { index, boundary ->
                     SettingRow(
                         label = stringResource(boundary.labelRes()),
-                        value = formattedTime(boundary.valueIn(schedule)),
+                        value = formatTime(boundary.valueIn(schedule), is24Hour),
                     ) { editing = boundary }
                     if (index != MealBoundary.entries.lastIndex) HorizontalDivider()
                 }
@@ -93,12 +88,6 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
         var selectedMinutes by remember(selectedBoundary, schedule) {
             mutableIntStateOf(selectedBoundary.valueIn(schedule))
         }
-        val options = remember(allowed, selectedMinutes) {
-            ((allowed.first..allowed.last step 15).toList() + selectedMinutes)
-                .filter { it in allowed }
-                .distinct()
-                .sorted()
-        }
         val label = stringResource(selectedBoundary.labelRes())
         Text(
             stringResource(R.string.settings_meal_time_edit_format, label),
@@ -106,11 +95,10 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
             fontWeight = FontWeight.Bold,
         )
         Spacer(Modifier.height(16.dp))
-        WheelPicker(
-            items = options,
-            selected = selectedMinutes,
-            onSelect = { selectedMinutes = it },
-            label = { formattedTime(it) },
+        TimeWheelPicker(
+            minutes = selectedMinutes,
+            onChange = { selectedMinutes = it },
+            is24Hour = is24Hour,
         )
         Spacer(Modifier.height(16.dp))
         GradientSaveButton {
@@ -125,6 +113,12 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
         )
         Spacer(Modifier.height(8.dp))
     }
+}
+
+private fun formatTime(minutes: Int, is24Hour: Boolean): String {
+    val time = java.time.LocalTime.of(minutes / 60, minutes % 60)
+    val pattern = if (is24Hour) "HH:mm" else "h:mm a"
+    return time.format(java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.getDefault()))
 }
 
 private fun MealBoundary.labelRes(): Int = when (this) {
