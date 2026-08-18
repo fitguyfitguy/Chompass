@@ -189,8 +189,6 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setMealSchedule(schedule: app.chompass.models.MealSchedule) = setMealScheduleImpl(schedule)
     val lastSavedMealsSegment: Flow<String> get() = lastSavedMealsSegmentImpl
     suspend fun setLastSavedMealsSegment(v: String) = setLastSavedMealsSegmentImpl(v)
-    val lastAddFoodTool: Flow<String> get() = lastAddFoodToolImpl
-    suspend fun setLastAddFoodTool(v: String) = setLastAddFoodToolImpl(v)
     val foodLogSortOrder: Flow<String> get() = foodLogSortOrderImpl
     suspend fun setFoodLogSortOrder(v: String) = setFoodLogSortOrderImpl(v)
     val homeTopNutrients: Flow<String> get() = homeTopNutrientsImpl

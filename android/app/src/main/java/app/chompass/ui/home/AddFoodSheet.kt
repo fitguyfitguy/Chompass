@@ -104,7 +104,7 @@ fun AddFoodSheet(
     ChompassBottomSheet(onDismiss = onDismiss) {
         AddFoodSheetContent(
             onPhoto = { onDismiss(); onPhoto() },
-            onNote = { onNote(); onDismiss() },
+            onNote = { onDismiss(); onNote() },
             onSavedRecents = { onDismiss(); onSavedRecents() },
             onVoice = { onDismiss(); onVoice() },
             onBarcode = { onDismiss(); onBarcode() },
