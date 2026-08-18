@@ -1,17 +1,18 @@
 package app.chompass.ui.components
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import app.chompass.services.FoodImageStore
-import app.chompass.services.withExifOrientation
+import app.chompass.services.decodeSampledBitmap
 
 /**
  * Decodes in-memory image bytes off the composition thread. Keyed on the array
- * identity, so a re-analysis of the same photo does not re-decode.
+ * identity, so a re-analysis of the same photo does not re-decode. Bounds-samples
+ * to the stored-image cap (see [decodeSampledBitmap]), so a 48 MP share-in photo
+ * never materializes as a ~192 MB bitmap for a 96–220 dp preview.
  */
 @Composable
 fun rememberDecodedBitmap(bytes: ByteArray?): Bitmap? {
@@ -20,7 +21,7 @@ fun rememberDecodedBitmap(bytes: ByteArray?): Bitmap? {
             null
         } else {
             withContext(Dispatchers.Default) {
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.withExifOrientation(bytes)
+                decodeSampledBitmap(bytes)
             }
         }
     }

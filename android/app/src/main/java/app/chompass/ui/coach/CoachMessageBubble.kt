@@ -1,7 +1,6 @@
 package app.chompass.ui.coach
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -65,6 +64,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ChatMessage
+import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
 
@@ -287,7 +287,7 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
                 val bitmap = rememberDecodedBitmap(encoded) {
                     runCatching {
                         val bytes = Base64.getDecoder().decode(encoded)
-                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        decodeSampledBitmap(bytes)
                     }.getOrNull()
                 }
                 if (bitmap != null) {
