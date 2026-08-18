@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -353,6 +354,15 @@ fun FoodResultSheet(
         else -> stringResource(R.string.action_log)
     }
 
+    // Codeberg #30: block top-edge drag dismissal only while the user is
+    // editing typed input: focus, or name/tip-note content that differs from
+    // the analysis. Read-only scrolls keep #14's drag-from-content dismissal.
+    // The maintainer device pass decides whether this gate stays or becomes
+    // a permanent flip.
+    var inputFocused by remember { mutableStateOf(false) }
+    val typedContentChanged = name.trim() != effectiveAnalysis.name.trim() ||
+        tipNote.isNotBlank()
+
     ChompassBottomSheet(
         onDismiss = { if (!isSaving) onDismiss() },
         sheetState = state,
@@ -421,11 +431,13 @@ fun FoodResultSheet(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .padding(horizontal = 20.dp)
+                        .onFocusChanged { inputFocused = it.isFocused },
                     // Codeberg #14: block bottom-edge overscroll vs sheet
-                    // drag-to-dismiss (the layer-3 shake); keep dismissal
-                    // from content at the top edge (blockTopEdge = false).
-                    blockTopEdge = false,
+                    // drag-to-dismiss (the layer-3 shake); the top edge is
+                    // gated (Codeberg #30): blocked while editing, else
+                    // drag-from-content dismissal stays.
+                    blockTopEdge = inputFocused || typedContentChanged,
                     verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
             // Status strip while AI runs — also announces when editing unlocks.

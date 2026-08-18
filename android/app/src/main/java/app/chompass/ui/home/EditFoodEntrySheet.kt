@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import app.chompass.ui.util.clockTimePattern
 import androidx.compose.ui.platform.LocalFocusManager
@@ -117,11 +118,10 @@ fun EditFoodEntrySheet(
     val state = rememberChompassSheetState(busy = isReprocessing)
     var errorText by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
-    // Long list: block overscroll at the BOTTOM edge only, so the bottom
-    // edge does not fight the sheet's drag-to-dismiss (oscillation shows as
-    // a shake when scrolled to the bottom). The top edge keeps
-    // drag-from-content dismissal: downward drags on the list still follow
-    // the finger, so dismissal does not depend on the handle/scrim.
+    // Long list: block overscroll at the BOTTOM edge always (the bottom edge
+    // must not fight the sheet's drag-to-dismiss, visible as a shake when
+    // scrolled to the bottom). The top edge is gated (Codeberg #30): blocked
+    // while typing, else drag-from-content dismissal stays (Codeberg #14).
     val listState = rememberLazyListState()
 
     val recordedServing = currentBaseEntry.servingSizeGrams
@@ -313,6 +313,15 @@ fun EditFoodEntrySheet(
         }
     }
 
+    // Codeberg #30: block top-edge drag dismissal only while the user is
+    // editing typed input. Focus covers active typing; the content diff
+    // covers typed-but-blurred fields (name/note). Read-only scrolls keep
+    // #14's drag-from-content dismissal. The maintainer device pass decides
+    // whether this gate stays or becomes a permanent flip.
+    var inputFocused by remember { mutableStateOf(false) }
+    val typedContentChanged = name.trim() != currentBaseEntry.name.trim() ||
+        noteText != (currentBaseEntry.customNote ?: "")
+
     ChompassBottomSheet(
         onDismiss = { if (!isReprocessing) onDismiss() },
         sheetState = state,
@@ -346,8 +355,9 @@ fun EditFoodEntrySheet(
                         listState = listState,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
-                        blockTopEdge = false,
+                            .padding(horizontal = 20.dp)
+                            .onFocusChanged { inputFocused = it.isFocused },
+                        blockTopEdge = inputFocused || typedContentChanged,
                         verticalArrangement = Arrangement.spacedBy(18.dp)
                     ) {
             // Compact hero so name / serving / macros fit the first viewport.
