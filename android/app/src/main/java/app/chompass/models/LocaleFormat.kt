@@ -2,6 +2,8 @@ package app.chompass.models
 
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.FormatStyle
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
@@ -14,9 +16,15 @@ import java.util.Locale
 object LocaleFormat {
     fun displayLocale(): Locale = Locale.getDefault()
 
+    /**
+     * Locale-natural medium date (e.g. "Aug 18, 2026" en-US, "18.08.2026" de) —
+     * parity with the PWA's `Intl.DateTimeFormat` `dateStyle: "medium"` (UI audit
+     * 2.6: word order deliberately follows the locale, see docs/LOCALIZATION.md).
+     */
     fun mediumDate(): DateTimeFormatter =
-        DateTimeFormatter.ofPattern("MMM d, yyyy", displayLocale())
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(displayLocale())
 
+    /** Month-name short date ("Aug 18") — kept month-based for chart axes and day rows. */
     fun shortDate(): DateTimeFormatter =
         DateTimeFormatter.ofPattern("MMM d", displayLocale())
 
@@ -29,10 +37,13 @@ object LocaleFormat {
     fun shortDateZoned(zone: ZoneId = ZoneId.systemDefault()): DateTimeFormatter =
         shortDate().withZone(zone)
 
-    /** Medium date + local clock time (e.g. "Aug 18, 2026 · 9:03 AM"). */
+    /** Medium date + local clock time (e.g. "Aug 18, 2026 · 4:32 PM" en-US, "18.08.2026 · 16:32" de). */
     fun mediumDateTimeZoned(zone: ZoneId = ZoneId.systemDefault()): DateTimeFormatter =
-        DateTimeFormatter
-            .ofPattern("MMM d, yyyy · h:mm a", displayLocale())
+        DateTimeFormatterBuilder()
+            .append(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+            .appendLiteral(" · ")
+            .append(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+            .toFormatter(displayLocale())
             .withZone(zone)
 
     fun monthOrDayZoned(showsYear: Boolean, zone: ZoneId = ZoneId.systemDefault()): DateTimeFormatter =

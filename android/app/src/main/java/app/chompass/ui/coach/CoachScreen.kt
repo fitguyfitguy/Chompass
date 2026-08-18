@@ -61,12 +61,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.io.ByteArrayOutputStream
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.models.LocaleFormat
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.InAppCameraCaptureDialog
+import app.chompass.ui.components.gramsText
+import app.chompass.ui.components.kcalText
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import kotlin.math.roundToInt
 
@@ -284,8 +285,14 @@ fun CoachScreen(container: AppContainer) {
         FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_food_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                "${entry.name}: ${LocaleFormat.integer(entry.calories)} kcal (${LocaleFormat.integer(entry.protein.roundToInt())}g protein, " +
-                    "${LocaleFormat.integer(entry.carbs.roundToInt())}g carbs, ${LocaleFormat.integer(entry.fat.roundToInt())}g fat)",
+                stringResource(
+                    R.string.coach_confirm_log_food_summary,
+                    entry.name,
+                    kcalText(entry.calories),
+                    gramsText(entry.protein),
+                    gramsText(entry.carbs),
+                    gramsText(entry.fat),
+                ),
                 style = MaterialTheme.typography.bodyMedium
             )
             FudGlassDialogActions(
@@ -300,7 +307,7 @@ fun CoachScreen(container: AppContainer) {
     ui.pendingWeight?.let { entry ->
         FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_weight_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Text("${LocaleFormat.decimal(entry.weightKg, 1)} kg", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.kg_value_format, entry.weightKg), style = MaterialTheme.typography.bodyMedium)
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_log),
                 onPrimary = { vm.confirmPendingWeight() },
@@ -313,7 +320,14 @@ fun CoachScreen(container: AppContainer) {
     ui.pendingWater?.let { entry ->
         FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_water_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Text("${entry.milliliters} ml", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(
+                    R.string.value_unit_format,
+                    entry.milliliters,
+                    stringResource(R.string.unit_ml),
+                ),
+                style = MaterialTheme.typography.bodyMedium
+            )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_log),
                 onPrimary = { vm.confirmPendingWater() },
