@@ -28,6 +28,12 @@ object LocaleFormat {
     fun shortDateZoned(zone: ZoneId = ZoneId.systemDefault()): DateTimeFormatter =
         shortDate().withZone(zone)
 
+    /** Medium date + local clock time (e.g. "Aug 18, 2026 · 9:03 AM"). */
+    fun mediumDateTimeZoned(zone: ZoneId = ZoneId.systemDefault()): DateTimeFormatter =
+        DateTimeFormatter
+            .ofPattern("MMM d, yyyy · h:mm a", displayLocale())
+            .withZone(zone)
+
     fun monthOrDayZoned(showsYear: Boolean, zone: ZoneId = ZoneId.systemDefault()): DateTimeFormatter =
         DateTimeFormatter
             .ofPattern(if (showsYear) "MMM yyyy" else "MMM d", displayLocale())

@@ -454,6 +454,20 @@ export class DiaryView extends HTMLElement {
     const waterGoal = appPrefs.waterGoalMl ?? 2000;
     const waterPct = waterGoal > 0 ? Math.min(100, (waterMl / waterGoal) * 100) : 0;
     const showWater = appPrefs.showWater === true;
+    // #38 (Android parity): in ADD_ACTIVE the ring target can sit above the
+    // stored base (manual kcal stacked on the estimate); scale the macro
+    // goals to the ring so cards and gauge never disagree. Typical days
+    // (estimate only) scale to exactly 1; keto targets stay fixed.
+    let macroTargets = targets;
+    if (targets && !prof?.ketoMode && calorieTarget > targets.calories) {
+      const s = calorieTarget / targets.calories;
+      macroTargets = {
+        ...targets,
+        proteinG: Math.round(targets.proteinG * s),
+        carbsG: Math.round(targets.carbsG * s),
+        fatG: Math.round(targets.fatG * s),
+      };
+    }
     const tubeKeys = normalizeHomeTopNutrients(appPrefs.homeTopNutrients, appPrefs.homeNutrientCardCount);
     const chipKeys = normalizeFoodLogChips(appPrefs.foodLogMacroChips);
     const optionalGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
@@ -480,13 +494,13 @@ export class DiaryView extends HTMLElement {
     const nextDisabled = this.date >= today ? "disabled" : "";
     const macrosMobile = targets
       ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
-          ${renderMacros(tubeKeys, entries, targets, optionalGoals, "tube")}
+          ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "tube")}
         </div>
         <button type="button" class="home-hero__more" data-nutrition-detail>${t("diary.view_more")} ›</button>`
       : "";
     const macrosDesktop = targets
       ? `<div class="macro-rows macro-rows--${tubeKeys.length}">
-          ${renderMacros(tubeKeys, entries, targets, optionalGoals, "row")}
+          ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "row")}
         </div>`
       : "";
     const gaugeInfoLabel = t("diary.calorie_budget_info");
@@ -606,7 +620,7 @@ export class DiaryView extends HTMLElement {
 
     this._gaugeInfo = gaugeInfo;
     this._gaugeGoal = calorieTarget;
-    this.bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs);
+    this.bindInteractions(entries, appPrefs, macroTargets, optionalGoals, waterLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
     this.afterHomeRender(appPrefs);

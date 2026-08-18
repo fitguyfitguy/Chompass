@@ -605,7 +605,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.prefs.setSelectedFallbackProvider(p)
             // Reset model to provider default if old model isn't in the new provider's list.
             val current = _ui.value.fallbackModel
-            val newModel = p.supportedFallbackModelOrDefault(current)
+            val newModel = if (p == AIProvider.ON_DEVICE) {
+                // On-device fallback defaults to the catalog's canonical model
+                // (mirrors the primary picker's defaultModel).
+                ModelCatalog.default.modelId
+            } else {
+                p.supportedFallbackModelOrDefault(current)
+            }
             container.prefs.setSelectedFallbackModel(newModel)
             val masked = maskKey(container.keyStore.fallbackApiKey(p))
             _ui.value = _ui.value.copy(fallbackProvider = p, fallbackModel = newModel, fallbackApiKeyMasked = masked)

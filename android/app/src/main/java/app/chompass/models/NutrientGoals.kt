@@ -3,6 +3,7 @@ package app.chompass.models
 import app.chompass.R
 
 import kotlinx.serialization.Serializable
+import kotlin.math.roundToInt
 
 enum class HomeTopNutrient(
     val storageKey: String,
@@ -61,10 +62,15 @@ enum class HomeTopNutrient(
         OMEGA3 -> entries.sumOf { it.omega3 ?: 0.0 }
     }
 
-    fun goal(profile: UserProfile?, optionalGoals: OptionalNutrientGoals): Int = when (this) {
-        PROTEIN -> profile?.effectiveProtein ?: 150
-        CARBS -> profile?.effectiveCarbs ?: 220
-        FAT -> profile?.effectiveFat ?: 70
+    /**
+     * P/C/F goals scale with the hero ring's projected day when ADD_ACTIVE
+     * pushes the displayed calorie target above the stored base (#38); the
+     * optional micronutrient goals are fixed daily targets and never scale.
+     */
+    fun goal(profile: UserProfile?, optionalGoals: OptionalNutrientGoals, macroScale: Float = 1f): Int = when (this) {
+        PROTEIN -> scaleMacro(profile?.effectiveProtein ?: 150, macroScale)
+        CARBS -> scaleMacro(profile?.effectiveCarbs ?: 220, macroScale)
+        FAT -> scaleMacro(profile?.effectiveFat ?: 70, macroScale)
         FIBER -> optionalGoals.fiber
         SUGAR -> optionalGoals.sugar
         ADDED_SUGAR -> optionalGoals.addedSugar
@@ -86,6 +92,9 @@ enum class HomeTopNutrient(
         FOLATE -> optionalGoals.folate
         OMEGA3 -> optionalGoals.omega3
     }
+
+    private fun scaleMacro(grams: Int, scale: Float): Int =
+        if (scale > 1f && grams > 0) (grams * scale).roundToInt() else grams
 
     companion object {
         val DefaultSelection = listOf(PROTEIN, CARBS, FAT, FIBER)

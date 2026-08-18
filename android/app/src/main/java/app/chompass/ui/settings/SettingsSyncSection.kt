@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
+import app.chompass.models.LocaleFormat
+import java.time.Instant
 
 @Composable
 internal fun SettingsSyncSection(
@@ -160,7 +162,12 @@ internal fun SettingsSyncSection(
                     fontWeight = FontWeight.Medium,
                 )
                 val subtitle = syncStatus
-                    ?: lastSyncAt?.let { stringResource(R.string.settings_last_sync, it) }
+                    ?: lastSyncAt?.let { raw ->
+                        val formatted = runCatching {
+                            LocaleFormat.mediumDateTimeZoned().format(Instant.parse(raw))
+                        }.getOrNull() ?: raw
+                        stringResource(R.string.settings_last_sync, formatted)
+                    }
                     ?: stringResource(R.string.settings_not_synced)
                 Text(
                     subtitle,
