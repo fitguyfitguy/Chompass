@@ -108,7 +108,6 @@ fun FudIconBubble(
     iconSize: Dp = 19.dp,
     tint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val plainIconSize = if (iconSize < size * 0.88f) size * 0.88f else iconSize
     Box(
         modifier = modifier.size(size),
         contentAlignment = Alignment.Center,
@@ -117,7 +116,7 @@ fun FudIconBubble(
             icon,
             contentDescription = null,
             tint = tint,
-            modifier = Modifier.size(plainIconSize),
+            modifier = Modifier.size(iconSize),
         )
     }
 }

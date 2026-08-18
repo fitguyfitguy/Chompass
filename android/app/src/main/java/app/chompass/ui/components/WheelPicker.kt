@@ -85,6 +85,21 @@ fun <T> WheelPicker(
             }
     }
 
+    // Follow externally-changed selection (e.g. Reset to Auto-balance in the
+    // goals picker): the list state is pinned to the first composition's index,
+    // so a programmatic change would otherwise leave the wheel on a stale row.
+    // Skipped while the user is dragging — the gesture wins, and the scroll
+    // collector above re-syncs the parent state when it settles.
+    LaunchedEffect(selected, items) {
+        val targetIndex = items.indexOf(selected)
+        if (targetIndex >= 0 &&
+            listState.firstVisibleItemIndex != targetIndex &&
+            !listState.isScrollInProgress
+        ) {
+            listState.scrollToItem(targetIndex)
+        }
+    }
+
     Box(
         modifier = modifier.height(ROW_HEIGHT),
         contentAlignment = Alignment.Center

@@ -3,8 +3,9 @@ package app.chompass.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +56,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -355,12 +355,15 @@ private fun AddFoodRelogChip(
             .clip(shape)
             .background(fill)
             .border(0.5.dp, border, shape)
-            .pointerInput(entry.id.toString()) {
-                detectTapGestures(
-                    onTap = { onRelog() },
-                    onLongPress = { onReview() },
-                )
-            }
+            .combinedClickable(
+                // No ripple (the chip is a tinted surface, not a button) but
+                // click + long-press semantics so TalkBack can activate and
+                // discover the review action.
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onRelog,
+                onLongClick = onReview,
+            )
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),

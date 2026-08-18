@@ -11,7 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -53,20 +56,24 @@ fun ActivityRing(
     centerContent: @Composable () -> Unit = {}
 ) {
     val animated = remember { Animatable(0f) }
-
-    // .onAppear { withAnimation(.spring(response: 1.2, dampingFraction: 0.75).delay(0.15)) }
-    LaunchedEffect(Unit) {
-        delay(150)
-        animated.animateTo(
-            targetValue = progress.coerceIn(0f, 1.5f),
-            animationSpec = spring(dampingRatio = 0.75f, stiffness = 30f) // response 1.2 ≈ stiffness 30
-        )
-    }
-    // .onChange(of: progress) { withAnimation(.spring(response: 0.6, dampingFraction: 0.85)) }
+    // First run mirrors .onAppear { withAnimation(.spring(response: 1.2,
+    // dampingFraction: 0.75).delay(0.15)) }; later changes use the faster
+    // .onChange spec. Folding both into one effect removes the redundant
+    // first-frame double animation (two animators racing to the same value).
+    var appeared by remember { mutableStateOf(false) }
     LaunchedEffect(progress) {
+        val firstRun = !appeared
+        if (firstRun) {
+            appeared = true
+            delay(150)
+        }
         animated.animateTo(
             targetValue = progress.coerceIn(0f, 1.5f),
-            animationSpec = spring(dampingRatio = 0.85f, stiffness = 110f) // response 0.6 ≈ stiffness 110
+            animationSpec = if (firstRun) {
+                spring(dampingRatio = 0.75f, stiffness = 30f) // response 1.2 ≈ stiffness 30
+            } else {
+                spring(dampingRatio = 0.85f, stiffness = 110f) // response 0.6 ≈ stiffness 110
+            }
         )
     }
 

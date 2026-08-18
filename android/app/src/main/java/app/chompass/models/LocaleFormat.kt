@@ -44,4 +44,7 @@ object LocaleFormat {
 
     fun integer(value: Int): String =
         String.format(displayLocale(), "%,d", value)
+
+    fun integer(value: Long): String =
+        String.format(displayLocale(), "%,d", value)
 }

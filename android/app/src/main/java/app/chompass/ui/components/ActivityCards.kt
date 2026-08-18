@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.ui.theme.AppColors
-import java.text.NumberFormat
 
 @Composable
 fun StepsCard(
@@ -59,13 +59,13 @@ fun StepsCard(
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            text = NumberFormat.getIntegerInstance().format(steps),
+            text = LocaleFormat.integer(steps),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = accentColor
         )
         Text(
-            text = stringResource(R.string.home_steps_goal_format, NumberFormat.getIntegerInstance().format(goal)),
+            text = stringResource(R.string.home_steps_goal_format, LocaleFormat.integer(goal)),
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
@@ -92,7 +92,7 @@ fun ActiveCaloriesCard(
             modifier = Modifier.size(16.dp)
         )
         Text(
-            NumberFormat.getIntegerInstance().format(activeCalories),
+            LocaleFormat.integer(activeCalories),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = accentColor,
