@@ -29,7 +29,7 @@ class ReprocessDiffTest {
             protein = 34.0,
             servingSizeGrams = 400.0,
         )
-        val rows = buildReprocessDiff(before, after)
+        val rows = buildReprocessDiff(before, after, kcalUnit = "kcal", gUnit = "g")
         assertEquals(4, rows.size)
         assertTrue(rows.any { it.label == "Name" && it.after == "Pepperoni pizza" })
         assertTrue(rows.any { it.label == "Calories" })
@@ -50,7 +50,7 @@ class ReprocessDiffTest {
             mealType = MealType.SNACK,
             servingSizeGrams = 180.0,
         )
-        assertTrue(buildReprocessDiff(entry, entry).isEmpty())
+        assertTrue(buildReprocessDiff(entry, entry, kcalUnit = "kcal", gUnit = "g").isEmpty())
     }
 
     // Codeberg #20 phase 2: with the master AI switch off, a note edit must
