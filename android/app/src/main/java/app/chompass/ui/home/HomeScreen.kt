@@ -107,9 +107,6 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
     // and the What-if row, and ignores the camera/voice launcher shortcuts.
     val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
-    // Codeberg #30: last add-food destination tile ("" = the grid). "+"
-    // restores it directly; backing out of the destination returns to the grid.
-    val lastAddFoodTool by container.prefs.lastAddFoodTool.collectAsState(initial = "")
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -139,11 +136,12 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
     var showNutritionDetail by rememberSaveable { mutableStateOf(false) }
-    // Codeberg #30: add-food flow. Tapping a tile (or the "+" FAB restoring
-    // the last tool) marks the flow active; backing out of a flow-launched
-    // destination reopens the grid instead of closing the whole flow.
-    // Shortcut/share/gallery-launched sheets never enter the flow, so their
-    // dismissals close normally.
+    // Codeberg #30: add-food flow. Tapping a tile (or the "+" FAB) marks the
+    // flow active; backing out of a flow-launched destination reopens the grid
+    // instead of closing the whole flow. Shortcut/share/gallery-launched sheets
+    // never enter the flow, so their dismissals close normally. (A "+" that
+    // restores the last tool was tried and removed on the maintainer device
+    // pass 2026-08-18 — "+" always opens the grid.)
     var addFoodFlowActive by rememberSaveable { mutableStateOf(false) }
 
     var showCameraCapture by rememberSaveable { mutableStateOf(false) }
@@ -326,30 +324,10 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val foodRemovedMessage = stringResource(R.string.home_food_removed)
     val undoLabel = stringResource(R.string.action_undo)
 
-    // Codeberg #30: add-food flow helpers. launchAddFoodTool persists the
-    // tool id so the next "+" skips the grid (photo excluded — reopening it
-    // would re-prompt the camera permission), then opens the destination.
-    fun launchAddFoodTool(tool: AddFoodTool) {
-        if (tool.persists) {
-            scope.launch { container.prefs.setLastAddFoodTool(tool.storageId) }
-        }
-        addFoodFlowActive = true
-        when (tool) {
-            AddFoodTool.PHOTO -> openCamera()
-            AddFoodTool.NOTE -> showText = true
-            AddFoodTool.SAVED_RECENTS -> savedMealsTab = SavedTab.RECENTS
-            AddFoodTool.VOICE -> showVoiceLocal = true
-            AddFoodTool.BARCODE -> openBarcodeScanner()
-            AddFoodTool.MANUAL -> showManual = true
-            AddFoodTool.COPY_FROM_DAY -> showCopyFromDay = true
-            AddFoodTool.SEARCH -> showFoodSearch = true
-            AddFoodTool.MANUAL_ACTIVE -> showManualActive = true
-            AddFoodTool.GROUNDED -> if (GroundedEntryFeature.ENABLED) showGroundedEntry = true
-        }
-    }
-
-    /** Back from a flow-launched destination: reopen the grid. No-op when the
-     *  destination came from outside the flow (shortcut, share, gallery). */
+    // Codeberg #30: add-food flow helper. Backing out of a flow-launched
+    // destination reopens the grid instead of closing the whole flow. No-op
+    // when the destination came from outside the flow (shortcut, share,
+    // gallery).
     fun returnToAddFoodGrid() {
         if (addFoodFlowActive) showAddFoodSheet = true
     }
@@ -622,16 +600,11 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onClick = {
                 // Warm the hub recents while the sheet animates open.
                 vm.prefetchQuickRelog()
-                // Codeberg #30: "+" reopens the last add-food tool directly
-                // (grid skipped). Unavailable or never-used tools fall back to
-                // the grid; backing out of the destination returns here.
-                val restore = resolveAddFoodRestoreTool(lastAddFoodTool, aiFeaturesEnabled)
-                if (restore != null) {
-                    launchAddFoodTool(restore)
-                } else {
-                    addFoodFlowActive = true
-                    showAddFoodSheet = true
-                }
+                // Codeberg #30: "+" always opens the grid (a last-tool restore
+                // was tried and removed on the maintainer device pass
+                // 2026-08-18); backing out of a destination returns here.
+                addFoodFlowActive = true
+                showAddFoodSheet = true
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -754,16 +727,48 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
             recentMeals = hubRecentMeals,
-            onPhoto = { launchAddFoodTool(AddFoodTool.PHOTO) },
-            onNote = { launchAddFoodTool(AddFoodTool.NOTE) },
-            onSavedRecents = { launchAddFoodTool(AddFoodTool.SAVED_RECENTS) },
-            onVoice = { launchAddFoodTool(AddFoodTool.VOICE) },
-            onBarcode = { launchAddFoodTool(AddFoodTool.BARCODE) },
-            onManual = { launchAddFoodTool(AddFoodTool.MANUAL) },
-            onCopyFromDay = { launchAddFoodTool(AddFoodTool.COPY_FROM_DAY) },
-            onManualActive = { launchAddFoodTool(AddFoodTool.MANUAL_ACTIVE) },
-            onGrounded = { launchAddFoodTool(AddFoodTool.GROUNDED) },
-            onSearch = { launchAddFoodTool(AddFoodTool.SEARCH) },
+            onPhoto = {
+                addFoodFlowActive = true
+                openCamera()
+            },
+            onNote = {
+                addFoodFlowActive = true
+                showText = true
+            },
+            onSavedRecents = {
+                addFoodFlowActive = true
+                savedMealsTab = SavedTab.RECENTS
+            },
+            onVoice = {
+                addFoodFlowActive = true
+                showVoiceLocal = true
+            },
+            onBarcode = {
+                addFoodFlowActive = true
+                openBarcodeScanner()
+            },
+            onManual = {
+                addFoodFlowActive = true
+                showManual = true
+            },
+            onCopyFromDay = {
+                addFoodFlowActive = true
+                showCopyFromDay = true
+            },
+            onManualActive = {
+                addFoodFlowActive = true
+                showManualActive = true
+            },
+            onGrounded = {
+                if (GroundedEntryFeature.ENABLED) {
+                    addFoodFlowActive = true
+                    showGroundedEntry = true
+                }
+            },
+            onSearch = {
+                addFoodFlowActive = true
+                showFoodSearch = true
+            },
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
             onRelogRecent = { vm.relogMeal(it) },
@@ -1394,67 +1399,4 @@ private fun Context.findComponentActivity(): ComponentActivity? {
         current = current.baseContext
     }
     return current as? ComponentActivity
-}
-
-/**
- * Codeberg #30: add-food destinations. Tapping a tile (or the "+" FAB
- * restoring the last tool) opens the destination; the id persists in
- * PreferencesStore so the next "+" skips the grid. Water quick actions are
- * not destinations and never persist.
- */
-enum class AddFoodTool(val storageId: String) {
-    PHOTO("photo"),
-    NOTE("note"),
-    SAVED_RECENTS("savedRecents"),
-    VOICE("voice"),
-    BARCODE("barcode"),
-    MANUAL("manual"),
-    COPY_FROM_DAY("copyFromDay"),
-    SEARCH("search"),
-    MANUAL_ACTIVE("manualActive"),
-    GROUNDED("grounded"),
-    ;
-
-    /**
-     * Destinations that remember their selection. Photo is excluded: reopening
-     * it would re-prompt the camera permission. Water quick actions are not
-     * tools and never reach this enum.
-     */
-    val persists: Boolean
-        get() = this != PHOTO
-
-    companion object {
-        fun fromStorageId(id: String): AddFoodTool? =
-            entries.firstOrNull { it.storageId == id }
-    }
-}
-
-/**
- * Whether the tool can be restored on "+": AI-off hides photo/note/voice and
- * grounded stays behind its feature gate. Mirrors the AddFoodSheet tile
- * visibility rules.
- */
-internal fun AddFoodTool.isAvailable(
-    aiFeaturesEnabled: Boolean,
-    groundedEnabled: Boolean = GroundedEntryFeature.ENABLED,
-): Boolean = when (this) {
-    AddFoodTool.PHOTO, AddFoodTool.NOTE, AddFoodTool.VOICE -> aiFeaturesEnabled
-    AddFoodTool.GROUNDED -> groundedEnabled
-    else -> true
-}
-
-/**
- * Codeberg #30: restore decision for the "+" FAB. Returns null (grid) when
- * nothing was persisted, the stored id is unknown, or the tool is currently
- * unavailable (e.g. AI-off hides photo/note/voice) — the same runCatching
- * fallback style as SavedMealsSheet's segment restore.
- */
-internal fun resolveAddFoodRestoreTool(
-    stored: String?,
-    aiFeaturesEnabled: Boolean,
-    groundedEnabled: Boolean = GroundedEntryFeature.ENABLED,
-): AddFoodTool? {
-    if (stored.isNullOrBlank()) return null
-    return AddFoodTool.fromStorageId(stored)
-        ?.takeIf { it.isAvailable(aiFeaturesEnabled, groundedEnabled) }
 }

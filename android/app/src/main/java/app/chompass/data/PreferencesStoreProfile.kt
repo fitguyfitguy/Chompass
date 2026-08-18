@@ -109,10 +109,6 @@ internal suspend fun PreferencesStore.setProgressMeasurementSitesImpl(sites: Set
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }
 
-    /** Codeberg #30: last add-food destination tile; "" = the tool grid. */
-internal val PreferencesStore.lastAddFoodToolImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_ADD_FOOD_TOOL] ?: "" }
-internal suspend fun PreferencesStore.setLastAddFoodToolImpl(v: String) { dataStore.edit { it[Keys.LAST_ADD_FOOD_TOOL] = v } }
-
     /** "standard" | "latestMealsFirst". Mirrors iOS @AppStorage("foodLogSortOrder"). */
 internal val PreferencesStore.foodLogSortOrderImpl: Flow<String> get() = dataStore.data.map { it[Keys.FOOD_LOG_SORT_ORDER] ?: "standard" }
 internal suspend fun PreferencesStore.setFoodLogSortOrderImpl(v: String) { dataStore.edit { it[Keys.FOOD_LOG_SORT_ORDER] = v } }
