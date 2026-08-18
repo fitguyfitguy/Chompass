@@ -37,6 +37,11 @@ Chompass has **two parent languages** with distinct roles (see
 - Source of truth: [`android/app/src/main/res/values/strings.xml`](../android/app/src/main/res/values/strings.xml)
 - Translations live in `values-<qual>/strings.xml` matching `androidValues` in the locale fixture
 - User-facing dates/numbers use the app locale; export/protocol formats stay `Locale.US`
+- Date **word order** follows the locale (deliberate, UI-audit 2.6): Android
+  `LocaleFormat.mediumDate()` uses `ofLocalizedDate(MEDIUM)` and the PWA uses
+  `Intl.DateTimeFormat` `dateStyle: "medium"`, so German renders `18.08.2026`
+  and Japanese `2026年8月18日`, never the fixed English "MMM d, yyyy" order.
+  `shortDate()` stays month-name based ("Aug 18") for chart axes and day rows.
 - Widgets and status fallbacks must use `R.string`, not hardcoded English
 - AI response language follows `Locale.getDefault()` (includes per-app language)
 

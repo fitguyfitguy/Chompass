@@ -30,15 +30,36 @@ class LocaleFormatTest {
     }
 
     @Test
+    fun mediumDateFollowsLocaleWordOrder() {
+        // UI-audit 2.6: word order deliberately follows the locale (PWA parity via
+        // Intl dateStyle "medium") — German gets dd.MM.yyyy, not English "MMM d, yyyy".
+        val previous = Locale.getDefault()
+        try {
+            Locale.setDefault(Locale.GERMAN)
+            val de = LocaleFormat.mediumDate().format(java.time.LocalDate.of(2026, 8, 18))
+            assertTrue("expected German word order in '$de'", de.startsWith("18"))
+        } finally {
+            Locale.setDefault(previous)
+        }
+    }
+
+    @Test
     fun mediumDateTimeZonedRendersLocalTimeNotUtc() {
         // Codeberg #40: the sync screen used to show the raw UTC timestamp.
         // The formatter must render the stored Instant in the given zone —
         // e.g. 14:32 UTC becomes 16:32 in UTC+2, never the raw UTC clock.
         val instant = java.time.Instant.parse("2026-08-18T14:32:00Z")
         val zone = java.time.ZoneId.of("Europe/Berlin") // UTC+2 in August
-        val rendered = LocaleFormat.mediumDateTimeZoned(zone).format(instant)
-        assertTrue("expected local time in rendered '$rendered'", rendered.contains("4:32 PM"))
-        assertFalse("must not render the raw UTC clock", rendered.contains("2:32 PM"))
+        val previous = Locale.getDefault()
+        try {
+            Locale.setDefault(Locale.US)
+            val rendered = LocaleFormat.mediumDateTimeZoned(zone).format(instant)
+            // Localized time may use a narrow no-break space before "PM" (U+202F).
+            assertTrue("expected local time in rendered '$rendered'", rendered.contains("4:32") && rendered.contains("PM"))
+            assertFalse("must not render the raw UTC clock", rendered.contains("2:32 PM") || rendered.contains("2:32"))
+        } finally {
+            Locale.setDefault(previous)
+        }
     }
 
     @Test

@@ -828,6 +828,7 @@
     <string name="cd_unfavorite">Quitar de favoritos</string>
     <string name="coach_confirm_log_food_title">¿Registrar esta comida?</string>
     <string name="coach_confirm_log_water_title">¿Registrar esta agua?</string>
+    <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s proteína, %4$s carbohidratos, %5$s grasas)</string>
     <string name="coach_confirm_log_weight_title">¿Registrar este peso?</string>
     <string name="coach_title">Coach</string>
     <string name="context_note_weight_hint">Si pesaste la porción, introduce los gramos aquí. El peso exacto mejora la precisión más que un título o una lista de ingredientes por sí solos.</string>

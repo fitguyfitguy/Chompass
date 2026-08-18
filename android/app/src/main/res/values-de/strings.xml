@@ -1251,6 +1251,8 @@ für dich ein</string>
 
     <string name="coach_confirm_log_water_title">Diese Wassermenge erfassen?</string>
 
+    <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s Protein, %4$s Kohlenhydrate, %5$s Fett)</string>
+
     <string name="coach_chip_predict_30_days">Wie viel werde ich in 30 Tagen wiegen?</string>
 
     <string name="coach_chip_lose_faster">Wie kann ich sicher schneller abnehmen?</string>
