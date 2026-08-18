@@ -92,14 +92,10 @@ fun ChompassTheme(
 
     val colorScheme = when {
         usesSystemPalette -> {
-            val dynamicScheme =
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            AppColors.setThemeColor(themeColor, dynamicScheme.primary)
-            dynamicScheme
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         else -> {
             val accent = if (themeColor.usesSystemPalette) AppThemeColor.TEAL else themeColor
-            AppColors.setThemeColor(themeColor)
             val baseScheme = if (darkTheme) darkColors(accent) else lightColors(accent)
             if (useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val dynamicScheme =
@@ -131,6 +127,9 @@ fun ChompassTheme(
             }
         }
     }
+    // Mirror the scheme primary into AppColors so Calorie accents equal
+    // colorScheme.primary in every mode (UI-audit 2.4).
+    AppColors.setThemeColor(themeColor, colorScheme.primary)
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,

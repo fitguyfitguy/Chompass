@@ -6,6 +6,8 @@ import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
@@ -184,21 +186,27 @@ fun AppThemeColor.widgetAccentColors(context: Context): Pair<Color, Color> {
 
 object AppColors {
     private var activeThemeColor: AppThemeColor = AppThemeColor.SYSTEM
-    private var dynamicPrimary: Color? = null
+    private var primaryOverride: Color? = null
 
-    fun setThemeColor(themeColor: AppThemeColor, dynamicPrimary: Color? = null) {
+    /**
+     * Sets the active theme and the scheme primary (UI-audit 2.4): [Calorie]/[CalorieStart]
+     * mirror `colorScheme.primary` in every mode (dynamic, fixed light, fixed dark — where
+     * the scheme lightens the accent), so Compose surfaces and widget/notification reads
+     * cannot drift. Called once per [ChompassTheme] composition (idempotent write).
+     */
+    fun setThemeColor(themeColor: AppThemeColor, primary: Color? = null) {
         activeThemeColor = themeColor
-        this.dynamicPrimary = if (themeColor.usesSystemPalette) dynamicPrimary else null
+        primaryOverride = primary
     }
 
     val ThemeColor: AppThemeColor
         get() = activeThemeColor
 
     val CalorieStart: Color
-        get() = dynamicPrimary ?: activeThemeColor.start
+        get() = primaryOverride ?: activeThemeColor.start
 
     val CalorieEnd: Color
-        get() = dynamicPrimary?.let { lerp(it, Color.White, 0.28f) } ?: activeThemeColor.end
+        get() = primaryOverride?.let { lerp(it, Color.White, 0.28f) } ?: activeThemeColor.end
 
     val Calorie: Color
         get() = CalorieStart
@@ -214,9 +222,6 @@ object AppColors {
 
     val Fiber: Color
         get() = activeThemeColor.macroPalette.fiber
-
-    /** Muted tone for non-core nutrients (sodium, vitamins, etc.). */
-    val SecondaryNutrient: Color = Color(0xFF79747E)
 
     fun nutrientColor(nutrient: HomeTopNutrient): Color =
         activeThemeColor.macroPalette.colorFor(nutrient)
@@ -277,3 +282,18 @@ val androidx.compose.material3.ColorScheme.warning: Color
 /** Resolves [AppColors.SuccessLight]/[AppColors.SuccessDark] against the active theme. */
 val androidx.compose.material3.ColorScheme.success: Color
     get() = if (background.luminance() < 0.5f) AppColors.SuccessDark else AppColors.SuccessLight
+
+/** Muted tone for non-core nutrients (sodium, vitamins…), theme/dark aware (UI-audit 2.4). */
+val androidx.compose.material3.ColorScheme.mutedNutrient: Color
+    get() = if (background.luminance() < 0.5f) AppColors.MutedDark else Color(0xFF79747E)
+
+/**
+ * Accent for a nutrient row: palette color for the four core macros, scheme-muted
+ * otherwise (UI-audit 2.4 — the old hardcoded 0xFF79747E was not dark aware).
+ */
+@Composable
+fun nutrientAccentColor(nutrient: HomeTopNutrient): Color = when (nutrient) {
+    HomeTopNutrient.PROTEIN, HomeTopNutrient.CARBS, HomeTopNutrient.FAT, HomeTopNutrient.FIBER ->
+        AppColors.nutrientColor(nutrient)
+    else -> MaterialTheme.colorScheme.mutedNutrient
+}

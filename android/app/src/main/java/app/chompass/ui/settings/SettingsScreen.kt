@@ -43,9 +43,8 @@ import app.chompass.ui.about.AboutSettingsRows
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 @Composable
 fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container))

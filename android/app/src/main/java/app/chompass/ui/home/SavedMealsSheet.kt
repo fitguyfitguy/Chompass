@@ -75,9 +75,9 @@ import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
+import app.chompass.ui.theme.AppRadii
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

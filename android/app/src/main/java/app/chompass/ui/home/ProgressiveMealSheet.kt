@@ -47,9 +47,9 @@ import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
+import app.chompass.ui.theme.AppRadii
 
 /**
  * Review sheet for an in-progress weigh-as-you-go meal: list of reviewed

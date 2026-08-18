@@ -26,9 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 @Composable
 fun StepsCard(
     steps: Long,

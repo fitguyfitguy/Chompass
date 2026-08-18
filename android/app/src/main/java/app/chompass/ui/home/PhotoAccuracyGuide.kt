@@ -28,9 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 /**
  * Progressive accuracy guidance for photo entry: a dismissible tip card for early
  * entries, otherwise a compact Info control that opens the same body in a dialog.

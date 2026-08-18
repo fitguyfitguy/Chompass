@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
+import app.chompass.ui.theme.AppRadii
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 

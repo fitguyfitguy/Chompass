@@ -51,9 +51,9 @@ import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.models.UnitFormat
+import app.chompass.ui.theme.AppRadii
 
 @Composable
 internal fun ActivityStep(selected: ActivityLevel, onSelect: (ActivityLevel) -> Unit) {
