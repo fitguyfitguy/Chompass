@@ -42,9 +42,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import app.chompass.R
 import app.chompass.services.BarcodeCodeNormalizer
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import zxingcpp.BarcodeReader
+import app.chompass.ui.theme.AppRadii
 
 @Composable
 internal fun BarcodeScannerContent(

@@ -65,9 +65,9 @@ import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ChatMessage
 import app.chompass.services.decodeSampledBitmap
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 
 @Composable
 internal fun EmptyState(modifier: Modifier = Modifier) {

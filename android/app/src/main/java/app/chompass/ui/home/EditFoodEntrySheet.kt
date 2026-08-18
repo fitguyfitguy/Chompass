@@ -70,9 +70,9 @@ import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
+import app.chompass.ui.theme.AppRadii
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

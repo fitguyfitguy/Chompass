@@ -41,6 +41,7 @@ import app.chompass.models.HomeTopNutrient
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.nutrientAccentColor
 import androidx.compose.foundation.shape.CircleShape
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
@@ -88,7 +89,7 @@ fun HomeTopNutrientPickerDialog(
                     label = stringResource(nutrient.displayNameRes),
                     unit = stringResource(nutrient.unitRes),
                     checked = nutrient in draft,
-                    accentColor = AppColors.nutrientColor(nutrient),
+                    accentColor = nutrientAccentColor(nutrient),
                     onClick = { toggle(nutrient) }
                 )
             }

@@ -44,9 +44,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.services.ondevice.OnDeviceCapability
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 @Composable
 fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
     val vm: OnboardingViewModel = viewModel(factory = OnboardingViewModel.Factory(container))

@@ -64,9 +64,9 @@ import app.chompass.models.AIProvider
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.OptionPickerSheet
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
+import app.chompass.ui.theme.AppRadii
 
 @Composable
 internal fun ProviderStep(

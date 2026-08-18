@@ -44,9 +44,8 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 @Composable
 fun HomeDisplaySettingsScreen(
     container: AppContainer,

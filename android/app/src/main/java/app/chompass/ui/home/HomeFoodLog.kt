@@ -68,9 +68,9 @@ import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.gramsText
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
+import app.chompass.ui.theme.AppRadii
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale

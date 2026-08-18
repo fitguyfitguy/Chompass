@@ -78,9 +78,9 @@ import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
+import app.chompass.ui.theme.AppRadii
 import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap

@@ -41,9 +41,9 @@ import app.chompass.models.MealType
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.flow.first
+import app.chompass.ui.theme.AppRadii
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate

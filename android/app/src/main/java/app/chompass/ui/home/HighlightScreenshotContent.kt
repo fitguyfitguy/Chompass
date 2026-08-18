@@ -37,9 +37,9 @@ import app.chompass.models.Recipe
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.kcalText
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
+import app.chompass.ui.theme.AppRadii
 
 /**
  * Home with a static meal-review sheet showing editable constituents

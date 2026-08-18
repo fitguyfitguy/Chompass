@@ -44,9 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 @Composable
 internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
     // iOS notificationsStep: centered bell.badge.fill in pink + big headline

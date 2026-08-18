@@ -35,9 +35,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
-
+import app.chompass.ui.theme.AppRadii
 /**
  * Shared scaffold for settings drill-down screens: back chip, large title,
  * then a vertically scrolling column of section cards.

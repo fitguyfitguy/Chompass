@@ -91,8 +91,9 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.nutrientAccentColor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -451,7 +452,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                                 current = nutrient.current(ui.todayEntries),
                                 goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                 unit = stringResource(nutrient.unitRes),
-                                accentColor = AppColors.nutrientColor(nutrient),
+                                accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
                             )
                         }
@@ -1311,7 +1312,7 @@ internal fun HomeScreenPreviewContent(
                                     current = nutrient.current(ui.todayEntries),
                                     goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                     unit = stringResource(nutrient.unitRes),
-                                    accentColor = AppColors.nutrientColor(nutrient),
+                                    accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),
                                     freezeProgress = freezeAnimations,
                                 )
