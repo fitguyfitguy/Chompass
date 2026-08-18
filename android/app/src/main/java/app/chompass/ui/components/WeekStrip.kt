@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -164,10 +166,14 @@ private fun DayTile(
 ) {
     Column(
         modifier = modifier
-            .clickable(
+            // selectable exposes the selected state + Tab role to TalkBack
+            // (UI-audit 2.7); indication stays null to keep the iOS look.
+            .selectable(
+                selected = isSelected,
+                onClick = onTap,
+                role = Role.Tab,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onTap
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)

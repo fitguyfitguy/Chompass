@@ -38,6 +38,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -180,6 +182,11 @@ internal fun CalorieHero(
             modifier = Modifier
                 .width(260.dp)
                 .aspectRatio(2f)
+                .semantics {
+                    // The budget sheet carries the exact numbers; the arc still
+                    // reports its fill so TalkBack users get progress (UI-audit 2.7).
+                    progressBarRangeInfo = ProgressBarRangeInfo(animatedRatio.value, 0f..1f, 0)
+                }
         ) {
             val stroke = 16.dp.toPx()
             val inset = stroke / 2f

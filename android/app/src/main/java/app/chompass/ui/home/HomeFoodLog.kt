@@ -4,6 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -346,6 +349,8 @@ internal fun Divider() {
  * The dismiss state is reset on a no-confirm swing-back so partial swipes don't
  * leave the row stuck mid-flight when the user releases short of the threshold.
  */
+private class SwipeAction(val label: String, val action: () -> Unit)
+
 @Composable
 internal fun SwipeableFoodRow(
     entry: FoodEntry,
@@ -359,6 +364,10 @@ internal fun SwipeableFoodRow(
 ) {
     val density = LocalDensity.current
     var offsetPx by remember(entry.id) { mutableFloatStateOf(0f) }
+    val deleteLabel = stringResource(R.string.home_swipe_delete)
+    val favoriteLabel = stringResource(
+        if (isFavorite) R.string.home_swipe_unfavorite else R.string.home_swipe_favorite
+    )
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
@@ -398,6 +407,21 @@ internal fun SwipeableFoodRow(
                         onClick = onTap,
                         onLongClick = onLongPress
                     )
+                    .semantics {
+                        // TalkBack fallback for the swipe gestures (UI-audit 2.7):
+                        // expose delete/favorite as custom actions so screen-reader
+                        // users can trigger them without swiping.
+                        val actions = listOf(
+                            SwipeAction(deleteLabel, onDelete),
+                            SwipeAction(favoriteLabel, onToggleFavorite),
+                        )
+                        customActions = actions.map { action ->
+                            CustomAccessibilityAction(action.label) {
+                                action.action()
+                                true
+                            }
+                        }
+                    }
             ) {
                 FoodRow(entry = entry, isFavorite = isFavorite, rowShape = rowShape, macroChips = macroChips)
             }
