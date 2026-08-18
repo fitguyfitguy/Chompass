@@ -48,7 +48,6 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.FeetInchesWheelPicker
-import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.NumericWheelPicker
@@ -143,7 +142,7 @@ internal fun <T> ListSheet(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        FudGlassPrimaryButton(
+        GradientSaveButton(
             text = stringResource(R.string.action_save),
             onClick = { if (custom.isNotBlank()) customField(custom.trim()) },
             modifier = Modifier.fillMaxWidth()
@@ -166,7 +165,7 @@ internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) ->
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
-    FudGlassPrimaryButton(
+    GradientSaveButton(
         text = stringResource(R.string.action_save),
         onClick = { onSave(value) },
         modifier = Modifier.fillMaxWidth()
@@ -195,7 +194,7 @@ internal fun TextFieldSheet(
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
-    FudGlassPrimaryButton(
+    GradientSaveButton(
         text = stringResource(R.string.action_save),
         onClick = { onSave(value.trim()) },
         modifier = Modifier.fillMaxWidth()
