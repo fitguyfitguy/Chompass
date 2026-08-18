@@ -56,6 +56,44 @@ class SyncDocumentTest {
     }
 
     @Test
+    fun mergeRawDocumentsDedupesWeightRows() {
+        // #39: same date+value written under different ids (and different wire
+        // styles: Android writes 80.0, the PWA writes 80) must collapse, while
+        // distinct rows and tombstones pass through.
+        val phone = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.0"},
+             "food_entries":[],"favorites":[],
+             "weights":[
+               {"id":"11111111-1111-4111-8111-111111111111","updated_at":"2026-07-20T08:00:00Z","deleted_at":null,"date":"2026-07-20T08:00:00Z","weight_kg":80.0},
+               {"id":"33333333-3333-4333-8333-333333333333","updated_at":"2026-07-19T08:00:00Z","deleted_at":null,"date":"2026-07-19T08:00:00Z","weight_kg":78.9},
+               {"id":"99999999-9999-4999-8999-999999999999","updated_at":"2026-07-20T08:00:00Z","deleted_at":"2026-07-20T08:00:00Z"}
+             ],
+             "body_fat":[],"measurements":[],"water":[],"recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val desktop = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.0"},
+             "food_entries":[],"favorites":[],
+             "weights":[
+               {"id":"22222222-2222-4222-8222-222222222222","updated_at":"2026-07-21T08:00:00Z","deleted_at":null,"date":"2026-07-20T08:00:00Z","weight_kg":80}
+             ],
+             "body_fat":[],"measurements":[],"water":[],"recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val local = (SyncDocument.parse(phone, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val remote = (SyncDocument.parse(desktop, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val merged = SyncDocument.mergeRawDocuments(local, remote)
+        val weights = merged["weights"]!!.jsonArray
+        assertEquals(3, weights.size)
+        val ids = weights.map { it.jsonObject["id"]!!.jsonPrimitive.content }.toSet()
+        // The 80.0/80 duplicate collapsed to the newest row (remote 2222...).
+        assertTrue("22222222-2222-4222-8222-222222222222" in ids)
+        assertTrue("11111111-1111-4111-8111-111111111111" !in ids)
+        // Distinct row and tombstone pass through untouched.
+        assertTrue("33333333-3333-4333-8333-333333333333" in ids)
+        assertTrue("99999999-9999-4999-8999-999999999999" in ids)
+        assertTrue(weights.any { it.jsonObject["deleted_at"] != null })
+    }
+
+    @Test
     fun buildRoundTripsDatesInZone() {
         // EMUI java.time defect: LocalDate/LocalTime.ofInstant are missing on some
         // Android 10 ROMs. buildJson must use atZone(...).toLocalDate()/toLocalTime()

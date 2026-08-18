@@ -340,6 +340,24 @@ object SyncDocument {
             return JsonArray(merged)
         }
 
+        // Weights merge by id AND collapse identical (date, weight_kg) rows that
+        // were written under different ids (#39): id-divergent duplicates would
+        // otherwise survive the merge and ride into the local store and back up
+        // to WebDAV on every sync.
+        fun mergeWeights(): JsonArray {
+            val localRows = local["weights"]?.asArrayOrNull()?.mapNotNull { it.asObjectOrNull() }.orEmpty()
+            val remoteRows = remote["weights"]?.asArrayOrNull()?.mapNotNull { it.asObjectOrNull() }.orEmpty()
+            val merged = SyncMerge.dedupeRecordLists(
+                local = localRows,
+                remote = remoteRows,
+                idOf = { it["id"]?.asString().orEmpty() },
+                keyOf = { weightDedupeKey(it) },
+                updatedAt = { it["updated_at"]?.asString().orEmpty() },
+                deletedAt = { it["deleted_at"]?.asString() },
+            )
+            return JsonArray(merged)
+        }
+
         fun mergeSingle(key: String): JsonElement {
             val l = local[key]?.asObjectOrNull()
             val r = remote[key]?.asObjectOrNull()
@@ -368,10 +386,11 @@ object SyncDocument {
                 },
             )
             for (key in listOf(
-                "food_entries", "favorites", "weights", "body_fat", "measurements", "water", "recipes",
+                "food_entries", "favorites", "body_fat", "measurements", "water", "recipes",
             )) {
                 put(key, mergeList(key))
             }
+            put("weights", mergeWeights())
             put("profile", mergeSingle("profile"))
             put("prefs", mergeSingle("prefs"))
         }
@@ -591,6 +610,19 @@ object SyncDocument {
                 selectedServingQuantity = row["selected_serving_quantity"]?.asDouble(),
             )
         }
+    }
+
+    /**
+     * Dedupe key for weight rows: date + canonical weight value. The value is
+     * parsed to a double and re-stringified without trailing zeros so the
+     * Android wire form ("80.0") and the PWA form ("80") collapse to the same
+     * key. Blank when the row has no usable date/value (tombstones are skipped
+     * by the caller anyway).
+     */
+    private fun weightDedupeKey(row: JsonObject): String {
+        val date = row["date"]?.asString() ?: return ""
+        val weight = row["weight_kg"]?.asDouble() ?: return ""
+        return "$date|${java.math.BigDecimal.valueOf(weight).stripTrailingZeros().toPlainString()}"
     }
 
     private fun parseWeightWire(el: JsonElement): WeightWire? {

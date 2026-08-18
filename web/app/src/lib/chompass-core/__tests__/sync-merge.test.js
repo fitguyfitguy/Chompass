@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  dedupeRecordLists,
   mergeRecordLists,
   mergeSyncDocuments,
   pickNewer,
@@ -102,4 +103,96 @@ test("partitionLiveAndDeleted separates tombstones", () => {
   ]);
   assert.equal(live.length, 1);
   assert.deepEqual(deletedIds, ["b"]);
+});
+
+// #39: weights merge also collapses identical (date, weight_kg) rows written
+// under different ids. Mirror of SyncMergeTest.dedupeRecordLists*.
+const weightKey = (row) => (row.date ? `${row.date}|${Number(row.weight_kg)}` : "");
+
+function dedupeWeights(local, remote) {
+  return dedupeRecordLists(local, remote, weightKey);
+}
+
+test("dedupeRecordLists collapses same date+value weights to the newest", () => {
+  const local = [
+    { id: "a", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 79.4 },
+  ];
+  const remote = [
+    { id: "b", updated_at: "2026-07-21T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 79.4 },
+  ];
+  const merged = dedupeWeights(local, remote);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].id, "b");
+});
+
+test("dedupeRecordLists prefers the remote row on equal updated_at", () => {
+  const local = [
+    { id: "a", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80 },
+  ];
+  const remote = [
+    { id: "b", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80 },
+  ];
+  const merged = dedupeWeights(local, remote);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].id, "b");
+});
+
+test("dedupeRecordLists passes tombstones through untouched", () => {
+  const local = [{ id: "t", updated_at: "2026-07-20T08:00:00Z", deleted_at: "2026-07-20T08:00:00Z" }];
+  const remote = [
+    { id: "b", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80 },
+    { id: "c", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80 },
+  ];
+  const merged = dedupeWeights(local, remote);
+  // Tombstone survives untouched; the two live dupes collapse to one.
+  assert.equal(merged.length, 2);
+  assert.ok(merged.some((r) => r.id === "t" && r.deleted_at));
+  assert.equal(merged.filter((r) => !r.deleted_at).length, 1);
+});
+
+test("dedupeRecordLists leaves distinct rows unaffected", () => {
+  const local = [
+    { id: "a", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 79.4 },
+  ];
+  const remote = [
+    { id: "b", updated_at: "2026-07-21T08:00:00Z", deleted_at: null, date: "2026-07-21T08:00:00Z", weight_kg: 79.4 },
+    { id: "c", updated_at: "2026-07-21T09:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80.1 },
+  ];
+  const merged = dedupeWeights(local, remote);
+  assert.equal(merged.length, 3);
+});
+
+test("mergeSyncDocuments collapses duplicate weights under different ids", () => {
+  const base = {
+    export: { app: "Chompass", kind: "sync", format_version: "1.0" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    water: [],
+    recipes: [],
+    profile: null,
+    prefs: null,
+  };
+  const phone = {
+    ...base,
+    weights: [
+      { id: "w1", updated_at: "2026-07-20T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80.0 },
+      { id: "w3", updated_at: "2026-07-19T08:00:00Z", deleted_at: null, date: "2026-07-19T08:00:00Z", weight_kg: 78.9 },
+      { id: "w4", updated_at: "2026-07-20T08:00:00Z", deleted_at: "2026-07-20T08:00:00Z" },
+    ],
+  };
+  const desktop = {
+    ...base,
+    weights: [
+      { id: "w2", updated_at: "2026-07-21T08:00:00Z", deleted_at: null, date: "2026-07-20T08:00:00Z", weight_kg: 80 },
+    ],
+  };
+  const merged = mergeSyncDocuments(phone, desktop);
+  assert.equal(merged.weights.length, 3);
+  assert.ok(!merged.weights.some((w) => w.id === "w1"));
+  assert.ok(merged.weights.some((w) => w.id === "w2"));
+  assert.ok(merged.weights.some((w) => w.id === "w3"));
+  assert.ok(merged.weights.some((w) => w.id === "w4" && w.deleted_at));
 });
