@@ -6,7 +6,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Macro goals rise with the active-burn target** (Android + web): on an active day the calorie ring can show a higher goal than the stored budget, and the protein, carbs and fat cards now scale up with it so they agree with the ring. Keto mode keeps the base split. Closes Codeberg [#38](https://codeberg.org/fitguy/Chompass/issues/38) by [@neshamon](https://codeberg.org/neshamon).
+
+- **The on-device model joins the AI fallback options** (Android): when a provider call fails, the app can now use the on-device model as the fallback target. It appears in the fallback list under Settings → AI & Speech once a model is downloaded. Closes Codeberg [#37](https://codeberg.org/fitguy/Chompass/issues/37) by [@ARR8](https://codeberg.org/ARR8).
+
 ### Fixed
+
+- **Typed entries no longer close by accident** (Android): a downward drag on the note sheet, or on an entry sheet while typing, no longer dismisses the sheet mid-entry. Dismissal stays on the handle, the scrim and the cancel button. Reopening Add food lands on the last tool you used, and backing out of it returns to the grid. Closes Codeberg [#30](https://codeberg.org/fitguy/Chompass/issues/30) by [@dpile103](https://codeberg.org/dpile103).
+
+- **Duplicate weight rows no longer appear after WebDAV sync** (Android + web): rows with the same date and weight, written by the app or the web app, now merge into one row instead of piling up with every sync. Closes Codeberg [#39](https://codeberg.org/fitguy/Chompass/issues/39) by [@tuxMode](https://codeberg.org/tuxMode).
+
+- **The last sync time shows in your local time zone** (Android): the sync screen used to show the raw UTC timestamp. It now shows the local time. Closes Codeberg [#40](https://codeberg.org/fitguy/Chompass/issues/40) by [@tuxMode](https://codeberg.org/tuxMode).
 
 - **Edit Food Entry shows no AI controls when AI is off** (Android): with AI features turned off, the edit sheet now only shows a plain note field and a Save button. The note on a logged entry stays editable, and no AI call can be started from anywhere in the app.
 
