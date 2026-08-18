@@ -48,7 +48,7 @@ import {
   mergeOptionalGoals,
   MAX_CUSTOM_GOAL_BY_KEY,
 } from "../lib/home-nutrients.js";
-import { LOCALES, t } from "../lib/i18n/index.js";
+import { LOCALES, t, formatNumber } from "../lib/i18n/index.js";
 
 const ACTIVITY_LEVELS = [
   { id: "sedentary", label: "Sedentary" },
@@ -373,7 +373,7 @@ export class SettingsView extends HTMLElement {
             <input id="customCalories" name="customCalories" type="number" min="0" value="${p.customCalories ?? ""}" placeholder="${targets.calories}" />
           </div>
         </div>
-        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">Formula targets: ${targets.calories} kcal · ${Math.round(targets.proteinG)}P / ${Math.round(targets.carbsG)}C / ${Math.round(targets.fatG)}F. Leave blank to use formula.</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">Formula targets: ${formatNumber(targets.calories)} kcal · ${Math.round(targets.proteinG)}P / ${Math.round(targets.carbsG)}C / ${Math.round(targets.fatG)}F. Leave blank to use formula.</p>
         <div class="field-row">
           <div class="field">
             <label for="proteinTargetMode">Protein target</label>
@@ -409,7 +409,7 @@ export class SettingsView extends HTMLElement {
       <div class="card">
         <h2 class="chart-title">Calculated targets</h2>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          BMR ${Math.round(bmr(p))} · TDEE ${Math.round(tdee(p))} kcal
+          BMR ${formatNumber(Math.round(bmr(p)))} · TDEE ${formatNumber(Math.round(tdee(p)))} kcal
         </p>
         <div class="stat-badges">
           <div class="stat-badge"><strong>${targets.calories}</strong>Calories</div>
@@ -530,7 +530,7 @@ export class SettingsView extends HTMLElement {
       const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
       if (after) {
         after.hidden = false;
-        after.textContent = `Updated to ${result.calories} kcal.${reason}`;
+        after.textContent = `Updated to ${formatNumber(result.calories)} kcal.${reason}`;
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

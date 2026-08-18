@@ -8,7 +8,7 @@ import {
 } from "../lib/chompass-core/weight-trend.js";
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
-import { t } from "../lib/i18n/index.js";
+import { t, formatNumber } from "../lib/i18n/index.js";
 
 const RANGES = [
   { id: "1W", labelKey: "progress.range_1w", days: 7 },
@@ -359,7 +359,7 @@ export class ProgressView extends HTMLElement {
                   ? `<p style="margin:0.6rem 0 0;font-size:0.85rem;">${escapeHtml(adaptive.message)}</p>
                      ${
                        adaptive.changed && adaptive.updatedCalories != null
-                         ? `<button type="button" class="btn btn--primary" style="margin-top:0.5rem;" data-apply-adapt="${adaptive.updatedCalories}">Apply ${adaptive.updatedCalories} kcal</button>`
+                         ? `<button type="button" class="btn btn--primary" style="margin-top:0.5rem;" data-apply-adapt="${adaptive.updatedCalories}">Apply ${formatNumber(adaptive.updatedCalories)} kcal</button>`
                          : ""
                      }`
                   : ""
