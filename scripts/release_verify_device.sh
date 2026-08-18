@@ -394,4 +394,4 @@ if [ "${FAIL}" -gt 0 ]; then
   exit 1
 fi
 echo ">>> All automated checks passed. Eyeball the PNGs (or run the vision skill),"
-echo "    then finish the manual checklist: docs/local/RELEASE_3.16_CHECKLIST.md"
+echo "    then finish the manual checklist documented in this script's section comments."
