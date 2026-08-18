@@ -53,7 +53,7 @@ scripts/apply_codeberg_labels.sh
 scripts/fetch_codeberg_delta.sh
 scripts/fetch_upstream_delta.sh
 scripts/post_issue_reply.sh
-scripts/setup_gh_fitguc.sh
+scripts/setup_gh_fitguyfitguy.sh
 scripts/sync_agent_configs.sh
 scripts/upstream_lookup.sh
 
