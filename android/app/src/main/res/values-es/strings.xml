@@ -455,6 +455,8 @@
     <string name="settings_appearance_system">Sistema</string>
     <string name="settings_appearance_light">Claro</string>
     <string name="settings_appearance_dark">Oscuro</string>
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_system">Sistema</string>
     <string name="settings_metric_units">Unidades métricas</string>
     <string name="settings_height_unit">Unidad de altura</string>
     <string name="settings_weight_unit">Unidad de peso</string>
@@ -516,6 +518,9 @@
     <string name="sheet_weight">Peso</string>
     <string name="sheet_birthday">Fecha de nacimiento</string>
     <string name="sheet_appearance">Apariencia</string>
+
+    <string name="sheet_language">Idioma</string>
+
     <string name="sheet_week_starts">La semana empieza el</string>
     <string name="sheet_height">Altura</string>
     <string name="sheet_body_fat_percent">Grasa corporal %</string>
@@ -634,8 +639,6 @@
     <string name="error_invalid_json">JSON no válido</string>
     <string name="error_unknown">Error desconocido</string>
     <string name="error_webdav_sync_failed">Falló la sincronización WebDAV</string>
-    <string name="settings_language_title">Idioma</string>
-    <string name="settings_language_system">Predeterminado del sistema</string>
     <string name="add_food_quick_relog">Registrar de nuevo</string>
     <string name="add_food_quick_relog_empty">Marca una comida como favorita o regístrala una vez. Aparecerá aquí para volver a registrarla con un toque.</string>
     <string name="add_food_quick_relog_hint">Favoritos y comidas anteriores. Más rápido que volver a escanear.</string>

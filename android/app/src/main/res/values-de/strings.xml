@@ -1519,6 +1519,10 @@ für dich ein</string>
 
     <string name="settings_appearance_dark">Dunkel</string>
 
+    <string name="settings_language_title">Sprache</string>
+
+    <string name="settings_language_system">System</string>
+
     <string name="settings_theme_color">Designfarbe</string>
 
     <string name="settings_fixed_launcher_icon">Feste Launcher-Ikone</string>
@@ -2024,6 +2028,8 @@ für dich ein</string>
 
     <string name="sheet_appearance">Aussehen</string>
 
+    <string name="sheet_language">Sprache</string>
+
     <string name="sheet_week_starts">Die Woche beginnt am</string>
 
     <string name="sheet_height">Körpergröße</string>
@@ -2245,10 +2251,6 @@ für dich ein</string>
     <string name="ai_error_grounded_requires_provider">Der „Grounded“-Tool-Loop erfordert einen aktiven KI-Anbieter.</string>
 
     <string name="ai_error_grounded_on_device">Der „Grounded“-Tool-Loop ist für gerätebasierte Modelle nicht verfügbar.</string>
-
-    <string name="settings_language_title">Sprache</string>
-
-    <string name="settings_language_system">Systemstandard</string>
 
     <string name="onboarding_privacy_note">Keine Werbung, keine Analysen, keine Konten. Dein Ernährungsprotokoll und deine API-Schlüssel bleiben auf deinem Gerät.</string>
 

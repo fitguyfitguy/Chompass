@@ -108,6 +108,8 @@ data class SettingsUiState(
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
     val onDeviceAvailable: Boolean = false,
     val appearanceMode: String = "system",
+    /** "" = system default, or locale tag like "de", "zh-CN". */
+    val appLanguage: String = "",
     /** Codeberg #20 phase 1: show the coach tab in the bottom bar; default ON. */
     val coachTabEnabled: Boolean = true,
     /** Codeberg #20 phase 2: master AI-features switch; default ON. */
@@ -233,6 +235,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val masked = maskKey(container.keyStore.apiKey(provider))
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val appearance = container.prefs.appearanceMode.first()
+            val appLanguage = container.prefs.appLanguage.first()
             val coachTabEnabled = container.prefs.coachTabEnabled.first()
             val aiFeaturesEnabled = container.prefs.aiFeaturesEnabled.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
@@ -315,6 +318,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 speechApiKeyMasked = speechMasked,
                 onDeviceAvailable = onDeviceAvailable,
                 appearanceMode = appearance,
+                appLanguage = appLanguage,
                 coachTabEnabled = coachTabEnabled,
                 aiFeaturesEnabled = aiFeaturesEnabled,
                 appThemeColor = appThemeColor,
@@ -635,6 +639,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAppearanceMode(mode: String) = updateUiPref(
         { container.prefs.setAppearanceMode(mode) },
         { copy(appearanceMode = mode) },
+    )
+
+    fun setAppLanguage(languageTag: String) = updateUiPref(
+        { container.prefs.setAppLanguage(languageTag) },
+        { copy(appLanguage = languageTag) },
     )
 
     fun setCoachTabEnabled(v: Boolean) = updateUiPref(

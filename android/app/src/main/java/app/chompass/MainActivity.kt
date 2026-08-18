@@ -41,6 +41,7 @@ import app.chompass.services.MealShare
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.InAppReview
 import app.chompass.services.health.HealthConnectDiagnostics
+import app.chompass.utils.LocaleHelper
 import app.chompass.ui.home.ImportSharedMealSheet
 import app.chompass.ui.navigation.ChompassNavHost
 import app.chompass.ui.navigation.ChompassRoutes
@@ -63,6 +64,8 @@ open class MainActivity : ComponentActivity() {
     private var lastSystemPrimaryArgb: Int? = null
     private var wallpaperColorsListener: WallpaperManager.OnColorsChangedListener? = null
     private var systemPaletteRefreshJob: Job? = null
+    /** Last applied app-language tag ("" = system). Guards against recreate loops on locale change. */
+    private var appliedAppLanguage: String = ""
 
     /**
      * Activity-owned Photo Picker for food entry. Registered here (not in Home
@@ -386,6 +389,10 @@ open class MainActivity : ComponentActivity() {
                 AppThemeColor.fromKey(initialThemeColorKey),
                 initialFixedLauncherIcon,
             )
+            // Apply per-app language before rendering content
+            val initialAppLanguage = container.prefs.appLanguage.first()
+            appliedAppLanguage = initialAppLanguage
+            LocaleHelper.apply(this@MainActivity, initialAppLanguage)
             startOnboarding = resolvedStartOnboarding
             if (!resolvedStartOnboarding) {
                 container.profileRepository.profile.first { it != null }
@@ -398,6 +405,20 @@ open class MainActivity : ComponentActivity() {
             val appearance by container.prefs.appearanceMode.collectAsState(initial = initialAppearance)
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
+            val appLanguage by container.prefs.appLanguage.collectAsState(initial = appliedAppLanguage)
+            // Apply per-app language when preference changes. The activity field
+            // guard prevents an infinite recreate loop: after the system (or legacy
+            // recreate) relaunches us, the flow re-emits the same tag which now
+            // equals appliedAppLanguage, so nothing fires again.
+            androidx.compose.runtime.LaunchedEffect(appLanguage) {
+                if (appLanguage != appliedAppLanguage) {
+                    appliedAppLanguage = appLanguage
+                    LocaleHelper.apply(this@MainActivity, appLanguage)
+                    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
+                        this@MainActivity.recreate()
+                    }
+                }
+            }
             val systemDark = isSystemInDarkTheme()
             val darkTheme = when (appearance) {
                 "light" -> false

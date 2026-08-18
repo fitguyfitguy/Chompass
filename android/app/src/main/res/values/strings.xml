@@ -1116,6 +1116,7 @@
     <string name="sheet_weight">Weight</string>
     <string name="sheet_birthday">Birthday</string>
     <string name="sheet_appearance">Appearance</string>
+    <string name="sheet_language">Language</string>
     <string name="sheet_week_starts">Week Starts On</string>
     <string name="sheet_height">Height</string>
     <string name="sheet_body_fat_percent">Body fat %</string>
