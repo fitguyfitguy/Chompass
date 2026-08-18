@@ -70,6 +70,7 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
 import java.time.ZoneId
@@ -127,7 +128,7 @@ internal fun SectionCard(title: String, content: @Composable () -> Unit) {
         )
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 18.dp,
+            cornerRadius = AppRadii.Container,
             padding = 0.dp,
             allowBlur = false
         ) {
@@ -565,7 +566,7 @@ internal fun GradientSaveButton(
     onClick: () -> Unit
 ) {
     val brush = Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
-    val shape = RoundedCornerShape(14.dp)
+    val shape = RoundedCornerShape(AppRadii.Field)
     Box(
         modifier
             .fillMaxWidth()

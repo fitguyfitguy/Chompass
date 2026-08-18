@@ -44,6 +44,7 @@ import app.chompass.models.WaterGoalBreakdown
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.warning
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
@@ -164,7 +165,7 @@ fun WaterSettingsScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(AppRadii.Field))
                         .background(MaterialTheme.colorScheme.warning.copy(alpha = 0.09f))
                         .padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),

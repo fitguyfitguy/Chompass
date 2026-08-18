@@ -78,12 +78,14 @@ import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
 import java.time.Instant
 import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.components.FudGlassTextField
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
@@ -516,7 +518,7 @@ fun FoodResultSheet(
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
                                 .size(96.dp)
-                                .clip(RoundedCornerShape(14.dp))
+                                .clip(RoundedCornerShape(AppRadii.Field))
                         )
                     } else {
                         Text(effectiveAnalysis.emoji ?: "🍽", fontSize = 40.sp)
@@ -1267,25 +1269,25 @@ internal fun WhatIfMealImpactDialog(
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_protein),
-                        added = "+${MacroValueFormatter.withUnit(entry.protein)}",
-                        total = profile?.let { "${MacroValueFormatter.withUnit(after.protein)} / ${it.effectiveProtein}g" }
-                            ?: MacroValueFormatter.withUnit(after.protein),
+                        added = "+${macroGramsText(entry.protein)}",
+                        total = profile?.let { "${macroGramsText(after.protein)} / ${macroGramsText(it.effectiveProtein.toDouble())}" }
+                            ?: macroGramsText(after.protein),
                         accentColor = AppColors.Protein
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_carbs),
-                        added = "+${MacroValueFormatter.withUnit(entry.carbs)}",
-                        total = profile?.let { "${MacroValueFormatter.withUnit(after.carbs)} / ${it.effectiveCarbs}g" }
-                            ?: MacroValueFormatter.withUnit(after.carbs),
+                        added = "+${macroGramsText(entry.carbs)}",
+                        total = profile?.let { "${macroGramsText(after.carbs)} / ${macroGramsText(it.effectiveCarbs.toDouble())}" }
+                            ?: macroGramsText(after.carbs),
                         accentColor = AppColors.Carbs
                     )
                     SheetHairline()
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_fat),
-                        added = "+${MacroValueFormatter.withUnit(entry.fat)}",
-                        total = profile?.let { "${MacroValueFormatter.withUnit(after.fat)} / ${it.effectiveFat}g" }
-                            ?: MacroValueFormatter.withUnit(after.fat),
+                        added = "+${macroGramsText(entry.fat)}",
+                        total = profile?.let { "${macroGramsText(after.fat)} / ${macroGramsText(it.effectiveFat.toDouble())}" }
+                            ?: macroGramsText(after.fat),
                         accentColor = AppColors.Fat
                     )
                 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
 import androidx.compose.foundation.layout.size
@@ -203,7 +204,7 @@ fun CalculationMethodsScreen(
                 Column(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(AppRadii.Field))
                         .background(MaterialTheme.colorScheme.warning.copy(alpha = 0.09f))
                         .padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -250,7 +251,7 @@ internal fun CalcFormulaCard(
     val uriHandler = LocalUriHandler.current
     FudGlassSurface(
         modifier = Modifier.fillMaxWidth(),
-        cornerRadius = 18.dp,
+        cornerRadius = AppRadii.Container,
         padding = 14.dp,
         allowBlur = false
     ) {

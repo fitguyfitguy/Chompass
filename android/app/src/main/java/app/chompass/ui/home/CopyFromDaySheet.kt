@@ -43,6 +43,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -214,7 +215,7 @@ internal fun CopyFromDaySheet(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                            cornerRadius = 18.dp,
+                            cornerRadius = AppRadii.Container,
                             padding = 0.dp
                         ) {
                             Row(

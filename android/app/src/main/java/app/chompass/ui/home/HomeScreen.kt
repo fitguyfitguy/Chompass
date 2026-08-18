@@ -91,6 +91,7 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.launch
 
@@ -449,7 +450,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                                 label = stringResource(nutrient.displayNameRes),
                                 current = nutrient.current(ui.todayEntries),
                                 goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
-                                unit = nutrient.unit,
+                                unit = stringResource(nutrient.unitRes),
                                 accentColor = AppColors.nutrientColor(nutrient),
                                 modifier = Modifier.weight(1f),
                             )
@@ -659,7 +660,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                     .alpha(if (pasteBusy) 0.55f else 1f)
                     .clickable(enabled = !pasteBusy, onClick = paste)
                     .zIndex(1f),
-                cornerRadius = 22.dp,
+                cornerRadius = AppRadii.SectionCard,
                 padding = 0.dp
             ) {
                 Row(
@@ -1309,7 +1310,7 @@ internal fun HomeScreenPreviewContent(
                                     label = stringResource(nutrient.displayNameRes),
                                     current = nutrient.current(ui.todayEntries),
                                     goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
-                                    unit = nutrient.unit,
+                                    unit = stringResource(nutrient.unitRes),
                                     accentColor = AppColors.nutrientColor(nutrient),
                                     modifier = Modifier.weight(1f),
                                     freezeProgress = freezeAnimations,

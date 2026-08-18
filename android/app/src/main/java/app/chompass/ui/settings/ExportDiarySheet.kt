@@ -41,6 +41,7 @@ import app.chompass.models.MealType
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -174,7 +175,7 @@ private fun DateRow(label: String, value: String, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(AppRadii.Field))
             .clickable(onClick = onClick)
             .padding(vertical = 10.dp),
     ) {

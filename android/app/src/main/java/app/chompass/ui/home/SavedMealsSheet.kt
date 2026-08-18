@@ -75,6 +75,7 @@ import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import kotlinx.coroutines.Dispatchers
@@ -261,7 +262,7 @@ fun SavedMealsSheet(
                         }
                     }
                 } else null,
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(AppRadii.Field),
                 colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = searchSurface,
                     unfocusedContainerColor = searchSurface,
@@ -640,12 +641,12 @@ private fun SavedMealRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(AppRadii.Container))
             .background(rowFill)
             .border(
                 0.5.dp,
                 rowBorder,
-                RoundedCornerShape(18.dp)
+                RoundedCornerShape(AppRadii.Container)
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -741,9 +742,9 @@ private fun RecipeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(AppRadii.Container))
             .background(rowFill)
-            .border(0.5.dp, rowBorder, RoundedCornerShape(18.dp))
+            .border(0.5.dp, rowBorder, RoundedCornerShape(AppRadii.Container))
             .clickable(onClick = onEdit)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

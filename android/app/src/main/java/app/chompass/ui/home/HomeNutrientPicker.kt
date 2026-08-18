@@ -42,9 +42,9 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.theme.AppColors
 import androidx.compose.foundation.shape.CircleShape
-import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.macroGramsText
 import java.util.Locale
 
 @Composable
@@ -230,7 +230,7 @@ fun FoodLogMacroChipView(chip: FoodLogMacroChip, value: Double) {
                 .padding(horizontal = 8.dp, vertical = 3.dp)
         ) {
             Text(
-                "${chip.glyph} ${MacroValueFormatter.withUnit(value)}",
+                "${chip.glyph} ${macroGramsText(value)}",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = color,

@@ -32,6 +32,7 @@ import app.chompass.models.UnitFormat
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.progress.TimeRange
 import java.util.Locale
+import app.chompass.ui.theme.AppRadii
 
 /**
  * Settings → App & Display → Customize progress. Groups everything that tunes the
@@ -61,7 +62,7 @@ fun CustomizeProgressScreen(
     ) {
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 22.dp,
+            cornerRadius = AppRadii.SectionCard,
             padding = 0.dp,
             allowBlur = false,
         ) {
@@ -74,7 +75,7 @@ fun CustomizeProgressScreen(
 
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 22.dp,
+            cornerRadius = AppRadii.SectionCard,
             padding = 0.dp,
             allowBlur = false,
         ) {

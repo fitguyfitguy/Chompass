@@ -13,6 +13,4 @@ object MacroValueFormatter {
             String.format(Locale.getDefault(), "%.1f", value)
         }
     }
-
-    fun withUnit(value: Double): String = "${string(value)}g"
 }

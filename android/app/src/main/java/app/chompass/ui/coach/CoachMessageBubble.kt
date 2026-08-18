@@ -65,6 +65,7 @@ import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ChatMessage
 import app.chompass.services.decodeSampledBitmap
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
 
@@ -139,9 +140,9 @@ internal fun MessageList(
                 ) {
                     Box(
                         Modifier
-                            .clip(RoundedCornerShape(18.dp))
+                            .clip(RoundedCornerShape(AppRadii.Container))
                             .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-                            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, RoundedCornerShape(18.dp))
+                            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, RoundedCornerShape(AppRadii.Container))
                             .padding(horizontal = 14.dp, vertical = 10.dp)
                     ) { TypingIndicator() }
                     Spacer(Modifier.weight(1f))
@@ -298,7 +299,7 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(AppRadii.Field))
                     )
                     Spacer(Modifier.height(8.dp))
                 }

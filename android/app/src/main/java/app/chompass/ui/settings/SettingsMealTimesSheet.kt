@@ -26,6 +26,7 @@ import app.chompass.models.MealSchedule
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.WheelPicker
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 
@@ -58,7 +59,7 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
         Spacer(Modifier.height(16.dp))
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 18.dp,
+            cornerRadius = AppRadii.Container,
             padding = 0.dp,
         ) {
             Column {

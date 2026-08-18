@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 /**
@@ -143,7 +144,7 @@ fun NutritionPickerSheet(
         Modifier
             .fillMaxWidth()
             .height(54.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(AppRadii.Field))
             .background(accentColor)
             .clickable { onSave(saveValue) },
         contentAlignment = Alignment.Center

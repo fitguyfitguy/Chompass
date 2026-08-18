@@ -44,6 +44,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -108,7 +109,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
                     Column {
                         SettingRow(
                             label = stringResource(R.string.home_display_nutrient_cards),
@@ -132,7 +133,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
                     Column {
                         ToggleRow(
                             label = stringResource(R.string.home_display_show_steps),
@@ -156,7 +157,7 @@ fun HomeDisplaySettingsScreen(
             // controls the STATIC "N active" caption.
             if (display.calorieDisplayMode == HomeCalorieDisplayMode.STATIC) {
                 item {
-                    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
+                    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
                         Column {
                             ToggleRow(
                                 label = stringResource(R.string.home_display_show_active_calories),
@@ -175,7 +176,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
                     Column {
                         SettingRow(
                             label = stringResource(R.string.home_display_calorie_mode),
@@ -206,7 +207,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 22.dp, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
                     SettingRow(
                         label = stringResource(R.string.home_display_food_log_chips),
                         value = display.foodLogMacroChips.joinToString(" ") { it.glyph },
@@ -291,7 +292,7 @@ private fun CalorieModePickerDialog(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(AppRadii.Field))
                         .clickable { onSelect(mode) }
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically

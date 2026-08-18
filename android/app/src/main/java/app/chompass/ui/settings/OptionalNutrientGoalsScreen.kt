@@ -40,6 +40,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.macroAccentColor
 
@@ -103,7 +104,7 @@ fun OptionalNutrientGoalsScreen(
             item {
                 FudGlassSurface(
                     modifier = Modifier.fillMaxWidth(),
-                    cornerRadius = 22.dp,
+                    cornerRadius = AppRadii.SectionCard,
                     padding = 0.dp,
                     allowBlur = false
                 ) {

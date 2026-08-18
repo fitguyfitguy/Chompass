@@ -43,7 +43,7 @@ fun MacroCard(
     label: String,
     current: Double,
     goal: Int,
-    unit: String = "g",
+    unit: String,
     modifier: Modifier = Modifier,
     accentColor: Color = MaterialTheme.colorScheme.primary,
     freezeProgress: Boolean = false,
