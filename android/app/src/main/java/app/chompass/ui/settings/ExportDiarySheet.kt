@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +39,7 @@ import app.chompass.export.DiaryFormat
 import app.chompass.export.DiaryRange
 import app.chompass.models.MealType
 import app.chompass.models.UserProfile
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.flow.first
@@ -59,7 +59,7 @@ fun ExportDiarySheet(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
 
     var range by remember { mutableStateOf(DiaryRange.THIS_WEEK) }
     var format by remember { mutableStateOf(DiaryFormat.JSON) }

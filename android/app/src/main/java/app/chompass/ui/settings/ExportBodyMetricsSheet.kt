@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +26,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.export.BodyMetricsExporter
 import app.chompass.export.BodyMetricsFormat
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -37,7 +37,7 @@ fun ExportBodyMetricsSheet(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
     var format by remember { mutableStateOf(BodyMetricsFormat.CSV) }
     var status by remember { mutableStateOf<String?>(null) }
 

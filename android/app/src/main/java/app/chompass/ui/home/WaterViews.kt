@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -136,7 +136,7 @@ fun WaterCustomAmountSheet(
     onDismiss: () -> Unit,
     onAdd: (Int) -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberChompassSheetState()
     var customAmount by remember { mutableStateOf("") }
     val amountMl = if (useMetric) {
         customAmount.toIntOrNull()?.takeIf { it > 0 }

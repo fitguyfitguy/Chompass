@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.background
@@ -28,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,7 +78,7 @@ fun NutritionDetailSheet(
     onHomeTopNutrientsChange: (List<HomeTopNutrient>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
     val listState = rememberLazyListState()
     var showHomeCardsPicker by remember { mutableStateOf(false) }
     val calories = entries.sumOf { it.calories }
@@ -123,6 +123,11 @@ fun NutritionDetailSheet(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 16.dp),
+            // Codeberg #30 (maintainer decision 2026-08-18): this read-only
+            // micros sheet used to block content drags entirely (no swipe to
+            // dismiss). Keep content drags enabled so it dismisses like the
+            // other sheets — deliberately, via the raised sheet thresholds.
+            blockTopEdge = false,
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             item {

@@ -1,5 +1,6 @@
 package app.chompass.ui.progress
 
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +45,7 @@ internal fun AllWeightHistorySheet(
     onDelete: (java.util.UUID) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
     val fmt = LocaleFormat.mediumDateZoned()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ChompassBottomSheet(
@@ -106,7 +106,7 @@ internal fun AllBodyFatHistorySheet(
     onDelete: (java.util.UUID) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state = rememberChompassSheetState()
     val fmt = LocaleFormat.mediumDateZoned()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
     ChompassBottomSheet(

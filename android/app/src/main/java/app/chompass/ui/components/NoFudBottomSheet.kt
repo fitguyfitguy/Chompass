@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -24,6 +23,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 
@@ -76,19 +77,41 @@ fun ChompassBottomSheet(
  *
  * @param busy when true, transitions to [SheetValue.Hidden] are rejected so a
  *   mid-flight save/reprocess cannot be aborted by a swipe.
+ * @param positionalThreshold minimum downward drag (dp) before a slow release
+ *   can settle to Hidden. m3 1.4's default (56.dp) means a slow release only
+ *   dismisses once the sheet is within 56dp of fully hidden — the real
+ *   dismissal sensitivity is [velocityThreshold]. Kept modest (120.dp) so a
+ *   fixed value cannot backfire on short sheets (a large fixed threshold
+ *   makes a short sheet dismiss on almost any pull).
+ * @param velocityThreshold minimum fling velocity (dp/s) that dismisses. m3's
+ *   default 125.dp/s is a gentle swipe — a normal scroll gesture at a list
+ *   top exceeds it and dismisses. Raised to 1200.dp/s (maintainer decision
+ *   2026-08-18, applied to every swipe-to-dismiss sheet) so only a deliberate
+ *   flick dismisses; ordinary scrolls spring back.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberChompassSheetState(
     busy: Boolean = false,
+    positionalThreshold: Dp = 120.dp,
+    velocityThreshold: Dp = 1200.dp,
 ): SheetState {
     // SheetState keeps the confirmValueChange from first remember; always read
     // the latest busy flag via rememberUpdatedState.
     val busyState = rememberUpdatedState(busy)
-    return rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { target -> allowsSheetHide(target, busyState.value) },
-    )
+    val density = LocalDensity.current
+    return remember(busyState, density, positionalThreshold, velocityThreshold) {
+        // rememberSheetState is internal in m3 1.4; the public SheetState
+        // constructor takes the thresholds as px lambdas (dp converted here).
+        SheetState(
+            skipPartiallyExpanded = true,
+            positionalThreshold = { with(density) { positionalThreshold.toPx() } },
+            velocityThreshold = { with(density) { velocityThreshold.toPx() } },
+            initialValue = SheetValue.Hidden,
+            confirmValueChange = { target -> allowsSheetHide(target, busyState.value) },
+            skipHiddenState = false,
+        )
+    }
 }
 
 /**
