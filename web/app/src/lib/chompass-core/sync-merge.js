@@ -63,6 +63,67 @@ export function mergeRecordLists(local, remote) {
 }
 
 /**
+ * Merge rows by id (LWW) and then collapse live rows that share a dedupe key —
+ * weights: identical (date, weight_kg) written under different ids. Keeps the
+ * newest updated_at; on a tie prefers the remote row, mirroring pickNewer.
+ * Tombstoned rows carry no date/value and pass through untouched so deletes
+ * still propagate. Replaces mergeRecordLists for the weights key.
+ * @template {SyncMeta} T
+ * @param {T[]} local
+ * @param {T[]} remote
+ * @param {(row: T) => string} keyOf
+ * @returns {T[]}
+ */
+export function dedupeRecordLists(local, remote, keyOf) {
+  const merged = mergeRecordLists(local, remote);
+  // A merged row came from remote when the remote side holds the same id with
+  // the same updated_at (pickNewer breaks equal-timestamp ties toward remote).
+  /** @type {Map<string, string>} */
+  const remoteUpdatedAt = new Map();
+  for (const row of remote) {
+    if (row?.id) remoteUpdatedAt.set(row.id, row.updated_at);
+  }
+  /** @type {Map<string, T>} */
+  const byKey = new Map();
+  /** @type {Map<string, boolean>} */
+  const winnerRemote = new Map();
+  for (const row of merged) {
+    if (row.deleted_at) continue; // tombstones pass through
+    const key = keyOf(row);
+    if (!key) continue;
+    const existing = byKey.get(key);
+    const rowIsRemote = remoteUpdatedAt.get(row.id) === row.updated_at;
+    if (!existing) {
+      byKey.set(key, row);
+      winnerRemote.set(key, rowIsRemote);
+    } else {
+      const cmp = compareUpdatedAt(existing.updated_at, row.updated_at);
+      if (cmp < 0 || (cmp === 0 && rowIsRemote && !winnerRemote.get(key))) {
+        byKey.set(key, row);
+        winnerRemote.set(key, rowIsRemote);
+      }
+    }
+  }
+  const tombstones = merged.filter((row) => row.deleted_at);
+  return [...tombstones, ...byKey.values()].sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * Dedupe key for weight rows: date + canonical weight value. The value is
+ * parsed to a number and re-stringified so the Android wire form ("80.0") and
+ * the PWA form ("80") collapse to the same key. Blank when there is no usable
+ * date/value (tombstones are skipped by the caller anyway).
+ * @param {SyncMeta & { date?: string; weight_kg?: number|string }} row
+ * @returns {string}
+ */
+function weightDedupeKey(row) {
+  if (!row.date) return "";
+  const weight = Number(row.weight_kg);
+  if (!Number.isFinite(weight)) return "";
+  return `${row.date}|${weight}`;
+}
+
+/**
  * Merge singleton envelope objects (profile / prefs).
  * @param {{ updated_at: string, deleted_at?: string|null, payload?: object }|null|undefined} local
  * @param {{ updated_at: string, deleted_at?: string|null, payload?: object }|null|undefined} remote
@@ -105,7 +166,10 @@ export function mergeSyncDocuments(local, remote) {
     },
   };
   for (const key of LIST_KEYS) {
-    out[key] = mergeRecordLists(local[key] ?? [], remote[key] ?? []);
+    out[key] =
+      key === "weights"
+        ? dedupeRecordLists(local[key] ?? [], remote[key] ?? [], weightDedupeKey)
+        : mergeRecordLists(local[key] ?? [], remote[key] ?? []);
   }
   const profile = mergeSingleton(local.profile, remote.profile);
   const prefs = mergeSingleton(local.prefs, remote.prefs);

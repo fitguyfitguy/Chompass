@@ -50,6 +50,54 @@ object SyncMerge {
         return byId.values.sortedBy { idOf(it) }
     }
 
+    /**
+     * Merge rows by id (LWW, same as [mergeRecordLists]) and then collapse live
+     * rows that share a dedupe key — for weights, identical (date, weight_kg)
+     * written under different ids. Keeps the newest [updatedAt]; on a tie
+     * prefers the remote row, mirroring [pickNewer]. Tombstoned rows carry no
+     * date/value and pass through untouched so deletes still propagate.
+     * Replaces [mergeRecordLists] for the weights key.
+     */
+    fun <T> dedupeRecordLists(
+        local: List<T>,
+        remote: List<T>,
+        idOf: (T) -> String,
+        keyOf: (T) -> String,
+        updatedAt: (T) -> String,
+        deletedAt: (T) -> String?,
+    ): List<T> {
+        val merged = mergeRecordLists(local, remote, idOf, updatedAt, deletedAt)
+        // A merged row came from remote when the remote side holds the same id
+        // with the same updated_at (pickNewer breaks equal-timestamp ties toward
+        // remote, so the winner can only be the remote copy in that case).
+        val remoteUpdatedAt = HashMap<String, String>()
+        for (row in remote) {
+            val id = idOf(row)
+            if (id.isNotBlank()) remoteUpdatedAt[id] = updatedAt(row)
+        }
+        val byKey = LinkedHashMap<String, T>()
+        val winnerRemote = HashMap<String, Boolean>()
+        for (row in merged) {
+            if (!deletedAt(row).isNullOrBlank()) continue // tombstones pass through
+            val key = keyOf(row)
+            if (key.isBlank()) continue
+            val existing = byKey[key]
+            val rowIsRemote = remoteUpdatedAt[idOf(row)] == updatedAt(row)
+            if (existing == null) {
+                byKey[key] = row
+                winnerRemote[key] = rowIsRemote
+            } else {
+                val cmp = compareUpdatedAt(updatedAt(existing), updatedAt(row))
+                if (cmp < 0 || (cmp == 0 && rowIsRemote && winnerRemote[key] == false)) {
+                    byKey[key] = row
+                    winnerRemote[key] = rowIsRemote
+                }
+            }
+        }
+        val tombstones = merged.filter { !deletedAt(it).isNullOrBlank() }
+        return (tombstones + byKey.values).sortedBy { idOf(it) }
+    }
+
     data class Partition<T>(val live: List<T>, val deletedIds: List<String>)
 
     fun <T> partitionLiveAndDeleted(
