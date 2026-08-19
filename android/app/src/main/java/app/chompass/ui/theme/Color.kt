@@ -297,7 +297,9 @@ object AppColors {
     // Text and accent colors reuse the Dark values (unchanged).
     val AppBackgroundOled = Color(0xFF000000)
     val AppCardOled = Color(0xFF000000)
-    val SurfaceContainerLowOled = Color(0xFF0A0A0A)
+    // Sheets and low-elevation surfaces are pure black too, so modal sheets
+    // blend with the app background (maintainer device-pass feedback 2026-08-19).
+    val SurfaceContainerLowOled = Color(0xFF000000)
     val SurfaceContainerHighOled = Color(0xFF141414)
     val NavBarOled = Color(0xFF000000)
     val ActivePillOled = Color(0xFF3A3A3A)
