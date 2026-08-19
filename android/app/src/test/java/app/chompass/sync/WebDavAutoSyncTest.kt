@@ -11,6 +11,14 @@ class WebDavAutoSyncTest {
     private val today = LocalDate.of(2026, 7, 31)
 
     @Test
+    fun tracksRevisionsWhenUrlIsSetRegardlessOfAutoSync() {
+        assertFalse(shouldTrackSyncRevisions(""))
+        assertFalse(shouldTrackSyncRevisions("   "))
+        assertTrue(shouldTrackSyncRevisions("https://dav.example/chompass.json"))
+        assertTrue(shouldTrackSyncRevisions("dav.example/chompass.json"))
+    }
+
+    @Test
     fun skipsWhenDisabledOrNotConfigured() {
         assertFalse(
             shouldAutoSyncWebDav(

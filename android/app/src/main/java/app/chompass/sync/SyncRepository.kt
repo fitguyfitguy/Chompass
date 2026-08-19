@@ -181,15 +181,14 @@ class SyncRepository(
     }
 
     /**
-     * Whether revision tracking is meaningful: WebDAV is opted in and a URL is
-     * set. When false, [touch]/[tombstone] are no-ops so logging never pays a
-     * full-file DataStore write for a revision map nothing will consume.
+     * Whether revision tracking is meaningful: a WebDAV URL is set. Auto-sync
+     * is a separate toggle; Sync Now still runs without it, so deletes must
+     * tombstone or the next pull re-injects the row (#39). When false,
+     * [touch]/[tombstone] are no-ops so logging never pays a full-file
+     * DataStore write for a revision map nothing will consume.
      */
-    private suspend fun syncConfigured(): Boolean {
-        val enabled = prefs.webDavEnabled.first()
-        val url = normalizeWebDavUrl(prefs.webDavUrl.first())
-        return enabled && url.isNotEmpty()
-    }
+    private suspend fun syncConfigured(): Boolean =
+        shouldTrackSyncRevisions(prefs.webDavUrl.first())
 
     /**
      * One-time repair for records created while WebDAV was disabled (or before
