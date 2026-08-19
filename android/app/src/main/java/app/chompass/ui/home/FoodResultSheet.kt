@@ -1202,51 +1202,43 @@ internal fun ReviewNutritionValueRow(
             enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
             exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp)
-                    .padding(bottom = 16.dp)
-            ) {
-                Text(
-                    label,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = accentColor ?: AppColors.Calorie,
-                    modifier = Modifier.padding(start = 4.dp).padding(bottom = 8.dp)
+            if (isCalories) {
+                // Unified calorie picker: single wheel with 2 kcal step
+                val calorieItems = remember { (0..5000 step 2).toList() }
+                val currentCalories = currentValue.roundToInt()
+                val clampedCalories = currentCalories.coerceIn(0, 5000)
+                val snappedCalories = (clampedCalories / 2) * 2
+                WheelPicker(
+                    items = calorieItems,
+                    selected = snappedCalories,
+                    onSelect = { newVal ->
+                        val formatted = newVal.toString()
+                        draft = formatted
+                        onEdit(formatted)
+                    },
+                    label = { "${it} kcal" },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp)
+                        .padding(bottom = 16.dp)
                 )
-                if (isCalories) {
-                    // Unified calorie picker: single wheel with 2 kcal step
-                    val calorieItems = remember { (0..5000 step 2).toList() }
-                    val currentCalories = currentValue.roundToInt()
-                    val clampedCalories = currentCalories.coerceIn(0, 5000)
-                    val snappedCalories = (clampedCalories / 2) * 2
-                    WheelPicker(
-                        items = calorieItems,
-                        selected = snappedCalories,
-                        onSelect = { newVal ->
-                            val formatted = newVal.toString()
-                            draft = formatted
-                            onEdit(formatted)
-                        },
-                        label = { "${it} kcal" },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    DecimalWheelPicker(
-                        value = currentValue,
-                        onValueChange = { newVal ->
-                            val formatted = String.format("%.1f", newVal)
-                            draft = formatted
-                            onEdit(formatted)
-                        },
-                        min = 0.0,
-                        max = 999.9,
-                        step = 0.1,
-                        unit = unit,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+            } else {
+                DecimalWheelPicker(
+                    value = currentValue,
+                    onValueChange = { newVal ->
+                        val formatted = String.format("%.1f", newVal)
+                        draft = formatted
+                        onEdit(formatted)
+                    },
+                    min = 0.0,
+                    max = 999.9,
+                    step = 0.1,
+                    unit = unit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp)
+                        .padding(bottom = 16.dp)
+                )
             }
         }
     }
