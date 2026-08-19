@@ -21,6 +21,8 @@ import app.chompass.BuildConfig
 internal data class DebugIntentActions(
     val resetOnboarding: Boolean = false,
     val seedTestData: Boolean = false,
+    val seedFull: Boolean = false,
+    val seedBusyHome: Boolean = false,
     val seedBodyMetrics: Boolean = false,
     val seedBodyMetricsTwoYears: Boolean = false,
     val seedKetoSettings: Boolean = false,
@@ -51,7 +53,13 @@ internal data class DebugIntentActions(
     val onDeviceLlmRepeat: Int = 1,
     val onDeviceLlmClearCache: Boolean = false,
     val diagnoseHealthConnect: Boolean = false,
-)
+) {
+    val hasSeedAction: Boolean
+        get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
+            seedKetoSettings || seedActiveCalories
+    /** Seeders that write onboarded=true before the heavy diary replace. */
+    val writesOnboarded: Boolean get() = hasSeedAction
+}
 
 /**
  * Reads (and strips) debug extras. INERT IN RELEASE: pass
@@ -68,6 +76,8 @@ internal fun consumeDebugIntentExtras(
     val actions = DebugIntentActions(
         resetOnboarding = intent.getBooleanExtra("reset_onboarding", false),
         seedTestData = intent.getBooleanExtra("seed_test_data", false),
+        seedFull = intent.getBooleanExtra("seed_full", false),
+        seedBusyHome = intent.getBooleanExtra("seed_busy_home", false),
         seedBodyMetrics = intent.getBooleanExtra("seed_body_metrics", false),
         seedBodyMetricsTwoYears = intent.getBooleanExtra("seed_body_metrics_2y", false),
         seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
@@ -107,6 +117,8 @@ internal fun consumeDebugIntentExtras(
     )
     if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
     if (actions.seedTestData) intent.removeExtra("seed_test_data")
+    if (actions.seedFull) intent.removeExtra("seed_full")
+    if (actions.seedBusyHome) intent.removeExtra("seed_busy_home")
     if (actions.seedBodyMetrics) intent.removeExtra("seed_body_metrics")
     if (actions.seedBodyMetricsTwoYears) intent.removeExtra("seed_body_metrics_2y")
     if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")

@@ -28,6 +28,8 @@ class MainActivityDebugExtrasGateTest {
         val intent = Intent().apply {
             putExtra("reset_onboarding", true)
             putExtra("seed_test_data", true)
+            putExtra("seed_full", true)
+            putExtra("seed_busy_home", true)
             putExtra("seed_body_metrics", true)
             putExtra("seed_body_metrics_2y", true)
             putExtra("seed_keto_settings", true)
@@ -54,15 +56,21 @@ class MainActivityDebugExtrasGateTest {
     fun debugBuild_stillParsesAndStripsSeedExtras() {
         val intent = Intent().apply {
             putExtra("seed_test_data", true)
+            putExtra("seed_full", true)
+            putExtra("seed_busy_home", true)
             putExtra("restore_real_data", true)
             putExtra("reset_onboarding", true)
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
         assertTrue(actions.seedTestData)
+        assertTrue(actions.seedFull)
+        assertTrue(actions.seedBusyHome)
         assertTrue(actions.restoreRealData)
         assertTrue(actions.resetOnboarding)
         // Consumed so Activity.recreate() / onNewIntent re-delivery cannot re-fire.
         assertFalse(intent.hasExtra("seed_test_data"))
+        assertFalse(intent.hasExtra("seed_full"))
+        assertFalse(intent.hasExtra("seed_busy_home"))
         assertFalse(intent.hasExtra("restore_real_data"))
         assertFalse(intent.hasExtra("reset_onboarding"))
     }

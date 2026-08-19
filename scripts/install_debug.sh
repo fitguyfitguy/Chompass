@@ -3,15 +3,19 @@
 # the common seed extras.
 #
 # Default: assembleDebug → install arm64 (or universal) → force-stop → start with
-# seed_test_data + seed_body_metrics + seed_keto_settings.
+# seed_full (year of food, 2y metrics, water, recipes, favorites, chat).
 #
 # Usage:
-#   ./scripts/install_debug.sh              # build + install + seeded launch
+#   ./scripts/install_debug.sh              # build + install + full-seed launch
 #   ./scripts/install_debug.sh --no-build   # skip Gradle; install existing APK
 #   ./scripts/install_debug.sh --no-seed    # build + install + plain launch
 #   ./scripts/install_debug.sh --no-launch  # build + install only
 #   ./scripts/install_debug.sh --reseed     # skip build/install; force-stop + seed
-#   ./scripts/install_debug.sh --2y         # also pass seed_body_metrics_2y
+#   ./scripts/install_debug.sh --full       # explicit full seed (the default)
+#   ./scripts/install_debug.sh --slim       # old trio: seed_test_data + 30d metrics + keto
+#   ./scripts/install_debug.sh --keto       # full seed in keto diet mode (or slim + keto)
+#   ./scripts/install_debug.sh --busy-home  # full seed with steps/active cards + extra nutrients
+#   ./scripts/install_debug.sh --2y         # slim only: also pass seed_body_metrics_2y
 #   ./scripts/install_debug.sh --universal  # prefer universal APK over arm64
 #   ./scripts/install_debug.sh --reinstall  # uninstall first (signature-mismatch installs)
 #
@@ -37,6 +41,9 @@ DO_BUILD=1
 DO_INSTALL=1
 DO_LAUNCH=1
 DO_SEED=1
+SEED_MODE=full
+SEED_KETO=0
+SEED_BUSY_HOME=0
 SEED_2Y=0
 PREFER_UNIVERSAL=0
 DO_REINSTALL=0
@@ -49,10 +56,14 @@ while [ $# -gt 0 ]; do
     --no-launch) DO_LAUNCH=0 ;;
     --reseed) DO_BUILD=0; DO_INSTALL=0; DO_LAUNCH=1; DO_SEED=1 ;;
     --reinstall) DO_REINSTALL=1 ;;
+    --full) SEED_MODE=full ;;
+    --slim) SEED_MODE=slim ;;
+    --keto) SEED_KETO=1 ;;
+    --busy-home) SEED_BUSY_HOME=1 ;;
     --2y) SEED_2Y=1 ;;
     --universal) PREFER_UNIVERSAL=1 ;;
     -h|--help)
-      sed -n '2,21p' "$0"
+      sed -n '2,26p' "$0"
       exit 0
       ;;
     *)
@@ -128,11 +139,22 @@ echo "Force-stopping ${PACKAGE}"
 
 START_ARGS=(am start -n "${ACTIVITY}")
 if [ "${DO_SEED}" -eq 1 ]; then
-  START_ARGS+=(--ez seed_test_data true --ez seed_body_metrics true --ez seed_keto_settings true)
-  if [ "${SEED_2Y}" -eq 1 ]; then
-    START_ARGS+=(--ez seed_body_metrics_2y true)
+  if [ "${SEED_MODE}" = slim ]; then
+    START_ARGS+=(--ez seed_test_data true --ez seed_body_metrics true --ez seed_keto_settings true)
+    if [ "${SEED_2Y}" -eq 1 ]; then
+      START_ARGS+=(--ez seed_body_metrics_2y true)
+    fi
+    echo "Launching with slim seed extras"
+  else
+    START_ARGS+=(--ez seed_full true)
+    if [ "${SEED_KETO}" -eq 1 ]; then
+      START_ARGS+=(--ez seed_keto_settings true)
+    fi
+    if [ "${SEED_BUSY_HOME}" -eq 1 ]; then
+      START_ARGS+=(--ez seed_busy_home true)
+    fi
+    echo "Launching with full seed extras"
   fi
-  echo "Launching with seed extras"
 else
   echo "Launching (no seed)"
 fi

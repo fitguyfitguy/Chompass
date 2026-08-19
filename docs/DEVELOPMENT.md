@@ -67,14 +67,17 @@ cd android
 ./gradlew :app:assembleDebug
 ```
 
-Install the debug APK (side-by-side package `app.chompass.debug`) and launch with the common seed extras:
+Install the debug APK (side-by-side package `app.chompass.debug`) and launch with the full power-user seed (year of food, 2y metrics, water, recipes, favorites, chat):
 
 ```bash
-./scripts/install_debug.sh            # build + install + seed launch (WSL → Windows adb)
+./scripts/install_debug.sh            # build + install + full-seed launch (WSL → Windows adb)
 install-debug                         # same, inside devenv shell
 ./scripts/install_debug.sh --no-build # skip Gradle; install existing APK
 ./scripts/install_debug.sh --no-seed  # build + install + plain launch
 ./scripts/install_debug.sh --reseed   # skip build/install; force-stop + seed again
+./scripts/install_debug.sh --slim     # old trio (year food + 30d metrics + keto)
+./scripts/install_debug.sh --keto     # full seed in keto diet mode
+./scripts/install_debug.sh --busy-home # full seed with extra Home cards
 ```
 
 **Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split: ignore them if your device is visible to local `adb devices`.

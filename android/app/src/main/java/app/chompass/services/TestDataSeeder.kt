@@ -2,16 +2,28 @@ package app.chompass.services
 
 import app.chompass.AppContainer
 import app.chompass.BuildConfig
+import app.chompass.models.ActivityLevel
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyMeasurement
+import app.chompass.models.ChatMessage
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
-import app.chompass.models.KetoCarbMode
+import app.chompass.models.Gender
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeTopNutrient
+import app.chompass.models.KetoCarbMode
 import app.chompass.models.MealType
+import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.Recipe
 import app.chompass.models.UserProfile
+import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
+import app.chompass.models.WeightGoal
 import app.chompass.services.health.DebugActivityDay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -39,6 +51,8 @@ import java.time.ZoneId
  */
 class TestDataSeeder(private val container: AppContainer) {
     private val json = Json { ignoreUnknownKeys = true }
+    private val _seeding = MutableStateFlow(false)
+    val seeding: StateFlow<Boolean> = _seeding.asStateFlow()
 
     /**
      * Focused seeder for Keto mode debugging. It mutates only profile fields (diet mode + keto
@@ -86,6 +100,122 @@ class TestDataSeeder(private val container: AppContainer) {
             SampleDataGenerators.bodyFatSeries(totalDays = 365, startFraction = 0.225, endFraction = 0.175, seed = 0xFA7365)
         )
         seedDebugHomeActivity(totalDays = 365)
+    }
+
+    /**
+     * One atomic power-user fixture: year of food, 2y metrics, water, recipes,
+     * favorites, chat, optional nutrients, and a handful of photo thumbs.
+     * Idempotent: replaceAll / set* overwrite, they do not stack.
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez seed_keto_settings true
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez seed_busy_home true
+     */
+    suspend fun seedFullyUtilized(keto: Boolean = false, busyHome: Boolean = false) {
+        if (!BuildConfig.DEBUG) return
+        _seeding.value = true
+        try {
+            snapshotRealDataIfNeeded()
+            container.prefs.setHealthConnectEnabled(false)
+
+            val profile = UserProfile(
+                name = "Alex",
+                gender = Gender.MALE,
+                heightCm = 178.0,
+                weightKg = 73.5,
+                activityLevel = ActivityLevel.MODERATE,
+                goal = WeightGoal.LOSE,
+                dietMode = if (keto) DietMode.KETO else DietMode.STANDARD,
+                ketoCarbMode = if (keto) KetoCarbMode.MANUAL else KetoCarbMode.ADAPTIVE,
+                ketoCarbManualTarget = if (keto) 25 else null,
+                bodyFatPercentage = 0.175,
+                goalBodyFatPercentage = 0.15,
+                goalWeightKg = 70.0,
+                weeklyChangeKg = 0.5,
+            )
+            container.profileRepository.save(profile)
+            container.prefs.setOnboardingCompleted(true)
+
+            val foods = attachSeedPhotos(SampleDataGenerators.fullFoodEntries())
+            container.foodRepository.replaceAll(foods)
+            container.weightRepository.replaceAll(
+                SampleDataGenerators.weightSeries(totalDays = 730, startKg = 82.0, endKg = 73.5, seed = 0x2BEEF)
+            )
+            container.bodyFatRepository.replaceAll(
+                SampleDataGenerators.bodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.175, seed = 0x2FA7)
+            )
+            container.bodyMeasurementRepository.replaceAll(
+                SampleDataGenerators.measurementSeries(totalDays = 180, seed = 0x7A1)
+            )
+            seedDebugHomeActivity(totalDays = 365)
+
+            val favorites = SampleDataGenerators.sampleFavorites()
+            container.prefs.setFavoriteFoodEntries(favorites)
+            container.prefs.setFavoriteKeys(favorites.map { it.favoriteKey }.toSet())
+            container.prefs.setRecipes(SampleDataGenerators.sampleRecipes())
+            container.prefs.setWaterTrackingEnabled(true)
+            container.prefs.setWaterDynamicEnabled(true)
+            container.prefs.setWaterFoodWaterEnabled(true)
+            container.prefs.setWaterDailyGoalMl(2_500)
+            container.prefs.setWaterEntries(SampleDataGenerators.waterEntries())
+            container.chatRepository.replaceAll(SampleDataGenerators.sampleChat())
+            container.prefs.setCoachTabEnabled(true)
+
+            container.prefs.setProgressMeasurementSites(
+                setOf(
+                    BodyMeasurement.Site.WAIST.storageId,
+                    BodyMeasurement.Site.HIPS.storageId,
+                    BodyMeasurement.Site.CHEST.storageId,
+                    BodyMeasurement.Site.NECK.storageId,
+                )
+            )
+            container.prefs.setOptionalNutrientGoals(
+                OptionalNutrientGoals.Default.copy(fiber = 30, sodium = 2300, potassium = 3500)
+            )
+
+            container.prefs.setNotificationsEnabled(true)
+            container.prefs.setStreakReminderEnabled(true)
+            container.prefs.setStreakReminderHour(20)
+            container.prefs.setDailySummaryEnabled(true)
+            container.prefs.setDailySummaryHour(21)
+            container.prefs.setWaterReminderEnabled(true)
+
+            if (busyHome) {
+                container.prefs.setHomeShowSteps(true)
+                container.prefs.setHomeShowActiveCalories(true)
+                container.prefs.setHomeNutrientCardCount(4)
+                container.prefs.setHomeTopNutrients(
+                    HomeTopNutrient.toStorage(
+                        listOf(
+                            HomeTopNutrient.PROTEIN,
+                            HomeTopNutrient.FIBER,
+                            HomeTopNutrient.SODIUM,
+                            HomeTopNutrient.POTASSIUM,
+                        ),
+                        cardCount = 4,
+                    )
+                )
+            }
+        } finally {
+            _seeding.value = false
+        }
+    }
+
+    private fun attachSeedPhotos(entries: List<FoodEntry>): List<FoodEntry> {
+        val fixtures = SEED_PHOTO_ASSETS.mapNotNull { path ->
+            runCatching { container.appContext.assets.open(path).use { it.readBytes() } }.getOrNull()
+                ?.takeIf { it.isNotEmpty() }
+        }
+        if (fixtures.isEmpty()) return entries
+        val photoIdxs = entries.indices.filter { entries[it].source == FoodSource.SNAP_FOOD }.takeLast(36)
+        if (photoIdxs.isEmpty()) return entries
+        val out = entries.toMutableList()
+        photoIdxs.forEachIndexed { i, idx ->
+            val entry = out[idx]
+            val filename = container.imageStore.storeBytes(fixtures[i % fixtures.size], entry.id)
+            if (filename != null) out[idx] = entry.copy(imageFilename = filename)
+        }
+        return out
     }
 
     private suspend fun seedDebugHomeActivity(totalDays: Int) {
@@ -287,6 +417,47 @@ class TestDataSeeder(private val container: AppContainer) {
             healthConnectEnabled = container.prefs.healthConnectEnabled.first(),
             onboarded = container.prefs.hasCompletedOnboarding.first(),
             debugActivityJson = container.prefs.debugActivityDaysJson(),
+            waterJson = json.encodeToString(
+                ListSerializer(WaterEntry.serializer()),
+                container.prefs.waterEntries.first(),
+            ),
+            recipesJson = json.encodeToString(
+                ListSerializer(Recipe.serializer()),
+                container.prefs.recipes.first(),
+            ),
+            favoritesJson = json.encodeToString(
+                ListSerializer(FoodEntry.serializer()),
+                container.prefs.favoriteFoodEntries.first(),
+            ),
+            chatJson = json.encodeToString(
+                ListSerializer(ChatMessage.serializer()),
+                container.prefs.chatHistory.first(),
+            ),
+            measurementsJson = json.encodeToString(
+                ListSerializer(BodyMeasurement.serializer()),
+                container.bodyMeasurementRepository.entries.first(),
+            ),
+            settings = SeedSettingsSnapshot(
+                waterTrackingEnabled = container.prefs.waterTrackingEnabled.first(),
+                waterDynamicEnabled = container.prefs.waterDynamicEnabled.first(),
+                waterFoodWaterEnabled = container.prefs.waterFoodWaterEnabled.first(),
+                waterDailyGoalMl = container.prefs.waterDailyGoalMl.first(),
+                waterReminderEnabled = container.prefs.waterReminderEnabled.first(),
+                notificationsEnabled = container.prefs.notificationsEnabled.first(),
+                streakReminderEnabled = container.prefs.streakReminderEnabled.first(),
+                dailySummaryEnabled = container.prefs.dailySummaryEnabled.first(),
+                coachTabEnabled = container.prefs.coachTabEnabled.first(),
+                progressMeasurementSites = container.prefs.progressMeasurementSites.first(),
+                optionalNutrientGoalsJson = json.encodeToString(
+                    OptionalNutrientGoals.serializer(),
+                    container.prefs.optionalNutrientGoals.first(),
+                ),
+                homeShowSteps = container.prefs.homeShowSteps.first(),
+                homeShowActiveCalories = container.prefs.homeShowActiveCalories.first(),
+                homeTopNutrients = container.prefs.homeTopNutrients.first(),
+                homeNutrientCardCount = container.prefs.homeNutrientCardCount.first(),
+                homeCalorieDisplayMode = container.prefs.homeCalorieDisplayMode.first(),
+            ),
         )
         container.prefs.setTestSeedBackupJson(json.encodeToString(SeedBackup.serializer(), backup))
     }
@@ -318,6 +489,53 @@ class TestDataSeeder(private val container: AppContainer) {
                 json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), it)
             )
         } ?: container.prefs.clearDebugActivityDays()
+        backup.waterJson?.let {
+            container.prefs.setWaterEntries(
+                json.decodeFromString(ListSerializer(WaterEntry.serializer()), it)
+            )
+        }
+        backup.recipesJson?.let {
+            container.prefs.setRecipes(
+                json.decodeFromString(ListSerializer(Recipe.serializer()), it)
+            )
+        }
+        backup.favoritesJson?.let {
+            val favorites = json.decodeFromString(ListSerializer(FoodEntry.serializer()), it)
+            container.prefs.setFavoriteFoodEntries(favorites)
+            container.prefs.setFavoriteKeys(favorites.map { fav -> fav.favoriteKey }.toSet())
+        }
+        backup.chatJson?.let {
+            container.chatRepository.replaceAll(
+                json.decodeFromString(ListSerializer(ChatMessage.serializer()), it)
+            )
+        }
+        backup.measurementsJson?.let {
+            container.bodyMeasurementRepository.replaceAll(
+                json.decodeFromString(ListSerializer(BodyMeasurement.serializer()), it)
+            )
+        }
+        backup.settings?.let { settings ->
+            container.prefs.setWaterTrackingEnabled(settings.waterTrackingEnabled)
+            container.prefs.setWaterDynamicEnabled(settings.waterDynamicEnabled)
+            container.prefs.setWaterFoodWaterEnabled(settings.waterFoodWaterEnabled)
+            container.prefs.setWaterDailyGoalMl(settings.waterDailyGoalMl)
+            container.prefs.setWaterReminderEnabled(settings.waterReminderEnabled)
+            container.prefs.setNotificationsEnabled(settings.notificationsEnabled)
+            container.prefs.setStreakReminderEnabled(settings.streakReminderEnabled)
+            container.prefs.setDailySummaryEnabled(settings.dailySummaryEnabled)
+            container.prefs.setCoachTabEnabled(settings.coachTabEnabled)
+            container.prefs.setProgressMeasurementSites(settings.progressMeasurementSites)
+            settings.optionalNutrientGoalsJson?.let { raw ->
+                json.decodeFromString(OptionalNutrientGoals.serializer(), raw).let {
+                    container.prefs.setOptionalNutrientGoals(it)
+                }
+            }
+            container.prefs.setHomeShowSteps(settings.homeShowSteps)
+            container.prefs.setHomeShowActiveCalories(settings.homeShowActiveCalories)
+            settings.homeTopNutrients?.let { container.prefs.setHomeTopNutrients(it) }
+            settings.homeNutrientCardCount?.let { container.prefs.setHomeNutrientCardCount(it) }
+            settings.homeCalorieDisplayMode?.let { container.prefs.setHomeCalorieDisplayMode(it) }
+        }
         backup.profileJson?.let {
             container.profileRepository.save(json.decodeFromString(UserProfile.serializer(), it))
         }
@@ -326,10 +544,18 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.clearTestSeedBackup()
     }
 
+    private companion object {
+        val SEED_PHOTO_ASSETS = listOf(
+            "ondevice_llm/food_plate.jpg",
+            "ondevice_llm/pizza_slices.jpg",
+            "ondevice_llm/fast_food_combo.jpg",
+        )
+    }
+
 }
 
 @Serializable
-private data class SeedBackup(
+internal data class SeedBackup(
     val entriesJson: String,
     val weightsJson: String,
     val profileJson: String?,
@@ -338,4 +564,30 @@ private data class SeedBackup(
     // Added after BodyFatRepository shipped — null in older backups.
     val bodyFatsJson: String? = null,
     val debugActivityJson: String? = null,
+    val waterJson: String? = null,
+    val recipesJson: String? = null,
+    val favoritesJson: String? = null,
+    val chatJson: String? = null,
+    val measurementsJson: String? = null,
+    val settings: SeedSettingsSnapshot? = null,
+)
+
+@Serializable
+internal data class SeedSettingsSnapshot(
+    val waterTrackingEnabled: Boolean = false,
+    val waterDynamicEnabled: Boolean = false,
+    val waterFoodWaterEnabled: Boolean = false,
+    val waterDailyGoalMl: Int = 2_000,
+    val waterReminderEnabled: Boolean = false,
+    val notificationsEnabled: Boolean = false,
+    val streakReminderEnabled: Boolean = false,
+    val dailySummaryEnabled: Boolean = false,
+    val coachTabEnabled: Boolean = true,
+    val progressMeasurementSites: Set<String> = emptySet(),
+    val optionalNutrientGoalsJson: String? = null,
+    val homeShowSteps: Boolean = false,
+    val homeShowActiveCalories: Boolean = false,
+    val homeTopNutrients: String? = null,
+    val homeNutrientCardCount: Int? = null,
+    val homeCalorieDisplayMode: String? = null,
 )
