@@ -620,7 +620,6 @@
 
     <string name="add_food_quick_relog">फिर से लॉग करें</string>
     <string name="add_food_quick_relog_empty">कोई भोजन पसंदीदा बनाएँ या एक बार लॉग करें। यह यहाँ एक-टैप पुनः-लॉग के लिए दिखेगा।</string>
-    <string name="add_food_quick_relog_hint">पसंदीदा और पिछले भोजन। दोबारा स्कैन से तेज़।</string>
     <string name="ai_provider_on_device_subtitle">निजी और ऑफ़लाइन। क्लाउड AI से कम सटीक; ~2-4 GB डाउनलोड</string>
     <string name="camera_scale_tip_message">सुझाव: भोजन के बगल में कांटा, हाथ या सिक्का रखें। यह हिस्से का अनुमान लगाने में मदद करता है।</string>
     <string name="cd_relog_meal">%1$s फिर से लॉग करें</string>

@@ -60,7 +60,6 @@ export const zh_CN = Object.freeze({
   "add_food.hero_recents": "最近",
   "add_food.hero_recents_sub": "最近和收藏",
   "add_food.quick_relog": "再次记录",
-  "add_food.quick_relog_hint": "收藏和过去的餐食。比重新扫描更快。",
   "add_food.quick_relog_empty": "将餐食加入收藏或记录一次，即可在此一键重新记录。",
   "add_food.more_section": "更多记录方式",
   "add_food.voice": "语音",

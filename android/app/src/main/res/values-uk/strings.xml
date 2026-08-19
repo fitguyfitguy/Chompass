@@ -237,7 +237,6 @@
     <string name="add_food_hero_saved_sub">Нещодавнє та улюблене</string>
     <string name="add_food_more_section">Інші способи внесення</string>
     <string name="add_food_quick_relog">Внести ще раз</string>
-    <string name="add_food_quick_relog_hint">Улюблені страви та минулі прийоми. Швидше, ніж сканувати знову.</string>
     <string name="add_food_quick_relog_empty">Познач страву як улюблену або внеси її один раз, і вона з\'явиться тут для швидкого повторного внесення.</string>
     <string name="cd_relog_meal">Внести %1$s ще раз</string>
     <string name="add_food_photo_source_title">Додати фото</string>

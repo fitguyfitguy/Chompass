@@ -60,7 +60,6 @@ export const az = Object.freeze({
   "add_food.hero_recents": "Son",
   "add_food.hero_recents_sub": "Son və seçilmişlər",
   "add_food.quick_relog": "Yenidən qeyd et",
-  "add_food.quick_relog_hint": "Seçilmişlər və keçmiş yeməklər. Yenidən skan etməkdən sürətli.",
   "add_food.quick_relog_empty": "Yeməyi seçilmişlərə əlavə edin və ya bir dəfə qeyd edin. Bir toxunuşla yenidən qeyd üçün burada görünəcək.",
   "add_food.more_section": "Qeyd etmənin digər yolları",
   "add_food.voice": "Səs",

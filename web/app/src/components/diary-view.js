@@ -983,7 +983,6 @@ export class DiaryView extends HTMLElement {
     const quickRelogBlock =
       quickRelogs.length > 0
         ? `<p class="add-food-section">${t("add_food.quick_relog")}</p>
-           <p class="add-food-hint">${t("add_food.quick_relog_hint")}</p>
            <div class="add-food-relog" role="list">
              ${quickRelogs
                .map(

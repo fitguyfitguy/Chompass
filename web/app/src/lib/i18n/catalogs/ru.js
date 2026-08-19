@@ -60,7 +60,6 @@ export const ru = Object.freeze({
   "add_food.hero_recents": "Недавние",
   "add_food.hero_recents_sub": "Недавние и избранное",
   "add_food.quick_relog": "Записать снова",
-  "add_food.quick_relog_hint": "Избранное и прошлые приёмы пищи. Быстрее, чем сканировать заново.",
   "add_food.quick_relog_empty": "Добавьте приём пищи в избранное или запишите его один раз. Он появится здесь для повторной записи в один тап.",
   "add_food.more_section": "Другие способы записи",
   "add_food.voice": "Голос",

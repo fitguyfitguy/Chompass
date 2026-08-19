@@ -695,8 +695,6 @@ für dich ein</string>
 
     <string name="add_food_quick_relog">Erneut eintragen</string>
 
-    <string name="add_food_quick_relog_hint">Favoriten und frühere Mahlzeiten. Schneller als erneutes Scannen.</string>
-
     <string name="add_food_quick_relog_empty">Füge eine Mahlzeit zu den Favoriten hinzu oder erfasse sie einmal. Sie wird hier angezeigt, damit du sie mit einem Fingertipp erneut erfassen kannst.</string>
 
     <string name="add_food_relog_kcal">%1$d kcal</string>

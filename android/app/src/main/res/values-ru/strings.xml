@@ -1143,7 +1143,6 @@
     <string name="settings_language_system">Системный</string>
     <string name="add_food_quick_relog">Записать снова</string>
     <string name="add_food_quick_relog_empty">Добавь приём пищи в избранное или запиши его один раз. Он появится здесь для повторной записи одним касанием.</string>
-    <string name="add_food_quick_relog_hint">Избранное и прошлые приёмы пищи. Быстрее, чем повторное сканирование.</string>
     <string name="add_food_relog_kcal">%1$d ккал</string>
     <string name="ai_provider_on_device_subtitle">Приватно и офлайн. Менее точно, чем облачный ИИ; загрузка ~2-4 ГБ</string>
     <string name="camera_scale_tip_message">Совет: положи рядом с едой вилку, руку или монету. Это помогает оценить размер порции.</string>
