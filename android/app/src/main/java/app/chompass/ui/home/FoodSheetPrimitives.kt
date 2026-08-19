@@ -76,6 +76,7 @@ import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitWheelPicker
+import app.chompass.ui.components.WheelSelectionHighlight
 
 // Shared visual primitives for the food review/edit sheets. Names are
 // `Sheet*`-prefixed so they don't collide with the look-alike privates in
@@ -379,8 +380,24 @@ internal fun ServingQuantityCard(
     }
 
     SheetPillCard {
+        val maxQuantity = when (selectedOption.normalizedUnit) {
+            "g", "gram", "grams", "mg" -> 2000.0
+            "kg" -> 5.0
+            "ml", "l" -> 2000.0
+            "oz", "fl oz", "fl. oz" -> 64.0
+            "lb", "lbs", "pound" -> 10.0
+            "tbsp" -> 50.0
+            "tsp" -> 100.0
+            "piece", "pieces", "pc", "pcs" -> 20.0
+            "cup", "cups", "c" -> 10.0
+            "serving", "servings" -> 10.0
+            else -> 100.0
+        }
+        val currentQty = parsedQuantity ?: 1.0
+        val showUnitWheel = pickerOptions.size > 1
+
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
+            Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -395,54 +412,7 @@ internal fun ServingQuantityCard(
                     .weight(1f)
                     .clickable { dismissKeyboard() }
             )
-            // Wheel picker for quantity — max depends on unit type
-            val maxQuantity = when (selectedOption.normalizedUnit) {
-                "g", "gram", "grams", "mg" -> 2000.0
-                "kg" -> 5.0
-                "ml", "l" -> 2000.0
-                "oz", "fl oz", "fl. oz" -> 64.0
-                "lb", "lbs", "pound" -> 10.0
-                "tbsp" -> 50.0
-                "tsp" -> 100.0
-                "piece", "pieces", "pc", "pcs" -> 20.0
-                "cup", "cups", "c" -> 10.0
-                "serving", "servings" -> 10.0
-                else -> 100.0
-            }
-            val currentQty = parsedQuantity ?: 1.0
-            SplitDecimalWheelPicker(
-                value = currentQty.coerceIn(0.1, maxQuantity),
-                onValueChange = { newVal ->
-                    val formatted = ServingUnitOption.formatQuantity(newVal)
-                    onQuantityChange(formatted)
-                },
-                min = 0,
-                max = maxQuantity.toInt(),
-                unit = selectedUnitLabel,
-                modifier = Modifier.width(140.dp)
-            )
-            Spacer(Modifier.width(6.dp))
-            if (pickerOptions.size > 1) {
-                var unitExpanded by remember { mutableStateOf(false) }
-                UnitWheelPicker(
-                    options = unitOptions,
-                    selectedId = selectedUnitId,
-                    onSelect = { onSelectedUnitChange(it); unitExpanded = false },
-                    expanded = unitExpanded,
-                    onExpandChange = { unitExpanded = it }
-                )
-            } else {
-                Text(
-                    gramUnit,
-                    fontSize = 17.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                    modifier = Modifier
-                        .width(24.dp)
-                        .clickable { dismissKeyboard() }
-                )
-            }
             if (canCustomizeServing && !editingServing) {
-                Spacer(Modifier.width(4.dp))
                 Icon(
                     Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.cd_edit_serving),
@@ -455,6 +425,43 @@ internal fun ServingQuantityCard(
                             editingServing = true
                         }
                 )
+            }
+        }
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 18.dp, end = 18.dp, bottom = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (showUnitWheel) {
+                WheelSelectionHighlight(Modifier.align(Alignment.Center))
+            }
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SplitDecimalWheelPicker(
+                    value = currentQty.coerceIn(0.1, maxQuantity),
+                    onValueChange = { newVal ->
+                        val formatted = ServingUnitOption.formatQuantity(newVal)
+                        onQuantityChange(formatted)
+                    },
+                    min = 0,
+                    max = maxQuantity.toInt(),
+                    unit = if (showUnitWheel) null else selectedUnitLabel,
+                    showSelectionHighlight = !showUnitWheel,
+                    modifier = if (showUnitWheel) Modifier.weight(1.4f) else Modifier.fillMaxWidth(),
+                )
+                if (showUnitWheel) {
+                    UnitWheelPicker(
+                        options = unitOptions,
+                        selectedId = selectedUnitId,
+                        onSelect = onSelectedUnitChange,
+                        showSelectionHighlight = false,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
 
