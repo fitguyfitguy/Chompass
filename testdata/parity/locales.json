@@ -40,7 +40,7 @@
       "speechCodes": [
         "az"
       ],
-      "maxMissing": 935
+      "maxMissing": 0
     },
     {
       "id": "de",

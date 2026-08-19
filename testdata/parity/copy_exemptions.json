@@ -190,5 +190,19 @@
     "Total",
     "Zinc",
     "auto"
+  ],
+  "az": [
+    "Chompass Protein",
+    "Format",
+    "Model",
+    "Omega",
+    "Protein",
+    "Vitamin A",
+    "Vitamin B12",
+    "Vitamin C",
+    "Vitamin D",
+    "Vitamin E",
+    "Vitamin K",
+    "Server URL"
   ]
 }
