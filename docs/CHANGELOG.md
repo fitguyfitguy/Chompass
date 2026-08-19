@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## Unreleased
 
+### Changed
+
+- **Smaller Codeberg download** (Android): the Obtainium and Codeberg APK no longer includes Intel libraries that phones do not use. Phones are unchanged. Emulators need an ARM system image.
+
 ## [3.21.0] - 2026-08-19
 
 ### Added

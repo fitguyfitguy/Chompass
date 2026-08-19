@@ -39,6 +39,8 @@ val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "
 // Optional: -PreleaseAbi=arm64-v8a for a single-ABI release APK (local smoke test /
 // F-Droid). Uses ndk.abiFilters with ABI splits disabled so the artifact is the
 // plain app-*-release(-unsigned).apk name F-Droid discovers without `output:`.
+// Full (non-F-Droid) releases are ARM-only: arm64-v8a + armeabi-v7a. x86/x86_64
+// stay in debug for emulators and are omitted from the Codeberg universal APK.
 val releaseAbi: String? = providers.gradleProperty("releaseAbi").orNull
 
 android {
@@ -88,6 +90,12 @@ android {
             isShrinkResources = true
             ndk {
                 debugSymbolLevel = "NONE"
+                // Phone ABIs only. Debug keeps x86/x86_64 for emulators.
+                // When -PreleaseAbi is set (F-Droid), defaultConfig already pinned
+                // that single ABI: do not add more here or the F-Droid APK grows.
+                if (releaseAbi == null) {
+                    abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+                }
             }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -160,8 +168,10 @@ android {
         includeInApk = false
         includeInBundle = false
     }
-    // Full releases: per-ABI APKs + universal. Single-ABI (-PreleaseAbi=…): no
-    // splits — plain APK name + abiFilters only (see releaseAbi above).
+    // Full releases: per-ABI APKs + universal (ARM only). Single-ABI
+    // (-PreleaseAbi=…): no splits — plain APK name + abiFilters only.
+    // splits.include does not filter the universal APK; release ndk.abiFilters
+    // is what keeps x86/x86_64 out of Chompass-fdroid-*.apk.
     splits {
         abi {
             if (releaseAbi != null) {
@@ -169,7 +179,7 @@ android {
             } else {
                 isEnable = true
                 reset()
-                include("arm64-v8a", "armeabi-v7a", "x86_64")
+                include("arm64-v8a", "armeabi-v7a")
                 isUniversalApk = true
             }
         }

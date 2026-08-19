@@ -51,7 +51,7 @@ Useful flags:
 ./scripts/package_release.sh --check-metadata    # also verify CHANGELOG + fdroid metadata
 ```
 
-Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SUMS`). Per-ABI splits may still be built locally but are not published.
+Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SUMS`). That APK is ARM-only (`arm64-v8a` + `armeabi-v7a`); x86/x86_64 stay in debug for emulators. Per-ABI splits may still be built locally but are not published.
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`

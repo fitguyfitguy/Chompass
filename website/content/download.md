@@ -77,8 +77,7 @@ All builds, checksums, and release notes: [Codeberg Releases](https://codeberg.o
 | --------------- | ------------------------ | ---------------------------- |
 | **arm64-v8a**   | Most modern phones       | {{< apk_arm64_note >}}       |
 | **armeabi-v7a** | Older 32-bit devices     | ~6 MiB                       |
-| **x86_64**      | Emulators or Chromebooks | ~16 MiB                      |
-| **universal**   | Only when unsure         | {{< apk_universal_note >}}   |
+| **universal**   | ARM phones (64 and 32 bit). No Intel/x86. | {{< apk_universal_note >}}   |
 
 Package ID: `app.chompass`
 

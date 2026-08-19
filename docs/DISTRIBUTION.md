@@ -34,7 +34,7 @@ devenv tasks run release:package
 APK outputs (before packaging rename):
 
 - Debug: `android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk` (also universal / per-ABI)
-- Release universal: `android/app/build/outputs/apk/release/app-universal-release.apk`
+- Release universal: `android/app/build/outputs/apk/release/app-universal-release.apk` (ARM only: arm64-v8a + armeabi-v7a; no x86/x86_64)
 
 Release packaging still uses the **`Chompass-fdroid-*` filename prefix** so existing F-Droid metadata and download URLs stay stable.
 
