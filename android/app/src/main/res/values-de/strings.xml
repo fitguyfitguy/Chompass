@@ -1518,6 +1518,7 @@ für dich ein</string>
     <string name="settings_appearance_light">Hell</string>
 
     <string name="settings_appearance_dark">Dunkel</string>
+    <string name="settings_appearance_oled">OLED</string>
 
     <string name="settings_language_title">Sprache</string>
 

@@ -466,6 +466,7 @@
     <string name="settings_appearance_system">システム</string>
     <string name="settings_appearance_light">ライト</string>
     <string name="settings_appearance_dark">ダーク</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">メートル単位</string>
     <string name="settings_height_unit">身長の単位</string>
     <string name="settings_weight_unit">体重の単位</string>

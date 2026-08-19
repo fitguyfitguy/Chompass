@@ -78,9 +78,42 @@ private fun darkColors(themeColor: AppThemeColor) = darkColorScheme(
     onErrorContainer = Color(0xFFF9DEDC),
 )
 
+/** OLED scheme: mirrors [darkColors] (same text/accents) but with true-black neutrals. */
+private fun oledColors(themeColor: AppThemeColor) = darkColors(themeColor).copy(
+    background = AppColors.AppBackgroundOled,
+    onBackground = AppColors.OnOled,
+    surface = AppColors.AppCardOled,
+    onSurface = AppColors.OnOled,
+    surfaceVariant = AppColors.SurfaceContainerLowOled,
+    onSurfaceVariant = AppColors.MutedOled,
+    surfaceContainerLow = AppColors.SurfaceContainerLowOled,
+    surfaceContainer = AppColors.SurfaceContainerLowOled,
+    surfaceContainerHigh = AppColors.SurfaceContainerHighOled,
+    surfaceContainerHighest = AppColors.SurfaceContainerHighOled,
+    outline = AppColors.DividerOled,
+    outlineVariant = AppColors.HairlineBorderOled,
+)
+
+/** Overrides a scheme's neutral surfaces with the OLED true-black set (dynamic paths). */
+private fun androidx.compose.material3.ColorScheme.withOledNeutrals() = copy(
+    background = AppColors.AppBackgroundOled,
+    onBackground = AppColors.OnOled,
+    surface = AppColors.AppCardOled,
+    onSurface = AppColors.OnOled,
+    surfaceVariant = AppColors.SurfaceContainerLowOled,
+    onSurfaceVariant = AppColors.MutedOled,
+    surfaceContainerLow = AppColors.SurfaceContainerLowOled,
+    surfaceContainer = AppColors.SurfaceContainerLowOled,
+    surfaceContainerHigh = AppColors.SurfaceContainerHighOled,
+    surfaceContainerHighest = AppColors.SurfaceContainerHighOled,
+    outline = AppColors.DividerOled,
+    outlineVariant = AppColors.HairlineBorderOled,
+)
+
 @Composable
 fun ChompassTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    oledTheme: Boolean = false,
     themeColor: AppThemeColor = AppThemeColor.SYSTEM,
     useDynamicColor: Boolean = true,
     content: @Composable () -> Unit
@@ -89,39 +122,48 @@ fun ChompassTheme(
     val usesSystemPalette = themeColor.usesSystemPalette &&
         useDynamicColor &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    // OLED is a dark variant: every dark-mode code path (dynamic scheme selection,
+    // accent computation) treats it as dark; only the neutral surfaces differ.
+    val dark = darkTheme || oledTheme
 
     val colorScheme = when {
         usesSystemPalette -> {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            val scheme = if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (oledTheme) scheme.withOledNeutrals() else scheme
         }
         else -> {
             val accent = if (themeColor.usesSystemPalette) AppThemeColor.TEAL else themeColor
-            val baseScheme = if (darkTheme) darkColors(accent) else lightColors(accent)
+            val baseScheme = when {
+                oledTheme -> oledColors(accent)
+                dark -> darkColors(accent)
+                else -> lightColors(accent)
+            }
             if (useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val dynamicScheme =
-                    if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+                    if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 
-                val primary = if (darkTheme) {
+                val primary = if (dark) {
                     lerp(accent.primary, Color.White, 0.25f)
                 } else {
                     accent.primary
                 }
                 val onPrimary = onColorFor(primary)
 
-                dynamicScheme.copy(
+                val accentOverrides = dynamicScheme.copy(
                     primary = primary,
                     onPrimary = onPrimary,
-                    primaryContainer = if (darkTheme) {
+                    primaryContainer = if (dark) {
                         lerp(accent.primary, Color.Black, 0.55f)
                     } else {
                         lerp(accent.primary, Color.White, 0.82f)
                     },
-                    onPrimaryContainer = if (darkTheme) {
+                    onPrimaryContainer = if (dark) {
                         lerp(accent.primary, Color.White, 0.75f)
                     } else {
                         lerp(accent.primary, Color.Black, 0.35f)
                     },
                 )
+                if (oledTheme) accentOverrides.withOledNeutrals() else accentOverrides
             } else {
                 baseScheme
             }

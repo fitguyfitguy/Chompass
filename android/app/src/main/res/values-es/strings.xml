@@ -455,6 +455,7 @@
     <string name="settings_appearance_system">Sistema</string>
     <string name="settings_appearance_light">Claro</string>
     <string name="settings_appearance_dark">Oscuro</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_language_title">Idioma</string>
     <string name="settings_language_system">Sistema</string>
     <string name="settings_metric_units">Unidades métricas</string>

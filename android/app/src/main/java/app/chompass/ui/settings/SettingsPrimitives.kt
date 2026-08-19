@@ -551,6 +551,7 @@ internal fun goalIcon(g: WeightGoal): ImageVector = when (g) {
 internal fun appearanceIcon(key: String): ImageVector = when (key) {
     "light" -> Icons.Outlined.LightMode
     "dark" -> Icons.Outlined.DarkMode
+    "oled" -> Icons.Outlined.DarkMode
     else -> Icons.Outlined.SettingsBrightness
 }
 

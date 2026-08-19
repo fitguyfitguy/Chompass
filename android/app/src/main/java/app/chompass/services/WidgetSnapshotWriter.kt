@@ -17,6 +17,7 @@ import app.chompass.models.WidgetNutrient
 import app.chompass.models.WidgetSnapshot
 import app.chompass.services.health.HomeActivityReader
 import app.chompass.ui.theme.AppThemeColor
+import app.chompass.ui.theme.appearanceIsDark
 import app.chompass.ui.theme.widgetAccentColors
 import app.chompass.widget.AllMetricsAppWidget
 import app.chompass.widget.CalorieAppWidget
@@ -55,6 +56,14 @@ class WidgetSnapshotWriter(
         val entries: List<WaterEntry>,
     )
 
+    /** Bundled inputs flowing through [observe]/[publish]. */
+    internal data class SnapshotInputs(
+        val entries: List<FoodEntry>,
+        val profile: UserProfile?,
+        val appearance: String,
+        val water: WaterInputs,
+    )
+
     internal data class WaterDynamicInputs(
         val dynamicEnabled: Boolean,
         val baseSource: String,
@@ -73,13 +82,18 @@ class WidgetSnapshotWriter(
 
     internal fun observe() = combine(
         combine(
-            foodRepository.entries,
-            profileRepository.profile,
-            prefs.homeDisplayPreferences,
-            prefs.appThemeColor,
-            prefs.optionalNutrientGoals,
-        ) { entries, profile, _, _, _ ->
-            entries to profile
+            combine(
+                foodRepository.entries,
+                profileRepository.profile,
+                prefs.homeDisplayPreferences,
+                prefs.appThemeColor,
+                prefs.optionalNutrientGoals,
+            ) { entries, profile, _, _, _ ->
+                entries to profile
+            },
+            prefs.appearanceMode,
+        ) { core, appearance ->
+            Triple(core.first, core.second, appearance)
         },
         combine(
             combine(
@@ -126,9 +140,11 @@ class WidgetSnapshotWriter(
                 entries = water.third,
             )
         },
-    ) { core, water -> Triple(core.first, core.second, water) }
+    ) { core, water ->
+        SnapshotInputs(core.first, core.second, core.third, water)
+    }
         .distinctUntilChanged()
-        .onEach { (entries, profile, water) -> publish(entries, profile, water) }
+        .onEach { inputs -> publish(inputs.entries, inputs.profile, inputs.appearance, inputs.water) }
 
     /**
      * Recompute and publish from current repos/prefs. Used when Theme Color is
@@ -138,6 +154,7 @@ class WidgetSnapshotWriter(
     suspend fun refresh() {
         val entries = foodRepository.entries.first()
         val profile = profileRepository.profile.first()
+        val appearance = prefs.appearanceMode.first()
         val water = WaterInputs(
             enabled = prefs.waterTrackingEnabled.first(),
             manualGoalMl = prefs.waterDailyGoalMl.first(),
@@ -156,12 +173,13 @@ class WidgetSnapshotWriter(
             ),
             entries = waterRepository.entries.first(),
         )
-        publish(entries, profile, water)
+        publish(entries, profile, appearance, water)
     }
 
     private suspend fun publish(
         entries: List<FoodEntry>,
         profile: UserProfile?,
+        appearance: String,
         water: WaterInputs,
     ) {
         val todaysEntries = entries.filter {
@@ -174,7 +192,7 @@ class WidgetSnapshotWriter(
             val selection = display.homeTopNutrients
             val optionalGoals = prefs.optionalNutrientGoals.first()
             val theme = AppThemeColor.fromKey(prefs.appThemeColor.first())
-            val (themeStart, themeEnd) = theme.widgetAccentColors(context)
+            val (themeStart, themeEnd) = theme.widgetAccentColors(context, appearanceIsDark(appearance, context))
             val activity = homeActivityReader.readForDate(LocalDate.now())
             val effectiveCalories = profile.effectiveCalories
             // Energy Burn measured active average overrides the PAL estimate for the ADD_ACTIVE
@@ -280,6 +298,7 @@ class WidgetSnapshotWriter(
                 waterUseMetric = weightUnit == "kg",
                 waterNextFireAtMillis = waterPlan?.nextFireMillis,
                 waterNextDrinkMl = waterPlan?.drinkMl ?: 0,
+                appearanceMode = appearance,
             )
             prefs.setWidgetSnapshot(snapshot)
         }

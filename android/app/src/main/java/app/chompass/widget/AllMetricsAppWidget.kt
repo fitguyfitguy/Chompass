@@ -69,7 +69,7 @@ private fun AllMetricsContent(context: Context, snapshot: WidgetSnapshot) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(WidgetTheme.backgroundProvider)
+            .background(WidgetTheme.backgroundProvider(snapshot.appearanceMode))
             .cornerRadius(22.dp)
             .padding(14.dp)
             .clickable(actionStartActivity<MainActivity>())
@@ -100,7 +100,8 @@ private fun AllMetricsWide(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.calorieGoal}"
+                centerSmall = "/ ${snapshot.calorieGoal}",
+                appearance = snapshot.appearanceMode
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
@@ -133,7 +134,7 @@ private fun AllMetricsTall(context: Context, snapshot: WidgetSnapshot) {
     val barH = (contentH - 34f - gaugeW * 0.58f - 66f).toInt().coerceAtLeast(40)
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = context.getString(R.string.widget_today))
+        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = context.getString(R.string.widget_today), appearance = snapshot.appearanceMode)
         Spacer(modifier = GlanceModifier.height(4.dp))
         Box(
             modifier = GlanceModifier.fillMaxWidth(),
@@ -145,7 +146,8 @@ private fun AllMetricsTall(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.calorieGoal}"
+                centerSmall = "/ ${snapshot.calorieGoal}",
+                appearance = snapshot.appearanceMode
             )
         }
         Box(

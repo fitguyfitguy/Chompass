@@ -80,6 +80,11 @@ data class WidgetSnapshot(
     val waterNextFireAtMillis: Long? = null,
     /** Amount to drink at [waterNextFireAtMillis] (one cup, capped by the goal remainder); 0 when no plan. */
     val waterNextDrinkMl: Int = 0,
+    /**
+     * The app's appearance mode ("system" | "light" | "dark" | "oled"). Null in
+     * snapshots written by older builds → widgets follow the system dark mode.
+     */
+    val appearanceMode: String? = null,
 ) {
     val resolvedCalorieMode: HomeCalorieDisplayMode
         get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)

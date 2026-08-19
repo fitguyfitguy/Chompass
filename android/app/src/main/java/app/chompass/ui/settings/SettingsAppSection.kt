@@ -59,6 +59,7 @@ internal fun SettingsAppSection(
                     when (ui.appearanceMode) {
                         "light" -> stringResource(R.string.settings_appearance_light)
                         "dark" -> stringResource(R.string.settings_appearance_dark)
+                        "oled" -> stringResource(R.string.settings_appearance_oled)
                         else -> stringResource(R.string.settings_appearance_system)
                     },
                     icon = Icons.Outlined.Brightness6
