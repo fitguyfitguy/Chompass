@@ -1,0 +1,7 @@
+• Local AI endpoints over plain HTTP: an Allow insecure HTTP switch in Settings → AI & Speech lets custom and Ollama endpoints use http:// URLs in release builds. Off by default
+• Ollama endpoints trust certificates you install: remote Ollama servers with your own CA now connect the same way custom endpoints already did
+• Clearer local-endpoint errors: blocked plain HTTP and untrusted certificates now explain what to do
+• Polish and Turkish language packs: Chompass now speaks 18 languages, covering the full Android app and the web app's core screens
+• Full Android translations: Russian, Ukrainian, Italian, Dutch, Brazilian Portuguese, Romanian, Azerbaijani, Hindi, Japanese, Korean, Simplified Chinese, and Arabic now cover the whole app
+• Log again shows recent and frequent foods: Add Food now has two scrollable rows, recent on top and frequent below
+• Add Food tiles share one height; the weight-chart legend is the shorter Weigh-in; nutrition badges sit on center and goal wheels no longer repeat the nutrient name

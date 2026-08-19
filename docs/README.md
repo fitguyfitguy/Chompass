@@ -18,7 +18,7 @@ status is missing or stale, fix it (release checklist step 3).
 |-----|----------|
 | [`CALCULATION_METHODS.md`](CALCULATION_METHODS.md) | Formula register (BMR/TDEE/goals/water), scientific audit, **calculation-change checklist** (dual Kotlin + PWA) |
 | [`PARITY.md`](PARITY.md) | Android ↔ PWA feature matrix + shared/Android-only/PWA-only scope |
-| [`LOCALIZATION.md`](LOCALIZATION.md) | Shared 16-locale contract, PWA `lib/i18n/`, Android `values-*` |
+| [`LOCALIZATION.md`](LOCALIZATION.md) | Shared 18-locale contract, PWA `lib/i18n/`, Android `values-*` |
 | [`TRANSLATION_GUIDE.md`](TRANSLATION_GUIDE.md) | Translator-facing guide: parent languages (EN semantic, DE fit + voice), voice, compact-label budgets, collisions, validation |
 | [`ACCURACY.md`](ACCURACY.md) | User-facing accuracy explainer (what the AI numbers mean) |
 | [`PRIVACY.md`](PRIVACY.md) | Privacy stance: no ads/analytics, local-first, API-key handling |
@@ -45,7 +45,7 @@ status is missing or stale, fix it (release checklist step 3).
 | [`UNCERTAINTY_DRIVEN_ENTRY.md`](UNCERTAINTY_DRIVEN_ENTRY.md) | Strategy; Bet 1 shipping since 2026-07-29 |
 | [`WATER_DYNAMIC_GOAL_DESIGN.md`](WATER_DYNAMIC_GOAL_DESIGN.md) | Shipped 3.13.0 (opt-in Beta): design + formula record |
 | [`WEATHER_INTEGRATION_DESIGN.md`](WEATHER_INTEGRATION_DESIGN.md) | Shipped 3.13.0 (Open-Meteo only) |
-| [`LOCAL_ENDPOINT_TRUST_DESIGN.md`](LOCAL_ENDPOINT_TRUST_DESIGN.md) | Shipped 3.9.0 (cleartext + user-CA trust) |
+| [`LOCAL_ENDPOINT_TRUST_DESIGN.md`](LOCAL_ENDPOINT_TRUST_DESIGN.md) | Shipped 3.21.0 (cleartext opt-in + Ollama user-CA trust; D1/D3/D4 in 3.9.0) |
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | Gemma on-device: production Tiers A/B + debug extras |
 | [`DEMO_HERO_FIREFOX.md`](DEMO_HERO_FIREFOX.md) | **OPEN**: Firefox/embedded demo reload loop |
 | [`SECURITY_HARDENING_PLAN.md`](SECURITY_HARDENING_PLAN.md) | Shipped 3.16.0: security/privacy audit + hardening (debug-extras gate, deep-link caps, image bounds, prompt-injection delimiters, PWA CSP); device rehearsal run 2026-08-16 |

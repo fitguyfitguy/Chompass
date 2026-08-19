@@ -6,12 +6,20 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## Unreleased
 
+## [3.21.0] - 2026-08-19
+
 ### Added
 
-- **Local AI endpoints over plain HTTP** (Android): an Allow insecure HTTP switch in Settings → AI &amp; Speech lets custom and Ollama endpoints use http:// URLs in release builds, for example on a home network. Off by default. Cloud providers use https. Follow-up on Codeberg [#8](https://codeberg.org/fitguy/Chompass/issues/8) by [@ARR8](https://codeberg.org/ARR8).
-- **Ollama endpoints trust certificates you install** (Android): custom endpoints already did; remote Ollama servers with your own CA now connect the same way.
+- **Local AI endpoints over plain HTTP** (Android): an Allow insecure HTTP switch in Settings → AI & Speech lets custom and Ollama endpoints use http:// URLs in release builds, for example on a home network. Off by default. Cloud providers use https. Follow-up on Codeberg [#8](https://codeberg.org/fitguy/Chompass/issues/8) by [@ARR8](https://codeberg.org/ARR8).
+- **Ollama endpoints trust certificates you install** (Android): custom endpoints already did. Remote Ollama servers with your own CA now connect the same way.
 - **Clearer local-endpoint errors** (Android): blocked plain HTTP and untrusted certificates now explain what to do (turn on Allow insecure HTTP, or install the CA on the phone) instead of showing a raw network error.
-- **Polish and Turkish language packs** (Android + web): Chompass now speaks 18 languages. Polish and Turkish cover the full Android app, from onboarding through the diary, coach, widgets, and safety notices, plus the web app's core screens. Choose them in Settings → App & Display → Language (Android) or App & Display → Language (web).
+- **Polish and Turkish language packs** (Android + web): Chompass now speaks 18 languages. Polish and Turkish cover the full Android app, from onboarding through the diary, coach, widgets, and safety notices, plus the web app's core screens. Choose them in Settings → App & Display → Language.
+- **Full Android translations** (Android): Russian, Ukrainian, Italian, Dutch, Brazilian Portuguese, Romanian, Azerbaijani, Hindi, Japanese, Korean, Simplified Chinese, and Arabic now cover the whole app, not just the main screens. French, Spanish, and German pick up the last missing strings.
+
+### Changed
+
+- **Log again shows recent and frequent foods** (Android + web): Add Food now has two scrollable rows under Log again, recent on top and frequent below. The extra hint under the heading is gone.
+- **Add Food tiles, nutrition badges, and goal wheels** (Android + web): Add Food tiles share one height. The weight-chart legend is the shorter "Weigh-in". On Android, letter badges in the nutrition sheet sit on center, and goal wheels no longer repeat the nutrient name as a title.
 
 ## [3.20.0] - 2026-08-19
 
