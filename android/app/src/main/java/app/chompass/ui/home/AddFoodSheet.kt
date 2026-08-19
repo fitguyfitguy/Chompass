@@ -208,7 +208,12 @@ internal fun AddFoodSheetContent(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             Spacer(Modifier.height(6.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 if (relogRows.recents.isNotEmpty()) {
                     AddFoodRelogRow(
                         entries = relogRows.recents,
@@ -344,9 +349,6 @@ private fun AddFoodRelogRow(
     onReview: (FoodEntry) -> Unit,
 ) {
     Row(
-        Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         entries.forEach { entry ->
