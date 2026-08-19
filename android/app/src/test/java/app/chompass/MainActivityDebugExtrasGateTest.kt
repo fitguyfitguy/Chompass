@@ -44,6 +44,7 @@ class MainActivityDebugExtrasGateTest {
             putExtra("demo_ai", true)
             putExtra("run_entry_benchmark", true)
             putExtra("benchmark_count", 9)
+            putExtra("run_relog_benchmark", true)
             putExtra("run_ondevice_llm_test", true)
             putExtra("diagnose_health_connect", true)
         }

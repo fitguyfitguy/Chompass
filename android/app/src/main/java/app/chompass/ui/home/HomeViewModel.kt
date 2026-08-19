@@ -1535,7 +1535,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /** Re-log a saved meal (from Saved Meals sheet) as a new entry timestamped to the selected day. */
     fun relogMeal(template: FoodEntry) {
         viewModelScope.launch {
-            container.foodRepository.addEntry(template.duplicatedForLogging(timestampForSelectedDay()))
+            app.chompass.services.PerfLog.measure("relog", "addEntry", "name=${template.name}") {
+                container.foodRepository.addEntry(template.duplicatedForLogging(timestampForSelectedDay()))
+            }
         }
     }
 

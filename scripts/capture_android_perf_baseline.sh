@@ -33,6 +33,11 @@ RELOG_CHIP_X="${RELOG_CHIP_X:-180}"
 RELOG_CHIP_Y="${RELOG_CHIP_Y:-980}"
 PROGRESS_DEEP_LINK="${PROGRESS_DEEP_LINK:-chompass://go/progress}"
 PROGRESS_LOG_TAIL_LINES="${PROGRESS_LOG_TAIL_LINES:-2000}"
+RUN_ENTRY_BENCH="${RUN_ENTRY_BENCH:-1}"
+ENTRY_COUNT="${ENTRY_COUNT:-3}"
+RUN_RELOG_BENCH="${RUN_RELOG_BENCH:-1}"
+RELOG_COUNT="${RELOG_COUNT:-3}"
+ENTRY_TIMEOUT="${ENTRY_TIMEOUT:-240}"
 
 mkdir -p "${OUT_DIR}"
 
@@ -40,6 +45,19 @@ go_nav() {
   local dest="$1"
   "${ADB_BIN}" shell am start -W -n "${ACTIVITY}" -d "chompass://go/${dest}" \
     > "${OUT_DIR}/start_go_${dest//\//_}.txt"
+}
+
+wait_fud_mark() {
+  local needle="$1"
+  local dest="$2"
+  local timeout="${3:-60}"
+  local deadline=$((SECONDS + timeout))
+  while [ "${SECONDS}" -lt "${deadline}" ]; do
+    if grep -q "${needle}" "${dest}" 2>/dev/null; then return 0; fi
+    sleep 1
+  done
+  echo "WARNING: timed out waiting for ${needle} in ${dest}" >&2
+  return 1
 }
 
 echo "Using package: ${PACKAGE}"
@@ -157,5 +175,23 @@ fi
 "${ADB_BIN}" shell input tap "${RELOG_CHIP_X}" "${RELOG_CHIP_Y}"
 sleep 1
 "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_relog_chip.txt"
+
+if [ "${RUN_RELOG_BENCH}" = 1 ]; then
+  echo "Running relog benchmark (${RELOG_COUNT}x first hub row, no coordinates)..."
+  "${ADB_BIN}" logcat -c
+  "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_relog_bench.txt" &
+  RELLOG_PID=$!
+  "${ADB_BIN}" shell am start -n "${ACTIVITY}" --ez run_relog_benchmark true --ei relog_benchmark_count "${RELOG_COUNT}" >/dev/null
+  wait_fud_mark "op=relogBench phase=done" "${OUT_DIR}/logcat_relog_bench.txt" 60 || true
+  sleep 1
+  kill "${RELLOG_PID}" 2>/dev/null || true
+fi
+
+if [ "${RUN_ENTRY_BENCH}" = 1 ]; then
+  echo "Running entry pipeline benchmark (${ENTRY_COUNT} analyze+save, no reseed)..."
+  ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+  SEED=0 QUIET=1 OUT_DIR="${OUT_DIR}" PACKAGE="${PACKAGE}" ADB_BIN="${ADB_BIN}" TIMEOUT="${ENTRY_TIMEOUT}" \
+    "${ROOT}/scripts/perf_entry_benchmark.sh" "${ENTRY_COUNT}" || true
+fi
 
 echo "Done. Review files under ${OUT_DIR}"
