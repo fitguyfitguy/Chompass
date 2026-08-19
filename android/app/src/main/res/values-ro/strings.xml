@@ -1606,10 +1606,12 @@
     <string name="unit_percent">%</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <plurals name="copy_foods_to">\n        <item quantity="one">Copiază %1$d aliment în %2$s</item>
+    <plurals name="copy_foods_to">
+        <item quantity="one">Copiază %1$d aliment în %2$s</item>
         <item quantity="other">Copiază %1$d alimente în %2$s</item>
     </plurals>
-    <plurals name="import_add_meals_title">\n        <item quantity="one">Adaugă masă partajată</item>
+    <plurals name="import_add_meals_title">
+        <item quantity="one">Adaugă masă partajată</item>
         <item quantity="other">Adaugă %1$d mese partajate</item>
     </plurals>
     <string name="onboarding_metric">Metrice</string>

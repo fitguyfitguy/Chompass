@@ -1604,10 +1604,12 @@
     <string name="unit_percent">%</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <plurals name="copy_foods_to">\n        <item quantity="one">%1$d개 음식을 %2$s에 복사</item>
+    <plurals name="copy_foods_to">
+        <item quantity="one">%1$d개 음식을 %2$s에 복사</item>
         <item quantity="other">%1$d개 음식을 %2$s에 복사</item>
     </plurals>
-    <plurals name="import_add_meals_title">\n        <item quantity="one">공유 식사 추가</item>
+    <plurals name="import_add_meals_title">
+        <item quantity="one">공유 식사 추가</item>
         <item quantity="other">공유 식사 %1$d개 추가</item>
     </plurals>
     <string name="about_made_by">Chompass, 제작 fitguy</string>
