@@ -3548,12 +3548,19 @@ body.dialog-open {
   margin: 0.5rem 0 1rem;
 }
 
+.add-food-relog-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
 .add-food-relog {
   display: flex;
   gap: 0.45rem;
   overflow-x: auto;
   padding-bottom: 0.15rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0;
   -webkit-overflow-scrolling: touch;
 }
 

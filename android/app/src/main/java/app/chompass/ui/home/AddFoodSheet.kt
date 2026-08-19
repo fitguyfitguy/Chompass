@@ -62,6 +62,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import app.chompass.R
+import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
@@ -97,7 +98,7 @@ fun AddFoodSheet(
     waterUseMetric: Boolean = true,
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
-    recentMeals: List<FoodEntry> = emptyList(),
+    relogRows: QuickRelogRows = QuickRelogRows.Empty,
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
@@ -120,7 +121,7 @@ fun AddFoodSheet(
             waterUseMetric = waterUseMetric,
             onWater = { ml -> onDismiss(); onWater(ml) },
             onWaterCustom = { onDismiss(); onWaterCustom() },
-            recentMeals = recentMeals,
+            relogRows = relogRows,
             onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
             onReviewRecent = { entry -> onDismiss(); onReviewRecent(entry) },
         )
@@ -149,7 +150,7 @@ internal fun AddFoodSheetContent(
     waterUseMetric: Boolean = true,
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
-    recentMeals: List<FoodEntry> = emptyList(),
+    relogRows: QuickRelogRows = QuickRelogRows.Empty,
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
@@ -198,7 +199,7 @@ internal fun AddFoodSheetContent(
                 onClick = onSavedRecents,
             )
         }
-        if (recentMeals.isNotEmpty()) {
+        if (!relogRows.isEmpty) {
             Spacer(Modifier.height(12.dp))
             Text(
                 stringResource(R.string.add_food_quick_relog),
@@ -207,17 +208,19 @@ internal fun AddFoodSheetContent(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             Spacer(Modifier.height(6.dp))
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                recentMeals.forEach { entry ->
-                    AddFoodRelogChip(
-                        entry = entry,
-                        onRelog = { onRelogRecent(entry) },
-                        onReview = { onReviewRecent(entry) },
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (relogRows.recents.isNotEmpty()) {
+                    AddFoodRelogRow(
+                        entries = relogRows.recents,
+                        onRelog = onRelogRecent,
+                        onReview = onReviewRecent,
+                    )
+                }
+                if (relogRows.frequents.isNotEmpty()) {
+                    AddFoodRelogRow(
+                        entries = relogRows.frequents,
+                        onRelog = onRelogRecent,
+                        onReview = onReviewRecent,
                     )
                 }
             }
@@ -329,6 +332,28 @@ internal fun AddFoodSheetContent(
                 useMetric = waterUseMetric,
                 onWater = onWater,
                 onWaterCustom = onWaterCustom,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddFoodRelogRow(
+    entries: List<FoodEntry>,
+    onRelog: (FoodEntry) -> Unit,
+    onReview: (FoodEntry) -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        entries.forEach { entry ->
+            AddFoodRelogChip(
+                entry = entry,
+                onRelog = { onRelog(entry) },
+                onReview = { onReview(entry) },
             )
         }
     }

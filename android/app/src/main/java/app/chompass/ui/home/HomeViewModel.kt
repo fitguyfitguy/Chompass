@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.data.QuickRelogRows
 import app.chompass.data.disambiguateFoodName
 import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
@@ -349,13 +350,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * first open. Invalidated on every diary/favorites emission (see the init
      * combine) so a fresh save always shows the new recents.
      */
-    private var quickRelogCache: List<FoodEntry>? = null
+    private var quickRelogCache: QuickRelogRows? = null
     private var quickRelogCacheDay: LocalDate? = null
     private var quickRelogCacheEpoch = 0
     /** Bumped on any diary/favorites change (init combine) — invalidates the cache. */
     private var quickRelogEpoch = 0
     /** Shared in-flight load so the FAB prefetch and the sheet LaunchedEffect never run twice. */
-    private var quickRelogLoad: CompletableDeferred<List<FoodEntry>>? = null
+    private var quickRelogLoad: CompletableDeferred<QuickRelogRows>? = null
 
     /** Warm hub recents while the Log sheet animates open (called from the FAB tap). */
     fun prefetchQuickRelog() {
@@ -363,25 +364,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /** Hub chips for the AddFoodSheet; cached per day, refreshed after any diary change. */
-    suspend fun quickRelogTemplatesCached(): List<FoodEntry> = loadQuickRelogCached()
+    suspend fun quickRelogRowsCached(): QuickRelogRows = loadQuickRelogCached()
 
-    private suspend fun loadQuickRelogCached(): List<FoodEntry> {
+    private suspend fun loadQuickRelogCached(): QuickRelogRows {
         val today = LocalDate.now()
         if (quickRelogCacheDay == today && quickRelogCacheEpoch == quickRelogEpoch) {
             quickRelogCache?.let { return it }
         }
         // Dedupe concurrent loads (FAB prefetch + sheet LaunchedEffect overlap).
         quickRelogLoad?.let { return it.await() }
-        val deferred = CompletableDeferred<List<FoodEntry>>()
+        val deferred = CompletableDeferred<QuickRelogRows>()
         quickRelogLoad = deferred
         val startEpoch = quickRelogEpoch
         viewModelScope.launch {
-            // Degrade to an empty chips row on failure — never hang the sheet.
+            // Degrade to empty chip rows on failure — never hang the sheet.
             val fresh = runCatching {
                 withContext(Dispatchers.Default) {
-                    container.foodRepository.quickRelogTemplates(limit = 6)
+                    container.foodRepository.quickRelogRows(perRow = 10)
                 }
-            }.getOrDefault(emptyList())
+            }.getOrDefault(QuickRelogRows.Empty)
             quickRelogLoad = null
             if (startEpoch == quickRelogEpoch) {
                 quickRelogCache = fresh

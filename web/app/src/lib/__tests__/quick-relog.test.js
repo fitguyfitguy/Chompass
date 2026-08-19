@@ -1,7 +1,7 @@
 // @ts-check
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { quickRelogFoodTemplates } from "../saved-meals.js";
+import { quickRelogRowsFrom } from "../saved-meals.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
 
 /** @param {Partial<import('../chompass-core/models.js').FoodEntry> & {name: string}} partial */
@@ -62,58 +62,55 @@ describe("guessMealTypeFromPrefs (Android MealSchedule parity)", () => {
   });
 });
 
-describe("quickRelogFoodTemplates", () => {
-  it("at lunch ranks meal-matched before dinner favorite, then snacks", () => {
-    const favorites = [entry({ name: "Dinner Fav", mealType: "dinner", time: "19:00" })];
-    const recents = [
-      entry({ name: "Lunch Bowl", mealType: "lunch", time: "12:00" }),
-      entry({ name: "Yogurt", mealType: "snack", time: "15:00" }),
-    ];
-    const out = quickRelogFoodTemplates(favorites, recents, [], "lunch");
-    assert.deepEqual(
-      out.map((e) => e.name),
-      ["Lunch Bowl", "Yogurt", "Dinner Fav"],
-    );
+describe("quickRelogRowsFrom", () => {
+  it("recents are newest-first and unique by key", () => {
+    const olderApple = entry({ name: "Apple", time: "08:00", calories: 80 });
+    const banana = entry({ name: "Banana", time: "10:00" });
+    const newerApple = entry({ name: "Apple", time: "14:00", calories: 120 });
+    const cherry = entry({ name: "Cherry", time: "16:00" });
+    const out = quickRelogRowsFrom([olderApple, banana, newerApple, cherry], []);
+    assert.deepEqual(out.recents.map((e) => e.name), ["Cherry", "Apple", "Banana"]);
+    assert.equal(out.recents.find((e) => e.name === "Apple")?.calories, 120);
+    assert.equal(out.frequents.length, 0);
   });
 
-  it("soft-boosts favorites within the meal-matched bucket", () => {
-    const favorites = [entry({ name: "Fav Salad", mealType: "lunch", time: "11:00" })];
-    const recents = [
-      entry({ name: "Newer Sandwich", mealType: "lunch", time: "13:00" }),
-      entry({ name: "Fav Salad", mealType: "lunch", time: "12:30" }),
-    ];
-    const out = quickRelogFoodTemplates(favorites, recents, [], "lunch");
-    assert.deepEqual(
-      out.map((e) => e.name),
-      ["Fav Salad", "Newer Sandwich"],
-    );
+  it("frequents are count-desc and exclude recent keys", () => {
+    const apple = entry({ name: "Apple", date: "2024-06-01" });
+    const banana = entry({ name: "Banana", date: "2024-05-01" });
+    const cherry = entry({ name: "Cherry", date: "2024-05-02" });
+    const frequentWindow = [apple, apple, apple, banana, banana, cherry];
+    const out = quickRelogRowsFrom([apple], frequentWindow);
+    assert.deepEqual(out.recents.map((e) => e.name), ["Apple"]);
+    assert.deepEqual(out.frequents.map((e) => e.name), ["Banana", "Cherry"]);
   });
 
-  it("at snack ranks snacks then recent others", () => {
-    const favorites = [entry({ name: "Steak", mealType: "dinner", time: "19:00" })];
-    const recents = [
-      entry({ name: "Apple", mealType: "snack", time: "16:00" }),
-      entry({ name: "Coffee", mealType: "snack", time: "10:00" }),
-      entry({ name: "Oatmeal", mealType: "breakfast", time: "08:00" }),
-    ];
-    const out = quickRelogFoodTemplates(favorites, recents, [], "snack");
-    assert.deepEqual(
-      out.map((e) => e.name),
-      ["Apple", "Coffee", "Steak", "Oatmeal"],
+  it("honors perRow on each side", () => {
+    const recents = Array.from({ length: 12 }, (_, i) =>
+      entry({ name: `Recent ${i + 1}`, time: `${String(i + 1).padStart(2, "0")}:00` }),
     );
+    const frequents = Array.from({ length: 12 }, (_, i) =>
+      Array.from({ length: 13 - (i + 1) }, () =>
+        entry({ name: `Freq ${i + 1}`, date: "2024-04-01" }),
+      ),
+    ).flat();
+    const out = quickRelogRowsFrom(recents, frequents, 3);
+    assert.equal(out.recents.length, 3);
+    assert.equal(out.frequents.length, 3);
+    assert.deepEqual(out.recents.map((e) => e.name), ["Recent 12", "Recent 11", "Recent 10"]);
+    assert.deepEqual(out.frequents.map((e) => e.name), ["Freq 1", "Freq 2", "Freq 3"]);
   });
 
-  it("dedupes by favoriteKey and respects limit", () => {
-    const favorites = [entry({ name: "Shared", mealType: "lunch", calories: 200 })];
-    const recents = [entry({ name: "Shared", mealType: "lunch", calories: 150 })];
-    const frequents = [
-      entry({ name: "Shared", mealType: "lunch", calories: 100 }),
-      entry({ name: "Extra", mealType: "lunch" }),
-      entry({ name: "More", mealType: "lunch" }),
-    ];
-    const out = quickRelogFoodTemplates(favorites, recents, frequents, "lunch", undefined, 2);
-    assert.equal(out.length, 2);
-    assert.equal(out[0].name, "Shared");
-    assert.equal(out[0].calories, 200);
+  it("empty recents plus some frequents yields only the frequent list", () => {
+    const yogurt = entry({ name: "Yogurt", date: "2024-04-01" });
+    const oats = entry({ name: "Oats", date: "2024-04-02" });
+    const out = quickRelogRowsFrom([], [yogurt, yogurt, oats]);
+    assert.equal(out.recents.length, 0);
+    assert.deepEqual(out.frequents.map((e) => e.name), ["Yogurt", "Oats"]);
+  });
+
+  it("empty both yields empty rows", () => {
+    const out = quickRelogRowsFrom([], []);
+    assert.equal(out.recents.length, 0);
+    assert.equal(out.frequents.length, 0);
   });
 });
