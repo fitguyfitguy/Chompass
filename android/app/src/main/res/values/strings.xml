@@ -1091,7 +1091,7 @@
     <!-- API ≤33 only: standalone Health Connect APK via Play Store. -->
     <string name="settings_health_unavailable_install">Health Connect isn\'t installed. Install it from the Play Store, then re-tap the toggle.</string>
     <string name="settings_health_update_required_apk">Health Connect needs an update. Update it from the Play Store, then re-tap the toggle.</string>
-    <!-- API 34+: framework / Mainline module — never tell users to install the old Play Store APK. -->
+    <!-- API 34+: framework / Mainline module - never tell users to install the old Play Store APK. -->
     <string name="settings_health_unavailable_platform">Health Connect isn\'t available to apps on this device. On Android 14 and later it\'s a system module. If Settings shows Health Connect but Chompass cannot connect, your ROM may not expose the Health Connect service (common on some de-Googled builds). Chompass does not require Play Store or sandboxed Play. Use diary and body-metrics export/import, or optional WebDAV, instead.</string>
     <string name="settings_health_update_required">Health Connect needs a system update. Install a Google Play system update (or your ROM\'s equivalent), then re-tap the toggle. You do not need to install a separate Health Connect app on Android 14+.</string>
     <string name="settings_health_manage_failed">Couldn\'t open Health Connect settings on this device.</string>

@@ -1066,7 +1066,7 @@
     <string name="onboarding_privacy_cloud_goals">AI लक्ष्य अनुमानित करते समय आपका प्रोफ़ाइल (योजना, पुनर्गणना, अनुकूली लक्ष्य)</string>
     <string name="onboarding_privacy_cloud_lead">क्लाउड प्रदाता के साथ, यह डेटा आपके डिवाइस से उस प्रदाता तक जाता है:</string>
     <string name="onboarding_privacy_cloud_title">क्लाउड प्रदाता (Gemini, OpenAI, Claude, …)</string>
-    <string name="onboarding_privacy_cloud_whatif">«क्या होगा अगर?» — आज के लॉग किए गए डायरी योग सहित भोजन प्रभाव</string>
+    <string name="onboarding_privacy_cloud_whatif">«क्या होगा अगर?»: आज के लॉग किए गए डायरी योग सहित भोजन प्रभाव</string>
     <string name="onboarding_privacy_note">कोई विज्ञापन, एनालिटिक्स या खाते नहीं। आपका खाद्य लॉग और API कुंजियां आपके डिवाइस पर रहती हैं।</string>
     <string name="onboarding_privacy_note_cloud">क्लाउड प्रदाता के साथ, खाद्य फोटो, भोजन नोट, चैट और प्रोफ़ाइल डेटा उस प्रदाता को भेजे जाते हैं। केवल ऑन-डिवाइस Gemma 4 मॉडल सब कुछ आपके फोन पर रखते हैं।</string>
     <string name="onboarding_privacy_note_ollama">Ollama आपके अपने कंप्यूटर पर चलता है। कुछ भी क्लाउड प्रदाता को नहीं भेजा जाता।</string>

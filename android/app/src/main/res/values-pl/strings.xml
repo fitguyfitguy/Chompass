@@ -1091,7 +1091,7 @@
     <!-- API ≤33 only: standalone Health Connect APK via Play Store. -->
     <string name="settings_health_unavailable_install">Health Connect nie jest zainstalowany. Zainstaluj go z Play Store, a następnie stuknij przełącznik ponownie.</string>
     <string name="settings_health_update_required_apk">Health Connect wymaga aktualizacji. Zaktualizuj go z Play Store, a następnie stuknij przełącznik ponownie.</string>
-    <!-- API 34+: framework / Mainline module — never tell users to install the old Play Store APK. -->
+    <!-- API 34+: framework / Mainline module - never tell users to install the old Play Store APK. -->
     <string name="settings_health_unavailable_platform">Health Connect nie jest dostępny dla aplikacji na tym urządzeniu. Na Androidzie 14 i nowszych to moduł systemowy. Jeśli Ustawienia pokazują Health Connect, ale Chompass nie może się połączyć, Twój ROM może nie udostępniać usługi Health Connect (częste w niektórych buildach odgooglowanych). Chompass nie wymaga Play Store ani sandboxed Play. Zamiast tego użyj eksportu/importu dziennika i danych ciała albo opcjonalnego WebDAV.</string>
     <string name="settings_health_update_required">Health Connect wymaga aktualizacji systemu. Zainstaluj aktualizację Google Play system (lub odpowiednik Twojego ROM), a następnie stuknij przełącznik ponownie. Na Androidzie 14+ nie musisz instalować osobnej aplikacji Health Connect.</string>
     <string name="settings_health_manage_failed">Nie udało się otworzyć ustawień Health Connect na tym urządzeniu.</string>
