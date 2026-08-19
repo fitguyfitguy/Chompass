@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **German water and serving labels** (Android + web): the next-drink line now says Nächste, and the water widget shows only the amount and time so the line is not cut off. Cup, tablespoon and teaspoon now use the German unit names Cup, EL and TL. The serving card labels the unit column Einheit. Follow-up on Codeberg [#3](https://codeberg.org/fitguy/Chompass/issues/3) by [@1260er](https://codeberg.org/1260er).
+- **Switching to maintain updates calories right away** (Android): changing the goal from lose or gain to maintain now applies the formula targets immediately, so the old deficit does not stay on screen until Recalculate. Follow-up on Codeberg [#3](https://codeberg.org/fitguy/Chompass/issues/3) by [@1260er](https://codeberg.org/1260er).
 
 ## [3.21.1] - 2026-08-19
 

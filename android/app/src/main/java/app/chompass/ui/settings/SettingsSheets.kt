@@ -367,29 +367,9 @@ internal fun SettingsSheets(
                     selected = { it == ui.profile?.goal },
                     icon = { goalIcon(it) },
                     onSelect = { g ->
-                        // Mirrors iOS ContentView.swift profile.goal onChange:
-                        //   - Switching to MAINTAIN clears weeklyChangeKg + goalWeightKg.
-                        //   - Switching to LOSE/GAIN seeds weeklyChangeKg if missing and
-                        //     clears goalWeightKg if it now contradicts the new direction.
-                        // Then recompute calories+macros from the new goal.
-                        vm.updateProfile { p ->
-                            when (g) {
-                                WeightGoal.MAINTAIN ->
-                                    p.copy(goal = g, weeklyChangeKg = null, goalWeightKg = null)
-                                else -> {
-                                    val gw = p.goalWeightKg
-                                    val mismatched = gw != null && (
-                                        (g == WeightGoal.LOSE && gw >= p.weightKg) ||
-                                        (g == WeightGoal.GAIN && gw <= p.weightKg)
-                                    )
-                                    p.copy(
-                                        goal = g,
-                                        weeklyChangeKg = p.weeklyChangeKg ?: 0.5,
-                                        goalWeightKg = if (mismatched) null else p.goalWeightKg
-                                    )
-                                }
-                            }
-                        }
+                        // Mirrors iOS ContentView.swift profile.goal onChange, then applies
+                        // formula calories/macros for the new goal (UserProfile.withGoal).
+                        vm.updateProfile { it.withGoal(g) }
                         onDismiss()
                     }
                 )

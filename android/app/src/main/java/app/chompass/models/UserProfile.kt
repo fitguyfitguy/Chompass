@@ -405,6 +405,35 @@ data class UserProfile(
     }
 
     /**
+     * Switch [goal] the way Settings does: Maintain clears pace and target weight;
+     * Lose/Gain seed a 0.5 kg/week pace and drop a target that now points the wrong way.
+     * Calories and macros then follow the new goal from the formulas, so a lose-to-maintain
+     * switch does not keep the old deficit on screen (Codeberg #3).
+     */
+    fun withGoal(newGoal: WeightGoal): UserProfile {
+        val redirected = when (newGoal) {
+            WeightGoal.MAINTAIN -> copy(
+                goal = newGoal,
+                weeklyChangeKg = null,
+                goalWeightKg = null,
+            )
+            else -> {
+                val gw = goalWeightKg
+                val mismatched = gw != null && (
+                    (newGoal == WeightGoal.LOSE && gw >= weightKg) ||
+                    (newGoal == WeightGoal.GAIN && gw <= weightKg)
+                )
+                copy(
+                    goal = newGoal,
+                    weeklyChangeKg = weeklyChangeKg ?: 0.5,
+                    goalWeightKg = if (mismatched) null else goalWeightKg,
+                )
+            }
+        }
+        return redirected.recalculatedFromFormulas()
+    }
+
+    /**
      * Returns a copy with calories recomputed from formulas, all three macros reset to auto, and
      * every user lock cleared — a fresh calculation starts unlocked.
      */
