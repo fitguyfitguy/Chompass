@@ -1065,7 +1065,7 @@
     <string name="onboarding_privacy_cloud_goals">AI가 목표를 추정할 때의 프로필(계획, 재계산, 적응형 목표)</string>
     <string name="onboarding_privacy_cloud_lead">클라우드 제공자 사용 시 다음 데이터는 기기를 떠나 해당 제공자로 전송됩니다:</string>
     <string name="onboarding_privacy_cloud_title">클라우드 제공자(Gemini, OpenAI, Claude 등)</string>
-    <string name="onboarding_privacy_cloud_whatif">「어떻게 될까?」 — 오늘 기록된 일기 합계를 포함한 식사 영향</string>
+    <string name="onboarding_privacy_cloud_whatif">「어떻게 될까?」: 오늘 기록된 일기 합계를 포함한 식사 영향</string>
     <string name="onboarding_privacy_note">광고, 분석, 계정 없음. 음식 기록과 API 키는 기기에 유지됩니다.</string>
     <string name="onboarding_privacy_note_cloud">클라우드 제공자 사용 시 음식 사진, 식사 메모, 대화, 프로필 데이터가 해당 제공자에게 전송됩니다. 온디바이스 Gemma 4 모델만 모든 것을 휴대폰에 유지합니다.</string>
     <string name="onboarding_privacy_note_ollama">Ollama는 사용자 컴퓨터에서 실행됩니다. 클라우드 제공자에게 아무것도 전송되지 않습니다.</string>

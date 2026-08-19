@@ -1067,7 +1067,7 @@
     <string name="onboarding_privacy_cloud_goals">AI 估算目标时的你的资料（计划、重算、自适应目标）</string>
     <string name="onboarding_privacy_cloud_lead">使用云端提供商时，以下数据会离开你的设备发送给该提供商：</string>
     <string name="onboarding_privacy_cloud_title">云端提供商（Gemini、OpenAI、Claude 等）</string>
-    <string name="onboarding_privacy_cloud_whatif">「会怎样？」—— 餐食影响，包括今日已记录的日记合计</string>
+    <string name="onboarding_privacy_cloud_whatif">「会怎样？」：餐食影响，包括今日已记录的日记合计</string>
     <string name="onboarding_privacy_note">无广告、无分析、无账户。你的食物记录和 API 密钥保留在设备上。</string>
     <string name="onboarding_privacy_note_cloud">使用云端提供商时，食物照片、餐食备注、对话和资料数据会发送给该提供商。只有端侧 Gemma 4 模型会把一切留在手机里。</string>
     <string name="onboarding_privacy_note_ollama">Ollama 运行在你自己的电脑上，不会向云端提供商发送任何内容。</string>

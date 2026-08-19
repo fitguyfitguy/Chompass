@@ -1091,7 +1091,7 @@
     <!-- API ≤33 only: standalone Health Connect APK via Play Store. -->
     <string name="settings_health_unavailable_install">Health Connect kurulu değil. Play Store\'dan kur, ardından anahtara tekrar dokun.</string>
     <string name="settings_health_update_required_apk">Health Connect bir güncelleme gerektiriyor. Play Store\'dan güncelle, ardından anahtara tekrar dokun.</string>
-    <!-- API 34+: framework / Mainline module — never tell users to install the old Play Store APK. -->
+    <!-- API 34+: framework / Mainline module - never tell users to install the old Play Store APK. -->
     <string name="settings_health_unavailable_platform">Health Connect bu cihazdaki uygulamalar için kullanılamıyor. Android 14 ve sonrasında bir sistem modülüdür. Ayarlar Health Connect\'i gösteriyor ancak Chompass bağlanamıyorsa, ROM\'un Health Connect servisini sunmuyor olabilir (bazı Google\'sız yapılarda yaygındır). Chompass, Play Store veya sandboxed Play gerektirmez. Bunun yerine günlük ve vücut ölçümü dışa/içe aktarımını veya isteğe bağlı WebDAV\'ı kullan.</string>
     <string name="settings_health_update_required">Health Connect bir sistem güncellemesi gerektiriyor. Bir Google Play sistem güncellemesi (veya ROM\'unun karşılığı) kur, ardından anahtara tekrar dokun. Android 14+ üzerinde ayrı bir Health Connect uygulaması kurman gerekmez.</string>
     <string name="settings_health_manage_failed">Bu cihazda Health Connect ayarları açılamadı.</string>

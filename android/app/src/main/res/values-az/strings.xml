@@ -1063,7 +1063,7 @@
     <string name="onboarding_privacy_cloud_goals">AI məqsədləri təxmin edərkən profiliniz (plan, yenidən hesablama, adaptiv məqsədlər)</string>
     <string name="onboarding_privacy_cloud_lead">Bulud provayderi ilə bu məlumatlar cihazınızdan həmin provayderə gedir:</string>
     <string name="onboarding_privacy_cloud_title">Bulud provayderləri (Gemini, OpenAI, Claude, …)</string>
-    <string name="onboarding_privacy_cloud_whatif">«Nə olardı?» — bugünkü jurnal cəmləri daxil olmaqla yeməyin təsiri</string>
+    <string name="onboarding_privacy_cloud_whatif">«Nə olardı?»: bugünkü jurnal cəmləri daxil olmaqla yeməyin təsiri</string>
     <string name="onboarding_privacy_note">Reklam, analitika və hesab yoxdur. Yemək jurnalınız və API açarlarınız cihazınızda qalır.</string>
     <string name="onboarding_privacy_note_cloud">Bulud provayderi ilə yemək şəkilləri, qeydlər, söhbət və profil məlumatları həmin provayderə göndərilir. Yalnız cihazdaxili Gemma 4 modelləri hər şeyi telefonunuzda saxlayır.</string>
     <string name="onboarding_privacy_note_ollama">Ollama öz kompüterinizdə işləyir. Heç nə bulud provayderinə göndərilmir.</string>

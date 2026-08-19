@@ -1065,7 +1065,7 @@
     <string name="onboarding_privacy_cloud_goals">AI が目標を推定する際のプロフィール（計画、再計算、適応型目標）</string>
     <string name="onboarding_privacy_cloud_lead">クラウドプロバイダー利用時、以下のデータはデバイスからそのプロバイダーへ送信されます：</string>
     <string name="onboarding_privacy_cloud_title">クラウドプロバイダー（Gemini、OpenAI、Claude など）</string>
-    <string name="onboarding_privacy_cloud_whatif">「どうなる？」— 今日記録済みの日記合計を含む食事の影響</string>
+    <string name="onboarding_privacy_cloud_whatif">「どうなる？」: 今日記録済みの日記合計を含む食事の影響</string>
     <string name="onboarding_privacy_note">広告・分析・アカウントなし。食事記録と API キーはデバイスに留まります。</string>
     <string name="onboarding_privacy_note_cloud">クラウドプロバイダー利用時、食品の写真、食事メモ、チャット、プロフィールデータはそのプロバイダーに送信されます。オンデバイスの Gemma 4 モデルのみがすべてを端末に保持します。</string>
     <string name="onboarding_privacy_note_ollama">Ollama はお使いのコンピューターで動作します。クラウドプロバイダーには何も送信されません。</string>
