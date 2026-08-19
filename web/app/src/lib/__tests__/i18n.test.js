@@ -40,6 +40,8 @@ describe("i18n locales contract", () => {
     assert.equal(resolveLocaleId("pt-BR"), "pt-BR");
     assert.equal(resolveLocaleId("zh-Hans-CN"), "zh-CN");
     assert.equal(resolveLocaleId("uk-UA"), "uk");
+    assert.equal(resolveLocaleId("pl-PL"), "pl");
+    assert.equal(resolveLocaleId("tr-TR"), "tr");
     assert.equal(resolveLocaleId("en-US"), "en");
     assert.equal(resolveLocaleId("xx-YY"), FALLBACK_LOCALE);
   });

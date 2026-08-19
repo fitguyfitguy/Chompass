@@ -115,6 +115,16 @@
       "maxMissing": 954
     },
     {
+      "id": "pl",
+      "bcp47": "pl",
+      "androidValues": "values-pl",
+      "name": "Polish",
+      "nativeName": "Polski",
+      "rtl": false,
+      "speechCodes": ["pl", "pl-PL"],
+      "maxMissing": 0
+    },
+    {
       "id": "pt-BR",
       "bcp47": "pt-BR",
       "androidValues": "values-pt-rBR",
@@ -143,6 +153,16 @@
       "rtl": false,
       "speechCodes": ["ru", "ru-RU"],
       "maxMissing": 462
+    },
+    {
+      "id": "tr",
+      "bcp47": "tr",
+      "androidValues": "values-tr",
+      "name": "Turkish",
+      "nativeName": "Türkçe",
+      "rtl": false,
+      "speechCodes": ["tr", "tr-TR"],
+      "maxMissing": 0
     },
     {
       "id": "uk",
