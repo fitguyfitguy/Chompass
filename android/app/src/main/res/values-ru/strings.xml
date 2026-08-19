@@ -4,9 +4,9 @@
 
     
     <string name="widget_calorie_label">Chompass Калории</string>
-    <string name="widget_calorie_description">Просматривайте калории и макросы за день одним взглядом.</string>
+    <string name="widget_calorie_description">Просматривай калории и макросы за день одним взглядом.</string>
     <string name="widget_protein_label">Chompass Белок</string>
-    <string name="widget_protein_description">Следите за прогрессом по белку за день одним взглядом.</string>
+    <string name="widget_protein_description">Следи за прогрессом по белку за день одним взглядом.</string>
     <string name="widget_today">Сегодня</string>
     <string name="widget_protein">Белок</string>
     <string name="widget_calories">Калории</string>
@@ -148,7 +148,7 @@
 
 
     <string name="speech_key_placeholder_deepgram">Токен your-deepgram-key</string>
-    <string name="speech_key_placeholder_assemblyai">Ваш ключ AssemblyAI</string>
+    <string name="speech_key_placeholder_assemblyai">Твой ключ AssemblyAI</string>
 
     <string name="speech_description_native">Распознавание речи Android прямо на устройстве. Бесплатно, работает офлайн на большинстве телефонов, в реальном времени с частичными результатами. Рекомендуется по умолчанию.</string>
     <string name="speech_description_openai">API OpenAI Whisper. Высокая точность, более 99 языков, оплата за минуту.</string>
@@ -189,15 +189,15 @@
     
     <string name="onboarding_back">Назад</string>
     <string name="onboarding_logo_description">Логотип Chompass</string>
-    <string name="onboarding_welcome_line1">Записывайте приёмы пищи,</string>
-    <string name="onboarding_welcome_line2">Сохраняйте баланс</string>
-    <string name="onboarding_welcome_subtitle">Записывайте еду фото, голосом или текстом.\nВаше питание — под рукой.</string>
+    <string name="onboarding_welcome_line1">Записывай приёмы пищи,</string>
+    <string name="onboarding_welcome_line2">Сохраняй баланс</string>
+    <string name="onboarding_welcome_subtitle">Записывай еду фото, голосом или текстом.\nТвоё питание под рукой.</string>
 
-    <string name="onboarding_gender_title">Какой у вас пол?</string>
-    <string name="onboarding_gender_subtitle">Это поможет нам рассчитать ваш метаболизм</string>
+    <string name="onboarding_gender_title">Какой у тебя пол?</string>
+    <string name="onboarding_gender_subtitle">Это поможет нам рассчитать твой метаболизм</string>
 
-    <string name="onboarding_birthday_title">Когда у вас день рождения?</string>
-    <string name="onboarding_birthday_subtitle">Используется для расчёта вашей суточной нормы</string>
+    <string name="onboarding_birthday_title">Когда у тебя день рождения?</string>
+    <string name="onboarding_birthday_subtitle">Используется для расчёта твоей суточной нормы</string>
 
     <string name="onboarding_height_weight_title">Рост и вес</string>
     <string name="onboarding_height_weight_subtitle">Мы сохраним это в тайне</string>
@@ -208,46 +208,46 @@
     <string name="onboarding_feet">Футы</string>
     <string name="onboarding_inches">Дюймы</string>
 
-    <string name="onboarding_activity_title">Насколько вы активны?</string>
-    <string name="onboarding_activity_subtitle">Ваша обычная неделя</string>
+    <string name="onboarding_activity_title">Какой у тебя уровень активности?</string>
+    <string name="onboarding_activity_subtitle">Твоя обычная неделя</string>
 
-    <string name="onboarding_goal_title">Какова ваша цель?</string>
-    <string name="onboarding_goal_subtitle">Вы можете изменить это в любое время</string>
+    <string name="onboarding_goal_title">Какова твоя цель?</string>
+    <string name="onboarding_goal_subtitle">Ты можешь изменить это в любое время</string>
 
-    <string name="onboarding_desired_weight_title">Какой у вас\nжелаемый вес?</string>
+    <string name="onboarding_desired_weight_title">Какой у тебя\nжелаемый вес?</string>
 
-    <string name="onboarding_body_fat_title">Знаете ли вы свой\nпроцент жира?</string>
-    <string name="onboarding_body_fat_subtitle">Помогает точнее рассчитать ваш метаболизм</string>
+    <string name="onboarding_body_fat_title">Знаешь ли ты свой\nпроцент жира?</string>
+    <string name="onboarding_body_fat_subtitle">Помогает точнее рассчитать твой метаболизм</string>
     <string name="onboarding_yes">Да</string>
     <string name="onboarding_no">Нет</string>
     <string name="onboarding_body_fat_ranges">Обычные диапазоны: мужчины 10-25%%, женщины 18-35%%</string>
-    <string name="onboarding_body_fat_no_worries">Не беспокойтесь! Мы используем стандартную формулу\nна основе вашего роста, веса и возраста.</string>
+    <string name="onboarding_body_fat_no_worries">Не беспокойся! Мы используем стандартную формулу\nна основе твоего роста, веса и возраста.</string>
 
-    <string name="onboarding_pace_title_maintain">Ваш темп</string>
+    <string name="onboarding_pace_title_maintain">Твой темп</string>
     <string name="onboarding_pace_subtitle_maintain">Мы установим сбалансированный план</string>
-    <string name="onboarding_pace_title_change">Как быстро вы хотите\nдостичь своей цели?</string>
+    <string name="onboarding_pace_title_change">Как быстро ты хочешь\nдостичь своей цели?</string>
     <string name="onboarding_pace_subtitle_lose">Скорость снижения веса в неделю</string>
     <string name="onboarding_pace_subtitle_gain">Скорость набора веса в неделю</string>
     <string name="onboarding_pace_balanced_set">Установлен сбалансированный темп</string>
-    <string name="onboarding_pace_balanced_subtitle">Мы будем удерживать ваши калории\nдля поддержания текущего веса.</string>
+    <string name="onboarding_pace_balanced_subtitle">Мы будем удерживать твои калории\nдля поддержания текущего веса.</string>
     <string name="onboarding_pace_per_week">в неделю</string>
     <string name="onboarding_pace_slow">Медленно</string>
     <string name="onboarding_pace_recommended">Рекомендуется</string>
     <string name="onboarding_pace_fast">Быстро</string>
-    <string name="onboarding_pace_reach_prefix">Вы достигнете цели через\ </string>
+    <string name="onboarding_pace_reach_prefix">Ты достигнешь цели через\ </string>
     <string name="onboarding_pace_days_format">%1$d дн.</string>
     <string name="onboarding_pace_caption_slow">Мягко и устойчиво. Отлично для долгосрочных привычек.</string>
     <string name="onboarding_pace_caption_fast">Агрессивно, но реально. Требует строгой дисциплины.</string>
-    <string name="onboarding_pace_caption_recommended">Самый сбалансированный темп - мотивирующий и устойчивый.</string>
+    <string name="onboarding_pace_caption_recommended">Самый сбалансированный темп, мотивирующий и устойчивый.</string>
 
     <string name="onboarding_notifications_title">Получать напоминания\nо записи блюд</string>
-    <string name="onboarding_notifications_subtitle">Получайте мягкие напоминания во время еды,\nчтобы не забыть отслеживать.</string>
+    <string name="onboarding_notifications_subtitle">Получай мягкие напоминания во время еды,\nчтобы не забыть отслеживать.</string>
     <string name="onboarding_notifications_enabled">Напоминания включены</string>
     <string name="onboarding_notifications_allow">Разрешить уведомления</string>
-    <string name="onboarding_notifications_change_anytime">Вы можете изменить это в любое время в Настройках.</string>
+    <string name="onboarding_notifications_change_anytime">Ты можешь изменить это в любое время в Настройках.</string>
 
     <string name="onboarding_health_title">Подключиться к\nHealth Connect</string>
-    <string name="onboarding_health_subtitle">Поддерживайте автоматическую синхронизацию\nпитания и измерений тела.</string>
+    <string name="onboarding_health_subtitle">Поддерживай автоматическую синхронизацию\nпитания и измерений тела.</string>
     <string name="onboarding_health_feature_nutrition">Данные о питании</string>
     <string name="onboarding_health_feature_weight">Синхронизация веса</string>
     <string name="onboarding_health_feature_body">Измерения тела</string>
@@ -255,18 +255,18 @@
     <string name="onboarding_health_connected">Подключено</string>
     <string name="onboarding_health_connect">Подключить</string>
 
-    <string name="onboarding_provider_title">Используйте свой ИИ</string>
+    <string name="onboarding_provider_title">Используй свой ИИ</string>
     <string name="onboarding_provider_subtitle">Необязательный API-ключ для фото еды и коуча.\nGoogle AI Studio бесплатен и рекомендуется.</string>
     <string name="onboarding_provider_recommended_title">Рекомендуется: Google AI Studio</string>
     <string name="onboarding_provider_recommended_subtitle">Бесплатно и высокое качество. Лучше всего для фото еды.</string>
     <string name="onboarding_provider_howto_title">Как получить бесплатный ключ Google AI Studio</string>
-    <string name="onboarding_provider_step_1">Откройте aistudio.google.com/apikey (нажмите, чтобы открыть)</string>
-    <string name="onboarding_provider_step_2">Войдите через Google и создайте API-ключ</string>
-    <string name="onboarding_provider_step_3">Вставьте ниже и нажмите «Проверить ключ»</string>
+    <string name="onboarding_provider_step_1">Открой aistudio.google.com/apikey (нажми, чтобы открыть)</string>
+    <string name="onboarding_provider_step_2">Войди через Google и создай API-ключ</string>
+    <string name="onboarding_provider_step_3">Вставь ниже и нажми «Проверить ключ»</string>
     <string name="onboarding_provider_footer">Поддерживаются все провайдеры. Ключ остаётся\nна устройстве, зашифрованным. Можно изменить в настройках.</string>
     <string name="onboarding_skip_ai">Пропустить пока</string>
     <string name="onboarding_skip_ai_title">Продолжить без облачного ключа?</string>
-    <string name="onboarding_skip_ai_body">Локальный ИИ работает приватно на телефоне, но гораздо менее точен, чем Google AI Studio или другие облачные модели. Ожидайте неверные калории, пропущенные позиции или слабое распознавание фото. Бесплатный ключ AI Studio можно добавить в настройках в любой момент.</string>
+    <string name="onboarding_skip_ai_body">Локальный ИИ работает приватно на телефоне, но гораздо менее точен, чем Google AI Studio или другие облачные модели. Ожидай неверные калории, пропущенные позиции или слабое распознавание фото. Бесплатный ключ AI Studio можно добавить в настройках в любой момент.</string>
     <string name="onboarding_skip_ai_later_body">ИИ для фото еды и коуч нуждаются в API-ключе или локальной модели. Настроить можно в любой момент в настройках.</string>
     <string name="onboarding_skip_ai_confirm">Всё равно продолжить</string>
 
@@ -276,16 +276,16 @@
     <string name="onboarding_building_fats">Жиры</string>
     <string name="onboarding_building_health_score">Балл здоровья</string>
 
-    <string name="onboarding_building_setting_up">Мы готовим всё\nдля вас</string>
+    <string name="onboarding_building_setting_up">Мы готовим всё\nдля тебя</string>
     <string name="onboarding_building_finalizing">Завершение обработки...</string>
     <string name="onboarding_building_recommendation">Дневная норма для</string>
 
 
-    <string name="onboarding_plan_title">Ваш план</string>
-    <string name="onboarding_plan_subtitle">Коснитесь любого значения, чтобы изменить</string>
+    <string name="onboarding_plan_title">Твой план</string>
+    <string name="onboarding_plan_subtitle">Коснись любого значения, чтобы изменить</string>
     <string name="onboarding_plan_daily_calories">калории в день</string>
-    <string name="onboarding_plan_doctor_title">Пожалуйста, проконсультируйтесь с врачом</string>
-    <string name="onboarding_plan_doctor_message">Минимальная рекомендация - 1 200 калорий в день.</string>
+    <string name="onboarding_plan_doctor_title">Пожалуйста, проконсультируйся с врачом</string>
+    <string name="onboarding_plan_doctor_message">Минимальная рекомендация: 1 200 калорий в день.</string>
 
     <string name="onboarding_plan_field_calories">Калории в день</string>
     <string name="onboarding_plan_field_protein">Белок</string>
@@ -314,7 +314,7 @@
     <string name="add_food_hero_photo">Фото</string>
     <string name="add_food_hero_photo_sub">Камера или галерея</string>
     <string name="add_food_hero_note">Заметка</string>
-    <string name="add_food_hero_note_sub">Опишите, что вы ели</string>
+    <string name="add_food_hero_note_sub">Опиши, что ты ел</string>
     <string name="add_food_hero_saved">Сохранённое</string>
     <string name="add_food_hero_saved_sub">Недавние и избранное</string>
     <string name="add_food_more_section">Другие способы записи</string>
@@ -324,7 +324,7 @@
     <string name="add_food_add_label_photo">Добавить фото этикетки</string>
     <string name="add_food_add_photo">Добавить фото</string>
     <string name="progressive_meal_add_next">Добавить следующий ингредиент</string>
-    <string name="text_input_title">Опишите вашу еду</string>
+    <string name="text_input_title">Опиши свою еду</string>
     <string name="home_kcal_of_format">из %1$s ккал</string>
     <string name="home_kcal_left_format">осталось %1$s</string>
     <string name="home_view_more">Показать больше</string>
@@ -335,7 +335,7 @@
     <string name="home_swipe_unfavorite">Из избранного</string>
     <string name="home_favorited">В избранном</string>
 
-    <string name="home_analyzing_food">Анализируем вашу еду...</string>
+    <string name="home_analyzing_food">Анализируем твою еду...</string>
     <string name="home_looking_up_nutrition">Ищем данные о питании...</string>
     <string name="entry_analysis_phase_preparing">Готовим запрос…</string>
     <string name="entry_analysis_phase_looking_up_barcode">Проверяем штрих-коды…</string>
@@ -382,7 +382,7 @@
     <string name="sheet_meal_type">Приём пищи</string>
     <string name="sheet_review_food">Проверить еду</string>
     <string name="sheet_edit_food">Изменить еду</string>
-    <string name="edit_icon_picker_title">Выберите значок</string>
+    <string name="edit_icon_picker_title">Выбери значок</string>
     <string name="edit_icon_set_photo">Установить фото</string>
     <string name="edit_icon_remove_photo">Удалить фото</string>
     <string name="edit_icon_photo_failed">Не удалось прочитать это фото</string>
@@ -404,10 +404,10 @@
 
     
     <string name="voice_listening">Слушаю...</string>
-    <string name="voice_tap_to_start">Коснитесь микрофона, чтобы начать</string>
+    <string name="voice_tap_to_start">Коснись микрофона, чтобы начать</string>
     <string name="voice_transcribing_format">Расшифровка через %1$s...</string>
     <string name="voice_mic_permission_denied">Доступ к микрофону запрещён.</string>
-    <string name="voice_mic_start_failed">Не удалось включить микрофон. Проверьте разрешения.</string>
+    <string name="voice_mic_start_failed">Не удалось включить микрофон. Проверь разрешения.</string>
     <string name="voice_transcription_failed">Не удалось расшифровать</string>
     <string name="voice_stop">Стоп</string>
     <string name="voice_record">Запись</string>
@@ -418,7 +418,7 @@
     <string name="saved_meals_tab_frequent">Частые</string>
     <string name="saved_meals_tab_favorites">Избранное</string>
     <string name="saved_meals_no_logs">Пока нет записей о еде</string>
-    <string name="saved_meals_no_favorites">Пока нет избранного\nСмахните влево по любой еде, чтобы добавить</string>
+    <string name="saved_meals_no_favorites">Пока нет избранного\nСмахни влево по любой еде, чтобы добавить</string>
     <string name="saved_meals_count_format">%1$d× записей</string>
     <string name="saved_meals_log_action">Запись</string>
     <string name="saved_meals_remove_favorite">Убрать из избранного</string>
@@ -450,12 +450,12 @@
     <string name="coach_send_a11y">Отправить</string>
     <string name="coach_input_voice_a11y">Голосовой ввод</string>
     <string name="coach_input_placeholder">Спросить тренера...</string>
-    <string name="coach_empty_title">Спросите тренера</string>
-    <string name="coach_empty_subtitle">Ваш тренер видит историю веса, журнал калорий и цели. Спросите об ожидаемом весе, что есть или как достичь цели.</string>
+    <string name="coach_empty_title">Спроси тренера</string>
+    <string name="coach_empty_subtitle">Твой тренер видит историю веса, журнал калорий и цели. Спроси об ожидаемом весе, что есть или как достичь цели.</string>
     <string name="coach_reset_dialog_title">Сбросить чат</string>
     <string name="coach_reset_dialog_message">Очистить все сообщения и начать заново? Это действие нельзя отменить.</string>
     <string name="coach_reset_confirm">Сбросить</string>
-    <string name="coach_no_profile_error">Профиль ещё не создан. Сначала завершите настройку.</string>
+    <string name="coach_no_profile_error">Профиль ещё не создан. Сначала заверши настройку.</string>
     <string name="coach_chat_failed">Сбой чата</string>
 
     <string name="coach_chip_predict_30_days">Какой у меня будет вес через 30 дней?</string>
@@ -484,11 +484,11 @@
     <string name="progress_log_weight">Записать вес</string>
     <string name="progress_stat_current">Текущий</string>
     <string name="progress_stat_goal">Цель</string>
-    <string name="progress_log_first_weight">Запишите первый вес, чтобы увидеть динамику</string>
+    <string name="progress_log_first_weight">Запиши первый вес, чтобы увидеть динамику</string>
 
     <string name="progress_weight_history">История веса</string>
     <string name="progress_body_fat_history">История жира тела</string>
-    <string name="progress_history_count_format">%1$d записей · коснитесь, чтобы посмотреть или удалить</string>
+    <string name="progress_history_count_format">%1$d записей · коснись, чтобы посмотреть или удалить</string>
 
     <string name="progress_calories_section">Калории</string>
     <string name="progress_avg_format">Сред.: %1$d ккал</string>
@@ -499,8 +499,8 @@
 
     <string name="progress_log_weight_title">Записать вес</string>
 
-    <string name="progress_goal_reached_title">Поздравляем! 🎉</string>
-    <string name="progress_goal_reached_message">Вы достигли целевого веса! Перейдите в Настройки, чтобы сменить цель, и нажмите «Пересчитать цели», чтобы обновить показатели.</string>
+    <string name="progress_goal_reached_title">Цель достигнута 🎉</string>
+    <string name="progress_goal_reached_message">Ты достиг целевого веса. Перейди в Настройки, чтобы сменить цель, и нажми «Пересчитать цели», чтобы обновить показатели.</string>
 
     
     <string name="settings_section_personal">Личные данные</string>
@@ -559,7 +559,7 @@
     <string name="settings_api_key">Ключ API</string>
     <string name="settings_base_url">Базовый URL</string>
     <string name="settings_server_url">URL сервера</string>
-    <string name="settings_tap_to_edit">Коснитесь, чтобы изменить</string>
+    <string name="settings_tap_to_edit">Коснись, чтобы изменить</string>
 
     <string name="settings_custom_url_title">Свой базовый URL</string>
     <string name="settings_clear_key">Очистить ключ</string>
@@ -572,9 +572,9 @@
     <string name="settings_clear_food_title">Очистить дневник питания?</string>
     <string name="settings_clear_food_message">Удалит все записи о еде и фото. Профиль, веса и настройки сохранятся.</string>
     <string name="settings_delete_all_title">Удалить все локальные данные?</string>
-    <string name="settings_delete_all_message">Удалит профиль, дневник питания, историю веса, чат и ключи API, после чего вернёт вас к настройке. Данные Health Connect останутся нетронутыми.</string>
+    <string name="settings_delete_all_message">Удалит профиль, дневник питания, историю веса, чат и ключи API, после чего вернёт тебя к настройке. Данные Health Connect останутся нетронутыми.</string>
     <string name="settings_max_pinned_title">Макс. 2 закреплено</string>
-    <string name="settings_max_pinned_message">Одновременно можно закрепить не более 2 макронутриентов. Сначала открепите другой, открыв его и нажав «Сбросить на Авто-баланс».</string>
+    <string name="settings_max_pinned_message">Одновременно можно закрепить не более 2 макронутриентов. Сначала открепи другой, открыв его и нажав «Сбросить на Авто-баланс».</string>
     <string name="settings_recalc_title">Пересчитать цели?</string>
     <string name="settings_recalc_message">Сбрасывает калории и макросы к значениям по формуле на основе роста, веса, активности и цели. Все закреплённые макросы будут сняты.</string>
     <string name="settings_recalc_confirm">Пересчитать</string>
@@ -583,20 +583,20 @@
     <string name="settings_invalid_goal_gain">Цель «Набрать» требует значения выше текущего веса.</string>
     <string name="settings_permission_title">Нужно разрешение</string>
 
-    <string name="settings_notifications_denied">Доступ к уведомлениям запрещён. Включите его в Системных настройках → Приложения → Chompass → Уведомления, чтобы получать напоминания.</string>
+    <string name="settings_notifications_denied">Доступ к уведомлениям запрещён. Включи его в Системных настройках → Приложения → Chompass → Уведомления, чтобы получать напоминания.</string>
 
     
     <string name="notif_weight_log_title">Пора взвеситься</string>
-    <string name="notif_weight_log_text">Запишите свой вес сегодня, чтобы график прогресса оставался точным.</string>
-    <string name="settings_health_unavailable">Health Connect недоступен на этом устройстве. На Android 14 и новее он входит в систему. Используйте экспорт/импорт файлов, если прошивка его не предоставляет. Chompass не требует приложение Health Connect из Play Store на Android 14+.</string>
+    <string name="notif_weight_log_text">Запиши свой вес сегодня, чтобы график прогресса оставался точным.</string>
+    <string name="settings_health_unavailable">Health Connect недоступен на этом устройстве. На Android 14 и новее он входит в систему. Используй экспорт/импорт файлов, если прошивка его не предоставляет. Chompass не требует приложение Health Connect из Play Store на Android 14+.</string>
 
     
     <string name="sheet_ai_provider">ИИ-провайдер</string>
     <string name="sheet_model">Модель</string>
-    <string name="sheet_model_footer">Или введите любой свой ID модели ниже.</string>
+    <string name="sheet_model_footer">Или введи любой свой ID модели ниже.</string>
     <string name="sheet_any_model_id">Любой ID модели</string>
-    <string name="sheet_api_key_format">Ключ API - %1$s</string>
-    <string name="sheet_speech_api_key_format">Ключ API речи - %1$s</string>
+    <string name="sheet_api_key_format">Ключ API: %1$s</string>
+    <string name="sheet_speech_api_key_format">Ключ API речи: %1$s</string>
     <string name="sheet_speech_engine">Движок речи</string>
     <string name="sheet_gender">Пол</string>
     <string name="sheet_activity_level">Уровень активности</string>
@@ -619,7 +619,7 @@
     <string name="sheet_reset_to_auto">Сбросить на Авто-баланс</string>
 
     <string name="sheet_macros">Макросы</string>
-    <string name="sheet_macros_subtitle">Закрепите до 2 макросов с точным числом граммов. Незакреплённые автоматически балансируются из оставшихся калорий.</string>
+    <string name="sheet_macros_subtitle">Закрепи до 2 макросов с точным числом граммов. Незакреплённые автоматически балансируются из оставшихся калорий.</string>
     <string name="sheet_macro_pinned">закреплено</string>
     <string name="sheet_macro_auto">авто</string>
 
@@ -633,7 +633,7 @@
     <string name="about_privacy">Политика конфиденциальности</string>
     <string name="about_made_by">Chompass от fitguy</string>
     <string name="about_with_care">На основе Fud AI от Apoorv Darshan</string>
-    <string name="about_share_message">Я слежу за питанием с помощью Chompass - сфотографируй блюдо, наговори его или введи текстом, и ИИ запишет калории. Бесплатно, с открытым кодом, все данные остаются на твоём устройстве.\n\nСкачать: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">Я слежу за питанием с помощью Chompass, свободного форка Fud AI без рекламы. Сфотографируй блюдо, наговори его или введи текстом, и ИИ запишет калории. Открытый код, все данные остаются на твоём устройстве.\n\nИсходный код: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Поделиться Chompass</string>
 
     
@@ -643,55 +643,55 @@
     <string name="notif_channel_daily_desc">Сводка калорий и макросов в конце дня.</string>
     <string name="notif_channel_weight_goal">Цель по весу</string>
     <string name="notif_channel_weight_goal_desc">Поздравление при достижении целевого веса.</string>
-    <string name="notif_streak_title">Не забудьте записать приёмы пищи</string>
-    <string name="notif_streak_text">Поддержите свою серию - добавьте запись за сегодня.</string>
+    <string name="notif_streak_title">Не забудь записать приёмы пищи</string>
+    <string name="notif_streak_text">Поддержи свою серию. Добавь запись за сегодня.</string>
     <string name="notif_summary_title">Сводка за сегодня готова</string>
-    <string name="notif_summary_text">Коснитесь, чтобы увидеть, как сложились макросы за день.</string>
+    <string name="notif_summary_text">Коснись, чтобы увидеть, как сложились макросы за день.</string>
 
     <string name="onboarding_goal_optional">Цель (необязательно)</string>
     <string name="onboarding_goal_set_later">Можно настроить позже в Настройках.</string>
     <string name="settings_goal_body_fat">Цель по жиру</string>
     <string name="settings_use_body_fat_bmr">Использовать жир для BMR</string>
-    <string name="settings_use_body_fat_bmr_subtitle">Вкл = Katch-McArdle (использует сухую массу для более точного BMR). Выкл = Mifflin-St Jeor (только рост/вес/возраст). Отключите, если измерение жира устарело.</string>
+    <string name="settings_use_body_fat_bmr_subtitle">Вкл = Katch-McArdle (использует сухую массу для более точного BMR). Выкл = Mifflin-St Jeor (только рост/вес/возраст). Отключи, если измерение жира устарело.</string>
     <string name="sheet_goal_body_fat">Цель по жиру</string>
     <string name="sheet_goal_body_fat_currently">Сейчас %1$d%%</string>
     <string name="action_remove_goal">Удалить цель</string>
     <string name="progress_metric_weight">Вес</string>
     <string name="progress_metric_body_fat">Жир тела</string>
     <string name="progress_log_body_fat">Записать жир</string>
-    <string name="progress_log_first_body_fat">Запишите первое измерение жира, чтобы увидеть динамику</string>
+    <string name="progress_log_first_body_fat">Запиши первое измерение жира, чтобы увидеть динамику</string>
     <string name="progress_log_body_fat_title">Записать жир</string>
     <string name="notif_body_fat_log_title">Проверка жира</string>
-    <string name="notif_body_fat_log_text">Запишите свой % жира сегодня, чтобы отслеживать динамику состава тела.</string>
+    <string name="notif_body_fat_log_text">Запиши свой % жира сегодня, чтобы отслеживать динамику состава тела.</string>
     <string name="saved_meals_search_placeholder">Поиск сохранённых продуктов</string>
     <string name="saved_meals_no_match">Нет подходящих продуктов</string>
     <string name="settings_section_custom_instructions">Свои инструкции для ИИ</string>
     <string name="settings_custom_instructions_placeholder">Например: живу в Германии, ориентируйся на европейские размеры порций, предпочитаю бренды ALDI/REWE. Я на сушке для бодибилдинга.</string>
-    <string name="settings_custom_instructions_footer">Необязательный контекст, отправляемый с каждым запросом к ИИ - регион, диета, спортивные цели, всё, что ты иначе повторял бы каждый раз. Оставь пустым, чтобы отключить.</string>
+    <string name="settings_custom_instructions_footer">Необязательный контекст, отправляемый с каждым запросом к ИИ: регион, диета, спортивные цели, всё, что ты иначе повторял бы каждый раз. Оставь пустым, чтобы отключить.</string>
     <string name="settings_save">Сохранить</string>
     <string name="settings_saved">Сохранено</string>
     <string name="settings_section_fallback">Резервный провайдер</string>
     <string name="settings_enable_fallback">Включить резерв</string>
-    <string name="settings_fallback_footer">Если основной провайдер недоступен (перегрузка, лимит запросов, сетевая ошибка), приложение автоматически повторит запрос через этот резервный. Можно выбрать того же провайдера, что и основной - просто укажи другую модель.</string>
+    <string name="settings_fallback_footer">Если основной провайдер недоступен (перегрузка, лимит запросов, сетевая ошибка), приложение автоматически повторит запрос через этот резервный. Можно выбрать того же провайдера, что и основной, просто укажи другую модель.</string>
     <string name="widget_all_metrics_label">Chompass Сегодня</string>
-    <string name="widget_all_metrics_description">Смотрите калории, белки, углеводы и жиры за сегодня в одном виджете.</string>
+    <string name="widget_all_metrics_description">Смотри калории, белки, углеводы и жиры за сегодня в одном виджете.</string>
     <string name="settings_needs_health_connect">Требуется Health Connect</string>
-    <string name="settings_energy_goals_info">Когда включено, Chompass использует измеренные сожжённые калории из Health Connect - среднее за 14 дней активной + базовой энергии - как ориентир поддержания (TDEE) при расчёте целей вместо оценки по формуле. ИИ не используется для чтения данных о расходе. Требуется Health Connect. Работает с кнопкой «Пересчитать» и с Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Примерно раз в неделю при открытии приложения Chompass автоматически заново выполняет полный расчёт целей - тот же, что и кнопка «Пересчитать», - на основе вашего профиля, недавно записанной еды и тренда веса. Если включён Energy Burn, измеренный расход используется как ориентир поддержания. Если ИИ недоступен, запуск тихо пропускается. При выключении восстанавливаются цели, действовавшие до первого изменения этой функцией. Это не медицинская рекомендация.</string>
-    <string name="onboarding_plan_adaptive_note">Ваш план автоматически корректируется каждую неделю по мере записей - отключите Адаптивные цели в настройках, чтобы он оставался неизменным.</string>
-    <string name="onboarding_feature_snap">Сфотографируйте - ИИ запишет</string>
-    <string name="onboarding_feature_coach">Коуч, который знает ваши данные</string>
+    <string name="settings_energy_goals_info">Когда включено, Chompass использует измеренные сожжённые калории из Health Connect, среднее за 14 дней активной + базовой энергии, как ориентир поддержания (TDEE) при расчёте целей вместо оценки по формуле. ИИ не используется для чтения данных о расходе. Требуется Health Connect. Работает с кнопкой «Пересчитать» и с адаптивными целями.</string>
+    <string name="settings_adaptive_goals_info">Примерно раз в неделю при открытии приложения Chompass автоматически заново выполняет полный расчёт целей, тот же, что и кнопка «Пересчитать», на основе твоего профиля, недавно записанной еды и тренда веса. Если включён расход энергии, измеренный расход используется как ориентир поддержания. Если ИИ недоступен, пересчёт пропускается. При выключении восстанавливаются цели, действовавшие до первого изменения этой функцией. Это не медицинская рекомендация.</string>
+    <string name="onboarding_plan_adaptive_note">Твой план автоматически корректируется каждую неделю по мере записей. Отключи «Адаптивные цели» в настройках, чтобы он оставался неизменным.</string>
+    <string name="onboarding_feature_snap">Сфотографируй. ИИ запишет.</string>
+    <string name="onboarding_feature_coach">Коуч, который знает твои данные</string>
     <string name="onboarding_feature_library">Health Connect для весов и носимых устройств</string>
     <string name="onboarding_feature_widgets">Виджеты на главном экране</string>
     <string name="whats_new_v30_workouts">Вкладка «Тренировки» удалена.</string>
     <string name="whats_new_v30_home">Новый главный экран: спидометр калорий, вертикальные полосы макросов, четыре карточки нутриентов и плавающая кнопка добавления.</string>
-    <string name="whats_new_v30_coach_voice">Задавайте вопросы Коучу голосом с новым встроенным рекордером.</string>
-    <string name="whats_new_v30_share">Делитесь любым приёмом пищи ссылкой, которая открывается сразу в Chompass - на iPhone или Android.</string>
-    <string name="whats_new_v30_export">Экспортируйте дневник питания в JSON, Markdown или CSV из настроек.</string>
-    <string name="whats_new_v30_reprocess">Переобработайте записанный приём пищи с ИИ - измените название, порцию или заметку и проанализируйте заново.</string>
+    <string name="whats_new_v30_coach_voice">Задавай вопросы Коучу голосом с новым встроенным рекордером.</string>
+    <string name="whats_new_v30_share">Делись любым приёмом пищи ссылкой, которая сразу открывается в Chompass на iPhone или Android.</string>
+    <string name="whats_new_v30_export">Экспортируй дневник питания в JSON, Markdown или CSV из настроек.</string>
+    <string name="whats_new_v30_reprocess">Переобработай записанный приём пищи с ИИ: измени название, порцию или заметку и проанализируй заново.</string>
     <string name="whats_new_v30_camera">Камера + Камера сохраняет оба снимка, соединённые рядом.</string>
-    <string name="whats_new_v30_colors">10 новых цветов темы - теперь выбираются прямо в настройках.</string>
-    <string name="whats_new_v30_bodyfat">История жира: просматривайте и удаляйте отдельные записи, как и с весом.</string>
+    <string name="whats_new_v30_colors">10 новых цветов темы, теперь их можно выбрать прямо в настройках.</string>
+    <string name="whats_new_v30_bodyfat">История жира: просматривай и удаляй отдельные записи, как и с весом.</string>
     <string name="whats_new_v30_units">Единицы роста и веса теперь настраиваются независимо.</string>
     <string name="whats_new_v30_adaptive">«Адаптивные цели» и «Расход энергии» вышли из экспериментального статуса и включены по умолчанию для новых установок.</string>
     <string name="whats_new_v30_restore">Переустановили приложение или сменили телефон? Дневник питания, вес и процент жира теперь автоматически восстанавливаются из Health Connect.</string>
@@ -701,7 +701,7 @@
 
     <string name="speech_description_gemini">Транскрипция аудио через Gemini API. Использует пакетное распознавание аудио, а не Speech-to-Text API Google Cloud в реальном времени.</string>
     <string name="what_if_title">А что если?</string>
-    <string name="what_if_subtitle">Посмотрите, как это блюдо изменит сегодняшний день, прежде чем записать его.</string>
+    <string name="what_if_subtitle">Посмотри, как это блюдо изменит сегодняшний день, прежде чем записать его.</string>
     <string name="what_if_ai_suggestion">Подсказка ИИ</string>
     <string name="what_if_loading">Оцениваем влияние...</string>
     <string name="what_if_no_suggestion">Подсказка недоступна.</string>
@@ -730,10 +730,10 @@
     <string name="settings_macro_locked">Заблокировано</string>
     <string name="settings_macro_unlocked">Разблокировано</string>
     <string name="settings_rebalance_blocked_title">Не удаётся пересчитать</string>
-    <string name="settings_rebalance_blocked_message">Калории заблокированы, и оба других макронутриента тоже, поэтому изменению некуда уйти. Разблокируйте калории или другой макронутриент и попробуйте снова.</string>
+    <string name="settings_rebalance_blocked_message">Калории заблокированы, и оба других макронутриента тоже, поэтому изменению некуда уйти. Разблокируй калории или другой макронутриент и попробуй снова.</string>
     <string name="settings_adaptive_locks_title">Включены адаптивные цели</string>
-    <string name="settings_adaptive_locks_message">Отключите адаптивные цели, чтобы блокировать или задавать свои калории и макронутриенты. Пока они включены, Chompass пересчитывает их за вас каждую неделю.</string>
-    <string name="settings_health_denied">Health Connect нужны разрешения: вес, процент жира, активные калории, общие калории, запись питания и запись воды. Нажмите переключатель ещё раз и предоставьте все запрошенные разрешения для синхронизации и расчёта целей по энергии.</string>
+    <string name="settings_adaptive_locks_message">Отключи адаптивные цели, чтобы блокировать или задавать свои калории и макронутриенты. Пока они включены, Chompass пересчитывает их за тебя каждую неделю.</string>
+    <string name="settings_health_denied">Health Connect нужны разрешения: вес, процент жира, активные калории, общие калории, запись питания и запись воды. Нажми переключатель ещё раз и предоставь все запрошенные разрешения для синхронизации и расчёта целей по энергии.</string>
     <string name="sheet_speech_language">Язык речи</string>
     <string name="speech_language_provider_auto">Автоопределение провайдером</string>
     <string name="speech_language_provider_auto_subtitle">Провайдер сам определит язык.</string>
@@ -785,7 +785,7 @@
     <string name="body_measurements_title">Замеры тела</string>
     <string name="label_derived">Расчётные</string>
     <string name="notif_goal_weight_title">Поздравляем! 🎉</string>
-    <string name="notif_goal_weight_text">Вы достигли целевого веса.</string>
+    <string name="notif_goal_weight_text">Ты достиг целевого веса.</string>
     <string name="cd_selected">Выбрано</string>
     <string name="cd_add_food">Добавить еду</string>
     <string name="cd_share_meal">Поделиться блюдом</string>
@@ -796,7 +796,7 @@
     <string name="cd_log">Записать</string>
     <string name="cd_close">Закрыть</string>
     <string name="cd_clear_quantity">Очистить количество</string>
-    <string name="cd_hold_to_record">Удерживайте для записи, нажмите для фиксации</string>
+    <string name="cd_hold_to_record">Удерживай для записи, нажми для фиксации</string>
     <string name="cd_cancel_recording">Отменить запись</string>
     <string name="cd_remove_image">Удалить изображение</string>
     <string name="cd_add_image">Добавить изображение</string>
@@ -818,9 +818,9 @@
         <item quantity="other">Скопировать %1$d блюда в %2$s</item>
     </plurals>
     <string name="home_first_photo_saved">Первое фото сохранено</string>
-    <string name="home_take_second_shot">Сделайте второй снимок</string>
+    <string name="home_take_second_shot">Сделай второй снимок</string>
     <string name="edit_reprocess_section">Повторный анализ с ИИ</string>
-    <string name="edit_reprocess_hint">Опишите исправление, напр. большая миска, на масле, овсяное молоко вместо обычного</string>
+    <string name="edit_reprocess_hint">Опиши исправление, напр. большая миска, на масле, овсяное молоко вместо обычного</string>
     <string name="edit_reprocess">Переанализировать</string>
     <string name="edit_reprocessing">Анализ...</string>
     <string name="edit_reprocessing_failed">Не удалось переанализировать</string>
@@ -842,16 +842,16 @@
     <string name="nutrition_label_folate">Фолат</string>
     <string name="nutrition_label_omega3">Омега-3</string>
     <string name="nutrition_section_home_cards">Карточки на главной</string>
-    <string name="home_nutrients_pick_four">Выберите ровно четыре нутриента для сводки на главном экране.</string>
+    <string name="home_nutrients_pick_four">Выбери ровно четыре нутриента для сводки на главном экране.</string>
     <string name="error_analysis_failed">Не удалось выполнить анализ</string>
     <string name="error_barcode_lookup_failed">Не удалось найти штрихкод</string>
     <string name="error_ai_suggestion">Не удалось загрузить подсказку ИИ.</string>
-    <string name="finish_onboarding_hint">Сначала завершите настройку, чтобы сравнивать блюда с дневными целями.</string>
+    <string name="finish_onboarding_hint">Сначала заверши настройку, чтобы сравнивать блюда с дневными целями.</string>
     <string name="export_from">С</string>
     <string name="export_to">По</string>
     <string name="export_no_meals">Нет записей за выбранный период.</string>
     <string name="export_failed">Не удалось экспортировать.</string>
-    <string name="settings_tap_to_update">Нажмите, чтобы изменить</string>
+    <string name="settings_tap_to_update">Нажми, чтобы изменить</string>
     <string name="settings_calc_methods">Методы расчёта</string>
     <string name="settings_max_tokens">Макс. токенов ответа</string>
     <string name="settings_notification_types">Типы уведомлений</string>
@@ -868,9 +868,9 @@
     <string name="settings_calc_micro_values">Значения микронутриентов</string>
     <string name="settings_not_medical_advice">Не является медицинской рекомендацией</string>
     <string name="settings_reset_autobalance">Сбросить на автобаланс</string>
-    <string name="settings_pace_loss_format">%1$s/нед. - снижение</string>
-    <string name="settings_pace_gain_format">%1$s/нед. - набор</string>
-    <string name="settings_macro_pin_hint">Закрепите до 2 макросов в граммах. Остальные балансируются автоматически из оставшихся калорий.</string>
+    <string name="settings_pace_loss_format">Снижение: %1$s/нед.</string>
+    <string name="settings_pace_gain_format">Набор: %1$s/нед.</string>
+    <string name="settings_macro_pin_hint">Закрепи до 2 макросов в граммах. Остальные балансируются автоматически из оставшихся калорий.</string>
     <string name="settings_macro_pinned_label_format">%1$s (закреплено)</string>
     <string name="settings_macro_auto_label_format">%1$s (авто)</string>
     <string name="vm_health_connect_needed">Нужен Health Connect</string>
@@ -886,12 +886,12 @@
     <string name="import_note">Добавит в журнал точные нутриенты от отправителя. Фото не передаётся.</string>
     <string name="import_add_to_log">Добавить в журнал</string>
     <string name="import_add_to_log_many_format">Добавить %1$d · %2$d ккал</string>
-    <string name="voice_release_to_cancel">Отпустите, чтобы отменить</string>
-    <string name="voice_slide_to_cancel">‹ смахните, чтобы отменить</string>
+    <string name="voice_release_to_cancel">Отпусти, чтобы отменить</string>
+    <string name="voice_slide_to_cancel">‹ смахни, чтобы отменить</string>
     <string name="camera_error_open">Не удалось открыть камеру</string>
     <string name="camera_error_save">Не удалось сохранить фото</string>
     <string name="camera_error_capture">Не удалось сделать снимок</string>
-    <string name="barcode_hint">Наведите камеру на штрихкод</string>
+    <string name="barcode_hint">Наведи камеру на штрихкод</string>
     <string name="barcode_off_note">Для упакованных продуктов используется Open Food Facts, если доступно.</string>
     <string name="measure_neck">Шея</string>
     <string name="measure_waist">Талия</string>
@@ -913,10 +913,10 @@
     <string name="notif_channel_body_fat">Напоминание о проценте жира</string>
     <string name="notif_channel_body_fat_desc">Ежедневное напоминание записать процент жира.</string>
     <string name="notif_channel_updates">Обновления приложения</string>
-    <string name="notif_channel_updates_desc">Новая версия Chompass доступна в Play Store.</string>
+    <string name="notif_channel_updates_desc">Доступна новая версия Chompass.</string>
     <string name="notif_update_title">Доступно обновление</string>
-    <string name="notif_update_text">Новая версия Chompass готова. Нажмите, чтобы обновить.</string>
-    <string name="settings_calc_intro">Ваши дневные цели по калориям и макронутриентам задаёт ИИ. Когда вы нажимаете «Пересчитать цели» - или автоматически примерно раз в неделю, если включены адаптивные цели, - Chompass отправляет вашему ИИ-провайдеру профиль, приведённые ниже эталонные формулы, недавно записанную еду и динамику веса. Он берёт за основу эти научно проверенные формулы и подстраивает их под ваши реальные данные, чтобы оценить фактическую норму и цели.</string>
+    <string name="notif_update_text">Новая версия Chompass готова. Нажми, чтобы обновить.</string>
+    <string name="settings_calc_intro">Твои дневные цели по калориям и макронутриентам задаёт ИИ. Когда ты нажимаешь «Пересчитать цели» или это происходит автоматически примерно раз в неделю при включённых адаптивных целях, Chompass отправляет твоему ИИ-провайдеру профиль, приведённые ниже эталонные формулы, недавно записанную еду и динамику веса. Он берёт за основу эти научно проверенные формулы и подстраивает их под твои реальные данные, чтобы оценить фактическую норму и цели.</string>
     <string name="settings_calc_sec_bmr">Базовый метаболизм (BMR)</string>
     <string name="settings_calc_sec_tdee">Суточный расход энергии (TDEE)</string>
     <string name="settings_calc_mifflin_name">Уравнение Миффлина-Сан Жеора</string>
@@ -929,15 +929,15 @@
     <string name="settings_calc_tdee_used">TDEE = BMR × множитель активности. Множитель соответствует выбранному уровню активности. Это базовый уровень поддержания, от которого отталкивается ИИ (если Energy Burn не даёт измеренное значение).</string>
     <string name="settings_calc_tdee_formula">Сидячий: 1,2 · Лёгкий: 1,375 · Умеренный: 1,465 · Активный: 1,55 · Очень активный: 1,725 · Максимально активный: 1,9</string>
     <string name="settings_calc_target_name">Поддержание и корректировка цели</string>
-    <string name="settings_calc_target_used">Поддержание рассчитывается от TDEE - или, если включён Energy Burn, от измеренного расхода из Health Connect (среднее за 14 дней: активная + базовая энергия). ИИ уточняет поддержание по фактическому рациону и динамике веса, затем применяет цель: недельная скорость изменения веса превращается в дневной дефицит (снижение) или профицит (набор) калорий.</string>
+    <string name="settings_calc_target_used">Поддержание рассчитывается от TDEE или, если включён расход энергии, от измеренного расхода из Health Connect (среднее за 14 дней: активная + базовая энергия). ИИ уточняет поддержание по фактическому рациону и динамике веса, затем применяет цель: недельная скорость изменения веса превращается в дневной дефицит (снижение) или профицит (набор) калорий.</string>
     <string name="settings_calc_target_formula">1 фунт жира ≈ 3 500 ккал · 1 кг ≈ 7 700 ккал\nНедельная скорость ÷ 7 вычитается из поддержания (снижение) или прибавляется к нему (набор), задавая дневную цель по калориям.</string>
     <string name="settings_calc_split_name">Цели по белкам, углеводам и жирам</string>
-    <string name="settings_calc_split_used">ИИ подбирает белки, углеводы и жиры под цель по калориям, ориентируясь на эти источники. Белок зависит от уровня активности (и рассчитывается от безжировой массы, если указан процент жира); жиры - от массы тела; углеводы заполняют остаток. Любое значение можно закрепить или изменить в настройках.</string>
+    <string name="settings_calc_split_used">ИИ подбирает белки, углеводы и жиры под цель по калориям, ориентируясь на эти источники. Белок зависит от уровня активности (и рассчитывается от безжировой массы, если указан процент жира); жиры зависят от массы тела; углеводы заполняют остаток. Любое значение можно закрепить или изменить в настройках.</string>
     <string name="settings_calc_split_formula">Белки: ~0,8-2,2 г на кг в зависимости от активности (чуть выше при снижении веса)\nЖиры: ~0,6 г на кг массы тела\nУглеводы: оставшиеся калории ÷ 4 ккал/г</string>
     <string name="settings_calc_micro_name">Оценки по каждому приёму пищи</string>
-    <string name="settings_calc_micro_used">Калории, макросы, клетчатка, сахар, насыщенные жиры, холестерин, натрий, калий и другие значения по каждому блюду - это оценки ИИ по фото, голосовой записи или текстовому описанию через выбранного вами провайдера.</string>
+    <string name="settings_calc_micro_used">Калории, макросы, клетчатка, сахар, насыщенные жиры, холестерин, натрий, калий и другие значения по каждому блюду ИИ оценивает по фото, голосовой записи или текстовому описанию через выбранного тобой провайдера.</string>
     <string name="settings_not_medical_title">Не является медицинской консультацией</string>
-    <string name="settings_not_medical_body">Chompass - это инструмент оценки, а не клинический прибор. В прогностических уравнениях есть внутренняя погрешность (обычно ±10% для BMR). Перед существенными изменениями рациона проконсультируйтесь с дипломированным диетологом, врачом или спортивным врачом - особенно если у вас есть заболевание, вы беременны или кормите грудью, вам меньше 18 лет, или вы справляетесь с расстройством пищевого поведения.</string>
+    <string name="settings_not_medical_body">Chompass это инструмент оценки, а не клинический прибор. В прогностических уравнениях есть внутренняя погрешность (обычно ±10% для BMR). Перед существенными изменениями рациона проконсультируйся с дипломированным диетологом, врачом или спортивным врачом, особенно если у тебя есть заболевание, ты беременна или кормишь грудью, тебе меньше 18 лет или у тебя расстройство пищевого поведения.</string>
     <string name="settings_waist_cm_format">Талия %1$.0f см</string>
     <string name="settings_waist_in_format">Талия %1$.0f in</string>
     <string name="export_range_today">Сегодня</string>
@@ -945,7 +945,7 @@
     <string name="export_range_month">Этот месяц</string>
     <string name="export_range_all">Всё время</string>
     <string name="export_range_custom">Свой период</string>
-    <string name="vm_health_connect_needed_msg">Разрешите Chompass читать активные и общие калории в Health Connect, затем снова включите Energy Burn.</string>
+    <string name="vm_health_connect_needed_msg">Разреши Chompass читать активные и общие калории в Health Connect, затем снова включи расход энергии.</string>
     <string name="vm_not_enough_energy_msg">Chompass нужно минимум 3 недавних дня данных об энергии из Health Connect, чтобы использовать измеренный расход.</string>
     <string name="nutrient_short_sat_fat">Нас. жиры</string>
     <string name="nutrient_short_vit_a">Вит. A</string>
@@ -961,14 +961,14 @@
     <string name="diet_mode_standard">Стандартный</string>
     <string name="diet_mode_keto_beta">Кето (бета)</string>
     <string name="diet_mode_beta_note">Бета-режим: ещё дорабатывается.</string>
-    <string name="onboarding_diet_mode_title">Следуете ли вы режиму питания?</string>
-    <string name="onboarding_diet_mode_subtitle">Выберите стиль рекомендаций по умолчанию</string>
+    <string name="onboarding_diet_mode_title">Соблюдаешь ли ты режим питания?</string>
+    <string name="onboarding_diet_mode_subtitle">Выбери стиль рекомендаций по умолчанию</string>
     <string name="settings_diet_mode">Режим питания</string>
     <string name="sheet_diet_mode">Режим питания</string>
     <string name="keto_carb_mode_adaptive">Адаптивные углеводы</string>
     <string name="keto_carb_mode_manual">Вручную</string>
-    <string name="keto_carb_mode_adaptive_subtitle">Рекомендуется с учётом вашего профиля и цели.</string>
-    <string name="keto_carb_mode_manual_subtitle">Задайте собственную цель чистых углеводов в граммах.</string>
+    <string name="keto_carb_mode_adaptive_subtitle">Рекомендуется с учётом твоего профиля и цели.</string>
+    <string name="keto_carb_mode_manual_subtitle">Задай собственную цель чистых углеводов в граммах.</string>
     <string name="keto_carb_grams_format">%1$d г/день</string>
     <string name="keto_carb_setup_title">Настройка кето-углеводов</string>
     <string name="keto_carb_manual_hint">Ручная цель ограничена 20–50 г/день чистых углеводов.</string>
@@ -984,17 +984,17 @@
     <string name="action_retry">Повторить</string>
     <string name="action_show">Показать</string>
     <string name="add_food_water_section">Вода</string>
-    <string name="error_failed_input_missing">Сохранённый ввод не удалось восстановить. Сделайте новое фото.</string>
+    <string name="error_failed_input_missing">Сохранённый ввод не удалось восстановить. Сделай новое фото.</string>
     <string name="export_body_metrics_empty">Записей о весе, жире или измерениях для экспорта не найдено.</string>
     <string name="export_body_metrics_format">Формат</string>
     <string name="export_body_metrics_subtitle">Экспортирует историю веса, жира и измерений тела в виде файла.</string>
     <string name="export_body_metrics_title">Экспорт веса и данных тела</string>
     <string name="home_active_calories_label">Активные ккал</string>
-    <string name="home_calorie_active_estimated_a11y">Активные калории оценены по вашему уровню активности</string>
+    <string name="home_calorie_active_estimated_a11y">Активные калории оценены по твоему уровню активности</string>
     <string name="home_calorie_mode_add_active">Добавлять активный расход к бюджету</string>
-    <string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешьте столько, сколько сжигаете. Установите уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключите Health Connect в Настройки → Здоровье для измеренного расхода.</string>
+    <string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешь столько, сколько сжигаешь. Установи уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключи Health Connect в Настройки → Здоровье для измеренного расхода.</string>
     <string name="home_calorie_mode_static">Фиксированная цель</string>
-    <string name="home_calorie_mode_static_desc">Ваша цель по калориям остаётся фиксированной. Движение не меняет сегодняшний бюджет.</string>
+    <string name="home_calorie_mode_static_desc">Твоя цель по калориям остаётся фиксированной. Движение не меняет сегодняшний бюджет.</string>
     <string name="home_calorie_of_goal">из %1$s</string>
     <string name="home_calories_active_burn">Сожжено активных %1$d</string>
     <string name="home_calories_goal_plus_active">Цель %1$s + %2$s активных</string>
@@ -1009,7 +1009,7 @@
     <string name="home_display_show_steps_desc">Необязательная карточка под шкалой. Требуется Health Connect или тестовые данные.</string>
     <string name="home_display_step_goal">Дневная цель шагов</string>
     <string name="home_display_title">Оформление главной</string>
-    <string name="home_nutrients_pick_count">Выберите до %1$d питательных веществ для главного экрана.</string>
+    <string name="home_nutrients_pick_count">Выбери до %1$d питательных веществ для главного экрана.</string>
     <string name="home_selected_count">Выбрано: %1$d</string>
     <string name="home_share_separately">Поделиться раздельно</string>
     <string name="home_share_together">Поделиться вместе</string>
@@ -1025,7 +1025,7 @@
     <string name="import_diary_malformed">Недопустимый JSON: %1$s</string>
     <string name="import_diary_success_count">Импортировано записей о еде: %1$d.</string>
     <string name="import_diary_title">Импорт дневника питания (JSON)</string>
-    <string name="import_diary_unsupported">Неподдерживаемый файл дневника: %1$s. Используйте JSON версии 1.0 или 1.1 из Fud AI, NoFUD или Chompass.</string>
+    <string name="import_diary_unsupported">Неподдерживаемый файл дневника: %1$s. Используй JSON версии 1.0 или 1.1 из Fud AI, NoFUD или Chompass.</string>
     <string name="macro_goal_of">из %1$d%2$s</string>
     <string name="macro_status_goal_reached">Цель достигнута</string>
     <string name="macro_status_left">%1$s%2$s осталось</string>
@@ -1038,15 +1038,15 @@
     <string name="meal_photos_title">Перед анализом</string>
     <string name="notif_channel_water">Напоминание о воде</string>
     <string name="notif_channel_water_desc">Ежедневное напоминание выпить воды и записать её.</string>
-    <string name="notif_water_text">Выпейте воды и запишите её в Chompass.</string>
+    <string name="notif_water_text">Выпей воды и запиши её в Chompass.</string>
     <string name="notif_water_title">Пора попить воды</string>
-    <string name="onboarding_privacy_note">Без рекламы, аналитики и аккаунтов. Ваш журнал еды и API-ключи остаются на устройстве.</string>
-    <string name="onboarding_safety_body">Chompass — помощник по отслеживанию, а не клинический инструмент. Если у вас в прошлом было расстройство пищевого поведения — или отслеживание усиливает тревогу вокруг еды/образа тела, — сделайте паузу и поговорите с врачом или терапевтом, прежде чем продолжать.</string>
+    <string name="onboarding_privacy_note">Без рекламы, аналитики и аккаунтов. Твой журнал еды и API-ключи остаются на устройстве.</string>
+    <string name="onboarding_safety_body">Chompass помогает отслеживать питание, но это не клинический инструмент. Если у тебя в прошлом было расстройство пищевого поведения или отслеживание усиливает тревогу вокруг еды или образа тела, сделай паузу и поговори с врачом или терапевтом, прежде чем продолжать.</string>
     <string name="onboarding_safety_low_bf">Предупреждение о низком проценте жира: слишком долгое сохранение низкого процента может повлиять на гормоны, восстановление и здоровье в целом как у женщин, так и у мужчин.</string>
     <string name="onboarding_safety_settings_hint">Полные рекомендации по безопасности и медицине можно посмотреть в настройках.</string>
-    <string name="onboarding_safety_not_medical">Это не медицинская рекомендация. В прогностических уравнениях есть погрешность. Перед существенными изменениями рациона проконсультируйтесь с диетологом, врачом или спортивным врачом, особенно при заболевании, беременности, грудном вскармливании или возрасте до 18 лет.</string>
+    <string name="onboarding_safety_not_medical">Это не медицинская рекомендация. В прогностических уравнениях есть погрешность. Перед существенными изменениями рациона проконсультируйся с диетологом, врачом или спортивным врачом, особенно при заболевании, беременности, грудном вскармливании или возрасте до 18 лет.</string>
     <string name="onboarding_accuracy_title">Оговорка о точности</string>
-    <string name="onboarding_accuracy_body">Оценки по фото и расплывчатые указания количества (горсть, чашка, порция) часто неточны. Подсказки приложения и особенно вывод ИИ/LLM лишь оценки, а не медицинские факты. Важные цифры проверяйте сами.</string>
+    <string name="onboarding_accuracy_body">Оценки по фото и расплывчатые указания количества (горсть, чашка, порция) часто неточны. Подсказки приложения и особенно вывод ИИ/LLM лишь оценки, а не медицинские факты. Важные цифры проверяй самостоятельно.</string>
     <string name="settings_accuracy_title">Точность оценок</string>
     <string name="settings_accuracy_body">Оценки еды по фото и расплывчатые порции часто ошибочны. Подсказки приложения и особенно ИИ-модели не медицинские факты.</string>
     <string name="onboarding_safety_title">Уведомление о безопасности</string>
@@ -1063,7 +1063,7 @@
     <string name="progress_wellness_sleep">Сон</string>
     <string name="progress_wellness_sleep_format">%1$d ч %2$d мин</string>
     <string name="serving_unit_heuristics_default_value">По умолчанию: %1$s г / шт.</string>
-    <string name="serving_unit_heuristics_footer">Отключите категорию, чтобы оставить граммы, или задайте свои граммы на единицу (например, банка 0,5 л вместо стандартных 330 мл).</string>
+    <string name="serving_unit_heuristics_footer">Отключи категорию, чтобы оставить граммы, или задай свои граммы на единицу (например, банка 0,5 л вместо стандартных 330 мл).</string>
     <string name="serving_unit_heuristics_reset">Сбросить к стандартным</string>
     <string name="serving_unit_mode_ai_call">Определяет ИИ</string>
     <string name="serving_unit_mode_ai_call_subtitle">Самый медленный и точный. При необходимости спрашивает единицу у ИИ-провайдера.</string>
@@ -1073,13 +1073,13 @@
     <string name="serving_unit_mode_heuristic_subtitle">Мгновенно, приблизительно. Угадывает распространённые единицы (ломтик, мл, ст. л…) по названию продукта, без сетевого запроса.</string>
     <string name="settings_breakfast_starts">Начало завтрака</string>
     <string name="settings_calc_adaptive_name">Адаптивные цели (еженедельно)</string>
-    <string name="settings_calc_adaptive_used">Когда включено, Chompass сравнивает ваш наблюдаемый тренд веса с выбранным еженедельным темпом и корректирует калории до ±150 ккал/день (минимум 25 ккал). Безопасный минимум: max(BMR, 1 200 ккал). Безопасный максимум: 125%% от измеренного или формульного поддержания. Требуется не менее 4 дней с записями еды и 3 взвешиваний или данные об энергии из Health Connect.</string>
+    <string name="settings_calc_adaptive_used">Когда включено, Chompass сравнивает твой наблюдаемый тренд веса с выбранным еженедельным темпом и корректирует калории до ±150 ккал/день (минимум 25 ккал). Безопасный минимум: max(BMR, 1 200 ккал). Безопасный максимум: 125%% от измеренного или формульного поддержания. Требуется не менее 4 дней с записями еды и 3 взвешиваний или данные об энергии из Health Connect.</string>
     <string name="settings_calc_body_name">Показатели из замеров лентой</string>
-    <string name="settings_calc_body_used">Необязательные обхваты позволяют рассчитать соотношение талия/бёдра, талия/рост, процент жира по формуле ВМС США и размер запястья. Это грубые оценки по замерам. Они не заменяют BMR, если вы отдельно не указали процент жира в профиле.</string>
+    <string name="settings_calc_body_used">Необязательные обхваты позволяют рассчитать соотношение талия/бёдра, талия/рост, процент жира по формуле ВМС США и размер запястья. Это грубые оценки по замерам. Они не заменяют BMR, если процент жира не задан в профиле отдельно.</string>
     <string name="settings_calc_forecast_name">Прогноз энергетического баланса</string>
-    <string name="settings_calc_forecast_used">Графики прогресса и прогноз ETA используют ваши недавние записи еды и взвешивания (до 90 дней). Если вы записываете еду менее чем в половине дней окна, потребление усредняется по календарным дням, чтобы редкие «большие» дни не завышали прогноз. В остальных случаях потребление усредняется только по дням с записями. Тренд веса использует устойчивую медианную регрессию (Тейла–Сена) по данным взвешиваний.</string>
+    <string name="settings_calc_forecast_used">Графики прогресса и прогноз ETA используют твои недавние записи еды и взвешивания (до 90 дней). Если ты записываешь еду менее чем в половине дней окна, потребление усредняется по календарным дням, чтобы редкие «большие» дни не завышали прогноз. В остальных случаях потребление усредняется только по дням с записями. Тренд веса использует устойчивую медианную регрессию (Тейла–Сена) по данным взвешиваний.</string>
     <string name="settings_calc_home_gauge_name">Активные затраты на кольце главной</string>
-    <string name="settings_calc_home_gauge_used">«Оформление главной» позволяет добавлять активные затраты к цели, отслеживать чистый приём или показывать подсказку о затратах. Оценка уровня активности — это TDEE минус BMR (часть PAL-множителя). Режимы «Добавлять активные» и «Двойной» используют эту оценку, когда Health Connect выключен; «Нетто» требует измеренных затрат из Health Connect. «Добавлять активные» разделяет сохранённую цель на базовую (сидячую) часть и сегодняшний активный слой, чтобы активность не учитывалась дважды. При режиме «Добавлять активные» установите уровень активности как повседневную жизнь без тренировок; измеренные или оценённые активные затраты покроют тренировки, чтобы они не складывались с высоким PAL.</string>
+    <string name="settings_calc_home_gauge_used">«Оформление главной» позволяет добавлять активные затраты к цели, отслеживать чистый приём или показывать подсказку о затратах. Оценка уровня активности равна TDEE минус BMR (часть PAL-множителя). Режимы «Добавлять активные» и «Двойной» используют эту оценку, когда Health Connect выключен; «Нетто» требует измеренных затрат из Health Connect. «Добавлять активные» разделяет сохранённую цель на базовую (сидячую) часть и сегодняшний активный слой, чтобы активность не учитывалась дважды. При режиме «Добавлять активные» установи уровень активности как повседневную жизнь без тренировок; измеренные или оценённые активные затраты покроют тренировки, чтобы они не складывались с высоким PAL.</string>
     <string name="settings_calc_sec_body">Оценки состава тела</string>
     <string name="settings_calc_sec_forecast">Тренд веса и адаптивные цели</string>
     <string name="settings_calc_sec_home_gauge">Шкала калорий на главной</string>
@@ -1087,7 +1087,7 @@
     <string name="settings_food_log_sort">Сортировка журнала еды</string>
     <string name="settings_glass_blur">Стеклянное размытие</string>
     <string name="settings_health_background_sync">Фоновая синхронизация</string>
-    <string name="settings_health_background_sync_desc">Проверяет Health Connect на новые данные каждые несколько часов, даже когда Chompass закрыт. По умолчанию выключено. Требуется разрешение на фоновое чтение, если его поддерживает ваш модуль Health Connect.</string>
+    <string name="settings_health_background_sync_desc">Проверяет Health Connect на новые данные каждые несколько часов, даже когда Chompass закрыт. По умолчанию выключено. Требуется разрешение на фоновое чтение, если его поддерживает твой модуль Health Connect.</string>
     <string name="settings_health_companions">Синхронизируется со всем, что говорит на языке Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band и другие носимые устройства), openScale (Bluetooth-весы), Samsung Health, Fitbit и другие. Вес и процент жира подтягиваются автоматически; записанные приёмы пищи и вода отправляются наружу, а приёмы пищи из других приложений поступают внутрь. Сон, пульс в покое и гидратация появляются на вкладке «Прогресс».</string>
     <string name="settings_home_display">Настроить главную</string>
     <string name="settings_home_display_summary">Карточки питательных веществ, активность, шкала калорий, чипы журнала</string>
@@ -1097,25 +1097,25 @@
     <string name="settings_meal_times">Время приёмов пищи</string>
     <string name="settings_meal_times_customize">Настроить</string>
     <string name="settings_meal_times_description">Задаёт, когда автоматический выбор приёма пищи переключается на следующий.</string>
-    <string name="settings_meal_times_help">Каждый приём пищи продолжается до начала следующего. Поздний перекус продолжается ночью до начала завтрака. Перед внесением вы всё равно можете сменить приём пищи вручную.</string>
+    <string name="settings_meal_times_help">Каждый приём пищи продолжается до начала следующего. Поздний перекус продолжается ночью до начала завтрака. Перед внесением ты всё равно можешь сменить приём пищи вручную.</string>
     <string name="settings_notif_water_reminder">Напоминание о воде</string>
     <string name="settings_permissions">Разрешения</string>
     <string name="settings_restore_default_times">Восстановить время по умолчанию</string>
     <string name="settings_safety_body">Chompass помогает отслеживать еду и вес, но это не медицинское устройство и не замена помощи врача, терапевта или диетолога.</string>
-    <string name="settings_safety_consult">Если вы планируете серьёзные изменения рациона или состава тела, сначала проконсультируйтесь с врачом или диетологом, чтобы план соответствовал вашей истории здоровья.</string>
-    <string name="settings_safety_ed">Если у вас есть или было расстройство пищевого поведения, или отслеживание усиливает тревогу вокруг еды или образа тела, сделайте паузу в использовании и обратитесь к своему лечащему специалисту.</string>
-    <string name="settings_safety_escalate">Если вы замечаете усталость, головокружение, нарушения сна, перепады настроения, изменения менструального цикла или снижение либидо — срочно обратитесь за медицинской помощью.</string>
+    <string name="settings_safety_consult">Если ты планируешь серьёзные изменения рациона или состава тела, сначала проконсультируйся с врачом или диетологом, чтобы план соответствовал твоей истории здоровья.</string>
+    <string name="settings_safety_ed">Если у тебя есть или было расстройство пищевого поведения, или отслеживание усиливает тревогу вокруг еды или образа тела, сделай паузу в использовании и обратись к своему лечащему специалисту.</string>
+    <string name="settings_safety_escalate">Если ты замечаешь усталость, головокружение, нарушения сна, перепады настроения, изменения менструального цикла или снижение либидо, срочно обратись за медицинской помощью.</string>
     <string name="settings_safety_hide">Скрыть</string>
-    <string name="settings_safety_low_bf">Предупреждение о низком проценте жира: длительное сохранение очень низкого процента может нести риск. У женщин очень низкий процент жира может влиять на гормональное и менструальное здоровье. У мужчин — на гормоны, настроение, восстановление и работоспособность.</string>
+    <string name="settings_safety_low_bf">Предупреждение о низком проценте жира: длительное сохранение очень низкого процента может нести риск. У женщин очень низкий процент жира может влиять на гормональное и менструальное здоровье. У мужчин это сказывается на гормонах, настроении, восстановлении и работоспособности.</string>
     <string name="settings_safety_medical">Безопасность и медицина</string>
     <string name="settings_safety_open">Открыть</string>
-    <string name="settings_safety_summary">Прочтите перед серьёзными изменениями рациона</string>
+    <string name="settings_safety_summary">Прочти перед серьёзными изменениями рациона</string>
     <string name="settings_safety_title">Безопасность</string>
     <string name="settings_section_home_display">Оформление главной</string>
     <string name="settings_serving_unit_heuristics">Правила размера порции</string>
     <string name="settings_serving_unit_mode">Определение размера порции</string>
     <string name="settings_water_goal">Дневная цель воды</string>
-    <string name="settings_water_goal_wheel_help">Прокручивайте с шагом 50 мл, чтобы выбрать цель от 50 до 10 000 мл в день.</string>
+    <string name="settings_water_goal_wheel_help">Прокручивай с шагом 50 мл, чтобы выбрать цель от 50 до 10 000 мл в день.</string>
     <string name="settings_water_tracking">Отслеживание воды</string>
     <string name="sheet_serving_unit_heuristics">Настроить эвристику</string>
     <string name="sheet_serving_unit_mode">Определение единицы порции</string>
@@ -1127,8 +1127,8 @@
     <string name="water_one_glass_amount">1 стакан (~250 мл)</string>
     <string name="water_three_glasses_amount">3 стакана (~750 мл)</string>
     <string name="water_two_glasses_amount">2 стакана (~500 мл)</string>
-    <string name="widget_water_description">Смотрите сегодняшний прогресс воды одним взглядом.</string>
-    <string name="widget_water_disabled">Включите отслеживание воды в Chompass</string>
+    <string name="widget_water_description">Смотри сегодняшний прогресс воды одним взглядом.</string>
+    <string name="widget_water_disabled">Включи отслеживание воды в Chompass</string>
     <string name="widget_water_label">Chompass Вода</string>
 
     <string name="widget_water_tracking">Учёт воды</string>
@@ -1142,50 +1142,50 @@
     <string name="settings_language_title">Язык</string>
     <string name="settings_language_system">Системный</string>
     <string name="add_food_quick_relog">Записать снова</string>
-    <string name="add_food_quick_relog_empty">Добавьте приём пищи в избранное или запишите его один раз. Он появится здесь для повторной записи одним касанием.</string>
+    <string name="add_food_quick_relog_empty">Добавь приём пищи в избранное или запиши его один раз. Он появится здесь для повторной записи одним касанием.</string>
     <string name="add_food_quick_relog_hint">Избранное и прошлые приёмы пищи. Быстрее, чем повторное сканирование.</string>
     <string name="add_food_relog_kcal">%1$d ккал</string>
     <string name="ai_provider_on_device_subtitle">Приватно и офлайн. Менее точно, чем облачный ИИ; загрузка ~2-4 ГБ</string>
-    <string name="camera_scale_tip_message">Совет: положите рядом с едой вилку, руку или монету. Это помогает оценить размер порции.</string>
+    <string name="camera_scale_tip_message">Совет: положи рядом с едой вилку, руку или монету. Это помогает оценить размер порции.</string>
     <string name="cd_relog_meal">Записать %1$s снова</string>
-    <string name="context_note_hint">Будьте конкретны: количество, бренды, масла или заправки и способ приготовления.</string>
-    <string name="edit_reprocess_diff_unchanged">Поля не изменились. Измените заметку и попробуйте снова.</string>
+    <string name="context_note_hint">Будь конкретнее: количество, бренды, масла или заправки и способ приготовления.</string>
+    <string name="edit_reprocess_diff_unchanged">Поля не изменились. Измени заметку и попробуй снова.</string>
     <string name="entry_analysis_add_photo">Добавить фото</string>
     <string name="entry_analysis_busy_analyzing">Анализ…</string>
     <string name="entry_analysis_busy_filling">Заполнение питательности…</string>
     <string name="entry_analysis_busy_units">Расчёт порций…</string>
 
     <string name="entry_analysis_ready">Готово к проверке</string>
-    <string name="entry_analysis_status_helper">Проверка штрихкодов на фото, затем запрос питательности у вашего ИИ-провайдера.</string>
+    <string name="entry_analysis_status_helper">Проверка штрихкодов на фото, затем запрос питательности у твоего ИИ-провайдера.</string>
     <string name="entry_analysis_streaming_hint">Значения появляются по мере ответа ИИ. Можно проверить их перед записью.</string>
     <string name="entry_analysis_tip_apply">Повторный анализ с подсказкой</string>
     <string name="entry_analysis_tip_cta">Добавить подсказку для ИИ (необязательно)</string>
-    <string name="home_calorie_mode_add_active_hc_hint">Совет: включите Health Connect, чтобы использовать активные калории с часов/телефона вместо оценки по уровню активности.</string>
+    <string name="home_calorie_mode_add_active_hc_hint">Совет: включи Health Connect, чтобы использовать активные калории с часов/телефона вместо оценки по уровню активности.</string>
     <string name="home_menu_manual_active">Активный расход</string>
     <string name="manual_active_kcal_hint">Сожжённые калории</string>
     <string name="manual_active_name_hint">Название активности (необязательно)</string>
     <string name="manual_active_save">Добавить к бюджету</string>
-    <string name="manual_active_subtitle">Добавьте сожжённые калории с прогулки, поездки или тренировки. Они расширяют сегодняшний бюджет, когда включено «Добавлять активный расход».</string>
+    <string name="manual_active_subtitle">Добавь сожжённые калории с прогулки, поездки или тренировки. Они расширяют сегодняшний бюджет, когда включено «Добавлять активный расход».</string>
     <string name="manual_active_title">Записать активный расход</string>
     <string name="meal_photos_add_label">Добавить этикетку</string>
     <string name="meal_photos_confirm_back">Продолжить редактирование</string>
     <string name="meal_photos_confirm_continue">Всё равно анализировать</string>
     <string name="meal_photos_confirm_no_note">Заметки пока нет. Оценки ИИ менее точны без количества или описания. Всё равно продолжить?</string>
     <string name="meal_photos_confirm_one_photo">Только одно фото. Второй снимок (другой ракурс или этикетка) часто помогает. Продолжить с одним фото?</string>
-    <string name="meal_photos_confirm_sparse">Нет заметки и только одно фото. Добавьте подсказку или фото этикетки для лучшей оценки или продолжите.</string>
+    <string name="meal_photos_confirm_sparse">Нет заметки и только одно фото. Добавь подсказку или фото этикетки для лучшей оценки или продолжи.</string>
     <string name="meal_photos_confirm_title">Анализировать сейчас?</string>
     <string name="meal_photos_dont_ask_note">Больше не спрашивать про заметку</string>
     <string name="meal_photos_note_section">Что это?</string>
     <string name="meal_photos_skip_note">Пропустить заметку и анализировать</string>
-    <string name="meal_photos_subtitle">Добавьте короткую заметку и при желании второе фото (напр. этикетку), затем нажмите «Анализ». ИИ запускается только после подтверждения.</string>
-    <string name="meal_photos_subtitle_note_optional">При желании добавьте ещё фото или подсказку, затем «Анализ». ИИ запускается только после подтверждения.</string>
+    <string name="meal_photos_subtitle">Добавь короткую заметку и при желании второе фото (напр. этикетку), затем нажми «Анализ». ИИ запускается только после подтверждения.</string>
+    <string name="meal_photos_subtitle_note_optional">При желании добавь ещё фото или подсказку, затем «Анализ». ИИ запускается только после подтверждения.</string>
     <string name="on_device_model_accuracy_notice">Эти модели менее точны, чем облачный ИИ. Возможны неверные калории, пропущенные позиции или слабое распознавание фото, особенно с меньшей моделью E2B. Облачные провайдеры остаются рекомендуемым вариантом для надёжной записи.</string>
     <string name="on_device_model_device_notice">Проверено на Pixel 9a (GrapheneOS). Другие устройства, особенно с более слабым или не-Tensor железом, ещё не проверены и могут работать медленнее или не поддерживаться; облачный провайдер там надёжнее.</string>
     <string name="on_device_model_loaded">Модель загружена. Готова к использованию.</string>
     <string name="on_device_model_not_loaded">Не загружена. Первый запрос после запуска приложения может занять до минуты.</string>
     <string name="on_device_model_privacy_notice">Работает полностью на этом устройстве. Ничего из введённого или сфотографированного не отправляется на сервер. Загрузка получает файл модели напрямую с Hugging Face (%1$s), стороннего хоста, который приложение иначе не использует.</string>
     <string name="onboarding_api_key_non_gemini_ok">Готово. Быстрый тест только для Gemini</string>
-    <string name="photo_accuracy_guide_body">Фото упускают многое. Добавляйте короткую заметку, когда можете:\n\n• Будьте конкретны: количество, бренды и что на тарелке\n• Укажите масла, заправки и жирные соусы (часто не видны)\n• Упомяните способ приготовления: жареное, на гриле, на пару, домашнее\n• Точные граммы или фото этикетки помогают больше всего</string>
+    <string name="photo_accuracy_guide_body">Фото упускают многое. Добавляй короткую заметку, когда можешь:\n\n• Будь конкретнее: количество, бренды и что на тарелке\n• Укажи масла, заправки и жирные соусы (часто не видны)\n• Упомяни способ приготовления: жареное, на гриле, на пару, домашнее\n• Точные граммы или фото этикетки помогают больше всего</string>
     <string name="photo_accuracy_guide_cd">Как улучшить точность фото</string>
     <string name="photo_accuracy_guide_dismiss">Понятно</string>
     <string name="photo_accuracy_guide_title">Советы для лучшей оценки</string>
@@ -1199,9 +1199,9 @@
     <string name="protein_target_mode_g_per_kg_total">г/кг массы тела</string>
     <string name="protein_target_mode_grams">Граммов в день</string>
     <string name="protein_target_mode_label">Цель по белку</string>
-    <string name="settings_gemini_google_search_footer">Если включено, Gemini может искать в интернете, когда это помогает ответить на запрос. Поисковые запросы отправляются в Google. Google выставляет счёт вашему проекту Gemini API. В моделях Gemini 3 каждый выполненный поисковый запрос учитывается в использовании; в Gemini 2.5 и старше оплата за каждый запрос с поиском.</string>
-    <string name="settings_health_unavailable_platform">Health Connect недоступен для приложений на этом устройстве. На Android 14 и новее это системный модуль. Если в настройках есть Health Connect, но Chompass не может подключиться, прошивка может не предоставлять службу Health Connect (часто на de-Googled сборках). Chompass не требует Play Store или sandboxed Play. Используйте экспорт/импорт дневника и показателей тела или необязательный WebDAV.</string>
-    <string name="settings_meal_constituents_footer_on_device">Недоступно для Gemma на устройстве: разбор ингредиентов требует более мощной модели. Переключитесь на облачного провайдера, чтобы включить.</string>
+    <string name="settings_gemini_google_search_footer">Если включено, Gemini может искать в интернете, когда это помогает ответить на запрос. Поисковые запросы отправляются в Google. Google выставляет счёт твоему проекту Gemini API. В моделях Gemini 3 каждый выполненный поисковый запрос учитывается в использовании; в Gemini 2.5 и старше оплата за каждый запрос с поиском.</string>
+    <string name="settings_health_unavailable_platform">Health Connect недоступен для приложений на этом устройстве. На Android 14 и новее это системный модуль. Если в настройках есть Health Connect, но Chompass не может подключиться, прошивка может не предоставлять службу Health Connect (часто на de-Googled сборках). Chompass не требует Play Store или sandboxed Play. Используй экспорт/импорт дневника и показателей тела или необязательный WebDAV.</string>
+    <string name="settings_meal_constituents_footer_on_device">Недоступно для Gemma на устройстве: разбор ингредиентов требует более мощной модели. Переключись на облачного провайдера, чтобы включить.</string>
     <string name="settings_photo_note_prompt">Спрашивать заметку к фото</string>
     <string name="settings_photo_note_prompt_footer">Если включено, при записи по фото поле заметки выделяется перед «Анализ». Можно подтвердить и продолжить без заметки.</string>
     <string name="settings_progress_default_range">Диапазон по умолчанию в «Прогресс»</string>
@@ -1209,40 +1209,40 @@
     <string name="food_search_sheet_title">Поиск в базах продуктов</string>
     <string name="food_search_placeholder">напр. греческий йогурт, Milch, quark</string>
     <string name="food_search_hint">Продукты из Open Food Facts, а также офлайн-базы USDA и швейцарская. Результаты имеют пометку источника.</string>
-    <string name="food_search_empty">Введите запрос для поиска продуктов</string>
-    <string name="food_search_no_results">Ничего не найдено. Попробуйте другое название.</string>
+    <string name="food_search_empty">Введи запрос для поиска продуктов</string>
+    <string name="food_search_no_results">Ничего не найдено. Попробуй другое название.</string>
 
 
     <string name="food_search_source_swiss">Швейцарская</string>
     <string name="grounding_badge_swiss">Проверено · Швейцарская база</string>
     <string name="grounding_source_swiss">Швейцарская</string>
-    <string name="error_search_food_failed">Не удалось загрузить этот продукт. Попробуйте ещё раз.</string>
-    <string name="about_donate">Купите мне йогурт</string>
+    <string name="error_search_food_failed">Не удалось загрузить этот продукт. Попробуй ещё раз.</string>
+    <string name="about_donate">Купи мне йогурт</string>
     <string name="action_close">Закрыть</string>
     <string name="action_undo">Отменить</string>
-    <string name="ai_error_coach_on_device">Тренер пока недоступен с локальным провайдером. Переключитесь на облачного провайдера в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_coach_round_limit">Тренер не смог ответить. Попробуйте переформулировать вопрос.</string>
+    <string name="ai_error_coach_on_device">Тренер пока недоступен с локальным провайдером. Переключись на облачного провайдера в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_coach_round_limit">Тренер не смог ответить. Попробуй переформулировать вопрос.</string>
     <string name="ai_error_disabled">ИИ-функции отключены в Настройки → ИИ и речь.</string>
     <string name="ai_error_grounded_on_device">Режим «Grounded» недоступен для локальных моделей.</string>
     <string name="ai_error_grounded_requires_provider">Режиму «Grounded» нужен активный ИИ-провайдер.</string>
     <string name="ai_error_image_conversion_failed">Не удалось обработать изображение.</string>
-    <string name="ai_error_invalid_response">Не удалось понять ответ ИИ. Попробуйте ещё раз.</string>
-    <string name="ai_error_invalid_url">Неверный URL API. Проверьте настройки провайдера.</string>
-    <string name="ai_error_key_rejected">API-ключ отклонён. Откройте Настройки → ИИ-провайдер и вставьте действующий ключ заново.</string>
-    <string name="ai_error_location_unsupported">Gemini недоступен из этого региона (страна/IP). Если используете VPN, отключите его или выберите выход из жилого диапазона. IP дата-центров часто блокируются. Либо включите биллинг в проекте Google AI Studio, попробуйте другую сеть или смените провайдера в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_model_unavailable">Провайдер не нашёл эту модель. Она может быть платной на бесплатном тарифе, недоступна в вашем регионе или указан неверный endpoint. Переключитесь на стандартную модель Flash в Настройки → ИИ-провайдер или включите биллинг в проекте AI Studio.</string>
+    <string name="ai_error_invalid_response">Не удалось понять ответ ИИ. Попробуй ещё раз.</string>
+    <string name="ai_error_invalid_url">Неверный URL API. Проверь настройки провайдера.</string>
+    <string name="ai_error_key_rejected">API-ключ отклонён. Открой Настройки → ИИ-провайдер и вставь действующий ключ заново.</string>
+    <string name="ai_error_location_unsupported">Gemini недоступен из этого региона (страна/IP). Если используешь VPN, отключи его или выбери выход из жилого диапазона. IP дата-центров часто блокируются. Либо включи биллинг в проекте Google AI Studio, попробуй другую сеть или смени провайдера в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_model_unavailable">Провайдер не нашёл эту модель. Она может быть платной на бесплатном тарифе, недоступна в твоём регионе или указан неверный endpoint. Переключись на стандартную модель Flash в Настройки → ИИ-провайдер или включи биллинг в проекте AI Studio.</string>
     <string name="ai_error_network_format">Ошибка сети: %1$s</string>
-    <string name="ai_error_no_api_key">API-ключ не настроен. Добавьте ключ в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_on_device_low_memory">Сейчас недостаточно памяти для анализа фото на устройстве. Попробуйте модель E2B, закройте другие приложения или смените провайдера в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_on_device_model_not_downloaded">Локальная модель ещё не загружена. Откройте Настройки → ИИ-провайдер → Модель, чтобы загрузить её.</string>
-    <string name="ai_error_on_device_unsupported_device">Это устройство не соответствует требованиям для локального ИИ. Выберите облачного провайдера в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_no_api_key">API-ключ не настроен. Добавь ключ в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_on_device_low_memory">Сейчас недостаточно памяти для анализа фото на устройстве. Попробуй модель E2B, закрой другие приложения или смени провайдера в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_on_device_model_not_downloaded">Локальная модель ещё не загружена. Открой Настройки → ИИ-провайдер → Модель, чтобы загрузить её.</string>
+    <string name="ai_error_on_device_unsupported_device">Это устройство не соответствует требованиям для локального ИИ. Выбери облачного провайдера в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_provider_error">ИИ-провайдер вернул ошибку.</string>
-    <string name="ai_error_provider_overloaded">ИИ-провайдер сейчас перегружен. Мы повторили несколько раз. Попробуйте через минуту или смените провайдера/модель в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_rate_limit">Достигнут лимит запросов по вашему API-ключу. Подождите минуту или смените провайдера в Настройки → ИИ-провайдер. На бесплатном тарифе самая большая квота у модели Flash-Lite.</string>
-    <string name="ai_error_timeout">ИИ-провайдер отвечал слишком долго. Попробуйте ещё раз или увеличьте таймаут в Настройки → ИИ и речь.</string>
-    <string name="ai_error_truncated">Ответ ИИ был обрезан. Попробуйте более короткий вопрос или другую модель.</string>
-    <string name="ai_error_truncated_twice">Ответ ИИ был обрезан дважды. Попробуйте более короткий вопрос или другую модель.</string>
-    <string name="ai_error_truncated_twice_description">Ответ ИИ был обрезан дважды. Попробуйте более короткое описание или другую модель.</string>
+    <string name="ai_error_provider_overloaded">ИИ-провайдер сейчас перегружен. Мы повторили несколько раз. Попробуй через минуту или смени провайдера/модель в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_rate_limit">Достигнут лимит запросов по твоему API-ключу. Подожди минуту или смени провайдера в Настройки → ИИ-провайдер. На бесплатном тарифе самая большая квота у модели Flash-Lite.</string>
+    <string name="ai_error_timeout">ИИ-провайдер отвечал слишком долго. Попробуй ещё раз или увеличь таймаут в Настройки → ИИ и речь.</string>
+    <string name="ai_error_truncated">Ответ ИИ был обрезан. Попробуй более короткий вопрос или другую модель.</string>
+    <string name="ai_error_truncated_twice">Ответ ИИ был обрезан дважды. Попробуй более короткий вопрос или другую модель.</string>
+    <string name="ai_error_truncated_twice_description">Ответ ИИ был обрезан дважды. Попробуй более короткое описание или другую модель.</string>
     <string name="ai_model_tier_paid">Только платная модель (бесплатный тариф больше не включает Pro)</string>
     <string name="ai_model_tier_varies">Доступность на бесплатном тарифе зависит от аккаунта и региона</string>
     <string name="ai_provider_on_device">На устройстве (приватно)</string>
@@ -1266,7 +1266,7 @@
     <string name="coach_confirm_log_food_title">Записать эту еду?</string>
     <string name="coach_confirm_log_water_title">Записать эту воду?</string>
     <string name="coach_confirm_log_weight_title">Записать этот вес?</string>
-    <string name="context_note_weight_hint">Если вы взвесили порцию, укажите вес в граммах. Точный вес повышает точность сильнее, чем название или состав.</string>
+    <string name="context_note_weight_hint">Если порция взвешена, укажи вес в граммах. Точный вес повышает точность сильнее, чем название или состав.</string>
     <string name="context_note_weight_placeholder">например, 280</string>
     <string name="context_note_weight_section">Общий вес (необязательно)</string>
     <string name="context_note_weight_unit">г</string>
@@ -1283,15 +1283,15 @@
     <string name="edit_reprocess_context">Текущая запись</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Что изменилось</string>
-    <string name="edit_reprocess_explain">ИИ пересчитает название, порцию, калории и макросы по вашей заметке. Проверьте изменения и нажмите «Сохранить».</string>
+    <string name="edit_reprocess_explain">ИИ пересчитает название, порцию, калории и макросы по твоей заметке. Проверь изменения и нажми «Сохранить».</string>
     <string name="edit_reprocess_label">Что изменилось?</string>
-    <string name="edit_reprocess_review_hint">Проверьте значения выше и нажмите «Сохранить», чтобы применить их.</string>
+    <string name="edit_reprocess_review_hint">Проверь значения выше и нажми «Сохранить», чтобы применить их.</string>
     <string name="entry_analysis_field_pending">Порция определяется…</string>
     <string name="entry_analysis_micros_found">Найдено ещё %d питательных веществ</string>
     <string name="entry_analysis_phase_filling_fields">Заполнение данных о питании…</string>
     <string name="entry_analysis_phase_recognizing">Распознавание продуктов…</string>
     <string name="entry_analysis_phase_resolving">Определение питательных веществ…</string>
-    <string name="entry_analysis_phase_searching_history">Проверка вашей истории…</string>
+    <string name="entry_analysis_phase_searching_history">Проверка твоей истории…</string>
     <string name="entry_analysis_phase_searching_usda">Поиск продуктов в USDA…</string>
     <string name="entry_analysis_units_found">Найдены единицы порции</string>
     <string name="entry_analysis_waiting_response">Ожидание ответа ИИ…</string>
@@ -1300,23 +1300,23 @@
     <string name="grounded_entry_add_photo">Добавить фото</string>
     <string name="grounded_entry_analyze">Определить питание</string>
     <string name="grounded_entry_placeholder">например, 2 яйца и банан</string>
-    <string name="grounded_entry_subtitle">Опишите и/или сфотографируйте приём пищи. Питательные вещества берутся из USDA, Open Food Facts или вашей подтверждённой истории, а не из свободных догадок.</string>
+    <string name="grounded_entry_subtitle">Опиши и/или сфотографируй приём пищи. Питательные вещества берутся из USDA, Open Food Facts или твоей подтверждённой истории, а не из свободных догадок.</string>
     <string name="grounded_entry_title">Обоснованный ввод</string>
     <string name="grounded_on_device_unavailable">Обоснованный ввод требует облачного ИИ-провайдера. Локальные модели используют «Фото/Заметка».</string>
     <string name="grounded_review_continue">Перейти к проверке</string>
     <string name="grounded_review_grams">Граммы</string>
     <string name="grounded_review_per_100g">%1$d ккал / 100 г</string>
-    <string name="grounded_review_subtitle">Выберите лучшее совпадение из базы и порцию для каждого продукта перед записью.</string>
+    <string name="grounded_review_subtitle">Выбери лучшее совпадение из базы и порцию для каждого продукта перед записью.</string>
     <string name="grounded_review_title">Подтверждение совпадений</string>
     <string name="grounded_review_unit">Единица</string>
     <string name="grounding_badge_estimate">Оценка · не из базы данных</string>
-    <string name="grounding_badge_history">Проверено · ваша история</string>
+    <string name="grounding_badge_history">Проверено · твоя история</string>
     <string name="grounding_badge_label">Проверено · этикетка</string>
     <string name="grounding_badge_off">Проверено · Open Food Facts</string>
     <string name="grounding_badge_usda">Проверено · USDA</string>
     <string name="grounding_confidence_summary">Уверенность: продукт %1$d%% · порция %2$d%% · источник %3$d%%</string>
     <string name="grounding_source_estimate">Оценка ИИ</string>
-    <string name="grounding_source_history">Ваша история</string>
+    <string name="grounding_source_history">Твоя история</string>
     <string name="grounding_source_label">Этикетка</string>
     <string name="grounding_source_off">Open Food Facts</string>
     <string name="grounding_source_usda">USDA</string>
@@ -1342,13 +1342,13 @@
     <string name="import_sync_failed">Ошибка импорта синхронизации: %1$s</string>
     <string name="import_sync_success">Документ синхронизации импортирован.</string>
     <string name="import_sync_title">Импорт синхронизации JSON</string>
-    <string name="notif_water_text_next_qty">Выпейте %1$s · следующее через ~%2$d мин</string>
-    <string name="notif_water_text_qty">Выпейте %1$s и запишите в Chompass.</string>
+    <string name="notif_water_text_next_qty">Выпей %1$s · следующее через ~%2$d мин</string>
+    <string name="notif_water_text_qty">Выпей %1$s и запиши в Chompass.</string>
     <string name="on_device_download_failed">Сбой загрузки</string>
     <string name="on_device_model_delete">Удалить загруженную модель</string>
     <string name="on_device_model_download">Загрузить</string>
     <string name="on_device_model_downloading">Загрузка… %1$d%%</string>
-    <string name="on_device_model_e4b_notice">Больше и медленнее, чем E2B, но может давать более подробные описания еды. Для стабильности анализ фото работает на CPU/GPU одновременно, поэтому может быть заметно медленнее текстового режима. Выберите E2B в Настройки → Модель, если хотите более быстрые ответы.</string>
+    <string name="on_device_model_e4b_notice">Больше и медленнее, чем E2B, но может давать более подробные описания еды. Для стабильности анализ фото работает на CPU/GPU одновременно, поэтому может быть заметно медленнее текстового режима. Выбери E2B в Настройки → Модель, если хочешь более быстрые ответы.</string>
     <string name="on_device_model_ready">Загружена и готова.</string>
     <string name="on_device_model_retry">Повторить загрузку</string>
     <string name="on_device_model_sheet_title">Локальная модель</string>
@@ -1357,27 +1357,27 @@
     <string name="on_device_model_verifying">Проверка загрузки…</string>
     <string name="on_device_model_wifi_only">Загружать только через Wi-Fi</string>
     <string name="onboarding_ai_free_tier_note">Бесплатный тариф включает модели Flash; модели Pro требуют биллинга в проекте AI Studio.</string>
-    <string name="onboarding_api_key_empty">Сначала вставьте API-ключ</string>
-    <string name="onboarding_api_key_network">Ошибка сети. Проверьте подключение и попробуйте снова.</string>
-    <string name="onboarding_api_key_rejected">Этот API-ключ отклонён. Создайте новый ключ в AI Studio и вставьте его заново.</string>
+    <string name="onboarding_api_key_empty">Сначала вставь API-ключ</string>
+    <string name="onboarding_api_key_network">Ошибка сети. Проверь подключение и попробуй снова.</string>
+    <string name="onboarding_api_key_rejected">Этот API-ключ отклонён. Создай новый ключ в AI Studio и вставь его заново.</string>
     <string name="onboarding_api_key_test">Проверить ключ</string>
     <string name="onboarding_api_key_testing">Проверка…</string>
     <string name="onboarding_api_key_works">Ключ работает</string>
-    <string name="onboarding_disclaimers_subtitle">Пожалуйста, прочитайте эти важные уведомления</string>
+    <string name="onboarding_disclaimers_subtitle">Пожалуйста, прочитай эти важные уведомления</string>
     <string name="onboarding_disclaimers_title">Перед началом</string>
-    <string name="onboarding_privacy_cloud_coach">Чат с тренером, включая ваш профиль и недавние записи</string>
+    <string name="onboarding_privacy_cloud_coach">Чат с тренером, включая твой профиль и недавние записи</string>
     <string name="onboarding_privacy_cloud_food">Фото еды и заметки к приёмам пищи (анализ еды)</string>
-    <string name="onboarding_privacy_cloud_goals">Ваш профиль, когда ИИ оценивает цели (план, пересчёт, адаптивные цели)</string>
+    <string name="onboarding_privacy_cloud_goals">Твой профиль, когда ИИ оценивает цели (план, пересчёт, адаптивные цели)</string>
     <string name="onboarding_privacy_cloud_lead">С облачным провайдером эти данные покидают устройство и уходят к нему:</string>
     <string name="onboarding_privacy_cloud_title">Облачные провайдеры (Gemini, OpenAI, Claude, …)</string>
-    <string name="onboarding_privacy_cloud_whatif">«А что если?» — влияние приёма пищи, включая итоги сегодняшнего журнала</string>
+    <string name="onboarding_privacy_cloud_whatif">«А что если?»: влияние приёма пищи, включая итоги сегодняшнего журнала</string>
     <string name="onboarding_privacy_note_cloud">С облачным провайдером фото еды, заметки, чат и данные профиля отправляются этому провайдеру. Только локальные модели Gemma 4 оставляют всё на телефоне.</string>
-    <string name="onboarding_privacy_note_ollama">Ollama работает на вашем компьютере. Ничего не отправляется в облако.</string>
+    <string name="onboarding_privacy_note_ollama">Ollama работает на твоём компьютере. Ничего не отправляется в облако.</string>
     <string name="onboarding_privacy_note_ondevice">Gemma 4 полностью работает на этом устройстве. Ничто из введённого или сфотографированного не отправляется на сервер.</string>
     <string name="onboarding_privacy_ondevice_body">Анализ еды, «А что если?» и оценка целей работают на этом телефоне; ничто не покидает его. Тренер пока недоступен на устройстве. Модель загружается с Hugging Face.</string>
     <string name="onboarding_privacy_ondevice_title">Локальная Gemma 4 (полная приватность)</string>
-    <string name="onboarding_privacy_title">Приватность и ваш ИИ-провайдер</string>
-    <string name="onboarding_safety_water">Цели гидратации и напоминания о питье — приблизительные оценки, а не медицинские советы. Жажда — лучший ориентир, чем любое приложение, а врач знает, что подходит именно вам.</string>
+    <string name="onboarding_privacy_title">Приватность и твой ИИ-провайдер</string>
+    <string name="onboarding_safety_water">Цели гидратации и напоминания о питье лишь приблизительные оценки, а не медицинские советы. Жажда подскажет лучше любого приложения, а врач знает, что подходит именно тебе.</string>
     <string name="paste_busy">Вставка…</string>
     <string name="paste_n_entries">Вставить %1$d записей</string>
     <string name="progress_chart_loading">Загрузка графика…</string>
@@ -1391,7 +1391,7 @@
     <string name="progressive_meal_log">Записать приём пищи</string>
     <string name="progressive_meal_name_placeholder">Название приёма пищи (необязательно)</string>
     <string name="progressive_meal_remove">Убрать ингредиент</string>
-    <string name="progressive_meal_scale_tip">Совет: зафиксируйте вес на весах (например, 180 г) перед анализом</string>
+    <string name="progressive_meal_scale_tip">Совет: зафиксируй вес на весах (например, 180 г) перед анализом</string>
     <string name="progressive_meal_title">Создание приёма пищи</string>
     <string name="progressive_meal_totals">Итоги приёма пищи</string>
     <string name="recipe_builder_add_from_favorites">Из избранного</string>
@@ -1406,20 +1406,20 @@
     <string name="recipe_builder_title_new">Новый рецепт</string>
     <string name="recipe_ingredient_count_format">Ингредиентов: %1$d</string>
     <string name="saved_meals_no_recipes">Рецептов пока нет
-Нажмите +, чтобы собрать его из нескольких ингредиентов</string>
+Нажми +, чтобы собрать его из нескольких ингредиентов</string>
     <string name="saved_meals_tab_recipes">Рецепты</string>
     <string name="settings_ai_features_master">ИИ-функции</string>
     <string name="settings_ai_features_master_footer">Отключает всё, что отправляет данные ИИ-провайдеру: тренера, запись по фото/тексту/голосу, «А что если?» и ИИ-подсказки целей. Штрихкод, поиск еды, ручная запись, сохранённые приёмы пищи, вода, синхронизация и Health Connect продолжают работать.</string>
     <string name="settings_ai_privacy_cloud">Фото еды, заметки, чат и данные профиля отправляются этому провайдеру. Только локальные модели Gemma 4 оставляют всё на телефоне.</string>
-    <string name="settings_ai_privacy_ollama">Ollama работает на вашем компьютере. Ничего не отправляется в облако.</string>
+    <string name="settings_ai_privacy_ollama">Ollama работает на твоём компьютере. Ничего не отправляется в облако.</string>
     <string name="settings_ai_privacy_ondevice">Полностью приватно: анализ еды, «А что если?» и оценка целей работают на устройстве. Ничего не отправляется на сервер.</string>
     <string name="settings_ai_read_timeout">Таймаут чтения ИИ</string>
     <string name="settings_ai_read_timeout_unit">с</string>
     <string name="settings_ai_read_timeout_value">%1$d с</string>
     <string name="settings_ai_reasoning_effort">Уровень рассуждений</string>
-    <string name="settings_ai_reasoning_effort_footer">Управляет бюджетом рассуждений моделей OpenRouter с поддержкой рассуждений. Auto — значение по умолчанию; выше — медленнее и больше токенов.</string>
+    <string name="settings_ai_reasoning_effort_footer">Управляет бюджетом рассуждений моделей OpenRouter с поддержкой рассуждений. Auto сохраняет значение по умолчанию; более высокий уровень медленнее и тратит больше токенов.</string>
     <string name="settings_ai_vision_model">Модель для фото</string>
-    <string name="settings_ai_vision_model_footer">Фото используют эту модель, текст — основную. Оставьте пустым, чтобы для всего использовалась основная модель.</string>
+    <string name="settings_ai_vision_model_footer">Фото используют эту модель, текст использует основную. Оставь пустым, чтобы для всего использовалась основная модель.</string>
     <string name="settings_ai_vision_model_unset">(как основная модель)</string>
     <string name="settings_calc_adaptive_formula">корректировка = (целевое изменение за неделю − наблюдаемое изменение за неделю) × 7700 ÷ 7
 ограничено ±150 ккал/день</string>
@@ -1446,30 +1446,30 @@
     <string name="settings_goal_auto">Авто</string>
     <string name="settings_goals_how_adaptive">Адаптивные цели пересчитывают калории и макросы примерно раз в неделю.</string>
     <string name="settings_goals_how_energy">Энергетический расход привязывает цели к измеренному расходу из Health Connect.</string>
-    <string name="settings_goals_how_lock">Заблокируйте цель, чтобы сохранить своё значение. Пересчёт и адаптивные цели не трогают её.</string>
-    <string name="settings_goals_how_title">Как работают ваши цели</string>
-    <string name="settings_goals_intro">Ваши дневные цели по калориям и макросам и то, что на них влияет.</string>
+    <string name="settings_goals_how_lock">Заблокируй цель, чтобы сохранить своё значение. Пересчёт и адаптивные цели не трогают её.</string>
+    <string name="settings_goals_how_title">Как работают твои цели</string>
+    <string name="settings_goals_intro">Твои дневные цели по калориям и макросам и то, что на них влияет.</string>
     <string name="settings_group_food">Еда и запись</string>
     <string name="settings_group_food_summary">Запись, размеры порций, анализ фото</string>
-    <string name="settings_health_background_denied">Фоновой синхронизации нужно разрешение на чтение Health Connect, когда Chompass закрыт. Нажмите переключатель ещё раз и разрешите доступ.</string>
+    <string name="settings_health_background_denied">Фоновой синхронизации нужно разрешение на чтение Health Connect, когда Chompass закрыт. Нажми переключатель ещё раз и разреши доступ.</string>
     <string name="settings_health_background_sync_unsupported">Фоновая синхронизация не поддерживается модулем Health Connect на этом устройстве. Синхронизация при открытом приложении работает.</string>
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_health_manage_failed">Не удалось открыть настройки Health Connect на этом устройстве.</string>
     <string name="settings_health_open_play_store">Открыть Play Store</string>
     <string name="settings_health_open_settings">Открыть Health Connect</string>
-    <string name="settings_health_unavailable_install">Health Connect не установлен. Установите его из Play Store и нажмите переключатель ещё раз.</string>
-    <string name="settings_health_update_required">Health Connect требует системное обновление. Установите обновление Google Play (или аналог вашей ROM), затем нажмите переключатель ещё раз. На Android 14+ отдельное приложение Health Connect не нужно.</string>
-    <string name="settings_health_update_required_apk">Health Connect требует обновления. Обновите его из Play Store и нажмите переключатель ещё раз.</string>
+    <string name="settings_health_unavailable_install">Health Connect не установлен. Установи его из Play Store и нажми переключатель ещё раз.</string>
+    <string name="settings_health_update_required">Health Connect требует системное обновление. Установи обновление Google Play (или аналог твоей ROM), затем нажми переключатель ещё раз. На Android 14+ отдельное приложение Health Connect не нужно.</string>
+    <string name="settings_health_update_required_apk">Health Connect требует обновления. Обнови его из Play Store и нажми переключатель ещё раз.</string>
     <string name="settings_last_sync">Последняя синхронизация: %1$s</string>
     <string name="settings_max_tokens_unit">токенов</string>
     <string name="settings_meal_constituents">Разбивка приёма пищи на ингредиенты</string>
-    <string name="settings_meal_constituents_footer">Когда включено, ИИ может разделять составные блюда на редактируемые ингредиенты с граммами и единицами. Лучше всего работает с более сильными облачными моделями; отключите для дешёвых или маленьких моделей, если результаты непоследовательны.</string>
+    <string name="settings_meal_constituents_footer">Когда включено, ИИ может разделять составные блюда на редактируемые ингредиенты с граммами и единицами. Лучше всего работает с более сильными облачными моделями; отключи для дешёвых или маленьких моделей, если результаты непоследовательны.</string>
     <string name="settings_needs_water_tracking">Требуется отслеживание воды</string>
     <string name="settings_not_synced">Ещё не синхронизировано</string>
-    <string name="settings_notifications_intro">Выберите, какие напоминания отправляет Chompass и когда они появляются.</string>
+    <string name="settings_notifications_intro">Выбери, какие напоминания отправляет Chompass и когда они появляются.</string>
     <string name="settings_off">Выкл</string>
     <string name="settings_on">Вкл</string>
-    <string name="settings_on_device_accuracy_footer">Локальные модели работают на устройстве ради приватности. Они значительно меньше облачных (Gemini, GPT, Claude и др.) и часто ошибаются в порциях, названиях брендов и фото. Включите запасного провайдера, чтобы облачная модель повторила попытку при сбое локальной.</string>
+    <string name="settings_on_device_accuracy_footer">Локальные модели работают на устройстве ради приватности. Они значительно меньше облачных (Gemini, GPT, Claude и др.) и часто ошибаются в порциях, названиях брендов и фото. Включи запасного провайдера, чтобы облачная модель повторила попытку при сбое локальной.</string>
     <string name="settings_on_device_model">Файл модели</string>
     <string name="settings_on_device_model_not_downloaded">Не загружена</string>
     <string name="settings_on_device_model_ready">Загружена</string>
@@ -1479,30 +1479,30 @@
     <string name="settings_picker_use_wheel">Использовать колесо</string>
     <string name="settings_picker_vitd_iu_hint">%1$d мкг ≈ %2$d МЕ</string>
     <string name="settings_portion_clarify">Проверка размера порции</string>
-    <string name="settings_portion_clarify_footer">Когда включено, каждая запись по фото предлагает точную корректировку веса без нового запроса к ИИ, а также чипы размера (маленькая, обычная, большая, ресторанная), которые пересчитывают анализ с вашим ответом.</string>
+    <string name="settings_portion_clarify_footer">Когда включено, каждая запись по фото предлагает точную корректировку веса без нового запроса к ИИ, а также чипы размера (маленькая, обычная, большая, ресторанная), которые пересчитывают анализ с твоим ответом.</string>
     <string name="settings_progress_plots">Графики замеров тела</string>
     <string name="settings_progress_plots_count">%1$d графиков</string>
     <string name="settings_progress_plots_latest">Последние: %1$s %2$s</string>
     <string name="settings_progress_plots_no_data">Замеров пока нет</string>
     <string name="settings_progress_plots_off">Графики выключены</string>
-    <string name="settings_progress_plots_subtitle">Показывать тренды обхватов на вкладке «Прогресс». Данные — из «Личные данные» → «Замеры тела».</string>
+    <string name="settings_progress_plots_subtitle">Показывать тренды обхватов на вкладке «Прогресс». Данные берутся из «Личные данные» → «Замеры тела».</string>
     <string name="settings_related">Связанное</string>
-    <string name="settings_safety_water">Цели гидратации и напоминания — оценки, а не медицинские советы. Они не заменяют жажду и рекомендации врача. Пейте достаточно, даже если приложение не напоминает.</string>
+    <string name="settings_safety_water">Цели гидратации и напоминания лишь оценки, а не медицинские советы. Они не заменяют жажду и рекомендации врача. Пей достаточно, даже если приложение не напоминает.</string>
     <string name="settings_section_notifications">Напоминания</string>
     <string name="settings_show_coach_tab">Показывать вкладку тренера</string>
     <string name="settings_show_coach_tab_footer">Скрывает вкладку тренера из нижней панели. Сама функция остаётся включённой; переключатель ИИ-функций выше отключает всё.</string>
     <string name="settings_suggestion_action_connect">Подключить</string>
     <string name="settings_suggestion_action_setup">Настроить</string>
     <string name="settings_suggestion_action_turn_on">Включить</string>
-    <string name="settings_suggestion_adaptive_goals">Адаптивные цели обновляют ваши цели по калориям и макросам каждую неделю</string>
-    <string name="settings_suggestion_backup">Сделайте резервную копию журнала с WebDAV-синхронизацией</string>
-    <string name="settings_suggestion_health_connect">Синхронизируйте вес и процент жира автоматически через Health Connect</string>
-    <string name="settings_suggestion_notifications">Включите напоминания о сериях и целях</string>
-    <string name="settings_suggestion_water_reminders">Настройте план напоминаний о питье, чтобы не сбиваться</string>
-    <string name="settings_suggestion_water_tracking">Отслеживайте воду, чтобы достигать цели гидратации</string>
+    <string name="settings_suggestion_adaptive_goals">Адаптивные цели обновляют твои цели по калориям и макросам каждую неделю</string>
+    <string name="settings_suggestion_backup">Сделай резервную копию журнала с WebDAV-синхронизацией</string>
+    <string name="settings_suggestion_health_connect">Синхронизируй вес и процент жира автоматически через Health Connect</string>
+    <string name="settings_suggestion_notifications">Включи напоминания о сериях и целях</string>
+    <string name="settings_suggestion_water_reminders">Настрой план напоминаний о питье, чтобы не сбиваться</string>
+    <string name="settings_suggestion_water_tracking">Отслеживай воду, чтобы достигать цели гидратации</string>
     <string name="settings_suggestions">Рекомендации</string>
     <string name="settings_suggestions_dismiss">Скрыть</string>
-    <string name="settings_sync_blurb">Необязательная синхронизация на вашем сервере. Укажите Android и PWA один и тот же WebDAV-файл (например, Nextcloud) или обменяйтесь sync JSON. Chompass не запускает сервер синхронизации. API-ключи и фото еды не включаются.</string>
+    <string name="settings_sync_blurb">Необязательная синхронизация на твоём сервере. Укажи Android и PWA один и тот же WebDAV-файл (например, Nextcloud) или обменяйся sync JSON. Chompass не запускает сервер синхронизации. API-ключи и фото еды не включаются.</string>
     <string name="settings_sync_now">Синхронизировать сейчас</string>
     <string name="settings_sync_section">Синхронизация</string>
     <string name="settings_water_add_preset">Добавить пресет</string>
@@ -1520,12 +1520,12 @@
     <string name="settings_water_dynamic_goal_help">Адаптируется к весу, температуре, активности и воде из еды. Без разрешения на геолокацию. Ожидаемый максимум вводится вручную.</string>
     <string name="settings_water_dynamic_preview">Цель на сегодня</string>
     <string name="settings_water_dynamic_preview_breakdown">%1$d мл база × %2$s температура × %3$s активность − %4$d мл из еды</string>
-    <string name="settings_water_dynamic_warning_body">Этот ориентир — оценка по общим рекомендациям по гидратации, а не предписание. Потребности у всех разные: реальная норма зависит от почек, лекарств, состояния здоровья, потоотделения, влажности и многого другого, поэтому для вас это число может быть неверным. При заболеваниях или приёме лекарств спросите врача, прежде чем менять объём питья. Лучший ориентир — жажда. Пейте, когда нужно, даже если «ещё не время», и всегда пейте достаточно в жару и при нагрузках, напоминает приложение или нет.</string>
+    <string name="settings_water_dynamic_warning_body">Этот ориентир лишь оценка на основе общих рекомендаций по гидратации, а не предписание. Потребности у всех разные: реальная норма зависит от почек, лекарств, состояния здоровья, потоотделения, влажности и многого другого, поэтому для тебя это число может быть неверным. При заболеваниях или приёме лекарств спроси врача, прежде чем менять объём питья. Лучше всего ориентироваться на жажду. Пей, когда нужно, даже если «ещё не время», и всегда пей достаточно в жару и при нагрузках, напоминает приложение или нет.</string>
     <string name="settings_water_dynamic_warning_title">Бета · это предложение, а не медицинский совет</string>
     <string name="settings_water_food_water">Вычитать воду из еды</string>
     <string name="settings_water_food_water_help">Грубая оценка: 60% веса сегодняшних записанных продуктов, максимум 1 л.</string>
     <string name="settings_water_goal_summary">%1$d мл</string>
-    <string name="settings_water_intro">Отслеживайте, сколько вы пьёте, задайте дневную цель и позвольте ей адаптироваться к весу, погоде и активности.</string>
+    <string name="settings_water_intro">Отслеживай, сколько ты пьёшь, задай дневную цель и позволь ей адаптироваться к весу, погоде и активности.</string>
     <string name="settings_water_manual_temp">Ожидаемый максимум сегодня</string>
     <string name="settings_water_manual_temp_help">Дневная цель растёт выше 25 °C (+4% за градус, максимум +60%). Без разрешения на геолокацию. Задаётся вручную.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
@@ -1534,7 +1534,7 @@
     <string name="settings_water_quick_presets_help">Точки на ползунке добавления воды. Хранятся в миллилитрах; показываются в унциях при имперских единицах.</string>
     <string name="settings_water_reminder_interval_help">Интервал = окно питья ÷ стаканы, необходимые для цели. Пересчитывается после каждой записи.</string>
     <string name="settings_water_reminder_interval_preview">≈ каждые %1$d мин · %2$d стаканов · по %3$d мл</string>
-    <string name="settings_water_reminder_note">Напоминания — мягкие подсказки. Если хочется пить — пейте, даже между напоминаниями.</string>
+    <string name="settings_water_reminder_note">Напоминания лишь мягкие подсказки. Если хочется пить, пей, даже между напоминаниями.</string>
     <string name="settings_water_reminder_plan">План напоминаний</string>
     <string name="settings_water_reminder_window_too_short">Окно питья должно быть не короче 15 минут.</string>
     <string name="settings_water_reminders">Напоминания о питье</string>
@@ -1547,20 +1547,20 @@
     <string name="settings_water_use_profile_activity">Использовать уровень активности из профиля</string>
     <string name="settings_weather_attribution">Данные о погоде © Open-Meteo (CC BY 4.0)</string>
     <string name="settings_weather_city">Город</string>
-    <string name="settings_weather_city_help">Найдите свой город, и Chompass загрузит его прогноз на сегодня. Open-Meteo передаются только название города и координаты. Без аккаунта, ключа и разрешения на геолокацию.</string>
-    <string name="settings_weather_city_none">Выберите город</string>
+    <string name="settings_weather_city_help">Найди свой город, и Chompass загрузит его прогноз на сегодня. Open-Meteo передаются только название города и координаты. Без аккаунта, ключа и разрешения на геолокацию.</string>
+    <string name="settings_weather_city_none">Выбери город</string>
     <string name="settings_weather_city_search">Поиск</string>
     <string name="settings_weather_city_search_hint">Название города…</string>
-    <string name="settings_weather_city_search_none">Города не найдены. Проверьте название или подключение.</string>
+    <string name="settings_weather_city_search_none">Города не найдены. Проверь название или подключение.</string>
     <string name="settings_weather_city_selected">Выбрано</string>
     <string name="settings_weather_city_title">Город Open-Meteo</string>
     <string name="settings_weather_source">Источник погоды</string>
     <string name="settings_weather_source_help">Ожидаемый максимум питает динамическую цель (+4% за °C выше 25 °C, максимум +60%). Когда у источника нет свежих данных, используется ручное значение.</string>
     <string name="settings_weather_source_manual">Вручную</string>
-    <string name="settings_weather_source_manual_sub">Введите ожидаемый максимум сами. Без сети.</string>
+    <string name="settings_weather_source_manual_sub">Введи ожидаемый максимум вручную. Без сети.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (онлайн)</string>
     <string name="settings_weather_source_meteo_sub">Прогноз для выбранного города. Без аккаунта, ключа и разрешения на геолокацию.</string>
-    <string name="settings_weather_status_fallback">Прогноза пока нет. Используется %1$d °C (нажмите, чтобы обновить)</string>
+    <string name="settings_weather_status_fallback">Прогноза пока нет. Используется %1$d °C (нажми, чтобы обновить)</string>
     <string name="settings_weather_status_label">Максимум сегодня</string>
     <string name="settings_weather_status_value">%1$d °C · %2$s</string>
     <string name="settings_weather_updated_date">%1$s %2$s</string>
@@ -1588,8 +1588,8 @@
     <string name="sheet_portion_clarify_small">Маленькая</string>
     <string name="sheet_portion_clarify_updating">Обновление оценки…</string>
     <string name="sheet_portion_clarify_weight_apply">Применить</string>
-    <string name="sheet_portion_clarify_weight_hint">Введите общий съедобный вес, чтобы пересчитать калории и макросы без нового запроса к ИИ.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Введите вес больше 0 г</string>
+    <string name="sheet_portion_clarify_weight_hint">Введи общий съедобный вес, чтобы пересчитать калории и макросы без нового запроса к ИИ.</string>
+    <string name="sheet_portion_clarify_weight_invalid">Введи вес больше 0 г</string>
     <string name="sheet_portion_clarify_weight_label">Точный вес</string>
     <string name="sheet_portion_clarify_weight_placeholder">граммы</string>
     <string name="sheet_serving_custom_grams">Граммов на единицу</string>
@@ -1608,8 +1608,8 @@
     <string name="speech_error_start_failed">Не удалось запустить распознавание речи</string>
     <string name="speech_error_unknown_format">Ошибка речи (%1$d)</string>
     <string name="sync_error_build_local_doc">Не удалось собрать локальный документ синхронизации</string>
-    <string name="sync_error_configure_webdav">Сначала настройте URL, имя пользователя и пароль WebDAV</string>
-    <string name="sync_error_conflict_persisted">Конфликт WebDAV сохраняется; попробуйте ещё раз</string>
+    <string name="sync_error_configure_webdav">Сначала настрой URL, имя пользователя и пароль WebDAV</string>
+    <string name="sync_error_conflict_persisted">Конфликт WebDAV сохраняется; попробуй ещё раз</string>
     <string name="sync_error_local_rebuild_failed">Сбой пересборки локальной синхронизации после конфликта</string>
     <string name="sync_error_merged_invalid">Объединённый документ синхронизации недействителен</string>
     <string name="sync_error_remote_invalid">Удалённый документ синхронизации недействителен</string>
@@ -1617,9 +1617,9 @@
     <string name="sync_error_unsupported_file">Неподдерживаемый файл синхронизации</string>
     <string name="sync_success_applied">Документ синхронизации применён</string>
     <string name="sync_success_synced">Синхронизировано с WebDAV</string>
-    <string name="vm_adaptive_updated">Обновлено до %1$d ккал по вашим последним данным.</string>
+    <string name="vm_adaptive_updated">Обновлено до %1$d ккал по твоим последним данным.</string>
     <string name="vm_goals_updated">Обновлено до %1$d ккал.</string>
-    <string name="voice_native_unavailable">В этом профиле нет доступного сервиса распознавания речи. Выберите облачный движок речи в настройках (Whisper, Groq, Gemini, …) или установите приложение распознавания речи с Android RecognitionService.</string>
+    <string name="voice_native_unavailable">В этом профиле нет доступного сервиса распознавания речи. Выбери облачный движок речи в настройках (Whisper, Groq, Gemini, …) или установи приложение распознавания речи с Android RecognitionService.</string>
     <string name="water_amount_ml">%1$d мл</string>
     <string name="water_custom_short">Своё</string>
     <string name="water_progress">%1$d / %2$d мл</string>
