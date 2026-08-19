@@ -3,7 +3,7 @@
 Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-droid.org/packages/app.chompass/) (package `app.chompass`). This page is the maintainer reference for keeping the listing healthy.
 
 **Application ID:** `app.chompass`  
-**Current version:** 3.13.0 (versionCode 50)  
+**Current version:** 3.19.0 (versionCode 59)  
 **Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256 (upstream):** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf` (F-Droid signs its own builds)
 
@@ -13,13 +13,13 @@ Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-d
 
 - Inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) was **merged**; the listing is live and F-Droid clients install / auto-update `app.chompass` directly.
 - **Updates:** F-Droid's `checkupdates` opens update MRs automatically from the `Builds:` entry in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml). No manual inclusion MR is needed, and **none should be opened** (duplicates review work).
-- **Maintainer:** update `docs/fdroid/app.chompass.yml` in this repo only; do **not** push to the fdroiddata repo. The maintainer may assist bot update MRs via the GitLab web GUI when needed. `scripts/legacy/submit_fdroiddata_mr.sh` is legacy (from the submission era) and is no longer part of the release flow.
-- **Pending (2026-08-19):** the live listing's `Donate:` field still points at the Codeberg repo. The mirror (`fdroid/app.chompass.yml`) now points at Ko-fi (`https://ko-fi.com/fitguy`); applying it to the live fdroiddata `metadata/app.chompass.yml` (line 10) needs a one-off MR (fork → edit → MR) or direct access, because F-Droid's `checkupdates` bot does not touch top-level metadata fields. See Codeberg issue #36.
+- **Maintainer:** update `docs/fdroid/app.chompass.yml` in this repo only; do **not** push to the fdroiddata repo. The maintainer may assist bot update MRs via the GitLab web GUI when needed. The submission-era `submit_fdroiddata_mr.sh` is archived locally (`docs/local/archive/`) and is no longer part of the release flow.
+- **Donate:** the live listing's `Donate:` field points at Ko-fi (`https://ko-fi.com/fitguy`), matching the mirror. See Codeberg issue #36.
 
 ## Per-release checklist (now that the listing is live)
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `docs/CHANGELOG.md` and `metadata/en-US/changelogs/<versionCode>.txt`
+2. Update `docs/CHANGELOG.md` and **add** `metadata/en-US/changelogs/<versionCode>.txt` (F-Droid's `checkupdates` copies this file into the fdroiddata repo when it builds the new version; without it the version ships with no changelog)
 3. Sync [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml): replace the previous `Builds:` entry with the new version, set `commit:` to the **full** release commit hash (not the `vX.Y.Z` tag), update `CurrentVersion` / `CurrentVersionCode`
 4. Run `devenv tasks run release:check-metadata` (verifies gradle / changelog / fdroid yml / hugo.toml agree)
 5. Tag `v<version>` on Codeberg and publish APKs
@@ -56,43 +56,6 @@ Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, 
 
 **Delivery:** Android 13 and lower use the Play Store Health Connect APK; Android 14+ uses the system/Mainline module. Chompass talks to both through Jetpack `connect-client` and does not require sandboxed Play. De-Googled ROMs that omit the binder service will report HC unavailable: file import/export remains the fallback.
 
-## Archived: inclusion MR body (merged via !42984)
+## Archived
 
-Kept for reference and for the legacy `scripts/legacy/submit_fdroiddata_mr.sh` (which extracts the first fenced block below):
-
-```markdown
-## Required
-
-* [x] The app complies with the [inclusion criteria](https://f-droid.org/docs/Inclusion_Policy)
-* [x] The original app author has been notified (and does not oppose the inclusion)
-* [x] Builds with `fdroid build` and all pipelines pass
-* [x] There is an issue tracker and contact info of the author so that we can report bugs and contact the author.
-
-## Strongly Recommended
-
-* [x] The upstream app source code repo contains the app metadata _(summary/description/images/changelog/etc)_ in a [Fastlane](https://gitlab.com/snippets/1895688) or [Triple-T](https://gitlab.com/snippets/1901490) folder structure
-* [x] Releases are tagged and auto update is enabled
-
-## Suggested
-
-* [x] External repos are added as git submodules instead of srclibs
-* [ ] Enable [Reproducible Builds](https://f-droid.org/docs/Reproducible_Builds)
-
-  No, I don't want this yet.
-* [ ] Multiple apks for native code
-
-  I ship a single arm64 APK for F-Droid (`-PreleaseAbi=arm64-v8a`; ABI splits disabled). `subdir` is `android/app` (the app module), so the unsigned APK lands at `build/outputs/apk/release/app-release-unsigned.apk` with no `output:` override.
-
-## Summary
-
-**New app:** Chompass: ad-free, privacy-focused Android calorie and macro tracker.
-
-- **Application ID:** `app.chompass`
-- **License:** MIT
-- **Upstream:** https://codeberg.org/fitguy/chompass
-- **Category:** Sports & Health, Diet
-
-Chompass is a maintained fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai) with a distinct application ID, branding, and scope (no workout library, no ad/analytics SDKs). There is a single `release` build. On-device barcode scanning uses FOSS **zxing-cpp** (Apache-2.0) in both upstream and F-Droid builds: no ML Kit / proprietary scanner split. The app was originally proposed as *NoFUD* (`org.codeberg.fitguy.nofud`) and renamed to **Chompass** (`app.chompass`) before first inclusion; the old ID never shipped on F-Droid.
-```
-
-**Latest release (2026-08-07):** v3.8.0: calorie hero upgrades, demo-hero scanning viewfinders, food search, faster food entry. Published at https://codeberg.org/fitguy/chompass/releases/tag/v3.8.0
+The inclusion MR body (merged via fdroiddata!42984) and the submission-era `submit_fdroiddata_mr.sh` are archived locally in `docs/local/archive/` (gitignored, not published).

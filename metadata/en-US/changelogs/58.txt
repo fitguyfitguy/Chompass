@@ -1,0 +1,7 @@
+• Macro goals rise with the active-burn target: on an active day the calorie ring can show a higher goal than the stored budget, and the protein, carbs and fat cards scale up with it. Keto mode keeps the base split
+• The on-device model joins the AI fallback options: when a provider call fails, the app can use the on-device model as the fallback target
+• Typed entries no longer close by accident: a downward drag on the note sheet, or on an entry sheet while typing, no longer dismisses the sheet mid-entry
+• The onboarding pace line keeps its spacing: the estimated-days line no longer runs the number into the word before it
+• Duplicate weight rows no longer appear after WebDAV sync: rows with the same date and weight now merge into one
+• The last sync time shows in your local time zone
+• Edit Food Entry shows no AI controls when AI is off: the edit sheet only shows a plain note field and a Save button
