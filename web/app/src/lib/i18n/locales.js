@@ -19,9 +19,11 @@ export const LOCALES = Object.freeze([
   { id: "ja", bcp47: "ja", name: "Japanese", nativeName: "日本語", rtl: false },
   { id: "ko", bcp47: "ko", name: "Korean", nativeName: "한국어", rtl: false },
   { id: "nl", bcp47: "nl", name: "Dutch", nativeName: "Nederlands", rtl: false },
+  { id: "pl", bcp47: "pl", name: "Polish", nativeName: "Polski", rtl: false },
   { id: "pt-BR", bcp47: "pt-BR", name: "Portuguese (Brazil)", nativeName: "Português (Brasil)", rtl: false },
   { id: "ro", bcp47: "ro", name: "Romanian", nativeName: "Română", rtl: false },
   { id: "ru", bcp47: "ru", name: "Russian", nativeName: "Русский", rtl: false },
+  { id: "tr", bcp47: "tr", name: "Turkish", nativeName: "Türkçe", rtl: false },
   { id: "uk", bcp47: "uk", name: "Ukrainian", nativeName: "Українська", rtl: false },
   { id: "zh-CN", bcp47: "zh-CN", name: "Chinese (Simplified)", nativeName: "简体中文", rtl: false },
 ]);
