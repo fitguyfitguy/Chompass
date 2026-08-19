@@ -457,6 +457,8 @@
     <string name="settings_tap_to_edit">Tik om te bewerken</string>
     <string name="settings_custom_url_placeholder">https://jouw-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Aangepaste basis-URL</string>
+    <string name="settings_ai_allow_insecure_http">Onveilige HTTP toestaan</string>
+    <string name="settings_ai_allow_insecure_http_footer">Laat eigen en Ollama-eindpunten http://-URL\'s gebruiken, bijvoorbeeld op je thuisnetwerk. Cloudproviders gebruiken https. Laat uit, tenzij je server geen TLS heeft.</string>
     <string name="settings_clear_key">Sleutel wissen</string>
 
     <string name="settings_clear_food_log">Voedingsdagboek wissen</string>
@@ -685,6 +687,7 @@
     <string name="ai_error_image_conversion_failed">Afbeelding verwerken mislukt.</string>
     <string name="ai_error_invalid_response">AI-antwoord niet begrepen. Probeer het opnieuw.</string>
     <string name="ai_error_invalid_url">Ongeldige API-URL. Controleer je providerinstellingen.</string>
+    <string name="ai_error_insecure_http_blocked">Onveilige HTTP is geblokkeerd. Zet «Onveilige HTTP toestaan» aan in Instellingen → AI en spraak, of gebruik een https://-URL.</string>
     <string name="ai_error_key_rejected">Je API-sleutel is afgewezen. Open Instellingen → AI-provider en plak opnieuw een geldige sleutel.</string>
     <string name="ai_error_location_unsupported">Gemini is niet beschikbaar vanaf deze netwerklocatie (land/IP). Gebruik je een VPN, zet die dan uit of kies een residentiële exit. Datacenter-/niet-residentiële VPN-IP\'s worden vaak geblokkeerd. Of schakel facturering in op het Google AI Studio-project, probeer een ander netwerk of wissel van provider in Instellingen → AI-provider.</string>
     <string name="ai_error_model_unavailable">Je provider kon dit model niet vinden. Het kan betaald zijn op de gratis laag, beperkt in jouw regio, of de endpoint kan onjuist zijn. Schakel naar het standaard Flash-model in Instellingen → AI-provider of schakel facturering in op je AI Studio-project.</string>

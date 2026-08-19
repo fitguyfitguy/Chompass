@@ -486,6 +486,8 @@
     <string name="settings_server_url">서버 URL</string>
     <string name="settings_tap_to_edit">탭하여 편집</string>
     <string name="settings_custom_url_title">사용자 지정 기본 URL</string>
+    <string name="settings_ai_allow_insecure_http">안전하지 않은 HTTP 허용</string>
+    <string name="settings_ai_allow_insecure_http_footer">사용자 지정 및 Ollama 엔드포인트에서 http:// URL을 쓸 수 있어요. 집 네트워크처럼요. 클라우드 제공자는 https를 사용해요. 서버에 TLS가 있을 때는 꺼 두세요.</string>
     <string name="settings_clear_key">키 지우기</string>
 
     <string name="settings_clear_food_log">음식 기록 지우기</string>
@@ -714,6 +716,7 @@
     <string name="ai_error_image_conversion_failed">이미지를 처리하지 못했어요.</string>
     <string name="ai_error_invalid_response">AI 응답을 이해하지 못했어요. 다시 시도해 주세요.</string>
     <string name="ai_error_invalid_url">API URL이 잘못되었어요. 제공자 설정을 확인하세요.</string>
+    <string name="ai_error_insecure_http_blocked">안전하지 않은 HTTP가 차단되었어요. 설정 → AI 및 음성에서 ‘안전하지 않은 HTTP 허용’을 켜거나 https:// URL을 사용하세요.</string>
     <string name="ai_error_key_rejected">API 키가 거부되었어요. 설정 → AI 제공자를 열어 유효한 키를 다시 붙여넣으세요.</string>
     <string name="ai_error_location_unsupported">Gemini는 현재 네트워크 위치(국가/IP)에서 사용할 수 없어요. VPN을 사용 중이면 끄거나 주거용 출구로 전환하세요. 데이터센터/비주거용 VPN IP는 자주 차단돼요. Google AI Studio 프로젝트에서 결제를 활성화하거나, 다른 네트워크를 시도하거나, 설정 → AI 제공자에서 제공자를 변경하세요.</string>
     <string name="ai_error_model_unavailable">제공자가 이 모델을 찾지 못했어요. 무료 티어에서 유료 전용이거나, 지역 제한이 있거나, 엔드포인트가 잘못되었을 수 있어요. 설정 → AI 제공자에서 기본 Flash 모델로 전환하거나 AI Studio 프로젝트에서 결제를 활성화하세요.</string>

@@ -477,6 +477,8 @@
     <string name="settings_tap_to_edit">Toca para editar</string>
     <string name="settings_custom_url_placeholder">https://tu-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizada</string>
+    <string name="settings_ai_allow_insecure_http">Permitir HTTP inseguro</string>
+    <string name="settings_ai_allow_insecure_http_footer">Permite que los endpoints personalizados y de Ollama usen URLs http://, por ejemplo en tu red local. Los proveedores en la nube usan https. Déjalo apagado salvo que tu servidor no tenga TLS.</string>
     <string name="settings_clear_key">Borrar clave</string>
 
     <string name="settings_clear_food_log">Borrar diario de comidas</string>
@@ -748,6 +750,7 @@
     <string name="ai_error_image_conversion_failed">No se pudo procesar la imagen.</string>
     <string name="ai_error_invalid_response">No se pudo entender la respuesta de la IA. Inténtalo de nuevo.</string>
     <string name="ai_error_invalid_url">URL de API no válida. Revisa la configuración de tu proveedor.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP inseguro bloqueado. Activa «Permitir HTTP inseguro» en Ajustes → IA y voz, o usa una URL https://.</string>
     <string name="ai_error_key_rejected">Tu clave API fue rechazada. Abre Ajustes → Proveedor de IA y pega una clave válida.</string>
     <string name="ai_error_location_unsupported">Gemini no está disponible desde esta ubicación de red (país/IP). Si usas una VPN, desactívala o cambia a una salida residencial. Las IP de centros de datos o VPN no residenciales suelen estar bloqueadas. También puedes activar la facturación en tu proyecto de Google AI Studio, probar otra red o cambiar de proveedor en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_model_unavailable">Tu proveedor no encontró este modelo. Puede ser solo de pago en el plan gratuito, estar restringido en tu región o el endpoint puede ser incorrecto. Cambia al modelo Flash predeterminado en Ajustes → Proveedor de IA, o activa la facturación en tu proyecto de AI Studio.</string>

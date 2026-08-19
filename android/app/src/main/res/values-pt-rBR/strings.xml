@@ -475,6 +475,8 @@
     <string name="settings_tap_to_edit">Toque para editar</string>
     <string name="settings_custom_url_placeholder">https://seu-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizada</string>
+    <string name="settings_ai_allow_insecure_http">Permitir HTTP inseguro</string>
+    <string name="settings_ai_allow_insecure_http_footer">Permite que endpoints personalizados e o Ollama usem URLs http://, por exemplo na sua rede local. Provedores na nuvem usam https. Deixe desligado, a menos que seu servidor não tenha TLS.</string>
     <string name="settings_clear_key">Limpar chave</string>
 
     <string name="settings_clear_food_log">Limpar diário alimentar</string>
@@ -703,6 +705,7 @@
     <string name="ai_error_image_conversion_failed">Falha ao processar a imagem.</string>
     <string name="ai_error_invalid_response">Não foi possível entender a resposta da IA. Tente novamente.</string>
     <string name="ai_error_invalid_url">URL de API inválida. Verifique as configurações do provedor.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP inseguro bloqueado. Ative «Permitir HTTP inseguro» em Configurações → IA e fala, ou use uma URL https://.</string>
     <string name="ai_error_key_rejected">Sua chave de API foi rejeitada. Abra Configurações → Provedor de IA e cole novamente uma chave válida.</string>
     <string name="ai_error_location_unsupported">O Gemini não está disponível nesta localização de rede (país/IP). Se usar VPN, desligue-a ou mude para uma saída residencial. IPs de datacenter/não residenciais de VPN costumam ser bloqueados. Ou ative o faturamento no projeto do Google AI Studio, tente outra rede ou troque de provedor em Configurações → Provedor de IA.</string>
     <string name="ai_error_model_unavailable">Seu provedor não encontrou este modelo. Ele pode ser pago no plano gratuito, restrito na sua região ou o endpoint pode estar errado. Troque para o modelo Flash padrão em Configurações → Provedor de IA ou ative o faturamento no seu projeto do AI Studio.</string>

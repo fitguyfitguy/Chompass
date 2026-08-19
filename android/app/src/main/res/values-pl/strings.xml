@@ -975,6 +975,8 @@
     <string name="settings_tap_to_edit">Stuknij, aby edytować</string>
     <string name="settings_custom_url_placeholder">https://twoj-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Niestandardowy bazowy URL</string>
+    <string name="settings_ai_allow_insecure_http">Zezwól na nieszyfrowane HTTP</string>
+    <string name="settings_ai_allow_insecure_http_footer">Pozwala własnym serwerom i Ollama używać adresów http://, na przykład w sieci domowej. Dostawcy chmurowi używają https. Zostaw wyłączone, chyba że twój serwer nie ma TLS.</string>
     <string name="settings_clear_key">Wyczyść klucz</string>
     <string name="settings_on_device_model">Plik modelu</string>
     <string name="settings_on_device_model_ready">Pobrano</string>
@@ -1225,6 +1227,7 @@
     <string name="ai_error_timeout">Dostawca AI odpowiadał zbyt długo. Spróbuj ponownie albo zwiększ limit czasu w Ustawienia → AI i mowa.</string>
     <string name="ai_error_disabled">Funkcje AI są wyłączone w Ustawienia → AI i mowa.</string>
     <string name="ai_error_invalid_url">Nieprawidłowy URL API. Sprawdź ustawienia dostawcy.</string>
+    <string name="ai_error_insecure_http_blocked">Nieszyfrowane HTTP jest zablokowane. Włącz „Zezwól na nieszyfrowane HTTP” w Ustawienia → AI i mowa albo użyj adresu https://.</string>
     <string name="ai_error_on_device_model_not_downloaded">Model na urządzeniu nie został jeszcze pobrany. Otwórz Ustawienia → Dostawca AI → Model, aby go pobrać.</string>
     <string name="ai_error_on_device_unsupported_device">To urządzenie nie spełnia wymagań dla AI na urządzeniu. Wybierz dostawcę chmurowego w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_on_device_low_memory">Za mało wolnej pamięci na analizę zdjęć na urządzeniu w tej chwili. Spróbuj mniejszego modelu E2B, zamknij inne aplikacje lub zmień dostawcę w Ustawienia → Dostawca AI.</string>

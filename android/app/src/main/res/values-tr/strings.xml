@@ -975,6 +975,8 @@
     <string name="settings_tap_to_edit">Düzenlemek için dokun</string>
     <string name="settings_custom_url_placeholder">https://uç-noktan.com/v1</string>
     <string name="settings_custom_url_title">Özel temel URL</string>
+    <string name="settings_ai_allow_insecure_http">Güvensiz HTTP\'ye izin ver</string>
+    <string name="settings_ai_allow_insecure_http_footer">Özel ve Ollama uç noktalarının http:// adreslerini kullanmasına izin verir, örneğin ev ağında. Bulut sağlayıcıları https kullanır. Sunucunda TLS varsa kapalı tut.</string>
     <string name="settings_clear_key">Anahtarı temizle</string>
     <string name="settings_on_device_model">Model dosyası</string>
     <string name="settings_on_device_model_ready">İndirildi</string>
@@ -1225,6 +1227,7 @@
     <string name="ai_error_timeout">AI sağlayıcısı yanıtlamak için çok uzun sürdü. Tekrar dene veya Ayarlar → AI ve Ses bölümünden zaman aşımını artır.</string>
     <string name="ai_error_disabled">AI özellikleri Ayarlar → AI ve Ses bölümünde kapatılmış.</string>
     <string name="ai_error_invalid_url">Geçersiz API URL\'si. Sağlayıcı ayarlarını kontrol et.</string>
+    <string name="ai_error_insecure_http_blocked">Güvensiz HTTP engellendi. Ayarlar → AI ve Ses bölümünde «Güvensiz HTTP\'ye izin ver»i aç veya https:// adresi kullan.</string>
     <string name="ai_error_on_device_model_not_downloaded">Cihazdaki model henüz indirilmedi. İndirmek için Ayarlar → AI Sağlayıcısı → Model bölümünü aç.</string>
     <string name="ai_error_on_device_unsupported_device">Bu cihaz, cihazdaki AI gereksinimlerini karşılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısı seç.</string>
     <string name="ai_error_on_device_low_memory">Şu anda cihazdaki fotoğraf analizi için yeterli boş bellek yok. Daha küçük E2B modelini dene, diğer uygulamaları kapat veya Ayarlar → AI Sağlayıcısı bölümünden sağlayıcı değiştir.</string>

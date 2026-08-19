@@ -486,6 +486,8 @@
     <string name="settings_server_url">عنوان URL للخادم</string>
     <string name="settings_tap_to_edit">اضغط للتعديل</string>
     <string name="settings_custom_url_title">عنوان URL أساسي مخصص</string>
+    <string name="settings_ai_allow_insecure_http">السماح بـ HTTP غير الآمن</string>
+    <string name="settings_ai_allow_insecure_http_footer">يتيح لنقاط النهاية المخصصة وOllama استخدام عناوين http://، مثلاً على شبكتك المنزلية. مزوّدو السحابة يستخدمون https. أبقه مطفأ إلا إذا لم يكن لخادمك TLS.</string>
     <string name="settings_clear_key">مسح المفتاح</string>
 
     <string name="settings_clear_food_log">مسح سجل الطعام</string>
@@ -715,6 +717,7 @@
     <string name="ai_error_image_conversion_failed">تعذّرت معالجة الصورة.</string>
     <string name="ai_error_invalid_response">تعذّر فهم رد الذكاء الاصطناعي. حاول مرة أخرى.</string>
     <string name="ai_error_invalid_url">رابط API غير صالح. تحقق من إعدادات المزوّد.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP غير الآمن محظور. فعّل «السماح بـ HTTP غير الآمن» في الإعدادات ← الذكاء الاصطناعي والصوت، أو استخدم عنوان https://.</string>
     <string name="ai_error_key_rejected">تم رفض مفتاح API الخاص بك. افتح الإعدادات ← مزوّد الذكاء الاصطناعي وأعد لصق مفتاح صالح.</string>
     <string name="ai_error_location_unsupported">Gemini غير متاح من هذا الموقع الشبكي (البلد/عنوان IP). إذا كنت تستخدم VPN، فأوقفه أو انتقل إلى مخرج سكني. غالبًا ما تُحظر عناوين IP الخاصة بمراكز البيانات/VPN غير السكنية. أو فعّل الفوترة في مشروع Google AI Studio، وجرّب شبكة أخرى، أو غيّر المزوّد في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_model_unavailable">لم يعثر مزوّدك على هذا النموذج. قد يكون مدفوعًا حصريًا في الخطة المجانية، أو مقيدًا في منطقتك، أو قد تكون نقطة النهاية خاطئة. انتقل إلى نموذج Flash الافتراضي في الإعدادات ← مزوّد الذكاء الاصطناعي، أو فعّل الفوترة في مشروع AI Studio.</string>

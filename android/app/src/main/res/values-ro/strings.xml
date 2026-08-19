@@ -478,6 +478,8 @@
     <string name="settings_tap_to_edit">Atinge pentru a edita</string>
     <string name="settings_custom_url_placeholder">https://endpointul-tau.com/v1</string>
     <string name="settings_custom_url_title">URL de bază personalizat</string>
+    <string name="settings_ai_allow_insecure_http">Permite HTTP nesigur</string>
+    <string name="settings_ai_allow_insecure_http_footer">Permite endpointurilor personalizate și Ollama să folosească URL-uri http://, de exemplu în rețeaua de acasă. Furnizorii cloud folosesc https. Ține-l oprit dacă serverul tău are TLS.</string>
     <string name="settings_clear_key">Șterge cheia</string>
 
     <string name="settings_clear_food_log">Șterge jurnalul alimentar</string>
@@ -706,6 +708,7 @@
     <string name="ai_error_image_conversion_failed">Procesarea imaginii a eșuat.</string>
     <string name="ai_error_invalid_response">Nu am putut înțelege răspunsul IA. Încearcă din nou.</string>
     <string name="ai_error_invalid_url">URL API nevalid. Verifică setările furnizorului.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP nesigur este blocat. Activează «Permite HTTP nesigur» în Setări → IA și voce sau folosește un URL https://.</string>
     <string name="ai_error_key_rejected">Cheia ta API a fost respinsă. Deschide Setări → Furnizor IA și lipește din nou o cheie validă.</string>
     <string name="ai_error_location_unsupported">Gemini nu este disponibil din această locație de rețea (țară/IP). Dacă folosești VPN, dezactivează-l sau comută la o ieșire rezidențială. IP-urile de datacenter/nerezidențiale VPN sunt adesea blocate. Sau activează facturarea în proiectul Google AI Studio, încearcă altă rețea sau schimbă furnizorul în Setări → Furnizor IA.</string>
     <string name="ai_error_model_unavailable">Furnizorul tău nu a găsit acest model. Poate fi plătit pe planul gratuit, restricționat în regiunea ta sau endpoint-ul poate fi greșit. Comută la modelul Flash implicit în Setări → Furnizor IA sau activează facturarea în proiectul tău AI Studio.</string>

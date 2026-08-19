@@ -468,6 +468,8 @@
     <string name="settings_tap_to_edit">Touchez pour modifier</string>
     <string name="settings_custom_url_placeholder">https://votre-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL de base personnalisée</string>
+    <string name="settings_ai_allow_insecure_http">Autoriser HTTP non sécurisé</string>
+    <string name="settings_ai_allow_insecure_http_footer">Permet aux serveurs personnalisés et à Ollama d\'utiliser des URL http://, par exemple sur votre réseau local. Les fournisseurs cloud utilisent https. Laissez désactivé sauf si votre serveur n\'a pas de TLS.</string>
     <string name="settings_clear_key">Effacer la clé</string>
 
     <string name="settings_clear_food_log">Effacer le journal alimentaire</string>
@@ -743,6 +745,7 @@
     <string name="ai_error_image_conversion_failed">Impossible de traiter l\'image.</string>
     <string name="ai_error_invalid_response">Impossible de comprendre la réponse de l\'IA. Réessayez.</string>
     <string name="ai_error_invalid_url">URL d\'API invalide. Vérifiez les réglages de votre fournisseur.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP non sécurisé bloqué. Activez « Autoriser HTTP non sécurisé » dans Réglages → IA et voix, ou utilisez une URL https://.</string>
     <string name="ai_error_key_rejected">Votre clé API a été rejetée. Ouvrez Réglages → Fournisseur d\'IA et collez une clé valide.</string>
     <string name="ai_error_location_unsupported">Gemini n\'est pas disponible depuis cet emplacement réseau (pays/IP). Si vous utilisez un VPN, désactivez-le ou passez à une sortie résidentielle. Les IP de datacenters ou de VPN non résidentiels sont souvent bloquées. Vous pouvez aussi activer la facturation sur votre projet Google AI Studio, essayer un autre réseau ou changer de fournisseur dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_model_unavailable">Votre fournisseur n\'a pas trouvé ce modèle. Il peut être payant uniquement dans l\'offre gratuite, restreint dans votre région, ou l\'endpoint peut être incorrect. Passez au modèle Flash par défaut dans Réglages → Fournisseur d\'IA, ou activez la facturation sur votre projet AI Studio.</string>

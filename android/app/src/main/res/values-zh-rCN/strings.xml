@@ -487,6 +487,8 @@
     <string name="settings_server_url">服务器 URL</string>
     <string name="settings_tap_to_edit">点按以编辑</string>
     <string name="settings_custom_url_title">自定义基础 URL</string>
+    <string name="settings_ai_allow_insecure_http">允许不安全的 HTTP</string>
+    <string name="settings_ai_allow_insecure_http_footer">允许自定义和 Ollama 端点使用 http:// 地址，例如在家庭网络上。云提供商使用 https。服务器有 TLS 时请保持关闭。</string>
     <string name="settings_clear_key">清除密钥</string>
 
     <string name="settings_clear_food_log">清除饮食记录</string>
@@ -716,6 +718,7 @@
     <string name="ai_error_image_conversion_failed">图片处理失败。</string>
     <string name="ai_error_invalid_response">无法理解 AI 的回复，请重试。</string>
     <string name="ai_error_invalid_url">API 网址无效，请检查提供商设置。</string>
+    <string name="ai_error_insecure_http_blocked">不安全的 HTTP 已被阻止。请在设置 → AI 与语音中打开“允许不安全的 HTTP”，或使用 https:// 地址。</string>
     <string name="ai_error_key_rejected">API 密钥被拒绝。请打开设置 → AI 提供商，重新粘贴有效密钥。</string>
     <string name="ai_error_location_unsupported">Gemini 在当前网络位置（国家/IP）不可用。如使用 VPN，请关闭或切换到住宅出口。数据中心/非住宅 VPN 的 IP 常被屏蔽。也可以在 Google AI Studio 项目中启用结算、换网络，或在设置 → AI 提供商中更换提供商。</string>
     <string name="ai_error_model_unavailable">提供商找不到此模型。它可能在免费层仅限付费、在你所在地区受限，或端点有误。请在设置 → AI 提供商切换到默认 Flash 模型，或在 AI Studio 项目中启用结算。</string>
