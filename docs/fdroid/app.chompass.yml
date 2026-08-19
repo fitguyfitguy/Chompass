@@ -17,28 +17,34 @@ Repo: https://codeberg.org/fitguy/chompass.git
 Builds:
   - versionName: 3.19.0
     versionCode: 59
-    commit: 247e6d6
+    commit: 247e6d60074a843d4e19464eb2efe7915e7fc60f
     subdir: android/app
     gradle:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.18.0
     versionCode: 58
-    commit: 5341e48
+    commit: 5341e482f288b1c4fc69784d3c93175862afdcbb
     subdir: android/app
     gradle:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.17.2
     versionCode: 57
-    commit: cc9a20b
+    commit: cc9a20b7b4dfa8e1710e1fb1fbcef8c602ee2720
     subdir: android/app
     gradle:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.17.0
     versionCode: 55
     commit: 9f9ad5465960b7d5d6ea3bf6df502b88b2c0b1a7
@@ -47,6 +53,8 @@ Builds:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.16.1
     versionCode: 54
     commit: dd10e333e6fa624e2e52f8ec1194a724b28acfb9
@@ -55,14 +63,18 @@ Builds:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.16.0
     versionCode: 53
-    commit: 4c388e9
+    commit: 4c388e9fec753836cc41586f5ab1ed350d36a8fe
     subdir: android/app
     gradle:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.15.0
     versionCode: 52
     commit: 87820c090b457880e2e5b0682d0a239fd122ef0f
@@ -71,6 +83,8 @@ Builds:
       - yes
     scandelete:
       - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
   - versionName: 3.14.0
     versionCode: 51
     commit: 5900f2c7485406364a9b5c64eaa9426097cd3c3d
@@ -84,7 +98,7 @@ Builds:
 
   - versionName: 3.13.0
     versionCode: 50
-    commit: 6157432d2b7bfca6005a5d51efb94577c1652584
+    commit: e701496ed429d1904f4fced28f6799853051875c
     subdir: android/app
     gradle:
       - yes
@@ -95,7 +109,7 @@ Builds:
 
   - versionName: 3.12.0
     versionCode: 49
-    commit: 17ffb333345579e28b47848e0d20987182933ae7
+    commit: 5a6898067238f7cb29a7e77dda1947f57a5bc40a
     subdir: android/app
     gradle:
       - yes
@@ -106,5 +120,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 3.19.0
-CurrentVersionCode: 59
+CurrentVersion: 3.20.0
+CurrentVersionCode: 60
