@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## Unreleased
+
+### Added
+
+- **Polish and Turkish language packs** (Android + web): Chompass now speaks 18 languages. Polish and Turkish cover the full Android app, from onboarding through the diary, coach, widgets, and safety notices, plus the web app's core screens. Choose them in Settings → App & Display → Language (Android) or App & Display → Language (web).
+
 ## [3.20.0] - 2026-08-19
 
 ### Added
