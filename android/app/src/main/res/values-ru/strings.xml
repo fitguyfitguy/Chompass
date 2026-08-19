@@ -542,6 +542,7 @@
     <string name="settings_appearance_system">Системное</string>
     <string name="settings_appearance_light">Светлая</string>
     <string name="settings_appearance_dark">Тёмная</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">Метрические единицы</string>
     <string name="settings_height_unit">Единица роста</string>
     <string name="settings_weight_unit">Единица веса</string>

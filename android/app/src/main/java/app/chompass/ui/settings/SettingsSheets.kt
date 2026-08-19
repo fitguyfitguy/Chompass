@@ -494,7 +494,8 @@ internal fun SettingsSheets(
                     items = listOf(
                         "system" to stringResource(R.string.settings_appearance_system),
                         "light" to stringResource(R.string.settings_appearance_light),
-                        "dark" to stringResource(R.string.settings_appearance_dark)
+                        "dark" to stringResource(R.string.settings_appearance_dark),
+                        "oled" to stringResource(R.string.settings_appearance_oled)
                     ),
                     label = { it.second },
                     selected = { it.first == ui.appearanceMode },

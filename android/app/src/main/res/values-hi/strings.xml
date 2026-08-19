@@ -467,6 +467,7 @@
     <string name="settings_appearance_system">सिस्टम</string>
     <string name="settings_appearance_light">लाइट</string>
     <string name="settings_appearance_dark">डार्क</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">मीट्रिक इकाइयाँ</string>
     <string name="settings_height_unit">ऊंचाई की इकाई</string>
     <string name="settings_weight_unit">वज़न की इकाई</string>

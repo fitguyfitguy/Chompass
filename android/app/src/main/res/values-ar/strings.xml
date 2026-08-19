@@ -467,6 +467,7 @@
     <string name="settings_appearance_system">النظام</string>
     <string name="settings_appearance_light">فاتح</string>
     <string name="settings_appearance_dark">داكن</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">وحدات متريّة</string>
     <string name="settings_height_unit">وحدة الطول</string>
     <string name="settings_weight_unit">وحدة الوزن</string>

@@ -467,6 +467,7 @@
     <string name="settings_appearance_system">시스템</string>
     <string name="settings_appearance_light">라이트</string>
     <string name="settings_appearance_dark">다크</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">미터 단위</string>
     <string name="settings_height_unit">키 단위</string>
     <string name="settings_weight_unit">체중 단위</string>

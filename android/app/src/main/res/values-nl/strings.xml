@@ -439,6 +439,7 @@
     <string name="settings_appearance_system">Systeem</string>
     <string name="settings_appearance_light">Licht</string>
     <string name="settings_appearance_dark">Donker</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">Metrische eenheden</string>
     <string name="settings_height_unit">Lengte-eenheid</string>
     <string name="settings_weight_unit">Gewichtseenheid</string>

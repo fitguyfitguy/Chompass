@@ -1,6 +1,8 @@
 package app.chompass.models
 
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import java.time.Instant
 
@@ -55,5 +57,23 @@ class WidgetSnapshotTest {
         val static = snapshot(mode = HomeCalorieDisplayMode.STATIC, effectiveGoal = 1800)
         assertEquals(1800, static.resolvedDisplayGoalTarget)
         assertEquals(800, static.caloriesRemaining)
+    }
+
+    @Test
+    fun appearanceMode_roundTripsThroughJson() {
+        val json = Json { ignoreUnknownKeys = true }
+        val encoded = json.encodeToString(WidgetSnapshot.serializer(), snapshot().copy(appearanceMode = "oled"))
+        val decoded = json.decodeFromString(WidgetSnapshot.serializer(), encoded)
+        assertEquals("oled", decoded.appearanceMode)
+    }
+
+    @Test
+    fun legacySnapshot_withoutAppearanceMode_decodesToNull() {
+        // Snapshots written by older builds carry no appearanceMode → widgets
+        // follow the system dark mode (null falls through to system).
+        val json = Json { ignoreUnknownKeys = true }
+        val encoded = json.encodeToString(WidgetSnapshot.serializer(), snapshot())
+        val decoded = json.decodeFromString(WidgetSnapshot.serializer(), encoded)
+        assertNull(decoded.appearanceMode)
     }
 }

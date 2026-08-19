@@ -65,7 +65,7 @@ private fun ProteinWidgetContent(context: Context, snapshot: WidgetSnapshot) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(WidgetTheme.backgroundProvider)
+            .background(WidgetTheme.backgroundProvider(snapshot.appearanceMode))
             .cornerRadius(22.dp)
             .padding(14.dp)
             .clickable(actionStartActivity<MainActivity>())
@@ -88,7 +88,7 @@ private fun ProteinSmall(context: Context, snapshot: WidgetSnapshot) {
     val gaugeW = minOf(contentW, (contentH - 44f) / 0.58f).toInt().coerceAtLeast(80)
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_bolt, label = nutrient.label)
+        WidgetHeader(iconRes = R.drawable.ic_widget_bolt, label = nutrient.label, appearance = snapshot.appearanceMode)
         Box(
             modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
             contentAlignment = Alignment.Center
@@ -99,7 +99,8 @@ private fun ProteinSmall(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = "${MacroValueFormatter.string(nutrient.value)}${nutrient.unit}",
-                centerSmall = "/ ${MacroValueFormatter.string(nutrient.goal)}${nutrient.unit}"
+                centerSmall = "/ ${MacroValueFormatter.string(nutrient.goal)}${nutrient.unit}",
+                appearance = snapshot.appearanceMode
             )
         }
         Text(
@@ -137,7 +138,8 @@ private fun ProteinMedium(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = "${MacroValueFormatter.string(nutrient.value)}${nutrient.unit}",
-                centerSmall = "/ ${MacroValueFormatter.string(nutrient.goal)}${nutrient.unit}"
+                centerSmall = "/ ${MacroValueFormatter.string(nutrient.goal)}${nutrient.unit}",
+                appearance = snapshot.appearanceMode
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(

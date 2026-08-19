@@ -66,7 +66,7 @@ private fun CalorieWidgetContent(context: Context, snapshot: WidgetSnapshot) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(WidgetTheme.backgroundProvider)
+            .background(WidgetTheme.backgroundProvider(snapshot.appearanceMode))
             .cornerRadius(22.dp)
             .padding(14.dp)
             .clickable(actionStartActivity<MainActivity>())
@@ -89,7 +89,7 @@ private fun CalorieSmall(context: Context, snapshot: WidgetSnapshot) {
     val gaugeW = minOf(contentW, (contentH - 44f) / 0.58f).toInt().coerceAtLeast(80)
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = context.getString(R.string.widget_today))
+        WidgetHeader(iconRes = R.drawable.ic_widget_flame, label = context.getString(R.string.widget_today), appearance = snapshot.appearanceMode)
         Box(
             modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
             contentAlignment = Alignment.Center
@@ -100,7 +100,8 @@ private fun CalorieSmall(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}"
+                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}",
+                appearance = snapshot.appearanceMode
             )
         }
         Text(
@@ -132,7 +133,8 @@ private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
                 centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}"
+                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}",
+                appearance = snapshot.appearanceMode
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(

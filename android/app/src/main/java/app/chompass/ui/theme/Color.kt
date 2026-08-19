@@ -172,17 +172,36 @@ fun AppThemeColor.resolveLauncherIconTheme(accent: Color, fixedIcon: Boolean = f
 fun AppThemeColor.resolveLauncherIconTheme(context: Context, fixedIcon: Boolean = false): AppThemeColor =
     resolveLauncherIconTheme(widgetAccentColors(context).first, fixedIcon)
 
-/** Accent colors for widgets and other non-Compose surfaces. */
-fun AppThemeColor.widgetAccentColors(context: Context): Pair<Color, Color> {
+/**
+ * Resolves the app's appearance-mode string to a dark flag. "system" (or null)
+ * falls back to the device's current uiMode. Used by non-Compose surfaces
+ * (widgets, notifications) that must mirror the app's explicit appearance.
+ */
+fun appearanceIsDark(appearance: String?, systemDark: Boolean): Boolean = when (appearance) {
+    "light" -> false
+    "dark", "oled" -> true
+    else -> systemDark
+}
+
+/** Context-based wrapper of [appearanceIsDark] (reads the device uiMode for "system"). */
+fun appearanceIsDark(appearance: String?, context: Context): Boolean {
+    val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    return appearanceIsDark(appearance, nightMode == Configuration.UI_MODE_NIGHT_YES)
+}
+
+/** Accent colors for widgets and other non-Compose surfaces, resolved against an explicit dark flag. */
+fun AppThemeColor.widgetAccentColors(context: Context, dark: Boolean): Pair<Color, Color> {
     if (!usesSystemPalette || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
         return start to end
     }
-    val nightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    val dark = nightMode == Configuration.UI_MODE_NIGHT_YES
     val scheme = if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     val primary = scheme.primary
     return primary to lerp(primary, Color.White, 0.28f)
 }
+
+/** Accent colors for widgets and other non-Compose surfaces (follows the device dark mode). */
+fun AppThemeColor.widgetAccentColors(context: Context): Pair<Color, Color> =
+    widgetAccentColors(context, appearanceIsDark(null, context))
 
 object AppColors {
     private var activeThemeColor: AppThemeColor = AppThemeColor.SYSTEM
@@ -273,6 +292,21 @@ object AppColors {
     /** Semantic success tone (goal-met, positive confirmation states). */
     val SuccessLight = Color(0xFF386A20)
     val SuccessDark = Color(0xFF9CD67D)
+
+    // OLED mode: true-black neutrals so OLED panels can turn pixels off.
+    // Text and accent colors reuse the Dark values (unchanged).
+    val AppBackgroundOled = Color(0xFF000000)
+    val AppCardOled = Color(0xFF000000)
+    val SurfaceContainerLowOled = Color(0xFF0A0A0A)
+    val SurfaceContainerHighOled = Color(0xFF141414)
+    val NavBarOled = Color(0xFF000000)
+    val ActivePillOled = Color(0xFF3A3A3A)
+    val OnOled = OnDark
+    val MutedOled = MutedDark
+    val DividerOled = DividerDark
+    val HairlineBorderOled = HairlineBorderDark
+    val WarningOled = WarningDark
+    val SuccessOled = SuccessDark
 }
 
 /** Resolves [AppColors.WarningLight]/[AppColors.WarningDark] against the active theme. */

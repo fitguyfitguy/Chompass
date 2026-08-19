@@ -69,7 +69,7 @@ private fun WaterWidgetContent(context: Context, snapshot: WidgetSnapshot) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(WidgetTheme.backgroundProvider)
+            .background(WidgetTheme.backgroundProvider(snapshot.appearanceMode))
             .cornerRadius(22.dp)
             .padding(14.dp)
             .clickable(actionStartActivity<MainActivity>()),
@@ -77,7 +77,7 @@ private fun WaterWidgetContent(context: Context, snapshot: WidgetSnapshot) {
         if (snapshot.waterTrackingEnabled) {
             WaterProgressContent(context, snapshot)
         } else {
-            WaterDisabledContent(context)
+            WaterDisabledContent(context, snapshot.appearanceMode)
         }
     }
 }
@@ -132,7 +132,7 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
     }
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-        WidgetHeader(iconRes = R.drawable.ic_widget_water, label = context.getString(R.string.water))
+        WidgetHeader(iconRes = R.drawable.ic_widget_water, label = context.getString(R.string.water), appearance = snapshot.appearanceMode)
         Box(
             modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
             contentAlignment = Alignment.Center,
@@ -144,6 +144,7 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
                 endHex = snapshot.themeEndHex,
                 centerLarge = currentLabel,
                 centerSmall = "/ $goalLabel",
+                appearance = snapshot.appearanceMode,
             )
         }
         Text(
@@ -158,7 +159,7 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
             Text(
                 text = nextDrinkLabel,
                 style = TextStyle(
-                    color = WidgetTheme.secondaryTextProvider,
+                    color = WidgetTheme.secondaryTextProvider(snapshot.appearanceMode),
                     fontWeight = FontWeight.Medium,
                     fontSize = 11.sp,
                 ),
@@ -169,7 +170,7 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
 }
 
 @Composable
-private fun WaterDisabledContent(context: Context) {
+private fun WaterDisabledContent(context: Context, appearance: String?) {
     Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
@@ -185,7 +186,7 @@ private fun WaterDisabledContent(context: Context) {
             Spacer(modifier = GlanceModifier.height(4.dp))
             Text(
                 text = context.getString(R.string.widget_water_enable_short),
-                style = TextStyle(color = WidgetTheme.secondaryTextProvider, fontSize = 12.sp),
+                style = TextStyle(color = WidgetTheme.secondaryTextProvider(appearance), fontSize = 12.sp),
             )
         }
     }

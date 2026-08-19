@@ -475,6 +475,7 @@
     <string name="settings_appearance">Зовнішній вигляд</string>
     <string name="settings_appearance_light">Світла</string>
     <string name="settings_appearance_dark">Темна</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_metric_units">Метричні одиниці</string>
     <string name="settings_height_unit">Одиниці зросту</string>
     <string name="settings_weight_unit">Одиниці ваги</string>

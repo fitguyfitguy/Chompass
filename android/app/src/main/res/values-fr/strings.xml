@@ -447,6 +447,7 @@
     <string name="settings_appearance_system">Système</string>
     <string name="settings_appearance_light">Clair</string>
     <string name="settings_appearance_dark">Sombre</string>
+    <string name="settings_appearance_oled">OLED</string>
     <string name="settings_language_title">Langue</string>
     <string name="settings_language_system">Système</string>
     <string name="settings_metric_units">Unités métriques</string>

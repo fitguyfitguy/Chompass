@@ -29,7 +29,7 @@ import app.chompass.models.WidgetSnapshot
 // instead of copying the skeleton.
 
 @Composable
-internal fun WidgetHeader(iconRes: Int, label: String) {
+internal fun WidgetHeader(iconRes: Int, label: String, appearance: String?) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
             provider = ImageProvider(iconRes),
@@ -40,7 +40,7 @@ internal fun WidgetHeader(iconRes: Int, label: String) {
         Text(
             text = label,
             style = TextStyle(
-                color = WidgetTheme.secondaryTextProvider,
+                color = WidgetTheme.secondaryTextProvider(appearance),
                 fontWeight = FontWeight.Medium,
                 fontSize = 12.sp
             )
@@ -59,7 +59,8 @@ internal fun SpeedometerWithCenter(
     startHex: Int?,
     endHex: Int?,
     centerLarge: String,
-    centerSmall: String
+    centerSmall: String,
+    appearance: String?
 ) {
     val density = Resources.getSystem().displayMetrics.density
     val sizePx = (gaugeWidthDp * density).toInt().coerceAtLeast(1)
@@ -98,7 +99,7 @@ internal fun SpeedometerWithCenter(
             Text(
                 text = centerSmall,
                 style = TextStyle(
-                    color = WidgetTheme.secondaryTextProvider,
+                    color = WidgetTheme.secondaryTextProvider(appearance),
                     fontSize = centerSmallFontSize
                 )
             )
@@ -146,7 +147,8 @@ internal fun NutrientBarsRow(
                     barRgb = snapshot.nutrientColorHex(nutrient.id),
                     barHeightDp = barHeightDp,
                     barWidthDp = barWidthDp,
-                    valueFontSp = valueFontSp
+                    valueFontSp = valueFontSp,
+                    appearance = snapshot.appearanceMode
                 )
             }
         }
@@ -159,7 +161,8 @@ internal fun VerticalNutrientBarCell(
     barRgb: Int,
     barHeightDp: Int,
     barWidthDp: Int,
-    valueFontSp: Int
+    valueFontSp: Int,
+    appearance: String?
 ) {
     val density = Resources.getSystem().displayMetrics.density
     val bitmap = verticalBarBitmap(
@@ -192,7 +195,7 @@ internal fun VerticalNutrientBarCell(
         Text(
             text = nutrient.label,
             style = TextStyle(
-                color = WidgetTheme.primaryTextProvider,
+                color = WidgetTheme.primaryTextProvider(appearance),
                 fontWeight = FontWeight.Medium,
                 fontSize = (valueFontSp - 3).coerceAtLeast(10).sp
             ),
@@ -201,7 +204,7 @@ internal fun VerticalNutrientBarCell(
         Text(
             text = "/${MacroValueFormatter.string(nutrient.goal)}${nutrient.unit}",
             style = TextStyle(
-                color = WidgetTheme.secondaryTextProvider,
+                color = WidgetTheme.secondaryTextProvider(appearance),
                 fontSize = (valueFontSp - 4).coerceAtLeast(9).sp
             ),
             maxLines = 1

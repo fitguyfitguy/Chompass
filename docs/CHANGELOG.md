@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **OLED appearance mode** (Android): a new OLED option in Settings → Appearance turns the app and all four home-screen widgets true black, so OLED screens can switch pixels off. Text and accent colors stay the same as Dark mode. Choosing Light or Dark explicitly now also applies to the widgets, not just the app.
 - **Buy fitguy a yogurt** (Android + web): a Ko-fi donation link now appears in the app's About screen, the website footer and download page, the PWA About screen, and the README. The F-Droid listing's donation link points to Ko-fi instead of the repository. Closes Codeberg [#36](https://codeberg.org/fitguy/Chompass/issues/36) by [@tpapastylianou](https://codeberg.org/tpapastylianou).
 
 ## [3.19.0] - 2026-08-18
