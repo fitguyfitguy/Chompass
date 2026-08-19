@@ -107,4 +107,36 @@ class UserProfileCalculationTest {
     assertTrue(p.fatGoal >= 45)
     assertTrue(p.proteinGoal >= 60)
   }
+
+  @Test
+  fun withGoal_maintainDropsDeficitAndClearsPace() {
+    val lose = profile(goal = WeightGoal.LOSE, weeklyChangeKg = 0.5).copy(
+      customCalories = 1800,
+      goalWeightKg = 75.0,
+    )
+    val maintain = lose.withGoal(WeightGoal.MAINTAIN)
+    assertEquals(WeightGoal.MAINTAIN, maintain.goal)
+    assertEquals(null, maintain.weeklyChangeKg)
+    assertEquals(null, maintain.goalWeightKg)
+    assertEquals(maintain.tdee.toInt(), maintain.effectiveCalories)
+    assertEquals(0, maintain.calorieAdjustment)
+  }
+
+  @Test
+  fun withGoal_loseSeedsPaceAndAppliesDeficit() {
+    val maintain = profile(goal = WeightGoal.MAINTAIN, weeklyChangeKg = null)
+    val lose = maintain.withGoal(WeightGoal.LOSE)
+    assertEquals(WeightGoal.LOSE, lose.goal)
+    assertEquals(0.5, lose.weeklyChangeKg)
+    assertEquals(lose.tdee.toInt() - 550, lose.effectiveCalories)
+  }
+
+  @Test
+  fun withGoal_clearsMismatchedTargetWeight() {
+    val lose = profile(goal = WeightGoal.LOSE, weeklyChangeKg = 0.5).copy(goalWeightKg = 90.0)
+    val stillLose = lose.withGoal(WeightGoal.LOSE)
+    assertEquals(null, stillLose.goalWeightKg)
+    val gain = profile(goal = WeightGoal.MAINTAIN).copy(goalWeightKg = 70.0)
+    assertEquals(null, gain.withGoal(WeightGoal.GAIN).goalWeightKg)
+  }
 }
