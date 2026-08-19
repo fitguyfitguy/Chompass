@@ -12,7 +12,7 @@ Open the [Chompass web app](https://chompass.app/app/) in any modern browser on 
 
 Works in Firefox, Safari, and other engines. **Chromium-based browsers** (Chrome, Edge, Brave, Cromite, and similar) generally have the smoothest install prompt, camera barcode, and Web Speech support.
 
-**Android-app features not on the PWA:** Health Connect, home-screen widgets, notifications, on-device Gemma 4, and the full 16-language pack.
+**Android-app features not on the PWA:** Health Connect, home-screen widgets, notifications, and on-device Gemma 4.
 
 ### How to install
 
@@ -84,8 +84,8 @@ Package ID: `app.chompass`
 ## After install
 
 1. Complete onboarding (profile and goals).
-2. For cloud AI: add a provider key under **Settings → AI Access** (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use).
-3. On the Android app, for private on-device analysis: **Settings → AI Provider → On-Device (Private)** and download Gemma 4 once.
+2. For cloud AI: add a provider key under **Settings → AI & Speech** (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use).
+3. On the Android app, for private on-device analysis: **Settings → AI & Speech**, then **On-Device (Private)**, and download Gemma 4 once.
 
 ## Migrate from Fud AI
 
