@@ -1604,10 +1604,12 @@
     <string name="unit_percent">%</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
-    <plurals name="copy_foods_to">\n        <item quantity="one">%1$d 品の食品を %2$s にコピー</item>
+    <plurals name="copy_foods_to">
+        <item quantity="one">%1$d 品の食品を %2$s にコピー</item>
         <item quantity="other">%1$d 品の食品を %2$s にコピー</item>
     </plurals>
-    <plurals name="import_add_meals_title">\n        <item quantity="one">共有食事を追加</item>
+    <plurals name="import_add_meals_title">
+        <item quantity="one">共有食事を追加</item>
         <item quantity="other">%1$d 件の共有食事を追加</item>
     </plurals>
     <string name="about_made_by">Chompass、著者 fitguy</string>
