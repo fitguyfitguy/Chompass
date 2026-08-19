@@ -80,6 +80,9 @@ install-debug                         # same, inside devenv shell
 ./scripts/install_debug.sh --busy-home # full seed with extra Home cards
 ```
 
+After the seed is on disk (do not reseed), capture cold start, Progress ranges,
+Add Food, relog, and the analyze+save pipeline: [`PERFORMANCE.md`](PERFORMANCE.md).
+
 **Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split: ignore them if your device is visible to local `adb devices`.
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
