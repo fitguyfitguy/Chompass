@@ -1,0 +1,4 @@
+• OLED appearance mode: a new OLED option in Settings → App & Display → Appearance turns the app and all four home-screen widgets true black, so OLED screens can switch pixels off
+• Per-app language selector: a Language row in Settings → App & Display switches the whole interface to any of the 16 supported languages, independent of the system language
+• Wheel pickers for entering values: calories, macros, serving size, meal times, water, manual activity, AI settings, and photo notes now use scrollable wheel pickers instead of typed fields
+• Buy fitguy a yogurt: a Ko-fi donation link now appears in the app's About screen, the website, and the README
