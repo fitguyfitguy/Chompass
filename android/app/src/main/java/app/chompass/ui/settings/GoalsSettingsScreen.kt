@@ -14,7 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
@@ -29,7 +28,7 @@ fun GoalsSettingsScreen(
     nav: NavHostController,
     onBack: () -> Unit,
 ) {
-    val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container))
+    val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }

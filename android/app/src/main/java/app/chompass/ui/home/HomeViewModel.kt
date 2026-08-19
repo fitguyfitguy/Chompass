@@ -668,16 +668,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             },
             container.prefs.waterFoodWaterEnabled,
             container.profileRepository.profile,
-            container.foodRepository.entries,
-        ) { prefs, foodWater, profile, entries ->
+            container.foodRepository.entriesForDate(LocalDate.now()),
+        ) { prefs, foodWater, profile, todayEntries ->
             if (!prefs.dynamicEnabled) {
                 prefs.manualGoalMl to false
             } else {
-                val todayFoodGrams = WaterGoalCalculator.estimateDiaryGrams(
-                    entries.filter {
-                        it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
-                    }
-                )
+                val todayFoodGrams = if (foodWater) {
+                    WaterGoalCalculator.estimateDiaryGrams(todayEntries)
+                } else {
+                    0
+                }
                 val goal = WaterGoalCalculator.dailyNetGoalMl(
                     baseSource = prefs.baseSource,
                     weightKg = profile?.weightKg,

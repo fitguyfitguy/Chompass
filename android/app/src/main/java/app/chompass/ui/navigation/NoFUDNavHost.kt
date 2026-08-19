@@ -275,6 +275,7 @@ fun ChompassNavHost(
                 composable(ChompassRoutes.SETTINGS_FOOD) {
                     FoodEntrySettingsScreen(
                         container = container,
+                        nav = nav,
                         onBack = { nav.popBackStack() },
                     )
                 }
@@ -321,13 +322,13 @@ fun ChompassNavHost(
                     )
                 }
                 composable(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) {
-                    OptionalNutrientGoalsScreen(container = container, onBack = { nav.popBackStack() })
+                    OptionalNutrientGoalsScreen(container = container, nav = nav, onBack = { nav.popBackStack() })
                 }
                 composable(ChompassRoutes.HOME_DISPLAY) {
-                    HomeDisplaySettingsScreen(container = container, onBack = { nav.popBackStack() })
+                    HomeDisplaySettingsScreen(container = container, nav = nav, onBack = { nav.popBackStack() })
                 }
                 composable(ChompassRoutes.CUSTOMIZE_PROGRESS) {
-                    CustomizeProgressScreen(container = container, onBack = { nav.popBackStack() })
+                    CustomizeProgressScreen(container = container, nav = nav, onBack = { nav.popBackStack() })
                 }
                 composable(ChompassRoutes.CALCULATION_METHODS) {
                     CalculationMethodsScreen(onBack = { nav.popBackStack() })

@@ -106,6 +106,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val clockFormatter = remember(ctx) {
         DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault())
     }
+    val seedingSampleData by container.testDataSeeder.seeding.collectAsState()
     val weekStartsOnMonday by container.prefs.weekStartsOnMonday.collectAsState(initial = true)
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
     // and the What-if row, and ignores the camera/voice launcher shortcuts.
@@ -365,6 +366,16 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         selectedDate = selectedDate,
                         onSelect = { vm.setSelectedDate(it) },
                         weekStartsOnMonday = weekStartsOnMonday
+                    )
+                }
+            }
+            if (seedingSampleData) {
+                item {
+                    Text(
+                        text = stringResource(R.string.home_loading_sample_data),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
             }

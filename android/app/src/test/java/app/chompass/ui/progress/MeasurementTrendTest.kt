@@ -3,6 +3,7 @@ package app.chompass.ui.progress
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.Gender
 import app.chompass.models.UserProfile
+import app.chompass.services.SampleDataGenerators
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -147,5 +148,28 @@ class MeasurementTrendTest {
             ui.measurementSites,
         )
         assertTrue(ui.filteredMeasurements.isEmpty())
+    }
+
+    @Test
+    fun previewState_holdsCountsNotUnfilteredLists() {
+        val anchor = LocalDate.of(2026, 8, 13)
+        val weights = SampleDataGenerators.weightSeries(
+            totalDays = 400,
+            startKg = 80.0,
+            endKg = 73.0,
+            seed = 1,
+            today = anchor,
+        )
+        val ui = buildProgressPreviewUiState(
+            profile = null,
+            weights = weights,
+            bodyFatEntries = emptyList(),
+            foods = emptyList(),
+            timeRange = TimeRange.WEEK,
+            anchorDate = anchor,
+        )
+        assertEquals(weights.size, ui.weightCount)
+        assertTrue(ui.filteredWeights.size < ui.weightCount)
+        assertEquals(weights.maxByOrNull { it.date }?.weightKg, ui.latestWeightKg)
     }
 }
