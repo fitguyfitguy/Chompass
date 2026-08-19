@@ -26,11 +26,11 @@ Photo and text analysis shows clear progress steps (including barcode lookup whe
 
 The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phone, tablet, or desktop (including desktop webcams for meal photos and barcode). Install to the home screen or dock when offered. Covers diary, progress, AI entry and Coach with your own key, settings, and onboarding. Diary and body-metrics JSON match the Android app. Chromium-based browsers work best for install, camera barcode, and speech; Firefox and Safari work with some feature gaps.
 
-**Android-app extras:** Health Connect, widgets, notifications, on-device Gemma 4, and the full 16-language pack.
+**Android-app extras:** Health Connect, widgets, notifications, and on-device Gemma 4.
 
 ## On-device AI (opt-in, Android app)
 
-**On-Device (Private)** in Settings → AI Provider runs Gemma 4 Edge (E2B or E4B) via LiteRT-LM. One-time download (about 2.4-3.4 GB). No API key and no server upload for food text or photo analysis. Cloud AI remains more accurate; optional fallback retries in the cloud when on-device fails. The PWA has no on-device option; it always uses cloud AI with your own key.
+**On-Device (Private)** in Settings → AI & Speech runs Gemma 4 Edge (E2B or E4B) via LiteRT-LM. One-time download (about 2.4-3.4 GB). No API key and no server upload for food text or photo analysis. Cloud AI remains more accurate; optional fallback retries in the cloud when on-device fails. The PWA has no on-device option; it always uses cloud AI with your own key.
 
 ## Accuracy, honestly
 
@@ -40,7 +40,7 @@ Typed entry **with a stated portion** is close to solved: about 90% of estimates
 
 ## AI Coach
 
-Chat with your own provider key on both clients. Optional fallback provider. Replies follow the app language on Android (PWA is EN-first).
+Chat with your own provider key on both clients. Optional fallback provider. Replies follow the app language.
 
 ## Diet modes
 
@@ -71,7 +71,7 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by *
 | Keto / diet modes           | No                                                     | **Yes**                                    | **Yes**                                        |
 | Health Connect              | Partial                                                | **Steps, exercise, sleep, HR, hydration**  | No                                             |
 | Widgets / notifications     | Upstream set                                           | **Yes**                                    | No (installable PWA)                           |
-| Languages                   | Upstream                                               | **15**                                     | EN-first                                       |
+| Languages                   | Upstream                                               | **18**                                     | **18** (core screens)                          |
 | Distribution                | Play-focused                                           | **F-Droid** / Obtainium / Codeberg         | **PWA** in any modern browser                  |
 | Open diary / body JSON      | Upstream formats                                       | **Yes**                                    | **Same contracts as Android**                  |
 
