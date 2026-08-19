@@ -35,4 +35,13 @@ class SettingsPrefsHydrationTest {
         assertTrue(snap.portionClarifyEnabled)
         assertTrue(snap.mealConstituentsEnabled)
     }
+
+    @Test
+    fun coldStartSnapshot_matchesFactoryDefaults() {
+        val snap = emptyPreferences().toColdStartPrefs()
+        assertFalse(snap.onboarded)
+        assertEquals("system", snap.appearanceMode)
+        assertEquals("", snap.appLanguage)
+        assertFalse(snap.fixedLauncherIcon)
+    }
 }

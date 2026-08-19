@@ -1,6 +1,8 @@
 package app.chompass.data
 
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.first
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
@@ -210,3 +212,23 @@ internal val PreferencesStore.lastRecalcGoalSignatureImpl: Flow<String?> get() =
 internal suspend fun PreferencesStore.setLastRecalcGoalSignatureImpl(value: String) {
     dataStore.edit { it[Keys.LAST_RECALC_GOAL_SIGNATURE] = value }
 }
+
+/** Splash-path prefs from one DataStore read (onboarding + theme + language). */
+data class ColdStartPrefs(
+    val onboarded: Boolean,
+    val appearanceMode: String,
+    val appThemeColor: String,
+    val fixedLauncherIcon: Boolean,
+    val appLanguage: String,
+)
+
+internal fun Preferences.toColdStartPrefs(): ColdStartPrefs = ColdStartPrefs(
+    onboarded = this[Keys.ONBOARDING_COMPLETED] ?: false,
+    appearanceMode = this[Keys.APPEARANCE_MODE] ?: "system",
+    appThemeColor = AppThemeColor.migrateKey(this[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY),
+    fixedLauncherIcon = this[Keys.FIXED_LAUNCHER_ICON] ?: false,
+    appLanguage = this[Keys.APP_LANGUAGE] ?: "",
+)
+
+internal suspend fun PreferencesStore.readColdStartPrefsImpl(): ColdStartPrefs =
+    dataStore.data.first().toColdStartPrefs()

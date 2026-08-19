@@ -465,6 +465,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     @Volatile private var daySwitchStartedAtNs = 0L
     @Volatile private var relogAckAtNs = 0L
     @Volatile private var relogAckPriorCount = -1
+    private var uiAckWaiter: CompletableDeferred<Long>? = null
+    private var waterAckWaiter: CompletableDeferred<Long>? = null
+    @Volatile private var waterAckAtNs = 0L
+    @Volatile private var waterAckPriorMl = -1
 
     /** Warm hub recents while the Log sheet animates open (called from the FAB tap). */
     fun prefetchQuickRelog() {
@@ -677,6 +681,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     init {
+        observePerfBench()
         combine(
             container.profileRepository.profile,
             _selectedDate.flatMapLatest { day -> container.foodRepository.entriesForDate(day) },
@@ -684,9 +689,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             container.prefs.foodLogSortOrder,
             _selectedDate
         ) { p, dayEntries, favKeys, sortOrder, day ->
-            // Any diary/favorites change makes the hub-chip cache stale.
-            quickRelogEpoch++
-            quickRelogCache = null
+            // Date or favorites change makes chips stale. A same-day food write
+            // does not — relog/save prepends the template so the next hub open
+            // stays instant instead of rescanning 90 days.
+            if (day != _ui.value.date || favKeys != _ui.value.favoriteKeys) {
+                quickRelogEpoch++
+                quickRelogCache = null
+            }
             _ui.value.copy(
                 profile = p,
                 date = day,
@@ -713,6 +722,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         PerfLog.event(
                             "op=relog phase=uiAck ms=$ms entries=${next.todayEntries.size}",
                         )
+                        uiAckWaiter?.complete(ms)
+                        uiAckWaiter = null
                     }
                 }
             }
@@ -848,6 +859,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { total ->
                 _ui.update { it.copy(waterTodayMl = total) }
                 refreshWaterPlan()
+                val sipAt = waterAckAtNs
+                if (sipAt != 0L && total > waterAckPriorMl) {
+                    waterAckAtNs = 0L
+                    val ms = (System.nanoTime() - sipAt) / 1_000_000
+                    PerfLog.event("op=waterSip phase=uiAck ms=$ms ml=$total")
+                    waterAckWaiter?.complete(ms)
+                    waterAckWaiter = null
+                }
             }
             .launchIn(viewModelScope)
 
@@ -1330,6 +1349,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // no stale draft — strictly better than the old two-edit window
                 // that could restore a review which double-logs on re-save).
                 container.foodRepository.addEntry(entry, clearDraft = true, writeHealth = false)
+                promoteQuickRelog(entry)
                 // Health Connect mirroring is the slowest save step (IPC). Run it
                 // in the background so the review sheet can dismiss as soon as the
                 // diary row is on disk instead of after the HC round-trip.
@@ -1679,6 +1699,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             relogAckAtNs = System.nanoTime()
             relogAckPriorCount = _ui.value.todayEntries.size
         }
+        promoteQuickRelog(template)
         viewModelScope.launch {
             PerfLog.measure("relog", "addEntry", "name=${template.name}") {
                 container.foodRepository.addEntry(template.duplicatedForLogging(timestampForSelectedDay()))
@@ -1975,6 +1996,156 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 container.imageStore.storeBytes(bytes, entryId)
             }
         }
+
+    private fun promoteQuickRelog(template: FoodEntry) {
+        val cache = quickRelogCache ?: return
+        val recents = (listOf(template) +
+            cache.recents.filter { it.favoriteKey != template.favoriteKey }).take(10)
+        val frequents = cache.frequents.filter { it.favoriteKey != template.favoriteKey }
+        quickRelogCache = QuickRelogRows(recents, frequents)
+    }
+
+    private fun observePerfBench() {
+        if (!PerfLog.enabled) return
+        container.perfBenchInbox
+            .onEach { req ->
+                if (req == null) return@onEach
+                container.perfBenchInbox.value = null
+                runCatching { handlePerfBench(req) }
+                    .onFailure {
+                        android.util.Log.w(PerfLog.TAG, "op=perfBench phase=fail err=${it.message}")
+                    }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun handlePerfBench(req: app.chompass.services.PerfBenchRequest) {
+        when (req) {
+            is app.chompass.services.PerfBenchRequest.Relog -> benchRelog(req.count)
+            is app.chompass.services.PerfBenchRequest.LocalEntry -> benchLocalEntry(req.count)
+            is app.chompass.services.PerfBenchRequest.WaterSip -> benchWaterSip(req.count)
+            is app.chompass.services.PerfBenchRequest.DaySwitch -> benchDaySwitch(req.count)
+            is app.chompass.services.PerfBenchRequest.HubOpen -> benchHubOpen(req.count)
+            is app.chompass.services.PerfBenchRequest.Flip -> {
+                android.util.Log.i(PerfLog.TAG, "op=flipBench phase=start relog=${req.relog} local=${req.local} sips=${req.sips}")
+                benchHubOpen(1)
+                benchRelog(req.relog)
+                benchLocalEntry(req.local)
+                benchWaterSip(req.sips)
+                benchDaySwitch(1)
+                android.util.Log.i(PerfLog.TAG, "op=flipBench phase=done")
+            }
+        }
+    }
+
+    private suspend fun benchHubOpen(count: Int) {
+        repeat(count) { i ->
+            quickRelogCache = null
+            quickRelogEpoch++
+            val rows = PerfLog.measure("hubOpen", "benchLoad", "i=$i") {
+                loadQuickRelogCached()
+            }
+            android.util.Log.i(
+                PerfLog.TAG,
+                "op=hubOpen phase=benchRows i=$i recents=${rows.recents.size} frequents=${rows.frequents.size}",
+            )
+        }
+    }
+
+    private suspend fun benchRelog(count: Int) {
+        android.util.Log.i(PerfLog.TAG, "op=relogBench phase=start count=$count")
+        val rows = loadQuickRelogCached()
+        val template = rows.recents.firstOrNull() ?: rows.frequents.firstOrNull()
+        if (template == null) {
+            android.util.Log.w(PerfLog.TAG, "op=relogBench phase=done count=0 ok=0 fail=0 err=no-hub-rows")
+            return
+        }
+        var ok = 0
+        repeat(count) { i ->
+            val ms = awaitUiAck {
+                relogMeal(template)
+            }
+            android.util.Log.i(
+                PerfLog.TAG,
+                "op=relogBench phase=uiAck i=$i ms=$ms name=${template.name}",
+            )
+            ok++
+        }
+        android.util.Log.i(PerfLog.TAG, "op=relogBench phase=done count=$count ok=$ok fail=0")
+    }
+
+    private suspend fun benchLocalEntry(count: Int) {
+        android.util.Log.i(PerfLog.TAG, "op=entryLocal phase=start count=$count")
+        var ok = 0
+        repeat(count) { i ->
+            val canned = FoodEntry(
+                name = "Bench Oats $i",
+                calories = 350,
+                protein = 12.0,
+                carbs = 55.0,
+                fat = 8.0,
+                source = FoodSource.MANUAL,
+                mealType = MealType.BREAKFAST,
+            )
+            val ms = awaitUiAck {
+                if (PerfLog.enabled) {
+                    relogAckAtNs = System.nanoTime()
+                    relogAckPriorCount = _ui.value.todayEntries.size
+                }
+                promoteQuickRelog(canned)
+                viewModelScope.launch {
+                    PerfLog.measure("entryLocal", "addEntry", "i=$i") {
+                        container.foodRepository.addEntry(
+                            canned.duplicatedForLogging(timestampForSelectedDay()),
+                        )
+                    }
+                }
+            }
+            android.util.Log.i(PerfLog.TAG, "op=entryLocal phase=uiAck i=$i ms=$ms")
+            ok++
+        }
+        android.util.Log.i(PerfLog.TAG, "op=entryLocal phase=done count=$count ok=$ok fail=0")
+    }
+
+    private suspend fun benchWaterSip(count: Int) {
+        android.util.Log.i(PerfLog.TAG, "op=waterSip phase=start count=$count")
+        var ok = 0
+        repeat(count) { i ->
+            val deferred = CompletableDeferred<Long>()
+            waterAckWaiter = deferred
+            waterAckAtNs = System.nanoTime()
+            waterAckPriorMl = _ui.value.waterTodayMl
+            addWater(250)
+            val ms = kotlinx.coroutines.withTimeoutOrNull(20_000) { deferred.await() } ?: -1L
+            android.util.Log.i(PerfLog.TAG, "op=waterSip phase=uiAck i=$i ms=$ms")
+            ok++
+        }
+        android.util.Log.i(PerfLog.TAG, "op=waterSip phase=done count=$count ok=$ok fail=0")
+    }
+
+    private suspend fun benchDaySwitch(count: Int) {
+        repeat(count) { i ->
+            val today = _selectedDate.value
+            setSelectedDate(today.minusDays(1))
+            kotlinx.coroutines.delay(50)
+            val start = System.nanoTime()
+            setSelectedDate(today)
+            var spins = 0
+            while (daySwitchStartedAtNs != 0L && spins < 200) {
+                kotlinx.coroutines.delay(10)
+                spins++
+            }
+            val ms = (System.nanoTime() - start) / 1_000_000
+            android.util.Log.i(PerfLog.TAG, "op=daySwitch phase=bench i=$i ms=$ms")
+        }
+    }
+
+    private suspend fun awaitUiAck(block: () -> Unit): Long {
+        val deferred = CompletableDeferred<Long>()
+        uiAckWaiter = deferred
+        block()
+        return kotlinx.coroutines.withTimeoutOrNull(20_000) { deferred.await() } ?: -1L
+    }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")

@@ -50,6 +50,7 @@ class PreferencesStore(private val appContext: Context) {
     val firstLaunchAt: Flow<Long> get() = firstLaunchAtImpl
     /** Idempotent seed of the first-launch timestamp; keeps the earliest value. */
     suspend fun ensureFirstLaunchAt(nowMillis: Long = System.currentTimeMillis()) = ensureFirstLaunchAtImpl(nowMillis)
+    suspend fun readColdStartPrefs(): ColdStartPrefs = readColdStartPrefsImpl()
     val dismissedSuggestionIds: Flow<Set<String>> get() = dismissedSuggestionIdsImpl
     suspend fun setSuggestionDismissed(id: String, dismissed: Boolean = true) = setSuggestionDismissedImpl(id, dismissed)
     val notificationsEnabled: Flow<Boolean> get() = notificationsEnabledImpl
