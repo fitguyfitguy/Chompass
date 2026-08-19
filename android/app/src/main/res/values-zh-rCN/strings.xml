@@ -53,12 +53,12 @@
     <string name="activity_active">活跃</string>
     <string name="activity_very_active">非常活跃</string>
     <string name="activity_extra_active">超级活跃</string>
-    <string name="activity_sedentary_subtitle">很少或不运动</string>
-    <string name="activity_light_subtitle">每周运动 1-3 次</string>
-    <string name="activity_moderate_subtitle">每周运动 4-5 次</string>
-    <string name="activity_active_subtitle">每天运动或每周高强度 3-4 次</string>
-    <string name="activity_very_active_subtitle">每周高强度运动 6-7 次</string>
-    <string name="activity_extra_active_subtitle">每天高强度运动，或体力劳动</string>
+    <string name="activity_sedentary_subtitle">很少或不运动。\n步数参考：每天低于 5,000 步</string>
+    <string name="activity_light_subtitle">每周运动 1-3 次。\n步数参考：每天 5,000 至 7,499 步</string>
+    <string name="activity_moderate_subtitle">每周运动 4-5 次。\n步数参考：每天 7,500 至 9,999 步</string>
+    <string name="activity_active_subtitle">每天运动或每周高强度 3-4 次。\n步数参考：每天 10,000 至 12,499 步</string>
+    <string name="activity_very_active_subtitle">每周高强度运动 6-7 次。\n步数参考：每天 12,500 至 14,999 步</string>
+    <string name="activity_extra_active_subtitle">每天高强度运动，或体力劳动。\n步数参考：每天 15,000 步以上</string>
 
     <!-- Weight Goal -->
     <string name="goal_lose">减重 / Cutting</string>
@@ -69,7 +69,7 @@
     <string name="meal_breakfast">早餐</string>
     <string name="meal_lunch">午餐</string>
     <string name="meal_dinner">晚餐</string>
-    <string name="meal_snack">小食</string>
+    <string name="meal_snack">零食</string>
     <string name="meal_other">其他</string>
 
     <!-- AutoBalance Macro -->
@@ -92,7 +92,7 @@
     <string name="speech_key_placeholder_native">无需密钥</string>
     <string name="speech_key_placeholder_assemblyai">你的 AssemblyAI 密钥</string>
 
-    <string name="speech_description_native">Android 设备端语音识别。免费，多数手机可离线使用，支持实时部分结果。推荐默认。</string>
+    <string name="speech_description_native">在此用户配置中可用时，使用设备的 Android 语音识别服务。免费，支持实时部分结果。需要系统语音识别引擎（仅有 Assist 的应用不算）。</string>
     <string name="speech_description_openai">OpenAI Whisper API。准确度高，支持 99 种以上语言，按分钟计费。</string>
     <string name="speech_description_groq">Groq 托管的 Whisper Large v3。推理速度极快，提供免费套餐。</string>
     <string name="speech_description_deepgram">Deepgram Nova。支持实时与批量模式，快速且准确。</string>
@@ -163,7 +163,7 @@
     <string name="onboarding_yes">是</string>
     <string name="onboarding_no">否</string>
     <string name="onboarding_body_fat_ranges">常见范围：男性 10-25%，女性 18-35%</string>
-    <string name="onboarding_body_fat_no_worries">没关系！我们会根据你的身高、体重和\n年龄使用标准公式计算。</string>
+    <string name="onboarding_body_fat_no_worries">没关系。我们会根据你的身高、体重和\n年龄使用标准公式计算。</string>
 
     <string name="onboarding_pace_title_maintain">你的节奏</string>
     <string name="onboarding_pace_subtitle_maintain">我们会为你设定一个平衡的计划</string>
@@ -426,19 +426,19 @@
 
     <string name="progress_log_weight_title">记录体重</string>
 
-    <string name="progress_goal_reached_title">恭喜！🎉</string>
-    <string name="progress_goal_reached_message">你已达到目标体重！前往“设置”切换目标，然后点按“重新计算目标”以更新你的目标。</string>
+    <string name="progress_goal_reached_title">目标达成 🎉</string>
+    <string name="progress_goal_reached_message">你已达到目标体重。前往“设置”切换目标，然后点按“重新计算目标”以更新你的目标。</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">个人信息</string>
     <string name="settings_section_goals">目标与营养</string>
-    <string name="settings_section_app">App 设置</string>
-    <string name="settings_section_ai">AI 提供商</string>
+    <string name="settings_section_app">应用设置</string>
+    <string name="settings_section_ai">AI 与语音</string>
     <string name="settings_section_speech">语音转文字</string>
     <string name="settings_section_health">健康与数据</string>
     <string name="settings_group_app_display">应用与显示</string>
     <string name="settings_group_ai">AI 与语音</string>
-    <string name="settings_group_data">健康、数据与同步</string>
+    <string name="settings_group_data">健康与数据</string>
     <string name="settings_group_personal_summary">性别、身高、体重、测量</string>
     <string name="settings_group_goals_summary">饮食、宏量营养素、自适应目标</string>
     <string name="settings_group_app_summary">外观、主页、通知</string>
@@ -498,7 +498,7 @@
     <string name="settings_delete_all_title">删除所有本地数据？</string>
     <string name="settings_delete_all_message">将清除个人资料、饮食记录、体重历史、聊天和 API 密钥，然后返回引导设置。Health Connect 数据保持不变。</string>
     <string name="settings_max_pinned_title">最多固定 2 个</string>
-    <string name="settings_max_pinned_message">一次最多只能固定 2 个宏量营养素。请先打开另一个并点按“重置为自动平衡”以取消固定。</string>
+    <string name="settings_max_pinned_message">一次最多只能固定 2 个宏量营养素，让其中一个保持自由以平衡。请先解锁另一个（点按其锁图标）。</string>
     <string name="settings_recalc_title">重新计算目标？</string>
     <string name="settings_recalc_message">将根据你的身高/体重/活动量/目标，使用公式默认值重置卡路里和宏量营养素。所有已固定的宏量营养素都会被清除。</string>
     <string name="settings_recalc_confirm">重新计算</string>
@@ -519,8 +519,8 @@
     <string name="sheet_model">模型</string>
     <string name="sheet_model_footer">或在下方输入任意自定义模型 ID。</string>
     <string name="sheet_any_model_id">任意模型 ID</string>
-    <string name="sheet_api_key_format">API 密钥 - %1$s</string>
-    <string name="sheet_speech_api_key_format">语音 API 密钥 - %1$s</string>
+    <string name="sheet_api_key_format">API 密钥：%1$s</string>
+    <string name="sheet_speech_api_key_format">语音 API 密钥：%1$s</string>
     <string name="sheet_speech_engine">语音引擎</string>
     <string name="sheet_gender">性别</string>
     <string name="sheet_activity_level">活动水平</string>
@@ -556,7 +556,7 @@
     <string name="about_request_feature">请求功能</string>
     <string name="about_privacy">隐私政策</string>
     <string name="about_with_care">基于 Apoorv Darshan 的 Fud AI</string>
-    <string name="about_share_message">我用 Chompass 记录每一餐--拍照、说话或输入，AI 自动记录卡路里。完全免费、开源，所有数据都保存在你的设备上。\n\n下载：https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">我用 Chompass 记录餐食，这是 Fud AI 的无广告分支。拍张照、说出来或打出来，AI 就会记下热量。开源，数据留在你的设备上。\n\n来源：https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">分享 Chompass</string>
 
     <!-- Notifications -->
@@ -567,7 +567,7 @@
     <string name="notif_channel_weight_goal">体重目标</string>
     <string name="notif_channel_weight_goal_desc">达成目标体重时的庆祝。</string>
     <string name="notif_streak_title">别忘了记录你的餐食</string>
-    <string name="notif_streak_text">保持连续记录--记录今天吃的内容。</string>
+    <string name="notif_streak_text">保持连续记录。记录今天吃的内容。</string>
     <string name="notif_summary_title">今日摘要已就绪</string>
     <string name="notif_summary_text">点按查看今日宏量营养素的完成情况。</string>
 
@@ -590,19 +590,19 @@
     <string name="saved_meals_no_match">没有匹配的食物</string>
     <string name="settings_section_custom_instructions">自定义 AI 指令</string>
     <string name="settings_custom_instructions_placeholder">例如：我住在德国，按欧洲份量计算，优先选择 ALDI/REWE 品牌。我正在进行健美减脂期。</string>
-    <string name="settings_custom_instructions_footer">随每次 AI 请求一同发送的可选上下文--地区、饮食、运动目标，任何你本来需要每次都重复的信息。留空即可停用。</string>
+    <string name="settings_custom_instructions_footer">随每次 AI 请求一同发送的可选上下文：地区、饮食、运动目标，任何你本来需要每次都重复的信息。留空即可停用。</string>
     <string name="settings_save">保存</string>
     <string name="settings_saved">已保存</string>
     <string name="settings_section_fallback">备用提供商</string>
     <string name="settings_enable_fallback">启用备用</string>
-    <string name="settings_fallback_footer">如果主提供商失败（过载、速率限制、网络错误），应用会自动使用此备用提供商重试。允许与主提供商相同--只需选择不同的模型即可。</string>
+    <string name="settings_fallback_footer">如果主提供商失败（过载、速率限制、网络错误），应用会自动使用此备用提供商重试。允许与主提供商相同，只需选择不同的模型即可。</string>
     <string name="widget_all_metrics_label">Chompass 今天</string>
     <string name="widget_all_metrics_description">在一个小部件中查看今天的卡路里、蛋白质、碳水和脂肪。</string>
     <string name="settings_needs_health_connect">需要 Health Connect</string>
-    <string name="settings_energy_goals_info">开启后，Chompass 会使用来自 Health Connect 的实测消耗热量（活动 + 基础能量的 14 天平均值）作为计算目标时的维持热量（TDEE）基准，而不是公式估算。读取消耗数据不使用 AI。需要 Health Connect。与“重新计算”按钮及 Adaptive Goals 配合使用。</string>
-    <string name="settings_adaptive_goals_info">大约每周一次，当你打开应用时，Chompass 会根据你的资料、最近记录的饮食和体重趋势，自动重新运行完整的目标计算（与“重新计算”按钮相同）。如果已开启 Energy Burn，则会以实测消耗作为维持热量的基准。若 AI 不可用则静默跳过。关闭后会恢复到该功能首次更改前的目标。这不是医疗建议。</string>
-    <string name="onboarding_plan_adaptive_note">你的计划会根据记录每周自动调整 - 想保持不变，可在设置中关闭 Adaptive Goals。</string>
-    <string name="onboarding_feature_snap">拍张照片 - AI 帮你记录</string>
+    <string name="settings_energy_goals_info">开启后，Chompass 会使用来自 Health Connect 的实测消耗热量（活动 + 基础能量的 14 天平均值）作为计算目标时的维持热量（TDEE）基准，而不是公式估算。读取消耗数据不使用 AI。需要 Health Connect。与“重新计算”按钮及自适应目标配合使用。</string>
+    <string name="settings_adaptive_goals_info">大约每周一次，当你打开应用时，Chompass 会根据你的资料、最近记录的饮食和体重趋势，自动重新运行完整的目标计算（与“重新计算”按钮相同）。如果已开启能量消耗，则会以实测消耗作为维持热量的基准。若 AI 不可用则静默跳过。关闭后会恢复到该功能首次更改前的目标。这不是医疗建议。</string>
+    <string name="onboarding_plan_adaptive_note">你的计划会根据记录每周自动调整。想保持不变，可在设置中关闭自适应目标。</string>
+    <string name="onboarding_feature_snap">拍张照片。AI 帮你记录。</string>
     <string name="onboarding_feature_coach">了解你数据的教练</string>
     <string name="onboarding_feature_library">通过 Health Connect 连接体脂秤与可穿戴设备</string>
     <string name="onboarding_feature_widgets">主屏幕小组件</string>
@@ -611,7 +611,7 @@
     <string name="whats_new_v30_coach_voice">用新的内置录音条向教练语音提问。</string>
     <string name="whats_new_v30_share">把任意一餐分享为链接，在 iPhone 或 Android 上直接打开 Chompass。</string>
     <string name="whats_new_v30_export">在设置中将饮食日记导出为 JSON、Markdown 或 CSV。</string>
-    <string name="whats_new_v30_reprocess">用 AI 重新处理已记录的餐食 - 调整名称、份量或备注后重新分析。</string>
+    <string name="whats_new_v30_reprocess">用 AI 重新处理已记录的餐食：调整名称、份量或备注后重新分析。</string>
     <string name="whats_new_v30_camera">相机 + 相机会保留两张照片，并排拼接。</string>
     <string name="whats_new_v30_colors">新增 10 种主题色，现在可在设置中直接选择。</string>
     <string name="whats_new_v30_bodyfat">体脂历史：像体重一样查看并删除单条记录。</string>
@@ -712,8 +712,8 @@
     <string name="ai_error_coach_on_device">教练暂不支持端侧提供商，请在设置 → AI 提供商中切换到云端提供商。</string>
     <string name="ai_error_coach_round_limit">教练无法回答，请尝试换个说法。</string>
     <string name="ai_error_disabled">AI 功能已在设置 → AI 与语音中关闭。</string>
-    <string name="ai_error_grounded_on_device">端侧模型不支持 Grounded 工具循环。</string>
-    <string name="ai_error_grounded_requires_provider">Grounded 工具循环需要可用的 AI 提供商。</string>
+    <string name="ai_error_grounded_on_device">端侧模型不支持 Grounded 模式。</string>
+    <string name="ai_error_grounded_requires_provider">Grounded 模式需要可用的 AI 提供商。</string>
     <string name="ai_error_image_conversion_failed">图片处理失败。</string>
     <string name="ai_error_invalid_response">无法理解 AI 的回复，请重试。</string>
     <string name="ai_error_invalid_url">API 网址无效，请检查提供商设置。</string>
@@ -862,7 +862,7 @@
     <string name="food_search_empty">输入以搜索包装食品和通用食物</string>
     <string name="food_search_hint">Open Food Facts 的包装食品，以及离线 USDA 和瑞士数据库。结果带有来源徽标。</string>
     <string name="food_search_no_results">未找到食物，请尝试其他名称。</string>
-    <string name="food_search_placeholder">例如 希腊酸奶、牛奶、夸克</string>
+    <string name="food_search_placeholder">例如 希腊酸奶、牛奶、夸克奶酪</string>
     <string name="food_search_sheet_title">搜索食物数据库</string>
     <string name="food_search_source_swiss">瑞士</string>
     <string name="frame_large">大</string>
@@ -1058,7 +1058,7 @@
     <string name="onboarding_api_key_test">测试密钥</string>
     <string name="onboarding_api_key_testing">测试中…</string>
     <string name="onboarding_api_key_works">密钥可用</string>
-    <string name="onboarding_diet_mode_subtitle">选择默认指导风格</string>
+    <string name="onboarding_diet_mode_subtitle">选择默认推荐风格</string>
     <string name="onboarding_diet_mode_title">你是否采用某种饮食模式？</string>
     <string name="onboarding_disclaimers_subtitle">请阅读这些重要提示</string>
     <string name="onboarding_disclaimers_title">开始之前</string>
@@ -1067,12 +1067,12 @@
     <string name="onboarding_privacy_cloud_goals">AI 估算目标时的你的资料（计划、重算、自适应目标）</string>
     <string name="onboarding_privacy_cloud_lead">使用云端提供商时，以下数据会离开你的设备发送给该提供商：</string>
     <string name="onboarding_privacy_cloud_title">云端提供商（Gemini、OpenAI、Claude 等）</string>
-    <string name="onboarding_privacy_cloud_whatif">「会怎样？」：餐食影响，包括今日已记录的日记合计</string>
+    <string name="onboarding_privacy_cloud_whatif">“会怎样？”：餐食影响，包括今日已记录的日记合计</string>
     <string name="onboarding_privacy_note">无广告、无分析、无账户。你的食物记录和 API 密钥保留在设备上。</string>
     <string name="onboarding_privacy_note_cloud">使用云端提供商时，食物照片、餐食备注、对话和资料数据会发送给该提供商。只有端侧 Gemma 4 模型会把一切留在手机里。</string>
     <string name="onboarding_privacy_note_ollama">Ollama 运行在你自己的电脑上，不会向云端提供商发送任何内容。</string>
     <string name="onboarding_privacy_note_ondevice">Gemma 4 完全在本设备上运行，你输入或拍摄的任何内容都不会发送到服务器。</string>
-    <string name="onboarding_privacy_ondevice_body">食物分析、「会怎样？」和目标估算都在本手机运行，不会外传。教练暂不支持端侧。模型从 Hugging Face 下载。</string>
+    <string name="onboarding_privacy_ondevice_body">食物分析、“会怎样？”和目标估算都在本手机运行，不会外传。教练暂不支持端侧。模型从 Hugging Face 下载。</string>
     <string name="onboarding_privacy_ondevice_title">端侧 Gemma 4（完全私密）</string>
     <string name="onboarding_privacy_title">隐私与你的 AI 提供商</string>
     <string name="onboarding_safety_body">Chompass 是记录辅助工具，不是临床工具。如果你有进食障碍史，或记录加重了围绕食物或身体形象的压力，请暂停并先与医生或治疗师沟通。</string>
@@ -1145,10 +1145,10 @@
     <string name="settings_adaptive_locks_message">关闭自适应目标以锁定或自行设置热量和宏量营养素。开启时，Chompass 每周为你重新计算。</string>
     <string name="settings_adaptive_locks_title">自适应目标已开启</string>
     <string name="settings_ai_features_master">AI 功能</string>
-    <string name="settings_ai_features_master_footer">关闭所有向 AI 提供商发送数据的功能：教练、照片/文字/语音记录、「会怎样？」和 AI 目标建议。条码、食物搜索、手动记录、已存餐食、饮水、同步和 Health Connect 仍正常工作。</string>
+    <string name="settings_ai_features_master_footer">关闭所有向 AI 提供商发送数据的功能：教练、照片/文字/语音记录、“会怎样？”和 AI 目标建议。条码、食物搜索、手动记录、已存餐食、饮水、同步和 Health Connect 仍正常工作。</string>
     <string name="settings_ai_privacy_cloud">食物照片、备注、对话和资料数据会发送给此提供商。只有端侧 Gemma 4 模型会把一切留在手机里。</string>
     <string name="settings_ai_privacy_ollama">Ollama 运行在你自己的电脑上，不会向云端提供商发送任何内容。</string>
-    <string name="settings_ai_privacy_ondevice">完全私密：食物分析、「会怎样？」和目标估算都在本设备运行，不会发送到服务器。</string>
+    <string name="settings_ai_privacy_ondevice">完全私密：食物分析、“会怎样？”和目标估算都在本设备运行，不会发送到服务器。</string>
     <string name="settings_ai_read_timeout">AI 读取超时</string>
     <string name="settings_ai_read_timeout_unit">秒</string>
     <string name="settings_ai_read_timeout_value">%1$d 秒</string>
@@ -1167,12 +1167,12 @@
     <string name="settings_calc_calorie_target">目标热量</string>
     <string name="settings_calc_forecast_formula">预计 公斤/周 =（日均热量 − TDEE）× 7 ÷ 7700\n观察 公斤/周 = Theil–Sen 斜率 × 7\n稀疏记录：当记录天数 &lt; 窗口 50%% 时，平均摄入 ÷ 日历天数</string>
     <string name="settings_calc_forecast_name">能量平衡预测</string>
-    <string name="settings_calc_forecast_used">进度图表和 ETA 预测使用你近期的食物记录和称重（最多 90 天）。当你在窗口内不足一半天数记录时，摄入按日历天数平均，以免偶发「大吃」日夸大预测。否则摄入仅按有记录的天数平均。观察体重趋势使用秤上记录的稳健中位数斜率（Theil–Sen）拟合。</string>
+    <string name="settings_calc_forecast_used">进度图表和 ETA 预测使用你近期的食物记录和称重（最多 90 天）。当你在窗口内不足一半天数记录时，摄入按日历天数平均，以免偶发“大吃”日夸大预测。否则摄入仅按有记录的天数平均。观察体重趋势使用秤上记录的稳健中位数斜率（Theil–Sen）拟合。</string>
     <string name="settings_calc_home_gauge_formula">估算主动 = TDEE − BMR\n久坐预算 = 热量目标 − 估算主动\n加主动目标 = 久坐预算 +（测量或估算主动）</string>
     <string name="settings_calc_home_gauge_name">主页圆环主动消耗</string>
-    <string name="settings_calc_home_gauge_used">主页显示可让你把主动消耗加入目标、跟踪净摄入或显示消耗提示。你的活动水平估算是 TDEE 减 BMR（PAL 乘数部分）。「加主动」和「双计」在 Health Connect 关闭时使用该估算；「净摄入」需要 Health Connect 实测消耗。「加主动」把你的已存目标拆成久坐基础加今日主动层，避免活动被重复计算。使用「加主动」时，请把活动水平设为不训练的日常，实测或估算的主动消耗覆盖锻炼，避免叠加在高 PAL 之上。</string>
-    <string name="settings_calc_intro">你的每日热量和宏量目标由 AI 设定。当你点按「重新计算目标」，或在自适应目标开启时每周自动进行一次，Chompass 会把你的资料、下方参考公式、近期记录的食物和体重趋势发送给 AI 提供商。它从这些同行评审的公式出发，再根据你的数据调整，估算你的维持量和目标。</string>
-    <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(公斤)\nLBM = 体重 × (1 − %体脂)</string>
+    <string name="settings_calc_home_gauge_used">主页显示可让你把主动消耗加入目标、跟踪净摄入或显示消耗提示。你的活动水平估算是 TDEE 减 BMR（PAL 乘数部分）。“加主动”和“双计”在 Health Connect 关闭时使用该估算；“净摄入”需要 Health Connect 实测消耗。“加主动”把你的已存目标拆成久坐基础加今日主动层，避免活动被重复计算。使用“加主动”时，请把活动水平设为不训练的日常，实测或估算的主动消耗覆盖锻炼，避免叠加在高 PAL 之上。</string>
+    <string name="settings_calc_intro">你的每日热量和宏量目标由 AI 设定。当你点按“重新计算目标”，或在自适应目标开启时每周自动进行一次，Chompass 会把你的资料、下方参考公式、近期记录的食物和体重趋势发送给 AI 提供商。它从这些同行评审的公式出发，再根据你的数据调整，估算你的维持量和目标。</string>
+    <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(公斤)\nLBM = 体重 × (1 − %体脂)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 公式</string>
     <string name="settings_calc_katch_used">输入体脂百分比后自动使用。对偏瘦和运动型用户更准确，因为它从瘦体重而非总体重推导 BMR。</string>
     <string name="settings_calc_macro_split">宏量营养素分配</string>
@@ -1181,7 +1181,7 @@
     <string name="settings_calc_micro_name">每餐估算</string>
     <string name="settings_calc_micro_used">每餐返回的热量、宏量、纤维、糖、饱和脂肪、胆固醇、钠、钾及其他微量营养素值，是由 AI 根据食物图片、语音转录或文字描述、使用你选择的 AI 提供商生成的估算。</string>
     <string name="settings_calc_micro_values">微量营养素值</string>
-    <string name="settings_calc_mifflin_formula">男性：10×体重(公斤) + 6,25×身高(厘米) − 5×年龄 + 5\n女性：10×体重(公斤) + 6,25×身高(厘米) − 5×年龄 − 161</string>
+    <string name="settings_calc_mifflin_formula">男性：10×体重(公斤) + 6.25×身高(厘米) − 5×年龄 + 5\n女性：10×体重(公斤) + 6.25×身高(厘米) − 5×年龄 − 161</string>
     <string name="settings_calc_mifflin_name">Mifflin-St Jeor 公式</string>
     <string name="settings_calc_mifflin_used">静息代谢的默认公式。未输入体脂百分比时使用。</string>
     <string name="settings_calc_sec_bmr">静息代谢（BMR）</string>
@@ -1189,15 +1189,15 @@
     <string name="settings_calc_sec_forecast">体重趋势与自适应目标</string>
     <string name="settings_calc_sec_home_gauge">主页热量表盘</string>
     <string name="settings_calc_sec_tdee">每日能量消耗（TDEE）</string>
-    <string name="settings_calc_split_formula">蛋白质：按活动水平每公斤约 0,8-2,2 克（减重时略高）\n脂肪：每公斤体重约 0,6 克\n碳水：剩余热量 ÷ 4 千卡/克</string>
+    <string name="settings_calc_split_formula">蛋白质：按活动水平每公斤约 0.8-2.2 克（减重时略高）\n脂肪：每公斤体重约 0.6 克\n碳水：剩余热量 ÷ 4 千卡/克</string>
     <string name="settings_calc_split_name">蛋白质、碳水、脂肪目标</string>
     <string name="settings_calc_split_used">AI 以这些参考为指引，把蛋白质、碳水和脂肪拟合到你的热量目标。蛋白质随活动水平缩放（设置体脂 %% 时基于瘦体重）；脂肪由体重决定；碳水填充剩余。你可以在设置中锁定或自行编辑任何值。</string>
     <string name="settings_calc_target_formula">1 磅体脂 ≈ 3500 千卡 · 1 公斤 ≈ 7700 千卡\n你的每周速度 ÷ 7 从维持量中减去（减重）或加上（增重），得到每日热量目标。</string>
     <string name="settings_calc_target_name">维持量与目标调整</string>
     <string name="settings_calc_target_used">维持量从你的 TDEE 开始。开启能量消耗后，从 Health Connect 实测消耗（14 天主动 + 基础平均）开始。AI 对照你的记录摄入和体重趋势细化维持量，然后应用你的目标：每周体重变化速度变成每日热量缺口（减重）或盈余（增重）。</string>
-    <string name="settings_calc_tdee_formula">久坐：1,2 · 轻度：1,375 · 中度：1,465 · 活跃：1,55 · 很活跃：1,725 · 极度活跃：1,9</string>
+    <string name="settings_calc_tdee_formula">久坐：1.2 · 轻度：1.375 · 中度：1.465 · 活跃：1.55 · 很活跃：1.725 · 极度活跃：1.9</string>
     <string name="settings_calc_tdee_name">活动乘数法</string>
-    <string name="settings_calc_tdee_used">TDEE = BMR × 活动乘数。乘数与所选活动水平对应。中度使用 1,465（介于 FAO/WHO 轻度 1,375 和中度 1,55 之间），适合久坐办公但每周锻炼几次的用户。这是 AI 起始的维持基准（除非能量消耗提供实测值）。</string>
+    <string name="settings_calc_tdee_used">TDEE = BMR × 活动乘数。乘数与所选活动水平对应。中度使用 1.465（介于 FAO/WHO 轻度 1.375 和中度 1.55 之间），适合久坐办公但每周锻炼几次的用户。这是 AI 起始的维持基准（除非能量消耗提供实测值）。</string>
     <string name="settings_customize_progress">自定义进度</string>
     <string name="settings_customize_progress_summary">%1$s · %2$s</string>
     <string name="settings_danger_zone">危险区</string>
@@ -1327,7 +1327,7 @@
     <string name="settings_show_coach_tab_footer">从底部栏隐藏教练页。教练功能本身保持开启；上方的 AI 功能开关关闭一切。</string>
     <string name="settings_speech_language">语言</string>
     <string name="settings_suggestion_action_connect">连接</string>
-    <string name="settings_suggestion_action_setup">设置</string>
+    <string name="settings_suggestion_action_setup">配置</string>
     <string name="settings_suggestion_action_turn_on">开启</string>
     <string name="settings_suggestion_adaptive_goals">自适应目标每周保持你的热量和宏量目标最新</string>
     <string name="settings_suggestion_backup">通过 WebDAV 同步备份你的日记</string>
@@ -1359,13 +1359,13 @@
     <string name="settings_water_dynamic_goal_help">根据体重、温度、活动量和食物中的水分调整。无需位置权限。手动输入预期最高温。</string>
     <string name="settings_water_dynamic_preview">今日目标</string>
     <string name="settings_water_dynamic_preview_breakdown">%1$d 毫升基础 × %2$s 温度 × %3$s 活动 − %4$d 毫升食物</string>
-    <string name="settings_water_dynamic_warning_body">此目标是基于一般补水指南的估算，不是处方。人人不同：你的实际需求取决于肾脏、药物、健康状况、出汗、湿度等，因此这个数字可能不适合你。如有健康问题或正在服药，改变饮水量前请咨询医生。口渴是最好的指引。需要时就喝，即使「还没到时间」，热天或运动时也要喝够，无论应用是否提醒。</string>
+    <string name="settings_water_dynamic_warning_body">此目标是基于一般补水指南的估算，不是处方。人人不同：你的实际需求取决于肾脏、药物、健康状况、出汗、湿度等，因此这个数字可能不适合你。如有健康问题或正在服药，改变饮水量前请咨询医生。口渴是最好的指引。需要时就喝，即使“还没到时间”，热天或运动时也要喝够，无论应用是否提醒。</string>
     <string name="settings_water_dynamic_warning_title">测试 · 建议而非医疗建议</string>
     <string name="settings_water_food_water">减去食物中的水分</string>
     <string name="settings_water_food_water_help">粗略估算：今日记录食物重量的 60%，上限 1 升。</string>
     <string name="settings_water_goal">每日饮水目标</string>
     <string name="settings_water_goal_summary">%1$d 毫升</string>
-    <string name="settings_water_goal_wheel_help">以 50 毫升步进滚动，选择 50 至 10 000 毫升的每日目标。</string>
+    <string name="settings_water_goal_wheel_help">以 50 毫升步进滚动，选择 50 至 10,000 毫升的每日目标。</string>
     <string name="settings_water_intro">跟踪饮水量、设定每日目标，并让它随体重、天气和活动调整。</string>
     <string name="settings_water_manual_temp">今日预期最高温</string>
     <string name="settings_water_manual_temp_help">每日目标在 25 °C 以上上升（每度 +4%，上限 +60%）。无需位置权限。手动设置。</string>
@@ -1409,7 +1409,7 @@
     <string name="settings_weather_updated_today">%1$s 更新</string>
     <string name="settings_weather_updated_yesterday">昨天 %1$s</string>
     <string name="settings_webdav_auto_sync">打开时同步</string>
-    <string name="settings_webdav_auto_sync_desc">配置 WebDAV 后，每天打开应用时同步一次。默认关闭。手动「立即同步」随时可用。</string>
+    <string name="settings_webdav_auto_sync_desc">配置 WebDAV 后，每天打开应用时同步一次。默认关闭。手动“立即同步”随时可用。</string>
     <string name="settings_webdav_password">密码</string>
     <string name="settings_webdav_save">保存 WebDAV 设置</string>
     <string name="settings_webdav_saved">WebDAV 设置已保存。</string>
