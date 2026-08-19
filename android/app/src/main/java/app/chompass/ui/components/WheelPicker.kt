@@ -57,7 +57,6 @@ import java.time.YearMonth
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.AppColors
 
 private val ITEM_HEIGHT = 44.dp
 private const val VISIBLE_ITEMS = 5
@@ -271,7 +270,7 @@ fun DateWheelPicker(
 }
 
 @Composable
-private fun WheelSelectionHighlight(modifier: Modifier = Modifier) {
+internal fun WheelSelectionHighlight(modifier: Modifier = Modifier) {
     // Material3 tonal indicator — same secondaryContainer band BottomNavBar
     // uses for its selected-tab pill, instead of a translucent glass capsule.
     val shape = RoundedCornerShape(AppRadii.Field)
@@ -385,7 +384,8 @@ fun SplitDecimalWheelPicker(
     min: Int,
     max: Int,
     unit: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showSelectionHighlight: Boolean = true,
 ) {
     val clampedValue = value.coerceIn(min.toDouble(), max.toDouble())
     val intPart = clampedValue.toInt().coerceIn(min, max)
@@ -403,7 +403,8 @@ fun SplitDecimalWheelPicker(
             items = ints,
             selected = intPart,
             onSelect = { newInt -> onValueChange(newInt + tenthsPart / 10.0) },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            showSelectionHighlight = showSelectionHighlight,
         )
         Text(
             decimalSeparator.toString(),
@@ -415,7 +416,8 @@ fun SplitDecimalWheelPicker(
             items = tenths,
             selected = tenthsPart,
             onSelect = { newTenth -> onValueChange(intPart + newTenth / 10.0) },
-            modifier = Modifier.weight(0.6f)
+            modifier = Modifier.weight(0.6f),
+            showSelectionHighlight = showSelectionHighlight,
         )
         if (unit != null) {
             Spacer(Modifier.size(8.dp))
@@ -636,75 +638,32 @@ fun ExpandableMacroPicker(
 }
 
 /**
- * Unit wheel picker — for selecting serving units (g, serving, slice, etc.)
+ * Always-visible unit wheel (g, serving, slice, …). No summary chrome — the
+ * serving card already names Quantity. Pass [showSelectionHighlight] false
+ * when a parent paints one capsule across quantity + unit.
  */
 @Composable
 fun UnitWheelPicker(
-    options: List<app.chompass.models.ServingUnitOption>,
+    options: List<ServingUnitOption>,
     selectedId: String,
     onSelect: (String) -> Unit,
-    expanded: Boolean,
-    onExpandChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showSelectionHighlight: Boolean = true,
 ) {
-    val pickerOptions = app.chompass.models.ServingUnitOption.pickerOptions(options)
-    val labels = pickerOptions.map { it.unit }.toList()
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        // Summary row
-        val selectedOption = app.chompass.models.ServingUnitOption.optionMatching(selectedId, options)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 12.dp)
-                .clickable { onExpandChange(!expanded) }
-                .background(Color.Transparent, RoundedCornerShape(12.dp)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                stringResource(R.string.sheet_quantity),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(Modifier.weight(1f))
-            Text(
-                selectedOption.unit,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = AppColors.Calorie
-            )
-            Spacer(Modifier.width(8.dp))
-            val rotation by animateFloatAsState(
-                targetValue = if (expanded) 180f else 0f,
-                animationSpec = spring(dampingRatio = 0.75f)
-            )
-            Icon(
-                Icons.Filled.KeyboardArrowDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                modifier = Modifier
-                    .graphicsLayer { rotationZ = rotation }
-            )
-        }
-
-        // Expanded wheel picker
-        if (expanded) {
-            val selectedLabel = selectedOption.unit
-            WheelPicker(
-                items = labels,
-                selected = selectedLabel,
-                onSelect = { label ->
-                    val idx = labels.indexOf(label)
-                    if (idx >= 0) onSelect(pickerOptions[idx].id)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp)
-                    .padding(bottom = 16.dp)
-            )
-        }
+    val pickerOptions = remember(options) { ServingUnitOption.pickerOptions(options) }
+    val selectedOption = remember(selectedId, pickerOptions) {
+        ServingUnitOption.optionMatching(selectedId, options)
     }
+    val servingLabel = stringResource(R.string.unit_serving)
+    val servingPluralLabel = stringResource(R.string.unit_serving_plural)
+    WheelPicker(
+        items = pickerOptions,
+        selected = selectedOption,
+        onSelect = { onSelect(it.id) },
+        label = { it.displayUnit(null, servingLabel, servingPluralLabel) },
+        modifier = modifier,
+        showSelectionHighlight = showSelectionHighlight,
+    )
 }
 
 /**
