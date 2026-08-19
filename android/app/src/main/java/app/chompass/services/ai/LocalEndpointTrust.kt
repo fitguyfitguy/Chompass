@@ -12,10 +12,10 @@ import javax.net.ssl.X509TrustManager
  * the device (Settings → Security → Install a certificate), not just the system
  * store — so self-hosted endpoints with self-signed certs verify.
  *
- * Scope: applied only to the Custom (OpenAI-compatible) provider — the only
- * provider whose base URL is user-entered ([AiHttp.usesUserCaTrust]). The
- * release network-security-config is left untouched, so cloud providers,
- * OLLAMA (loopback), WebDAV and STT keep the platform default (system CAs
+ * Scope: applied only to user-entered endpoints — Custom (OpenAI-compatible)
+ * and Ollama ([AiHttp.usesUserCaTrust]). The
+ * release network-security-config is left untouched for trust, so cloud providers,
+ * WebDAV and STT keep the platform default (system CAs
  * only): a user-installed CA can never intercept cloud AI traffic.
  */
 internal object LocalEndpointTrust {

@@ -173,6 +173,9 @@ class PreferencesStore(private val appContext: Context) {
     /** Codeberg #20 phase 2: master AI-features switch; default ON. */
     val aiFeaturesEnabled: Flow<Boolean> get() = aiFeaturesEnabledImpl
     suspend fun setAiFeaturesEnabled(v: Boolean) = setAiFeaturesEnabledImpl(v)
+    /** Issue #8 follow-up: release cleartext opt-in for user-entered AI endpoints; default OFF. */
+    val allowInsecureHttp: Flow<Boolean> get() = allowInsecureHttpImpl
+    suspend fun setAllowInsecureHttp(v: Boolean) = setAllowInsecureHttpImpl(v)
     val appThemeColor: Flow<String> get() = appThemeColorImpl
     suspend fun setAppThemeColor(v: String) = setAppThemeColorImpl(v)
     val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl

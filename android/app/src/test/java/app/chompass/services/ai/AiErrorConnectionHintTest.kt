@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import app.chompass.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -16,7 +17,25 @@ class AiErrorConnectionHintTest {
         )
         val msg = connectionFailureMessage(e)
         assertTrue("expected cleartext hint, got: $msg", msg.contains("Cleartext HTTP is blocked"))
+        assertTrue("expected toggle guidance, got: $msg", msg.contains("Allow insecure HTTP"))
         assertTrue("expected https guidance, got: $msg", msg.contains("https://"))
+    }
+
+    @Test
+    fun cleartextCauseMapsNetworkErrorToHintWithoutGenericResource() {
+        val e = UnknownServiceException(
+            "CLEARTEXT communication to 192.168.1.10 not permitted by network security policy"
+        )
+        val err = AiError.Network(e)
+        assertEquals(0, err.messageRes) // English hint shown verbatim
+        assertTrue(err.message!!.contains("Allow insecure HTTP"))
+    }
+
+    @Test
+    fun genericCauseKeepsLocalizedNetworkResource() {
+        val err = AiError.Network(IOException("connection reset"))
+        assertEquals(R.string.ai_error_network_format, err.messageRes)
+        assertTrue(err.message!!.startsWith("Network error:"))
     }
 
     @Test
