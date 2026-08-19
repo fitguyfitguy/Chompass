@@ -2,6 +2,8 @@ package app.chompass.services.ai
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
@@ -10,6 +12,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import app.chompass.models.AIProvider
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.R
+import app.chompass.services.PerfLog
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -278,15 +281,81 @@ internal data class OpenAITextResponse(
     val text: String?,
     val finishReason: String?,
     val hasReasoning: Boolean,
+    val messageJson: JSONObject? = null,
 ) {
     val wasTruncated: Boolean get() = finishReason == "length"
     val needsCompactRetry: Boolean get() = wasTruncated || (text == null && hasReasoning)
+    val toolCalls: JSONArray? get() = messageJson?.optJSONArray("tool_calls")?.takeIf { it.length() > 0 }
 }
 
 internal object OpenAIResponseParser {
-    fun parse(body: String): OpenAITextResponse {
+    fun parse(body: String): OpenAITextResponse = parseBody(body)
+
+    /**
+     * Accepts a normal chat.completion JSON object, a stream-shaped object
+     * (`delta` / `choices[0].text`), or an already-buffered SSE body.
+     * Local proxies (OmniRoute, some Ollama builds) assemble an upstream
+     * stream and still return SSE or a delta object when the client did not
+     * send `stream: true`.
+     */
+    fun parseBody(raw: String, contentType: String? = null): OpenAITextResponse {
+        val trimmed = raw.trim()
+        if (trimmed.isEmpty()) invalid(raw, contentType)
+        return if (AiSse.looksLikeSse(trimmed)) {
+            parseSse(trimmed, contentType)
+        } else {
+            parseJsonObject(trimmed, contentType)
+        }
+    }
+
+    private fun parseSse(raw: String, contentType: String?): OpenAITextResponse {
+        val payloads = AiSse.payloads(raw)
+        if (payloads.isEmpty()) invalid(raw, contentType)
+        if (payloads.size == 1) {
+            return parseJsonObject(payloads[0], contentType)
+        }
+        val assembled = StringBuilder()
+        var finishReason: String? = null
+        var lastMessage: JsonObject? = null
+        var lastDelta: JsonObject? = null
+        var lastError: String? = null
+        for (payload in payloads) {
+            val json = runCatching { Json.parseToJsonElement(payload).jsonObject }.getOrNull()
+                ?: continue
+            runCatching {
+                json["error"]?.jsonObject?.get("message")?.jsonPrimitive?.contentOrNull
+            }.getOrNull()?.takeIf { it.isNotBlank() }?.let { lastError = it }
+            val choice = runCatching { json["choices"]?.jsonArray?.firstOrNull()?.jsonObject }.getOrNull()
+                ?: continue
+            runCatching { choice["finish_reason"]?.jsonPrimitive?.contentOrNull }
+                .getOrNull()?.takeIf { it.isNotBlank() }?.let { finishReason = it }
+            val message = runCatching { choice["message"]?.jsonObject }.getOrNull()
+            val delta = runCatching { choice["delta"]?.jsonObject }.getOrNull()
+            if (message != null) lastMessage = message
+            if (delta != null) lastDelta = delta
+            val piece = contentPiece(delta?.get("content"))
+                ?: contentPiece(message?.get("content"))
+                ?: contentPiece(choice["text"])
+            if (!piece.isNullOrEmpty()) assembled.append(piece)
+        }
+        if (finishReason == "error" || (assembled.isEmpty() && lastMessage == null && lastError != null)) {
+            throw AiError.Api(
+                lastError ?: "The AI provider returned an error.",
+                messageRes = if (lastError == null) R.string.ai_error_provider_error else 0,
+            )
+        }
+        val text = assembled.toString().trim().takeIf { it.isNotEmpty() }
+            ?: lastMessage?.let { contentText(it["content"]) }
+            ?: lastDelta?.let { contentText(it["content"]) }
+        val messageJson = lastMessage?.let { runCatching { JSONObject(it.toString()) }.getOrNull() }
+        val hasReasoning = hasReasoning(lastMessage) || hasReasoning(lastDelta)
+        if (text == null && messageJson == null && !hasReasoning) invalid(raw, contentType)
+        return OpenAITextResponse(text, finishReason, hasReasoning, messageJson)
+    }
+
+    private fun parseJsonObject(body: String, contentType: String?): OpenAITextResponse {
         val json = runCatching { Json.parseToJsonElement(body).jsonObject }.getOrNull()
-            ?: throw AiError.InvalidResponse
+            ?: invalid(body, contentType)
         val errorMessage = runCatching {
             json["error"]?.jsonObject?.get("message")?.jsonPrimitive?.contentOrNull
         }.getOrNull()?.takeIf { it.isNotBlank() }
@@ -294,24 +363,60 @@ internal object OpenAIResponseParser {
         val finishReason = runCatching { choice?.get("finish_reason")?.jsonPrimitive?.contentOrNull }
             .getOrNull()?.takeIf { it.isNotBlank() }
         if (finishReason == "error" || (choice == null && errorMessage != null)) {
-            throw AiError.Api(errorMessage ?: "The AI provider returned an error.", messageRes = if (errorMessage == null) R.string.ai_error_provider_error else 0)
+            throw AiError.Api(
+                errorMessage ?: "The AI provider returned an error.",
+                messageRes = if (errorMessage == null) R.string.ai_error_provider_error else 0,
+            )
         }
-        val message = runCatching { choice?.get("message")?.jsonObject }.getOrNull()
-            ?: throw AiError.InvalidResponse
-        val text = when (val content = message["content"]) {
-            is JsonPrimitive -> content.contentOrNull?.trim()?.takeIf { it.isNotEmpty() }
-            is JsonArray -> content.mapNotNull { element ->
-                runCatching { element.jsonObject["text"]?.jsonPrimitive?.contentOrNull }
-                    .getOrNull()?.trim()?.takeIf { it.isNotEmpty() }
-            }.joinToString("\n").takeIf { it.isNotEmpty() }
-            else -> null
+        if (choice == null) invalid(body, contentType)
+        val message = runCatching { choice["message"]?.jsonObject }.getOrNull()
+        val delta = runCatching { choice["delta"]?.jsonObject }.getOrNull()
+        val text = contentText(message?.get("content"))
+            ?: contentText(delta?.get("content"))
+            ?: contentText(choice["text"])
+        if (message == null && delta == null && text == null && errorMessage == null) {
+            invalid(body, contentType)
         }
+        val messageJson = message?.let { runCatching { JSONObject(it.toString()) }.getOrNull() }
+        val hasReasoning = hasReasoning(message) || hasReasoning(delta)
+        return OpenAITextResponse(text, finishReason, hasReasoning, messageJson)
+    }
+
+    private fun contentText(node: JsonElement?): String? = when (node) {
+        is JsonPrimitive -> node.contentOrNull?.trim()?.takeIf { it.isNotEmpty() }
+        is JsonArray -> node.mapNotNull { element ->
+            runCatching { element.jsonObject["text"]?.jsonPrimitive?.contentOrNull }
+                .getOrNull()?.trim()?.takeIf { it.isNotEmpty() }
+        }.joinToString("\n").takeIf { it.isNotEmpty() }
+        else -> null
+    }
+
+    /** Untrimmed fragment for SSE assembly so spaces between tokens survive. */
+    private fun contentPiece(node: JsonElement?): String? = when (node) {
+        is JsonPrimitive -> node.contentOrNull
+        is JsonArray -> node.mapNotNull { element ->
+            runCatching { element.jsonObject["text"]?.jsonPrimitive?.contentOrNull }.getOrNull()
+        }.joinToString("").takeIf { it.isNotEmpty() }
+        else -> null
+    }
+
+    private fun hasReasoning(obj: JsonObject?): Boolean {
+        if (obj == null) return false
         fun nonEmptyString(key: String): Boolean = runCatching {
-            message[key]?.jsonPrimitive?.contentOrNull?.isNotBlank() == true
+            obj[key]?.jsonPrimitive?.contentOrNull?.isNotBlank() == true
         }.getOrDefault(false)
-        val hasReasoning = nonEmptyString("reasoning") ||
+        return nonEmptyString("reasoning") ||
             nonEmptyString("reasoning_content") ||
-            runCatching { message["reasoning_details"]?.jsonArray?.isNotEmpty() == true }.getOrDefault(false)
-        return OpenAITextResponse(text, finishReason, hasReasoning)
+            runCatching { obj["reasoning_details"]?.jsonArray?.isNotEmpty() == true }.getOrDefault(false)
+    }
+
+    private fun invalid(raw: String, contentType: String?): Nothing {
+        if (PerfLog.enabled) {
+            val prefix = raw.take(200).replace('\n', ' ').replace('\r', ' ')
+            PerfLog.event(
+                "op=parse phase=invalid contentType=${contentType ?: "-"} chars=${raw.length} prefix=$prefix",
+            )
+        }
+        throw AiError.InvalidResponse
     }
 }

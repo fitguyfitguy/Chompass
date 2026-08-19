@@ -12,6 +12,7 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
+import app.chompass.BuildConfig
 import app.chompass.services.ai.AiError
 import app.chompass.services.ai.userMessage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -137,10 +138,15 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
             } catch (e: AiError) {
                 _ui.value = _ui.value.copy(sending = false, error = e.userMessage(container.appContext))
             } catch (e: Throwable) {
+                val msg = e.localizedMessage
                 _ui.value = _ui.value.copy(
                     sending = false,
-                    error = e.localizedMessage,
-                    errorRes = if (e.localizedMessage.isNullOrBlank()) R.string.coach_chat_failed else null
+                    error = when {
+                        !msg.isNullOrBlank() -> msg
+                        BuildConfig.DEBUG -> e.javaClass.simpleName
+                        else -> null
+                    },
+                    errorRes = if (msg.isNullOrBlank()) R.string.coach_chat_failed else null,
                 )
             }
         }

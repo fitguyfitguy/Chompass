@@ -17,15 +17,27 @@ import kotlin.coroutines.resumeWithException
  * The caller supplies a factory that builds a fresh [Call] per attempt
  * because OkHttp [Call] instances can only be executed once.
  */
+internal data class AiHttpText(
+    val body: String,
+    val contentType: String?,
+)
+
 object RetryPolicy {
     private val delays = longArrayOf(1_000, 2_000, 4_000)
 
     internal fun isRetryableHttpStatus(code: Int): Boolean =
         code == 503 || code == 529
 
-    suspend fun execute(callFactory: () -> Call): String {
+    suspend fun execute(callFactory: () -> Call): String =
+        executeText(callFactory).body
+
+    /** Like [execute], but keeps the response Content-Type for parse-failure logs. */
+    internal suspend fun executeText(callFactory: () -> Call): AiHttpText {
         open(callFactory).use { response ->
-            return response.body?.string().orEmpty()
+            return AiHttpText(
+                body = response.body?.string().orEmpty(),
+                contentType = response.header("Content-Type"),
+            )
         }
     }
 

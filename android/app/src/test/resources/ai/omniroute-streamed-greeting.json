@@ -1,0 +1,23 @@
+{
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "Greetings! I'm Coach, your nutrition and weight-change assistant. I'd love to help you with your goals. What can I do for you today?"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1936,
+    "completion_tokens": 33,
+    "total_tokens": 1969
+  },
+  "_streamed": true,
+  "_omniroute": {
+    "claudePromptCacheUsage": {
+      "cacheReadTokens": 1792,
+      "cacheCreationTokens": 0
+    }
+  }
+}
