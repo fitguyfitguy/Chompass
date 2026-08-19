@@ -380,6 +380,13 @@ open class MainActivity : ComponentActivity() {
 
             container.prefs.ensureFirstLaunchAt()
 
+            // Seed extras write onboarded + profile first, then the heavy replaceAll.
+            // Wait only for that fast prefix so first-install --full skips onboarding
+            // without holding the splash across a year of diary writes.
+            if (debugActions.writesOnboarded) {
+                container.prefs.hasCompletedOnboarding.first { it }
+            }
+
             val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
             initialAppearance = container.prefs.appearanceMode.first()
             initialThemeColorKey = container.prefs.appThemeColor.first()
@@ -488,10 +495,17 @@ open class MainActivity : ComponentActivity() {
                 app.container.prefs.setOnboardingCompleted(false)
                 app.container.prefs.setOnboardingDraft(null)
             }
-            if (actions.seedTestData) container.testDataSeeder.seedYear()
-            if (actions.seedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
-            if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
-            if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
+            if (actions.seedFull) {
+                container.testDataSeeder.seedFullyUtilized(
+                    keto = actions.seedKetoSettings,
+                    busyHome = actions.seedBusyHome,
+                )
+            } else {
+                if (actions.seedTestData) container.testDataSeeder.seedYear()
+                if (actions.seedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
+                if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
+                if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
+            }
             if (actions.seedActiveCalories) {
                 runCatching { container.testDataSeeder.seedActiveCalories(actions.activeTodayOverride) }
                     .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedActiveCalories failed", it) }
