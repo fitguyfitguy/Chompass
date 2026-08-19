@@ -60,7 +60,6 @@ export const ja = Object.freeze({
   "add_food.hero_recents": "履歴",
   "add_food.hero_recents_sub": "履歴とお気に入り",
   "add_food.quick_relog": "再度ログ",
-  "add_food.quick_relog_hint": "お気に入りと過去の食事。再スキャンより速い。",
   "add_food.quick_relog_empty": "食事をお気に入りにするか一度ログすると、ワンタップで再ログできます。",
   "add_food.more_section": "他の記録方法",
   "add_food.voice": "音声",

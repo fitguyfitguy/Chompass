@@ -621,7 +621,6 @@
 
     <string name="add_food_quick_relog">再次记录</string>
     <string name="add_food_quick_relog_empty">将一餐加入收藏或先记录一次。之后会显示在这里，可一键再次记录。</string>
-    <string name="add_food_quick_relog_hint">收藏和过往餐食。比重新扫描更快。</string>
     <string name="ai_provider_on_device_subtitle">私密且离线。比云端 AI 准确度低；约 2~4 GB 下载</string>
     <string name="camera_scale_tip_message">提示：在食物旁放入叉子、手或硬币。有助于估算份量。</string>
     <string name="cd_relog_meal">再次记录 %1$s</string>

@@ -588,7 +588,6 @@
 
     <string name="add_food_quick_relog">Opnieuw loggen</string>
     <string name="add_food_quick_relog_empty">Markeer een maaltijd als favoriet of log hem een keer. Hij verschijnt hier voor één-tik opnieuw loggen.</string>
-    <string name="add_food_quick_relog_hint">Favorieten en eerdere maaltijden. Sneller dan opnieuw scannen.</string>
     <string name="ai_provider_on_device_subtitle">Privé en offline. Minder nauwkeurig dan cloud-AI; ~2-4 GB download</string>
     <string name="camera_scale_tip_message">Tip: leg een vork, hand of munt naast je eten. Dat helpt de portiegrootte te schatten.</string>
     <string name="cd_relog_meal">%1$s opnieuw loggen</string>

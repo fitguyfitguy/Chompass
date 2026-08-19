@@ -610,7 +610,6 @@ bilirsən?</string>
 
     <string name="add_food_quick_relog">Yenidən qeyd et</string>
     <string name="add_food_quick_relog_empty">Bir yeməyi sevimlilərə əlavə et və ya bir dəfə qeyd et. Bir toxunuşla yenidən qeyd üçün burada görünəcək.</string>
-    <string name="add_food_quick_relog_hint">Sevimlilər və keçmiş yeməklər. Yenidən skan etməkdən daha sürətli.</string>
     <string name="ai_provider_on_device_subtitle">Məxfi və oflayn. Bulud AI-dan daha az dəqiq; ~2-4 GB endirmə</string>
     <string name="camera_scale_tip_message">Məsləhət: yeməyin yanına çəngəl, əl və ya sikkə qoy. Porsiya ölçüsünü təxmin etməyə kömək edir.</string>
     <string name="cd_relog_meal">%1$s yenidən qeyd et</string>

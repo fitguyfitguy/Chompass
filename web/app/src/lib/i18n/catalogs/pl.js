@@ -70,7 +70,6 @@ export const pl = Object.freeze({
   "add_food.hero_recents": "Ostatnie",
   "add_food.hero_recents_sub": "Ostatnie i ulubione",
   "add_food.quick_relog": "Dodaj ponownie",
-  "add_food.quick_relog_hint": "Ulubione i wcześniejsze posiłki. Szybciej niż skanowanie od nowa.",
   "add_food.quick_relog_empty": "Dodaj posiłek do ulubionych lub zaloguj go raz. Pojawi się tutaj i dodasz go jednym stuknięciem.",
   "add_food.more_section": "Inne sposoby dodawania",
   "add_food.voice": "Głos",

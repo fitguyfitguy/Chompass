@@ -607,7 +607,6 @@
 
     <string name="add_food_quick_relog">Registrar novamente</string>
     <string name="add_food_quick_relog_empty">Favorite uma refeição ou registre uma vez. Ela aparecerá aqui para registro com um toque.</string>
-    <string name="add_food_quick_relog_hint">Favoritos e refeições anteriores. Mais rápido que escanear de novo.</string>
     <string name="ai_provider_on_device_subtitle">Privado e offline. Menos preciso que a IA na nuvem; download de ~2-4 GB</string>
     <string name="camera_scale_tip_message">Dica: inclua um garfo, a mão ou uma moeda ao lado da comida. Isso ajuda a estimar o tamanho da porção.</string>
     <string name="cd_relog_meal">Registrar %1$s novamente</string>

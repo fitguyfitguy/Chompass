@@ -60,7 +60,6 @@ export const ro = Object.freeze({
   "add_food.hero_recents": "Recente",
   "add_food.hero_recents_sub": "Recente și favorite",
   "add_food.quick_relog": "Înregistrează din nou",
-  "add_food.quick_relog_hint": "Favorite și mese anterioare. Mai rapid decât re-scanarea.",
   "add_food.quick_relog_empty": "Pune o masă la favorite sau înregistreaz-o o dată. Va apărea aici pentru re-înregistrare dintr-o atingere.",
   "add_food.more_section": "Mai multe moduri de înregistrare",
   "add_food.voice": "Voce",

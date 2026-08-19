@@ -70,7 +70,6 @@ export const uk = Object.freeze({
   "add_food.hero_recents": "Нещодавнє",
   "add_food.hero_recents_sub": "Нещодавнє та улюблене",
   "add_food.quick_relog": "Внести ще раз",
-  "add_food.quick_relog_hint": "Улюблені страви та минулі прийоми. Швидше, ніж сканувати знову.",
   "add_food.quick_relog_empty": "Позначте страву як улюблену або внесіть її один раз, і вона з'явиться тут для швидкого повторного внесення.",
   "add_food.more_section": "Інші способи внесення",
   "add_food.voice": "Голос",

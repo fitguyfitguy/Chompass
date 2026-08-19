@@ -60,7 +60,6 @@ export const de = Object.freeze({
   "add_food.hero_recents": "Zuletzt",
   "add_food.hero_recents_sub": "Zuletzt & Favoriten",
   "add_food.quick_relog": "Erneut loggen",
-  "add_food.quick_relog_hint": "Favoriten und frühere Mahlzeiten. Schneller als erneutes Scannen.",
   "add_food.quick_relog_empty": "Favorisiere eine Mahlzeit oder logge sie einmal. Sie erscheint hier zum erneuten Loggen mit einem Tipp.",
   "add_food.more_section": "Weitere Logging-Möglichkeiten",
   "add_food.voice": "Sprache",

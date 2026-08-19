@@ -643,7 +643,6 @@
     <string name="error_webdav_sync_failed">Falló la sincronización WebDAV</string>
     <string name="add_food_quick_relog">Registrar de nuevo</string>
     <string name="add_food_quick_relog_empty">Marca una comida como favorita o regístrala una vez. Aparecerá aquí para volver a registrarla con un toque.</string>
-    <string name="add_food_quick_relog_hint">Favoritos y comidas anteriores. Más rápido que volver a escanear.</string>
     <string name="ai_provider_on_device_subtitle">Privado y sin conexión. Menos preciso que la IA en la nube; descarga de ~2-4 GB</string>
     <string name="camera_scale_tip_message">Consejo: incluye un tenedor, la mano o una moneda junto a la comida. Ayuda a estimar el tamaño de la porción.</string>
     <string name="cd_relog_meal">Registrar %1$s de nuevo</string>

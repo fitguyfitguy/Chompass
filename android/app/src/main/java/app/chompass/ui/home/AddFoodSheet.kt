@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -206,12 +205,6 @@ internal fun AddFoodSheetContent(
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                stringResource(R.string.add_food_quick_relog_hint),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
             )
             Spacer(Modifier.height(6.dp))
             Row(
@@ -539,13 +532,13 @@ private fun AddFoodActionTile(
     }
     Column(
         modifier
-            .heightIn(min = if (isHero) 96.dp else 64.dp)
+            .height(if (isHero) 108.dp else 72.dp)
             .clip(shape)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)
             .padding(
                 horizontal = if (isHero) 10.dp else 8.dp,
-                vertical = if (isHero) 14.dp else 10.dp
+                vertical = if (isHero) 10.dp else 8.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -556,29 +549,48 @@ private fun AddFoodActionTile(
             iconSize = iconSize,
             tint = AppColors.Calorie
         )
-        Spacer(Modifier.height(if (isHero) 8.dp else 6.dp))
-        Text(
-            label,
-            style = if (isHero) {
-                MaterialTheme.typography.bodyMedium
-            } else {
-                MaterialTheme.typography.labelMedium
-            },
-            fontWeight = if (isHero) FontWeight.SemiBold else FontWeight.Medium,
-            maxLines = if (isHero) 1 else 2,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
-        if (isHero && !subtitle.isNullOrBlank()) {
-            Spacer(Modifier.height(2.dp))
+        Spacer(Modifier.height(if (isHero) 8.dp else 4.dp))
+        if (isHero) {
             Text(
-                subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
+                label,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center
             )
+            Spacer(Modifier.height(2.dp))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(32.dp),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Text(
+                    subtitle.orEmpty(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

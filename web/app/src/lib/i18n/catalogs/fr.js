@@ -60,7 +60,6 @@ export const fr = Object.freeze({
   "add_food.hero_recents": "Récents",
   "add_food.hero_recents_sub": "Récents et favoris",
   "add_food.quick_relog": "Rejournaliser",
-  "add_food.quick_relog_hint": "Favoris et repas passés. Plus rapide qu'un nouveau scan.",
   "add_food.quick_relog_empty": "Mettez un repas en favori ou journalisez-le une fois. Il apparaîtra ici pour être rejournalisé en un geste.",
   "add_food.more_section": "Autres façons de journaliser",
   "add_food.voice": "Voix",

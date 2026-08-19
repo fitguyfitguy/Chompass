@@ -619,7 +619,6 @@
 
     <string name="add_food_quick_relog">다시 기록</string>
     <string name="add_food_quick_relog_empty">식사를 즐겨찾기하거나 한 번 기록하세요. 여기에 표시되어 한 번에 다시 기록할 수 있어요.</string>
-    <string name="add_food_quick_relog_hint">즐겨찾기와 지난 식사. 다시 스캔하는 것보다 빨라요.</string>
     <string name="ai_provider_on_device_subtitle">비공개·오프라인. 클라우드 AI보다 정확도 낮음. 약 2~4 GB 다운로드</string>
     <string name="camera_scale_tip_message">팁: 포크, 손, 또는 동전을 음식 옆에 함께 찍으세요. 1인분 크기 추정에 도움이 돼요.</string>
     <string name="cd_relog_meal">%1$s 다시 기록</string>

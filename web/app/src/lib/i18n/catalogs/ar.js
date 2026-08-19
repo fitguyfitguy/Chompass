@@ -60,7 +60,6 @@ export const ar = Object.freeze({
   "add_food.hero_recents": "الأخيرة",
   "add_food.hero_recents_sub": "الأخيرة والمفضلة",
   "add_food.quick_relog": "تسجيل مجدد",
-  "add_food.quick_relog_hint": "المفضلة ووجبات سابقة. أسرع من إعادة المسح.",
   "add_food.quick_relog_empty": "أضف وجبة إلى المفضلة أو سجّلها مرة واحدة. ستظهر هنا لإعادة التسجيل بلمسة واحدة.",
   "add_food.more_section": "طرق أخرى للتسجيل",
   "add_food.voice": "صوت",

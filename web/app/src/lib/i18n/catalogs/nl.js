@@ -60,7 +60,6 @@ export const nl = Object.freeze({
   "add_food.hero_recents": "Recent",
   "add_food.hero_recents_sub": "Recent & favorieten",
   "add_food.quick_relog": "Opnieuw loggen",
-  "add_food.quick_relog_hint": "Favorieten en eerdere maaltijden. Sneller dan opnieuw scannen.",
   "add_food.quick_relog_empty": "Maak een maaltijd favoriet of log hem een keer. Hij verschijnt hier voor herloggen met één tik.",
   "add_food.more_section": "Meer manieren om te loggen",
   "add_food.voice": "Stem",

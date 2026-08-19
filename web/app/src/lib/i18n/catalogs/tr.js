@@ -70,7 +70,6 @@ export const tr = Object.freeze({
   "add_food.hero_recents": "Son kullanılanlar",
   "add_food.hero_recents_sub": "Son kullanılanlar ve favoriler",
   "add_food.quick_relog": "Tekrar ekle",
-  "add_food.quick_relog_hint": "Favoriler ve geçmiş öğünler. Yeniden taramaktan daha hızlı.",
   "add_food.quick_relog_empty": "Bir öğünü favorilere ekleyin veya bir kez kaydedin. Tek dokunuşla tekrar eklemek için burada görünür.",
   "add_food.more_section": "Diğer ekleme yolları",
   "add_food.voice": "Ses",

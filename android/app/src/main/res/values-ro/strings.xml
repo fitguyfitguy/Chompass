@@ -610,7 +610,6 @@
 
     <string name="add_food_quick_relog">Înregistrează din nou</string>
     <string name="add_food_quick_relog_empty">Adaugă o masă la favorite sau înregistreaz-o o dată. Va apărea aici pentru reînregistrare cu o atingere.</string>
-    <string name="add_food_quick_relog_hint">Favorite și mese anterioare. Mai rapid decât rescanarea.</string>
     <string name="ai_provider_on_device_subtitle">Privat și offline. Mai puțin precis decât IA în cloud; descărcare de ~2-4 GB</string>
     <string name="camera_scale_tip_message">Sfat: include o furculiță, mâna sau o monedă lângă mâncare. Ajută la estimarea porției.</string>
     <string name="cd_relog_meal">Înregistrează din nou %1$s</string>

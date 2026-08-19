@@ -60,7 +60,6 @@ export const ko = Object.freeze({
   "add_food.hero_recents": "최근",
   "add_food.hero_recents_sub": "최근 및 즐겨찾기",
   "add_food.quick_relog": "다시 기록",
-  "add_food.quick_relog_hint": "즐겨찾기와 과거 식사. 다시 스캔하는 것보다 빠릅니다.",
   "add_food.quick_relog_empty": "식사를 즐겨찾기에 추가하거나 한 번 기록하세요. 한 번의 탭으로 다시 기록할 수 있게 여기에 표시됩니다.",
   "add_food.more_section": "더 많은 기록 방법",
   "add_food.voice": "음성",

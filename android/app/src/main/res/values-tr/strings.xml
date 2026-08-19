@@ -400,7 +400,6 @@
     <string name="add_food_hero_saved_sub">Son kullanılanlar ve favoriler</string>
     <string name="add_food_more_section">Diğer ekleme yolları</string>
     <string name="add_food_quick_relog">Tekrar ekle</string>
-    <string name="add_food_quick_relog_hint">Favoriler ve geçmiş öğünler. Yeniden taramaktan daha hızlı.</string>
     <string name="add_food_quick_relog_empty">Bir öğünü favorilere ekle veya bir kez kaydet. Tek dokunuşla tekrar eklemek için burada görünür.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">%1$s tekrar ekle</string>

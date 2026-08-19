@@ -60,7 +60,6 @@ export const it = Object.freeze({
   "add_food.hero_recents": "Recenti",
   "add_food.hero_recents_sub": "Recenti e preferiti",
   "add_food.quick_relog": "Registra di nuovo",
-  "add_food.quick_relog_hint": "Preferiti e pasti passati. Più veloce che riscansionare.",
   "add_food.quick_relog_empty": "Metti un pasto nei preferiti o registralo una volta. Apparirà qui per il re-log con un tocco.",
   "add_food.more_section": "Altri modi per registrare",
   "add_food.voice": "Voce",

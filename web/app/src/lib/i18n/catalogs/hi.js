@@ -60,7 +60,6 @@ export const hi = Object.freeze({
   "add_food.hero_recents": "हाल के",
   "add_food.hero_recents_sub": "हाल के और पसंदीदा",
   "add_food.quick_relog": "फिर से लॉग करें",
-  "add_food.quick_relog_hint": "पसंदीदा और पिछले भोजन। दोबारा स्कैन करने से तेज़।",
   "add_food.quick_relog_empty": "किसी भोजन को पसंदीदा बनाएं या एक बार लॉग करें। यह एक-टैप री-लॉग के लिए यहां दिखेगा।",
   "add_food.more_section": "लॉग करने के और तरीके",
   "add_food.voice": "आवाज़",

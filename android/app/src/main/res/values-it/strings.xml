@@ -609,7 +609,6 @@
 
     <string name="add_food_quick_relog">Registra di nuovo</string>
     <string name="add_food_quick_relog_empty">Aggiungi un pasto ai preferiti o registralo una volta. Comparirà qui per un nuovo log con un tocco.</string>
-    <string name="add_food_quick_relog_hint">Preferiti e pasti recenti. Più veloce di una nuova scansione.</string>
     <string name="ai_provider_on_device_subtitle">Privato e offline. Meno preciso dell\'IA cloud; download di ~2-4 GB</string>
     <string name="camera_scale_tip_message">Suggerimento: includi una forchetta, la mano o una moneta accanto al cibo. Aiuta a stimare la porzione.</string>
     <string name="cd_relog_meal">Registra di nuovo %1$s</string>
