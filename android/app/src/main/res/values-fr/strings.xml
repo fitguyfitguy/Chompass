@@ -536,6 +536,7 @@
     <string name="about_report_issue">Signaler un problème</string>
     <string name="about_request_feature">Demander une fonctionnalité</string>
     <string name="about_privacy">Politique de confidentialité</string>
+    <string name="about_donate">Offrez-moi un yaourt</string>
     <string name="about_made_by">Chompass par fitguy</string>
     <string name="about_with_care">Basé sur Fud AI par Apoorv Darshan</string>
     <string name="about_share_message">Je suis mes repas avec Chompass - prends une photo, parle ou tape, l\'IA enregistre les calories. C\'est gratuit, open source, et tes données restent sur ton appareil.\n\nTélécharger : https://codeberg.org/fitguy/chompass</string>
@@ -839,6 +840,10 @@
     <string name="copy_from">Copier depuis</string>
     <string name="copy_from_loading">Chargement du journal alimentaire…</string>
     <string name="copy_hint">Les aliments seront copiés vers %1$s. Les entrées d\'origine restent inchangées.</string>
+    <plurals name="copy_foods_to">
+        <item quantity="one">Copier %1$d aliment vers %2$s</item>
+        <item quantity="other">Copier %1$d aliments vers %2$s</item>
+    </plurals>
     <string name="copy_meal_format">Copier %1$s</string>
     <string name="copy_no_foods_on_day">Aucun aliment enregistré ce jour</string>
     <string name="copy_to">Copier vers</string>
@@ -972,6 +977,10 @@
     <string name="home_water_next_tomorrow">Prochain %1$s · demain %2$s</string>
     <string name="import_add_to_log">Ajouter au journal</string>
     <string name="import_add_to_log_many_format">Ajouter %1$d au journal · %2$d kcal</string>
+    <plurals name="import_add_meals_title">
+        <item quantity="one">Ajouter un repas partagé</item>
+        <item quantity="other">Ajouter %1$d repas partagés</item>
+    </plurals>
     <string name="import_body_metrics_empty">Ce fichier ne contient aucune entrée de poids ou de données corporelles à importer.</string>
     <string name="import_body_metrics_malformed">Impossible de lire le fichier : %1$s</string>
     <string name="import_body_metrics_success">%1$d entrées de poids, %2$d de masse grasse et %3$d de mesures importées.</string>
@@ -1300,6 +1309,7 @@
     <string name="settings_macro_unlocked">Déverrouillé</string>
     <string name="settings_manage_health_access">Gérer l\'accès à Health Connect</string>
     <string name="settings_max_tokens">Longueur maximale de réponse</string>
+    <string name="settings_max_tokens_unit">tokens</string>
 
     <string name="settings_meal_constituents">Détail des ingrédients du repas</string>
     <string name="settings_meal_constituents_footer">Quand c\'est activé, l\'IA peut diviser les repas composites en ingrédients modifiables avec grammes et unités. Fonctionne mieux avec des modèles cloud puissants ; désactivez pour les modèles moins chers ou plus petits si les résultats semblent incohérents.</string>

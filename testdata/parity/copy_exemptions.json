@@ -80,7 +80,8 @@
     "Omega-3",
     "Total",
     "Zinc",
-    "auto"
+    "auto",
+    "tokens"
   ],
   "fr": [
     "Active",
@@ -107,7 +108,8 @@
     "Suggestions",
     "Total",
     "Zinc",
-    "auto"
+    "auto",
+    "tokens"
   ],
   "pl": [
     "Cholesterol",
