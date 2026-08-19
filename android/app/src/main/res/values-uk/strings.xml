@@ -432,7 +432,7 @@
     <string name="progress_log_first_weight">Внеси першу вагу, щоб бачити динаміку</string>
     <string name="progress_weight_trend_legend">Тренд за 7 днів</string>
     <string name="progress_weight_trend_need_more">Для тренду за 7 днів потрібно щонайменше 2 дні зважувань</string>
-    <string name="progress_weight_raw_legend">Щоденні зважування</string>
+    <string name="progress_weight_raw_legend">Зважування</string>
     <string name="progress_weight_history">Історія ваги</string>
     <string name="progress_body_fat_history">Історія жиру в тілі</string>
     <string name="progress_history_count_format">%1$d записів · натисни, щоб переглянути чи видалити</string>

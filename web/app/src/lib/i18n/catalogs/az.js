@@ -101,7 +101,7 @@ export const az = Object.freeze({
   "progress.range_6m": "6A",
   "progress.range_1y": "1İ",
   "progress.range_all": "Hamısı",
-  "progress.weight_raw_legend": "Gündəlik çəkilər",
+  "progress.weight_raw_legend": "Çəki",
   "progress.weight_trend_legend": "7 günlük trend",
   "progress.weight_trend_need_more": "7 günlük trend üçün ən azı 2 çəki günü lazımdır",
 "progress.log_weight": "Çəki qeyd et",

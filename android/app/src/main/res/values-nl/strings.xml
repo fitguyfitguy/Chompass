@@ -638,7 +638,7 @@
     <string name="photo_accuracy_guide_dismiss">Begrepen</string>
     <string name="photo_accuracy_guide_title">Tips voor een betere schatting</string>
     <string name="photo_import_failed">Foto kon niet worden geïmporteerd</string>
-    <string name="progress_weight_raw_legend">Dagelijkse wegingen</string>
+    <string name="progress_weight_raw_legend">Weging</string>
     <string name="progress_weight_trend_legend">7-daagse trend</string>
     <string name="progress_weight_trend_need_more">7-daagse trend vereist minstens 2 weegdagen</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/dag</string>

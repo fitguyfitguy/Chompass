@@ -101,7 +101,7 @@ export const hi = Object.freeze({
   "progress.range_6m": "6मा",
   "progress.range_1y": "1व",
   "progress.range_all": "सभी",
-  "progress.weight_raw_legend": "दैनिक वजन",
+  "progress.weight_raw_legend": "तौल",
   "progress.weight_trend_legend": "7-दिन रुझान",
   "progress.weight_trend_need_more": "7-दिन रुझान के लिए कम से कम 2 वजन दिन चाहिए",
 "progress.log_weight": "वज़न लॉग करें",

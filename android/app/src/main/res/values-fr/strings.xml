@@ -684,7 +684,7 @@
     <string name="photo_accuracy_guide_dismiss">Compris</string>
     <string name="photo_accuracy_guide_title">Astuces pour une meilleure estimation</string>
     <string name="photo_import_failed">Impossible d\'importer la photo</string>
-    <string name="progress_weight_raw_legend">Pesées quotidiennes</string>
+    <string name="progress_weight_raw_legend">Pesée</string>
     <string name="progress_weight_trend_legend">Tendance sur 7 jours</string>
     <string name="progress_weight_trend_need_more">La tendance sur 7 jours nécessite au moins 2 jours de pesée</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/jour</string>

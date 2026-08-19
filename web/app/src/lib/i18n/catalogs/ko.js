@@ -101,7 +101,7 @@ export const ko = Object.freeze({
   "progress.range_6m": "6달",
   "progress.range_1y": "1년",
   "progress.range_all": "전체",
-  "progress.weight_raw_legend": "일일 체중",
+  "progress.weight_raw_legend": "체중",
   "progress.weight_trend_legend": "7일 추세",
   "progress.weight_trend_need_more": "7일 추세는 체중 기록 2일 이상이 필요합니다",
 "progress.log_weight": "체중 기록",

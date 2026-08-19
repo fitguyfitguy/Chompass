@@ -660,7 +660,7 @@ bilirsən?</string>
     <string name="photo_accuracy_guide_dismiss">Anladım</string>
     <string name="photo_accuracy_guide_title">Daha yaxşı təxmin üçün məsləhətlər</string>
     <string name="photo_import_failed">Foto idxal edilə bilmədi</string>
-    <string name="progress_weight_raw_legend">Gündəlik çəkilmələr</string>
+    <string name="progress_weight_raw_legend">Çəki</string>
     <string name="progress_weight_trend_legend">7 günlük trend</string>
     <string name="progress_weight_trend_need_more">7 günlük trend üçün ən azı 2 çəkilmə günü lazımdır</string>
     <string name="protein_target_g_per_kg_format">%1$.1f q/kq · %2$d q/gün</string>

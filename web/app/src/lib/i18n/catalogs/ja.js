@@ -101,7 +101,7 @@ export const ja = Object.freeze({
   "progress.range_6m": "6月",
   "progress.range_1y": "1年",
   "progress.range_all": "すべて",
-  "progress.weight_raw_legend": "日々の体重",
+  "progress.weight_raw_legend": "体重",
   "progress.weight_trend_legend": "7日トレンド",
   "progress.weight_trend_need_more": "7日トレンドには2日以上の体重記録が必要です",
 "progress.log_weight": "体重を記録",

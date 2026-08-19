@@ -101,7 +101,7 @@ export const ru = Object.freeze({
   "progress.range_6m": "6М",
   "progress.range_1y": "1Г",
   "progress.range_all": "Всё",
-  "progress.weight_raw_legend": "Ежедневные взвешивания",
+  "progress.weight_raw_legend": "Взвешивание",
   "progress.weight_trend_legend": "Тренд 7 дней",
   "progress.weight_trend_need_more": "Тренду 7 дней нужно минимум 2 дня взвешиваний",
 "progress.log_weight": "Записать вес",

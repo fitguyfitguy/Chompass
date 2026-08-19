@@ -670,7 +670,7 @@
     <string name="photo_accuracy_guide_dismiss">فهمت</string>
     <string name="photo_accuracy_guide_title">نصائح لتقدير أفضل</string>
     <string name="photo_import_failed">تعذّر استيراد الصورة</string>
-    <string name="progress_weight_raw_legend">الوزن اليومي</string>
+    <string name="progress_weight_raw_legend">الوزن</string>
     <string name="progress_weight_trend_legend">اتجاه 7 أيام</string>
     <string name="progress_weight_trend_need_more">اتجاه 7 أيام يحتاج يومي وزن على الأقل</string>
     <string name="protein_target_g_per_kg_format">%1$.1f غ/كغ · %2$d غ/يوم</string>

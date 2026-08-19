@@ -660,7 +660,7 @@
     <string name="photo_accuracy_guide_dismiss">Am înțeles</string>
     <string name="photo_accuracy_guide_title">Sfaturi pentru o estimare mai bună</string>
     <string name="photo_import_failed">Nu s-a putut importa fotografia</string>
-    <string name="progress_weight_raw_legend">Cântăriri zilnice</string>
+    <string name="progress_weight_raw_legend">Cântărire</string>
     <string name="progress_weight_trend_legend">Tendință pe 7 zile</string>
     <string name="progress_weight_trend_need_more">Tendința pe 7 zile necesită cel puțin 2 zile cu cântărire</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/zi</string>

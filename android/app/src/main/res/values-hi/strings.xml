@@ -670,7 +670,7 @@
     <string name="photo_accuracy_guide_dismiss">समझ गया</string>
     <string name="photo_accuracy_guide_title">बेहतर अनुमान के सुझाव</string>
     <string name="photo_import_failed">फ़ोटो आयात नहीं हो सका</string>
-    <string name="progress_weight_raw_legend">दैनिक तौल</string>
+    <string name="progress_weight_raw_legend">तौल</string>
     <string name="progress_weight_trend_legend">7-दिन का रुझान</string>
     <string name="progress_weight_trend_need_more">7-दिन के रुझान के लिए कम से कम 2 तौल-दिन चाहिए</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/दिन</string>

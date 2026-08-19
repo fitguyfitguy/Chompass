@@ -668,7 +668,7 @@
     <string name="photo_accuracy_guide_dismiss">了解</string>
     <string name="photo_accuracy_guide_title">より良い推定のヒント</string>
     <string name="photo_import_failed">写真をインポートできませんでした</string>
-    <string name="progress_weight_raw_legend">毎日の計量</string>
+    <string name="progress_weight_raw_legend">体重</string>
     <string name="progress_weight_trend_legend">7日間トレンド</string>
     <string name="progress_weight_trend_need_more">7日間トレンドには少なくとも2日分の計量が必要です</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/日</string>

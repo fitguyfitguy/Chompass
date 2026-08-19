@@ -659,7 +659,7 @@
     <string name="photo_accuracy_guide_dismiss">Capito</string>
     <string name="photo_accuracy_guide_title">Suggerimenti per una stima migliore</string>
     <string name="photo_import_failed">Impossibile importare la foto</string>
-    <string name="progress_weight_raw_legend">Pesate giornaliere</string>
+    <string name="progress_weight_raw_legend">Pesata</string>
     <string name="progress_weight_trend_legend">Trend a 7 giorni</string>
     <string name="progress_weight_trend_need_more">Il trend a 7 giorni richiede almeno 2 giorni con pesata</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/giorno</string>

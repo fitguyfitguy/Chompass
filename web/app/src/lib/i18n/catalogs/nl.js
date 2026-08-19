@@ -101,7 +101,7 @@ export const nl = Object.freeze({
   "progress.range_6m": "6M",
   "progress.range_1y": "1J",
   "progress.range_all": "Alles",
-  "progress.weight_raw_legend": "Dagelijkse wegingen",
+  "progress.weight_raw_legend": "Weging",
   "progress.weight_trend_legend": "7-dagen trend",
   "progress.weight_trend_need_more": "7-dagen trend heeft minstens 2 weegdagen nodig",
 "progress.log_weight": "Gewicht vastleggen",
