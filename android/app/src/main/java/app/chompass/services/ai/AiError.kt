@@ -140,7 +140,7 @@ internal fun connectionFailureHint(cause: Throwable): String? {
         when {
             message.contains("CLEARTEXT communication", ignoreCase = true) ||
                 message.contains("not permitted by network security policy", ignoreCase = true) ->
-                return "Cleartext HTTP is blocked. Turn on \"Allow insecure HTTP\" in Settings → AI & Speech for plain-http endpoints, or use https:// — a certificate you install on this phone is trusted for custom and Ollama endpoints."
+                return "Cleartext HTTP is blocked. Turn on \"Allow insecure HTTP\" in Settings → AI & Speech for plain-http endpoints, or use https://. A certificate you install on this phone is trusted for custom and Ollama endpoints."
 
             t is java.security.cert.CertPathValidatorException ||
                 message.contains("Trust anchor", ignoreCase = true) ->

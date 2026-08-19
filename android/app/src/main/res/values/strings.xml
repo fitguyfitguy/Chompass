@@ -975,7 +975,7 @@
     <string name="settings_tap_to_edit">Tap to edit</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_ai_allow_insecure_http">Allow insecure HTTP</string>
-    <string name="settings_ai_allow_insecure_http_footer">Lets custom and Ollama endpoints use plain http:// URLs, for example on your home network. Cloud providers always use https. Keep off unless your server has no TLS.</string>
+    <string name="settings_ai_allow_insecure_http_footer">Lets custom and Ollama endpoints use plain http:// URLs, for example on your home network. Cloud providers use https. Keep off unless your server has no TLS.</string>
     <string name="settings_custom_url_title">Custom base URL</string>
     <string name="settings_clear_key">Clear key</string>
     <string name="settings_on_device_model">Model file</string>

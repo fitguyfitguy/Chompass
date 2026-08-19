@@ -485,6 +485,8 @@
     <string name="settings_server_url">サーバーURL</string>
     <string name="settings_tap_to_edit">タップして編集</string>
     <string name="settings_custom_url_title">カスタム ベースURL</string>
+    <string name="settings_ai_allow_insecure_http">安全でない HTTP を許可</string>
+    <string name="settings_ai_allow_insecure_http_footer">カスタムおよび Ollama のエンドポイントで http:// URL を使えます。自宅ネットワークなど。クラウド提供元は https を使います。サーバーに TLS があるときはオフのままにしてください。</string>
     <string name="settings_clear_key">キーを消去</string>
 
     <string name="settings_clear_food_log">食事ログを消去</string>
@@ -714,6 +716,7 @@
     <string name="ai_error_image_conversion_failed">画像を処理できませんでした。</string>
     <string name="ai_error_invalid_response">AI の応答を理解できませんでした。もう一度お試しください。</string>
     <string name="ai_error_invalid_url">API URL が無効です。プロバイダー設定を確認してください。</string>
+    <string name="ai_error_insecure_http_blocked">安全でない HTTP はブロックされています。設定 → AI と音声で「安全でない HTTP を許可」をオンにするか、https:// URL を使ってください。</string>
     <string name="ai_error_key_rejected">API キーが拒否されました。設定 → AI プロバイダーを開き、有効なキーを貼り直してください。</string>
     <string name="ai_error_location_unsupported">Gemini はこのネットワーク環境（国/IP）では利用できません。VPN を使用している場合はオフにするか、住宅用出口に切り替えてください。データセンター/非住宅用 VPN IP はよくブロックされます。Google AI Studio プロジェクトで課金を有効にするか、別のネットワークを試すか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
     <string name="ai_error_model_unavailable">プロバイダーがこのモデルを見つけられませんでした。無料プランでは有料のみ、地域で制限されている、またはエンドポイントが間違っている可能性があります。設定 → AI プロバイダーでデフォルトの Flash モデルに切り替えるか、AI Studio プロジェクトで課金を有効にしてください。</string>

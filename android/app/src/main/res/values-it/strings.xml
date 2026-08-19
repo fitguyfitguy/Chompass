@@ -476,6 +476,8 @@
     <string name="settings_tap_to_edit">Tocca per modificare</string>
     <string name="settings_custom_url_placeholder">https://tuo-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizzato</string>
+    <string name="settings_ai_allow_insecure_http">Consenti HTTP non sicuro</string>
+    <string name="settings_ai_allow_insecure_http_footer">Consente agli endpoint personalizzati e Ollama di usare URL http://, ad esempio nella rete di casa. I provider cloud usano https. Tienilo spento se il tuo server ha il TLS.</string>
     <string name="settings_clear_key">Cancella chiave</string>
 
     <string name="settings_clear_food_log">Cancella registro cibo</string>
@@ -705,6 +707,7 @@
     <string name="ai_error_image_conversion_failed">Impossibile elaborare l\'immagine.</string>
     <string name="ai_error_invalid_response">Impossibile comprendere la risposta dell\'IA. Riprova.</string>
     <string name="ai_error_invalid_url">URL API non valido. Controlla le impostazioni del fornitore.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP non sicuro bloccato. Attiva «Consenti HTTP non sicuro» in Impostazioni → IA e voce, oppure usa un URL https://.</string>
     <string name="ai_error_key_rejected">La tua chiave API è stata rifiutata. Apri Impostazioni → Fornitore IA e incolla di nuovo una chiave valida.</string>
     <string name="ai_error_location_unsupported">Gemini non è disponibile da questa posizione di rete (paese/IP). Se usi una VPN, disattivala o passa a un\'uscita residenziale. Gli IP di data center vengono spesso bloccati. In alternativa, attiva la fatturazione sul progetto Google AI Studio, prova un\'altra rete o cambia fornitore in Impostazioni → Fornitore IA.</string>
     <string name="ai_error_model_unavailable">Il tuo fornitore non trova questo modello. Potrebbe essere a pagamento sul piano gratuito, non disponibile nella tua regione o l\'endpoint potrebbe essere sbagliato. Passa al modello Flash predefinito in Impostazioni → Fornitore IA oppure attiva la fatturazione sul progetto AI Studio.</string>

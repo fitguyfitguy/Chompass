@@ -486,6 +486,8 @@
     <string name="settings_server_url">सर्वर URL</string>
     <string name="settings_tap_to_edit">संपादित करने के लिए टैप करें</string>
     <string name="settings_custom_url_title">कस्टम बेस URL</string>
+    <string name="settings_ai_allow_insecure_http">असुरक्षित HTTP की अनुमति दें</string>
+    <string name="settings_ai_allow_insecure_http_footer">कस्टम और Ollama एंडपॉइंट को सादे http:// URL इस्तेमाल करने देता है, जैसे आपके घर के नेटवर्क पर। क्लाउड प्रदाता https इस्तेमाल करते हैं। सर्वर में TLS होने पर बंद रखें।</string>
     <string name="settings_clear_key">कुंजी साफ़ करें</string>
 
     <string name="settings_clear_food_log">खाद्य लॉग साफ़ करें</string>
@@ -715,6 +717,7 @@
     <string name="ai_error_image_conversion_failed">छवि संसाधित नहीं हो सकी।</string>
     <string name="ai_error_invalid_response">AI प्रतिक्रिया समझ में नहीं आई। कृपया फिर से प्रयास करें।</string>
     <string name="ai_error_invalid_url">अमान्य API URL। अपनी प्रदाता सेटिंग्स जांचें।</string>
+    <string name="ai_error_insecure_http_blocked">असुरक्षित HTTP अवरुद्ध है। सेटिंग्स → AI और भाषण में “असुरक्षित HTTP की अनुमति दें” चालू करें, या https:// URL इस्तेमाल करें।</string>
     <string name="ai_error_key_rejected">आपकी API कुंजी अस्वीकार कर दी गई। सेटिंग्स → AI प्रदाता खोलें और एक मान्य कुंजी दोबारा पेस्ट करें।</string>
     <string name="ai_error_location_unsupported">Gemini इस नेटवर्क स्थान (देश/IP) से उपलब्ध नहीं है। VPN उपयोग कर रहे हैं तो उसे बंद करें या रेज़िडेंशियल आउटपुट पर स्विच करें। डेटासेंटर/गैर-रेज़िडेंशियल VPN IP अक्सर ब्लॉक होते हैं। या Google AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें, कोई और नेटवर्क आज़माएं, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
     <string name="ai_error_model_unavailable">आपका प्रदाता यह मॉडल नहीं ढूंढ सका। यह मुफ्त टियर पर केवल-भुगतान वाला, आपके क्षेत्र में प्रतिबंधित, या endpoint गलत हो सकता है। सेटिंग्स → AI प्रदाता में डिफ़ॉल्ट Flash मॉडल पर स्विच करें, या अपने AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें।</string>

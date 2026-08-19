@@ -1773,6 +1773,8 @@ für dich ein</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
 
     <string name="settings_custom_url_title">Benutzerdefinierte Basis-URL</string>
+    <string name="settings_ai_allow_insecure_http">Unsicheres HTTP erlauben</string>
+    <string name="settings_ai_allow_insecure_http_footer">Eigene und Ollama-Endpunkte dürfen dann http://-URLs nutzen, zum Beispiel im Heimnetz. Cloud-Anbieter nutzen https. Lass aus, außer dein Server hat kein TLS.</string>
 
     <string name="settings_clear_key">Schlüssel löschen</string>
 
@@ -2219,6 +2221,7 @@ für dich ein</string>
     <string name="ai_error_disabled">KI-Funktionen sind unter Einstellungen → KI &amp; Sprache deaktiviert.</string>
 
     <string name="ai_error_invalid_url">Ungültige API-URL. Überprüfe deine Anbietereinstellungen.</string>
+    <string name="ai_error_insecure_http_blocked">Unsicheres HTTP ist gesperrt. Schalte „Unsicheres HTTP erlauben“ unter Einstellungen → KI &amp; Sprache ein, oder nutze eine https://-URL.</string>
 
     <string name="ai_error_on_device_model_not_downloaded">Das geräteinterne Modell wurde noch nicht heruntergeladen. Öffne „Einstellungen“ → „KI-Anbieter“ → „Modell“, um es herunterzuladen.</string>
 

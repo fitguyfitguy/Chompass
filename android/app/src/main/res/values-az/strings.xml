@@ -478,6 +478,8 @@ bilirsən?</string>
     <string name="settings_base_url">Əsas URL</string>
     <string name="settings_tap_to_edit">Redaktə etmək üçün toxun</string>
     <string name="settings_custom_url_title">Fərdi əsas URL</string>
+    <string name="settings_ai_allow_insecure_http">Qorunmayan HTTP-yə icazə ver</string>
+    <string name="settings_ai_allow_insecure_http_footer">Fərdi və Ollama ünvanlarının http:// URL-lərindən istifadəsinə icazə verir, məsələn ev şəbəkəndə. Bulud provayderləri https istifadə edir. Serverində TLS varsa, bağlı saxla.</string>
     <string name="settings_clear_key">Açarı təmizlə</string>
 
     <string name="settings_clear_food_log">Yemək Qeydlərini Təmizlə</string>
@@ -706,6 +708,7 @@ bilirsən?</string>
     <string name="ai_error_image_conversion_failed">Şəklin işlənməsi alınmadı.</string>
     <string name="ai_error_invalid_response">AI cavabı başa düşülmədi. Yenidən cəhd et.</string>
     <string name="ai_error_invalid_url">Yanlış API URL. Provayder parametrlərini yoxla.</string>
+    <string name="ai_error_insecure_http_blocked">Qorunmayan HTTP bloklanıb. Parametrlər → AI və Nitq bölməsində «Qorunmayan HTTP-yə icazə ver»i aç, və ya https:// URL istifadə et.</string>
     <string name="ai_error_key_rejected">API açarın rədd edildi. Parametrlər → AI Provayderi açıb etibarlı açarı yenidən yapışdır.</string>
     <string name="ai_error_location_unsupported">Gemini bu şəbəkə yerindən (ölkə/IP) mövcud deyil. VPN işlədirsənsə, onu söndür və ya yaşayış çıxışına keç. Məlumat mərkəzi/qeyri-yaşayış VPN IP-ləri tez-tez bloklanır. Yaxud Google AI Studio layihəsində ödənişi aktivləşdir, başqa şəbəkə sına və ya Parametrlər → AI Provayderi bölməsində provayderi dəyiş.</string>
     <string name="ai_error_model_unavailable">Provayderin bu modeli tapa bilmədi. O, pulsuz planda yalnız ödənişli, regionunda məhdud və ya endpoint səhv ola bilər. Parametrlər → AI Provayderi bölməsində standart Flash modelinə keç və ya AI Studio layihəndə ödənişi aktivləşdir.</string>

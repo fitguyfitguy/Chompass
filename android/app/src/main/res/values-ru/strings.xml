@@ -562,6 +562,8 @@
     <string name="settings_tap_to_edit">Коснись, чтобы изменить</string>
 
     <string name="settings_custom_url_title">Свой базовый URL</string>
+    <string name="settings_ai_allow_insecure_http">Разрешить незащищённый HTTP</string>
+    <string name="settings_ai_allow_insecure_http_footer">Свои и Ollama-адреса смогут использовать http://, например в домашней сети. Облачные провайдеры используют https. Держи выключенным, если на сервере есть TLS.</string>
     <string name="settings_clear_key">Очистить ключ</string>
 
 
@@ -1227,6 +1229,7 @@
     <string name="ai_error_image_conversion_failed">Не удалось обработать изображение.</string>
     <string name="ai_error_invalid_response">Не удалось понять ответ ИИ. Попробуй ещё раз.</string>
     <string name="ai_error_invalid_url">Неверный URL API. Проверь настройки провайдера.</string>
+    <string name="ai_error_insecure_http_blocked">Незащищённый HTTP заблокирован. Включи «Разрешить незащищённый HTTP» в Настройки → ИИ и речь или используй URL https://.</string>
     <string name="ai_error_key_rejected">API-ключ отклонён. Открой Настройки → ИИ-провайдер и вставь действующий ключ заново.</string>
     <string name="ai_error_location_unsupported">Gemini недоступен из этого региона (страна/IP). Если используешь VPN, отключи его или выбери выход из жилого диапазона. IP дата-центров часто блокируются. Либо включи биллинг в проекте Google AI Studio, попробуй другую сеть или смени провайдера в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_model_unavailable">Провайдер не нашёл эту модель. Она может быть платной на бесплатном тарифе, недоступна в твоём регионе или указан неверный endpoint. Переключись на стандартную модель Flash в Настройки → ИИ-провайдер или включи биллинг в проекте AI Studio.</string>

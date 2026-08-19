@@ -499,6 +499,8 @@
     <string name="settings_tap_to_edit">Натисни, щоб змінити</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Власний базовий URL</string>
+    <string name="settings_ai_allow_insecure_http">Дозволити незахищений HTTP</string>
+    <string name="settings_ai_allow_insecure_http_footer">Власні та Ollama-адреси зможуть використовувати http://, наприклад у домашній мережі. Хмарні провайдери використовують https. Тримай вимкненим, якщо на сервері є TLS.</string>
     <string name="settings_clear_key">Очистити ключ</string>
     <string name="settings_gemini_google_search_footer">Увімкнувши, Gemini може шукати в інтернеті, якщо це допомагає відповісти. Пошукові запити надсилаються в Google. Google тарифікує це у твоєму Gemini API-проєкті. На моделях Gemini 3 кожен пошуковий запит враховується в ліміті; на Gemini 2.5 і старіших оплата за промпт, що використовує пошук.</string>
     <string name="settings_meal_constituents_footer_on_device">Недоступно для пристроєвої Gemma: розбір інгредієнтів потребує потужнішої моделі. Перемкнися на хмарного провайдера, щоб увімкнути.</string>
@@ -628,6 +630,7 @@
     <string name="ai_error_network_format">Помилка мережі: %1$s</string>
     <string name="ai_error_invalid_response">Не вдалося зрозуміти відповідь ШІ. Спробуй ще раз.</string>
     <string name="ai_error_invalid_url">Недійсний API URL. Перевір налаштування провайдера.</string>
+    <string name="ai_error_insecure_http_blocked">Незахищений HTTP заблоковано. Увімкни «Дозволити незахищений HTTP» у Налаштування → ШІ та мова або використай URL https://.</string>
     <string name="ai_error_on_device_model_not_downloaded">Пристроєву модель ще не завантажено. Відкрий Налаштування → ШІ-провайдер → Модель, щоб завантажити.</string>
     <string name="ai_error_on_device_unsupported_device">Цей пристрій не відповідає вимогам пристроєвого ШІ. Обери хмарного провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_on_device_low_memory">Зараз недостатньо вільної пам\'яті для пристроєвого аналізу фото. Спробуй меншу модель E2B, закрий інші застосунки або зміни провайдера в Налаштуваннях → ШІ-провайдер.</string>
