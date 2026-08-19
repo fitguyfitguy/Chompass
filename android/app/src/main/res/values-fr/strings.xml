@@ -229,6 +229,7 @@
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">Chargement des données d\'exemple…</string>
     <string name="home_add_food">Ajouter un aliment</string>
     <string name="home_menu_camera">Appareil photo</string>
     <string name="home_menu_camera_note">Appareil photo + note</string>

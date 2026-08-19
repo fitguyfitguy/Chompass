@@ -14,7 +14,6 @@ import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
-import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json

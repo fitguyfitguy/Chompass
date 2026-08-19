@@ -1,0 +1,7 @@
+• Deleted weigh-ins stay gone after WebDAV sync: deleting a weight and then tapping Sync Now no longer brings the old row back from the file
+• Serving unit wheel stays open and every row is reachable: quantity and unit sit in one row, and a short list turns one row at a time
+• Coach reads streamed replies from local endpoints: greetings from OmniRoute and similar proxies that stream their reply now show in the coach
+• Faster Home, Progress, and Settings on a long diary: those screens no longer load the whole food and body history just to show today or the selected range
+• Add Food and Progress stay smooth on a long diary: Add Food opens without scanning a year of meals first
+• Faster cold start: Home appears after one settings read instead of a chain of them
+• Smaller Codeberg download: the Obtainium and Codeberg APK no longer includes Intel libraries that phones do not use

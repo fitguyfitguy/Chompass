@@ -6,9 +6,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## Unreleased
 
-### Fixed
-
-- **Deleted weigh-ins stay gone after WebDAV sync** (Android): deleting a weight and then tapping Sync Now no longer brings the old row back from the file. That used to happen when Auto-sync was off. Extra rows already in the file still need to be deleted once, then synced. Follow-up on Codeberg [#39](https://codeberg.org/fitguy/Chompass/issues/39) by [@tuxMode](https://codeberg.org/tuxMode).
+## [3.21.1] - 2026-08-19
 
 ### Changed
 
@@ -16,6 +14,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Add Food and Progress stay smooth on a long diary** (Android): Add Food opens without scanning a year of meals first. Progress range chips only read the months in view, and long calorie charts roll up to weekly bars. Logging a meal no longer forces Add Food to rescan recents.
 - **Faster cold start** (Android): Home appears after one settings read instead of a chain of them. Background cleanup and widget refresh wait until the first screen is up.
 - **Smaller Codeberg download** (Android): the Obtainium and Codeberg APK no longer includes Intel libraries that phones do not use. Phones are unchanged. Emulators need an ARM system image.
+
+### Fixed
+
+- **Deleted weigh-ins stay gone after WebDAV sync** (Android): deleting a weight and then tapping Sync Now no longer brings the old row back from the file. That used to happen when Auto-sync was off. Extra rows already in the file still need to be deleted once, then synced. Follow-up on Codeberg [#39](https://codeberg.org/fitguy/Chompass/issues/39) by [@tuxMode](https://codeberg.org/tuxMode).
+- **Serving unit wheel stays open and every row is reachable** (Android): on Review Food, quantity and unit sit in one row, the unit list stays on screen, and a short list turns one row at a time so the last unit can be selected. Closes Codeberg [#42](https://codeberg.org/fitguy/Chompass/issues/42) by [@tuxMode](https://codeberg.org/tuxMode).
+- **Coach reads streamed replies from local endpoints** (Android): a greeting from OmniRoute or a similar OpenAI-compatible proxy that streams its reply now shows in the coach instead of an error. Follow-up on Codeberg [#8](https://codeberg.org/fitguy/Chompass/issues/8) by [@darkxylese](https://codeberg.org/darkxylese).
 
 ## [3.21.0] - 2026-08-19
 

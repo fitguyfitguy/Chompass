@@ -7,13 +7,13 @@ summaryLength = 20
 
 [params]
   description = 'Private calorie tracking for Android and the browser. Bring your own AI key; optional on-device Gemma 4 on Android. Live calorie budget and Health Connect on Android. No ads, no analytics, no account.'
-  version = '3.21.0'
+  version = '3.21.1'
   # Demo cache-buster: bump on demo/deploy changes so the hero iframe + its
   # entry module fetch fresh (module graph still revalidates via ETag).
   # Kept separate from `version` so a demo fix never looks like a release.
   demoVersion = '3.8.0-d4'
   apkArm64Note = '~17 MiB'
-  apkUniversalNote = '~29 MiB'
+  apkUniversalNote = '~19 MiB'
   repo = 'https://codeberg.org/fitguy/chompass'
   releases = 'https://codeberg.org/fitguy/chompass/releases'
   fdroid = 'https://f-droid.org/packages/app.chompass/'

@@ -233,6 +233,7 @@
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">샘플 데이터 불러오는 중…</string>
     <string name="home_add_food">음식 추가</string>
     <string name="home_menu_camera">카메라</string>
     <string name="home_menu_camera_note">카메라 + 메모</string>

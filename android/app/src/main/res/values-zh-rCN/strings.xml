@@ -234,6 +234,7 @@
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">正在加载示例数据…</string>
     <string name="home_add_food">添加食物</string>
     <string name="home_menu_camera">相机</string>
     <string name="home_menu_camera_note">相机 + 备注</string>
