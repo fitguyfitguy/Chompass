@@ -4,16 +4,17 @@ import app.chompass.models.AIProvider
 import okhttp3.OkHttpClient
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AiHttpTest {
     @Test
-    fun userCaTrustAppliesOnlyToCustomEndpoint() {
+    fun userCaTrustAppliesToUserEnteredEndpointsOnly() {
         AIProvider.entries.forEach { provider ->
             assertEquals(
                 "usesUserCaTrust($provider)",
-                provider == AIProvider.CUSTOM_OPENAI,
+                provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA,
                 AiHttp.usesUserCaTrust(provider),
             )
         }
@@ -39,7 +40,7 @@ class AiHttpTest {
     }
 
     @Test
-    fun clientForProviderKeepsReadTimeoutForLocalProviderWithoutUserCaTrust() {
+    fun clientForProviderKeepsReadTimeoutForLocalProviderAndAddsUserCaTrust() {
         val base = OkHttpClient()
         var trustCalls = 0
         val fake: (OkHttpClient) -> OkHttpClient = {
@@ -49,7 +50,34 @@ class AiHttpTest {
 
         val ollama = AiHttp.clientForProvider(base, AIProvider.OLLAMA, 60, fake)
         assertTrue(ollama !== base) // read-timeout variant
-        assertEquals(0, trustCalls)
+        assertEquals(1, trustCalls) // Ollama is a user-entered endpoint → user-CA trust
+    }
+
+    // -- release cleartext gate (issue #8 follow-up) ---------------------
+
+    @Test
+    fun cleartextGateBlocksNonLoopbackHttpWhenDisabled() {
+        assertThrows(AiError.InsecureHttpBlocked::class.java) {
+            AiHttp.assertCleartextAllowed("http://192.168.1.10:8000/v1", allowInsecureHttp = false)
+        }
+    }
+
+    @Test
+    fun cleartextGateAllowsLoopbackHttpWhenDisabled() {
+        // Default Ollama URL + emulator alias must keep working with the toggle off.
+        AiHttp.assertCleartextAllowed("http://localhost:11434/v1", allowInsecureHttp = false)
+        AiHttp.assertCleartextAllowed("http://127.0.0.1:11434/v1", allowInsecureHttp = false)
+    }
+
+    @Test
+    fun cleartextGateAllowsHttpWhenEnabled() {
+        AiHttp.assertCleartextAllowed("http://192.168.1.10:8000/v1", allowInsecureHttp = true)
+    }
+
+    @Test
+    fun cleartextGateIgnoresHttpsAndBlank() {
+        AiHttp.assertCleartextAllowed("https://192.168.1.10:8000/v1", allowInsecureHttp = false)
+        AiHttp.assertCleartextAllowed("", allowInsecureHttp = false)
     }
 
     @Test

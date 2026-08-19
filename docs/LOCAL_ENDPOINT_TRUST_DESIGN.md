@@ -1,9 +1,12 @@
 # Design: Local OpenAI-compatible endpoints (cleartext + user-CA trust) (issue #8)
 
-Status: **Shipped in 3.9.0 (2026-08-11).** D1 (user-CA trust for custom
+Status: **D2 follow-up implemented (issue #8 follow-ups, ARR8 2026-08-18/19).** The
+original change shipped in 3.9.0 (2026-08-11): D1 (user-CA trust for custom
 endpoints), D3 (scheme normalization) and D4 (actionable connection errors)
-landed; D2 (LAN cleartext in release by default) deferred by decision; see the
-D2 section for the rationale.
+landed; D2 was deferred by decision. The follow-up change lands **D2 Option B**
+(release cleartext opt-in with an app-level gate), extends D1 to **Ollama**
+(user-entered endpoint, same trust model), and wires D4's hints into the
+`AiError.Network` surface (they were defined but never shown).
 Related: [Codeberg #8](https://codeberg.org/fitguy/Chompass/issues/8)
 
 ## Problem statement
@@ -98,28 +101,30 @@ fun clientForProvider(base: OkHttpClient, provider: AIProvider, localTimeoutSeco
 }
 ```
 
-- `CUSTOM_OPENAI` is the only provider with a user-entered URL → the only one
-  that gets user-CA trust. Cloud providers, OLLAMA (`http://localhost:11434`,
-  loopback: allowed today and unaffected), WebDAV, STT all keep the hardened
-  platform default.
+- `CUSTOM_OPENAI` and `OLLAMA` are the providers with user-entered URLs → the
+  only ones that get user-CA trust (follow-up: Ollama's URL is user-overridable
+  via `prefs.customBaseUrl(OLLAMA)`, same trust model as custom). Cloud
+  providers, WebDAV, STT all keep the hardened platform default.
 - `AndroidCAStore` contains both system and user CAs, so valid public certs
   keep working and self-signed ones now verify against the phone's own trust
   store; that matches the reporter's mental model ("the app should read the
   Android cert store").
 
-### D2 (decision): LAN cleartext in release (deferred, documented)
+### D2 (implemented follow-up): opt-in LAN cleartext in release
 
 Platform constraint 1 makes a per-host runtime cleartext toggle impossible.
-Options:
+The #8 follow-ups (ARR8: even the custom endpoint fails for LAN cleartext;
+darkxylese: same) are that demand, so **Option B is now implemented**:
 
 | Option | What | Verdict |
 |--------|------|---------|
-| **A: https-only in release** (recommended) | Keep release NSC as-is. With D1, self-signed https works; reply to the reporter: switch OmniRoute (or the endpoint) to https, or use the debug build for LAN http. Settings hint text says "HTTPS required in the release build". | Zero security regression, minimal diff. Fixes the reporter's actual use case (they already run a root CA on the phone and prefer https). |
-| **B: opt-in LAN cleartext** (follow-up candidate) | Release base-config `cleartextTrafficPermitted="true"` **plus** an app-level gate: new per-provider "Allow insecure HTTP" toggle checked in `AiHttp`/dispatch that rejects cleartext URLs unless enabled. | Platform then permits cleartext for *all* sockets (WebDAV, STT, OFF, WebView): the app-level gate must be replicated in every client or it silently widens. More surface, weaker default posture. Only if LAN-http demand materializes. |
+| **A: https-only in release** (v1) | Keep release NSC as-is; self-signed https works via D1; cleartext stays a debug-build/loopback feature. | Shipped 3.9.0. |
+| **B: opt-in LAN cleartext** (implemented) | Release base-config `cleartextTrafficPermitted="true"` **plus** an app-level gate: `AiHttp.assertCleartextAllowed(url, allowInsecureHttp)` rejects http:// URLs for non-loopback hosts unless the user enabled the "Allow insecure HTTP" toggle (Settings → AI & Speech, default OFF; pref `allowInsecureHttp`). Gate is called at the base-URL resolution sites (`ChatService` + `FoodAnalysisService.dispatch`, which also covers fallback). | Chosen. Default posture unchanged (off); loopback stays exempt for the default Ollama URL. |
 
-**Decision for v1: Option A.** D1 already unblocks self-hosted servers over
-https; cleartext stays a debug-build/loopback feature. Revisit B if #8 gets
-follow-ups asking for plain-http LAN support.
+**Known widening (accepted):** the NSC applies app-wide, so WebDAV and custom
+STT endpoints also gain cleartext capability in release builds. Both only ever
+use http when the user configured an http:// URL themselves; replicating the
+gate in those clients is a possible follow-up if it becomes a concern.
 
 ### D3 (small hardening): scheme normalization for custom base URLs
 
@@ -137,6 +142,13 @@ or `CertPathValidatorException` (untrusted cert), surface a hint in the
 existing `AiError` message: "Release builds require https; user-installed CA
 certificates are trusted for custom endpoints." Cheap, and it converts the
 reporter's two cryptic errors into guidance.
+
+**Follow-up wiring:** `connectionFailureHint(cause)` is now the single mapper,
+and `AiError.Network` uses it: hint causes show the English hint verbatim
+(`messageRes = 0`), everything else keeps the localized generic network
+message. The cleartext hint now points at the "Allow insecure HTTP" toggle
+instead of the debug build. `AiError.InsecureHttpBlocked` is thrown by the D2
+gate before any network attempt.
 
 ## Strings / localization
 
@@ -163,12 +175,13 @@ reporter's two cryptic errors into guidance.
 
 1. Custom endpoint `https://<lan-ip>:<port>/v1` with self-signed cert + root
    CA installed on phone → food analysis and coach chat succeed.
-2. Same endpoint over `http://` → clean error with the D4 hint (not a raw
-   platform exception).
+2. Same endpoint over `http://` → clean gate error pointing at the toggle
+   while "Allow insecure HTTP" is off; succeeds once it is on.
 3. Cloud provider (e.g. Gemini) still connects; a *newly* user-installed CA
    cannot intercept it (no app-wide trust change).
-4. OLLAMA loopback unaffected.
-5. `devenv tasks run release:check-parity` unaffected (no PWA/formula change).
+4. OLLAMA loopback unaffected (gate exempts localhost/127.0.0.1).
+5. Remote Ollama over https + user CA connects (D1 extension).
+6. `devenv tasks run release:check-parity` unaffected (no PWA/formula change).
 
 ## Out of scope / follow-ups
 
@@ -176,4 +189,6 @@ reporter's two cryptic errors into guidance.
   `CertPathValidatorException`); fix them with the same `LocalEndpointTrust`
   helper in a later change: noting each has its own client
   (`WebDavClient.kt`, `RemoteSttClients.kt`).
-- Option B (opt-in LAN cleartext) if demand appears.
+- The D2 gate is enforced on the AI path only; WebDAV/STT cleartext now works
+  in release whenever the user configured http:// URLs (accepted widening,
+  see D2). Replicate the gate there if it becomes a concern.

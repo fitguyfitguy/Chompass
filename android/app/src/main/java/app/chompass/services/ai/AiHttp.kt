@@ -12,7 +12,8 @@ internal object AiHttp {
 
     /**
      * Local/custom endpoints use the user-configured timeout; cloud providers keep the default client.
-     * Custom (OpenAI-compatible) endpoints additionally trust user-installed CA certs ([usesUserCaTrust]).
+     * Custom and Ollama endpoints (both user-entered URLs) additionally trust user-installed CA certs
+     * ([usesUserCaTrust]).
      */
     fun clientForProvider(
         base: OkHttpClient,
@@ -29,13 +30,33 @@ internal object AiHttp {
         return client
     }
 
-    /** Only the user-entered endpoint trusts certs installed on the phone. */
-    fun usesUserCaTrust(provider: AIProvider): Boolean = provider == AIProvider.CUSTOM_OPENAI
+    /** User-entered endpoints (custom OpenAI-compatible + Ollama) trust certs installed on the phone. */
+    fun usesUserCaTrust(provider: AIProvider): Boolean =
+        provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA
+
+    /**
+     * Gate for the release cleartext opt-in (issue #8 follow-up, design doc D2
+     * Option B): with the release network-security-config now permitting
+     * cleartext, http:// URLs to non-loopback hosts are rejected here unless the
+     * user enabled "Allow insecure HTTP" in Settings → AI & Speech. Loopback
+     * (localhost / 127.0.0.1) stays allowed unconditionally — that is the
+     * default Ollama URL and the emulator alias.
+     *
+     * Called at every base-URL resolution site (ChatService, FoodAnalysisService
+     * dispatch) so primary and fallback requests are covered.
+     */
+    fun assertCleartextAllowed(url: String, allowInsecureHttp: Boolean) {
+        if (allowInsecureHttp || !url.startsWith("http://")) return
+        val host = runCatching { java.net.URI(url).host }.getOrNull().orEmpty().lowercase()
+        if (host == "localhost" || host == "127.0.0.1" || host == "::1" || host == "[::1]") return
+        throw AiError.InsecureHttpBlocked
+    }
 
     /**
      * Normalize a user-entered custom base URL: trim whitespace/stacked schemes and default a
-     * missing scheme to https (release builds block cleartext). Mirrors `WebDavUrl.normalizeWebDavUrl`
-     * (an explicit `http://` is preserved; it only works in the debug build).
+     * missing scheme to https (cleartext is the opt-in path — [assertCleartextAllowed]). Mirrors
+     * `WebDavUrl.normalizeWebDavUrl` (an explicit `http://` is preserved and allowed once the
+     * user enables "Allow insecure HTTP").
      */
     fun normalizeCustomBaseUrl(raw: String): String {
         var rest = raw.trim()

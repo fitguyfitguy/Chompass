@@ -114,6 +114,8 @@ data class SettingsUiState(
     val coachTabEnabled: Boolean = true,
     /** Codeberg #20 phase 2: master AI-features switch; default ON. */
     val aiFeaturesEnabled: Boolean = true,
+    /** Issue #8 follow-up: release cleartext opt-in for user-entered endpoints; default OFF. */
+    val allowInsecureHttp: Boolean = false,
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
     val fixedLauncherIcon: Boolean = false,
@@ -238,6 +240,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val appLanguage = container.prefs.appLanguage.first()
             val coachTabEnabled = container.prefs.coachTabEnabled.first()
             val aiFeaturesEnabled = container.prefs.aiFeaturesEnabled.first()
+            val allowInsecureHttp = container.prefs.allowInsecureHttp.first()
             val appThemeColor = AppThemeColor.fromKey(container.prefs.appThemeColor.first())
             val fixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
             val foodLogSortOrder = FoodLogSortOrder.fromStorage(container.prefs.foodLogSortOrder.first())
@@ -321,6 +324,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 appLanguage = appLanguage,
                 coachTabEnabled = coachTabEnabled,
                 aiFeaturesEnabled = aiFeaturesEnabled,
+                allowInsecureHttp = allowInsecureHttp,
                 appThemeColor = appThemeColor,
                 fixedLauncherIcon = fixedLauncherIcon,
                 foodLogSortOrder = foodLogSortOrder,
@@ -655,6 +659,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setAiFeaturesEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setAiFeaturesEnabled(v) },
         { copy(aiFeaturesEnabled = v) },
+    )
+
+    /** Issue #8 follow-up: allow http:// URLs for user-entered endpoints in release builds. */
+    fun setAllowInsecureHttp(v: Boolean) = updateUiPref(
+        { container.prefs.setAllowInsecureHttp(v) },
+        { copy(allowInsecureHttp = v) },
     )
 
     fun setAppThemeColor(themeColor: AppThemeColor) = updateUiPref(
