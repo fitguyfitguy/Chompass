@@ -1,12 +1,16 @@
 package app.chompass.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.gestures.snapping.snapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +24,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,6 +62,8 @@ import app.chompass.ui.theme.AppColors
 private val ITEM_HEIGHT = 44.dp
 private const val VISIBLE_ITEMS = 5
 private val ROW_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS
+/** Unit wheels and other tiny ranges: kill ballistic fling so a flick is one row. */
+private const val SHORT_LIST_ITEM_COUNT = 5
 
 /**
  * Scrolling wheel picker. Items snap to the center row. The highlighted row
@@ -82,10 +87,23 @@ fun <T> WheelPicker(
     if (items.isEmpty()) return
     val initialIndex = items.indexOf(selected).coerceAtLeast(0)
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
-    val fling = rememberSnapFlingBehavior(lazyListState = listState)
+    // Always compose both flings so a list that grows past SHORT_LIST_ITEM_COUNT
+    // (custom unit added) does not change the remember count.
+    val defaultFling = rememberSnapFlingBehavior(lazyListState = listState)
+    val shortDecay = remember { exponentialDecay<Float>(frictionMultiplier = 8f) }
+    val shortSnap = remember { spring<Float>(stiffness = Spring.StiffnessMediumLow) }
+    val shortProvider = remember(listState) { SnapLayoutInfoProvider(lazyListState = listState) }
+    val shortFling = remember(shortProvider, shortDecay, shortSnap) {
+        snapFlingBehavior(
+            snapLayoutInfoProvider = shortProvider,
+            decayAnimationSpec = shortDecay,
+            snapAnimationSpec = shortSnap,
+        )
+    }
+    val fling = if (items.size <= SHORT_LIST_ITEM_COUNT) shortFling else defaultFling
 
     val centerIndex by remember {
-        derivedStateOf { listState.firstVisibleItemIndex }
+        derivedStateOf { listState.centeredIndex() ?: listState.firstVisibleItemIndex }
     }
 
     // rememberUpdatedState forwards the latest onSelect / selected into the
@@ -94,12 +112,21 @@ fun <T> WheelPicker(
     // (e.g. year + day in a date picker) move independently.
     val currentOnSelect by rememberUpdatedState(onSelect)
     val currentSelected by rememberUpdatedState(selected)
+    val currentItems by rememberUpdatedState(items)
 
-    LaunchedEffect(listState, items) {
-        snapshotFlow { listState.firstVisibleItemIndex }
+    // Commit only after the snap settles. Mid-scroll firstVisibleItemIndex is
+    // the top visible row, not the capsule row — on a 3-item unit wheel the
+    // last row never becomes first-visible (Codeberg #42).
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val inProgress = listState.isScrollInProgress
+            val idx = listState.centeredIndex()
+            inProgress to idx
+        }
             .distinctUntilChanged()
-            .collect { idx ->
-                val snapped = items.getOrNull(idx) ?: return@collect
+            .collect { (inProgress, idx) ->
+                if (inProgress) return@collect
+                val snapped = currentItems.getOrNull(idx ?: return@collect) ?: return@collect
                 if (snapped != currentSelected) currentOnSelect(snapped)
             }
     }
@@ -112,7 +139,7 @@ fun <T> WheelPicker(
     LaunchedEffect(selected, items) {
         val targetIndex = items.indexOf(selected)
         if (targetIndex >= 0 &&
-            listState.firstVisibleItemIndex != targetIndex &&
+            listState.centeredIndex() != targetIndex &&
             !listState.isScrollInProgress
         ) {
             listState.scrollToItem(targetIndex)
@@ -136,8 +163,9 @@ fun <T> WheelPicker(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = ITEM_HEIGHT * (VISIBLE_ITEMS / 2)),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(items) { item ->
-                val isSelected = item == items.getOrNull(centerIndex)
+            items(items.size) { index ->
+                val item = items[index]
+                val isSelected = index == centerIndex
                 val alpha by animateFloatAsState(
                     targetValue = if (isSelected) 1f else 0.6f,
                     label = "wheelAlpha"
