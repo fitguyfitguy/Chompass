@@ -142,7 +142,7 @@ screenshot references if the labels changed.
 | az | complete | **reviewed** (re-voiced siz→sən) |
 | it, es, nl, pt-BR, ro | complete | **reviewed** (informal kept) |
 | hi, ja, ko, zh-CN | complete | **reviewed** (hi आप, ja polite, ko 해요체, zh neutral) |
-| ar | complete | **reviewed** (MSA; device RTL pass remaining) |
+| ar | complete | **reviewed** (MSA; device RTL pass 2026-08) |
 | fr | complete | complete (vous kept; not in the native-review program) |
 
 Status as of 2026-08: **all 18 Android packs have 0 missing keys, 0
@@ -152,9 +152,6 @@ second-phase sweep also fixed the checker to count `<plurals>` keys, so the
 reported numbers include both `<string>` and `<plurals>`.
 
 Native reads of the broadened packs shipped 2026-08. Remaining:
-- **ar**: one hardware RTL check at max font scale (Home متبقي 91,5g,
-  macro chips, widgets, voice hint, formula screen). The text/RTL audit
-  was static only.
 - **fr**: not in this program. Keep vous.
 
 Second phase: all locale files were swept for verbatim EN copies: they were
