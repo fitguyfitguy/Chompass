@@ -165,5 +165,15 @@
     "per week",
     "tokens",
     "Snack"
+  ],
+  "pt-BR": [
+    "Auto",
+    "Coach",
+    "Info",
+    "Macros",
+    "Manual",
+    "Total",
+    "auto",
+    "tokens"
   ]
 }
