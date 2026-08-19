@@ -425,8 +425,8 @@
 
     <string name="progress_log_weight_title">تسجيل الوزن</string>
 
-    <string name="progress_goal_reached_title">تهانينا! 🎉</string>
-    <string name="progress_goal_reached_message">لقد وصلت إلى وزنك المستهدف! انتقل إلى الإعدادات لتبديل هدفك ثم اضغط على إعادة حساب الأهداف لتحديث مقاييسك.</string>
+    <string name="progress_goal_reached_title">تم تحقيق الهدف 🎉</string>
+    <string name="progress_goal_reached_message">لقد وصلت إلى وزنك المستهدف. انتقل إلى الإعدادات لتبديل هدفك ثم اضغط على إعادة حساب الأهداف لتحديثها.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">المعلومات الشخصية</string>
@@ -511,15 +511,15 @@
     <!-- Notification copy -->
     <string name="notif_weight_log_title">حان وقت الوزن</string>
     <string name="notif_weight_log_text">سجّل وزنك اليوم لإبقاء مخطط تقدمك دقيقاً.</string>
-    <string name="settings_health_unavailable">Health Connect غير متاح على هذا الجهاز. على Android 14 فما فوق يأتي مع النظام. استخدم تصدير/استيراد الملفات إذا لم تقدّمه الشريحة المخصّصة. لا يتطلّب Chompass تطبيق Health Connect من Play Store على Android 14+.</string>
+    <string name="settings_health_unavailable">Health Connect غير متاح على هذا الجهاز. على Android 14 فما فوق يأتي مع النظام. استخدم تصدير/استيراد الملفات إذا لم يوفّرها نظامك المخصّص. لا يتطلّب Chompass تطبيق Health Connect من Play Store على Android 14+.</string>
 
     <!-- Settings sheets / pickers -->
     <string name="sheet_ai_provider">مزود الذكاء الاصطناعي</string>
     <string name="sheet_model">النموذج</string>
     <string name="sheet_model_footer">أو اكتب أي معرّف نموذج مخصص أدناه.</string>
     <string name="sheet_any_model_id">أي معرّف نموذج</string>
-    <string name="sheet_api_key_format">مفتاح API - %1$s</string>
-    <string name="sheet_speech_api_key_format">مفتاح API للكلام - %1$s</string>
+    <string name="sheet_api_key_format">مفتاح API: %1$s</string>
+    <string name="sheet_speech_api_key_format">مفتاح API للكلام: %1$s</string>
     <string name="sheet_speech_engine">محرك الكلام</string>
     <string name="sheet_gender">الجنس</string>
     <string name="sheet_activity_level">مستوى النشاط</string>
@@ -555,7 +555,7 @@
     <string name="about_privacy">سياسة الخصوصية</string>
     <string name="about_made_by">Chompass بواسطة fitguy</string>
     <string name="about_with_care">مبني على Fud AI بواسطة Apoorv Darshan</string>
-    <string name="about_share_message">أتتبّع وجباتي مع Chompass - التقط صورة أو تحدّث أو اكتب، والذكاء الاصطناعي يسجّل السعرات الحرارية. التطبيق مجاني ومفتوح المصدر، وتبقى بياناتك على جهازك.\n\nنزّله: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">أتتبّع وجباتي مع Chompass، وهو مشتق من Fud AI بدون إعلانات. التقط صورة أو تحدّث أو اكتب، ويسجّل الذكاء الاصطناعي السعرات الحرارية. التطبيق مفتوح المصدر، وتبقى بياناتك على جهازك.\n\nالمصدر: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">شارك Chompass</string>
 
     <!-- Notifications -->
@@ -566,7 +566,7 @@
     <string name="notif_channel_weight_goal">هدف الوزن</string>
     <string name="notif_channel_weight_goal_desc">احتفال عند الوصول إلى وزن هدفك.</string>
     <string name="notif_streak_title">لا تنسَ تسجيل وجباتك</string>
-    <string name="notif_streak_text">حافظ على سلسلتك - سجّل شيئًا من اليوم.</string>
+    <string name="notif_streak_text">حافظ على سلسلتك. سجّل شيئًا من اليوم.</string>
     <string name="notif_summary_title">ملخص اليوم جاهز</string>
     <string name="notif_summary_text">اضغط لرؤية كيف اتسقت ماكروهات اليوم.</string>
 
@@ -589,33 +589,33 @@
     <string name="saved_meals_no_match">لا توجد أطعمة مطابقة</string>
     <string name="settings_section_custom_instructions">تعليمات الذكاء الاصطناعي المخصصة</string>
     <string name="settings_custom_instructions_placeholder">مثلاً: أعيش في ألمانيا، افترض أحجام حصص أوروبية، أُفضّل ماركات ALDI/REWE. أنا في مرحلة تنشيف لكمال الأجسام.</string>
-    <string name="settings_custom_instructions_footer">سياق اختياري يُرسَل مع كل طلب للذكاء الاصطناعي - المنطقة، النظام الغذائي، الأهداف الرياضية، أي شيء كنت ستكرره في كل مرة. اتركه فارغاً للتعطيل.</string>
+    <string name="settings_custom_instructions_footer">سياق اختياري يُرسَل مع كل طلب للذكاء الاصطناعي: المنطقة، النظام الغذائي، الأهداف الرياضية، أي شيء كنت ستكرره في كل مرة. اتركه فارغاً للتعطيل.</string>
     <string name="settings_save">حفظ</string>
     <string name="settings_saved">تم الحفظ</string>
     <string name="settings_section_fallback">المزود الاحتياطي</string>
     <string name="settings_enable_fallback">تفعيل الاحتياطي</string>
-    <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي - فقط اختر طرازاً مختلفاً.</string>
+    <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي. فقط اختر طرازاً مختلفاً.</string>
     <string name="widget_all_metrics_label">Chompass اليوم</string>
     <string name="widget_all_metrics_description">شاهد سعرات اليوم والبروتين والكربوهيدرات والدهون في أداة واحدة.</string>
     <string name="settings_needs_health_connect">يتطلب Health Connect</string>
-    <string name="settings_energy_goals_info">عند التفعيل، يستخدم Chompass السعرات المحروقة المقاسة من Health Connect - متوسط 14 يومًا للطاقة النشطة + الأساسية - كمرجع لسعرات الثبات (TDEE) عند حساب الأهداف، بدلًا من التقدير بالمعادلة. لا يُستخدم الذكاء الاصطناعي لقراءة الحرق. يتطلب Health Connect. يعمل مع زر إعادة الحساب ومع Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">مرة واحدة تقريبًا في الأسبوع عند فتح التطبيق، يعيد Chompass تلقائيًا تشغيل حساب الأهداف الكامل - وهو نفس الحساب الذي يستخدمه زر إعادة الحساب - استنادًا إلى ملفك الشخصي والطعام المسجّل مؤخرًا واتجاه وزنك. إذا كان Energy Burn مفعّلًا، يُستخدم حرقك المقاس كمرجع لسعرات الثبات. إذا لم يكن الذكاء الاصطناعي متاحًا، يتم التخطي بصمت. عند إيقاف هذه الميزة تُستعاد الأهداف التي كانت قبل أول تغيير أجرته. هذه ليست نصيحة طبية.</string>
-    <string name="onboarding_plan_adaptive_note">تتعدّل خطتك تلقائيًا كل أسبوع حسب تسجيلاتك - أوقف Adaptive Goals من الإعدادات لإبقائها ثابتة.</string>
-    <string name="onboarding_feature_snap">التقط صورة - والذكاء الاصطناعي يسجّلها</string>
+    <string name="settings_energy_goals_info">عند التفعيل، يستخدم Chompass السعرات المحروقة المقاسة من Health Connect (متوسط 14 يومًا للطاقة النشطة + الأساسية) كمرجع لسعرات الثبات (TDEE) عند حساب الأهداف، بدلًا من التقدير بالمعادلة. لا يُستخدم الذكاء الاصطناعي لقراءة الحرق. يتطلب Health Connect. يعمل مع زر إعادة الحساب ومع الأهداف التكيفية.</string>
+    <string name="settings_adaptive_goals_info">مرة واحدة تقريبًا في الأسبوع عند فتح التطبيق، يعيد Chompass تلقائيًا تشغيل حساب الأهداف الكامل (وهو نفس الحساب الذي يستخدمه زر إعادة الحساب) استنادًا إلى ملفك الشخصي والطعام المسجّل مؤخرًا واتجاه وزنك. إذا كان إنفاق الطاقة مفعّلًا، يُستخدم حرقك المقاس كمرجع لسعرات الثبات. إذا لم يكن الذكاء الاصطناعي متاحًا، يتم التخطي بصمت. عند إيقاف هذه الميزة تُستعاد الأهداف التي كانت قبل أول تغيير أجرته. هذه ليست نصيحة طبية.</string>
+    <string name="onboarding_plan_adaptive_note">تتعدّل خطتك تلقائيًا كل أسبوع حسب تسجيلاتك. أوقف الأهداف التكيفية من الإعدادات لإبقائها ثابتة.</string>
+    <string name="onboarding_feature_snap">التقط صورة. يسجّلها الذكاء الاصطناعي.</string>
     <string name="onboarding_feature_coach">مدرّب يعرف بياناتك</string>
     <string name="onboarding_feature_library">Health Connect للموازين والأجهزة القابلة للارتداء</string>
     <string name="onboarding_feature_widgets">أدوات الشاشة الرئيسية</string>
     <string name="whats_new_v30_workouts">تمت إزالة علامة تبويب التمارين.</string>
     <string name="whats_new_v30_home">تصميم جديد للرئيسية: عدّاد سرعة للسعرات، وأشرطة ماكرو عمودية، وأربع بطاقات مغذّيات، وزر إضافة عائم.</string>
     <string name="whats_new_v30_coach_voice">اسأل المدرب صوتيًا عبر المسجّل المدمج الجديد.</string>
-    <string name="whats_new_v30_share">شارك أي وجبة كرابط يفتح مباشرة في Chompass - على iPhone أو Android.</string>
+    <string name="whats_new_v30_share">شارك أي وجبة كرابط يُفتح مباشرة في Chompass على iPhone أو Android.</string>
     <string name="whats_new_v30_export">صدّر يوميات طعامك بصيغة JSON أو Markdown أو CSV من الإعدادات.</string>
-    <string name="whats_new_v30_reprocess">أعد معالجة وجبة مسجلة بالذكاء الاصطناعي - عدّل الاسم أو الكمية أو الملاحظة ثم أعد التحليل.</string>
+    <string name="whats_new_v30_reprocess">أعد معالجة وجبة مسجلة بالذكاء الاصطناعي: عدّل الاسم أو الكمية أو الملاحظة ثم أعد التحليل.</string>
     <string name="whats_new_v30_camera">كاميرا + كاميرا تحتفظ باللقطتين معًا جنبًا إلى جنب.</string>
     <string name="whats_new_v30_colors">10 ألوان جديدة للسمة، تُختار الآن مباشرة من الإعدادات.</string>
     <string name="whats_new_v30_bodyfat">سجل دهون الجسم: راجع واحذف الإدخالات الفردية تمامًا كما في الوزن.</string>
     <string name="whats_new_v30_units">يمكن الآن ضبط وحدتي الطول والوزن بشكل مستقل.</string>
-    <string name="whats_new_v30_adaptive">تخرّجت ميزتا الأهداف التكيفية وحرق الطاقة من المرحلة التجريبية وأصبحتا مفعّلتين افتراضيًا للتثبيتات الجديدة.</string>
+    <string name="whats_new_v30_adaptive">خرجت ميزتا الأهداف التكيفية وإنفاق الطاقة من المرحلة التجريبية وأصبحتا مفعّلتين افتراضيًا للتثبيتات الجديدة.</string>
     <string name="whats_new_v30_restore">أعدت التثبيت أو غيّرت هاتفك؟ يُستعاد الآن سجل طعامك ووزنك ودهون جسمك تلقائيًا من Health Connect.</string>
 
     <string name="add_food_quick_relog">تسجيل مرة أخرى</string>
@@ -680,7 +680,7 @@
     <string name="protein_target_mode_grams">غرامات في اليوم</string>
     <string name="protein_target_mode_label">هدف البروتين</string>
     <string name="settings_gemini_google_search_footer">عند التفعيل، قد يبحث Gemini في الويب عندما يساعد في الإجابة. تُرسل استعلامات البحث إلى Google. تُفوتر Google مشروع Gemini API. في نماذج Gemini 3، يُحسب كل استعلام بحث نُفّذ ضمن الاستخدام؛ في Gemini 2.5 والأقدم، الفوترة لكل مطالبة تستخدم البحث.</string>
-    <string name="settings_health_unavailable_platform">Health Connect غير متاح للتطبيقات على هذا الجهاز. على Android 14 فما فوق هو وحدة نظام. إذا ظهر Health Connect في الإعدادات لكن Chompass لا يتصل، قد لا تقدّم الشريحة خدمة Health Connect (شائع في بعض إصدارات de-Googled). لا يتطلّب Chompass Play Store أو sandboxed Play. استخدم تصدير/استيراد اليوميات ومقاييس الجسم، أو WebDAV اختياريًا.</string>
+    <string name="settings_health_unavailable_platform">Health Connect غير متاح للتطبيقات على هذا الجهاز. على Android 14 فما فوق هو وحدة نظام. إذا ظهر Health Connect في الإعدادات لكن Chompass لا يتصل، قد لا يوفّر النظام المخصص خدمة Health Connect (شائع في بعض إصدارات de-Googled). لا يتطلّب Chompass Play Store أو sandboxed Play. استخدم تصدير/استيراد اليوميات ومقاييس الجسم، أو WebDAV اختياريًا.</string>
     <string name="settings_meal_constituents_footer_on_device">غير متاح لـ Gemma على الجهاز: تفصيل المكوّنات يحتاج نموذجًا أقوى. انتقل إلى مزوّد سحابي لتفعيله.</string>
     <string name="settings_photo_note_prompt">السؤال عن ملاحظة للصورة</string>
     <string name="settings_photo_note_prompt_footer">عند التفعيل، يُبرز إدخال الصورة حقل الملاحظة قبل التحليل. يمكنك التأكيد والمتابعة بدون ملاحظة.</string>
@@ -1106,7 +1106,7 @@
     <string name="progressive_meal_continue">متابعة الوجبة (%1$d)</string>
     <string name="progressive_meal_discard">تجاهل الوجبة</string>
     <string name="progressive_meal_empty">لا مكونات بعد</string>
-    <string name="progressive_meal_ingredient_count">%1$d مكون</string>
+    <string name="progressive_meal_ingredient_count">%1$d مكونات</string>
     <string name="progressive_meal_log">تسجيل الوجبة</string>
     <string name="progressive_meal_name_placeholder">اسم الوجبة (اختياري)</string>
     <string name="progressive_meal_remove">إزالة المكون</string>
@@ -1123,7 +1123,7 @@
     <string name="recipe_builder_save">حفظ</string>
     <string name="recipe_builder_title_edit">تعديل الوصفة</string>
     <string name="recipe_builder_title_new">وصفة جديدة</string>
-    <string name="recipe_ingredient_count_format">%1$d مكون</string>
+    <string name="recipe_ingredient_count_format">%1$d مكونات</string>
     <string name="saved_meals_no_recipes">لا وصفات بعد\nانقر + لبناء واحدة من مكونات متعددة</string>
     <string name="saved_meals_tab_recipes">وصفات</string>
     <string name="section_date_time">التاريخ والوقت</string>
@@ -1295,7 +1295,7 @@
     <string name="settings_portion_clarify">التحقق من حجم الحصة</string>
     <string name="settings_portion_clarify_footer">عند التفعيل، يقدم كل سجل بالصورة تصحيحًا دقيقًا للوزن يعيد القياس دون استدعاء ذكاء اصطناعي آخر، بالإضافة إلى رقائق الحجم (صغيرة، عادية، كبيرة، بحجم المطعم) التي تعيد التحليل بإجابتك.</string>
     <string name="settings_progress_plots">رسوم قياسات الجسم</string>
-    <string name="settings_progress_plots_count">%1$d رسمًا</string>
+    <string name="settings_progress_plots_count">%1$d رسوم</string>
     <string name="settings_progress_plots_latest">الأحدث: %1$s %2$s</string>
     <string name="settings_progress_plots_no_data">لا قياسات بعد</string>
     <string name="settings_progress_plots_off">الرسوم معطلة</string>
@@ -1606,12 +1606,18 @@
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
     <plurals name="copy_foods_to">
-        <item quantity="one">نسخ %1$d طعام إلى %2$s</item>
-        <item quantity="other">نسخ %1$d أطعمة إلى %2$s</item>
+        <item quantity="one">نسخ طعام واحد إلى %2$s</item>
+        <item quantity="two">نسخ طعامين إلى %2$s</item>
+        <item quantity="few">نسخ %1$d أطعمة إلى %2$s</item>
+        <item quantity="many">نسخ %1$d طعامًا إلى %2$s</item>
+        <item quantity="other">نسخ %1$d طعام إلى %2$s</item>
     </plurals>
     <plurals name="import_add_meals_title">
         <item quantity="one">إضافة وجبة مشتركة</item>
-        <item quantity="other">إضافة %1$d وجبات مشتركة</item>
+        <item quantity="two">إضافة وجبتين مشتركتين</item>
+        <item quantity="few">إضافة %1$d وجبات مشتركة</item>
+        <item quantity="many">إضافة %1$d وجبةً مشتركةً</item>
+        <item quantity="other">إضافة %1$d وجبة مشتركة</item>
     </plurals>
     <string name="settings_custom_url_placeholder">https://endpoint-khas.com/v1</string>
     <string name="speech_key_placeholder_deepgram">رمز مفتاح-deepgram-الخاص بك</string>
