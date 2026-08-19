@@ -26,7 +26,7 @@
     <string name="action_analyze">分析</string>
     <string name="action_discard">破棄</string>
     <string name="action_reset">リセット</string>
-    <string name="action_keep_going">続ける</string>
+    <string name="action_keep_going">そのまま続ける</string>
     <string name="action_send">送信</string>
     <string name="action_pin">固定</string>
 
@@ -52,12 +52,12 @@
     <string name="activity_active">活発</string>
     <string name="activity_very_active">とても活発</string>
     <string name="activity_extra_active">非常に活発</string>
-    <string name="activity_sedentary_subtitle">運動はほとんど、またはまったくしない</string>
-    <string name="activity_light_subtitle">週1〜3回の運動</string>
-    <string name="activity_moderate_subtitle">週4〜5回の運動</string>
-    <string name="activity_active_subtitle">毎日の運動、または週3〜4回の激しい運動</string>
-    <string name="activity_very_active_subtitle">週6〜7回の激しい運動</string>
-    <string name="activity_extra_active_subtitle">毎日の非常に激しい運動、または肉体労働</string>
+    <string name="activity_sedentary_subtitle">運動はほとんど、またはまったくしない。\n目安の歩数：1日5,000歩未満</string>
+    <string name="activity_light_subtitle">週1〜3回の運動。\n目安の歩数：1日5,000〜7,499歩</string>
+    <string name="activity_moderate_subtitle">週4〜5回の運動。\n目安の歩数：1日7,500〜9,999歩</string>
+    <string name="activity_active_subtitle">毎日の運動、または週3〜4回の激しい運動。\n目安の歩数：1日10,000〜12,499歩</string>
+    <string name="activity_very_active_subtitle">週6〜7回の激しい運動。\n目安の歩数：1日12,500〜14,999歩</string>
+    <string name="activity_extra_active_subtitle">毎日の非常に激しい運動、または肉体労働。\n目安の歩数：1日15,000歩以上</string>
 
     <!-- Weight Goal -->
     <string name="goal_lose">減量 / Cutting</string>
@@ -90,7 +90,7 @@
     <string name="speech_key_placeholder_native">不要</string>
     <string name="speech_key_placeholder_assemblyai">あなたのAssemblyAIキー</string>
 
-    <string name="speech_description_native">Androidのオンデバイス音声認識。無料で、ほとんどの端末でオフライン動作し、リアルタイムで部分結果を表示します。デフォルトとしておすすめ。</string>
+    <string name="speech_description_native">このプロファイルで利用できる場合、端末の Android 音声認識サービスを使います。無料で、リアルタイムの部分結果があります。システムの音声認識エンジンが必要です（Assist専用アプリは対象外）。</string>
     <string name="speech_description_openai">OpenAI Whisper API。高精度で99以上の言語に対応、分単位の有料サービス。</string>
     <string name="speech_description_groq">Groqがホストする Whisper Large v3。非常に高速な推論、無料プランあり。</string>
     <string name="speech_description_deepgram">Deepgram Nova。リアルタイムとバッチの両方に対応、高速かつ高精度。</string>
@@ -129,9 +129,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">戻る</string>
     <string name="onboarding_logo_description">Chompass ロゴ</string>
-    <string name="onboarding_welcome_line1">賢く食べよう、</string>
-    <string name="onboarding_welcome_line2">より良く生きる</string>
-    <string name="onboarding_welcome_subtitle">撮って、記録して、健康に。\nあなたの栄養管理を、シンプルに。</string>
+    <string name="onboarding_welcome_line1">食事を記録して、</string>
+    <string name="onboarding_welcome_line2">バランスを保とう</string>
+    <string name="onboarding_welcome_subtitle">写真・音声・テキストで食事を記録。\n栄養がひと目でわかる。</string>
 
     <string name="onboarding_gender_title">性別を教えてください</string>
     <string name="onboarding_gender_subtitle">代謝の計算に役立ちます</string>
@@ -161,7 +161,7 @@
     <string name="onboarding_yes">はい</string>
     <string name="onboarding_no">いいえ</string>
     <string name="onboarding_body_fat_ranges">一般的な範囲：男性10-25%、女性18-35%</string>
-    <string name="onboarding_body_fat_no_worries">大丈夫です！身長、体重、年齢から\n標準的な計算式を使用します。</string>
+    <string name="onboarding_body_fat_no_worries">大丈夫です。身長、体重、年齢から\n標準的な計算式を使用します。</string>
 
     <string name="onboarding_pace_title_maintain">あなたのペース</string>
     <string name="onboarding_pace_subtitle_maintain">バランスの取れたプランを設定します</string>
@@ -379,24 +379,24 @@
     <string name="coach_empty_title">コーチに聞いてみよう</string>
     <string name="coach_empty_subtitle">コーチはあなたの体重履歴、カロリー記録、目標を確認できます。予想体重、食事内容、目標達成の方法を聞いてみましょう。</string>
     <string name="coach_reset_dialog_title">チャットをリセット</string>
-    <string name="coach_reset_dialog_message">すべてのメッセージを消去して最初からやり直しますか?この操作は取り消せません。</string>
+    <string name="coach_reset_dialog_message">すべてのメッセージを消去して最初からやり直しますか？この操作は取り消せません。</string>
     <string name="coach_reset_confirm">リセット</string>
     <string name="coach_no_profile_error">プロフィールがまだありません。先にオンボーディングを完了してください。</string>
     <string name="coach_chat_failed">チャットに失敗しました</string>
 
-    <string name="coach_chip_predict_30_days">30日後の予想体重は?</string>
-    <string name="coach_chip_lose_faster">安全に早く痩せるには?</string>
-    <string name="coach_chip_eating_too_much">食べ過ぎ?</string>
-    <string name="coach_chip_what_dinner">夕食に何を食べる?</string>
-    <string name="coach_chip_gain_healthy">健康的に太るには?</string>
-    <string name="coach_chip_eating_enough">十分食べてる?</string>
-    <string name="coach_chip_high_protein">追加できる高タンパク食品は?</string>
-    <string name="coach_chip_holding_weight">体重を維持できてる?</string>
-    <string name="coach_chip_average_intake">平均摂取量は?</string>
-    <string name="coach_chip_macro_suggestions">マクロの提案は?</string>
-    <string name="coach_chip_trend">僕の傾向は?</string>
-    <string name="coach_chip_doing_this_week">今週の調子は?</string>
-    <string name="coach_chip_log_advice">記録に基づいたアドバイスは?</string>
+    <string name="coach_chip_predict_30_days">30日後の予想体重は？</string>
+    <string name="coach_chip_lose_faster">安全に早く痩せるには？</string>
+    <string name="coach_chip_eating_too_much">食べ過ぎ？</string>
+    <string name="coach_chip_what_dinner">夕食に何を食べる？</string>
+    <string name="coach_chip_gain_healthy">健康的に太るには？</string>
+    <string name="coach_chip_eating_enough">十分食べてる？</string>
+    <string name="coach_chip_high_protein">追加できる高タンパク食品は？</string>
+    <string name="coach_chip_holding_weight">体重を維持できてる？</string>
+    <string name="coach_chip_average_intake">平均摂取量は？</string>
+    <string name="coach_chip_macro_suggestions">マクロの提案は？</string>
+    <string name="coach_chip_trend">私の傾向は？</string>
+    <string name="coach_chip_doing_this_week">今週の調子は？</string>
+    <string name="coach_chip_log_advice">記録に基づいたアドバイスは？</string>
 
     <!-- Progress -->
     <string name="progress_range_week">1週</string>
@@ -424,19 +424,19 @@
 
     <string name="progress_log_weight_title">体重を記録</string>
 
-    <string name="progress_goal_reached_title">おめでとうございます！ 🎉</string>
-    <string name="progress_goal_reached_message">目標体重に到達しました！設定で目標を切り替えて「目標を再計算」をタップし、ターゲットを更新してください。</string>
+    <string name="progress_goal_reached_title">目標達成 🎉</string>
+    <string name="progress_goal_reached_message">目標体重に到達しました。設定で目標を切り替えて「目標を再計算」をタップし、ターゲットを更新してください。</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">個人情報</string>
     <string name="settings_section_goals">目標と栄養</string>
-    <string name="settings_section_app">App設定</string>
-    <string name="settings_section_ai">AIプロバイダ</string>
+    <string name="settings_section_app">アプリ設定</string>
+    <string name="settings_section_ai">AIと音声</string>
     <string name="settings_section_speech">音声入力</string>
     <string name="settings_section_health">ヘルスとデータ</string>
     <string name="settings_group_app_display">アプリと表示</string>
     <string name="settings_group_ai">AIと音声</string>
-    <string name="settings_group_data">ヘルス、データ、同期</string>
+    <string name="settings_group_data">ヘルスとデータ</string>
     <string name="settings_group_personal_summary">性別、身長、体重、計測</string>
     <string name="settings_group_goals_summary">食事、マクロ、適応目標</string>
     <string name="settings_group_app_summary">外観、ホーム、通知</string>
@@ -453,7 +453,7 @@
 
     <string name="settings_weight_goal">体重目標</string>
     <string name="settings_activity_level">活動レベル</string>
-    <string name="settings_weekly_change">週間の変化</string>
+    <string name="settings_weekly_change">週ごとの変化</string>
     <string name="settings_weekly_default">0.50 kg/週</string>
     <string name="settings_goal_weight">目標体重</string>
     <string name="settings_calories">カロリー</string>
@@ -467,7 +467,7 @@
     <string name="settings_appearance_light">ライト</string>
     <string name="settings_appearance_dark">ダーク</string>
     <string name="settings_appearance_oled">OLED</string>
-    <string name="settings_metric_units">メートル単位</string>
+    <string name="settings_metric_units">メートル法</string>
     <string name="settings_height_unit">身長の単位</string>
     <string name="settings_weight_unit">体重の単位</string>
     <string name="settings_week_starts">週の始まり</string>
@@ -475,7 +475,7 @@
     <string name="settings_week_sunday">日曜日</string>
     <string name="settings_notifications">通知</string>
     <string name="settings_battery_opt">バッテリー最適化</string>
-    <string name="settings_battery_opt_value">Chompass を除外</string>
+    <string name="settings_battery_opt_value">Chompass を最適化の対象から除外</string>
 
     <string name="settings_ai_provider">プロバイダ</string>
     <string name="settings_ai_model">モデル</string>
@@ -496,7 +496,7 @@
     <string name="settings_delete_all_title">ローカルデータをすべて削除しますか？</string>
     <string name="settings_delete_all_message">プロフィール、食事ログ、体重履歴、チャット、APIキーを削除し、オンボーディングに戻ります。Health Connect のデータはそのまま残ります。</string>
     <string name="settings_max_pinned_title">最大2つ固定</string>
-    <string name="settings_max_pinned_message">一度に固定できるマクロは最大2つです。まず別のマクロの固定を解除してください（タップして「自動バランスにリセット」をタップ）。</string>
+    <string name="settings_max_pinned_message">一度に固定できるマクロは最大2つです。まず別のマクロの固定を解除してください（ロックアイコンをタップ）。</string>
     <string name="settings_recalc_title">目標を再計算しますか？</string>
     <string name="settings_recalc_message">身長/体重/活動レベル/目標から、カロリーとマクロを計算式のデフォルトにリセットします。固定中のマクロはすべて解除されます。</string>
     <string name="settings_recalc_confirm">再計算</string>
@@ -517,8 +517,8 @@
     <string name="sheet_model">モデル</string>
     <string name="sheet_model_footer">または下にカスタムモデルIDを入力してください。</string>
     <string name="sheet_any_model_id">任意のモデルID</string>
-    <string name="sheet_api_key_format">APIキー - %1$s</string>
-    <string name="sheet_speech_api_key_format">音声APIキー - %1$s</string>
+    <string name="sheet_api_key_format">APIキー: %1$s</string>
+    <string name="sheet_speech_api_key_format">音声APIキー: %1$s</string>
     <string name="sheet_speech_engine">音声エンジン</string>
     <string name="sheet_gender">性別</string>
     <string name="sheet_activity_level">活動レベル</string>
@@ -530,7 +530,7 @@
     <string name="sheet_week_starts">週の始まり</string>
     <string name="sheet_height">身長</string>
     <string name="sheet_body_fat_percent">体脂肪率 %</string>
-    <string name="sheet_weekly_change">週間の変化</string>
+    <string name="sheet_weekly_change">週ごとの変化</string>
     <string name="sheet_weekly_change_format">%1$.1f %2$s/週 %3$s</string>
     <string name="sheet_weekly_change_loss">減量</string>
     <string name="sheet_weekly_change_gain">増量</string>
@@ -553,7 +553,7 @@
     <string name="about_request_feature">機能をリクエスト</string>
     <string name="about_privacy">プライバシーポリシー</string>
     <string name="about_with_care">Apoorv Darshan 作の Fud AI をベースに</string>
-    <string name="about_share_message">食事の記録は Chompass で。写真を撮るか話すか入力するだけで、AI がカロリーを記録します。無料・オープンソースで、データは端末内に残ります。\n\nダウンロード: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">食事の記録は Chompass で。Fud AI の広告なしフォークです。写真を撮るか話すか入力するだけで、AI がカロリーを記録します。オープンソースで、データは端末内に残ります。\n\n出典: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass を共有</string>
 
     <!-- Notifications -->
@@ -564,7 +564,7 @@
     <string name="notif_channel_weight_goal">体重目標</string>
     <string name="notif_channel_weight_goal_desc">目標体重に到達したときのお祝い。</string>
     <string name="notif_streak_title">食事の記録を忘れずに</string>
-    <string name="notif_streak_text">連続記録を続けましょう - 今日のものを記録してください。</string>
+    <string name="notif_streak_text">連続記録を続けましょう。今日のものを記録してください。</string>
     <string name="notif_summary_title">今日のサマリーが準備できました</string>
     <string name="notif_summary_text">タップして今日のマクロの状況を確認。</string>
 
@@ -587,28 +587,28 @@
     <string name="saved_meals_no_match">一致する食事がありません</string>
     <string name="settings_section_custom_instructions">カスタムAIインストラクション</string>
     <string name="settings_custom_instructions_placeholder">例: ドイツ在住で、ヨーロッパの分量を想定し、ALDI/REWEのブランドを優先します。ボディビルの減量期です。</string>
-    <string name="settings_custom_instructions_footer">すべてのAIリクエストと一緒に送信される任意のコンテキスト - 地域、食事制限、トレーニング目標など、毎回繰り返したくない情報。無効にするには空のままにしてください。</string>
+    <string name="settings_custom_instructions_footer">すべてのAIリクエストと一緒に送信される任意のコンテキスト：地域、食事制限、トレーニング目標など、毎回繰り返したくない情報。無効にするには空のままにしてください。</string>
     <string name="settings_save">保存</string>
     <string name="settings_saved">保存しました</string>
     <string name="settings_section_fallback">フォールバックプロバイダー</string>
     <string name="settings_enable_fallback">フォールバックを有効にする</string>
-    <string name="settings_fallback_footer">プライマリプロバイダーが失敗した場合（過負荷、レート制限、ネットワークエラー）、アプリはこのフォールバックで自動的に再試行します。プライマリと同じプロバイダーも使用できます - 別のモデルを選んでください。</string>
+    <string name="settings_fallback_footer">プライマリプロバイダーが失敗した場合（過負荷、レート制限、ネットワークエラー）、アプリはこのフォールバックで自動的に再試行します。プライマリと同じプロバイダーも使用できます。別のモデルを選んでください。</string>
     <string name="widget_all_metrics_label">Chompass 今日</string>
     <string name="widget_all_metrics_description">今日のカロリー・タンパク質・炭水化物・脂質を1つのウィジェットで確認。</string>
     <string name="settings_needs_health_connect">Health Connectが必要</string>
-    <string name="settings_energy_goals_info">オンにすると、ChompassはHealth Connectから取得した実測の消費カロリー（アクティブ＋基礎代謝の14日間平均）を、数式による推定の代わりに維持カロリー（TDEE）の基準として目標計算に使います。消費カロリーの読み取りにAIは使いません。Health Connectが必要です。「再計算」ボタンおよびAdaptive Goalsと連動します。</string>
-    <string name="settings_adaptive_goals_info">週に1回ほど、アプリを開いたときに、Chompassがプロフィール・最近の食事記録・体重トレンドをもとに、「再計算」ボタンと同じ目標計算全体を自動で再実行します。Energy Burnがオンの場合は、実測の消費カロリーを維持カロリーの基準として使います。AIが利用できないときは何もせずスキップします。オフにすると、この機能が最初に変更する前の目標に戻ります。これは医療アドバイスではありません。</string>
-    <string name="onboarding_plan_adaptive_note">プランは記録に合わせて週1回自動調整されます。固定したい場合は設定でAdaptive Goalsをオフにしてください。</string>
-    <string name="onboarding_feature_snap">写真を撮るだけ - AIが記録</string>
+    <string name="settings_energy_goals_info">オンにすると、ChompassはHealth Connectから取得した実測の消費カロリー（アクティブ＋基礎代謝の14日間平均）を、数式による推定の代わりに維持カロリー（TDEE）の基準として目標計算に使います。消費カロリーの読み取りにAIは使いません。Health Connectが必要です。「再計算」ボタンおよび適応型目標と連動します。</string>
+    <string name="settings_adaptive_goals_info">週に1回ほど、アプリを開いたときに、Chompassがプロフィール・最近の食事記録・体重トレンドをもとに、「再計算」ボタンと同じ目標計算全体を自動で再実行します。エネルギー消費がオンの場合は、実測の消費カロリーを維持カロリーの基準として使います。AIが利用できないときは何もせずスキップします。オフにすると、この機能が最初に変更する前の目標に戻ります。これは医療アドバイスではありません。</string>
+    <string name="onboarding_plan_adaptive_note">プランは記録に合わせて週1回自動調整されます。固定したい場合は設定で適応型目標をオフにしてください。</string>
+    <string name="onboarding_feature_snap">写真を撮るだけ。AIが記録。</string>
     <string name="onboarding_feature_coach">あなたのデータを知るコーチ</string>
     <string name="onboarding_feature_library">体重計・ウェアラブル向け Health Connect</string>
     <string name="onboarding_feature_widgets">ホーム画面ウィジェット</string>
     <string name="whats_new_v30_workouts">ワークアウトタブは削除されました。</string>
     <string name="whats_new_v30_home">ホームを刷新：スピードメーター型カロリーゲージ、縦型マクロバー、4枚の栄養素カード、フローティング追加ボタン。</string>
     <string name="whats_new_v30_coach_voice">新しいインラインレコーダーで、コーチに音声で質問できます。</string>
-    <string name="whats_new_v30_share">食事をリンクとして共有 - iPhoneでもAndroidでもChompassが直接開きます。</string>
+    <string name="whats_new_v30_share">食事をリンクとして共有。iPhoneでもAndroidでもChompassが直接開きます。</string>
     <string name="whats_new_v30_export">設定から食事日記をJSON・Markdown・CSVでエクスポート。</string>
-    <string name="whats_new_v30_reprocess">記録済みの食事をAIで再解析 - 名前・分量・メモを調整して再分析できます。</string>
+    <string name="whats_new_v30_reprocess">記録済みの食事をAIで再解析。名前・分量・メモを調整して再分析できます。</string>
     <string name="whats_new_v30_camera">カメラ＋カメラは2枚の写真を並べて保存します。</string>
     <string name="whats_new_v30_colors">テーマカラーを10色追加。設定内でそのまま選べます。</string>
     <string name="whats_new_v30_bodyfat">体脂肪履歴：体重と同じように、個別の記録を確認・削除できます。</string>
@@ -628,7 +628,7 @@
     <string name="entry_analysis_add_photo">写真を追加</string>
     <string name="entry_analysis_busy_analyzing">分析中…</string>
     <string name="entry_analysis_busy_filling">栄養情報を入力中…</string>
-    <string name="entry_analysis_busy_units">提供量単位を計算中…</string>
+    <string name="entry_analysis_busy_units">分量単位を計算中…</string>
     <string name="entry_analysis_ready">確認の準備完了</string>
     <string name="entry_analysis_status_helper">写真内のバーコードを確認し、AIプロバイダーに栄養情報を問い合わせます。</string>
     <string name="entry_analysis_streaming_hint">AIの応答に合わせて値が表示されます。記録前に確認できます。</string>
@@ -710,8 +710,8 @@
     <string name="ai_error_coach_on_device">コーチはまだオンデバイスプロバイダーに対応していません。設定 → AI プロバイダーでクラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_coach_round_limit">コーチは回答できませんでした。質問の言い方を変えてみてください。</string>
     <string name="ai_error_disabled">AI 機能は設定 → AI と音声でオフになっています。</string>
-    <string name="ai_error_grounded_on_device">Grounded ツールループはオンデバイスモデルでは利用できません。</string>
-    <string name="ai_error_grounded_requires_provider">Grounded ツールループには有効な AI プロバイダーが必要です。</string>
+    <string name="ai_error_grounded_on_device">Grounded モードはオンデバイスモデルでは利用できません。</string>
+    <string name="ai_error_grounded_requires_provider">Grounded モードには有効な AI プロバイダーが必要です。</string>
     <string name="ai_error_image_conversion_failed">画像を処理できませんでした。</string>
     <string name="ai_error_invalid_response">AI の応答を理解できませんでした。もう一度お試しください。</string>
     <string name="ai_error_invalid_url">API URL が無効です。プロバイダー設定を確認してください。</string>
@@ -1056,7 +1056,7 @@
     <string name="onboarding_api_key_test">キーをテスト</string>
     <string name="onboarding_api_key_testing">テスト中…</string>
     <string name="onboarding_api_key_works">キーは動作します</string>
-    <string name="onboarding_diet_mode_subtitle">デフォルトのコーチングスタイルを選択</string>
+    <string name="onboarding_diet_mode_subtitle">デフォルトの推奨スタイルを選択</string>
     <string name="onboarding_diet_mode_title">食事モードを利用していますか？</string>
     <string name="onboarding_disclaimers_subtitle">これらの重要な注意事項をお読みください</string>
     <string name="onboarding_disclaimers_title">始める前に</string>
@@ -1170,7 +1170,7 @@
     <string name="settings_calc_home_gauge_name">ホームリングの活動消費</string>
     <string name="settings_calc_home_gauge_used">ホーム表示では、活動消費を目標に追加したり、ネット摂取を追跡したり、消費ヒントを表示したりできます。活動レベルの推定値は TDEE マイナス BMR です（PAL 乗数の部分）。「活動を追加」と「二重」は Health Connect オフ時にその推定値を使用し、「ネット」は Health Connect の測定消費が必要です。「活動を追加」は保存済み目標を座位ベースと今日の活動レイヤーに分割し、活動が二重計上されないようにします。「活動を追加」では、活動レベルをトレーニングなしの日常に設定してください。測定または推定の活動がワークアウトをカバーし、高い PAL に積み上がりません。</string>
     <string name="settings_calc_intro">1日のカロリーとマクロの目標は AI が設定します。「目標を再計算」をタップするか、適応型目標オンの場合に週1回程度自動で、Chompass はプロフィール、下記の参照式、最近記録した食事、体重傾向を AI プロバイダーに送信します。査読済みの計算式から始め、データに合わせて調整して維持量と目標を推定します。</string>
-    <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kg)\nLBM = 体重 × (1 − %体脂肪)</string>
+    <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = 体重 × (1 − %体脂肪)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 式</string>
     <string name="settings_calc_katch_used">体脂肪率を入力すると自動で使用されます。総体重ではなく除脂肪体重から BMR を導出するため、痩せ型・アスリートに正確です。</string>
     <string name="settings_calc_macro_split">マクロ栄養素の配分</string>
@@ -1179,7 +1179,7 @@
     <string name="settings_calc_micro_name">食事ごとの推定</string>
     <string name="settings_calc_micro_used">食事ごとに返されるカロリー、マクロ、食物繊維、糖質、飽和脂肪酸、コレステロール、ナトリウム、カリウムなどの微量栄養素値は、選択した AI プロバイダーを使用して、食品画像、音声文字起こし、テキスト説明から AI が生成した推定値です。</string>
     <string name="settings_calc_micro_values">微量栄養素の値</string>
-    <string name="settings_calc_mifflin_formula">男性：10×体重(kg) + 6,25×身長(cm) − 5×年齢 + 5\n女性：10×体重(kg) + 6,25×身長(cm) − 5×年齢 − 161</string>
+    <string name="settings_calc_mifflin_formula">男性：10×体重(kg) + 6.25×身長(cm) − 5×年齢 + 5\n女性：10×体重(kg) + 6.25×身長(cm) − 5×年齢 − 161</string>
     <string name="settings_calc_mifflin_name">Mifflin-St Jeor 式</string>
     <string name="settings_calc_mifflin_used">安静時代謝のデフォルト式。体脂肪率を入力していない場合に使用されます。</string>
     <string name="settings_calc_sec_bmr">安静時代謝（BMR）</string>
@@ -1187,15 +1187,15 @@
     <string name="settings_calc_sec_forecast">体重傾向と適応型目標</string>
     <string name="settings_calc_sec_home_gauge">ホームのカロリーゲージ</string>
     <string name="settings_calc_sec_tdee">1日のエネルギー消費（TDEE）</string>
-    <string name="settings_calc_split_formula">タンパク質：活動レベルに応じて kg あたり約0,8〜2,2 g（減量時はやや高め）\n脂質：体重 kg あたり約0,6 g\n炭水化物：残りのカロリー ÷ 4 kcal/g</string>
+    <string name="settings_calc_split_formula">タンパク質：活動レベルに応じて kg あたり約0.8〜2.2 g（減量時はやや高め）\n脂質：体重 kg あたり約0.6 g\n炭水化物：残りのカロリー ÷ 4 kcal/g</string>
     <string name="settings_calc_split_name">タンパク質・炭水化物・脂質の目標</string>
     <string name="settings_calc_split_used">AI はこれらの参照をガイドに、タンパク質・炭水化物・脂質をカロリーターゲットに合わせます。タンパク質は活動レベルでスケールし（体脂肪 %% 設定時は除脂肪体重ベース）、脂質は体重から、炭水化物は残りを埋めます。任意の値を固定したり、設定で自分で編集したりできます。</string>
     <string name="settings_calc_target_formula">体脂肪1ポンド ≈ 3500 kcal · 1 kg ≈ 7700 kcal\n週のペース ÷ 7 を維持量から引き（減量）または足し（増量）、1日のカロリーターゲットを設定します。</string>
     <string name="settings_calc_target_name">維持量と目標調整</string>
     <string name="settings_calc_target_used">維持量は TDEE から始まります。エネルギー消費オンの場合、Health Connect の測定消費（14日間の活動+基礎平均）から始まります。AI は記録された摂取量と体重傾向に対して維持量を精緻化し、目標を適用します：週の体重変化ペースが1日のカロリー不足（減量）または超過（増量）になります。</string>
-    <string name="settings_calc_tdee_formula">座位：1,2 · 軽度：1,375 · 中度：1,465 · 活動的：1,55 · 非常に活動的：1,725 · 超活動的：1,9</string>
+    <string name="settings_calc_tdee_formula">座位：1.2 · 軽度：1.375 · 中度：1.465 · 活動的：1.55 · 非常に活動的：1.725 · 超活動的：1.9</string>
     <string name="settings_calc_tdee_name">活動係数法</string>
-    <string name="settings_calc_tdee_used">TDEE = BMR × 活動係数。係数は選択した活動レベルに対応します。中度は、週に数回運動するデスクワーカー向けに1,465（FAO/WHO の軽度1,375と中度1,55の間）を使用します。これは AI が開始する維持ベースラインです（エネルギー消費が測定値を提供しない場合）。</string>
+    <string name="settings_calc_tdee_used">TDEE = BMR × 活動係数。係数は選択した活動レベルに対応します。中度は、週に数回運動するデスクワーカー向けに1.465（FAO/WHO の軽度1.375と中度1.55の間）を使用します。これは AI が開始する維持ベースラインです（エネルギー消費が測定値を提供しない場合）。</string>
     <string name="settings_customize_progress">進捗をカスタマイズ</string>
     <string name="settings_customize_progress_summary">%1$s · %2$s</string>
     <string name="settings_danger_zone">危険ゾーン</string>
@@ -1334,7 +1334,7 @@
     <string name="settings_suggestion_water_reminders">ペースを保つための飲水ウィンドウ・リマインダー計画を設定</string>
     <string name="settings_suggestion_water_tracking">水分補給目標達成のため水を記録</string>
     <string name="settings_suggestions">提案</string>
-    <string name="settings_suggestions_dismiss">閉じる</string>
+    <string name="settings_suggestions_dismiss">却下</string>
     <string name="settings_sync_blurb">任意の自己ホスト同期。Android と PWA を同じ WebDAV ファイル（例：Nextcloud）に向けるか、同期 JSON を共有します。Chompass は同期サーバーを運営しません。API キーと食品の写真は含まれません。</string>
     <string name="settings_sync_now">今すぐ同期</string>
     <string name="settings_sync_section">同期</string>
@@ -1363,7 +1363,7 @@
     <string name="settings_water_food_water_help">大まかな推定：今日記録した食品重量の60%、上限1 L。</string>
     <string name="settings_water_goal">1日の水分目標</string>
     <string name="settings_water_goal_summary">%1$d ml</string>
-    <string name="settings_water_goal_wheel_help">50 ml 刻みでスクロールし、50〜10 000 ml の1日目標を選択します。</string>
+    <string name="settings_water_goal_wheel_help">50 ml 刻みでスクロールし、50〜10,000 ml の1日目標を選択します。</string>
     <string name="settings_water_intro">飲水量を記録し、1日の目標を設定して、体重・天気・活動に合わせて調整できます。</string>
     <string name="settings_water_manual_temp">今日の予想最高気温</string>
     <string name="settings_water_manual_temp_help">1日の目標は25 °Cを超えると上昇します（1度につき+4%、上限+60%）。位置情報の権限は不要です。手動で設定してください。</string>
