@@ -2,17 +2,21 @@
 set -euo pipefail
 
 # Full-seed perf suite: cold start, Progress (go/ + range chips), tabs,
-# Settings Food/Goals, Add Food hub, relog bench, analyze+save pipeline.
+# Settings Food/Goals, Add Food hub, Home fling/day/swipe/sip, relog bench,
+# analyze+save pipeline.
 # Seed first with ./scripts/install_debug.sh; do not pass seed extras here.
 # Usage:
 #   scripts/capture_android_perf_baseline.sh [package]
 #   ADB_BIN=/path/to/adb scripts/capture_android_perf_baseline.sh [package]
-#   RUN_ENTRY_BENCH=0 RUN_RELOG_BENCH=0   # skip live AI / relog tails
+#   RUN_ENTRY_BENCH=0 RUN_RELOG_BENCH=0 RUN_WATER_SIP_BENCH=0
 # Default package is the debug flavor. See docs/PERFORMANCE.md.
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/_adb_resolve.sh
+. "${ROOT}/scripts/_adb_resolve.sh"
 
 PACKAGE="${1:-app.chompass.debug}"
 ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
-ADB_BIN="${ADB_BIN:-adb}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 OUT_DIR="android/build/perf-baseline/${STAMP}"
 HOME_SETTLE_SECONDS="${HOME_SETTLE_SECONDS:-4}"
@@ -40,7 +44,19 @@ RUN_ENTRY_BENCH="${RUN_ENTRY_BENCH:-1}"
 ENTRY_COUNT="${ENTRY_COUNT:-3}"
 RUN_RELOG_BENCH="${RUN_RELOG_BENCH:-1}"
 RELOG_COUNT="${RELOG_COUNT:-3}"
+RUN_WATER_SIP_BENCH="${RUN_WATER_SIP_BENCH:-1}"
+WATER_SIP_COUNT="${WATER_SIP_COUNT:-1}"
 ENTRY_TIMEOUT="${ENTRY_TIMEOUT:-240}"
+# Pixel 9a 1080×2424-ish: Home fling / hero day-swipe / first food-row swipe.
+HOME_FLING_FROM_Y="${HOME_FLING_FROM_Y:-1900}"
+HOME_FLING_TO_Y="${HOME_FLING_TO_Y:-700}"
+DAY_SWIPE_Y="${DAY_SWIPE_Y:-520}"
+DAY_CHIP_Y="${DAY_CHIP_Y:-180}"
+FOOD_ROW_Y="${FOOD_ROW_Y:-1400}"
+WATER_SIP_X="${WATER_SIP_X:-880}"
+WATER_SIP_Y="${WATER_SIP_Y:-2080}"
+PROGRESS_FLING_FROM_Y="${PROGRESS_FLING_FROM_Y:-1900}"
+PROGRESS_FLING_TO_Y="${PROGRESS_FLING_TO_Y:-700}"
 
 mkdir -p "${OUT_DIR}"
 
@@ -61,6 +77,21 @@ wait_fud_mark() {
   done
   echo "WARNING: timed out waiting for ${needle} in ${dest}" >&2
   return 1
+}
+
+capture_input() {
+  local name="$1"
+  shift
+  "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
+  "${ADB_BIN}" logcat -c
+  "${ADB_BIN}" shell input "$@"
+  sleep "${TAB_SETTLE_SECONDS}"
+  "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_${name}.txt"
+  local pid
+  pid="$("${ADB_BIN}" shell pidof -s "${PACKAGE}" 2>/dev/null | tr -d '\r')"
+  if [ -n "${pid}" ]; then
+    "${ADB_BIN}" logcat -d -s FudAIPerf --pid="${pid}" > "${OUT_DIR}/logcat_${name}.txt" || true
+  fi
 }
 
 echo "Using package: ${PACKAGE}"
@@ -142,6 +173,9 @@ for i in "${!RANGE_XS[@]}"; do
 done
 "${ADB_BIN}" shell dumpsys meminfo "${PACKAGE}" > "${OUT_DIR}/meminfo_progress_all.txt"
 
+echo "Collecting Progress fling after All-range..."
+capture_input progress_fling swipe 540 "${PROGRESS_FLING_FROM_Y}" 540 "${PROGRESS_FLING_TO_Y}" 250
+
 echo "Collecting tab-switch framestats via chompass://go (Home → Progress → Coach → Settings → Home)..."
 "${ADB_BIN}" shell am force-stop "${PACKAGE}"
 "${ADB_BIN}" shell am start -W -n "${ACTIVITY}" > "${OUT_DIR}/start_tab_loop.txt"
@@ -162,9 +196,28 @@ for hop in settings/food settings/goals; do
   "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_settings_${slug}.txt"
 done
 
-echo "Collecting Add Food hub + quick-relog open..."
+echo "Collecting Home fling / day switch / food-row swipe..."
 go_nav home
 sleep "${TAB_SETTLE_SECONDS}"
+capture_input home_fling swipe 540 "${HOME_FLING_FROM_Y}" 540 "${HOME_FLING_TO_Y}" 250
+# Hero swipe-right → yesterday (120dp threshold; more reliable than a day chip).
+capture_input day_switch swipe 200 "${DAY_SWIPE_Y}" 850 "${DAY_SWIPE_Y}" 120
+# Also tap yesterday's week-strip chip when today is not Monday.
+DOW="$("${ADB_BIN}" shell date +%u 2>/dev/null | tr -d '\r')"
+if [ -n "${DOW}" ] && [ "${DOW}" -ge 2 ] && [ "${DOW}" -le 7 ]; then
+  # 16dp side pad ≈ 42px on 2.625 density; 7 equal tiles on 1080-wide.
+  today_idx=$((DOW - 1))
+  yday_idx=$((today_idx - 1))
+  yday_x=$((42 + yday_idx * 142 + 71))
+  capture_input day_chip tap "${yday_x}" "${DAY_CHIP_Y}"
+fi
+# Short left-swipe on the first food row: reveal then cancel (snaps back).
+capture_input row_swipe swipe 900 "${FOOD_ROW_Y}" 550 "${FOOD_ROW_Y}" 180
+# Back to today so later hub/relog land on the seeded day.
+go_nav home
+sleep "${TAB_SETTLE_SECONDS}"
+
+echo "Collecting Add Food hub + quick-relog open..."
 "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
 "${ADB_BIN}" logcat -c
 "${ADB_BIN}" shell input tap "${ADD_FOOD_FAB_X}" "${ADD_FOOD_FAB_Y}"
@@ -178,6 +231,23 @@ fi
 "${ADB_BIN}" shell input tap "${RELOG_CHIP_X}" "${RELOG_CHIP_Y}"
 sleep 1
 "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_relog_chip.txt"
+# Re-open the hub and tap the water + (sheet dismisses on sip).
+go_nav home
+sleep "${TAB_SETTLE_SECONDS}"
+"${ADB_BIN}" shell input tap "${ADD_FOOD_FAB_X}" "${ADD_FOOD_FAB_Y}"
+sleep "${TAB_SETTLE_SECONDS}"
+capture_input water_sip tap "${WATER_SIP_X}" "${WATER_SIP_Y}"
+
+if [ "${RUN_WATER_SIP_BENCH}" = 1 ]; then
+  echo "Running water-sip benchmark (${WATER_SIP_COUNT}x, no coordinates)..."
+  "${ADB_BIN}" logcat -c
+  "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_water_sip_bench.txt" &
+  WATER_PID=$!
+  "${ADB_BIN}" shell am start -n "${ACTIVITY}" --ez run_water_sip_benchmark true --ei water_sip_benchmark_count "${WATER_SIP_COUNT}" >/dev/null
+  wait_fud_mark "op=waterSip phase=done" "${OUT_DIR}/logcat_water_sip_bench.txt" 30 || true
+  sleep 1
+  kill "${WATER_PID}" 2>/dev/null || true
+fi
 
 if [ "${RUN_RELOG_BENCH}" = 1 ]; then
   echo "Running relog benchmark (${RELOG_COUNT}x first hub row, no coordinates)..."

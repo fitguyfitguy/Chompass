@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import app.chompass.AppContainer
@@ -123,12 +125,22 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
         }.let { baseData ->
             combine(
                 baseData,
-                container.foodRepository.entries,
                 container.prefs.weightUnit,
                 timeRange,
-                goalReached
-            ) { base, foods, weightUnit, selectedRange, showGoalReached ->
-                ProgressSnapshot(base, foods, weightUnit, selectedRange, showGoalReached)
+                goalReached,
+            ) { base, weightUnit, selectedRange, showGoalReached ->
+                ProgressRangeInputs(base, weightUnit, selectedRange, showGoalReached)
+            }.flatMapLatest { inputs ->
+                val (start, end) = inputs.selectedRange.dateRange()
+                container.foodRepository.entriesBetween(start, end).map { foods ->
+                    ProgressSnapshot(
+                        base = inputs.base,
+                        foods = foods,
+                        weightUnit = inputs.weightUnit,
+                        selectedRange = inputs.selectedRange,
+                        showGoalReached = inputs.showGoalReached,
+                    )
+                }
             }.mapLatest { snapshot ->
                 withContext(Dispatchers.Default) {
                     app.chompass.services.PerfLog.measure(
@@ -208,6 +220,13 @@ private data class DailyFoodAggregate(
     var protein: Double = 0.0,
     var carbs: Double = 0.0,
     var fat: Double = 0.0
+)
+
+private data class ProgressRangeInputs(
+    val base: BaseProgressData,
+    val weightUnit: String,
+    val selectedRange: TimeRange,
+    val showGoalReached: Boolean,
 )
 
 private data class ProgressSnapshot(

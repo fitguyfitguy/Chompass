@@ -46,10 +46,13 @@ import app.chompass.models.WeightEntry
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters
 import app.chompass.models.UnitFormat
 
 /** One plotted point on a trend chart — either a raw entry or the average of
@@ -89,6 +92,33 @@ internal data class BodyFatChartModel(
     val showsDots: Boolean,
     val goalPercent: Double?
 )
+
+/**
+ * Cap calorie-bar draw calls. 1W/1M stay daily. Longer ranges roll up to ISO
+ * weeks (iOS weekly bars); if that still exceeds [maxBars] (All over years),
+ * fold weeks into equal-width buckets. Badge totals must use the unbucketed
+ * series — this is canvas-only.
+ */
+internal fun downsampleCalorieBars(
+    dailyCalories: List<Pair<LocalDate, Int>>,
+    maxBars: Int = 90,
+): List<Pair<LocalDate, Int>> {
+    if (dailyCalories.size <= maxBars) return dailyCalories
+    val weekly = dailyCalories
+        .groupBy { it.first.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+        .toSortedMap()
+        .map { (weekStart, days) -> weekStart to days.sumOf { it.second } }
+    if (weekly.size <= maxBars) return weekly
+    val first = weekly.first().first
+    val last = weekly.last().first
+    val spanDays = ChronoUnit.DAYS.between(first, last).coerceAtLeast(1)
+    val bucketDays = ((spanDays + maxBars - 1) / maxBars).coerceAtLeast(7)
+    return weekly
+        .groupBy { ChronoUnit.DAYS.between(first, it.first) / bucketDays }
+        .toSortedMap()
+        .values
+        .map { bucket -> bucket.first().first to bucket.sumOf { it.second } }
+}
 
 /** Averages a date-sorted series into equal date buckets once it outgrows
  *  [maxPoints]. Hundreds of raw readings drew every dot on top of its

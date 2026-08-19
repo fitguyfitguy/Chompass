@@ -301,6 +301,111 @@ data class HomeUiState(
     }
 
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
+
+    /**
+     * Ignore in-flight photo [ByteArray] identity so a water/saving/`copy`
+     * that keeps the same pixels does not bust every Home collector. Image
+     * updates always change another field (`pendingAnalysis`, `analyzing`, …)
+     * so StateFlow still emits when the review sheet needs a new bitmap.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is HomeUiState) return false
+        return date == other.date &&
+            profile == other.profile &&
+            todayEntries == other.todayEntries &&
+            homeDisplay == other.homeDisplay &&
+            homeTopNutrients == other.homeTopNutrients &&
+            foodLogMacroChips == other.foodLogMacroChips &&
+            measuredActiveAverageCalories == other.measuredActiveAverageCalories &&
+            activitySnapshot == other.activitySnapshot &&
+            optionalNutrientGoals == other.optionalNutrientGoals &&
+            foodLogSortOrder == other.foodLogSortOrder &&
+            preferGramsByDefault == other.preferGramsByDefault &&
+            portionClarifyEnabled == other.portionClarifyEnabled &&
+            skipPhotoNotePrompt == other.skipPhotoNotePrompt &&
+            photoNoteSkipCount == other.photoNoteSkipCount &&
+            photoAccuracyGuideCount == other.photoAccuracyGuideCount &&
+            hasSeenCameraScaleTip == other.hasSeenCameraScaleTip &&
+            weightMetric == other.weightMetric &&
+            favoriteKeys == other.favoriteKeys &&
+            pendingAnalysis == other.pendingAnalysis &&
+            pendingFoodSource == other.pendingFoodSource &&
+            pendingDraftImageFilename == other.pendingDraftImageFilename &&
+            pendingReviewSource == other.pendingReviewSource &&
+            pendingInputNote == other.pendingInputNote &&
+            pendingInputConfirmedPortionGrams == other.pendingInputConfirmedPortionGrams &&
+            pendingPortionPreConfirmed == other.pendingPortionPreConfirmed &&
+            pendingInputDraftImageFilename == other.pendingInputDraftImageFilename &&
+            pendingGroundedReview == other.pendingGroundedReview &&
+            analyzing == other.analyzing &&
+            analysisPhase == other.analysisPhase &&
+            analysisPreview == other.analysisPreview &&
+            analysisPartial == other.analysisPartial &&
+            inferringUnits == other.inferringUnits &&
+            saving == other.saving &&
+            error == other.error &&
+            waterTrackingEnabled == other.waterTrackingEnabled &&
+            waterDailyGoalMl == other.waterDailyGoalMl &&
+            waterQuickPresetsMl == other.waterQuickPresetsMl &&
+            waterTodayMl == other.waterTodayMl &&
+            waterGoalDynamic == other.waterGoalDynamic &&
+            waterNextPlan == other.waterNextPlan &&
+            progressiveMeal == other.progressiveMeal &&
+            resumeProgressiveCapture == other.resumeProgressiveCapture &&
+            showProgressiveMealSheet == other.showProgressiveMealSheet &&
+            manualActiveKcal == other.manualActiveKcal &&
+            copiedEntries == other.copiedEntries
+    }
+
+    override fun hashCode(): Int {
+        var result = date.hashCode()
+        result = 31 * result + (profile?.hashCode() ?: 0)
+        result = 31 * result + todayEntries.hashCode()
+        result = 31 * result + homeDisplay.hashCode()
+        result = 31 * result + homeTopNutrients.hashCode()
+        result = 31 * result + foodLogMacroChips.hashCode()
+        result = 31 * result + measuredActiveAverageCalories
+        result = 31 * result + activitySnapshot.hashCode()
+        result = 31 * result + optionalNutrientGoals.hashCode()
+        result = 31 * result + foodLogSortOrder.hashCode()
+        result = 31 * result + preferGramsByDefault.hashCode()
+        result = 31 * result + portionClarifyEnabled.hashCode()
+        result = 31 * result + skipPhotoNotePrompt.hashCode()
+        result = 31 * result + photoNoteSkipCount
+        result = 31 * result + photoAccuracyGuideCount
+        result = 31 * result + hasSeenCameraScaleTip.hashCode()
+        result = 31 * result + weightMetric.hashCode()
+        result = 31 * result + favoriteKeys.hashCode()
+        result = 31 * result + (pendingAnalysis?.hashCode() ?: 0)
+        result = 31 * result + (pendingFoodSource?.hashCode() ?: 0)
+        result = 31 * result + (pendingDraftImageFilename?.hashCode() ?: 0)
+        result = 31 * result + (pendingReviewSource?.hashCode() ?: 0)
+        result = 31 * result + (pendingInputNote?.hashCode() ?: 0)
+        result = 31 * result + (pendingInputConfirmedPortionGrams?.hashCode() ?: 0)
+        result = 31 * result + pendingPortionPreConfirmed.hashCode()
+        result = 31 * result + (pendingInputDraftImageFilename?.hashCode() ?: 0)
+        result = 31 * result + (pendingGroundedReview?.hashCode() ?: 0)
+        result = 31 * result + analyzing.hashCode()
+        result = 31 * result + (analysisPhase?.hashCode() ?: 0)
+        result = 31 * result + (analysisPreview?.hashCode() ?: 0)
+        result = 31 * result + (analysisPartial?.hashCode() ?: 0)
+        result = 31 * result + inferringUnits.hashCode()
+        result = 31 * result + saving.hashCode()
+        result = 31 * result + (error?.hashCode() ?: 0)
+        result = 31 * result + waterTrackingEnabled.hashCode()
+        result = 31 * result + waterDailyGoalMl
+        result = 31 * result + waterQuickPresetsMl.hashCode()
+        result = 31 * result + waterTodayMl
+        result = 31 * result + waterGoalDynamic.hashCode()
+        result = 31 * result + (waterNextPlan?.hashCode() ?: 0)
+        result = 31 * result + (progressiveMeal?.hashCode() ?: 0)
+        result = 31 * result + resumeProgressiveCapture.hashCode()
+        result = 31 * result + showProgressiveMealSheet.hashCode()
+        result = 31 * result + manualActiveKcal
+        result = 31 * result + copiedEntries.hashCode()
+        return result
+    }
 }
 
 private fun elapsedDayFraction(day: LocalDate): Float {
@@ -357,10 +462,23 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private var quickRelogEpoch = 0
     /** Shared in-flight load so the FAB prefetch and the sheet LaunchedEffect never run twice. */
     private var quickRelogLoad: CompletableDeferred<QuickRelogRows>? = null
+    @Volatile private var daySwitchStartedAtNs = 0L
+    @Volatile private var relogAckAtNs = 0L
+    @Volatile private var relogAckPriorCount = -1
 
     /** Warm hub recents while the Log sheet animates open (called from the FAB tap). */
     fun prefetchQuickRelog() {
         viewModelScope.launch { loadQuickRelogCached() }
+    }
+
+    /** Instant chip row if the same-day cache is still valid; null means show placeholders. */
+    fun peekQuickRelogCache(): QuickRelogRows? {
+        val today = LocalDate.now()
+        return if (quickRelogCacheDay == today && quickRelogCacheEpoch == quickRelogEpoch) {
+            quickRelogCache
+        } else {
+            null
+        }
     }
 
     /** Hub chips for the AddFoodSheet; cached per day, refreshed after any diary change. */
@@ -577,7 +695,27 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 favoriteKeys = favKeys
             )
         }
-            .onEach { _ui.value = it }
+            .onEach { next ->
+                _ui.value = next
+                if (PerfLog.enabled) {
+                    val switchAt = daySwitchStartedAtNs
+                    if (switchAt != 0L && next.date == _selectedDate.value) {
+                        daySwitchStartedAtNs = 0L
+                        val ms = (System.nanoTime() - switchAt) / 1_000_000
+                        PerfLog.event(
+                            "op=daySwitch phase=listReady ms=$ms date=${next.date} entries=${next.todayEntries.size}",
+                        )
+                    }
+                    val ackAt = relogAckAtNs
+                    if (ackAt != 0L && next.todayEntries.size > relogAckPriorCount) {
+                        relogAckAtNs = 0L
+                        val ms = (System.nanoTime() - ackAt) / 1_000_000
+                        PerfLog.event(
+                            "op=relog phase=uiAck ms=$ms entries=${next.todayEntries.size}",
+                        )
+                    }
+                }
+            }
             .launchIn(viewModelScope)
 
         container.prefs.homeDisplayPreferences
@@ -757,6 +895,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun setSelectedDate(date: LocalDate) {
+        if (PerfLog.enabled && date != _selectedDate.value) {
+            daySwitchStartedAtNs = System.nanoTime()
+        }
         _selectedDate.value = date
     }
 
@@ -1534,8 +1675,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     /** Re-log a saved meal (from Saved Meals sheet) as a new entry timestamped to the selected day. */
     fun relogMeal(template: FoodEntry) {
+        if (PerfLog.enabled) {
+            relogAckAtNs = System.nanoTime()
+            relogAckPriorCount = _ui.value.todayEntries.size
+        }
         viewModelScope.launch {
-            app.chompass.services.PerfLog.measure("relog", "addEntry", "name=${template.name}") {
+            PerfLog.measure("relog", "addEntry", "name=${template.name}") {
                 container.foodRepository.addEntry(template.duplicatedForLogging(timestampForSelectedDay()))
             }
         }

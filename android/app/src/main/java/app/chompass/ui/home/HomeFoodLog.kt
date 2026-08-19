@@ -481,7 +481,10 @@ internal fun FoodRow(
 ) {
     val isDark = isDarkTheme()
     val ctx = LocalContext.current
-    val timeFmt = DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault()).withZone(ZoneId.systemDefault())
+    val timeFmt = remember(ctx) {
+        DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
+    }
     val container = (ctx.applicationContext as? app.chompass.ChompassApp)?.container
     val bitmap = rememberFoodThumbnail(entry.imageFilename, container?.imageStore)
     // iOS layout: large 76dp square thumb · column with (Name + heart on left,

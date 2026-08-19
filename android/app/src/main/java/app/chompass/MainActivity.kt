@@ -538,6 +538,11 @@ open class MainActivity : ComponentActivity() {
                     EntryPerfBenchmark(container).runRelog(actions.relogBenchmarkCount)
                 }
             }
+            if (actions.runWaterSipBenchmark) {
+                lifecycleScope.launch {
+                    EntryPerfBenchmark(container).runWaterSip(actions.waterSipBenchmarkCount)
+                }
+            }
             if (actions.runEntryBenchmark) {
                 lifecycleScope.launch {
                     EntryPerfBenchmark(container).run(actions.entryBenchmarkCount)

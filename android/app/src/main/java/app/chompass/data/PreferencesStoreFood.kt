@@ -58,6 +58,15 @@ internal fun PreferencesStore.foodEntriesForMonthImpl(month: YearMonth): Flow<Li
         emitAll(foodEntriesForBucketRawImpl(month))
     }
 
+    /** Decode only the named month buckets (missing keys → empty). One DataStore map. */
+internal fun PreferencesStore.foodEntriesForMonthsImpl(months: Collection<YearMonth>): Flow<List<FoodEntry>> = flow {
+        migrateFoodEntriesToBucketsIfNeededImpl()
+        val ordered = months.toList()
+        emitAll(dataStore.data.map { prefs ->
+            ordered.flatMap { month -> decodeEntryListImpl(prefs[Keys.foodEntriesBucket(month)]) }
+        })
+    }
+
     /**
      * Applies upserts (by id) and/or removals (by id) to exactly the named
      * month buckets, in one atomic DataStore edit — so a cross-month move

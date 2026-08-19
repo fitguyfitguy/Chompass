@@ -268,6 +268,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setOnDeviceFeatureVisible(v: Boolean) = setOnDeviceFeatureVisibleImpl(v)
     val foodEntries: Flow<List<FoodEntry>> get() = foodEntriesImpl
     fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = foodEntriesForMonthImpl(month)
+    fun foodEntriesForMonths(months: Collection<YearMonth>): Flow<List<FoodEntry>> =
+        foodEntriesForMonthsImpl(months)
     suspend fun applyFoodEntryBucketChanges(
         upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),

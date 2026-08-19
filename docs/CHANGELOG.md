@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Faster Home, Progress, and Settings on a long diary** (Android): those screens no longer load the whole food and body history just to show today or the selected range.
+- **Add Food and Progress stay smooth on a long diary** (Android): Add Food opens without scanning a year of meals first. Progress range chips only read the months in view, and long calorie charts roll up to weekly bars.
 - **Smaller Codeberg download** (Android): the Obtainium and Codeberg APK no longer includes Intel libraries that phones do not use. Phones are unchanged. Emulators need an ARM system image.
 
 ## [3.21.0] - 2026-08-19
