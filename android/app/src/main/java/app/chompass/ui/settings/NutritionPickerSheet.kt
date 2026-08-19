@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -34,9 +36,9 @@ import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 /**
  * Wheel-picker sheet for a single macro / calorie target. Mirrors iOS
- * NutritionPickerSheet exactly: title, wheel picker stepped at the requested
- * step, gradient Save button, optional "Reset to Auto-balance" link when the
- * macro is currently pinned.
+ * NutritionPickerSheet exactly: optional title, wheel picker stepped at the
+ * requested step, gradient Save button, optional "Reset to Auto-balance"
+ * link when the macro is currently pinned.
  *
  * Also offers "Enter custom value…": swaps the wheel for a free-entry field
  * so values outside the preset range (e.g. a therapeutic vitamin D dose of
@@ -68,6 +70,13 @@ fun NutritionPickerSheet(
      * maxCustomGoal); null keeps any non-negative integer.
      */
     maxCustomGoal: Int? = null,
+    /**
+     * When true, paint [label] as a large colored heading above the wheel.
+     * Goal hosts already name the nutrient on the row the user tapped, so
+     * the default is off. Body-measurement editors keep it on because the
+     * dialog's only heading is this label.
+     */
+    showTitle: Boolean = false,
 ) {
     val items = remember(range, step) { (range.first..range.last step step).toList() }
     val snapped = (currentValue / step) * step
@@ -80,8 +89,10 @@ fun NutritionPickerSheet(
     val clampCustom: (Int) -> Int = { v -> if (maxCustomGoal != null) v.coerceAtMost(maxCustomGoal) else v }
     val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
     val saveValue = if (customMode) parsedCustom ?: selected else selected
-    Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = accentColor)
-    Spacer(Modifier.height(12.dp))
+    if (showTitle) {
+        Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = accentColor)
+        Spacer(Modifier.height(12.dp))
+    }
     Row(
         Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -91,7 +102,9 @@ fun NutritionPickerSheet(
             items = items,
             selected = selected,
             onSelect = { selected = it; onValueChange?.invoke(it) },
-            modifier = Modifier.width(120.dp)
+            modifier = Modifier
+                .width(120.dp)
+                .semantics { contentDescription = label }
         )
         Spacer(Modifier.width(8.dp))
         Text(
