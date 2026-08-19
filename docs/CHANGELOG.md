@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## Unreleased
 
+### Fixed
+
+- **Deleted weigh-ins stay gone after WebDAV sync** (Android): deleting a weight and then tapping Sync Now no longer brings the old row back from the file. That used to happen when Auto-sync was off. Extra rows already in the file still need to be deleted once, then synced. Follow-up on Codeberg [#39](https://codeberg.org/fitguy/Chompass/issues/39) by [@tuxMode](https://codeberg.org/tuxMode).
+
 ### Changed
 
 - **Faster Home, Progress, and Settings on a long diary** (Android): those screens no longer load the whole food and body history just to show today or the selected range.
