@@ -21,6 +21,29 @@ import kotlin.math.roundToInt
 
 private fun FoodEntry.month(): YearMonth = YearMonth.from(timestamp.atZone(ZoneId.systemDefault()))
 
+/** Inclusive calendar-month span covering [start]..[end]. */
+internal fun yearMonthsOverlapping(start: LocalDate, end: LocalDate): List<YearMonth> {
+    if (start.isAfter(end)) return emptyList()
+    val out = ArrayList<YearMonth>()
+    var month = YearMonth.from(start)
+    val last = YearMonth.from(end)
+    while (!month.isAfter(last)) {
+        out.add(month)
+        month = month.plusMonths(1)
+    }
+    return out
+}
+
+/** Months that can contain the 90-day frequent window ending at [now]. */
+internal fun yearMonthsForQuickRelog(
+    now: Instant,
+    zone: ZoneId = ZoneId.systemDefault(),
+    frequentDays: Long = 90,
+): List<YearMonth> {
+    val today = now.atZone(zone).toLocalDate()
+    return yearMonthsOverlapping(today.minusDays(frequentDays - 1), today)
+}
+
 /**
  * CRUD + reactive reads for food entries. Port of iOS FoodStore.
  * Backed by [PreferencesStore] (entries + favorites serialized as JSON).
@@ -67,6 +90,17 @@ class FoodRepository(
             monthEntries.filter { it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == date }
                 .sortedByDescending { it.timestamp }
         }
+
+    /** Entries whose local date is in [start]..[end], decoding only overlapping month buckets. */
+    fun entriesBetween(start: LocalDate, end: LocalDate): Flow<List<FoodEntry>> {
+        val zone = ZoneId.systemDefault()
+        return prefs.foodEntriesForMonths(yearMonthsOverlapping(start, end)).map { monthEntries ->
+            monthEntries.filter { entry ->
+                val day = entry.timestamp.atZone(zone).toLocalDate()
+                !day.isBefore(start) && !day.isAfter(end)
+            }
+        }
+    }
 
     fun entriesByMealForDate(date: LocalDate): Flow<List<Pair<MealType, List<FoodEntry>>>> =
         entriesForDate(date).map { dayEntries ->
@@ -520,11 +554,14 @@ class FoodRepository(
      */
     suspend fun quickRelogRows(perRow: Int = 10): QuickRelogRows =
         PerfLog.measure("hubOpen", "quickRelog", "perRow=$perRow") {
-            val all = prefs.foodEntries.first()
             val now = Instant.now()
+            val months = yearMonthsForQuickRelog(now)
+            val windowed = prefs.foodEntriesForMonths(months).first()
+            val recentStart = now.minus(30, ChronoUnit.DAYS)
+            val frequentStart = now.minus(90, ChronoUnit.DAYS)
             quickRelogRows(
-                recentWindow = all.filter { !it.timestamp.isBefore(now.minus(30, ChronoUnit.DAYS)) },
-                frequentWindow = all.filter { !it.timestamp.isBefore(now.minus(90, ChronoUnit.DAYS)) },
+                recentWindow = windowed.filter { !it.timestamp.isBefore(recentStart) },
+                frequentWindow = windowed.filter { !it.timestamp.isBefore(frequentStart) },
                 perRow = perRow,
             )
         }

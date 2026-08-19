@@ -43,6 +43,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,6 +80,7 @@ import app.chompass.models.FoodSource
 import app.chompass.models.WaterAmountFormat
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
+import app.chompass.services.PerfLog
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.FudGlassDialog
@@ -132,7 +134,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var showBarcodeScannerLocal by rememberSaveable { mutableStateOf(false) }
     var showCopyFromDay by rememberSaveable { mutableStateOf(false) }
     var showAddFoodSheet by rememberSaveable { mutableStateOf(false) }
-    var hubRelogRows by remember { mutableStateOf(QuickRelogRows.Empty) }
+    var hubRelogRows by remember { mutableStateOf(vm.peekQuickRelogCache() ?: QuickRelogRows.Empty) }
+    var hubRelogLoading by remember { mutableStateOf(vm.peekQuickRelogCache() == null) }
+    var hubOpenedAtNs by remember { mutableLongStateOf(0L) }
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
     var showManualActive by rememberSaveable { mutableStateOf(false) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
@@ -612,6 +616,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         FloatingActionButton(
             onClick = {
                 // Warm the hub recents while the sheet animates open.
+                if (PerfLog.enabled) hubOpenedAtNs = System.nanoTime()
                 vm.prefetchQuickRelog()
                 // Codeberg #30: "+" always opens the grid (a last-tool restore
                 // was tried and removed on the maintainer device pass
@@ -729,7 +734,19 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 
     LaunchedEffect(showAddFoodSheet) {
         if (showAddFoodSheet) {
+            if (PerfLog.enabled && hubOpenedAtNs != 0L) {
+                val ms = (System.nanoTime() - hubOpenedAtNs) / 1_000_000
+                PerfLog.event("op=hubOpen phase=sheetVisible ms=$ms")
+            }
+            val cached = vm.peekQuickRelogCache()
+            if (cached != null) {
+                hubRelogRows = cached
+                hubRelogLoading = false
+            } else {
+                hubRelogLoading = true
+            }
             hubRelogRows = vm.quickRelogRowsCached()
+            hubRelogLoading = false
         }
     }
 
@@ -740,6 +757,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
             relogRows = hubRelogRows,
+            relogLoading = hubRelogLoading,
             onPhoto = {
                 addFoodFlowActive = true
                 openCamera()

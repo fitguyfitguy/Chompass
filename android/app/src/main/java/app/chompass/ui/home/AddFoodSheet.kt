@@ -99,6 +99,7 @@ fun AddFoodSheet(
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
     relogRows: QuickRelogRows = QuickRelogRows.Empty,
+    relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
@@ -122,6 +123,7 @@ fun AddFoodSheet(
             onWater = { ml -> onDismiss(); onWater(ml) },
             onWaterCustom = { onDismiss(); onWaterCustom() },
             relogRows = relogRows,
+            relogLoading = relogLoading,
             onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
             onReviewRecent = { entry -> onDismiss(); onReviewRecent(entry) },
         )
@@ -151,6 +153,7 @@ internal fun AddFoodSheetContent(
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
     relogRows: QuickRelogRows = QuickRelogRows.Empty,
+    relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
@@ -229,6 +232,9 @@ internal fun AddFoodSheetContent(
                     )
                 }
             }
+        } else if (relogLoading) {
+            Spacer(Modifier.height(12.dp))
+            AddFoodRelogPlaceholder()
         } else {
             Spacer(Modifier.height(12.dp))
             Text(
@@ -338,6 +344,25 @@ internal fun AddFoodSheetContent(
                 onWater = onWater,
                 onWaterCustom = onWaterCustom,
             )
+        }
+    }
+}
+
+@Composable
+private fun AddFoodRelogPlaceholder() {
+    val fill = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        repeat(2) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                repeat(5) {
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(fill)
+                            .size(width = 96.dp, height = 36.dp),
+                    )
+                }
+            }
         }
     }
 }

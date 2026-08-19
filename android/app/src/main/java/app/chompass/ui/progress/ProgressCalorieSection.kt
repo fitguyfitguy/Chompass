@@ -45,7 +45,10 @@ internal fun CalorieSection(dailyCalories: List<Pair<LocalDate, Int>>, calorieGo
                 )
             }
         } else {
-            CalorieBarChart(dailyCalories = dailyCalories, goal = calorieGoal)
+            CalorieBarChart(
+                dailyCalories = downsampleCalorieBars(dailyCalories),
+                goal = calorieGoal,
+            )
         }
     }
 }

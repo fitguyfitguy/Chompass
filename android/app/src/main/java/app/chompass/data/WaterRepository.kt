@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.WaterEntry
+import app.chompass.services.PerfLog
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.ExternalHydration
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,9 @@ class WaterRepository(
 
     suspend fun add(entry: WaterEntry) {
         if (entry.milliliters <= 0) return
-        prefs.setWaterEntries(prefs.waterEntries.first() + entry)
+        PerfLog.measure("waterSip", "dataStore", "ml=${entry.milliliters}") {
+            prefs.setWaterEntries(prefs.waterEntries.first() + entry)
+        }
         sync?.touch(entry.id, "water")
         if (shouldSyncHealth()) health?.writeHydration(entry)
         onEntriesChanged?.invoke()

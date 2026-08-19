@@ -39,7 +39,10 @@ Needs a Gemini key in `android/secrets.properties` (debug builds only).
 | Range chips 1W→All | taps + `FudAIPerf rangeChange` | `gfx_framestats_range_*.txt`, `logcat_range_*.txt` |
 | Tabs Home/Progress/Coach/Settings | `chompass://go/<tab>` | `gfx_framestats_tab_*.txt` |
 | Settings Food / Goals | `chompass://go/settings/food` etc. | `gfx_framestats_settings_*.txt` |
-| Add Food hub | FAB tap | `gfx_framestats_add_food.txt`, `logcat_add_food.txt` (`hubOpen`) |
+| Add Food hub | FAB tap | `gfx_framestats_add_food.txt`, `logcat_add_food.txt` (`hubOpen` `quickRelog` + `sheetVisible`) |
+| Home fling / day switch / row swipe | `input swipe` + week-strip tap | `gfx_framestats_home_fling.txt`, `day_switch`, `day_chip`, `row_swipe` + matching `logcat_*` (`daySwitch`, `relog uiAck`) |
+| Water sip | hub water + tap, then `run_water_sip_benchmark` | `gfx_framestats_water_sip.txt`, `logcat_water_sip_bench.txt` (`waterSip dataStore`) |
+| Progress fling after All | swipe-up | `gfx_framestats_progress_fling.txt` |
 | Relog first hub row | `run_relog_benchmark` (no coordinates) | `logcat_relog_bench.txt` (`relogBench`, `save`) |
 | Analyze+save ×N | `perf_entry_benchmark.sh` `SEED=0` | `entry_perf.log` + summarizer |
 
@@ -47,7 +50,7 @@ Do **not** use raw tab-bar taps for Progress: on a 1080-wide Pixel,
 `PROGRESS_TAB_X=540` lands between Progress and Coach. Deep links are the
 source of truth.
 
-Skip the live AI / relog tails with `RUN_ENTRY_BENCH=0` / `RUN_RELOG_BENCH=0`.
+Skip the live AI / relog / water-sip tails with `RUN_ENTRY_BENCH=0` / `RUN_RELOG_BENCH=0` / `RUN_WATER_SIP_BENCH=0`.
 
 ## Fixture (`install_debug.sh`)
 
@@ -63,6 +66,10 @@ Tag `FudAIPerf`. Release builds emit nothing.
 ```
 op=progress phase=rangeChange ms=323 range=1Y foods=1265 weights=588
 op=hubOpen phase=quickRelog ms=1015 perRow=10
+op=hubOpen phase=sheetVisible ms=18
+op=daySwitch phase=listReady ms=12 date=2026-08-18 entries=4
+op=waterSip phase=dataStore ms=410 ml=250
+op=relog phase=uiAck ms=390 entries=5
 op=relogBench phase=addEntry ms=4773 i=0 name=...
 op=save phase=dataStore ms=590 month=2026-08
 op=analyzeText phase=promptBuild ms=8

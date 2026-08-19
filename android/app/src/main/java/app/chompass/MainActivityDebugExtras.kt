@@ -46,6 +46,8 @@ internal data class DebugIntentActions(
     val entryBenchmarkCount: Int = 3,
     val runRelogBenchmark: Boolean = false,
     val relogBenchmarkCount: Int = 3,
+    val runWaterSipBenchmark: Boolean = false,
+    val waterSipBenchmarkCount: Int = 1,
     val runOnDeviceLlmTest: Boolean = false,
     val onDeviceLlmBackend: String = "gpu",
     val onDeviceLlmMtp: Boolean = false,
@@ -107,6 +109,8 @@ internal fun consumeDebugIntentExtras(
         entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
         runRelogBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_relog_benchmark", false),
         relogBenchmarkCount = intent.getIntExtra("relog_benchmark_count", 3),
+        runWaterSipBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_water_sip_benchmark", false),
+        waterSipBenchmarkCount = intent.getIntExtra("water_sip_benchmark_count", 1),
         runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
         onDeviceLlmBackend = if (presetDaily) "gpu" else intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
         onDeviceLlmMtp = presetDaily || intent.getBooleanExtra("ondevice_llm_mtp", false),
@@ -146,6 +150,10 @@ internal fun consumeDebugIntentExtras(
     if (actions.runRelogBenchmark) {
         intent.removeExtra("run_relog_benchmark")
         intent.removeExtra("relog_benchmark_count")
+    }
+    if (actions.runWaterSipBenchmark) {
+        intent.removeExtra("run_water_sip_benchmark")
+        intent.removeExtra("water_sip_benchmark_count")
     }
     if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
     if (actions.runOnDeviceLlmTest) {

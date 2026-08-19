@@ -4,6 +4,7 @@ import android.util.Log
 import app.chompass.AppContainer
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.WaterEntry
 import app.chompass.services.ai.toFoodEntry
 
 /**
@@ -72,6 +73,24 @@ class EntryPerfBenchmark(private val container: AppContainer) {
             ok++
         }
         Log.i(PerfLog.TAG, "op=relogBench phase=done count=$count ok=$ok fail=0")
+    }
+
+    /**
+     * One-tap water sip without UI coordinates: writes [count] 250 ml entries
+     * through [app.chompass.data.WaterRepository.add] so `op=waterSip
+     * phase=dataStore` is comparable across devices. Emits start/done.
+     */
+    suspend fun runWaterSip(count: Int = 1) {
+        Log.i(PerfLog.TAG, "op=waterSip phase=start count=$count")
+        var ok = 0
+        repeat(count) { i ->
+            container.waterRepository.add(
+                WaterEntry(milliliters = 250),
+            )
+            ok++
+            Log.i(PerfLog.TAG, "op=waterSip phase=add i=$i")
+        }
+        Log.i(PerfLog.TAG, "op=waterSip phase=done count=$count ok=$ok fail=0")
     }
 
     companion object {
