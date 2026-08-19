@@ -121,9 +121,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">Terug</string>
     <string name="onboarding_logo_description">Chompass-logo</string>
-    <string name="onboarding_welcome_line1">Eet slim,</string>
-    <string name="onboarding_welcome_line2">Leef beter</string>
-    <string name="onboarding_welcome_subtitle">Snap, registreer en bloei op.\nJouw voeding, vereenvoudigd.</string>
+    <string name="onboarding_welcome_line1">Houd maaltijden bij,</string>
+    <string name="onboarding_welcome_line2">Blijf in balans</string>
+    <string name="onboarding_welcome_subtitle">Log maaltijden met foto\'s, spraak of tekst.\nJouw voeding, in één oogopslag.</string>
 
     <string name="onboarding_gender_title">Wat is je geslacht?</string>
     <string name="onboarding_gender_subtitle">Dit helpt ons je metabolisme te berekenen</string>
@@ -400,8 +400,8 @@
 
     <string name="progress_log_weight_title">Gewicht loggen</string>
 
-    <string name="progress_goal_reached_title">Gefeliciteerd! 🎉</string>
-    <string name="progress_goal_reached_message">Je hebt je streefgewicht bereikt! Ga naar Instellingen om je doel te wijzigen en tik op Doelen opnieuw berekenen om je targets te vernieuwen.</string>
+    <string name="progress_goal_reached_title">Doel bereikt 🎉</string>
+    <string name="progress_goal_reached_message">Je hebt je streefgewicht bereikt. Ga naar Instellingen om je doel te wijzigen en tik op Doelen opnieuw berekenen om je targets te vernieuwen.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">Persoonlijke gegevens</string>
@@ -488,8 +488,8 @@
     <string name="sheet_ai_provider">AI-provider</string>
     <string name="sheet_model_footer">Of typ hieronder een aangepaste model-ID.</string>
     <string name="sheet_any_model_id">Elke model-ID</string>
-    <string name="sheet_api_key_format">API-sleutel - %1$s</string>
-    <string name="sheet_speech_api_key_format">Spraak-API-sleutel - %1$s</string>
+    <string name="sheet_api_key_format">API-sleutel: %1$s</string>
+    <string name="sheet_speech_api_key_format">Spraak-API-sleutel: %1$s</string>
     <string name="sheet_speech_engine">Spraakengine</string>
     <string name="sheet_gender">Geslacht</string>
     <string name="sheet_activity_level">Activiteitsniveau</string>
@@ -523,7 +523,7 @@
     <string name="about_privacy">Privacybeleid</string>
     <string name="about_made_by">Chompass door fitguy</string>
     <string name="about_with_care">Gebaseerd op Fud AI door Apoorv Darshan</string>
-    <string name="about_share_message">Ik houd mijn maaltijden bij met Chompass - maak een foto, spreek het in of typ het, en de AI logt de calorieën. Het is gratis, open source, en je gegevens blijven op je apparaat.\n\nDownload: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">Ik houd mijn maaltijden bij met Chompass, een advertentievrije fork van Fud AI. Maak een foto, spreek het in of typ het, en de AI logt de calorieën. Open source, en je gegevens blijven op je apparaat.\n\nBron: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass delen</string>
 
     <!-- Notifications -->
@@ -534,7 +534,7 @@
     <string name="notif_channel_weight_goal">Gewichtsdoel</string>
     <string name="notif_channel_weight_goal_desc">Felicitatie wanneer je je streefgewicht bereikt.</string>
     <string name="notif_streak_title">Vergeet niet je maaltijden te loggen</string>
-    <string name="notif_streak_text">Houd je streak gaande - log iets van vandaag.</string>
+    <string name="notif_streak_text">Houd je streak gaande. Log iets van vandaag.</string>
     <string name="notif_summary_title">De samenvatting van vandaag is klaar</string>
     <string name="notif_summary_text">Tik om te zien hoe de macro\'s van vandaag uitkwamen.</string>
 
@@ -557,28 +557,28 @@
     <string name="saved_meals_no_match">Geen overeenkomende maaltijden</string>
     <string name="settings_section_custom_instructions">Aangepaste AI-instructies</string>
     <string name="settings_custom_instructions_placeholder">Bijv. ik woon in Duitsland, ga uit van Europese portiegroottes, voorkeur voor ALDI/REWE-merken. Ik zit in een bodybuilding-cut.</string>
-    <string name="settings_custom_instructions_footer">Optionele context die met elk AI-verzoek wordt meegestuurd - regio, dieet, sportieve doelen, alles wat je anders elke keer zou herhalen. Laat leeg om uit te schakelen.</string>
+    <string name="settings_custom_instructions_footer">Optionele context die met elk AI-verzoek wordt meegestuurd: regio, dieet, sportieve doelen, alles wat je anders elke keer zou herhalen. Laat leeg om uit te schakelen.</string>
     <string name="settings_save">Opslaan</string>
     <string name="settings_saved">Opgeslagen</string>
     <string name="settings_section_fallback">Reserveprovider</string>
     <string name="settings_enable_fallback">Reserve inschakelen</string>
-    <string name="settings_fallback_footer">Als je primaire provider faalt (overbelasting, snelheidslimiet, netwerkfout), probeert de app automatisch opnieuw met deze reserve. Dezelfde provider als de primaire is toegestaan - kies gewoon een ander model.</string>
+    <string name="settings_fallback_footer">Als je primaire provider faalt (overbelasting, snelheidslimiet, netwerkfout), probeert de app automatisch opnieuw met deze reserve. Dezelfde provider als de primaire is toegestaan, kies gewoon een ander model.</string>
     <string name="widget_all_metrics_label">Chompass Vandaag</string>
     <string name="widget_all_metrics_description">Bekijk de calorieën, eiwitten, koolhydraten en vetten van vandaag in één widget.</string>
     <string name="settings_needs_health_connect">Vereist Health Connect</string>
-    <string name="settings_energy_goals_info">Indien ingeschakeld gebruikt Chompass je gemeten verbrande calorieën uit Health Connect - een 14-daags gemiddelde van actieve + basale energie - als onderhoudsanker (TDEE) bij het berekenen van doelen, in plaats van de formuleschatting. Er wordt geen AI gebruikt om je verbruik te lezen. Vereist Health Connect. Werkt met de knop Opnieuw berekenen en met Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Ongeveer één keer per week, wanneer je de app opent, voert Chompass automatisch de volledige doelberekening opnieuw uit - dezelfde als de knop Opnieuw berekenen - op basis van je profiel, recent gelogde voeding en je gewichtstrend. Als Energy Burn aanstaat, wordt je gemeten verbruik gebruikt als onderhoudsanker. Als de AI niet beschikbaar is, wordt de run stilletjes overgeslagen. Bij uitschakelen worden de doelen hersteld van vóór de eerste wijziging door deze functie. Dit is geen medisch advies.</string>
-    <string name="onboarding_plan_adaptive_note">Je plan past zich wekelijks aan op basis van je logs - zet Adaptive Goals uit in Instellingen om het vast te houden.</string>
-    <string name="onboarding_feature_snap">Maak een foto - de AI logt het</string>
+    <string name="settings_energy_goals_info">Indien ingeschakeld gebruikt Chompass je gemeten verbrande calorieën uit Health Connect, een 14-daags gemiddelde van actieve + basale energie, als onderhoudsanker (TDEE) bij het berekenen van doelen, in plaats van de formuleschatting. Er wordt geen AI gebruikt om je verbruik te lezen. Vereist Health Connect. Werkt met de knop Opnieuw berekenen en met adaptieve doelen.</string>
+    <string name="settings_adaptive_goals_info">Ongeveer één keer per week, wanneer je de app opent, voert Chompass automatisch de volledige doelberekening opnieuw uit, dezelfde als de knop Opnieuw berekenen, op basis van je profiel, recent gelogde voeding en je gewichtstrend. Als energieverbruik aanstaat, wordt je gemeten verbruik gebruikt als onderhoudsanker. Als de AI niet beschikbaar is, wordt de run stilletjes overgeslagen. Bij uitschakelen worden de doelen hersteld van vóór de eerste wijziging door deze functie. Dit is geen medisch advies.</string>
+    <string name="onboarding_plan_adaptive_note">Je plan past zich wekelijks aan op basis van je logs. Zet adaptieve doelen uit in Instellingen om het vast te houden.</string>
+    <string name="onboarding_feature_snap">Maak een foto. De AI logt het.</string>
     <string name="onboarding_feature_coach">Coach die je gegevens kent</string>
     <string name="onboarding_feature_library">Health Connect voor weegschalen en wearables</string>
     <string name="onboarding_feature_widgets">Widgets op het startscherm</string>
     <string name="whats_new_v30_workouts">Het Workouts-tabblad is verwijderd.</string>
     <string name="whats_new_v30_home">Home vernieuwd: snelheidsmeter voor calorieën, verticale macrobalken, vier voedingskaarten en een zwevende toevoegknop.</string>
     <string name="whats_new_v30_coach_voice">Stel de Coach een vraag met je stem via de nieuwe ingebouwde recorder.</string>
-    <string name="whats_new_v30_share">Deel elke maaltijd als een link die direct in Chompass opent - op iPhone of Android.</string>
+    <string name="whats_new_v30_share">Deel elke maaltijd als een link die direct in Chompass opent, op iPhone of Android.</string>
     <string name="whats_new_v30_export">Exporteer je eetdagboek als JSON, Markdown of CSV via Instellingen.</string>
-    <string name="whats_new_v30_reprocess">Verwerk een gelogde maaltijd opnieuw met AI - pas naam, portie of notitie aan en analyseer opnieuw.</string>
+    <string name="whats_new_v30_reprocess">Verwerk een gelogde maaltijd opnieuw met AI: pas naam, portie of notitie aan en analyseer opnieuw.</string>
     <string name="whats_new_v30_camera">Camera + Camera bewaart beide foto\'s, zij aan zij samengevoegd.</string>
     <string name="whats_new_v30_colors">10 nieuwe themakleuren, nu direct te kiezen in Instellingen.</string>
     <string name="whats_new_v30_bodyfat">Vetpercentagegeschiedenis: bekijk en verwijder losse metingen, net als bij gewicht.</string>
@@ -681,8 +681,8 @@
     <string name="ai_error_coach_on_device">Coach is nog niet beschikbaar met de on-device provider. Schakel over naar een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_coach_round_limit">Coach kon niet antwoorden. Probeer je vraag anders te formuleren.</string>
     <string name="ai_error_disabled">AI-functies zijn uitgeschakeld in Instellingen → AI en spraak.</string>
-    <string name="ai_error_grounded_on_device">Grounded-toolloop is niet beschikbaar voor on-device modellen.</string>
-    <string name="ai_error_grounded_requires_provider">Grounded-toolloop vereist een actieve AI-provider.</string>
+    <string name="ai_error_grounded_on_device">De Grounded-modus is niet beschikbaar voor on-device modellen.</string>
+    <string name="ai_error_grounded_requires_provider">De Grounded-modus vereist een actieve AI-provider.</string>
     <string name="ai_error_image_conversion_failed">Afbeelding verwerken mislukt.</string>
     <string name="ai_error_invalid_response">AI-antwoord niet begrepen. Probeer het opnieuw.</string>
     <string name="ai_error_invalid_url">Ongeldige API-URL. Controleer je providerinstellingen.</string>
@@ -1032,7 +1032,7 @@
     <string name="onboarding_api_key_test">Sleutel testen</string>
     <string name="onboarding_api_key_testing">Testen…</string>
     <string name="onboarding_api_key_works">Sleutel werkt</string>
-    <string name="onboarding_diet_mode_subtitle">Kies je standaard coachstijl</string>
+    <string name="onboarding_diet_mode_subtitle">Kies je standaard aanbevelingsstijl</string>
     <string name="onboarding_diet_mode_title">Volg je een dieetmodus?</string>
     <string name="onboarding_disclaimers_subtitle">Lees deze belangrijke mededelingen</string>
     <string name="onboarding_disclaimers_title">Voordat je begint</string>
@@ -1294,7 +1294,7 @@
     <string name="settings_safety_escalate">Merk je vermoeidheid, duizeligheid, slaapverstoring, stemmingswisselingen, menstruatieveranderingen of verminderd libido? Vraag dan snel medisch advies.</string>
     <string name="settings_safety_hide">Verberg</string>
     <string name="settings_safety_low_bf">Let op bij laag lichaamsvet: langdurig zeer mager kan risico\'s geven. Bij vrouwen kan zeer laag lichaamsvet de hormonale en menstruatiegezondheid beïnvloeden. Bij mannen kan het hormonen, stemming, herstel en prestaties beïnvloeden.</string>
-    <string name="settings_safety_medical">Veiligheid en medisch</string>
+    <string name="settings_safety_medical">Veiligheid en medisch advies</string>
     <string name="settings_safety_open">Bekijken</string>
     <string name="settings_safety_summary">Lees dit vóór ingrijpende dieetwijzigingen</string>
     <string name="settings_safety_title">Veiligheid</string>

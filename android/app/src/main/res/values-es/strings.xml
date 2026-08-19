@@ -415,8 +415,8 @@
 
     <string name="progress_log_weight_title">Registrar peso</string>
 
-    <string name="progress_goal_reached_title">¡Felicidades! 🎉</string>
-    <string name="progress_goal_reached_message">¡Has alcanzado tu peso objetivo! Ve a Ajustes para cambiar tu objetivo y toca Recalcular objetivos para actualizar tus metas.</string>
+    <string name="progress_goal_reached_title">Objetivo alcanzado 🎉</string>
+    <string name="progress_goal_reached_message">Has alcanzado tu peso objetivo. Ve a Ajustes para cambiar tu objetivo y toca Recalcular objetivos para actualizar tus metas.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">Información personal</string>
@@ -509,8 +509,8 @@
     <string name="sheet_model">Modelo</string>
     <string name="sheet_model_footer">O escribe abajo cualquier ID de modelo personalizado.</string>
     <string name="sheet_any_model_id">Cualquier ID de modelo</string>
-    <string name="sheet_api_key_format">Clave API - %1$s</string>
-    <string name="sheet_speech_api_key_format">Clave API de voz - %1$s</string>
+    <string name="sheet_api_key_format">Clave API: %1$s</string>
+    <string name="sheet_speech_api_key_format">Clave API de voz: %1$s</string>
     <string name="sheet_speech_engine">Motor de voz</string>
     <string name="sheet_gender">Sexo</string>
     <string name="sheet_activity_level">Nivel de actividad</string>
@@ -548,7 +548,7 @@
     <string name="about_donate">Cómprame un yogur</string>
     <string name="about_made_by">Chompass por fitguy</string>
     <string name="about_with_care">Basado en Fud AI de Apoorv Darshan</string>
-    <string name="about_share_message">Llevo el control de mis comidas con Chompass - haz una foto, dícela o escríbela, y la IA registra las calorías. Es gratis, de código abierto, y tus datos se quedan en tu dispositivo.\n\nDescargar: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">Llevo el control de mis comidas con Chompass, un fork sin anuncios de Fud AI. Haz una foto, dícela o escríbela, y la IA registra las calorías. Código abierto, y tus datos se quedan en tu dispositivo.\n\nFuente: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Compartir Chompass</string>
 
     <!-- Notifications -->
@@ -559,7 +559,7 @@
     <string name="notif_channel_weight_goal">Objetivo de peso</string>
     <string name="notif_channel_weight_goal_desc">Celebración cuando alcances tu peso objetivo.</string>
     <string name="notif_streak_title">No olvides registrar tus comidas</string>
-    <string name="notif_streak_text">Mantén tu racha - registra algo de hoy.</string>
+    <string name="notif_streak_text">Mantén tu racha. Registra algo de hoy.</string>
     <string name="notif_summary_title">El resumen de hoy está listo</string>
     <string name="notif_summary_text">Toca para ver cómo cuadraron los macros de hoy.</string>
 
@@ -587,14 +587,14 @@
     <string name="settings_saved">Guardado</string>
     <string name="settings_section_fallback">Proveedor de respaldo</string>
     <string name="settings_enable_fallback">Activar respaldo</string>
-    <string name="settings_fallback_footer">Si tu proveedor principal falla (sobrecarga, límite de tasa, error de red), la app reintenta automáticamente con este respaldo. Se permite el mismo proveedor que el principal - solo elige un modelo diferente.</string>
+    <string name="settings_fallback_footer">Si tu proveedor principal falla (sobrecarga, límite de tasa, error de red), la app reintenta automáticamente con este respaldo. Se permite el mismo proveedor que el principal, solo elige un modelo diferente.</string>
     <string name="widget_all_metrics_label">Chompass Hoy</string>
     <string name="widget_all_metrics_description">Mira las calorías, proteínas, carbohidratos y grasas de hoy en un widget.</string>
     <string name="settings_needs_health_connect">Requiere Health Connect</string>
-    <string name="settings_energy_goals_info">Cuando está activado, Chompass usa tus calorías quemadas medidas de Health Connect - un promedio de 14 días de energía activa + basal - como ancla de mantenimiento (TDEE) al calcular objetivos, en lugar de la estimación por fórmula. No se usa IA para leer tu gasto. Requiere Health Connect. Funciona con el botón Recalcular y con Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Aproximadamente una vez a la semana, al abrir la app, Chompass vuelve a ejecutar automáticamente el cálculo completo de objetivos - el mismo que usa el botón Recalcular - a partir de tu perfil, tus comidas registradas recientes y tu tendencia de peso. Si Energy Burn está activado, usa tu gasto medido como ancla de mantenimiento. Si la IA no está disponible, se omite silenciosamente. Al desactivarlo se restauran los objetivos previos al primer cambio hecho por esta función. Esto no es un consejo médico.</string>
-    <string name="onboarding_plan_adaptive_note">Tu plan se ajusta automáticamente cada semana según lo que registras - desactiva Adaptive Goals en Ajustes para mantenerlo fijo.</string>
-    <string name="onboarding_feature_snap">Haz una foto - la IA la registra</string>
+    <string name="settings_energy_goals_info">Cuando está activado, Chompass usa tus calorías quemadas medidas de Health Connect, un promedio de 14 días de energía activa + basal, como ancla de mantenimiento (TDEE) al calcular objetivos, en lugar de la estimación por fórmula. No se usa IA para leer tu gasto. Requiere Health Connect. Funciona con el botón Recalcular y con los objetivos adaptativos.</string>
+    <string name="settings_adaptive_goals_info">Aproximadamente una vez a la semana, al abrir la app, Chompass vuelve a ejecutar automáticamente el cálculo completo de objetivos, el mismo que usa el botón Recalcular, a partir de tu perfil, tus comidas registradas recientes y tu tendencia de peso. Si la quema de energía está activada, usa tu gasto medido como ancla de mantenimiento. Si la IA no está disponible, se omite silenciosamente. Al desactivarlo se restauran los objetivos previos al primer cambio hecho por esta función. Esto no es un consejo médico.</string>
+    <string name="onboarding_plan_adaptive_note">Tu plan se ajusta automáticamente cada semana según lo que registras. Desactiva los objetivos adaptativos en Ajustes para mantenerlo fijo.</string>
+    <string name="onboarding_feature_snap">Haz una foto. La IA la registra.</string>
     <string name="onboarding_feature_coach">Un coach que conoce tus datos</string>
     <string name="onboarding_feature_library">Health Connect para básculas y wearables</string>
     <string name="onboarding_feature_widgets">Widgets en la pantalla de inicio</string>
