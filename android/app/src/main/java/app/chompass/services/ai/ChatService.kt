@@ -172,7 +172,7 @@ class ChatService(
         messages.put(JSONObject().put("role", "user").put("content", openAIUserContent(newUserMessage, imageBytes)))
 
         repeat(MAX_TOOL_ROUNDS) {
-            suspend fun request(compactRetry: Boolean): Pair<JSONObject, OpenAITextResponse> {
+            suspend fun request(compactRetry: Boolean): OpenAITextResponse {
                 val body = JSONObject().apply {
                     put("model", model)
                     put("messages", messages)
@@ -192,28 +192,23 @@ class ChatService(
                     builder.addHeader("HTTP-Referer", "https://codeberg.org/fitguy/chompass")
                     builder.addHeader("X-Title", "Fud AI")
                 }
-                val raw = RetryPolicy.execute { client.newCall(builder.build()) }
-                val json = runCatching { JSONObject(raw) }.getOrNull() ?: throw AiError.InvalidResponse
-                val parsed = OpenAIResponseParser.parse(raw)
-                val message = json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")
-                    ?: throw AiError.InvalidResponse
-                return message to parsed
+                val http = RetryPolicy.executeText { client.newCall(builder.build()) }
+                return OpenAIResponseParser.parseBody(http.body, http.contentType)
             }
 
-            var (message, parsed) = request(compactRetry = false)
-            if (parsed.needsCompactRetry && message.optJSONArray("tool_calls") == null) {
-                val retry = request(compactRetry = true)
-                parsed = retry.second
-                message = retry.first
+            var parsed = request(compactRetry = false)
+            if (parsed.needsCompactRetry && parsed.toolCalls == null) {
+                parsed = request(compactRetry = true)
                 if (parsed.wasTruncated) {
                     throw AiError.Api("The AI response was truncated twice. Try a shorter question or another model.", messageRes = R.string.ai_error_truncated_twice)
                 }
             }
 
             // Tool calls take precedence; loop until the model returns plain content.
-            val toolCalls = message.optJSONArray("tool_calls")
-            if (toolCalls != null && toolCalls.length() > 0) {
-                messages.put(message)
+            val toolCalls = parsed.toolCalls
+            val messageJson = parsed.messageJson
+            if (toolCalls != null && messageJson != null) {
+                messages.put(messageJson)
                 for (i in 0 until toolCalls.length()) {
                     val call = toolCalls.optJSONObject(i) ?: continue
                     val function = call.optJSONObject("function") ?: continue
@@ -230,8 +225,8 @@ class ChatService(
                 }
                 return@repeat
             }
-            val content = parsed.text ?: message.optString("content")
-            if (content.isNotEmpty()) return content.trim()
+            val content = parsed.text
+            if (!content.isNullOrEmpty()) return content.trim()
             throw AiError.InvalidResponse
         }
         throw AiError.Api("Coach exceeded the tool-call round limit. Try rephrasing your question.", messageRes = R.string.ai_error_coach_round_limit)

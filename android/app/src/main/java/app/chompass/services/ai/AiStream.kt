@@ -11,6 +11,24 @@ import java.io.InputStreamReader
  * `data:` payload (excluding the terminal `[DONE]` marker).
  */
 object AiSse {
+    /** True when [raw] is an SSE stream, not a single JSON object. */
+    fun looksLikeSse(raw: String): Boolean {
+        val trimmed = raw.trimStart()
+        if (trimmed.startsWith("data:") || trimmed.startsWith("event:")) return true
+        if (trimmed.startsWith(":") && trimmed.contains("\ndata:")) return true
+        return trimmed.contains('\n') &&
+            trimmed.lineSequence().any { it.startsWith("data:") }
+    }
+
+    /** `data:` payloads from an already-buffered SSE body, skipping `[DONE]`. */
+    fun payloads(raw: String): List<String> =
+        raw.lineSequence().mapNotNull { line ->
+            val trimmed = line.trimEnd('\r')
+            if (!trimmed.startsWith("data:")) return@mapNotNull null
+            val payload = trimmed.removePrefix("data:").trim()
+            payload.takeIf { it.isNotEmpty() && it != "[DONE]" }
+        }.toList()
+
     suspend fun read(
         response: Response,
         onData: (String) -> Unit,
