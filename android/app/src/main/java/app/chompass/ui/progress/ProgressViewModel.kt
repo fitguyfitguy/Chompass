@@ -130,7 +130,13 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
             ) { base, foods, weightUnit, selectedRange, showGoalReached ->
                 ProgressSnapshot(base, foods, weightUnit, selectedRange, showGoalReached)
             }.mapLatest { snapshot ->
-                withContext(Dispatchers.Default) { snapshot.toUiState() }
+                withContext(Dispatchers.Default) {
+                    app.chompass.services.PerfLog.measure(
+                        "progress",
+                        "rangeChange",
+                        "range=${snapshot.selectedRange.storageId} foods=${snapshot.foods.size} weights=${snapshot.base.entries.size}",
+                    ) { snapshot.toUiState() }
+                }
             }.onEach { _ui.value = it }.launchIn(viewModelScope)
         }
     }
