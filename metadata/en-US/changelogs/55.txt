@@ -1,0 +1,12 @@
+• Turn off all AI features: a new switch under Settings → AI & Speech turns off everything that sends data to an AI provider. The app keeps working without AI: barcode scanning, food search, manual entry, saved meals, water, sync and Health Connect all stay on
+• The app is now fully translated into Spanish and French: the whole packs are complete in one consistent voice, informal Spanish and formal French
+• Long settings labels no longer break apart: labels wrap naturally and values end with an ellipsis
+• The result sheet's side-by-side actions fit: both buttons truncate cleanly instead of collapsing letter by letter
+• "Add next ingredient" is translated: the add-to-meal action now shows in twelve more languages
+• The photo entry sheet no longer shakes when swiping
+• A photo with a barcode no longer fails when AI cannot run: the product from the barcode or QR code in the photo is shown instead
+• Log Weight and Log Body Fat popups scroll when full: the Save button stays reachable on small screens
+• Adding a search result no longer fails on some products: products whose code fails the check digit now add normally
+• Barcode scanning prefers the retail barcode on mixed labels: when a label carries both a barcode and a QR or Data Matrix code, the scan uses the barcode
+• The serving unit on barcode and AI entries is translated
+• App-generated messages are translated: adaptive-goals and goal update messages now show in the app language

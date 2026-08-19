@@ -1,0 +1,1 @@
+• Settings values line up on the right again: values and their arrows sit at the right edge of each row again, and long labels wrap instead of stacking letter by letter

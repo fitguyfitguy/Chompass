@@ -1,0 +1,1 @@
+• German and Russian labels fit at large font sizes: compact labels are shortened and macro status lines use the shorter suffix form, so chips, tabs, buttons, meal slots, and bottom-nav labels no longer truncate or overflow

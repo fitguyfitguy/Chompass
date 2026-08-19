@@ -1,0 +1,9 @@
+• Numbers, dates and decimals now follow the app locale: diary entries, recipes, results, wheel pickers, birthday age and coach dialogs all use locale-aware formatting instead of US defaults
+• TalkBack reads week strip, onboarding pickers, swipe rows and the hero arc correctly: accessibility semantics added so screen readers announce these elements properly
+• Empty macro cards render as bare tracks: the calorie ring no longer shows broken layout when a macro has no data
+• Picker sheets use unified primary button styling: the iOS-style capsule button now appears consistently across picker dialogs
+• Calorie accent color unified with the theme primary: the ring and accent elements now match the Material3 color scheme
+• Wheel picker follows external selection, icons honor iconSize, chips have semantics
+• Coach preview uses the production send button
+• Photo memory usage capped to the stored-image limit: in-memory decodes no longer exceed the on-disk cap, reducing OOM risk on large images
+• Update Available row explains F-Droid delivery: the about screen now clarifies that updates come via F-Droid, not the Play Store

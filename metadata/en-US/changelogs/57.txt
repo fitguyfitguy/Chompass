@@ -1,0 +1,1 @@
+• WebDAV sync and sync-file import no longer drop food photos and emoji: photos stay in place locally and emoji are part of the backup again

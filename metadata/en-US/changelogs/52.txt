@@ -1,0 +1,6 @@
+• Barcode scanning reads QR and Data Matrix codes: the square matrix codes printed on many packages now scan like a barcode, and products found in the Open Food Facts database log the same way. Codes that only carry an internal number are ignored
+• Onboarding explains what goes to your AI provider: during setup and under Settings → AI & Speech, the app spells out which data leaves the device for each provider. Only the on-device Gemma 4 models keep everything on your phone; Ollama runs on your own computer
+• Barcode scan now says why it failed: a product not in the Open Food Facts database shows a clear "product not found" message, and temporary Open Food Facts hiccups are retried automatically
+• Fixing a food's weight no longer changes its nutrition: for foods from other apps with no recorded serving, correcting the weight no longer rescales the macros
+• WebDAV sync no longer crashes on some Huawei phones: saving your diary to a WebDAV server no longer stops with an error on older EMUI builds
+• Plainer English wording: dialogs and settings copy reworded for clarity

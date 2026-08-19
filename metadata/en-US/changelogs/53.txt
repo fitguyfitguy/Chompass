@@ -1,0 +1,13 @@
+• Reminder notifications open the right tab: tapping a weight or body-fat reminder now lands on the Progress tab instead of the main page
+• Hide the coach tab: a new switch under Settings → AI & Speech removes the coach tab from the bottom bar
+• The app is now fully translated into German: the whole German pack is complete in one consistent informal voice
+• Food analysis no longer gets stuck on "Analyzing...": food photos and notes now stop with a clear message when the AI provider stalls
+• The window no longer fights the light theme choice: toggling dark on the phone can't leave a dark frame around the light app
+• Searching for food no longer closes the app while you type: replaced searches stop cleanly and offline lookups no longer pile up
+• Barcode scanning keeps trying until it reads the code: a half-read frame no longer stops the scan with an error
+• Turning off the "Ask for a Photo Note" setting no longer asks before analyzing
+• Searching for food no longer closes the app on incomplete products: missing macros show a dash instead of crashing
+• The calorie ring's base marker stays visible: the boundary now draws on top of the eaten fill
+• Release builds ignore debug-only test commands: seed and restore extras only work in debug builds
+• Malformed links and oversized images no longer crash the app
+• AI results are checked before they are saved: missing, negative, or absurd values are clamped or dropped
