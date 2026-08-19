@@ -4,11 +4,13 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [3.20.0] - unreleased
+## [3.20.0] - 2026-08-19
 
 ### Added
 
-- **OLED appearance mode** (Android): a new OLED option in Settings → Appearance turns the app and all four home-screen widgets true black, so OLED screens can switch pixels off. Text and accent colors stay the same as Dark mode. Choosing Light or Dark explicitly now also applies to the widgets, not just the app.
+- **OLED appearance mode** (Android): a new OLED option in Settings → App & Display → Appearance turns the app and all four home-screen widgets true black, so OLED screens can switch pixels off. Text and accent colors stay the same as Dark mode. Choosing Light or Dark explicitly now also applies to the widgets, not just the app.
+- **Per-app language selector** (Android): a Language row in Settings → App & Display switches the whole interface to any of the 16 supported languages, independent of the system language. The choice is saved and survives restarts; System follows the device language.
+- **Wheel pickers for entering values** (Android): calories, macros, serving size, meal times, water, manual activity, AI settings, and photo notes now use scrollable wheel pickers instead of typed fields. Time wheels follow the 12 or 24 hour format of the app language.
 - **Buy fitguy a yogurt** (Android + web): a Ko-fi donation link now appears in the app's About screen, the website footer and download page, the PWA About screen, and the README. The F-Droid listing's donation link points to Ko-fi instead of the repository. Closes Codeberg [#36](https://codeberg.org/fitguy/Chompass/issues/36) by [@tpapastylianou](https://codeberg.org/tpapastylianou).
 
 ## [3.19.0] - 2026-08-18
