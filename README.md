@@ -47,7 +47,7 @@ Not on the Play Store. Install from **F-Droid**, Obtainium, or Codeberg Releases
 
 - **F-Droid**: [app.chompass](https://f-droid.org/packages/app.chompass/): install and auto-update from the F-Droid client.
 - **Obtainium**: tap the badge above, then confirm in Obtainium. Or paste `https://codeberg.org/fitguy/chompass` into **Add App**.
-- **Direct APK**: download from [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases). Prefer `arm64-v8a` on modern phones; use `armeabi-v7a` for older 32-bit devices, `x86_64` for emulators/Chromebooks, or universal only when unsure.
+- **Direct APK**: download from [Codeberg Releases](https://codeberg.org/fitguy/chompass/releases). The release APK covers 64-bit and 32-bit ARM phones. It does not include Intel (x86) libraries.
 
 Release package ID: `app.chompass`. Debug (from source): `app.chompass.debug`.
 
@@ -120,7 +120,7 @@ See [CHANGELOG.md](docs/CHANGELOG.md) for release notes.
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Models**           | [Gemma 4 Edge](https://developers.google.com/edge/litert-lm/android) (E2B ~2.4 GB or E4B ~3.4 GB), downloaded once from Hugging Face  |
 | **What stays local** | Food text and photo analysis when logging meals                                                                                       |
-| **Requirements**     | arm64 or x86_64, 6 GB+ RAM (hidden on unsupported devices)                                                                            |
+| **Requirements**     | arm64, 6 GB+ RAM (hidden on unsupported devices)                                                                                      |
 | **Accuracy**         | On-device models are much smaller than cloud AI and often misread portions, brands, and photos. Cloud AI is still the better default. |
 | **Fallback**         | Enable **Fallback Provider** so a cloud model retries when on-device inference fails                                                  |
 
