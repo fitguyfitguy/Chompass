@@ -101,7 +101,7 @@ export const ro = Object.freeze({
   "progress.range_6m": "6L",
   "progress.range_1y": "1A",
   "progress.range_all": "Tot",
-  "progress.weight_raw_legend": "Cântăriri zilnice",
+  "progress.weight_raw_legend": "Cântărire",
   "progress.weight_trend_legend": "Tendință 7 zile",
   "progress.weight_trend_need_more": "Tendința pe 7 zile necesită cel puțin 2 zile cu greutate",
 "progress.log_weight": "Înregistrează greutatea",

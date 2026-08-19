@@ -671,7 +671,7 @@
     <string name="photo_accuracy_guide_dismiss">知道了</string>
     <string name="photo_accuracy_guide_title">获得更好估算的提示</string>
     <string name="photo_import_failed">无法导入照片</string>
-    <string name="progress_weight_raw_legend">每日称重</string>
+    <string name="progress_weight_raw_legend">体重</string>
     <string name="progress_weight_trend_legend">7 日趋势</string>
     <string name="progress_weight_trend_need_more">7 日趋势至少需要 2 天的称重记录</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/天</string>

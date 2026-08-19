@@ -136,7 +136,7 @@ export const tr = Object.freeze({
   "progress.range_6m": "6A",
   "progress.range_1y": "1Y",
   "progress.range_all": "Tümü",
-  "progress.weight_raw_legend": "Günlük tartımlar",
+  "progress.weight_raw_legend": "Tartım",
   "progress.weight_trend_legend": "7 günlük trend",
   "progress.weight_trend_need_more": "7 günlük trend için en az 2 tartım günü gerekir",
   "progress.log_weight": "Kilo ekle",

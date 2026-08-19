@@ -101,7 +101,7 @@ export const zh_CN = Object.freeze({
   "progress.range_6m": "6月",
   "progress.range_1y": "1年",
   "progress.range_all": "全部",
-  "progress.weight_raw_legend": "每日体重",
+  "progress.weight_raw_legend": "体重",
   "progress.weight_trend_legend": "7日趋势",
   "progress.weight_trend_need_more": "7日趋势至少需要2天体重记录",
 "progress.log_weight": "记录体重",

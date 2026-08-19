@@ -731,7 +731,7 @@
     <string name="progress_log_first_weight">Trendleri görmek için ilk kilonuzu ekleyin</string>
     <string name="progress_weight_trend_legend">7 günlük trend</string>
     <string name="progress_weight_trend_need_more">7 günlük trend için en az 2 tartım günü gerekir</string>
-    <string name="progress_weight_raw_legend">Günlük tartımlar</string>
+    <string name="progress_weight_raw_legend">Tartım</string>
 
     <string name="progress_weight_history">Kilo Geçmişi</string>
     <string name="progress_body_fat_history">Vücut Yağı Geçmişi</string>

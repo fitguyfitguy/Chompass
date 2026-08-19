@@ -669,7 +669,7 @@
     <string name="photo_accuracy_guide_dismiss">알겠습니다</string>
     <string name="photo_accuracy_guide_title">더 나은 추정을 위한 팁</string>
     <string name="photo_import_failed">사진을 가져올 수 없어요</string>
-    <string name="progress_weight_raw_legend">매일 체중</string>
+    <string name="progress_weight_raw_legend">체중</string>
     <string name="progress_weight_trend_legend">7일 추세</string>
     <string name="progress_weight_trend_need_more">7일 추세에는 최소 2일의 체중 기록이 필요해요</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/일</string>

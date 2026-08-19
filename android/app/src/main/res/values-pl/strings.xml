@@ -731,7 +731,7 @@
     <string name="progress_log_first_weight">Dodaj pierwszą wagę, aby zobaczyć trendy</string>
     <string name="progress_weight_trend_legend">Trend 7-dniowy</string>
     <string name="progress_weight_trend_need_more">Trend 7-dniowy wymaga co najmniej 2 dni ważeń</string>
-    <string name="progress_weight_raw_legend">Codzienne ważenia</string>
+    <string name="progress_weight_raw_legend">Ważenie</string>
 
     <string name="progress_weight_history">Historia wagi</string>
     <string name="progress_body_fat_history">Historia tkanki tłuszczowej</string>

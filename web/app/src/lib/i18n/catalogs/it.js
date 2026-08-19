@@ -101,7 +101,7 @@ export const it = Object.freeze({
   "progress.range_6m": "6M",
   "progress.range_1y": "1A",
   "progress.range_all": "Tutto",
-  "progress.weight_raw_legend": "Pesate giornaliere",
+  "progress.weight_raw_legend": "Pesata",
   "progress.weight_trend_legend": "Trend 7 giorni",
   "progress.weight_trend_need_more": "Il trend a 7 giorni richiede almeno 2 giorni di peso",
 "progress.log_weight": "Registra peso",

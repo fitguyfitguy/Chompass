@@ -101,7 +101,7 @@ export const ar = Object.freeze({
   "progress.range_6m": "٦ أشهر",
   "progress.range_1y": "سنة",
   "progress.range_all": "الكل",
-  "progress.weight_raw_legend": "أوزان يومية",
+  "progress.weight_raw_legend": "الوزن",
   "progress.weight_trend_legend": "اتجاه 7 أيام",
   "progress.weight_trend_need_more": "اتجاه 7 أيام يحتاج يومي وزن على الأقل",
 "progress.log_weight": "تسجيل الوزن",
