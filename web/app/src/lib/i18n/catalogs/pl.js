@@ -319,7 +319,7 @@ export const pl = Object.freeze({
   "settings.ai.meal_constituents": "Rozbicie posiłku na składniki",
   "settings.ai.meal_constituents_hint": "Poproś AI o rozbicie złożonych posiłków na edytowalne składniki. Wyłącz dla słabszych modeli, jeśli wyniki wyglądają niespójnie.",
   "settings.ai.serving_unit_mode": "Określanie jednostki porcji",
-  "settings.ai.serving_unit_mode_hint": "Jak uzupełnić jednostkę inną niż gramy, gdy model jej nie poda. Tylko gramy — najszybciej; heurystyka zgaduje z nazwy jedzenia; AI pyta o jednostkę w razie potrzeby.",
+  "settings.ai.serving_unit_mode_hint": "Jak uzupełnić jednostkę inną niż gramy, gdy model jej nie poda. Tylko gramy, najszybciej; heurystyka zgaduje z nazwy jedzenia; AI pyta o jednostkę w razie potrzeby.",
   "settings.ai.serving_unit_grams_only": "Tylko gramy",
   "settings.ai.serving_unit_heuristic": "Heurystyka",
   "settings.ai.serving_unit_ai_call": "Określa AI",

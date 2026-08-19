@@ -1,6 +1,6 @@
 // @ts-check
 // Catalog registry (Phase 1): only the English catalog is eager. The other 14
-// load on demand via loadCatalog(id) — the PWA activates its locale in an
+// load on demand via loadCatalog(id) - the PWA activates its locale in an
 // async boot path anyway, and the demo hero never needs anything but `en`, so
 // ~248 KiB of catalogs stopped shipping on every load. t()/tp() keep their
 // synchronous English fallback for the brief window before a catalog lands.

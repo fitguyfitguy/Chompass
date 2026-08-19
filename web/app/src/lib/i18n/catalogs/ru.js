@@ -291,7 +291,7 @@ export const ru = Object.freeze({
   "manual_active.kcal_hint": "Сожжённые калории",
   "manual_active.save": "Добавить к бюджету",
   "settings.ai.serving_unit_mode": "Определение единицы порции",
-  "settings.ai.serving_unit_mode_hint": "Как заполнить неграммовую единицу, если модель её не указала. Только граммы — самый быстрый вариант; эвристика угадывает по названию продукта; определяет ИИ — использует unit_options модели, если они есть.",
+  "settings.ai.serving_unit_mode_hint": "Как заполнить неграммовую единицу, если модель её не указала. Только граммы, самый быстрый вариант; эвристика угадывает по названию продукта; определяет ИИ и использует unit_options модели, если они есть.",
   "settings.ai.serving_unit_grams_only": "Только граммы",
   "settings.ai.serving_unit_heuristic": "Эвристика",
   "settings.ai.serving_unit_ai_call": "Определяет ИИ",
