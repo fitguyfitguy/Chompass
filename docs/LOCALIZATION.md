@@ -136,11 +136,23 @@ screenshot references if the labels changed.
 | Locale | PWA core catalog | Android resource pack |
 |--------|------------------|------------------------|
 | en | complete | complete (source) |
-| ru | complete | most complete non-EN (1,044 / 1,420 present) |
-| uk | complete (new, translated from scratch) | 673 keys translated; EN fallback for the rest |
-| de, es, fr | complete | **de: complete (1,494 / 1,494 + 2 plurals, community pack by 1260er, style-reviewed 2026-08-16)**; es, fr: partial (~600 / 1,420 present) |
-| pl, tr | complete | **complete (full packs, added 2026-08-19; Polish 4 plural forms, Turkish vowel-harmony checked)** |
-| ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | partial (~560–590 / 1,420 present); EN fallback for missing keys |
+| de, pl, tr | complete | complete, style-reviewed (full packs) |
+| ru | complete | **complete** (0 missing, cap 0); style review pending |
+| uk | complete | **complete** (0 missing, incl. 4-form plurals) |
+| es, fr | complete | complete (0 missing) |
+| ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | **complete** (0 missing each; caps 0) |
+
+Status as of 2026-08: **all 18 Android packs have 0 missing keys, 0
+verbatim EN copies, empty compact fallback lists, and `maxMissing` caps of
+0** (see `PLAN_LOCALES_BROADENING.md` for the commit per locale). The
+second-phase sweep also fixed the checker to count `<plurals>` keys, so the
+reported numbers include both `<string>` and `<plurals>`.
+
+Remaining before a locale can be claimed *reviewed* (not just translated):
+- **Native read** of each pack (the honest quality gate; community or
+  arranged reviewer per the de-merge pattern).
+- **ar**: device RTL render pass at max font scale (the only RTL pack).
+- ru: decide the formal-вы vs informal-ты voice question with a reviewer.
 
 Second phase: all locale files were swept for verbatim EN copies: they were
 translated (ru) or removed so they fall back to EN honestly (all other packs),
