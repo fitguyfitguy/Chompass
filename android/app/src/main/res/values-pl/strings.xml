@@ -365,6 +365,7 @@
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">Ładowanie danych przykładowych…</string>
     <string name="home_add_food">Dodaj jedzenie</string>
     <string name="home_menu_camera">Aparat</string>
     <string name="home_menu_camera_note">Aparat + notatka</string>

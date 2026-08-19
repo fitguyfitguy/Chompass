@@ -232,6 +232,7 @@
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">サンプルデータを読み込み中…</string>
     <string name="home_add_food">食事を追加</string>
     <string name="home_menu_camera">カメラ</string>
     <string name="home_menu_camera_note">カメラ + メモ</string>

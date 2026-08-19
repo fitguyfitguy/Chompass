@@ -233,6 +233,7 @@
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">جارٍ تحميل بيانات العينة…</string>
     <string name="home_add_food">إضافة طعام</string>
     <string name="home_menu_camera">الكاميرا</string>
     <string name="home_menu_camera_note">كاميرا + ملاحظة</string>

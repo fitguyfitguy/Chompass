@@ -207,6 +207,7 @@
     <string name="onboarding_plan_field_calories">Щоденні калорії</string>
     <string name="onboarding_plan_field_carbs">Вуглеводи</string>
     <string name="onboarding_plan_field_fat">Жири</string>
+    <string name="home_loading_sample_data">Завантаження зразкових даних…</string>
     <string name="home_add_food">Додати їжу</string>
     <string name="home_menu_camera">Камера</string>
     <string name="home_menu_camera_note">Камера + нотатка</string>

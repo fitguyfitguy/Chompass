@@ -62,8 +62,8 @@ android {
         applicationId = "app.chompass"
         minSdk = 26
         targetSdk = 36
-        versionCode = 61
-        versionName = "3.21.0"
+        versionCode = 62
+        versionName = "3.21.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         if (releaseAbi != null) {

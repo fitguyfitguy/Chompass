@@ -625,6 +625,7 @@ für dich ein</string>
 
     <string name="onboarding_plan_field_fat">Fett</string>
 
+    <string name="home_loading_sample_data">Beispieldaten werden geladen…</string>
     <string name="home_add_food">Lebensmittel hinzufügen</string>
 
     <string name="home_menu_camera">Kamera</string>

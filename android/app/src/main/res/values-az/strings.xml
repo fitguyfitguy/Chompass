@@ -230,6 +230,7 @@ bilirsən?</string>
 
 
     <!-- Home -->
+    <string name="home_loading_sample_data">Nümunə məlumatlar yüklənir…</string>
     <string name="home_add_food">Yemək əlavə et</string>
     <string name="home_menu_camera">Kamera</string>
     <string name="home_menu_camera_note">Kamera + Qeyd</string>

@@ -294,6 +294,7 @@
 
 
     
+    <string name="home_loading_sample_data">Загрузка тестовых данных…</string>
     <string name="home_add_food">Добавить еду</string>
     <string name="home_menu_camera">Камера</string>
     <string name="home_menu_camera_note">Камера + заметка</string>
