@@ -48,6 +48,11 @@ internal data class DebugIntentActions(
     val relogBenchmarkCount: Int = 3,
     val runWaterSipBenchmark: Boolean = false,
     val waterSipBenchmarkCount: Int = 1,
+    val runLocalEntryBenchmark: Boolean = false,
+    val localEntryBenchmarkCount: Int = 3,
+    val runHubBenchmark: Boolean = false,
+    val runDaySwitchBenchmark: Boolean = false,
+    val runFlipBenchmark: Boolean = false,
     val runOnDeviceLlmTest: Boolean = false,
     val onDeviceLlmBackend: String = "gpu",
     val onDeviceLlmMtp: Boolean = false,
@@ -111,6 +116,11 @@ internal fun consumeDebugIntentExtras(
         relogBenchmarkCount = intent.getIntExtra("relog_benchmark_count", 3),
         runWaterSipBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_water_sip_benchmark", false),
         waterSipBenchmarkCount = intent.getIntExtra("water_sip_benchmark_count", 1),
+        runLocalEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_local_entry_benchmark", false),
+        localEntryBenchmarkCount = intent.getIntExtra("local_entry_benchmark_count", 3),
+        runHubBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_hub_benchmark", false),
+        runDaySwitchBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_day_switch_benchmark", false),
+        runFlipBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_flip_benchmark", false),
         runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
         onDeviceLlmBackend = if (presetDaily) "gpu" else intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
         onDeviceLlmMtp = presetDaily || intent.getBooleanExtra("ondevice_llm_mtp", false),
@@ -155,6 +165,13 @@ internal fun consumeDebugIntentExtras(
         intent.removeExtra("run_water_sip_benchmark")
         intent.removeExtra("water_sip_benchmark_count")
     }
+    if (actions.runLocalEntryBenchmark) {
+        intent.removeExtra("run_local_entry_benchmark")
+        intent.removeExtra("local_entry_benchmark_count")
+    }
+    if (actions.runHubBenchmark) intent.removeExtra("run_hub_benchmark")
+    if (actions.runDaySwitchBenchmark) intent.removeExtra("run_day_switch_benchmark")
+    if (actions.runFlipBenchmark) intent.removeExtra("run_flip_benchmark")
     if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
     if (actions.runOnDeviceLlmTest) {
         intent.removeExtra("run_ondevice_llm_test")

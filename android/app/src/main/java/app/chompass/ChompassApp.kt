@@ -46,10 +46,12 @@ import app.chompass.services.weather.OpenMeteoClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 /**
@@ -76,27 +78,27 @@ class ChompassApp : Application() {
         container.prefs.mealSchedule
             .onEach { CurrentMealSchedule.value = it }
             .launchIn(appScope)
-        container.widgetSnapshotWriter.observe().launchIn(appScope)
-        // Widgets show "today" — roll the snapshot over just after midnight so
-        // a widget left on the home screen never displays yesterday's totals
-        // until the app happens to refresh it. Re-armed daily by the receiver;
-        // this cold-start arm covers reboots and app updates (issue #16).
-        appScope.launch { container.notifications.scheduleWidgetMidnightRefresh() }
-        // Cold-start weather refresh: when the dynamic goal uses Open-Meteo,
-        // refetch today's high so the goal reflects an updated forecast (and
-        // the reminder chain re-arms on the next entry change). No-op when the
-        // cache already covers today.
+        // Widget snapshot writes the same DataStore file Home is reading on
+        // first paint — wait until the first frame is out before observing.
+        container.widgetSnapshotWriter.observe()
+            .onStart { delay(WIDGET_OBSERVE_DELAY_MS) }
+            .launchIn(appScope)
+        scheduleDeferredStartupWork()
+    }
+
+    /**
+     * Prune / weather / reminder re-arm / midnight widget alarm. None of this
+     * is needed for the first Home frame; running it in onCreate contended
+     * with splash DataStore reads on a full diary.
+     */
+    private fun scheduleDeferredStartupWork() {
         appScope.launch {
+            delay(DEFERRED_STARTUP_DELAY_MS)
+            container.notifications.scheduleWidgetMidnightRefresh()
             if (container.prefs.weatherSource.first() == WeatherRepository.SOURCE_OPEN_METEO) {
                 container.weatherRepository.refreshOpenMeteo()
             }
-        }
-        // Older builds removed food rows without removing their JPEGs.
-        appScope.launch { container.foodRepository.pruneOrphanedImages() }
-        // Re-arm opt-in background Health Connect sync on cold start. KEEP makes
-        // this a no-op when the periodic work is already enqueued. Requires the
-        // module feature + background-read grant (API varies by Mainline version).
-        appScope.launch {
+            container.foodRepository.pruneOrphanedImages()
             if (container.prefs.healthBackgroundSyncEnabled.first() &&
                 container.health.isAvailable() &&
                 container.health.isBackgroundReadAvailable() &&
@@ -107,12 +109,6 @@ class ChompassApp : Application() {
                 container.prefs.setHealthBackgroundSyncEnabled(false)
                 HealthSyncWorker.cancel(this@ChompassApp)
             }
-        }
-        // Re-arm the daily weight-log alarm on every cold start. AlarmManager
-        // drops scheduled alarms on device reboot and (sometimes) on app
-        // updates — without this, a user who enabled Notifications once would
-        // silently stop receiving the reminder after the next reboot.
-        appScope.launch {
             if (container.prefs.notificationsEnabled.first() &&
                 container.notifications.canPostNotifications()
             ) {
@@ -137,8 +133,6 @@ class ChompassApp : Application() {
                 } else {
                     container.notifications.cancelWeightReminder()
                 }
-                // Body-fat reminder only fires for users who've actually opted
-                // into body-fat tracking and left that notification type on.
                 val profile = container.profileRepository.current()
                 if (container.prefs.bodyFatReminderEnabled.first() && profile?.bodyFatPercentage != null) {
                     container.notifications.scheduleBodyFatReminder()
@@ -152,6 +146,11 @@ class ChompassApp : Application() {
                 }
             }
         }
+    }
+
+    private companion object {
+        const val WIDGET_OBSERVE_DELAY_MS = 2_000L
+        const val DEFERRED_STARTUP_DELAY_MS = 2_500L
     }
 
     /**
@@ -304,6 +303,10 @@ class AppContainer(app: ChompassApp) {
      * Single-slot is enough — the newest tap wins.
      */
     val launchDestinationInbox: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    /** Debug-only: HomeViewModel runs flippidity benches through the real UI path. */
+    val perfBenchInbox: MutableStateFlow<app.chompass.services.PerfBenchRequest?> =
+        MutableStateFlow(null)
 
     /** See [HealthConnectReadSync.sync]. */
     suspend fun syncHealthConnectReads() = healthConnectReadSync.sync()

@@ -35,6 +35,8 @@ import app.chompass.services.AndroidAppIconManager
 import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
 import app.chompass.services.EntryPerfBenchmark
+import app.chompass.services.PerfBenchRequest
+import app.chompass.services.PerfLog
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.LauncherShortcuts
 import app.chompass.services.MealShare
@@ -376,9 +378,8 @@ open class MainActivity : ComponentActivity() {
         var contentReady by mutableStateOf(false)
         splashScreen.setKeepOnScreenCondition { !contentReady }
         lifecycleScope.launch {
+            val splashAt = if (PerfLog.enabled) System.nanoTime() else 0L
             launchDebugIntentActions(debugActions, container, app)
-
-            container.prefs.ensureFirstLaunchAt()
 
             // Seed extras write onboarded + profile first, then the heavy replaceAll.
             // Wait only for that fast prefix so first-install --full skips onboarding
@@ -387,24 +388,29 @@ open class MainActivity : ComponentActivity() {
                 container.prefs.hasCompletedOnboarding.first { it }
             }
 
-            val resolvedStartOnboarding = !container.prefs.hasCompletedOnboarding.first()
-            initialAppearance = container.prefs.appearanceMode.first()
-            initialThemeColorKey = container.prefs.appThemeColor.first()
-            val initialFixedLauncherIcon = container.prefs.fixedLauncherIcon.first()
+            val snap = PerfLog.measure("coldStart", "prefsSnapshot") {
+                container.prefs.readColdStartPrefs()
+            }
+            initialAppearance = snap.appearanceMode
+            initialThemeColorKey = snap.appThemeColor
             AndroidAppIconManager.apply(
                 this@MainActivity,
                 AppThemeColor.fromKey(initialThemeColorKey),
-                initialFixedLauncherIcon,
+                snap.fixedLauncherIcon,
             )
-            // Apply per-app language before rendering content
-            val initialAppLanguage = container.prefs.appLanguage.first()
-            appliedAppLanguage = initialAppLanguage
-            LocaleHelper.apply(this@MainActivity, initialAppLanguage)
-            startOnboarding = resolvedStartOnboarding
-            if (!resolvedStartOnboarding) {
+            appliedAppLanguage = snap.appLanguage
+            LocaleHelper.apply(this@MainActivity, snap.appLanguage)
+            startOnboarding = !snap.onboarded
+            if (snap.onboarded) {
                 container.profileRepository.profile.first { it != null }
             }
             contentReady = true
+            if (PerfLog.enabled) {
+                val ms = (System.nanoTime() - splashAt) / 1_000_000
+                PerfLog.event("op=coldStart phase=splashReady ms=$ms")
+            }
+            // Write after splash dismiss so it does not contend with first paint.
+            container.prefs.ensureFirstLaunchAt()
         }
 
         setContent {
@@ -532,17 +538,24 @@ open class MainActivity : ComponentActivity() {
                 container.prefs.setPendingFoodInputDraft(null)
             }
 
-            // Independent of seeding/onboarding: benchmarks only need the AI provider + key.
-            if (actions.runRelogBenchmark) {
-                lifecycleScope.launch {
-                    EntryPerfBenchmark(container).runRelog(actions.relogBenchmarkCount)
-                }
+            // Flippidity benches go through HomeViewModel (chip cache, uiAck).
+            // Gemini analyze+save stays on the repo path (no Home UI).
+            val flipReq = when {
+                actions.runFlipBenchmark -> PerfBenchRequest.Flip(
+                    relog = actions.relogBenchmarkCount,
+                    local = actions.localEntryBenchmarkCount,
+                    sips = actions.waterSipBenchmarkCount,
+                )
+                actions.runRelogBenchmark -> PerfBenchRequest.Relog(actions.relogBenchmarkCount)
+                actions.runLocalEntryBenchmark ->
+                    PerfBenchRequest.LocalEntry(actions.localEntryBenchmarkCount)
+                actions.runWaterSipBenchmark ->
+                    PerfBenchRequest.WaterSip(actions.waterSipBenchmarkCount)
+                actions.runHubBenchmark -> PerfBenchRequest.HubOpen()
+                actions.runDaySwitchBenchmark -> PerfBenchRequest.DaySwitch()
+                else -> null
             }
-            if (actions.runWaterSipBenchmark) {
-                lifecycleScope.launch {
-                    EntryPerfBenchmark(container).runWaterSip(actions.waterSipBenchmarkCount)
-                }
-            }
+            if (flipReq != null) container.perfBenchInbox.value = flipReq
             if (actions.runEntryBenchmark) {
                 lifecycleScope.launch {
                     EntryPerfBenchmark(container).run(actions.entryBenchmarkCount)

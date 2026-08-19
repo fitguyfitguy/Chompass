@@ -43,7 +43,8 @@ Needs a Gemini key in `android/secrets.properties` (debug builds only).
 | Home fling / day switch / row swipe | `input swipe` + week-strip tap | `gfx_framestats_home_fling.txt`, `day_switch`, `day_chip`, `row_swipe` + matching `logcat_*` (`daySwitch`, `relog uiAck`) |
 | Water sip | hub water + tap, then `run_water_sip_benchmark` | `gfx_framestats_water_sip.txt`, `logcat_water_sip_bench.txt` (`waterSip dataStore`) |
 | Progress fling after All | swipe-up | `gfx_framestats_progress_fling.txt` |
-| Relog first hub row | `run_relog_benchmark` (no coordinates) | `logcat_relog_bench.txt` (`relogBench`, `save`) |
+| Flip suite (hub chips, relog uiAck, local Log, sip, day switch) | `run_flip_benchmark` through HomeViewModel | `logcat_flip_bench.txt` (`hubOpen benchLoad`, `relogBench uiAck`, `entryLocal uiAck`, `waterSip uiAck`, `daySwitch`) |
+| Relog first hub row | `run_relog_benchmark` (legacy; flip suite preferred) | `logcat_relog_bench.txt` |
 | Analyze+save ×N | `perf_entry_benchmark.sh` `SEED=0` | `entry_perf.log` + summarizer |
 
 Do **not** use raw tab-bar taps for Progress: on a 1080-wide Pixel,
@@ -65,8 +66,13 @@ Tag `FudAIPerf`. Release builds emit nothing.
 
 ```
 op=progress phase=rangeChange ms=323 range=1Y foods=1265 weights=588
+op=coldStart phase=prefsSnapshot ms=12
+op=coldStart phase=splashReady ms=180
 op=hubOpen phase=quickRelog ms=1015 perRow=10
 op=hubOpen phase=sheetVisible ms=18
+op=hubOpen phase=benchLoad ms=40
+op=relogBench phase=uiAck i=0 ms=90 name=...
+op=entryLocal phase=uiAck i=0 ms=120
 op=daySwitch phase=listReady ms=12 date=2026-08-18 entries=4
 op=waterSip phase=dataStore ms=410 ml=250
 op=relog phase=uiAck ms=390 entries=5

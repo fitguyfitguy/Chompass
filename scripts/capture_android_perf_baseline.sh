@@ -46,6 +46,8 @@ RUN_RELOG_BENCH="${RUN_RELOG_BENCH:-1}"
 RELOG_COUNT="${RELOG_COUNT:-3}"
 RUN_WATER_SIP_BENCH="${RUN_WATER_SIP_BENCH:-1}"
 WATER_SIP_COUNT="${WATER_SIP_COUNT:-1}"
+RUN_FLIP_BENCH="${RUN_FLIP_BENCH:-1}"
+LOCAL_ENTRY_COUNT="${LOCAL_ENTRY_COUNT:-3}"
 ENTRY_TIMEOUT="${ENTRY_TIMEOUT:-240}"
 # Pixel 9a 1080×2424-ish: Home fling / hero day-swipe / first food-row swipe.
 HOME_FLING_FROM_Y="${HOME_FLING_FROM_Y:-1900}"
@@ -217,7 +219,7 @@ capture_input row_swipe swipe 900 "${FOOD_ROW_Y}" 550 "${FOOD_ROW_Y}" 180
 go_nav home
 sleep "${TAB_SETTLE_SECONDS}"
 
-echo "Collecting Add Food hub + quick-relog open..."
+echo "Collecting Add Food hub first frame (no chip/photo taps — those hit Photo)..."
 "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
 "${ADB_BIN}" logcat -c
 "${ADB_BIN}" shell input tap "${ADD_FOOD_FAB_X}" "${ADD_FOOD_FAB_Y}"
@@ -227,37 +229,50 @@ HUB_PID="$("${ADB_BIN}" shell pidof -s "${PACKAGE}" 2>/dev/null | tr -d '\r')"
 if [ -n "${HUB_PID}" ]; then
   "${ADB_BIN}" logcat -d -s FudAIPerf --pid="${HUB_PID}" > "${OUT_DIR}/logcat_add_food.txt" || true
 fi
-"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
-"${ADB_BIN}" shell input tap "${RELOG_CHIP_X}" "${RELOG_CHIP_Y}"
-sleep 1
-"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_relog_chip.txt"
-# Re-open the hub and tap the water + (sheet dismisses on sip).
+# Dismiss the sheet. Coordinate taps on this sheet land on Photo and leave
+# the in-app camera up while a save freezes the UI.
+"${ADB_BIN}" shell input keyevent KEYCODE_BACK
+sleep 0.4
+"${ADB_BIN}" shell input keyevent KEYCODE_BACK
 go_nav home
 sleep "${TAB_SETTLE_SECONDS}"
-"${ADB_BIN}" shell input tap "${ADD_FOOD_FAB_X}" "${ADD_FOOD_FAB_Y}"
-sleep "${TAB_SETTLE_SECONDS}"
-capture_input water_sip tap "${WATER_SIP_X}" "${WATER_SIP_Y}"
 
-if [ "${RUN_WATER_SIP_BENCH}" = 1 ]; then
-  echo "Running water-sip benchmark (${WATER_SIP_COUNT}x, no coordinates)..."
+if [ "${RUN_FLIP_BENCH}" = 1 ]; then
+  echo "Running flip bench via Home (hub chips, relog uiAck, local entry, sip, day switch)..."
+  "${ADB_BIN}" shell input keyevent KEYCODE_BACK
+  go_nav home
+  sleep "${TAB_SETTLE_SECONDS}"
   "${ADB_BIN}" logcat -c
-  "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_water_sip_bench.txt" &
-  WATER_PID=$!
-  "${ADB_BIN}" shell am start -n "${ACTIVITY}" --ez run_water_sip_benchmark true --ei water_sip_benchmark_count "${WATER_SIP_COUNT}" >/dev/null
-  wait_fud_mark "op=waterSip phase=done" "${OUT_DIR}/logcat_water_sip_bench.txt" 30 || true
+  "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_flip_bench.txt" &
+  FLIP_PID=$!
+  "${ADB_BIN}" shell am start -n "${ACTIVITY}" \
+    --ez run_flip_benchmark true \
+    --ei relog_benchmark_count "${RELOG_COUNT}" \
+    --ei local_entry_benchmark_count "${LOCAL_ENTRY_COUNT}" \
+    --ei water_sip_benchmark_count "${WATER_SIP_COUNT}" >/dev/null
+  wait_fud_mark "op=flipBench phase=done" "${OUT_DIR}/logcat_flip_bench.txt" 120 || true
   sleep 1
-  kill "${WATER_PID}" 2>/dev/null || true
-fi
-
-if [ "${RUN_RELOG_BENCH}" = 1 ]; then
-  echo "Running relog benchmark (${RELOG_COUNT}x first hub row, no coordinates)..."
-  "${ADB_BIN}" logcat -c
-  "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_relog_bench.txt" &
-  RELLOG_PID=$!
-  "${ADB_BIN}" shell am start -n "${ACTIVITY}" --ez run_relog_benchmark true --ei relog_benchmark_count "${RELOG_COUNT}" >/dev/null
-  wait_fud_mark "op=relogBench phase=done" "${OUT_DIR}/logcat_relog_bench.txt" 60 || true
-  sleep 1
-  kill "${RELLOG_PID}" 2>/dev/null || true
+  kill "${FLIP_PID}" 2>/dev/null || true
+elif [ "${RUN_RELOG_BENCH}" = 1 ] || [ "${RUN_WATER_SIP_BENCH}" = 1 ]; then
+  echo "Running leftover repo benches (set RUN_FLIP_BENCH=1 for the Home path)..."
+  if [ "${RUN_WATER_SIP_BENCH}" = 1 ]; then
+    "${ADB_BIN}" logcat -c
+    "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_water_sip_bench.txt" &
+    WATER_PID=$!
+    "${ADB_BIN}" shell am start -n "${ACTIVITY}" --ez run_water_sip_benchmark true --ei water_sip_benchmark_count "${WATER_SIP_COUNT}" >/dev/null
+    wait_fud_mark "op=waterSip phase=done" "${OUT_DIR}/logcat_water_sip_bench.txt" 30 || true
+    sleep 1
+    kill "${WATER_PID}" 2>/dev/null || true
+  fi
+  if [ "${RUN_RELOG_BENCH}" = 1 ]; then
+    "${ADB_BIN}" logcat -c
+    "${ADB_BIN}" logcat -v epoch -s "FudAIPerf:V" > "${OUT_DIR}/logcat_relog_bench.txt" &
+    RELLOG_PID=$!
+    "${ADB_BIN}" shell am start -n "${ACTIVITY}" --ez run_relog_benchmark true --ei relog_benchmark_count "${RELOG_COUNT}" >/dev/null
+    wait_fud_mark "op=relogBench phase=done" "${OUT_DIR}/logcat_relog_bench.txt" 60 || true
+    sleep 1
+    kill "${RELLOG_PID}" 2>/dev/null || true
+  fi
 fi
 
 if [ "${RUN_ENTRY_BENCH}" = 1 ]; then
@@ -267,4 +282,9 @@ if [ "${RUN_ENTRY_BENCH}" = 1 ]; then
     "${ROOT}/scripts/perf_entry_benchmark.sh" "${ENTRY_COUNT}" || true
 fi
 
+echo
+echo "=== FudAIPerf summary (${OUT_DIR}) ==="
+grep -hE 'op=(coldStart|hubOpen|relog|relogBench|entryLocal|waterSip|daySwitch|progress|save|flipBench)' \
+  "${OUT_DIR}"/logcat*.txt 2>/dev/null | sed 's/.*FudAIPerf: //' | sort -u || true
+echo
 echo "Done. Review files under ${OUT_DIR}"
