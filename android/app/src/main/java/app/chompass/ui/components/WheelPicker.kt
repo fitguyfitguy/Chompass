@@ -519,7 +519,8 @@ fun MacroWheelPicker(
 
 /**
  * Expandable macro picker — shows a summary row with label, current value, and unit.
- * On tap, expands to show a full-width wheel picker with the macro name as title.
+ * On tap, expands to show a full-width wheel picker. The summary row already
+ * names the nutrient, so the expanded state does not reprint the title.
  */
 @Composable
 fun ExpandableMacroPicker(
@@ -593,27 +594,15 @@ fun ExpandableMacroPicker(
             enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
             exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
         ) {
-            Column(
+            WheelPicker(
+                items = items,
+                selected = clamped,
+                onSelect = onValueChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 18.dp)
                     .padding(bottom = 16.dp)
-            ) {
-                // Macro name as title
-                Text(
-                    label,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = accentColor,
-                    modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
-                )
-                WheelPicker(
-                    items = items,
-                    selected = clamped,
-                    onSelect = onValueChange,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            )
         }
     }
 }

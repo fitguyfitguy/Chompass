@@ -304,6 +304,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
             key(heightMetric) {
                 NutritionPickerSheet(
                     label = stringResource(site.labelRes),
+                    showTitle = true,
                     unit = unit,
                     currentValue = editorValue,
                     range = if (heightMetric) 10..250 else 4..100,
