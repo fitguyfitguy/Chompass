@@ -17,6 +17,8 @@ internal object Keys {
         val LAST_RECALC_GOAL_SIGNATURE = stringPreferencesKey("lastRecalcGoalSignature")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")
+        /** Release cleartext opt-in for user-entered AI endpoints (issue #8 follow-up, design doc D2 Option B). */
+        val ALLOW_INSECURE_HTTP = booleanPreferencesKey("allowInsecureHttp")
         val HAS_SEEN_CAMERA_SCALE_TIP = booleanPreferencesKey("hasSeenCameraScaleTip")
         /** Epoch-millis of first app launch; gates settings Suggestions so new users aren't nagged. */
         val FIRST_LAUNCH_AT = longPreferencesKey("firstLaunchAt")

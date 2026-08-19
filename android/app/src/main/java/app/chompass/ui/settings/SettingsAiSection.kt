@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -102,6 +103,16 @@ internal fun SettingsAiSection(
                         stringResource(R.string.settings_tap_to_edit),
                         icon = Icons.Outlined.Link
                     ) { onOpenSheet(SettingsSheet.CUSTOM_BASE_URL) }
+                    // Issue #8 follow-up: release builds allow cleartext only via this
+                    // opt-in; the AI layer rejects http:// URLs while it is off.
+                    HorizontalDivider()
+                    ToggleRow(
+                        stringResource(R.string.settings_ai_allow_insecure_http),
+                        ui.allowInsecureHttp,
+                        icon = Icons.Outlined.Warning,
+                        onChange = { vm.setAllowInsecureHttp(it) }
+                    )
+                    SettingFootnote(stringResource(R.string.settings_ai_allow_insecure_http_footer))
                 }
                 if (ui.selectedAI == AIProvider.ON_DEVICE) {
                     HorizontalDivider()
