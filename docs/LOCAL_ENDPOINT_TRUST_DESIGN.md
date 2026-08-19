@@ -1,12 +1,11 @@
 # Design: Local OpenAI-compatible endpoints (cleartext + user-CA trust) (issue #8)
 
-Status: **D2 follow-up implemented (issue #8 follow-ups, ARR8 2026-08-18/19).** The
-original change shipped in 3.9.0 (2026-08-11): D1 (user-CA trust for custom
+Status: **shipped in 3.21.0 (2026-08-19).** Original D1 (user-CA trust for custom
 endpoints), D3 (scheme normalization) and D4 (actionable connection errors)
-landed; D2 was deferred by decision. The follow-up change lands **D2 Option B**
-(release cleartext opt-in with an app-level gate), extends D1 to **Ollama**
-(user-entered endpoint, same trust model), and wires D4's hints into the
-`AiError.Network` surface (they were defined but never shown).
+shipped in 3.9.0 (2026-08-11); D2 was deferred by decision. This release lands
+**D2 Option B** (release cleartext opt-in with an app-level gate), extends D1 to
+**Ollama** (user-entered endpoint, same trust model), and wires D4's hints into
+the `AiError.Network` surface (they were defined but never shown).
 Related: [Codeberg #8](https://codeberg.org/fitguy/Chompass/issues/8)
 
 ## Problem statement
