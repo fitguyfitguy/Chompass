@@ -140,5 +140,30 @@
     "Password",
     "Standard",
     "auto"
+  ],
+  "nl": [
+    "Auto",
+    "Barcode",
+    "Calcium",
+    "Camera",
+    "Cholesterol",
+    "Chompass Water",
+    "Coach",
+    "Home",
+    "Indigo",
+    "Info",
+    "Lunch",
+    "Magnesium",
+    "Model",
+    "Omega",
+    "Omega-3",
+    "Provider",
+    "Stop",
+    "Teal",
+    "Water",
+    "auto",
+    "per week",
+    "tokens",
+    "Snack"
   ]
 }
