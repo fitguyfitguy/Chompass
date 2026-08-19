@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
@@ -20,7 +19,7 @@ fun AiSettingsScreen(
     nav: NavHostController,
     onBack: () -> Unit,
 ) {
-    val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container))
+    val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
 

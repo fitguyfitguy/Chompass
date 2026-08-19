@@ -102,7 +102,7 @@ fun ProgressScreen(container: AppContainer) {
         repeat(2) { withFrameNanos { } }
         heavySectionsReady = true
     }
-    val bodyFatAvailable = ui.bodyFatEntries.isNotEmpty()
+    val bodyFatAvailable = ui.bodyFatCount > 0
         || ui.profile?.bodyFatPercentage != null
         || ui.profile?.goalBodyFatPercentage != null
 
@@ -155,15 +155,15 @@ fun ProgressScreen(container: AppContainer) {
                 }
             }
 
-            if (ui.entries.isNotEmpty()) {
+            if (ui.weightCount > 0) {
                 item {
-                    WeightHistoryLink(count = ui.entries.size) { showAllWeights = true }
+                    WeightHistoryLink(count = ui.weightCount) { showAllWeights = true }
                 }
             }
 
-            if (ui.bodyFatEntries.isNotEmpty()) {
+            if (ui.bodyFatCount > 0) {
                 item {
-                    BodyFatHistoryLink(count = ui.bodyFatEntries.size) { showAllBodyFats = true }
+                    BodyFatHistoryLink(count = ui.bodyFatCount) { showAllBodyFats = true }
                 }
             }
 
@@ -228,7 +228,7 @@ fun ProgressScreen(container: AppContainer) {
     }
 
     if (showAddDialog) {
-        val seedKg = ui.entries.maxByOrNull { it.date }?.weightKg
+        val seedKg = ui.latestWeightKg
             ?: ui.profile?.weightKg
             ?: 70.0
         val scope = rememberCoroutineScope()
@@ -244,7 +244,7 @@ fun ProgressScreen(container: AppContainer) {
         }
     }
     if (showAddBodyFatDialog) {
-        val seedFraction = ui.bodyFatEntries.maxByOrNull { it.date }?.bodyFatFraction
+        val seedFraction = ui.latestBodyFatFraction
             ?: ui.profile?.bodyFatPercentage
             ?: 0.20
         AddBodyFatDialog(initialFraction = seedFraction, onDismiss = { showAddBodyFatDialog = false }) { fraction, whenLogged ->
@@ -252,16 +252,18 @@ fun ProgressScreen(container: AppContainer) {
         }
     }
     if (showAllWeights) {
+        val allWeights by container.weightRepository.entries.collectAsState(initial = emptyList())
         AllWeightHistorySheet(
-            entries = ui.entries.sortedByDescending { it.date },
+            entries = allWeights.sortedByDescending { it.date },
             useMetric = weightMetric,
             onDelete = vm::deleteWeight,
             onDismiss = { showAllWeights = false }
         )
     }
     if (showAllBodyFats) {
+        val allBodyFats by container.bodyFatRepository.entries.collectAsState(initial = emptyList())
         AllBodyFatHistorySheet(
-            entries = ui.bodyFatEntries.sortedByDescending { it.date },
+            entries = allBodyFats.sortedByDescending { it.date },
             onDelete = vm::deleteBodyFat,
             onDismiss = { showAllBodyFats = false }
         )
@@ -292,7 +294,7 @@ internal fun ProgressScreenPreviewContent(
 ) {
     val weightMetric = ui.weightUnit == "kg"
     val heightMetric = measurementMetric
-    val bodyFatAvailable = ui.bodyFatEntries.isNotEmpty()
+    val bodyFatAvailable = ui.bodyFatCount > 0
         || ui.profile?.bodyFatPercentage != null
         || ui.profile?.goalBodyFatPercentage != null
 
@@ -346,11 +348,11 @@ internal fun ProgressScreenPreviewContent(
                     }
                 }
             }
-            if (ui.entries.isNotEmpty()) {
-                item { WeightHistoryLink(count = ui.entries.size) {} }
+            if (ui.weightCount > 0) {
+                item { WeightHistoryLink(count = ui.weightCount) {} }
             }
-            if (ui.bodyFatEntries.isNotEmpty()) {
-                item { BodyFatHistoryLink(count = ui.bodyFatEntries.size) {} }
+            if (ui.bodyFatCount > 0) {
+                item { BodyFatHistoryLink(count = ui.bodyFatCount) {} }
             }
             BodyMeasurement.Site.values()
                 .filter { it in ui.measurementSites }

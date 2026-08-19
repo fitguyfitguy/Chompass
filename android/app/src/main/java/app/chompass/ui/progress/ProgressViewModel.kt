@@ -40,9 +40,10 @@ data class BodyFatSummaryStats(
 )
 
 data class ProgressUiState(
-    val entries: List<WeightEntry> = emptyList(),
-    val bodyFatEntries: List<BodyFatEntry> = emptyList(),
-    val bodyMeasurements: List<BodyMeasurement> = emptyList(),
+    val weightCount: Int = 0,
+    val bodyFatCount: Int = 0,
+    val latestWeightKg: Double? = null,
+    val latestBodyFatFraction: Double? = null,
     val profile: UserProfile? = null,
     val weightUnit: String = "kg",
     val timeRange: TimeRange = TimeRange.WEEK,
@@ -250,9 +251,10 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
     }
     return ProgressUiState(
         profile = base.profile,
-        entries = base.entries,
-        bodyFatEntries = base.bodyFatEntries,
-        bodyMeasurements = base.bodyMeasurements,
+        weightCount = base.entries.size,
+        bodyFatCount = base.bodyFatEntries.size,
+        latestWeightKg = base.entries.maxByOrNull { it.date }?.weightKg,
+        latestBodyFatFraction = base.bodyFatEntries.maxByOrNull { it.date }?.bodyFatFraction,
         weightUnit = weightUnit,
         timeRange = selectedRange,
         filteredWeights = filteredWeights,

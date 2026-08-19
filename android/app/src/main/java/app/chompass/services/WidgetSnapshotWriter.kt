@@ -83,7 +83,7 @@ class WidgetSnapshotWriter(
     internal fun observe() = combine(
         combine(
             combine(
-                foodRepository.entries,
+                foodRepository.entriesForDate(LocalDate.now()),
                 profileRepository.profile,
                 prefs.homeDisplayPreferences,
                 prefs.appThemeColor,
@@ -152,7 +152,7 @@ class WidgetSnapshotWriter(
      * (wallpaper / palette refresh on resume).
      */
     suspend fun refresh() {
-        val entries = foodRepository.entries.first()
+        val entries = foodRepository.entriesForDate(LocalDate.now()).first()
         val profile = profileRepository.profile.first()
         val appearance = prefs.appearanceMode.first()
         val water = WaterInputs(
