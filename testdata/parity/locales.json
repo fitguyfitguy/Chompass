@@ -12,7 +12,11 @@
       "name": "English",
       "nativeName": "English",
       "rtl": false,
-      "speechCodes": ["en", "en-US", "en-GB"]
+      "speechCodes": [
+        "en",
+        "en-US",
+        "en-GB"
+      ]
     },
     {
       "id": "ar",
@@ -21,8 +25,10 @@
       "name": "Arabic",
       "nativeName": "العربية",
       "rtl": true,
-      "speechCodes": ["ar"],
-      "maxMissing": 922
+      "speechCodes": [
+        "ar"
+      ],
+      "maxMissing": 924
     },
     {
       "id": "az",
@@ -31,8 +37,10 @@
       "name": "Azerbaijani",
       "nativeName": "Azərbaycan",
       "rtl": false,
-      "speechCodes": ["az"],
-      "maxMissing": 933
+      "speechCodes": [
+        "az"
+      ],
+      "maxMissing": 935
     },
     {
       "id": "de",
@@ -41,8 +49,11 @@
       "name": "German",
       "nativeName": "Deutsch",
       "rtl": false,
-      "speechCodes": ["de", "de-DE"],
-      "maxMissing": 1
+      "speechCodes": [
+        "de",
+        "de-DE"
+      ],
+      "maxMissing": 0
     },
     {
       "id": "es",
@@ -51,8 +62,11 @@
       "name": "Spanish",
       "nativeName": "Español",
       "rtl": false,
-      "speechCodes": ["es", "es-ES"],
-      "maxMissing": 2
+      "speechCodes": [
+        "es",
+        "es-ES"
+      ],
+      "maxMissing": 0
     },
     {
       "id": "fr",
@@ -61,8 +75,11 @@
       "name": "French",
       "nativeName": "Français",
       "rtl": false,
-      "speechCodes": ["fr", "fr-FR"],
-      "maxMissing": 2
+      "speechCodes": [
+        "fr",
+        "fr-FR"
+      ],
+      "maxMissing": 0
     },
     {
       "id": "hi",
@@ -71,8 +88,11 @@
       "name": "Hindi",
       "nativeName": "हिन्दी",
       "rtl": false,
-      "speechCodes": ["hi", "hi-IN"],
-      "maxMissing": 922
+      "speechCodes": [
+        "hi",
+        "hi-IN"
+      ],
+      "maxMissing": 924
     },
     {
       "id": "it",
@@ -81,8 +101,11 @@
       "name": "Italian",
       "nativeName": "Italiano",
       "rtl": false,
-      "speechCodes": ["it", "it-IT"],
-      "maxMissing": 933
+      "speechCodes": [
+        "it",
+        "it-IT"
+      ],
+      "maxMissing": 935
     },
     {
       "id": "ja",
@@ -91,8 +114,11 @@
       "name": "Japanese",
       "nativeName": "日本語",
       "rtl": false,
-      "speechCodes": ["ja", "ja-JP"],
-      "maxMissing": 924
+      "speechCodes": [
+        "ja",
+        "ja-JP"
+      ],
+      "maxMissing": 926
     },
     {
       "id": "ko",
@@ -101,8 +127,11 @@
       "name": "Korean",
       "nativeName": "한국어",
       "rtl": false,
-      "speechCodes": ["ko", "ko-KR"],
-      "maxMissing": 923
+      "speechCodes": [
+        "ko",
+        "ko-KR"
+      ],
+      "maxMissing": 925
     },
     {
       "id": "nl",
@@ -111,8 +140,11 @@
       "name": "Dutch",
       "nativeName": "Nederlands",
       "rtl": false,
-      "speechCodes": ["nl", "nl-NL"],
-      "maxMissing": 954
+      "speechCodes": [
+        "nl",
+        "nl-NL"
+      ],
+      "maxMissing": 956
     },
     {
       "id": "pl",
@@ -121,7 +153,10 @@
       "name": "Polish",
       "nativeName": "Polski",
       "rtl": false,
-      "speechCodes": ["pl", "pl-PL"],
+      "speechCodes": [
+        "pl",
+        "pl-PL"
+      ],
       "maxMissing": 0
     },
     {
@@ -131,8 +166,11 @@
       "name": "Portuguese (Brazil)",
       "nativeName": "Português (Brasil)",
       "rtl": false,
-      "speechCodes": ["pt", "pt-BR"],
-      "maxMissing": 935
+      "speechCodes": [
+        "pt",
+        "pt-BR"
+      ],
+      "maxMissing": 937
     },
     {
       "id": "ro",
@@ -141,8 +179,11 @@
       "name": "Romanian",
       "nativeName": "Română",
       "rtl": false,
-      "speechCodes": ["ro", "ro-RO"],
-      "maxMissing": 932
+      "speechCodes": [
+        "ro",
+        "ro-RO"
+      ],
+      "maxMissing": 934
     },
     {
       "id": "ru",
@@ -151,7 +192,10 @@
       "name": "Russian",
       "nativeName": "Русский",
       "rtl": false,
-      "speechCodes": ["ru", "ru-RU"],
+      "speechCodes": [
+        "ru",
+        "ru-RU"
+      ],
       "maxMissing": 462
     },
     {
@@ -161,7 +205,10 @@
       "name": "Turkish",
       "nativeName": "Türkçe",
       "rtl": false,
-      "speechCodes": ["tr", "tr-TR"],
+      "speechCodes": [
+        "tr",
+        "tr-TR"
+      ],
       "maxMissing": 0
     },
     {
@@ -171,8 +218,11 @@
       "name": "Ukrainian",
       "nativeName": "Українська",
       "rtl": false,
-      "speechCodes": ["uk", "uk-UA"],
-      "maxMissing": 836
+      "speechCodes": [
+        "uk",
+        "uk-UA"
+      ],
+      "maxMissing": 838
     },
     {
       "id": "zh-CN",
@@ -181,8 +231,11 @@
       "name": "Chinese (Simplified)",
       "nativeName": "简体中文",
       "rtl": false,
-      "speechCodes": ["zh", "zh-CN"],
-      "maxMissing": 921
+      "speechCodes": [
+        "zh",
+        "zh-CN"
+      ],
+      "maxMissing": 923
     }
   ],
   "speechLocales": {

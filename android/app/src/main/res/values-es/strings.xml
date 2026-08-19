@@ -545,6 +545,7 @@
     <string name="about_report_issue">Informar de un problema</string>
     <string name="about_request_feature">Solicitar una función</string>
     <string name="about_privacy">Política de privacidad</string>
+    <string name="about_donate">Cómprame un yogur</string>
     <string name="about_made_by">Chompass por fitguy</string>
     <string name="about_with_care">Basado en Fud AI de Apoorv Darshan</string>
     <string name="about_share_message">Llevo el control de mis comidas con Chompass - haz una foto, dícela o escríbela, y la IA registra las calorías. Es gratis, de código abierto, y tus datos se quedan en tu dispositivo.\n\nDescargar: https://codeberg.org/fitguy/chompass</string>
@@ -843,6 +844,10 @@
     <string name="copy_from">Copiar de</string>
     <string name="copy_from_loading">Cargando el registro de comida…</string>
     <string name="copy_hint">Los alimentos se copiarán a %1$s. Las entradas originales no cambian.</string>
+    <plurals name="copy_foods_to">
+        <item quantity="one">Copiar %1$d alimento a %2$s</item>
+        <item quantity="other">Copiar %1$d alimentos a %2$s</item>
+    </plurals>
     <string name="copy_meal_format">Copiar %1$s</string>
     <string name="copy_no_foods_on_day">No hay alimentos registrados este día</string>
     <string name="copy_to">Copiar a</string>
@@ -979,6 +984,10 @@
     <string name="home_water_next_tomorrow">Siguiente %1$s · mañana %2$s</string>
     <string name="import_add_to_log">Añadir al registro</string>
     <string name="import_add_to_log_many_format">Añadir %1$d al registro · %2$d kcal</string>
+    <plurals name="import_add_meals_title">
+        <item quantity="one">Añadir comida compartida</item>
+        <item quantity="other">Añadir %1$d comidas compartidas</item>
+    </plurals>
     <string name="import_body_metrics_empty">Este archivo no tiene entradas de peso o datos corporales para importar.</string>
     <string name="import_body_metrics_malformed">No se pudo leer el archivo: %1$s</string>
     <string name="import_body_metrics_success">Se importaron %1$d entradas de peso, %2$d de grasa corporal y %3$d de medidas.</string>
@@ -1304,6 +1313,7 @@
     <string name="settings_macro_unlocked">Desfijado</string>
     <string name="settings_manage_health_access">Gestionar acceso a Health Connect</string>
     <string name="settings_max_tokens">Longitud máxima de respuesta</string>
+    <string name="settings_max_tokens_unit">tokens</string>
 
     <string name="settings_meal_constituents">Desglose de ingredientes de la comida</string>
     <string name="settings_meal_constituents_footer">Cuando está activado, la IA puede dividir comidas compuestas en ingredientes editables con gramos y unidades. Funciona mejor con modelos en la nube potentes; desactívalo para modelos más baratos o pequeños si los resultados parecen inconsistentes.</string>

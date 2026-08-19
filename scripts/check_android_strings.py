@@ -37,10 +37,12 @@ def cjk_count(value: str) -> int:
 
 
 def load_strings(path: Path) -> dict[str, str]:
+    """Load <string> AND <plurals> keys (plurals concatenate their quantity
+    items), so missing/copy/placeholder checks cover both element types."""
     tree = ET.parse(path)
     out: dict[str, str] = {}
     for el in tree.getroot():
-        if el.tag != "string":
+        if el.tag not in ("string", "plurals"):
             continue
         name = el.attrib.get("name")
         if not name:
