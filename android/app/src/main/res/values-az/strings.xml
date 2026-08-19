@@ -128,9 +128,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">Geri</string>
     <string name="onboarding_logo_description">Chompass loqosu</string>
-    <string name="onboarding_welcome_line1">Ağıllı Yeyin,</string>
-    <string name="onboarding_welcome_line2">Daha Yaxşı Yaşa</string>
-    <string name="onboarding_welcome_subtitle">Sadəcə şəkil çək, izlə və inkişaf et.\nQidalanmanız sadələşdirildi.</string>
+    <string name="onboarding_welcome_line1">Yeməkləri izləyin,</string>
+    <string name="onboarding_welcome_line2">Balansı saxlayın</string>
+    <string name="onboarding_welcome_subtitle">Yeməkləri foto, səs və ya mətnlə qeyd edin.\nQidalanmanız bir baxışda.</string>
 
     <string name="onboarding_gender_title">Cinsiniz nədir?</string>
     <string name="onboarding_gender_subtitle">Bu, metabolizminizi hesablamağa kömək edir</string>
@@ -284,7 +284,7 @@
     <string name="text_input_placeholder_1">2 yumurta, kərə yağı ilə tost və qəhvə</string>
     <string name="text_input_placeholder_2">Toyuq və düyü ilə Chipotle burrito kasası</string>
     <string name="text_input_placeholder_3">Domino\'s pepperoni pizza, 2 dilim</string>
-    <string name="text_input_placeholder_4">Granola və göygiləmiş yunan qatığı</string>
+    <string name="text_input_placeholder_4">Granola və qaragiləli yunan qatığı</string>
 
     <string name="manual_title">Əl ilə Daxil Et</string>
     <string name="manual_name">Ad</string>
@@ -418,14 +418,14 @@
 
     <string name="progress_log_weight_title">Çəkini Qeyd Et</string>
 
-    <string name="progress_goal_reached_title">Təbriklər! 🎉</string>
-    <string name="progress_goal_reached_message">Hədəf çəkinizə çatdınız! Hədəfinizi dəyişdirmək üçün Parametrlərə keçin və hədəfləri yeniləmək üçün Hədəfləri Yenidən Hesabla düyməsinə toxunun.</string>
+    <string name="progress_goal_reached_title">Məqsədə çatdınız 🎉</string>
+    <string name="progress_goal_reached_message">Hədəf çəkinizə çatdınız. Hədəfinizi dəyişdirmək üçün Parametrlərə keçin və hədəfləri yeniləmək üçün Hədəfləri Yenidən Hesabla düyməsinə toxunun.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">Şəxsi Məlumat</string>
     <string name="settings_section_goals">Hədəflər və Qidalanma</string>
     <string name="settings_section_app">Tətbiq Parametrləri</string>
-    <string name="settings_section_ai">AI Təminatçısı</string>
+    <string name="settings_section_ai">AI və Nitq</string>
     <string name="settings_section_speech">Nitqdən Mətnə</string>
     <string name="settings_section_health">Sağlamlıq və Məlumat</string>
     <string name="settings_group_app_display">Tətbiq və görünüş</string>
@@ -435,7 +435,7 @@
     <string name="settings_group_goals_summary">Diet, makro, adaptiv hədəflər</string>
     <string name="settings_group_app_summary">Görünüş, ana səhifə, bildirişlər</string>
     <string name="settings_group_ai_summary">Provayderlər, modellər, nitq</string>
-    <string name="settings_group_data_summary">Health Connect, ixrac, sync</string>
+    <string name="settings_group_data_summary">Health Connect, ixrac, sinxronizasiya</string>
 
     <string name="settings_gender">Cins</string>
     <string name="settings_birthday">Doğum Günü</string>
@@ -508,8 +508,8 @@
     <string name="sheet_ai_provider">AI Təminatçısı</string>
     <string name="sheet_model_footer">Və ya aşağıda istənilən fərdi model ID-sini yazın.</string>
     <string name="sheet_any_model_id">İstənilən model ID</string>
-    <string name="sheet_api_key_format">API Açarı - %1$s</string>
-    <string name="sheet_speech_api_key_format">Nitq API Açarı - %1$s</string>
+    <string name="sheet_api_key_format">API Açarı: %1$s</string>
+    <string name="sheet_speech_api_key_format">Nitq API Açarı: %1$s</string>
     <string name="sheet_speech_engine">Nitq Mühərriki</string>
     <string name="sheet_gender">Cins</string>
     <string name="sheet_activity_level">Fəaliyyət səviyyəsi</string>
@@ -544,7 +544,7 @@
     <string name="about_request_feature">Funksiya Tələb Et</string>
     <string name="about_privacy">Məxfilik Siyasəti</string>
     <string name="about_with_care">Apoorv Darshan tərəfindən hazırlanmış Fud AI əsasında</string>
-    <string name="about_share_message">Yeməklərimi Chompass ilə izləyirəm - şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nEndir: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">Yeməklərimi Chompass ilə izləyirəm. Şəkil çək, danış və ya yaz, süni zəka kaloriləri qeyd etsin. Pulsuz, açıq mənbəlidir və məlumatların cihazında qalır.\n\nMənbə: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass-ı Paylaş</string>
 
     <!-- Notifications -->
@@ -555,7 +555,7 @@
     <string name="notif_channel_weight_goal">Çəki Hədəfi</string>
     <string name="notif_channel_weight_goal_desc">Hədəf çəkinizə çatdığınız zaman təbrik.</string>
     <string name="notif_streak_title">Yeməklərinizi qeyd etməyi unutmayın</string>
-    <string name="notif_streak_text">Silsilənizi davam etdirin - bu gündən nəsə qeyd edin.</string>
+    <string name="notif_streak_text">Silsilənizi davam etdirin. Bu gündən nəsə qeyd edin.</string>
     <string name="notif_summary_title">Bu günün xülasəsi hazırdır</string>
     <string name="notif_summary_text">Bu günün makrolarının necə düzüldüyünü görmək üçün toxunun.</string>
 
@@ -563,9 +563,9 @@
     <string name="onboarding_goal_set_later">Bunu sonra Tənzimləmələrdə təyin edə bilərsiniz.</string>
     <string name="settings_goal_body_fat">Hədəf bədən yağı</string>
     <string name="settings_use_body_fat_bmr">BMR üçün bədən yağını istifadə et</string>
-    <string name="settings_use_body_fat_bmr_subtitle">Açıq = Katch-McArdle (daha dəqiq BMR üçün arıq kütlədən istifadə edir). Bağlı = Mifflin-St Jeor (yalnız boy/çəki/yaş). Bədən yağı oxunuşunuz köhnəlibsə, bağlayın.</string>
+    <string name="settings_use_body_fat_bmr_subtitle">Açıq = Katch-McArdle (daha dəqiq BMR üçün yağsız kütlədən istifadə edir). Bağlı = Mifflin-St Jeor (yalnız boy/çəki/yaş). Bədən yağı oxunuşunuz köhnəlibsə, bağlayın.</string>
     <string name="sheet_goal_body_fat">Bədən yağı hədəfi</string>
-    <string name="sheet_goal_body_fat_currently">Hazırda %%%1$d</string>
+    <string name="sheet_goal_body_fat_currently">Hazırda %1$d%%</string>
     <string name="action_remove_goal">Hədəfi sil</string>
     <string name="progress_metric_weight">Çəki</string>
     <string name="progress_metric_body_fat">Bədən yağı</string>
@@ -578,30 +578,30 @@
     <string name="saved_meals_no_match">Uyğun yemək tapılmadı</string>
     <string name="settings_section_custom_instructions">Fərdi AI Təlimatları</string>
     <string name="settings_custom_instructions_placeholder">məsələn, Almaniyada yaşayıram, Avropa porsiya ölçülərini nəzərə al, ALDI/REWE markalarını üstün tut. Bodibildinq kəsim mərhələsindəyəm.</string>
-    <string name="settings_custom_instructions_footer">Hər AI sorğusu ilə göndərilən isteğe bağlı kontekst - region, pəhriz, idman məqsədləri, hər dəfə təkrarlamalı olduğun hər şey. Söndürmək üçün boş burax.</string>
+    <string name="settings_custom_instructions_footer">Hər AI sorğusu ilə göndərilən isteğe bağlı kontekst: region, pəhriz, idman məqsədləri, hər dəfə təkrarlamalı olduğun hər şey. Söndürmək üçün boş burax.</string>
     <string name="settings_save">Yadda saxla</string>
     <string name="settings_saved">Yadda saxlanıldı</string>
     <string name="settings_section_fallback">Ehtiyat Provayder</string>
     <string name="settings_enable_fallback">Ehtiyatı aktivləşdir</string>
-    <string name="settings_fallback_footer">Əsas provayderin uğursuz olarsa (yüklənmə, sürət limiti, şəbəkə xətası), tətbiq avtomatik olaraq bu ehtiyat provayderlə yenidən cəhd edir. Əsas ilə eyni provayder seçilə bilər - sadəcə fərqli model seç.</string>
+    <string name="settings_fallback_footer">Əsas provayderin uğursuz olarsa (yüklənmə, sürət limiti, şəbəkə xətası), tətbiq avtomatik olaraq bu ehtiyat provayderlə yenidən cəhd edir. Əsas ilə eyni provayder seçilə bilər, sadəcə fərqli model seç.</string>
     <string name="widget_all_metrics_label">Chompass Bu gün</string>
     <string name="widget_all_metrics_description">Bu günün kalorilərini, zülalını, karbohidratını və yağını bir vidcetdə görün.</string>
     <string name="settings_needs_health_connect">Health Connect tələb olunur</string>
-    <string name="settings_energy_goals_info">Aktiv olduqda Chompass Health Connect-dən ölçülmüş yandırılan kalorilərinizi - aktiv + bazal enerjinin 14 günlük ortalamasını - hədəfləri hesablayarkən düstur təxmini əvəzinə saxlanma (TDEE) istinadı kimi istifadə edir. Sərfiyyatınızı oxumaq üçün Sİ istifadə olunmur. Health Connect tələb olunur. Yenidən Hesabla düyməsi və Adaptive Goals ilə işləyir.</string>
-    <string name="settings_adaptive_goals_info">Təxminən həftədə bir dəfə, tətbiqi açanda Chompass profilinizə, son qeyd olunmuş yeməklərə və çəki trendinizə əsasən tam hədəf hesablamasını - Yenidən Hesabla düyməsinin istifadə etdiyi eyni hesablamanı - avtomatik yenidən işə salır. Energy Burn aktivdirsə, ölçülmüş sərfiyyatınız saxlanma kalorisi üçün istinad kimi istifadə olunur. Sİ əlçatan olmadıqda addım səssizcə ötürülür. Bunu söndürdükdə bu funksiyanın ilk dəyişikliyindən əvvəlki hədəflər bərpa olunur. Bu, tibbi məsləhət deyil.</string>
-    <string name="onboarding_plan_adaptive_note">Planınız qeydlərinizə əsasən hər həftə avtomatik tənzimlənir - sabit saxlamaq üçün Parametrlərdə Adaptive Goals-u söndürün.</string>
-    <string name="onboarding_feature_snap">Şəkil çəkin - Sİ qeyd edir</string>
+    <string name="settings_energy_goals_info">Aktiv olduqda Chompass Health Connect-dən ölçülmüş yandırılan kalorilərinizi, aktiv + bazal enerjinin 14 günlük ortalamasını, hədəfləri hesablayarkən düstur təxmini əvəzinə saxlanma (TDEE) istinadı kimi istifadə edir. Sərfiyyatınızı oxumaq üçün AI istifadə olunmur. Health Connect tələb olunur. Yenidən Hesabla düyməsi və adaptiv məqsədlər ilə işləyir.</string>
+    <string name="settings_adaptive_goals_info">Təxminən həftədə bir dəfə, tətbiqi açanda Chompass profilinizə, son qeyd olunmuş yeməklərə və çəki trendinizə əsasən tam hədəf hesablamasını, Yenidən Hesabla düyməsinin istifadə etdiyi eyni hesablamanı, avtomatik yenidən işə salır. Enerji sərfi aktivdirsə, ölçülmüş sərfiyyatınız saxlanma kalorisi üçün istinad kimi istifadə olunur. AI əlçatan olmadıqda addım səssizcə ötürülür. Bunu söndürdükdə bu funksiyanın ilk dəyişikliyindən əvvəlki hədəflər bərpa olunur. Bu, tibbi məsləhət deyil.</string>
+    <string name="onboarding_plan_adaptive_note">Planınız qeydlərinizə əsasən hər həftə avtomatik tənzimlənir. Sabit saxlamaq üçün Parametrlərdə adaptiv məqsədləri söndürün.</string>
+    <string name="onboarding_feature_snap">Şəkil çəkin. AI qeyd edir.</string>
     <string name="onboarding_feature_coach">Məlumatlarınızı bilən məşqçi</string>
     <string name="onboarding_feature_library">Tərəzi və geyiləbilənlər üçün Health Connect</string>
     <string name="onboarding_feature_widgets">Əsas ekran vidcetləri</string>
     <string name="whats_new_v30_workouts">Məşqlər tabı silindi.</string>
     <string name="whats_new_v30_home">Yenilənmiş Ana səhifə: spidometr kalori göstəricisi, şaquli makro zolaqları, dörd qida kartı və üzən əlavə düyməsi.</string>
     <string name="whats_new_v30_coach_voice">Yeni daxili yazıcı ilə Koça səslə sual verin.</string>
-    <string name="whats_new_v30_share">İstənilən yeməyi birbaşa Chompass-də açılan link kimi paylaşın - iPhone və ya Android-də.</string>
+    <string name="whats_new_v30_share">İstənilən yeməyi birbaşa Chompass-də açılan link kimi paylaşın, iPhone və ya Android-də.</string>
     <string name="whats_new_v30_export">Qida gündəliyinizi Parametrlərdən JSON, Markdown və ya CSV kimi ixrac edin.</string>
-    <string name="whats_new_v30_reprocess">Qeyd olunmuş yeməyi Sİ ilə yenidən emal edin - adı, porsiyanı və ya qeydi dəyişib yenidən analiz edin.</string>
+    <string name="whats_new_v30_reprocess">Qeyd olunmuş yeməyi AI ilə yenidən emal edin: adı, porsiyanı və ya qeydi dəyişib yenidən analiz edin.</string>
     <string name="whats_new_v30_camera">Kamera + Kamera hər iki kadrı yan-yana birləşdirilmiş saxlayır.</string>
-    <string name="whats_new_v30_colors">10 yeni tema rəngi - indi birbaşa Parametrlərdə seçilir.</string>
+    <string name="whats_new_v30_colors">10 yeni tema rəngi, indi birbaşa Parametrlərdə seçilir.</string>
     <string name="whats_new_v30_bodyfat">Bədən yağı tarixçəsi: çəki kimi ayrı-ayrı qeydlərə baxın və silin.</string>
     <string name="whats_new_v30_units">Boy və çəki vahidləri indi ayrıca seçilir.</string>
     <string name="whats_new_v30_adaptive">Adaptiv Məqsədlər və Enerji Sərfi eksperimental mərhələdən çıxdı və yeni quraşdırmalarda defolt olaraq aktivdir.</string>
@@ -633,7 +633,7 @@
     <string name="manual_active_kcal_hint">Yanan kalorilər</string>
     <string name="manual_active_name_hint">Fəaliyyət adı (istəyə bağlı)</string>
     <string name="manual_active_save">Büdcəyə əlavə et</string>
-    <string name="manual_active_subtitle">Gəzinti, sürüş və ya məşqdən yanan kaloriləri əlavə edin. «Aktiv yanmanı büdcəyə əlavə et» aktiv olanda bu günkü büdcəni genişləndirir.</string>
+    <string name="manual_active_subtitle">Gəzinti, sürmə və ya məşqdən yanan kaloriləri əlavə edin. «Aktiv yanmanı büdcəyə əlavə et» aktiv olanda bu günkü büdcəni genişləndirir.</string>
     <string name="manual_active_title">Aktiv yanmanı qeyd et</string>
     <string name="meal_photos_add_label">Etiket əlavə et</string>
     <string name="meal_photos_confirm_back">Redaktəyə davam et</string>
@@ -701,8 +701,8 @@
     <string name="ai_error_coach_on_device">Məşqçi hələlik cihazdaxili provayderlə mövcud deyil. Parametrlər → AI Provayderi bölməsində bulud provayderinə keçin.</string>
     <string name="ai_error_coach_round_limit">Məşqçi cavab verə bilmədi. Sualınızı yenidən ifadə etməyə çalışın.</string>
     <string name="ai_error_disabled">AI funksiyaları Parametrlər → AI və Nitq bölməsində söndürülüb.</string>
-    <string name="ai_error_grounded_on_device">Grounded alət dövrəsi cihazdaxili modellər üçün mövcud deyil.</string>
-    <string name="ai_error_grounded_requires_provider">Grounded alət dövrəsi aktiv AI provayderi tələb edir.</string>
+    <string name="ai_error_grounded_on_device">Əsaslı qeyd rejimi cihazdaxili modellər üçün mövcud deyil.</string>
+    <string name="ai_error_grounded_requires_provider">Əsaslı qeyd rejimi aktiv AI provayderi tələb edir.</string>
     <string name="ai_error_image_conversion_failed">Şəklin işlənməsi alınmadı.</string>
     <string name="ai_error_invalid_response">AI cavabı başa düşülmədi. Yenidən cəhd edin.</string>
     <string name="ai_error_invalid_url">Yanlış API URL. Provayder parametrlərini yoxlayın.</string>
@@ -1053,7 +1053,7 @@
     <string name="onboarding_api_key_testing">Yoxlanılır…</string>
     <string name="onboarding_api_key_works">Açar işləyir</string>
     <string name="onboarding_building_protein">Protein</string>
-    <string name="onboarding_diet_mode_subtitle">Standart məşqçilik tərzinizi seçin</string>
+    <string name="onboarding_diet_mode_subtitle">Standart tövsiyə üslubunu seçin</string>
     <string name="onboarding_diet_mode_title">Pəhriz rejiminə əməl edirsiniz?</string>
     <string name="onboarding_disclaimers_subtitle">Bu vacib bildirişləri oxuyun</string>
     <string name="onboarding_disclaimers_title">Başlamazdan əvvəl</string>
