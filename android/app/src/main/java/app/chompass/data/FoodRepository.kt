@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -513,29 +512,22 @@ class FoodRepository(
     )
 
     /**
-     * Hub chips for one-tap re-log: meal-matched (or snacks in the snack
-     * window) first, favorites soft-boosted within each bucket, then fill
-     * from snacks / other recents / frequent. De-duplicated by
-     * [FoodEntry.favoriteKey].
+     * Hub chips for one-tap re-log: a recents row (newest, 30 days) and a
+     * frequent row (by count, 90 days) with no shared [FoodEntry.favoriteKey].
+     * Meal-window ranking stays on Saved Meals tabs, not the hub.
      *
-     * Reads the diary snapshot once and reuses it for both the recents and
-     * frequents windows — the previous version decoded the full history twice
-     * (once per window), which was the slowest part of opening the Log sheet.
+     * Reads the diary snapshot once and reuses it for both windows.
      */
-    suspend fun quickRelogTemplates(limit: Int = 6): List<FoodEntry> = PerfLog.measure("hubOpen", "quickRelog", "limit=$limit") {
-        migratedFavorites()
-        val favorites = prefs.favoriteFoodEntries.first()
-        val all = prefs.foodEntries.first()
-        val now = Instant.now()
-        val recents = recentFoodTemplates(
-            all.filter { !it.timestamp.isBefore(now.minus(30, ChronoUnit.DAYS)) },
-        )
-        val frequents = frequentFoodGroups(
-            all.filter { !it.timestamp.isBefore(now.minus(90, ChronoUnit.DAYS)) },
-        ).map { it.template }
-        val currentMeal = prefs.mealSchedule.first().mealTypeAt(LocalTime.now())
-        quickRelogFoodTemplates(favorites, recents, frequents, currentMeal, limit = limit)
-    }
+    suspend fun quickRelogRows(perRow: Int = 10): QuickRelogRows =
+        PerfLog.measure("hubOpen", "quickRelog", "perRow=$perRow") {
+            val all = prefs.foodEntries.first()
+            val now = Instant.now()
+            quickRelogRows(
+                recentWindow = all.filter { !it.timestamp.isBefore(now.minus(30, ChronoUnit.DAYS)) },
+                frequentWindow = all.filter { !it.timestamp.isBefore(now.minus(90, ChronoUnit.DAYS)) },
+                perRow = perRow,
+            )
+        }
 }
 
 /**
@@ -551,52 +543,24 @@ internal fun recentFoodTemplates(entries: List<FoodEntry>, limit: Int = 50): Lis
 }
 
 /**
- * Mealtime-aware hub chips: unique by [FoodEntry.favoriteKey] (merge order
- * favorites → recents → frequent for template payload), then ranked by
- * current meal window with favorites soft-boosted within each bucket.
+ * Two hub rows from already-windowed diary snapshots. Recents are newest
+ * first and unique by [FoodEntry.favoriteKey]; frequents are count-desc
+ * (then name) and skip keys already shown in recents.
  */
-internal fun quickRelogFoodTemplates(
-    favorites: List<FoodEntry>,
-    recents: List<FoodEntry>,
-    frequents: List<FoodEntry>,
-    currentMeal: MealType,
-    favoriteKeys: Set<String> = favorites
-        .map { it.favoriteKey }
-        .filter { it.isNotEmpty() }
-        .toSet(),
-    limit: Int = 6,
-): List<FoodEntry> {
-    val seen = mutableSetOf<String>()
-    val pool = ArrayList<FoodEntry>()
-    for (source in listOf(favorites, recents, frequents)) {
-        for (entry in source) {
-            val key = entry.favoriteKey
-            if (key.isEmpty() || !seen.add(key)) continue
-            pool.add(entry)
-        }
-    }
-
-    val withinBucket = Comparator<FoodEntry> { a, b ->
-        val favCmp = (b.favoriteKey in favoriteKeys).compareTo(a.favoriteKey in favoriteKeys)
-        if (favCmp != 0) favCmp else b.timestamp.compareTo(a.timestamp)
-    }
-
-    val buckets = if (currentMeal == MealType.SNACK) {
-        listOf(
-            pool.filter { it.mealType == MealType.SNACK },
-            pool.filter { it.mealType != MealType.SNACK },
-        )
-    } else {
-        listOf(
-            pool.filter { it.mealType == currentMeal },
-            pool.filter { it.mealType == MealType.SNACK },
-            pool.filter { it.mealType != currentMeal && it.mealType != MealType.SNACK },
-        )
-    }
-
-    return buckets
-        .flatMap { bucket -> bucket.sortedWith(withinBucket) }
-        .take(limit)
+internal fun quickRelogRows(
+    recentWindow: List<FoodEntry>,
+    frequentWindow: List<FoodEntry>,
+    perRow: Int = 10,
+): QuickRelogRows {
+    val recents = recentFoodTemplates(recentWindow, limit = perRow)
+    val recentKeys = recents.mapNotNull { it.favoriteKey.takeIf(String::isNotEmpty) }.toSet()
+    val frequents = frequentFoodGroups(frequentWindow)
+        .asSequence()
+        .filter { it.template.favoriteKey.isNotEmpty() && it.template.favoriteKey !in recentKeys }
+        .take(perRow)
+        .map { it.template }
+        .toList()
+    return QuickRelogRows(recents, frequents)
 }
 
 /**
@@ -646,6 +610,17 @@ fun disambiguateFoodName(desired: String, existingKeys: Set<String>): String {
 }
 
 private val TRAILING_NUMERIC_SUFFIX = Regex("""\s+\((\d+)\)$""")
+
+data class QuickRelogRows(
+    val recents: List<FoodEntry>,
+    val frequents: List<FoodEntry>,
+) {
+    val isEmpty: Boolean get() = recents.isEmpty() && frequents.isEmpty()
+
+    companion object {
+        val Empty = QuickRelogRows(emptyList(), emptyList())
+    }
+}
 
 data class FrequentFoodGroup(
     val template: FoodEntry,

@@ -73,6 +73,7 @@ import java.util.UUID
 import app.chompass.AppContainer
 import app.chompass.MainActivity
 import app.chompass.R
+import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.WaterAmountFormat
@@ -130,7 +131,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var showBarcodeScannerLocal by rememberSaveable { mutableStateOf(false) }
     var showCopyFromDay by rememberSaveable { mutableStateOf(false) }
     var showAddFoodSheet by rememberSaveable { mutableStateOf(false) }
-    var hubRecentMeals by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
+    var hubRelogRows by remember { mutableStateOf(QuickRelogRows.Empty) }
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
     var showManualActive by rememberSaveable { mutableStateOf(false) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
@@ -717,7 +718,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 
     LaunchedEffect(showAddFoodSheet) {
         if (showAddFoodSheet) {
-            hubRecentMeals = vm.quickRelogTemplatesCached()
+            hubRelogRows = vm.quickRelogRowsCached()
         }
     }
 
@@ -727,7 +728,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             waterTrackingEnabled = ui.waterTrackingEnabled,
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
-            recentMeals = hubRecentMeals,
+            relogRows = hubRelogRows,
             onPhoto = {
                 addFoodFlowActive = true
                 openCamera()

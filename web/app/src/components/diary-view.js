@@ -7,7 +7,7 @@ import {
   recentFoodTemplates,
   frequentFoodGroups,
   listFavorites,
-  quickRelogTemplates,
+  quickRelogRows,
   toggleFavorite,
   isFavorite,
   duplicatedForLogging,
@@ -979,26 +979,30 @@ export class DiaryView extends HTMLElement {
 
     const showWater = appPrefs.showWater === true;
     const speech = createSpeechCapture();
-    const quickRelogs = await quickRelogTemplates(6);
-    const quickRelogBlock =
-      quickRelogs.length > 0
-        ? `<p class="add-food-section">${t("add_food.quick_relog")}</p>
-           <div class="add-food-relog" role="list">
-             ${quickRelogs
-               .map(
-                 (e, i) => `
-               <button type="button" class="add-food-relog-chip" data-relog="${i}" role="listitem">
+    const relogRows = await quickRelogRows(10);
+    const relogChip = (e, key) => `
+               <button type="button" class="add-food-relog-chip" data-relog="${key}" role="listitem">
                  <span class="add-food-relog-chip__emoji" aria-hidden="true">${e.emoji ? escapeHtml(String(e.emoji)) : "🍽"}</span>
                  <span class="add-food-relog-chip__text">
                    <strong>${escapeHtml(e.name)}</strong>
                    <span class="add-food-relog-chip__kcal">${Math.round(e.calories)} kcal</span>
                  </span>
                  <span class="add-food-relog-chip__add" aria-hidden="true">+</span>
-               </button>`
-               )
-               .join("")}
+               </button>`;
+    const relogRow = (entries, prefix) =>
+      entries.length === 0
+        ? ""
+        : `<div class="add-food-relog" role="list">
+             ${entries.map((e, i) => relogChip(e, `${prefix}-${i}`)).join("")}
+           </div>`;
+    const hasRelog = relogRows.recents.length > 0 || relogRows.frequents.length > 0;
+    const quickRelogBlock = hasRelog
+      ? `<p class="add-food-section">${t("add_food.quick_relog")}</p>
+           <div class="add-food-relog-stack">
+             ${relogRow(relogRows.recents, "r")}
+             ${relogRow(relogRows.frequents, "f")}
            </div>`
-        : `<p class="add-food-hint add-food-hint--empty">${t("add_food.quick_relog_empty")}</p>`;
+      : `<p class="add-food-hint add-food-hint--empty">${t("add_food.quick_relog_empty")}</p>`;
     const body = `
       <div class="add-food-heroes">
         ${tile("photo", t("add_food.hero_photo"), t("add_food.hero_photo_sub"), ICONS.photo, true)}
@@ -1082,8 +1086,12 @@ export class DiaryView extends HTMLElement {
 
     sheet.body.querySelectorAll("[data-relog]").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        const idx = Number(btn.getAttribute("data-relog"));
-        const entry = quickRelogs[idx];
+        const key = btn.getAttribute("data-relog") || "";
+        const dash = key.indexOf("-");
+        const prefix = dash >= 0 ? key.slice(0, dash) : "";
+        const idx = Number(dash >= 0 ? key.slice(dash + 1) : key);
+        const list = prefix === "f" ? relogRows.frequents : relogRows.recents;
+        const entry = list[idx];
         if (!entry) return;
         sheet.close();
         const mealType = guessMealTypeFromPrefs(appPrefs);

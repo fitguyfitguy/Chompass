@@ -3,8 +3,7 @@
  * Saved Meals helpers — Recents / Frequent / Favorites, mirroring Android
  * FoodRepository recentFoodTemplates / frequentFoodGroups / toggleFavorite.
  */
-import { foodEntries, favorites as favoritesStore, prefs } from "./db.js";
-import { guessMealTypeFromPrefs } from "./meal-schedule.js";
+import { foodEntries, favorites as favoritesStore } from "./db.js";
 
 /** @param {import('./chompass-core/models.js').FoodEntry | {name?: string}} entry */
 export function favoriteKey(entry) {
@@ -33,21 +32,27 @@ export function duplicatedForLogging(entry, date, time, mealType) {
 }
 
 /**
- * Newest-first templates, one per favoriteKey, within `days`.
- * @param {number} [days]
- * @param {number} [limit]
+ * @param {import('./chompass-core/models.js').FoodEntry[]} entries
+ * @param {number} days
  */
-export async function recentFoodTemplates(days = 30, limit = 50) {
-  const all = await foodEntries.all();
+function entriesInWindow(entries, days) {
   const cutoff = Date.now() - days * 86400000;
-  const filtered = all.filter((e) => {
+  return entries.filter((e) => {
     const ts = Date.parse(`${e.date}T${e.time || "12:00"}`);
     return !Number.isNaN(ts) && ts >= cutoff;
   });
+}
+
+/**
+ * Newest-first templates, one per favoriteKey.
+ * @param {import('./chompass-core/models.js').FoodEntry[]} entries
+ * @param {number} [limit]
+ */
+export function recentTemplatesFrom(entries, limit = 50) {
   const seen = new Set();
   /** @type {import('./chompass-core/models.js').FoodEntry[]} */
   const out = [];
-  filtered
+  entries
     .slice()
     .sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`))
     .forEach((e) => {
@@ -60,17 +65,22 @@ export async function recentFoodTemplates(days = 30, limit = 50) {
 }
 
 /**
+ * Newest-first templates, one per favoriteKey, within `days`.
  * @param {number} [days]
- * @returns {Promise<{template: import('./chompass-core/models.js').FoodEntry, count: number}[]>}
+ * @param {number} [limit]
  */
-export async function frequentFoodGroups(days = 90) {
-  const all = await foodEntries.all();
-  const cutoff = Date.now() - days * 86400000;
+export async function recentFoodTemplates(days = 30, limit = 50) {
+  return recentTemplatesFrom(entriesInWindow(await foodEntries.all(), days), limit);
+}
+
+/**
+ * @param {import('./chompass-core/models.js').FoodEntry[]} entries
+ * @returns {{template: import('./chompass-core/models.js').FoodEntry, count: number}[]}
+ */
+export function frequentGroupsFrom(entries) {
   /** @type {Map<string, {count: number, template: import('./chompass-core/models.js').FoodEntry}>} */
   const aggregates = new Map();
-  for (const e of all) {
-    const ts = Date.parse(`${e.date}T${e.time || "12:00"}`);
-    if (Number.isNaN(ts) || ts < cutoff) continue;
+  for (const e of entries) {
     const key = favoriteKey(e);
     if (!key) continue;
     const existing = aggregates.get(key);
@@ -90,93 +100,43 @@ export async function frequentFoodGroups(days = 90) {
 }
 
 /**
- * @param {import('./chompass-core/models.js').FoodEntry} entry
+ * @param {number} [days]
+ * @returns {Promise<{template: import('./chompass-core/models.js').FoodEntry, count: number}[]>}
  */
-function entryStamp(entry) {
-  return Date.parse(`${entry.date}T${entry.time || "12:00"}`) || 0;
+export async function frequentFoodGroups(days = 90) {
+  return frequentGroupsFrom(entriesInWindow(await foodEntries.all(), days));
 }
 
 /**
- * Mealtime-aware hub chips — mirrors Android quickRelogFoodTemplates.
- * @param {import('./chompass-core/models.js').FoodEntry[]} favorites
- * @param {import('./chompass-core/models.js').FoodEntry[]} recents
- * @param {import('./chompass-core/models.js').FoodEntry[]} frequents
- * @param {"breakfast"|"lunch"|"dinner"|"snack"|"other"} currentMeal
- * @param {Set<string>} [favoriteKeys]
- * @param {number} [limit]
- * @returns {import('./chompass-core/models.js').FoodEntry[]}
+ * Two hub rows from already-windowed diary snapshots. Recents are newest
+ * first and unique by favoriteKey; frequents are count-desc (then name)
+ * and skip keys already shown in recents.
+ * @param {import('./chompass-core/models.js').FoodEntry[]} recentWindow
+ * @param {import('./chompass-core/models.js').FoodEntry[]} frequentWindow
+ * @param {number} [perRow]
+ * @returns {{recents: import('./chompass-core/models.js').FoodEntry[], frequents: import('./chompass-core/models.js').FoodEntry[]}}
  */
-export function quickRelogFoodTemplates(
-  favorites,
-  recents,
-  frequents,
-  currentMeal,
-  favoriteKeys = new Set(favorites.map(favoriteKey).filter(Boolean)),
-  limit = 6,
-) {
-  const seen = new Set();
-  /** @type {import('./chompass-core/models.js').FoodEntry[]} */
-  const pool = [];
-  for (const source of [favorites, recents, frequents]) {
-    for (const entry of source) {
-      const key = favoriteKey(entry);
-      if (!key || seen.has(key)) continue;
-      seen.add(key);
-      pool.push(entry);
-    }
-  }
-
-  /**
-   * @param {import('./chompass-core/models.js').FoodEntry} a
-   * @param {import('./chompass-core/models.js').FoodEntry} b
-   */
-  const withinBucket = (a, b) => {
-    const aFav = favoriteKeys.has(favoriteKey(a)) ? 1 : 0;
-    const bFav = favoriteKeys.has(favoriteKey(b)) ? 1 : 0;
-    if (bFav !== aFav) return bFav - aFav;
-    return entryStamp(b) - entryStamp(a);
-  };
-
-  /** @type {import('./chompass-core/models.js').FoodEntry[][]} */
-  let buckets;
-  if (currentMeal === "snack") {
-    buckets = [
-      pool.filter((e) => e.mealType === "snack"),
-      pool.filter((e) => e.mealType !== "snack"),
-    ];
-  } else {
-    buckets = [
-      pool.filter((e) => e.mealType === currentMeal),
-      pool.filter((e) => e.mealType === "snack"),
-      pool.filter((e) => e.mealType !== currentMeal && e.mealType !== "snack"),
-    ];
-  }
-
-  return buckets.flatMap((bucket) => bucket.slice().sort(withinBucket)).slice(0, limit);
+export function quickRelogRowsFrom(recentWindow, frequentWindow, perRow = 10) {
+  const recents = recentTemplatesFrom(recentWindow, perRow);
+  const recentKeys = new Set(recents.map(favoriteKey).filter(Boolean));
+  const frequents = frequentGroupsFrom(frequentWindow)
+    .filter((g) => {
+      const key = favoriteKey(g.template);
+      return key && !recentKeys.has(key);
+    })
+    .slice(0, perRow)
+    .map((g) => g.template);
+  return { recents, frequents };
 }
 
 /**
- * Meal-matched (or snacks in the snack window) first; favorites soft-boost
- * within each bucket. Unique by favoriteKey (Android quickRelogTemplates).
- * @param {number} [limit]
- * @returns {Promise<import('./chompass-core/models.js').FoodEntry[]>}
+ * Hub chips: recents (30 days) then frequents (90 days), one diary decode.
+ * @param {number} [perRow]
+ * @returns {Promise<{recents: import('./chompass-core/models.js').FoodEntry[], frequents: import('./chompass-core/models.js').FoodEntry[]}>}
  */
-export async function quickRelogTemplates(limit = 6) {
-  const [favorites, recents, frequent, appPrefs] = await Promise.all([
-    listFavorites(),
-    recentFoodTemplates(30, 50),
-    frequentFoodGroups(90),
-    prefs.load(),
-  ]);
-  const currentMeal = guessMealTypeFromPrefs(appPrefs);
-  return quickRelogFoodTemplates(
-    favorites,
-    recents,
-    frequent.map((g) => g.template),
-    currentMeal,
-    undefined,
-    limit,
-  );
+export async function quickRelogRows(perRow = 10) {
+  const all = await foodEntries.all();
+  return quickRelogRowsFrom(entriesInWindow(all, 30), entriesInWindow(all, 90), perRow);
 }
 
 export async function listFavorites() {
