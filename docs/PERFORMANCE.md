@@ -1,129 +1,96 @@
-# Android Performance Baseline
+# Android performance capture
 
-This project now includes a repeatable baseline capture script:
+Repeatable measurements under a **fully utilized** debug diary (year of food,
+2y metrics, water, recipes, favorites, chat). Build in WSL; talk to the USB
+device with Windows `adb` (see [DEVELOPMENT.md](DEVELOPMENT.md)).
 
-- `scripts/capture_android_perf_baseline.sh`
+## One-shot suite
 
-It gathers:
-
-- cold-start timing via `am start -W`
-- frame stats via `dumpsys gfxinfo ... framestats`
-- memory snapshots via `dumpsys meminfo`
-
-## Run
+Seed once, then capture **without** reseeding (otherwise splash time is the
+seeder, not the app):
 
 ```bash
-scripts/capture_android_perf_baseline.sh
+./scripts/install_debug.sh            # build + install + seed_full
+# wait until Home is interactive (first seed ~15s write)
+
+ADB_BIN=... scripts/capture_android_perf_baseline.sh
 ```
 
-Or for release package:
+`install_debug.sh --reseed` only when you need a fresh fixture. The capture
+script force-stops and cold-starts with **no** seed extras.
+
+Standalone entry pipeline (same fixture, or seed itself):
 
 ```bash
-scripts/capture_android_perf_baseline.sh app.chompass
+SEED=0 scripts/perf_entry_benchmark.sh 3          # diary already on disk
+scripts/perf_entry_benchmark.sh                   # seed_full, then 3 analyses
+SEED_MODE=slim scripts/perf_entry_benchmark.sh    # old trio instead of seed_full
 ```
 
-Artifacts are written under:
+Needs a Gemini key in `android/secrets.properties` (debug builds only).
 
-- `android/build/perf-baseline/<timestamp>/`
+## What the baseline script records
 
-## Current Baseline Status
+| Step | How | Artifacts under `android/build/perf-baseline/<timestamp>/` |
+|------|-----|--------------------------------------------------------------|
+| Cold start ×5 | `am start -W` | `start_run_1..5.txt` (WaitTime) |
+| Home settle mem | `dumpsys meminfo` | `meminfo_home.txt` |
+| Progress first open | `chompass://go/progress` | `gfx_framestats_progress.txt`, `meminfo_progress.txt` |
+| Range chips 1W→All | taps + `FudAIPerf rangeChange` | `gfx_framestats_range_*.txt`, `logcat_range_*.txt` |
+| Tabs Home/Progress/Coach/Settings | `chompass://go/<tab>` | `gfx_framestats_tab_*.txt` |
+| Settings Food / Goals | `chompass://go/settings/food` etc. | `gfx_framestats_settings_*.txt` |
+| Add Food hub | FAB tap | `gfx_framestats_add_food.txt`, `logcat_add_food.txt` (`hubOpen`) |
+| Relog first hub row | `run_relog_benchmark` (no coordinates) | `logcat_relog_bench.txt` (`relogBench`, `save`) |
+| Analyze+save ×N | `perf_entry_benchmark.sh` `SEED=0` | `entry_perf.log` + summarizer |
 
-- Capture requires the device; run via the WSL2 build + Windows adb split (see
-  [DEVELOPMENT.md](DEVELOPMENT.md)) or `ADB_BIN` pointing at a Windows `adb.exe`.
-- Artifacts land in `android/build/perf-baseline/<timestamp>/` (gitignored).
+Do **not** use raw tab-bar taps for Progress: on a 1080-wide Pixel,
+`PROGRESS_TAB_X=540` lands between Progress and Coach. Deep links are the
+source of truth.
 
-## Validation Cadence
+Skip the live AI / relog tails with `RUN_ENTRY_BENCH=0` / `RUN_RELOG_BENCH=0`.
 
-After each performance phase:
+## Fixture (`install_debug.sh`)
 
-1. Run the baseline script again.
-2. Compare `start_run_*.txt` totals against previous run.
-3. Compare `gfx_framestats.txt` jank/frame distribution.
-4. Compare `meminfo.txt` resident footprint and Java heap usage.
-5. Keep only changes with measurable startup or smoothness improvement.
+Default is `seed_full`. Flags: `--slim` (old trio), `--keto`, `--busy-home`,
+`--reseed`, `--no-seed`. Intent extras: `seed_full`, `seed_busy_home`,
+`run_entry_benchmark` / `benchmark_count`, `run_relog_benchmark` /
+`relog_benchmark_count`.
 
-## Entry-addition timing (FudAIPerf)
+## FudAIPerf marks (debug only)
 
-Debug builds emit per-phase latency for the add-a-food-entry pipeline under the
-logcat tag `FudAIPerf` (gated by `BuildConfig.DEBUG`; release builds emit
-nothing). Each line is one measurement in `key=value` form:
+Tag `FudAIPerf`. Release builds emit nothing.
 
 ```
+op=progress phase=rangeChange ms=323 range=1Y foods=1265 weights=588
+op=hubOpen phase=quickRelog ms=1015 perRow=10
+op=relogBench phase=addEntry ms=4773 i=0 name=...
+op=save phase=dataStore ms=590 month=2026-08
 op=analyzeText phase=promptBuild ms=8
 op=analyzeText phase=parse ms=3 chars=1830
-op=net phase=call host=generativelanguage.googleapis.com dnsMs=12 connectMs=45 tlsMs=60 ttfbMs=980 totalMs=1420 reqBytes=2100 respBytes=1830 status=200
-op=save phase=imageWrite ms=27 bytes=142000
-op=save phase=dataStore ms=41 entries=214
-op=save phase=healthWrite ms=88
+op=net phase=call host=... ttfbMs=980 totalMs=1420 status=200
+op=benchmark phase=entry i=0 ms=57354 status=ok
+op=benchmark phase=done count=3 ok=1 fail=2
 ```
 
-Phases: `promptBuild` (input assembly + prefs read), `parse` (JSON deserialize),
-`net` (OkHttp round-trip: DNS/connect/TLS/TTFB/total + byte counts, covers every
-AI/STT/OpenFoodFacts call), and the Phase-2 persistence `imageWrite` / `dataStore`
-/ `healthWrite`. Notes: `dataStore` re-serializes the whole log per add, so it
-scales with `entries=`; a single photo analysis fires **two** `net` calls (main
-analysis + serving-unit inference, `op=inferServing`) when the main analysis
-prompt's own `unit_options` comes back empty; the primary prompts were
-strengthened to make that less common, but the fallback still exists
-structurally since `inferServing` depends on the main call's parsed result;
-`net` metrics are `-1` when a phase is skipped (e.g. pooled connection) or on
-failure (`status=-1`).
+`dataStore` writes one month bucket (`month=yyyy-MM`), not the whole diary.
+A photo analysis can still fire a second `net` call (`op=inferServing`) when
+the main prompt returns empty `unit_options`.
 
-### Capture
-
-The USB device is reachable from Windows adb, not WSL adb. Build + install the
-debug APK (see [DEVELOPMENT.md](DEVELOPMENT.md)), then:
-
-```bash
-# From WSL: the script auto-detects a Windows adb.exe (Downloads/platform-tools,
-# the Android SDK, C:\platform-tools) and drops the WSL-only adb server port.
-scripts/capture_entry_perf.sh
-# Override the adb binary if it lives elsewhere:
-ADB_BIN=/mnt/c/path/to/adb.exe scripts/capture_entry_perf.sh
-# Optional: LAUNCH=1 to cold-launch first; DURATION=60 to auto-stop after 60s.
-```
-
-```powershell
-# Natively on Windows (device attached there):
-scripts\capture_entry_perf.ps1          # -Launch to cold-start first
-```
-
-Add entries on the device (text, photo + Save, manual, barcode) while it records;
-press Ctrl-C to stop. Raw log + summary land in
-`android/build/perf-entry/<timestamp>/entry_perf.log`. Re-summarize any log with:
+Re-summarize any entry log:
 
 ```bash
 uv run python scripts/summarize_entry_perf.py android/build/perf-entry/<timestamp>/entry_perf.log
 ```
 
-The summarizer prints per-`(op, phase)` count/min/p50/p90/max/mean(ms) and a
-network-phase breakdown.
+Manual interactive capture (you tap the UI yourself) is still
+`scripts/capture_entry_perf.sh`.
 
-### All-in-one benchmark
+## Compare runs
 
-`scripts/perf_entry_benchmark.sh` does the whole loop in one shot: seed the app's
-settings + tracking data, fire N real analyze+save requests through the live AI
-provider, then capture and summarize their timings. It stops automatically when
-the batch finishes (a `op=benchmark phase=done` marker). Debug build only, and it
-needs a Gemini key in `secrets.properties` so requests actually go out.
+After each perf change, on the same device, same seed already on disk:
 
-```bash
-scripts/perf_entry_benchmark.sh          # 3 entries, seed_full first
-scripts/perf_entry_benchmark.sh 5        # 5 entries
-SEED=0 scripts/perf_entry_benchmark.sh   # benchmark only, no data seeding
-SEED_MODE=slim scripts/perf_entry_benchmark.sh  # old trio instead of seed_full
-```
-
-`scripts/capture_android_perf_baseline.sh` also runs this at the end (`SEED=0`)
-plus a coordinate-free relog bench (`run_relog_benchmark`) after Add Food.
-Set `RUN_ENTRY_BENCH=0` / `RUN_RELOG_BENCH=0` to skip.
-
-It force-stops, waits 2s, and cold-launches MainActivity with extras in one intent:
-`seed_full` (or `SEED_MODE=slim` for the older trio) populate the app,
-and `run_entry_benchmark` + `benchmark_count` drive
-`EntryPerfBenchmark.run(...)`, which calls `FoodAnalysisService.analyzeText` and
-persists via `FoodRepository.addEntry` for each sample, so every phase
-(promptBuild / net / parse / dataStore / healthWrite) is timed. The batch also
-emits `op=benchmark phase=entry ms=<wall>` per entry (full analyze+save time).
-Artifacts land under `android/build/perf-entry/<timestamp>/` like the manual
-capture.
+1. WaitTime in `start_run_*.txt`
+2. Progress `rangeChange` ms for 1Y / All
+3. `hubOpen` / `relogBench` / `save dataStore` in the FudAIPerf logs
+4. Java heap in `meminfo_home.txt` vs `meminfo_progress.txt`
+5. Keep only changes that move a number or a felt hitch

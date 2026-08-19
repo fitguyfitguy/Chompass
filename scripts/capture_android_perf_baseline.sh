@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Captures startup, frame stats, and memory snapshots for Chompass.
+# Full-seed perf suite: cold start, Progress (go/ + range chips), tabs,
+# Settings Food/Goals, Add Food hub, relog bench, analyze+save pipeline.
+# Seed first with ./scripts/install_debug.sh; do not pass seed extras here.
 # Usage:
 #   scripts/capture_android_perf_baseline.sh [package]
 #   ADB_BIN=/path/to/adb scripts/capture_android_perf_baseline.sh [package]
-# Default package is the debug flavor.
+#   RUN_ENTRY_BENCH=0 RUN_RELOG_BENCH=0   # skip live AI / relog tails
+# Default package is the debug flavor. See docs/PERFORMANCE.md.
 
 PACKAGE="${1:-app.chompass.debug}"
 ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
