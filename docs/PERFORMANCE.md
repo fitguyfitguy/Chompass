@@ -108,13 +108,18 @@ the batch finishes (a `op=benchmark phase=done` marker). Debug build only, and i
 needs a Gemini key in `secrets.properties` so requests actually go out.
 
 ```bash
-scripts/perf_entry_benchmark.sh          # 3 entries, seeds data first
+scripts/perf_entry_benchmark.sh          # 3 entries, seed_full first
 scripts/perf_entry_benchmark.sh 5        # 5 entries
 SEED=0 scripts/perf_entry_benchmark.sh   # benchmark only, no data seeding
+SEED_MODE=slim scripts/perf_entry_benchmark.sh  # old trio instead of seed_full
 ```
 
-It force-stops and cold-launches MainActivity with all extras in one intent:
-`seed_full` (or the older `seed_test_data` / `seed_body_metrics` / `seed_keto_settings` trio) populate the app,
+`scripts/capture_android_perf_baseline.sh` also runs this at the end (`SEED=0`)
+plus a coordinate-free relog bench (`run_relog_benchmark`) after Add Food.
+Set `RUN_ENTRY_BENCH=0` / `RUN_RELOG_BENCH=0` to skip.
+
+It force-stops, waits 2s, and cold-launches MainActivity with extras in one intent:
+`seed_full` (or `SEED_MODE=slim` for the older trio) populate the app,
 and `run_entry_benchmark` + `benchmark_count` drive
 `EntryPerfBenchmark.run(...)`, which calls `FoodAnalysisService.analyzeText` and
 persists via `FoodRepository.addEntry` for each sample, so every phase

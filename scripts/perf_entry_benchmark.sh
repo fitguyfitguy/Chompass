@@ -10,8 +10,10 @@ set -euo pipefail
 # Env:
 #   ADB_BIN    adb binary (auto-detects a Windows adb.exe from WSL if unset)
 #   PACKAGE    app package (default: app.chompass.debug)
-#   SEED       "1" (default) seeds test data + body metrics + keto settings first;
-#              "0" skips seeding and only benchmarks
+#   SEED       "1" (default) seeds seed_full first; "0" skips seeding
+#   SEED_MODE  full (default) or slim when SEED=1
+#   OUT_DIR    override output directory
+#   QUIET      "1" skips the live tail (for embedding in another script)
 #   TIMEOUT    seconds to wait for the batch before giving up (default: 240)
 #
 # Prereq: the debug APK is installed and secrets.properties carries a Gemini key
@@ -21,9 +23,11 @@ COUNT="${1:-3}"
 PACKAGE="${PACKAGE:-app.chompass.debug}"
 ACTIVITY="${PACKAGE}/app.chompass.MainActivity"
 SEED="${SEED:-1}"
+SEED_MODE="${SEED_MODE:-full}"
 TIMEOUT="${TIMEOUT:-240}"
+QUIET="${QUIET:-0}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
-OUT_DIR="android/build/perf-entry/${STAMP}"
+OUT_DIR="${OUT_DIR:-android/build/perf-entry/${STAMP}}"
 LOG="${OUT_DIR}/entry_perf.log"
 
 # shellcheck source=scripts/_adb_resolve.sh
@@ -41,10 +45,16 @@ echo "Writing to:    ${LOG}"
 # benchmark flag. force-stop first so onCreate (not onNewIntent) fires.
 echo "Force-stopping and launching with seed + benchmark extras..."
 "${ADB_BIN}" shell am force-stop "${PACKAGE}"
+# Windows adb force-stop is async; starting too soon delivers extras to the dying process.
+sleep 2
 
 START_ARGS=(am start -n "${ACTIVITY}")
 if [ "${SEED}" = "1" ]; then
-  START_ARGS+=(--ez seed_test_data true --ez seed_body_metrics true --ez seed_keto_settings true)
+  if [ "${SEED_MODE}" = slim ]; then
+    START_ARGS+=(--ez seed_test_data true --ez seed_body_metrics true --ez seed_keto_settings true)
+  else
+    START_ARGS+=(--ez seed_full true)
+  fi
 fi
 START_ARGS+=(--ez run_entry_benchmark true --ei benchmark_count "${COUNT}")
 
@@ -68,8 +78,11 @@ trap cleanup EXIT
 
 # Follow the log live and stop as soon as the batch finishes. Warn once if no
 # benchmark marker shows up quickly (usually a stale APK without benchmark code).
-tail -n +1 -f "${LOG}" &
-TAIL_PID=$!
+TAIL_PID=""
+if [ "${QUIET}" != "1" ]; then
+  tail -n +1 -f "${LOG}" &
+  TAIL_PID=$!
+fi
 started=0
 deadline=$((SECONDS + TIMEOUT))
 while kill -0 "${LOGCAT_PID}" 2>/dev/null; do
@@ -85,7 +98,7 @@ while kill -0 "${LOGCAT_PID}" 2>/dev/null; do
   if [ "${SECONDS}" -ge "${deadline}" ]; then echo ">>> Timed out after ${TIMEOUT}s."; break; fi
   sleep 1
 done
-kill "${TAIL_PID}" 2>/dev/null || true
+if [ -n "${TAIL_PID}" ]; then kill "${TAIL_PID}" 2>/dev/null || true; fi
 cleanup
 
 echo

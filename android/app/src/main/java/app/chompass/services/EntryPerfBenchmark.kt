@@ -49,6 +49,31 @@ class EntryPerfBenchmark(private val container: AppContainer) {
         Log.i(PerfLog.TAG, "op=benchmark phase=done count=$count ok=$ok fail=$fail")
     }
 
+    /**
+     * One-tap relog path without UI coordinates: builds hub rows, then
+     * [FoodRepository.addEntry]s the first recent (else frequent) template
+     * [count] times. Emits `op=relogBench` start/addEntry/done.
+     */
+    suspend fun runRelog(count: Int = 3) {
+        Log.i(PerfLog.TAG, "op=relogBench phase=start count=$count")
+        val rows = container.foodRepository.quickRelogRows(perRow = 10)
+        val template = rows.recents.firstOrNull() ?: rows.frequents.firstOrNull()
+        if (template == null) {
+            Log.w(PerfLog.TAG, "op=relogBench phase=done count=0 ok=0 fail=0 err=no-hub-rows")
+            return
+        }
+        var ok = 0
+        repeat(count) { i ->
+            PerfLog.measure("relogBench", "addEntry", "i=$i name=${template.name}") {
+                container.foodRepository.addEntry(
+                    template.duplicatedForLogging(java.time.Instant.now())
+                )
+            }
+            ok++
+        }
+        Log.i(PerfLog.TAG, "op=relogBench phase=done count=$count ok=$ok fail=0")
+    }
+
     companion object {
         /** Short, unambiguous descriptions that exercise text analysis + serving inference. */
         private val SAMPLES = listOf(

@@ -533,6 +533,11 @@ open class MainActivity : ComponentActivity() {
             }
 
             // Independent of seeding/onboarding: benchmarks only need the AI provider + key.
+            if (actions.runRelogBenchmark) {
+                lifecycleScope.launch {
+                    EntryPerfBenchmark(container).runRelog(actions.relogBenchmarkCount)
+                }
+            }
             if (actions.runEntryBenchmark) {
                 lifecycleScope.launch {
                     EntryPerfBenchmark(container).run(actions.entryBenchmarkCount)

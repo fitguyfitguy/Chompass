@@ -44,6 +44,8 @@ internal data class DebugIntentActions(
     val clearPendingDraft: Boolean = false,
     val runEntryBenchmark: Boolean = false,
     val entryBenchmarkCount: Int = 3,
+    val runRelogBenchmark: Boolean = false,
+    val relogBenchmarkCount: Int = 3,
     val runOnDeviceLlmTest: Boolean = false,
     val onDeviceLlmBackend: String = "gpu",
     val onDeviceLlmMtp: Boolean = false,
@@ -103,6 +105,8 @@ internal fun consumeDebugIntentExtras(
         clearPendingDraft = BuildConfig.DEBUG && intent.getBooleanExtra("clear_pending_draft", false),
         runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
         entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
+        runRelogBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_relog_benchmark", false),
+        relogBenchmarkCount = intent.getIntExtra("relog_benchmark_count", 3),
         runOnDeviceLlmTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_ondevice_llm_test", false),
         onDeviceLlmBackend = if (presetDaily) "gpu" else intent.getStringExtra("ondevice_llm_backend") ?: "gpu",
         onDeviceLlmMtp = presetDaily || intent.getBooleanExtra("ondevice_llm_mtp", false),
@@ -135,7 +139,14 @@ internal fun consumeDebugIntentExtras(
     if (actions.restoreRealData) intent.removeExtra("restore_real_data")
     if (actions.demoAi) intent.removeExtra("demo_ai")
     if (actions.clearPendingDraft) intent.removeExtra("clear_pending_draft")
-    if (actions.runEntryBenchmark) intent.removeExtra("run_entry_benchmark")
+    if (actions.runEntryBenchmark) {
+        intent.removeExtra("run_entry_benchmark")
+        intent.removeExtra("benchmark_count")
+    }
+    if (actions.runRelogBenchmark) {
+        intent.removeExtra("run_relog_benchmark")
+        intent.removeExtra("relog_benchmark_count")
+    }
     if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
     if (actions.runOnDeviceLlmTest) {
         intent.removeExtra("run_ondevice_llm_test")
