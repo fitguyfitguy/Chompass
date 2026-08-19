@@ -1,6 +1,6 @@
 # Chompass translation guide
 
-How to translate Chompass into one of the 16 supported locales, and how a
+How to translate Chompass into one of the 18 supported locales, and how a
 full pack gets reviewed before it ships. Written for community translators
 and for maintainers reviewing translation merges.
 

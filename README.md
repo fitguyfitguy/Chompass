@@ -100,7 +100,7 @@ Shared on the [PWA](https://chompass.app/app/) and Android app unless noted:
 - **AI**: cloud, using your own key (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use) with progress steps and a live field preview. On Android: opt-in **On-Device (Private)** Gemma 4 via [LiteRT-LM](https://developers.google.com/edge/litert-lm/android), optional fallback provider. AI Coach chat on both clients.
 - **Live calorie budget** (Android): the home ring grows your daily goal with the day's burn in Add Active mode, from measured Health Connect energy, a manual burn entry after a run you did not log with a device, or an estimate. Without live data it falls back to your 14-day active average from Health Connect history, then to your activity-level estimate. The ring compares today's burn with a typical day; widgets use the same budget.
 - **Progress**: weight, body fat, measurements, forecast. **Health Connect** (Android): steps, exercise, wellness; two-way sync with Gadgetbridge, openScale, and other Health Connect apps
-- **Diet & extras**: keto and other diet modes, water tracking. Android: home-screen widgets, 16 languages (web is EN-first)
+- **Diet & extras**: keto and other diet modes, water tracking. Android: home-screen widgets, 18 languages (web is EN-first)
 - **Open data**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links (`chompass://` on Android; hash URL on web)
 - **Size (Android)**: ~15 MiB arm64 / ~27 MiB universal; no ads, analytics, or workout library ([releases](https://codeberg.org/fitguy/chompass/releases))
 

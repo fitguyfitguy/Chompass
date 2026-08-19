@@ -9,7 +9,7 @@ Canonical list: [`testdata/parity/locales.json`](../testdata/parity/locales.json
 
 | Item | Rule |
 |------|------|
-| Supported UI locales | 16 tags: `en`, `ar`, `az`, `de`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `nl`, `pt-BR`, `ro`, `ru`, `uk`, `zh-CN` |
+| Supported UI locales | 18 tags: `en`, `ar`, `az`, `de`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `nl`, `pl`, `pt-BR`, `ro`, `ru`, `tr`, `uk`, `zh-CN` |
 | Fallback | Always English (`en` / `values/strings.xml`) |
 | RTL | Arabic (`ar`) only in the current set; set `dir="rtl"` / Compose RTL |
 | Detection | Android: system + Android 13+ per-app language. PWA: `prefs.uiLang` or browser `navigator.language` |
@@ -139,6 +139,7 @@ screenshot references if the labels changed.
 | ru | complete | most complete non-EN (1,044 / 1,420 present) |
 | uk | complete (new, translated from scratch) | 673 keys translated; EN fallback for the rest |
 | de, es, fr | complete | **de: complete (1,494 / 1,494 + 2 plurals, community pack by 1260er, style-reviewed 2026-08-16)**; es, fr: partial (~600 / 1,420 present) |
+| pl, tr | complete | **complete (full packs, added 2026-08-19; Polish 4 plural forms, Turkish vowel-harmony checked)** |
 | ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | partial (~560–590 / 1,420 present); EN fallback for missing keys |
 
 Second phase: all locale files were swept for verbatim EN copies: they were
