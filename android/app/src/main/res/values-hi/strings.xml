@@ -17,7 +17,7 @@
     <!-- Common buttons / actions -->
     <string name="action_save">सहेजें</string>
     <string name="action_cancel">रद्द करें</string>
-    <string name="action_done">पूर्ण</string>
+    <string name="action_done">हो गया</string>
     <string name="action_ok">ठीक है</string>
     <string name="action_clear">साफ़ करें</string>
     <string name="action_delete">हटाएं</string>
@@ -25,9 +25,9 @@
     <string name="action_get_started">शुरू करें</string>
     <string name="action_log">लॉग</string>
     <string name="action_analyze">विश्लेषण करें</string>
-    <string name="action_discard">रद्द करें</string>
+    <string name="action_discard">छोड़ दें</string>
     <string name="action_reset">रीसेट</string>
-    <string name="action_keep_going">जारी रखें</string>
+    <string name="action_keep_going">आगे बढ़ें</string>
     <string name="action_send">भेजें</string>
     <string name="action_pin">पिन करें</string>
 
@@ -53,12 +53,12 @@
     <string name="activity_active">सक्रिय</string>
     <string name="activity_very_active">बहुत सक्रिय</string>
     <string name="activity_extra_active">अत्यधिक सक्रिय</string>
-    <string name="activity_sedentary_subtitle">कम या कोई व्यायाम नहीं</string>
-    <string name="activity_light_subtitle">सप्ताह में 1-3 बार व्यायाम</string>
-    <string name="activity_moderate_subtitle">सप्ताह में 4-5 बार व्यायाम</string>
-    <string name="activity_active_subtitle">रोज़ाना व्यायाम या सप्ताह में 3-4 बार तीव्र</string>
-    <string name="activity_very_active_subtitle">सप्ताह में 6-7 बार तीव्र व्यायाम</string>
-    <string name="activity_extra_active_subtitle">रोज़ाना बहुत तीव्र, या शारीरिक काम</string>
+    <string name="activity_sedentary_subtitle">कम या कोई व्यायाम नहीं।\nअनुमानित कदम मार्गदर्शन: प्रतिदिन 5,000 से कम कदम।</string>
+    <string name="activity_light_subtitle">सप्ताह में 1-3 बार व्यायाम।\nअनुमानित कदम मार्गदर्शन: प्रतिदिन 5,000 से 7,499 कदम।</string>
+    <string name="activity_moderate_subtitle">सप्ताह में 4-5 बार व्यायाम।\nअनुमानित कदम मार्गदर्शन: प्रतिदिन 7,500 से 9,999 कदम।</string>
+    <string name="activity_active_subtitle">रोज़ाना व्यायाम या सप्ताह में 3-4 बार तीव्र।\nअनुमानित कदम मार्गदर्शन: प्रतिदिन 10,000 से 12,499 कदम।</string>
+    <string name="activity_very_active_subtitle">सप्ताह में 6-7 बार तीव्र व्यायाम।\nअनुमानित कदम मार्गदर्शन: प्रतिदिन 12,500 से 14,999 कदम।</string>
+    <string name="activity_extra_active_subtitle">रोज़ाना बहुत तीव्र, या शारीरिक काम।\nअनुमानित कदम मार्गदर्शन: प्रतिदिन 15,000+ कदम।</string>
 
     <!-- Weight Goal -->
     <string name="goal_lose">वज़न घटाएँ / Cutting</string>
@@ -91,7 +91,7 @@
     <string name="speech_key_placeholder_native">ज़रूरत नहीं</string>
     <string name="speech_key_placeholder_assemblyai">आपकी AssemblyAI कुंजी</string>
 
-    <string name="speech_description_native">Android की ऑन-डिवाइस स्पीच रिकग्निशन। मुफ़्त, अधिकांश फ़ोनों पर ऑफ़लाइन काम करती है, रियल-टाइम आंशिक परिणाम। अनुशंसित डिफ़ॉल्ट।</string>
+    <string name="speech_description_native">इस प्रोफ़ाइल में उपलब्ध होने पर डिवाइस की Android स्पीच रिकग्निशन सेवा उपयोग करता है। मुफ़्त, रियल-टाइम आंशिक परिणामों के साथ। सिस्टम STT इंजन चाहिए (केवल Assist ऐप पर्याप्त नहीं)।</string>
     <string name="speech_description_openai">OpenAI Whisper API. उच्च सटीकता, 99+ भाषाएँ, प्रति मिनट भुगतान।</string>
     <string name="speech_description_groq">Groq-होस्टेड Whisper Large v3. बहुत तेज़ इन्फ़रेंस, मुफ़्त टियर उपलब्ध।</string>
     <string name="speech_description_deepgram">Deepgram Nova. रियल-टाइम और बैच मोड, तेज़ और सटीक।</string>
@@ -162,7 +162,7 @@
     <string name="onboarding_yes">हाँ</string>
     <string name="onboarding_no">नहीं</string>
     <string name="onboarding_body_fat_ranges">सामान्य रेंज: पुरुष 10-25%, महिला 18-35%</string>
-    <string name="onboarding_body_fat_no_worries">कोई बात नहीं! हम आपकी ऊंचाई, वज़न और उम्र\nके आधार पर एक मानक फ़ॉर्मूला उपयोग करेंगे।</string>
+    <string name="onboarding_body_fat_no_worries">कोई बात नहीं। हम आपकी ऊंचाई, वज़न और उम्र\nके आधार पर एक मानक फ़ॉर्मूला उपयोग करेंगे।</string>
 
     <string name="onboarding_pace_title_maintain">आपकी गति</string>
     <string name="onboarding_pace_subtitle_maintain">हम एक संतुलित प्लान सेट करेंगे</string>
@@ -378,7 +378,7 @@
     <string name="coach_input_voice_a11y">वॉइस इनपुट</string>
     <string name="coach_input_placeholder">कोच से पूछें...</string>
     <string name="coach_empty_title">अपने कोच से पूछें</string>
-    <string name="coach_empty_subtitle">आपका कोच आपके वज़न का इतिहास, कैलोरी लॉग और लक्ष्य देख सकता है। अपेक्षित वज़न, क्या खाएँ, या अपने लक्ष्य तक कैसे पहुँचें - पूछें।</string>
+    <string name="coach_empty_subtitle">आपका कोच आपके वज़न का इतिहास, कैलोरी लॉग और लक्ष्य देख सकता है। अपेक्षित वज़न, क्या खाएँ, या अपने लक्ष्य तक कैसे पहुँचें, पूछें।</string>
     <string name="coach_reset_dialog_title">चैट रीसेट करें</string>
     <string name="coach_reset_dialog_message">सभी संदेश साफ़ करके नई शुरुआत करें? इसे पूर्ववत नहीं किया जा सकता।</string>
     <string name="coach_reset_confirm">रीसेट</string>
@@ -425,19 +425,19 @@
 
     <string name="progress_log_weight_title">वज़न लॉग करें</string>
 
-    <string name="progress_goal_reached_title">बधाई हो! 🎉</string>
-    <string name="progress_goal_reached_message">आप अपने लक्ष्य वज़न तक पहुँच गए हैं! अपने लक्ष्य को बदलने के लिए सेटिंग्स पर जाएँ और अपने टार्गेट रिफ़्रेश करने के लिए लक्ष्य पुनः गणना पर टैप करें।</string>
+    <string name="progress_goal_reached_title">लक्ष्य प्राप्त 🎉</string>
+    <string name="progress_goal_reached_message">आप अपने लक्ष्य वज़न तक पहुँच गए हैं। अपने लक्ष्य को बदलने के लिए सेटिंग्स पर जाएँ और अपने लक्ष्य रिफ़्रेश करने के लिए लक्ष्य पुनः गणना पर टैप करें।</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">व्यक्तिगत जानकारी</string>
     <string name="settings_section_goals">लक्ष्य और पोषण</string>
     <string name="settings_section_app">ऐप सेटिंग्स</string>
-    <string name="settings_section_ai">AI प्रदाता</string>
+    <string name="settings_section_ai">AI और भाषण</string>
     <string name="settings_section_speech">स्पीच-टू-टेक्स्ट</string>
     <string name="settings_section_health">स्वास्थ्य और डेटा</string>
     <string name="settings_group_app_display">ऐप और प्रदर्शन</string>
     <string name="settings_group_ai">AI और वाणी</string>
-    <string name="settings_group_data">स्वास्थ्य, डेटा और सिंक</string>
+    <string name="settings_group_data">स्वास्थ्य और डेटा</string>
     <string name="settings_group_personal_summary">लिंग, ऊंचाई, वजन, माप</string>
     <string name="settings_group_goals_summary">आहार, मैक्रो, अनुकूली लक्ष्य</string>
     <string name="settings_group_app_summary">दिखावट, होम, सूचनाएँ</string>
@@ -497,13 +497,13 @@
     <string name="settings_delete_all_title">सभी लोकल डेटा हटाएं?</string>
     <string name="settings_delete_all_message">प्रोफ़ाइल, खाद्य लॉग, वज़न इतिहास, चैट और API कुंजियाँ मिटा देता है, फिर आपको ऑनबोर्डिंग पर वापस ले जाता है। Health Connect डेटा सुरक्षित रहता है।</string>
     <string name="settings_max_pinned_title">अधिकतम 2 पिन</string>
-    <string name="settings_max_pinned_message">एक समय में अधिकतम 2 मैक्रो पिन किए जा सकते हैं। पहले किसी अन्य मैक्रो को खोलकर ऑटो-बैलेंस पर रीसेट करें पर टैप करके अनपिन करें।</string>
+    <string name="settings_max_pinned_message">एक समय में अधिकतम 2 मैक्रो लॉक हो सकते हैं, ताकि एक बैलेंस के लिए खाली रहे। पहले कोई दूसरा मैक्रो अनलॉक करें (उसके लॉक आइकन पर टैप करें)।</string>
     <string name="settings_recalc_title">लक्ष्य पुनः गणना करें?</string>
     <string name="settings_recalc_message">आपकी ऊंचाई/वज़न/गतिविधि/लक्ष्य से कैलोरी और मैक्रो को फ़ॉर्मूला डिफ़ॉल्ट पर रीसेट करता है। कोई भी पिन किए गए मैक्रो साफ़ हो जाते हैं।</string>
     <string name="settings_recalc_confirm">पुनः गणना करें</string>
     <string name="settings_invalid_goal_title">लक्ष्य वज़न आपके लक्ष्य से मेल नहीं खाता</string>
-    <string name="settings_invalid_goal_lose">घटाने के लक्ष्य के लिए आपके वर्तमान वज़न से कम टार्गेट चाहिए।</string>
-    <string name="settings_invalid_goal_gain">बढ़ाने के लक्ष्य के लिए आपके वर्तमान वज़न से अधिक टार्गेट चाहिए।</string>
+    <string name="settings_invalid_goal_lose">घटाने के लक्ष्य के लिए आपके वर्तमान वज़न से कम लक्ष्य चाहिए।</string>
+    <string name="settings_invalid_goal_gain">बढ़ाने के लक्ष्य के लिए आपके वर्तमान वज़न से अधिक लक्ष्य चाहिए।</string>
     <string name="settings_permission_title">अनुमति आवश्यक</string>
 
     <string name="settings_notifications_denied">सूचनाओं की अनुमति अस्वीकृत। रिमाइंडर पाने के लिए सिस्टम सेटिंग्स → ऐप्स → Chompass → सूचनाएँ में सक्षम करें।</string>
@@ -518,8 +518,8 @@
     <string name="sheet_model">मॉडल</string>
     <string name="sheet_model_footer">या नीचे कोई कस्टम मॉडल ID टाइप करें।</string>
     <string name="sheet_any_model_id">कोई भी मॉडल ID</string>
-    <string name="sheet_api_key_format">API कुंजी - %1$s</string>
-    <string name="sheet_speech_api_key_format">स्पीच API कुंजी - %1$s</string>
+    <string name="sheet_api_key_format">API कुंजी: %1$s</string>
+    <string name="sheet_speech_api_key_format">स्पीच API कुंजी: %1$s</string>
     <string name="sheet_speech_engine">स्पीच इंजन</string>
     <string name="sheet_gender">लिंग</string>
     <string name="sheet_activity_level">गतिविधि स्तर</string>
@@ -555,7 +555,7 @@
     <string name="about_privacy">गोपनीयता नीति</string>
     <string name="about_made_by">fitguy द्वारा Chompass</string>
     <string name="about_with_care">Apoorv Darshan के Fud AI पर आधारित</string>
-    <string name="about_share_message">मैं Chompass से अपने भोजन ट्रैक कर रहा हूँ - एक तस्वीर खींचें, बोलें, या टाइप करें, और AI कैलोरी लॉग कर देता है। यह मुफ़्त है, ओपन सोर्स है, और आपका डेटा आपके डिवाइस पर ही रहता है।\n\nडाउनलोड: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">मैं Chompass से अपने भोजन ट्रैक कर रहा हूँ, जो Fud AI का विज्ञापन-मुक्त फ़ोर्क है। फ़ोटो खींचें, बोलें या टाइप करें, और AI कैलोरी लॉग कर देता है। ओपन सोर्स, और आपका डेटा आपके डिवाइस पर ही रहता है।\n\nस्रोत: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Chompass शेयर करें</string>
 
     <!-- Notifications -->
@@ -566,7 +566,7 @@
     <string name="notif_channel_weight_goal">वज़न लक्ष्य</string>
     <string name="notif_channel_weight_goal_desc">जब आप अपने लक्ष्य वज़न तक पहुँचते हैं तो जश्न।</string>
     <string name="notif_streak_title">अपने भोजन लॉग करना न भूलें</string>
-    <string name="notif_streak_text">अपनी स्ट्रीक जारी रखें - आज का कुछ लॉग करें।</string>
+    <string name="notif_streak_text">अपनी स्ट्रीक जारी रखें। आज का कुछ लॉग करें।</string>
     <string name="notif_summary_title">आज का सारांश तैयार है</string>
     <string name="notif_summary_text">देखने के लिए टैप करें कि आज के मैक्रो कैसे रहे।</string>
 
@@ -589,28 +589,28 @@
     <string name="saved_meals_no_match">कोई मेल खाता खाना नहीं</string>
     <string name="settings_section_custom_instructions">कस्टम AI निर्देश</string>
     <string name="settings_custom_instructions_placeholder">उदा. मैं जर्मनी में रहता हूँ, यूरोपीय पोर्शन साइज़ मानें, ALDI/REWE ब्रांड्स को प्राथमिकता दें। मैं बॉडीबिल्डिंग कट पर हूँ।</string>
-    <string name="settings_custom_instructions_footer">हर AI अनुरोध के साथ भेजा जाने वाला वैकल्पिक संदर्भ - क्षेत्र, डाइट, एथलेटिक लक्ष्य, और जो कुछ भी आप हर बार दोहराते हैं। बंद करने के लिए खाली छोड़ें।</string>
+    <string name="settings_custom_instructions_footer">हर AI अनुरोध के साथ भेजा जाने वाला वैकल्पिक संदर्भ: क्षेत्र, डाइट, एथलेटिक लक्ष्य, और जो कुछ भी आप हर बार दोहराते हैं। बंद करने के लिए खाली छोड़ें।</string>
     <string name="settings_save">सहेजें</string>
     <string name="settings_saved">सहेजा गया</string>
     <string name="settings_section_fallback">फ़ॉलबैक प्रदाता</string>
     <string name="settings_enable_fallback">फ़ॉलबैक चालू करें</string>
-    <string name="settings_fallback_footer">यदि आपका प्राथमिक प्रदाता विफल हो जाता है (ओवरलोड, रेट लिमिट, नेटवर्क त्रुटि), तो ऐप स्वचालित रूप से इस फ़ॉलबैक के साथ पुनः प्रयास करता है। प्राथमिक के समान प्रदाता की अनुमति है - बस एक अलग मॉडल चुनें।</string>
+    <string name="settings_fallback_footer">यदि आपका प्राथमिक प्रदाता विफल हो जाता है (ओवरलोड, रेट लिमिट, नेटवर्क त्रुटि), तो ऐप स्वचालित रूप से इस फ़ॉलबैक के साथ पुनः प्रयास करता है। प्राथमिक के समान प्रदाता की अनुमति है। बस एक अलग मॉडल चुनें।</string>
     <string name="widget_all_metrics_label">Chompass आज</string>
     <string name="widget_all_metrics_description">आज की कैलोरी, प्रोटीन, कार्ब्स और फैट एक ही विजेट में देखें।</string>
     <string name="settings_needs_health_connect">Health Connect ज़रूरी है</string>
-    <string name="settings_energy_goals_info">चालू होने पर, Chompass Health Connect से मापी गई आपकी बर्न हुई कैलोरी - सक्रिय + बेसल ऊर्जा का 14-दिन का औसत - को फ़ॉर्मूला अनुमान की जगह लक्ष्य कैलकुलेशन में मेंटेनेंस (TDEE) आधार के रूप में इस्तेमाल करता है। बर्न पढ़ने के लिए कोई AI इस्तेमाल नहीं होता। Health Connect ज़रूरी है। पुनः गणना करें बटन और Adaptive Goals के साथ काम करता है।</string>
-    <string name="settings_adaptive_goals_info">हफ़्ते में लगभग एक बार, ऐप खोलने पर Chompass आपकी प्रोफ़ाइल, हाल में लॉग किए गए खाने और वज़न के ट्रेंड के आधार पर पूरा लक्ष्य कैलकुलेशन अपने आप दोबारा चलाता है - वही जो पुनः गणना करें बटन चलाता है। अगर Energy Burn चालू है, तो आपकी मापी गई बर्न को मेंटेनेंस का आधार बनाया जाता है। AI उपलब्ध न होने पर यह चुपचाप छूट जाता है। इसे बंद करने पर वे लक्ष्य वापस आ जाते हैं जो इस फ़ीचर के पहले बदलाव से पहले थे। यह चिकित्सा सलाह नहीं है।</string>
-    <string name="onboarding_plan_adaptive_note">आपका प्लान आपकी लॉगिंग के अनुसार हर हफ़्ते अपने आप एडजस्ट होता है - इसे स्थिर रखने के लिए सेटिंग्स में Adaptive Goals बंद करें।</string>
-    <string name="onboarding_feature_snap">फोटो खींचें - AI लॉग कर देगा</string>
+    <string name="settings_energy_goals_info">चालू होने पर, Chompass Health Connect से मापी गई आपकी बर्न हुई कैलोरी (सक्रिय + बेसल ऊर्जा का 14-दिन का औसत) को फ़ॉर्मूला अनुमान की जगह लक्ष्य कैलकुलेशन में मेंटेनेंस (TDEE) आधार के रूप में इस्तेमाल करता है। बर्न पढ़ने के लिए कोई AI इस्तेमाल नहीं होता। Health Connect ज़रूरी है। पुनः गणना करें बटन और अनुकूली लक्ष्य के साथ काम करता है।</string>
+    <string name="settings_adaptive_goals_info">हफ़्ते में लगभग एक बार, ऐप खोलने पर Chompass आपकी प्रोफ़ाइल, हाल में लॉग किए गए खाने और वज़न के ट्रेंड के आधार पर पूरा लक्ष्य कैलकुलेशन अपने आप दोबारा चलाता है (वही जो पुनः गणना करें बटन चलाता है)। अगर ऊर्जा व्यय चालू है, तो आपकी मापी गई बर्न को मेंटेनेंस का आधार बनाया जाता है। AI उपलब्ध न होने पर यह चुपचाप छूट जाता है। इसे बंद करने पर वे लक्ष्य वापस आ जाते हैं जो इस फ़ीचर के पहले बदलाव से पहले थे। यह चिकित्सा सलाह नहीं है।</string>
+    <string name="onboarding_plan_adaptive_note">आपका प्लान आपकी लॉगिंग के अनुसार हर हफ़्ते अपने आप एडजस्ट होता है। इसे स्थिर रखने के लिए सेटिंग्स में अनुकूली लक्ष्य बंद करें।</string>
+    <string name="onboarding_feature_snap">फोटो खींचें। AI लॉग कर देगा।</string>
     <string name="onboarding_feature_coach">कोच जो आपका डेटा जानता है</string>
     <string name="onboarding_feature_library">स्केल और वियरेबल्स के लिए Health Connect</string>
     <string name="onboarding_feature_widgets">होम स्क्रीन विजेट</string>
     <string name="whats_new_v30_workouts">Workouts टैब हटा दिया गया।</string>
     <string name="whats_new_v30_home">नया होम: स्पीडोमीटर कैलोरी गेज, खड़ी मैक्रो बार, चार पोषक कार्ड और फ़्लोटिंग जोड़ें बटन।</string>
     <string name="whats_new_v30_coach_voice">नए इनलाइन रिकॉर्डर से कोच से आवाज़ में पूछें।</string>
-    <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें - iPhone या Android पर सीधे Chompass में खुलता है।</string>
+    <string name="whats_new_v30_share">किसी भी भोजन को लिंक के रूप में साझा करें। iPhone या Android पर सीधे Chompass में खुलता है।</string>
     <string name="whats_new_v30_export">सेटिंग्स से अपनी फ़ूड डायरी JSON, Markdown या CSV में निर्यात करें।</string>
-    <string name="whats_new_v30_reprocess">लॉग किए भोजन को AI से दोबारा प्रोसेस करें - नाम, मात्रा या नोट बदलकर फिर से विश्लेषण करें।</string>
+    <string name="whats_new_v30_reprocess">लॉग किए भोजन को AI से दोबारा प्रोसेस करें: नाम, मात्रा या नोट बदलकर फिर से विश्लेषण करें।</string>
     <string name="whats_new_v30_camera">कैमरा + कैमरा दोनों फ़ोटो साथ-साथ जोड़कर रखता है।</string>
     <string name="whats_new_v30_colors">10 नए थीम रंग, अब सेटिंग्स में ही चुनें।</string>
     <string name="whats_new_v30_bodyfat">बॉडी फ़ैट इतिहास: वज़न की तरह हर प्रविष्टि देखें और हटाएँ।</string>
@@ -644,13 +644,13 @@
     <string name="manual_active_kcal_hint">जली कैलोरी</string>
     <string name="manual_active_name_hint">गतिविधि का नाम (वैकल्पिक)</string>
     <string name="manual_active_save">बजट में जोड़ें</string>
-    <string name="manual_active_subtitle">चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। «सक्रिय बर्न बजट में जोड़ें» चालू होने पर ये आज का बजट बढ़ाती हैं।</string>
+    <string name="manual_active_subtitle">चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। "सक्रिय बर्न बजट में जोड़ें" चालू होने पर ये आज का बजट बढ़ाती हैं।</string>
     <string name="manual_active_title">सक्रिय बर्न लॉग करें</string>
     <string name="meal_photos_add_label">लेबल जोड़ें</string>
     <string name="meal_photos_confirm_back">संपादन जारी रखें</string>
     <string name="meal_photos_confirm_continue">फिर भी विश्लेषण करें</string>
     <string name="meal_photos_confirm_no_note">अभी कोई नोट नहीं। मात्रा या विवरण के बिना AI अनुमान कम सटीक होते हैं। फिर भी जारी रखें?</string>
-    <string name="meal_photos_confirm_one_photo">केवल एक फ़ोटो। दूसरी शॉट (दूसा कोण या पोषण लेबल) अक्सर मदद करती है। एक फ़ोटो से जारी रखें?</string>
+    <string name="meal_photos_confirm_one_photo">केवल एक फ़ोटो। दूसरी शॉट (दूसरा कोण या पोषण लेबल) अक्सर मदद करती है। एक फ़ोटो से जारी रखें?</string>
     <string name="meal_photos_confirm_sparse">नोट नहीं और केवल एक फ़ोटो। बेहतर अनुमान के लिए सुझाव या लेबल फ़ोटो जोड़ें, या फिर भी जारी रखें।</string>
     <string name="meal_photos_confirm_title">अभी विश्लेषण करें?</string>
     <string name="meal_photos_dont_ask_note">नोट फिर न पूछें</string>
@@ -706,13 +706,13 @@
     <string name="action_show">दिखाएं</string>
     <string name="action_undo">पूर्ववत</string>
     <string name="action_what_if">क्या होगा अगर?</string>
-    <string name="add_food_relog_kcal">%1$d किलो कैलोरी</string>
+    <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="add_food_water_section">पानी</string>
     <string name="ai_error_coach_on_device">कोच अभी ऑन-डिवाइस प्रदाता के साथ उपलब्ध नहीं है। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_coach_round_limit">कोच जवाब नहीं दे सका। अपना प्रश्न दोबारा लिखकर देखें।</string>
     <string name="ai_error_disabled">AI सुविधाएं सेटिंग्स → AI और भाषण में बंद हैं।</string>
-    <string name="ai_error_grounded_on_device">Grounded टूल लूप ऑन-डिवाइस मॉडल के लिए उपलब्ध नहीं है।</string>
-    <string name="ai_error_grounded_requires_provider">Grounded टूल लूप के लिए एक सक्रिय AI प्रदाता आवश्यक है।</string>
+    <string name="ai_error_grounded_on_device">Grounded मोड ऑन-डिवाइस मॉडल के लिए उपलब्ध नहीं है।</string>
+    <string name="ai_error_grounded_requires_provider">Grounded मोड के लिए एक सक्रिय AI प्रदाता आवश्यक है।</string>
     <string name="ai_error_image_conversion_failed">छवि संसाधित नहीं हो सकी।</string>
     <string name="ai_error_invalid_response">AI प्रतिक्रिया समझ में नहीं आई। कृपया फिर से प्रयास करें।</string>
     <string name="ai_error_invalid_url">अमान्य API URL। अपनी प्रदाता सेटिंग्स जांचें।</string>
@@ -780,7 +780,7 @@
     <string name="context_note_weight_hint">यदि आपने सर्विंग तौली है, तो ग्राम यहां दर्ज करें। सटीक वज़न शीर्षक या सामग्री सूची से अधिक सटीकता बढ़ाता है।</string>
     <string name="context_note_weight_placeholder">जैसे 280</string>
     <string name="context_note_weight_section">कुल वज़न (वैकल्पिक)</string>
-    <string name="context_note_weight_unit">ग्राम</string>
+    <string name="context_note_weight_unit">g</string>
     <string name="copy_all">सभी कॉपी करें</string>
     <string name="copy_from">से कॉपी करें</string>
     <string name="copy_from_loading">खाद्य लॉग लोड हो रहा है…</string>
@@ -900,7 +900,7 @@
     <string name="home_active_burn_over_a11y">सक्रिय खर्च %1$d, सामान्य दिन से %2$d अधिक</string>
     <string name="home_active_burn_progress_a11y">सक्रिय खर्च %1$d, सामान्य %2$d</string>
     <string name="home_active_calories_label">सक्रिय किलो कैलोरी</string>
-    <string name="home_budget_burned_today">आज खर्च: %1$d किलो कैलोरी</string>
+    <string name="home_budget_burned_today">आज खर्च: %1$d kcal</string>
     <string name="home_calorie_active_estimated_a11y">सक्रिय कैलोरी आपके गतिविधि स्तर से अनुमानित</string>
     <string name="home_calorie_budget_a11y">बजट %1$d: लक्ष्य %2$d और %3$d सक्रिय खर्च</string>
     <string name="home_calorie_budget_info">आज का बजट कैसे परिकलित होता है</string>
@@ -944,7 +944,7 @@
     <string name="home_water_next">अगला %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">अगला %1$s · कल %2$s</string>
     <string name="import_add_to_log">लॉग में जोड़ें</string>
-    <string name="import_add_to_log_many_format">%1$d लॉग में जोड़ें · %2$d किलो कैलोरी</string>
+    <string name="import_add_to_log_many_format">%1$d लॉग में जोड़ें · %2$d kcal</string>
     <string name="import_body_metrics_empty">इस फ़ाइल में आयात करने के लिए कोई वज़न या शरीर डेटा प्रविष्टि नहीं है।</string>
     <string name="import_body_metrics_malformed">फ़ाइल पढ़ी नहीं जा सकी: %1$s</string>
     <string name="import_body_metrics_success">%1$d वज़न, %2$d वसा और %3$d माप प्रविष्टियां आयात हुईं।</string>
@@ -1054,10 +1054,10 @@
     <string name="onboarding_api_key_empty">पहले एक API कुंजी पेस्ट करें</string>
     <string name="onboarding_api_key_network">नेटवर्क त्रुटि। अपना कनेक्शन जांचें और फिर प्रयास करें।</string>
     <string name="onboarding_api_key_rejected">वह API कुंजी अस्वीकार कर दी गई। AI Studio में नई कुंजी बनाकर दोबारा पेस्ट करें।</string>
-    <string name="onboarding_api_key_test">कुंजी परीक्षण</string>
+    <string name="onboarding_api_key_test">कुंजी जाँचें</string>
     <string name="onboarding_api_key_testing">परीक्षण…</string>
     <string name="onboarding_api_key_works">कुंजी काम करती है</string>
-    <string name="onboarding_diet_mode_subtitle">अपनी डिफ़ॉल्ट कोचिंग शैली चुनें</string>
+    <string name="onboarding_diet_mode_subtitle">अपनी डिफ़ॉल्ट अनुशंसा शैली चुनें</string>
     <string name="onboarding_diet_mode_title">क्या आप कोई आहार मोड अपनाते हैं?</string>
     <string name="onboarding_disclaimers_subtitle">कृपया ये महत्वपूर्ण सूचनाएं पढ़ें</string>
     <string name="onboarding_disclaimers_title">शुरू करने से पहले</string>
@@ -1066,12 +1066,12 @@
     <string name="onboarding_privacy_cloud_goals">AI लक्ष्य अनुमानित करते समय आपका प्रोफ़ाइल (योजना, पुनर्गणना, अनुकूली लक्ष्य)</string>
     <string name="onboarding_privacy_cloud_lead">क्लाउड प्रदाता के साथ, यह डेटा आपके डिवाइस से उस प्रदाता तक जाता है:</string>
     <string name="onboarding_privacy_cloud_title">क्लाउड प्रदाता (Gemini, OpenAI, Claude, …)</string>
-    <string name="onboarding_privacy_cloud_whatif">«क्या होगा अगर?»: आज के लॉग किए गए डायरी योग सहित भोजन प्रभाव</string>
+    <string name="onboarding_privacy_cloud_whatif">"क्या होगा अगर?": आज के लॉग किए गए डायरी योग सहित भोजन प्रभाव</string>
     <string name="onboarding_privacy_note">कोई विज्ञापन, एनालिटिक्स या खाते नहीं। आपका खाद्य लॉग और API कुंजियां आपके डिवाइस पर रहती हैं।</string>
     <string name="onboarding_privacy_note_cloud">क्लाउड प्रदाता के साथ, खाद्य फोटो, भोजन नोट, चैट और प्रोफ़ाइल डेटा उस प्रदाता को भेजे जाते हैं। केवल ऑन-डिवाइस Gemma 4 मॉडल सब कुछ आपके फोन पर रखते हैं।</string>
     <string name="onboarding_privacy_note_ollama">Ollama आपके अपने कंप्यूटर पर चलता है। कुछ भी क्लाउड प्रदाता को नहीं भेजा जाता।</string>
     <string name="onboarding_privacy_note_ondevice">Gemma 4 पूरी तरह इस डिवाइस पर चलता है। आपके द्वारा टाइप या फोटो किया गया कुछ भी सर्वर को नहीं भेजा जाता।</string>
-    <string name="onboarding_privacy_ondevice_body">खाद्य विश्लेषण, «क्या होगा अगर?» और लक्ष्य अनुमान इस फोन पर चलते हैं; कुछ भी बाहर नहीं जाता। कोच अभी ऑन-डिवाइस उपलब्ध नहीं है। मॉडल डाउनलोड Hugging Face से आता है।</string>
+    <string name="onboarding_privacy_ondevice_body">खाद्य विश्लेषण, "क्या होगा अगर?" और लक्ष्य अनुमान इस फोन पर चलते हैं; कुछ भी बाहर नहीं जाता। कोच अभी ऑन-डिवाइस उपलब्ध नहीं है। मॉडल डाउनलोड Hugging Face से आता है।</string>
     <string name="onboarding_privacy_ondevice_title">ऑन-डिवाइस Gemma 4 (पूरी तरह निजी)</string>
     <string name="onboarding_privacy_title">गोपनीयता और आपका AI प्रदाता</string>
     <string name="onboarding_safety_body">Chompass एक ट्रैकिंग सहायक है, कोई क्लिनिकल उपकरण नहीं। यदि आपको खाने के विकार का इतिहास है, या ट्रैकिंग भोजन या शारीरिक छवि के आसपास तनाव बढ़ाती है, तो जारी रखने से पहले रुककर डॉक्टर या थेरेपिस्ट से बात करें।</string>
@@ -1144,17 +1144,17 @@
     <string name="settings_adaptive_locks_message">अपनी कैलोरी और मैक्रोज़ लॉक या सेट करने के लिए अनुकूली लक्ष्य बंद करें। चालू रहने पर Chompass हर सप्ताह उन्हें आपके लिए पुनर्गणना करता है।</string>
     <string name="settings_adaptive_locks_title">अनुकूली लक्ष्य चालू हैं</string>
     <string name="settings_ai_features_master">AI सुविधाएं</string>
-    <string name="settings_ai_features_master_footer">AI प्रदाता को डेटा भेजने वाली हर चीज़ बंद करता है: कोच, फोटो/टेक्स्ट/वॉयस लॉगिंग, «क्या होगा अगर?» और AI लक्ष्य सुझाव। बारकोड, खाद्य खोज, मैन्युअल प्रविष्टि, सहेजे गए भोजन, पानी, सिंक और Health Connect सामान्य रूप से काम करते रहते हैं।</string>
+    <string name="settings_ai_features_master_footer">AI प्रदाता को डेटा भेजने वाली हर चीज़ बंद करता है: कोच, फोटो/टेक्स्ट/वॉयस लॉगिंग, "क्या होगा अगर?" और AI लक्ष्य सुझाव। बारकोड, खाद्य खोज, मैन्युअल प्रविष्टि, सहेजे गए भोजन, पानी, सिंक और Health Connect सामान्य रूप से काम करते रहते हैं।</string>
     <string name="settings_ai_privacy_cloud">खाद्य फोटो, नोट, चैट और प्रोफ़ाइल डेटा इस प्रदाता को भेजे जाते हैं। केवल ऑन-डिवाइस Gemma 4 मॉडल सब कुछ आपके फोन पर रखते हैं।</string>
     <string name="settings_ai_privacy_ollama">Ollama आपके अपने कंप्यूटर पर चलता है। कुछ भी क्लाउड प्रदाता को नहीं भेजा जाता।</string>
-    <string name="settings_ai_privacy_ondevice">पूरी तरह निजी: खाद्य विश्लेषण, «क्या होगा अगर?» और लक्ष्य अनुमान इस डिवाइस पर चलते हैं। कुछ भी सर्वर को नहीं भेजा जाता।</string>
+    <string name="settings_ai_privacy_ondevice">पूरी तरह निजी: खाद्य विश्लेषण, "क्या होगा अगर?" और लक्ष्य अनुमान इस डिवाइस पर चलते हैं। कुछ भी सर्वर को नहीं भेजा जाता।</string>
     <string name="settings_ai_read_timeout">AI रीड टाइमआउट</string>
     <string name="settings_ai_read_timeout_unit">से</string>
     <string name="settings_ai_read_timeout_value">%1$d से</string>
     <string name="settings_ai_reasoning_effort">तर्क प्रयास</string>
     <string name="settings_ai_reasoning_effort_footer">तर्क-क्षम OpenRouter मॉडल के लिए सोच बजट नियंत्रित करता है। ऑटो ऐप डिफ़ॉल्ट रखता है; अधिक प्रयास धीमा और अधिक टोकन खर्च करने वाला है।</string>
     <string name="settings_ai_vision_model">विज़न मॉडल</string>
-    <string name="settings_ai_vision_model_footer">फोटो यह मॉडल उपयोग करती हैं; टेक्स्ट मुख्य मॉडल। सब कुछ के लिए मुख्य मॉडल उपयोग करने हेतु खाली छोड़ें।</string>
+    <string name="settings_ai_vision_model_footer">फ़ोटो के लिए यह मॉडल उपयोग होता है; टेक्स्ट के लिए मुख्य मॉडल। सब कुछ के लिए मुख्य मॉडल उपयोग करने हेतु खाली छोड़ें।</string>
     <string name="settings_ai_vision_model_unset">(मॉडल के समान)</string>
     <string name="settings_breakfast_starts">नाश्ता प्रारंभ</string>
     <string name="settings_calc_adaptive_formula">समायोजन = (लक्षित साप्ताहिक परिवर्तन − अवलोकित साप्ताहिक परिवर्तन) × 7700 ÷ 7\n±150 किलो कैलोरी/दिन पर सीमित</string>
@@ -1163,15 +1163,15 @@
     <string name="settings_calc_body_formula">कमर/कूल्हे = कमर ÷ कूल्हे\nकमर/ऊंचाई = कमर ÷ ऊंचाई\nUS Navy %BF: लिंग-विशिष्ट लॉग समीकरण (गर्दन, कमर, कूल्हे, ऊंचाई)</string>
     <string name="settings_calc_body_name">टेप-माप व्युत्पन्न मीट्रिक</string>
     <string name="settings_calc_body_used">वैकल्पिक परिधियां कमर/कूल्हे, कमर/ऊंचाई, US Navy शारीरिक वसा % और कलाई ढांचा आकार व्युत्पन्न कर सकती हैं। ये मोटे टेप-माप अनुमान हैं। जब तक आप प्रोफ़ाइल में अलग से शारीरिक वसा प्रतिशत दर्ज नहीं करते, ये BMR को ओवरराइड नहीं करते।</string>
-    <string name="settings_calc_calorie_target">लक्ष्य के लिए कैलोरी टारगेट</string>
+    <string name="settings_calc_calorie_target">लक्ष्य की कैलोरी</string>
     <string name="settings_calc_forecast_formula">पूर्वानुमान किग्रा/सप्ताह = (औसत दैनिक कैलोरी − TDEE) × 7 ÷ 7700\nअवलोकित किग्रा/सप्ताह = Theil–Sen ढलान × 7\nविरल लॉगिंग: औसत सेवन ÷ कैलेंडर दिन जब लॉग किए दिन &lt; 50%% विंडो के</string>
     <string name="settings_calc_forecast_name">ऊर्जा-संतुलन पूर्वानुमान</string>
-    <string name="settings_calc_forecast_used">प्रगति चार्ट और लक्ष्य ETA आपके हाल के खाद्य लॉग और वज़न (90 दिन तक) उपयोग करते हैं। जब आप विंडो के आधे से कम दिनों में लॉग करते हैं, तो सेवन कैलेंडर दिनों में औसत होता है ताकि कभी-कभार «बड़े» दिन पूर्वानुमान को फुलाएं नहीं। अन्यथा सेवन केवल लॉग किए दिनों में औसत होता है। अवलोकित वज़न प्रवृत्ति स्केल प्रविष्टियों पर मजबूत माध्यिका-ढलान (Theil–Sen) फिट उपयोग करती है।</string>
+    <string name="settings_calc_forecast_used">प्रगति चार्ट और लक्ष्य ETA आपके हाल के खाद्य लॉग और वज़न (90 दिन तक) उपयोग करते हैं। जब आप विंडो के आधे से कम दिनों में लॉग करते हैं, तो सेवन कैलेंडर दिनों में औसत होता है ताकि कभी-कभार "बड़े" दिन पूर्वानुमान को फुलाएं नहीं। अन्यथा सेवन केवल लॉग किए दिनों में औसत होता है। अवलोकित वज़न प्रवृत्ति स्केल प्रविष्टियों पर मजबूत माध्यिका-ढलान (Theil–Sen) फिट उपयोग करती है।</string>
     <string name="settings_calc_home_gauge_formula">अनुमानित सक्रिय = TDEE − BMR\nगतिहीन बजट = कैलोरी लक्ष्य − अनुमानित सक्रिय\nसक्रिय लक्ष्य = गतिहीन बजट + (मापा या अनुमानित सक्रिय)</string>
     <string name="settings_calc_home_gauge_name">होम रिंग पर सक्रिय खर्च</string>
-    <string name="settings_calc_home_gauge_used">होम डिस्प्ले आपको सक्रिय खर्च को लक्ष्य में जोड़ने, शुद्ध सेवन ट्रैक करने या खर्च संकेत दिखाने देता है। आपका गतिविधि स्तर अनुमान TDEE माइनस BMR है (PAL गुणक भाग)। «सक्रिय जोड़ें» और «दोहरा» Health Connect बंद होने पर वह अनुमान उपयोग करते हैं; «शुद्ध» के लिए मापा Health Connect खर्च आवश्यक है। «सक्रिय जोड़ें» आपके संग्रहीत लक्ष्य को गतिहीन आधार और आज की सक्रिय परत में विभाजित करता है ताकि गतिविधि दो बार न गिनी जाए। «सक्रिय जोड़ें» के साथ, गतिविधि स्तर को बिना कसरत के रोजमर्रा जीवन सेट करें; मापी या अनुमानित सक्रिय कसरत कवर करती है ताकि वे उच्च PAL पर न जुड़ें।</string>
-    <string name="settings_calc_intro">आपके दैनिक कैलोरी और मैक्रो लक्ष्य AI द्वारा सेट किए जाते हैं। जब आप «लक्ष्य पुनर्गणना करें» टैप करते हैं, या अनुकूली लक्ष्य चालू होने पर सप्ताह में लगभग एक बार स्वचालित रूप से, Chompass आपका प्रोफ़ाइल, नीचे दिए संदर्भ समीकरण, हाल में लॉग किया खाना और वज़न प्रवृत्ति आपके AI प्रदाता को भेजता है। यह इन सहकर्मी-समीक्षित सूत्रों से शुरू होता है, फिर आपके डेटा के अनुसार उन्हें समायोजित कर आपका रखरखाव और लक्ष्य अनुमानित करता है।</string>
-    <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(किग्रा)\nLBM = वज़न × (1 − %वसा)</string>
+    <string name="settings_calc_home_gauge_used">होम डिस्प्ले आपको सक्रिय खर्च को लक्ष्य में जोड़ने, शुद्ध सेवन ट्रैक करने या खर्च संकेत दिखाने देता है। आपका गतिविधि स्तर अनुमान TDEE माइनस BMR है (PAL गुणक भाग)। "सक्रिय जोड़ें" और "दोहरा" Health Connect बंद होने पर वह अनुमान उपयोग करते हैं; "शुद्ध" के लिए मापा Health Connect खर्च आवश्यक है। "सक्रिय जोड़ें" आपके संग्रहीत लक्ष्य को गतिहीन आधार और आज की सक्रिय परत में विभाजित करता है ताकि गतिविधि दो बार न गिनी जाए। "सक्रिय जोड़ें" के साथ, गतिविधि स्तर को बिना कसरत के रोजमर्रा जीवन सेट करें; मापी या अनुमानित सक्रिय कसरत कवर करती है ताकि वे उच्च PAL पर न जुड़ें।</string>
+    <string name="settings_calc_intro">आपके दैनिक कैलोरी और मैक्रो लक्ष्य AI द्वारा सेट किए जाते हैं। जब आप "लक्ष्य पुनर्गणना करें" टैप करते हैं, या अनुकूली लक्ष्य चालू होने पर सप्ताह में लगभग एक बार स्वचालित रूप से, Chompass आपका प्रोफ़ाइल, नीचे दिए संदर्भ समीकरण, हाल में लॉग किया खाना और वज़न प्रवृत्ति आपके AI प्रदाता को भेजता है। यह इन सहकर्मी-समीक्षित सूत्रों से शुरू होता है, फिर आपके डेटा के अनुसार उन्हें समायोजित कर आपका रखरखाव और लक्ष्य अनुमानित करता है।</string>
+    <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(किग्रा)\nLBM = वज़न × (1 − %वसा)</string>
     <string name="settings_calc_katch_name">Katch-McArdle समीकरण</string>
     <string name="settings_calc_katch_used">जब आप शारीरिक वसा % दर्ज करते हैं तो स्वचालित रूप से उपयोग होता है। दुबले और एथलेटिक उपयोगकर्ताओं के लिए अधिक सटीक क्योंकि यह कुल वज़न के बजाय दुबले शरीर द्रव्यमान से BMR व्युत्पन्न करता है।</string>
     <string name="settings_calc_macro_split">मैक्रोन्यूट्रिएंट विभाजन</string>
@@ -1180,7 +1180,7 @@
     <string name="settings_calc_micro_name">प्रति-भोजन अनुमान</string>
     <string name="settings_calc_micro_used">प्रति भोजन लौटाए गए कैलोरी, मैक्रो, फाइबर, चीनी, संतृप्त वसा, कोलेस्ट्रॉल, सोडियम, पोटेशियम और अन्य सूक्ष्म पोषक मान आपके चुने हुए AI प्रदाता का उपयोग करके खाद्य छवि, वॉयस ट्रांसक्रिप्ट या टेक्स्ट विवरण से AI-जनित अनुमान हैं।</string>
     <string name="settings_calc_micro_values">सूक्ष्म पोषक मान</string>
-    <string name="settings_calc_mifflin_formula">पुरुष: 10×वज़न(किग्रा) + 6,25×ऊंचाई(सेमी) − 5×आयु + 5\nमहिलाएं: 10×वज़न(किग्रा) + 6,25×ऊंचाई(सेमी) − 5×आयु − 161</string>
+    <string name="settings_calc_mifflin_formula">पुरुष: 10×वज़न(किग्रा) + 6.25×ऊंचाई(सेमी) − 5×आयु + 5\nमहिलाएं: 10×वज़न(किग्रा) + 6.25×ऊंचाई(सेमी) − 5×आयु − 161</string>
     <string name="settings_calc_mifflin_name">Mifflin-St Jeor समीकरण</string>
     <string name="settings_calc_mifflin_used">विश्राम चयापचय के लिए डिफ़ॉल्ट सूत्र। जब आपने शारीरिक वसा % दर्ज नहीं किया हो तो उपयोग होता है।</string>
     <string name="settings_calc_sec_bmr">विश्राम चयापचय (BMR)</string>
@@ -1188,15 +1188,15 @@
     <string name="settings_calc_sec_forecast">वज़न प्रवृत्ति और अनुकूली लक्ष्य</string>
     <string name="settings_calc_sec_home_gauge">होम कैलोरी गेज</string>
     <string name="settings_calc_sec_tdee">दैनिक ऊर्जा व्यय (TDEE)</string>
-    <string name="settings_calc_split_formula">प्रोटीन: गतिविधि स्तर के अनुसार प्रति किग्रा ~0,8-2,2 ग्राम (वजन घटाते समय थोड़ा अधिक)\nवसा: प्रति किग्रा शरीर वज़न ~0,6 ग्राम\nकार्ब्स: शेष कैलोरी ÷ 4 किलो कैलोरी/ग्राम</string>
+    <string name="settings_calc_split_formula">प्रोटीन: गतिविधि स्तर के अनुसार प्रति किग्रा ~0.8-2.2 ग्राम (वजन घटाते समय थोड़ा अधिक)\nवसा: प्रति किग्रा शरीर वज़न ~0.6 ग्राम\nकार्ब्स: शेष कैलोरी ÷ 4 किलो कैलोरी/ग्राम</string>
     <string name="settings_calc_split_name">प्रोटीन, कार्ब्स और वसा लक्ष्य</string>
-    <string name="settings_calc_split_used">AI प्रोटीन, कार्ब्स और वसा को आपके कैलोरी टारगेट में फिट करता है, इन संदर्भों को मार्गदर्शक मानकर। प्रोटीन आपके गतिविधि स्तर के साथ बढ़ता है (और शारीरिक वसा %% सेट होने पर दुबले शरीर द्रव्यमान पर आधारित); वसा शरीर वज़न से; कार्ब्स शेष भरते हैं। आप कोई भी मान लॉक या सेटिंग्स में स्वयं संपादित कर सकते हैं।</string>
-    <string name="settings_calc_target_formula">1 पाउंड शारीरिक वसा ≈ 3500 किलो कैलोरी · 1 किग्रा ≈ 7700 किलो कैलोरी\nआपकी साप्ताहिक दर ÷ 7 रखरखाव से घटाई (घटाना) या जोड़ी (बढ़ाना) जाती है और दैनिक कैलोरी टारगेट सेट होता है।</string>
+    <string name="settings_calc_split_used">AI प्रोटीन, कार्ब्स और वसा को आपके कैलोरी लक्ष्य में फिट करता है, इन संदर्भों को मार्गदर्शक मानकर। प्रोटीन आपके गतिविधि स्तर के साथ बढ़ता है (और शारीरिक वसा %% सेट होने पर दुबले शरीर द्रव्यमान पर आधारित); वसा शरीर वज़न से; कार्ब्स शेष भरते हैं। आप कोई भी मान लॉक या सेटिंग्स में स्वयं संपादित कर सकते हैं।</string>
+    <string name="settings_calc_target_formula">1 पाउंड शारीरिक वसा ≈ 3500 किलो कैलोरी · 1 किग्रा ≈ 7700 किलो कैलोरी\nआपकी साप्ताहिक दर ÷ 7 रखरखाव से घटाई (घटाना) या जोड़ी (बढ़ाना) जाती है और दैनिक कैलोरी लक्ष्य सेट होता है।</string>
     <string name="settings_calc_target_name">रखरखाव और लक्ष्य समायोजन</string>
     <string name="settings_calc_target_used">रखरखाव आपके TDEE से शुरू होता है। ऊर्जा व्यय चालू होने पर, यह आपके मापे गए Health Connect खर्च (14-दिन सक्रिय + बेसल औसत) से शुरू होता है। AI आपके लॉग किए सेवन और वज़न प्रवृत्ति के विरुद्ध रखरखाव को परिष्कृत करता है, फिर आपका लक्ष्य लागू करता है: साप्ताहिक वज़न परिवर्तन दर दैनिक कैलोरी घाटा (घटाना) या अधिशेष (बढ़ाना) बन जाती है।</string>
-    <string name="settings_calc_tdee_formula">गतिहीन: 1,2 · हल्का: 1,375 · मध्यम: 1,465 · सक्रिय: 1,55 · बहुत सक्रिय: 1,725 · अति सक्रिय: 1,9</string>
+    <string name="settings_calc_tdee_formula">गतिहीन: 1.2 · हल्का: 1.375 · मध्यम: 1.465 · सक्रिय: 1.55 · बहुत सक्रिय: 1.725 · अति सक्रिय: 1.9</string>
     <string name="settings_calc_tdee_name">गतिविधि-गुणक विधि</string>
-    <string name="settings_calc_tdee_used">TDEE = BMR × गतिविधि गुणक। गुणक आपके चुने गतिविधि स्तर से मेल खाता है। मध्यम उन डेस्क-सक्रिय उपयोगकर्ताओं के लिए 1,465 (FAO/WHO हल्के 1,375 और मध्यम 1,55 के बीच) उपयोग करता है जो सप्ताह में कुछ बार व्यायाम करते हैं। यह वह रखरखाव आधार है जिससे AI शुरू होता है (जब तक ऊर्जा व्यय मापा मान न दे)।</string>
+    <string name="settings_calc_tdee_used">TDEE = BMR × गतिविधि गुणक। गुणक आपके चुने गतिविधि स्तर से मेल खाता है। मध्यम उन डेस्क-सक्रिय उपयोगकर्ताओं के लिए 1.465 (FAO/WHO हल्के 1.375 और मध्यम 1.55 के बीच) उपयोग करता है जो सप्ताह में कुछ बार व्यायाम करते हैं। यह वह रखरखाव आधार है जिससे AI शुरू होता है (जब तक ऊर्जा व्यय मापा मान न दे)।</string>
     <string name="settings_customize_progress">प्रगति अनुकूलित करें</string>
     <string name="settings_customize_progress_summary">%1$s · %2$s</string>
     <string name="settings_danger_zone">खतरे का क्षेत्र</string>
@@ -1358,13 +1358,13 @@
     <string name="settings_water_dynamic_goal_help">आपके वज़न, तापमान, गतिविधि और भोजन से पानी के अनुसार अनुकूलित होता है। कोई स्थान अनुमति नहीं। अपेक्षित अधिकतम मैन्युअल रूप से दर्ज करें।</string>
     <string name="settings_water_dynamic_preview">आज का लक्ष्य</string>
     <string name="settings_water_dynamic_preview_breakdown">%1$d मिली आधार × %2$s तापमान × %3$s गतिविधि − %4$d मिली भोजन</string>
-    <string name="settings_water_dynamic_warning_body">यह लक्ष्य सामान्य हाइड्रेशन दिशानिर्देशों से एक अनुमान है, कोई नुस्खा नहीं। हर कोई अलग है: आपकी वास्तविक आवश्यकता गुर्दे, दवा, स्वास्थ्य स्थितियों, पसीने, आर्द्रता और अधिक पर निर्भर करती है, इसलिए यह संख्या आपके लिए गलत हो सकती है। यदि आपको स्वास्थ्य स्थिति है या दवा लेते हैं, तो पीने की मात्रा बदलने से पहले डॉक्टर से पूछें। प्यास आपका सर्वश्रेष्ठ मार्गदर्शक है। जब आवश्यकता हो पिएं, भले ही «समय» न हुआ हो, और गर्म दिनों या व्यायाम के दौरान हमेशा पर्याप्त पिएं, चाहे ऐप याद दिलाए या नहीं।</string>
+    <string name="settings_water_dynamic_warning_body">यह लक्ष्य सामान्य हाइड्रेशन दिशानिर्देशों से एक अनुमान है, कोई नुस्खा नहीं। हर कोई अलग है: आपकी वास्तविक आवश्यकता गुर्दे, दवा, स्वास्थ्य स्थितियों, पसीने, आर्द्रता और अधिक पर निर्भर करती है, इसलिए यह संख्या आपके लिए गलत हो सकती है। यदि आपको स्वास्थ्य स्थिति है या दवा लेते हैं, तो पीने की मात्रा बदलने से पहले डॉक्टर से पूछें। प्यास आपका सर्वश्रेष्ठ मार्गदर्शक है। जब आवश्यकता हो पिएं, भले ही "समय" न हुआ हो, और गर्म दिनों या व्यायाम के दौरान हमेशा पर्याप्त पिएं, चाहे ऐप याद दिलाए या नहीं।</string>
     <string name="settings_water_dynamic_warning_title">बीटा · एक सुझाव, चिकित्सीय सलाह नहीं</string>
     <string name="settings_water_food_water">भोजन से पानी घटाएं</string>
     <string name="settings_water_food_water_help">मोटा अनुमान: आज लॉग किए भोजन वज़न का 60%, अधिकतम 1 लीटर।</string>
     <string name="settings_water_goal">दैनिक पानी लक्ष्य</string>
     <string name="settings_water_goal_summary">%1$d मिली</string>
-    <string name="settings_water_goal_wheel_help">50 से 10 000 मिली के बीच दैनिक लक्ष्य चुनने के लिए 50 मिली चरणों में स्क्रॉल करें।</string>
+    <string name="settings_water_goal_wheel_help">50 से 10,000 मिली के बीच दैनिक लक्ष्य चुनने के लिए 50 मिली चरणों में स्क्रॉल करें।</string>
     <string name="settings_water_intro">आप कितना पीते हैं ट्रैक करें, दैनिक लक्ष्य सेट करें, और इसे वज़न, मौसम और गतिविधि के अनुसार अनुकूलित होने दें।</string>
     <string name="settings_water_manual_temp">आज का अपेक्षित अधिकतम</string>
     <string name="settings_water_manual_temp_help">दैनिक लक्ष्य 25 °C से ऊपर बढ़ता है (+प्रति डिग्री 4%, अधिकतम +60%)। कोई स्थान अनुमति नहीं। मैन्युअल रूप से सेट करें।</string>
@@ -1529,7 +1529,7 @@
     <string name="widget_center_small_format">/ %1$d</string>
     <string name="widget_center_small_g_format">/ %1$dg</string>
     <string name="widget_fl_oz_left_format">%1$d fl oz शेष</string>
-    <string name="widget_kcal">किलो कैलोरी</string>
+    <string name="widget_kcal">kcal</string>
     <string name="widget_ml_left_format">%1$d मिली शेष</string>
     <string name="widget_unit_left_format">%1$s%2$s शेष</string>
     <string name="widget_water_description">आज की पानी प्रगति एक नज़र में देखें।</string>
