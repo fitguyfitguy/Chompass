@@ -308,6 +308,7 @@
     <string name="sheet_more_nutrition">Altri valori nutrizionali</string>
     <string name="sheet_name">Nome</string>
     <string name="sheet_quantity">Quantità</string>
+    <string name="sheet_unit">Unità</string>
     <string name="sheet_meal_type">Tipo di pasto</string>
     <string name="sheet_review_food">Rivedi cibo</string>
     <string name="sheet_edit_food">Modifica cibo</string>
@@ -1423,6 +1424,10 @@
     <string name="theme_color_teal">Verde acqua</string>
     <string name="unit_serving">porzione</string>
     <string name="unit_serving_plural">porzioni</string>
+    <string name="unit_cup">tazza</string>
+    <string name="unit_cup_plural">tazze</string>
+    <string name="unit_tbsp">cucch.</string>
+    <string name="unit_tsp">cucc.</string>
     <string name="vm_adaptive_on_message">Obiettivi adattivi attivi. Chompass controllerà una volta a settimana quando ci saranno abbastanza dati su cibo e peso.</string>
     <string name="vm_adaptive_updated">Aggiornato a %1$d kcal dai tuoi dati più recenti.</string>
     <string name="vm_goals_recalculated">Obiettivi ricalcolati</string>

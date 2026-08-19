@@ -307,6 +307,7 @@
     <string name="sheet_more_nutrition">Más nutrición</string>
     <string name="sheet_name">Nombre</string>
     <string name="sheet_quantity">Cantidad</string>
+    <string name="sheet_unit">Unidad</string>
     <string name="sheet_meal_type">Tipo de comida</string>
     <string name="sheet_review_food">Revisar alimento</string>
     <string name="sheet_edit_food">Editar alimento</string>
@@ -1585,6 +1586,10 @@
     <string name="unit_percent">%</string>
     <string name="unit_serving">ración</string>
     <string name="unit_serving_plural">raciones</string>
+    <string name="unit_cup">taza</string>
+    <string name="unit_cup_plural">tazas</string>
+    <string name="unit_tbsp">cda</string>
+    <string name="unit_tsp">cdta</string>
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="vm_adaptive_on_message">Los Objetivos adaptativos están activados. Chompass hará la comprobación una vez por semana cuando existan suficientes datos de comida y peso.</string>
 

@@ -59,6 +59,10 @@
     <string name="unit_ft_in">ft / in</string>
     <string name="unit_serving">porcja</string>
     <string name="unit_serving_plural">porcje</string>
+    <string name="unit_cup">filiżanka</string>
+    <string name="unit_cup_plural">filiżanki</string>
+    <string name="unit_tbsp">łyżka</string>
+    <string name="unit_tsp">łyżeczka</string>
     <string name="kcal_value_format">%1$s kcal</string>
     <string name="grams_value_format">%1$sg</string>
     <string name="grams_value_decimal_format">%1$sg</string>
@@ -549,6 +553,7 @@
     <string name="sheet_more_nutrition">Więcej wartości odżywczych</string>
     <string name="sheet_name">Nazwa</string>
     <string name="sheet_quantity">Ilość</string>
+    <string name="sheet_unit">Jednostka</string>
     <string name="sheet_meal_type">Typ posiłku</string>
     <string name="sheet_review_food">Przejrzyj produkt</string>
     <string name="sheet_edit_food">Edytuj produkt</string>

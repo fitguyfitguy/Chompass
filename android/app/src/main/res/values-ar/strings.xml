@@ -312,6 +312,7 @@
     <string name="sheet_more_nutrition">مزيد من التغذية</string>
     <string name="sheet_name">الاسم</string>
     <string name="sheet_quantity">الكمية</string>
+    <string name="sheet_unit">الوحدة</string>
     <string name="sheet_meal_type">نوع الوجبة</string>
     <string name="sheet_review_food">مراجعة الطعام</string>
     <string name="sheet_edit_food">تحرير الطعام</string>
@@ -1499,6 +1500,10 @@
     <string name="theme_color_teal">تركوازي</string>
     <string name="unit_serving">حصة</string>
     <string name="unit_serving_plural">حصص</string>
+    <string name="unit_cup">كوب</string>
+    <string name="unit_cup_plural">أكواب</string>
+    <string name="unit_tbsp">ملعقة ك.</string>
+    <string name="unit_tsp">ملعقة ص.</string>
     <string name="vm_adaptive_on_message">الأهداف التكيفية مفعّلة. سيتحقق Chompass مرة أسبوعيًا بعد توفر بيانات كافية عن الطعام والوزن.</string>
     <string name="vm_adaptive_updated">حُدّث إلى %1$d سعرة من أحدث بياناتك.</string>
     <string name="vm_goals_recalculated">تمت إعادة حساب الأهداف</string>

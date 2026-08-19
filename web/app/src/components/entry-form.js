@@ -31,6 +31,14 @@ import { ANALYSIS_PHASE, isAbortError } from "../lib/ai/analysis-phase.js";
 // never triggers it. See demo/demo-main.js.
 import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
 import { t } from "../lib/i18n/index.js";
+
+function culinaryUnitLabels() {
+  return {
+    cup: [t("unit.cup"), t("unit.cup_plural")],
+    tbsp: [t("unit.tbsp"), t("unit.tbsp")],
+    tsp: [t("unit.tsp"), t("unit.tsp")],
+  };
+}
 import {
   addToProgressiveMeal,
   hasProgressiveMealItems,
@@ -304,7 +312,7 @@ export class EntryForm extends HTMLElement {
                   ${picker
                     .map((opt) => {
                       const id = optionId(opt);
-                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null, servingLabel, servingPluralLabel);
+                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null, servingLabel, servingPluralLabel, culinaryUnitLabels());
                       return `<option value="${escapeAttr(id)}" ${id === this.selectedServingUnit ? "selected" : ""}>${escapeHtml(label)}</option>`;
                     })
                     .join("")}
@@ -529,7 +537,7 @@ export class EntryForm extends HTMLElement {
                 ${picker
                   .map((opt) => {
                     const id = optionId(opt);
-                    const label = displayUnit(opt, id === unitId ? qty : null, servingLabel, servingPluralLabel);
+                    const label = displayUnit(opt, id === unitId ? qty : null, servingLabel, servingPluralLabel, culinaryUnitLabels());
                     return `<option value="${escapeAttr(id)}" ${id === unitId ? "selected" : ""}>${escapeHtml(label)}</option>`;
                   })
                   .join("")}

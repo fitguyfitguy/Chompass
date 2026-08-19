@@ -307,6 +307,7 @@
     <string name="sheet_more_nutrition">Mais nutrição</string>
     <string name="sheet_name">Nome</string>
     <string name="sheet_quantity">Quantidade</string>
+    <string name="sheet_unit">Unidade</string>
     <string name="sheet_meal_type">Tipo de refeição</string>
     <string name="sheet_review_food">Revisar alimento</string>
     <string name="sheet_edit_food">Editar alimento</string>
@@ -1496,6 +1497,10 @@
     <string name="theme_color_teal">Azul-petróleo</string>
     <string name="unit_serving">porção</string>
     <string name="unit_serving_plural">porções</string>
+    <string name="unit_cup">xícara</string>
+    <string name="unit_cup_plural">xícaras</string>
+    <string name="unit_tbsp">col.</string>
+    <string name="unit_tsp">c.chá</string>
     <string name="vm_adaptive_on_message">As metas adaptativas estão ativas. O Chompass verificará uma vez por semana quando houver dados suficientes de comida e peso.</string>
     <string name="vm_adaptive_updated">Atualizado para %1$d kcal com seus dados mais recentes.</string>
     <string name="vm_goals_recalculated">Metas recalculadas</string>

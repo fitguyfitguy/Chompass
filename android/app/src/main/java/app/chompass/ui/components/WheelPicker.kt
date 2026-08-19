@@ -637,6 +637,14 @@ fun ExpandableMacroPicker(
     }
 }
 
+/** Localized cup / tbsp / tsp labels for [ServingUnitOption.displayUnit]. */
+@Composable
+fun culinaryUnitLabels(): Map<String, Pair<String, String>> = mapOf(
+    "cup" to (stringResource(R.string.unit_cup) to stringResource(R.string.unit_cup_plural)),
+    "tbsp" to (stringResource(R.string.unit_tbsp) to stringResource(R.string.unit_tbsp)),
+    "tsp" to (stringResource(R.string.unit_tsp) to stringResource(R.string.unit_tsp)),
+)
+
 /**
  * Always-visible unit wheel (g, serving, slice, …). No summary chrome — the
  * serving card already names Quantity. Pass [showSelectionHighlight] false
@@ -656,11 +664,12 @@ fun UnitWheelPicker(
     }
     val servingLabel = stringResource(R.string.unit_serving)
     val servingPluralLabel = stringResource(R.string.unit_serving_plural)
+    val culinaryLabels = culinaryUnitLabels()
     WheelPicker(
         items = pickerOptions,
         selected = selectedOption,
         onSelect = { onSelect(it.id) },
-        label = { it.displayUnit(null, servingLabel, servingPluralLabel) },
+        label = { it.displayUnit(null, servingLabel, servingPluralLabel, culinaryLabels) },
         modifier = modifier,
         showSelectionHighlight = showSelectionHighlight,
     )

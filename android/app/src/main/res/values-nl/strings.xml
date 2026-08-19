@@ -296,6 +296,7 @@
     <string name="sheet_more_nutrition">Meer voeding</string>
     <string name="sheet_name">Naam</string>
     <string name="sheet_quantity">Aantal</string>
+    <string name="sheet_unit">Eenheid</string>
     <string name="sheet_meal_type">Maaltijdtype</string>
     <string name="sheet_review_food">Eten beoordelen</string>
     <string name="sheet_edit_food">Eten bewerken</string>
@@ -1482,6 +1483,10 @@
     <string name="theme_color_teal">Teal</string>
     <string name="unit_serving">portie</string>
     <string name="unit_serving_plural">porties</string>
+    <string name="unit_cup">kop</string>
+    <string name="unit_cup_plural">koppen</string>
+    <string name="unit_tbsp">el</string>
+    <string name="unit_tsp">tl</string>
     <string name="vm_adaptive_on_message">Adaptieve doelen staan aan. Chompass controleert één keer per week zodra er genoeg voedings- en gewichtsgegevens zijn.</string>
     <string name="vm_adaptive_updated">Bijgewerkt naar %1$d kcal op basis van je laatste gegevens.</string>
     <string name="vm_goals_recalculated">Doelen herberekend</string>

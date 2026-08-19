@@ -39,14 +39,21 @@ data class ServingUnitOption(
         quantity: Double?,
         servingLabel: String? = null,
         servingPluralLabel: String? = null,
+        culinaryLabels: Map<String, Pair<String, String>> = emptyMap(),
     ): String {
+        val singular = quantity == null || kotlin.math.abs(quantity - 1.0) <= 0.0001
+        val culinaryKey = culinaryUnitKey(normalizedUnit)
+        if (culinaryKey != null) {
+            culinaryLabels[culinaryKey]?.let { (label, plural) ->
+                return if (singular) label else plural
+            }
+        }
         // App-generated "serving" option (OFF barcode / AI fallback): the raw
         // unit string is English, so the UI passes the localized label(s).
         if (normalizedUnit in SERVING_UNITS && servingLabel != null) {
-            val singular = quantity == null || kotlin.math.abs(quantity - 1.0) <= 0.0001
             return if (singular) servingLabel else (servingPluralLabel ?: servingLabel)
         }
-        if (quantity == null || kotlin.math.abs(quantity - 1.0) <= 0.0001) return unit
+        if (singular) return unit
         return when (normalizedUnit) {
             "g", "gram", "grams", "kg", "mg", "ml", "l", "oz", "fl oz", "tbsp", "tsp" -> unit
             "piece" -> "pieces"
@@ -57,6 +64,14 @@ data class ServingUnitOption(
     companion object {
         /** App-generated "serving" unit ids (OFF barcode lookup / AI fallback). */
         private val SERVING_UNITS = setOf("serving", "servings")
+
+        /** Canonical key for a known English culinary unit (and common aliases). */
+        fun culinaryUnitKey(normalizedUnit: String): String? = when (normalizedUnit) {
+            "cup", "cups", "c" -> "cup"
+            "tbsp", "tblsp", "tablespoon", "tablespoons" -> "tbsp"
+            "tsp", "teaspoon", "teaspoons" -> "tsp"
+            else -> null
+        }
 
         val grams = ServingUnitOption(unit = "g", gramsPerUnit = 1.0)
 

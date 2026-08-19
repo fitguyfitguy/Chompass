@@ -37,7 +37,6 @@ import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WidgetSnapshot
 import app.chompass.ui.util.clockTimePattern
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -124,11 +123,8 @@ private fun WaterProgressContent(context: Context, snapshot: WidgetSnapshot) {
         val time = fireZone.format(
             DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault()),
         )
-        if (fireZone.toLocalDate().isAfter(LocalDate.now())) {
-            context.getString(R.string.home_water_next_tomorrow, amount, time)
-        } else {
-            context.getString(R.string.home_water_next, amount, time)
-        }
+        // Widget line is tight: amount and time only (Codeberg #3).
+        "$amount · $time"
     }
 
     Column(modifier = GlanceModifier.fillMaxSize()) {

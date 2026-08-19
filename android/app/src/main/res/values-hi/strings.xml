@@ -312,6 +312,7 @@
     <string name="sheet_more_nutrition">अधिक पोषण</string>
     <string name="sheet_name">नाम</string>
     <string name="sheet_quantity">मात्रा</string>
+    <string name="sheet_unit">इकाई</string>
     <string name="sheet_meal_type">भोजन का प्रकार</string>
     <string name="sheet_review_food">भोजन समीक्षा करें</string>
     <string name="sheet_edit_food">भोजन संपादित करें</string>
@@ -1499,6 +1500,10 @@
     <string name="theme_color_teal">टील</string>
     <string name="unit_serving">सर्विंग</string>
     <string name="unit_serving_plural">सर्विंग</string>
+    <string name="unit_cup">कप</string>
+    <string name="unit_cup_plural">कप</string>
+    <string name="unit_tbsp">बड़ा चम्मच</string>
+    <string name="unit_tsp">छोटा चम्मच</string>
     <string name="vm_adaptive_on_message">अनुकूली लक्ष्य चालू हैं। पर्याप्त भोजन और वज़न डेटा होने पर Chompass सप्ताह में एक बार जांचेगा।</string>
     <string name="vm_adaptive_updated">आपके नवीनतम डेटा से %1$d किलो कैलोरी पर अपडेट हुआ।</string>
     <string name="vm_goals_recalculated">लक्ष्य पुनर्गणित</string>
