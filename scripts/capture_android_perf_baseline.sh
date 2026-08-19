@@ -15,19 +15,32 @@ OUT_DIR="android/build/perf-baseline/${STAMP}"
 HOME_SETTLE_SECONDS="${HOME_SETTLE_SECONDS:-4}"
 PROGRESS_SETTLE_SECONDS="${PROGRESS_SETTLE_SECONDS:-4}"
 TAB_SETTLE_SECONDS="${TAB_SETTLE_SECONDS:-2}"
-TAB_Y="${TAB_Y:-2210}"
+TAB_Y="${TAB_Y:-2256}"
 HOME_TAB_X="${HOME_TAB_X:-135}"
-PROGRESS_TAB_X="${PROGRESS_TAB_X:-540}"
+PROGRESS_TAB_X="${PROGRESS_TAB_X:-405}"
 COACH_TAB_X="${COACH_TAB_X:-675}"
 SETTINGS_TAB_X="${SETTINGS_TAB_X:-945}"
 PROGRESS_TAB_Y="${PROGRESS_TAB_Y:-${TAB_Y}}"
-SETTINGS_FOOD_Y="${SETTINGS_FOOD_Y:-620}"
-SETTINGS_WATER_Y="${SETTINGS_WATER_Y:-720}"
-SETTINGS_GOALS_Y="${SETTINGS_GOALS_Y:-420}"
-PROGRESS_DEEP_LINK="${PROGRESS_DEEP_LINK:-}"
+# Pixel 9a 1080-wide: 6 Progress range chips (1W 1M 3M 6M 1Y All).
+RANGE_CHIP_Y="${RANGE_CHIP_Y:-257}"
+RANGE_CHIP_XS="${RANGE_CHIP_XS:-116 285 454 623 792 961}"
+RANGE_CHIP_IDS="${RANGE_CHIP_IDS:-1W 1M 3M 6M 1Y All}"
+# Home "+" FAB, above the docked tab bar.
+ADD_FOOD_FAB_X="${ADD_FOOD_FAB_X:-960}"
+ADD_FOOD_FAB_Y="${ADD_FOOD_FAB_Y:-2060}"
+# First quick-relog chip in the Add Food sheet (approx, 1080-wide).
+RELOG_CHIP_X="${RELOG_CHIP_X:-180}"
+RELOG_CHIP_Y="${RELOG_CHIP_Y:-980}"
+PROGRESS_DEEP_LINK="${PROGRESS_DEEP_LINK:-chompass://go/progress}"
 PROGRESS_LOG_TAIL_LINES="${PROGRESS_LOG_TAIL_LINES:-2000}"
 
 mkdir -p "${OUT_DIR}"
+
+go_nav() {
+  local dest="$1"
+  "${ADB_BIN}" shell am start -W -n "${ACTIVITY}" -d "chompass://go/${dest}" \
+    > "${OUT_DIR}/start_go_${dest//\//_}.txt"
+}
 
 echo "Using package: ${PACKAGE}"
 echo "Using adb: ${ADB_BIN}"
@@ -74,18 +87,14 @@ if [ -n "${APP_PID}" ]; then
   "${ADB_BIN}" logcat -d --pid="${APP_PID}" > "${OUT_DIR}/logcat_app.txt" || true
 fi
 
-echo "Collecting Progress-screen perf captures..."
+echo "Collecting Progress-screen perf captures (chompass://go/progress)..."
 "${ADB_BIN}" shell am force-stop "${PACKAGE}"
 "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
 "${ADB_BIN}" logcat -c
 "${ADB_BIN}" shell am start -W -n "${ACTIVITY}" > "${OUT_DIR}/start_progress_nav.txt"
 sleep "${HOME_SETTLE_SECONDS}"
-if [ -n "${PROGRESS_DEEP_LINK}" ]; then
-  "${ADB_BIN}" shell am start -W -a android.intent.action.VIEW -d "${PROGRESS_DEEP_LINK}" "${PACKAGE}" \
-    > "${OUT_DIR}/start_progress_deeplink.txt"
-else
-  "${ADB_BIN}" shell input tap "${PROGRESS_TAB_X}" "${PROGRESS_TAB_Y}"
-fi
+"${ADB_BIN}" shell am start -W -n "${ACTIVITY}" -d "${PROGRESS_DEEP_LINK}" \
+  > "${OUT_DIR}/start_progress_deeplink.txt"
 sleep "${PROGRESS_SETTLE_SECONDS}"
 "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_progress.txt"
 "${ADB_BIN}" shell dumpsys meminfo "${PACKAGE}" > "${OUT_DIR}/meminfo_progress.txt"
@@ -94,37 +103,59 @@ if [ -n "${PROGRESS_PID}" ]; then
   "${ADB_BIN}" logcat -d -t "${PROGRESS_LOG_TAIL_LINES}" --pid="${PROGRESS_PID}" > "${OUT_DIR}/logcat_progress.txt" || true
 fi
 
-echo "Collecting tab-switch framestats (Home → Progress → Coach → Settings → Home)..."
+echo "Collecting Progress range-chip hops (1W → All)..."
+# shellcheck disable=SC2206
+RANGE_XS=(${RANGE_CHIP_XS})
+RANGE_IDS=(${RANGE_CHIP_IDS})
+for i in "${!RANGE_XS[@]}"; do
+  id="${RANGE_IDS[$i]}"
+  x="${RANGE_XS[$i]}"
+  "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
+  "${ADB_BIN}" logcat -c
+  "${ADB_BIN}" shell input tap "${x}" "${RANGE_CHIP_Y}"
+  sleep "${TAB_SETTLE_SECONDS}"
+  "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_range_${id}.txt"
+  if [ -n "${PROGRESS_PID}" ]; then
+    "${ADB_BIN}" logcat -d -s FudAIPerf --pid="${PROGRESS_PID}" > "${OUT_DIR}/logcat_range_${id}.txt" || true
+  fi
+done
+"${ADB_BIN}" shell dumpsys meminfo "${PACKAGE}" > "${OUT_DIR}/meminfo_progress_all.txt"
+
+echo "Collecting tab-switch framestats via chompass://go (Home → Progress → Coach → Settings → Home)..."
 "${ADB_BIN}" shell am force-stop "${PACKAGE}"
 "${ADB_BIN}" shell am start -W -n "${ACTIVITY}" > "${OUT_DIR}/start_tab_loop.txt"
 sleep "${HOME_SETTLE_SECONDS}"
 for hop in progress coach settings home; do
   "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
-  case "${hop}" in
-    progress) "${ADB_BIN}" shell input tap "${PROGRESS_TAB_X}" "${TAB_Y}" ;;
-    coach) "${ADB_BIN}" shell input tap "${COACH_TAB_X}" "${TAB_Y}" ;;
-    settings) "${ADB_BIN}" shell input tap "${SETTINGS_TAB_X}" "${TAB_Y}" ;;
-    home) "${ADB_BIN}" shell input tap "${HOME_TAB_X}" "${TAB_Y}" ;;
-  esac
+  go_nav "${hop}"
   sleep "${TAB_SETTLE_SECONDS}"
   "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_tab_${hop}.txt"
 done
 
-echo "Collecting Settings sub-screen hops (Food / Water / Goals)..."
-"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
-"${ADB_BIN}" shell input tap "${SETTINGS_TAB_X}" "${TAB_Y}"
-sleep "${TAB_SETTLE_SECONDS}"
-for hop in food water goals; do
+echo "Collecting Settings sub-screen hops via chompass://go..."
+for hop in settings/food settings/goals; do
+  slug="${hop##*/}"
   "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
-  case "${hop}" in
-    food) "${ADB_BIN}" shell input tap 540 "${SETTINGS_FOOD_Y}" ;;
-    water) "${ADB_BIN}" shell input tap 540 "${SETTINGS_WATER_Y}" ;;
-    goals) "${ADB_BIN}" shell input tap 540 "${SETTINGS_GOALS_Y}" ;;
-  esac
+  go_nav "${hop}"
   sleep "${TAB_SETTLE_SECONDS}"
-  "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_settings_${hop}.txt"
-  "${ADB_BIN}" shell input keyevent 4
-  sleep 1
+  "${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_settings_${slug}.txt"
 done
+
+echo "Collecting Add Food hub + quick-relog open..."
+go_nav home
+sleep "${TAB_SETTLE_SECONDS}"
+"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
+"${ADB_BIN}" logcat -c
+"${ADB_BIN}" shell input tap "${ADD_FOOD_FAB_X}" "${ADD_FOOD_FAB_Y}"
+sleep "${TAB_SETTLE_SECONDS}"
+"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_add_food.txt"
+HUB_PID="$("${ADB_BIN}" shell pidof -s "${PACKAGE}" 2>/dev/null | tr -d '\r')"
+if [ -n "${HUB_PID}" ]; then
+  "${ADB_BIN}" logcat -d -s FudAIPerf --pid="${HUB_PID}" > "${OUT_DIR}/logcat_add_food.txt" || true
+fi
+"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" reset >/dev/null 2>&1 || true
+"${ADB_BIN}" shell input tap "${RELOG_CHIP_X}" "${RELOG_CHIP_Y}"
+sleep 1
+"${ADB_BIN}" shell dumpsys gfxinfo "${PACKAGE}" framestats > "${OUT_DIR}/gfx_framestats_relog_chip.txt"
 
 echo "Done. Review files under ${OUT_DIR}"
