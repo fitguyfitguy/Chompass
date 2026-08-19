@@ -30,6 +30,19 @@ internal suspend fun PreferencesStore.setAiFeaturesEnabledImpl(v: Boolean) {
     }
 
 // -- AI Provider selection --------------------------------------------
+
+/**
+ * Release cleartext opt-in (issue #8 follow-up, design doc D2 Option B):
+ * [app.chompass.services.ai.AiHttp.assertCleartextAllowed] rejects http:// URLs for
+ * non-loopback hosts unless this is on. Default OFF — https stays the default path.
+ */
+internal val PreferencesStore.allowInsecureHttpImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.ALLOW_INSECURE_HTTP] ?: false
+    }
+internal suspend fun PreferencesStore.setAllowInsecureHttpImpl(v: Boolean) {
+        dataStore.edit { it[Keys.ALLOW_INSECURE_HTTP] = v }
+    }
+
 internal val PreferencesStore.selectedAIProviderImpl: Flow<AIProvider> get() = dataStore.data.map {
         val raw = it[Keys.SELECTED_AI_PROVIDER]
         AIProvider.values().firstOrNull { p -> p.name == raw } ?: AIProvider.GEMINI

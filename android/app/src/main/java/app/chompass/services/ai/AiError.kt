@@ -20,8 +20,11 @@ sealed class AiError(
     object Disabled : AiError("AI features are turned off in Settings → AI & Speech.", messageRes = R.string.ai_error_disabled)
     object ImageConversionFailed : AiError("Failed to process the image.", messageRes = R.string.ai_error_image_conversion_failed)
     class Network(cause: Throwable) : AiError(
-        "Network error: ${cause.localizedMessage}",
-        messageRes = R.string.ai_error_network_format,
+        connectionFailureMessage(cause),
+        // Connection failures that map to an actionable hint (cleartext gate,
+        // untrusted cert) show the English hint verbatim; everything else keeps
+        // the localized generic network message.
+        messageRes = if (connectionFailureHint(cause) != null) 0 else R.string.ai_error_network_format,
         formatArgs = arrayOf(cause.localizedMessage.orEmpty()),
     )
     object InvalidResponse : AiError("Could not understand the AI response. Please try again.", messageRes = R.string.ai_error_invalid_response)
@@ -31,6 +34,11 @@ sealed class AiError(
     )
     class Api(raw: String, @StringRes messageRes: Int = 0) : AiError(raw, messageRes = messageRes)
     class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.", messageRes = R.string.ai_error_invalid_url)
+    /** Issue #8 follow-up: user-entered http:// URL with the "Allow insecure HTTP" toggle off. */
+    object InsecureHttpBlocked : AiError(
+        "Insecure HTTP is blocked. Turn on \"Allow insecure HTTP\" in Settings → AI & Speech, or use an https:// URL.",
+        messageRes = R.string.ai_error_insecure_http_blocked,
+    )
     object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.", messageRes = R.string.ai_error_on_device_model_not_downloaded)
     object OnDeviceUnsupportedDevice : AiError("This device doesn't meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_unsupported_device)
     object OnDeviceLowMemory : AiError("Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_low_memory)
@@ -116,25 +124,29 @@ private fun modelNotFoundMarker(raw: String): Boolean =
 
 /**
  * Maps common connection failures on custom endpoints to actionable hints instead of raw
- * platform exceptions. Cleartext is blocked by the release network-security-config
- * ("CLEARTEXT communication … not permitted by network security policy", OkHttp
+ * platform exceptions. Cleartext is gated by [AiHttp.assertCleartextAllowed] ("CLEARTEXT
+ * communication … not permitted by network security policy", OkHttp
  * [java.net.UnknownServiceException]); untrusted self-signed certs surface as
  * [java.security.cert.CertPathValidatorException] wrapped in an SSLHandshakeException.
  */
-internal fun connectionFailureMessage(cause: Throwable): String {
+internal fun connectionFailureMessage(cause: Throwable): String =
+    connectionFailureHint(cause) ?: "Network error: ${cause.localizedMessage}"
+
+/** Returns the actionable hint for [cause] (walking the cause chain), or null when generic. */
+internal fun connectionFailureHint(cause: Throwable): String? {
     var t: Throwable? = cause
     while (t != null) {
         val message = t.message.orEmpty()
         when {
             message.contains("CLEARTEXT communication", ignoreCase = true) ||
                 message.contains("not permitted by network security policy", ignoreCase = true) ->
-                return "Cleartext HTTP is blocked in the release build. Use https:// for custom endpoints — a certificate you install on this phone is trusted — or use the debug build for plain http."
+                return "Cleartext HTTP is blocked. Turn on \"Allow insecure HTTP\" in Settings → AI & Speech for plain-http endpoints, or use https:// — a certificate you install on this phone is trusted for custom and Ollama endpoints."
 
             t is java.security.cert.CertPathValidatorException ||
                 message.contains("Trust anchor", ignoreCase = true) ->
-                return "The server's certificate isn't trusted. Install its CA certificate on this phone (Settings → Security → Install a certificate) and restart the app; custom endpoints trust your installed certificates."
+                return "The server's certificate isn't trusted. Install its CA certificate on this phone (Settings → Security → Install a certificate) and restart the app; custom and Ollama endpoints trust your installed certificates."
         }
         t = t.cause
     }
-    return "Network error: ${cause.localizedMessage}"
+    return null
 }

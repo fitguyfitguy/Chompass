@@ -1080,6 +1080,7 @@ class FoodAnalysisService(
             return OnDeviceLlmDispatchClient.analyze(gateway, prompt, imageBytesList)
         }
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
+        AiHttp.assertCleartextAllowed(baseUrl, prefs?.allowInsecureHttp?.first() ?: false)
         val sanitizedKey = AiHttp.sanitizeApiKey(apiKey)
         if (provider.requiresApiKey && sanitizedKey.isNullOrEmpty()) throw AiError.NoApiKey
         val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)

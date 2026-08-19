@@ -8,6 +8,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Local AI endpoints over plain HTTP** (Android): an Allow insecure HTTP switch in Settings → AI &amp; Speech lets custom and Ollama endpoints use http:// URLs in release builds, for example on a home network. Off by default; cloud providers always use https. Closes Codeberg [#8](https://codeberg.org/fitguy/Chompass/issues/8) follow-ups by [@ARR8](https://codeberg.org/ARR8).
+- **Ollama endpoints trust certificates you install** (Android): custom endpoints already did; remote Ollama servers with your own CA now connect the same way.
+- **Clearer local-endpoint errors** (Android): blocked plain HTTP and untrusted certificates now explain what to do (turn on Allow insecure HTTP, or install the CA on the phone) instead of showing a raw network error.
 - **Polish and Turkish language packs** (Android + web): Chompass now speaks 18 languages. Polish and Turkish cover the full Android app, from onboarding through the diary, coach, widgets, and safety notices, plus the web app's core screens. Choose them in Settings → App & Display → Language (Android) or App & Display → Language (web).
 
 ## [3.20.0] - 2026-08-19
