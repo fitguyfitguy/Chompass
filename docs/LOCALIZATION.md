@@ -137,10 +137,13 @@ screenshot references if the labels changed.
 |--------|------------------|------------------------|
 | en | complete | complete (source) |
 | de, pl, tr | complete | complete, style-reviewed (full packs) |
-| ru | complete | **complete** (0 missing, cap 0); style review pending |
-| uk | complete | **complete** (0 missing, incl. 4-form plurals) |
-| es, fr | complete | complete (0 missing) |
-| ar, az, hi, it, ja, ko, nl, pt-BR, ro, zh-CN | complete | **complete** (0 missing each; caps 0) |
+| ru | complete | **reviewed** (re-voiced вы→ты) |
+| uk | complete | **reviewed** (re-voiced ви→ти; 4-form plurals) |
+| az | complete | **reviewed** (re-voiced siz→sən) |
+| it, es, nl, pt-BR, ro | complete | **reviewed** (informal kept) |
+| hi, ja, ko, zh-CN | complete | **reviewed** (hi आप, ja polite, ko 해요체, zh neutral) |
+| ar | complete | **reviewed** (MSA; device RTL pass remaining) |
+| fr | complete | complete (vous kept; not in the native-review program) |
 
 Status as of 2026-08: **all 18 Android packs have 0 missing keys, 0
 verbatim EN copies, empty compact fallback lists, and `maxMissing` caps of
@@ -148,11 +151,11 @@ verbatim EN copies, empty compact fallback lists, and `maxMissing` caps of
 second-phase sweep also fixed the checker to count `<plurals>` keys, so the
 reported numbers include both `<string>` and `<plurals>`.
 
-Remaining before a locale can be claimed *reviewed* (not just translated):
-- **Native read** of each pack (the honest quality gate; community or
-  arranged reviewer per the de-merge pattern).
-- **ar**: device RTL render pass at max font scale (the only RTL pack).
-- ru: decide the formal-вы vs informal-ты voice question with a reviewer.
+Native reads of the broadened packs shipped 2026-08. Remaining:
+- **ar**: one hardware RTL check at max font scale (Home متبقي 91,5g,
+  macro chips, widgets, voice hint, formula screen). The text/RTL audit
+  was static only.
+- **fr**: not in this program. Keep vous.
 
 Second phase: all locale files were swept for verbatim EN copies: they were
 translated (ru) or removed so they fall back to EN honestly (all other packs),
