@@ -114,7 +114,7 @@ SEED=0 scripts/perf_entry_benchmark.sh   # benchmark only, no data seeding
 ```
 
 It force-stops and cold-launches MainActivity with all extras in one intent:
-`seed_test_data` / `seed_body_metrics` / `seed_keto_settings` populate the app,
+`seed_full` (or the older `seed_test_data` / `seed_body_metrics` / `seed_keto_settings` trio) populate the app,
 and `run_entry_benchmark` + `benchmark_count` drive
 `EntryPerfBenchmark.run(...)`, which calls `FoodAnalysisService.analyzeText` and
 persists via `FoodRepository.addEntry` for each sample, so every phase
