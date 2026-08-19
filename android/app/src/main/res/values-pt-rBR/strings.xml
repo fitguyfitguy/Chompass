@@ -126,9 +126,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">Voltar</string>
     <string name="onboarding_logo_description">Logotipo do Chompass</string>
-    <string name="onboarding_welcome_line1">Coma com inteligência,</string>
-    <string name="onboarding_welcome_line2">Viva melhor</string>
-    <string name="onboarding_welcome_subtitle">Basta tirar foto, registrar e prosperar.\nSua nutrição, simplificada.</string>
+    <string name="onboarding_welcome_line1">Registre refeições,</string>
+    <string name="onboarding_welcome_line2">Mantenha o equilíbrio</string>
+    <string name="onboarding_welcome_subtitle">Registre refeições com foto, voz ou texto.\nSua nutrição, num relance.</string>
 
     <string name="onboarding_gender_title">Qual é o seu sexo?</string>
     <string name="onboarding_gender_subtitle">Isso nos ajuda a calcular seu metabolismo</string>
@@ -415,8 +415,8 @@
 
     <string name="progress_log_weight_title">Registrar peso</string>
 
-    <string name="progress_goal_reached_title">Parabéns! 🎉</string>
-    <string name="progress_goal_reached_message">Você atingiu seu peso-meta! Vá até Ajustes para mudar sua meta e toque em Recalcular metas para atualizar seus alvos.</string>
+    <string name="progress_goal_reached_title">Meta atingida 🎉</string>
+    <string name="progress_goal_reached_message">Você atingiu seu peso-meta. Vá até Ajustes para mudar sua meta e toque em Recalcular metas para atualizar seus alvos.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">Informações pessoais</string>
@@ -507,8 +507,8 @@
     <string name="sheet_model">Modelo</string>
     <string name="sheet_model_footer">Ou digite o ID de qualquer modelo personalizado abaixo.</string>
     <string name="sheet_any_model_id">ID de qualquer modelo</string>
-    <string name="sheet_api_key_format">Chave de API - %1$s</string>
-    <string name="sheet_speech_api_key_format">Chave de API de voz - %1$s</string>
+    <string name="sheet_api_key_format">Chave de API: %1$s</string>
+    <string name="sheet_speech_api_key_format">Chave de API de voz: %1$s</string>
     <string name="sheet_speech_engine">Mecanismo de voz</string>
     <string name="sheet_gender">Sexo</string>
     <string name="sheet_activity_level">Nível de atividade</string>
@@ -542,7 +542,7 @@
     <string name="about_privacy">Política de privacidade</string>
     <string name="about_made_by">Chompass por fitguy</string>
     <string name="about_with_care">Baseado em Fud AI de Apoorv Darshan</string>
-    <string name="about_share_message">Eu acompanho minhas refeições com o Chompass - tire uma foto, fale ou digite, e a IA registra as calorias. É grátis, código aberto, e seus dados ficam no seu dispositivo.\n\nBaixar: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">Eu acompanho minhas refeições com o Chompass, um fork sem anúncios do Fud AI. Tire uma foto, fale ou digite, e a IA registra as calorias. Código aberto, e seus dados ficam no seu dispositivo.\n\nFonte: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Compartilhar Chompass</string>
 
     <!-- Notifications -->
@@ -553,7 +553,7 @@
     <string name="notif_channel_weight_goal">Meta de peso</string>
     <string name="notif_channel_weight_goal_desc">Comemoração quando você atinge seu peso-meta.</string>
     <string name="notif_streak_title">Não esqueça de registrar suas refeições</string>
-    <string name="notif_streak_text">Mantenha sua sequência - registre algo de hoje.</string>
+    <string name="notif_streak_text">Mantenha sua sequência. Registre algo de hoje.</string>
     <string name="notif_summary_title">O resumo de hoje está pronto</string>
     <string name="notif_summary_text">Toque para ver como ficaram seus macros hoje.</string>
 
@@ -573,31 +573,31 @@
     <string name="notif_body_fat_log_title">Check-in de gordura corporal</string>
     <string name="notif_body_fat_log_text">Registre sua gordura corporal de hoje para acompanhar a tendência de composição.</string>
     <string name="saved_meals_search_placeholder">Buscar refeições salvas</string>
-    <string name="saved_meals_no_match">Nenhuma refeição correspondente</string>
+    <string name="saved_meals_no_match">Nenhum alimento correspondente</string>
     <string name="settings_section_custom_instructions">Instruções de IA personalizadas</string>
     <string name="settings_custom_instructions_placeholder">Ex.: moro na Alemanha, considere porções europeias, prefiro as marcas ALDI/REWE. Estou em fase de cutting no fisiculturismo.</string>
-    <string name="settings_custom_instructions_footer">Contexto opcional enviado em cada solicitação de IA - região, dieta, objetivos atléticos, qualquer coisa que você repetiria toda vez. Deixe vazio para desativar.</string>
+    <string name="settings_custom_instructions_footer">Contexto opcional enviado em cada solicitação de IA: região, dieta, objetivos atléticos, qualquer coisa que você repetiria toda vez. Deixe vazio para desativar.</string>
     <string name="settings_save">Salvar</string>
     <string name="settings_saved">Salvo</string>
     <string name="settings_section_fallback">Provedor de fallback</string>
     <string name="settings_enable_fallback">Ativar fallback</string>
-    <string name="settings_fallback_footer">Se o seu provedor principal falhar (sobrecarga, limite de taxa, erro de rede), o app tenta novamente automaticamente com este fallback. É permitido o mesmo provedor do principal - basta escolher um modelo diferente.</string>
+    <string name="settings_fallback_footer">Se o seu provedor principal falhar (sobrecarga, limite de taxa, erro de rede), o app tenta novamente automaticamente com este fallback. É permitido o mesmo provedor do principal, basta escolher um modelo diferente.</string>
     <string name="widget_all_metrics_label">Chompass Hoje</string>
     <string name="widget_all_metrics_description">Veja calorias, proteínas, carboidratos e gordura de hoje em um widget.</string>
     <string name="settings_needs_health_connect">Requer Health Connect</string>
-    <string name="settings_energy_goals_info">Quando ativado, o Chompass usa suas calorias queimadas medidas pelo Health Connect - uma média de 14 dias de energia ativa + basal - como âncora de manutenção (TDEE) ao calcular metas, em vez da estimativa por fórmula. Nenhuma IA é usada para ler seu gasto. Requer Health Connect. Funciona com o botão Recalcular e com o Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Cerca de uma vez por semana, ao abrir o app, o Chompass reexecuta automaticamente o cálculo completo de metas - o mesmo do botão Recalcular - com base no seu perfil, nas refeições registradas recentemente e na tendência de peso. Se o Energy Burn estiver ativado, usa seu gasto medido como âncora de manutenção. Se a IA estiver indisponível, a execução é ignorada silenciosamente. Ao desativar, são restauradas as metas de antes da primeira alteração feita por este recurso. Isto não é aconselhamento médico.</string>
-    <string name="onboarding_plan_adaptive_note">Seu plano se ajusta automaticamente toda semana conforme você registra - desative o Adaptive Goals em Ajustes para mantê-lo fixo.</string>
-    <string name="onboarding_feature_snap">Tire uma foto - a IA registra</string>
+    <string name="settings_energy_goals_info">Quando ativado, o Chompass usa suas calorias queimadas medidas pelo Health Connect, uma média de 14 dias de energia ativa + basal, como âncora de manutenção (TDEE) ao calcular metas, em vez da estimativa por fórmula. Nenhuma IA é usada para ler seu gasto. Requer Health Connect. Funciona com o botão Recalcular e com as metas adaptativas.</string>
+    <string name="settings_adaptive_goals_info">Cerca de uma vez por semana, ao abrir o app, o Chompass reexecuta automaticamente o cálculo completo de metas, o mesmo do botão Recalcular, com base no seu perfil, nas refeições registradas recentemente e na tendência de peso. Se a queima de energia estiver ativada, usa seu gasto medido como âncora de manutenção. Se a IA estiver indisponível, a execução é ignorada silenciosamente. Ao desativar, são restauradas as metas de antes da primeira alteração feita por este recurso. Isto não é aconselhamento médico.</string>
+    <string name="onboarding_plan_adaptive_note">Seu plano se ajusta automaticamente toda semana conforme você registra. Desative as metas adaptativas em Ajustes para mantê-lo fixo.</string>
+    <string name="onboarding_feature_snap">Tire uma foto. A IA registra.</string>
     <string name="onboarding_feature_coach">Coach que conhece seus dados</string>
     <string name="onboarding_feature_library">Health Connect para balanças e wearables</string>
     <string name="onboarding_feature_widgets">Widgets na tela inicial</string>
     <string name="whats_new_v30_workouts">A aba Treinos foi removida.</string>
     <string name="whats_new_v30_home">Nova tela inicial: velocímetro de calorias, barras verticais de macros, quatro cartões de nutrientes e um botão flutuante de adicionar.</string>
     <string name="whats_new_v30_coach_voice">Pergunte ao Coach por voz com o novo gravador integrado.</string>
-    <string name="whats_new_v30_share">Compartilhe qualquer refeição como um link que abre direto no Chompass - no iPhone ou Android.</string>
+    <string name="whats_new_v30_share">Compartilhe qualquer refeição como um link que abre direto no Chompass, no iPhone ou Android.</string>
     <string name="whats_new_v30_export">Exporte seu diário alimentar em JSON, Markdown ou CSV nos Ajustes.</string>
-    <string name="whats_new_v30_reprocess">Reprocesse uma refeição registrada com IA - ajuste o nome, a porção ou a nota e analise de novo.</string>
+    <string name="whats_new_v30_reprocess">Reprocesse uma refeição registrada com IA: ajuste o nome, a porção ou a nota e analise de novo.</string>
     <string name="whats_new_v30_camera">Câmera + Câmera mantém as duas fotos, unidas lado a lado.</string>
     <string name="whats_new_v30_colors">10 novas cores de tema, agora escolhidas direto nos Ajustes.</string>
     <string name="whats_new_v30_bodyfat">Histórico de gordura corporal: veja e exclua entradas individuais, como no peso.</string>
@@ -699,8 +699,8 @@
     <string name="ai_error_coach_on_device">O Coach ainda não está disponível com o provedor no dispositivo. Troque para um provedor em nuvem em Configurações → Provedor de IA.</string>
     <string name="ai_error_coach_round_limit">O Coach não conseguiu responder. Tente reformular sua pergunta.</string>
     <string name="ai_error_disabled">Os recursos de IA estão desativados em Configurações → IA e fala.</string>
-    <string name="ai_error_grounded_on_device">O loop de ferramentas Grounded não está disponível para modelos no dispositivo.</string>
-    <string name="ai_error_grounded_requires_provider">O loop de ferramentas Grounded exige um provedor de IA ativo.</string>
+    <string name="ai_error_grounded_on_device">O modo Grounded não está disponível para modelos no dispositivo.</string>
+    <string name="ai_error_grounded_requires_provider">O modo Grounded exige um provedor de IA ativo.</string>
     <string name="ai_error_image_conversion_failed">Falha ao processar a imagem.</string>
     <string name="ai_error_invalid_response">Não foi possível entender a resposta da IA. Tente novamente.</string>
     <string name="ai_error_invalid_url">URL de API inválida. Verifique as configurações do provedor.</string>
@@ -1047,7 +1047,7 @@
     <string name="onboarding_api_key_test">Testar chave</string>
     <string name="onboarding_api_key_testing">Testando…</string>
     <string name="onboarding_api_key_works">A chave funciona</string>
-    <string name="onboarding_diet_mode_subtitle">Escolha seu estilo padrão de orientação</string>
+    <string name="onboarding_diet_mode_subtitle">Escolha seu estilo padrão de recomendação</string>
     <string name="onboarding_diet_mode_title">Você segue um modo de dieta?</string>
     <string name="onboarding_disclaimers_subtitle">Leia estes avisos importantes</string>
     <string name="onboarding_disclaimers_title">Antes de começar</string>

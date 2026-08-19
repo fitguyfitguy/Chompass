@@ -127,9 +127,9 @@
     <!-- Onboarding -->
     <string name="onboarding_back">Înapoi</string>
     <string name="onboarding_logo_description">Logo Chompass</string>
-    <string name="onboarding_welcome_line1">Mănâncă inteligent,</string>
-    <string name="onboarding_welcome_line2">Trăiește mai bine</string>
-    <string name="onboarding_welcome_subtitle">Doar fă o poză, urmărește și prosperă.\nNutriția ta, simplificată.</string>
+    <string name="onboarding_welcome_line1">Înregistrează mesele,</string>
+    <string name="onboarding_welcome_line2">Menține echilibrul</string>
+    <string name="onboarding_welcome_subtitle">Înregistrează mesele cu poză, voce sau text.\nNutriția ta, dintr-o privire.</string>
 
     <string name="onboarding_gender_title">Care e sexul tău?</string>
     <string name="onboarding_gender_subtitle">Ne ajută să calculăm metabolismul tău</string>
@@ -420,8 +420,8 @@
 
     <string name="progress_log_weight_title">Înregistrează greutatea</string>
 
-    <string name="progress_goal_reached_title">Felicitări! 🎉</string>
-    <string name="progress_goal_reached_message">Ți-ai atins greutatea obiectiv! Mergi la Setări pentru a-ți schimba obiectivul și atinge Recalculează obiectivele pentru a actualiza țintele.</string>
+    <string name="progress_goal_reached_title">Obiectiv atins 🎉</string>
+    <string name="progress_goal_reached_message">Ți-ai atins greutatea obiectiv. Mergi la Setări pentru a-ți schimba obiectivul și atinge Recalculează obiectivele pentru a actualiza țintele.</string>
 
     <!-- Settings -->
     <string name="settings_section_personal">Informații personale</string>
@@ -509,8 +509,8 @@
     <string name="sheet_ai_provider">Furnizor AI</string>
     <string name="sheet_model_footer">Sau scrie orice ID de model personalizat mai jos.</string>
     <string name="sheet_any_model_id">Orice ID de model</string>
-    <string name="sheet_api_key_format">Cheie API - %1$s</string>
-    <string name="sheet_speech_api_key_format">Cheie API voce - %1$s</string>
+    <string name="sheet_api_key_format">Cheie API: %1$s</string>
+    <string name="sheet_speech_api_key_format">Cheie API voce: %1$s</string>
     <string name="sheet_speech_engine">Motor vocal</string>
     <string name="sheet_gender">Sex</string>
     <string name="sheet_activity_level">Nivel de activitate</string>
@@ -545,7 +545,7 @@
     <string name="about_privacy">Politica de confidențialitate</string>
     <string name="about_made_by">Chompass de fitguy</string>
     <string name="about_with_care">Bazat pe Fud AI de Apoorv Darshan</string>
-    <string name="about_share_message">Îmi urmăresc mesele cu Chompass - fă o poză, spune-o sau tasteaz-o, iar AI înregistrează caloriile. E gratuit, open source, iar datele rămân pe dispozitivul tău.\n\nDescarcă: https://codeberg.org/fitguy/chompass</string>
+    <string name="about_share_message">Îmi urmăresc mesele cu Chompass, un fork fără reclame al Fud AI. Fă o poză, spune-o sau tasteaz-o, iar AI înregistrează caloriile. Open source, iar datele rămân pe dispozitivul tău.\n\nSursă: https://codeberg.org/fitguy/chompass</string>
     <string name="about_share_chooser">Distribuie Chompass</string>
 
     <!-- Notifications -->
@@ -556,9 +556,9 @@
     <string name="notif_channel_weight_goal">Obiectiv de greutate</string>
     <string name="notif_channel_weight_goal_desc">Sărbătoare când îți atingi greutatea obiectiv.</string>
     <string name="notif_streak_title">Nu uita să îți înregistrezi mesele</string>
-    <string name="notif_streak_text">Menține-ți seria - înregistrează ceva din ziua de azi.</string>
+    <string name="notif_streak_text">Menține-ți seria. Înregistrează ceva din ziua de azi.</string>
     <string name="notif_summary_title">Rezumatul de azi e gata</string>
-    <string name="notif_summary_text">Atinge pentru a vedea cum s-au aliniat macronutrienții de azi.</string>
+    <string name="notif_summary_text">Atinge pentru a vedea cum au ieșit macronutrienții azi.</string>
 
     <string name="onboarding_goal_optional">Țintă (opțional)</string>
     <string name="onboarding_goal_set_later">Poți seta asta mai târziu în Setări.</string>
@@ -579,28 +579,28 @@
     <string name="saved_meals_no_match">Nicio mâncare potrivită</string>
     <string name="settings_section_custom_instructions">Instrucțiuni AI personalizate</string>
     <string name="settings_custom_instructions_placeholder">Ex.: locuiesc în Germania, presupune porții europene, prefer mărcile ALDI/REWE. Sunt într-o etapă de definire la culturism.</string>
-    <string name="settings_custom_instructions_footer">Context opțional trimis cu fiecare cerere AI - regiune, dietă, obiective sportive, orice ai repeta altfel de fiecare dată. Lasă gol pentru a dezactiva.</string>
+    <string name="settings_custom_instructions_footer">Context opțional trimis cu fiecare cerere AI: regiune, dietă, obiective sportive, orice ai repeta altfel de fiecare dată. Lasă gol pentru a dezactiva.</string>
     <string name="settings_save">Salvează</string>
     <string name="settings_saved">Salvat</string>
     <string name="settings_section_fallback">Furnizor de rezervă</string>
     <string name="settings_enable_fallback">Activează rezerva</string>
-    <string name="settings_fallback_footer">Dacă furnizorul principal eșuează (suprasolicitare, limită de rată, eroare de rețea), aplicația reîncearcă automat cu această rezervă. Este permis același furnizor ca cel principal - doar alege un model diferit.</string>
+    <string name="settings_fallback_footer">Dacă furnizorul principal eșuează (suprasolicitare, limită de rată, eroare de rețea), aplicația reîncearcă automat cu această rezervă. Este permis același furnizor ca cel principal, doar alege un model diferit.</string>
     <string name="widget_all_metrics_label">Chompass Astăzi</string>
     <string name="widget_all_metrics_description">Vezi caloriile, proteinele, carbohidrații și grăsimile de azi într-un singur widget.</string>
     <string name="settings_needs_health_connect">Necesită Health Connect</string>
-    <string name="settings_energy_goals_info">Când este activat, Chompass folosește caloriile arse măsurate din Health Connect - o medie pe 14 zile a energiei active + bazale - ca ancoră de întreținere (TDEE) la calcularea obiectivelor, în locul estimării prin formulă. Nu se folosește IA pentru citirea consumului. Necesită Health Connect. Funcționează cu butonul Recalculează și cu Adaptive Goals.</string>
-    <string name="settings_adaptive_goals_info">Aproximativ o dată pe săptămână, la deschiderea aplicației, Chompass reia automat calculul complet al obiectivelor - același folosit de butonul Recalculează - pe baza profilului tău, a alimentelor înregistrate recent și a tendinței greutății. Dacă Energy Burn este activat, consumul tău măsurat este folosit ca ancoră de întreținere. Dacă IA nu este disponibilă, rularea este omisă silențios. Dezactivarea restaurează obiectivele de dinainte de prima modificare făcută de această funcție. Acesta nu este un sfat medical.</string>
-    <string name="onboarding_plan_adaptive_note">Planul tău se ajustează automat săptămânal pe măsură ce înregistrezi - dezactivează Adaptive Goals din Setări pentru a-l păstra fix.</string>
-    <string name="onboarding_feature_snap">Fă o poză - IA o înregistrează</string>
+    <string name="settings_energy_goals_info">Când este activat, Chompass folosește caloriile arse măsurate din Health Connect, o medie pe 14 zile a energiei active + bazale, ca ancoră de întreținere (TDEE) la calcularea obiectivelor, în locul estimării prin formulă. Nu se folosește IA pentru citirea consumului. Necesită Health Connect. Funcționează cu butonul Recalculează și cu obiectivele adaptive.</string>
+    <string name="settings_adaptive_goals_info">Aproximativ o dată pe săptămână, la deschiderea aplicației, Chompass reia automat calculul complet al obiectivelor, același folosit de butonul Recalculează, pe baza profilului tău, a alimentelor înregistrate recent și a tendinței greutății. Dacă energia consumată este activată, consumul tău măsurat este folosit ca ancoră de întreținere. Dacă IA nu este disponibilă, rularea este omisă silențios. Dezactivarea restaurează obiectivele de dinainte de prima modificare făcută de această funcție. Acesta nu este un sfat medical.</string>
+    <string name="onboarding_plan_adaptive_note">Planul tău se ajustează automat săptămânal pe măsură ce înregistrezi. Dezactivează obiectivele adaptive din Setări pentru a-l păstra fix.</string>
+    <string name="onboarding_feature_snap">Fă o poză. IA o înregistrează.</string>
     <string name="onboarding_feature_coach">Antrenor care îți cunoaște datele</string>
     <string name="onboarding_feature_library">Health Connect pentru cântare și wearables</string>
     <string name="onboarding_feature_widgets">Widgeturi pe ecranul principal</string>
     <string name="whats_new_v30_workouts">Fila Antrenamente a fost eliminată.</string>
     <string name="whats_new_v30_home">Ecran principal reproiectat: vitezometru pentru calorii, bare verticale de macronutrienți, patru carduri de nutrienți și un buton plutitor de adăugare.</string>
     <string name="whats_new_v30_coach_voice">Întreabă Coach-ul cu vocea, cu noul recorder integrat.</string>
-    <string name="whats_new_v30_share">Trimite orice masă ca link care se deschide direct în Chompass - pe iPhone sau Android.</string>
+    <string name="whats_new_v30_share">Trimite orice masă ca link care se deschide direct în Chompass, pe iPhone sau Android.</string>
     <string name="whats_new_v30_export">Exportă jurnalul alimentar ca JSON, Markdown sau CSV din Setări.</string>
-    <string name="whats_new_v30_reprocess">Reprocesează o masă înregistrată cu AI - ajustează numele, porția sau nota și analizează din nou.</string>
+    <string name="whats_new_v30_reprocess">Reprocesează o masă înregistrată cu AI: ajustează numele, porția sau nota și analizează din nou.</string>
     <string name="whats_new_v30_camera">Cameră + Cameră păstrează ambele cadre, lipite una lângă alta.</string>
     <string name="whats_new_v30_colors">10 culori noi de temă, alese acum direct din Setări.</string>
     <string name="whats_new_v30_bodyfat">Istoric grăsime corporală: vezi și șterge intrări individuale, la fel ca la greutate.</string>
@@ -702,8 +702,8 @@
     <string name="ai_error_coach_on_device">Antrenorul nu este încă disponibil cu furnizorul local. Comută la un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_coach_round_limit">Antrenorul nu a putut răspunde. Încearcă să reformulezi întrebarea.</string>
     <string name="ai_error_disabled">Funcțiile IA sunt dezactivate în Setări → IA și voce.</string>
-    <string name="ai_error_grounded_on_device">Bucla de instrumente Grounded nu este disponibilă pentru modelele locale.</string>
-    <string name="ai_error_grounded_requires_provider">Bucla de instrumente Grounded necesită un furnizor IA activ.</string>
+    <string name="ai_error_grounded_on_device">Modul Grounded nu este disponibil pentru modelele locale.</string>
+    <string name="ai_error_grounded_requires_provider">Modul Grounded necesită un furnizor IA activ.</string>
     <string name="ai_error_image_conversion_failed">Procesarea imaginii a eșuat.</string>
     <string name="ai_error_invalid_response">Nu am putut înțelege răspunsul IA. Încearcă din nou.</string>
     <string name="ai_error_invalid_url">URL API nevalid. Verifică setările furnizorului.</string>
@@ -1050,7 +1050,7 @@
     <string name="onboarding_api_key_test">Testează cheia</string>
     <string name="onboarding_api_key_testing">Se testează…</string>
     <string name="onboarding_api_key_works">Cheia funcționează</string>
-    <string name="onboarding_diet_mode_subtitle">Alege stilul tău implicit de îndrumare</string>
+    <string name="onboarding_diet_mode_subtitle">Alege stilul tău implicit de recomandare</string>
     <string name="onboarding_diet_mode_title">Urmezi un mod de dietă?</string>
     <string name="onboarding_disclaimers_subtitle">Te rugăm să citești aceste mențiuni importante</string>
     <string name="onboarding_disclaimers_title">Înainte să începi</string>
