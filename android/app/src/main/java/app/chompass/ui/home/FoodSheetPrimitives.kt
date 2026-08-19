@@ -77,6 +77,7 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitWheelPicker
 import app.chompass.ui.components.WheelSelectionHighlight
+import app.chompass.ui.components.culinaryUnitLabels
 
 // Shared visual primitives for the food review/edit sheets. Names are
 // `Sheet*`-prefixed so they don't collide with the look-alike privates in
@@ -326,7 +327,13 @@ internal fun ServingQuantityCard(
     // model; display the localized label(s) instead (unit_serving / _plural).
     val servingLabel = stringResource(R.string.unit_serving)
     val servingPluralLabel = stringResource(R.string.unit_serving_plural)
-    val selectedUnitLabel = selectedOption.displayUnit(parsedQuantity, servingLabel, servingPluralLabel)
+    val culinaryLabels = culinaryUnitLabels()
+    val selectedUnitLabel = selectedOption.displayUnit(
+        parsedQuantity,
+        servingLabel,
+        servingPluralLabel,
+        culinaryLabels,
+    )
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val dismissKeyboard = {
@@ -412,6 +419,15 @@ internal fun ServingQuantityCard(
                     .weight(1f)
                     .clickable { dismissKeyboard() }
             )
+            if (showUnitWheel) {
+                Text(
+                    stringResource(R.string.sheet_unit),
+                    fontSize = 17.sp,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .clickable { dismissKeyboard() }
+                )
+            }
             if (canCustomizeServing && !editingServing) {
                 Icon(
                     Icons.Filled.Edit,

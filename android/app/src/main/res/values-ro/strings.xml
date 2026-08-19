@@ -307,6 +307,7 @@
     <string name="sheet_more_nutrition">Mai multe informații nutriționale</string>
     <string name="sheet_name">Nume</string>
     <string name="sheet_quantity">Cantitate</string>
+    <string name="sheet_unit">Unitate</string>
     <string name="sheet_meal_type">Tipul mesei</string>
     <string name="sheet_review_food">Verifică alimentul</string>
     <string name="sheet_edit_food">Editează alimentul</string>
@@ -1499,6 +1500,10 @@
     <string name="theme_color_teal">Turcoaz</string>
     <string name="unit_serving">porție</string>
     <string name="unit_serving_plural">porții</string>
+    <string name="unit_cup">cană</string>
+    <string name="unit_cup_plural">căni</string>
+    <string name="unit_tbsp">ling.</string>
+    <string name="unit_tsp">ling.ț</string>
     <string name="vm_adaptive_on_message">Obiectivele adaptive sunt active. Chompass va verifica o dată pe săptămână după ce există suficiente date de mâncare și greutate.</string>
     <string name="vm_adaptive_updated">Actualizat la %1$d kcal din cele mai recente date ale tale.</string>
     <string name="vm_goals_recalculated">Obiective recalculate</string>

@@ -48,6 +48,14 @@
     <string name="unit_serving">порция</string>
     <string name="unit_serving_plural">порции</string>
 
+    <string name="unit_cup">чашка</string>
+
+    <string name="unit_cup_plural">чашки</string>
+
+    <string name="unit_tbsp">ст. л.</string>
+
+    <string name="unit_tsp">ч. л.</string>
+
 
 
 
@@ -380,6 +388,7 @@
     <string name="sheet_more_nutrition">Больше о питании</string>
     <string name="sheet_name">Название</string>
     <string name="sheet_quantity">Количество</string>
+    <string name="sheet_unit">Единица</string>
     <string name="sheet_meal_type">Приём пищи</string>
     <string name="sheet_review_food">Проверить еду</string>
     <string name="sheet_edit_food">Изменить еду</string>

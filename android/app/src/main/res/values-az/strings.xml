@@ -307,6 +307,7 @@ bilirsən?</string>
     <string name="sheet_more_nutrition">Daha çox Qidalanma</string>
     <string name="sheet_name">Ad</string>
     <string name="sheet_quantity">Miqdar</string>
+    <string name="sheet_unit">Vahid</string>
     <string name="sheet_meal_type">Yemək Növü</string>
     <string name="sheet_review_food">Yeməyi Nəzərdən Keçir</string>
     <string name="sheet_edit_food">Yeməyi Redaktə Et</string>
@@ -1499,6 +1500,10 @@ bilirsən?</string>
     <string name="theme_color_teal">Firuzəyi</string>
     <string name="unit_serving">porsiya</string>
     <string name="unit_serving_plural">porsiya</string>
+    <string name="unit_cup">fincan</string>
+    <string name="unit_cup_plural">fincan</string>
+    <string name="unit_tbsp">x.q.</string>
+    <string name="unit_tsp">ç.q.</string>
     <string name="vm_adaptive_on_message">Adaptiv məqsədlər aktivdir. Kifayət qədər yemək və çəki məlumatı olduqda Chompass həftədə bir dəfə yoxlayacaq.</string>
     <string name="vm_adaptive_updated">Ən son məlumatlarına görə %1$d kkal-a yeniləndi.</string>
     <string name="vm_goals_recalculated">Məqsədlər yenidən hesablandı</string>

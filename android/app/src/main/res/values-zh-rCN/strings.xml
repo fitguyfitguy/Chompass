@@ -313,6 +313,7 @@
     <string name="sheet_more_nutrition">更多营养</string>
     <string name="sheet_name">名称</string>
     <string name="sheet_quantity">数量</string>
+    <string name="sheet_unit">单位</string>
     <string name="sheet_meal_type">餐食类型</string>
     <string name="sheet_review_food">核对食物</string>
     <string name="sheet_edit_food">编辑食物</string>
@@ -1499,6 +1500,10 @@
     <string name="theme_color_teal">青色</string>
     <string name="unit_serving">份</string>
     <string name="unit_serving_plural">份</string>
+    <string name="unit_cup">杯</string>
+    <string name="unit_cup_plural">杯</string>
+    <string name="unit_tbsp">汤匙</string>
+    <string name="unit_tsp">茶匙</string>
     <string name="vm_adaptive_on_message">自适应目标已开启。当存在足够的食物和体重数据后，Chompass 将每周检查一次。</string>
     <string name="vm_adaptive_updated">已根据你的最新数据更新为 %1$d 千卡。</string>
     <string name="vm_goals_recalculated">目标已重新计算</string>

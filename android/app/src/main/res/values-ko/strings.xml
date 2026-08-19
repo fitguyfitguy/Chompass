@@ -312,6 +312,7 @@
     <string name="sheet_more_nutrition">추가 영양 정보</string>
     <string name="sheet_name">이름</string>
     <string name="sheet_quantity">수량</string>
+    <string name="sheet_unit">단위</string>
     <string name="sheet_meal_type">식사 종류</string>
     <string name="sheet_review_food">음식 검토</string>
     <string name="sheet_edit_food">음식 편집</string>
@@ -1498,6 +1499,10 @@
     <string name="theme_color_teal">청록</string>
     <string name="unit_serving">1인분</string>
     <string name="unit_serving_plural">1인분</string>
+    <string name="unit_cup">컵</string>
+    <string name="unit_cup_plural">컵</string>
+    <string name="unit_tbsp">큰술</string>
+    <string name="unit_tsp">작은술</string>
     <string name="vm_adaptive_on_message">적응형 목표가 켜져 있어요. 충분한 음식과 체중 데이터가 쌓이면 Chompass가 주 1회 확인해요.</string>
     <string name="vm_adaptive_updated">최신 데이터로 %1$d kcal에 업데이트했어요.</string>
     <string name="vm_goals_recalculated">목표 재계산됨</string>

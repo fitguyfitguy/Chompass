@@ -311,6 +311,7 @@
     <string name="sheet_more_nutrition">その他の栄養</string>
     <string name="sheet_name">名前</string>
     <string name="sheet_quantity">数量</string>
+    <string name="sheet_unit">単位</string>
     <string name="sheet_meal_type">食事タイプ</string>
     <string name="sheet_review_food">食事を確認</string>
     <string name="sheet_edit_food">食事を編集</string>
@@ -1498,6 +1499,10 @@
     <string name="theme_color_teal">ティール</string>
     <string name="unit_serving">食</string>
     <string name="unit_serving_plural">食</string>
+    <string name="unit_cup">カップ</string>
+    <string name="unit_cup_plural">カップ</string>
+    <string name="unit_tbsp">大さじ</string>
+    <string name="unit_tsp">小さじ</string>
     <string name="vm_adaptive_on_message">適応型目標がオンです。十分な食事と体重データが揃うと、Chompass は週1回確認します。</string>
     <string name="vm_adaptive_updated">最新のデータに基づき %1$d kcal に更新しました。</string>
     <string name="vm_goals_recalculated">目標を再計算しました</string>

@@ -108,6 +108,14 @@
 
     <string name="unit_serving_plural">Portionen</string>
 
+    <string name="unit_cup">Cup</string>
+
+    <string name="unit_cup_plural">Cups</string>
+
+    <string name="unit_tbsp">EL</string>
+
+    <string name="unit_tsp">TL</string>
+
     <string name="kcal_value_format">%1$s kcal</string>
 
     <string name="grams_value_format">%1$sg</string>
@@ -734,9 +742,9 @@ für dich ein</string>
 
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
 
-    <string name="home_water_next">Nächstes %1$s · %2$s</string>
+    <string name="home_water_next">Nächste %1$s · %2$s</string>
 
-    <string name="home_water_next_tomorrow">Nächstes %1$s · morgen %2$s</string>
+    <string name="home_water_next_tomorrow">Nächste %1$s · morgen %2$s</string>
 
     <string name="home_food_removed">Lebensmittel entfernt</string>
 
@@ -981,6 +989,8 @@ für dich ein</string>
     <string name="sheet_name">Name</string>
 
     <string name="sheet_quantity">Menge</string>
+
+    <string name="sheet_unit">Einheit</string>
 
     <string name="sheet_meal_type">Mahlzeitentyp</string>
 

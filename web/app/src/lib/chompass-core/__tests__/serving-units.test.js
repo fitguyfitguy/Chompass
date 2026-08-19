@@ -15,6 +15,7 @@ import {
   applyQuantityInput,
   isQuantityExpression,
   displayUnit,
+  culinaryUnitKey,
   GRAMS_OPTION,
   HEURISTIC_RULES,
 } from "../serving-units.js";
@@ -35,6 +36,17 @@ test("displayUnit_localizesAppGeneratedServingUnit", () => {
   // Non-serving units ignore the labels.
   const slice = { unit: "slice", gramsPerUnit: 30 };
   assert.equal(displayUnit(slice, 2, "Portion", "Portionen"), "slices");
+});
+
+test("displayUnit_localizesCulinaryUnits", () => {
+  const labels = { cup: ["Tasse", "Tassen"], tbsp: ["EL", "EL"], tsp: ["TL", "TL"] };
+  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 1, undefined, undefined, labels), "Tasse");
+  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 2.1, undefined, undefined, labels), "Tassen");
+  assert.equal(displayUnit({ unit: "tblsp", gramsPerUnit: 15 }, 2, undefined, undefined, labels), "EL");
+  assert.equal(displayUnit({ unit: "teaspoon", gramsPerUnit: 5 }, 3, undefined, undefined, labels), "TL");
+  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 2), "cups");
+  assert.equal(culinaryUnitKey("tblsp"), "tbsp");
+  assert.equal(culinaryUnitKey("slice"), null);
 });
 
 test("formatQuantity_integersAndDecimals", () => {

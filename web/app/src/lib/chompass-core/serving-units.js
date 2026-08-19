@@ -61,21 +61,36 @@ export function quantityFor(option, totalGrams) {
   return option.gramsPerUnit > 0 ? totalGrams / option.gramsPerUnit : totalGrams;
 }
 
+/** Canonical key for a known English culinary unit (and common aliases). */
+export function culinaryUnitKey(optionOrId) {
+  const id = typeof optionOrId === "string" ? optionOrId : normalizedUnit(optionOrId);
+  if (id === "cup" || id === "cups" || id === "c") return "cup";
+  if (id === "tbsp" || id === "tblsp" || id === "tablespoon" || id === "tablespoons") return "tbsp";
+  if (id === "tsp" || id === "teaspoon" || id === "teaspoons") return "tsp";
+  return null;
+}
+
 /**
  * @param {ServingUnitOption} option
  * @param {number|null|undefined} quantity
  * @param {string} [servingLabel] localized "serving" label (app-generated unit)
  * @param {string} [servingPluralLabel] localized plural form
+ * @param {Record<string, [string, string]>} [culinaryLabels] cup/tbsp/tsp labels
  */
-export function displayUnit(option, quantity, servingLabel, servingPluralLabel) {
+export function displayUnit(option, quantity, servingLabel, servingPluralLabel, culinaryLabels) {
   const id = normalizedUnit(option);
+  const singular = quantity == null || Math.abs(quantity - 1.0) <= 0.0001;
+  const culinaryKey = culinaryUnitKey(id);
+  if (culinaryKey && culinaryLabels?.[culinaryKey]) {
+    const [label, plural] = culinaryLabels[culinaryKey];
+    return singular ? label : plural;
+  }
   // App-generated "serving" option (OFF barcode / AI fallback): the raw unit
   // string is English, so the UI passes the localized label(s).
   if (SERVING_UNITS.has(id) && servingLabel) {
-    const singular = quantity == null || Math.abs(quantity - 1.0) <= 0.0001;
     return singular ? servingLabel : (servingPluralLabel || servingLabel);
   }
-  if (quantity == null || Math.abs(quantity - 1.0) <= 0.0001) return option.unit;
+  if (singular) return option.unit;
   if (GRAM_UNITS.has(id) || id === "kg" || id === "mg" || id === "ml" || id === "l" || id === "oz" || id === "fl oz" || id === "tbsp" || id === "tsp") {
     return option.unit;
   }
