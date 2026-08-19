@@ -108,5 +108,22 @@
     "Total",
     "Zinc",
     "auto"
+  ],
+  "pl": [
+    "Cholesterol",
+    "Format",
+    "Keto (Beta)",
+    "Model",
+    "Omega",
+    "Omega-3",
+    "Stop",
+    "auto"
+  ],
+  "tr": [
+    "Keto (Beta)",
+    "Model",
+    "Omega",
+    "Omega-3",
+    "Protein"
   ]
 }
