@@ -576,6 +576,8 @@
     <string name="notif_summary_on_target">バランス</string>
     <string name="notif_summary_eaten_burned">摂取 %1$s · 消費 %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d ネット · F %3$d</string>
+    <string name="notif_summary_of_goal">目標 %2$s のうち %1$s</string>
 
     <string name="onboarding_goal_optional">目標(任意)</string>
     <string name="onboarding_goal_set_later">後で設定から変更できます。</string>

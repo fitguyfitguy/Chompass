@@ -161,6 +161,13 @@ class DailySummaryPolicyTest {
     }
 
     @Test
+    fun netCarbs_subtractsFiber_notBelowZero() {
+        assertEquals(140, DailySummaryPolicy.netCarbsG(160.0, 20.0))
+        assertEquals(0, DailySummaryPolicy.netCarbsG(10.0, 20.0))
+        assertEquals(160, DailySummaryPolicy.netCarbsG(160.0, 0.0))
+    }
+
+    @Test
     fun summaryDate_fourAmIsToday() {
         val now = ZonedDateTime.of(2026, 8, 21, 4, 0, 0, 0, ZoneOffset.UTC)
         assertEquals(now.toLocalDate(), DailySummaryPolicy.summaryDate(now))

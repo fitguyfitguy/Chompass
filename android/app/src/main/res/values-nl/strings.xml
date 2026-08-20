@@ -546,6 +546,8 @@
     <string name="notif_summary_on_target">In balans</string>
     <string name="notif_summary_eaten_burned">Gegeten %1$s · verbrand %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d netto · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s van %2$s doel</string>
 
     <string name="onboarding_goal_optional">Doel (optioneel)</string>
     <string name="onboarding_goal_set_later">Je kunt dit later in Instellingen instellen.</string>

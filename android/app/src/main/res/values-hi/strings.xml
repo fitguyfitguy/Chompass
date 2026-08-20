@@ -578,6 +578,8 @@
     <string name="notif_summary_on_target">संतुलित</string>
     <string name="notif_summary_eaten_burned">खाया %1$s · जलाया %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d नेट · F %3$d</string>
+    <string name="notif_summary_of_goal">लक्ष्य %2$s में से %1$s</string>
 
     <string name="onboarding_goal_optional">लक्ष्य (वैकल्पिक)</string>
     <string name="onboarding_goal_set_later">आप इसे बाद में सेटिंग्स में सेट कर सकते हैं।</string>

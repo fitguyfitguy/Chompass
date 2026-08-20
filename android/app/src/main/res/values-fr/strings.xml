@@ -562,6 +562,8 @@
     <string name="notif_summary_on_target">Équilibré</string>
     <string name="notif_summary_eaten_burned">Ingérées %1$s · brûlées %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d nets · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s sur %2$s d\'objectif</string>
 
     <string name="onboarding_goal_optional">Objectif (facultatif)</string>
     <string name="onboarding_goal_set_later">Vous pouvez définir cela plus tard dans les Réglages.</string>

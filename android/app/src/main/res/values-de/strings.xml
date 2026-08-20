@@ -2178,6 +2178,8 @@ für dich ein</string>
     <string name="notif_summary_on_target">Ausgeglichen</string>
     <string name="notif_summary_eaten_burned">Gegessen %1$s · verbrannt %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d netto · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s von %2$s Ziel</string>
 
     <string name="widget_all_metrics_label">Chompass Heute</string>
 

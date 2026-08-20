@@ -579,6 +579,8 @@
     <string name="notif_summary_on_target">平衡</string>
     <string name="notif_summary_eaten_burned">摄入 %1$s · 消耗 %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d 净 · F %3$d</string>
+    <string name="notif_summary_of_goal">目标 %2$s 中的 %1$s</string>
 
     <string name="onboarding_goal_optional">目标(可选)</string>
     <string name="onboarding_goal_set_later">稍后可以在设置中设置。</string>

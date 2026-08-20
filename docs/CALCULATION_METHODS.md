@@ -117,6 +117,8 @@ on target when |delta| ≤ 100 kcal
 
 Skip the notification when no food is logged. If nothing resolvable for `burned`, keep the static summary copy.
 
+The expanded notification also shows eaten vs the Home calorie goal (display only) and, in keto diet mode, net carbs (`carbs − fiber`, not below 0) instead of total C.
+
 **Call sites:** `DailySummaryPolicy` (Daily summary notification).
 
 ### Home calorie gauge modes

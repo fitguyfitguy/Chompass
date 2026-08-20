@@ -578,6 +578,8 @@
     <string name="notif_summary_on_target">متوازن</string>
     <string name="notif_summary_eaten_burned">مأكول %1$s · محروق %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d صافٍ · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s من هدف %2$s</string>
 
     <string name="onboarding_goal_optional">الهدف (اختياري)</string>
     <string name="onboarding_goal_set_later">يمكنك ضبط هذا لاحقاً في الإعدادات.</string>

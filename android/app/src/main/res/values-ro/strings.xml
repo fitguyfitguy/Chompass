@@ -568,6 +568,8 @@
     <string name="notif_summary_on_target">În echilibru</string>
     <string name="notif_summary_eaten_burned">Ingerate %1$s · arse %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d neți · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s din %2$s obiectiv</string>
 
     <string name="onboarding_goal_optional">Țintă (opțional)</string>
     <string name="onboarding_goal_set_later">Poți seta asta mai târziu în Setări.</string>

@@ -577,6 +577,8 @@
     <string name="notif_summary_on_target">균형</string>
     <string name="notif_summary_eaten_burned">섭취 %1$s · 소모 %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d 순 · F %3$d</string>
+    <string name="notif_summary_of_goal">목표 %2$s 중 %1$s</string>
 
     <string name="onboarding_goal_optional">목표(선택)</string>
     <string name="onboarding_goal_set_later">나중에 설정에서 설정할 수 있어요.</string>

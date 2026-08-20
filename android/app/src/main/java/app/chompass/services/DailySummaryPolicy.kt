@@ -2,6 +2,7 @@ package app.chompass.services
 
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import kotlin.math.roundToInt
 
 /**
  * Pure nightly energy-balance math for the Daily summary notification.
@@ -56,6 +57,10 @@ object DailySummaryPolicy {
         val burned = input.bmrKcal.coerceAtLeast(0) + active
         return burned.takeIf { it > 0 }
     }
+
+    /** Net carbs for the keto expanded line: carbs minus fiber, not below 0. */
+    fun netCarbsG(carbs: Double, fiber: Double): Int =
+        (carbs - fiber).coerceAtLeast(0.0).roundToInt()
 }
 
 data class DailySummaryInput(

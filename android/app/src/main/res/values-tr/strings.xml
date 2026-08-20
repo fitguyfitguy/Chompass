@@ -1202,6 +1202,8 @@
     <string name="notif_summary_on_target">Dengede</string>
     <string name="notif_summary_eaten_burned">Yenilen %1$s · yakılan %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · net C %2$d · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s / %2$s hedef</string>
 
     <string name="widget_all_metrics_label">Chompass Bugün</string>
     <string name="widget_all_metrics_description">Bugünün kalori, protein, karbonhidrat ve yağını tek widget\'ta gör.</string>
