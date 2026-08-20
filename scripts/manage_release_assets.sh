@@ -51,6 +51,8 @@ is_play_asset() {
 list_release_tags() {
   # tea -o simple prints two lines per release (tar.gz row + bare zip URL).
   # Only keep real semver tags like v1.14.10.
+  # Order is load-bearing: ascending semver (oldest first, newest last).
+  # keep-n / keep-latest keep from the end of this list.
   run_tea releases list \
     --login "$LOGIN" \
     --repo "$CODEBERG_REPO" \
@@ -428,25 +430,28 @@ EOF
     exit 0
   fi
 
-  local -a to_delete=()
-  local count=0
-  for tag in "${all_tags[@]}"; do
-    count=$((count + 1))
-    if [[ $count -le $n ]]; then
-      continue
-    fi
-    to_delete+=("$tag")
-  done
-
-  if [[ ${#to_delete[@]} -eq 0 ]]; then
+  local total=${#all_tags[@]}
+  if [[ "$total" -le "$n" ]]; then
     echo "Already at most $n release(s). Nothing to delete."
     exit 0
   fi
 
+  # all_tags is oldest-first. Keep the last N (newest); delete the prefix.
+  local keep_start=$((total - n))
+  local -a to_keep=("${all_tags[@]:keep_start}")
+  local -a to_delete=("${all_tags[@]:0:keep_start}")
+
+  # Belt-and-suspenders: never delete a tag newer than one we keep.
+  if [[ "$(printf '%s\n%s\n' "${to_delete[-1]}" "${to_keep[0]}" | sort -V | head -1)" != "${to_delete[-1]}" ]]; then
+    echo "Refusing to delete: would drop a newer release than one being kept." >&2
+    echo "Keep: ${to_keep[*]}" >&2
+    echo "Delete: ${to_delete[*]}" >&2
+    exit 1
+  fi
+
   echo "Keeping the $n most recent release(s):"
-  local start=$(( ${#all_tags[@]} - n ))
-  for ((i = start; i < ${#all_tags[@]}; i++)); do
-    echo "  ${all_tags[$i]}"
+  for tag in "${to_keep[@]}"; do
+    echo "  $tag"
   done
   echo "Deleting ${#to_delete[@]} older release(s):"
   for tag in "${to_delete[@]}"; do
