@@ -3,6 +3,7 @@ package app.chompass.utils
 import android.annotation.SuppressLint
 import android.app.LocaleManager
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
 import androidx.core.os.LocaleListCompat
@@ -46,13 +47,7 @@ object LocaleHelper {
     /** Android 8-12 (API 26-32): update Configuration; caller recreates the activity. */
     private fun applyLegacy(context: Context, languageTag: String) {
         val configuration = context.resources.configuration
-        val localeListCompat = if (languageTag.isBlank()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(languageTag)
-        }
-        // Convert LocaleListCompat to framework LocaleList for Configuration
-        configuration.setLocales(localeListCompat.toFrameworkLocaleList())
+        configuration.setLocales(localeListForLanguageTag(languageTag))
         context.createConfigurationContext(configuration)
     }
 
@@ -66,4 +61,29 @@ object LocaleHelper {
         }
         return LocaleList(*locales.toTypedArray())
     }
+}
+
+/**
+ * Locale list to apply for a language tag. Blank = follow the system.
+ * Never returns an empty list: `setLocales(empty)` makes `locales[0]` null
+ * on API 26-32 and crashes Home (#43).
+ */
+internal fun localeListForLanguageTag(languageTag: String): LocaleList {
+    if (languageTag.isBlank()) return systemLocaleList()
+    val locales = mutableListOf<Locale>()
+    val compat = LocaleListCompat.forLanguageTags(languageTag)
+    for (i in 0 until compat.size()) {
+        compat.get(i)?.let { locales.add(it) }
+    }
+    if (locales.isEmpty()) return systemLocaleList()
+    return LocaleList(*locales.toTypedArray())
+}
+
+internal fun systemLocaleList(): LocaleList {
+    val system = Resources.getSystem().configuration.locales
+    if (system.size() > 0) {
+        val first = system[0]
+        if (first != null) return system
+    }
+    return LocaleList(Locale.getDefault() ?: Locale.US)
 }

@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.chompass.models.LocaleFormat
 import app.chompass.ui.theme.AppColors
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -235,11 +236,11 @@ private fun DayTile(
  */
 @Composable
 private fun narrowDay(dow: DayOfWeek): String {
-    val locale = LocalConfiguration.current.locales[0]
+    val locale = LocaleFormat.first(LocalConfiguration.current.locales[0])
     val formatter = remember(locale) { DateTimeFormatter.ofPattern("EEEEE", locale) }
     return formatter.format(dow)
 }
 
 /** Pure equivalent of [narrowDay] for tests: narrow weekday name in [locale]. */
 internal fun narrowDayName(dow: DayOfWeek, locale: Locale = Locale.getDefault()): String =
-    DateTimeFormatter.ofPattern("EEEEE", locale).format(dow)
+    DateTimeFormatter.ofPattern("EEEEE", LocaleFormat.first(locale)).format(dow)
