@@ -1202,6 +1202,8 @@
     <string name="notif_summary_on_target">W równowadze</string>
     <string name="notif_summary_eaten_burned">Zjedzone %1$s · spalone %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d netto · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s z %2$s celu</string>
 
     <string name="widget_all_metrics_label">Chompass Dziś</string>
     <string name="widget_all_metrics_description">Zobacz dzisiejsze kalorie, białko, węglowodany i tłuszcz w jednym widżecie.</string>

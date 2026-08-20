@@ -568,6 +568,8 @@ bilirsən?</string>
     <string name="notif_summary_on_target">Tarazlıqda</string>
     <string name="notif_summary_eaten_burned">Yeyilən %1$s · yandırılan %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d xalis · F %3$d</string>
+    <string name="notif_summary_of_goal">%2$s hədəfdən %1$s</string>
 
     <string name="onboarding_goal_optional">Hədəf (isteğe bağlı)</string>
     <string name="onboarding_goal_set_later">Bunu sonra Tənzimləmələrdə təyin edə bilərsən.</string>

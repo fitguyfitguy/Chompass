@@ -4,6 +4,7 @@ import android.content.Context
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.ActiveCalorieSource
+import app.chompass.models.DietMode
 import kotlinx.coroutines.flow.first
 import java.text.NumberFormat
 import java.time.ZoneId
@@ -47,11 +48,22 @@ internal suspend fun buildDailySummaryNotification(
         else -> activity?.activeCalories ?: 0
     }
     val total = activity?.totalCalories
+    val keto = profile?.dietMode == DietMode.KETO
+    val carbsTotal = entries.sumOf { it.carbs }
+    val fiberTotal = entries.sumOf { it.fiber ?: 0.0 }
+    val carbsG = if (keto) {
+        DailySummaryPolicy.netCarbsG(carbsTotal, fiberTotal)
+    } else {
+        carbsTotal.roundToInt()
+    }
+    val goalKcal = widgetForDay?.resolvedDisplayGoalTarget
+        ?: profile?.effectiveCalories
+        ?: 0
 
     val input = DailySummaryInput(
         eatenKcal = entries.sumOf { it.calories },
         proteinG = entries.sumOf { it.protein }.roundToInt(),
-        carbsG = entries.sumOf { it.carbs }.roundToInt(),
+        carbsG = carbsG,
         fatG = entries.sumOf { it.fat }.roundToInt(),
         bmrKcal = profile?.bmr?.roundToInt() ?: 0,
         activeKcal = active,
@@ -61,7 +73,14 @@ internal suspend fun buildDailySummaryNotification(
         hasFoodLogged = entries.isNotEmpty(),
     )
     val result = DailySummaryPolicy.evaluate(input)
-    return formatDailySummary(context, result, fallbackTitle, fallbackText)
+    return formatDailySummary(
+        context,
+        result,
+        fallbackTitle,
+        fallbackText,
+        goalKcal = goalKcal,
+        carbsAreNet = keto,
+    )
 }
 
 internal fun formatDailySummary(
@@ -69,6 +88,8 @@ internal fun formatDailySummary(
     result: DailySummaryResult,
     fallbackTitle: String,
     fallbackText: String,
+    goalKcal: Int = 0,
+    carbsAreNet: Boolean = false,
 ): DailySummaryNotification? {
     when (result.verdict) {
         DailySummaryVerdict.SKIP -> return null
@@ -95,14 +116,29 @@ internal fun formatDailySummary(
         nf.format(result.burned),
     )
     val macros = context.getString(
-        R.string.notif_summary_macros,
+        if (carbsAreNet) R.string.notif_summary_macros_net else R.string.notif_summary_macros,
         result.proteinG,
         result.carbsG,
         result.fatG,
     )
+    val bigText = buildString {
+        append(text)
+        if (goalKcal > 0) {
+            append('\n')
+            append(
+                context.getString(
+                    R.string.notif_summary_of_goal,
+                    nf.format(result.eaten),
+                    nf.format(goalKcal),
+                ),
+            )
+        }
+        append('\n')
+        append(macros)
+    }
     return DailySummaryNotification(
         title = title,
         text = text,
-        bigText = "$text\n$macros",
+        bigText = bigText,
     )
 }

@@ -565,6 +565,8 @@
     <string name="notif_summary_on_target">Em equilíbrio</string>
     <string name="notif_summary_eaten_burned">Ingeridas %1$s · queimadas %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d líquidos · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s de %2$s meta</string>
 
     <string name="onboarding_goal_optional">Objetivo (opcional)</string>
     <string name="onboarding_goal_set_later">Você pode definir isso mais tarde em Ajustes.</string>

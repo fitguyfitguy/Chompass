@@ -61,6 +61,49 @@ class DailySummaryCopyTest {
         assertTrue(copy.title.contains("deficit") || copy.title.contains("kcal"))
         assertTrue(copy.text.contains("1,800") || copy.text.contains("1800"))
         assertTrue(copy.bigText.contains("P 140"))
+        assertTrue(!copy.bigText.contains("goal"))
+    }
+
+    @Test
+    fun expanded_includesGoalLine() {
+        val copy = formatDailySummary(
+            context,
+            DailySummaryResult(
+                verdict = DailySummaryVerdict.DEFICIT,
+                eaten = 1500,
+                burned = 2467,
+                delta = 967,
+                proteinG = 60,
+                carbsG = 160,
+                fatG = 55,
+            ),
+            fallbackTitle,
+            fallbackText,
+            goalKcal = 1916,
+        )!!
+        assertTrue(copy.text.contains("1,500") || copy.text.contains("1500"))
+        assertTrue(!copy.text.contains("1916") && !copy.text.contains("1,916"))
+        assertTrue(copy.bigText.contains("1,916") || copy.bigText.contains("1916"))
+    }
+
+    @Test
+    fun keto_usesNetCarbLabel() {
+        val copy = formatDailySummary(
+            context,
+            DailySummaryResult(
+                verdict = DailySummaryVerdict.ON_TARGET,
+                eaten = 1800,
+                burned = 1850,
+                proteinG = 140,
+                carbsG = 22,
+                fatG = 120,
+            ),
+            fallbackTitle,
+            fallbackText,
+            carbsAreNet = true,
+        )!!
+        assertTrue(copy.bigText.contains("22"))
+        assertTrue(copy.bigText.contains("net"))
     }
 
     @Test

@@ -1202,6 +1202,8 @@
     <string name="notif_summary_on_target">On target</string>
     <string name="notif_summary_eaten_burned">Eaten %1$s · burned %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d net · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s of %2$s goal</string>
 
     <string name="widget_all_metrics_label">Chompass Today</string>
     <string name="widget_all_metrics_description">See today\'s calories, protein, carbs, and fat in one widget.</string>

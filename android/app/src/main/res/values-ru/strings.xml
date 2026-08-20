@@ -664,6 +664,8 @@
     <string name="notif_summary_on_target">В балансе</string>
     <string name="notif_summary_eaten_burned">Съедено %1$s · сожжено %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
+    <string name="notif_summary_macros_net">P %1$d · C %2$d нетто · F %3$d</string>
+    <string name="notif_summary_of_goal">%1$s из %2$s цели</string>
 
     <string name="onboarding_goal_optional">Цель (необязательно)</string>
     <string name="onboarding_goal_set_later">Можно настроить позже в Настройках.</string>
