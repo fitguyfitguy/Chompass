@@ -34,6 +34,7 @@ internal fun NotificationTypeRows(
     vm: SettingsViewModel,
     onOpenSheet: (SettingsSheet) -> Unit,
     onOpenWater: () -> Unit,
+    onOpenHealth: () -> Unit,
 ) {
     val context = LocalContext.current
     Text(
@@ -55,6 +56,34 @@ internal fun NotificationTypeRows(
         icon = Icons.Outlined.GraphicEq,
         onChange = vm::setDailySummaryEnabled
     )
+    if (ui.dailySummaryEnabled) {
+        val summaryTime = remember(ui.dailySummaryHour, ui.dailySummaryMinute, context) {
+            DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+                .format(LocalTime.of(ui.dailySummaryHour, ui.dailySummaryMinute))
+        }
+        SettingRow(
+            stringResource(R.string.settings_notif_daily_summary_time),
+            summaryTime,
+            icon = Icons.Outlined.Schedule,
+        ) { onOpenSheet(SettingsSheet.DAILY_SUMMARY_TIME) }
+    }
+    if (ui.dailySummaryEnabled &&
+        ui.healthConnectEnabled &&
+        ui.healthBackgroundReadAvailable &&
+        !ui.healthBackgroundReadGranted
+    ) {
+        Text(
+            stringResource(
+                R.string.settings_notif_daily_summary_needs_hc_background,
+                stringResource(R.string.settings_group_data),
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = AppColors.Calorie,
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                .clickable(onClick = onOpenHealth),
+        )
+    }
     HorizontalDivider()
     ToggleRow(
         stringResource(R.string.settings_notif_weight_reminder),

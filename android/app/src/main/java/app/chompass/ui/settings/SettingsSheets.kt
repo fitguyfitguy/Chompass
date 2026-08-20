@@ -621,6 +621,14 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
+                SettingsSheet.DAILY_SUMMARY_TIME -> DailySummaryTimeSheet(
+                    hour = ui.dailySummaryHour,
+                    minute = ui.dailySummaryMinute,
+                    onSave = { hour, minute ->
+                        vm.setDailySummaryTime(hour, minute)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.CALORIES -> NutritionPickerSheet(
                     label = stringResource(R.string.macro_calories), unit = stringResource(R.string.unit_kcal),
                     currentValue = ui.profile?.effectiveCalories ?: 2000,

@@ -1197,6 +1197,11 @@
     <string name="notif_streak_text">Keep your streak going. Log something from today.</string>
     <string name="notif_summary_title">Today\'s summary is ready</string>
     <string name="notif_summary_text">Tap to see how today\'s macros lined up.</string>
+    <string name="notif_summary_deficit">%1$s kcal deficit</string>
+    <string name="notif_summary_surplus">%1$s kcal surplus</string>
+    <string name="notif_summary_on_target">On target</string>
+    <string name="notif_summary_eaten_burned">Eaten %1$s · burned %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="widget_all_metrics_label">Chompass Today</string>
     <string name="widget_all_metrics_description">See today\'s calories, protein, carbs, and fat in one widget.</string>
@@ -1483,6 +1488,8 @@
     <string name="settings_notification_types">Notification types</string>
     <string name="settings_notif_food_reminders">Food log reminders</string>
     <string name="settings_notif_daily_summary">Daily summary</string>
+    <string name="settings_notif_daily_summary_time">Summary time</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">For a live burn number, turn on background Health Connect in %1$s.</string>
     <string name="settings_notif_weight_reminder">Weight log reminder</string>
     <string name="settings_notif_body_fat_reminder">Body fat reminder</string>
     <string name="settings_notif_water_reminder">Water reminder</string>

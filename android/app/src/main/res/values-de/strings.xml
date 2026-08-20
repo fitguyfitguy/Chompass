@@ -2173,6 +2173,11 @@ für dich ein</string>
     <string name="notif_summary_title">Die heutige Zusammenfassung ist fertig</string>
 
     <string name="notif_summary_text">Tippe darauf, um zu sehen, wie sich die Makros heute verteilt haben.</string>
+    <string name="notif_summary_deficit">%1$s kcal Defizit</string>
+    <string name="notif_summary_surplus">%1$s kcal Überschuss</string>
+    <string name="notif_summary_on_target">Ausgeglichen</string>
+    <string name="notif_summary_eaten_burned">Gegessen %1$s · verbrannt %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="widget_all_metrics_label">Chompass Heute</string>
 
@@ -2716,6 +2721,8 @@ für dich ein</string>
     <string name="settings_notif_food_reminders">Erinnerungen zum Ernährungstagebuch</string>
 
     <string name="settings_notif_daily_summary">Tägliche Zusammenfassung</string>
+    <string name="settings_notif_daily_summary_time">Uhrzeit</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Für eine aktuelle Verbrauchszahl schalte Health Connect im Hintergrund unter %1$s ein.</string>
 
     <string name="settings_notif_weight_reminder">Erinnerung zur Gewichtserfassung</string>
 

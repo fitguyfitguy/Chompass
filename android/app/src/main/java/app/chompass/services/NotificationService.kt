@@ -30,8 +30,11 @@ import java.util.Calendar
  * Schedules + fires the local reminders the app supports:
  *   - Weight log reminder: daily at 8:00am — gated by the master Notifications
  *     toggle so it tracks the system permission state and never fires silently
- *   - Streak reminder + Daily summary: present in code for parity with iOS but
- *     not wired to the Settings UI yet
+ *   - Streak reminder: skip when food is already logged today
+ *   - Daily summary: evening energy-balance notification (measured burn vs
+ *     eaten). Toggle + time live under Settings → Notifications. Off by default.
+ *     Copy is computed at fire time ([DailySummaryPolicy]); static extras are
+ *     the fail-open payload when the app container is missing.
  *
  * Uses inexact alarms (setAndAllowWhileIdle) — a daily nudge firing within a
  * few minutes of the chosen time is perfectly fine, and Play Store reserves
@@ -155,6 +158,46 @@ class NotificationService(private val context: Context) {
         title = context.getString(R.string.notif_summary_title),
         text = context.getString(R.string.notif_summary_text)
     )
+
+    /** Debug extra / device-pass: post today's Daily summary immediately, no alarm. */
+    suspend fun postDailySummaryNow() {
+        val container = (context.applicationContext as? ChompassApp)?.container ?: return
+        val fallbackTitle = context.getString(R.string.notif_summary_title)
+        val fallbackText = context.getString(R.string.notif_summary_text)
+        val copy = buildDailySummaryNotification(context, container, fallbackTitle, fallbackText)
+            ?: DailySummaryNotification(fallbackTitle, fallbackText, fallbackText)
+        postChannelNotification(
+            channel = CHANNEL_DAILY,
+            request = REQUEST_DAILY,
+            title = copy.title,
+            text = copy.text,
+            bigText = copy.bigText,
+        )
+    }
+
+    internal fun postChannelNotification(
+        channel: String,
+        request: Int,
+        title: String,
+        text: String,
+        bigText: String? = null,
+    ) {
+        val open = PendingIntent.getActivity(
+            context, request,
+            ChompassLaunchIntents.openApp(context, destination = destinationForChannel(channel)),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val builder = NotificationCompat.Builder(context, channel)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setContentIntent(open)
+            .setAutoCancel(true)
+        if (bigText != null) {
+            builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
+        }
+        NotificationManagerCompat.from(context).notifySafely(request, builder.build())
+    }
 
     fun scheduleWeightReminder(hour: Int = 8, minute: Int = 0) = schedule(
         REQUEST_WEIGHT, hour, minute, CHANNEL_WEIGHT_LOG,
@@ -368,6 +411,12 @@ class ReminderReceiver : BroadcastReceiver() {
                     null
                 }
 
+                val dailyCopy = if (channel == NotificationService.CHANNEL_DAILY && container != null) {
+                    buildDailySummaryNotification(context, container, title, text)
+                } else {
+                    null
+                }
+
                 val shouldPost = if (channel == NotificationService.CHANNEL_STREAK) {
                     val hasFoodToday = runCatching {
                         val c = (context.applicationContext as? ChompassApp)?.container
@@ -378,6 +427,8 @@ class ReminderReceiver : BroadcastReceiver() {
                 } else if (channel == NotificationService.CHANNEL_WATER) {
                     // Nothing to post when the reminder got disabled since arming.
                     waterPlan != null
+                } else if (channel == NotificationService.CHANNEL_DAILY && container != null) {
+                    dailyCopy != null
                 } else {
                     true
                 }
@@ -407,16 +458,20 @@ class ReminderReceiver : BroadcastReceiver() {
                             context.getString(R.string.notif_water_text_qty, qty)
                         }
                     } else {
-                        text
+                        dailyCopy?.text ?: text
                     }
-                    val notif = NotificationCompat.Builder(context, channel)
+                    val notifTitle = dailyCopy?.title ?: title
+                    val builder = NotificationCompat.Builder(context, channel)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(title)
+                        .setContentTitle(notifTitle)
                         .setContentText(notifText)
                         .setContentIntent(open)
                         .setAutoCancel(true)
-                        .build()
-                    NotificationManagerCompat.from(context).notifySafely(request, notif)
+                    val bigText = dailyCopy?.bigText
+                    if (bigText != null) {
+                        builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
+                    }
+                    NotificationManagerCompat.from(context).notifySafely(request, builder.build())
                 }
 
                 if (channel == NotificationService.CHANNEL_WATER) {

@@ -583,6 +583,10 @@ open class MainActivity : ComponentActivity() {
                     container.health,
                 )
             }
+            if (actions.previewDailySummary) {
+                runCatching { container.notifications.postDailySummaryNow() }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "previewDailySummary failed", it) }
+            }
             Log.d(PHOTO_IMPORT_TAG, "debug actions complete")
         }
     }

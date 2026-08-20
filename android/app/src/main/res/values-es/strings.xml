@@ -566,6 +566,11 @@
     <string name="notif_streak_text">Mantén tu racha. Registra algo de hoy.</string>
     <string name="notif_summary_title">El resumen de hoy está listo</string>
     <string name="notif_summary_text">Toca para ver cómo cuadraron los macros de hoy.</string>
+    <string name="notif_summary_deficit">Déficit de %1$s kcal</string>
+    <string name="notif_summary_surplus">Superávit de %1$s kcal</string>
+    <string name="notif_summary_on_target">En equilibrio</string>
+    <string name="notif_summary_eaten_burned">Ingeridas %1$s · quemadas %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">Objetivo (opcional)</string>
     <string name="onboarding_goal_set_later">Puedes establecer esto más tarde en Ajustes.</string>
@@ -1334,6 +1339,8 @@
     <string name="settings_notif_app_updates">Actualizaciones de la app</string>
     <string name="settings_notif_body_fat_reminder">Recordatorio de grasa corporal</string>
     <string name="settings_notif_daily_summary">Resumen diario</string>
+    <string name="settings_notif_daily_summary_time">Hora</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Para un gasto medido, activa Health Connect en segundo plano en %1$s.</string>
     <string name="settings_notif_food_reminders">Recordatorios de registro de comida</string>
     <string name="settings_notif_goal_alerts">Avisos de objetivo logrado</string>
     <string name="settings_notif_none_selected">No hay ningún tipo de notificación seleccionado. Puedes mantener las notificaciones permitidas y todos los recordatorios desactivados.</string>
