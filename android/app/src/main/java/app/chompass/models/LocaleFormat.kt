@@ -14,7 +14,10 @@ import java.util.Locale
  * Keep [Locale.US] only for export/protocol/parse paths — not display.
  */
 object LocaleFormat {
-    fun displayLocale(): Locale = Locale.getDefault()
+    /** Non-null locale for formatters. `Configuration.locales[0]` is null on some Android 10 builds (#43). */
+    fun first(locale: Locale?): Locale = locale ?: Locale.getDefault() ?: Locale.US
+
+    fun displayLocale(): Locale = first(Locale.getDefault())
 
     /**
      * Locale-natural medium date (e.g. "Aug 18, 2026" en-US, "18.08.2026" de) —

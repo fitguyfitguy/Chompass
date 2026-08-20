@@ -79,4 +79,18 @@ class LocaleFormatTest {
         ).map { narrowDayName(it, Locale.US) }
         assertEquals("M T W T F S S", en.joinToString(" "))
     }
+
+    @Test
+    fun firstFallsBackWhenLocaleIsNull() {
+        // Codeberg #43: Configuration.locales[0] is null on some Android 10 builds.
+        val fallback = LocaleFormat.first(null)
+        val formatted = java.time.format.DateTimeFormatter.ofPattern("EEEEE", fallback)
+            .format(DayOfWeek.MONDAY)
+        assertTrue(formatted.isNotEmpty())
+    }
+
+    @Test
+    fun firstKeepsProvidedLocale() {
+        assertEquals(Locale.GERMAN, LocaleFormat.first(Locale.GERMAN))
+    }
 }

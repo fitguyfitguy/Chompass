@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Opening the app no longer crashes on some Huawei phones** (Android): on older Huawei EMUI builds based on Android 10, tapping the icon could close the app before Home appeared when the language follows the system. Closes Codeberg [#43](https://codeberg.org/fitguy/Chompass/issues/43) by [@tuxMode](https://codeberg.org/tuxMode).
 - **German water and serving labels** (Android + web): the next-drink line now says Nächste, and the water widget shows only the amount and time so the line is not cut off. Cup, tablespoon and teaspoon now use the German unit names Cup, EL and TL. The serving card labels the unit column Einheit. Follow-up on Codeberg [#3](https://codeberg.org/fitguy/Chompass/issues/3) by [@1260er](https://codeberg.org/1260er).
 - **Switching to maintain updates calories right away** (Android): changing the goal from lose or gain to maintain now applies the formula targets immediately, so the old deficit does not stay on screen until Recalculate. Follow-up on Codeberg [#3](https://codeberg.org/fitguy/Chompass/issues/3) by [@1260er](https://codeberg.org/1260er).
 
