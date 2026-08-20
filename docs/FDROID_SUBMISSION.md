@@ -3,7 +3,7 @@
 Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-droid.org/packages/app.chompass/) (package `app.chompass`). This page is the maintainer reference for keeping the listing healthy.
 
 **Application ID:** `app.chompass`  
-**Current version:** 3.21.1 (versionCode 62)  
+**Current version:** 3.21.2 (versionCode 63)  
 **Build task:** `release` in `android/app` subdir (`assembleRelease` with `-PreleaseAbi=arm64-v8a`)  
 **Signing key SHA-256 (upstream):** `2694994fcb99d70e2c3978f770384dcf3091a310d9c56a23d4a145f150658dcf` (F-Droid signs its own builds)
 

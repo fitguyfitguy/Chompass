@@ -307,6 +307,10 @@ export const tr = Object.freeze({
   // Serving unit label (app-generated "serving" option from OFF / heuristics)
   "unit.serving": "porsiyon",
   "unit.serving_plural": "porsiyon",
+  "unit.cup": "fincan",
+  "unit.cup_plural": "fincan",
+  "unit.tbsp": "yk",
+  "unit.tsp": "tk",
 
   // A11y
   "a11y.open_menu": "Menüyü aç",

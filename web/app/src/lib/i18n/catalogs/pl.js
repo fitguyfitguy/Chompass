@@ -307,6 +307,10 @@ export const pl = Object.freeze({
   // Serving unit label (app-generated "serving" option from OFF / heuristics)
   "unit.serving": "porcja",
   "unit.serving_plural": "porcje",
+  "unit.cup": "filiżanka",
+  "unit.cup_plural": "filiżanki",
+  "unit.tbsp": "łyżka",
+  "unit.tsp": "łyżeczka",
 
   // A11y
   "a11y.open_menu": "Otwórz menu",

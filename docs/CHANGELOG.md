@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## Unreleased
 
+## [3.21.2] - 2026-08-20
+
 ### Fixed
 
 - **Opening the app no longer crashes on some Huawei phones** (Android): on older Huawei EMUI builds based on Android 10, tapping the icon could close the app before Home appeared when the language follows the system. Closes Codeberg [#43](https://codeberg.org/fitguy/Chompass/issues/43) by [@tuxMode](https://codeberg.org/tuxMode).
