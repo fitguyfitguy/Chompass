@@ -7,7 +7,7 @@ summaryLength = 20
 
 [params]
   description = 'Private calorie tracking for Android and the browser. Bring your own AI key; optional on-device Gemma 4 on Android. Live calorie budget and Health Connect on Android. No ads, no analytics, no account.'
-  version = '3.21.1'
+  version = '3.21.2'
   # Demo cache-buster: bump on demo/deploy changes so the hero iframe + its
   # entry module fetch fresh (module graph still revalidates via ETag).
   # Kept separate from `version` so a demo fix never looks like a release.

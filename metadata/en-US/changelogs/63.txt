@@ -1,0 +1,3 @@
+• Opening the app no longer crashes on some Huawei phones: on older EMUI based on Android 10, tapping the icon could close the app before Home appeared when the language follows the system
+• German water and serving labels: the next-drink line now says Nächste, the water widget shows only the amount and time, and cup, tablespoon and teaspoon use Cup, EL and TL. The serving card labels the unit column Einheit
+• Switching to maintain updates calories right away: changing the goal from lose or gain to maintain now applies the formula targets immediately

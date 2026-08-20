@@ -75,7 +75,7 @@ export function culinaryUnitKey(optionOrId) {
  * @param {number|null|undefined} quantity
  * @param {string} [servingLabel] localized "serving" label (app-generated unit)
  * @param {string} [servingPluralLabel] localized plural form
- * @param {Record<string, [string, string]>} [culinaryLabels] cup/tbsp/tsp labels
+ * @param {Record<string, string[]>} [culinaryLabels] cup/tbsp/tsp labels
  */
 export function displayUnit(option, quantity, servingLabel, servingPluralLabel, culinaryLabels) {
   const id = normalizedUnit(option);

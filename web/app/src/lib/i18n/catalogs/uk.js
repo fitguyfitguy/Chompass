@@ -305,6 +305,10 @@ export const uk = Object.freeze({
   "entry.constituents.macros": "{calories} ккал · Б {protein} · В {carbs} · Ж {fat}",
   "unit.serving": "порція",
   "unit.serving_plural": "порції",
+  "unit.cup": "чашка",
+  "unit.cup_plural": "чашки",
+  "unit.tbsp": "ст. л.",
+  "unit.tsp": "ч. л.",
 
   // A11y
   "a11y.open_menu": "Відкрити меню",
