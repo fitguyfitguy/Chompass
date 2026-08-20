@@ -16,7 +16,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CODEBERG_REPO="${CODEBERG_REPO:-fitguy/chompass}"
-LOGIN="${CODEBERG_LOGIN:-codeberg}"
+# Release-asset ops need write:repository. The default tea login `codeberg`
+# is issue-triage only and cannot list or delete releases.
+LOGIN="${CODEBERG_LOGIN:-codeberg-release}"
 
 run_tea() {
   if command -v tea >/dev/null 2>&1; then
@@ -53,12 +55,29 @@ list_release_tags() {
   # Only keep real semver tags like v1.14.10.
   # Order is load-bearing: ascending semver (oldest first, newest last).
   # keep-n / keep-latest keep from the end of this list.
-  run_tea releases list \
+  local out
+  if ! out="$(run_tea releases list \
     --login "$LOGIN" \
     --repo "$CODEBERG_REPO" \
-    -o simple 2>/dev/null \
-    | awk '/^[[:space:]]*v[0-9]/{print $1}' \
-    | sort -uV
+    --limit 100 \
+    -o simple)"; then
+    echo "Failed to list releases on $CODEBERG_REPO (login: $LOGIN)." >&2
+    echo "Use CODEBERG_LOGIN=codeberg-release (write:repository). The default" >&2
+    echo "tea login 'codeberg' is issue-triage only and cannot list releases." >&2
+    return 1
+  fi
+  awk '/^[[:space:]]*v[0-9]/{print $1}' <<<"$out" | sort -uV
+}
+
+load_release_tags() {
+  local -n _tags=$1
+  local out
+  out="$(list_release_tags)" || return 1
+  _tags=()
+  while IFS= read -r tag; do
+    [[ -z "$tag" ]] && continue
+    _tags+=("$tag")
+  done <<<"$out"
 }
 
 list_assets_for_tag() {
@@ -86,10 +105,12 @@ parse_size_mb() {
 cmd_list() {
   ensure_login
   local total_mb=0
+  local -a all_tags=()
+  load_release_tags all_tags || exit 1
   echo "Release assets on $CODEBERG_REPO"
   echo
-  while IFS= read -r tag; do
-    [[ -z "$tag" ]] && continue
+  local tag
+  for tag in "${all_tags[@]}"; do
     local assets
     assets="$(list_assets_for_tag "$tag" || true)"
     [[ -z "$assets" ]] && continue
@@ -110,7 +131,7 @@ cmd_list() {
       printf '  %-40s %8s%s\n' "$name" "$size" "$marker"
     done <<<"$assets"
     echo
-  done < <(list_release_tags)
+  done
   echo "Estimated attachment total: ~${total_mb} MB"
   echo
   cat <<EOF
@@ -176,12 +197,14 @@ EOF
   done
 
   if [[ -n "$before" ]]; then
-    while IFS= read -r tag; do
-      [[ -z "$tag" ]] && continue
+    local -a listed=()
+    load_release_tags listed || exit 1
+    local tag
+    for tag in "${listed[@]}"; do
       if [[ "$(printf '%s\n%s\n' "$tag" "$before" | sort -V | head -1)" == "$tag" && "$tag" != "$before" ]]; then
         tags+=("$tag")
       fi
-    done < <(list_release_tags)
+    done
   fi
 
   if [[ ${#tags[@]} -eq 0 ]]; then
@@ -294,10 +317,7 @@ EOF
   done
 
   local -a all_tags=()
-  while IFS= read -r tag; do
-    [[ -z "$tag" ]] && continue
-    all_tags+=("$tag")
-  done < <(list_release_tags)
+  load_release_tags all_tags || exit 1
 
   if [[ ${#all_tags[@]} -eq 0 ]]; then
     echo "No releases found on $CODEBERG_REPO."
@@ -420,10 +440,7 @@ EOF
   fi
 
   local -a all_tags=()
-  while IFS= read -r tag; do
-    [[ -z "$tag" ]] && continue
-    all_tags+=("$tag")
-  done < <(list_release_tags)
+  load_release_tags all_tags || exit 1
 
   if [[ ${#all_tags[@]} -eq 0 ]]; then
     echo "No releases found on $CODEBERG_REPO."
@@ -530,10 +547,7 @@ EOF
   done
 
   if [[ ${#tags[@]} -eq 0 ]]; then
-    while IFS= read -r tag; do
-      [[ -z "$tag" ]] && continue
-      tags+=("$tag")
-    done < <(list_release_tags)
+    load_release_tags tags || exit 1
   fi
 
   local -a to_delete=()
@@ -605,7 +619,7 @@ Commands:
 
 Environment:
   CODEBERG_REPO   Default: fitguy/chompass
-  CODEBERG_LOGIN  Default: codeberg
+  CODEBERG_LOGIN  Default: codeberg-release
 EOF
 }
 
