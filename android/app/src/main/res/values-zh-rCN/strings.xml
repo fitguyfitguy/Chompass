@@ -574,6 +574,11 @@
     <string name="notif_streak_text">保持连续记录。记录今天吃的内容。</string>
     <string name="notif_summary_title">今日摘要已就绪</string>
     <string name="notif_summary_text">点按查看今日宏量营养素的完成情况。</string>
+    <string name="notif_summary_deficit">缺口 %1$s 千卡</string>
+    <string name="notif_summary_surplus">盈余 %1$s 千卡</string>
+    <string name="notif_summary_on_target">平衡</string>
+    <string name="notif_summary_eaten_burned">摄入 %1$s · 消耗 %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">目标(可选)</string>
     <string name="onboarding_goal_set_later">稍后可以在设置中设置。</string>
@@ -1274,6 +1279,8 @@
     <string name="settings_notif_app_updates">应用更新</string>
     <string name="settings_notif_body_fat_reminder">体脂提醒</string>
     <string name="settings_notif_daily_summary">每日摘要</string>
+    <string name="settings_notif_daily_summary_time">时间</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">要显示实测消耗，请在%1$s中开启后台 Health Connect。</string>
     <string name="settings_notif_food_reminders">食物记录提醒</string>
     <string name="settings_notif_goal_alerts">目标达成提醒</string>
     <string name="settings_notif_none_selected">未选择任何通知类型。你可以保持通知允许并关闭所有提醒。</string>

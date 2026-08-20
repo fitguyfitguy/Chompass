@@ -563,6 +563,11 @@
     <string name="notif_streak_text">Menține-ți seria. Înregistrează ceva din ziua de azi.</string>
     <string name="notif_summary_title">Rezumatul de azi e gata</string>
     <string name="notif_summary_text">Atinge pentru a vedea cum au ieșit macronutrienții azi.</string>
+    <string name="notif_summary_deficit">Deficit de %1$s kcal</string>
+    <string name="notif_summary_surplus">Excedent de %1$s kcal</string>
+    <string name="notif_summary_on_target">În echilibru</string>
+    <string name="notif_summary_eaten_burned">Ingerate %1$s · arse %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">Țintă (opțional)</string>
     <string name="onboarding_goal_set_later">Poți seta asta mai târziu în Setări.</string>
@@ -1271,6 +1276,8 @@
     <string name="settings_notif_app_updates">Actualizări aplicație</string>
     <string name="settings_notif_body_fat_reminder">Memento grăsime corporală</string>
     <string name="settings_notif_daily_summary">Rezumat zilnic</string>
+    <string name="settings_notif_daily_summary_time">Oră</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Pentru un consum măsurat, pornește Health Connect în fundal din %1$s.</string>
     <string name="settings_notif_food_reminders">Mementouri jurnal alimentar</string>
     <string name="settings_notif_goal_alerts">Alerte obiectiv atins</string>
     <string name="settings_notif_none_selected">Niciun tip de notificare selectat. Poți păstra notificările permise și toate mementourile oprite.</string>

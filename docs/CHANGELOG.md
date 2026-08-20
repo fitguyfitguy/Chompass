@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## Unreleased
 
+### Added
+
+- **Daily summary shows today's deficit or surplus** (Android): the evening notification now uses logged calories and measured burn (Health Connect when available) to say whether the day landed in deficit, surplus, or on target. You can set the time under Settings → Notifications. Off by default.
+
 ## [3.21.2] - 2026-08-20
 
 ### Fixed

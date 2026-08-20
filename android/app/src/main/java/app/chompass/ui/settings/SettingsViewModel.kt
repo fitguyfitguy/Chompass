@@ -71,6 +71,8 @@ data class SettingsUiState(
     val notificationsEnabled: Boolean = false,
     val streakReminderEnabled: Boolean = false,
     val dailySummaryEnabled: Boolean = false,
+    val dailySummaryHour: Int = 21,
+    val dailySummaryMinute: Int = 0,
     val weightReminderEnabled: Boolean = true,
     val bodyFatReminderEnabled: Boolean = true,
     val waterTrackingEnabled: Boolean = false,
@@ -96,6 +98,8 @@ data class SettingsUiState(
     val healthConnectEnabled: Boolean = false,
     val healthEnergyGoalsEnabled: Boolean = false,
     val healthBackgroundSyncEnabled: Boolean = false,
+    val healthBackgroundReadAvailable: Boolean = false,
+    val healthBackgroundReadGranted: Boolean = false,
     val adaptiveGoalsEnabled: Boolean = false,
     val applyingHealthEnergyGoals: Boolean = false,
     val applyingAdaptiveGoals: Boolean = false,
@@ -236,6 +240,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 notificationsEnabled = snap.notificationsEnabled,
                 streakReminderEnabled = snap.streakReminderEnabled,
                 dailySummaryEnabled = snap.dailySummaryEnabled,
+                dailySummaryHour = snap.dailySummaryHour,
+                dailySummaryMinute = snap.dailySummaryMinute,
                 weightReminderEnabled = snap.weightReminderEnabled,
                 bodyFatReminderEnabled = snap.bodyFatReminderEnabled,
                 waterTrackingEnabled = snap.waterTrackingEnabled,
@@ -266,6 +272,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 healthConnectEnabled = hc,
                 healthEnergyGoalsEnabled = energyGoals,
                 healthBackgroundSyncEnabled = backgroundSync,
+                healthBackgroundReadAvailable = container.health.isBackgroundReadAvailable(),
+                healthBackgroundReadGranted = container.health.hasBackgroundRead(),
                 adaptiveGoalsEnabled = snap.adaptiveGoalsEnabled,
                 apiKeyMasked = masked,
                 speechApiKeyMasked = speechMasked,
@@ -818,6 +826,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             syncNotificationSchedules()
         },
         { copy(dailySummaryEnabled = v) },
+    )
+
+    fun setDailySummaryTime(hour: Int, minute: Int) = updateUiPref(
+        {
+            container.prefs.setDailySummaryHour(hour)
+            container.prefs.setDailySummaryMinute(minute)
+            syncNotificationSchedules()
+        },
+        { copy(dailySummaryHour = hour, dailySummaryMinute = minute) },
     )
 
     fun setWeightReminderEnabled(v: Boolean) = updateUiPref(

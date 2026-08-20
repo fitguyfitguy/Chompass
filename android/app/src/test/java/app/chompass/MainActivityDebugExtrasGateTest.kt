@@ -52,6 +52,7 @@ class MainActivityDebugExtrasGateTest {
             putExtra("run_flip_benchmark", true)
             putExtra("run_ondevice_llm_test", true)
             putExtra("diagnose_health_connect", true)
+            putExtra("preview_daily_summary", true)
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = false)
         // Every flag/extra comes back at its default: no seed, no restore, no reset.

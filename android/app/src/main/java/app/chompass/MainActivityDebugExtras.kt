@@ -62,6 +62,7 @@ internal data class DebugIntentActions(
     val onDeviceLlmRepeat: Int = 1,
     val onDeviceLlmClearCache: Boolean = false,
     val diagnoseHealthConnect: Boolean = false,
+    val previewDailySummary: Boolean = false,
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
@@ -132,6 +133,8 @@ internal fun consumeDebugIntentExtras(
         onDeviceLlmClearCache = intent.getBooleanExtra("ondevice_llm_clear_cache", false),
         diagnoseHealthConnect = BuildConfig.DEBUG &&
             intent.getBooleanExtra("diagnose_health_connect", false),
+        previewDailySummary = BuildConfig.DEBUG &&
+            intent.getBooleanExtra("preview_daily_summary", false),
     )
     if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
     if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -173,6 +176,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.runDaySwitchBenchmark) intent.removeExtra("run_day_switch_benchmark")
     if (actions.runFlipBenchmark) intent.removeExtra("run_flip_benchmark")
     if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
+    if (actions.previewDailySummary) intent.removeExtra("preview_daily_summary")
     if (actions.runOnDeviceLlmTest) {
         intent.removeExtra("run_ondevice_llm_test")
         intent.removeExtra("ondevice_llm_backend")

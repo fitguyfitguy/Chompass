@@ -541,6 +541,11 @@
     <string name="notif_streak_text">Houd je streak gaande. Log iets van vandaag.</string>
     <string name="notif_summary_title">De samenvatting van vandaag is klaar</string>
     <string name="notif_summary_text">Tik om te zien hoe de macro\'s van vandaag uitkwamen.</string>
+    <string name="notif_summary_deficit">%1$s kcal tekort</string>
+    <string name="notif_summary_surplus">%1$s kcal overschot</string>
+    <string name="notif_summary_on_target">In balans</string>
+    <string name="notif_summary_eaten_burned">Gegeten %1$s · verbrand %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">Doel (optioneel)</string>
     <string name="onboarding_goal_set_later">Je kunt dit later in Instellingen instellen.</string>
@@ -1254,6 +1259,8 @@
     <string name="settings_notif_app_updates">App-updates</string>
     <string name="settings_notif_body_fat_reminder">Herinnering lichaamsvet</string>
     <string name="settings_notif_daily_summary">Dagelijkse samenvatting</string>
+    <string name="settings_notif_daily_summary_time">Tijd</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Voor een actueel verbruikscijfer zet je Health Connect op de achtergrond aan in %1$s.</string>
     <string name="settings_notif_food_reminders">Voedingslogboek-herinneringen</string>
     <string name="settings_notif_goal_alerts">Doel bereikt-meldingen</string>
     <string name="settings_notif_none_selected">Geen meldingstype geselecteerd. Je kunt meldingen toegestaan houden en alle herinneringen uit.</string>

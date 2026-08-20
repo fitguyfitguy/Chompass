@@ -560,6 +560,11 @@
     <string name="notif_streak_text">Mantenha sua sequência. Registre algo de hoje.</string>
     <string name="notif_summary_title">O resumo de hoje está pronto</string>
     <string name="notif_summary_text">Toque para ver como ficaram seus macros hoje.</string>
+    <string name="notif_summary_deficit">Déficit de %1$s kcal</string>
+    <string name="notif_summary_surplus">Superávit de %1$s kcal</string>
+    <string name="notif_summary_on_target">Em equilíbrio</string>
+    <string name="notif_summary_eaten_burned">Ingeridas %1$s · queimadas %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">Objetivo (opcional)</string>
     <string name="onboarding_goal_set_later">Você pode definir isso mais tarde em Ajustes.</string>
@@ -1269,6 +1274,8 @@
     <string name="settings_notif_app_updates">Atualizações do app</string>
     <string name="settings_notif_body_fat_reminder">Lembrete de gordura corporal</string>
     <string name="settings_notif_daily_summary">Resumo diário</string>
+    <string name="settings_notif_daily_summary_time">Horário</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Para um gasto medido, ative o Health Connect em segundo plano em %1$s.</string>
     <string name="settings_notif_food_reminders">Lembretes do diário alimentar</string>
     <string name="settings_notif_goal_alerts">Alertas de meta atingida</string>
     <string name="settings_notif_none_selected">Nenhum tipo de notificação selecionado. Você pode manter as notificações permitidas e todos os lembretes desligados.</string>

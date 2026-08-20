@@ -659,6 +659,11 @@
     <string name="notif_streak_text">Поддержи свою серию. Добавь запись за сегодня.</string>
     <string name="notif_summary_title">Сводка за сегодня готова</string>
     <string name="notif_summary_text">Коснись, чтобы увидеть, как сложились макросы за день.</string>
+    <string name="notif_summary_deficit">Дефицит %1$s ккал</string>
+    <string name="notif_summary_surplus">Профицит %1$s ккал</string>
+    <string name="notif_summary_on_target">В балансе</string>
+    <string name="notif_summary_eaten_burned">Съедено %1$s · сожжено %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">Цель (необязательно)</string>
     <string name="onboarding_goal_set_later">Можно настроить позже в Настройках.</string>
@@ -869,6 +874,8 @@
     <string name="settings_notification_types">Типы уведомлений</string>
     <string name="settings_notif_food_reminders">Напоминания о еде</string>
     <string name="settings_notif_daily_summary">Итоги дня</string>
+    <string name="settings_notif_daily_summary_time">Время</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Для актуального расхода включи Health Connect в фоне в разделе %1$s.</string>
     <string name="settings_notif_weight_reminder">Напоминание о взвешивании</string>
     <string name="settings_notif_body_fat_reminder">Напоминание о проценте жира</string>
     <string name="settings_notif_goal_alerts">Достижение целей</string>

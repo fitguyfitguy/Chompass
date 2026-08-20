@@ -563,6 +563,11 @@ bilirsən?</string>
     <string name="notif_streak_text">Silsiləni davam etdir. Bu gündən nəsə qeyd et.</string>
     <string name="notif_summary_title">Bu günün xülasəsi hazırdır</string>
     <string name="notif_summary_text">Bu günün makrolarının necə düzüldüyünü görmək üçün toxun.</string>
+    <string name="notif_summary_deficit">%1$s kkal kəsir</string>
+    <string name="notif_summary_surplus">%1$s kkal artıq</string>
+    <string name="notif_summary_on_target">Tarazlıqda</string>
+    <string name="notif_summary_eaten_burned">Yeyilən %1$s · yandırılan %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">Hədəf (isteğe bağlı)</string>
     <string name="onboarding_goal_set_later">Bunu sonra Tənzimləmələrdə təyin edə bilərsən.</string>
@@ -1272,6 +1277,8 @@ bilirsən?</string>
     <string name="settings_notif_app_updates">Tətbiq yeniləmələri</string>
     <string name="settings_notif_body_fat_reminder">Bədən yağı xatırlatması</string>
     <string name="settings_notif_daily_summary">Gündəlik xülasə</string>
+    <string name="settings_notif_daily_summary_time">Vaxt</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Canlı yanma rəqəmi üçün %1$s bölməsində fon Health Connect-i yandır.</string>
     <string name="settings_notif_food_reminders">Yemək jurnalı xatırlatmaları</string>
     <string name="settings_notif_goal_alerts">Məqsədə çatma xəbərdarlıqları</string>
     <string name="settings_notif_none_selected">Heç bir bildiriş növü seçilməyib. Bildirişlərə icazə verilmiş qala və bütün xatırlatmalar söndürülə bilər.</string>

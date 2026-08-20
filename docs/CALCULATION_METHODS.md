@@ -45,6 +45,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
 | WATER-DYN-B | Food-water subtraction   | Heuristic     | `WaterGoalCalculator.foodWaterMl` / `netGoalMl` | ml/day  |
 | WATER-DYN-C | Adaptive reminder interval | Heuristic   | `WaterGoalCalculator.liveIntervalMin`          | min      |
+| NIGHT-BAL | Nightly energy-balance band | Display     | `DailySummaryPolicy.evaluate`                  | kcal     |
 
 ### BMR-MSJ: Mifflin-St Jeor
 
@@ -99,7 +100,24 @@ sedentaryBudget = effectiveCalories − estimatedDailyActive
 
 **When:** Home calorie gauge modes (Add Active, Dual) when **no live measured-energy source exists** (Health Connect energy permission not granted, or HC off). With a live source, measured-so-far wins even at 0: a morning before the first wearable sync shows the sedentary budget plus 0, and the estimate is never substituted for today's measured value.
 
-**Call sites:** `UserProfile.estimatedDailyActiveCalories`, `HomeCalorieDisplay.resolveActiveBurn`, home ring + widgets.
+**Call sites:** `UserProfile.estimatedDailyActiveCalories`, `HomeCalorieDisplay.resolveActiveBurn`, home ring + widgets, nightly summary fallback.
+
+### NIGHT-BAL: Nightly energy-balance band (display)
+
+Notification-only. Does not change stored goals or the Home ring.
+
+```
+burned = HC total energy if > 0
+       else BMR + active
+active = measured if a live HC/debug source exists (0 counts)
+       else PAL estimate when no live source exists
+delta  = burned − eaten
+on target when |delta| ≤ 100 kcal
+```
+
+Skip the notification when no food is logged. If nothing resolvable for `burned`, keep the static summary copy.
+
+**Call sites:** `DailySummaryPolicy` (Daily summary notification).
 
 ### Home calorie gauge modes
 

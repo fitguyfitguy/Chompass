@@ -573,6 +573,11 @@
     <string name="notif_streak_text">अपनी स्ट्रीक जारी रखें। आज का कुछ लॉग करें।</string>
     <string name="notif_summary_title">आज का सारांश तैयार है</string>
     <string name="notif_summary_text">देखने के लिए टैप करें कि आज के मैक्रो कैसे रहे।</string>
+    <string name="notif_summary_deficit">%1$s किलोकलरी घाटा</string>
+    <string name="notif_summary_surplus">%1$s किलोकलरी अधिशेष</string>
+    <string name="notif_summary_on_target">संतुलित</string>
+    <string name="notif_summary_eaten_burned">खाया %1$s · जलाया %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="onboarding_goal_optional">लक्ष्य (वैकल्पिक)</string>
     <string name="onboarding_goal_set_later">आप इसे बाद में सेटिंग्स में सेट कर सकते हैं।</string>
@@ -1273,6 +1278,8 @@
     <string name="settings_notif_app_updates">ऐप अपडेट</string>
     <string name="settings_notif_body_fat_reminder">शारीरिक वसा रिमाइंडर</string>
     <string name="settings_notif_daily_summary">दैनिक सारांश</string>
+    <string name="settings_notif_daily_summary_time">समय</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">लाइव बर्न संख्या के लिए %1$s में बैकग्राउंड Health Connect चालू करें।</string>
     <string name="settings_notif_food_reminders">खाद्य लॉग रिमाइंडर</string>
     <string name="settings_notif_goal_alerts">लक्ष्य प्राप्त अलर्ट</string>
     <string name="settings_notif_none_selected">कोई सूचना प्रकार चयनित नहीं। आप सूचनाएं अनुमत रख सकते हैं और सभी रिमाइंडर बंद कर सकते हैं।</string>

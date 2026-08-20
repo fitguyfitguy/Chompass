@@ -1197,6 +1197,11 @@
     <string name="notif_streak_text">Podtrzymuj serię. Zaloguj coś z dzisiaj.</string>
     <string name="notif_summary_title">Dzisiejsze podsumowanie jest gotowe</string>
     <string name="notif_summary_text">Stuknij, aby zobaczyć, jak ułożyły się dzisiejsze makroskładniki.</string>
+    <string name="notif_summary_deficit">Deficyt %1$s kcal</string>
+    <string name="notif_summary_surplus">Nadwyżka %1$s kcal</string>
+    <string name="notif_summary_on_target">W równowadze</string>
+    <string name="notif_summary_eaten_burned">Zjedzone %1$s · spalone %2$s</string>
+    <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
 
     <string name="widget_all_metrics_label">Chompass Dziś</string>
     <string name="widget_all_metrics_description">Zobacz dzisiejsze kalorie, białko, węglowodany i tłuszcz w jednym widżecie.</string>
@@ -1485,6 +1490,8 @@
     <string name="settings_notification_types">Typy powiadomień</string>
     <string name="settings_notif_food_reminders">Przypomnienia o logowaniu jedzenia</string>
     <string name="settings_notif_daily_summary">Podsumowanie dzienne</string>
+    <string name="settings_notif_daily_summary_time">Godzina</string>
+    <string name="settings_notif_daily_summary_needs_hc_background">Aby mieć aktualny wydatek, włącz Health Connect w tle w %1$s.</string>
     <string name="settings_notif_weight_reminder">Przypomnienie o ważeniu</string>
     <string name="settings_notif_body_fat_reminder">Przypomnienie o tkance tłuszczowej</string>
     <string name="settings_notif_water_reminder">Przypomnienie o wodzie</string>
