@@ -37,9 +37,8 @@ private fun gb(bytes: Long): String = "${LocaleFormat.decimal(bytes / 1_073_741_
  * Model download/management sheet for [SettingsSheet.ON_DEVICE_MODEL]. Shows
  * the Hugging Face disclosure before the first download (not repeated once a
  * model is present), a storage pre-check, download progress, and
- * delete/unload actions. Pause/resume isn't implemented — [onCancelDownload]
- * discards the partial file and a retry starts over; the model is a one-time
- * large fetch, so simple restart was judged not worth range-resume complexity.
+ * delete/unload actions. Interrupted downloads resume from the partial file
+ * via HTTP Range (see [ModelDownloadWorker]); cancel discards the partial file.
  */
 @Composable
 internal fun OnDeviceModelSheet(
