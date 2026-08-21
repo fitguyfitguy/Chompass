@@ -12,7 +12,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
-- **Adaptive Goals is a small weekly nudge** (Android): about once a week it now adjusts calories by at most 150 kcal from your recent weight trend. Locked calorie and macro rows stay as you set them. Recalculate still asks the AI for a full plan, and if calories are locked it plans protein, carbs and fat around that number instead of replacing it. Closes Codeberg [#45](https://codeberg.org/fitguy/Chompass/issues/45) by [@Ludisc](https://codeberg.org/Ludisc).
+- **Adaptive Goals is a small weekly nudge** (Android): about once a week it now adjusts calories by at most 150 kcal from your recent weight trend, and only after about four weeks of weigh-ins (six readings). Locked calorie and macro rows stay as you set them. Recalculate still asks the AI for a full plan, and if calories are locked it plans protein, carbs and fat around that number instead of replacing it. Closes Codeberg [#45](https://codeberg.org/fitguy/Chompass/issues/45) by [@Ludisc](https://codeberg.org/Ludisc).
 
 ### Fixed
 

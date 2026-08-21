@@ -217,7 +217,7 @@ Shared goldens: `testdata/parity/weight-trend-expected.json`.
 
 ### ADAPT: Adaptive goals (weekly)
 
-**Data gates:** ≥4 logged food days AND ≥3 weight entries in window, **or** measured Health Connect TDEE.
+**Data gates:** ≥4 logged food days AND ≥6 weigh-ins spanning ≥28 days in the window, **or** measured Health Connect TDEE. Fewer weeks of scale data is treated as noise: no calorie nudge.
 
 ```
 rawAdjustment = (targetWeeklyChange − observedWeeklyChange) × 7700 / 7

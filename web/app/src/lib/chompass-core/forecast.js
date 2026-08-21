@@ -9,7 +9,8 @@ const MAX_LOOKBACK_DAYS = 90;
 const SPARSE_LOGGING_FRACTION_THRESHOLD = 0.5;
 const TREND_DISAGREEMENT_KG_PER_WEEK = 0.3;
 const MINIMUM_FOOD_DAYS = 4;
-const MINIMUM_WEIGHT_ENTRIES = 3;
+const MINIMUM_WEIGHT_ENTRIES = 6;
+const MINIMUM_WEIGHT_SPAN_DAYS = 28;
 const MINIMUM_DAILY_ADJUSTMENT = 25;
 const MAXIMUM_DAILY_ADJUSTMENT = 150;
 
@@ -113,6 +114,9 @@ export function computeWeightForecast({ weights, foods, profile }) {
   const regressionWindow = sortedWeights.filter((w) => w.date.slice(0, 10) >= cutoffIso);
   const slope = theilSenSlopePerDay(regressionWindow);
   const observedWeeklyKg = slope != null ? slope * 7 : null;
+  const weightDays = regressionWindow.map((w) => String(w.date).slice(0, 10)).sort();
+  const weightSpanDays =
+    weightDays.length >= 2 ? daysBetweenIso(weightDays[0], weightDays[weightDays.length - 1]) : 0;
 
   const hasEnoughData = daysLogged >= 2 && weights.length >= 2;
   const trendsDisagree =
@@ -151,6 +155,7 @@ export function computeWeightForecast({ weights, foods, profile }) {
     loggedDayAvgCalories,
     firstLoggedDate: first ?? null,
     lastLoggedDate: loggedDates.length ? loggedDates[loggedDates.length - 1] : null,
+    weightSpanDays,
   };
 }
 
@@ -183,13 +188,14 @@ export function suggestAdaptiveCalories({ profile, weights, foods }) {
   const hasWeightTrend =
     forecast.daysOfFoodData >= MINIMUM_FOOD_DAYS &&
     forecast.weightEntriesUsed >= MINIMUM_WEIGHT_ENTRIES &&
+    forecast.weightSpanDays >= MINIMUM_WEIGHT_SPAN_DAYS &&
     observed != null;
 
   if (!hasWeightTrend || observed == null) {
     return {
       changed: false,
       updatedCalories: null,
-      message: `Adaptive Goals needs at least ${MINIMUM_FOOD_DAYS} logged food days and ${MINIMUM_WEIGHT_ENTRIES} recent weight entries before making a correction.`,
+      message: `Adaptive Goals needs about four weeks of weigh-ins (${MINIMUM_WEIGHT_ENTRIES} readings spanning ${MINIMUM_WEIGHT_SPAN_DAYS} days) and ${MINIMUM_FOOD_DAYS} logged food days before changing calories.`,
       forecast,
     };
   }

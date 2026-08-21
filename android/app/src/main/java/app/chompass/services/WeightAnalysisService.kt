@@ -8,6 +8,7 @@ import app.chompass.models.WeightGoal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.max
@@ -43,6 +44,8 @@ data class WeightForecast(
     val loggedDayAvgCalories: Int = 0,
     val firstLoggedDate: LocalDate? = null,
     val lastLoggedDate: LocalDate? = null,
+    /** Calendar days between first and last weigh-in in the lookback (0 if fewer than 2). */
+    val weightSpanDays: Int = 0,
 ) {
     companion object {
         const val MAX_LOOKBACK_DAYS = 90
@@ -58,7 +61,8 @@ data class AdaptiveGoalResult(
 
 object AdaptiveGoalService {
     private const val MINIMUM_FOOD_DAYS = 4
-    private const val MINIMUM_WEIGHT_ENTRIES = 3
+    private const val MINIMUM_WEIGHT_ENTRIES = 6
+    private const val MINIMUM_WEIGHT_SPAN_DAYS = 28
     private const val MINIMUM_DAILY_ADJUSTMENT = 25
     private const val MAXIMUM_DAILY_ADJUSTMENT = 150
     private val caloriesPerKg: Double get() = NutritionConstants.KCAL_PER_KG_BODY_MASS
@@ -94,6 +98,7 @@ object AdaptiveGoalService {
 
         val hasWeightTrend = forecast.daysOfFoodData >= MINIMUM_FOOD_DAYS &&
             forecast.weightEntriesUsed >= MINIMUM_WEIGHT_ENTRIES &&
+            forecast.weightSpanDays >= MINIMUM_WEIGHT_SPAN_DAYS &&
             observedWeeklyChangeKg != null
 
         val limitedAdjustment: Int = if (hasWeightTrend && observedWeeklyChangeKg != null) {
@@ -111,7 +116,7 @@ object AdaptiveGoalService {
                 profile = profile,
                 changed = false,
                 updatedCalories = null,
-                message = "Adaptive Goals is on. It needs at least $MINIMUM_FOOD_DAYS logged food days and $MINIMUM_WEIGHT_ENTRIES recent weight entries, or Health Connect energy data, before making a correction."
+                message = "Adaptive Goals needs about four weeks of weigh-ins ($MINIMUM_WEIGHT_ENTRIES readings spanning $MINIMUM_WEIGHT_SPAN_DAYS days) and $MINIMUM_FOOD_DAYS logged food days, or Health Connect energy data, before changing calories."
             )
         }
 
@@ -223,6 +228,12 @@ object WeightAnalysisService {
 
         val regressionWindow = sortedWeights.filter { it.date >= cutoff }
         val observedWeeklyKg = WeightForecastMath.theilSenSlopePerDay(regressionWindow, zone)?.let { it * 7.0 }
+        val weightSpanDays = if (regressionWindow.size >= 2) {
+            val dates = regressionWindow.map { it.date.atZone(zone).toLocalDate() }
+            ChronoUnit.DAYS.between(dates.min(), dates.max()).toInt()
+        } else {
+            0
+        }
 
         val pred30 = currentWeight + predictedWeeklyKg * 30.0 / 7.0
         val pred60 = currentWeight + predictedWeeklyKg * 60.0 / 7.0
@@ -273,6 +284,7 @@ object WeightAnalysisService {
             loggedDayAvgCalories = loggedDayAvg,
             firstLoggedDate = window.firstLogged,
             lastLoggedDate = window.loggedDates.maxOrNull(),
+            weightSpanDays = weightSpanDays,
         )
     }
 }

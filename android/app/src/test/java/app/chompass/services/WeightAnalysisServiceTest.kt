@@ -90,11 +90,13 @@ class WeightAnalysisServiceTest {
   @Test
   fun adaptiveGoal_lowersCaloriesWhenLosingTooSlowly() {
     val p = profile().copy(customCalories = 2200)
-    val foods = (1..5).map { foodEntry(calories = 2200, dayOffset = it.toLong()) }
+    val foods = (1..8).map { foodEntry(calories = 2200, dayOffset = it.toLong()) }
     val weights = listOf(
-      WeightEntry(date = daysAgo(21), weightKg = 80.0),
-      WeightEntry(date = daysAgo(14), weightKg = 79.9),
-      WeightEntry(date = daysAgo(7), weightKg = 79.85),
+      WeightEntry(date = daysAgo(35), weightKg = 80.0),
+      WeightEntry(date = daysAgo(28), weightKg = 79.95),
+      WeightEntry(date = daysAgo(21), weightKg = 79.9),
+      WeightEntry(date = daysAgo(14), weightKg = 79.85),
+      WeightEntry(date = daysAgo(7), weightKg = 79.82),
       WeightEntry(date = daysAgo(0), weightKg = 79.8),
     )
     val result = AdaptiveGoalService.apply(p, weights, foods)
@@ -108,7 +110,21 @@ class WeightAnalysisServiceTest {
     val p = profile().copy(customCalories = 2000)
     val result = AdaptiveGoalService.apply(p, emptyList(), emptyList())
     assertFalse(result.changed)
-    assertTrue(result.message.contains("4"))
+    assertTrue(result.message.contains("four weeks"))
+  }
+
+  @Test
+  fun adaptiveGoal_noChangeOnTwoNoisyWeeks() {
+    val p = profile().copy(customCalories = 2000)
+    val foods = (1..8).map { foodEntry(calories = 2000, dayOffset = it.toLong()) }
+    val weights = listOf(
+      WeightEntry(date = daysAgo(10), weightKg = 80.0),
+      WeightEntry(date = daysAgo(5), weightKg = 80.4),
+      WeightEntry(date = daysAgo(0), weightKg = 80.6),
+    )
+    val result = AdaptiveGoalService.apply(p, weights, foods)
+    assertFalse(result.changed)
+    assertTrue(result.message.contains("four weeks"))
   }
 
   @Test

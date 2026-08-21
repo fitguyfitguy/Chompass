@@ -72,7 +72,7 @@ describe("computeWeightForecast / suggestAdaptiveCalories", () => {
   it("adaptive needs enough data", () => {
     const r = suggestAdaptiveCalories({ profile, weights: [], foods: [] });
     assert.equal(r.changed, false);
-    assert.match(r.message, /needs at least/);
+    assert.match(r.message, /four weeks/);
   });
 
   it("nine consecutive complete days uses logged-day average", () => {
