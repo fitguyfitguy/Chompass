@@ -10,16 +10,21 @@ import { loadProviderKey, listConfiguredProviders } from "./key-storage.js";
 import { t } from "../i18n/index.js";
 import {
   KCAL_PER_KG_BODY_MASS,
+  CALORIE_ABSOLUTE_FLOOR_KCAL,
+  CALORIE_PARSER_CEILING_KCAL,
   bmr,
   tdee,
   dailyCalories,
   dailyTargets,
   proteinGoal,
+  clampAutoCalories,
+  safetyFloorKcal,
 } from "../chompass-core/formulas.js";
 import {
   activityMultipliersLine,
   proteinPerKgLine,
   calorieAdjustmentLine,
+  calorieSafetyLine,
 } from "../chompass-core/goal-formula-reference.js";
 
 /** @typedef {import('../chompass-core/models.js').UserProfile} UserProfile */
@@ -63,7 +68,7 @@ export function parseGoalCalculation(text) {
   const macro = (v, cap) => Math.min(cap, Math.max(0, intOf(v) ?? 0));
   const reasonRaw = json.reason != null ? String(json.reason).trim() : "";
   return {
-    calories: Math.min(6000, Math.max(800, calories)),
+    calories: Math.min(CALORIE_PARSER_CEILING_KCAL, Math.max(CALORIE_ABSOLUTE_FLOOR_KCAL, calories)),
     protein: macro(json.protein, 500),
     carbs: macro(json.carbs, 1200),
     fat: macro(json.fat, 400),
@@ -123,7 +128,8 @@ export async function calculateGoalsWithAi({
     tools: [],
     signal,
   });
-  return parseGoalCalculation(response.text);
+  const parsed = parseGoalCalculation(response.text);
+  return { ...parsed, calories: clampAutoCalories(parsed.calories, profile) };
 }
 
 /**
@@ -205,7 +211,6 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
   const activityLine = activityMultipliersLine();
   const proteinLine = proteinPerKgLine();
   const calorieAdjLine = calorieAdjustmentLine();
-  const proteinBasis = profile.bodyFatPercentage != null ? "lean body mass" : "full bodyweight";
 
   const observedSection = buildObservedSection(forecast, weightMetric);
   const dietLine = profile.ketoMode
@@ -229,11 +234,12 @@ FORMULAS
 - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg.
 - TDEE = BMR * activity multiplier. Multipliers: ${activityLine}.
 - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${calorieAdjLine}.
-- Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${proteinLine} g/kg; +0.2 if losing) applied to the user's ${proteinBasis}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
+- Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${proteinLine} g/kg; +0.2 if losing) applied to the user's full bodyweight. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
 - Fat: 0.6 g/kg of full bodyweight.
 - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
 BMR method in effect for this user: ${bmrMethod}.
-Keep calories within 800-6000. Use integers only. Output no keys other than calories, protein, carbs, fat, reason.
+${calorieSafetyLine()}
+This user's BMR is ${Math.trunc(bmr(formulaProfile))} kcal; floor is ${safetyFloorKcal(formulaProfile)} kcal. Use integers only. Output no keys other than calories, protein, carbs, fat, reason.
 
 USER PROFILE
 - Gender: ${profile.sex}
@@ -292,7 +298,7 @@ function buildObservedSection(forecast, weightMetric) {
     );
   }
   lines.push(
-    "HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. Keep calories within 800-6000."
+    `HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. ${calorieSafetyLine()}`
   );
   return lines.join("\n");
 }

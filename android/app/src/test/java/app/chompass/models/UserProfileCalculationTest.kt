@@ -195,6 +195,22 @@ class UserProfileCalculationTest {
   }
 
   @Test
+  fun applyingAiGoals_clampsUnlockedCaloriesToFloor() {
+    val p = profile(
+      gender = Gender.FEMALE,
+      ageYears = 60,
+      heightCm = 155.0,
+      weightKg = 52.0,
+      activityLevel = ActivityLevel.SEDENTARY,
+      goal = WeightGoal.LOSE,
+      weeklyChangeKg = 0.5,
+    ).copy(customCalories = 1800)
+    val next = p.applyingAiGoals(calories = 800, protein = 80, carbs = 80, fat = 40)
+    assertEquals(CalorieSafety.floorKcal(p.bmr), next.effectiveCalories)
+    assertTrue(next.effectiveCalories >= 1200)
+  }
+
+  @Test
   fun applyingAiGoals_keepsLockedProtein() {
     val p = profile().copy(
       customCalories = 2000,

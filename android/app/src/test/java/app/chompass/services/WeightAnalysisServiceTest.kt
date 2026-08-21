@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.models.ActivityLevel
+import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.Gender
@@ -194,6 +195,15 @@ class WeightAnalysisServiceTest {
     assertEquals(150, 1900 - result.updatedCalories!!) // hits the −150 cap: slow loss vs −0.5 kg/week target
     assertTrue(result.message, result.message.contains("Observed"))
     assertTrue(result.message, result.message.contains("target"))
+  }
+
+  @Test
+  fun adaptiveGoal_raisesSubFloorTargetWithoutWaitingForTrend() {
+    val p = profile().copy(customCalories = 800)
+    val result = AdaptiveGoalService.apply(p, emptyList(), emptyList())
+    assertTrue(result.changed)
+    assertEquals(CalorieSafety.floorKcal(p.bmr), result.updatedCalories)
+    assertTrue(result.message.contains("safety floor"))
   }
 
   @Test

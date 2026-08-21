@@ -133,6 +133,14 @@ class FoodJsonParserTest {
     }
 
     @Test
+    fun parseGoalCalculation_raisesBelowAbsoluteFloor() {
+        val goals = FoodJsonParser.parseGoalCalculation(
+            """{"calories":200,"protein":80,"carbs":50,"fat":40}""",
+        )
+        assertEquals(1200, goals.calories)
+    }
+
+    @Test
     fun parseHealthEnergyGoalSuggestion_readsCalories() {
         val suggestion = FoodJsonParser.parseHealthEnergyGoalSuggestion(
             """{"calories":2200,"reason":"active day"}""",

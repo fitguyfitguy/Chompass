@@ -7,6 +7,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.R
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
 import app.chompass.models.OptionalNutrientGoals
@@ -172,7 +173,8 @@ class FoodAnalysisService(
             Use Health Connect energy as the primary activity signal, but keep the app's existing formula as a sanity check.
             If Health Connect total energy is unavailable, estimate total daily burn from app BMR plus Health Connect active energy.
             Apply the user's weight goal and weekly change preference to choose the calorie target.
-            Keep calories practical for a consumer food tracker: 800-6000 kcal.
+            ${GoalFormulaReference.calorieSafetyLine()}
+            This user's BMR is ${profile.bmr.toInt()} kcal; floor is ${CalorieSafety.floorKcal(profile.bmr)} kcal.
             Do not set protein, carbs, or fat; the app keeps macros unlocked on auto-balance unless the user manually locks them.
             Use integers only for calories. Do not include any other keys.
 
@@ -198,7 +200,8 @@ class FoodAnalysisService(
             - Basal energy average: ${energy.basalAverageCalories?.let { "$it kcal/day" } ?: "not available"}
             - Health total: $healthTotalLine
         """.trimIndent()
-        return FoodJsonParser.parseHealthEnergyGoalSuggestion(callAi(prompt, imageBytes = null))
+        val suggestion = FoodJsonParser.parseHealthEnergyGoalSuggestion(callAi(prompt, imageBytes = null))
+        return suggestion.copy(calories = CalorieSafety.clampAuto(suggestion.calories, profile))
     }
 
     /**
@@ -265,14 +268,14 @@ class FoodAnalysisService(
                 if (forecast.trendsDisagree) {
                     appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories.")
                 }
-                append("HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. Keep calories within 800-6000.")
+                append("HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. ${GoalFormulaReference.calorieSafetyLine()}")
             }
         }
 
         // Energy Burn toggle: when on (and Health Connect has enough data) this measured
         // maintenance replaces the formula TDEE as the calorie anchor.
         val measuredSection = if (measuredTdee != null) {
-            "\nMEASURED ENERGY BURN: the user's REAL maintenance from Health Connect (14-day average of active + basal calories). Use THIS as the maintenance/TDEE anchor INSTEAD of the formula TDEE: $measuredTdee kcal/day. Apply the weight goal and weekly-change adjustment to this measured maintenance. Still sanity-check it against the observed weight trend."
+            "\nMEASURED ENERGY BURN: the user's REAL maintenance from Health Connect (14-day average of active + basal calories). Use THIS as the maintenance/TDEE anchor INSTEAD of the formula TDEE: $measuredTdee kcal/day. Apply the weight goal and weekly-change adjustment to this measured maintenance. Still sanity-check it against the observed weight trend. If measured maintenance is below BMR, do not apply a further deficit below the safety floor."
         } else ""
 
         // Optional tape-measure circumferences + derived metrics. Extra signal only — never overrides
@@ -293,11 +296,12 @@ class FoodAnalysisService(
             - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg.
             - TDEE = BMR * activity multiplier. Multipliers: ${GoalFormulaReference.activityMultipliersLine()}.
             - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${GoalFormulaReference.calorieAdjustmentLine()}.
-            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's ${if (profile.bodyFatPercentage != null) "lean body mass" else "full bodyweight"}. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target.
+            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's full bodyweight. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
             - Fat: 0.6 g/kg of full bodyweight.
             - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
             BMR method in effect for this user: $bmrMethod.
-            Keep calories within 800-6000. Use integers only. Output no keys other than calories, protein, carbs, fat, reason.
+            ${GoalFormulaReference.calorieSafetyLine()}
+            This user's BMR is ${profile.bmr.toInt()} kcal; floor is ${CalorieSafety.floorKcal(profile.bmr)} kcal. Use integers only. Output no keys other than calories, protein, carbs, fat, reason.
 
             USER PROFILE
             - Gender: ${profile.gender.name.lowercase()}
@@ -332,9 +336,10 @@ class FoodAnalysisService(
             val lock = profile.goalLockPromptSection()
             if (lock.isNotBlank()) Log.d("Chompass", "calculateGoals$lock")
         }
-        return FoodJsonParser.parseGoalCalculation(
+        val parsed = FoodJsonParser.parseGoalCalculation(
             callAi(prompt, imageBytes = null, op = "calculateGoals", reportPhases = false),
         )
+        return parsed.copy(calories = CalorieSafety.clampAuto(parsed.calories, profile))
     }
 
     suspend fun suggestMealWhatIf(

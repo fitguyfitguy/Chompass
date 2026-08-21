@@ -20,6 +20,11 @@ test("parseGoalCalculation_clampsRanges", () => {
   assert.equal(goals.reason, "test");
 });
 
+test("parseGoalCalculation_raisesBelowAbsoluteFloor", () => {
+  const goals = parseGoalCalculation(`{"calories":200,"protein":80,"carbs":50,"fat":40}`);
+  assert.equal(goals.calories, 1200);
+});
+
 test("parseGoalCalculation_extractsFencedJson", () => {
   const goals = parseGoalCalculation(`Here you go:\n\`\`\`json\n{"calories":2100,"protein":140,"carbs":180,"fat":70,"reason":"ok"}\n\`\`\``);
   assert.equal(goals.calories, 2100);
@@ -59,6 +64,8 @@ test("buildCalculateGoalsPrompt_includesFormulaAnchor", () => {
   assert.match(prompt, /APP FORMULA REFERENCE/);
   assert.match(prompt, /Weight goal: maintain/);
   assert.match(prompt, /Diet mode: standard/);
+  assert.match(prompt, /Never set calories below this user's BMR or 1200/);
+  assert.doesNotMatch(prompt, /800-6000/);
 });
 
 test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {

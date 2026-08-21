@@ -66,6 +66,10 @@ class GoalFormulaReferenceTest {
       fixture.getString("moderateActivityMultiplierRationale"),
       GoalFormulaReference.moderateActivityMultiplierRationale(),
     )
+    assertEquals(
+      fixture.getString("calorieSafetyLine"),
+      GoalFormulaReference.calorieSafetyLine(),
+    )
   }
 
   private fun format(value: Double): String =
