@@ -177,6 +177,7 @@
     <string name="onboarding_pace_caption_slow">Doux et durable. Idéal pour des habitudes à long terme.</string>
     <string name="onboarding_pace_caption_fast">Agressif mais réalisable. Demande une grande discipline.</string>
     <string name="onboarding_pace_caption_recommended">Le rythme le plus équilibré, motivant et durable.</string>
+    <string name="onboarding_pace_capped">Ce rythme est impossible pour ta morphologie sans passer sous ton métabolisme de repos estimé. Ton objectif sera de %1$d kcal.</string>
 
     <string name="onboarding_notifications_title">Recevez des rappels\npour enregistrer vos repas</string>
     <string name="onboarding_notifications_subtitle">Recevez de doux rappels aux heures des repas\npour ne jamais oublier de suivre.</string>
@@ -221,6 +222,9 @@
     <string name="onboarding_plan_daily_calories">calories quotidiennes</string>
     <string name="onboarding_plan_doctor_title">Veuillez consulter un médecin</string>
     <string name="onboarding_plan_doctor_message">La recommandation minimale est de 1 200 calories par jour.</string>
+    <string name="onboarding_minor_title">Formules pour adultes uniquement</string>
+    <string name="onboarding_minor_message">Cette appli utilise des formules de calories pour adultes. Si tu as moins de 18 ans, demande à un professionnel de santé avant d'utiliser ces objectifs.</string>
+    <string name="onboarding_minor_continue">Je comprends</string>
 
     <string name="onboarding_plan_field_calories">Calories quotidiennes</string>
     <string name="onboarding_plan_field_protein">Protéines</string>
@@ -1361,6 +1365,9 @@
     <string name="settings_personal_intro">Les bases que Chompass utilise pour estimer vos besoins énergétiques et vos objectifs.</string>
     <string name="settings_picker_custom_placeholder">Valeur en %1$s</string>
     <string name="settings_picker_enter_custom">Saisir une valeur personnalisée…</string>
+    <string name="settings_calorie_below_floor_title">Sous le seuil de sécurité</string>
+    <string name="settings_calorie_below_floor_message">C'est sous ton métabolisme de repos estimé ou sous 1 200 kcal. Continue uniquement si un professionnel de santé l'a prescrit.</string>
+    <string name="settings_calorie_below_floor_continue">Continuer quand même</string>
     <string name="settings_picker_use_wheel">Utiliser la molette</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
     <string name="settings_portion_clarify">Vérification de la taille de portion</string>

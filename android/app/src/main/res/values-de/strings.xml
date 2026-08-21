@@ -519,6 +519,7 @@
     <string name="onboarding_pace_caption_fast">Ambitioniert, aber machbar. Erfordert starke Disziplin.</string>
 
     <string name="onboarding_pace_caption_recommended">Das ausgewogenste Tempo, motivierend und nachhaltig.</string>
+    <string name="onboarding_pace_capped">Dieses Tempo ist bei deiner Größe nicht möglich, ohne unter deinen geschätzten Ruheumsatz zu fallen. Dein Ziel wird %1$d kcal sein.</string>
 
     <string name="onboarding_notifications_title">Erinnerung zum\nErfassen von Mahlzeiten</string>
 
@@ -620,6 +621,9 @@ für dich ein</string>
     <string name="onboarding_plan_doctor_title">Bitte konsultiere einen Arzt</string>
 
     <string name="onboarding_plan_doctor_message">Die empfohlene Mindestmenge beträgt 1.200 Kalorien pro Tag.</string>
+    <string name="onboarding_minor_title">Nur Formeln für Erwachsene</string>
+    <string name="onboarding_minor_message">Diese App verwendet Kalorienformeln für Erwachsene. Wenn du unter 18 bist, frage eine Ärztin oder einen Arzt, bevor du diese Ziele verwendest.</string>
+    <string name="onboarding_minor_continue">Ich verstehe</string>
 
     <string name="onboarding_disclaimers_title">Bevor du beginnst</string>
 
@@ -2751,6 +2755,9 @@ für dich ein</string>
     <string name="settings_reset_autobalance">Auf „Auto-Balance“ zurücksetzen</string>
 
     <string name="settings_picker_enter_custom">Benutzerdefinierten Wert eingeben…</string>
+    <string name="settings_calorie_below_floor_title">Unter der Sicherheitsgrenze</string>
+    <string name="settings_calorie_below_floor_message">Das liegt unter deinem geschätzten Ruheumsatz oder unter 1.200 kcal. Mach nur weiter, wenn eine Ärztin oder ein Arzt es verordnet hat.</string>
+    <string name="settings_calorie_below_floor_continue">Trotzdem fortfahren</string>
 
     <string name="settings_picker_use_wheel">Rad verwenden</string>
 

@@ -179,6 +179,7 @@ bilirsən?</string>
     <string name="onboarding_pace_caption_slow">Yumşaq və davamlı. Uzunmüddətli vərdişlər üçün əladır.</string>
     <string name="onboarding_pace_caption_fast">Aqressiv, lakin mümkündür. Güclü intizam tələb edir.</string>
     <string name="onboarding_pace_caption_recommended">Ən balanslı sürət, motivasiyaedici və davamlı.</string>
+    <string name="onboarding_pace_capped">Bu sürət, təxmini istirahət xərcinin altına düşmədən sənin bədən quruluşun üçün mümkün deyil. Hədəfin %1$d kkal olacaq.</string>
 
     <string name="onboarding_notifications_title">Yeməkləri qeyd etmək üçün\nxatırlatma al</string>
     <string name="onboarding_notifications_subtitle">Yemək vaxtlarında yumşaq xatırlatmalar al\nki, izləməyi unutmayasan.</string>
@@ -223,6 +224,9 @@ bilirsən?</string>
     <string name="onboarding_plan_daily_calories">gündəlik kalorilər</string>
     <string name="onboarding_plan_doctor_title">Zəhmət olmasa həkimlə məsləhətləşin</string>
     <string name="onboarding_plan_doctor_message">Tövsiyə olunan minimum gündə 1,200 kaloridir.</string>
+    <string name="onboarding_minor_title">Yalnız böyüklər üçün düsturlar</string>
+    <string name="onboarding_minor_message">Bu tətbiq böyüklər üçün kalori düsturlarından istifadə edir. 18 yaşından kiçiksənsə, bu hədəfləri istifadə etməzdən əvvəl səhiyyə mütəxəssisindən soruş.</string>
+    <string name="onboarding_minor_continue">Başa düşdüm</string>
 
     <string name="onboarding_plan_field_calories">Gündəlik kalorilər</string>
     <string name="onboarding_plan_field_carbs">Karbohidrat</string>
@@ -1302,6 +1306,9 @@ bilirsən?</string>
     <string name="settings_personal_intro">Chompass-ın enerji ehtiyaclarını və məqsədlərini təxmin etmək üçün istifadə etdiyi əsaslar.</string>
     <string name="settings_picker_custom_placeholder">%1$s ilə dəyər</string>
     <string name="settings_picker_enter_custom">Fərdi dəyər daxil et…</string>
+    <string name="settings_calorie_below_floor_title">Təhlükəsiz həddin altında</string>
+    <string name="settings_calorie_below_floor_message">Bu, təxmini istirahət xərcindən və ya 1.200 kkal-dan aşağıdır. Yalnız səhiyyə mütəxəssisi tövsiyə edibsə davam et.</string>
+    <string name="settings_calorie_below_floor_continue">Yenə də davam et</string>
     <string name="settings_picker_use_wheel">Təkərdən istifadə et</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mkq ≈ %2$d IU</string>
     <string name="settings_portion_clarify">Porsiya ölçüsü yoxlaması</string>

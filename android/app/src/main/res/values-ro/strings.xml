@@ -175,6 +175,7 @@
     <string name="onboarding_pace_caption_slow">Blând și sustenabil. Excelent pentru obiceiuri pe termen lung.</string>
     <string name="onboarding_pace_caption_fast">Agresiv, dar realizabil. Necesită disciplină puternică.</string>
     <string name="onboarding_pace_caption_recommended">Cel mai echilibrat ritm, motivant și sustenabil.</string>
+    <string name="onboarding_pace_capped">Acest ritm nu este posibil pentru fizicul tău fără să scadă sub metabolismul de repaus estimat. Obiectivul tău va fi de %1$d kcal.</string>
 
     <string name="onboarding_notifications_title">Fii notificat să\nînregistrezi mesele</string>
     <string name="onboarding_notifications_subtitle">Primește mementouri blânde la orele meselor\nca să nu uiți să urmărești.</string>
@@ -220,6 +221,9 @@
     <string name="onboarding_plan_daily_calories">calorii zilnice</string>
     <string name="onboarding_plan_doctor_title">Consultă un medic</string>
     <string name="onboarding_plan_doctor_message">Recomandarea minimă este de 1.200 de calorii pe zi.</string>
+    <string name="onboarding_minor_title">Doar formule pentru adulți</string>
+    <string name="onboarding_minor_message">Această aplicație folosește formule de calorii pentru adulți. Dacă ai sub 18 ani, întreabă un specialist în sănătate înainte de a folosi aceste obiective.</string>
+    <string name="onboarding_minor_continue">Am înțeles</string>
 
     <string name="onboarding_plan_field_calories">Calorii zilnice</string>
     <string name="onboarding_plan_field_protein">Proteine</string>
@@ -1301,6 +1305,9 @@
     <string name="settings_personal_intro">Bazele pe care Chompass le folosește pentru a estima nevoile tale de energie și obiectivele.</string>
     <string name="settings_picker_custom_placeholder">Valoare în %1$s</string>
     <string name="settings_picker_enter_custom">Introdu valoare personalizată…</string>
+    <string name="settings_calorie_below_floor_title">Sub limita de siguranță</string>
+    <string name="settings_calorie_below_floor_message">Această valoare este sub metabolismul de repaus estimat sau sub 1.200 kcal. Continuă doar dacă a fost prescris de un specialist în sănătate.</string>
+    <string name="settings_calorie_below_floor_continue">Continuă oricum</string>
     <string name="settings_picker_use_wheel">Folosește roata</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
     <string name="settings_portion_clarify">Verificarea mărimii porției</string>

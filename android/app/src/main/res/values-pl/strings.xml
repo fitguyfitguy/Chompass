@@ -303,6 +303,7 @@
     <string name="onboarding_pace_caption_slow">Łagodne i zrównoważone. Świetne na długoterminowe nawyki.</string>
     <string name="onboarding_pace_caption_fast">Agresywne, ale wykonalne. Wymaga silnej dyscypliny.</string>
     <string name="onboarding_pace_caption_recommended">Najbardziej zrównoważone tempo, motywujące i możliwe do utrzymania.</string>
+    <string name="onboarding_pace_capped">To tempo nie jest możliwe dla Twojej sylwetki bez zejścia poniżej szacowanego spoczynkowego wydatku energetycznego. Twój cel wyniesie %1$d kcal.</string>
 
     <string name="onboarding_notifications_title">Przypominaj o\nlogowaniu posiłków</string>
     <string name="onboarding_notifications_subtitle">Delikatne przypomnienia o porach posiłków,\nżebyś nie zapominał o śledzeniu.</string>
@@ -358,6 +359,9 @@
     <string name="onboarding_plan_daily_calories">dzienne kalorie</string>
     <string name="onboarding_plan_doctor_title">Skonsultuj się z lekarzem</string>
     <string name="onboarding_plan_doctor_message">Minimalna rekomendacja to 1 200 kalorii dziennie.</string>
+    <string name="onboarding_minor_title">Tylko formuły dla dorosłych</string>
+    <string name="onboarding_minor_message">Ta aplikacja używa formuł kalorycznych dla dorosłych. Jeśli masz mniej niż 18 lat, zapytaj specjalistę zdrowia, zanim użyjesz tych celów.</string>
+    <string name="onboarding_minor_continue">Rozumiem</string>
 
     <string name="onboarding_disclaimers_title">Zanim zaczniesz</string>
     <string name="onboarding_disclaimers_subtitle">Przeczytaj te ważne informacje</string>
@@ -1507,6 +1511,9 @@
     <string name="settings_not_medical_advice">Nie porada medyczna</string>
     <string name="settings_reset_autobalance">Resetuj do auto-balansu</string>
     <string name="settings_picker_enter_custom">Wpisz własną wartość…</string>
+    <string name="settings_calorie_below_floor_title">Poniżej bezpiecznego minimum</string>
+    <string name="settings_calorie_below_floor_message">To poniżej szacowanego spoczynkowego wydatku energetycznego lub 1 200 kcal. Kontynuuj tylko, jeśli zalecił to specjalista zdrowia.</string>
+    <string name="settings_calorie_below_floor_continue">Kontynuuj mimo to</string>
     <string name="settings_picker_use_wheel">Użyj koła</string>
     <string name="settings_picker_custom_placeholder">Wartość w %1$s</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>

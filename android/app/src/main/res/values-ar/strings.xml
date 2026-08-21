@@ -180,6 +180,7 @@
     <string name="onboarding_pace_caption_slow">لطيف ومستدام. رائع للعادات طويلة المدى.</string>
     <string name="onboarding_pace_caption_fast">حازم لكنه قابل للتنفيذ. يتطلب انضباطًا قويًا.</string>
     <string name="onboarding_pace_caption_recommended">الوتيرة الأكثر توازنًا، محفّزة ومستدامة.</string>
+    <string name="onboarding_pace_capped">هذا المعدل غير ممكن لجسمك دون النزول تحت معدل الأيض أثناء الراحة المقدر. سيكون هدفك %1$d سعرة حرارية.</string>
 
     <string name="onboarding_notifications_title">احصل على تذكيرات\nلتسجيل الوجبات</string>
     <string name="onboarding_notifications_subtitle">احصل على تذكيرات لطيفة في أوقات الوجبات\nحتى لا تنسى التتبع أبدًا.</string>
@@ -225,6 +226,9 @@
     <string name="onboarding_plan_daily_calories">السعرات اليومية</string>
     <string name="onboarding_plan_doctor_title">يرجى استشارة طبيب</string>
     <string name="onboarding_plan_doctor_message">الحد الأدنى الموصى به هو 1,200 سعرة حرارية يوميًا.</string>
+    <string name="onboarding_minor_title">صيغ للبالغين فقط</string>
+    <string name="onboarding_minor_message">يستخدم هذا التطبيق صيغ سعرات حرارية للبالغين. إذا كان عمرك أقل من 18 عامًا، اسأل مختصًا صحيًا قبل استخدام هذه الأهداف.</string>
+    <string name="onboarding_minor_continue">أفهم</string>
 
     <string name="onboarding_plan_field_calories">السعرات اليومية</string>
     <string name="onboarding_plan_field_protein">البروتين</string>
@@ -1303,6 +1307,9 @@
     <string name="settings_personal_intro">الأساسيات التي يستخدمها Chompass لتقدير احتياجاتك من الطاقة وأهدافك.</string>
     <string name="settings_picker_custom_placeholder">قيمة بوحدة %1$s</string>
     <string name="settings_picker_enter_custom">إدخال قيمة مخصصة…</string>
+    <string name="settings_calorie_below_floor_title">أقل من الحد الآمن</string>
+    <string name="settings_calorie_below_floor_message">هذا أقل من معدل الأيض أثناء الراحة المقدر أو 1,200 سعرة حرارية. استمر فقط إذا وصفه مختص صحي.</string>
+    <string name="settings_calorie_below_floor_continue">المتابعة على أي حال</string>
     <string name="settings_picker_use_wheel">استخدام العجلة</string>
     <string name="settings_picker_vitd_iu_hint">%1$d مكغ ≈ %2$d وحدة دولية</string>
     <string name="settings_portion_clarify">التحقق من حجم الحصة</string>

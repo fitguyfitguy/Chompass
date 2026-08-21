@@ -164,6 +164,7 @@
     <string name="onboarding_pace_caption_slow">М\'який і стабільний. Чудово для довготривалих звичок.</string>
     <string name="onboarding_pace_caption_fast">Агресивний, але реальний. Потребує самодисципліни.</string>
     <string name="onboarding_pace_caption_recommended">Найзбалансованіший темп, мотивує і не виснажує.</string>
+    <string name="onboarding_pace_capped">Такий темп неможливий для вашої статури без зниження нижче розрахункового споживання у спокої. Ваша ціль становитиме %1$d ккал.</string>
     <string name="onboarding_notifications_title">Нагадування про\nвнесення прийомів їжі</string>
     <string name="onboarding_notifications_subtitle">Отримуй м\'які нагадування в час прийомів їжі,\nщоб не забувати записувати.</string>
     <string name="onboarding_notifications_enabled">Нагадування ввімкнено</string>
@@ -204,6 +205,9 @@
     <string name="onboarding_plan_daily_calories">щоденні калорії</string>
     <string name="onboarding_plan_doctor_title">Будь ласка, проконсультуйся з лікарем</string>
     <string name="onboarding_plan_doctor_message">Мінімальна рекомендація: 1 200 калорій на день.</string>
+    <string name="onboarding_minor_title">Лише формули для дорослих</string>
+    <string name="onboarding_minor_message">Цей застосунок використовує формули калорій для дорослих. Якщо вам менше 18 років, запитайте медичного спеціаліста, перш ніж використовувати ці цілі.</string>
+    <string name="onboarding_minor_continue">Розумію</string>
     <string name="onboarding_plan_field_calories">Щоденні калорії</string>
     <string name="onboarding_plan_field_carbs">Вуглеводи</string>
     <string name="onboarding_plan_field_fat">Жири</string>
@@ -1251,6 +1255,9 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_personal_intro">Базові дані, які Chompass використовує для оцінки потреб в енергії та цілей.</string>
     <string name="settings_picker_custom_placeholder">Значення в %1$s</string>
     <string name="settings_picker_enter_custom">Власне значення…</string>
+    <string name="settings_calorie_below_floor_title">Нижче безпечного мінімуму</string>
+    <string name="settings_calorie_below_floor_message">Це нижче вашого розрахункового споживання у спокої або 1 200 ккал. Продовжуйте, лише якщо це призначив медичний спеціаліст.</string>
+    <string name="settings_calorie_below_floor_continue">Все одно продовжити</string>
     <string name="settings_picker_use_wheel">Використовувати колесо</string>
     <string name="settings_picker_vitd_iu_hint">%1$d мкг ≈ %2$d МО</string>
     <string name="settings_portion_clarify">Перевірка розміру порції</string>

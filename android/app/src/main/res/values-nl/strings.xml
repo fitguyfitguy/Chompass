@@ -169,6 +169,7 @@
     <string name="onboarding_pace_caption_slow">Mild en duurzaam. Geweldig voor langetermijngewoonten.</string>
     <string name="onboarding_pace_caption_fast">Agressief maar haalbaar. Vereist sterke discipline.</string>
     <string name="onboarding_pace_caption_recommended">Het meest gebalanceerde tempo, motiverend en duurzaam.</string>
+    <string name="onboarding_pace_capped">Dit tempo is bij jouw postuur niet mogelijk zonder onder je geschatte rustverbruik te zakken. Je doel wordt %1$d kcal.</string>
 
     <string name="onboarding_notifications_title">Word herinnerd om\nmaaltijden te loggen</string>
     <string name="onboarding_notifications_subtitle">Krijg vriendelijke herinneringen op maaltijden\nzodat je nooit vergeet bij te houden.</string>
@@ -214,6 +215,9 @@
     <string name="onboarding_plan_daily_calories">dagelijkse calorieën</string>
     <string name="onboarding_plan_doctor_title">Raadpleeg een arts</string>
     <string name="onboarding_plan_doctor_message">De minimale aanbeveling is 1.200 calorieën per dag.</string>
+    <string name="onboarding_minor_title">Alleen formules voor volwassenen</string>
+    <string name="onboarding_minor_message">Deze app gebruikt calorieformules voor volwassenen. Ben je jonger dan 18? Vraag dan eerst een zorgverlener voordat je deze doelen gebruikt.</string>
+    <string name="onboarding_minor_continue">Ik begrijp het</string>
 
     <string name="onboarding_plan_field_calories">Dagelijkse calorieën</string>
     <string name="onboarding_plan_field_protein">Eiwit</string>
@@ -1284,6 +1288,9 @@
     <string name="settings_personal_intro">De basis die Chompass gebruikt om je energiebehoefte en doelen te schatten.</string>
     <string name="settings_picker_custom_placeholder">Waarde in %1$s</string>
     <string name="settings_picker_enter_custom">Eigen waarde invoeren…</string>
+    <string name="settings_calorie_below_floor_title">Onder de veilige ondergrens</string>
+    <string name="settings_calorie_below_floor_message">Dit ligt onder je geschatte rustverbruik of onder 1.200 kcal. Ga alleen verder als een zorgverlener het heeft voorgeschreven.</string>
+    <string name="settings_calorie_below_floor_continue">Toch doorgaan</string>
     <string name="settings_picker_use_wheel">Wiel gebruiken</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IE</string>
     <string name="settings_portion_clarify">Portiegroottecontrole</string>
