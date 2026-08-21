@@ -2,7 +2,7 @@
 
 Canonical reference for nutrition and sports-science math in Chompass. In-app copy lives under **Settings → Calculation Methods**; this document is the maintainer audit trail.
 
-**Last audited:** 2026-08-11
+**Last audited:** 2026-08-22
 
 ## How goals are produced
 
@@ -238,6 +238,7 @@ rawAdjustment = (targetWeeklyChange − observedWeeklyChange) × 7700 / 7
 clamped to ±150 kcal/day; ignored if |adjustment| < 25
 safetyFloor = max(BMR, 1200)
 safetyCeiling = max(floor, maintenanceTdee × 1.25)
+If currentCalories < safetyFloor, raise to the floor immediately (even without trend data).
 ```
 
 **Measured TDEE:** 14-day Health Connect active + basal average when Energy Burn enabled.
@@ -343,6 +344,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 ## Known limitations (user-facing caveats)
 
 1. Predictive equations carry ~±10% BMR error; TDEE error can be larger.
+1b. CAL-SAFE floor max(BMR, 1,200) is a UX guardrail, not a clinical prescription. Gender OTHER uses the female Mifflin term; the floor is the mitigation for under-estimated BMR.
 2. Energy balance is simplified (no metabolic adaptation model in forecast).
 3. Sparse food logging uses calendar-day averaging when logged days &lt; 50% of the window from first log through yesterday.
 4. Measured TDEE mixes device estimates with formula fallbacks.

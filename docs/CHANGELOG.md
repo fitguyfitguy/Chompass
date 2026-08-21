@@ -12,6 +12,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
+- **Lose goals stay at or above resting calories** (Android + web): formula, Recalculate, Adaptive, and onboarding never set a daily target below your estimated resting burn or 1,200 kcal. A faster weekly pace shrinks to fit that floor instead of writing a crash diet. You can still type a lower number after a confirm. Adaptive also raises a target that is already too low.
 - **Adaptive Goals is a small weekly nudge** (Android): about once a week it now adjusts calories by at most 150 kcal from your recent weight trend, and only after about four weeks of weigh-ins (six readings). Locked calorie and macro rows stay as you set them. Recalculate still asks the AI for a full plan, and if calories are locked it plans protein, carbs and fat around that number instead of replacing it. Closes Codeberg [#45](https://codeberg.org/fitguy/Chompass/issues/45) by [@Ludisc](https://codeberg.org/Ludisc).
 
 ### Fixed
