@@ -131,7 +131,9 @@ class FoodAnalysisService(
             - Potassium, calcium, iron, magnesium, zinc, vitamins, folate, and omega-3 should use practical daily targets, not food-log intake.
             - Use integers only.
         """.trimIndent()
-        return FoodJsonParser.parseOptionalNutrientGoals(callAi(prompt, imageBytes = null))
+        return FoodJsonParser.parseOptionalNutrientGoals(
+            callAi(prompt, imageBytes = null, op = "optionalNutrients", reportPhases = false),
+        )
     }
 
     suspend fun suggestHealthEnergyGoals(
@@ -318,7 +320,9 @@ class FoodAnalysisService(
             $measurementsSection
             $observedSection
         """.trimIndent()
-        return FoodJsonParser.parseGoalCalculation(callAi(prompt, imageBytes = null))
+        return FoodJsonParser.parseGoalCalculation(
+            callAi(prompt, imageBytes = null, op = "calculateGoals", reportPhases = false),
+        )
     }
 
     suspend fun suggestMealWhatIf(

@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -1354,9 +1355,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val measuredTdee = container.measuredEnergyTdeeIfEnabled(current)
             // AI-only — no formula fallback. If the AI provider is unavailable, leave the
             // existing goals untouched and tell the user so they can fix their key and retry.
+            Log.d("Chompass", "recalculateGoals: calling calculateGoals")
             val result = try {
                 container.foodAnalysis.calculateGoals(current, forecast, heightMetric, weightMetric, measuredTdee, container.bodyMeasurementRepository.latestSnapshot())
             } catch (e: Throwable) {
+                Log.e("Chompass", "recalculateGoals failed", e)
                 _ui.value = _ui.value.copy(
                     recalculatingGoals = false,
                     adaptiveGoalAlertTitle = "Couldn't Recalculate",
@@ -1364,6 +1367,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 )
                 return@launch
             }
+            Log.d("Chompass", "recalculateGoals: got ${result.calories} kcal")
             // Write unlocked fields only. Locked calories/macros survive Recalculate.
             val next = current.applyingAiGoals(
                 calories = result.calories,
@@ -1374,24 +1378,24 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val message = container.appContext.getString(R.string.vm_goals_updated, result.calories) +
                 (result.reason?.let { " $it" } ?: "")
             container.profileRepository.save(next)
-            // Goals are now fresh — capture this input baseline so the recalc nudge clears.
             lastRecalcSignature = next.goalInputSignature
             container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)
-            // Also AI-refresh the optional Other Nutrients; keep existing values on failure.
+            // Show the result now. Optional-nutrient AI is a second Gemini round-trip
+            // (can 503 / sit for minutes) and must not hold the spinner or the dialog.
+            _ui.value = _ui.value.copy(
+                recalculatingGoals = false,
+                profile = next,
+                adaptiveGoalAlertTitle = container.appContext.getString(R.string.vm_goals_recalculated),
+                adaptiveGoalAlertMessage = message,
+                goalsNeedRecalc = false
+            )
             try {
                 val goals = container.foodAnalysis.estimateOptionalNutrientGoals(next)
                 container.prefs.setOptionalNutrientGoals(goals)
                 _ui.value = _ui.value.copy(optionalNutrientGoals = goals)
-            } catch (_: Throwable) { /* keep existing nutrient goals */ }
-            val adaptiveResult = container.refreshAdaptiveGoalsIfNeeded(force = false)
-            val adaptiveNote = adaptiveResult?.takeIf { it.changed }?.let { "\n\n${it.message}" } ?: ""
-            _ui.value = _ui.value.copy(
-                recalculatingGoals = false,
-                profile = adaptiveResult?.profile ?: next,
-                adaptiveGoalAlertTitle = container.appContext.getString(R.string.vm_goals_recalculated),
-                adaptiveGoalAlertMessage = message + adaptiveNote,
-                goalsNeedRecalc = false
-            )
+            } catch (e: Throwable) {
+                Log.w("Chompass", "recalculateGoals: optional nutrients skipped", e)
+            }
         }
     }
 

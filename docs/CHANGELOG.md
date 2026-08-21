@@ -17,6 +17,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Coach average matches the Progress chart** (Android + web): asking the coach for a full analysis now uses the average of days you actually logged, not empty days before you started. Progress Avg also skips today, which is still being logged. Closes Codeberg [#49](https://codeberg.org/fitguy/Chompass/issues/49) and [#50](https://codeberg.org/fitguy/Chompass/issues/50) by [@tuxMode](https://codeberg.org/tuxMode).
+- **Recalculate returns as soon as calories and macros are ready** (Android): it no longer waits on a second AI call for optional nutrients, which could sit for minutes after Gemini hiccuped.
 
 ## [3.21.2] - 2026-08-20
 
