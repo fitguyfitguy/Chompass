@@ -2,6 +2,7 @@ package app.chompass.models
 
 import app.chompass.services.KetoCarbRecommendationService
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
@@ -138,5 +139,48 @@ class UserProfileCalculationTest {
     assertEquals(null, stillLose.goalWeightKg)
     val gain = profile(goal = WeightGoal.MAINTAIN).copy(goalWeightKg = 70.0)
     assertEquals(null, gain.withGoal(WeightGoal.GAIN).goalWeightKg)
+  }
+
+  @Test
+  fun applyingAiGoals_keepsLockedCalories() {
+    val p = profile().copy(
+      customCalories = 1900,
+      customProtein = 180,
+      customCarbs = 150,
+      customFat = 60,
+      caloriesLocked = true,
+    )
+    val next = p.applyingAiGoals(calories = 1500, protein = 120, carbs = 100, fat = 40)
+    assertEquals(1900, next.effectiveCalories)
+    assertTrue(next.caloriesLocked)
+  }
+
+  @Test
+  fun applyingAiGoals_writesUnlockedCalories() {
+    val p = profile().copy(
+      customCalories = 1900,
+      customProtein = 180,
+      customCarbs = 150,
+      customFat = 60,
+      caloriesLocked = false,
+    )
+    val next = p.applyingAiGoals(calories = 2100, protein = 140, carbs = 180, fat = 70)
+    assertEquals(2100, next.effectiveCalories)
+    assertEquals(140, next.effectiveProtein)
+    assertFalse(next.caloriesLocked)
+  }
+
+  @Test
+  fun applyingAiGoals_keepsLockedProtein() {
+    val p = profile().copy(
+      customCalories = 2000,
+      customProtein = 180,
+      customCarbs = 150,
+      customFat = 60,
+      lockedMacros = setOf(AutoBalanceMacro.PROTEIN),
+    )
+    val next = p.applyingAiGoals(calories = 2100, protein = 100, carbs = 200, fat = 70)
+    assertEquals(180, next.effectiveProtein)
+    assertEquals(2100, next.effectiveCalories)
   }
 }

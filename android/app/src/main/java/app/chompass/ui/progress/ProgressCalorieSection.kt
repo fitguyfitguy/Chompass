@@ -21,15 +21,18 @@ import java.time.LocalDate
 import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
-internal fun CalorieSection(dailyCalories: List<Pair<LocalDate, Int>>, calorieGoal: Int) {
+internal fun CalorieSection(
+    dailyCalories: List<Pair<LocalDate, Int>>,
+    calorieGoal: Int,
+    calorieAverage: Int? = null,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.progress_calories_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
-            if (dailyCalories.isNotEmpty()) {
-                val avg = dailyCalories.sumOf { it.second } / dailyCalories.size
+            if (calorieAverage != null) {
                 Text(
-                    stringResource(R.string.progress_avg_format, avg),
+                    stringResource(R.string.progress_avg_format, calorieAverage),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)

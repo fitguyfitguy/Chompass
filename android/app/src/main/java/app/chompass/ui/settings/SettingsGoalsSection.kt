@@ -57,7 +57,6 @@ internal fun SettingsGoalsSection(
     onHealthEnergyGoalsToggle: (Boolean) -> Unit,
     onShowAdaptiveGoalsInfo: () -> Unit,
     onShowHealthEnergyGoalsInfo: () -> Unit,
-    onShowAdaptiveLockHint: () -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_goals_how_title)) {
         Column(
@@ -157,12 +156,9 @@ internal fun SettingsGoalsSection(
                     )
                     HorizontalDivider()
                     // The lock glyph is read-only. Saving a value locks it; the picker's Reset
-                    // releases it. While Adaptive Goals is on, tapping a row explains that it owns
-                    // the targets (so editing would be overwritten weekly) instead of opening.
-                    val lockEnabled = !ui.adaptiveGoalsEnabled
-                    val openGoal = { target: SettingsSheet ->
-                        if (ui.adaptiveGoalsEnabled) onShowAdaptiveLockHint() else onOpenSheet(target)
-                    }
+                    // releases it. Locked rows survive Recalculate and weekly Adaptive.
+                    val lockEnabled = true
+                    val openGoal = { target: SettingsSheet -> onOpenSheet(target) }
                     LockableGoalRow(
                         label = stringResource(R.string.settings_calories),
                         value = stringResource(R.string.kcal_value_format, LocaleFormat.integer(p.effectiveCalories)),

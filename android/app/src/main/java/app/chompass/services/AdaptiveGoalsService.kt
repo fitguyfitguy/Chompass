@@ -1,13 +1,11 @@
 package app.chompass.services
 
-import app.chompass.data.BodyMeasurementRepository
 import app.chompass.R
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.data.WeightRepository
 import app.chompass.models.UserProfile
-import app.chompass.services.ai.FoodAnalysisService
 import app.chompass.services.health.HealthConnectManager
 import java.time.LocalDate
 import kotlin.math.roundToInt
@@ -23,8 +21,6 @@ class AdaptiveGoalsService(
     private val profileRepository: ProfileRepository,
     private val foodRepository: FoodRepository,
     private val weightRepository: WeightRepository,
-    private val bodyMeasurementRepository: BodyMeasurementRepository,
-    private val foodAnalysis: FoodAnalysisService,
     private val strings: (Int, Array<out Any>) -> String,
 ) {
     private var refreshInFlight = false
@@ -46,11 +42,9 @@ class AdaptiveGoalsService(
     }
 
     /**
-     * Adaptive Goals: automatically re-runs the FULL AI goal calculation (the same one the
-     * Recalculate button uses) about once a week, from the latest logged food + weight trend
-     * (hit-and-trial) and — when Energy Burn is on — the measured Health maintenance anchor.
-     * Silent and non-destructive on AI failure (keeps existing goals; marks checked so it does not
-     * retry on every app open). Protein is pinned to the activity multiplier, like manual recalc.
+     * Adaptive Goals: once a week, apply the deterministic ±150 kcal tweak
+     * ([AdaptiveGoalService.apply]) from the logged weight trend (or measured Health Connect
+     * TDEE). Locked calories are left untouched. Recalculate stays the AI path.
      */
     suspend fun refreshIfNeeded(force: Boolean = false): AdaptiveGoalResult? {
         if (refreshInFlight) return null
@@ -64,43 +58,21 @@ class AdaptiveGoalsService(
             }
 
             val profile = profileRepository.current() ?: return null
-            val heightMetric = prefs.heightUnit.first() == "cm"
-            val weightMetric = prefs.weightUnit.first() == "kg"
             val measuredTdee = measuredEnergyTdeeIfEnabled(profile)
-            val forecast = WeightAnalysisService.compute(
+            val result = AdaptiveGoalService.apply(
+                profile = profile,
                 weights = weightRepository.entries.first(),
                 foods = foodRepository.entries.first(),
-                profile = profile
+                measuredTdee = measuredTdee,
             )
-            val result = runCatching {
-                foodAnalysis.calculateGoals(
-                    profile,
-                    forecast,
-                    heightMetric,
-                    weightMetric,
-                    measuredTdee,
-                    bodyMeasurementRepository.latestSnapshot(),
-                )
-            }.getOrNull()
-            // Mark checked on success OR AI failure so a misconfigured provider isn't hit on every
-            // foreground; the weekly cadence simply resumes next week.
             prefs.setAdaptiveGoalsLastCheckDay(today.toString())
-            if (result == null) return null
+            if (!result.changed || result.updatedCalories == null) return result
 
             prefs.saveAdaptiveGoalPreviousTargetsIfNeeded(profile)
-            val next = profile.recalculatedFromFormulas().copy(
-                customCalories = result.calories,
-                customProtein = result.protein,
-                customCarbs = result.carbs,
-                customFat = result.fat
-            )
-            profileRepository.save(next)
-            return AdaptiveGoalResult(
-                profile = next,
-                changed = true,
-                updatedCalories = result.calories,
-                message = strings(R.string.vm_adaptive_updated, arrayOf(result.calories)) +
-                    (result.reason?.let { " $it" } ?: "")
+            profileRepository.save(result.profile)
+            return result.copy(
+                message = strings(R.string.vm_adaptive_updated, arrayOf(result.updatedCalories)) +
+                    " ${result.message}"
             )
         } finally {
             refreshInFlight = false

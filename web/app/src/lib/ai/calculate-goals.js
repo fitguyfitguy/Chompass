@@ -237,17 +237,18 @@ function buildObservedSection(forecast, weightMetric) {
     "",
     "OBSERVED DATA: from the user's OWN logs (prefer this over the formula when reliable):",
   ];
+  const loggedAvg =
+    forecast.loggedDayAvgCalories > 0 ? forecast.loggedDayAvgCalories : forecast.avgDailyCalories;
   const intakeBasis = forecast.usesCalendarDayAverage
-    ? `avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days; sparse logging)`
-    : `avg ${forecast.avgDailyCalories} kcal/day across ${forecast.daysOfFoodData} logged days`;
+    ? `avg ${loggedAvg} kcal/day across ${forecast.daysOfFoodData} logged days. Sparse coverage: calendar-day average is ${forecast.avgDailyCalories} kcal over ${forecast.calendarDaysInWindow} days — do not use that as recorded intake.`
+    : `avg ${loggedAvg} kcal/day across ${forecast.daysOfFoodData} logged days`;
   lines.push(`- Logged intake: ${intakeBasis}`);
   const obs = forecast.observedWeeklyChangeKg;
   if (obs != null) {
     const obsStr = weightMetric
       ? `${obs >= 0 ? "+" : ""}${obs.toFixed(2)} kg/week`
       : `${obs * 2.20462 >= 0 ? "+" : ""}${(obs * 2.20462).toFixed(2)} lb/week`;
-    const empiricalTdee =
-      forecast.avgDailyCalories - Math.trunc((obs * KCAL_PER_KG_BODY_MASS) / 7);
+    const empiricalTdee = loggedAvg - Math.trunc((obs * KCAL_PER_KG_BODY_MASS) / 7);
     lines.push(`- Observed weight trend: ${obsStr} from ${forecast.weightEntriesUsed} weigh-ins`);
     lines.push(
       `- Implied actual maintenance (logged intake minus the weekly change): ~${empiricalTdee} kcal/day`

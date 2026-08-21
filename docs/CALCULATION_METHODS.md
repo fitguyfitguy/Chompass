@@ -185,13 +185,14 @@ If body fat % set: requirement is expressed per kg total weight via lean-mass fr
 
 ### FCAST: Weight forecast
 
-**Window:** Up to 90 days of food + weight entries.
+**Window:** Up to 90 days of food + weight entries. Intake uses **complete days only** (today excluded). `calendarDaysInWindow` runs from the **first logged food in the lookback through yesterday**, not from 90 days ago — empty days before the user started logging do not count as sparse.
 
 ```
 When loggedDays / calendarDays >= 0.5:
   avgDailyCalories = sum(calories) / loggedDays
 Else (sparse logging):
   avgDailyCalories = sum(calories) / calendarDaysInWindow
+loggedDayAvgCalories = sum(calories) / loggedDays   // always; coach + AI empirical TDEE use this
 predictedWeeklyChangeKg = (avgDailyCalories − TDEE) × 7 / 7700
 observedWeeklyChangeKg = theilSenSlope(kg/day) × 7
 ```
@@ -200,7 +201,7 @@ observedWeeklyChangeKg = theilSenSlope(kg/day) × 7
 
 **Trend disagreement:** `|predicted − observed| > 0.3` kg/week.
 
-**Sparse logging:** Calendar-day averaging prevents cheat-day-only logs from inflating intake.
+**Sparse logging:** Calendar-day averaging prevents cheat-day-only logs from inflating intake, after logging has started. Progress Avg uses the same complete-day rule (today excluded from the mean; today's bar still draws).
 
 ### Progress chart: 7-day weight trend (display-only)
 
@@ -329,7 +330,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 
 1. Predictive equations carry ~±10% BMR error; TDEE error can be larger.
 2. Energy balance is simplified (no metabolic adaptation model in forecast).
-3. Sparse food logging uses calendar-day averaging when logged days &lt; 50% of window.
+3. Sparse food logging uses calendar-day averaging when logged days &lt; 50% of the window from first log through yesterday.
 4. Measured TDEE mixes device estimates with formula fallbacks.
 5. Keto carb targets do not measure blood ketones.
 6. AI meal and micronutrient estimates vary by provider and input quality.

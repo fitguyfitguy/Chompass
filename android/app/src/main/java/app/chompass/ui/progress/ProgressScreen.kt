@@ -186,7 +186,8 @@ fun ProgressScreen(container: AppContainer) {
                     CardSection {
                         CalorieSection(
                             dailyCalories = ui.dailyCalories,
-                            calorieGoal = ui.profile?.effectiveCalories ?: 2000
+                            calorieGoal = ui.profile?.effectiveCalories ?: 2000,
+                            calorieAverage = ui.calorieAverage,
                         )
                     }
                 }
@@ -371,6 +372,7 @@ internal fun ProgressScreenPreviewContent(
                     CalorieSection(
                         dailyCalories = ui.dailyCalories,
                         calorieGoal = ui.profile?.effectiveCalories ?: 2000,
+                        calorieAverage = ui.calorieAverage,
                     )
                 }
             }

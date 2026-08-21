@@ -59,3 +59,33 @@ test("buildCalculateGoalsPrompt_includesFormulaAnchor", () => {
   assert.match(prompt, /Weight goal: maintain/);
   assert.match(prompt, /Diet mode: standard/);
 });
+
+test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const forecast = {
+    hasEnoughData: true,
+    usesCalendarDayAverage: true,
+    avgDailyCalories: 207,
+    loggedDayAvgCalories: 2096,
+    daysOfFoodData: 9,
+    calendarDaysInWindow: 91,
+    observedWeeklyChangeKg: -0.4,
+    weightEntriesUsed: 5,
+    tdee: 2500,
+    trendsDisagree: true,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, forecast, true, true);
+  assert.match(prompt, /avg 2096 kcal\/day across 9 logged days/);
+  assert.match(prompt, /do not use that as recorded intake/);
+  assert.doesNotMatch(prompt, /Logged intake: avg 207 kcal\/day across/);
+});

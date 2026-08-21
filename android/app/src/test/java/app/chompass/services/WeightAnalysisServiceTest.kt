@@ -121,18 +121,59 @@ class WeightAnalysisServiceTest {
   }
 
   @Test
-  fun forecast_sparseLogging_usesCalendarDayAverage() {
+  fun forecast_sparseGapsAfterFirstLog_usesCalendarDayAverage() {
     val p = profile()
-    val tdee = p.tdee.toInt()
-    // Two high-calorie days in a 90-day window — logged-day avg would be ~3000.
+    // First log 80 days ago plus yesterday — gaps after logging started count as sparse.
     val foods = listOf(
+      foodEntry(calories = 4500, dayOffset = 80),
       foodEntry(calories = 4500, dayOffset = 1),
-      foodEntry(calories = 4500, dayOffset = 2),
     )
     val forecast = WeightAnalysisService.compute(emptyList(), foods, p)
     assertTrue(forecast.usesCalendarDayAverage)
-    assertTrue(forecast.avgDailyCalories < 200)
     assertEquals(2, forecast.daysOfFoodData)
+    assertEquals(4500, forecast.loggedDayAvgCalories)
+    assertTrue(forecast.avgDailyCalories < 200)
+    assertTrue(forecast.avgDailyCalories > 50)
+  }
+
+  @Test
+  fun forecast_nineConsecutiveDays_usesLoggedDayAverage() {
+    val p = profile()
+    val foods = (1..9).map { foodEntry(calories = 2100, dayOffset = it.toLong()) }
+    val forecast = WeightAnalysisService.compute(emptyList(), foods, p)
+    assertFalse(forecast.usesCalendarDayAverage)
+    assertEquals(9, forecast.daysOfFoodData)
+    assertEquals(2100, forecast.avgDailyCalories)
+    assertEquals(2100, forecast.loggedDayAvgCalories)
+  }
+
+  @Test
+  fun forecast_excludesTodayFromIntake() {
+    val p = profile()
+    val foods = listOf(
+      foodEntry(calories = 2000, dayOffset = 1),
+      foodEntry(calories = 2000, dayOffset = 2),
+      foodEntry(calories = 500, dayOffset = 0),
+    )
+    val forecast = WeightAnalysisService.compute(emptyList(), foods, p)
+    assertEquals(2, forecast.daysOfFoodData)
+    assertEquals(2000, forecast.loggedDayAvgCalories)
+    assertEquals(2000, forecast.avgDailyCalories)
+  }
+
+  @Test
+  fun adaptiveGoal_skipsWhenCaloriesLocked() {
+    val p = profile().copy(customCalories = 1900, caloriesLocked = true)
+    val foods = (1..5).map { foodEntry(calories = 2200, dayOffset = it.toLong()) }
+    val weights = listOf(
+      WeightEntry(date = daysAgo(21), weightKg = 80.0),
+      WeightEntry(date = daysAgo(14), weightKg = 79.9),
+      WeightEntry(date = daysAgo(7), weightKg = 79.85),
+      WeightEntry(date = daysAgo(0), weightKg = 79.8),
+    )
+    val result = AdaptiveGoalService.apply(p, weights, foods)
+    assertFalse(result.changed)
+    assertEquals(1900, p.effectiveCalories)
   }
 
   private fun foodEntry(calories: Int, dayOffset: Long): FoodEntry =

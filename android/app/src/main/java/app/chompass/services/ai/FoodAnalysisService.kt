@@ -240,17 +240,18 @@ class FoodAnalysisService(
             if (forecast != null && forecast.hasEnoughData) {
                 appendLine()
                 appendLine("OBSERVED DATA: from the user's OWN logs (prefer this over the formula when reliable):")
+                val loggedAvg = forecast.loggedDayAvgCalories.takeIf { it > 0 } ?: forecast.avgDailyCalories
                 val intakeBasis = if (forecast.usesCalendarDayAverage) {
-                    "avg ${forecast.avgDailyCalories} kcal/day spread across ${forecast.calendarDaysInWindow} calendar days (${forecast.daysOfFoodData} logged days; sparse logging)"
+                    "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days. Sparse coverage: calendar-day average is ${forecast.avgDailyCalories} kcal over ${forecast.calendarDaysInWindow} days — do not use that as recorded intake."
                 } else {
-                    "avg ${forecast.avgDailyCalories} kcal/day across ${forecast.daysOfFoodData} logged days"
+                    "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days"
                 }
                 appendLine("- Logged intake: $intakeBasis")
                 val obs = forecast.observedWeeklyChangeKg
                 if (obs != null) {
                     val obsStr = if (weightMetric) String.format(Locale.US, "%+.2f kg/week", obs)
                         else String.format(Locale.US, "%+.2f lb/week", UnitFormat.kgToLbs(obs))
-                    val empiricalTdee = forecast.avgDailyCalories -
+                    val empiricalTdee = loggedAvg -
                         NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
                     appendLine("- Observed weight trend: $obsStr from ${forecast.weightEntriesUsed} weigh-ins")
                     appendLine("- Implied actual maintenance (logged intake minus the weekly change): ~$empiricalTdee kcal/day")

@@ -10,6 +10,14 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Daily summary shows today's deficit or surplus** (Android): the evening notification now uses logged calories and measured burn (Health Connect when available) to say whether the day landed in deficit, surplus, or on target. Expand it to see eaten vs your calorie goal, and net carbs when keto is on. You can set the time under Settings → Notifications. Off by default.
 
+### Changed
+
+- **Adaptive Goals is a small weekly nudge** (Android): about once a week it now adjusts calories by at most 150 kcal from your recent weight trend. Locked calorie and macro rows stay as you set them. Recalculate still asks the AI for a full plan. Closes Codeberg [#45](https://codeberg.org/fitguy/Chompass/issues/45) by [@Ludisc](https://codeberg.org/Ludisc).
+
+### Fixed
+
+- **Coach average matches the Progress chart** (Android + web): asking the coach for a full analysis now uses the average of days you actually logged, not empty days before you started. Progress Avg also skips today, which is still being logged. Closes Codeberg [#49](https://codeberg.org/fitguy/Chompass/issues/49) and [#50](https://codeberg.org/fitguy/Chompass/issues/50) by [@tuxMode](https://codeberg.org/tuxMode).
+
 ## [3.21.2] - 2026-08-20
 
 ### Fixed

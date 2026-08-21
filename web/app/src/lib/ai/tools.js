@@ -34,7 +34,8 @@ export const AI_TOOLS = [
   },
   {
     name: "get_calorie_totals",
-    description: "Daily calorie totals for a date range. Read-only.",
+    description:
+      "Daily calorie totals for a date range. Returns totals[], days_with_data, and average_kcal_logged_days (mean of complete days with food; ignores today and empty days). Read-only.",
     inputSchema: {
       type: "object",
       properties: {

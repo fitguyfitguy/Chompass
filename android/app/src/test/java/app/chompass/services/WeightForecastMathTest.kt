@@ -8,6 +8,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 
 class WeightForecastMathTest {
@@ -77,5 +78,25 @@ class WeightForecastMathTest {
         hasEnoughData = true,
       )
     )
+  }
+
+  @Test
+  fun completeDayWindow_startsAtFirstLog_excludesToday() {
+    val today = LocalDate.of(2026, 8, 21)
+    val logged = (0..8).map { today.minusDays(it.toLong()) } // includes today
+    val window = WeightForecastMath.completeDayWindow(logged, today, maxLookbackDays = 90)
+    assertEquals(LocalDate.of(2026, 8, 13), window.firstLogged)
+    assertEquals(8, window.loggedDates.size)
+    assertFalse(today in window.loggedDates)
+    assertEquals(8, window.calendarDays)
+  }
+
+  @Test
+  fun completeDayWindow_emptyBeforeFirstLogDoesNotPad() {
+    val today = LocalDate.of(2026, 8, 21)
+    val logged = listOf(LocalDate.of(2026, 8, 20), LocalDate.of(2026, 8, 19))
+    val window = WeightForecastMath.completeDayWindow(logged, today, maxLookbackDays = 90)
+    assertEquals(2, window.calendarDays)
+    assertEquals(2, window.loggedDates.size)
   }
 }

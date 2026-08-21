@@ -135,6 +135,7 @@ class CoachTools(
     private fun getCalorieTotals(args: JSONObject): String {
         val (from, to) = parseRange(args)
         val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
         val daily = sortedMapOf<String, Int>()
         for (food in foods) {
             if (food.timestamp !in from..to) continue
@@ -145,10 +146,13 @@ class CoachTools(
         for ((day, kcal) in daily) {
             arr.put(JSONObject().apply { put("date", day); put("kcal", kcal) })
         }
+        val complete = daily.filterKeys { runCatching { LocalDate.parse(it) }.getOrNull()?.let { d -> d < today } == true }
+        val avg = if (complete.isEmpty()) JSONObject.NULL else complete.values.sum() / complete.size
         return JSONObject().apply {
             put("from", iso(from))
             put("to", iso(to))
             put("days_with_data", daily.size)
+            put("average_kcal_logged_days", avg)
             put("totals", arr)
         }.toString()
     }
@@ -339,7 +343,7 @@ class CoachTools(
             "get_data_summary" to "Get a quick summary of the user's available data: total counts and earliest/latest dates for weights, body-fat readings, and food entries. Call this first when the user asks anything about their history range or data spanning more than 14 days.",
             "get_weight_history" to "Fetch weight entries between two dates (inclusive). Returns date + weight (kg + lbs). Use this when the user asks about specific past dates or weight trends older than the last 10 entries.",
             "get_body_fat_history" to "Fetch body-fat readings between two dates (inclusive). Returns date + percent. Use when the user asks about body composition trends older than the last 10 readings.",
-            "get_calorie_totals" to "Daily calorie totals (sum of all logged foods per day) between two dates. Returns date + kcal. Use when the user asks about intake patterns older than the last 14 days.",
+            "get_calorie_totals" to "Daily calorie totals (sum of all logged foods per day) between two dates. Returns totals[], days_with_data, and average_kcal_logged_days (mean of complete days with food; ignores today and empty days). Use for intake patterns or a full-history analysis.",
             "get_food_entries" to "Individual logged food items (name + calories + macros) between two dates. Use when the user asks about specific meals, what they ate on a given date, or wants macro breakdowns rather than just kcal totals.",
             "propose_log_food" to "Propose logging a food entry from a natural-language description (e.g. \"2 eggs and toast\"). This does NOT save it. It only estimates nutrition and shows the user a confirmation before anything is logged. Call this when the user asks you to log, add, or track something they ate. After calling it, tell the user what you propose to log and that they need to confirm it in the app.",
             "propose_log_weight" to "Propose logging a body weight entry in kilograms. This does NOT save it. The user must confirm in the app. Call this when the user tells you their current weight and asks you to log it (e.g. \"log my weight, I'm 82.3kg today\"). Convert to kilograms first if the user gave pounds.",

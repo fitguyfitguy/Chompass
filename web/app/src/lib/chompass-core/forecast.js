@@ -60,6 +60,25 @@ function dayIndex(isoDate) {
   return Math.floor(new Date(isoDate.includes("T") ? isoDate : `${isoDate}T00:00:00`).getTime() / 86400000);
 }
 
+function localIsoDate(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function addDaysIso(iso, delta) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d + delta);
+  return localIsoDate(dt);
+}
+
+function daysBetweenIso(a, b) {
+  const [ay, am, ad] = a.split("-").map(Number);
+  const [by, bm, bd] = b.split("-").map(Number);
+  return Math.round((Date.UTC(by, bm - 1, bd) - Date.UTC(ay, am - 1, ad)) / 86400000);
+}
+
 /**
  * @param {Object} args
  * @param {import('./models.js').WeightEntry[]} args.weights
@@ -67,16 +86,24 @@ function dayIndex(isoDate) {
  * @param {import('./models.js').UserProfile} args.profile
  */
 export function computeWeightForecast({ weights, foods, profile }) {
-  const now = Date.now();
-  const cutoff = now - MAX_LOOKBACK_DAYS * 86400000;
-  const cutoffIso = new Date(cutoff).toISOString().slice(0, 10);
+  const today = localIsoDate();
+  const yesterday = addDaysIso(today, -1);
+  const lookbackStart = addDaysIso(today, -MAX_LOOKBACK_DAYS);
+  const cutoffIso = lookbackStart;
 
-  const recentFoods = foods.filter((f) => f.date >= cutoffIso);
-  const daysLogged = new Set(recentFoods.map((f) => f.date)).size;
-  const totalRecentCal = recentFoods.reduce((s, f) => s + f.calories, 0);
-  const calendarDays = MAX_LOOKBACK_DAYS;
+  const foodDay = (f) => String(f.date).slice(0, 10);
+  const completeFoods = foods.filter((f) => {
+    const d = foodDay(f);
+    return d >= lookbackStart && d <= yesterday;
+  });
+  const loggedDates = [...new Set(completeFoods.map(foodDay))].sort();
+  const daysLogged = loggedDates.length;
+  const totalRecentCal = completeFoods.reduce((s, f) => s + f.calories, 0);
+  const first = loggedDates[0];
+  const calendarDays = first ? daysBetweenIso(first, yesterday) + 1 : 1;
   const intake = averageDailyIntake(totalRecentCal, daysLogged, calendarDays);
   const avgDailyCal = intake.avgDailyCalories;
+  const loggedDayAvgCalories = daysLogged > 0 ? Math.trunc(totalRecentCal / daysLogged) : 0;
   const maintenance = Math.trunc(tdee(profile));
   const balance = avgDailyCal - maintenance;
   const predictedWeeklyKg = (balance * 7) / KCAL_PER_KG_BODY_MASS;
@@ -121,6 +148,9 @@ export function computeWeightForecast({ weights, foods, profile }) {
     weightEntriesUsed: regressionWindow.length,
     calendarDaysInWindow: intake.calendarDaysInWindow,
     usesCalendarDayAverage: intake.usesCalendarDayAverage,
+    loggedDayAvgCalories,
+    firstLoggedDate: first ?? null,
+    lastLoggedDate: loggedDates.length ? loggedDates[loggedDates.length - 1] : null,
   };
 }
 
@@ -132,6 +162,14 @@ export function computeWeightForecast({ weights, foods, profile }) {
  * @param {import('./models.js').FoodEntry[]} args.foods
  */
 export function suggestAdaptiveCalories({ profile, weights, foods }) {
+  if (profile.caloriesLocked) {
+    return {
+      changed: false,
+      updatedCalories: null,
+      message: "Calories are locked, so Adaptive Goals did not change them.",
+      forecast: computeWeightForecast({ weights, foods, profile }),
+    };
+  }
   const forecast = computeWeightForecast({ weights, foods, profile });
   const observed = forecast.observedWeeklyChangeKg;
   const magnitude = profile.weeklyChangeKg ?? 0.5;
