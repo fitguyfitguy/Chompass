@@ -137,6 +137,8 @@ enum class AIProvider {
         )
         CUSTOM_OPENAI -> emptyList()
         // Downloadable on-device models — see services/ondevice/ModelCatalog.kt.
+        // The static list stays complete for supportedModelOrDefault resolution;
+        // Settings filters E4B out by device capability (7 GiB usable-RAM floor).
         ON_DEVICE -> listOf("gemma-4-E2B-it", "gemma-4-E4B-it")
     }
 

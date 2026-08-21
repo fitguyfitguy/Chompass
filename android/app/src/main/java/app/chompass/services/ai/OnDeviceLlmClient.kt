@@ -1,6 +1,7 @@
 package app.chompass.services.ai
 
 import android.util.Log
+import app.chompass.services.ondevice.OnDeviceLlmEngine
 import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Content
 import com.google.ai.edge.litertlm.Contents
@@ -13,7 +14,6 @@ import com.google.ai.edge.litertlm.ExperimentalFlags
 import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.ToolSet
 import com.google.ai.edge.litertlm.tool
-import java.io.Closeable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -41,14 +41,14 @@ class OnDeviceLlmClient(
     private val backend: Backend = Backend.GPU(),
     private val enableMtp: Boolean = false,
     private val enableVision: Boolean = false,
-) : Closeable {
+) : OnDeviceLlmEngine {
     val backendName: String get() = backend.name
-    val visionEnabled: Boolean get() = enableVision
+    override val visionEnabled: Boolean get() = enableVision
 
     private var engine: Engine? = null
 
     /** Loads the model on first call; a no-op (returns 0) if already loaded. Returns load time in ms. */
-    suspend fun ensureLoaded(): Long = withContext(Dispatchers.Default) {
+    override suspend fun ensureLoaded(): Long = withContext(Dispatchers.Default) {
         if (engine != null) return@withContext 0L
         val start = System.nanoTime()
         val config = EngineConfig(
@@ -97,7 +97,7 @@ class OnDeviceLlmClient(
     }
 
     /** Single-shot prompt/response, no tool calling. Used for Tier A (`analyzeText`) scenarios. */
-    suspend fun generate(systemPrompt: String, userPrompt: String): String = withContext(Dispatchers.Default) {
+    override suspend fun generate(systemPrompt: String, userPrompt: String): String = withContext(Dispatchers.Default) {
         val active = engine ?: error("Engine not initialized — call ensureLoaded() first")
         active.createConversation(
             ConversationConfig(systemInstruction = Contents.of(systemPrompt))
@@ -108,10 +108,10 @@ class OnDeviceLlmClient(
      * Single-shot multimodal prompt/response. Image bytes must precede text in the content list.
      * Requires [enableVision] with `visionBackend = GPU` — otherwise native SIGSEGV.
      */
-    suspend fun generateWithImage(
+    override suspend fun generateWithImage(
         userPrompt: String,
         imageBytes: ByteArray,
-        systemPrompt: String = "",
+        systemPrompt: String,
     ): String = withContext(Dispatchers.Default) {
         require(enableVision) { "Vision not enabled — construct OnDeviceLlmClient with enableVision=true" }
         val active = engine ?: error("Engine not initialized — call ensureLoaded() first")

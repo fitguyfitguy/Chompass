@@ -1248,6 +1248,7 @@
     <string name="ai_error_on_device_model_not_downloaded">On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.</string>
     <string name="ai_error_on_device_unsupported_device">This device doesn\'t meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.</string>
     <string name="ai_error_on_device_low_memory">Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.</string>
+    <string name="ai_error_on_device_engine_init">The on-device model engine failed to start on this device. Try again, unload the model in Settings → AI Provider → Model, or switch to a cloud provider.</string>
     <string name="ai_error_key_rejected">Your API key was rejected. Open Settings → AI Provider and re-paste a valid key.</string>
     <string name="ai_error_location_unsupported">Gemini isn\'t available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider.</string>
     <string name="ai_error_provider_overloaded">The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider.</string>

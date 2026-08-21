@@ -111,7 +111,12 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.AI_MODEL -> ListSheet(
                     title = stringResource(R.string.sheet_model),
-                    items = ui.selectedAI.models,
+                    // ON_DEVICE shows only the models this device can run
+                    // (SettingsUiState.onDeviceModels filters E4B on 6 GB phones).
+                    items = if (ui.selectedAI == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty())
+                        ui.onDeviceModels
+                    else
+                        ui.selectedAI.models,
                     label = { it },
                     subtitle = { model ->
                         when (ui.selectedAI.modelTiers[model]) {
@@ -270,10 +275,15 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.FALLBACK_MODEL -> {
                     // Same provider as primary → exclude primary's selected model so
-                    // fallback can't be a literal duplicate config.
+                    // fallback can't be a literal duplicate config. ON_DEVICE mirrors
+                    // the primary picker's per-model capability gate.
+                    val base = if (ui.fallbackProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty())
+                        ui.onDeviceModels
+                    else
+                        ui.fallbackProvider.models
                     val opts = if (ui.fallbackProvider == ui.selectedAI)
-                        ui.fallbackProvider.models.filter { it != ui.selectedModel }
-                    else ui.fallbackProvider.models
+                        base.filter { it != ui.selectedModel }
+                    else base
                     ListSheet(
                         title = stringResource(R.string.sheet_model),
                         items = opts,
