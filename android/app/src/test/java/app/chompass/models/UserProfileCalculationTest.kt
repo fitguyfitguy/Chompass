@@ -59,6 +59,15 @@ class UserProfileCalculationTest {
   }
 
   @Test
+  fun useBodyFatInBMR_falseFallsBackToMifflin() {
+    val katch = profile(weightKg = 80.0, bodyFatPercentage = 0.50)
+    val msj = katch.copy(useBodyFatInBMR = false)
+    assertTrue(katch.usesBodyFatForBMR)
+    assertFalse(msj.usesBodyFatForBMR)
+    assertTrue(msj.bmr > katch.bmr)
+  }
+
+  @Test
   fun tdee_appliesActivityMultiplier() {
     val p = profile(activityLevel = ActivityLevel.MODERATE)
     assertEquals(1780.0 * 1.465, p.tdee, 0.5)
@@ -76,6 +85,13 @@ class UserProfileCalculationTest {
   fun calorieAdjustment_gainUses7700KcalPerKg() {
     val p = profile(goal = WeightGoal.GAIN, weeklyChangeKg = 0.25)
     assertEquals(275, p.calorieAdjustment)
+  }
+
+  @Test
+  fun proteinGoal_withBodyFatEqualsTotalWeightRate() {
+    val withBf = profile(weightKg = 80.0, bodyFatPercentage = 0.30, activityLevel = ActivityLevel.MODERATE)
+    val noBf = profile(weightKg = 80.0, bodyFatPercentage = null, activityLevel = ActivityLevel.MODERATE)
+    assertEquals(noBf.proteinGoal, withBf.proteinGoal)
   }
 
   @Test

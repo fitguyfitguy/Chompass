@@ -25,6 +25,7 @@ internal fun SettingsPersonalSection(
     latestMeasurement: app.chompass.models.BodyMeasurement?,
     nav: NavHostController,
     onOpenSheet: (SettingsSheet) -> Unit,
+    onToggleUseBodyFatInBmr: (Boolean) -> Unit = {},
 ) {
     SectionCard(title = stringResource(R.string.settings_section_personal)) {
                 profile?.let { p ->
@@ -52,11 +53,13 @@ internal fun SettingsPersonalSection(
                         icon = Icons.Outlined.Percent
                     ) { onOpenSheet(SettingsSheet.BODY_FAT) }
 
-                    // Goal Body Fat only renders when the user actually has a body
-                    // fat % set — avoids surfacing irrelevant controls to users who
-                    // never opted in. When body fat is set it is always used for BMR
-                    // (Katch-McArdle); otherwise Mifflin-St Jeor — no manual toggle.
                     if (p.bodyFatPercentage != null) {
+                        HorizontalDivider()
+                        ToggleRow(
+                            label = stringResource(R.string.settings_use_body_fat_bmr),
+                            checked = p.useBodyFatInBMR != false,
+                            onChange = onToggleUseBodyFatInBmr,
+                        )
                         HorizontalDivider()
                         SettingRow(
                             stringResource(R.string.settings_goal_body_fat),

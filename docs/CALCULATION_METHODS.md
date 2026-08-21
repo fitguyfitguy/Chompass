@@ -64,7 +64,7 @@ Other: same as women (no +5 sex term)
 
 ### BMR-KM: Katch-McArdle
 
-**When:** `bodyFatPercentage` is set (fraction 0–1).
+**When:** `bodyFatPercentage` is set (fraction 0–1) and `useBodyFatInBMR` is not false (default on).
 
 ```
 LBM(kg) = weight(kg) × (1 − bodyFat%)
@@ -164,7 +164,7 @@ Stops Lose + Fast from persisting TDEE − 1,100 when that is below BMR (or belo
 ```
 base g/kg by activity: 0.8, 1.2, 1.6, 1.8, 2.0, 2.2
 + 0.2 g/kg when goal = LOSE (lean-mass preservation)
-If body fat % set: requirement is expressed per kg total weight via lean-mass fraction adjustment
+Standard protein is g/kg of **total** weight (the lean-mass fraction algebra cancels). Keto floor `1.6 g/kg` uses lean mass when BF% is set.
 ```
 
 **User pin modes** (`ProteinTargetMode`): grams/day (`customProtein`), or g/kg of total weight / lean mass (`proteinGramsPerKg`). Rate modes recompute g/day when weight or BF% changes.

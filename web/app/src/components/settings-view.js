@@ -308,6 +308,10 @@ export class SettingsView extends HTMLElement {
               value="${p.bodyFatPercentage != null ? p.bodyFatPercentage * 100 : ""}" />
           </div>
         </div>
+        <label class="field" style="display:flex;gap:0.5rem;align-items:center;">
+          <input type="checkbox" name="useBodyFatInBMR" ${p.useBodyFatInBMR !== false ? "checked" : ""} />
+          Use body fat % in BMR (Katch-McArdle)
+        </label>
         <div class="field">
           <label for="activityLevel">Activity</label>
           <select id="activityLevel" name="activityLevel">
@@ -332,6 +336,7 @@ export class SettingsView extends HTMLElement {
         heightCm: appPrefs.heightUnit === "in" ? height * 2.54 : height,
         weightKg: appPrefs.weightUnit === "lb" ? weight / 2.20462 : weight,
         bodyFatPercentage: bfRaw ? Number(bfRaw) / 100 : null,
+        useBodyFatInBMR: fd.get("useBodyFatInBMR") === "on",
         activityLevel: /** @type {any} */ (fd.get("activityLevel")),
       });
       location.hash = SETTINGS_PARENT.personal;
