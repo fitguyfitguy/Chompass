@@ -17,6 +17,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **On-device model downloads resume after an interruption** (Android): the Gemma model file no longer restarts from zero when the connection drops or the download stalls, which could loop forever on a multi-GB file. If storage runs out, you get a clear error instead. Closes Codeberg [#51](https://codeberg.org/fitguy/Chompass/issues/51) by [@samuraihelmet](https://codeberg.org/samuraihelmet).
 - **Coach average matches the Progress chart** (Android + web): asking the coach for a full analysis now uses the average of days you actually logged, not empty days before you started. Progress Avg also skips today, which is still being logged. Closes Codeberg [#49](https://codeberg.org/fitguy/Chompass/issues/49) and [#50](https://codeberg.org/fitguy/Chompass/issues/50) by [@tuxMode](https://codeberg.org/tuxMode).
 - **Recalculate returns as soon as calories and macros are ready** (Android): it no longer waits on a second AI call for optional nutrients, which could sit for minutes after Gemini hiccuped.
 
