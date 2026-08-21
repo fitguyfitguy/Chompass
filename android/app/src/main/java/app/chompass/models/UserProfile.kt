@@ -433,9 +433,37 @@ data class UserProfile(
         return redirected.recalculatedFromFormulas()
     }
 
+    /** Prompt fragment for Recalculate: locked fields are hard constraints. Empty if none. */
+    fun goalLockPromptSection(): String {
+        if (!caloriesLocked && lockedMacros.isEmpty()) return ""
+        val lines = mutableListOf(
+            "",
+            "LOCKED TARGETS (the user pinned these; return these exact numbers):",
+        )
+        if (caloriesLocked) {
+            lines.add(
+                "- Calories locked at $effectiveCalories kcal. Return that exact calories value. " +
+                    "Choose unlocked macros so 4*protein + 4*carbs + 9*fat is about $effectiveCalories. " +
+                    "Do not lower calories to force a bigger deficit."
+            )
+        }
+        if (isMacroLocked(AutoBalanceMacro.PROTEIN)) {
+            lines.add("- Protein locked at $effectiveProtein g. Return that exact protein value.")
+        }
+        if (isMacroLocked(AutoBalanceMacro.CARBS)) {
+            lines.add("- Carbs locked at $effectiveCarbs g. Return that exact carbs value.")
+        }
+        if (isMacroLocked(AutoBalanceMacro.FAT)) {
+            lines.add("- Fat locked at $effectiveFat g. Return that exact fat value.")
+        }
+        lines.add("Unlocked macros may change. Locked fields must match the numbers above.")
+        return lines.joinToString("\n")
+    }
+
     /**
      * Apply an AI goal snapshot while keeping user locks. Unlocked fields take the new values;
-     * locked fields stay. When calories is locked, unlocked macros rebalance around the kept total.
+     * locked fields stay. When calories is locked, AI macros are kept if they already fill the
+     * budget (small rounding on the last unlocked macro); only a large miss scales them.
      */
     fun applyingAiGoals(calories: Int, protein: Int, carbs: Int, fat: Int): UserProfile {
         val keptCalories = if (caloriesLocked) effectiveCalories else calories
@@ -452,9 +480,23 @@ data class UserProfile(
             )
         }
         if (caloriesLocked) {
-            next = next.applyCaloriesEdit(keptCalories)
+            next = next.fittingUnlockedMacrosTo(keptCalories)
         }
         return next
+    }
+
+    private fun fittingUnlockedMacrosTo(targetCalories: Int): UserProfile {
+        val unlocked = AutoBalanceMacro.values().filter { !isMacroLocked(it) }
+        if (unlocked.isEmpty()) return copy(customCalories = targetCalories)
+        val sum = AutoBalanceMacro.values().sumOf { effectiveGrams(it) * it.kcalPerGram }
+        val delta = targetCalories - sum
+        if (kotlin.math.abs(delta) <= 30) {
+            val last = unlocked.last()
+            val adjGrams = Math.round(delta.toDouble() / last.kcalPerGram).toInt()
+            return withMacroGrams(mapOf(last to maxOf(0, effectiveGrams(last) + adjGrams)))
+                .copy(customCalories = targetCalories)
+        }
+        return applyCaloriesEdit(targetCalories)
     }
 
     /**

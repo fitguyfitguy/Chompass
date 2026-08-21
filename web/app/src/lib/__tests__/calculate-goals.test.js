@@ -6,6 +6,7 @@ import {
   buildCalculateGoalsPrompt,
   formulaDailyCalories,
   recalculatedFromFormulas,
+  lockConstraintsSection,
 } from "../ai/calculate-goals.js";
 
 test("parseGoalCalculation_clampsRanges", () => {
@@ -88,4 +89,25 @@ test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {
   assert.match(prompt, /avg 2096 kcal\/day across 9 logged days/);
   assert.match(prompt, /do not use that as recorded intake/);
   assert.doesNotMatch(prompt, /Logged intake: avg 207 kcal\/day across/);
+});
+
+test("buildCalculateGoalsPrompt_includesLockedCaloriesConstraint", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: 1900,
+    caloriesLocked: true,
+    lockedMacros: /** @type {const} */ (["protein"]),
+    customProtein: 180,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, null, true, true);
+  assert.match(prompt, /Calories locked at 1900/);
+  assert.match(prompt, /Protein locked at 180/);
+  assert.equal(lockConstraintsSection({ ...profile, caloriesLocked: false, lockedMacros: [] }), "");
 });
