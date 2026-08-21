@@ -160,5 +160,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 3.21.2
-CurrentVersionCode: 63
+CurrentVersion: 3.22.0
+CurrentVersionCode: 64
