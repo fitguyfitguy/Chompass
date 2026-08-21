@@ -1299,6 +1299,9 @@
     <string name="settings_on_device_model_not_downloaded">Nedescărcat</string>
     <string name="settings_on_device_model_ready">Descărcat</string>
     <string name="settings_other_nutrient_goals">Alte obiective de nutrienți</string>
+    <string name="settings_optional_nutrient_estimate_ai">Estimează cu AI</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Stabilește aceste obiective pe baza profilului și a țintei calorice. Înlocuiește valorile manuale.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Nu s-au putut estima obiectivele</string>
     <string name="settings_other_nutrients">Alți nutrienți</string>
     <string name="settings_pace_gain_format">+%1$s/săptămână</string>
     <string name="settings_pace_loss_format">−%1$s/săptămână</string>

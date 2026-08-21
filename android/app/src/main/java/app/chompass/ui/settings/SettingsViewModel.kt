@@ -36,6 +36,8 @@ import app.chompass.models.WeightGoal
 import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WeightAnalysisService
+import app.chompass.services.ai.AiError
+import app.chompass.services.ai.userMessage
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.weather.OmCity
@@ -109,6 +111,10 @@ data class SettingsUiState(
     val healthEnergyGoalAlertMessage: String? = null,
     val adaptiveGoalAlertTitle: String? = null,
     val adaptiveGoalAlertMessage: String? = null,
+    /** Settings → Other Nutrient Goals: in-flight flag for the opt-in "Estimate with AI" call. */
+    val estimatingOptionalNutrientGoals: Boolean = false,
+    /** Localized error for the "Estimate with AI" call; null = no alert shown. */
+    val optionalNutrientEstimateAlertMessage: String? = null,
     val apiKeyMasked: String = "",
     val speechApiKeyMasked: String = "",
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
@@ -488,6 +494,48 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { container.prefs.setOptionalNutrientGoals(goals) },
         { copy(optionalNutrientGoals = goals) },
     )
+
+    /**
+     * Settings → Other Nutrient Goals → "Estimate with AI": one user-initiated
+     * Gemini round-trip (the same prompt the old Recalculate auto-call used).
+     * Runs only when tapped, never in the background and never from Recalculate,
+     * so manually set optional goals stay durable. Replaces every optional goal
+     * on success; on failure the existing values are left untouched.
+     */
+    fun estimateOptionalNutrientGoals() {
+        viewModelScope.launch {
+            if (_ui.value.estimatingOptionalNutrientGoals) return@launch
+            _ui.value = _ui.value.copy(estimatingOptionalNutrientGoals = true)
+            val profile = container.profileRepository.current()
+            val result = try {
+                container.foodAnalysis.estimateOptionalNutrientGoals(profile)
+            } catch (e: AiError) {
+                Log.e("Chompass", "estimateOptionalNutrientGoals failed", e)
+                _ui.value = _ui.value.copy(
+                    estimatingOptionalNutrientGoals = false,
+                    optionalNutrientEstimateAlertMessage = e.userMessage(container.appContext)
+                )
+                return@launch
+            } catch (e: Throwable) {
+                Log.e("Chompass", "estimateOptionalNutrientGoals failed", e)
+                _ui.value = _ui.value.copy(
+                    estimatingOptionalNutrientGoals = false,
+                    optionalNutrientEstimateAlertMessage = e.localizedMessage
+                        ?: container.appContext.getString(R.string.ai_error_provider_error)
+                )
+                return@launch
+            }
+            container.prefs.setOptionalNutrientGoals(result)
+            _ui.value = _ui.value.copy(
+                estimatingOptionalNutrientGoals = false,
+                optionalNutrientGoals = result
+            )
+        }
+    }
+
+    fun dismissOptionalNutrientEstimateAlert() {
+        _ui.value = _ui.value.copy(optionalNutrientEstimateAlertMessage = null)
+    }
 
     fun setUserContext(value: String) = updateUiPref(
         { container.prefs.setUserContext(value) },

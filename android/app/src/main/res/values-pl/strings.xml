@@ -1306,6 +1306,9 @@
     <string name="export_action">Eksportuj</string>
     <string name="settings_other_nutrients">Inne składniki odżywcze</string>
     <string name="settings_other_nutrient_goals">Cele innych składników odżywczych</string>
+    <string name="settings_optional_nutrient_estimate_ai">Oszacuj za pomocą AI</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Ustawia te cele na podstawie profilu i celu kalorycznego. Zastępuje wartości ręczne.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Nie udało się oszacować celów</string>
     <string name="settings_reset_defaults">Przywróć domyślne</string>
     <string name="copy_from">Kopiuj z</string>
     <string name="copy_to">Kopiuj do</string>

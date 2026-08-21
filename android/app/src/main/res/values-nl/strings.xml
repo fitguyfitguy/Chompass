@@ -1282,6 +1282,9 @@
     <string name="settings_on_device_model_not_downloaded">Niet gedownload</string>
     <string name="settings_on_device_model_ready">Gedownload</string>
     <string name="settings_other_nutrient_goals">Andere voedingsstofdoelen</string>
+    <string name="settings_optional_nutrient_estimate_ai">Schat met AI</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Stelt deze doelen in op basis van uw profiel en caloriedoel. Vervangt handmatige waarden.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Doelen konden niet worden geschat</string>
     <string name="settings_other_nutrients">Andere voedingsstoffen</string>
     <string name="settings_pace_gain_format">+%1$s/week</string>
     <string name="settings_pace_loss_format">−%1$s/week</string>

@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,8 +39,10 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.OptionalNutrient
 import app.chompass.ui.components.FudGlassDialog
+import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
+import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.macroAccentColor
@@ -103,6 +107,52 @@ fun OptionalNutrientGoalsScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
+            // Opt-in AI estimate (Codeberg #20 phase 2: hidden with the master AI
+            // switch off — this is a purely-LLM feature with no formula fallback).
+            // Never fired automatically: Recalculate keeps optional goals untouched.
+            if (ui.aiFeaturesEnabled) {
+                item {
+                    FudGlassSurface(
+                        modifier = Modifier.fillMaxWidth(),
+                        cornerRadius = AppRadii.SectionCard,
+                        padding = 0.dp,
+                        allowBlur = false
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(enabled = !ui.estimatingOptionalNutrientGoals) {
+                                    vm.estimateOptionalNutrientGoals()
+                                }
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FudIconBubble(icon = Icons.Outlined.AutoAwesome, size = 22.dp, iconSize = 14.dp)
+                            Spacer(Modifier.width(14.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(R.string.settings_optional_nutrient_estimate_ai),
+                                    color = if (ui.estimatingOptionalNutrientGoals) {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                                    } else {
+                                        AppColors.Calorie
+                                    },
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    stringResource(R.string.settings_optional_nutrient_estimate_ai_hint),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                )
+                            }
+                            if (ui.estimatingOptionalNutrientGoals) {
+                                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                            }
+                        }
+                    }
+                }
+            }
             item {
                 FudGlassSurface(
                     modifier = Modifier.fillMaxWidth(),
@@ -160,6 +210,24 @@ fun OptionalNutrientGoalsScreen(
                 onClick = { editing = null },
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+            )
+        }
+    }
+
+    ui.optionalNutrientEstimateAlertMessage?.let { message ->
+        FudGlassDialog(onDismissRequest = { vm.dismissOptionalNutrientEstimateAlert() }) {
+            Text(
+                stringResource(R.string.settings_optional_nutrient_estimate_failed_title),
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                message,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_ok),
+                onPrimary = { vm.dismissOptionalNutrientEstimateAlert() }
             )
         }
     }
