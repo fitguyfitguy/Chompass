@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.models.CalorieSafety
 import app.chompass.models.ActivityLevel
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.DietMode
@@ -629,18 +630,28 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
-                SettingsSheet.CALORIES -> NutritionPickerSheet(
-                    label = stringResource(R.string.macro_calories), unit = stringResource(R.string.unit_kcal),
-                    currentValue = ui.profile?.effectiveCalories ?: 2000,
-                    range = 800..6000, step = 50,
-                    onSave = { v ->
-                        vm.editCaloriesGoal(v)
-                        onDismiss()
-                    },
-                    onResetToAuto = if (ui.profile?.caloriesLocked == true) {
-                        { vm.resetCaloriesLock(); onDismiss() }
-                    } else null
-                )
+                SettingsSheet.CALORIES -> {
+                    val p = ui.profile
+                    val floor = p?.let { CalorieSafety.floorKcal(it.bmr) } ?: CalorieSafety.ABSOLUTE_FLOOR_KCAL
+                    val ceiling = p?.let { CalorieSafety.ceilingKcal(it.tdee, floor) }
+                        ?: CalorieSafety.PARSER_CEILING_KCAL
+                    NutritionPickerSheet(
+                        label = stringResource(R.string.macro_calories), unit = stringResource(R.string.unit_kcal),
+                        currentValue = p?.effectiveCalories ?: 2000,
+                        range = floor..ceiling, step = 50,
+                        maxCustomGoal = ceiling,
+                        confirmBelow = floor,
+                        confirmBelowTitle = stringResource(R.string.settings_calorie_below_floor_title),
+                        confirmBelowMessage = stringResource(R.string.settings_calorie_below_floor_message),
+                        onSave = { v ->
+                            vm.editCaloriesGoal(v)
+                            onDismiss()
+                        },
+                        onResetToAuto = if (p?.caloriesLocked == true) {
+                            { vm.resetCaloriesLock(); onDismiss() }
+                        } else null
+                    )
+                }
                 SettingsSheet.PROTEIN -> ProteinGoalSheet(
                     profile = ui.profile,
                     onModeChange = { mode ->

@@ -146,14 +146,18 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     onChange = vm::setGoalWeight,
                     onToggle = vm::setUseMetric
                 )
-                OnboardingStep.GOAL_SPEED -> GoalSpeedStep(
-                    weeklyKg = ui.weeklyChangeKg,
-                    goal = ui.goal,
-                    useMetric = ui.weightMetric,
-                    currentKg = ui.weightKg,
-                    targetKg = ui.goalWeightKg,
-                    onSelect = vm::setWeeklyChange
-                )
+                OnboardingStep.GOAL_SPEED -> {
+                    val draft = ui.buildProfile()
+                    GoalSpeedStep(
+                        weeklyKg = ui.weeklyChangeKg,
+                        goal = ui.goal,
+                        useMetric = ui.weightMetric,
+                        currentKg = ui.weightKg,
+                        targetKg = ui.goalWeightKg,
+                        onSelect = vm::setWeeklyChange,
+                        paceCappedTarget = draft.takeIf { it.rawDailyCalories < it.dailyCalories }?.dailyCalories,
+                    )
+                }
                 OnboardingStep.NOTIFICATIONS -> NotificationsStep(
                     enabled = ui.notificationsEnabled,
                     onToggle = vm::setNotificationsEnabled

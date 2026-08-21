@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -70,6 +71,10 @@ fun NutritionPickerSheet(
      * maxCustomGoal); null keeps any non-negative integer.
      */
     maxCustomGoal: Int? = null,
+    /** When set, saving a value below this shows a confirm dialog first. */
+    confirmBelow: Int? = null,
+    confirmBelowTitle: String? = null,
+    confirmBelowMessage: String? = null,
     /**
      * When true, paint [label] as a large colored heading above the wheel.
      * Goal hosts already name the nutrient on the row the user tapped, so
@@ -86,6 +91,7 @@ fun NutritionPickerSheet(
     var selected by remember(initial) { mutableStateOf(initial) }
     var customMode by remember { mutableStateOf(false) }
     var customText by remember { mutableStateOf("") }
+    var pendingConfirm by remember { mutableStateOf(false) }
     val clampCustom: (Int) -> Int = { v -> if (maxCustomGoal != null) v.coerceAtMost(maxCustomGoal) else v }
     val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
     val saveValue = if (customMode) parsedCustom ?: selected else selected
@@ -159,7 +165,10 @@ fun NutritionPickerSheet(
             .height(54.dp)
             .clip(RoundedCornerShape(AppRadii.Field))
             .background(accentColor)
-            .clickable { onSave(saveValue) },
+            .clickable {
+                if (confirmBelow != null && saveValue < confirmBelow) pendingConfirm = true
+                else onSave(saveValue)
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -182,4 +191,21 @@ fun NutritionPickerSheet(
         }
     }
     Spacer(Modifier.height(8.dp))
+    if (pendingConfirm && confirmBelow != null) {
+        AlertDialog(
+            onDismissRequest = { pendingConfirm = false },
+            title = { Text(confirmBelowTitle ?: stringResource(R.string.settings_calorie_below_floor_title)) },
+            text = { Text(confirmBelowMessage ?: stringResource(R.string.settings_calorie_below_floor_message)) },
+            confirmButton = {
+                TextButton(onClick = { pendingConfirm = false; onSave(saveValue) }) {
+                    Text(stringResource(R.string.settings_calorie_below_floor_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingConfirm = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
 }

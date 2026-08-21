@@ -357,7 +357,8 @@
     <string name="onboarding_plan_subtitle">Tap any value to edit</string>
     <string name="onboarding_plan_daily_calories">daily calories</string>
     <string name="onboarding_plan_doctor_title">Please consult with a doctor</string>
-    <string name="onboarding_plan_doctor_message">The minimum recommendation is 1,200 calories per day.</string>
+    <string name="onboarding_plan_doctor_message">This is below your estimated resting calories or 1,200 kcal a day.</string>
+    <string name="onboarding_pace_capped">This pace isn\'t possible at your size without going below your estimated resting calories. Your target will be %1$d kcal.</string>
 
     <string name="onboarding_disclaimers_title">Before you start</string>
     <string name="onboarding_disclaimers_subtitle">Please read these important notices</string>
@@ -1505,6 +1506,9 @@
     <string name="settings_not_medical_advice">Not medical advice</string>
     <string name="settings_reset_autobalance">Reset to Auto-balance</string>
     <string name="settings_picker_enter_custom">Enter custom value…</string>
+    <string name="settings_calorie_below_floor_title">Below the safety floor</string>
+    <string name="settings_calorie_below_floor_message">This is below your estimated resting burn or 1,200 kcal. Only continue if a clinician prescribed it.</string>
+    <string name="settings_calorie_below_floor_continue">Continue anyway</string>
     <string name="settings_picker_use_wheel">Use wheel</string>
     <string name="settings_picker_custom_placeholder">Value in %1$s</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>

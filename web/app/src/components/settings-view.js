@@ -8,7 +8,7 @@ import {
   prefs,
   clearAllUserData,
 } from "../lib/db.js";
-import { dailyTargets, bmr, tdee } from "../lib/chompass-core/formulas.js";
+import { dailyTargets, bmr, tdee, safetyFloorKcal, CALORIE_PARSER_CEILING_KCAL } from "../lib/chompass-core/formulas.js";
 import { computeWeightForecast } from "../lib/chompass-core/forecast.js";
 import { exportDiary, importDiary } from "../lib/chompass-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/chompass-core/body-metrics-format.js";
@@ -370,7 +370,7 @@ export class SettingsView extends HTMLElement {
           </div>
           <div class="field">
             <label for="customCalories">Custom calories</label>
-            <input id="customCalories" name="customCalories" type="number" min="0" value="${p.customCalories ?? ""}" placeholder="${targets.calories}" />
+            <input id="customCalories" name="customCalories" type="number" min="0" max="${CALORIE_PARSER_CEILING_KCAL}" value="${p.customCalories ?? ""}" placeholder="${targets.calories}" />
           </div>
         </div>
         <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">Formula targets: ${formatNumber(targets.calories)} kcal · ${Math.round(targets.proteinG)}P / ${Math.round(targets.carbsG)}C / ${Math.round(targets.fatG)}F. Leave blank to use formula.</p>
@@ -431,6 +431,15 @@ export class SettingsView extends HTMLElement {
       const paceRaw = fd.get("weeklyChangeKg");
       const goalW = fd.get("goalWeightKg");
       const custom = fd.get("customCalories");
+      const floor = safetyFloorKcal(p);
+      if (custom && Number(custom) < floor) {
+        const ok = await openConfirm({
+          title: "Below the safety floor",
+          message: "This is below your estimated resting burn or 1,200 kcal. Only continue if a clinician prescribed it.",
+          confirmLabel: "Continue anyway",
+        });
+        if (!ok) return;
+      }
       const customProtein = fd.get("customProtein");
       const customCarbs = fd.get("customCarbs");
       const customFat = fd.get("customFat");
