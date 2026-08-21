@@ -33,6 +33,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | TDEE    | Activity multiplier TDEE | Deterministic | `UserProfile.tdee`                             | kcal/day |
 | ACT-EST | Estimated daily active   | Deterministic | `UserProfile.estimatedDailyActiveCalories`     | kcal/day |
 | CAL-ADJ | Goal calorie adjustment  | Deterministic | `UserProfile.calorieAdjustment`                | kcal/day |
+| CAL-SAFE | Auto calorie floor/ceiling | Guardrail   | `CalorieSafety.clampAuto` / `formulas.clampAutoCalories` | kcal/day |
 | MACRO-P | Protein target           | Deterministic | `UserProfile.proteinGoal`                      | g/day    |
 | MACRO-F | Fat target               | Deterministic | `UserProfile.fatGoal`                          | g/day    |
 | MACRO-C | Carb target              | Deterministic | `UserProfile.carbsGoal`                        | g/day    |
@@ -138,12 +139,25 @@ When **Energy Burn Goals** is on, the stored goal is the _measured_ Health Conne
 
 ```
 adjustment = weeklyChangeKg × 7,700 / 7   (signed: negative for lose, positive for gain)
-dailyCalories = int(TDEE) + adjustment
+rawDailyCalories = int(TDEE) + adjustment
+dailyCalories = CAL-SAFE clamp of rawDailyCalories
 ```
 
 **Constant:** `NutritionConstants.KCAL_PER_KG_BODY_MASS = 7700` (shared with forecast/adaptive).
 
 **Default pace:** 0.5 kg/week when `weeklyChangeKg` unset.
+
+### CAL-SAFE: Auto calorie floor / ceiling
+
+Applied to **formula** `dailyCalories` (and later Recalculate / Adaptive auto writes). Manual `customCalories` pins are not clamped here.
+
+```
+floor    = max(round(BMR), 1,200)
+ceiling  = max(floor, 6,000, round(TDEE × 1.5))
+dailyCalories = clamp(rawDailyCalories, floor, ceiling)
+```
+
+Stops Lose + Fast from persisting TDEE − 1,100 when that is below BMR (or below 1,200 when BMR is lower). Pace label is unchanged; the effective deficit shrinks to the floor.
 
 ### MACRO-P: Protein
 
@@ -314,7 +328,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 | Fat 0.6 g/kg                     | **Keep**                        | Practical minimum-fat heuristic; not a clinical prescription              |
 | Keto carb heuristic              | **Keep**                        | Explicit policy range; document as heuristic not medical ketosis protocol |
 | Adaptive ±150 kcal, 25 min step  | **Keep**                        | Prevents oscillation; conservative weekly nudge                           |
-| Safety floor max(BMR, 1200)      | **Keep**                        | UX guardrail; documented limitation for small users                       |
+| Safety floor max(BMR, 1200)      | **Keep / extend to all auto writes** | Formula `dailyCalories`, Recalculate, and Adaptive; never auto-set a VLCD (800). Manual pin still allowed with confirm. |
 | Linear regression on scale data  | **Replaced with Theil–Sen**     | Robust median-slope; resists outlier weigh-ins                            |
 | AI goal recalculation            | **Keep, segregated**            | Non-deterministic; audit deterministic layer separately                   |
 | US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
@@ -376,7 +390,7 @@ When changing **diary / body-metrics / meal-share / sync** wire formats: bump `f
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Profile & macros              | `android/app/src/main/java/.../models/UserProfile.kt`                                                                                          |
 | Home gauge math               | `android/app/src/main/java/.../models/HomeDisplayPreferences.kt`                                                                               |
-| Constants                     | `android/app/src/main/java/.../models/NutritionConstants.kt`                                                                                   |
+| Constants                     | `android/app/src/main/java/.../models/NutritionConstants.kt`, `CalorieSafety.kt`                                                               |
 | Activity / protein            | `android/app/src/main/java/.../models/ActivityLevel.kt`                                                                                        |
 | Forecast & adaptive           | `android/app/src/main/java/.../services/WeightAnalysisService.kt`                                                                              |
 | Forecast math (pure)          | `android/app/src/main/java/.../services/WeightForecastMath.kt`                                                                                 |

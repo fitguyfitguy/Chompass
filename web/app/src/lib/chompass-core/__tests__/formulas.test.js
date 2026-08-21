@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bmr, tdee, dailyCalories, proteinGoal, fatGoalStandard, dailyTargets } from "../formulas.js";
+import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets } from "../formulas.js";
 import { averageDailyIntake } from "../forecast.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
@@ -38,7 +38,7 @@ for (const scenario of scenarios) {
       assert.equal(dailyCalories(profile), expect.dailyCalories);
     }
     if (expect.calorieAdjustment != null) {
-      assert.equal(dailyCalories(profile) - Math.trunc(tdee(profile)), expect.calorieAdjustment);
+      assert.equal(calorieAdjustment(profile), expect.calorieAdjustment);
     }
     if (expect.proteinGoal != null) {
       assert.equal(proteinGoal(profile), expect.proteinGoal);

@@ -38,6 +38,11 @@ export const PROTEIN_G_PER_KG = {
 
 const DEFAULT_WEEKLY_CHANGE_KG = 0.5;
 
+/** CAL-SAFE: never auto-set below BMR or 1200 kcal. */
+export const CALORIE_ABSOLUTE_FLOOR_KCAL = 1200;
+export const CALORIE_PARSER_CEILING_KCAL = 6000;
+const AUTO_TDEE_CEILING_MULT = 1.5;
+
 /**
  * BMR-MSJ: Mifflin-St Jeor. Used when bodyFatPercentage is not set.
  * @param {UserProfile} profile
@@ -99,15 +104,45 @@ function signedWeeklyChangeKg(profile) {
 }
 
 /**
- * CAL-ADJ: goal calorie adjustment and resulting daily calorie target.
- * Mirrors Kotlin's Int arithmetic: both tdee and the adjustment are
- * truncated (not rounded) before summing (UserProfile.kt dailyCalories).
+ * CAL-ADJ: signed daily calorie adjustment for the profile's goal pace.
+ * Raw (unclamped). Mirrors Kotlin Int truncation.
+ * @param {UserProfile} profile
+ */
+export function calorieAdjustment(profile) {
+  return Math.trunc((signedWeeklyChangeKg(profile) * KCAL_PER_KG_BODY_MASS) / 7);
+}
+
+/** @param {UserProfile} profile */
+export function safetyFloorKcal(profile) {
+  return Math.max(Math.round(bmr(profile)), CALORIE_ABSOLUTE_FLOOR_KCAL);
+}
+
+/** @param {UserProfile} profile @param {number} floor */
+export function safetyCeilingKcal(profile, floor) {
+  return Math.max(floor, CALORIE_PARSER_CEILING_KCAL, Math.round(tdee(profile) * AUTO_TDEE_CEILING_MULT));
+}
+
+/**
+ * CAL-SAFE clamp for auto-set targets (formula / Recalculate / Adaptive).
+ * @param {number} raw
+ * @param {UserProfile} profile
+ */
+export function clampAutoCalories(raw, profile) {
+  const floor = safetyFloorKcal(profile);
+  const ceiling = safetyCeilingKcal(profile, floor);
+  return Math.min(ceiling, Math.max(floor, Math.trunc(raw)));
+}
+
+/**
+ * CAL-ADJ + CAL-SAFE: daily calorie target.
+ * Custom pins are returned as-is (manual override). Formula path is clamped.
+ * Mirrors Kotlin: tdee and adjustment truncated, then CalorieSafety.clampAuto.
  * @param {UserProfile} profile
  */
 export function dailyCalories(profile) {
   if (profile.customCalories != null) return Math.trunc(profile.customCalories);
-  const adjustment = Math.trunc((signedWeeklyChangeKg(profile) * KCAL_PER_KG_BODY_MASS) / 7);
-  return Math.trunc(tdee(profile)) + adjustment;
+  const raw = Math.trunc(tdee(profile)) + calorieAdjustment(profile);
+  return clampAutoCalories(raw, profile);
 }
 
 /**
