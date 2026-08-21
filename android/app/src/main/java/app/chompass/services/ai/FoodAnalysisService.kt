@@ -308,6 +308,7 @@ class FoodAnalysisService(
             - Goal weight: $goalWeight
             ${dietModeLine(profile)}
             ${ketoGoalRulesSection(profile)}
+            ${profile.goalLockPromptSection()}
             APP FORMULA REFERENCE (already computed deterministically; use as the anchor)
             - BMR: ${profile.bmr.toInt()} kcal/day
             - TDEE: ${profile.tdee.toInt()} kcal/day

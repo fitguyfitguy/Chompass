@@ -156,6 +156,30 @@ class UserProfileCalculationTest {
   }
 
   @Test
+  fun applyingAiGoals_keepsAiMacrosWhenTheyAlreadyFillLockedCalories() {
+    val p = profile().copy(
+      customCalories = 1900,
+      customProtein = 180,
+      customCarbs = 150,
+      customFat = 60,
+      caloriesLocked = true,
+    )
+    // 140*4 + 180*4 + 70*9 = 1910, within 30 kcal of 1900.
+    val next = p.applyingAiGoals(calories = 1500, protein = 140, carbs = 180, fat = 70)
+    assertEquals(1900, next.effectiveCalories)
+    assertEquals(140, next.effectiveProtein)
+    assertEquals(180, next.effectiveCarbs)
+  }
+
+  @Test
+  fun goalLockPromptSection_namesLockedCalories() {
+    val p = profile().copy(customCalories = 1900, caloriesLocked = true)
+    val section = p.goalLockPromptSection()
+    assertTrue(section.contains("Calories locked at 1900"))
+    assertTrue(section.contains("Do not lower calories"))
+  }
+
+  @Test
   fun applyingAiGoals_writesUnlockedCalories() {
     val p = profile().copy(
       customCalories = 1900,

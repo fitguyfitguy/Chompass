@@ -146,6 +146,34 @@ export async function resolveGoalsAiClient() {
 
 /**
  * @param {UserProfile} profile
+ */
+export function lockConstraintsSection(profile) {
+  const caloriesLocked = !!profile.caloriesLocked;
+  const locked = new Set(profile.lockedMacros || []);
+  if (!caloriesLocked && locked.size === 0) return "";
+  const lines = ["", "LOCKED TARGETS (the user pinned these; return these exact numbers):"];
+  const calories =
+    profile.customCalories != null ? Math.trunc(profile.customCalories) : null;
+  if (caloriesLocked && calories != null) {
+    lines.push(
+      `- Calories locked at ${calories} kcal. Return that exact calories value. Choose unlocked macros so 4*protein + 4*carbs + 9*fat is about ${calories}. Do not lower calories to force a bigger deficit.`,
+    );
+  }
+  if (locked.has("protein") && profile.customProtein != null) {
+    lines.push(`- Protein locked at ${Math.round(profile.customProtein)} g. Return that exact protein value.`);
+  }
+  if (locked.has("carbs") && profile.customCarbs != null) {
+    lines.push(`- Carbs locked at ${Math.round(profile.customCarbs)} g. Return that exact carbs value.`);
+  }
+  if (locked.has("fat") && profile.customFat != null) {
+    lines.push(`- Fat locked at ${Math.round(profile.customFat)} g. Return that exact fat value.`);
+  }
+  lines.push("Unlocked macros may change. Locked fields must match the numbers above.");
+  return lines.join("\n");
+}
+
+/**
+ * @param {UserProfile} profile
  * @param {WeightForecast|null} forecast
  * @param {boolean} heightMetric
  * @param {boolean} weightMetric
@@ -219,6 +247,7 @@ USER PROFILE
 - Goal weight: ${goalWeight}
 ${dietLine}
 ${ketoSection}
+${lockConstraintsSection(profile)}
 APP FORMULA REFERENCE (already computed deterministically; use as the anchor)
 - BMR: ${Math.trunc(bmr(formulaProfile))} kcal/day
 - TDEE: ${Math.trunc(tdee(formulaProfile))} kcal/day

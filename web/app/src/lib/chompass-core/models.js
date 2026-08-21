@@ -195,7 +195,8 @@
  * @property {boolean} [ketoMode]
  * @property {number|null} [goalWeightKg]
  * @property {number|null} [customCalories]      when set, overrides formula dailyCalories (adaptive / manual pin)
- * @property {boolean} [caloriesLocked]          when true, Adaptive does not overwrite customCalories
+ * @property {boolean} [caloriesLocked]          when true, Recalculate/Adaptive do not overwrite customCalories
+ * @property {Array<"protein"|"carbs"|"fat">} [lockedMacros]
  * @property {number|null} [customProtein]       g/day pin (Android effectiveProtein)
  * @property {number|null} [customCarbs]         g/day pin
  * @property {number|null} [customFat]           g/day pin
