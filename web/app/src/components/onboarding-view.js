@@ -718,6 +718,14 @@ export class OnboardingView extends HTMLElement {
       await this.finish();
       return;
     }
+    if (id === "age" && (this.draft.age ?? 0) > 0 && this.draft.age < 18) {
+      const ok = await openConfirm({
+        title: "Adult formulas only",
+        message: "This app uses adult calorie formulas. If you are under 18, ask a clinician before using these targets.",
+        confirmLabel: "I understand",
+      });
+      if (!ok) return;
+    }
     if (id === "ai") {
       if (this.aiDraft.apiKey.trim()) {
         const ok = await this.testAiKey({ advanceOnSuccess: true });
