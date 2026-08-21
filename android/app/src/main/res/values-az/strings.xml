@@ -1300,6 +1300,9 @@ bilirsən?</string>
     <string name="settings_on_device_model_not_downloaded">Endirilməyib</string>
     <string name="settings_on_device_model_ready">Endirilib</string>
     <string name="settings_other_nutrient_goals">Digər qida maddəsi məqsədləri</string>
+    <string name="settings_optional_nutrient_estimate_ai">AI ilə qiymətləndir</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Bu məqsədləri profilinizə və kalori hədəfinizə uyğun təyin edir. Əl ilə daxil edilmiş dəyərləri əvəz edir.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Məqsədləri qiymətləndirmək mümkün olmadı</string>
     <string name="settings_other_nutrients">Digər qida maddələri</string>
     <string name="settings_pace_gain_format">+%1$s/həftə</string>
     <string name="settings_pace_loss_format">−%1$s/həftə</string>

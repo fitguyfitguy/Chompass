@@ -1306,6 +1306,9 @@
     <string name="export_action">Dışa Aktar</string>
     <string name="settings_other_nutrients">Diğer Besinler</string>
     <string name="settings_other_nutrient_goals">Diğer Besin Hedefleri</string>
+    <string name="settings_optional_nutrient_estimate_ai">AI ile Tahmin Et</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Bu hedefleri profilinize ve kalori hedefinize göre belirler. Manuel değerlerin yerine geçer.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Hedefler tahmin edilemedi</string>
     <string name="settings_reset_defaults">Varsayılanlara Sıfırla</string>
     <string name="copy_from">Şuradan Kopyala</string>
     <string name="copy_to">Şuraya Kopyala</string>

@@ -1302,6 +1302,9 @@
     <string name="settings_on_device_model_not_downloaded">未下载</string>
     <string name="settings_on_device_model_ready">已下载</string>
     <string name="settings_other_nutrient_goals">其他营养素目标</string>
+    <string name="settings_optional_nutrient_estimate_ai">使用 AI 估算</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">根据您的资料和热量目标设置这些目标。会替换手动设置的值。</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">无法估算目标</string>
     <string name="settings_other_nutrients">其他营养素</string>
     <string name="settings_pace_gain_format">+%1$s/周</string>
     <string name="settings_pace_loss_format">−%1$s/周</string>

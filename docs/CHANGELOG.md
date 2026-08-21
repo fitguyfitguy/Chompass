@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Daily summary shows today's deficit or surplus** (Android): the evening notification now uses logged calories and measured burn (Health Connect when available) to say whether the day landed in deficit, surplus, or on target. Expand it to see eaten vs your calorie goal, and net carbs when keto is on. You can set the time under Settings → Notifications. Off by default.
+- **Optional nutrient goals can be estimated with AI on demand** (Android): Settings → Other Nutrient Goals now has an Estimate with AI button that fills sugar, fiber, sodium, vitamins, and the other optional goals from your profile and calorie target. It only runs when you tap it. Recalculate leaves these values alone, so your manual edits stay as you set them.
 
 ### Changed
 

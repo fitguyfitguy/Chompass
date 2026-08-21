@@ -787,6 +787,9 @@
     <string name="export_action">Экспортировать</string>
     <string name="settings_other_nutrients">Другие нутриенты</string>
     <string name="settings_other_nutrient_goals">Цели по другим нутриентам</string>
+    <string name="settings_optional_nutrient_estimate_ai">Оценить с помощью ИИ</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Устанавливает эти цели на основе вашего профиля и целевых калорий. Заменяет ручные значения.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Не удалось оценить цели</string>
     <string name="settings_reset_defaults">Сбросить по умолчанию</string>
     <string name="copy_from">Копировать из</string>
     <string name="macro_protein_format">Белки: %1$s</string>

@@ -158,6 +158,18 @@ class AiFeaturesGateTest {
     }
 
     @Test
+    fun estimateOptionalNutrientGoals_throwsDisabled_whenMasterSwitchOff() = runBlocking {
+        prefs.setAiFeaturesEnabled(false)
+
+        try {
+            serviceWithKeys().estimateOptionalNutrientGoals(null)
+            fail("expected AiError.Disabled")
+        } catch (e: AiError) {
+            assertTrue("expected Disabled, got $e", e is AiError.Disabled)
+        }
+    }
+
+    @Test
     fun chatService_sendMessage_throwsDisabled_whenMasterSwitchOff() = runBlocking {
         prefs.setAiFeaturesEnabled(false)
         val chat = ChatService(

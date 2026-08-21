@@ -1362,6 +1362,9 @@
     <string name="settings_on_device_model_not_downloaded">No descargado</string>
     <string name="settings_on_device_model_ready">Descargado</string>
     <string name="settings_other_nutrient_goals">Objetivos de otros nutrientes</string>
+    <string name="settings_optional_nutrient_estimate_ai">Estimar con IA</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Define estos objetivos a partir de tu perfil y tu objetivo calórico. Reemplaza los valores manuales.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">No se pudieron estimar los objetivos</string>
     <string name="settings_other_nutrients">Otros nutrientes</string>
     <string name="settings_pace_gain_format">%1$s/semana de ganancia</string>
     <string name="settings_pace_loss_format">%1$s/semana de pérdida</string>

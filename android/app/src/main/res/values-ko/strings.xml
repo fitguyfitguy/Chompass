@@ -1300,6 +1300,9 @@
     <string name="settings_on_device_model_not_downloaded">다운로드 안 됨</string>
     <string name="settings_on_device_model_ready">다운로드됨</string>
     <string name="settings_other_nutrient_goals">기타 영양소 목표</string>
+    <string name="settings_optional_nutrient_estimate_ai">AI로 추정</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">프로필과 칼로리 목표를 바탕으로 이 목표들을 설정합니다. 수동으로 입력한 값을 대체합니다.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">목표를 추정할 수 없습니다</string>
     <string name="settings_other_nutrients">기타 영양소</string>
     <string name="settings_pace_gain_format">+%1$s/주</string>
     <string name="settings_pace_loss_format">−%1$s/주</string>

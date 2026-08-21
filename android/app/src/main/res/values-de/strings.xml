@@ -2361,6 +2361,9 @@ für dich ein</string>
     <string name="settings_other_nutrients">Sonstige Nährstoffe</string>
 
     <string name="settings_other_nutrient_goals">Ziele für sonstige Nährstoffe</string>
+    <string name="settings_optional_nutrient_estimate_ai">Mit KI schätzen</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">Setzt diese Ziele aus Ihrem Profil und Ihrem Kalorienziel. Ersetzt manuelle Werte.</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">Ziele konnten nicht geschätzt werden</string>
 
     <string name="settings_reset_defaults">Auf Standardwerte zurücksetzen</string>
 

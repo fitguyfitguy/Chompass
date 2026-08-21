@@ -1301,6 +1301,9 @@
     <string name="settings_on_device_model_not_downloaded">डाउनलोड नहीं</string>
     <string name="settings_on_device_model_ready">डाउनलोड हो गया</string>
     <string name="settings_other_nutrient_goals">अन्य पोषक तत्व लक्ष्य</string>
+    <string name="settings_optional_nutrient_estimate_ai">AI से अनुमान लगाएं</string>
+    <string name="settings_optional_nutrient_estimate_ai_hint">ये लक्ष्य आपकी प्रोफ़ाइल और कैलोरी लक्ष्य से निर्धारित करता है। मैन्युअल मान बदल देता है।</string>
+    <string name="settings_optional_nutrient_estimate_failed_title">लक्ष्यों का अनुमान नहीं लगाया जा सका</string>
     <string name="settings_other_nutrients">अन्य पोषक तत्व</string>
     <string name="settings_pace_gain_format">+%1$s/सप्ताह</string>
     <string name="settings_pace_loss_format">−%1$s/सप्ताह</string>
