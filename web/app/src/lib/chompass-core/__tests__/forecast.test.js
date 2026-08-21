@@ -106,6 +106,17 @@ describe("computeWeightForecast / suggestAdaptiveCalories", () => {
     assert.equal(f.loggedDayAvgCalories, 2000);
   });
 
+  it("raises a sub-floor target without waiting for trend data", () => {
+    const r = suggestAdaptiveCalories({
+      profile: { ...profile, customCalories: 800 },
+      weights: [],
+      foods: [],
+    });
+    assert.equal(r.changed, true);
+    assert.ok(r.updatedCalories >= 1200);
+    assert.match(r.message, /safety floor/);
+  });
+
   it("skips adaptive when calories are locked", () => {
     const r = suggestAdaptiveCalories({
       profile: { ...profile, customCalories: 1900, caloriesLocked: true },

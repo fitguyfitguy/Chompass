@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.GroundingConfidence
@@ -491,7 +492,10 @@ internal object FoodJsonParser {
             else -> null
         } ?: throw AiError.InvalidResponse
         return HealthEnergyGoalSuggestion(
-            calories = calories.coerceIn(800, 6000),
+            calories = calories.coerceIn(
+                CalorieSafety.ABSOLUTE_FLOOR_KCAL,
+                CalorieSafety.PARSER_CEILING_KCAL,
+            ),
             reason = json.optString("reason").takeIf { it.isNotBlank() }
         )
     }
@@ -507,7 +511,10 @@ internal object FoodJsonParser {
         val calories = intOf("calories") ?: throw AiError.InvalidResponse
         fun macro(key: String, cap: Int): Int = (intOf(key) ?: 0).coerceIn(0, cap)
         return GoalCalculation(
-            calories = calories.coerceIn(800, 6000),
+            calories = calories.coerceIn(
+                CalorieSafety.ABSOLUTE_FLOOR_KCAL,
+                CalorieSafety.PARSER_CEILING_KCAL,
+            ),
             protein = macro("protein", 500),
             carbs = macro("carbs", 1200),
             fat = macro("fat", 400),

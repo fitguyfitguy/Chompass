@@ -3,7 +3,7 @@
  * FCAST + ADAPT — port of WeightForecastMath / WeightAnalysisService /
  * AdaptiveGoalService. See docs/CALCULATION_METHODS.md.
  */
-import { KCAL_PER_KG_BODY_MASS, bmr, dailyCalories, tdee } from "./formulas.js";
+import { KCAL_PER_KG_BODY_MASS, bmr, dailyCalories, tdee, safetyFloorKcal } from "./formulas.js";
 
 const MAX_LOOKBACK_DAYS = 90;
 const SPARSE_LOGGING_FRACTION_THRESHOLD = 0.5;
@@ -181,9 +181,18 @@ export function suggestAdaptiveCalories({ profile, weights, foods }) {
   const targetWeekly =
     profile.goal === "lose" ? -magnitude : profile.goal === "gain" ? magnitude : 0;
   const currentCalories = profile.customCalories ?? dailyCalories(profile);
-  const safetyFloor = Math.max(Math.round(bmr(profile)), 1200);
+  const safetyFloor = safetyFloorKcal(profile);
   const maintenanceTdee = Math.round(tdee(profile));
   const safetyCeiling = Math.max(safetyFloor, Math.round(maintenanceTdee * 1.25));
+
+  if (currentCalories < safetyFloor) {
+    return {
+      changed: true,
+      updatedCalories: safetyFloor,
+      message: `Adaptive Goals raised calories to ${safetyFloor} kcal, the safety floor (never below your estimated resting burn or 1,200 kcal).`,
+      forecast,
+    };
+  }
 
   const hasWeightTrend =
     forecast.daysOfFoodData >= MINIMUM_FOOD_DAYS &&

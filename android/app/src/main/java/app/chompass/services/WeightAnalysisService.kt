@@ -1,5 +1,6 @@
 package app.chompass.services
 
+import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodEntry
 import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
@@ -91,10 +92,20 @@ object AdaptiveGoalService {
         val observedWeeklyChangeKg = forecast.observedWeeklyChangeKg
         val targetWeeklyChangeKg = targetWeeklyChangeKg(profile)
         val currentCalories = profile.effectiveCalories
-        val safetyFloor = max(profile.bmr.roundToInt(), 1_200)
+        val safetyFloor = CalorieSafety.floorKcal(profile.bmr)
         // Prefer Health Connect measured burn for the maintenance/ceiling basis when available.
         val maintenanceTdee = measuredTdee ?: profile.tdee.roundToInt()
         val safetyCeiling = max(safetyFloor, (maintenanceTdee * 1.25).roundToInt())
+
+        if (currentCalories < safetyFloor) {
+            val lifted = profile.applyCaloriesEdit(safetyFloor)
+            return AdaptiveGoalResult(
+                profile = lifted,
+                changed = true,
+                updatedCalories = safetyFloor,
+                message = "Adaptive Goals raised calories to $safetyFloor kcal, the safety floor (never below your estimated resting burn or 1,200 kcal)."
+            )
+        }
 
         val hasWeightTrend = forecast.daysOfFoodData >= MINIMUM_FOOD_DAYS &&
             forecast.weightEntriesUsed >= MINIMUM_WEIGHT_ENTRIES &&
@@ -162,7 +173,7 @@ object AdaptiveGoalService {
             )
         }
 
-        val nextProfile = profile.copy(customCalories = adjustedCalories)
+        val nextProfile = profile.applyCaloriesEdit(adjustedCalories)
         val signedAdjustment = adjustedCalories - currentCalories
         val sign = if (signedAdjustment > 0) "+" else ""
         val basis = if (hasWeightTrend) "your recent weight trend" else "your Health Connect energy burn"

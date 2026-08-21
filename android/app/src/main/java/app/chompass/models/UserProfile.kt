@@ -469,7 +469,8 @@ data class UserProfile(
      * budget (small rounding on the last unlocked macro); only a large miss scales them.
      */
     fun applyingAiGoals(calories: Int, protein: Int, carbs: Int, fat: Int): UserProfile {
-        val keptCalories = if (caloriesLocked) effectiveCalories else calories
+        val clamped = CalorieSafety.clampAuto(calories, this)
+        val keptCalories = if (caloriesLocked) effectiveCalories else clamped
         var next = copy(
             customCalories = keptCalories,
             customProtein = if (isMacroLocked(AutoBalanceMacro.PROTEIN)) effectiveProtein else protein,
@@ -482,7 +483,7 @@ data class UserProfile(
                 proteinTargetMode = ProteinTargetMode.GRAMS_PER_DAY,
             )
         }
-        if (caloriesLocked) {
+        if (caloriesLocked || keptCalories != calories) {
             next = next.fittingUnlockedMacrosTo(keptCalories)
         }
         return next

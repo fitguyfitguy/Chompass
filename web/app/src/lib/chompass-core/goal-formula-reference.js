@@ -4,7 +4,7 @@
  * GoalFormulaReference.kt. Must stay aligned with formulas.js constants and
  * testdata/parity/goal-formula-prompt-fragments.json.
  */
-import { PAL_MULTIPLIERS, PROTEIN_G_PER_KG, KCAL_PER_KG_BODY_MASS } from "./formulas.js";
+import { PAL_MULTIPLIERS, PROTEIN_G_PER_KG, KCAL_PER_KG_BODY_MASS, CALORIE_ABSOLUTE_FLOOR_KCAL } from "./formulas.js";
 
 /** @param {number} value */
 function formatMultiplier(value) {
@@ -33,5 +33,13 @@ export function moderateActivityMultiplierRationale() {
   return (
     `Moderate uses ${moderate} (between FAO/WHO light 1.375 ` +
     `and moderate 1.55) for desk-active users who exercise a few times per week.`
+  );
+}
+
+export function calorieSafetyLine() {
+  return (
+    `Never set calories below this user's BMR or ${CALORIE_ABSOLUTE_FLOOR_KCAL}. ` +
+    `If the weekly pace would break that floor, shrink the deficit instead of lowering the floor. ` +
+    `800 kcal is a medically supervised VLCD, not an app target.`
   );
 }
