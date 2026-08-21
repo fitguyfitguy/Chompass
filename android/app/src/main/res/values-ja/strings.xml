@@ -179,6 +179,7 @@
     <string name="onboarding_pace_caption_slow">穏やかで持続可能。長期的な習慣に最適。</string>
     <string name="onboarding_pace_caption_fast">積極的だが実行可能。強い自制心が必要です。</string>
     <string name="onboarding_pace_caption_recommended">最もバランスの取れたペースで、モチベーションを保ち持続可能。</string>
+    <string name="onboarding_pace_capped">このペースは、推定安静時代謝を下回らずにあなたの体格では不可能です。目標は%1$d kcalになります。</string>
 
     <string name="onboarding_notifications_title">食事の記録を\nリマインド</string>
     <string name="onboarding_notifications_subtitle">食事の時間に優しくリマインドして\n記録を忘れないようサポートします。</string>
@@ -224,6 +225,9 @@
     <string name="onboarding_plan_daily_calories">1日のカロリー</string>
     <string name="onboarding_plan_doctor_title">医師にご相談ください</string>
     <string name="onboarding_plan_doctor_message">推奨される最低量は1日1,200カロリーです。</string>
+    <string name="onboarding_minor_title">大人向けの計算式のみ</string>
+    <string name="onboarding_minor_message">このアプリは大人向けのカロリー計算式を使用します。18歳未満の場合は、これらの目標を使う前に医療専門家に相談してください。</string>
+    <string name="onboarding_minor_continue">理解しました</string>
 
     <string name="onboarding_plan_field_calories">1日のカロリー</string>
     <string name="onboarding_plan_field_protein">タンパク質</string>
@@ -1302,6 +1306,9 @@
     <string name="settings_personal_intro">Chompass がエネルギー必要量と目標の推定に使う基本データ。</string>
     <string name="settings_picker_custom_placeholder">%1$s 単位の値</string>
     <string name="settings_picker_enter_custom">カスタム値を入力…</string>
+    <string name="settings_calorie_below_floor_title">安全な下限を下回っています</string>
+    <string name="settings_calorie_below_floor_message">これは推定安静時代謝または1,200 kcalを下回っています。医療専門家が処方した場合のみ続けてください。</string>
+    <string name="settings_calorie_below_floor_continue">それでも続ける</string>
     <string name="settings_picker_use_wheel">ホイールを使用</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
     <string name="settings_portion_clarify">分量サイズの確認</string>

@@ -180,6 +180,7 @@
     <string name="onboarding_pace_caption_slow">부드럽고 지속 가능해요. 장기적인 습관에 적합해요.</string>
     <string name="onboarding_pace_caption_fast">공격적이지만 가능해요. 강한 절제가 필요해요.</string>
     <string name="onboarding_pace_caption_recommended">가장 균형 잡힌 속도로 동기부여가 되고 지속 가능해요.</string>
+    <string name="onboarding_pace_capped">이 페이스는 추정 안정 시 대사량 아래로 내려가지 않고는 체격상 불가능합니다. 목표는 %1$dkcal입니다.</string>
 
     <string name="onboarding_notifications_title">식사 기록\n알림 받기</string>
     <string name="onboarding_notifications_subtitle">식사 시간에 부드러운 알림을 받아\n기록을 잊지 마세요.</string>
@@ -225,6 +226,9 @@
     <string name="onboarding_plan_daily_calories">하루 칼로리</string>
     <string name="onboarding_plan_doctor_title">의사와 상담하세요</string>
     <string name="onboarding_plan_doctor_message">최소 권장량은 하루 1,200칼로리예요.</string>
+    <string name="onboarding_minor_title">성인용 계산식만</string>
+    <string name="onboarding_minor_message">이 앱은 성인용 칼로리 계산식을 사용합니다. 18세 미만이라면 이러한 목표를 사용하기 전에 의료 전문가에게 문의하세요.</string>
+    <string name="onboarding_minor_continue">이해했습니다</string>
 
     <string name="onboarding_plan_field_calories">하루 칼로리</string>
     <string name="onboarding_plan_field_protein">단백질</string>
@@ -1302,6 +1306,9 @@
     <string name="settings_personal_intro">Chompass가 에너지 필요량과 목표를 추정하는 데 사용하는 기본 데이터.</string>
     <string name="settings_picker_custom_placeholder">%1$s 단위 값</string>
     <string name="settings_picker_enter_custom">사용자 지정 값 입력…</string>
+    <string name="settings_calorie_below_floor_title">안전 하한선 미만</string>
+    <string name="settings_calorie_below_floor_message">이 값은 추정 안정 시 대사량 또는 1,200kcal 미만입니다. 의료 전문가가 처방한 경우에만 계속하세요.</string>
+    <string name="settings_calorie_below_floor_continue">그래도 계속</string>
     <string name="settings_picker_use_wheel">휠 사용</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
     <string name="settings_portion_clarify">1인분 크기 확인</string>

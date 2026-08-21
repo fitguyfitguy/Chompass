@@ -303,6 +303,7 @@
     <string name="onboarding_pace_caption_slow">Nazik ve sürdürülebilir. Uzun vadeli alışkanlıklar için harika.</string>
     <string name="onboarding_pace_caption_fast">Hırslı ama uygulanabilir. Güçlü disiplin gerektirir.</string>
     <string name="onboarding_pace_caption_recommended">En dengeli tempo, motive edici ve sürdürülebilir.</string>
+    <string name="onboarding_pace_capped">Bu tempo, tahmini dinlenme harcamanın altına inmeden senin yapın için mümkün değil. Hedefin %1$d kcal olacak.</string>
 
     <string name="onboarding_notifications_title">Öğün kaydı için\nhatırlat</string>
     <string name="onboarding_notifications_subtitle">Öğün saatlerinde nazik hatırlatmalar al,\nböylece takip etmeyi unutmazsın.</string>
@@ -358,6 +359,9 @@
     <string name="onboarding_plan_daily_calories">günlük kalori</string>
     <string name="onboarding_plan_doctor_title">Lütfen bir doktora danışın</string>
     <string name="onboarding_plan_doctor_message">Minimum öneri günde 1.200 kaloridir.</string>
+    <string name="onboarding_minor_title">Yalnızca yetişkin formülleri</string>
+    <string name="onboarding_minor_message">Bu uygulama yetişkin kalori formüllerini kullanır. 18 yaşından küçüksen, bu hedefleri kullanmadan önce bir sağlık uzmanına sor.</string>
+    <string name="onboarding_minor_continue">Anladım</string>
 
     <string name="onboarding_disclaimers_title">Başlamadan önce</string>
     <string name="onboarding_disclaimers_subtitle">Lütfen bu önemli bildirimleri oku</string>
@@ -1505,6 +1509,9 @@
     <string name="settings_not_medical_advice">Tıbbi tavsiye değil</string>
     <string name="settings_reset_autobalance">Otomatik Dengelemeye Sıfırla</string>
     <string name="settings_picker_enter_custom">Özel değer gir…</string>
+    <string name="settings_calorie_below_floor_title">Güvenli sınırın altında</string>
+    <string name="settings_calorie_below_floor_message">Bu, tahmini dinlenme harcamanın veya 1.200 kcal'in altında. Yalnızca bir sağlık uzmanı önerdiyse devam et.</string>
+    <string name="settings_calorie_below_floor_continue">Yine de devam et</string>
     <string name="settings_picker_use_wheel">Çarkı kullan</string>
     <string name="settings_picker_custom_placeholder">%1$s cinsinden değer</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>

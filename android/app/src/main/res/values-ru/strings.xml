@@ -247,6 +247,7 @@
     <string name="onboarding_pace_caption_slow">Мягко и устойчиво. Отлично для долгосрочных привычек.</string>
     <string name="onboarding_pace_caption_fast">Агрессивно, но реально. Требует строгой дисциплины.</string>
     <string name="onboarding_pace_caption_recommended">Самый сбалансированный темп, мотивирующий и устойчивый.</string>
+    <string name="onboarding_pace_capped">Такой темп невозможен для вашего телосложения без снижения ниже расчетного расхода в покое. Ваша цель составит %1$d ккал.</string>
 
     <string name="onboarding_notifications_title">Получать напоминания\nо записи блюд</string>
     <string name="onboarding_notifications_subtitle">Получай мягкие напоминания во время еды,\nчтобы не забыть отслеживать.</string>
@@ -294,6 +295,9 @@
     <string name="onboarding_plan_daily_calories">калории в день</string>
     <string name="onboarding_plan_doctor_title">Пожалуйста, проконсультируйся с врачом</string>
     <string name="onboarding_plan_doctor_message">Минимальная рекомендация: 1 200 калорий в день.</string>
+    <string name="onboarding_minor_title">Только формулы для взрослых</string>
+    <string name="onboarding_minor_message">Это приложение использует формулы калорий для взрослых. Если вам меньше 18 лет, спросите специалиста в области здравоохранения, прежде чем использовать эти цели.</string>
+    <string name="onboarding_minor_continue">Понимаю</string>
 
     <string name="onboarding_plan_field_calories">Калории в день</string>
     <string name="onboarding_plan_field_protein">Белок</string>
@@ -1497,6 +1501,9 @@
     <string name="settings_personal_intro">Базовые данные, которые Chompass использует для оценки потребности в энергии и целей.</string>
     <string name="settings_picker_custom_placeholder">Значение в %1$s</string>
     <string name="settings_picker_enter_custom">Своё значение…</string>
+    <string name="settings_calorie_below_floor_title">Ниже безопасного минимума</string>
+    <string name="settings_calorie_below_floor_message">Это ниже вашего расчетного расхода в покое или 1 200 ккал. Продолжайте, только если это назначил специалист в области здравоохранения.</string>
+    <string name="settings_calorie_below_floor_continue">Всё равно продолжить</string>
     <string name="settings_picker_use_wheel">Использовать колесо</string>
     <string name="settings_picker_vitd_iu_hint">%1$d мкг ≈ %2$d МЕ</string>
     <string name="settings_portion_clarify">Проверка размера порции</string>

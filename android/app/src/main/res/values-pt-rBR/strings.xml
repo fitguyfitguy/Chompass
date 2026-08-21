@@ -175,6 +175,7 @@
     <string name="onboarding_pace_caption_slow">Suave e sustentável. Ótimo para hábitos de longo prazo.</string>
     <string name="onboarding_pace_caption_fast">Agressivo, mas viável. Exige bastante disciplina.</string>
     <string name="onboarding_pace_caption_recommended">O ritmo mais equilibrado, motivador e sustentável.</string>
+    <string name="onboarding_pace_capped">Este ritmo não é possível para o seu corpo sem ficar abaixo do metabolismo de repouso estimado. Sua meta será de %1$d kcal.</string>
 
     <string name="onboarding_notifications_title">Receba lembretes\npara registrar refeições</string>
     <string name="onboarding_notifications_subtitle">Lembretes leves nos horários das refeições\npara você nunca esquecer de registrar.</string>
@@ -220,6 +221,9 @@
     <string name="onboarding_plan_daily_calories">calorias diárias</string>
     <string name="onboarding_plan_doctor_title">Consulte um médico</string>
     <string name="onboarding_plan_doctor_message">A recomendação mínima é de 1.200 calorias por dia.</string>
+    <string name="onboarding_minor_title">Somente fórmulas para adultos</string>
+    <string name="onboarding_minor_message">Este app usa fórmulas de calorias para adultos. Se você tem menos de 18 anos, pergunte a um profissional de saúde antes de usar essas metas.</string>
+    <string name="onboarding_minor_continue">Entendi</string>
 
     <string name="onboarding_plan_field_calories">Calorias diárias</string>
     <string name="onboarding_plan_field_protein">Proteína</string>
@@ -1299,6 +1303,9 @@
     <string name="settings_personal_intro">O básico que o Chompass usa para estimar suas necessidades de energia e metas.</string>
     <string name="settings_picker_custom_placeholder">Valor em %1$s</string>
     <string name="settings_picker_enter_custom">Inserir valor personalizado…</string>
+    <string name="settings_calorie_below_floor_title">Abaixo do mínimo seguro</string>
+    <string name="settings_calorie_below_floor_message">Isso está abaixo do seu metabolismo de repouso estimado ou de 1.200 kcal. Continue somente se um profissional de saúde receitou.</string>
+    <string name="settings_calorie_below_floor_continue">Continuar mesmo assim</string>
     <string name="settings_picker_use_wheel">Usar roda</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
     <string name="settings_portion_clarify">Verificação do tamanho da porção</string>

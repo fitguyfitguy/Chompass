@@ -176,6 +176,7 @@
     <string name="onboarding_pace_caption_slow">Suave y sostenible. Ideal para hábitos a largo plazo.</string>
     <string name="onboarding_pace_caption_fast">Agresivo pero alcanzable. Requiere una fuerte disciplina.</string>
     <string name="onboarding_pace_caption_recommended">El ritmo más equilibrado, motivador y sostenible.</string>
+    <string name="onboarding_pace_capped">Este ritmo no es posible para tu complexión sin bajar de tu gasto en reposo estimado. Tu objetivo será de %1$d kcal.</string>
 
     <string name="onboarding_notifications_title">Recibe recordatorios\npara registrar comidas</string>
     <string name="onboarding_notifications_subtitle">Recibe avisos suaves a la hora de comer\npara que nunca olvides registrar.</string>
@@ -221,6 +222,9 @@
     <string name="onboarding_plan_daily_calories">calorías diarias</string>
     <string name="onboarding_plan_doctor_title">Consulta a un médico</string>
     <string name="onboarding_plan_doctor_message">La recomendación mínima es de 1.200 calorías al día.</string>
+    <string name="onboarding_minor_title">Solo fórmulas para adultos</string>
+    <string name="onboarding_minor_message">Esta app usa fórmulas de calorías para adultos. Si eres menor de 18 años, pregunta a un profesional de la salud antes de usar estos objetivos.</string>
+    <string name="onboarding_minor_continue">Entiendo</string>
 
     <string name="onboarding_plan_field_calories">Calorías diarias</string>
     <string name="onboarding_plan_field_protein">Proteína</string>
@@ -1364,6 +1368,9 @@
     <string name="settings_personal_intro">Los datos básicos que Chompass usa para estimar tus necesidades de energía y tus objetivos.</string>
     <string name="settings_picker_custom_placeholder">Valor en %1$s</string>
     <string name="settings_picker_enter_custom">Introducir valor personalizado…</string>
+    <string name="settings_calorie_below_floor_title">Por debajo del mínimo seguro</string>
+    <string name="settings_calorie_below_floor_message">Esto está por debajo de tu gasto en reposo estimado o de 1.200 kcal. Continúa solo si un profesional de la salud lo ha recetado.</string>
+    <string name="settings_calorie_below_floor_continue">Continuar de todos modos</string>
     <string name="settings_picker_use_wheel">Usar rueda</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
     <string name="settings_portion_clarify">Comprobación del tamaño de porción</string>

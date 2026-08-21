@@ -180,6 +180,7 @@
     <string name="onboarding_pace_caption_slow">सौम्य और टिकाऊ। दीर्घकालिक आदतों के लिए बढ़िया।</string>
     <string name="onboarding_pace_caption_fast">तीव्र लेकिन संभव। मज़बूत अनुशासन की ज़रूरत है।</string>
     <string name="onboarding_pace_caption_recommended">सबसे संतुलित गति, प्रेरक और टिकाऊ।</string>
+    <string name="onboarding_pace_capped">यह गति आपके शरीर के लिए अनुमानित आराम चयापचय से नीचे जाए बिना संभव नहीं है। आपका लक्ष्य %1$d किलो कैलोरी होगा।</string>
 
     <string name="onboarding_notifications_title">भोजन लॉग करने के\nलिए याद दिलाया जाए</string>
     <string name="onboarding_notifications_subtitle">भोजन के समय हल्की याद दिलावटें पाएँ\nताकि आप ट्रैक करना न भूलें।</string>
@@ -225,6 +226,9 @@
     <string name="onboarding_plan_daily_calories">दैनिक कैलोरी</string>
     <string name="onboarding_plan_doctor_title">कृपया डॉक्टर से सलाह लें</string>
     <string name="onboarding_plan_doctor_message">न्यूनतम अनुशंसा प्रतिदिन 1,200 कैलोरी है।</string>
+    <string name="onboarding_minor_title">केवल वयस्कों के लिए फ़ॉर्मूले</string>
+    <string name="onboarding_minor_message">यह ऐप वयस्कों के लिए कैलोरी फ़ॉर्मूले का उपयोग करता है। यदि आप 18 वर्ष से कम हैं, तो इन लक्ष्यों का उपयोग करने से पहले किसी स्वास्थ्य विशेषज्ञ से पूछें।</string>
+    <string name="onboarding_minor_continue">मैं समझ गया</string>
 
     <string name="onboarding_plan_field_calories">दैनिक कैलोरी</string>
     <string name="onboarding_plan_field_protein">प्रोटीन</string>
@@ -1303,6 +1307,9 @@
     <string name="settings_personal_intro">मूल बातें जो Chompass आपकी ऊर्जा आवश्यकताओं और लक्ष्यों का अनुमान लगाने के लिए उपयोग करता है।</string>
     <string name="settings_picker_custom_placeholder">%1$s में मान</string>
     <string name="settings_picker_enter_custom">कस्टम मान दर्ज करें…</string>
+    <string name="settings_calorie_below_floor_title">सुरक्षित सीमा से नीचे</string>
+    <string name="settings_calorie_below_floor_message">यह आपके अनुमानित आराम चयापचय या 1,200 किलो कैलोरी से कम है। केवल तभी जारी रखें जब किसी स्वास्थ्य विशेषज्ञ ने इसे निर्धारित किया हो।</string>
+    <string name="settings_calorie_below_floor_continue">फिर भी जारी रखें</string>
     <string name="settings_picker_use_wheel">व्हील उपयोग करें</string>
     <string name="settings_picker_vitd_iu_hint">%1$d एमसीजी ≈ %2$d IU</string>
     <string name="settings_portion_clarify">सर्विंग आकार जांच</string>

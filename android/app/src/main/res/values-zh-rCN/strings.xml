@@ -181,6 +181,7 @@
     <string name="onboarding_pace_caption_slow">温和且可持续。适合养成长期习惯。</string>
     <string name="onboarding_pace_caption_fast">激进但可行。需要较强的自律。</string>
     <string name="onboarding_pace_caption_recommended">最平衡的节奏，既有动力又可持续。</string>
+    <string name="onboarding_pace_capped">以您的体型，此速度不可能不跌破估计的静息代谢。您的目标将是 %1$d 千卡。</string>
 
     <string name="onboarding_notifications_title">提醒你\n记录餐食</string>
     <string name="onboarding_notifications_subtitle">在用餐时间获得温和提醒，\n让你不会忘记记录。</string>
@@ -226,6 +227,9 @@
     <string name="onboarding_plan_daily_calories">每日卡路里</string>
     <string name="onboarding_plan_doctor_title">请咨询医生</string>
     <string name="onboarding_plan_doctor_message">最低建议为每天 1,200 卡路里。</string>
+    <string name="onboarding_minor_title">仅限成人计算公式</string>
+    <string name="onboarding_minor_message">此应用使用成人卡路里计算公式。如果您未满 18 岁，请在使用这些目标前咨询医疗专业人士。</string>
+    <string name="onboarding_minor_continue">我明白了</string>
 
     <string name="onboarding_plan_field_calories">每日卡路里</string>
     <string name="onboarding_plan_field_protein">蛋白质</string>
@@ -1304,6 +1308,9 @@
     <string name="settings_personal_intro">Chompass 用于估算能量需求和目标的基础数据。</string>
     <string name="settings_picker_custom_placeholder">以 %1$s 为单位的值</string>
     <string name="settings_picker_enter_custom">输入自定义值…</string>
+    <string name="settings_calorie_below_floor_title">低于安全下限</string>
+    <string name="settings_calorie_below_floor_message">这低于您估计的静息代谢或 1,200 千卡。仅在医疗专业人士开具处方时继续。</string>
+    <string name="settings_calorie_below_floor_continue">仍然继续</string>
     <string name="settings_picker_use_wheel">使用滚轮</string>
     <string name="settings_picker_vitd_iu_hint">%1$d 微克 ≈ %2$d IU</string>
     <string name="settings_portion_clarify">份量大小确认</string>
