@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.CalorieSafety
+import java.time.LocalDate
+import java.time.Period
 import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
@@ -53,6 +56,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
     val context = LocalContext.current
     val onDeviceAvailable = remember(context) { OnDeviceCapability.isSupported(context) }
     var showAiSkipDialog by remember { mutableStateOf(false) }
+    var showMinorDialog by remember { mutableStateOf(false) }
 
     Column(
         Modifier
@@ -284,7 +288,12 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
             else -> {
                 // iOS continueButton: full-width inverse-coloured capsule.
                 Button(
-                    onClick = { vm.next() },
+                    onClick = {
+                        val age = Period.between(ui.birthday, LocalDate.now()).years
+                        if (ui.step == OnboardingStep.BIRTHDAY && age < CalorieSafety.ADULT_MIN_AGE) {
+                            showMinorDialog = true
+                        } else vm.next()
+                    },
                     enabled = ui.canAdvance,
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -307,6 +316,23 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
         }
     }
 
+    if (showMinorDialog) {
+        AlertDialog(
+            onDismissRequest = { showMinorDialog = false },
+            title = { Text(stringResource(R.string.onboarding_minor_title)) },
+            text = { Text(stringResource(R.string.onboarding_minor_message)) },
+            confirmButton = {
+                TextButton(onClick = { showMinorDialog = false; vm.next() }) {
+                    Text(stringResource(R.string.onboarding_minor_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showMinorDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
     if (showAiSkipDialog) {
         AlertDialog(
             onDismissRequest = { showAiSkipDialog = false },

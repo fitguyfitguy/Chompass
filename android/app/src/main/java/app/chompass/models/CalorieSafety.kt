@@ -14,6 +14,7 @@ import kotlin.math.roundToInt
 object CalorieSafety {
     const val ABSOLUTE_FLOOR_KCAL = 1_200
     const val PARSER_CEILING_KCAL = 6_000
+    const val ADULT_MIN_AGE = 18
     private const val AUTO_TDEE_CEILING_MULT = 1.5
 
     fun floorKcal(bmr: Double): Int = max(bmr.roundToInt(), ABSOLUTE_FLOOR_KCAL)
