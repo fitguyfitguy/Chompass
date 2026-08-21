@@ -24,6 +24,7 @@ import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import {
   calculateGoalsWithAi,
   recalculatedFromFormulas,
+  applyingAiGoals,
   resolveGoalsAiClient,
 } from "../lib/ai/calculate-goals.js";
 import { openConfirm } from "../lib/ui/dialog.js";
@@ -496,7 +497,7 @@ export class SettingsView extends HTMLElement {
     const ok = await openConfirm({
       title: "Recalculate goals?",
       message: aiClient
-        ? "Uses your AI provider with your profile and recent food/weight logs to refresh calorie targets. Macros stay formula-based on the web app."
+        ? "Uses your AI provider with your profile and recent food/weight logs to refresh calorie and macro targets. Locked values stay put."
         : "No AI key configured. Resets calories to formula defaults from your height/weight/activity/goal. Add an AI key in Settings for the same AI recalculation as Android.",
       confirmLabel: "Recalculate",
     });
@@ -533,7 +534,7 @@ export class SettingsView extends HTMLElement {
         heightMetric: appPrefs.heightUnit !== "in",
         weightMetric: appPrefs.weightUnit !== "lb",
       });
-      await profileStore.save({ ...profile, customCalories: result.calories });
+      await profileStore.save(applyingAiGoals(profile, result));
       const reason = result.reason ? ` ${result.reason}` : "";
       this.render();
       const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));

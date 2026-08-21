@@ -6,6 +6,7 @@ import {
   buildCalculateGoalsPrompt,
   formulaDailyCalories,
   recalculatedFromFormulas,
+  applyingAiGoals,
   lockConstraintsSection,
 } from "../ai/calculate-goals.js";
 
@@ -46,6 +47,41 @@ test("formulaDailyCalories_ignoresCustomPin", () => {
   };
   assert.notEqual(formulaDailyCalories(profile), 9999);
   assert.equal(recalculatedFromFormulas(profile).customCalories, null);
+});
+
+test("applyingAiGoals_honorsLockedCaloriesAndWritesMacros", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: 1900,
+    caloriesLocked: true,
+    customProtein: 180,
+  };
+  const next = applyingAiGoals(profile, { calories: 1500, protein: 120, carbs: 100, fat: 40, reason: null });
+  assert.equal(next.customCalories, 1900);
+  assert.equal(next.customProtein, 120);
+});
+
+test("applyingAiGoals_clampsBelowFloor", () => {
+  const profile = {
+    sex: /** @type {const} */ ("female"),
+    age: 60,
+    heightCm: 155,
+    weightKg: 52,
+    activityLevel: /** @type {const} */ ("sedentary"),
+    goal: /** @type {const} */ ("lose"),
+    weeklyChangeKg: 0.5,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const next = applyingAiGoals(profile, { calories: 800, protein: 80, carbs: 80, fat: 40, reason: null });
+  assert.ok(next.customCalories >= 1200);
 });
 
 test("buildCalculateGoalsPrompt_includesFormulaAnchor", () => {

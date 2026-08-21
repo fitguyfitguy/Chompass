@@ -56,6 +56,28 @@ export function recalculatedFromFormulas(profile) {
 }
 
 /**
+ * Apply an AI goal snapshot while keeping user locks. Mirrors Android
+ * UserProfile.applyingAiGoals. Calories are CAL-SAFE clamped unless locked.
+ * @param {UserProfile} profile
+ * @param {GoalCalculation} result
+ * @returns {UserProfile}
+ */
+export function applyingAiGoals(profile, result) {
+  const clamped = clampAutoCalories(result.calories, profile);
+  const keptCalories = profile.caloriesLocked
+    ? (profile.customCalories != null ? Math.trunc(profile.customCalories) : clamped)
+    : clamped;
+  const locked = new Set(profile.lockedMacros || []);
+  return {
+    ...profile,
+    customCalories: keptCalories,
+    customProtein: locked.has("protein") ? profile.customProtein : result.protein,
+    customCarbs: locked.has("carbs") ? profile.customCarbs : result.carbs,
+    customFat: locked.has("fat") ? profile.customFat : result.fat,
+  };
+}
+
+/**
  * @param {string} text
  * @returns {GoalCalculation}
  */
