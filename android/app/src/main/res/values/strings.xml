@@ -1577,7 +1577,7 @@
     <string name="settings_calc_mifflin_used">Default formula for resting metabolism. Used when you haven\'t entered a body fat %.</string>
     <string name="settings_calc_mifflin_formula">Men: 10×weight(kg) + 6.25×height(cm) − 5×age + 5\nWomen: 10×weight(kg) + 6.25×height(cm) − 5×age − 161</string>
     <string name="settings_calc_katch_name">Katch-McArdle equation</string>
-    <string name="settings_calc_katch_used">Used when you\'ve entered a body fat % and left Use body fat % in BMR on. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight. Turn the toggle off to keep Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used">Used when you\'ve entered a body fat %% and left Use body fat %% in BMR on. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight. Turn the toggle off to keep Mifflin-St Jeor.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = weight × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Activity-multiplier method</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. Moderate uses 1.465 (between FAO/WHO light 1.375 and moderate 1.55) for desk-active users who exercise a few times per week. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>
