@@ -1,0 +1,389 @@
+// @ts-check
+/**
+ * Build / apply sync-1.0 documents against IndexedDB, and optional WebDAV sync.
+ */
+import {
+  foodEntries,
+  favorites,
+  recipes,
+  weights,
+  bodyFat,
+  measurements,
+  water,
+  prefs,
+  withRevisionHooksSuppressed,
+} from "./db.js";
+import {
+  exportSyncDocument,
+  parseSyncDocument,
+  appendTombstones,
+  liveFoodEntriesFromSync,
+  liveWeightsFromSync,
+  liveBodyFatFromSync,
+  liveMeasurementsFromSync,
+  liveWaterFromSync,
+  liveRecipesFromSync,
+} from "./chompass-core/sync-format.js";
+import { mergeSyncDocuments, partitionLiveAndDeleted } from "./chompass-core/sync-merge.js";
+
+/** @returns {Promise<Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>>} */
+async function loadRevisions() {
+  const p = await prefs.load();
+  return p.syncRevisions ?? {};
+}
+
+/** @param {Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>} revisions */
+async function saveRevisions(revisions) {
+  await prefs.save({ syncRevisions: revisions });
+}
+
+export async function touchRevision(id, kind = "food") {
+  const revisions = await loadRevisions();
+  const now = new Date().toISOString();
+  revisions[id] = { updatedAt: now, deletedAt: null, kind };
+  await saveRevisions(revisions);
+}
+
+export async function tombstoneRevision(id, kind = "food") {
+  const revisions = await loadRevisions();
+  const now = new Date().toISOString();
+  revisions[id] = { updatedAt: now, deletedAt: now, kind };
+  await saveRevisions(revisions);
+}
+
+export async function buildLocalSyncDocument() {
+  const revisions = await loadRevisions();
+  const doc = exportSyncDocument({
+    foodEntries: await foodEntries.all(),
+    favorites: await favorites.all(),
+    weights: await weights.all(),
+    bodyFat: await bodyFat.all(),
+    measurements: await measurements.all(),
+    water: await water.all(),
+    recipes: await recipes.all(),
+    revisions,
+    generatedAt: new Date().toISOString(),
+  });
+  appendTombstones(doc, revisions);
+  return doc;
+}
+
+/**
+ * @param {any} incoming
+ */
+export async function importAndMergeSyncDocument(incoming) {
+  const remote = parseSyncDocument(incoming);
+  const local = await buildLocalSyncDocument();
+  const merged = mergeSyncDocuments(local, remote);
+  await applySyncDocument(merged);
+  return merged;
+}
+
+/**
+ * @param {any} doc
+ */
+export async function applySyncDocument(doc) {
+  parseSyncDocument(doc);
+  await withRevisionHooksSuppressed(async () => {
+  /** @type {Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>} */
+  const revisions = {};
+
+  const foodPart = partitionLiveAndDeleted(doc.food_entries ?? []);
+  for (const row of doc.food_entries ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "food" };
+  }
+  for (const id of foodPart.deletedIds) await foodEntries.delete(id);
+  for (const entry of liveFoodEntriesFromSync(foodPart.live)) await foodEntries.put(entry);
+
+  const favPart = partitionLiveAndDeleted(doc.favorites ?? []);
+  for (const row of doc.favorites ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "favorite" };
+  }
+  for (const id of favPart.deletedIds) await favorites.delete(id);
+  for (const entry of liveFoodEntriesFromSync(favPart.live)) await favorites.put(entry);
+
+  const weightPart = partitionLiveAndDeleted(doc.weights ?? []);
+  for (const row of doc.weights ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "weight" };
+  }
+  for (const id of weightPart.deletedIds) await weights.delete(id);
+  for (const entry of liveWeightsFromSync(weightPart.live)) await weights.put(entry);
+
+  const bfPart = partitionLiveAndDeleted(doc.body_fat ?? []);
+  for (const row of doc.body_fat ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "bodyfat" };
+  }
+  for (const id of bfPart.deletedIds) await bodyFat.delete(id);
+  for (const entry of liveBodyFatFromSync(bfPart.live)) await bodyFat.put(entry);
+
+  const mPart = partitionLiveAndDeleted(doc.measurements ?? []);
+  for (const row of doc.measurements ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "measure" };
+  }
+  for (const id of mPart.deletedIds) await measurements.delete(id);
+  for (const entry of liveMeasurementsFromSync(mPart.live)) await measurements.put(entry);
+
+  const wPart = partitionLiveAndDeleted(doc.water ?? []);
+  for (const row of doc.water ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "water" };
+  }
+  for (const id of wPart.deletedIds) await water.delete(id);
+  for (const entry of liveWaterFromSync(wPart.live)) await water.put(entry);
+
+  const rPart = partitionLiveAndDeleted(doc.recipes ?? []);
+  for (const row of doc.recipes ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "recipe" };
+  }
+  for (const id of rPart.deletedIds) await recipes.delete(id);
+  for (const entry of liveRecipesFromSync(rPart.live)) await recipes.put(entry);
+
+  await saveRevisions(revisions);
+  });
+}
+
+/**
+ * Normalize a user-entered WebDAV file URL.
+ * Missing scheme → https; collapses stacked schemes (https://https://…).
+ * @param {string} raw
+ * @returns {string}
+ */
+export function normalizeWebDavUrl(raw) {
+  let rest = (raw ?? "").trim();
+  if (!rest) return rest;
+
+  let preferHttp = false;
+  let sawScheme = false;
+  while (true) {
+    const lower = rest.toLowerCase();
+    if (lower.startsWith("https://")) {
+      rest = rest.slice(8);
+      preferHttp = false;
+      sawScheme = true;
+    } else if (lower.startsWith("http://")) {
+      rest = rest.slice(7);
+      if (!sawScheme) preferHttp = true;
+      sawScheme = true;
+    } else {
+      break;
+    }
+  }
+  rest = rest.replace(/^\/+/, "");
+  if (!rest) return (raw ?? "").trim();
+  return `${preferHttp ? "http" : "https"}://${rest}`;
+}
+
+/**
+ * @returns {Promise<{ url: string, username: string, password: string, etag: string|null, lastSyncAt: string|null, autoSync: boolean, autoSyncDay: string|null }>}
+ */
+export async function loadWebDavSettings() {
+  const p = await prefs.load();
+  const cfg = p.webdav ?? {};
+  return {
+    url: cfg.url ?? "",
+    username: cfg.username ?? "",
+    password: cfg.password ?? "",
+    etag: cfg.etag ?? null,
+    lastSyncAt: cfg.lastSyncAt ?? null,
+    autoSync: cfg.autoSync === true,
+    autoSyncDay: cfg.autoSyncDay ?? null,
+  };
+}
+
+/**
+ * @param {{ url: string, username: string, password: string, etag?: string|null, lastSyncAt?: string|null, autoSync?: boolean, autoSyncDay?: string|null }} cfg
+ */
+export async function saveWebDavSettings(cfg) {
+  await prefs.save({
+    webdav: {
+      url: normalizeWebDavUrl(cfg.url),
+      username: cfg.username.trim(),
+      password: cfg.password,
+      etag: cfg.etag ?? null,
+      lastSyncAt: cfg.lastSyncAt ?? null,
+      autoSync: cfg.autoSync === true,
+      autoSyncDay: cfg.autoSyncDay ?? null,
+    },
+  });
+}
+
+/**
+ * Basic Authorization header using UTF-8 (curl / RFC 7617).
+ * Plain `btoa(user:pass)` is Latin-1 and 401s on hosts like Hetzner Storage Box
+ * when the password contains characters such as ß or §.
+ * @param {string} username
+ * @param {string} password
+ * @returns {string}
+ */
+export function webDavBasicAuthHeader(username, password) {
+  const bytes = new TextEncoder().encode(`${username}:${password}`);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return "Basic " + btoa(binary);
+}
+
+/**
+ * If-Match uses strong comparison; weak validators (W/"…") never match.
+ * @param {string|null|undefined} etag
+ * @returns {string}
+ */
+export function normalizeEtagForIfMatch(etag) {
+  const trimmed = (etag ?? "").trim();
+  if (trimmed.toUpperCase().startsWith("W/")) return trimmed.slice(2).trimStart();
+  return trimmed;
+}
+
+/**
+ * PUT precondition headers from a prior GET.
+ * Missing ETag on an existing file must not use If-None-Match: * (create-only).
+ * @param {string|null|undefined} etag
+ * @param {boolean} notFound
+ * @returns {Record<string, string>}
+ */
+export function webDavPutPreconditionHeaders(etag, notFound) {
+  if (notFound) return { "If-None-Match": "*" };
+  const normalized = normalizeEtagForIfMatch(etag);
+  if (normalized) return { "If-Match": normalized };
+  return {};
+}
+
+/**
+ * Pull-merge-push against the configured WebDAV URL.
+ * @returns {Promise<{ ok: boolean, message: string }>}
+ */
+export async function syncWebDavNow() {
+  const cfg = await loadWebDavSettings();
+  cfg.url = normalizeWebDavUrl(cfg.url);
+  if (!cfg.url || !cfg.username || !cfg.password) {
+    return { ok: false, message: "Configure WebDAV URL, username, and password first" };
+  }
+  const auth = webDavBasicAuthHeader(cfg.username, cfg.password);
+  let remoteText = null;
+  let etag = cfg.etag;
+  let notFound = false;
+  const getRes = await fetch(cfg.url, { headers: { Authorization: auth } });
+  if (getRes.status === 404) {
+    remoteText = null;
+    etag = null;
+    notFound = true;
+  } else if (!getRes.ok) {
+    return { ok: false, message: `WebDAV GET failed: HTTP ${getRes.status}` };
+  } else {
+    remoteText = await getRes.text();
+    // Prefer GET ETag; fall back to stored (browsers often hide ETag without CORS expose).
+    etag = getRes.headers.get("ETag") ?? etag;
+  }
+
+  const local = await buildLocalSyncDocument();
+  let merged = local;
+  if (remoteText) {
+    try {
+      merged = mergeSyncDocuments(local, parseSyncDocument(JSON.parse(remoteText)));
+    } catch (err) {
+      return { ok: false, message: err instanceof Error ? err.message : "Invalid remote sync document" };
+    }
+  }
+  await applySyncDocument(merged);
+  const body = JSON.stringify(merged, null, 2);
+
+  /** @type {Record<string, string>} */
+  const putHeaders = {
+    Authorization: auth,
+    "Content-Type": "application/json; charset=utf-8",
+    ...webDavPutPreconditionHeaders(etag, notFound),
+  };
+
+  let putRes = await fetch(cfg.url, { method: "PUT", headers: putHeaders, body });
+  if (putRes.status === 412) {
+    const again = await fetch(cfg.url, { headers: { Authorization: auth } });
+    if (!again.ok) return { ok: false, message: `Conflict re-fetch failed: HTTP ${again.status}` };
+    const againText = await again.text();
+    const againEtag = again.headers.get("ETag") ?? etag;
+    const againNotFound = false;
+    try {
+      merged = mergeSyncDocuments(await buildLocalSyncDocument(), parseSyncDocument(JSON.parse(againText)));
+    } catch (err) {
+      return { ok: false, message: err instanceof Error ? err.message : "Invalid remote after conflict" };
+    }
+    await applySyncDocument(merged);
+    const retryBody = JSON.stringify(merged, null, 2);
+    /** @type {Record<string, string>} */
+    const retryHeaders = {
+      Authorization: auth,
+      "Content-Type": "application/json; charset=utf-8",
+      ...webDavPutPreconditionHeaders(againEtag, againNotFound),
+    };
+    putRes = await fetch(cfg.url, { method: "PUT", headers: retryHeaders, body: retryBody });
+    if (putRes.status === 412) {
+      // Broken/weak/hidden ETags: overwrite once after merge.
+      putRes = await fetch(cfg.url, {
+        method: "PUT",
+        headers: {
+          Authorization: auth,
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: retryBody,
+      });
+    }
+    if (putRes.status === 412) return { ok: false, message: "WebDAV conflict persisted; try again" };
+    if (!putRes.ok) return { ok: false, message: `WebDAV PUT failed: HTTP ${putRes.status}` };
+    etag = putRes.headers.get("ETag") ?? againEtag;
+  } else if (!putRes.ok) {
+    return { ok: false, message: `WebDAV PUT failed: HTTP ${putRes.status}` };
+  } else {
+    etag = putRes.headers.get("ETag") ?? etag;
+  }
+
+  const lastSyncAt = new Date().toISOString();
+  await saveWebDavSettings({ ...cfg, etag, lastSyncAt });
+  return { ok: true, message: "Synced with WebDAV" };
+}
+
+/**
+ * Local calendar day yyyy-MM-dd.
+ * @param {Date} [d]
+ * @returns {string}
+ */
+export function localCalendarDay(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Mirrors Android shouldAutoSyncWebDav.
+ * @param {{ enabled: boolean, configured: boolean, today: string, lastSyncAt: string|null, lastAutoSyncDay: string|null }} args
+ * @returns {boolean}
+ */
+export function shouldAutoSyncWebDav({ enabled, configured, today, lastSyncAt, lastAutoSyncDay }) {
+  if (!enabled || !configured) return false;
+  if (lastAutoSyncDay === today) return false;
+  if (lastSyncAt) {
+    const last = new Date(lastSyncAt);
+    if (!Number.isNaN(last.getTime()) && localCalendarDay(last) === today) return false;
+  }
+  return true;
+}
+
+/**
+ * Opt-in auto-sync: at most once per local calendar day when WebDAV is configured.
+ * @returns {Promise<{ ok: boolean, message: string }|null>} null when skipped
+ */
+export async function maybeAutoSyncWebDav() {
+  const cfg = await loadWebDavSettings();
+  cfg.url = normalizeWebDavUrl(cfg.url);
+  const today = localCalendarDay();
+  if (
+    !shouldAutoSyncWebDav({
+      enabled: cfg.autoSync,
+      configured: Boolean(cfg.url && cfg.username && cfg.password),
+      today,
+      lastSyncAt: cfg.lastSyncAt,
+      lastAutoSyncDay: cfg.autoSyncDay,
+    })
+  ) {
+    return null;
+  }
+  await saveWebDavSettings({ ...cfg, autoSyncDay: today });
+  return syncWebDavNow();
+}
