@@ -736,6 +736,7 @@
     <string name="ai_error_network_format">네트워크 오류: %1$s</string>
     <string name="ai_error_no_api_key">API 키가 설정되지 않았어요. 설정 → AI 제공자에서 키를 추가하세요.</string>
     <string name="ai_error_on_device_low_memory">지금은 온디바이스 사진 분석을 위한 여유 메모리가 부족해요. 더 작은 E2B 모델을 시도하거나, 다른 앱을 닫거나, 설정 → AI 제공자에서 제공자를 변경하세요.</string>
+    <string name="ai_error_on_device_engine_init">이 기기에서 모델 엔진을 시작하지 못했습니다. 다시 시도하고 설정 → AI 제공업체 → 모델에서 모델을 언로드하거나 클라우드 제공업체로 전환하세요.</string>
     <string name="ai_error_on_device_model_not_downloaded">온디바이스 모델이 아직 다운로드되지 않았어요. 설정 → AI 제공자 → 모델을 열어 다운로드하세요.</string>
     <string name="ai_error_on_device_unsupported_device">이 기기는 온디바이스 AI 요구 사항을 충족하지 않아요. 설정 → AI 제공자에서 클라우드 제공자를 선택하세요.</string>
     <string name="ai_error_provider_error">AI 제공자가 오류를 반환했어요.</string>
@@ -1386,7 +1387,7 @@
     <string name="settings_water_goal_wheel_help">50ml 단위로 스크롤하여 50~10,000ml 사이의 일일 목표를 선택하세요.</string>
     <string name="settings_water_intro">음수량을 기록하고 일일 목표를 설정하여 체중, 날씨, 활동에 맞게 조정하세요.</string>
     <string name="settings_water_manual_temp">오늘 예상 최고 기온</string>
-    <string name="settings_water_manual_temp_help">일일 목표는 25°C 이상에서 상승해요(도당 +4%, 최대 +60%). 위치 권한 없음. 수동으로 설정하세요.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">일일 목표는 25°C 이상에서 상승해요(도당 +4%, 최대 +60%). 위치 권한 없음. 수동으로 설정하세요.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">프리셋 %1$d</string>
     <string name="settings_water_quick_presets">빠른 기록 프리셋</string>
@@ -1415,7 +1416,7 @@
     <string name="settings_weather_city_selected">선택됨</string>
     <string name="settings_weather_city_title">Open-Meteo 도시</string>
     <string name="settings_weather_source">날씨 소스</string>
-    <string name="settings_weather_source_help">예상 최고 기온이 동적 목표를 구동해요(25°C 초과 시 도당 +4%, 최대 +60%). 소스에 새 데이터가 없으면 수동 값이 사용돼요.</string>
+    <string name="settings_weather_source_help" formatted="false">예상 최고 기온이 동적 목표를 구동해요(25°C 초과 시 도당 +4%, 최대 +60%). 소스에 새 데이터가 없으면 수동 값이 사용돼요.</string>
     <string name="settings_weather_source_manual">수동</string>
     <string name="settings_weather_source_manual_sub">예상 최고 기온을 직접 입력하세요. 네트워크 없음.</string>
     <string name="settings_weather_source_meteo">Open-Meteo(온라인)</string>

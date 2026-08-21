@@ -1259,6 +1259,7 @@
     <string name="ai_error_network_format">Ошибка сети: %1$s</string>
     <string name="ai_error_no_api_key">API-ключ не настроен. Добавь ключ в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_on_device_low_memory">Сейчас недостаточно памяти для анализа фото на устройстве. Попробуй модель E2B, закрой другие приложения или смени провайдера в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_on_device_engine_init">Не удалось запустить движок модели на этом устройстве. Попробуй ещё раз, выгрузи модель в Настройках → ИИ-провайдер → Модель или переключись на облачного провайдера.</string>
     <string name="ai_error_on_device_model_not_downloaded">Локальная модель ещё не загружена. Открой Настройки → ИИ-провайдер → Модель, чтобы загрузить её.</string>
     <string name="ai_error_on_device_unsupported_device">Это устройство не соответствует требованиям для локального ИИ. Выбери облачного провайдера в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_provider_error">ИИ-провайдер вернул ошибку.</string>
@@ -1555,7 +1556,7 @@
     <string name="settings_water_goal_summary">%1$d мл</string>
     <string name="settings_water_intro">Отслеживай, сколько ты пьёшь, задай дневную цель и позволь ей адаптироваться к весу, погоде и активности.</string>
     <string name="settings_water_manual_temp">Ожидаемый максимум сегодня</string>
-    <string name="settings_water_manual_temp_help">Дневная цель растёт выше 25 °C (+4% за градус, максимум +60%). Без разрешения на геолокацию. Задаётся вручную.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">Дневная цель растёт выше 25 °C (+4% за градус, максимум +60%). Без разрешения на геолокацию. Задаётся вручную.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">Пресет %1$d</string>
     <string name="settings_water_quick_presets">Пресеты быстрой записи</string>
@@ -1583,7 +1584,7 @@
     <string name="settings_weather_city_selected">Выбрано</string>
     <string name="settings_weather_city_title">Город Open-Meteo</string>
     <string name="settings_weather_source">Источник погоды</string>
-    <string name="settings_weather_source_help">Ожидаемый максимум питает динамическую цель (+4% за °C выше 25 °C, максимум +60%). Когда у источника нет свежих данных, используется ручное значение.</string>
+    <string name="settings_weather_source_help" formatted="false">Ожидаемый максимум питает динамическую цель (+4% за °C выше 25 °C, максимум +60%). Когда у источника нет свежих данных, используется ручное значение.</string>
     <string name="settings_weather_source_manual">Вручную</string>
     <string name="settings_weather_source_manual_sub">Введи ожидаемый максимум вручную. Без сети.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (онлайн)</string>

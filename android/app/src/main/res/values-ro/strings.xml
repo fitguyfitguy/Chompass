@@ -728,6 +728,7 @@
     <string name="ai_error_network_format">Eroare de rețea: %1$s</string>
     <string name="ai_error_no_api_key">Nicio cheie API configurată. Adaugă cheia ta în Setări → Furnizor IA.</string>
     <string name="ai_error_on_device_low_memory">Nu este suficientă memorie liberă pentru analiza foto pe dispozitiv chiar acum. Încearcă modelul E2B mai mic, închide alte aplicații sau schimbă furnizorul în Setări → Furnizor IA.</string>
+    <string name="ai_error_on_device_engine_init">Motorul modelului nu a putut fi pornit pe acest dispozitiv. Încearcă din nou, descarcă modelul din Setări → Furnizor AI → Model sau comută la un furnizor cloud.</string>
     <string name="ai_error_on_device_model_not_downloaded">Modelul local nu a fost încă descărcat. Deschide Setări → Furnizor IA → Model pentru a-l descărca.</string>
     <string name="ai_error_on_device_unsupported_device">Acest dispozitiv nu îndeplinește cerințele pentru IA locală. Alege un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_provider_error">Furnizorul IA a returnat o eroare.</string>
@@ -1385,7 +1386,7 @@
     <string name="settings_water_goal_wheel_help">Derulează în pași de 50 ml pentru a alege un obiectiv zilnic de la 50 la 10 000 ml.</string>
     <string name="settings_water_intro">Urmărește cât bei, setează un obiectiv zilnic și lasă-l să se adapteze la greutate, vreme și activitate.</string>
     <string name="settings_water_manual_temp">Maximul preconizat azi</string>
-    <string name="settings_water_manual_temp_help">Obiectivul zilnic crește peste 25 °C (+4% pe grad, maxim +60%). Fără permisiune de locație. Setează-l manual.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">Obiectivul zilnic crește peste 25 °C (+4% pe grad, maxim +60%). Fără permisiune de locație. Setează-l manual.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">Preset %1$d</string>
     <string name="settings_water_quick_presets">Preseturi de înregistrare rapidă</string>
@@ -1414,7 +1415,7 @@
     <string name="settings_weather_city_selected">Selectat</string>
     <string name="settings_weather_city_title">Oraș Open-Meteo</string>
     <string name="settings_weather_source">Sursa meteo</string>
-    <string name="settings_weather_source_help">Maximul preconizat alimentează obiectivul dinamic (+4% per °C peste 25 °C, maxim +60%). Când sursa nu are date proaspete, se folosește valoarea manuală.</string>
+    <string name="settings_weather_source_help" formatted="false">Maximul preconizat alimentează obiectivul dinamic (+4% per °C peste 25 °C, maxim +60%). Când sursa nu are date proaspete, se folosește valoarea manuală.</string>
     <string name="settings_weather_source_manual">Manual</string>
     <string name="settings_weather_source_manual_sub">Introdu tu maximul preconizat. Fără rețea.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (online)</string>

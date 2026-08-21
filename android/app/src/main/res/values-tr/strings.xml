@@ -1248,6 +1248,7 @@
     <string name="ai_error_on_device_model_not_downloaded">Cihazdaki model henüz indirilmedi. İndirmek için Ayarlar → AI Sağlayıcısı → Model bölümünü aç.</string>
     <string name="ai_error_on_device_unsupported_device">Bu cihaz, cihazdaki AI gereksinimlerini karşılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısı seç.</string>
     <string name="ai_error_on_device_low_memory">Şu anda cihazdaki fotoğraf analizi için yeterli boş bellek yok. Daha küçük E2B modelini dene, diğer uygulamaları kapat veya Ayarlar → AI Sağlayıcısı bölümünden sağlayıcı değiştir.</string>
+    <string name="ai_error_on_device_engine_init">Cihazda model motoru başlatılamadı. Yeniden deneyin, Ayarlar → AI Sağlayıcısı → Model bölümünden modeli kaldırın veya bulut sağlayıcısına geçin.</string>
     <string name="ai_error_key_rejected">API anahtarın reddedildi. Ayarlar → AI Sağlayıcısı bölümünü aç ve geçerli bir anahtarı yeniden yapıştır.</string>
     <string name="ai_error_location_unsupported">Gemini bu ağ konumundan (ülke/IP) kullanılamıyor. VPN kullanıyorsan kapat veya konut çıkışına geç. Veri merkezi/konut dışı VPN IP\'leri genellikle engellenir. Veya Google AI Studio projesinde faturalandırmayı etkinleştir, başka bir ağ dene ya da Ayarlar → AI Sağlayıcısı bölümünden sağlayıcıyı değiştir.</string>
     <string name="ai_error_provider_overloaded">AI sağlayıcısı şu anda aşırı yüklü. Birkaç kez denedik. Bir dakika içinde tekrar dene veya Ayarlar → AI Sağlayıcısı bölümünden farklı bir sağlayıcıya/model geç.</string>
@@ -1510,7 +1511,7 @@
     <string name="settings_reset_autobalance">Otomatik Dengelemeye Sıfırla</string>
     <string name="settings_picker_enter_custom">Özel değer gir…</string>
     <string name="settings_calorie_below_floor_title">Güvenli sınırın altında</string>
-    <string name="settings_calorie_below_floor_message">Bu, tahmini dinlenme harcamanın veya 1.200 kcal'in altında. Yalnızca bir sağlık uzmanı önerdiyse devam et.</string>
+    <string name="settings_calorie_below_floor_message">Bu, tahmini dinlenme harcamanın veya 1.200 kcal\'in altında. Yalnızca bir sağlık uzmanı önerdiyse devam et.</string>
     <string name="settings_calorie_below_floor_continue">Yine de devam et</string>
     <string name="settings_picker_use_wheel">Çarkı kullan</string>
     <string name="settings_picker_custom_placeholder">%1$s cinsinden değer</string>

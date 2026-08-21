@@ -738,6 +738,7 @@
     <string name="ai_error_network_format">网络错误：%1$s</string>
     <string name="ai_error_no_api_key">未配置 API 密钥。请在设置 → AI 提供商中添加密钥。</string>
     <string name="ai_error_on_device_low_memory">当前空闲内存不足以进行端侧照片分析。请尝试更小的 E2B 模型、关闭其他应用，或在设置 → AI 提供商中更换提供商。</string>
+    <string name="ai_error_on_device_engine_init">无法在此设备上启动模型引擎。请重试，在设置 → AI 提供商 → 模型中卸载模型，或切换到云端提供商。</string>
     <string name="ai_error_on_device_model_not_downloaded">端侧模型尚未下载。请打开设置 → AI 提供商 → 模型进行下载。</string>
     <string name="ai_error_on_device_unsupported_device">此设备不满足端侧 AI 的要求，请在设置 → AI 提供商中选择云端提供商。</string>
     <string name="ai_error_provider_error">AI 提供商返回错误。</string>
@@ -1388,7 +1389,7 @@
     <string name="settings_water_goal_wheel_help">以 50 毫升步进滚动，选择 50 至 10,000 毫升的每日目标。</string>
     <string name="settings_water_intro">跟踪饮水量、设定每日目标，并让它随体重、天气和活动调整。</string>
     <string name="settings_water_manual_temp">今日预期最高温</string>
-    <string name="settings_water_manual_temp_help">每日目标在 25 °C 以上上升（每度 +4%，上限 +60%）。无需位置权限。手动设置。</string>
+    <string name="settings_water_manual_temp_help" formatted="false">每日目标在 25 °C 以上上升（每度 +4%，上限 +60%）。无需位置权限。手动设置。</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">预设 %1$d</string>
     <string name="settings_water_quick_presets">快速记录预设</string>
@@ -1417,7 +1418,7 @@
     <string name="settings_weather_city_selected">已选择</string>
     <string name="settings_weather_city_title">Open-Meteo 城市</string>
     <string name="settings_weather_source">天气来源</string>
-    <string name="settings_weather_source_help">预期最高温驱动动态目标（25 °C 以上每 °C +4%，上限 +60%）。当来源没有新数据时，使用手动值。</string>
+    <string name="settings_weather_source_help" formatted="false">预期最高温驱动动态目标（25 °C 以上每 °C +4%，上限 +60%）。当来源没有新数据时，使用手动值。</string>
     <string name="settings_weather_source_manual">手动</string>
     <string name="settings_weather_source_manual_sub">自行输入预期最高温。无需网络。</string>
     <string name="settings_weather_source_meteo">Open-Meteo（在线）</string>

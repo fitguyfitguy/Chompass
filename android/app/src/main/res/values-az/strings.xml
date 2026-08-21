@@ -728,6 +728,7 @@ bilirsən?</string>
     <string name="ai_error_network_format">Şəbəkə xətası: %1$s</string>
     <string name="ai_error_no_api_key">API açarı konfiqurasiya edilməyib. Açarını Parametrlər → AI Provayderi bölməsində əlavə et.</string>
     <string name="ai_error_on_device_low_memory">Hazırda cihazdaxili foto analizi üçün kifayət qədər boş yaddaş yoxdur. Kiçik E2B modelini sına, digər tətbiqləri bağla və ya Parametrlər → AI Provayderi bölməsində provayderi dəyiş.</string>
+    <string name="ai_error_on_device_engine_init">Bu cihazda model mühərriki işə salına bilmədi. Yenidən cəhd edin, modeli Ayarlar → AI Provayderi → Model bölməsində yükləmədən çıxarın və ya bulud provayderinə keçin.</string>
     <string name="ai_error_on_device_model_not_downloaded">Cihazdaxili model hələ endirilməyib. Endirmək üçün Parametrlər → AI Provayderi → Model bölməsini aç.</string>
     <string name="ai_error_on_device_unsupported_device">Bu cihaz cihazdaxili AI tələblərinə cavab vermir. Parametrlər → AI Provayderi bölməsində bulud provayderini seç.</string>
     <string name="ai_error_provider_error">AI provayderi xəta qaytardı.</string>

@@ -2250,6 +2250,7 @@ für dich ein</string>
     <string name="ai_error_on_device_unsupported_device">Dieses Gerät erfüllt nicht die Anforderungen für geräteinterne KI. Wähle in „Einstellungen“ → „AI-Anbieter“ einen Cloud-Anbieter aus.</string>
 
     <string name="ai_error_on_device_low_memory">Derzeit ist nicht genügend freier Speicher für die gerätebasierte Fotoanalyse verfügbar. Versuche es mit dem kleineren E2B-Modell, schließe andere Apps oder wechsle in „Einstellungen“ → „AI-Anbieter“ den Anbieter.</string>
+    <string name="ai_error_on_device_engine_init">Die Modul-Engine konnte auf diesem Gerät nicht gestartet werden. Versuche es erneut, entlade das Modell unter Einstellungen → KI-Anbieter → Modell oder wechsle zu einem Cloud-Anbieter.</string>
 
     <string name="ai_error_key_rejected">Dein API-Schlüssel wurde abgelehnt. Öffne „Einstellungen“ → „KI-Anbieter“ und füge einen gültigen Schlüssel erneut ein.</string>
 
