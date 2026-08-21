@@ -42,6 +42,11 @@ sealed class AiError(
     object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.", messageRes = R.string.ai_error_on_device_model_not_downloaded)
     object OnDeviceUnsupportedDevice : AiError("This device doesn't meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_unsupported_device)
     object OnDeviceLowMemory : AiError("Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_low_memory)
+    /** On-device engine failed to initialize (OpenCL/GPU or CPU) with no fallback left. */
+    class OnDeviceEngineInit(cause: Throwable) : AiError(
+        "The on-device model engine failed to start on this device. Try again, unload the model in Settings → AI Provider → Model, or switch to a cloud provider.",
+        messageRes = R.string.ai_error_on_device_engine_init,
+    )
 }
 
 /**

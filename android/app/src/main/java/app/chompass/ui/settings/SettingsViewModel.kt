@@ -113,6 +113,8 @@ data class SettingsUiState(
     val speechApiKeyMasked: String = "",
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
     val onDeviceAvailable: Boolean = false,
+    /** ON_DEVICE model ids this device can actually run (E4B gated by the 7 GiB usable-RAM floor). */
+    val onDeviceModels: List<String> = emptyList(),
     val appearanceMode: String = "system",
     /** "" = system default, or locale tag like "de", "zh-CN". */
     val appLanguage: String = "",
@@ -215,6 +217,17 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             val onDeviceAvailable = snap.onDeviceFeatureVisible &&
                 OnDeviceCapability.isSupported(container.appContext)
+            val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
+                // E4B is the OOM-risk model (GPU+GPU vision killed the process on
+                // Pixel 9a); 6 GB devices get E2B only. Static ON_DEVICE.models stays
+                // complete so supportedModelOrDefault still resolves a persisted E4B.
+                AIProvider.ON_DEVICE.models.filter { modelId ->
+                    OnDeviceCapability.isModelSupported(container.appContext, ModelCatalog.forModelId(modelId))
+                }
+            } else {
+                emptyList()
+            }
+            val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) onDeviceModels.first() else model
             val masked = maskKey(container.keyStore.apiKey(provider))
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val fbProvider = snap.fallbackProvider
@@ -226,7 +239,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             _ui.value = SettingsUiState(
                 selectedAI = provider,
-                selectedModel = model,
+                selectedModel = effectiveModel,
                 visionModel = vision,
                 maxResponseTokens = snap.maxResponseTokens,
                 aiReadTimeoutSeconds = snap.aiReadTimeoutSeconds,
@@ -279,6 +292,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 apiKeyMasked = masked,
                 speechApiKeyMasked = speechMasked,
                 onDeviceAvailable = onDeviceAvailable,
+                onDeviceModels = onDeviceModels,
                 appearanceMode = snap.appearanceMode,
                 appLanguage = snap.appLanguage,
                 coachTabEnabled = snap.coachTabEnabled,
