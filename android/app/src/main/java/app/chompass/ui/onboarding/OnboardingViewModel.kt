@@ -364,12 +364,11 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
                 container.foodAnalysis.calculateGoals(state.buildProfile(), forecast = null, heightMetric = state.heightMetric, weightMetric = state.weightMetric)
             }.getOrNull()
             if (result != null) {
-                val carbs = maxOf(0, (result.calories - result.protein * 4 - result.fat * 9) / 4)
                 _ui.value = _ui.value.copy(
                     customCalories = result.calories,
                     customProtein = result.protein,
                     customFat = result.fat,
-                    customCarbs = carbs
+                    customCarbs = result.carbs,
                 )
             }
             onDone()
