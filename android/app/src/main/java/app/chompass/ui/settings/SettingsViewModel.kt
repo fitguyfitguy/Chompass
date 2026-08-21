@@ -1389,13 +1389,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 adaptiveGoalAlertMessage = message,
                 goalsNeedRecalc = false
             )
-            try {
-                val goals = container.foodAnalysis.estimateOptionalNutrientGoals(next)
-                container.prefs.setOptionalNutrientGoals(goals)
-                _ui.value = _ui.value.copy(optionalNutrientGoals = goals)
-            } catch (e: Throwable) {
-                Log.w("Chompass", "recalculateGoals: optional nutrients skipped", e)
-            }
+            // Optional-nutrient AI is a separate Gemini call. Do not run it here:
+            // it kept the screen feeling busy after Recalculate had already finished.
         }
     }
 
