@@ -162,6 +162,25 @@ class WeightAnalysisServiceTest {
   }
 
   @Test
+  fun seedYear_observedTrendIsSlowLoss_notGain() {
+    val p = profile().copy(customCalories = 1900, weightKg = 73.5, goalWeightKg = 70.0)
+    val weights = SampleDataGenerators.yearWeights()
+    val foods = SampleDataGenerators.foodEntries()
+    val forecast = WeightAnalysisService.compute(weights, foods, p)
+    val observed = forecast.observedWeeklyChangeKg
+    assertNotNull(observed)
+    // 78 → 73.5 kg over a year ≈ −0.09 kg/week, not a gain.
+    assertTrue("observed weekly kg=$observed", observed!! < 0.0)
+    assertTrue("observed weekly kg=$observed should be slower than −0.5", observed > -0.3)
+    val result = AdaptiveGoalService.apply(p, weights, foods)
+    assertTrue("message=${result.message}", result.changed)
+    assertNotNull(result.updatedCalories)
+    assertEquals(150, 1900 - result.updatedCalories!!) // hits the −150 cap: slow loss vs −0.5 kg/week target
+    assertTrue(result.message, result.message.contains("Observed"))
+    assertTrue(result.message, result.message.contains("target"))
+  }
+
+  @Test
   fun adaptiveGoal_skipsWhenCaloriesLocked() {
     val p = profile().copy(customCalories = 1900, caloriesLocked = true)
     val foods = (1..5).map { foodEntry(calories = 2200, dayOffset = it.toLong()) }

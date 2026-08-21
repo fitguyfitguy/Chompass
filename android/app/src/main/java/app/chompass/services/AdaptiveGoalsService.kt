@@ -1,5 +1,6 @@
 package app.chompass.services
 
+import android.util.Log
 import app.chompass.R
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
@@ -65,6 +66,7 @@ class AdaptiveGoalsService(
                 foods = foodRepository.entries.first(),
                 measuredTdee = measuredTdee,
             )
+            Log.d("Chompass", "adaptive: changed=${result.changed} kcal=${result.updatedCalories} ${result.message}")
             prefs.setAdaptiveGoalsLastCheckDay(today.toString())
             if (!result.changed || result.updatedCalories == null) return result
 

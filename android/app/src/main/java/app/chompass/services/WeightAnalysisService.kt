@@ -8,6 +8,7 @@ import app.chompass.models.WeightGoal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -160,13 +161,19 @@ object AdaptiveGoalService {
         val signedAdjustment = adjustedCalories - currentCalories
         val sign = if (signedAdjustment > 0) "+" else ""
         val basis = if (hasWeightTrend) "your recent weight trend" else "your Health Connect energy burn"
+        val trendNote = if (hasWeightTrend && observedWeeklyChangeKg != null) {
+            " Observed ${formatWeeklyKg(observedWeeklyChangeKg)}, target ${formatWeeklyKg(targetWeeklyChangeKg)}."
+        } else ""
         return AdaptiveGoalResult(
             profile = nextProfile,
             changed = true,
             updatedCalories = adjustedCalories,
-            message = "Adaptive Goals adjusted calories by $sign$signedAdjustment kcal to $adjustedCalories kcal based on $basis. Pinned macros stay pinned; unlocked macros auto-balance."
+            message = "Adaptive Goals adjusted calories by $sign$signedAdjustment kcal to $adjustedCalories kcal based on $basis.$trendNote"
         )
     }
+
+    private fun formatWeeklyKg(kg: Double): String =
+        String.format(Locale.US, "%+.2f kg/week", kg)
 
     private fun targetWeeklyChangeKg(profile: UserProfile): Double = when (profile.goal) {
         WeightGoal.LOSE -> -(profile.weeklyChangeKg ?: 0.5)
