@@ -1,6 +1,6 @@
 // @ts-check
 import { profile as profileStore, prefs } from "../lib/db.js";
-import { dailyTargets } from "../lib/chompass-core/formulas.js";
+import { dailyTargets, safetyFloorKcal, calorieAdjustment, tdee } from "../lib/chompass-core/formulas.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
@@ -567,6 +567,7 @@ export class OnboardingView extends HTMLElement {
             </button>
           </div>
           <p style="color:var(--muted);margin:0;font-size:0.85rem;">${t("onboarding.plan.customize_hint")}</p>
+          ${planSafetyNote(this.draft, targets)}
           ${disclaimerCardsHtml()}
         </div>`;
     }
@@ -761,6 +762,17 @@ export class OnboardingView extends HTMLElement {
     } else {
       const n = Number(trimmed);
       if (!Number.isFinite(n) || n < 0) return;
+      if (field === "customCalories") {
+        const floor = safetyFloorKcal(this.draft);
+        if (n < floor) {
+          const ok = await openConfirm({
+            title: "Below the safety floor",
+            message: "This is below your estimated resting burn or 1,200 kcal. Only continue if a clinician prescribed it.",
+            confirmLabel: "Continue anyway",
+          });
+          if (!ok) return;
+        }
+      }
       this.draft[field] = Math.round(n);
     }
     this.render();
@@ -812,6 +824,19 @@ function choiceGrid(field, options, selected) {
       )
       .join("")}
   </div>`;
+}
+
+/** @param {import('../lib/chompass-core/models.js').UserProfile} draft */
+function planSafetyNote(draft, targets) {
+  const formulaDraft = { ...draft, customCalories: null };
+  const raw = Math.trunc(tdee(formulaDraft)) + calorieAdjustment(formulaDraft);
+  if (raw < targets.calories) {
+    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">This pace isn't possible at your size without going below your estimated resting calories. Your target will be ${targets.calories} kcal.</p>`;
+  }
+  if (targets.calories < safetyFloorKcal(draft)) {
+    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">Please consult with a doctor. This is below your estimated resting calories or 1,200 kcal a day.</p>`;
+  }
+  return "";
 }
 
 /** @param {string} s */

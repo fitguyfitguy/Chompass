@@ -225,7 +225,8 @@ internal fun GoalSpeedStep(
     useMetric: Boolean,
     currentKg: Double,
     targetKg: Double,
-    onSelect: (Double) -> Unit
+    onSelect: (Double) -> Unit,
+    paceCappedTarget: Int? = null,
 ) {
     // iOS goalSpeedStep: MAINTAIN shows a centered "Balanced pace set" card; LOSE/GAIN
     // show a big weekly-change readout, a tortoise/hare/bolt row, a 3-stop slider
@@ -345,9 +346,11 @@ internal fun GoalSpeedStep(
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        when (idx) {
-                            0 -> stringResource(R.string.onboarding_pace_caption_slow)
-                            2 -> stringResource(R.string.onboarding_pace_caption_fast)
+                        when {
+                            paceCappedTarget != null ->
+                                stringResource(R.string.onboarding_pace_capped, paceCappedTarget)
+                            idx == 0 -> stringResource(R.string.onboarding_pace_caption_slow)
+                            idx == 2 -> stringResource(R.string.onboarding_pace_caption_fast)
                             else -> stringResource(R.string.onboarding_pace_caption_recommended)
                         },
                         style = MaterialTheme.typography.bodySmall,

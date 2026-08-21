@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.models.CalorieSafety
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.OptionPickerSheet
@@ -609,6 +610,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
         editing?.let { field ->
             PlanEditDialog(
                 field = field,
+                calorieFloor = CalorieSafety.floorKcal(profile.bmr),
                 currentValue = when (field) {
                     PlanField.CALORIES -> profile.effectiveCalories
                     PlanField.PROTEIN -> profile.effectiveProtein
@@ -644,7 +646,9 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 } else null
             )
         }
-        if (profile.effectiveCalories < 1200) {
+        if (profile.effectiveCalories < CalorieSafety.floorKcal(profile.bmr) ||
+            profile.rawDailyCalories < profile.dailyCalories
+        ) {
             Spacer(Modifier.height(20.dp))
             Card(
                 shape = RoundedCornerShape(12.dp),
@@ -665,13 +669,17 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                     )
                     Spacer(Modifier.width(10.dp))
                     Column {
+                        val paceCapped = profile.rawDailyCalories < profile.dailyCalories
+                        if (!paceCapped) {
+                            Text(
+                                stringResource(R.string.onboarding_plan_doctor_title),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                         Text(
-                            stringResource(R.string.onboarding_plan_doctor_title),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            stringResource(R.string.onboarding_plan_doctor_message),
+                            if (paceCapped) stringResource(R.string.onboarding_pace_capped, profile.dailyCalories)
+                            else stringResource(R.string.onboarding_plan_doctor_message),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                         )
@@ -904,12 +912,13 @@ private fun PlanEditDialog(
     currentValue: Int,
     onDismiss: () -> Unit,
     onSave: (Int) -> Unit,
-    onReset: (() -> Unit)?
+    onReset: (() -> Unit)?,
+    calorieFloor: Int = CalorieSafety.ABSOLUTE_FLOOR_KCAL,
 ) {
     // Match the in-app Settings nutrition pickers: range + step per field, scroll
     // to a value, no keyboard. Saves on the picker's currently-selected value.
     val (min, max, step) = when (field) {
-        PlanField.CALORIES -> Triple(800, 6000, 50)
+        PlanField.CALORIES -> Triple(calorieFloor, CalorieSafety.PARSER_CEILING_KCAL, 50)
         PlanField.PROTEIN  -> Triple(10, 500, 5)
         PlanField.CARBS    -> Triple(0, 800, 5)
         PlanField.FAT      -> Triple(10, 300, 5)
