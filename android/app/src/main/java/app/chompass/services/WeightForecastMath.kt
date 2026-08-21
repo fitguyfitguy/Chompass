@@ -2,6 +2,7 @@ package app.chompass.services
 
 import app.chompass.models.WeightEntry
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import kotlin.math.abs
@@ -27,6 +28,43 @@ object WeightForecastMath {
         val startDate = start.atZone(zone).toLocalDate()
         val endDate = end.atZone(zone).toLocalDate()
         return (ChronoUnit.DAYS.between(startDate, endDate) + 1).toInt().coerceAtLeast(1)
+    }
+
+    data class CompleteDayWindow(
+        val firstLogged: LocalDate?,
+        val lastComplete: LocalDate,
+        val calendarDays: Int,
+        val loggedDates: Set<LocalDate>,
+    )
+
+    /**
+     * Intake window for FCAST: from the first logged food in the lookback through yesterday.
+     * Empty days before the first log do not count as sparse. Today is excluded (incomplete).
+     */
+    fun completeDayWindow(
+        loggedDates: Collection<LocalDate>,
+        today: LocalDate,
+        maxLookbackDays: Int = 90,
+    ): CompleteDayWindow {
+        val lookbackStart = today.minusDays(maxLookbackDays.toLong())
+        val yesterday = today.minusDays(1)
+        val inLookback = loggedDates.filter { it in lookbackStart..yesterday }.toSet()
+        if (inLookback.isEmpty()) {
+            return CompleteDayWindow(
+                firstLogged = null,
+                lastComplete = yesterday,
+                calendarDays = 1,
+                loggedDates = emptySet(),
+            )
+        }
+        val first = inLookback.min()
+        val calendarDays = (ChronoUnit.DAYS.between(first, yesterday).toInt() + 1).coerceAtLeast(1)
+        return CompleteDayWindow(
+            firstLogged = first,
+            lastComplete = yesterday,
+            calendarDays = calendarDays,
+            loggedDates = inLookback,
+        )
     }
 
     /**

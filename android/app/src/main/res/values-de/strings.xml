@@ -1888,7 +1888,7 @@ für dich ein</string>
 
     <string name="settings_adaptive_goals">Adaptive Ziele</string>
 
-    <string name="settings_adaptive_goals_info">Etwa einmal pro Woche, wenn du die App öffnest, führt Chompass automatisch die vollständige Zielberechnung – dieselbe, die auch die Schaltfläche „Neu berechnen“ verwendet – anhand deines Profils, der zuletzt erfassten Mahlzeiten und deines Gewichtsverlaufs erneut durch. Wenn „Energieverbrauch“ aktiviert ist, wird dein gemessener Energieverbrauch als Referenzwert für den Erhaltungsbedarf verwendet. Die Funktion wird stillschweigend übersprungen, wenn die KI nicht verfügbar ist. Durch Deaktivieren dieser Funktion werden die Zielwerte wiederhergestellt, die vor der ersten Anpassung durch die adaptiven Ziele galten. Dies stellt keine medizinische Beratung dar.</string>
+    <string name="settings_adaptive_goals_info">Etwa einmal pro Woche, wenn du die App öffnest, passt Chompass dein Kalorienziel um höchstens 150 kcal anhand deines jüngsten Gewichtsverlaufs an. Wenn „Energieverbrauch“ aktiviert ist, kann der gemessene Verbrauch genutzt werden, solange noch zu wenig Waagendaten vorliegen. Gesperrte Kalorien und Makros bleiben unverändert. „Neu berechnen“ fragt weiterhin die KI nach einem vollständigen Plan. Durch Deaktivieren werden die Zielwerte wiederhergestellt, die vor der ersten Anpassung durch Adaptive Ziele galten. Dies stellt keine medizinische Beratung dar.</string>
 
     <string name="settings_refresh_energy_goals">Energieverbrauchs-Ziele aktualisieren</string>
 

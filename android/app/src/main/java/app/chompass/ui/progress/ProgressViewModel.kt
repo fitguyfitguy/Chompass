@@ -56,6 +56,8 @@ data class ProgressUiState(
     /** Sites with a Progress-tab trend plot enabled in Customize Progress; empty = plots off. */
     val measurementSites: Set<BodyMeasurement.Site> = emptySet(),
     val dailyCalories: List<Pair<LocalDate, Int>> = emptyList(),
+    /** Mean of complete days in [dailyCalories] (today excluded). Null if none. */
+    val calorieAverage: Int? = null,
     val macroAverages: Triple<Double, Double, Double> = Triple(0.0, 0.0, 0.0),
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
     val bodyFatStats: BodyFatSummaryStats = BodyFatSummaryStats(),
@@ -265,13 +267,20 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         .mapNotNull { (day, aggregate) ->
             if (aggregate.calories == 0) null else day to aggregate.calories
         }
-    val macroAverages = if (foodByDay.isEmpty()) {
+    val completeCalorieDays = dailyCalories.filter { it.first < anchorDate }
+    val calorieAverage = if (completeCalorieDays.isEmpty()) {
+        null
+    } else {
+        completeCalorieDays.sumOf { it.second } / completeCalorieDays.size
+    }
+    val completeFoodByDay = foodByDay.filterKeys { it < anchorDate }
+    val macroAverages = if (completeFoodByDay.isEmpty()) {
         Triple(0.0, 0.0, 0.0)
     } else {
-        val days = foodByDay.size.toDouble()
-        val protein = foodByDay.values.sumOf { it.protein } / days
-        val carbs = foodByDay.values.sumOf { it.carbs } / days
-        val fat = foodByDay.values.sumOf { it.fat } / days
+        val days = completeFoodByDay.size.toDouble()
+        val protein = completeFoodByDay.values.sumOf { it.protein } / days
+        val carbs = completeFoodByDay.values.sumOf { it.carbs } / days
+        val fat = completeFoodByDay.values.sumOf { it.fat } / days
         Triple(protein, carbs, fat)
     }
     return ProgressUiState(
@@ -287,6 +296,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         filteredMeasurements = filteredMeasurements,
         measurementSites = base.measurementSites.mapNotNull { BodyMeasurement.Site.fromStorageId(it) }.toSet(),
         dailyCalories = dailyCalories,
+        calorieAverage = calorieAverage,
         macroAverages = macroAverages,
         weightStats = filteredWeights.toWeightStats(),
         bodyFatStats = filteredBodyFats.toBodyFatStats(),

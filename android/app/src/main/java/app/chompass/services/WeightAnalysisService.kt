@@ -6,6 +6,7 @@ import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.math.abs
 import kotlin.math.max
@@ -33,10 +34,14 @@ data class WeightForecast(
     val trendsDisagree: Boolean,
     val daysOfFoodData: Int,
     val weightEntriesUsed: Int,
-    /** Calendar days in the 90-day lookback window (inclusive). */
+    /** Calendar days from first logged food in lookback through yesterday. */
     val calendarDaysInWindow: Int = WeightForecast.MAX_LOOKBACK_DAYS,
     /** True when sparse logging triggered calendar-day intake averaging. */
     val usesCalendarDayAverage: Boolean = false,
+    /** Mean of complete logged days (today excluded). Equal to [avgDailyCalories] when not sparse. */
+    val loggedDayAvgCalories: Int = 0,
+    val firstLoggedDate: LocalDate? = null,
+    val lastLoggedDate: LocalDate? = null,
 ) {
     companion object {
         const val MAX_LOOKBACK_DAYS = 90
@@ -69,6 +74,14 @@ object AdaptiveGoalService {
         foods: List<FoodEntry>,
         measuredTdee: Int? = null
     ): AdaptiveGoalResult {
+        if (profile.caloriesLocked) {
+            return AdaptiveGoalResult(
+                profile = profile,
+                changed = false,
+                updatedCalories = null,
+                message = "Calories are locked, so Adaptive Goals did not change them."
+            )
+        }
         val forecast = WeightAnalysisService.compute(weights = weights, foods = foods, profile = profile)
         val observedWeeklyChangeKg = forecast.observedWeeklyChangeKg
         val targetWeeklyChangeKg = targetWeeklyChangeKg(profile)
@@ -166,18 +179,32 @@ object WeightAnalysisService {
     fun compute(
         weights: List<WeightEntry>,
         foods: List<FoodEntry>,
-        profile: UserProfile
+        profile: UserProfile,
+        now: Instant = Instant.now(),
+        zone: ZoneId = ZoneId.systemDefault(),
     ): WeightForecast {
-        val now = Instant.now()
-        val zone = ZoneId.systemDefault()
-        val cutoff = now.minusSeconds(WeightForecast.MAX_LOOKBACK_DAYS * 86_400L)
+        val today = now.atZone(zone).toLocalDate()
+        val lookbackStart = today.minusDays(WeightForecast.MAX_LOOKBACK_DAYS.toLong())
+        val cutoff = lookbackStart.atStartOfDay(zone).toInstant()
 
-        val recentFoods = foods.filter { it.timestamp in cutoff..now }
-        val daysLogged = recentFoods.map { it.timestamp.atZone(zone).toLocalDate() }.toSet().size
-        val totalRecentCal = recentFoods.sumOf { it.calories }
-        val calendarDays = WeightForecastMath.calendarDaysInclusive(cutoff, now, zone)
-        val intake = WeightForecastMath.averageDailyIntake(totalRecentCal, daysLogged, calendarDays)
+        val foodDates = foods.map { it.timestamp.atZone(zone).toLocalDate() }
+        val window = WeightForecastMath.completeDayWindow(
+            foodDates,
+            today,
+            WeightForecast.MAX_LOOKBACK_DAYS,
+        )
+        val completeFoods = foods.filter {
+            it.timestamp.atZone(zone).toLocalDate() in window.loggedDates
+        }
+        val daysLogged = window.loggedDates.size
+        val totalRecentCal = completeFoods.sumOf { it.calories }
+        val intake = WeightForecastMath.averageDailyIntake(
+            totalRecentCal,
+            daysLogged,
+            window.calendarDays,
+        )
         val avgDailyCal = intake.avgDailyCalories
+        val loggedDayAvg = if (daysLogged > 0) totalRecentCal / daysLogged else 0
 
         val tdee = profile.tdee.toInt()
         val balance = avgDailyCal - tdee
@@ -236,6 +263,9 @@ object WeightAnalysisService {
             weightEntriesUsed = regressionWindow.size,
             calendarDaysInWindow = intake.calendarDaysInWindow,
             usesCalendarDayAverage = intake.usesCalendarDayAverage,
+            loggedDayAvgCalories = loggedDayAvg,
+            firstLoggedDate = window.firstLogged,
+            lastLoggedDate = window.loggedDates.maxOrNull(),
         )
     }
 }

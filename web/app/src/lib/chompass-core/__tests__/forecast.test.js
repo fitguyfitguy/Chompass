@@ -74,4 +74,69 @@ describe("computeWeightForecast / suggestAdaptiveCalories", () => {
     assert.equal(r.changed, false);
     assert.match(r.message, /needs at least/);
   });
+
+  it("nine consecutive complete days uses logged-day average", () => {
+    const foods = Array.from({ length: 9 }, (_, i) => ({
+      id: String(i),
+      name: "meal",
+      mealType: "lunch",
+      date: localIso(i + 1),
+      time: "12:00",
+      calories: 2100,
+      proteinG: 100,
+      carbsG: 150,
+      fatG: 60,
+      source: "manual",
+    }));
+    const f = computeWeightForecast({ weights: [], foods, profile });
+    assert.equal(f.usesCalendarDayAverage, false);
+    assert.equal(f.daysOfFoodData, 9);
+    assert.equal(f.avgDailyCalories, 2100);
+    assert.equal(f.loggedDayAvgCalories, 2100);
+  });
+
+  it("excludes today from intake average", () => {
+    const foods = [
+      meal(2000, 1),
+      meal(2000, 2),
+      meal(500, 0),
+    ];
+    const f = computeWeightForecast({ weights: [], foods, profile });
+    assert.equal(f.daysOfFoodData, 2);
+    assert.equal(f.loggedDayAvgCalories, 2000);
+  });
+
+  it("skips adaptive when calories are locked", () => {
+    const r = suggestAdaptiveCalories({
+      profile: { ...profile, customCalories: 1900, caloriesLocked: true },
+      weights: [],
+      foods: [],
+    });
+    assert.equal(r.changed, false);
+    assert.match(r.message, /locked/i);
+  });
 });
+
+function localIso(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function meal(calories, daysAgo) {
+  return {
+    id: String(daysAgo),
+    name: "meal",
+    mealType: "lunch",
+    date: localIso(daysAgo),
+    time: "12:00",
+    calories,
+    proteinG: 100,
+    carbsG: 150,
+    fatG: 60,
+    source: "manual",
+  };
+}

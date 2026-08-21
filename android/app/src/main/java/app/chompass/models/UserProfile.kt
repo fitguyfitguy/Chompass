@@ -39,11 +39,11 @@ data class UserProfile(
     val autoBalanceMacro: AutoBalanceMacro? = null,
     /** User lock over the calorie target. When locked, editing one macro holds this total fixed
      *  (the other unlocked macros absorb the change) instead of letting calories float to the new
-     *  sum. Defaults false for back-compat. Cleared by Recalculate and the Adaptive auto-run. */
+     *  sum. Recalculate and weekly Adaptive leave a locked field untouched. Defaults false. */
     val caloriesLocked: Boolean = false,
     /** User locks over individual macros — at most two at once, so at least one stays free to
-     *  balance. A locked macro is never auto-adjusted during a rebalance. Defaults empty for
-     *  back-compat. Cleared by Recalculate and the Adaptive auto-run. */
+     *  balance. A locked macro is never auto-adjusted during a rebalance. Recalculate and weekly
+     *  Adaptive leave locked macros untouched. Defaults empty. */
     val lockedMacros: Set<AutoBalanceMacro> = emptySet()
 ) {
     val displayName: String get() = name?.takeIf { it.isNotEmpty() } ?: "User"
@@ -431,6 +431,30 @@ data class UserProfile(
             }
         }
         return redirected.recalculatedFromFormulas()
+    }
+
+    /**
+     * Apply an AI goal snapshot while keeping user locks. Unlocked fields take the new values;
+     * locked fields stay. When calories is locked, unlocked macros rebalance around the kept total.
+     */
+    fun applyingAiGoals(calories: Int, protein: Int, carbs: Int, fat: Int): UserProfile {
+        val keptCalories = if (caloriesLocked) effectiveCalories else calories
+        var next = copy(
+            customCalories = keptCalories,
+            customProtein = if (isMacroLocked(AutoBalanceMacro.PROTEIN)) effectiveProtein else protein,
+            customCarbs = if (isMacroLocked(AutoBalanceMacro.CARBS)) effectiveCarbs else carbs,
+            customFat = if (isMacroLocked(AutoBalanceMacro.FAT)) effectiveFat else fat,
+        )
+        if (!isMacroLocked(AutoBalanceMacro.PROTEIN)) {
+            next = next.copy(
+                proteinGramsPerKg = null,
+                proteinTargetMode = ProteinTargetMode.GRAMS_PER_DAY,
+            )
+        }
+        if (caloriesLocked) {
+            next = next.applyCaloriesEdit(keptCalories)
+        }
+        return next
     }
 
     /**

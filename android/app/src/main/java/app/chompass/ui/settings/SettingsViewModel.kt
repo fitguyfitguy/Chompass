@@ -1259,13 +1259,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 adaptiveGoalsEnabled = true,
                 applyingAdaptiveGoals = true
             )
-            // Adaptive owns the targets while on and auto-recalculates — drop any user locks now so
-            // the (disabled) lock controls read as unlocked, even before the first weekly run lands.
-            container.profileRepository.current()?.let { cur ->
-                if (cur.caloriesLocked || cur.lockedMacros.isNotEmpty()) {
-                    container.profileRepository.save(cur.withLocksCleared())
-                }
-            }
             val result = container.refreshAdaptiveGoalsIfNeeded(force = true)
             _ui.value = _ui.value.copy(
                 profile = result?.profile ?: container.profileRepository.current() ?: _ui.value.profile,
@@ -1371,15 +1364,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 )
                 return@launch
             }
-            // Store the AI's full plan as a fixed snapshot: calories + all three macros. Protein is
-            // the AI's choice within a range near the activity multiplier. Freezing carbs and fat too
-            // means editing a profile input (weight, pace, …) no longer reshuffles macros — they only
-            // change on the next Recalculate.
-            val next = current.recalculatedFromFormulas().copy(
-                customCalories = result.calories,
-                customProtein = result.protein,
-                customCarbs = result.carbs,
-                customFat = result.fat
+            // Write unlocked fields only. Locked calories/macros survive Recalculate.
+            val next = current.applyingAiGoals(
+                calories = result.calories,
+                protein = result.protein,
+                carbs = result.carbs,
+                fat = result.fat,
             )
             val message = container.appContext.getString(R.string.vm_goals_updated, result.calories) +
                 (result.reason?.let { " $it" } ?: "")

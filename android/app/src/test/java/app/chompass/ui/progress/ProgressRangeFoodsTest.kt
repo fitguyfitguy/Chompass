@@ -50,6 +50,26 @@ class ProgressRangeFoodsTest {
     }
 
     @Test
+    fun calorieAverageExcludesToday() {
+        val today = LocalDate.of(2026, 8, 21)
+        val foods = listOf(
+            entry("A", today.minusDays(2), calories = 2000),
+            entry("B", today.minusDays(1), calories = 2200),
+            entry("C", today, calories = 500),
+        )
+        val ui = buildProgressPreviewUiState(
+            profile = null,
+            weights = emptyList(),
+            bodyFatEntries = emptyList(),
+            foods = foods,
+            timeRange = TimeRange.ALL_TIME,
+            anchorDate = today,
+        )
+        assertEquals(3, ui.dailyCalories.size)
+        assertEquals(2100, ui.calorieAverage)
+    }
+
+    @Test
     fun oneWeekDoesNotTouchTwoYearOldBuckets() {
         val today = LocalDate.of(2026, 8, 19)
         val (start, end) = TimeRange.WEEK.dateRange(today)

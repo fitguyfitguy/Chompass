@@ -116,10 +116,22 @@ async function executeReadTool(tc) {
     /** @type {Record<string, number>} */
     const byDate = {};
     for (const e of all) {
-      if (e.date < start || e.date > end) continue;
-      byDate[e.date] = (byDate[e.date] || 0) + e.calories;
+      const day = String(e.date).slice(0, 10);
+      if (day < start || day > end) continue;
+      byDate[day] = (byDate[day] || 0) + e.calories;
     }
-    return byDate;
+    const complete = Object.entries(byDate).filter(([d]) => d < today);
+    const average =
+      complete.length === 0
+        ? null
+        : Math.trunc(complete.reduce((s, [, kcal]) => s + kcal, 0) / complete.length);
+    return {
+      days_with_data: Object.keys(byDate).length,
+      average_kcal_logged_days: average,
+      totals: Object.entries(byDate)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, kcal]) => ({ date, kcal })),
+    };
   }
   if (tc.name === "get_data_summary") {
     const [prof, allFood, allW, allBf] = await Promise.all([

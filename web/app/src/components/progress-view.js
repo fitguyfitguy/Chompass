@@ -127,10 +127,12 @@ export class ProgressView extends HTMLElement {
       totalsByDate.set(e.date, acc);
     }
     // Match Android: one bar per logged non-zero day (no calendar zero-padding).
-    const calorieBars = [...totalsByDate.entries()]
+    const today = todayIso();
+    const calorieEntries = [...totalsByDate.entries()]
       .filter(([, t]) => t.calories !== 0)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([d, t]) => ({ label: shortDate(d), value: t.calories }));
+      .sort(([a], [b]) => a.localeCompare(b));
+    const calorieBars = calorieEntries.map(([d, t]) => ({ label: shortDate(d), value: t.calories }));
+    const completeCalorieEntries = calorieEntries.filter(([d]) => d < today);
     const targets = prof ? dailyTargets(prof) : null;
     const goalWeight = prof?.goalWeightKg != null ? toDisplay(prof.goalWeightKg) : null;
 
@@ -146,9 +148,13 @@ export class ProgressView extends HTMLElement {
         ? suggestAdaptiveCalories({ profile: prof, weights: allWeights, foods: allEntries })
         : null;
 
-    const macroDays = [...totalsByDate.values()];
+    const completeMacroDays = [...totalsByDate.entries()]
+      .filter(([d]) => d < today)
+      .map(([, t]) => t);
     const macroAvg = (key) =>
-      macroDays.length ? macroDays.reduce((s, d) => s + d[key], 0) / macroDays.length : 0;
+      completeMacroDays.length
+        ? completeMacroDays.reduce((s, d) => s + d[key], 0) / completeMacroDays.length
+        : 0;
 
     // Chart + history only when logged BF entries exist (Android never draws an
     // empty BF plot). Profile body-fat alone is not enough to show this card.
@@ -175,8 +181,11 @@ export class ProgressView extends HTMLElement {
           ? prof.goalBodyFatPercentage
           : prof.goalBodyFatPercentage * 100
         : null;
-    const avgCalories = calorieBars.length
-      ? Math.round(calorieBars.reduce((s, b) => s + b.value, 0) / calorieBars.length)
+    const avgCalories = completeCalorieEntries.length
+      ? Math.round(
+          completeCalorieEntries.reduce((s, [, t]) => s + t.calories, 0) /
+            completeCalorieEntries.length,
+        )
       : null;
 
     const weightSection = `
