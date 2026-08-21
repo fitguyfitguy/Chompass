@@ -1570,14 +1570,14 @@
     <string name="notif_water_text_next_qty">Drink %1$s · next in ~%2$d min</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
-    <string name="settings_calc_intro">Your daily calorie and macro targets are set by AI. When you tap Recalculate Goals, or automatically about once a week if Adaptive Goals is on, Chompass sends your profile, the reference equations below, your recently logged food, and your weight trend to your AI provider. It starts from these peer-reviewed formulas, then adjusts them to your data to estimate your maintenance and targets.</string>
+    <string name="settings_calc_intro">Your daily calorie and macro targets start from the formulas below. They are never set below your estimated resting calories or 1,200 kcal. When you tap Recalculate Goals, or automatically about once a week if Adaptive Goals is on, Chompass can refine them using your logs and your AI provider, but not below that floor.</string>
     <string name="settings_calc_sec_bmr">Resting metabolism (BMR)</string>
     <string name="settings_calc_sec_tdee">Daily energy expenditure (TDEE)</string>
     <string name="settings_calc_mifflin_name">Mifflin-St Jeor equation</string>
     <string name="settings_calc_mifflin_used">Default formula for resting metabolism. Used when you haven\'t entered a body fat %.</string>
     <string name="settings_calc_mifflin_formula">Men: 10×weight(kg) + 6.25×height(cm) − 5×age + 5\nWomen: 10×weight(kg) + 6.25×height(cm) − 5×age − 161</string>
     <string name="settings_calc_katch_name">Katch-McArdle equation</string>
-    <string name="settings_calc_katch_used">Used automatically when you\'ve entered a body fat %. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight.</string>
+    <string name="settings_calc_katch_used">Used when you\'ve entered a body fat % and left Use body fat % in BMR on. More accurate for lean and athletic users since it derives BMR from lean body mass instead of total weight. Turn the toggle off to keep Mifflin-St Jeor.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = weight × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Activity-multiplier method</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × activity multiplier. The multiplier corresponds to your selected activity level. Moderate uses 1.465 (between FAO/WHO light 1.375 and moderate 1.55) for desk-active users who exercise a few times per week. This is the maintenance baseline the AI starts from (unless Energy Burn supplies a measured one).</string>
@@ -1600,7 +1600,7 @@
     <string name="settings_calc_forecast_used">Progress charts and goal ETA use your recent food logs and weigh-ins (up to 90 days). When you log on fewer than half the days in the window, intake is averaged across calendar days so occasional big-log days do not inflate the forecast. Otherwise intake is averaged across logged days only. Observed weight trend uses a robust median-slope (Theil–Sen) fit on scale entries.</string>
     <string name="settings_calc_forecast_formula">predicted kg/week = (avgDailyCalories − TDEE) × 7 ÷ 7,700\nobserved kg/week = Theil–Sen slope × 7\nsparse logging: avg intake ÷ calendar days when logged days &lt; 50%% of window</string>
     <string name="settings_calc_adaptive_name">Adaptive Goals (weekly)</string>
-    <string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal). Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 3 weigh-ins, or Health Connect energy data.</string>
+    <string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal); a target already below the floor is raised to it. Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 6 weigh-ins spanning 28 days, or Health Connect energy data.</string>
     <string name="settings_calc_adaptive_formula">adjustment = (targetWeeklyChange − observedWeeklyChange) × 7,700 ÷ 7\nclamped to ±150 kcal/day</string>
     <string name="settings_calc_sec_body">Body composition estimates</string>
     <string name="settings_calc_body_name">Tape-measure derived metrics</string>
