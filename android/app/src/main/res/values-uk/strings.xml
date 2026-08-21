@@ -647,6 +647,7 @@
     <string name="ai_error_on_device_model_not_downloaded">Пристроєву модель ще не завантажено. Відкрий Налаштування → ШІ-провайдер → Модель, щоб завантажити.</string>
     <string name="ai_error_on_device_unsupported_device">Цей пристрій не відповідає вимогам пристроєвого ШІ. Обери хмарного провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_on_device_low_memory">Зараз недостатньо вільної пам\'яті для пристроєвого аналізу фото. Спробуй меншу модель E2B, закрий інші застосунки або зміни провайдера в Налаштуваннях → ШІ-провайдер.</string>
+    <string name="ai_error_on_device_engine_init">Не вдалося запустити механізм моделі на цьому пристрої. Спробуй ще раз, вивантаж модель у Налаштуваннях → ШІ-провайдер → Модель або перемкнися на хмарного провайдера.</string>
     <string name="ai_error_key_rejected">Твій API-ключ відхилено. Відкрий Налаштування → ШІ-провайдер і встав дійсний ключ.</string>
     <string name="ai_error_location_unsupported">Gemini недоступний з цієї мережі (країна/IP). Якщо ти користуєшся VPN, вимкни його або обери домашній вихід. IP дата-центрів часто заблоковані. Або увімкни оплату в проєкті Google AI Studio, спробуй іншу мережу чи зміни провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_provider_overloaded">ШІ-провайдер зараз перевантажений. Ми повторили кілька разів. Спробуй за хвилину або зміни провайдера/модель у Налаштуваннях → ШІ-провайдер.</string>
@@ -1335,7 +1336,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_water_goal_wheel_help">Прокручуй з кроком 50 мл, щоб вибрати денну ціль від 50 до 10 000 мл.</string>
     <string name="settings_water_intro">Відстежуй, скільки ти п\'єш, задай денну ціль і дозволь їй адаптуватися до ваги, погоди та активності.</string>
     <string name="settings_water_manual_temp">Очікуваний максимум сьогодні</string>
-    <string name="settings_water_manual_temp_help">Денна ціль зростає вище 25 °C (+4% за градус, максимум +60%). Без дозволу на геолокацію. Задається вручну.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">Денна ціль зростає вище 25 °C (+4% за градус, максимум +60%). Без дозволу на геолокацію. Задається вручну.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">Пресет %1$d</string>
     <string name="settings_water_quick_presets">Пресети швидкого запису</string>
@@ -1364,7 +1365,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_weather_city_selected">Вибрано</string>
     <string name="settings_weather_city_title">Місто Open-Meteo</string>
     <string name="settings_weather_source">Джерело погоди</string>
-    <string name="settings_weather_source_help">Очікуваний максимум живить динамічну ціль (+4% за °C вище 25 °C, максимум +60%). Коли в джерела немає свіжих даних, використовується ручне значення.</string>
+    <string name="settings_weather_source_help" formatted="false">Очікуваний максимум живить динамічну ціль (+4% за °C вище 25 °C, максимум +60%). Коли в джерела немає свіжих даних, використовується ручне значення.</string>
     <string name="settings_weather_source_manual">Вручну</string>
     <string name="settings_weather_source_manual_sub">Введи очікуваний максимум вручну. Без мережі.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (онлайн)</string>

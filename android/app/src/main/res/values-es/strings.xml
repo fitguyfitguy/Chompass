@@ -770,6 +770,7 @@
     <string name="ai_error_network_format">Error de red: %1$s</string>
     <string name="ai_error_no_api_key">No hay clave API configurada. Añade tu clave en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_on_device_low_memory">No hay suficiente memoria libre para el análisis de fotos en el dispositivo ahora mismo. Prueba el modelo E2B más pequeño, cierra otras apps o cambia de proveedor en Ajustes → Proveedor de IA.</string>
+    <string name="ai_error_on_device_engine_init">No se pudo iniciar el motor del modelo en este dispositivo. Inténtalo de nuevo, descarga el modelo en Ajustes → Proveedor de IA → Modelo o cambia a un proveedor en la nube.</string>
     <string name="ai_error_on_device_model_not_downloaded">El modelo en el dispositivo aún no se ha descargado. Abre Ajustes → Proveedor de IA → Modelo para descargarlo.</string>
     <string name="ai_error_on_device_unsupported_device">Este dispositivo no cumple los requisitos para la IA en el dispositivo. Elige un proveedor en la nube en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_provider_error">El proveedor de IA devolvió un error.</string>

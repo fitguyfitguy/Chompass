@@ -727,6 +727,7 @@
     <string name="ai_error_network_format">Errore di rete: %1$s</string>
     <string name="ai_error_no_api_key">Nessuna chiave API configurata. Aggiungi la chiave in Impostazioni → Fornitore IA.</string>
     <string name="ai_error_on_device_low_memory">Memoria libera insufficiente per l\'analisi foto sul dispositivo in questo momento. Prova il modello E2B più piccolo, chiudi altre app o cambia fornitore in Impostazioni → Fornitore IA.</string>
+    <string name="ai_error_on_device_engine_init">Il motore del modello non è riuscito ad avviarsi su questo dispositivo. Riprova, scarica il modello in Impostazioni → Provider IA → Modello oppure passa a un provider cloud.</string>
     <string name="ai_error_on_device_model_not_downloaded">Modello locale non ancora scaricato. Apri Impostazioni → Fornitore IA → Modello per scaricarlo.</string>
     <string name="ai_error_on_device_unsupported_device">Questo dispositivo non soddisfa i requisiti per l\'IA locale. Scegli un fornitore cloud in Impostazioni → Fornitore IA.</string>
     <string name="ai_error_provider_error">Il fornitore IA ha restituito un errore.</string>
@@ -1335,7 +1336,7 @@
     <string name="settings_water_goal_wheel_help">Scorri con passi da 50 ml per scegliere un obiettivo giornaliero da 50 a 10 000 ml.</string>
     <string name="settings_water_intro">Monitora quanto bevi, imposta un obiettivo giornaliero e lascia che si adatti a peso, meteo e attività.</string>
     <string name="settings_water_manual_temp">Massimo previsto oggi</string>
-    <string name="settings_water_manual_temp_help">L\'obiettivo giornaliero sale sopra i 25 °C (+4% per grado, massimo +60%). Nessuna autorizzazione di posizione. Impostalo manualmente.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">L\'obiettivo giornaliero sale sopra i 25 °C (+4% per grado, massimo +60%). Nessuna autorizzazione di posizione. Impostalo manualmente.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">Preset %1$d</string>
     <string name="settings_water_quick_presets">Preset di registrazione rapida</string>
@@ -1364,7 +1365,7 @@
     <string name="settings_weather_city_selected">Selezionata</string>
     <string name="settings_weather_city_title">Città Open-Meteo</string>
     <string name="settings_weather_source">Fonte meteo</string>
-    <string name="settings_weather_source_help">Il massimo previsto alimenta l\'obiettivo dinamico (+4% per °C sopra i 25 °C, massimo +60%). Quando la fonte non ha dati freschi, viene usato il valore manuale.</string>
+    <string name="settings_weather_source_help" formatted="false">Il massimo previsto alimenta l\'obiettivo dinamico (+4% per °C sopra i 25 °C, massimo +60%). Quando la fonte non ha dati freschi, viene usato il valore manuale.</string>
     <string name="settings_weather_source_manual">Manuale</string>
     <string name="settings_weather_source_manual_sub">Inserisci tu il massimo previsto. Nessuna rete.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (online)</string>

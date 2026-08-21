@@ -725,6 +725,7 @@
     <string name="ai_error_network_format">Erro de rede: %1$s</string>
     <string name="ai_error_no_api_key">Nenhuma chave de API configurada. Adicione sua chave em Configurações → Provedor de IA.</string>
     <string name="ai_error_on_device_low_memory">Não há memória livre suficiente para análise de fotos no dispositivo agora. Tente o modelo E2B menor, feche outros apps ou troque de provedor em Configurações → Provedor de IA.</string>
+    <string name="ai_error_on_device_engine_init">Não foi possível iniciar o mecanismo do modelo neste dispositivo. Tente novamente, descarregue o modelo em Configurações → Provedor de IA → Modelo ou mude para um provedor em nuvem.</string>
     <string name="ai_error_on_device_model_not_downloaded">Modelo no dispositivo ainda não baixado. Abra Configurações → Provedor de IA → Modelo para baixá-lo.</string>
     <string name="ai_error_on_device_unsupported_device">Este aparelho não atende aos requisitos para IA no dispositivo. Escolha um provedor em nuvem em Configurações → Provedor de IA.</string>
     <string name="ai_error_provider_error">O provedor de IA retornou um erro.</string>
@@ -1383,7 +1384,7 @@
     <string name="settings_water_goal_wheel_help">Role em passos de 50 ml para escolher uma meta diária de 50 a 10 000 ml.</string>
     <string name="settings_water_intro">Acompanhe quanto você bebe, defina uma meta diária e deixe-a se adaptar a peso, clima e atividade.</string>
     <string name="settings_water_manual_temp">Máximo esperado hoje</string>
-    <string name="settings_water_manual_temp_help">A meta diária sobe acima de 25 °C (+4% por grau, máximo +60%). Sem permissão de localização. Defina manualmente.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">A meta diária sobe acima de 25 °C (+4% por grau, máximo +60%). Sem permissão de localização. Defina manualmente.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">Predefinição %1$d</string>
     <string name="settings_water_quick_presets">Predefinições de registro rápido</string>
@@ -1412,7 +1413,7 @@
     <string name="settings_weather_city_selected">Selecionada</string>
     <string name="settings_weather_city_title">Cidade do Open-Meteo</string>
     <string name="settings_weather_source">Fonte do clima</string>
-    <string name="settings_weather_source_help">O máximo esperado alimenta a meta dinâmica (+4% por °C acima de 25 °C, máximo +60%). Quando a fonte não tem dados recentes, o valor manual é usado.</string>
+    <string name="settings_weather_source_help" formatted="false">O máximo esperado alimenta a meta dinâmica (+4% por °C acima de 25 °C, máximo +60%). Quando a fonte não tem dados recentes, o valor manual é usado.</string>
     <string name="settings_weather_source_manual">Manual</string>
     <string name="settings_weather_source_manual_sub">Informe você mesmo o máximo esperado. Sem rede.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (online)</string>

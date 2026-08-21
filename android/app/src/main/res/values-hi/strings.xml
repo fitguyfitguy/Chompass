@@ -737,6 +737,7 @@
     <string name="ai_error_network_format">नेटवर्क त्रुटि: %1$s</string>
     <string name="ai_error_no_api_key">कोई API कुंजी कॉन्फ़िगर नहीं है। अपनी कुंजी सेटिंग्स → AI प्रदाता में जोड़ें।</string>
     <string name="ai_error_on_device_low_memory">अभी ऑन-डिवाइस फोटो विश्लेषण के लिए पर्याप्त खाली मेमोरी नहीं है। छोटा E2B मॉडल आज़माएं, अन्य ऐप बंद करें, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
+    <string name="ai_error_on_device_engine_init">इस डिवाइस पर मॉडल इंजन शुरू नहीं हो सका। फिर से प्रयास करें, सेटिंग्स → AI प्रदाता → मॉडल में मॉडल अनलोड करें, या क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_on_device_model_not_downloaded">ऑन-डिवाइस मॉडल अभी डाउनलोड नहीं हुआ है। डाउनलोड करने के लिए सेटिंग्स → AI प्रदाता → मॉडल खोलें।</string>
     <string name="ai_error_on_device_unsupported_device">यह डिवाइस ऑन-डिवाइस AI की आवश्यकताओं को पूरा नहीं करता। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता चुनें।</string>
     <string name="ai_error_provider_error">AI प्रदाता ने एक त्रुटि लौटाई।</string>
@@ -1387,7 +1388,7 @@
     <string name="settings_water_goal_wheel_help">50 से 10,000 मिली के बीच दैनिक लक्ष्य चुनने के लिए 50 मिली चरणों में स्क्रॉल करें।</string>
     <string name="settings_water_intro">आप कितना पीते हैं ट्रैक करें, दैनिक लक्ष्य सेट करें, और इसे वज़न, मौसम और गतिविधि के अनुसार अनुकूलित होने दें।</string>
     <string name="settings_water_manual_temp">आज का अपेक्षित अधिकतम</string>
-    <string name="settings_water_manual_temp_help">दैनिक लक्ष्य 25 °C से ऊपर बढ़ता है (+प्रति डिग्री 4%, अधिकतम +60%)। कोई स्थान अनुमति नहीं। मैन्युअल रूप से सेट करें।</string>
+    <string name="settings_water_manual_temp_help" formatted="false">दैनिक लक्ष्य 25 °C से ऊपर बढ़ता है (+प्रति डिग्री 4%, अधिकतम +60%)। कोई स्थान अनुमति नहीं। मैन्युअल रूप से सेट करें।</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">प्रीसेट %1$d</string>
     <string name="settings_water_quick_presets">त्वरित-लॉग प्रीसेट</string>
@@ -1416,7 +1417,7 @@
     <string name="settings_weather_city_selected">चयनित</string>
     <string name="settings_weather_city_title">Open-Meteo शहर</string>
     <string name="settings_weather_source">मौसम स्रोत</string>
-    <string name="settings_weather_source_help">अपेक्षित अधिकतम गतिशील लक्ष्य को संचालित करता है (+25 °C से ऊपर प्रति °C 4%, अधिकतम +60%)। जब स्रोत के पास ताज़ा डेटा नहीं होता, तो मैन्युअल मान उपयोग होता है।</string>
+    <string name="settings_weather_source_help" formatted="false">अपेक्षित अधिकतम गतिशील लक्ष्य को संचालित करता है (+25 °C से ऊपर प्रति °C 4%, अधिकतम +60%)। जब स्रोत के पास ताज़ा डेटा नहीं होता, तो मैन्युअल मान उपयोग होता है।</string>
     <string name="settings_weather_source_manual">मैन्युअल</string>
     <string name="settings_weather_source_manual_sub">अपेक्षित अधिकतम स्वयं दर्ज करें। कोई नेटवर्क नहीं।</string>
     <string name="settings_weather_source_meteo">Open-Meteo (ऑनलाइन)</string>

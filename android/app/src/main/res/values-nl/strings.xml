@@ -707,6 +707,7 @@
     <string name="ai_error_network_format">Netwerkfout: %1$s</string>
     <string name="ai_error_no_api_key">Geen API-sleutel geconfigureerd. Voeg je sleutel toe in Instellingen → AI-provider.</string>
     <string name="ai_error_on_device_low_memory">Nu niet genoeg vrij geheugen voor foto-analyse op het apparaat. Probeer het kleinere E2B-model, sluit andere apps of wissel van provider in Instellingen → AI-provider.</string>
+    <string name="ai_error_on_device_engine_init">De modelengine kon op dit apparaat niet worden gestart. Probeer het opnieuw, verwijder het model onder Instellingen → AI-provider → Model of schakel over naar een cloudprovider.</string>
     <string name="ai_error_on_device_model_not_downloaded">On-device model nog niet gedownload. Open Instellingen → AI-provider → Model om het te downloaden.</string>
     <string name="ai_error_on_device_unsupported_device">Dit apparaat voldoet niet aan de vereisten voor on-device AI. Kies een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_provider_error">De AI-provider gaf een fout terug.</string>
@@ -1368,7 +1369,7 @@
     <string name="settings_water_goal_wheel_help">Scroll in stappen van 50 ml om een dagelijks doel van 50 tot 10.000 ml te kiezen.</string>
     <string name="settings_water_intro">Volg hoeveel je drinkt, stel een dagelijks doel in en laat het zich aanpassen aan gewicht, weer en activiteit.</string>
     <string name="settings_water_manual_temp">Verwacht maximum vandaag</string>
-    <string name="settings_water_manual_temp_help">Het dagelijkse doel stijgt boven 25 °C (+4% per graad, maximum +60%). Geen locatietoestemming. Stel het handmatig in.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">Het dagelijkse doel stijgt boven 25 °C (+4% per graad, maximum +60%). Geen locatietoestemming. Stel het handmatig in.</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">Preset %1$d</string>
     <string name="settings_water_quick_presets">Snel-log presets</string>
@@ -1397,7 +1398,7 @@
     <string name="settings_weather_city_selected">Geselecteerd</string>
     <string name="settings_weather_city_title">Open-Meteo-stad</string>
     <string name="settings_weather_source">Weerbron</string>
-    <string name="settings_weather_source_help">Het verwachte maximum voedt het dynamische doel (+4% per °C boven 25 °C, maximum +60%). Wanneer de bron geen verse gegevens heeft, wordt de handmatige waarde gebruikt.</string>
+    <string name="settings_weather_source_help" formatted="false">Het verwachte maximum voedt het dynamische doel (+4% per °C boven 25 °C, maximum +60%). Wanneer de bron geen verse gegevens heeft, wordt de handmatige waarde gebruikt.</string>
     <string name="settings_weather_source_manual">Handmatig</string>
     <string name="settings_weather_source_manual_sub">Voer het verwachte maximum zelf in. Geen netwerk.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (online)</string>

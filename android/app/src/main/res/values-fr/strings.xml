@@ -223,7 +223,7 @@
     <string name="onboarding_plan_doctor_title">Veuillez consulter un médecin</string>
     <string name="onboarding_plan_doctor_message">La recommandation minimale est de 1 200 calories par jour.</string>
     <string name="onboarding_minor_title">Formules pour adultes uniquement</string>
-    <string name="onboarding_minor_message">Cette appli utilise des formules de calories pour adultes. Si tu as moins de 18 ans, demande à un professionnel de santé avant d'utiliser ces objectifs.</string>
+    <string name="onboarding_minor_message">Cette appli utilise des formules de calories pour adultes. Si tu as moins de 18 ans, demande à un professionnel de santé avant d\'utiliser ces objectifs.</string>
     <string name="onboarding_minor_continue">Je comprends</string>
 
     <string name="onboarding_plan_field_calories">Calories quotidiennes</string>
@@ -765,6 +765,7 @@
     <string name="ai_error_network_format">Erreur réseau : %1$s</string>
     <string name="ai_error_no_api_key">Aucune clé API configurée. Ajoutez votre clé dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_on_device_low_memory">Pas assez de mémoire libre pour l\'analyse photo sur l\'appareil pour le moment. Essayez le petit modèle E2B, fermez d\'autres apps ou changez de fournisseur dans Réglages → Fournisseur d\'IA.</string>
+    <string name="ai_error_on_device_engine_init">Le moteur du modèle n\'a pas pu démarrer sur cet appareil. Réessaie, décharge le modèle dans Réglages → Fournisseur d\'IA → Modèle, ou passe à un fournisseur cloud.</string>
     <string name="ai_error_on_device_model_not_downloaded">Le modèle sur l\'appareil n\'est pas encore téléchargé. Ouvrez Réglages → Fournisseur d\'IA → Modèle pour le télécharger.</string>
     <string name="ai_error_on_device_unsupported_device">Cet appareil ne répond pas aux exigences de l\'IA sur l\'appareil. Choisissez un fournisseur cloud dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_provider_error">Le fournisseur d\'IA a renvoyé une erreur.</string>
@@ -1366,7 +1367,7 @@
     <string name="settings_picker_custom_placeholder">Valeur en %1$s</string>
     <string name="settings_picker_enter_custom">Saisir une valeur personnalisée…</string>
     <string name="settings_calorie_below_floor_title">Sous le seuil de sécurité</string>
-    <string name="settings_calorie_below_floor_message">C'est sous ton métabolisme de repos estimé ou sous 1 200 kcal. Continue uniquement si un professionnel de santé l'a prescrit.</string>
+    <string name="settings_calorie_below_floor_message">C\'est sous ton métabolisme de repos estimé ou sous 1 200 kcal. Continue uniquement si un professionnel de santé l\'a prescrit.</string>
     <string name="settings_calorie_below_floor_continue">Continuer quand même</string>
     <string name="settings_picker_use_wheel">Utiliser la molette</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>

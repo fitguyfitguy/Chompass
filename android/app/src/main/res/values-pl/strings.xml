@@ -1248,6 +1248,7 @@
     <string name="ai_error_on_device_model_not_downloaded">Model na urządzeniu nie został jeszcze pobrany. Otwórz Ustawienia → Dostawca AI → Model, aby go pobrać.</string>
     <string name="ai_error_on_device_unsupported_device">To urządzenie nie spełnia wymagań dla AI na urządzeniu. Wybierz dostawcę chmurowego w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_on_device_low_memory">Za mało wolnej pamięci na analizę zdjęć na urządzeniu w tej chwili. Spróbuj mniejszego modelu E2B, zamknij inne aplikacje lub zmień dostawcę w Ustawienia → Dostawca AI.</string>
+    <string name="ai_error_on_device_engine_init">Nie udało się uruchomić silnika modelu na tym urządzeniu. Spróbuj ponownie, zwolnij model w Ustawienia → Dostawca AI → Model albo przełącz się na dostawcę chmurowego.</string>
     <string name="ai_error_key_rejected">Twój klucz API został odrzucony. Otwórz Ustawienia → Dostawca AI i wklej ponownie prawidłowy klucz.</string>
     <string name="ai_error_location_unsupported">Gemini nie jest dostępny z tej lokalizacji sieciowej (kraj/IP). Jeśli używasz VPN, wyłącz go lub przełącz się na wyjście domowe. IP VPN z centrów danych (nie-domowe) są często blokowane. Możesz też włączyć płatności w projekcie Google AI Studio, spróbować innej sieci lub zmienić dostawcę w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_provider_overloaded">Dostawca AI jest teraz przeciążony. Próbowaliśmy kilka razy. Spróbuj ponownie za minutę albo zmień dostawcę/model w Ustawienia → Dostawca AI.</string>

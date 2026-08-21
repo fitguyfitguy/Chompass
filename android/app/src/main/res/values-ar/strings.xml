@@ -737,6 +737,7 @@
     <string name="ai_error_network_format">خطأ في الشبكة: %1$s</string>
     <string name="ai_error_no_api_key">لا يوجد مفتاح API مهيأ. أضف مفتاحك في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_on_device_low_memory">لا توجد ذاكرة حرة كافية لتحليل الصور محليًا الآن. جرّب نموذج E2B الأصغر، أو أغلق تطبيقات أخرى، أو غيّر المزوّد في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
+    <string name="ai_error_on_device_engine_init">تعذّر بدء تشغيل محرك النموذج على هذا الجهاز. أعد المحاولة، أو ألغِ تحميل النموذج في الإعدادات ← مزوّد الذكاء الاصطناعي ← النموذج، أو بدّل إلى مزوّد سحابي.</string>
     <string name="ai_error_on_device_model_not_downloaded">النموذج المحلي لم يُنزَّل بعد. افتح الإعدادات ← مزوّد الذكاء الاصطناعي ← النموذج لتنزيله.</string>
     <string name="ai_error_on_device_unsupported_device">لا يستوفي هذا الجهاز متطلبات الذكاء الاصطناعي المحلي. اختر مزوّدًا سحابيًا في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_provider_error">أرجع مزوّد الذكاء الاصطناعي خطأ.</string>
@@ -1387,7 +1388,7 @@
     <string name="settings_water_goal_wheel_help">مرّر بخطوات 50 مل لاختيار هدف يومي من 50 إلى 10,000 مل.</string>
     <string name="settings_water_intro">تتبّع كمية شربك، وحدد هدفًا يوميًا، ودعه يتكيف مع الوزن والطقس والنشاط.</string>
     <string name="settings_water_manual_temp">الحد الأقصى المتوقع اليوم</string>
-    <string name="settings_water_manual_temp_help">يرتفع الهدف اليومي فوق 25 درجة مئوية (+4% لكل درجة، بحد أقصى +60%). دون إذن موقع. اضبطه يدويًا.</string>
+    <string name="settings_water_manual_temp_help" formatted="false">يرتفع الهدف اليومي فوق 25 درجة مئوية (+4% لكل درجة، بحد أقصى +60%). دون إذن موقع. اضبطه يدويًا.</string>
     <string name="settings_water_manual_temp_summary">%1$d درجة مئوية</string>
     <string name="settings_water_preset_label">إعداد مسبق %1$d</string>
     <string name="settings_water_quick_presets">إعدادات التسجيل السريع</string>
@@ -1416,7 +1417,7 @@
     <string name="settings_weather_city_selected">محددة</string>
     <string name="settings_weather_city_title">مدينة Open-Meteo</string>
     <string name="settings_weather_source">مصدر الطقس</string>
-    <string name="settings_weather_source_help">يغذي الحد الأقصى المتوقع الهدف الديناميكي (+4% لكل درجة مئوية فوق 25، بحد أقصى +60%). عندما لا تتوفر بيانات جديدة من المصدر، تُستخدم القيمة اليدوية.</string>
+    <string name="settings_weather_source_help" formatted="false">يغذي الحد الأقصى المتوقع الهدف الديناميكي (+4% لكل درجة مئوية فوق 25، بحد أقصى +60%). عندما لا تتوفر بيانات جديدة من المصدر، تُستخدم القيمة اليدوية.</string>
     <string name="settings_weather_source_manual">يدوي</string>
     <string name="settings_weather_source_manual_sub">أدخل الحد الأقصى المتوقع بنفسك. دون شبكة.</string>
     <string name="settings_weather_source_meteo">Open-Meteo (عبر الإنترنت)</string>

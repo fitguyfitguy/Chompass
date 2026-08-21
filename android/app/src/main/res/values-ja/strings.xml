@@ -736,6 +736,7 @@
     <string name="ai_error_network_format">ネットワークエラー：%1$s</string>
     <string name="ai_error_no_api_key">API キーが設定されていません。設定 → AI プロバイダーでキーを追加してください。</string>
     <string name="ai_error_on_device_low_memory">現在、オンデバイスでの写真分析に十分な空きメモリがありません。小さい E2B モデルを試すか、他のアプリを閉じるか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
+    <string name="ai_error_on_device_engine_init">このデバイスでモデルエンジンを起動できませんでした。もう一度お試しください。設定 → AIプロバイダー → モデルでモデルをアンロードするか、クラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_on_device_model_not_downloaded">オンデバイスモデルがまだダウンロードされていません。設定 → AI プロバイダー → モデルを開いてダウンロードしてください。</string>
     <string name="ai_error_on_device_unsupported_device">このデバイスはオンデバイス AI の要件を満たしていません。設定 → AI プロバイダーでクラウドプロバイダーを選択してください。</string>
     <string name="ai_error_provider_error">AI プロバイダーがエラーを返しました。</string>
@@ -1386,7 +1387,7 @@
     <string name="settings_water_goal_wheel_help">50 ml 刻みでスクロールし、50〜10,000 ml の1日目標を選択します。</string>
     <string name="settings_water_intro">飲水量を記録し、1日の目標を設定して、体重・天気・活動に合わせて調整できます。</string>
     <string name="settings_water_manual_temp">今日の予想最高気温</string>
-    <string name="settings_water_manual_temp_help">1日の目標は25 °Cを超えると上昇します（1度につき+4%、上限+60%）。位置情報の権限は不要です。手動で設定してください。</string>
+    <string name="settings_water_manual_temp_help" formatted="false">1日の目標は25 °Cを超えると上昇します（1度につき+4%、上限+60%）。位置情報の権限は不要です。手動で設定してください。</string>
     <string name="settings_water_manual_temp_summary">%1$d °C</string>
     <string name="settings_water_preset_label">プリセット %1$d</string>
     <string name="settings_water_quick_presets">クイック記録プリセット</string>
@@ -1415,7 +1416,7 @@
     <string name="settings_weather_city_selected">選択済み</string>
     <string name="settings_weather_city_title">Open-Meteo の都市</string>
     <string name="settings_weather_source">天気ソース</string>
-    <string name="settings_weather_source_help">予想最高気温が動的目標を駆動します（25 °C超で1度あたり+4%、上限+60%）。ソースに新しいデータがない場合は、手動の値が使われます。</string>
+    <string name="settings_weather_source_help" formatted="false">予想最高気温が動的目標を駆動します（25 °C超で1度あたり+4%、上限+60%）。ソースに新しいデータがない場合は、手動の値が使われます。</string>
     <string name="settings_weather_source_manual">手動</string>
     <string name="settings_weather_source_manual_sub">予想最高気温を自分で入力します。ネットワーク不要。</string>
     <string name="settings_weather_source_meteo">Open-Meteo（オンライン）</string>
