@@ -6,6 +6,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.R
 import app.chompass.models.ActivityLevel
+import app.chompass.models.CalorieSafety
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
@@ -591,7 +592,7 @@ internal fun buildSystemPrompt(
     lines.add("- Calorie goal: ${profile.effectiveCalories} kcal/day")
     lines.add("- Macro targets: ${profile.effectiveProtein}g protein, ${profile.effectiveCarbs}g carbs, ${profile.effectiveFat}g fat")
     lines.add("")
-    lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. When they ask expected weight, reference the forecast numbers below.")
+    lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. Never recommend a daily calorie target below this user's BMR (${profile.bmr.toInt()} kcal) or ${CalorieSafety.ABSOLUTE_FLOOR_KCAL} kcal. If they ask to go lower, explain the floor and suggest a clinician. When they ask expected weight, reference the forecast numbers below.")
     // --- Below this marker is the per-day / per-log volatile tail ---
     // Everything above it must stay byte-identical between turns so the
     // Anthropic cache breakpoint (see [anthropicSystemBlocks]) keeps hitting.

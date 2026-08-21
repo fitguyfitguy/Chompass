@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.models.CalorieSafety
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.LocaleFormat
 import app.chompass.models.WaterQuickPresets
@@ -486,6 +488,11 @@ internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit) {
     // user's local date to avoid an off-by-one when the user is east of UTC.
     val localDate = current.atZone(ZoneId.systemDefault()).toLocalDate()
     var pickedDate by remember(current) { mutableStateOf(localDate) }
+    var confirmMinor by remember { mutableStateOf(false) }
+    fun commit() {
+        val newInstant = pickedDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
+        onSave(newInstant)
+    }
     Text(stringResource(R.string.sheet_birthday), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(8.dp))
     DateWheelPicker(
@@ -496,8 +503,25 @@ internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit) {
     )
     Spacer(Modifier.height(12.dp))
     GradientSaveButton {
-        val newInstant = pickedDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
-        onSave(newInstant)
+        val age = java.time.Period.between(pickedDate, LocalDate.now()).years
+        if (age < CalorieSafety.ADULT_MIN_AGE) confirmMinor = true else commit()
     }
     Spacer(Modifier.height(8.dp))
+    if (confirmMinor) {
+        AlertDialog(
+            onDismissRequest = { confirmMinor = false },
+            title = { Text(stringResource(R.string.onboarding_minor_title)) },
+            text = { Text(stringResource(R.string.onboarding_minor_message)) },
+            confirmButton = {
+                TextButton(onClick = { confirmMinor = false; commit() }) {
+                    Text(stringResource(R.string.onboarding_minor_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmMinor = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
 }
