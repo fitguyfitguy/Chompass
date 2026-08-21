@@ -62,9 +62,10 @@ data class UserProfile(
         return Period.between(birthDate, LocalDate.now()).years.coerceAtLeast(0)
     }
 
-    /** True when BMR uses Katch-McArdle: whenever a body fat % is set it is used directly.
-     *  No manual override — if body fat is unset, BMR falls back to Mifflin-St Jeor. */
-    val usesBodyFatForBMR: Boolean get() = bodyFatPercentage != null
+    /** True when BMR uses Katch-McArdle. Default on whenever body fat % is set;
+     *  [useBodyFatInBMR] false falls back to Mifflin-St Jeor without clearing BF%. */
+    val usesBodyFatForBMR: Boolean get() =
+        bodyFatPercentage != null && useBodyFatInBMR != false
 
     val bmr: Double get() = if (usesBodyFatForBMR) {
         // Katch-McArdle

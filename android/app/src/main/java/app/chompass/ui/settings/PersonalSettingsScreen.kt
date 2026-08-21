@@ -42,6 +42,9 @@ fun PersonalSettingsScreen(
             latestMeasurement = latestMeasurement,
             nav = nav,
             onOpenSheet = { sheet = it },
+            onToggleUseBodyFatInBmr = { on ->
+                vm.updateProfile { it.copy(useBodyFatInBMR = on) }
+            },
         )
     }
 

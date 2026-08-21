@@ -189,6 +189,7 @@
  * @property {number} heightCm
  * @property {number} weightKg
  * @property {number|null} [bodyFatPercentage]  fraction 0-1, null when unknown
+ * @property {boolean} [useBodyFatInBMR]         when false, BMR stays Mifflin-St Jeor even if BF% is set; default/undefined = true
  * @property {ActivityLevel} activityLevel
  * @property {Goal} goal
  * @property {number|null} [weeklyChangeKg]      unsigned magnitude; sign derived from `goal` at calc time; default 0.5 when unset

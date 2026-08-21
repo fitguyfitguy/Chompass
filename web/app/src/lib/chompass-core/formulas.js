@@ -66,9 +66,8 @@ export function bmrKatchMcArdle(profile) {
 
 /** @param {UserProfile} profile */
 export function bmr(profile) {
-  return profile.bodyFatPercentage != null
-    ? bmrKatchMcArdle(profile)
-    : bmrMifflinStJeor(profile);
+  const useKatch = profile.bodyFatPercentage != null && profile.useBodyFatInBMR !== false;
+  return useKatch ? bmrKatchMcArdle(profile) : bmrMifflinStJeor(profile);
 }
 
 /** TDEE: BMR × activity multiplier. @param {UserProfile} profile */
