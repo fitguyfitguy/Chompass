@@ -85,6 +85,66 @@
       }
     },
     {
+      "id": "golden_smallFemaleSedentaryLose_clampedToFloor",
+      "profile": {
+        "sex": "female",
+        "age": 60,
+        "heightCm": 155,
+        "weightKg": 52,
+        "bodyFatPercentage": null,
+        "activityLevel": "sedentary",
+        "goal": "lose",
+        "weeklyChangeKg": 0.5,
+        "ketoMode": false
+      },
+      "expect": {
+        "bmr": 1027.75,
+        "bmrTol": 0.5,
+        "calorieAdjustment": -550,
+        "dailyCalories": 1200
+      }
+    },
+    {
+      "id": "golden_minWeightLoseFast_clampedToFloor",
+      "profile": {
+        "sex": "female",
+        "age": 20,
+        "heightCm": 150,
+        "weightKg": 30,
+        "bodyFatPercentage": null,
+        "activityLevel": "sedentary",
+        "goal": "lose",
+        "weeklyChangeKg": 1.0,
+        "ketoMode": false
+      },
+      "expect": {
+        "bmr": 976.5,
+        "bmrTol": 0.5,
+        "calorieAdjustment": -1100,
+        "dailyCalories": 1200
+      }
+    },
+    {
+      "id": "golden_defaultMaleLoseFast_clampedToBmr",
+      "profile": {
+        "sex": "male",
+        "age": 25,
+        "heightCm": 175,
+        "weightKg": 70,
+        "bodyFatPercentage": null,
+        "activityLevel": "moderate",
+        "goal": "lose",
+        "weeklyChangeKg": 1.0,
+        "ketoMode": false
+      },
+      "expect": {
+        "bmr": 1673.75,
+        "bmrTol": 0.5,
+        "calorieAdjustment": -1100,
+        "dailyCalories": 1674
+      }
+    },
+    {
       "id": "golden_sparseLogging_calendarDayAverage",
       "kind": "averageDailyIntake",
       "input": {

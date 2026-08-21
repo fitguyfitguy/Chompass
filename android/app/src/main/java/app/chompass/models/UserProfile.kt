@@ -89,7 +89,10 @@ data class UserProfile(
         }
     }
 
-    val dailyCalories: Int get() = tdee.toInt() + calorieAdjustment
+    /** Unclamped TDEE ± pace. Display the raw deficit; persist [dailyCalories]. */
+    val rawDailyCalories: Int get() = tdee.toInt() + calorieAdjustment
+
+    val dailyCalories: Int get() = CalorieSafety.clampAuto(rawDailyCalories, bmr, tdee)
 
     private val standardProteinGoal: Int get() {
         // +0.2 g/kg during cutting phase to preserve lean mass (Helms et al 2014).
