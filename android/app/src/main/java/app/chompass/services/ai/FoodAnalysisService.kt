@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import android.util.Log
 import app.chompass.data.KeyStore
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore
@@ -320,6 +321,17 @@ class FoodAnalysisService(
             $measurementsSection
             $observedSection
         """.trimIndent()
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                "Chompass",
+                "calculateGoals intake loggedDay=${forecast?.loggedDayAvgCalories} " +
+                    "calendarAvg=${forecast?.avgDailyCalories} sparse=${forecast?.usesCalendarDayAverage} " +
+                    "observedWeekly=${forecast?.observedWeeklyChangeKg} " +
+                    "locked=${profile.caloriesLocked} kcal=${profile.effectiveCalories}",
+            )
+            val lock = profile.goalLockPromptSection()
+            if (lock.isNotBlank()) Log.d("Chompass", "calculateGoals$lock")
+        }
         return FoodJsonParser.parseGoalCalculation(
             callAi(prompt, imageBytes = null, op = "calculateGoals", reportPhases = false),
         )
