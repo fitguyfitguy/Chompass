@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -113,6 +114,10 @@ internal fun CalorieHero(
     /** Resting (basal) burn so far, when known. Feeds the budget sheet's burned-today total. */
     restingBurn: Int? = null,
     freezeProgress: Boolean = false,
+    /** True when a goal-change explanation exists; shows the ⓘ dialog's recalc-details link. */
+    recalcDetailsAvailable: Boolean = false,
+    /** Opens the recalc details sheet (closes the ⓘ budget dialog first). */
+    onShowRecalcDetails: (() -> Unit)? = null,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
@@ -404,6 +409,8 @@ internal fun CalorieHero(
             source = activeCalorieSource,
             burnedToday = restingBurn?.let { it + liveActiveBurn },
             onDismiss = { showBudgetSheet = false },
+            recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
+            onShowRecalcDetails = onShowRecalcDetails,
         )
     }
 }
@@ -479,6 +486,8 @@ private fun BudgetExplanationDialog(
     source: ActiveCalorieSource?,
     burnedToday: Int? = null,
     onDismiss: () -> Unit,
+    recalcDetailsAvailable: Boolean = false,
+    onShowRecalcDetails: (() -> Unit)? = null,
 ) {
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     FudGlassDialog(onDismissRequest = onDismiss) {
@@ -526,6 +535,42 @@ private fun BudgetExplanationDialog(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
+            }
+            // Hero ⓘ → recalc details: one tappable row into the persisted goal-change
+            // explanation (AI Recalculate or Adaptive) — closes this dialog first.
+            if (recalcDetailsAvailable) {
+                HorizontalDivider(Modifier.padding(vertical = 2.dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onDismiss()
+                            onShowRecalcDetails?.invoke()
+                        }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(15.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.settings_recalc_details),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        Icons.Filled.ChevronRight,
+                        contentDescription = null,
+                        tint = muted,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
             }
         }
         FudGlassDialogActions(
