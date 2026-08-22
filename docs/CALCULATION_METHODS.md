@@ -245,9 +245,21 @@ If currentCalories < safetyFloor, raise to the floor immediately (even without t
 
 **Locked calories:** if `caloriesLocked`, Adaptive skips the calorie write (including the sub-floor lift). Locked macros stay put when an unlocked calorie target is nudged (`applyCaloriesEdit`).
 
-### AI-RECALC: AI goal recalculation (empirical gate)
+### AI-RECALC: AI goal recalculation (two tiers, per-dispatch selection)
 
-`FoodAnalysisService.calculateGoals` asks the AI for a full plan. The AI may replace the formula TDEE with a **hit-and-trial** maintenance estimate (logged intake minus the observed weight trend) only when the logs are dense enough:
+`FoodAnalysisService.calculateGoals` asks the AI for a full plan. The AI may replace the formula TDEE with a **hit-and-trial** maintenance estimate (logged intake minus the observed weight trend). The prompt is built TWICE and the tier follows the model that actually runs, picked per dispatch at the moment of the call:
+
+| | SAFE (on-device models) | SMART (cloud models) |
+|---|---|---|
+| Observed data in prompt | Aggregates only (avg intake, Theil-Sen slope, count/span) | Raw weigh-in series (date + kg, capped ~20) + last-14-days intake table + aggregates |
+| App's implied-maintenance line | Withheld when thin / below BMR / disagreeing | Always shown, labeled "the app's rough estimate — verify against the raw series" |
+| Reliability judgment | App-side confidence gates (below) | Model-side, with explicit noise guidance in the prompt |
+| Enforcement after parse | Deterministic snap to formula/measured anchor when data not trustworthy; pace-miss snap | None beyond the CAL-SAFE clamp + parser ranges |
+| Result report | tier/provider/model recorded; fallback (incl. which provider failed) recorded when one fired | same |
+
+A cloud-primary → on-device-fallback call still hands the on-device leg the SAFE prompt (proven by `GoalTierSelectionTest` and the harness's forced-fallback scenario). The result sheet (Settings → Goals → Recalculate) shows which tier/provider answered, the formula baseline, the data used, and the model's full reason.
+
+**SAFE-tier confidence gates** (these apply only to the SAFE prompt/enforcement):
 
 ```
 usable      = weigh-ins >= 4 AND span >= 14 days AND logged food days >= 4
@@ -261,7 +273,7 @@ trustEmpir  = usable AND NOT belowFloor AND NOT trendsDisagree
 - **Below the CAL-SAFE floor:** the implied number is withheld entirely (it was dragging goals down to ~BMR).
 - **Disagreeing trends** (`|predicted − observed| > 0.3` kg/week): implied maintenance is not used.
 
-**Deterministic enforcement** (the AI prompt is advisory on small on-device models):
+**Deterministic enforcement** (SAFE tier only — the AI prompt is advisory on small on-device models; SMART gets no snap):
 
 ```
 if NOT trustEmpir:  calories = measured maintenance + goal pace, else formula dailyCalories
@@ -270,7 +282,7 @@ if trustEmpir AND |model − (implied + pace)| > 150 AND |model − implied| <= 
                     calories = implied + goal pace   // model returned maintenance alone
 ```
 
-Rationale: with sparse weigh-ins the model anchored the target at ~BMR (e.g. 1742 kcal vs formula TDEE ~2680), and CAL-SAFE passes it (it is ≥ BMR), so the guard is prompt-side plus this deterministic snap. Unit tests: `GoalPromptGateTest`; device matrix: `run_goal_matrix_test` debug extra (docs/ON_DEVICE_LLM.md).
+Rationale: with sparse weigh-ins the on-device model anchored the target at ~BMR (e.g. 1742 kcal vs formula TDEE ~2680), and CAL-SAFE passes it (it is ≥ BMR), so the guard is prompt-side plus this deterministic snap. SMART shows the raw series even when thin and trusts the model's judgment (cloud matrix validation; revisit if the cloud matrix shows the same failure patterns). Unit tests: `GoalPromptGateTest` (SAFE prompt contract via the delegate) + `GoalTierSelectionTest` (per-dispatch tier selection incl. fallback); device matrix: `run_goal_matrix_test` debug extra (docs/ON_DEVICE_LLM.md).
 
 ### WATER-DYN-A: Dynamic gross water goal
 
@@ -393,7 +405,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 | P3       | Robust regression (Theil–Sen) for weight trend            | **Done:** `WeightForecastMath.theilSenSlopePerDay`                   |
 | P3       | Review moderate PAL 1.465 vs literature 1.55              | **Done:** kept 1.465; documented in strings + `GoalFormulaReference` |
 | P4       | AI prompt parity via shared formula reference             | **Done:** `GoalFormulaReference` + unit tests                        |
-| P1       | AI recalc empirical-maintenance gate                       | **Done:** `AI-RECALC` below: withhold implied maintenance on thin/under-floor/disagreeing data + deterministic snap; `GoalPromptGateTest` + Pixel 9a device matrix (`run_goal_matrix_test`) |
+| P1       | AI recalc empirical-maintenance gate                       | **Done:** `AI-RECALC` above: SAFE/SMART tiers with per-dispatch selection (cloud → raw series + model judgment; on-device → aggregates + gates + snap); `GoalPromptGateTest` + `GoalTierSelectionTest` + Pixel 9a device matrix (`run_goal_matrix_test`) |
 
 ---
 
