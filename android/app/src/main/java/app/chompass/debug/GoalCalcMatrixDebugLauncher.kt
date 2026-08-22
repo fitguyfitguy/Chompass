@@ -13,9 +13,10 @@ object GoalCalcMatrixDebugLauncher {
         repeatCount: Int = 1,
         tier: String = "auto",
         provider: String = "on_device",
+        model: String = "",
     ) {
         scope.launch {
-            GoalCalcMatrixDebugRunner.run(container, scenarios, repeatCount, tier, provider)
+            GoalCalcMatrixDebugRunner.run(container, scenarios, repeatCount, tier, provider, model)
         }
     }
 }

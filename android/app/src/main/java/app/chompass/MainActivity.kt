@@ -586,6 +586,7 @@ open class MainActivity : ComponentActivity() {
                     repeatCount = actions.goalMatrixRepeat,
                     tier = actions.goalMatrixTier,
                     provider = actions.goalMatrixProvider,
+                    model = actions.goalMatrixModel,
                 )
             }
             if (actions.diagnoseHealthConnect) {
