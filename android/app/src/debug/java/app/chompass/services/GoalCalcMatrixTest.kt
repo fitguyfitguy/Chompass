@@ -2,6 +2,8 @@ package app.chompass.services
 
 import android.util.Log
 import app.chompass.AppContainer
+import app.chompass.data.KeyStore
+import app.chompass.data.Keys
 import app.chompass.models.ActivityLevel
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
@@ -10,28 +12,44 @@ import app.chompass.models.Gender
 import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
+import app.chompass.services.ai.GoalRecalcTier
+import app.chompass.services.ondevice.ModelCatalog
+import app.chompass.services.ondevice.ModelDownloadManager
 import java.time.LocalDate
 import java.time.ZoneId
+import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 
 /**
  * Debug-only goal-calculation matrix: drives the REAL production path
- * (FoodAnalysisService.calculateGoals → selected provider) against the
- * on-device Gemma model with a fixed scenario matrix, so we can see what the
- * model does with thin/sparse/rich/disagreeing observed data, measured TDEE,
- * keto, locks, and every weight goal.
+ * (FoodAnalysisService.calculateGoals → selected provider) with a fixed
+ * scenario matrix, so we can see what the model does with thin/sparse/rich/
+ * disagreeing observed data, measured TDEE, keto, locks, and every weight goal.
  *
  * Triggered by the `run_goal_matrix_test` intent extra; `goal_matrix_scenarios`
- * filters to a comma-separated subset. Results land in logcat tag `GoalMatrix`
+ * filters to a comma-separated subset; `goal_matrix_tier` (safe|smart|auto) and
+ * `goal_matrix_provider` (on_device|gemini|anthropic|openai) pick the tier and
+ * provider for the run. With a cloud provider, a forced-fallback scenario
+ * (cloud primary → on-device fallback) runs last and logs PASS/FAIL for the
+ * per-dispatch tier rule. Results land in logcat tag `GoalMatrix`
  * (op=goal_matrix phase=...). See docs/ON_DEVICE_LLM.md § Goal calculation matrix.
  */
 class GoalCalcMatrixTest(
     private val container: AppContainer,
     private val filter: String? = null,
     private val repeatCount: Int = 1,
+    private val tierName: String = "auto",
+    private val providerName: String = "on_device",
 ) {
     private val tag = "GoalMatrix"
+
+    private val providers = mapOf(
+        "on_device" to AIProvider.ON_DEVICE,
+        "gemini" to AIProvider.GEMINI,
+        "anthropic" to AIProvider.ANTHROPIC,
+        "openai" to AIProvider.OPENAI,
+    )
 
     private data class Scenario(
         val name: String,
@@ -224,33 +242,98 @@ class GoalCalcMatrixTest(
     suspend fun run() {
         val wanted = filter?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet()
         val list = if (wanted.isNullOrEmpty()) scenarios else scenarios.filter { it.name in wanted }
-        Log.i(tag, "op=goal_matrix phase=start scenarios=${list.size} repeat=$repeatCount filter=${filter ?: "all"}")
+        val provider = providers[providerName] ?: AIProvider.ON_DEVICE
+        val tierOverride = when (tierName) {
+            "safe" -> GoalRecalcTier.SAFE
+            "smart" -> GoalRecalcTier.SMART
+            else -> null // auto: per-dispatch (cloud → SMART, on-device → SAFE)
+        }
+        Log.i(tag, "op=goal_matrix phase=start scenarios=${list.size} repeat=$repeatCount filter=${filter ?: "all"} tier=$tierName provider=${provider.name}")
 
-        // Force the production dispatch onto the on-device provider for the
-        // whole run, then restore the user's own settings afterwards.
+        // Force the production dispatch onto the requested provider/tier for the
+        // whole run, then restore the user's own settings afterwards. Keys are
+        // only ever saved/restored, never logged.
         val prefs = container.prefs
+        val keyStore = container.keyStore
         val prevAi = prefs.aiFeaturesEnabled.first()
         val prevProvider = prefs.selectedAIProvider.first()
         val prevModel = prefs.selectedAIModel.first()
         val prevFallback = prefs.fallbackEnabled.first()
+        val prevFallbackProvider = prefs.selectedFallbackProvider.first()
+        val prevFallbackModel = prefs.selectedFallbackModel.first()
+        val prevPrimaryKey = keyStore.apiKey(provider)
+        val prevTierOverride = container.foodAnalysis.goalTierOverrideForTest
         prefs.setAiFeaturesEnabled(true)
-        prefs.setSelectedAIProvider(AIProvider.ON_DEVICE)
-        prefs.setSelectedAIModel("gemma-4-E2B-it")
+        prefs.setSelectedAIProvider(provider)
+        prefs.setSelectedAIModel(provider.defaultModel)
         prefs.setFallbackEnabled(false)
+        container.foodAnalysis.goalTierOverrideForTest = tierOverride
         try {
             list.forEachIndexed { i, s ->
                 repeat(repeatCount) { rep -> runScenario(s, i + 1, list.size, rep) }
             }
+            // Forced-fallback scenario: cloud primary → on-device fallback. Proves
+            // the on-device leg gets the SAFE prompt (per-dispatch tier rule) and
+            // the result reports the fallback. Only in auto tier, where the two
+            // legs genuinely differ.
+            if (provider != AIProvider.ON_DEVICE && tierOverride == null) {
+                runFallbackScenario(keyStore, provider, prevPrimaryKey)
+            }
             Log.i(tag, "op=goal_matrix phase=done scenarios=${list.size} repeat=$repeatCount")
         } finally {
+            container.foodAnalysis.goalTierOverrideForTest = prevTierOverride
             prefs.setAiFeaturesEnabled(prevAi)
             prefs.setSelectedAIProvider(prevProvider)
             prevModel?.let { prefs.setSelectedAIModel(it) }
             prefs.setFallbackEnabled(prevFallback)
+            prefs.setSelectedFallbackProvider(prevFallbackProvider)
+            if (prevFallbackModel == null) {
+                prefs.dataStore.edit { it.remove(Keys.FALLBACK_MODEL) }
+            } else {
+                prefs.setSelectedFallbackModel(prevFallbackModel)
+            }
+            if (prevPrimaryKey == null) keyStore.setApiKey(provider, null) else keyStore.setApiKey(provider, prevPrimaryKey)
         }
     }
 
-    private suspend fun runScenario(s: Scenario, index: Int, total: Int, rep: Int) {
+    /**
+     * Cloud-primary → on-device-fallback scenario: the primary key is swapped
+     * for an invalid one so the cloud leg fails fast (or NoApiKey when the user
+     * has no key), then the on-device leg must answer with the SAFE prompt and
+     * the result must report the fallback. Never logs keys; restores the real
+     * key and prefs afterwards. Skips (with a log) when the model is not
+     * downloaded.
+     */
+    private suspend fun runFallbackScenario(keyStore: KeyStore, provider: AIProvider, prevPrimaryKey: String?) {
+        val prefs = container.prefs
+        val entry = ModelCatalog.forModelId(AIProvider.ON_DEVICE.defaultModel)
+        if (!ModelDownloadManager(container.appContext).isDownloaded(entry)) {
+            Log.i(tag, "op=goal_matrix phase=fallback skip=on_device_model_not_downloaded model=${entry.modelId}")
+            return
+        }
+        val prevFallbackEnabled = prefs.fallbackEnabled.first()
+        val prevFallbackProvider = prefs.selectedFallbackProvider.first()
+        val prevFallbackModel = prefs.selectedFallbackModel.first()
+        prefs.setFallbackEnabled(true)
+        prefs.setSelectedFallbackProvider(AIProvider.ON_DEVICE)
+        prefs.setSelectedFallbackModel(AIProvider.ON_DEVICE.defaultModel)
+        if (prevPrimaryKey != null) keyStore.setApiKey(provider, "goal-matrix-invalid-key")
+        try {
+            val s = scenarios.first { it.name == "sparse_up" }
+            runScenario(s, scenarios.size + 1, scenarios.size + 1, rep = 0, fallback = true)
+        } finally {
+            if (prevPrimaryKey != null) keyStore.setApiKey(provider, prevPrimaryKey)
+            prefs.setFallbackEnabled(prevFallbackEnabled)
+            prefs.setSelectedFallbackProvider(prevFallbackProvider)
+            if (prevFallbackModel == null) {
+                prefs.dataStore.edit { it.remove(Keys.FALLBACK_MODEL) }
+            } else {
+                prefs.setSelectedFallbackModel(prevFallbackModel)
+            }
+        }
+    }
+
+    private suspend fun runScenario(s: Scenario, index: Int, total: Int, rep: Int, fallback: Boolean = false) {
         val p = s.profile
         val bmr = p.bmr
         val tdee = p.tdee
@@ -274,7 +357,7 @@ class GoalCalcMatrixTest(
         }
         Log.i(
             tag,
-            "op=goal_matrix phase=start scenario=${s.name} [$index/$total rep=$rep] bmr=${bmr.toInt()} tdee=${tdee.toInt()} " +
+            "op=goal_matrix phase=start scenario=${s.name} [$index/$total rep=$rep fallback=$fallback] bmr=${bmr.toInt()} tdee=${tdee.toInt()} " +
                 "formula=$formula floor=$floor ceiling=$ceiling measured=${s.measuredTdee} keto=${p.dietMode == DietMode.KETO} " +
                 "locked=${p.caloriesLocked} observed=[$observedText] note=${s.note}",
         )
@@ -298,8 +381,21 @@ class GoalCalcMatrixTest(
                 tag,
                 "op=goal_matrix phase=result scenario=${s.name} rep=$rep ms=$ms modelCalories=${result.calories} " +
                     "protein=${result.protein} carbs=${result.carbs} fat=${result.fat} " +
+                    "tier=${result.tier} provider=${result.provider} model=${result.model} fallbackFired=${result.fallbackFired} " +
                     "dFormula=$dFormula dFloor=$dFloor dImplied=$dImplied reason=${result.reason?.replace(" ", "_") ?: "null"}",
             )
+            if (fallback) {
+                val ok = result.fallbackFired &&
+                    result.tier == GoalRecalcTier.SAFE &&
+                    result.provider == AIProvider.ON_DEVICE
+                Log.i(
+                    tag,
+                    "op=goal_matrix phase=fallback ${if (ok) "PASS" else "FAIL"} " +
+                        "expected=provider_ON_DEVICE,tier_SAFE,fallbackFired=true " +
+                        "got=provider_${result.provider},tier_${result.tier},fallbackFired=${result.fallbackFired} " +
+                        "primaryError=${result.primaryError?.replace(" ", "_")?.take(120) ?: "null"}",
+                )
+            }
         } catch (e: Throwable) {
             val ms = System.currentTimeMillis() - startMs
             Log.e(tag, "op=goal_matrix phase=error scenario=${s.name} rep=$rep ms=$ms err=${e::class.simpleName}: ${e.message}", e)

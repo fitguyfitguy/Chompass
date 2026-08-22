@@ -4,6 +4,10 @@ import android.content.Intent
 import app.chompass.debug.OnDeviceLlmDefaults
 import app.chompass.BuildConfig
 
+/** Valid values for the `goal_matrix_tier` / `goal_matrix_provider` debug extras. */
+private val GOAL_MATRIX_TIERS = setOf("safe", "smart", "auto")
+private val GOAL_MATRIX_PROVIDERS = setOf("on_device", "gemini", "anthropic", "openai")
+
 /**
  * Debug-only intent extras (seeders, benchmarks, on-device LLM smoke test).
  * Parsed once and stripped so `Activity.recreate()` does not re-fire them.
@@ -61,12 +65,16 @@ internal data class DebugIntentActions(
     val onDeviceLlmPrompt: String = "full",
     val onDeviceLlmRepeat: Int = 1,
     val onDeviceLlmClearCache: Boolean = false,
-    /** Debug-only: run the goal-calculation matrix against the on-device model. */
+    /** Debug-only: run the goal-calculation matrix (docs/ON_DEVICE_LLM.md). */
     val runGoalMatrixTest: Boolean = false,
     /** Comma-separated scenario filter for [runGoalMatrixTest]; blank = all. */
     val goalMatrixScenarios: String = "",
     /** Repeat count per scenario (1-5) for [runGoalMatrixTest] variance sampling. */
     val goalMatrixRepeat: Int = 1,
+    /** Goal-recalc tier for the matrix: "safe" | "smart" | "auto" (per-dispatch). */
+    val goalMatrixTier: String = "auto",
+    /** Provider for the matrix: "on_device" | "gemini" | "anthropic" | "openai". */
+    val goalMatrixProvider: String = "on_device",
     val diagnoseHealthConnect: Boolean = false,
     val previewDailySummary: Boolean = false,
 ) {
@@ -140,6 +148,10 @@ internal fun consumeDebugIntentExtras(
         runGoalMatrixTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_goal_matrix_test", false),
         goalMatrixScenarios = intent.getStringExtra("goal_matrix_scenarios") ?: "",
         goalMatrixRepeat = intent.getIntExtra("goal_matrix_repeat", 1).coerceIn(1, 5),
+        goalMatrixTier = (intent.getStringExtra("goal_matrix_tier") ?: "auto")
+            .takeIf { it in GOAL_MATRIX_TIERS } ?: "auto",
+        goalMatrixProvider = (intent.getStringExtra("goal_matrix_provider") ?: "on_device")
+            .takeIf { it in GOAL_MATRIX_PROVIDERS } ?: "on_device",
         diagnoseHealthConnect = BuildConfig.DEBUG &&
             intent.getBooleanExtra("diagnose_health_connect", false),
         previewDailySummary = BuildConfig.DEBUG &&
@@ -199,6 +211,8 @@ internal fun consumeDebugIntentExtras(
     if (actions.runGoalMatrixTest) intent.removeExtra("run_goal_matrix_test")
     if (actions.goalMatrixScenarios.isNotBlank()) intent.removeExtra("goal_matrix_scenarios")
     if (actions.goalMatrixRepeat > 1) intent.removeExtra("goal_matrix_repeat")
+    if (actions.goalMatrixTier != "auto") intent.removeExtra("goal_matrix_tier")
+    if (actions.goalMatrixProvider != "on_device") intent.removeExtra("goal_matrix_provider")
     }
     return actions
 }
