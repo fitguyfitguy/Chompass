@@ -408,6 +408,19 @@ Uses real `CoachTools` against live DataStore data via LiteRT-LM native `@Tool` 
 
 ## Validated results (Pixel 9a, GrapheneOS, 2026-07-14)
 
+**Production dispatch re-validation (2026-08-22, Pixel 9a / GrapheneOS):** the
+production ON_DEVICE path (`FoodAnalysisService.analyzeText` → `OnDeviceLlmGateway`
+→ engine, `cache/litert`, no MTP) was exercised on-device for the first time,
+with the current catalog artifact (`gemma-4-E2B-it.litertlm`, HF repo rebuilt
+2026-08-07) on litertlm 0.14.0: cold engine init 34.5 s, full analyze+parse+save
+63.2 s, entry persisted and shown on Home (name localized to the phone locale).
+Also re-validated the daily preset against the current artifact: engine init
+36.8 s, Tier A 3/3, Tier B 4/4, Tier C 2/2, total 139.8 s (matches the 2026-07-14
+run 4 baseline). Caveat: a LiteRT compile cache built against an older model
+artifact breaks every generation with `llm_litert_compiled_model_executor`
+INTERNAL errors until cleared — the push script and the in-app download worker
+both wipe `cache/litert` + `cache/litert-mtp` when a new model file lands.
+
 Library: `litertlm-android` **0.14.0**, model: **Gemma 4 E2B-it** int4 `.litertlm`, backend: **GPU**, **MTP off**.
 
 ### Latency
