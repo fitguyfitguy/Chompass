@@ -118,10 +118,21 @@ internal fun SettingsAiSection(
                     HorizontalDivider()
                     val downloadState by vm.container.onDeviceModelDownloadManager.state(ui.selectedModel)
                         .collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
-                    val ready = downloadState is OnDeviceDownloadState.Downloaded
+                    val subtitle = when (val s = downloadState) {
+                        is OnDeviceDownloadState.Downloaded ->
+                            stringResource(R.string.settings_on_device_model_ready)
+                        is OnDeviceDownloadState.Downloading ->
+                            stringResource(R.string.on_device_model_downloading, s.progressPercent)
+                        is OnDeviceDownloadState.Verifying ->
+                            stringResource(R.string.on_device_model_verifying)
+                        is OnDeviceDownloadState.Failed ->
+                            stringResource(R.string.on_device_download_failed)
+                        is OnDeviceDownloadState.NotDownloaded ->
+                            stringResource(R.string.settings_on_device_model_not_downloaded)
+                    }
                     SettingRow(
                         stringResource(R.string.settings_on_device_model),
-                        if (ready) stringResource(R.string.settings_on_device_model_ready) else stringResource(R.string.settings_on_device_model_not_downloaded),
+                        subtitle,
                         icon = Icons.Outlined.Download
                     ) { onOpenSheet(SettingsSheet.ON_DEVICE_MODEL) }
                     SettingFootnote(stringResource(R.string.settings_on_device_accuracy_footer))

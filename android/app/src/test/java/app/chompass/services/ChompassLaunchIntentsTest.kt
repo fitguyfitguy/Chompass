@@ -50,5 +50,9 @@ class ChompassLaunchIntentsTest {
         assertNull(NotificationService.destinationForChannel(NotificationService.CHANNEL_WATER))
         assertNull(NotificationService.destinationForChannel(NotificationService.CHANNEL_STREAK))
         assertNull(NotificationService.destinationForChannel(NotificationService.CHANNEL_DAILY))
+        assertEquals(
+            NotificationService.DESTINATION_SETTINGS_AI,
+            NotificationService.destinationForChannel(NotificationService.CHANNEL_MODEL_DOWNLOAD),
+        )
     }
 }

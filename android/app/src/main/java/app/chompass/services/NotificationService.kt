@@ -91,7 +91,16 @@ class NotificationService(private val context: Context) {
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply { description = context.getString(R.string.notif_channel_water_desc) }
 
-        mgr.createNotificationChannels(listOf(streak, daily, goal, weight, bodyFat, appUpdate, water))
+        val modelDownload = NotificationChannel(
+            CHANNEL_MODEL_DOWNLOAD,
+            context.getString(R.string.notif_channel_model_download),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = context.getString(R.string.notif_channel_model_download_desc)
+            setSound(null, null)
+        }
+
+        mgr.createNotificationChannels(listOf(streak, daily, goal, weight, bodyFat, appUpdate, water, modelDownload))
     }
 
     fun canPostNotifications(): Boolean {
@@ -308,16 +317,20 @@ class NotificationService(private val context: Context) {
         const val CHANNEL_APP_UPDATE = "app_update"
         const val CHANNEL_WATER = "water_reminder"
         const val CHANNEL_WIDGET_MIDNIGHT = "widget_midnight_refresh"
+        const val CHANNEL_MODEL_DOWNLOAD = "model_download"
 
         /** Notification tap destinations (Codeberg #27); also openable via `chompass://go/<dest>`. */
         const val DESTINATION_PROGRESS = "progress"
+        const val DESTINATION_SETTINGS_AI = "settings/ai"
 
         /**
          * Where a notification tap should land, by channel. Weight/body-fat/goal
-         * reminders open the Progress tab; everything else stays on the Home tab.
+         * reminders open the Progress tab; the model-download FGS opens AI settings;
+         * everything else stays on the Home tab.
          */
         fun destinationForChannel(channel: String): String? = when (channel) {
             CHANNEL_WEIGHT_GOAL, CHANNEL_WEIGHT_LOG, CHANNEL_BODY_FAT_LOG -> DESTINATION_PROGRESS
+            CHANNEL_MODEL_DOWNLOAD -> DESTINATION_SETTINGS_AI
             else -> null
         }
         const val EXTRA_CHANNEL = "channel"

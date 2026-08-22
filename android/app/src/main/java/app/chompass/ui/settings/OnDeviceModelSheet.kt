@@ -38,7 +38,8 @@ private fun gb(bytes: Long): String = "${LocaleFormat.decimal(bytes / 1_073_741_
  * the Hugging Face disclosure before the first download (not repeated once a
  * model is present), a storage pre-check, download progress, and
  * delete/unload actions. Interrupted downloads resume from the partial file
- * via HTTP Range (see [ModelDownloadWorker]); cancel discards the partial file.
+ * via HTTP Range (see [ModelDownloadWorker]); cancel stops the worker but
+ * keeps the partial file so Download can continue.
  */
 @Composable
 internal fun OnDeviceModelSheet(
