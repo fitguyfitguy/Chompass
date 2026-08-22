@@ -164,6 +164,13 @@ class OnDeviceLlmClient(
     /**
      * Opens a tool-enabled conversation for Tier C (Coach) scenarios. LiteRT-LM's
      * native function-calling drives the tool round-trip internally.
+     *
+     * FOOTGUN: only the conversation *creation* runs on [Dispatchers.Default];
+     * the returned [Conversation] executes `sendMessage` inference on the
+     * **caller's** dispatcher. Always wrap `conversation.sendMessage(...)` in
+     * `withContext(Dispatchers.Default)` — calling it from a Main-scoped
+     * coroutine blocks input dispatch for the whole generation (observed as a
+     * 5 s input-dispatch ANR from the smoke-test harness, 2026-08-22).
      */
     suspend fun createToolConversation(systemPrompt: String, toolSet: ToolSet): Conversation =
         withContext(Dispatchers.Default) {

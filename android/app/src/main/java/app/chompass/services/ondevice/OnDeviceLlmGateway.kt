@@ -1,5 +1,6 @@
 package app.chompass.services.ondevice
 
+import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
 import com.google.ai.edge.litertlm.Backend
@@ -83,6 +84,23 @@ class OnDeviceLlmGateway(
         val entry = selectedEntry()
         if (!ModelDownloadManager(context).isDownloaded(entry)) {
             throw AiError.OnDeviceModelNotDownloaded
+        }
+        // Loading maps the weights into RSS (≈ the model file size). On a
+        // memory-starved device this thrashes swap and stalls every app, so
+        // refuse the load while availMem is below the floor and surface a
+        // catchable error instead (vision calls already carry their own
+        // stricter preflight in generateWithImage).
+        if (!OnDeviceCapability.hasEnoughAvailableMemoryForLoad(context, entry)) {
+            val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            val info = ActivityManager.MemoryInfo()
+            am?.getMemoryInfo(info)
+            Log.w(
+                ON_DEVICE_LLM_TAG,
+                "op=ondevice_llm phase=loadBlocked reason=low_memory model=${entry.modelId} " +
+                    "availMem=${info.availMem} totalMem=${info.totalMem} " +
+                    "need=${entry.sizeBytes + OnDeviceCapability.loadMemoryHeadroomBytes}"
+            )
+            throw AiError.OnDeviceLowMemory
         }
         return lock.withLock {
             val existing = engine

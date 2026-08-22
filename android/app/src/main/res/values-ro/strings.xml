@@ -734,7 +734,7 @@
     <string name="ai_error_model_unavailable">Furnizorul tău nu a găsit acest model. Poate fi plătit pe planul gratuit, restricționat în regiunea ta sau endpoint-ul poate fi greșit. Comută la modelul Flash implicit în Setări → Furnizor IA sau activează facturarea în proiectul tău AI Studio.</string>
     <string name="ai_error_network_format">Eroare de rețea: %1$s</string>
     <string name="ai_error_no_api_key">Nicio cheie API configurată. Adaugă cheia ta în Setări → Furnizor IA.</string>
-    <string name="ai_error_on_device_low_memory">Nu este suficientă memorie liberă pentru analiza foto pe dispozitiv chiar acum. Încearcă modelul E2B mai mic, închide alte aplicații sau schimbă furnizorul în Setări → Furnizor IA.</string>
+    <string name="ai_error_on_device_low_memory">Nu este suficientă memorie liberă pentru AI pe dispozitiv chiar acum. Încearcă modelul E2B mai mic, închide alte aplicații sau schimbă furnizorul în Setări → Furnizor IA.</string>
     <string name="ai_error_on_device_engine_init">Motorul modelului nu a putut fi pornit pe acest dispozitiv. Încearcă din nou, descarcă modelul din Setări → Furnizor AI → Model sau comută la un furnizor cloud.</string>
     <string name="ai_error_on_device_model_not_downloaded">Modelul local nu a fost încă descărcat. Deschide Setări → Furnizor IA → Model pentru a-l descărca.</string>
     <string name="ai_error_on_device_unsupported_device">Acest dispozitiv nu îndeplinește cerințele pentru IA locală. Alege un furnizor cloud în Setări → Furnizor IA.</string>

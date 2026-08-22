@@ -31,6 +31,15 @@ object OnDeviceCapability {
     /** Fixed headroom required on top of the model file size before starting a vision call. */
     private const val VISION_MEMORY_HEADROOM_BYTES = 1_500L * 1024 * 1024
 
+    /**
+     * Fixed headroom required on top of the model file size before loading the
+     * engine at all (text or vision). Loading maps the weights into RSS (≈ the
+     * file size) plus KV-cache/activation buffers; on a memory-starved device
+     * that thrashes swap and can OOM-kill the process, so the load is refused
+     * below this floor instead of degrading the whole phone.
+     */
+    internal val loadMemoryHeadroomBytes: Long = 512L * 1024 * 1024
+
     private val SUPPORTED_ABIS = setOf("arm64-v8a", "x86_64")
 
     fun isSupported(context: Context): Boolean =
@@ -83,5 +92,21 @@ object OnDeviceCapability {
         am.getMemoryInfo(info)
         if (info.lowMemory) return false
         return info.availMem >= entry.sizeBytes + VISION_MEMORY_HEADROOM_BYTES
+    }
+
+    /**
+     * Preflight check run immediately before loading the engine (any call).
+     * Weaker than [hasEnoughAvailableMemoryForVision] (smaller headroom) — the
+     * vision check still applies on top for image calls. Loading with less than
+     * the model size + headroom available was observed to push the device into
+     * swap thrash (3 GB swapped on a Pixel 9a with Telegram/YouTube/Instagram
+     * resident) and stall every app, so the gateway refuses the load instead.
+     */
+    fun hasEnoughAvailableMemoryForLoad(context: Context, entry: OnDeviceModelEntry): Boolean {
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return false
+        val info = ActivityManager.MemoryInfo()
+        am.getMemoryInfo(info)
+        if (info.lowMemory) return false
+        return info.availMem >= entry.sizeBytes + loadMemoryHeadroomBytes
     }
 }

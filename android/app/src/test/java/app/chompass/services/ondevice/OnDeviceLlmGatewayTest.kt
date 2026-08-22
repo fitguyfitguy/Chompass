@@ -65,6 +65,10 @@ class OnDeviceLlmGatewayTest {
     private fun withEnoughFreeMemoryForVision() =
         setMemoryInfo(8L * GB, ModelCatalog.E2B.sizeBytes + 4_000L * MB)
 
+    /** Engine-load preflight: availMem ≥ model size + 512 MiB headroom. */
+    private fun withEnoughFreeMemoryForLoad() =
+        setMemoryInfo(8L * GB, ModelCatalog.E2B.sizeBytes + 1_000L * MB)
+
     private class FakeEngine(
         override val visionEnabled: Boolean,
         private val failures: MutableList<Throwable>,
@@ -101,6 +105,7 @@ class OnDeviceLlmGatewayTest {
 
     @Test
     fun gpuInitFailure_retriesOnceOnCpu_forText() = runBlocking {
+        withEnoughFreeMemoryForLoad()
         val engines = mutableListOf<FakeEngine>()
         val backends = mutableListOf<Backend>()
         val paths = mutableListOf<String>()
@@ -149,6 +154,25 @@ class OnDeviceLlmGatewayTest {
         } catch (e: AiError.OnDeviceLowMemory) {
             // expected — catchable, not an OS kill
         }
+    }
+
+    /** Text load gate: loading maps the weights into RSS (≈ model size), so
+     *  below size + 512 MiB availMem the engine must be refused with a
+     *  catchable error instead of thrashing the device's swap. */
+    @Test
+    fun loadPreflight_rejectsWhenFreeMemoryIsLow_forText() = runBlocking {
+        setMemoryInfo(8L * GB, availMem = ModelCatalog.E2B.sizeBytes + 100L * MB)
+        val engines = mutableListOf<FakeEngine>()
+        val g = gateway(emptyList(), engines, mutableListOf(), mutableListOf())
+
+        try {
+            g.generate("sys", "user")
+            fail("expected AiError.OnDeviceLowMemory")
+        } catch (e: AiError.OnDeviceLowMemory) {
+            // expected — the load must never start on a starved device
+        }
+        assertTrue("no engine may be created when the load is refused", engines.isEmpty())
+        assertTrue(!g.isLoaded)
     }
 
     @Test

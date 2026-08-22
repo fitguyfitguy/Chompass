@@ -742,7 +742,7 @@
     <string name="ai_error_model_unavailable">プロバイダーがこのモデルを見つけられませんでした。無料プランでは有料のみ、地域で制限されている、またはエンドポイントが間違っている可能性があります。設定 → AI プロバイダーでデフォルトの Flash モデルに切り替えるか、AI Studio プロジェクトで課金を有効にしてください。</string>
     <string name="ai_error_network_format">ネットワークエラー：%1$s</string>
     <string name="ai_error_no_api_key">API キーが設定されていません。設定 → AI プロバイダーでキーを追加してください。</string>
-    <string name="ai_error_on_device_low_memory">現在、オンデバイスでの写真分析に十分な空きメモリがありません。小さい E2B モデルを試すか、他のアプリを閉じるか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
+    <string name="ai_error_on_device_low_memory">現在、オンデバイスでのAIに十分な空きメモリがありません。小さい E2B モデルを試すか、他のアプリを閉じるか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
     <string name="ai_error_on_device_engine_init">このデバイスでモデルエンジンを起動できませんでした。もう一度お試しください。設定 → AIプロバイダー → モデルでモデルをアンロードするか、クラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_on_device_model_not_downloaded">オンデバイスモデルがまだダウンロードされていません。設定 → AI プロバイダー → モデルを開いてダウンロードしてください。</string>
     <string name="ai_error_on_device_unsupported_device">このデバイスはオンデバイス AI の要件を満たしていません。設定 → AI プロバイダーでクラウドプロバイダーを選択してください。</string>

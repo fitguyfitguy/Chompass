@@ -11,12 +11,14 @@ import com.google.gson.JsonPrimitive
 import java.io.File
 import java.time.LocalDate
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import app.chompass.AppContainer
 import app.chompass.debug.OnDeviceLlmDebugConfig
@@ -424,7 +426,15 @@ class OnDeviceLlmSmokeTest(
                 withInferenceHeartbeat(phase = "tierC", detail = "scenario=${scenario.name}") {
                     withTimeout(INFERENCE_TIMEOUT_MS) {
                         client.createToolConversation(systemPrompt, toolSet).use { conversation ->
-                            val response = conversation.sendMessage(scenario.message)
+                            // createToolConversation only wraps conversation CREATION in
+                            // Default; the returned Conversation executes sendMessage
+                            // inference on the caller's dispatcher. This harness runs on
+                            // lifecycleScope (Main) — a multi-second Gemma generation
+                            // there blocks input dispatch (ANR 2026-08-22). Run the
+                            // inference off-main explicitly.
+                            val response = withContext(Dispatchers.Default) {
+                                conversation.sendMessage(scenario.message)
+                            }
                             val ms = (System.nanoTime() - start) / 1_000_000
                             Log.i(
                                 ON_DEVICE_LLM_TAG,
