@@ -68,16 +68,16 @@ Tag `FudAIPerf`. Release builds emit nothing.
 op=progress phase=rangeChange ms=323 range=1Y foods=1265 weights=588
 op=coldStart phase=prefsSnapshot ms=12
 op=coldStart phase=splashReady ms=180
-op=hubOpen phase=quickRelog ms=1015 perRow=10
+op=hubOpen phase=quickRelog ms=50 perRow=10
 op=hubOpen phase=sheetVisible ms=18
-op=hubOpen phase=benchLoad ms=40
-op=relogBench phase=uiAck i=0 ms=90 name=...
-op=entryLocal phase=uiAck i=0 ms=120
+op=hubOpen phase=benchLoad ms=52
+op=relogBench phase=uiAck i=0 ms=65 name=...
+op=entryLocal phase=uiAck i=0 ms=143
 op=daySwitch phase=listReady ms=12 date=2026-08-18 entries=4
-op=waterSip phase=dataStore ms=410 ml=250
-op=relog phase=uiAck ms=390 entries=5
-op=relogBench phase=addEntry ms=4773 i=0 name=...
-op=save phase=dataStore ms=590 month=2026-08
+op=waterSip phase=dataStore ms=240 ml=250
+op=relog phase=uiAck ms=143 entries=10
+op=relogBench phase=addEntry ms=293 i=0 name=...
+op=save phase=dataStore ms=190 month=2026-08
 op=analyzeText phase=promptBuild ms=8
 op=analyzeText phase=parse ms=3 chars=1830
 op=net phase=call host=... ttfbMs=980 totalMs=1420 status=200
@@ -86,6 +86,11 @@ op=benchmark phase=done count=3 ok=1 fail=2
 ```
 
 `dataStore` writes one month bucket (`month=yyyy-MM`), not the whole diary.
+Since 2026-08 the unbounded datasets (food, water, weight, body fat,
+measurements) live in per-month JSON files under
+`filesDir/chompass-buckets/` (JsonBucketStore) instead of the single
+DataStore proto, so `save`/`waterSip` measure a ~10-30 KB month-file
+write; the remaining proto (settings) is ~40 KB seeded.
 A photo analysis can still fire a second `net` call (`op=inferServing`) when
 the main prompt returns empty `unit_options`.
 
