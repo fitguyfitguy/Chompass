@@ -257,6 +257,8 @@ If currentCalories < safetyFloor, raise to the floor immediately (even without t
 | Enforcement after parse | Deterministic snap to formula/measured anchor when data not trustworthy; pace-miss snap | None beyond the CAL-SAFE clamp + parser ranges |
 | Result report | tier/provider/model recorded; fallback (incl. which provider failed) recorded when one fired | same |
 
+**Tier rule (per dispatch, by provider AND model):** on-device → SAFE; cloud models whose id matches a small-model pattern (`flash-lite`, `nano`, `haiku`, trailing `-mini`, OpenRouter `/free`) → SAFE; everything else → SMART. Measured on-device 2026-08-22: gemini-3.5-flash-lite with the SMART prompt clamped 6/19 scenarios to the BMR floor (sparse_up 1728 vs formula 1980) and ignored the measured anchor — the exact failure the SAFE tier fixes — while gemini-3.6-flash passed all 19 (formula anchors, measured 1950, gain 3080, keto/locked exact). Unit tests: `GoalTierSelectionTest` (incl. the small-model rule and the "mini-" substring trap); harness: `goal_matrix_model` extra.
+
 A cloud-primary → on-device-fallback call still hands the on-device leg the SAFE prompt (proven by `GoalTierSelectionTest` and the harness's forced-fallback scenario). The result sheet (Settings → Goals → Recalculate) shows which tier/provider answered, the formula baseline, the data used, and the model's full reason.
 
 **SAFE-tier confidence gates** (these apply only to the SAFE prompt/enforcement):
