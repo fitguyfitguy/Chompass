@@ -941,6 +941,7 @@
     <string name="settings_week_starts">Hafta Başlangıcı</string>
     <string name="settings_week_monday">Pazartesi</string>
     <string name="settings_week_sunday">Pazar</string>
+    <string name="settings_week_saturday">Cumartesi</string>
     <string name="settings_progress_default_range">Varsayılan ilerleme aralığı</string>
     <string name="settings_customize_progress">İlerlemeyi özelleştir</string>
     <string name="settings_customize_progress_summary">%1$s · %2$s</string>

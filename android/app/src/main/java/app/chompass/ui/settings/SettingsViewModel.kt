@@ -136,6 +136,7 @@ data class SettingsUiState(
     val fixedLauncherIcon: Boolean = false,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
+    val weekStartDay: app.chompass.models.WeekStartDay = app.chompass.models.WeekStartDay.MONDAY,
     /** Settings default Progress range id (`1W`…`All`). */
     val progressDefaultRangeId: String = "1W",
     /** Body-measurement sites with a Progress-tab trend plot; empty = plots off. */
@@ -308,7 +309,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 appThemeColor = AppThemeColor.fromKey(snap.appThemeColorKey),
                 fixedLauncherIcon = snap.fixedLauncherIcon,
                 foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
-                weekStartsOnMonday = snap.weekStartsOnMonday,
+                weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
+                weekStartDay = snap.weekStartDay,
                 progressDefaultRangeId = snap.progressDefaultRangeId,
                 progressMeasurementSites = snap.progressMeasurementSites,
                 userContext = snap.userContext,
@@ -699,9 +701,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(fixedLauncherIcon = enabled) },
     )
 
-    fun setWeekStartsOnMonday(monday: Boolean) = updateUiPref(
-        { container.prefs.setWeekStartsOnMonday(monday) },
-        { copy(weekStartsOnMonday = monday) },
+    fun setWeekStartsOnMonday(monday: Boolean) = setWeekStartDay(
+        if (monday) app.chompass.models.WeekStartDay.MONDAY else app.chompass.models.WeekStartDay.SUNDAY,
+    )
+
+    fun setWeekStartDay(day: app.chompass.models.WeekStartDay) = updateUiPref(
+        { container.prefs.setWeekStartDay(day) },
+        { copy(weekStartDay = day, weekStartsOnMonday = day == app.chompass.models.WeekStartDay.MONDAY) },
     )
 
     fun setProgressDefaultRangeId(rangeId: String) = updateUiPref(

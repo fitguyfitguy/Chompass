@@ -311,6 +311,7 @@ export const profile = {
  * @property {boolean} [adaptiveGoals]
  * @property {"RECENTS"|"FREQUENT"|"FAVORITES"|"RECIPES"} [lastSavedMealsSegment]
  * @property {boolean} [weekStartsOnMonday]
+ * @property {"monday"|"sunday"|"saturday"} [weekStartDay]
  * @property {number} [mealBreakfastStart]
  * @property {number} [mealLunchStart]
  * @property {number} [mealDinnerStart]
@@ -350,6 +351,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   adaptiveGoals: false,
   lastSavedMealsSegment: "RECENTS",
   weekStartsOnMonday: true,
+  weekStartDay: "monday",
   mealBreakfastStart: 5 * 60,
   mealLunchStart: 11 * 60,
   mealDinnerStart: 15 * 60,

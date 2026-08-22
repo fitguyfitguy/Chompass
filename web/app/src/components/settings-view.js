@@ -591,10 +591,22 @@ export class SettingsView extends HTMLElement {
           </select>
         </div>
         <div class="field">
-          <label for="weekStartsOnMonday">Week starts</label>
-          <select id="weekStartsOnMonday" name="weekStartsOnMonday">
-            <option value="true" ${p.weekStartsOnMonday !== false ? "selected" : ""}>Monday</option>
-            <option value="false" ${p.weekStartsOnMonday === false ? "selected" : ""}>Sunday</option>
+          <label for="weekStartDay">Week starts</label>
+          <select id="weekStartDay" name="weekStartDay">
+            ${(() => {
+              const day =
+                p.weekStartDay || (p.weekStartsOnMonday === false ? "sunday" : "monday");
+              return [
+                ["monday", "Monday"],
+                ["sunday", "Sunday"],
+                ["saturday", "Saturday"],
+              ]
+                .map(
+                  ([id, label]) =>
+                    `<option value="${id}" ${day === id ? "selected" : ""}>${label}</option>`
+                )
+                .join("");
+            })()}
           </select>
         </div>
         <div class="field">
@@ -634,7 +646,8 @@ export class SettingsView extends HTMLElement {
         heightUnit: /** @type {any} */ (fd.get("heightUnit")),
         theme: /** @type {any} */ (fd.get("theme")),
         accent: String(fd.get("accent") || "system"),
-        weekStartsOnMonday: fd.get("weekStartsOnMonday") === "true",
+        weekStartDay: /** @type {"monday"|"sunday"|"saturday"} */ (String(fd.get("weekStartDay") || "monday")),
+        weekStartsOnMonday: String(fd.get("weekStartDay") || "monday") === "monday",
         progressDefaultRangeId: String(fd.get("progressDefaultRangeId") || "1W"),
         mealBreakfastStart: timeInputToMinutes(String(fd.get("mealBreakfastStart"))),
         mealLunchStart: timeInputToMinutes(String(fd.get("mealLunchStart"))),

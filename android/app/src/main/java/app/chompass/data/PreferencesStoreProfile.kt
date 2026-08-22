@@ -86,9 +86,28 @@ internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) { data
 internal val PreferencesStore.fixedLauncherIconImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FIXED_LAUNCHER_ICON] ?: false }
 internal suspend fun PreferencesStore.setFixedLauncherIconImpl(v: Boolean) { dataStore.edit { it[Keys.FIXED_LAUNCHER_ICON] = v } }
 
-    /** false = Sunday, true = Monday (default). Mirrors iOS @AppStorage("weekStartsOnMonday"). */
-internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.WEEK_STARTS_MONDAY] ?: true }
-internal suspend fun PreferencesStore.setWeekStartsOnMondayImpl(v: Boolean) { dataStore.edit { it[Keys.WEEK_STARTS_MONDAY] = v } }
+    /** false = Sunday, true = Monday (default). Kept for backup/legacy; prefer [weekStartDayImpl]. */
+internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() =
+    weekStartDayImpl.map { it == app.chompass.models.WeekStartDay.MONDAY }
+internal suspend fun PreferencesStore.setWeekStartsOnMondayImpl(v: Boolean) {
+    setWeekStartDayImpl(
+        if (v) app.chompass.models.WeekStartDay.MONDAY else app.chompass.models.WeekStartDay.SUNDAY,
+    )
+}
+
+internal val PreferencesStore.weekStartDayImpl: Flow<app.chompass.models.WeekStartDay> get() =
+    dataStore.data.map {
+        app.chompass.models.WeekStartDay.fromStorage(
+            it[Keys.WEEK_START_DAY],
+            it[Keys.WEEK_STARTS_MONDAY],
+        )
+    }
+internal suspend fun PreferencesStore.setWeekStartDayImpl(v: app.chompass.models.WeekStartDay) {
+    dataStore.edit {
+        it[Keys.WEEK_START_DAY] = v.storageValue
+        it[Keys.WEEK_STARTS_MONDAY] = v == app.chompass.models.WeekStartDay.MONDAY
+    }
+}
 
 /** Settings default for Progress time range. Factory default: `1W`. */
 internal val PreferencesStore.progressDefaultRangeIdImpl: Flow<String> get() =

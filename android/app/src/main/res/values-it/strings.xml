@@ -469,6 +469,7 @@
     <string name="settings_week_starts">La settimana inizia il</string>
     <string name="settings_week_monday">Lunedì</string>
     <string name="settings_week_sunday">Domenica</string>
+    <string name="settings_week_saturday">Sabato</string>
     <string name="settings_notifications">Notifiche</string>
     <string name="settings_battery_opt">Ottimizzazione batteria</string>
     <string name="settings_battery_opt_value">Aggiungi Chompass alla whitelist</string>

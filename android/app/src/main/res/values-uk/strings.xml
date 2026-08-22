@@ -492,6 +492,7 @@
     <string name="settings_week_starts">Початок тижня</string>
     <string name="settings_week_monday">Понеділок</string>
     <string name="settings_week_sunday">Неділя</string>
+    <string name="settings_week_saturday">Субота</string>
     <string name="settings_progress_default_range">Типовий діапазон прогресу</string>
     <string name="settings_notifications">Сповіщення</string>
     <string name="settings_battery_opt">Оптимізація батареї</string>

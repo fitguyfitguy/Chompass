@@ -109,7 +109,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault())
     }
     val seedingSampleData by container.testDataSeeder.seeding.collectAsState()
-    val weekStartsOnMonday by container.prefs.weekStartsOnMonday.collectAsState(initial = true)
+    val weekStartDay by container.prefs.weekStartDay.collectAsState(initial = app.chompass.models.WeekStartDay.MONDAY)
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
     // and the What-if row, and ignores the camera/voice launcher shortcuts.
     val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
@@ -369,7 +369,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                     WeekEnergyStrip(
                         selectedDate = selectedDate,
                         onSelect = { vm.setSelectedDate(it) },
-                        weekStartsOnMonday = weekStartsOnMonday
+                        weekStartDay = weekStartDay
                     )
                 }
             }
@@ -1282,6 +1282,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 @Composable
 internal fun HomeScreenPreviewContent(
     ui: HomeUiState,
+    weekStartDay: app.chompass.models.WeekStartDay = app.chompass.models.WeekStartDay.MONDAY,
     weekStartsOnMonday: Boolean = true,
     freezeAnimations: Boolean = true,
 ) {
@@ -1305,7 +1306,7 @@ internal fun HomeScreenPreviewContent(
                         WeekEnergyStrip(
                             selectedDate = selectedDate,
                             onSelect = {},
-                            weekStartsOnMonday = weekStartsOnMonday,
+                            weekStartDay = if (weekStartsOnMonday) weekStartDay else app.chompass.models.WeekStartDay.SUNDAY,
                         )
                     }
                 }

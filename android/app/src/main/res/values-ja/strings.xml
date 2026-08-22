@@ -479,6 +479,7 @@
     <string name="settings_week_starts">週の始まり</string>
     <string name="settings_week_monday">月曜日</string>
     <string name="settings_week_sunday">日曜日</string>
+    <string name="settings_week_saturday">土曜日</string>
     <string name="settings_notifications">通知</string>
     <string name="settings_battery_opt">バッテリー最適化</string>
     <string name="settings_battery_opt_value">Chompass を最適化の対象から除外</string>

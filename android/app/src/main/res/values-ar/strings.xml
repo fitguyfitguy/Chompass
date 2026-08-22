@@ -480,6 +480,7 @@
     <string name="settings_week_starts">يبدأ الأسبوع يوم</string>
     <string name="settings_week_monday">الإثنين</string>
     <string name="settings_week_sunday">الأحد</string>
+    <string name="settings_week_saturday">السبت</string>
     <string name="settings_notifications">الإشعارات</string>
     <string name="settings_battery_opt">تحسين البطارية</string>
     <string name="settings_battery_opt_value">إضافة Chompass للقائمة البيضاء</string>

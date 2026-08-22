@@ -41,6 +41,8 @@ class PrefDefaultsParityTest {
         assertEquals(f.getInt("homeNutrientCardCount"), HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT)
         assertEquals(f.getString("calorieGaugeMode"), HomeCalorieDisplayMode.Default.storageKey)
         assertTrue(f.getBoolean("weekStartsOnMonday"))
+        assertEquals("monday", f.getString("weekStartDay"))
+        assertEquals(app.chompass.models.WeekStartDay.MONDAY.storageValue, f.getString("weekStartDay"))
         assertEquals(f.getInt("mealBreakfastStart"), MealSchedule.DEFAULT_BREAKFAST_START)
         assertEquals(f.getInt("mealLunchStart"), MealSchedule.DEFAULT_LUNCH_START)
         assertEquals(f.getInt("mealDinnerStart"), MealSchedule.DEFAULT_DINNER_START)

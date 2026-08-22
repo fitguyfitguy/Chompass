@@ -480,6 +480,7 @@
     <string name="settings_week_starts">주 시작 요일</string>
     <string name="settings_week_monday">월요일</string>
     <string name="settings_week_sunday">일요일</string>
+    <string name="settings_week_saturday">토요일</string>
     <string name="settings_notifications">알림</string>
     <string name="settings_battery_opt">배터리 최적화</string>
     <string name="settings_battery_opt_value">Chompass 화이트리스트 추가</string>

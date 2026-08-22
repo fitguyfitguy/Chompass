@@ -452,6 +452,7 @@
     <string name="settings_week_starts">Week begint op</string>
     <string name="settings_week_monday">Maandag</string>
     <string name="settings_week_sunday">Zondag</string>
+    <string name="settings_week_saturday">Zaterdag</string>
     <string name="settings_notifications">Meldingen</string>
     <string name="settings_battery_opt">Batterijoptimalisatie</string>
     <string name="settings_battery_opt_value">Chompass op witte lijst</string>

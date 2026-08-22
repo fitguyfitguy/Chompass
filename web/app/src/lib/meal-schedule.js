@@ -66,19 +66,25 @@ function localIso(d) {
 }
 
 /**
- * Week strip starting Monday (default) or Sunday.
- * @param {string} selectedIso
- * @param {boolean} [weekStartsOnMonday]
+ * @param {boolean|string|undefined} weekStart monday/sunday/saturday, or legacy boolean (true=Mon).
+ * @returns {0|1|6} JS getDay() of the first weekday
  */
-export function weekDates(selectedIso, weekStartsOnMonday = true) {
+export function resolveWeekStartDow(weekStart) {
+  if (weekStart === false || weekStart === "sunday") return 0;
+  if (weekStart === "saturday") return 6;
+  return 1;
+}
+
+/**
+ * Week strip starting Monday (default), Sunday, or Saturday.
+ * @param {string} selectedIso
+ * @param {boolean|string} [weekStart] true/"monday", false/"sunday", or "saturday"
+ */
+export function weekDates(selectedIso, weekStart = true) {
   const selected = new Date(`${selectedIso}T12:00:00`);
   const dow = selected.getDay(); // 0=Sun
-  let offset;
-  if (weekStartsOnMonday) {
-    offset = dow === 0 ? -6 : 1 - dow;
-  } else {
-    offset = -dow;
-  }
+  const startDow = resolveWeekStartDow(weekStart);
+  const offset = -((dow - startDow + 7) % 7);
   const start = new Date(selected);
   start.setDate(selected.getDate() + offset);
   return Array.from({ length: 7 }, (_, i) => {

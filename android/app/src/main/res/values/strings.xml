@@ -941,6 +941,7 @@
     <string name="settings_week_starts">Week Starts On</string>
     <string name="settings_week_monday">Monday</string>
     <string name="settings_week_sunday">Sunday</string>
+    <string name="settings_week_saturday">Saturday</string>
     <string name="settings_progress_default_range">Progress default range</string>
     <string name="settings_customize_progress">Customize progress</string>
     <string name="settings_customize_progress_summary">%1$s · %2$s</string>
