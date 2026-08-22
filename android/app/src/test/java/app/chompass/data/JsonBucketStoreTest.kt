@@ -200,6 +200,23 @@ class JsonBucketStoreTest {
     }
 
     @Test
+    fun `monthsFlow merges exactly the requested months in order`() = runBlocking {
+        val s = store(tmp.newFolder("buckets"))
+        s.applyChanges(
+            upsertsByMonth = mapOf(
+                YearMonth.of(2026, 8) to listOf(entry("a", "2026-08-01T10:00:00Z")),
+                YearMonth.of(2026, 7) to listOf(entry("j", "2026-07-05T10:00:00Z")),
+                YearMonth.of(2026, 6) to listOf(entry("x", "2026-06-05T10:00:00Z")),
+            ),
+        )
+        val windowed = s.monthsFlow(listOf(YearMonth.of(2026, 7), YearMonth.of(2026, 8))).first()
+        assertEquals(listOf("2026-07-05T10:00:00Z", "2026-08-01T10:00:00Z"), windowed.map { it.date.toString() })
+        // A month outside the window is not decoded.
+        assertTrue(s.monthsFlow(listOf(YearMonth.of(2026, 6))).first().isNotEmpty())
+        assertTrue(s.monthsFlow(listOf(YearMonth.of(2026, 5))).first().isEmpty())
+    }
+
+    @Test
     fun `readMonth on a never-written month is empty`() = runBlocking {
         val s = store(tmp.newFolder("buckets"))
         assertTrue(s.readMonth(YearMonth.of(2025, 1)).isEmpty())
