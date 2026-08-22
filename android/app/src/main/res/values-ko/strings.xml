@@ -515,6 +515,7 @@
     <string name="notif_channel_model_download_desc">온디바이스 모델 파일 다운로드 진행률.</string>
     <string name="notif_model_download_title">온디바이스 모델 다운로드 중</string>
     <string name="settings_recalc_confirm">다시 계산</string>
+    <string name="settings_recalc_details">재계산 세부정보</string>
     <string name="settings_invalid_goal_title">목표 체중이 목표와 일치하지 않아요</string>
     <string name="settings_invalid_goal_lose">감량 목표는 현재 체중보다 낮은 목표가 필요해요.</string>
     <string name="settings_invalid_goal_gain">증량 목표는 현재 체중보다 높은 목표가 필요해요.</string>

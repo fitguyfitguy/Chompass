@@ -515,6 +515,7 @@
     <string name="notif_channel_model_download_desc">ऑन-डिवाइस मॉडल फ़ाइल डाउनलोड होने की प्रगति।</string>
     <string name="notif_model_download_title">ऑन-डिवाइस मॉडल डाउनलोड हो रहा है</string>
     <string name="settings_recalc_confirm">पुनः गणना करें</string>
+    <string name="settings_recalc_details">पुनर्गणना विवरण</string>
     <string name="settings_invalid_goal_title">लक्ष्य वज़न आपके लक्ष्य से मेल नहीं खाता</string>
     <string name="settings_invalid_goal_lose">घटाने के लक्ष्य के लिए आपके वर्तमान वज़न से कम लक्ष्य चाहिए।</string>
     <string name="settings_invalid_goal_gain">बढ़ाने के लक्ष्य के लिए आपके वर्तमान वज़न से अधिक लक्ष्य चाहिए।</string>

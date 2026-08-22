@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Equalizer
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Restaurant
@@ -46,6 +47,10 @@ import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
+import app.chompass.services.ai.RecalcSheetData
+import app.chompass.services.ai.RecalcSheetSource
+import java.util.Date
+import java.text.DateFormat
 
 @Composable
 internal fun SettingsGoalsSection(
@@ -266,6 +271,17 @@ internal fun SettingsGoalsSection(
                             )
                         }
                     }
+                    // On-demand transparency: reopen the latest goal-change explanation
+                    // (AI Recalculate or Adaptive) without triggering a new calculation.
+                    val lastSheet = ui.lastRecalcSheet
+                    if (lastSheet != null) {
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_recalc_details),
+                            recalcDetailsSubtitle(lastSheet),
+                            icon = Icons.Outlined.Info
+                        ) { vm.openRecalcSheet() }
+                    }
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_calc_methods),
@@ -274,4 +290,17 @@ internal fun SettingsGoalsSection(
                     ) { nav.navigate(ChompassRoutes.CALCULATION_METHODS) }
                 }
     }
+}
+
+/** "Gemini · 22 Aug 2026" / "Adaptive Goals · 22 Aug 2026" for the details row. */
+@Composable
+private fun recalcDetailsSubtitle(sheet: RecalcSheetData): String {
+    val who = if (sheet.source == RecalcSheetSource.ADAPTIVE) {
+        stringResource(R.string.settings_adaptive_goals)
+    } else {
+        sheet.result.provider?.let { stringResource(it.displayNameRes) }
+            ?: stringResource(R.string.recalc_sheet_tier_formula)
+    }
+    val date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(sheet.savedAtMillis))
+    return "$who · $date"
 }

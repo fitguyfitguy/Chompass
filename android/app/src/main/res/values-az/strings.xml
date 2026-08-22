@@ -507,6 +507,7 @@ bilirsən?</string>
     <string name="notif_channel_model_download_desc">Qurğudaxili model faylı yüklənərkən gedişat.</string>
     <string name="notif_model_download_title">Qurğudaxili model yüklənir</string>
     <string name="settings_recalc_confirm">Yenidən Hesabla</string>
+    <string name="settings_recalc_details">Yenidən hesablama təfərrüatları</string>
     <string name="settings_invalid_goal_title">Hədəf çəkisi hədəfinə uyğun gəlmir</string>
     <string name="settings_invalid_goal_lose">Çəki azaltma hədəfi cari çəkindən aşağı bir hədəf tələb edir.</string>
     <string name="settings_invalid_goal_gain">Çəki artırma hədəfi cari çəkindən yuxarı bir hədəf tələb edir.</string>

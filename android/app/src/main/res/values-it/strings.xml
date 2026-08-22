@@ -505,6 +505,7 @@
     <string name="notif_channel_model_download_desc">Avanzamento durante il download del modello sul dispositivo.</string>
     <string name="notif_model_download_title">Download del modello sul dispositivo</string>
     <string name="settings_recalc_confirm">Ricalcola</string>
+    <string name="settings_recalc_details">Dettagli del ricalcolo</string>
     <string name="settings_invalid_goal_title">Il peso obiettivo non corrisponde al tuo obiettivo</string>
     <string name="settings_invalid_goal_lose">Un obiettivo Perdere richiede un target inferiore al tuo peso attuale.</string>
     <string name="settings_invalid_goal_gain">Un obiettivo Aumentare richiede un target superiore al tuo peso attuale.</string>

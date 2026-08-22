@@ -21,10 +21,18 @@ import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.BuildConfig
+import app.chompass.services.EMPIRICAL_MEDIUM_MAX_SPAN_DAYS
+import app.chompass.services.EMPIRICAL_MEDIUM_MAX_WEIGH_INS
+import app.chompass.services.EMPIRICAL_MIN_SPAN_DAYS
+import app.chompass.services.EMPIRICAL_MIN_WEIGH_INS
+import app.chompass.services.EMPIRICAL_PACE_MISS_KCAL
+import app.chompass.services.EmpiricalSignals
 import app.chompass.services.InputSanitizer
 import app.chompass.services.OffPromptContext
 import app.chompass.services.PerfLog
 import app.chompass.services.WeightForecast
+import app.chompass.services.buildGoalCalculationReport
+import app.chompass.services.empiricalSignals
 import app.chompass.ui.home.AnalysisPreviewSource
 import app.chompass.ui.home.EntryAnalysisPhase
 import app.chompass.ui.home.FoodAnalysisProgress
@@ -80,18 +88,9 @@ private const val ENTRY_EMOJI_NULL_RULE =
 // and the "prefer empirical" instruction are withheld from the prompt (sparse
 // weigh-ins anchored the model at ~BMR, e.g. 1742 kcal vs formula TDEE ~2680;
 // CAL-SAFE cannot catch it because it is >= BMR). See docs/CALCULATION_METHODS.md.
-private const val EMPIRICAL_MIN_WEIGH_INS = 4
-private const val EMPIRICAL_MIN_SPAN_DAYS = 14
-private const val EMPIRICAL_MIN_FOOD_DAYS = 4
-// Medium-confidence band: implied maintenance is shown, but a >15% deviation
-// from the formula TDEE sends the model back to the formula.
-private const val EMPIRICAL_MEDIUM_MAX_WEIGH_INS = 6
-private const val EMPIRICAL_MEDIUM_MAX_SPAN_DAYS = 28
-private const val EMPIRICAL_MEDIUM_MAX_FOOD_DAYS = 10
-// Deterministic enforcement: a trusted-empirical result that sits within this
-// many kcal of the implied maintenance is treated as "goal pace not applied"
-// and snapped to maintenance + pace.
-private const val EMPIRICAL_PACE_MISS_KCAL = 150
+// Hit-and-trial empirical-maintenance confidence gates for the calculateGoals
+// OBSERVED DATA section (shared with the Adaptive pass). See
+// app.chompass.services.GoalRecalcReport.kt and docs/CALCULATION_METHODS.md.
 
 /**
  * Out-param threaded through `callAi` → `dispatch` so `calculateGoals` learns
@@ -422,65 +421,7 @@ class FoodAnalysisService(
         forecast: WeightForecast?,
         measuredTdee: Int?,
         signals: EmpiricalSignals,
-    ): GoalCalculationReport = GoalCalculationReport(
-        bmr = profile.bmr.toInt(),
-        tdee = profile.tdee.toInt(),
-        activityMultiplier = profile.activityLevel.multiplier,
-        calorieAdjustment = profile.calorieAdjustment,
-        formulaCalories = profile.dailyCalories,
-        formulaProtein = profile.proteinGoal,
-        formulaCarbs = profile.carbsGoal,
-        formulaFat = profile.fatGoal,
-        measuredTdee = measuredTdee,
-        weighIns = forecast?.weightEntriesUsed ?: 0,
-        weightSpanDays = forecast?.weightSpanDays ?: 0,
-        foodDays = forecast?.daysOfFoodData ?: 0,
-        loggedDayAvgCalories = forecast?.loggedDayAvgCalories?.takeIf { it > 0 } ?: forecast?.avgDailyCalories,
-        impliedMaintenance = signals.impliedMaintenance,
-        impliedWithheld = when {
-            signals.impliedBelowFloor -> ImpliedWithheldReason.BELOW_FLOOR
-            forecast?.trendsDisagree == true -> ImpliedWithheldReason.DISAGREE
-            !signals.empiricalUsable -> ImpliedWithheldReason.THIN
-            else -> null
-        },
-        trendsDisagree = forecast?.trendsDisagree ?: false,
-    )
-
-    /**
-     * App-side confidence gates for the SAFE tier's observed-data section and its
-     * deterministic enforcement. With sparse weigh-ins the model anchored the target at
-     * ~BMR (e.g. 1742 kcal vs formula TDEE ~2680) and CAL-SAFE passes it (it is >= BMR),
-     * so the SAFE guard is prompt-side: withhold the implied numbers and the "prefer
-     * empirical" instruction until these minimums are met. See docs/CALCULATION_METHODS.md.
-     */
-    private fun empiricalSignals(forecast: WeightForecast?, profile: UserProfile): EmpiricalSignals {
-        val empiricalUsable = forecast != null &&
-            forecast.weightEntriesUsed >= EMPIRICAL_MIN_WEIGH_INS &&
-            forecast.weightSpanDays >= EMPIRICAL_MIN_SPAN_DAYS &&
-            forecast.daysOfFoodData >= EMPIRICAL_MIN_FOOD_DAYS
-        val mediumConfidence = empiricalUsable && (
-            forecast!!.weightEntriesUsed < EMPIRICAL_MEDIUM_MAX_WEIGH_INS ||
-                forecast.weightSpanDays < EMPIRICAL_MEDIUM_MAX_SPAN_DAYS ||
-                forecast.daysOfFoodData < EMPIRICAL_MEDIUM_MAX_FOOD_DAYS
-            )
-        val safetyFloor = CalorieSafety.floorKcal(profile.bmr)
-        val loggedAvg = (forecast?.loggedDayAvgCalories?.takeIf { it > 0 } ?: forecast?.avgDailyCalories) ?: 0
-        val impliedMaintenance = forecast?.observedWeeklyChangeKg?.let { obs ->
-            loggedAvg - NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
-        }
-        // True when the implied maintenance is below the BMR safety floor: the number is
-        // withheld from SAFE (the model anchored on "below BMR" values before) and the
-        // section falls back to the formula/measured anchor below.
-        val impliedBelowFloor = impliedMaintenance != null && impliedMaintenance < safetyFloor
-        // When false, the SAFE prompt forbids estimating maintenance from the observed data
-        // and the deterministic enforcement snaps the model's calories back to the anchor.
-        val trustEmpirical = empiricalUsable && !impliedBelowFloor &&
-            !(forecast?.trendsDisagree ?: false)
-        return EmpiricalSignals(
-            empiricalUsable, mediumConfidence, safetyFloor, loggedAvg,
-            impliedMaintenance, impliedBelowFloor, trustEmpirical,
-        )
-    }
+    ): GoalCalculationReport = buildGoalCalculationReport(profile, forecast, measuredTdee)
 
     /** MEASURED ENERGY BURN block; the trend-refinement rule differs by tier (app-side gates vs model-side judgment). */
     private fun measuredSectionFor(measuredTdee: Int?, smart: Boolean): String {

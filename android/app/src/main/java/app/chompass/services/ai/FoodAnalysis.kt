@@ -8,6 +8,7 @@ import app.chompass.models.GroundingConfidence
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.UserProfile
 import app.chompass.services.InputSanitizer
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
@@ -282,9 +283,11 @@ data class HealthEnergyGoalSuggestion(
  * judgment), the on-device model runs the SAFE prompt (aggregates only,
  * app-side gates + deterministic snap). See docs/CALCULATION_METHODS.md § AI-RECALC.
  */
+@Serializable
 enum class GoalRecalcTier { SMART, SAFE }
 
 /** Why the SAFE tier withheld the implied maintenance (surfaced in the result sheet). */
+@Serializable
 enum class ImpliedWithheldReason { THIN, BELOW_FLOOR, DISAGREE }
 
 /**
@@ -292,6 +295,7 @@ enum class ImpliedWithheldReason { THIN, BELOW_FLOOR, DISAGREE }
  * "formula baseline" and "data used" sections — the user can check the chain
  * BMR → TDEE × activity multiplier → goal pace → formula target.
  */
+@Serializable
 data class GoalCalculationReport(
     val bmr: Int,
     val tdee: Int,
@@ -312,6 +316,7 @@ data class GoalCalculationReport(
     val trendsDisagree: Boolean = false,
 )
 
+@Serializable
 data class GoalCalculation(
     val calories: Int,
     val protein: Int,
@@ -332,6 +337,28 @@ data class GoalCalculation(
     val primaryError: String? = null,
     /** Deterministic inputs behind this calculation (formula baseline + data used). */
     val report: GoalCalculationReport? = null,
+)
+
+/** Where a stored goal-change entry came from (drives the sheet's title/subtitle). */
+@Serializable
+enum class RecalcSheetSource { AI, ADAPTIVE }
+
+/**
+ * Structured goal-change result for the transparency sheet on the Goals screen:
+ * the AI Recalculate result or the deterministic Adaptive pass, with the
+ * before/after profiles and the time it happened. Persisted (DataStore JSON) so
+ * the sheet can be reopened on demand; the newest entry (recalc or adaptive)
+ * wins.
+ */
+@Serializable
+data class RecalcSheetData(
+    val result: GoalCalculation,
+    /** Profile before the change was applied. */
+    val before: UserProfile,
+    /** Profile after (locked fields survive; these are the sheet's "new targets"). */
+    val after: UserProfile,
+    val savedAtMillis: Long = 0L,
+    val source: RecalcSheetSource = RecalcSheetSource.AI,
 )
 
 internal object FoodJsonParser {

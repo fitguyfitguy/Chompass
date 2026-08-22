@@ -544,6 +544,7 @@
     <string name="notif_channel_model_download_desc">Прогрес завантаження файлу моделі на пристрій.</string>
     <string name="notif_model_download_title">Завантаження моделі на пристрій</string>
     <string name="settings_recalc_confirm">Перерахувати</string>
+    <string name="settings_recalc_details">Деталі перерахунку</string>
     <string name="settings_invalid_goal_title">Цільова вага не відповідає твоїй цілі</string>
     <string name="settings_invalid_goal_lose">Для цілі «Схуднення» потрібна ціль нижча за поточну вагу.</string>
     <string name="settings_invalid_goal_gain">Для цілі «Набір маси» потрібна ціль вища за поточну вагу.</string>

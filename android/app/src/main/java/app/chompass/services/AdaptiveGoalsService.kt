@@ -6,7 +6,11 @@ import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.data.WeightRepository
+import app.chompass.data.saveLastGoalChangeSheet
 import app.chompass.models.UserProfile
+import app.chompass.services.ai.GoalCalculation
+import app.chompass.services.ai.RecalcSheetData
+import app.chompass.services.ai.RecalcSheetSource
 import app.chompass.services.health.HealthConnectManager
 import java.time.LocalDate
 import kotlin.math.roundToInt
@@ -72,10 +76,33 @@ class AdaptiveGoalsService(
 
             prefs.saveAdaptiveGoalPreviousTargetsIfNeeded(profile)
             profileRepository.save(result.profile)
-            return result.copy(
-                message = strings(R.string.vm_adaptive_updated, arrayOf(result.updatedCalories)) +
-                    " ${result.message}"
+            val message = strings(R.string.vm_adaptive_updated, arrayOf(result.updatedCalories)) +
+                " ${result.message}"
+            // Record the change for the Goals transparency sheet (reopenable on demand):
+            // deterministic, so tier/provider stay null and the sheet renders the
+            // built-in-formulas lines + the formula baseline/data used + this reason.
+            val forecast = WeightAnalysisService.compute(
+                weights = weightRepository.entries.first(),
+                foods = foodRepository.entries.first(),
+                profile = profile,
             )
+            prefs.saveLastGoalChangeSheet(
+                RecalcSheetData(
+                    result = GoalCalculation(
+                        calories = result.updatedCalories,
+                        protein = result.profile.proteinGoal,
+                        carbs = result.profile.carbsGoal,
+                        fat = result.profile.fatGoal,
+                        reason = message,
+                        report = buildGoalCalculationReport(profile, forecast, measuredTdee),
+                    ),
+                    before = profile,
+                    after = result.profile,
+                    savedAtMillis = System.currentTimeMillis(),
+                    source = RecalcSheetSource.ADAPTIVE,
+                )
+            )
+            return result.copy(message = message)
         } finally {
             refreshInFlight = false
         }

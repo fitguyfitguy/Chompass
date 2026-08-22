@@ -20,6 +20,8 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.services.ai.GoalRecalcTier
 import app.chompass.services.ai.ImpliedWithheldReason
+import app.chompass.services.ai.RecalcSheetData
+import app.chompass.services.ai.RecalcSheetSource
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.theme.AppColors
@@ -55,7 +57,11 @@ internal fun RecalcResultSheet(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                stringResource(R.string.vm_goals_recalculated),
+                if (data.source == RecalcSheetSource.ADAPTIVE) {
+                    stringResource(R.string.settings_adaptive_goals)
+                } else {
+                    stringResource(R.string.vm_goals_recalculated)
+                },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
@@ -103,7 +109,8 @@ internal fun RecalcResultSheet(
             val weighIns = report?.weighIns ?: 0
             val spanDays = report?.weightSpanDays ?: 0
             val tierLine = when {
-                report?.measuredTdee != null && result.tier != GoalRecalcTier.SMART ->
+                // Adaptive/deterministic entries (tier null) always show the formula line.
+                result.tier != null && report?.measuredTdee != null && result.tier != GoalRecalcTier.SMART ->
                     stringResource(R.string.recalc_sheet_tier_measured)
                 result.tier == GoalRecalcTier.SMART && weighIns > 0 ->
                     stringResource(R.string.recalc_sheet_tier_smart, weighIns, spanDays)

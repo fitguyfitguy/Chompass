@@ -600,6 +600,7 @@
     <string name="notif_channel_model_download_desc">Ход загрузки файла модели на устройство.</string>
     <string name="notif_model_download_title">Загрузка модели на устройство</string>
     <string name="settings_recalc_confirm">Пересчитать</string>
+    <string name="settings_recalc_details">Подробности пересчёта</string>
     <string name="settings_invalid_goal_title">Целевой вес не соответствует цели</string>
     <string name="settings_invalid_goal_lose">Цель «Сбросить» требует значения ниже текущего веса.</string>
     <string name="settings_invalid_goal_gain">Цель «Набрать» требует значения выше текущего веса.</string>
