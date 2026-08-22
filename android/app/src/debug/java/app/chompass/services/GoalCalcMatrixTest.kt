@@ -46,6 +46,8 @@ class GoalCalcMatrixTest(
     private val repeatCount: Int = 1,
     private val tierName: String = "auto",
     private val providerName: String = "on_device",
+    /** Model id override (defaults to the provider's default model). */
+    private val modelName: String = "",
 ) {
     private val tag = "GoalMatrix"
 
@@ -253,7 +255,7 @@ class GoalCalcMatrixTest(
             "smart" -> GoalRecalcTier.SMART
             else -> null // auto: per-dispatch (cloud → SMART, on-device → SAFE)
         }
-        Log.i(tag, "op=goal_matrix phase=start scenarios=${list.size} repeat=$repeatCount filter=${filter ?: "all"} tier=$tierName provider=${provider.name}")
+        Log.i(tag, "op=goal_matrix phase=start scenarios=${list.size} repeat=$repeatCount filter=${filter ?: "all"} tier=$tierName provider=${provider.name} model=${modelName.ifBlank { provider.defaultModel }}")
 
         // Force the production dispatch onto the requested provider/tier for the
         // whole run, then restore the user's own settings afterwards. Keys are
@@ -270,7 +272,7 @@ class GoalCalcMatrixTest(
         val prevTierOverride = container.foodAnalysis.goalTierOverrideForTest
         prefs.setAiFeaturesEnabled(true)
         prefs.setSelectedAIProvider(provider)
-        prefs.setSelectedAIModel(provider.defaultModel)
+        prefs.setSelectedAIModel(modelName.ifBlank { provider.defaultModel })
         prefs.setFallbackEnabled(false)
         container.foodAnalysis.goalTierOverrideForTest = tierOverride
         try {
