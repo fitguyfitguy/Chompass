@@ -1024,6 +1024,7 @@
     <string name="on_device_model_delete">Usuń pobrany model</string>
     <string name="on_device_model_clear">Usuń z tego urządzenia</string>
     <string name="on_device_model_clear_footer">Usuwa %1$s plików modelu i niedokończonych pobrań oraz zwalnia pamięć.</string>
+    <string name="on_device_model_leftover_footer">Na tym urządzeniu zostało %1$s z wcześniejszego lokalnego pobierania. Otwórz, aby wznowić lub usunąć.</string>
     <string name="on_device_model_retry">Ponów pobieranie</string>
     <string name="on_device_model_sheet_title">Model na urządzeniu</string>
 

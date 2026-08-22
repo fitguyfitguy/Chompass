@@ -15,12 +15,17 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.models.LocaleFormat
 import app.chompass.services.ondevice.OnDeviceDownloadState
 import app.chompass.ui.navigation.ChompassRoutes
+
+private fun leftoverGb(bytes: Long): String =
+    "${LocaleFormat.decimal(bytes / 1_073_741_824.0, 1)} GB"
 
 /**
  * AI & Speech provider wiring: which service, model, key and endpoint are
@@ -114,9 +119,12 @@ internal fun SettingsAiSection(
                     )
                     SettingFootnote(stringResource(R.string.settings_ai_allow_insecure_http_footer))
                 }
+                val downloadManager = vm.container.onDeviceModelDownloadManager
+                val storageEpoch by downloadManager.storageEpoch.collectAsState()
+                val leftoverBytes = remember(storageEpoch) { downloadManager.occupiedBytes() }
                 if (ui.selectedAI == AIProvider.ON_DEVICE) {
                     HorizontalDivider()
-                    val downloadState by vm.container.onDeviceModelDownloadManager.state(ui.selectedModel)
+                    val downloadState by downloadManager.state(ui.selectedModel)
                         .collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
                     val subtitle = when (val s = downloadState) {
                         is OnDeviceDownloadState.Downloaded ->
@@ -128,7 +136,8 @@ internal fun SettingsAiSection(
                         is OnDeviceDownloadState.Failed ->
                             stringResource(R.string.on_device_download_failed)
                         is OnDeviceDownloadState.NotDownloaded ->
-                            stringResource(R.string.settings_on_device_model_not_downloaded)
+                            if (leftoverBytes > 0L) leftoverGb(leftoverBytes)
+                            else stringResource(R.string.settings_on_device_model_not_downloaded)
                     }
                     SettingRow(
                         stringResource(R.string.settings_on_device_model),
@@ -136,6 +145,19 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Download
                     ) { onOpenSheet(SettingsSheet.ON_DEVICE_MODEL) }
                     SettingFootnote(stringResource(R.string.settings_on_device_accuracy_footer))
+                } else if (leftoverBytes > 0L) {
+                    // Upgraders who tried a download on an older build, then
+                    // switched back to a cloud provider, still need a path to
+                    // the leftover `.part` / old-named files.
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_on_device_model),
+                        leftoverGb(leftoverBytes),
+                        icon = Icons.Outlined.Download
+                    ) { onOpenSheet(SettingsSheet.ON_DEVICE_MODEL) }
+                    SettingFootnote(
+                        stringResource(R.string.on_device_model_leftover_footer, leftoverGb(leftoverBytes))
+                    )
                 }
                 // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
                 // uncapped and on-device dispatch doesn't take one at all, so hide this

@@ -1024,6 +1024,7 @@
     <string name="on_device_model_delete">İndirilen modeli sil</string>
     <string name="on_device_model_clear">Bu cihazdan sil</string>
     <string name="on_device_model_clear_footer">%1$s model dosyasını ve yarım kalmış indirmeyi kaldırır, belleği de boşaltır.</string>
+    <string name="on_device_model_leftover_footer">Bu cihazda önceki yerel indirmeden %1$s kaldı. Sürdürmek veya silmek için açın.</string>
     <string name="on_device_model_retry">İndirmeyi yeniden dene</string>
     <string name="on_device_model_sheet_title">Cihazdaki model</string>
 
