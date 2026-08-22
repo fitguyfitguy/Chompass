@@ -1157,8 +1157,6 @@
     <string name="settings_accuracy_body">사진 음식 추정과 모호한 1인분 표기는 종종 틀려요. 앱 제안, 특히 AI 모델은 의학적 사실이 아니에요.</string>
     <string name="settings_accuracy_title">추정 정확도</string>
     <string name="settings_adaptive_goals">적응형 목표</string>
-    <string name="settings_adaptive_locks_message">자신의 칼로리와 매크로를 고정하거나 설정하려면 적응형 목표를 끄세요. 켜져 있는 동안 Chompass가 매주 다시 계산해요.</string>
-    <string name="settings_adaptive_locks_title">적응형 목표가 켜져 있음</string>
     <string name="settings_ai_features_master">AI 기능</string>
     <string name="settings_ai_features_master_footer">AI 제공자에게 데이터를 보내는 모든 기능을 꺼요: 코치, 사진/텍스트/음성 기록, "어떻게 될까?", AI 목표 제안. 바코드, 음식 검색, 수동 입력, 저장된 식사, 물, 동기화, Health Connect는 계속 작동해요.</string>
     <string name="settings_ai_privacy_cloud">음식 사진, 메모, 대화, 프로필 데이터가 이 제공자에게 전송돼요. 온디바이스 Gemma 4 모델만 모든 것을 휴대폰에 유지해요.</string>

@@ -1157,8 +1157,6 @@
     <string name="settings_accuracy_body">写真による食品推定やあいまいな分量表記は誤っていることがよくあります。アプリの提案、特に AI モデルは医学的事実ではありません。</string>
     <string name="settings_accuracy_title">推定の精度</string>
     <string name="settings_adaptive_goals">適応型目標</string>
-    <string name="settings_adaptive_locks_message">カロリーとマクロを固定・設定するには適応型目標をオフにしてください。オンの間、Chompass が毎週再計算します。</string>
-    <string name="settings_adaptive_locks_title">適応型目標がオンです</string>
     <string name="settings_ai_features_master">AI 機能</string>
     <string name="settings_ai_features_master_footer">AI プロバイダーにデータを送信するすべての機能をオフにします：コーチ、写真/テキスト/音声記録、「どうなる？」、AI 目標提案。バーコード、食品検索、手動入力、保存した食事、水、同期、Health Connect は通常どおり動作します。</string>
     <string name="settings_ai_privacy_cloud">食品の写真、メモ、チャット、プロフィールデータはこのプロバイダーに送信されます。オンデバイスの Gemma 4 モデルのみがすべてを端末に保持します。</string>

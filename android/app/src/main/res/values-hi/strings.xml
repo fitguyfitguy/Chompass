@@ -1158,8 +1158,6 @@
     <string name="settings_accuracy_body">फोटो खाद्य अनुमान और अस्पष्ट सर्विंग लेबल अक्सर गलत होते हैं। ऐप सुझाव और विशेष रूप से AI मॉडल चिकित्सीय तथ्य नहीं हैं।</string>
     <string name="settings_accuracy_title">अनुमानों की सटीकता</string>
     <string name="settings_adaptive_goals">अनुकूली लक्ष्य</string>
-    <string name="settings_adaptive_locks_message">अपनी कैलोरी और मैक्रोज़ लॉक या सेट करने के लिए अनुकूली लक्ष्य बंद करें। चालू रहने पर Chompass हर सप्ताह उन्हें आपके लिए पुनर्गणना करता है।</string>
-    <string name="settings_adaptive_locks_title">अनुकूली लक्ष्य चालू हैं</string>
     <string name="settings_ai_features_master">AI सुविधाएं</string>
     <string name="settings_ai_features_master_footer">AI प्रदाता को डेटा भेजने वाली हर चीज़ बंद करता है: कोच, फोटो/टेक्स्ट/वॉयस लॉगिंग, "क्या होगा अगर?" और AI लक्ष्य सुझाव। बारकोड, खाद्य खोज, मैन्युअल प्रविष्टि, सहेजे गए भोजन, पानी, सिंक और Health Connect सामान्य रूप से काम करते रहते हैं।</string>
     <string name="settings_ai_privacy_cloud">खाद्य फोटो, नोट, चैट और प्रोफ़ाइल डेटा इस प्रदाता को भेजे जाते हैं। केवल ऑन-डिवाइस Gemma 4 मॉडल सब कुछ आपके फोन पर रखते हैं।</string>

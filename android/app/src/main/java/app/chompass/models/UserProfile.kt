@@ -237,6 +237,26 @@ data class UserProfile(
 
     fun withLocksCleared(): UserProfile = copy(caloriesLocked = false, lockedMacros = emptySet())
 
+    /** Pin the current calorie number so Recalculate / Adaptive leave it. */
+    fun pinCalories(): UserProfile = copy(
+        customCalories = effectiveCalories,
+        caloriesLocked = true,
+    )
+
+    /** Allow Recalculate / Adaptive to write calories. Keeps the current number. */
+    fun unpinCalories(): UserProfile = copy(caloriesLocked = false)
+
+    /** Pin the current grams for [macro]. No-op when already locked or a third lock is attempted. */
+    fun pinMacro(macro: AutoBalanceMacro): UserProfile {
+        if (macro in lockedMacros || lockedMacros.size >= 2) return this
+        return withMacroGrams(mapOf(macro to effectiveGrams(macro)))
+            .copy(lockedMacros = lockedMacros + macro)
+    }
+
+    /** Allow Recalculate / Adaptive to write [macro]. Keeps the current grams. */
+    fun unpinMacro(macro: AutoBalanceMacro): UserProfile =
+        copy(lockedMacros = lockedMacros - macro)
+
     private fun effectiveGrams(macro: AutoBalanceMacro): Int = when (macro) {
         AutoBalanceMacro.PROTEIN -> effectiveProtein
         AutoBalanceMacro.CARBS -> effectiveCarbs

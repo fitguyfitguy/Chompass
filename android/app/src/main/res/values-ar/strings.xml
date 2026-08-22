@@ -1158,8 +1158,6 @@
     <string name="settings_accuracy_body">تقديرات الطعام بالصور وتسميات الحصص الغامضة غالبًا خاطئة. اقتراحات التطبيق وخاصة نماذج الذكاء الاصطناعي ليست حقائق طبية.</string>
     <string name="settings_accuracy_title">دقة التقديرات</string>
     <string name="settings_adaptive_goals">أهداف تكيفية</string>
-    <string name="settings_adaptive_locks_message">أطفئ الأهداف التكيفية لقفل أو تعيين السعرات والمغذيات الكبرى الخاصة بك. طالما كانت مفعّلة، يعيد Chompass حسابها لك كل أسبوع.</string>
-    <string name="settings_adaptive_locks_title">الأهداف التكيفية مفعّلة</string>
     <string name="settings_ai_features_master">ميزات الذكاء الاصطناعي</string>
     <string name="settings_ai_features_master_footer">يطفئ كل ما يرسل بيانات إلى مزوّد ذكاء اصطناعي: المدرب، والتسجيل بالصورة/النص/الصوت، و«ماذا لو؟»، واقتراحات الأهداف بالذكاء الاصطناعي. الرمز الشريطي والبحث عن الطعام والإدخال اليدوي والوجبات المحفوظة والماء والمزامنة وHealth Connect تستمر بالعمل.</string>
     <string name="settings_ai_privacy_cloud">تُرسل صور الطعام والملاحظات والمحادثة وبيانات الملف إلى هذا المزوّد. نماذج Gemma 4 المحلية فقط تُبقي كل شيء على هاتفك.</string>

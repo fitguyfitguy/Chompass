@@ -7,6 +7,8 @@ import {
   formulaDailyCalories,
   recalculatedFromFormulas,
   applyingAiGoals,
+  applyingFormulaGoals,
+  locksFromFilledCustoms,
   lockConstraintsSection,
 } from "../ai/calculate-goals.js";
 
@@ -153,4 +155,49 @@ test("buildCalculateGoalsPrompt_includesLockedCaloriesConstraint", () => {
   assert.match(prompt, /Calories locked at 1900/);
   assert.match(prompt, /Protein locked at 180/);
   assert.equal(lockConstraintsSection({ ...profile, caloriesLocked: false, lockedMacros: [] }), "");
+});
+
+test("locksFromFilledCustoms_locksCaloriesAndFirstTwoMacros", () => {
+  const locks = locksFromFilledCustoms({
+    customCalories: 1900,
+    customProtein: 180,
+    customCarbs: 200,
+    customFat: 70,
+  });
+  assert.equal(locks.caloriesLocked, true);
+  assert.deepEqual(locks.lockedMacros, ["protein", "carbs"]);
+  assert.deepEqual(
+    locksFromFilledCustoms({
+      customCalories: null,
+      customProtein: null,
+      customCarbs: null,
+      customFat: null,
+    }),
+    { caloriesLocked: false, lockedMacros: [] },
+  );
+});
+
+test("applyingFormulaGoals_keepsLockedCalories", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: 1900,
+    caloriesLocked: true,
+    customProtein: 180,
+    lockedMacros: /** @type {const} */ (["protein"]),
+    customCarbs: 200,
+    customFat: 70,
+  };
+  const next = applyingFormulaGoals(profile);
+  assert.equal(next.customCalories, 1900);
+  assert.equal(next.customProtein, 180);
+  assert.equal(next.customCarbs, null);
+  assert.equal(next.customFat, null);
+  assert.equal(next.caloriesLocked, true);
 });

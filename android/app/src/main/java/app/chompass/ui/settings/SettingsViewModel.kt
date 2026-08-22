@@ -1558,6 +1558,32 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         updateProfile { it.resetCaloriesToBalance() }
     }
 
+    /** Chip toggle on the calories row: pin the current number, or release it without snapping. */
+    fun toggleCaloriesLock() {
+        updateProfile { if (it.caloriesLocked) it.unpinCalories() else it.pinCalories() }
+    }
+
+    /** Chip toggle on a macro row. A protein g/kg pin has no honest "keep grams" Auto, so Auto
+     *  resets it. A third lock is refused and [onBlocked] runs. */
+    fun toggleMacroLock(macro: AutoBalanceMacro, onBlocked: () -> Unit) {
+        viewModelScope.launch {
+            val current = container.profileRepository.current() ?: return@launch
+            val ratePinned = macro == AutoBalanceMacro.PROTEIN &&
+                current.proteinTargetMode.usesRate && current.proteinGramsPerKg != null
+            val next = when {
+                ratePinned -> current.resetMacroToBalance(macro)
+                current.isMacroLocked(macro) -> current.unpinMacro(macro)
+                else -> current.pinMacro(macro)
+            }
+            if (next === current) {
+                if (!current.isMacroLocked(macro) && !ratePinned) onBlocked()
+                return@launch
+            }
+            container.profileRepository.save(next)
+            applyProfile(next)
+        }
+    }
+
     fun setProteinTargetMode(mode: ProteinTargetMode) {
         updateProfile { it.withProteinTargetMode(mode) }
     }
