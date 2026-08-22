@@ -1863,6 +1863,7 @@ für dich ein</string>
     <string name="on_device_model_delete">Heruntergeladenes Modell löschen</string>
     <string name="on_device_model_clear">Vom Gerät entfernen</string>
     <string name="on_device_model_clear_footer">Entfernt %1$s an Modelldateien und unfertigen Downloads und entlädt das Modell aus dem Speicher.</string>
+    <string name="on_device_model_leftover_footer">%1$s von einem früheren lokalen Download sind noch auf dem Gerät. Öffnen zum Fortsetzen oder Entfernen.</string>
 
     <string name="on_device_model_retry">Download wiederholen</string>
 

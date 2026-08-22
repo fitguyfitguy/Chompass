@@ -1032,6 +1032,7 @@
     <string name="on_device_model_delete">Gedownload model verwijderen</string>
     <string name="on_device_model_clear">Wissen van dit apparaat</string>
     <string name="on_device_model_clear_footer">Verwijdert %1$s aan modelbestanden en onvolledige downloads, en haalt het model uit het geheugen.</string>
+    <string name="on_device_model_leftover_footer">%1$s van een eerdere lokale download staat nog op dit apparaat. Open om te hervatten of te wissen.</string>
     <string name="on_device_model_download">Downloaden</string>
     <string name="on_device_model_downloading">Downloaden… %1$d%%</string>
     <string name="on_device_model_e4b_notice">Groter en langzamer dan E2B, maar geeft mogelijk betere voedingsbeschrijvingen. Foto-analyse gebruikt voor stabiliteit een CPU/GPU-split, dus het kan merkbaar langzamer zijn dan tekst. Kies E2B in Instellingen → Model als je snellere antwoorden wilt.</string>

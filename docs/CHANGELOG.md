@@ -9,7 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **On-device model download no longer crashes at 100%** (Android): finishing the Gemma download no longer re-reads the whole multi-GB file just to check it, which could close the app and then hide On-Device in Settings until things settled. If a download was interrupted after the file landed, Retry finishes the check instead of starting over.
-- **On-device model can be cleared from the phone** (Android): Settings → AI → On-device model now has Clear from this device. It removes a finished model, a leftover unfinished download, and the compile cache, and unloads the model from memory.
+- **On-device model can be cleared from the phone** (Android): Settings → AI shows leftover model files even if you switched back to a cloud provider, including unfinished downloads from an older app version. Clear from this device removes the finished model, leftover files, and the compile cache, and unloads the model from memory.
 
 ## [3.22.0] - 2026-08-21
 

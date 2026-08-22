@@ -996,6 +996,7 @@
     <string name="on_device_model_delete">Видалити завантажену модель</string>
     <string name="on_device_model_clear">Видалити з пристрою</string>
     <string name="on_device_model_clear_footer">Видаляє %1$s файлів моделі та незавершених завантажень і звільняє памʼять.</string>
+    <string name="on_device_model_leftover_footer">На пристрої лишилося %1$s з попереднього локального завантаження. Відкрийте, щоб продовжити або видалити.</string>
     <string name="on_device_model_download">Завантажити</string>
     <string name="on_device_model_downloading">Завантаження… %1$d%%</string>
     <string name="on_device_model_e4b_notice">Більша та повільніша за E2B, але може давати кращі описи їжі. Для стабільності аналіз фото працює на CPU/GPU одночасно, тому може бути помітно повільнішим за текстовий режим. Вибери E2B у Налаштуваннях → Модель, якщо бажаєш швидших відповідей.</string>

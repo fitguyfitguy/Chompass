@@ -1058,6 +1058,7 @@
     <string name="on_device_model_delete">删除已下载模型</string>
     <string name="on_device_model_clear">从本机清除</string>
     <string name="on_device_model_clear_footer">删除 %1$s 的模型文件和未完成的下载，并从内存中卸载。</string>
+    <string name="on_device_model_leftover_footer">此设备上还留有先前本地下载的 %1$s。打开后可继续或清除。</string>
     <string name="on_device_model_download">下载</string>
     <string name="on_device_model_downloading">下载中… %1$d%%</string>
     <string name="on_device_model_e4b_notice">比 E2B 更大更慢，但食物描述可能更好。照片分析为稳定性采用 CPU/GPU 分流，因此可能明显慢于纯文本。若希望响应更快，请在设置 → 模型中选择 E2B。</string>

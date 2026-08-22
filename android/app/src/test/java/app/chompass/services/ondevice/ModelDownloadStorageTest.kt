@@ -24,6 +24,16 @@ class ModelDownloadStorageTest {
     }
 
     @Test
+    fun deleteAll_removesLegacyFilenamesToo() {
+        val models = tmp.newFolder("models-legacy")
+        val cache = tmp.newFolder("cache-legacy")
+        File(models, "gemma-e2b-int4.litertlm").writeBytes(ByteArray(50))
+        File(models, "gemma-e2b-int4.litertlm.part").writeBytes(ByteArray(80))
+        ModelDownloadStorage.deleteAll(models, cache)
+        assertEquals(0L, ModelDownloadStorage.occupiedBytes(models, cache))
+    }
+
+    @Test
     fun deleteAll_removesModelsAndCaches() {
         val models = tmp.newFolder("models")
         val cache = tmp.newFolder("cache")

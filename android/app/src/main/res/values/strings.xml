@@ -1026,6 +1026,7 @@
     <string name="on_device_model_delete">Delete downloaded model</string>
     <string name="on_device_model_clear">Clear from this device</string>
     <string name="on_device_model_clear_footer">Removes %1$s of model files and unfinished downloads, and unloads the model from memory.</string>
+    <string name="on_device_model_leftover_footer">%1$s from an earlier on-device download is still on this device. Open to retry or clear it.</string>
     <string name="on_device_model_retry">Retry download</string>
     <string name="on_device_model_sheet_title">On-device model</string>
     <string name="notif_channel_model_download">On-device model</string>
