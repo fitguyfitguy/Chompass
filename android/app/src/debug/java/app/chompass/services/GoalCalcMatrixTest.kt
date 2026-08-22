@@ -56,6 +56,7 @@ class GoalCalcMatrixTest(
         "gemini" to AIProvider.GEMINI,
         "anthropic" to AIProvider.ANTHROPIC,
         "openai" to AIProvider.OPENAI,
+        "openrouter" to AIProvider.OPENROUTER,
     )
 
     private data class Scenario(
