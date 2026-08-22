@@ -1,0 +1,8 @@
+• Saturday as the week start: Settings → App & Display → Week Starts On now offers Sunday, Monday, or Saturday, and the diary, charts, and week summaries follow it
+• Locked/Auto toggle on calorie and macro goals: pin a target so Recalculate and Adaptive leave it alone, or set it back to Auto to let them adjust it
+• Recalculate explains itself: a result sheet shows the new targets, which AI provider and model set them, the smart or conservative path, the formula chain, the data used, and the model's reasoning. The explanation stays on the Goals screen
+• Cloud Recalculate uses your full history: cloud models see your raw weigh-in series and recent intake; lite, nano, haiku, mini, and free models stay on the safe path
+• Logging food, water, and weight entries is faster on long histories: saves touch only the current calendar month, and your data moves over automatically
+• Progress stays smooth on a long diary: charts read a compact daily summary of your meals instead of every logged entry
+• Clear on-device AI leftovers: wipe a finished model, a broken partial download, the compile cache, and the engine in memory from Settings → AI & Speech → On-device model
+• Fixed: the Gemma download survives screen-off and Android time limits, no memory crash at 100%, onboarding no longer appears stuck with on-device AI, and Recalculate no longer hangs on a stalled read
