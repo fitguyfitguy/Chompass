@@ -1455,10 +1455,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 val weightMetric = withTimeout(30_000) { container.prefs.weightUnit.first() == "kg" }
                 // Empirical signal: recent logged intake + observed weight trend, so the AI can
                 // estimate true maintenance (hit-and-trial) instead of trusting the formula alone.
+                // The raw lists also feed the SMART tier's raw weigh-in series + intake table.
+                val weights = withTimeout(60_000) { container.weightRepository.entries.first() }
+                val foods = withTimeout(60_000) { container.foodRepository.entries.first() }
                 val forecast = withTimeout(60_000) {
                     WeightAnalysisService.compute(
-                        weights = container.weightRepository.entries.first(),
-                        foods = container.foodRepository.entries.first(),
+                        weights = weights,
+                        foods = foods,
                         profile = current
                     )
                 }
@@ -1469,7 +1472,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 // existing goals untouched and tell the user so they can fix their key and retry.
                 Log.d("Chompass", "recalculateGoals: calling calculateGoals")
                 val result = container.foodAnalysis.calculateGoals(
-                    current, forecast, heightMetric, weightMetric, measuredTdee, measurement
+                    current, forecast, heightMetric, weightMetric, measuredTdee, measurement,
+                    weights = weights, foods = foods,
                 )
                 Log.d("Chompass", "recalculateGoals: got ${result.calories} kcal")
                 // Write unlocked fields only. Locked calories/macros survive Recalculate.
