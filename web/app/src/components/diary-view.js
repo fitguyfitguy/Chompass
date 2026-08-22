@@ -105,6 +105,10 @@ function shiftDate(iso, days) {
   return localIsoDate(d);
 }
 
+/**
+ * @param {string} selectedIso
+ * @param {boolean|string} [weekStart] true/"monday", false/"sunday", or "saturday"
+ */
 function weekDates(selectedIso, weekStart = true) {
   return weekDatesForPrefs(selectedIso, weekStart);
 }
