@@ -361,7 +361,18 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val state = _ui.value
             val result = runCatching {
-                container.foodAnalysis.calculateGoals(state.buildProfile(), forecast = null, heightMetric = state.heightMetric, weightMetric = state.weightMetric)
+                // A cold on-device engine load (60-90 s+ of uninterruptible
+                // native init + generation) would hold the "Setting up" screen
+                // at 100% with no feedback. Formula targets are the documented
+                // fallback anyway, so only run the AI plan calc when the
+                // on-device engine is already warm.
+                if (state.aiProvider == AIProvider.ON_DEVICE &&
+                    !container.onDeviceLlmGateway.isLoaded
+                ) {
+                    null
+                } else {
+                    container.foodAnalysis.calculateGoals(state.buildProfile(), forecast = null, heightMetric = state.heightMetric, weightMetric = state.weightMetric)
+                }
             }.getOrNull()
             if (result != null) {
                 _ui.value = _ui.value.copy(

@@ -105,6 +105,8 @@ The download happens **once** on the dev machine into `android/build/ondevice-mo
 PACKAGE=app.chompass.debug2 ./scripts/push_ondevice_model.sh   # other debug package
 ```
 
+The script skips the push when the device already has the identical file (sha256 match). When it **does** push a different model file, it wipes the phone's LiteRT compile caches (`cache/litert`, `cache/litert-mtp`) — a cache compiled against an older artifact makes every generation fail with `llm_litert_compiled_model_executor` INTERNAL errors until cleared. The in-app download clears them too.
+
 Manual fallback (any file, any package; `run-as` needs a debuggable app):
 
 ```powershell

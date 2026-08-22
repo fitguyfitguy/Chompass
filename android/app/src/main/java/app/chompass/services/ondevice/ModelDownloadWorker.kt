@@ -225,6 +225,12 @@ class ModelDownloadWorker(
             return failure("Could not finalize the downloaded model file.")
         }
         ModelDownloadHasher.deleteSidecar(partFile)
+        // A fresh model file invalidates LiteRT compile caches compiled against
+        // an older artifact: a stale cache makes every generation fail with
+        // llm_litert_compiled_model_executor INTERNAL errors until the cache is
+        // wiped. Clear both cache trees so the next engine load recompiles.
+        ModelDownloadStorage.cacheDirs(applicationContext.cacheDir)
+            .forEach { it.deleteRecursively() }
         container?.prefs?.setOnDeviceModelDownloadedVersion(entry.version)
         Log.i(TAG, "op=download phase=done version=${entry.version}")
         return Result.success()
