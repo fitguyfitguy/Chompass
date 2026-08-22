@@ -2796,6 +2796,34 @@ für dich ein</string>
     <string name="progress_chart_loading">Diagramm wird geladen…</string>
 
     <string name="vm_goals_recalculated">Ziele neu berechnet</string>
+        <string name="recalc_sheet_new_targets">Neue Ziele</string>
+        <string name="recalc_sheet_macros_format">P %1$d · K %2$d · F %3$d</string>
+        <string name="recalc_sheet_who_decided">Wer hat entschieden</string>
+        <string name="recalc_sheet_fallback_note">%1$s ist fehlgeschlagen — %2$s hat stattdessen geantwortet</string>
+        <string name="recalc_sheet_how_decided">Wie entschieden wurde</string>
+        <string name="recalc_sheet_tier_smart">Smart — deine %1$d Wiegungen über %2$d Tage wurden verwendet</string>
+        <string name="recalc_sheet_tier_safe">Sicher — nur %1$d Wiegungen über %2$d Tage, daher wurde die Formel verwendet</string>
+        <string name="recalc_sheet_tier_measured">An deinen gemessenen Health-Connect-Verbrauch gekoppelt</string>
+        <string name="recalc_sheet_tier_formula">Integrierte Formeln</string>
+        <string name="recalc_sheet_formula_baseline">Formel-Basis</string>
+        <string name="recalc_sheet_bmr_row">Grundumsatz (BMR, Ruheverbrauch): %1$s kcal</string>
+        <string name="recalc_sheet_tdee_row">Erhaltung × Aktivität %1$s: %2$s kcal</string>
+        <string name="recalc_sheet_pace_row">Zieltempo: %1$s kcal/Tag</string>
+        <string name="recalc_sheet_formula_target_row">Formelziel: %1$s kcal</string>
+        <string name="recalc_sheet_measured_row">Gemessener Health-Connect-Verbrauch: %1$s kcal</string>
+        <string name="recalc_sheet_data_used">Verwendete Daten</string>
+        <string name="recalc_sheet_data_weighins">%1$d Wiegungen über %2$d Tage</string>
+        <string name="recalc_sheet_data_no_weighins">Noch keine Wiegungen erfasst</string>
+        <string name="recalc_sheet_data_intake">Durchschnittliche Zufuhr: %1$s kcal an %2$d erfassten Tagen</string>
+        <string name="recalc_sheet_data_no_intake">Noch keine Mahlzeiten erfasst</string>
+        <string name="recalc_sheet_data_implied">Geschätzter Erhaltungsbedarf: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied_thin">Geschätzter Erhaltungsbedarf: nicht berechnet — zu wenige Daten</string>
+        <string name="recalc_sheet_data_implied_below_floor">Geschätzter Erhaltungsbedarf: unter der Sicherheitsgrenze, ignoriert</string>
+        <string name="recalc_sheet_data_implied_disagree">Geschätzter Erhaltungsbedarf: zurückgehalten — Protokoll und Gewichtstrend widersprechen sich</string>
+        <string name="recalc_sheet_change">Änderung</string>
+        <string name="recalc_sheet_previous">Bisher: %1$s kcal</string>
+        <string name="recalc_sheet_new_with_delta">Neu: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_reason">Warum</string>
 
     <plurals name="import_add_meals_title">
         <item quantity="one">Gemeinsame Mahlzeit hinzufügen</item>

@@ -204,6 +204,10 @@ fun GoalsSettingsScreen(
         }
     }
 
+    ui.recalcSheet?.let { sheet ->
+        RecalcResultSheet(data = sheet, onDismiss = { vm.dismissRecalcSheet() })
+    }
+
     invalidGoalWeightMessage?.let { msg ->
         FudGlassDialog(onDismissRequest = { invalidGoalWeightMessage = null }) {
             Text(stringResource(R.string.settings_invalid_goal_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
