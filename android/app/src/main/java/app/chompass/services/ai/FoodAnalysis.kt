@@ -284,6 +284,34 @@ data class HealthEnergyGoalSuggestion(
  */
 enum class GoalRecalcTier { SMART, SAFE }
 
+/** Why the SAFE tier withheld the implied maintenance (surfaced in the result sheet). */
+enum class ImpliedWithheldReason { THIN, BELOW_FLOOR, DISAGREE }
+
+/**
+ * Deterministic inputs behind one AI recalculation, for the result sheet's
+ * "formula baseline" and "data used" sections — the user can check the chain
+ * BMR → TDEE × activity multiplier → goal pace → formula target.
+ */
+data class GoalCalculationReport(
+    val bmr: Int,
+    val tdee: Int,
+    val activityMultiplier: Double,
+    /** Signed goal pace in kcal/day (0 for maintain). */
+    val calorieAdjustment: Int,
+    val formulaCalories: Int,
+    val formulaProtein: Int,
+    val formulaCarbs: Int,
+    val formulaFat: Int,
+    val measuredTdee: Int? = null,
+    val weighIns: Int = 0,
+    val weightSpanDays: Int = 0,
+    val foodDays: Int = 0,
+    val loggedDayAvgCalories: Int? = null,
+    val impliedMaintenance: Int? = null,
+    val impliedWithheld: ImpliedWithheldReason? = null,
+    val trendsDisagree: Boolean = false,
+)
+
 data class GoalCalculation(
     val calories: Int,
     val protein: Int,
@@ -298,8 +326,12 @@ data class GoalCalculation(
     val model: String? = null,
     /** True when the primary provider failed and a fallback leg answered. */
     val fallbackFired: Boolean = false,
+    /** Primary provider that failed when a fallback fired. */
+    val primaryProvider: AIProvider? = null,
     /** Primary attempt's error message when a fallback fired (may be technical; UI decides whether to show). */
     val primaryError: String? = null,
+    /** Deterministic inputs behind this calculation (formula baseline + data used). */
+    val report: GoalCalculationReport? = null,
 )
 
 internal object FoodJsonParser {

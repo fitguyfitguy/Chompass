@@ -1,6 +1,5 @@
 package app.chompass.services.ondevice
 
-import java.io.File
 import java.security.MessageDigest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

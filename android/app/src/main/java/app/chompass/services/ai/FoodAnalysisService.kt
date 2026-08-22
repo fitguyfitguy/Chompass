@@ -104,6 +104,7 @@ internal class GoalCallTrace {
     var model: String? = null
     var tier: GoalRecalcTier? = null
     var fallbackFired: Boolean = false
+    var primaryProvider: AIProvider? = null
     var primaryError: String? = null
 }
 
@@ -297,6 +298,7 @@ class FoodAnalysisService(
                 carbs = profile.carbsGoal,
                 fat = profile.fatGoal,
                 reason = "Calculated from the built-in formulas.",
+                report = buildGoalReport(profile, forecast, measuredTdee, empiricalSignals(forecast, profile)),
             )
         }
 
@@ -356,7 +358,9 @@ class FoodAnalysisService(
             provider = trace.provider,
             model = trace.model,
             fallbackFired = trace.fallbackFired,
+            primaryProvider = trace.primaryProvider,
             primaryError = trace.primaryError,
+            report = buildGoalReport(profile, forecast, measuredTdee, signals),
         )
         if (profile.caloriesLocked) return clamped
         // SMART (cloud) tier: the model judged the raw series itself — no deterministic
@@ -411,6 +415,36 @@ class FoodAnalysisService(
         }
         return clamped
     }
+
+    /** Deterministic inputs behind one calculation, for the result sheet's formula baseline + data used. */
+    private fun buildGoalReport(
+        profile: UserProfile,
+        forecast: WeightForecast?,
+        measuredTdee: Int?,
+        signals: EmpiricalSignals,
+    ): GoalCalculationReport = GoalCalculationReport(
+        bmr = profile.bmr.toInt(),
+        tdee = profile.tdee.toInt(),
+        activityMultiplier = profile.activityLevel.multiplier,
+        calorieAdjustment = profile.calorieAdjustment,
+        formulaCalories = profile.dailyCalories,
+        formulaProtein = profile.proteinGoal,
+        formulaCarbs = profile.carbsGoal,
+        formulaFat = profile.fatGoal,
+        measuredTdee = measuredTdee,
+        weighIns = forecast?.weightEntriesUsed ?: 0,
+        weightSpanDays = forecast?.weightSpanDays ?: 0,
+        foodDays = forecast?.daysOfFoodData ?: 0,
+        loggedDayAvgCalories = forecast?.loggedDayAvgCalories?.takeIf { it > 0 } ?: forecast?.avgDailyCalories,
+        impliedMaintenance = signals.impliedMaintenance,
+        impliedWithheld = when {
+            signals.impliedBelowFloor -> ImpliedWithheldReason.BELOW_FLOOR
+            forecast?.trendsDisagree == true -> ImpliedWithheldReason.DISAGREE
+            !signals.empiricalUsable -> ImpliedWithheldReason.THIN
+            else -> null
+        },
+        trendsDisagree = forecast?.trendsDisagree ?: false,
+    )
 
     /**
      * App-side confidence gates for the SAFE tier's observed-data section and its
@@ -1255,6 +1289,7 @@ class FoodAnalysisService(
                     val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
                     trace?.let {
                         it.fallbackFired = true
+                        it.primaryProvider = primary
                         it.primaryError = primaryError.message
                     }
                     val fallbackModel = resolveModelForRequest(
