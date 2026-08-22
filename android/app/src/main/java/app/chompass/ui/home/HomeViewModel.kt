@@ -7,6 +7,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.data.disambiguateFoodName
+import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.FoodEntry
@@ -112,6 +113,10 @@ data class HomeUiState(
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val preferGramsByDefault: Boolean = false,
+    /** Latest persisted goal-change explanation (hero ⓘ → recalc details); null = none yet. */
+    val lastRecalcSheet: app.chompass.services.ai.RecalcSheetData? = null,
+    /** Recalc details sheet currently shown (opened from the hero ⓘ budget dialog). */
+    val recalcSheet: app.chompass.services.ai.RecalcSheetData? = null,
     val portionClarifyEnabled: Boolean = false,
     /** When false (default), photo staging requires a text note before Analyze. */
     val skipPhotoNotePrompt: Boolean = false,
@@ -322,6 +327,8 @@ data class HomeUiState(
             optionalNutrientGoals == other.optionalNutrientGoals &&
             foodLogSortOrder == other.foodLogSortOrder &&
             preferGramsByDefault == other.preferGramsByDefault &&
+            lastRecalcSheet == other.lastRecalcSheet &&
+            recalcSheet == other.recalcSheet &&
             portionClarifyEnabled == other.portionClarifyEnabled &&
             skipPhotoNotePrompt == other.skipPhotoNotePrompt &&
             photoNoteSkipCount == other.photoNoteSkipCount &&
@@ -370,6 +377,8 @@ data class HomeUiState(
         result = 31 * result + optionalNutrientGoals.hashCode()
         result = 31 * result + foodLogSortOrder.hashCode()
         result = 31 * result + preferGramsByDefault.hashCode()
+        result = 31 * result + (lastRecalcSheet?.hashCode() ?: 0)
+        result = 31 * result + (recalcSheet?.hashCode() ?: 0)
         result = 31 * result + portionClarifyEnabled.hashCode()
         result = 31 * result + skipPhotoNotePrompt.hashCode()
         result = 31 * result + photoNoteSkipCount
@@ -682,6 +691,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         observePerfBench()
+        viewModelScope.launch {
+            // Hero ⓘ → recalc details: restore the latest goal-change explanation
+            // (AI Recalculate or Adaptive) so the link can open the sheet on demand.
+            container.prefs.loadLastGoalChangeSheet()?.let { stored ->
+                _ui.update { it.copy(lastRecalcSheet = stored) }
+            }
+        }
         combine(
             container.profileRepository.profile,
             _selectedDate.flatMapLatest { day -> container.foodRepository.entriesForDate(day) },
@@ -705,7 +721,20 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
         }
             .onEach { next ->
-                _ui.value = next
+                // Merge, never replace: the combine transform snapshots `_ui.value` in a
+                // separate coroutine (5-flow combine uses an internal channel), so a
+                // wholesale `_ui.value = next` can clobber fields written meanwhile
+                // (e.g. the hero ⓘ recalc-sheet restore in init). Only the fields this
+                // chain owns are copied onto the current state.
+                _ui.update { cur ->
+                    cur.copy(
+                        profile = next.profile,
+                        date = next.date,
+                        todayEntries = next.todayEntries,
+                        foodLogSortOrder = next.foodLogSortOrder,
+                        favoriteKeys = next.favoriteKeys,
+                    )
+                }
                 if (PerfLog.enabled) {
                     val switchAt = daySwitchStartedAtNs
                     if (switchAt != 0L && next.date == _selectedDate.value) {
@@ -2003,6 +2032,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             cache.recents.filter { it.favoriteKey != template.favoriteKey }).take(10)
         val frequents = cache.frequents.filter { it.favoriteKey != template.favoriteKey }
         quickRelogCache = QuickRelogRows(recents, frequents)
+    }
+
+    /** Hero ⓘ → recalc details: open the persisted goal-change sheet. */
+    fun openRecalcDetails() {
+        _ui.update { it.copy(recalcSheet = it.lastRecalcSheet) }
+    }
+
+    fun dismissRecalcSheet() {
+        _ui.update { it.copy(recalcSheet = null) }
     }
 
     private fun observePerfBench() {

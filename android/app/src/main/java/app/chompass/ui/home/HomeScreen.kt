@@ -85,6 +85,7 @@ import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.settings.RecalcResultSheet
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.MacroCard
@@ -439,6 +440,8 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         liveActiveBurn = ui.liveActiveBurn,
                         burnShade = ui.activeBurnShade,
                         restingBurn = ui.restingBurnToday,
+                        recalcDetailsAvailable = ui.lastRecalcSheet != null,
+                        onShowRecalcDetails = { vm.openRecalcDetails() },
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
@@ -1276,6 +1279,10 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onDiscard = { vm.discardProgressiveMeal() },
             onDismiss = { vm.showProgressiveMealSheet(false) },
         )
+    }
+    // Hero ⓘ → recalc details: reopen the persisted goal-change explanation.
+    ui.recalcSheet?.let { sheet ->
+        RecalcResultSheet(data = sheet, onDismiss = { vm.dismissRecalcSheet() })
     }
 }
 /** Static home layout for release screenshot previews (no ViewModel / permissions). */

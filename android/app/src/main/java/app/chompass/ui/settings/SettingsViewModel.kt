@@ -206,13 +206,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            // On-demand transparency row: restore the latest goal-change explanation
-            // (AI Recalculate or Adaptive) so the details sheet can be reopened.
-            container.prefs.loadLastGoalChangeSheet()?.let { stored ->
-                _ui.update { it.copy(lastRecalcSheet = stored) }
-            }
-        }
-        viewModelScope.launch {
             container.prefs.optionalNutrientGoals.collect { goals ->
                 _ui.value = _ui.value.copy(optionalNutrientGoals = goals)
             }
@@ -360,6 +353,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 mealSchedule = snap.mealSchedule,
                 goalsNeedRecalc = needsRecalc(profile)
             )
+            // The hydration rebuild above is wholesale; re-apply the persisted
+            // goal-change explanation (AI Recalculate or Adaptive) for the on-demand
+            // details row. DataStore is cached, so this second read is cheap and
+            // race-free (same coroutine).
+            _ui.update { it.copy(lastRecalcSheet = container.prefs.loadLastGoalChangeSheet()) }
         }
 
         container.prefs.homeDisplayPreferences
