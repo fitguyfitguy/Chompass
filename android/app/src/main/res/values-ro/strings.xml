@@ -1152,8 +1152,6 @@
     <string name="settings_accuracy_body">Estimările alimentelor din fotografii și etichetele vagi de porție sunt adesea greșite. Sugestiile aplicației și mai ales modelele IA nu sunt fapte medicale.</string>
     <string name="settings_accuracy_title">Acuratețea estimărilor</string>
     <string name="settings_adaptive_goals">Obiective adaptive</string>
-    <string name="settings_adaptive_locks_message">Dezactivează obiectivele adaptive pentru a bloca sau seta propriile calorii și macrouri. Cât timp sunt active, Chompass le recalculează pentru tine în fiecare săptămână.</string>
-    <string name="settings_adaptive_locks_title">Obiective adaptive active</string>
     <string name="settings_ai_features_master">Funcții IA</string>
     <string name="settings_ai_features_master_footer">Dezactivează tot ce trimite date unui furnizor IA: antrenorul, înregistrarea foto/text/voce, «Ce-ar fi?» și sugestiile de obiective IA. Codul de bare, căutarea alimentelor, înregistrarea manuală, mesele salvate, apa, sincronizarea și Health Connect continuă să funcționeze.</string>
     <string name="settings_ai_model">Model</string>

@@ -1059,8 +1059,6 @@
     <string name="settings_macro_unlocked">Kilitsiz</string>
     <string name="settings_rebalance_blocked_title">Yeniden Dengeleme Yapılamıyor</string>
     <string name="settings_rebalance_blocked_message">Kalori kilitli ve diğer iki makro da kilitli, bu yüzden bu değişikliği emecek bir şey kalmadı. Kalorinin veya başka bir makronun kilidini aç, sonra tekrar dene.</string>
-    <string name="settings_adaptive_locks_title">Uyarlanabilir Hedefler Açık</string>
-    <string name="settings_adaptive_locks_message">Kendi kalori ve makrolarını kilitlemek veya ayarlamak için Uyarlanabilir Hedefler\'i kapat. Açıkken Chompass onları her hafta senin için yeniden hesaplar.</string>
     <string name="settings_recalc_title">Hedefler yeniden hesaplansın mı?</string>
     <string name="settings_recalc_message">Kalori ve makroları boy/kilo/aktivite/hedefinden formül varsayılanlarına sıfırlar. Sabitlenmiş makrolar temizlenir.</string>
     <string name="settings_recalc_confirm">Yeniden Hesapla</string>

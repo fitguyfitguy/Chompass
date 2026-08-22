@@ -1059,8 +1059,6 @@
     <string name="settings_macro_unlocked">Odblokowane</string>
     <string name="settings_rebalance_blocked_title">Nie można przebalansować</string>
     <string name="settings_rebalance_blocked_message">Kalorie są zablokowane i oba pozostałe makroskładniki są zablokowane, więc nie ma czego wchłonąć tej zmiany. Odblokuj kalorie lub inny makroskładnik i spróbuj ponownie.</string>
-    <string name="settings_adaptive_locks_title">Cele adaptacyjne są włączone</string>
-    <string name="settings_adaptive_locks_message">Wyłącz cele adaptacyjne, aby zablokować lub ustawić własne kalorie i makroskładniki. Dopóki są włączone, Chompass przelicza je za Ciebie co tydzień.</string>
     <string name="settings_recalc_title">Przeliczyć cele?</string>
     <string name="settings_recalc_message">Resetuje kalorie i makroskładniki do domyślnych wartości ze wzorów na podstawie wzrostu/wagi/aktywności/celu. Przypięte makroskładniki są usuwane.</string>
     <string name="settings_recalc_confirm">Przelicz</string>

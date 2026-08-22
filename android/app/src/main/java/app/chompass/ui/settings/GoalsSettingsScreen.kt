@@ -33,6 +33,7 @@ fun GoalsSettingsScreen(
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }
     var showRebalanceBlockedAlert by remember { mutableStateOf(false) }
+    var showThirdMacroLockAlert by remember { mutableStateOf(false) }
     var showHealthEnergyGoalsInfo by remember { mutableStateOf(false) }
     var showAdaptiveGoalsInfo by remember { mutableStateOf(false) }
     var permissionDeniedMessage by remember { mutableStateOf<String?>(null) }
@@ -100,6 +101,7 @@ fun GoalsSettingsScreen(
             onHealthEnergyGoalsToggle = ::onHealthEnergyGoalsToggle,
             onShowAdaptiveGoalsInfo = { showAdaptiveGoalsInfo = true },
             onShowHealthEnergyGoalsInfo = { showHealthEnergyGoalsInfo = true },
+            onThirdMacroLockBlocked = { showThirdMacroLockAlert = true },
         )
     }
 
@@ -112,6 +114,20 @@ fun GoalsSettingsScreen(
             onInvalidGoalWeight = { invalidGoalWeightMessage = it },
             onRebalanceBlocked = { showRebalanceBlockedAlert = true },
         )
+    }
+
+    if (showThirdMacroLockAlert) {
+        FudGlassDialog(onDismissRequest = { showThirdMacroLockAlert = false }) {
+            Text(stringResource(R.string.settings_max_pinned_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(R.string.settings_max_pinned_message),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_ok),
+                onPrimary = { showThirdMacroLockAlert = false }
+            )
+        }
     }
 
     if (showRebalanceBlockedAlert) {

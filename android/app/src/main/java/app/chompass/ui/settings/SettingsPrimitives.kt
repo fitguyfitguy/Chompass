@@ -56,6 +56,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -246,10 +250,9 @@ internal fun ActivityLevelSettingRow(
 
 /**
  * A goal row (calories or a macro). Tapping the row opens the value picker. The
- * trailing chip is a READ-ONLY status indicator: "Locked" (pink) when the user
- * pinned a manual value, "Auto" (dimmed) while Adaptive Goals owns the targets,
- * nothing when the value is free. Saving a value locks it; the picker's
- * "Reset to Auto-balance" releases it.
+ * trailing chip is a Locked / Auto toggle. Tapping the chip pins or releases
+ * the current number; tapping the row still opens the value picker. Saving a
+ * picker value also locks it; the picker's "Reset to Auto-balance" snaps.
  */
 @Composable
 internal fun LockableGoalRow(
@@ -257,8 +260,8 @@ internal fun LockableGoalRow(
     value: String,
     icon: ImageVector,
     locked: Boolean,
-    lockEnabled: Boolean,
     onClick: () -> Unit,
+    onToggleLock: () -> Unit,
     iconTint: Color = AppColors.Calorie,
 ) {
     Row(
@@ -282,33 +285,40 @@ internal fun LockableGoalRow(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
         Spacer(Modifier.width(10.dp))
-        GoalStatusChip(locked = locked, lockEnabled = lockEnabled)
+        GoalStatusChip(locked = locked, onClick = onToggleLock)
     }
 }
 
-/** Read-only status chip for [LockableGoalRow]: "Locked" / "Auto" / nothing. */
+/** Tappable Locked / Auto chip for [LockableGoalRow]. */
 @Composable
-internal fun GoalStatusChip(locked: Boolean, lockEnabled: Boolean) {
-    val showAuto = !lockEnabled
-    if (!locked && !showAuto) return
-    val chipText = if (showAuto) {
-        stringResource(R.string.settings_goal_auto)
-    } else {
+internal fun GoalStatusChip(locked: Boolean, onClick: () -> Unit) {
+    val chipText = if (locked) {
         stringResource(R.string.settings_macro_locked)
+    } else {
+        stringResource(R.string.settings_goal_auto)
     }
-    val chipColor = when {
-        showAuto -> MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
-        else -> AppColors.Calorie
+    val chipColor = if (locked) {
+        AppColors.Calorie
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
+    }
+    val chipCd = if (locked) {
+        stringResource(R.string.settings_goal_chip_locked_cd)
+    } else {
+        stringResource(R.string.settings_goal_chip_auto_cd)
     }
     Box(
         Modifier
             .clip(RoundedCornerShape(8.dp))
+            .semantics { contentDescription = chipCd }
+            .clickable(onClick = onClick, role = Role.Button)
             .background(chipColor.copy(alpha = 0.14f))
             .padding(horizontal = 8.dp, vertical = 3.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             chipText,
+            modifier = Modifier.clearAndSetSemantics { },
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             color = chipColor,

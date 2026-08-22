@@ -1220,8 +1220,6 @@
     <string name="settings_accuracy_body">Las estimaciones de comida por foto y las etiquetas de porción vagas suelen ser incorrectas. Las sugerencias de la app y sobre todo las de los modelos de IA no son hechos médicos.</string>
     <string name="settings_accuracy_title">Precisión de las estimaciones</string>
     <string name="settings_adaptive_goals">Objetivos adaptativos</string>
-    <string name="settings_adaptive_locks_message">Desactiva los Objetivos adaptativos para fijar o definir tus propias calorías y macros. Mientras estén activados, Chompass los recalcula por ti cada semana.</string>
-    <string name="settings_adaptive_locks_title">Objetivos adaptativos activados</string>
     <string name="settings_ai_privacy_cloud">Las fotos de comida, las notas, el chat y los datos del perfil se envían a este proveedor. Solo los modelos Gemma 4 en el dispositivo mantienen todo en tu teléfono.</string>
     <string name="settings_ai_privacy_ollama">Ollama se ejecuta en tu propio ordenador. No se envía nada a un proveedor en la nube.</string>
     <string name="settings_ai_privacy_ondevice">Totalmente privado: el análisis de alimentos, «¿Y si…?» y las estimaciones de objetivos se ejecutan en este dispositivo. No se envía nada a un servidor.</string>

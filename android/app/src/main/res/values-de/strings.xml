@@ -1437,14 +1437,16 @@ für dich ein</string>
     <string name="settings_needs_water_tracking">Wasser-Tracking erforderlich</string>
 
     <string name="settings_goal_auto">Automatisch</string>
+    <string name="settings_goal_chip_locked_cd">Gesperrt, tippen für Automatisch</string>
+    <string name="settings_goal_chip_auto_cd">Automatisch, tippen zum Sperren</string>
 
     <string name="settings_goals_how_title">So funktionieren deine Ziele</string>
 
-    <string name="settings_goals_how_adaptive">Adaptive Ziele berechnen deine Kalorien- und Makro-Ziele etwa einmal pro Woche neu.</string>
+    <string name="settings_goals_how_adaptive">Adaptive Ziele passen die Kalorien etwa einmal pro Woche um höchstens 150 kcal anhand deines Gewichtsverlaufs an.</string>
 
     <string name="settings_goals_how_energy">„Energieverbrauch“ richtet die Ziele nach deinem gemessenen Energieverbrauch aus Health Connect aus.</string>
 
-    <string name="settings_goals_how_lock">Ein Ziel sperren, um deinen eigenen Wert beizubehalten – bei „Neuberechnung“ und „Adaptive Ziele“ bleibt es unverändert.</string>
+    <string name="settings_goals_how_lock">Tippe bei einem Ziel auf „Gesperrt“, um deinen Wert zu behalten. „Neuberechnung“ und „Adaptive Ziele“ lassen ihn unverändert.</string>
 
     <string name="settings_danger_zone">Gefahrenzone</string>
 
@@ -1915,7 +1917,7 @@ für dich ein</string>
 
     <string name="settings_max_pinned_title">Maximal 2 Makros gesperrt</string>
 
-    <string name="settings_max_pinned_message">Es können höchstens 2 Makros gleichzeitig gesperrt werden, damit eines frei bleibt, um den Ausgleich zu gewährleisten. Entsperre zuerst ein anderes Makro (tippe auf das Schloss-Symbol).</string>
+    <string name="settings_max_pinned_message">Es können höchstens 2 Makros gleichzeitig gesperrt werden, damit eines frei bleibt, um den Ausgleich zu gewährleisten. Entsperre zuerst ein anderes Makro.</string>
 
     <string name="settings_macro_locked">Gesperrt</string>
 
@@ -1924,10 +1926,6 @@ für dich ein</string>
     <string name="settings_rebalance_blocked_title">Neubalancierung nicht möglich</string>
 
     <string name="settings_rebalance_blocked_message">Kalorien sind gesperrt und beide anderen Makros sind gesperrt, sodass nichts übrig bleibt, um diese Änderung auszugleichen. Entsperre die Kalorien oder ein anderes Makro und versuche es dann erneut.“</string>
-
-    <string name="settings_adaptive_locks_title">Adaptive Ziele sind aktiviert</string>
-
-    <string name="settings_adaptive_locks_message">Deaktiviere die adaptiven Ziele, um deine Kalorien und Makros zu sperren oder selbst festzulegen. Solange diese Funktion aktiviert ist, berechnet Chompass sie jede Woche neu für dich.“</string>
 
     <string name="settings_recalc_title">Ziele neu berechnen?</string>
 

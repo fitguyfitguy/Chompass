@@ -1152,8 +1152,6 @@
     <string name="settings_accuracy_body">Estimativas de comida por foto e rótulos vagos de porção costumam estar errados. Sugestões do app e principalmente modelos de IA não são fatos médicos.</string>
     <string name="settings_accuracy_title">Precisão das estimativas</string>
     <string name="settings_adaptive_goals">Metas adaptativas</string>
-    <string name="settings_adaptive_locks_message">Desative as metas adaptativas para travar ou definir suas próprias calorias e macros. Enquanto ativas, o Chompass as recalcula para você toda semana.</string>
-    <string name="settings_adaptive_locks_title">Metas adaptativas ativas</string>
     <string name="settings_ai_features_master">Recursos de IA</string>
     <string name="settings_ai_features_master_footer">Desativa tudo que envia dados a um provedor de IA: o Coach, registro por foto/texto/voz, «E se...?» e sugestões de metas da IA. Código de barras, busca de alimentos, registro manual, refeições salvas, água, sincronização e Health Connect continuam funcionando.</string>
     <string name="settings_ai_privacy_cloud">Fotos de comida, notas, chat e dados do perfil são enviados a este provedor. Apenas os modelos Gemma 4 no dispositivo mantêm tudo no seu celular.</string>

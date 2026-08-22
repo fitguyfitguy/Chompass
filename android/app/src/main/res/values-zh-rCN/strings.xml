@@ -1159,8 +1159,6 @@
     <string name="settings_accuracy_body">照片食物估算和模糊的份量描述常常有误。应用建议尤其是 AI 模型并非医学事实。</string>
     <string name="settings_accuracy_title">估算准确性</string>
     <string name="settings_adaptive_goals">自适应目标</string>
-    <string name="settings_adaptive_locks_message">关闭自适应目标以锁定或自行设置热量和宏量营养素。开启时，Chompass 每周为你重新计算。</string>
-    <string name="settings_adaptive_locks_title">自适应目标已开启</string>
     <string name="settings_ai_features_master">AI 功能</string>
     <string name="settings_ai_features_master_footer">关闭所有向 AI 提供商发送数据的功能：教练、照片/文字/语音记录、“会怎样？”和 AI 目标建议。条码、食物搜索、手动记录、已存餐食、饮水、同步和 Health Connect 仍正常工作。</string>
     <string name="settings_ai_privacy_cloud">食物照片、备注、对话和资料数据会发送给此提供商。只有端侧 Gemma 4 模型会把一切留在手机里。</string>

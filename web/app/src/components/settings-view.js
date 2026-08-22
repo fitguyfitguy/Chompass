@@ -23,8 +23,9 @@ import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProvid
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import {
   calculateGoalsWithAi,
-  recalculatedFromFormulas,
+  applyingFormulaGoals,
   applyingAiGoals,
+  locksFromFilledCustoms,
   resolveGoalsAiClient,
 } from "../lib/ai/calculate-goals.js";
 import { openConfirm } from "../lib/ui/dialog.js";
@@ -446,9 +447,9 @@ export class SettingsView extends HTMLElement {
         });
         if (!ok) return;
       }
-      const customProtein = fd.get("customProtein");
-      const customCarbs = fd.get("customCarbs");
-      const customFat = fd.get("customFat");
+      const customProteinRaw = fd.get("customProtein");
+      const customCarbsRaw = fd.get("customCarbs");
+      const customFatRaw = fd.get("customFat");
       const proteinTargetModeRaw = String(fd.get("proteinTargetMode") || "gramsPerDay");
       const proteinTargetMode =
         proteinTargetModeRaw === "gPerKgTotal" || proteinTargetModeRaw === "gPerKgLbm"
@@ -459,20 +460,32 @@ export class SettingsView extends HTMLElement {
         proteinGramsPerKgRaw !== null && String(proteinGramsPerKgRaw).trim() !== ""
           ? Number(proteinGramsPerKgRaw)
           : null;
+      const customCalories = custom ? Number(custom) : null;
+      const customProtein =
+        proteinTargetMode === "gramsPerDay" && customProteinRaw ? Number(customProteinRaw) : null;
+      const customCarbs = customCarbsRaw ? Number(customCarbsRaw) : null;
+      const customFat = customFatRaw ? Number(customFatRaw) : null;
+      const locks = locksFromFilledCustoms({
+        customCalories,
+        customProtein,
+        customCarbs,
+        customFat,
+      });
       await profileStore.save({
         ...p,
         goal: /** @type {any} */ (fd.get("goal")),
         weeklyChangeKg: paceRaw ? Number(paceRaw) : null,
         goalWeightKg: goalW ? Number(goalW) : null,
         ketoMode: fd.get("ketoMode") === "true",
-        customCalories: custom ? Number(custom) : null,
-        customProtein:
-          proteinTargetMode === "gramsPerDay" && customProtein ? Number(customProtein) : null,
-        customCarbs: customCarbs ? Number(customCarbs) : null,
-        customFat: customFat ? Number(customFat) : null,
+        customCalories,
+        customProtein,
+        customCarbs,
+        customFat,
         proteinTargetMode,
         proteinGramsPerKg:
           proteinTargetMode === "gramsPerDay" ? null : proteinGramsPerKg,
+        caloriesLocked: locks.caloriesLocked,
+        lockedMacros: locks.lockedMacros,
       });
       location.hash = SETTINGS_PARENT.goals;
     });
@@ -485,6 +498,8 @@ export class SettingsView extends HTMLElement {
         customFat: null,
         proteinTargetMode: "gramsPerDay",
         proteinGramsPerKg: null,
+        caloriesLocked: false,
+        lockedMacros: [],
       });
       this.render();
     });
@@ -503,7 +518,7 @@ export class SettingsView extends HTMLElement {
       title: "Recalculate goals?",
       message: aiClient
         ? "Uses your AI provider with your profile and recent food/weight logs to refresh calorie and macro targets. Locked values stay put."
-        : "No AI key configured. Resets calories to formula defaults from your height/weight/activity/goal. Add an AI key in Settings for the same AI recalculation as Android.",
+        : "No AI key configured. Unlocked calories and macros go back to formula defaults. Locked values stay. Add an AI key in Settings for the same AI recalculation as Android.",
       confirmLabel: "Recalculate",
     });
     if (!ok) return;
@@ -518,7 +533,7 @@ export class SettingsView extends HTMLElement {
 
     try {
       if (!aiClient) {
-        await profileStore.save(recalculatedFromFormulas(profile));
+        await profileStore.save(applyingFormulaGoals(profile));
         this.render();
         const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
         if (after) {

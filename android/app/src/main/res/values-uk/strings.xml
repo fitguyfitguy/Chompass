@@ -1103,8 +1103,6 @@
     <string name="settings_accuracy_body">Оцінки їжі за фото та розпливчасті позначки порцій часто помилкові. Підказки застосунку й особливо ШІ-моделі не є медичними фактами.</string>
     <string name="settings_accuracy_title">Точність оцінок</string>
     <string name="settings_adaptive_goals">Адаптивні цілі</string>
-    <string name="settings_adaptive_locks_message">Вимкни адаптивні цілі, щоб зафіксувати або задати власні калорії та макроси. Поки вони ввімкнені, Chompass перераховує їх за тебе щотижня.</string>
-    <string name="settings_adaptive_locks_title">Адаптивні цілі ввімкнено</string>
     <string name="settings_ai_features_master">ШІ-функції</string>
     <string name="settings_ai_features_master_footer">Вимикає все, що надсилає дані ШІ-провайдеру: тренера, запис за фото/текстом/голосом, «Що як?» і ШІ-підказки цілей. Штрих-код, пошук їжі, ручний запис, збережені страви, вода, синхронізація та Health Connect працюють далі.</string>
     <string name="settings_ai_privacy_cloud">Фото їжі, нотатки, чат і дані профілю надсилаються цьому провайдеру. Лише локальні моделі Gemma 4 тримають усе на твоєму телефоні.</string>

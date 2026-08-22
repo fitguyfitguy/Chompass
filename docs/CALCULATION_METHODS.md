@@ -243,6 +243,8 @@ If currentCalories < safetyFloor, raise to the floor immediately (even without t
 
 **Measured TDEE:** 14-day Health Connect active + basal average when Energy Burn enabled.
 
+**Locked calories:** if `caloriesLocked`, Adaptive skips the calorie write (including the sub-floor lift). Locked macros stay put when an unlocked calorie target is nudged (`applyCaloriesEdit`).
+
 ### WATER-DYN-A: Dynamic gross water goal
 
 **Android-only** (opt-in, `waterDynamicEnabled`; PWA has no water UI, so no `chompass-core` mirror yet).

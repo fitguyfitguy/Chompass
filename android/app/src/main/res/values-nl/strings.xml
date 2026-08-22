@@ -1138,8 +1138,6 @@
     <string name="settings_accuracy_body">Voedsel-schattingen op foto en vage portielabels kloppen vaak niet. Suggesties van de app en vooral AI-modellen zijn geen medische feiten.</string>
     <string name="settings_accuracy_title">Nauwkeurigheid van schattingen</string>
     <string name="settings_adaptive_goals">Adaptieve doelen</string>
-    <string name="settings_adaptive_locks_message">Zet adaptieve doelen uit om je eigen calorieën en macro\'s te vergrendelen of in te stellen. Zolang ze aan staan, herberekent Chompass ze elke week voor je.</string>
-    <string name="settings_adaptive_locks_title">Adaptieve doelen staan aan</string>
     <string name="settings_ai_features_master">AI-functies</string>
     <string name="settings_ai_features_master_footer">Zet alles uit dat gegevens naar een AI-provider stuurt: de coach, foto-/tekst-/spraaklogging, «Wat als?» en AI-doelsuggesties. Barcode, voedselzoekopdracht, handmatige invoer, opgeslagen maaltijden, water, synchronisatie en Health Connect blijven gewoon werken.</string>
     <string name="settings_ai_privacy_cloud">Voedselfoto\'s, notities, chat en profielgegevens worden naar deze provider gestuurd. Alleen de on-device Gemma 4-modellen houden alles op je telefoon.</string>

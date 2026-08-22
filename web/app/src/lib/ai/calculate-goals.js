@@ -56,6 +56,43 @@ export function recalculatedFromFormulas(profile) {
 }
 
 /**
+ * Lock flags implied by filled custom fields (PWA Goals Save).
+ * At most two macros lock so one stays free to balance; protein wins if all three are filled.
+ * @param {Pick<UserProfile, "customCalories"|"customProtein"|"customCarbs"|"customFat">} profile
+ */
+export function locksFromFilledCustoms(profile) {
+  /** @type {Array<"protein"|"carbs"|"fat">} */
+  const macros = [];
+  if (profile.customProtein != null) macros.push("protein");
+  if (profile.customCarbs != null) macros.push("carbs");
+  if (profile.customFat != null) macros.push("fat");
+  return {
+    caloriesLocked: profile.customCalories != null,
+    lockedMacros: macros.slice(0, 2),
+  };
+}
+
+/**
+ * AI-off Recalculate: live formula for unlocked fields, keep locked custom* and flags.
+ * @param {UserProfile} profile
+ * @returns {UserProfile}
+ */
+export function applyingFormulaGoals(profile) {
+  const locked = new Set(profile.lockedMacros || []);
+  return {
+    ...profile,
+    customCalories: profile.caloriesLocked ? profile.customCalories : null,
+    customProtein: locked.has("protein") ? profile.customProtein : null,
+    customCarbs: locked.has("carbs") ? profile.customCarbs : null,
+    customFat: locked.has("fat") ? profile.customFat : null,
+    proteinTargetMode: locked.has("protein")
+      ? (profile.proteinTargetMode || "gramsPerDay")
+      : "gramsPerDay",
+    proteinGramsPerKg: locked.has("protein") ? profile.proteinGramsPerKg : null,
+  };
+}
+
+/**
  * Apply an AI goal snapshot while keeping user locks. Mirrors Android
  * UserProfile.applyingAiGoals. Calories are CAL-SAFE clamped unless locked.
  * @param {UserProfile} profile

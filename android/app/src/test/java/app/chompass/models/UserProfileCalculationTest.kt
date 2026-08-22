@@ -239,4 +239,54 @@ class UserProfileCalculationTest {
     assertEquals(180, next.effectiveProtein)
     assertEquals(2100, next.effectiveCalories)
   }
+
+  @Test
+  fun pinCalories_materializesEffectiveAndLocks() {
+    val p = profile()
+    val pinned = p.pinCalories()
+    assertEquals(p.effectiveCalories, pinned.customCalories)
+    assertEquals(p.effectiveCalories, pinned.effectiveCalories)
+    assertTrue(pinned.caloriesLocked)
+  }
+
+  @Test
+  fun unpinCalories_clearsLockKeepsNumber() {
+    val p = profile().copy(customCalories = 1900, caloriesLocked = true)
+    val next = p.unpinCalories()
+    assertFalse(next.caloriesLocked)
+    assertEquals(1900, next.effectiveCalories)
+  }
+
+  @Test
+  fun pinMacro_pinsProteinGrams() {
+    val p = profile()
+    val pinned = p.pinMacro(AutoBalanceMacro.PROTEIN)
+    assertEquals(p.effectiveProtein, pinned.customProtein)
+    assertTrue(pinned.isMacroLocked(AutoBalanceMacro.PROTEIN))
+    val kept = pinned.applyingAiGoals(calories = 2100, protein = 100, carbs = 200, fat = 70)
+    assertEquals(p.effectiveProtein, kept.effectiveProtein)
+  }
+
+  @Test
+  fun unpinMacro_clearsLockKeepsGrams() {
+    val p = profile().copy(
+      customProtein = 180,
+      lockedMacros = setOf(AutoBalanceMacro.PROTEIN),
+    )
+    val next = p.unpinMacro(AutoBalanceMacro.PROTEIN)
+    assertFalse(next.isMacroLocked(AutoBalanceMacro.PROTEIN))
+    assertEquals(180, next.effectiveProtein)
+  }
+
+  @Test
+  fun pinMacro_thirdLockIsNoOp() {
+    val p = profile().copy(
+      customProtein = 180,
+      customCarbs = 200,
+      lockedMacros = setOf(AutoBalanceMacro.PROTEIN, AutoBalanceMacro.CARBS),
+    )
+    val next = p.pinMacro(AutoBalanceMacro.FAT)
+    assertEquals(p, next)
+    assertFalse(next.isMacroLocked(AutoBalanceMacro.FAT))
+  }
 }

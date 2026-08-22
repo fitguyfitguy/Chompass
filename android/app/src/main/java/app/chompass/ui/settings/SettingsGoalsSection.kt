@@ -57,6 +57,7 @@ internal fun SettingsGoalsSection(
     onHealthEnergyGoalsToggle: (Boolean) -> Unit,
     onShowAdaptiveGoalsInfo: () -> Unit,
     onShowHealthEnergyGoalsInfo: () -> Unit,
+    onThirdMacroLockBlocked: () -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_goals_how_title)) {
         Column(
@@ -155,17 +156,17 @@ internal fun SettingsGoalsSection(
                         onChange = onHealthEnergyGoalsToggle
                     )
                     HorizontalDivider()
-                    // The lock glyph is read-only. Saving a value locks it; the picker's Reset
-                    // releases it. Locked rows survive Recalculate and weekly Adaptive.
-                    val lockEnabled = true
+                    // Chip is a real Locked / Auto toggle. Saving a picker value also locks;
+                    // picker Reset snaps to auto-balance. Locked rows survive Recalculate
+                    // and weekly Adaptive.
                     val openGoal = { target: SettingsSheet -> onOpenSheet(target) }
                     LockableGoalRow(
                         label = stringResource(R.string.settings_calories),
                         value = stringResource(R.string.kcal_value_format, LocaleFormat.integer(p.effectiveCalories)),
                         icon = Icons.Outlined.LocalFireDepartment,
                         locked = p.caloriesLocked,
-                        lockEnabled = lockEnabled,
-                        onClick = { openGoal(SettingsSheet.CALORIES) }
+                        onClick = { openGoal(SettingsSheet.CALORIES) },
+                        onToggleLock = vm::toggleCaloriesLock,
                     )
                     HorizontalDivider()
                     LockableGoalRow(
@@ -183,8 +184,10 @@ internal fun SettingsGoalsSection(
                         iconTint = AppColors.Protein,
                         locked = p.isMacroLocked(AutoBalanceMacro.PROTEIN) ||
                             (p.proteinTargetMode.usesRate && p.proteinGramsPerKg != null),
-                        lockEnabled = lockEnabled,
-                        onClick = { openGoal(SettingsSheet.PROTEIN) }
+                        onClick = { openGoal(SettingsSheet.PROTEIN) },
+                        onToggleLock = {
+                            vm.toggleMacroLock(AutoBalanceMacro.PROTEIN, onThirdMacroLockBlocked)
+                        },
                     )
                     HorizontalDivider()
                     LockableGoalRow(
@@ -193,8 +196,10 @@ internal fun SettingsGoalsSection(
                         icon = Icons.Outlined.DataUsage,
                         iconTint = AppColors.Carbs,
                         locked = p.isMacroLocked(AutoBalanceMacro.CARBS),
-                        lockEnabled = lockEnabled,
-                        onClick = { openGoal(SettingsSheet.CARBS) }
+                        onClick = { openGoal(SettingsSheet.CARBS) },
+                        onToggleLock = {
+                            vm.toggleMacroLock(AutoBalanceMacro.CARBS, onThirdMacroLockBlocked)
+                        },
                     )
                     HorizontalDivider()
                     LockableGoalRow(
@@ -203,8 +208,10 @@ internal fun SettingsGoalsSection(
                         icon = Icons.Outlined.DataUsage,
                         iconTint = AppColors.Fat,
                         locked = p.isMacroLocked(AutoBalanceMacro.FAT),
-                        lockEnabled = lockEnabled,
-                        onClick = { openGoal(SettingsSheet.FAT) }
+                        onClick = { openGoal(SettingsSheet.FAT) },
+                        onToggleLock = {
+                            vm.toggleMacroLock(AutoBalanceMacro.FAT, onThirdMacroLockBlocked)
+                        },
                     )
                     HorizontalDivider()
                     SettingRow(
