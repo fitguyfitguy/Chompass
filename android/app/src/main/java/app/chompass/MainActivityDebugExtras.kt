@@ -6,7 +6,7 @@ import app.chompass.BuildConfig
 
 /** Valid values for the `goal_matrix_tier` / `goal_matrix_provider` debug extras. */
 private val GOAL_MATRIX_TIERS = setOf("safe", "smart", "auto")
-private val GOAL_MATRIX_PROVIDERS = setOf("on_device", "gemini", "anthropic", "openai")
+private val GOAL_MATRIX_PROVIDERS = setOf("on_device", "gemini", "anthropic", "openai", "openrouter")
 
 /**
  * Debug-only intent extras (seeders, benchmarks, on-device LLM smoke test).
@@ -73,7 +73,7 @@ internal data class DebugIntentActions(
     val goalMatrixRepeat: Int = 1,
     /** Goal-recalc tier for the matrix: "safe" | "smart" | "auto" (per-dispatch). */
     val goalMatrixTier: String = "auto",
-    /** Provider for the matrix: "on_device" | "gemini" | "anthropic" | "openai". */
+    /** Provider for the matrix: "on_device" | "gemini" | "anthropic" | "openai" | "openrouter". */
     val goalMatrixProvider: String = "on_device",
     /** Model id override for the matrix (defaults to the provider's default model). */
     val goalMatrixModel: String = "",
