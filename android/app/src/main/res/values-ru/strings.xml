@@ -1374,6 +1374,8 @@
     <string name="notif_water_text_qty">Выпей %1$s и запиши в Chompass.</string>
     <string name="on_device_download_failed">Сбой загрузки</string>
     <string name="on_device_model_delete">Удалить загруженную модель</string>
+    <string name="on_device_model_clear">Удалить с устройства</string>
+    <string name="on_device_model_clear_footer">Удаляет %1$s файлов модели и незавершённых загрузок и выгружает модель из памяти.</string>
     <string name="on_device_model_download">Загрузить</string>
     <string name="on_device_model_downloading">Загрузка… %1$d%%</string>
     <string name="on_device_model_e4b_notice">Больше и медленнее, чем E2B, но может давать более подробные описания еды. Для стабильности анализ фото работает на CPU/GPU одновременно, поэтому может быть заметно медленнее текстового режима. Выбери E2B в Настройки → Модель, если хочешь более быстрые ответы.</string>

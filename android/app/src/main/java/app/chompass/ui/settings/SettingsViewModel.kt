@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
@@ -783,13 +784,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun deleteOnDeviceModel() {
         viewModelScope.launch {
-            val entry = ModelCatalog.forModelId(_ui.value.selectedModel)
             container.onDeviceLlmGateway.unload()
-            container.onDeviceModelDownloadManager.delete(entry)
-            val stillDownloaded = ModelCatalog.entries.any { container.onDeviceModelDownloadManager.isDownloaded(it) }
-            if (!stillDownloaded) {
-                container.prefs.setOnDeviceModelDownloadedVersion(null)
+            withContext(Dispatchers.IO) {
+                container.onDeviceModelDownloadManager.deleteAll()
             }
+            container.prefs.setOnDeviceModelDownloadedVersion(null)
         }
     }
 

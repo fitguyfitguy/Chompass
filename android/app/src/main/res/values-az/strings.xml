@@ -1051,6 +1051,8 @@ bilirsən?</string>
     <string name="nutrition_unlock_editing">Qida redaktəsini aç</string>
     <string name="on_device_download_failed">Endirmə alınmadı</string>
     <string name="on_device_model_delete">Endirilmiş modeli sil</string>
+    <string name="on_device_model_clear">Bu cihazdan sil</string>
+    <string name="on_device_model_clear_footer">%1$s model faylını və yarımçıq endirməni silir, yaddaşdan da çıxarır.</string>
     <string name="on_device_model_download">Endir</string>
     <string name="on_device_model_downloading">Endirilir… %1$d%%</string>
     <string name="on_device_model_e4b_notice">E2B-dən böyük və yavaşdır, lakin daha yaxşı qida təsvirləri verə bilər. Foto analizi sabitlik üçün CPU/GPU bölgüsü ilə işləyir, ona görə mətn rejimindən nəzərəçarpacaq dərəcədə yavaş ola bilər. Daha sürətli cavablar istəyirsənsə, Parametrlər → Model bölməsində E2B seç.</string>

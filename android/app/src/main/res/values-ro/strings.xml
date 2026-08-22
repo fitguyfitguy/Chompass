@@ -1048,6 +1048,8 @@
     <string name="nutrition_unlock_editing">Deblochează editarea nutriției</string>
     <string name="on_device_download_failed">Descărcarea a eșuat</string>
     <string name="on_device_model_delete">Șterge modelul descărcat</string>
+    <string name="on_device_model_clear">Șterge de pe acest dispozitiv</string>
+    <string name="on_device_model_clear_footer">Elimină %1$s de fișiere model și descărcări neterminate și eliberează memoria.</string>
     <string name="on_device_model_download">Descarcă</string>
     <string name="on_device_model_downloading">Se descarcă… %1$d%%</string>
     <string name="on_device_model_e4b_notice">Mai mare și mai lent decât E2B, dar poate oferi descrieri mai bune ale alimentelor. Analiza foto folosește o diviziune CPU/GPU pentru stabilitate, deci poate fi vizibil mai lentă decât cea textuală. Alege E2B în Setări → Model dacă preferi răspunsuri mai rapide.</string>

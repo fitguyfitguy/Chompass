@@ -1022,6 +1022,8 @@
     <string name="on_device_model_unload">Modeli boşalt (belleği serbest bırakır)</string>
     <string name="on_device_download_failed">İndirme başarısız</string>
     <string name="on_device_model_delete">İndirilen modeli sil</string>
+    <string name="on_device_model_clear">Bu cihazdan sil</string>
+    <string name="on_device_model_clear_footer">%1$s model dosyasını ve yarım kalmış indirmeyi kaldırır, belleği de boşaltır.</string>
     <string name="on_device_model_retry">İndirmeyi yeniden dene</string>
     <string name="on_device_model_sheet_title">Cihazdaki model</string>
 
