@@ -139,27 +139,35 @@ adb shell run-as app.chompass.debug ls -la files/models/
 | `ondevice_llm_repeat` | int | `1` | Tier A repeat count (1–5) for warm-cache latency comparison |
 | `ondevice_llm_clear_cache` | boolean | `false` | Delete LiteRT compile cache before run (cold disk cache) |
 | `ondevice_llm_preset` | string | - | **`daily`** → `tier=daily`, `prompt=fewshot_units`, `mtp=true`, `backend=gpu` |
-| `run_goal_matrix_test` | boolean | - | Run the goal-calculation matrix (below) against the on-device model |
+| `run_goal_matrix_test` | boolean | - | Run the goal-calculation matrix (below) against the selected provider/tier |
 | `goal_matrix_scenarios` | string | all | Comma-separated scenario filter for the goal matrix |
 | `goal_matrix_repeat` | int | `1` | Repeat count per scenario (1–5) for variance sampling |
+| `goal_matrix_tier` | string | `auto` | **`safe`** / **`smart`** / **`auto`** (per-dispatch: cloud → SMART, on-device → SAFE); forces the prompt tier regardless of provider |
+| `goal_matrix_provider` | string | `on_device` | **`on_device`** / **`gemini`** / **`anthropic`** / **`openai`** — provider forced for the run (cloud legs use the stored KeyStore key; keys are never logged and prefs/key are restored after) |
 
 If the app is already foreground, `adb shell am start` prints `Activity not started, intent has been delivered to currently running top-most instance`: **this is normal** (`singleTop`); the test still runs via `onNewIntent`.
 
 ### Goal calculation matrix (`run_goal_matrix_test`)
 
-Drives the **real production path** (`FoodAnalysisService.calculateGoals` → selected provider; the harness forces the on-device provider for the run and restores your settings afterwards) across a fixed scenario matrix: fresh user, sparse/medium/rich weigh-in data (blips up/down/flat), trends-disagree, implied maintenance below BMR, measured Health Connect TDEE, keto, locked calories, all three weight goals, body-fat BMR, and activity extremes. Results log under tag `GoalMatrix` with the formula/floor/implied anchors and the model's parsed answer per scenario, so you can see exactly when the model anchors on the empirical maintenance instead of the formula.
+Drives the **real production path** (`FoodAnalysisService.calculateGoals` → selected provider) across a fixed scenario matrix: fresh user, sparse/medium/rich weigh-in data (blips up/down/flat), trends-disagree, implied maintenance below BMR, measured Health Connect TDEE, keto, locked calories, all three weight goals, body-fat BMR, and activity extremes. The harness forces the requested provider/tier for the run and restores your settings (and any swapped KeyStore key) afterwards. Results log under tag `GoalMatrix` with the formula/floor/implied anchors, the model's parsed answer, and the tier/provider/model that actually answered per scenario, so you can see exactly when the model anchors on the empirical maintenance instead of the formula.
 
 ```powershell
 adb shell am force-stop app.chompass.debug
 adb logcat -c
-# Full matrix, each scenario twice (variance sampling):
+# SAFE tier on the on-device model (v4 regression baseline; default):
 adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --ei goal_matrix_repeat 2
-# Just the reported sparse-weigh-in cases:
-adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_scenarios sparse_up,sparse_up_active,maintain_sparse_up
+# SMART tier on Gemini (raw weigh-in series + intake table; needs a Gemini key):
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_tier smart --es goal_matrix_provider gemini
+# Just the reported sparse-weigh-in cases, SMART tier:
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_tier smart --es goal_matrix_provider gemini --es goal_matrix_scenarios sparse_up,sparse_up_active,maintain_sparse_up
 adb logcat -s GoalMatrix
 ```
 
-Warm-cache generations are ~5–7 s each, so a full 19-scenario run with repeat=2 takes under 5 minutes plus cold engine init. The empirical-maintenance confidence gate and the deterministic enforcement are documented in `docs/CALCULATION_METHODS.md` § AI-RECALC; unit-tested in `GoalPromptGateTest`.
+Warm-cache generations are ~5–7 s each, so a full 19-scenario run with repeat=2 takes under 5 minutes plus cold engine init (cloud legs add a round-trip each).
+
+**Forced-fallback scenario:** with a cloud provider in `auto` tier, the harness appends a fallback scenario (cloud primary key swapped for an invalid one → on-device fallback answers) and logs `phase=fallback PASS/FAIL` for `provider=ON_DEVICE, tier=SAFE, fallbackFired=true` — proving the on-device leg always receives the SAFE prompt and the result reports the fallback. Skipped (with a log) when the on-device model is not downloaded.
+
+The SAFE/SMART tier split, the confidence gates, and the deterministic enforcement are documented in `docs/CALCULATION_METHODS.md` § AI-RECALC; unit-tested in `GoalPromptGateTest` + `GoalTierSelectionTest`.
 
 ### GPU (default)
 
