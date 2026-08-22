@@ -13,8 +13,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **On-device model download no longer crashes at 100%** (Android): finishing the Gemma download no longer re-reads the whole multi-GB file just to check it, which could close the app and then hide On-Device in Settings until things settled. If a download was interrupted after the file landed, Retry finishes the check instead of starting over.
-- **On-device model can be cleared from the phone** (Android): Settings → AI shows leftover model files even if you switched back to a cloud provider, including unfinished downloads from an older app version. Clear from this device removes the finished model, leftover files, and the compile cache, and unloads the model from memory.
+- **Recalculate no longer anchors on a short weight trend** (Android): with only a few days or weigh-ins of history, the AI sometimes set the calorie goal at your resting burn instead of your activity-based target, because the first weigh-ins can look like a much lower or higher maintenance than you really have. Recalculate now only uses your logged trend as the maintenance estimate once it is dense enough (at least 4 weigh-ins spanning 14 days with 4 logged food days), and otherwise keeps the built-in formula or your measured Health Connect burn. If the trend would imply a maintenance below your resting burn, it is ignored instead of dragging the goal down.
 
 ## [3.22.0] - 2026-08-21
 

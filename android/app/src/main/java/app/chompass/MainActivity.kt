@@ -34,6 +34,7 @@ import app.chompass.models.FoodEntry
 import app.chompass.services.AndroidAppIconManager
 import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
+import app.chompass.debug.GoalCalcMatrixDebugLauncher
 import app.chompass.services.EntryPerfBenchmark
 import app.chompass.services.PerfBenchRequest
 import app.chompass.services.PerfLog
@@ -575,6 +576,14 @@ open class MainActivity : ComponentActivity() {
                         repeatCount = actions.onDeviceLlmRepeat,
                         clearCache = actions.onDeviceLlmClearCache,
                     ),
+                )
+            }
+            if (actions.runGoalMatrixTest) {
+                GoalCalcMatrixDebugLauncher.launchIfRequested(
+                    scope = lifecycleScope,
+                    container = container,
+                    scenarios = actions.goalMatrixScenarios,
+                    repeatCount = actions.goalMatrixRepeat,
                 )
             }
             if (actions.diagnoseHealthConnect) {

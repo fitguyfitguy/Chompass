@@ -61,6 +61,12 @@ internal data class DebugIntentActions(
     val onDeviceLlmPrompt: String = "full",
     val onDeviceLlmRepeat: Int = 1,
     val onDeviceLlmClearCache: Boolean = false,
+    /** Debug-only: run the goal-calculation matrix against the on-device model. */
+    val runGoalMatrixTest: Boolean = false,
+    /** Comma-separated scenario filter for [runGoalMatrixTest]; blank = all. */
+    val goalMatrixScenarios: String = "",
+    /** Repeat count per scenario (1-5) for [runGoalMatrixTest] variance sampling. */
+    val goalMatrixRepeat: Int = 1,
     val diagnoseHealthConnect: Boolean = false,
     val previewDailySummary: Boolean = false,
 ) {
@@ -131,6 +137,9 @@ internal fun consumeDebugIntentExtras(
         onDeviceLlmPrompt = if (presetDaily) "fewshot_units" else intent.getStringExtra("ondevice_llm_prompt") ?: "full",
         onDeviceLlmRepeat = intent.getIntExtra("ondevice_llm_repeat", 1).coerceIn(1, 5),
         onDeviceLlmClearCache = intent.getBooleanExtra("ondevice_llm_clear_cache", false),
+        runGoalMatrixTest = BuildConfig.DEBUG && intent.getBooleanExtra("run_goal_matrix_test", false),
+        goalMatrixScenarios = intent.getStringExtra("goal_matrix_scenarios") ?: "",
+        goalMatrixRepeat = intent.getIntExtra("goal_matrix_repeat", 1).coerceIn(1, 5),
         diagnoseHealthConnect = BuildConfig.DEBUG &&
             intent.getBooleanExtra("diagnose_health_connect", false),
         previewDailySummary = BuildConfig.DEBUG &&
@@ -187,6 +196,9 @@ internal fun consumeDebugIntentExtras(
         intent.removeExtra("ondevice_llm_repeat")
         intent.removeExtra("ondevice_llm_clear_cache")
         intent.removeExtra("ondevice_llm_preset")
+    if (actions.runGoalMatrixTest) intent.removeExtra("run_goal_matrix_test")
+    if (actions.goalMatrixScenarios.isNotBlank()) intent.removeExtra("goal_matrix_scenarios")
+    if (actions.goalMatrixRepeat > 1) intent.removeExtra("goal_matrix_repeat")
     }
     return actions
 }
