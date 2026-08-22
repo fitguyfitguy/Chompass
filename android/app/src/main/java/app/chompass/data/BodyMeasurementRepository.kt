@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneId
 import java.util.UUID
 
@@ -26,14 +27,13 @@ class BodyMeasurementRepository(
 
     suspend fun addEntry(entry: BodyMeasurement) {
         if (!entry.hasAnyValue) return
-        val current = prefs.bodyMeasurements.first()
-        prefs.setBodyMeasurements(current + entry)
+        prefs.applyMeasurementBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
         sync?.touch(entry.id, "measure")
     }
 
     suspend fun deleteEntry(id: UUID) {
-        val current = prefs.bodyMeasurements.first()
-        prefs.setBodyMeasurements(current.filter { it.id != id })
+        val existing = prefs.bodyMeasurements.first().firstOrNull { it.id == id } ?: return
+        prefs.applyMeasurementBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "measure")
     }
 
@@ -49,10 +49,18 @@ class BodyMeasurementRepository(
         val today = LocalDate.now(zone)
         if (latest != null && latest.date.atZone(zone).toLocalDate() == today) {
             val updated = latest.setting(site, cm)
-            val rest = current.filter { it.id != latest.id }
-            prefs.setBodyMeasurements(if (updated.hasAnyValue) rest + updated else rest)
-            if (updated.hasAnyValue) sync?.touch(updated.id, "measure")
-            else sync?.tombstone(latest.id, "measure")
+            if (updated.hasAnyValue) {
+                prefs.applyMeasurementBucketChanges(
+                    upsertsByMonth = mapOf(updated.month() to listOf(updated)),
+                    removalIdsByMonth = mapOf(latest.month() to setOf(latest.id)),
+                )
+                sync?.touch(updated.id, "measure")
+            } else {
+                prefs.applyMeasurementBucketChanges(
+                    removalIdsByMonth = mapOf(latest.month() to setOf(latest.id)),
+                )
+                sync?.tombstone(latest.id, "measure")
+            }
         } else {
             var fresh = BodyMeasurement()
             if (latest != null) {
@@ -60,7 +68,7 @@ class BodyMeasurementRepository(
             }
             fresh = fresh.setting(site, cm)
             if (fresh.hasAnyValue) {
-                prefs.setBodyMeasurements(current + fresh)
+                prefs.applyMeasurementBucketChanges(upsertsByMonth = mapOf(fresh.month() to listOf(fresh)))
                 sync?.touch(fresh.id, "measure")
             }
         }
@@ -92,6 +100,8 @@ class BodyMeasurementRepository(
     /** Current latest snapshot — used by the goal calc + Coach call sites. */
     suspend fun latestSnapshot(): BodyMeasurement? =
         prefs.bodyMeasurements.first().maxByOrNull { it.date }
+
+    private fun BodyMeasurement.month(): YearMonth = YearMonth.from(date.atZone(ZoneId.systemDefault()))
 }
 
 /**

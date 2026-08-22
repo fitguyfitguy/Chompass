@@ -86,4 +86,11 @@ internal suspend fun PreferencesStore.setSuggestionDismissedImpl(id: String, dis
 // -- Wipe everything --------------------------------------------------
 internal suspend fun PreferencesStore.clearAllImpl() {
     dataStore.edit { it.clear() }
+    // Bucket datasets live outside the proto; wipe them in the same breath so
+    // "delete all data" really is all data.
+    foodBucketStore.clear()
+    waterBucketStore.clear()
+    weightBucketStore.clear()
+    bodyFatBucketStore.clear()
+    measurementBucketStore.clear()
 }

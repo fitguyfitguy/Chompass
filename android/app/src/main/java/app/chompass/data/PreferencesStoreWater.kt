@@ -1,11 +1,16 @@
 package app.chompass.data
 
 import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import app.chompass.models.WaterEntry
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import java.time.YearMonth
+import java.time.ZoneId
+import java.util.UUID
 
 internal val PreferencesStore.waterTrackingEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.WATER_TRACKING_ENABLED, false)
@@ -100,7 +105,28 @@ internal suspend fun PreferencesStore.setWaterQuickPresetsMlImpl(amountsMl: List
 }
 
 internal val PreferencesStore.waterEntriesImpl: Flow<List<WaterEntry>>
-    get() = listPref(Keys.WATER_ENTRIES, WaterEntry.serializer())
+    get() = flow {
+        migrateBucketsToFilesIfNeeded()
+        emitAll(waterBucketStore.allFlow())
+    }
 
-internal suspend fun PreferencesStore.setWaterEntriesImpl(entries: List<WaterEntry>) =
-    setListPref(Keys.WATER_ENTRIES, WaterEntry.serializer(), entries)
+internal suspend fun PreferencesStore.setWaterEntriesImpl(entries: List<WaterEntry>) {
+    migrateBucketsToFilesIfNeeded()
+    waterBucketStore.replaceAll(
+        entries.groupBy { YearMonth.from(it.date.atZone(ZoneId.systemDefault())) }
+    )
+}
+
+/**
+ * Month-scoped water write — a sip touches exactly one bucket file instead of
+ * re-encoding the whole water history. Same upsert/removal-by-id semantics as
+ * the food bucket helper.
+ */
+internal suspend fun PreferencesStore.applyWaterBucketChangesImpl(
+    upsertsByMonth: Map<YearMonth, List<WaterEntry>> = emptyMap(),
+    removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+) {
+    if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
+    migrateBucketsToFilesIfNeeded()
+    waterBucketStore.applyChanges(upsertsByMonth, removalIdsByMonth)
+}
