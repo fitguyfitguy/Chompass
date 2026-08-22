@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodGroundingProvenance
@@ -275,12 +276,30 @@ data class HealthEnergyGoalSuggestion(
 )
 
 /** AI-computed daily targets returned by FoodAnalysisService.calculateGoals. */
+/**
+ * Which recalculation tier answered (picked per dispatch, not per call):
+ * cloud providers run the SMART prompt (raw series, model-side reliability
+ * judgment), the on-device model runs the SAFE prompt (aggregates only,
+ * app-side gates + deterministic snap). See docs/CALCULATION_METHODS.md § AI-RECALC.
+ */
+enum class GoalRecalcTier { SMART, SAFE }
+
 data class GoalCalculation(
     val calories: Int,
     val protein: Int,
     val carbs: Int,
     val fat: Int,
-    val reason: String? = null
+    val reason: String? = null,
+    /** Tier of the model that actually answered (null when a test delegate answered). */
+    val tier: GoalRecalcTier? = null,
+    /** Provider that actually answered, after any fallback. */
+    val provider: AIProvider? = null,
+    /** Model id that actually answered, after any fallback. */
+    val model: String? = null,
+    /** True when the primary provider failed and a fallback leg answered. */
+    val fallbackFired: Boolean = false,
+    /** Primary attempt's error message when a fallback fired (may be technical; UI decides whether to show). */
+    val primaryError: String? = null,
 )
 
 internal object FoodJsonParser {

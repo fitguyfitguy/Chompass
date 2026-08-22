@@ -10,6 +10,7 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
+import app.chompass.models.WeightEntry
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.resolveModelForRequest
 import app.chompass.models.GoalFormulaReference
@@ -37,6 +38,7 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import java.util.Locale
+import java.time.ZoneId
 import kotlin.math.abs
 import app.chompass.models.UnitFormat
 
@@ -92,6 +94,34 @@ private const val EMPIRICAL_MEDIUM_MAX_FOOD_DAYS = 10
 private const val EMPIRICAL_PACE_MISS_KCAL = 150
 
 /**
+ * Out-param threaded through `callAi` → `dispatch` so `calculateGoals` learns
+ * which provider/model/tier actually answered (after any fallback) and whether
+ * a fallback fired. Tier is picked PER DISPATCH, not per call: cloud legs run
+ * the SMART prompt, the on-device leg always runs the SAFE prompt.
+ */
+internal class GoalCallTrace {
+    var provider: AIProvider? = null
+    var model: String? = null
+    var tier: GoalRecalcTier? = null
+    var fallbackFired: Boolean = false
+    var primaryError: String? = null
+}
+
+/**
+ * App-side confidence gates for the SAFE tier's observed-data section and its
+ * deterministic enforcement. See docs/CALCULATION_METHODS.md § AI-RECALC.
+ */
+private data class EmpiricalSignals(
+    val empiricalUsable: Boolean,
+    val mediumConfidence: Boolean,
+    val safetyFloor: Int,
+    val loggedAvg: Int,
+    val impliedMaintenance: Int?,
+    val impliedBelowFloor: Boolean,
+    val trustEmpirical: Boolean,
+)
+
+/**
  * Single-shot food / text / nutrition-label analysis. Port of iOS GeminiService.
  * Routes the call to the right per-format client based on the user's selected provider.
  */
@@ -113,6 +143,15 @@ class FoodAnalysisService(
             "FoodAnalysisService requires prefs and keyStore unless callAiDelegate is provided"
         }
     }
+
+    /**
+     * Debug/test-only: force the goal-recalculation tier for the next
+     * `calculateGoals` dispatch regardless of the provider (goal-matrix harness
+     * A/B: SMART prompt on the on-device model, SAFE prompt on cloud). Null =
+     * per-dispatch selection (cloud → SMART, on-device → SAFE). Never set from
+     * production code paths; the harness restores it after the run.
+     */
+    internal var goalTierOverrideForTest: GoalRecalcTier? = null
 
     suspend fun estimateOptionalNutrientGoals(profile: UserProfile?): OptionalNutrientGoals {
         val profileContext = profile?.let {
@@ -228,6 +267,12 @@ class FoodAnalysisService(
      * app's formulas, the profile, and — when available — recent logged intake + observed weight
      * trend so the model can estimate true maintenance empirically (hit-and-trial) rather than
      * trusting the formula alone. Caller falls back to the formula when this throws.
+     *
+     * Builds BOTH tiers' prompts (string work only): the SAFE prompt (aggregates only, app-side
+     * confidence gates, deterministic snap — for on-device models) and the SMART prompt (raw
+     * weigh-in series + day-by-day intake table, model-side reliability judgment — for cloud
+     * models). [callAi] picks per dispatch based on the provider that actually runs, so a
+     * cloud-primary → on-device-fallback call still hands the on-device leg the SAFE prompt.
      */
     suspend fun calculateGoals(
         profile: UserProfile,
@@ -235,7 +280,11 @@ class FoodAnalysisService(
         heightMetric: Boolean,
         weightMetric: Boolean,
         measuredTdee: Int? = null,
-        measurement: BodyMeasurement? = null
+        measurement: BodyMeasurement? = null,
+        /** Raw weigh-ins for the SMART tier's raw series (onboarding passes none). */
+        weights: List<WeightEntry> = emptyList(),
+        /** Raw food entries for the SMART tier's intake table (onboarding passes none). */
+        foods: List<FoodEntry> = emptyList(),
     ): GoalCalculation {
         // Codeberg #20 phase 2: with the master AI switch off, return the
         // deterministic formula targets directly — the AI prompt below anchors on
@@ -250,23 +299,127 @@ class FoodAnalysisService(
                 reason = "Calculated from the built-in formulas.",
             )
         }
-        val weight = if (weightMetric) String.format(Locale.US, "%.1f kg", profile.weightKg)
-            else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
-        val height = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
-            else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
-        val bodyFat = profile.bodyFatPercentage?.let { "${(it * 100).toInt()}%" } ?: "not set"
-        val goalWeight = profile.goalWeightKg?.let { kg ->
-            if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
-        } ?: "not set"
+
         val weekly = profile.weeklyChangeKg?.let { String.format(Locale.US, "%.2f kg/week", it) } ?: "not set (maintain)"
         val bmrMethod = if (profile.usesBodyFatForBMR) "Katch-McArdle (body fat known and enabled)" else "Mifflin-St Jeor"
+        val signals = empiricalSignals(forecast, profile)
 
-        // Empirical (hit-and-trial) maintenance is only surfaced to the model when the
-        // logs are dense enough that the Theil-Sen trend isn't water-weight noise. With
-        // sparse weigh-ins the model anchored the calorie target at the implied
-        // maintenance (~BMR) — e.g. 1742 kcal vs a formula TDEE of ~2680 — and CAL-SAFE
-        // passes it (it is >= BMR), so the guard is prompt-side: withhold the implied
-        // numbers and the "prefer empirical" instruction until these minimums are met.
+        // Energy Burn toggle: when on (and Health Connect has enough data) this measured
+        // maintenance replaces the formula TDEE as the calorie anchor. A thin weight trend
+        // must not drag it down (observed: model blended measured 2500 with a 2-weigh-in
+        // implied 1740 and output 1800 instead of 1950). The trend-refinement rule differs
+        // per tier: app-side gates for SAFE, model-side judgment for SMART.
+        val measuredSection = measuredSectionFor(measuredTdee, smart = false)
+        val measuredSectionSmart = measuredSectionFor(measuredTdee, smart = true)
+
+        // Optional tape-measure circumferences + derived metrics. Extra signal only — never overrides
+        // the formulas. A shrinking waist alongside flat/declining weight implies recomposition.
+        val measurementsSummary = measurement?.promptSummary(profile.gender, profile.heightCm)
+        val measurementsSection = if (measurementsSummary != null) {
+            "\nBODY MEASUREMENTS: the user's latest tape-measure circumferences and the metrics derived from them. Use as extra signal: a shrinking waist with steady or falling weight suggests recomposition, so keep protein high and don't over-cut. Treat the US-Navy body-fat figure as a rough estimate, not exact.\n$measurementsSummary"
+        } else ""
+
+        val safePrompt = goalPrompt(
+            profile, heightMetric, weightMetric, bmrMethod, weekly,
+            measuredSection, measurementsSection,
+            safeObservedSection(signals, forecast, measuredTdee, weightMetric),
+        )
+        val smartPrompt = goalPrompt(
+            profile, heightMetric, weightMetric, bmrMethod, weekly,
+            measuredSectionSmart, measurementsSection,
+            smartObservedSection(signals, weights, foods, forecast, weightMetric),
+        )
+
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                "Chompass",
+                "calculateGoals intake loggedDay=${forecast?.loggedDayAvgCalories} " +
+                    "calendarAvg=${forecast?.avgDailyCalories} sparse=${forecast?.usesCalendarDayAverage} " +
+                    "observedWeekly=${forecast?.observedWeeklyChangeKg} " +
+                    "locked=${profile.caloriesLocked} kcal=${profile.effectiveCalories}",
+            )
+            val lock = profile.goalLockPromptSection()
+            if (lock.isNotBlank()) Log.d("Chompass", "calculateGoals$lock")
+        }
+        // Trace records which provider/model/tier actually answered (after any fallback),
+        // so the result can report it and the UI can say "Gemini timed out, used Claude".
+        val trace = GoalCallTrace()
+        val parsed = FoodJsonParser.parseGoalCalculation(
+            callAi(
+                safePrompt, imageBytes = null, op = "calculateGoals", reportPhases = false,
+                smartPrompt = smartPrompt, trace = trace,
+            ),
+        )
+        val clamped = parsed.copy(
+            calories = CalorieSafety.clampAuto(parsed.calories, profile),
+            tier = trace.tier,
+            provider = trace.provider,
+            model = trace.model,
+            fallbackFired = trace.fallbackFired,
+            primaryError = trace.primaryError,
+        )
+        if (profile.caloriesLocked) return clamped
+        // SMART (cloud) tier: the model judged the raw series itself — no deterministic
+        // snap beyond the CAL-SAFE clamp above and the parser ranges. Enforcement below
+        // is for the SAFE (on-device) tier only (and test delegates, which leave the
+        // tier unset and keep the historical behavior).
+        if (trace.tier == GoalRecalcTier.SMART) return clamped
+        // Deterministic enforcement of the empirical-data gate. A small on-device model
+        // can drift to a BMR-ish round number (e.g. 1800 when the formula says 1980) that
+        // passes CAL-SAFE, so when the observed data is NOT trustworthy (thin logs,
+        // disagreeing trends, or implied maintenance below the BMR floor) the calories are
+        // snapped to the anchor the prompt named: measured Health Connect maintenance +
+        // goal pace when available, else the formula target. Macros follow the formula so
+        // 4*protein + 4*carbs + 9*fat stays near calories (Settings re-fits rounding).
+        if (!signals.trustEmpirical) {
+            val anchorCalories = if (measuredTdee != null) {
+                CalorieSafety.clampAuto(measuredTdee + profile.calorieAdjustment, profile.bmr, measuredTdee.toDouble())
+            } else {
+                profile.dailyCalories
+            }
+            if (clamped.calories == anchorCalories) return clamped
+            return clamped.copy(
+                calories = anchorCalories,
+                protein = profile.proteinGoal,
+                carbs = profile.carbsGoal,
+                fat = profile.fatGoal,
+                reason = when {
+                    measuredTdee != null ->
+                        "Calculated from your measured Health Connect energy burn plus your weekly goal pace."
+                    forecast == null -> "Calculated from the built-in formulas."
+                    else -> "Calculated from the built-in formulas — your logs are too thin to estimate true maintenance."
+                },
+            )
+        }
+        // Trusted empirical data: the model may use the implied maintenance, but it must
+        // apply the goal pace. When it returned maintenance alone (a pattern seen with
+        // gain goals), apply the pace deterministically.
+        val implied = signals.impliedMaintenance
+        if (implied != null) {
+            val expectedEmpirical = CalorieSafety.clampAuto(implied.toInt() + profile.calorieAdjustment, profile)
+            if (abs(clamped.calories - expectedEmpirical) > EMPIRICAL_PACE_MISS_KCAL &&
+                abs(clamped.calories - implied.toInt()) <= EMPIRICAL_PACE_MISS_KCAL
+            ) {
+                return clamped.copy(
+                    calories = expectedEmpirical,
+                    protein = profile.proteinGoal,
+                    carbs = profile.carbsGoal,
+                    fat = profile.fatGoal,
+                    reason = "Applied your weekly goal pace to your observed maintenance.",
+                )
+            }
+        }
+        return clamped
+    }
+
+    /**
+     * App-side confidence gates for the SAFE tier's observed-data section and its
+     * deterministic enforcement. With sparse weigh-ins the model anchored the target at
+     * ~BMR (e.g. 1742 kcal vs formula TDEE ~2680) and CAL-SAFE passes it (it is >= BMR),
+     * so the SAFE guard is prompt-side: withhold the implied numbers and the "prefer
+     * empirical" instruction until these minimums are met. See docs/CALCULATION_METHODS.md.
+     */
+    private fun empiricalSignals(forecast: WeightForecast?, profile: UserProfile): EmpiricalSignals {
         val empiricalUsable = forecast != null &&
             forecast.weightEntriesUsed >= EMPIRICAL_MIN_WEIGH_INS &&
             forecast.weightSpanDays >= EMPIRICAL_MIN_SPAN_DAYS &&
@@ -282,84 +435,50 @@ class FoodAnalysisService(
             loggedAvg - NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
         }
         // True when the implied maintenance is below the BMR safety floor: the number is
-        // withheld (the model anchored on "below BMR" values before) and the section falls
-        // back to the formula/measured anchor below.
+        // withheld from SAFE (the model anchored on "below BMR" values before) and the
+        // section falls back to the formula/measured anchor below.
         val impliedBelowFloor = impliedMaintenance != null && impliedMaintenance < safetyFloor
-        // When false, the prompt forbids estimating maintenance from the observed data and
-        // the deterministic enforcement below snaps the model's calories back to the anchor.
+        // When false, the SAFE prompt forbids estimating maintenance from the observed data
+        // and the deterministic enforcement snaps the model's calories back to the anchor.
         val trustEmpirical = empiricalUsable && !impliedBelowFloor &&
             !(forecast?.trendsDisagree ?: false)
-        val observedSection = buildString {
-            if (forecast != null && forecast.hasEnoughData) {
-                appendLine()
-                appendLine("OBSERVED DATA: from the user's OWN logs (prefer this over the formula when reliable):")
-                val intakeBasis = if (forecast.usesCalendarDayAverage) {
-                    "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days. Sparse coverage: calendar-day average is ${forecast.avgDailyCalories} kcal over ${forecast.calendarDaysInWindow} days — do not use that as recorded intake."
-                } else {
-                    "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days"
-                }
-                appendLine("- Logged intake: $intakeBasis")
-                val obs = forecast.observedWeeklyChangeKg
-                if (obs != null) {
-                    val obsStr = if (weightMetric) String.format(Locale.US, "%+.2f kg/week", obs)
-                        else String.format(Locale.US, "%+.2f lb/week", UnitFormat.kgToLbs(obs))
-                    appendLine("- Observed weight trend: $obsStr from ${forecast.weightEntriesUsed} weigh-ins spanning ${forecast.weightSpanDays} days")
-                    if (empiricalUsable) {
-                        val empiricalTdee = loggedAvg -
-                            NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
-                        if (impliedBelowFloor) {
-                            appendLine("- Implied actual maintenance: below the BMR safety floor ($safetyFloor kcal/day) — discarded. Do not use it.")
-                        } else {
-                            appendLine("- Implied actual maintenance (logged intake minus the weekly change): ~$empiricalTdee kcal/day")
-                        }
-                    } else {
-                        appendLine("- Implied maintenance: NOT computed — ${forecast.weightEntriesUsed} weigh-ins over ${forecast.weightSpanDays} days is too thin to trust (daily water-weight noise dominates the slope). Do not estimate maintenance from this trend.")
-                    }
-                } else {
-                    appendLine("- Observed weight trend: not enough weigh-ins yet to measure")
-                }
-                appendLine("- Formula TDEE for comparison: ${forecast.tdee} kcal/day")
-                if (forecast.trendsDisagree) {
-                    appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories and do NOT use the implied maintenance.")
-                }
-                if (trustEmpirical) {
-                    if (mediumConfidence) {
-                        appendLine("- MEDIUM CONFIDENCE: this trend is still short. If the implied maintenance deviates from the formula TDEE by more than 15%, prefer the formula TDEE.")
-                    }
-                    append("HIT-AND-TRIAL: this observed data is dense enough to use. Estimate true maintenance from intake and the real weight trend, then apply the goal's weekly-change adjustment to THAT maintenance instead of the formula TDEE: SUBTRACT the lose pace from it, ADD the gain pace to it — output maintenance + adjustment, never maintenance alone. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE exactly — do not blend, average, or anchor between the two. ${GoalFormulaReference.calorieSafetyLine()}")
-                } else {
-                    val reasons = buildList {
-                        if (impliedBelowFloor) add("the implied maintenance is below the BMR safety floor")
-                        if (forecast.trendsDisagree) add("the logged intake and weight trend disagree — likely under-logging")
-                        if (!empiricalUsable) add("${forecast.weightEntriesUsed} weigh-ins over ${forecast.weightSpanDays} days, ${forecast.daysOfFoodData} logged food days is too thin to trust")
-                    }
-                    val anchor = if (measuredTdee != null) "the measured maintenance above" else "the formula TDEE"
-                    append(
-                        "HIT-AND-TRIAL: do NOT estimate maintenance from the observed data here" +
-                            (if (reasons.isEmpty()) "" else " (" + reasons.joinToString("; ") + ")") +
-                            ". Use $anchor as the maintenance anchor and apply the goal's weekly-change adjustment to it. " +
-                            GoalFormulaReference.calorieSafetyLine()
-                    )
-                }
-            }
+        return EmpiricalSignals(
+            empiricalUsable, mediumConfidence, safetyFloor, loggedAvg,
+            impliedMaintenance, impliedBelowFloor, trustEmpirical,
+        )
+    }
+
+    /** MEASURED ENERGY BURN block; the trend-refinement rule differs by tier (app-side gates vs model-side judgment). */
+    private fun measuredSectionFor(measuredTdee: Int?, smart: Boolean): String {
+        if (measuredTdee == null) return ""
+        val trendRule = if (smart) {
+            "The raw observed series above may refine this measured value only when the trend looks reliable (several weigh-ins spread over at least ~2 weeks); otherwise keep the measured maintenance."
+        } else {
+            "Ignore the observed weight trend when it is thin (fewer than $EMPIRICAL_MIN_WEIGH_INS weigh-ins or less than $EMPIRICAL_MIN_SPAN_DAYS days of span); only a strong trend (at least $EMPIRICAL_MEDIUM_MAX_WEIGH_INS weigh-ins over at least $EMPIRICAL_MEDIUM_MAX_SPAN_DAYS days) may refine it."
         }
+        return "\nMEASURED ENERGY BURN: the user's REAL maintenance from Health Connect (14-day average of active + basal calories). Use THIS as the maintenance/TDEE anchor INSTEAD of the formula TDEE: $measuredTdee kcal/day. Apply the weight goal and weekly-change adjustment to this measured maintenance. $trendRule If measured maintenance is below BMR, do not apply a further deficit below the safety floor."
+    }
 
-        // Energy Burn toggle: when on (and Health Connect has enough data) this measured
-        // maintenance replaces the formula TDEE as the calorie anchor. A thin weight trend
-        // must not drag it down (observed: model blended measured 2500 with a 2-weigh-in
-        // implied 1740 and output 1800 instead of 1950).
-        val measuredSection = if (measuredTdee != null) {
-            "\nMEASURED ENERGY BURN: the user's REAL maintenance from Health Connect (14-day average of active + basal calories). Use THIS as the maintenance/TDEE anchor INSTEAD of the formula TDEE: $measuredTdee kcal/day. Apply the weight goal and weekly-change adjustment to this measured maintenance. Ignore the observed weight trend when it is thin (fewer than $EMPIRICAL_MIN_WEIGH_INS weigh-ins or less than $EMPIRICAL_MIN_SPAN_DAYS days of span); only a strong trend (at least $EMPIRICAL_MEDIUM_MAX_WEIGH_INS weigh-ins over at least $EMPIRICAL_MEDIUM_MAX_SPAN_DAYS days) may refine it. If measured maintenance is below BMR, do not apply a further deficit below the safety floor."
-        } else ""
-
-        // Optional tape-measure circumferences + derived metrics. Extra signal only — never overrides
-        // the formulas. A shrinking waist alongside flat/declining weight implies recomposition.
-        val measurementsSummary = measurement?.promptSummary(profile.gender, profile.heightCm)
-        val measurementsSection = if (measurementsSummary != null) {
-            "\nBODY MEASUREMENTS: the user's latest tape-measure circumferences and the metrics derived from them. Use as extra signal: a shrinking waist with steady or falling weight suggests recomposition, so keep protein high and don't over-cut. Treat the US-Navy body-fat figure as a rough estimate, not exact.\n$measurementsSummary"
-        } else ""
-
-        val prompt = """
+    /** Shared goal-calculator prompt template; the observed/measured sections differ per tier. */
+    private fun goalPrompt(
+        profile: UserProfile,
+        heightMetric: Boolean,
+        weightMetric: Boolean,
+        bmrMethod: String,
+        weekly: String,
+        measuredSection: String,
+        measurementsSection: String,
+        observedSection: String,
+    ): String {
+        val weight = if (weightMetric) String.format(Locale.US, "%.1f kg", profile.weightKg)
+            else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
+        val height = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
+            else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
+        val bodyFat = profile.bodyFatPercentage?.let { "${(it * 100).toInt()}%" } ?: "not set"
+        val goalWeight = profile.goalWeightKg?.let { kg ->
+            if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
+        } ?: "not set"
+        return """
             You are the goal calculator for a calorie & macro tracking app. Using the FORMULAS, the USER PROFILE, and any OBSERVED DATA below, compute the user's daily targets.
             Return ONLY valid JSON with these exact keys (integers, plus a short reason):
             {"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters"}
@@ -399,68 +518,152 @@ class FoodAnalysisService(
             $measurementsSection
             $observedSection
         """.trimIndent()
-        if (BuildConfig.DEBUG) {
-            Log.d(
-                "Chompass",
-                "calculateGoals intake loggedDay=${forecast?.loggedDayAvgCalories} " +
-                    "calendarAvg=${forecast?.avgDailyCalories} sparse=${forecast?.usesCalendarDayAverage} " +
-                    "observedWeekly=${forecast?.observedWeeklyChangeKg} " +
-                    "locked=${profile.caloriesLocked} kcal=${profile.effectiveCalories}",
-            )
-            val lock = profile.goalLockPromptSection()
-            if (lock.isNotBlank()) Log.d("Chompass", "calculateGoals$lock")
-        }
-        val parsed = FoodJsonParser.parseGoalCalculation(
-            callAi(prompt, imageBytes = null, op = "calculateGoals", reportPhases = false),
-        )
-        val clamped = parsed.copy(calories = CalorieSafety.clampAuto(parsed.calories, profile))
-        if (profile.caloriesLocked) return clamped
-        // Deterministic enforcement of the empirical-data gate. A small on-device model
-        // can drift to a BMR-ish round number (e.g. 1800 when the formula says 1980) that
-        // passes CAL-SAFE, so when the observed data is NOT trustworthy (thin logs,
-        // disagreeing trends, or implied maintenance below the BMR floor) the calories are
-        // snapped to the anchor the prompt named: measured Health Connect maintenance +
-        // goal pace when available, else the formula target. Macros follow the formula so
-        // 4*protein + 4*carbs + 9*fat stays near calories (Settings re-fits rounding).
-        if (!trustEmpirical) {
-            val anchorCalories = if (measuredTdee != null) {
-                CalorieSafety.clampAuto(measuredTdee + profile.calorieAdjustment, profile.bmr, measuredTdee.toDouble())
+    }
+
+    /**
+     * SAFE tier observed-data section: aggregates only. Withholds the implied
+     * maintenance while the logs are below the empirical minimums (sparse weigh-ins
+     * anchored the on-device model at ~BMR — e.g. 1742 kcal vs a formula TDEE of ~2680
+     * — and CAL-SAFE passes it because it is >= BMR), and names the anchor the
+     * deterministic enforcement below will snap to.
+     */
+    private fun safeObservedSection(
+        signals: EmpiricalSignals,
+        forecast: WeightForecast?,
+        measuredTdee: Int?,
+        weightMetric: Boolean,
+    ): String = buildString {
+        if (forecast != null && forecast.hasEnoughData) {
+            appendLine()
+            appendLine("OBSERVED DATA: from the user's OWN logs (prefer this over the formula when reliable):")
+            val loggedAvg = signals.loggedAvg
+            val intakeBasis = if (forecast.usesCalendarDayAverage) {
+                "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days. Sparse coverage: calendar-day average is ${forecast.avgDailyCalories} kcal over ${forecast.calendarDaysInWindow} days — do not use that as recorded intake."
             } else {
-                profile.dailyCalories
+                "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days"
             }
-            if (clamped.calories == anchorCalories) return clamped
-            return clamped.copy(
-                calories = anchorCalories,
-                protein = profile.proteinGoal,
-                carbs = profile.carbsGoal,
-                fat = profile.fatGoal,
-                reason = when {
-                    measuredTdee != null ->
-                        "Calculated from your measured Health Connect energy burn plus your weekly goal pace."
-                    forecast == null -> "Calculated from the built-in formulas."
-                    else -> "Calculated from the built-in formulas — your logs are too thin to estimate true maintenance."
-                },
-            )
-        }
-        // Trusted empirical data: the model may use the implied maintenance, but it must
-        // apply the goal pace. When it returned maintenance alone (a pattern seen with
-        // gain goals), apply the pace deterministically.
-        val implied = impliedMaintenance
-        if (implied != null) {
-            val expectedEmpirical = CalorieSafety.clampAuto(implied.toInt() + profile.calorieAdjustment, profile)
-            if (abs(clamped.calories - expectedEmpirical) > EMPIRICAL_PACE_MISS_KCAL &&
-                abs(clamped.calories - implied.toInt()) <= EMPIRICAL_PACE_MISS_KCAL
-            ) {
-                return clamped.copy(
-                    calories = expectedEmpirical,
-                    protein = profile.proteinGoal,
-                    carbs = profile.carbsGoal,
-                    fat = profile.fatGoal,
-                    reason = "Applied your weekly goal pace to your observed maintenance.",
+            appendLine("- Logged intake: $intakeBasis")
+            val obs = forecast.observedWeeklyChangeKg
+            if (obs != null) {
+                val obsStr = if (weightMetric) String.format(Locale.US, "%+.2f kg/week", obs)
+                    else String.format(Locale.US, "%+.2f lb/week", UnitFormat.kgToLbs(obs))
+                appendLine("- Observed weight trend: $obsStr from ${forecast.weightEntriesUsed} weigh-ins spanning ${forecast.weightSpanDays} days")
+                if (signals.empiricalUsable) {
+                    val empiricalTdee = loggedAvg -
+                        NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(obs)
+                    if (signals.impliedBelowFloor) {
+                        appendLine("- Implied actual maintenance: below the BMR safety floor (${signals.safetyFloor} kcal/day) — discarded. Do not use it.")
+                    } else {
+                        appendLine("- Implied actual maintenance (logged intake minus the weekly change): ~$empiricalTdee kcal/day")
+                    }
+                } else {
+                    appendLine("- Implied maintenance: NOT computed — ${forecast.weightEntriesUsed} weigh-ins over ${forecast.weightSpanDays} days is too thin to trust (daily water-weight noise dominates the slope). Do not estimate maintenance from this trend.")
+                }
+            } else {
+                appendLine("- Observed weight trend: not enough weigh-ins yet to measure")
+            }
+            appendLine("- Formula TDEE for comparison: ${forecast.tdee} kcal/day")
+            if (forecast.trendsDisagree) {
+                appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories and do NOT use the implied maintenance.")
+            }
+            if (signals.trustEmpirical) {
+                if (signals.mediumConfidence) {
+                    appendLine("- MEDIUM CONFIDENCE: this trend is still short. If the implied maintenance deviates from the formula TDEE by more than 15%, prefer the formula TDEE.")
+                }
+                append("HIT-AND-TRIAL: this observed data is dense enough to use. Estimate true maintenance from intake and the real weight trend, then apply the goal's weekly-change adjustment to THAT maintenance instead of the formula TDEE: SUBTRACT the lose pace from it, ADD the gain pace to it — output maintenance + adjustment, never maintenance alone. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE exactly — do not blend, average, or anchor between the two. ${GoalFormulaReference.calorieSafetyLine()}")
+            } else {
+                val reasons = buildList {
+                    if (signals.impliedBelowFloor) add("the implied maintenance is below the BMR safety floor")
+                    if (forecast.trendsDisagree) add("the logged intake and weight trend disagree — likely under-logging")
+                    if (!signals.empiricalUsable) add("${forecast.weightEntriesUsed} weigh-ins over ${forecast.weightSpanDays} days, ${forecast.daysOfFoodData} logged food days is too thin to trust")
+                }
+                val anchor = if (measuredTdee != null) "the measured maintenance above" else "the formula TDEE"
+                append(
+                    "HIT-AND-TRIAL: do NOT estimate maintenance from the observed data here" +
+                        (if (reasons.isEmpty()) "" else " (" + reasons.joinToString("; ") + ")") +
+                        ". Use $anchor as the maintenance anchor and apply the goal's weekly-change adjustment to it. " +
+                        GoalFormulaReference.calorieSafetyLine()
                 )
             }
         }
-        return clamped
+    }
+
+    /**
+     * SMART tier observed-data section: raw weigh-in series (capped ~20) + day-by-day
+     * intake table + aggregates. The implied maintenance is ALWAYS shown (labeled the
+     * app's rough estimate) and reliability judgment is left to the model, with explicit
+     * noise guidance — cloud models can use the raw series, a 2B int4 on-device model
+     * cannot (it anchors on whichever number is nearest, ~BMR).
+     */
+    private fun smartObservedSection(
+        signals: EmpiricalSignals,
+        weights: List<WeightEntry>,
+        foods: List<FoodEntry>,
+        forecast: WeightForecast?,
+        weightMetric: Boolean,
+    ): String {
+        if (weights.isEmpty() && foods.isEmpty() && (forecast == null || !forecast.hasEnoughData)) return ""
+        return buildString {
+            appendLine()
+            appendLine("OBSERVED DATA: the user's RAW logs, newest last. Judge the trend's reliability yourself from the raw series — do not trust aggregates alone.")
+            if (weights.isNotEmpty()) {
+                val unit = if (weightMetric) "kg" else "lb"
+                appendLine("RAW WEIGH-INS (date, $unit):")
+                weights.takeLast(20).forEach { w ->
+                    val day = w.date.atZone(ZoneId.systemDefault()).toLocalDate()
+                    val value = if (weightMetric) String.format(Locale.US, "%.1f", w.weightKg)
+                        else String.format(Locale.US, "%.1f", UnitFormat.kgToLbs(w.weightKg))
+                    appendLine("- $day: $value")
+                }
+            }
+            if (foods.isNotEmpty()) {
+                val zone = ZoneId.systemDefault()
+                val byDay = foods.groupBy { it.timestamp.atZone(zone).toLocalDate() }
+                val newest = byDay.keys.maxOrNull()
+                if (newest != null) {
+                    appendLine("RAW INTAKE, last 14 days (date, kcal; \"-\" = nothing logged that day):")
+                    (0L..13L).map { newest.minusDays(it) }.forEach { day ->
+                        val total = byDay[day]?.sumOf { it.calories }
+                        appendLine("- $day: ${total ?: "-"}")
+                    }
+                }
+            }
+            if (forecast != null && forecast.hasEnoughData) {
+                val loggedAvg = signals.loggedAvg
+                val intakeBasis = if (forecast.usesCalendarDayAverage) {
+                    "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days. Sparse coverage: calendar-day average is ${forecast.avgDailyCalories} kcal over ${forecast.calendarDaysInWindow} days — do not use that as recorded intake."
+                } else {
+                    "avg $loggedAvg kcal/day across ${forecast.daysOfFoodData} logged days"
+                }
+                appendLine("- Logged intake: $intakeBasis")
+                val obs = forecast.observedWeeklyChangeKg
+                if (obs != null) {
+                    val obsStr = if (weightMetric) String.format(Locale.US, "%+.2f kg/week", obs)
+                        else String.format(Locale.US, "%+.2f lb/week", UnitFormat.kgToLbs(obs))
+                    appendLine("- Observed weight trend: $obsStr from ${forecast.weightEntriesUsed} weigh-ins spanning ${forecast.weightSpanDays} days")
+                } else {
+                    appendLine("- Observed weight trend: not enough weigh-ins yet to measure")
+                }
+                appendLine("- Formula TDEE for comparison: ${forecast.tdee} kcal/day")
+                if (forecast.trendsDisagree) {
+                    appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories and do NOT use the implied maintenance.")
+                }
+                // Always shown for SMART, even when thin or below the floor — the model
+                // judges it, but it must know it is an estimate and when the app flags it.
+                val implied = signals.impliedMaintenance
+                if (implied != null) {
+                    if (signals.impliedBelowFloor) {
+                        appendLine("- Implied actual maintenance: ~${implied.toInt()} kcal/day — BELOW the BMR safety floor (${signals.safetyFloor} kcal/day), so the app flags it unusable. Verify against the raw series above before trusting it.")
+                    } else {
+                        appendLine("- Implied actual maintenance (logged intake minus the weekly change): ~${implied.toInt()} kcal/day — the app's ROUGH estimate; verify it against the raw series above before trusting it.")
+                    }
+                }
+            }
+            appendLine("NOISE GUIDANCE: a single weigh-in carries ±0.5-1 kg of water-weight noise, so never judge the trend from two endpoints. A trend becomes reliable with several weigh-ins spread over at least ~2 weeks. If weight trends up while logged intake looks low, the intake table is likely incomplete (under-logging).")
+            append(
+                "HIT-AND-TRIAL: estimate true maintenance from the raw series and logged intake when the series looks reliable, then apply the goal's weekly-change adjustment to THAT maintenance instead of the formula TDEE: SUBTRACT the lose pace from it, ADD the gain pace to it — output maintenance + adjustment, never maintenance alone. If your estimate is below the BMR floor, discard it and use the formula or measured TDEE exactly — do not blend, average, or anchor between the two. ${GoalFormulaReference.calorieSafetyLine()}"
+            )
+        }
     }
 
     suspend fun suggestMealWhatIf(
@@ -932,8 +1135,10 @@ class FoodAnalysisService(
         op: String = "callAi",
         onProgress: (FoodAnalysisProgress) -> Unit = {},
         reportPhases: Boolean = true,
+        smartPrompt: String? = null,
+        trace: GoalCallTrace? = null,
     ): String {
-        return callAi(prompt, imageBytes?.let { listOf(it) }.orEmpty(), op, onProgress, reportPhases)
+        return callAi(prompt, imageBytes?.let { listOf(it) }.orEmpty(), op, onProgress, reportPhases, smartPrompt, trace)
     }
 
     private suspend fun callAi(
@@ -942,6 +1147,10 @@ class FoodAnalysisService(
         op: String = "callAi",
         onProgress: (FoodAnalysisProgress) -> Unit = {},
         reportPhases: Boolean = true,
+        /** SMART-tier prompt; [dispatch] picks it for cloud legs and [prompt] (SAFE) for the on-device leg. */
+        smartPrompt: String? = null,
+        /** Out-param recording which provider/model/tier actually answered (after any fallback). */
+        trace: GoalCallTrace? = null,
     ): String {
         callAiDelegate?.let { delegate ->
             if (reportPhases) {
@@ -966,7 +1175,7 @@ class FoodAnalysisService(
         // Time input/prompt assembly (includes the suspending userContext read) as
         // the "promptBuild" phase; the network round-trip itself is captured by the
         // OkHttp PerfEventListener, and JSON parse is timed at the call site.
-        val finalPrompt = PerfLog.measure(op, "promptBuild") {
+        val (finalPrompt, finalSmartPrompt) = PerfLog.measure(op, "promptBuild") {
             val context = prefs!!.userContext.first()
             // Non-English UI locales get localized prose (food names, reasons, advice)
             // while the machine-read parts of the JSON stay English for the parser.
@@ -982,7 +1191,8 @@ class FoodAnalysisService(
             } else {
                 ""
             }
-            languageLine + contextLine + prompt
+            val wrap: (String) -> String = { p -> languageLine + contextLine + p }
+            wrap(prompt) to smartPrompt?.let(wrap)
         }
 
         val primary = prefs!!.selectedAIProvider.first()
@@ -1034,6 +1244,8 @@ class FoodAnalysisService(
                         preferStreaming = reportPhases,
                         reasoningEffort = reasoningEffort,
                         assembler = assembler,
+                        smartPrompt = finalSmartPrompt,
+                        trace = trace,
                     )
                 } catch (primaryError: Throwable) {
                     // Never retry a different provider once content already
@@ -1041,6 +1253,10 @@ class FoodAnalysisService(
                     // doubles the wait (#25).
                     if (partialsEmitted) throw primaryError
                     val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
+                    trace?.let {
+                        it.fallbackFired = true
+                        it.primaryError = primaryError.message
+                    }
                     val fallbackModel = resolveModelForRequest(
                         provider = fallback.provider,
                         selectedModel = fallback.model,
@@ -1055,6 +1271,8 @@ class FoodAnalysisService(
                         preferStreaming = reportPhases,
                         reasoningEffort = reasoningEffort,
                         assembler = assembler,
+                        smartPrompt = finalSmartPrompt,
+                        trace = trace,
                     )
                 }
             }
@@ -1218,10 +1436,34 @@ class FoodAnalysisService(
         preferStreaming: Boolean = false,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
         assembler: FoodPartialJsonAssembler? = null,
+        /** SMART-tier prompt; cloud legs run it, the on-device leg always runs [prompt] (SAFE). */
+        smartPrompt: String? = null,
+        /** Out-param recording the leg that actually answers. */
+        trace: GoalCallTrace? = null,
     ): String {
+        // Tier selection happens PER DISPATCH, at the moment of the actual call:
+        // cloud legs run the SMART prompt (raw series, model-side judgment), the
+        // on-device leg always runs the SAFE prompt (aggregates only — a 2B int4
+        // model anchors on whichever number is nearest, ~BMR, when handed a raw
+        // series). The trace records which leg answered, so the result can report
+        // provider/model/tier and any fallback. goalTierOverrideForTest (debug
+        // harness only) forces one tier regardless of provider.
+        val overrideTier = goalTierOverrideForTest
+        val effectivePrompt = when {
+            overrideTier != null && smartPrompt != null ->
+                if (overrideTier == GoalRecalcTier.SAFE) prompt else smartPrompt
+            provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE -> prompt
+            else -> smartPrompt ?: prompt
+        }
+        trace?.let {
+            it.provider = provider
+            it.model = model
+            it.tier = overrideTier
+                ?: if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) GoalRecalcTier.SAFE else GoalRecalcTier.SMART
+        }
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
-            return OnDeviceLlmDispatchClient.analyze(gateway, prompt, imageBytesList)
+            return OnDeviceLlmDispatchClient.analyze(gateway, effectivePrompt, imageBytesList)
         }
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         AiHttp.assertCleartextAllowed(baseUrl, prefs?.allowInsecureHttp?.first() ?: false)
@@ -1232,11 +1474,11 @@ class FoodAnalysisService(
         if (!preferStreaming) {
             return when (provider.apiFormat) {
                 AIProvider.ApiFormat.GEMINI ->
-                    GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, enableGoogleSearch)
+                    GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, enableGoogleSearch)
                 AIProvider.ApiFormat.ANTHROPIC ->
-                    AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens)
+                    AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, maxTokens)
                 AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                    OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort)
+                    OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, effectivePrompt, imageBytesList, provider, maxTokens, reasoningEffort)
                 AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
             }
         }
@@ -1259,16 +1501,16 @@ class FoodAnalysisService(
         return when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI ->
                 GeminiClient.analyzeStreaming(
-                    httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList,
+                    httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList,
                     enableGoogleSearch, onDelta,
                 )
             AIProvider.ApiFormat.ANTHROPIC ->
                 AnthropicClient.analyzeStreaming(
-                    httpClient, baseUrl, model, sanitizedKey!!, prompt, imageBytesList, maxTokens, onDelta,
+                    httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, maxTokens, onDelta,
                 )
             AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
                 OpenAICompatibleClient.analyzeStreaming(
-                    httpClient, baseUrl, model, sanitizedKey, prompt, imageBytesList, provider, maxTokens, onDelta, reasoningEffort,
+                    httpClient, baseUrl, model, sanitizedKey, effectivePrompt, imageBytesList, provider, maxTokens, onDelta, reasoningEffort,
                 )
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
