@@ -497,6 +497,7 @@
     <string name="notif_channel_model_download_desc">Progression pendant le téléchargement du modèle sur l\'appareil.</string>
     <string name="notif_model_download_title">Téléchargement du modèle sur l\'appareil</string>
     <string name="settings_recalc_confirm">Recalculer</string>
+    <string name="settings_recalc_details">Détails du recalcul</string>
     <string name="settings_invalid_goal_title">Le poids cible ne correspond pas à votre objectif</string>
     <string name="settings_invalid_goal_lose">Un objectif de perte nécessite une cible inférieure à votre poids actuel.</string>
     <string name="settings_invalid_goal_gain">Un objectif de prise nécessite une cible supérieure à votre poids actuel.</string>

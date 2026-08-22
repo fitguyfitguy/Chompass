@@ -27,7 +27,9 @@ import app.chompass.models.WaterGoalBreakdown
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
-import app.chompass.services.ai.GoalCalculation
+import app.chompass.services.ai.RecalcSheetData
+import app.chompass.data.loadLastGoalChangeSheet
+import app.chompass.data.saveLastGoalChangeSheet
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.data.readSettingsHydration
@@ -57,15 +59,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-
-/** Structured Recalculate result for the transparency sheet on the Goals screen. */
-data class RecalcSheetData(
-    val result: GoalCalculation,
-    /** Profile before Recalculate applied the new targets. */
-    val before: UserProfile,
-    /** Profile after (locked fields survive; these are the sheet's "new targets"). */
-    val after: UserProfile,
-)
 
 data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
@@ -126,6 +119,8 @@ data class SettingsUiState(
     val adaptiveGoalAlertMessage: String? = null,
     /** Recalculate transparency sheet (structured result); null = not shown. */
     val recalcSheet: RecalcSheetData? = null,
+    /** Latest persisted goal-change explanation (AI or Adaptive) for the on-demand details row. */
+    val lastRecalcSheet: RecalcSheetData? = null,
     /** Settings → Other Nutrient Goals: in-flight flag for the opt-in "Estimate with AI" call. */
     val estimatingOptionalNutrientGoals: Boolean = false,
     /** Localized error for the "Estimate with AI" call; null = no alert shown. */
@@ -210,6 +205,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         lastRecalcSignature != null && profile != null && lastRecalcSignature != profile.goalInputSignature
 
     init {
+        viewModelScope.launch {
+            // On-demand transparency row: restore the latest goal-change explanation
+            // (AI Recalculate or Adaptive) so the details sheet can be reopened.
+            container.prefs.loadLastGoalChangeSheet()?.let { stored ->
+                _ui.update { it.copy(lastRecalcSheet = stored) }
+            }
+        }
         viewModelScope.launch {
             container.prefs.optionalNutrientGoals.collect { goals ->
                 _ui.value = _ui.value.copy(optionalNutrientGoals = goals)
@@ -1380,11 +1382,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 adaptiveGoalAlertMessage = result?.message
                     ?: container.appContext.getString(R.string.vm_adaptive_on_message)
             )
+            // The adaptive pass persists its own transparency-sheet entry; surface it
+            // for the on-demand details row without re-reading DataStore.
+            container.prefs.loadLastGoalChangeSheet()?.let { stored ->
+                _ui.update { it.copy(lastRecalcSheet = stored) }
+            }
         }
     }
 
     fun dismissRecalcSheet() {
         _ui.update { it.copy(recalcSheet = null) }
+    }
+
+    /** Reopen the persisted goal-change explanation sheet on demand. */
+    fun openRecalcSheet() {
+        _ui.update { it.copy(recalcSheet = it.lastRecalcSheet) }
     }
 
     fun dismissAdaptiveGoalAlert() {
@@ -1503,13 +1515,20 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 lastRecalcSignature = next.goalInputSignature
                 container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)
                 // Show the transparency sheet now (new targets, who/how it decided,
-                // formula baseline, data used, before → after, full reason).
+                // formula baseline, data used, before → after, full reason) and keep
+                // it persisted so the details row can reopen it on demand.
                 // Optional-nutrient AI is a second Gemini round-trip (can 503 / sit for
                 // minutes) and must not hold the spinner or the sheet.
+                val sheet = RecalcSheetData(
+                    result = result, before = current, after = next,
+                    savedAtMillis = System.currentTimeMillis(),
+                )
+                container.prefs.saveLastGoalChangeSheet(sheet)
                 _ui.value = _ui.value.copy(
                     recalculatingGoals = false,
                     profile = next,
-                    recalcSheet = RecalcSheetData(result = result, before = current, after = next),
+                    recalcSheet = sheet,
+                    lastRecalcSheet = sheet,
                     goalsNeedRecalc = false
                 )
                 // Optional-nutrient AI is a separate Gemini call. Do not run it here:

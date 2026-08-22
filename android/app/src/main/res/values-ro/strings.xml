@@ -507,6 +507,7 @@
     <string name="notif_channel_model_download_desc">Progres în timp ce fișierul modelului se descarcă pe dispozitiv.</string>
     <string name="notif_model_download_title">Se descarcă modelul pe dispozitiv</string>
     <string name="settings_recalc_confirm">Recalculează</string>
+    <string name="settings_recalc_details">Detalii recalculare</string>
     <string name="settings_invalid_goal_title">Greutatea obiectiv nu se potrivește cu obiectivul tău</string>
     <string name="settings_invalid_goal_lose">Un obiectiv de slăbire necesită o țintă sub greutatea actuală.</string>
     <string name="settings_invalid_goal_gain">Un obiectiv de îngrășare necesită o țintă peste greutatea actuală.</string>

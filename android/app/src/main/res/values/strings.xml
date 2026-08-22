@@ -1070,6 +1070,7 @@
     <string name="settings_recalc_title">Recalculate goals?</string>
     <string name="settings_recalc_message">Resets calories and macros to formula defaults from your height/weight/activity/goal. Any pinned macros are cleared.</string>
     <string name="settings_recalc_confirm">Recalculate</string>
+    <string name="settings_recalc_details">Recalculation details</string>
     <string name="settings_invalid_goal_title">Goal weight doesn\'t match your goal</string>
     <string name="settings_invalid_goal_lose">A Lose goal needs a target below your current weight.</string>
     <string name="settings_invalid_goal_gain">A Gain goal needs a target above your current weight.</string>

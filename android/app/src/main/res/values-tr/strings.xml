@@ -1070,6 +1070,7 @@
     <string name="notif_channel_model_download_desc">Cihaz içi model dosyası inerken ilerleme.</string>
     <string name="notif_model_download_title">Cihaz içi model indiriliyor</string>
     <string name="settings_recalc_confirm">Yeniden Hesapla</string>
+    <string name="settings_recalc_details">Yeniden hesaplama ayrıntıları</string>
     <string name="settings_invalid_goal_title">Hedef kilo, hedefinle eşleşmiyor</string>
     <string name="settings_invalid_goal_lose">Kilo Verme hedefi, mevcut kilonun altında bir hedef gerektirir.</string>
     <string name="settings_invalid_goal_gain">Kilo Alma hedefi, mevcut kilonun üzerinde bir hedef gerektirir.</string>

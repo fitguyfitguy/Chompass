@@ -515,6 +515,7 @@
     <string name="notif_channel_model_download_desc">التقدم أثناء تنزيل ملف النموذج على الجهاز.</string>
     <string name="notif_model_download_title">جارٍ تنزيل النموذج على الجهاز</string>
     <string name="settings_recalc_confirm">إعادة الحساب</string>
+    <string name="settings_recalc_details">تفاصيل إعادة الحساب</string>
     <string name="settings_invalid_goal_title">وزن الهدف لا يطابق هدفك</string>
     <string name="settings_invalid_goal_lose">يحتاج هدف الإنقاص إلى وزن أقل من وزنك الحالي.</string>
     <string name="settings_invalid_goal_gain">يحتاج هدف الزيادة إلى وزن أعلى من وزنك الحالي.</string>

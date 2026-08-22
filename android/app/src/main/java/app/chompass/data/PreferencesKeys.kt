@@ -195,4 +195,6 @@ internal object Keys {
         val WEBDAV_AUTO_SYNC_DAY = stringPreferencesKey("webDavAutoSyncDay")
         val LAST_SYNC_AT = stringPreferencesKey("lastSyncAt")
         val LAST_SYNC_ETAG = stringPreferencesKey("lastSyncEtag")
+        /** Serialized [app.chompass.services.ai.RecalcSheetData] of the latest goal change (AI Recalculate or Adaptive). */
+        val LAST_GOAL_CHANGE_SHEET_JSON = stringPreferencesKey("lastGoalChangeSheetJson")
 }

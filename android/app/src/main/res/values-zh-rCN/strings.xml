@@ -516,6 +516,7 @@
     <string name="notif_channel_model_download_desc">设备端模型文件下载进度。</string>
     <string name="notif_model_download_title">正在下载设备端模型</string>
     <string name="settings_recalc_confirm">重新计算</string>
+    <string name="settings_recalc_details">重新计算详情</string>
     <string name="settings_invalid_goal_title">目标体重与你的目标不匹配</string>
     <string name="settings_invalid_goal_lose">减重目标的目标体重需低于当前体重。</string>
     <string name="settings_invalid_goal_gain">增重目标的目标体重需高于当前体重。</string>

@@ -1935,6 +1935,7 @@ für dich ein</string>
     <string name="settings_recalc_message">Setzt Kalorien und Makros auf die Standardwerte der Formel zurück, basierend auf deiner Größe, deinem Gewicht, deiner Aktivität und deinem Ziel. Alle festgelegten Makros werden gelöscht.</string>
 
     <string name="settings_recalc_confirm">Neu berechnen</string>
+    <string name="settings_recalc_details">Details der Neuberechnung</string>
 
     <string name="settings_invalid_goal_title">Das Zielgewicht stimmt nicht mit deinem Ziel überein</string>
 

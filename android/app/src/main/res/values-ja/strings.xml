@@ -514,6 +514,7 @@
     <string name="notif_channel_model_download_desc">オンデバイスモデルのダウンロード進捗。</string>
     <string name="notif_model_download_title">オンデバイスモデルをダウンロード中</string>
     <string name="settings_recalc_confirm">再計算</string>
+    <string name="settings_recalc_details">再計算の詳細</string>
     <string name="settings_invalid_goal_title">目標体重が目標と一致しません</string>
     <string name="settings_invalid_goal_lose">減量の目標には現在の体重より低い目標値が必要です。</string>
     <string name="settings_invalid_goal_gain">増量の目標には現在の体重より高い目標値が必要です。</string>
