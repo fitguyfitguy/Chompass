@@ -77,6 +77,8 @@ internal data class DebugIntentActions(
     val goalMatrixProvider: String = "on_device",
     /** Model id override for the matrix (defaults to the provider's default model). */
     val goalMatrixModel: String = "",
+    /** Debug-only: store an OpenRouter API key in the encrypted KeyStore (benchmark key import). */
+    val setOpenRouterKey: String = "",
     val diagnoseHealthConnect: Boolean = false,
     val previewDailySummary: Boolean = false,
 ) {
@@ -155,6 +157,7 @@ internal fun consumeDebugIntentExtras(
         goalMatrixProvider = (intent.getStringExtra("goal_matrix_provider") ?: "on_device")
             .takeIf { it in GOAL_MATRIX_PROVIDERS } ?: "on_device",
         goalMatrixModel = intent.getStringExtra("goal_matrix_model") ?: "",
+        setOpenRouterKey = if (BuildConfig.DEBUG) intent.getStringExtra("set_openrouter_key") ?: "" else "",
         diagnoseHealthConnect = BuildConfig.DEBUG &&
             intent.getBooleanExtra("diagnose_health_connect", false),
         previewDailySummary = BuildConfig.DEBUG &&
@@ -217,6 +220,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.goalMatrixTier != "auto") intent.removeExtra("goal_matrix_tier")
     if (actions.goalMatrixProvider != "on_device") intent.removeExtra("goal_matrix_provider")
     if (actions.goalMatrixModel.isNotBlank()) intent.removeExtra("goal_matrix_model")
+    if (actions.setOpenRouterKey.isNotEmpty()) intent.removeExtra("set_openrouter_key")
     }
     return actions
 }
