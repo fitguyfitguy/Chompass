@@ -83,6 +83,21 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
             foodKeys.forEach { key -> it.remove(key) }
         }
     }
+
+    // Daily food aggregates (flippidity C.1): a derived per-day totals cache
+    // over the food month files, so Progress never decodes the full diary.
+    // Built once here when food history exists but the cache is empty (upgrade
+    // from a pre-aggregate build); rebuild is idempotent and self-healing — a
+    // cache that is ever emptied rebuilds from the source files, and every
+    // subsequent food write maintains it write-through.
+    val foodMonths = foodBucketStore.monthsOnDisk()
+    if (foodMonths.isNotEmpty() && foodAggregateBucketStore.monthsOnDisk().isEmpty()) {
+        foodAggregateBucketStore.replaceAll(
+            foodMonths.associateWith { month ->
+                aggregateFoodEntriesByDay(foodBucketStore.readMonth(month))
+            }
+        )
+    }
 }
 
 private fun <T> PreferencesStore.decodeListOrEmpty(raw: String, serializer: KSerializer<T>): List<T> =

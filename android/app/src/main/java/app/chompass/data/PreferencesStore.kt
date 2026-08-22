@@ -6,6 +6,7 @@ import app.chompass.models.AIProvider
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
+import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeDisplayPreferences
@@ -89,6 +90,22 @@ class PreferencesStore(private val appContext: Context) {
             serializer = FoodEntry.serializer(),
             idOf = { it.id },
             order = compareBy(FoodEntry::timestamp),
+        )
+    }
+    /**
+     * Derived per-day totals over [foodBucketStore] (flippidity C.1): Progress
+     * reads one small row per logged day instead of the year of [FoodEntry]s,
+     * so All-range compute no longer holds the full diary in memory. Written
+     * through on every food write; rebuilt from the food files by the bucket
+     * migration if ever empty. A cache, never a source of truth.
+     */
+    internal val foodAggregateBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/food-aggregates"),
+            json = json,
+            serializer = DailyFoodTotals.serializer(),
+            idOf = { it.id },
+            order = compareBy(DailyFoodTotals::date),
         )
     }
 
@@ -331,6 +348,9 @@ class PreferencesStore(private val appContext: Context) {
     fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = foodEntriesForMonthImpl(month)
     fun foodEntriesForMonths(months: Collection<YearMonth>): Flow<List<FoodEntry>> =
         foodEntriesForMonthsImpl(months)
+    /** Per-day food totals for the named months (flippidity C.1 aggregate cache). */
+    fun dailyFoodTotalsForMonths(months: Collection<YearMonth>): Flow<List<DailyFoodTotals>> =
+        dailyFoodTotalsForMonthsImpl(months)
     suspend fun applyFoodEntryBucketChanges(
         upsertsByMonth: Map<YearMonth, List<FoodEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),

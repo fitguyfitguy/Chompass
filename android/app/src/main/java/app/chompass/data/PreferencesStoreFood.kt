@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import androidx.datastore.preferences.core.edit
+import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
@@ -53,6 +54,35 @@ internal fun PreferencesStore.foodEntriesForMonthsImpl(months: Collection<YearMo
         emitAll(foodBucketStore.monthsFlow(months))
     }
 
+    /** Per-day food totals for the named months, from the aggregates cache (flippidity C.1). */
+internal fun PreferencesStore.dailyFoodTotalsForMonthsImpl(months: Collection<YearMonth>): Flow<List<DailyFoodTotals>> = flow {
+        migrateBucketsToFilesIfNeeded()
+        emitAll(foodAggregateBucketStore.monthsFlow(months))
+    }
+
+    /**
+     * Recomputes the daily-aggregate rows for [months] from the food month
+     * files and writes through to the aggregate store. Runs after every food
+     * write so Progress' aggregate flow re-emits only when a day's totals
+     * actually change. A day whose last entry was removed has its stale row
+     * dropped — a phantom zero day would skew Progress' macro-average day
+     * count. Cache hits only: the food months were just written by the caller.
+     */
+internal suspend fun PreferencesStore.rebuildDailyAggregates(months: Collection<YearMonth>) {
+        if (months.isEmpty()) return
+        val upserts = HashMap<YearMonth, List<DailyFoodTotals>>()
+        val removals = HashMap<YearMonth, Set<UUID>>()
+        for (month in months) {
+            val entries = foodBucketStore.readMonth(month)
+            val totals = aggregateFoodEntriesByDay(entries)
+            val days = totals.mapTo(HashSet()) { it.date }
+            val stale = foodAggregateBucketStore.readMonth(month).filterNot { it.date in days }
+            if (totals.isNotEmpty()) upserts[month] = totals
+            if (stale.isNotEmpty()) removals[month] = stale.map { it.id }.toSet()
+        }
+        foodAggregateBucketStore.applyChanges(upserts, removals)
+    }
+
     /**
      * Applies upserts (by id) and/or removals (by id) to exactly the named
      * month buckets, in one atomic DataStore edit — so a cross-month move
@@ -83,6 +113,9 @@ internal suspend fun PreferencesStore.applyFoodEntryBucketChangesImpl(
         // them leaves an entry without its re-edit snapshot — same UX as the
         // post-commit clearDraft path — or a harmless orphan draft.
         foodBucketStore.applyChanges(upsertsByMonth, removalIdsByMonth)
+        // Daily aggregates follow the same write: recompute the touched months
+        // from the (now updated) food cache so Progress never reads stale totals.
+        rebuildDailyAggregates(upsertsByMonth.keys + removalIdsByMonth.keys)
         if (draft != null || clearDraft) {
             dataStore.edit { prefs ->
                 if (draft != null) {
@@ -98,8 +131,12 @@ internal suspend fun PreferencesStore.applyFoodEntryBucketChangesImpl(
     /** Full replace (reseed / clear-all) — wipes every existing bucket file and regroups [entries] by month. */
 internal suspend fun PreferencesStore.replaceAllFoodEntriesImpl(entries: List<FoodEntry>) {
         migrateBucketsToFilesIfNeeded()
-        foodBucketStore.replaceAll(
-            entries.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
+        val byMonth = entries.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
+        foodBucketStore.replaceAll(byMonth)
+        // Full rebuild of the aggregate cache to match — months absent from the
+        // new diary have their aggregate files deleted too (replaceAll semantics).
+        foodAggregateBucketStore.replaceAll(
+            byMonth.mapValues { (_, monthEntries) -> aggregateFoodEntriesByDay(monthEntries) }
         )
     }
 
