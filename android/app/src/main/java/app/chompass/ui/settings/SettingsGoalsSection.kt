@@ -141,7 +141,14 @@ internal fun SettingsGoalsSection(
                         label = stringResource(R.string.settings_energy_goals),
                         checked = ui.healthEnergyGoalsEnabled,
                         icon = Icons.Outlined.LocalFireDepartment,
-                        busy = ui.recalculatingGoals,
+                        // Only show recalc activity here when the recalculation
+                        // actually consults Health Connect: measuredEnergyTdeeIfEnabled
+                        // returns null (and the prompt skips the measured TDEE) unless
+                        // Energy Burn is on AND Health Connect is connected. Without
+                        // HC the row just sits there disabled — a spinner would lie.
+                        busy = ui.recalculatingGoals &&
+                            ui.healthEnergyGoalsEnabled &&
+                            ui.healthConnectEnabled,
                         onInfo = onShowHealthEnergyGoalsInfo,
                         subtitle = if (!ui.healthConnectEnabled) {
                             stringResource(R.string.settings_needs_health_connect)
