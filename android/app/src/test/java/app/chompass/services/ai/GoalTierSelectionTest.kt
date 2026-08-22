@@ -16,6 +16,8 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import androidx.datastore.preferences.core.edit
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -139,6 +141,9 @@ class GoalTierSelectionTest {
     @After
     fun tearDown() {
         server.shutdown()
+        // The DataStore is a process-wide singleton: restore prefs this class
+        // mutates so later tests/suites see pristine state.
+        runBlocking { prefs.dataStore.edit { it.remove(app.chompass.data.Keys.SELECTED_AI_MODEL) } }
     }
 
     @Test
@@ -151,7 +156,8 @@ class GoalTierSelectionTest {
             weights = weights, foods = foods,
         )
 
-        val body = server.takeRequest().body.readUtf8()
+        val request = server.takeRequest()
+        val body = request.body.readUtf8()
         assertTrue("SMART prompt must include the raw weigh-in series", body.contains("RAW WEIGH-INS"))
         assertTrue("raw series must carry date + weight", body.contains("2026-08-01: 76.4"))
         assertTrue("SMART prompt must include the intake table", body.contains("RAW INTAKE, last 14 days"))
@@ -210,6 +216,28 @@ class GoalTierSelectionTest {
         assertEquals(AIProvider.ON_DEVICE, result.provider)
         assertTrue("fallback must be reported", result.fallbackFired)
         assertTrue("primary error must be recorded", result.primaryError?.contains("boom") == true)
+    }
+
+    @Test
+    fun smallCloudModel_receivesSafePrompt_andEnforcesSnap() = runBlocking {
+        // gemini-3.5-flash-lite anchors on the nearest maintenance (~BMR) when
+        // handed the raw series (measured 2026-08-22 on-device: 6/19 scenarios
+        // clamped to the BMR floor, measured anchor ignored), so it must run the
+        // SAFE tier like the on-device model.
+        prefs.setSelectedAIModel("gemini-3.5-flash-lite")
+        val service = newService()
+        server.enqueue(MockResponse().setResponseCode(200).setBody(geminiText(goalJson)))
+
+        val result = service.calculateGoals(
+            profile(), thinForecast(), heightMetric = true, weightMetric = true,
+            weights = weights, foods = foods,
+        )
+
+        val body = server.takeRequest().body.readUtf8()
+        assertFalse("small cloud models must NOT receive the raw series", body.contains("RAW WEIGH-INS"))
+        assertTrue("small cloud models must carry the thin-data gate", body.contains("too thin"))
+        assertEquals(GoalRecalcTier.SAFE, result.tier)
+        assertEquals("SAFE enforcement must snap thin data to the formula anchor", profile().dailyCalories, result.calories)
     }
 
     @Test

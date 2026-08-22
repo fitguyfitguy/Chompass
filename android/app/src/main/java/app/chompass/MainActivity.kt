@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import app.chompass.models.FoodEntry
+import app.chompass.models.AIProvider
 import app.chompass.services.AndroidAppIconManager
 import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
@@ -588,6 +589,12 @@ open class MainActivity : ComponentActivity() {
                     provider = actions.goalMatrixProvider,
                     model = actions.goalMatrixModel,
                 )
+            }
+            if (actions.setOpenRouterKey.isNotBlank()) {
+                // Debug-only key import (benchmark key for the goal matrix).
+                // Stored in the encrypted KeyStore; never logged; the extra is
+                // stripped right after parsing so it cannot re-fire.
+                container.keyStore.setApiKey(AIProvider.OPENROUTER, actions.setOpenRouterKey.trim())
             }
             if (actions.diagnoseHealthConnect) {
                 HealthConnectDiagnostics.log(

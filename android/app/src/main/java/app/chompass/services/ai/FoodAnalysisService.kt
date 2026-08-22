@@ -1484,17 +1484,26 @@ class FoodAnalysisService(
         // provider/model/tier and any fallback. goalTierOverrideForTest (debug
         // harness only) forces one tier regardless of provider.
         val overrideTier = goalTierOverrideForTest
+        // Small cloud models anchor on whichever maintenance number is nearest
+        // (~BMR) when handed the SMART prompt's raw series — measured on-device
+        // with gemini-3.5-flash-lite (6/19 scenarios clamped to the BMR floor,
+        // measured anchor ignored; gemini-3.6-flash passed 19/19). They run the
+        // SAFE tier (aggregates + gates + snap) like the on-device model.
+        val answeringTier = when {
+            overrideTier != null -> overrideTier
+            provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE -> GoalRecalcTier.SAFE
+            isSmallCloudGoalModel(model) -> GoalRecalcTier.SAFE
+            else -> GoalRecalcTier.SMART
+        }
         val effectivePrompt = when {
-            overrideTier != null && smartPrompt != null ->
-                if (overrideTier == GoalRecalcTier.SAFE) prompt else smartPrompt
-            provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE -> prompt
-            else -> smartPrompt ?: prompt
+            smartPrompt == null -> prompt
+            answeringTier == GoalRecalcTier.SAFE -> prompt
+            else -> smartPrompt
         }
         trace?.let {
             it.provider = provider
             it.model = model
-            it.tier = overrideTier
-                ?: if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) GoalRecalcTier.SAFE else GoalRecalcTier.SMART
+            it.tier = answeringTier
         }
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
@@ -1549,6 +1558,19 @@ class FoodAnalysisService(
                 )
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
+    }
+
+    /**
+     * Small-cloud-model detection for the goal-recalc tier rule. Matches the
+     * lite/nano/haiku/mini tier of each vendor's catalog (plus OpenRouter's
+     * free endpoint); everything else counts as a capable cloud model.
+     * Rationale + measured evidence: docs/CALCULATION_METHODS.md § AI-RECALC.
+     */
+    private fun isSmallCloudGoalModel(model: String): Boolean {
+        val m = model.lowercase()
+        // "mini" only matches as trailing "-mini" — a bare "mini-" would hit
+        // every "gemini-*" id.
+        return listOf("flash-lite", "nano", "haiku", "-mini", "/free").any { m.contains(it) }
     }
 
     private suspend fun currentFallbackConfig(
