@@ -1,6 +1,8 @@
 package app.chompass.services.ai
 
+import android.app.ActivityManager
 import android.app.Application
+import android.content.Context
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.models.FoodEntry
@@ -16,7 +18,6 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.flow.first
 import androidx.datastore.preferences.core.edit
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -32,6 +33,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 /**
@@ -104,6 +106,13 @@ class GoalTierSelectionTest {
     /** Fake on-device engine + a gateway that will use it (model file stubbed on disk). */
     private fun fakeGateway(onGenerate: (String) -> String): Pair<OnDeviceLlmGateway, FakeOnDeviceEngine> {
         val context = RuntimeEnvironment.getApplication()
+        // The real gateway runs the engine-load memory preflight; give Robolectric
+        // enough availMem that the fake engine is actually reached.
+        val mem = ActivityManager.MemoryInfo().apply {
+            totalMem = 8L * 1024 * 1024 * 1024
+            availMem = 6L * 1024 * 1024 * 1024
+        }
+        shadowOf(context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).setMemoryInfo(mem)
         val entry = ModelCatalog.forModelId("gemma-4-E2B-it")
         val modelFile = ModelDownloadManager(context).modelFile(entry)
         modelFile.parentFile?.mkdirs()

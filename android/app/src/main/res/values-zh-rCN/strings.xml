@@ -744,7 +744,7 @@
     <string name="ai_error_model_unavailable">提供商找不到此模型。它可能在免费层仅限付费、在你所在地区受限，或端点有误。请在设置 → AI 提供商切换到默认 Flash 模型，或在 AI Studio 项目中启用结算。</string>
     <string name="ai_error_network_format">网络错误：%1$s</string>
     <string name="ai_error_no_api_key">未配置 API 密钥。请在设置 → AI 提供商中添加密钥。</string>
-    <string name="ai_error_on_device_low_memory">当前空闲内存不足以进行端侧照片分析。请尝试更小的 E2B 模型、关闭其他应用，或在设置 → AI 提供商中更换提供商。</string>
+    <string name="ai_error_on_device_low_memory">当前空闲内存不足以进行端侧AI。请尝试更小的 E2B 模型、关闭其他应用，或在设置 → AI 提供商中更换提供商。</string>
     <string name="ai_error_on_device_engine_init">无法在此设备上启动模型引擎。请重试，在设置 → AI 提供商 → 模型中卸载模型，或切换到云端提供商。</string>
     <string name="ai_error_on_device_model_not_downloaded">端侧模型尚未下载。请打开设置 → AI 提供商 → 模型进行下载。</string>
     <string name="ai_error_on_device_unsupported_device">此设备不满足端侧 AI 的要求，请在设置 → AI 提供商中选择云端提供商。</string>

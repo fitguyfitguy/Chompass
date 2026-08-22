@@ -733,7 +733,7 @@
     <string name="ai_error_model_unavailable">Il tuo fornitore non trova questo modello. Potrebbe essere a pagamento sul piano gratuito, non disponibile nella tua regione o l\'endpoint potrebbe essere sbagliato. Passa al modello Flash predefinito in Impostazioni → Fornitore IA oppure attiva la fatturazione sul progetto AI Studio.</string>
     <string name="ai_error_network_format">Errore di rete: %1$s</string>
     <string name="ai_error_no_api_key">Nessuna chiave API configurata. Aggiungi la chiave in Impostazioni → Fornitore IA.</string>
-    <string name="ai_error_on_device_low_memory">Memoria libera insufficiente per l\'analisi foto sul dispositivo in questo momento. Prova il modello E2B più piccolo, chiudi altre app o cambia fornitore in Impostazioni → Fornitore IA.</string>
+    <string name="ai_error_on_device_low_memory">Memoria libera insufficiente per l\'IA sul dispositivo in questo momento. Prova il modello E2B più piccolo, chiudi altre app o cambia fornitore in Impostazioni → Fornitore IA.</string>
     <string name="ai_error_on_device_engine_init">Il motore del modello non è riuscito ad avviarsi su questo dispositivo. Riprova, scarica il modello in Impostazioni → Provider IA → Modello oppure passa a un provider cloud.</string>
     <string name="ai_error_on_device_model_not_downloaded">Modello locale non ancora scaricato. Apri Impostazioni → Fornitore IA → Modello per scaricarlo.</string>
     <string name="ai_error_on_device_unsupported_device">Questo dispositivo non soddisfa i requisiti per l\'IA locale. Scegli un fornitore cloud in Impostazioni → Fornitore IA.</string>

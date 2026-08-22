@@ -28,6 +28,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
 import app.chompass.services.ai.RecalcSheetData
+import app.chompass.data.SettingsPrefsHydration
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.data.saveLastGoalChangeSheet
 import app.chompass.data.OpenRouterReasoningEffort
@@ -182,6 +183,21 @@ data class SettingsSuggestion(
     val targetRoute: String,
 )
 
+/**
+ * Snapshot + AI-selection resolution from the first (off-main) hydration
+ * phase of [SettingsViewModel]. Kept separate from the slow tail (Health
+ * Connect, weather, profile, water preview) so the provider picker paints
+ * the resolved On-Device/Gemini selection before that tail finishes.
+ */
+private data class EarlyHydration(
+    val snap: SettingsPrefsHydration,
+    val provider: AIProvider,
+    val effectiveModel: String,
+    val vision: String,
+    val onDeviceAvailable: Boolean,
+    val onDeviceModels: List<String>,
+)
+
 class SettingsViewModel(val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(
         // Capability is cheap and sync. Defaulting this to false hid On-Device
@@ -218,146 +234,168 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         viewModelScope.launch {
-            val snap = container.prefs.readSettingsHydration()
-            val provider = snap.selectedAI
-            val model = provider.supportedModelOrDefault(snap.selectedModelRaw)
-            val vision = snap.visionModelRaw
-                ?.takeIf { it.isNotBlank() }
-                ?.let { provider.supportedModelOrDefault(it) }
-                .orEmpty()
-            val speech = snap.selectedSpeech
-            val onDeviceAvailable = snap.onDeviceFeatureVisible &&
-                OnDeviceCapability.isSupported(container.appContext)
-            val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
-                supportedOnDeviceModels()
-            } else {
-                emptyList()
-            }
-            val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) {
-                onDeviceModels.first()
-            } else {
-                model
+            // Hydration touches the DataStore snapshot decode, the encrypted
+            // KeyStore (synchronous AES file I/O), Health Connect IPC, and a
+            // food-bucket read for the water preview. Run the whole chain
+            // off-main so the first Settings frame is never held up; only the
+            // final state writes touch the main thread.
+            val early = withContext(Dispatchers.IO) {
+                val snap = container.prefs.readSettingsHydration()
+                val provider = snap.selectedAI
+                val model = provider.supportedModelOrDefault(snap.selectedModelRaw)
+                val vision = snap.visionModelRaw
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { provider.supportedModelOrDefault(it) }
+                    .orEmpty()
+                val onDeviceAvailable = snap.onDeviceFeatureVisible &&
+                    OnDeviceCapability.isSupported(container.appContext)
+                val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
+                    supportedOnDeviceModels()
+                } else {
+                    emptyList()
+                }
+                val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) {
+                    onDeviceModels.first()
+                } else {
+                    model
+                }
+                EarlyHydration(
+                    snap = snap,
+                    provider = provider,
+                    effectiveModel = effectiveModel,
+                    vision = vision,
+                    onDeviceAvailable = onDeviceAvailable,
+                    onDeviceModels = onDeviceModels,
+                )
             }
             // Paint AI selection before Health Connect / weather so a slow
             // hydrate cannot flash Gemini and hide On-Device.
             _ui.update {
                 it.copy(
-                    selectedAI = provider,
-                    selectedModel = effectiveModel,
-                    onDeviceAvailable = onDeviceAvailable,
-                    onDeviceModels = onDeviceModels,
-                    aiFeaturesEnabled = snap.aiFeaturesEnabled,
+                    selectedAI = early.provider,
+                    selectedModel = early.effectiveModel,
+                    onDeviceAvailable = early.onDeviceAvailable,
+                    onDeviceModels = early.onDeviceModels,
+                    aiFeaturesEnabled = early.snap.aiFeaturesEnabled,
                 )
             }
-            val weather = container.weatherRepository.state.first()
-            val hc = reconcileHealthConnectState()
-            val profile = container.profileRepository.current()
-            val energyGoals = snap.healthEnergyGoalsEnabled && hc
-            var backgroundSync = snap.healthBackgroundSyncEnabled && hc
-            if (backgroundSync &&
-                !(container.health.isBackgroundReadAvailable() && container.health.hasBackgroundRead())
-            ) {
-                container.prefs.setHealthBackgroundSyncEnabled(false)
-                HealthSyncWorker.cancel(container.appContext)
-                backgroundSync = false
-            }
-            val masked = maskKey(container.keyStore.apiKey(provider))
-            val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
-            val fbProvider = snap.fallbackProvider
-            val fbModel = fbProvider.supportedFallbackModelOrDefault(snap.fallbackModelRaw)
-            val fbMasked = maskKey(container.keyStore.fallbackApiKey(fbProvider))
-            lastRecalcSignature = snap.lastRecalcGoalSignature ?: profile?.goalInputSignature
-            if (snap.lastRecalcGoalSignature == null && profile != null) {
-                container.prefs.setLastRecalcGoalSignature(profile.goalInputSignature)
-            }
-            _ui.value = SettingsUiState(
-                selectedAI = provider,
-                selectedModel = effectiveModel,
-                visionModel = vision,
-                maxResponseTokens = snap.maxResponseTokens,
-                aiReadTimeoutSeconds = snap.aiReadTimeoutSeconds,
-                servingUnitInferenceMode = snap.servingUnitInferenceMode,
-                heuristicServingUnitSettings = snap.heuristicServingUnitSettings,
-                selectedSpeech = speech,
-                selectedSpeechLanguage = snap.selectedSpeechLanguage,
-                heightUnit = snap.heightUnit,
-                weightUnit = snap.weightUnit,
-                preferGramsByDefault = snap.preferGramsByDefault,
-                profile = profile,
-                notificationsEnabled = snap.notificationsEnabled,
-                streakReminderEnabled = snap.streakReminderEnabled,
-                dailySummaryEnabled = snap.dailySummaryEnabled,
-                dailySummaryHour = snap.dailySummaryHour,
-                dailySummaryMinute = snap.dailySummaryMinute,
-                weightReminderEnabled = snap.weightReminderEnabled,
-                bodyFatReminderEnabled = snap.bodyFatReminderEnabled,
-                waterTrackingEnabled = snap.waterTrackingEnabled,
-                waterDailyGoalMl = snap.waterDailyGoalMl,
-                waterQuickPresetsMl = snap.waterQuickPresetsMl,
-                waterReminderEnabled = snap.waterReminderEnabled,
-                waterDynamicEnabled = snap.waterDynamicEnabled,
-                waterBaseSource = snap.waterBaseSource,
-                waterManualTempC = snap.waterManualTempC,
-                weatherSource = weather.source,
-                weatherOmCity = weather.omCity,
-                weatherOmHighC = weather.omHighC,
-                weatherOmUpdatedAtMillis = weather.omUpdatedAtMillis,
-                waterUseProfileActivity = snap.waterUseProfileActivity,
-                waterFoodWaterEnabled = snap.waterFoodWaterEnabled,
-                waterAwakeStartMinutes = snap.waterAwakeStartMinutes,
-                waterAwakeEndMinutes = snap.waterAwakeEndMinutes,
-                waterCupSizeMl = snap.waterCupSizeMl,
-                waterDynamicGoalPreview = if (snap.waterDynamicEnabled) computeWaterGoalPreview(
+            val (state, sheet) = withContext(Dispatchers.IO) {
+                val snap = early.snap
+                val provider = early.provider
+                val speech = snap.selectedSpeech
+                val weather = container.weatherRepository.state.first()
+                val hc = reconcileHealthConnectState()
+                val profile = container.profileRepository.current()
+                val energyGoals = snap.healthEnergyGoalsEnabled && hc
+                var backgroundSync = snap.healthBackgroundSyncEnabled && hc
+                if (backgroundSync &&
+                    !(container.health.isBackgroundReadAvailable() && container.health.hasBackgroundRead())
+                ) {
+                    container.prefs.setHealthBackgroundSyncEnabled(false)
+                    HealthSyncWorker.cancel(container.appContext)
+                    backgroundSync = false
+                }
+                val masked = maskKey(container.keyStore.apiKey(provider))
+                val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
+                val fbProvider = snap.fallbackProvider
+                val fbModel = fbProvider.supportedFallbackModelOrDefault(snap.fallbackModelRaw)
+                val fbMasked = maskKey(container.keyStore.fallbackApiKey(fbProvider))
+                lastRecalcSignature = snap.lastRecalcGoalSignature ?: profile?.goalInputSignature
+                if (snap.lastRecalcGoalSignature == null && profile != null) {
+                    container.prefs.setLastRecalcGoalSignature(profile.goalInputSignature)
+                }
+                val state = SettingsUiState(
+                    selectedAI = provider,
+                    selectedModel = early.effectiveModel,
+                    visionModel = early.vision,
+                    maxResponseTokens = snap.maxResponseTokens,
+                    aiReadTimeoutSeconds = snap.aiReadTimeoutSeconds,
+                    servingUnitInferenceMode = snap.servingUnitInferenceMode,
+                    heuristicServingUnitSettings = snap.heuristicServingUnitSettings,
+                    selectedSpeech = speech,
+                    selectedSpeechLanguage = snap.selectedSpeechLanguage,
+                    heightUnit = snap.heightUnit,
+                    weightUnit = snap.weightUnit,
+                    preferGramsByDefault = snap.preferGramsByDefault,
+                    profile = profile,
+                    notificationsEnabled = snap.notificationsEnabled,
+                    streakReminderEnabled = snap.streakReminderEnabled,
+                    dailySummaryEnabled = snap.dailySummaryEnabled,
+                    dailySummaryHour = snap.dailySummaryHour,
+                    dailySummaryMinute = snap.dailySummaryMinute,
+                    weightReminderEnabled = snap.weightReminderEnabled,
+                    bodyFatReminderEnabled = snap.bodyFatReminderEnabled,
+                    waterTrackingEnabled = snap.waterTrackingEnabled,
+                    waterDailyGoalMl = snap.waterDailyGoalMl,
+                    waterQuickPresetsMl = snap.waterQuickPresetsMl,
+                    waterReminderEnabled = snap.waterReminderEnabled,
+                    waterDynamicEnabled = snap.waterDynamicEnabled,
+                    waterBaseSource = snap.waterBaseSource,
+                    waterManualTempC = snap.waterManualTempC,
+                    weatherSource = weather.source,
+                    weatherOmCity = weather.omCity,
+                    weatherOmHighC = weather.omHighC,
+                    weatherOmUpdatedAtMillis = weather.omUpdatedAtMillis,
+                    waterUseProfileActivity = snap.waterUseProfileActivity,
+                    waterFoodWaterEnabled = snap.waterFoodWaterEnabled,
+                    waterAwakeStartMinutes = snap.waterAwakeStartMinutes,
+                    waterAwakeEndMinutes = snap.waterAwakeEndMinutes,
+                    waterCupSizeMl = snap.waterCupSizeMl,
+                    waterDynamicGoalPreview = if (snap.waterDynamicEnabled) computeWaterGoalPreview(
                     manualGoalMl = snap.waterDailyGoalMl,
                     source = snap.waterBaseSource,
                     tempC = snap.waterManualTempC,
                     useActivity = snap.waterUseProfileActivity,
                     foodWater = snap.waterFoodWaterEnabled,
-                ) else null,
-                goalReachedNotificationsEnabled = snap.goalReachedNotificationsEnabled,
-                appUpdateNotificationsEnabled = snap.appUpdateNotificationsEnabled,
-                healthConnectEnabled = hc,
-                healthEnergyGoalsEnabled = energyGoals,
-                healthBackgroundSyncEnabled = backgroundSync,
-                healthBackgroundReadAvailable = container.health.isBackgroundReadAvailable(),
-                healthBackgroundReadGranted = container.health.hasBackgroundRead(),
-                adaptiveGoalsEnabled = snap.adaptiveGoalsEnabled,
-                apiKeyMasked = masked,
-                speechApiKeyMasked = speechMasked,
-                onDeviceAvailable = onDeviceAvailable,
-                onDeviceModels = onDeviceModels,
-                appearanceMode = snap.appearanceMode,
-                appLanguage = snap.appLanguage,
-                coachTabEnabled = snap.coachTabEnabled,
-                aiFeaturesEnabled = snap.aiFeaturesEnabled,
-                allowInsecureHttp = snap.allowInsecureHttp,
-                appThemeColor = AppThemeColor.fromKey(snap.appThemeColorKey),
-                fixedLauncherIcon = snap.fixedLauncherIcon,
-                foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
-                weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
-                weekStartDay = snap.weekStartDay,
-                progressDefaultRangeId = snap.progressDefaultRangeId,
-                progressMeasurementSites = snap.progressMeasurementSites,
-                userContext = snap.userContext,
-                fallbackEnabled = snap.fallbackEnabled,
-                fallbackProvider = fbProvider,
-                fallbackModel = fbModel,
-                fallbackApiKeyMasked = fbMasked,
-                geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
-                openRouterReasoningEffort = snap.openRouterReasoningEffort,
-                portionClarifyEnabled = snap.portionClarifyEnabled,
-                mealConstituentsEnabled = snap.mealConstituentsEnabled,
-                skipPhotoNotePrompt = snap.skipPhotoNotePrompt,
-                optionalNutrientGoals = snap.optionalNutrientGoals,
-                homeDisplay = snap.homeDisplay,
-                mealSchedule = snap.mealSchedule,
-                goalsNeedRecalc = needsRecalc(profile)
-            )
-            // The hydration rebuild above is wholesale; re-apply the persisted
-            // goal-change explanation (AI Recalculate or Adaptive) for the on-demand
-            // details row. DataStore is cached, so this second read is cheap and
-            // race-free (same coroutine).
-            _ui.update { it.copy(lastRecalcSheet = container.prefs.loadLastGoalChangeSheet()) }
+                    ) else null,
+                    goalReachedNotificationsEnabled = snap.goalReachedNotificationsEnabled,
+                    appUpdateNotificationsEnabled = snap.appUpdateNotificationsEnabled,
+                    healthConnectEnabled = hc,
+                    healthEnergyGoalsEnabled = energyGoals,
+                    healthBackgroundSyncEnabled = backgroundSync,
+                    healthBackgroundReadAvailable = container.health.isBackgroundReadAvailable(),
+                    healthBackgroundReadGranted = container.health.hasBackgroundRead(),
+                    adaptiveGoalsEnabled = snap.adaptiveGoalsEnabled,
+                    apiKeyMasked = masked,
+                    speechApiKeyMasked = speechMasked,
+                    onDeviceAvailable = early.onDeviceAvailable,
+                    onDeviceModels = early.onDeviceModels,
+                    appearanceMode = snap.appearanceMode,
+                    appLanguage = snap.appLanguage,
+                    coachTabEnabled = snap.coachTabEnabled,
+                    aiFeaturesEnabled = snap.aiFeaturesEnabled,
+                    allowInsecureHttp = snap.allowInsecureHttp,
+                    appThemeColor = AppThemeColor.fromKey(snap.appThemeColorKey),
+                    fixedLauncherIcon = snap.fixedLauncherIcon,
+                    foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
+                    weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
+                    weekStartDay = snap.weekStartDay,
+                    progressDefaultRangeId = snap.progressDefaultRangeId,
+                    progressMeasurementSites = snap.progressMeasurementSites,
+                    userContext = snap.userContext,
+                    fallbackEnabled = snap.fallbackEnabled,
+                    fallbackProvider = fbProvider,
+                    fallbackModel = fbModel,
+                    fallbackApiKeyMasked = fbMasked,
+                    geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
+                    openRouterReasoningEffort = snap.openRouterReasoningEffort,
+                    portionClarifyEnabled = snap.portionClarifyEnabled,
+                    mealConstituentsEnabled = snap.mealConstituentsEnabled,
+                    skipPhotoNotePrompt = snap.skipPhotoNotePrompt,
+                    optionalNutrientGoals = snap.optionalNutrientGoals,
+                    homeDisplay = snap.homeDisplay,
+                    mealSchedule = snap.mealSchedule,
+                    goalsNeedRecalc = needsRecalc(profile)
+                )
+                // The hydration rebuild above is wholesale; re-apply the persisted
+                // goal-change explanation (AI Recalculate or Adaptive) for the on-demand
+                // details row. DataStore is cached, so this second read is cheap and
+                // race-free (same coroutine).
+                val sheet = container.prefs.loadLastGoalChangeSheet()
+                state to sheet
+            }
+            _ui.value = state
+            _ui.update { it.copy(lastRecalcSheet = sheet) }
         }
 
         container.prefs.homeDisplayPreferences

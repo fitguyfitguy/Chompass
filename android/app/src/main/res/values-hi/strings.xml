@@ -743,7 +743,7 @@
     <string name="ai_error_model_unavailable">आपका प्रदाता यह मॉडल नहीं ढूंढ सका। यह मुफ्त टियर पर केवल-भुगतान वाला, आपके क्षेत्र में प्रतिबंधित, या endpoint गलत हो सकता है। सेटिंग्स → AI प्रदाता में डिफ़ॉल्ट Flash मॉडल पर स्विच करें, या अपने AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें।</string>
     <string name="ai_error_network_format">नेटवर्क त्रुटि: %1$s</string>
     <string name="ai_error_no_api_key">कोई API कुंजी कॉन्फ़िगर नहीं है। अपनी कुंजी सेटिंग्स → AI प्रदाता में जोड़ें।</string>
-    <string name="ai_error_on_device_low_memory">अभी ऑन-डिवाइस फोटो विश्लेषण के लिए पर्याप्त खाली मेमोरी नहीं है। छोटा E2B मॉडल आज़माएं, अन्य ऐप बंद करें, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
+    <string name="ai_error_on_device_low_memory">अभी ऑन-डिवाइस AI के लिए पर्याप्त खाली मेमोरी नहीं है। छोटा E2B मॉडल आज़माएं, अन्य ऐप बंद करें, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
     <string name="ai_error_on_device_engine_init">इस डिवाइस पर मॉडल इंजन शुरू नहीं हो सका। फिर से प्रयास करें, सेटिंग्स → AI प्रदाता → मॉडल में मॉडल अनलोड करें, या क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_on_device_model_not_downloaded">ऑन-डिवाइस मॉडल अभी डाउनलोड नहीं हुआ है। डाउनलोड करने के लिए सेटिंग्स → AI प्रदाता → मॉडल खोलें।</string>
     <string name="ai_error_on_device_unsupported_device">यह डिवाइस ऑन-डिवाइस AI की आवश्यकताओं को पूरा नहीं करता। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता चुनें।</string>

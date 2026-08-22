@@ -713,7 +713,7 @@
     <string name="ai_error_model_unavailable">Je provider kon dit model niet vinden. Het kan betaald zijn op de gratis laag, beperkt in jouw regio, of de endpoint kan onjuist zijn. Schakel naar het standaard Flash-model in Instellingen → AI-provider of schakel facturering in op je AI Studio-project.</string>
     <string name="ai_error_network_format">Netwerkfout: %1$s</string>
     <string name="ai_error_no_api_key">Geen API-sleutel geconfigureerd. Voeg je sleutel toe in Instellingen → AI-provider.</string>
-    <string name="ai_error_on_device_low_memory">Nu niet genoeg vrij geheugen voor foto-analyse op het apparaat. Probeer het kleinere E2B-model, sluit andere apps of wissel van provider in Instellingen → AI-provider.</string>
+    <string name="ai_error_on_device_low_memory">Nu niet genoeg vrij geheugen voor AI op het apparaat. Probeer het kleinere E2B-model, sluit andere apps of wissel van provider in Instellingen → AI-provider.</string>
     <string name="ai_error_on_device_engine_init">De modelengine kon op dit apparaat niet worden gestart. Probeer het opnieuw, verwijder het model onder Instellingen → AI-provider → Model of schakel over naar een cloudprovider.</string>
     <string name="ai_error_on_device_model_not_downloaded">On-device model nog niet gedownload. Open Instellingen → AI-provider → Model om het te downloaden.</string>
     <string name="ai_error_on_device_unsupported_device">Dit apparaat voldoet niet aan de vereisten voor on-device AI. Kies een cloudprovider in Instellingen → AI-provider.</string>
