@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **Logging food, water, and weight entries is faster on long histories** (Android): saves no longer rewrite your whole history in one file each time. Adding one entry now touches only that calendar month, so the app stays as quick after a year of logging as it is on day one. Your existing data moves over automatically on update; exports, backups, and sync are unchanged.
+
 ### Fixed
 
 - **On-device model download no longer crashes at 100%** (Android): finishing the Gemma download no longer re-reads the whole multi-GB file just to check it, which could close the app and then hide On-Device in Settings until things settled. If a download was interrupted after the file landed, Retry finishes the check instead of starting over.
