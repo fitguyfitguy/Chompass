@@ -42,14 +42,14 @@ Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developer
 |-------|--------|
 | Model | **Gemma 4 E2B-it** (instruction-tuned, ~2B params) |
 | Format | **`.litertlm`** (LiteRT-LM native/mobile bundle, **not** `.task` or web/WASM builds) |
-| Quantization | int4 (filename convention: `gemma-e2b-int4.litertlm`) |
+| Quantization | int4 (native/mobile build; filename `gemma-4-E2B-it.litertlm`) |
 | Source | [Hugging Face `litert-community`](https://huggingface.co/litert-community); use the **native/mobile** artifact for Gemma 4 E2B-it |
-| On-device path | `filesDir/models/gemma-e2b-int4.litertlm` |
+| On-device path | `filesDir/models/gemma-4-E2B-it.litertlm` |
 | Package path (debug) | `/data/user/0/app.chompass.debug/files/models/` |
 
 **Important:** Hugging Face listings can include both **web** and **native/mobile** builds of the same model. Web variants fail at load with errors like `TF_LITE_PREFILL_DECODE not found in the model`. Only the native `.litertlm` mobile build works with the Android API.
 
-The model is **not bundled** in the APK (~1–2 GB). Delivery is manual via `adb` (see below).
+The model is **not bundled** in the APK (2.6 GB E2B / 3.7 GB E4B). Delivery is scripted: [`scripts/push_ondevice_model.sh`](../scripts/push_ondevice_model.sh) downloads once into a local cache and pushes into app-private storage (see below).
 
 ---
 
@@ -93,18 +93,25 @@ Use the **arm64-v8a** split on Pixel 9a (or the universal debug APK).
 
 ---
 
-## Model delivery (`adb push`)
+## Model delivery (`scripts/push_ondevice_model.sh`)
 
-From Windows PowerShell (adjust WSL distro name if needed):
+The download happens **once** on the dev machine into `android/build/ondevice-models/` (gitignored), SHA-256-verified against the hashes in [`ModelCatalog.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelCatalog.kt), then pushed into app-private storage via `run-as`. Reinstalls, reflashes, and package switches reuse the cache — no re-download per test cycle. Model filenames match `ModelCatalog.kt`, so the same pushed file serves both the smoke test and production dispatch.
+
+```bash
+./scripts/push_ondevice_model.sh                  # e2b: download (if needed) + push
+./scripts/push_ondevice_model.sh e4b              # Gemma 4 E4B-it (~3.7 GB)
+./scripts/push_ondevice_model.sh --download-only  # fetch + verify into cache only
+./scripts/push_ondevice_model.sh --push-only      # push a cached model (e.g. after a phone reflash)
+PACKAGE=app.chompass.debug2 ./scripts/push_ondevice_model.sh   # other debug package
+```
+
+Manual fallback (any file, any package; `run-as` needs a debuggable app):
 
 ```powershell
-# 1. Push to a world-readable staging path
-adb push gemma-e2b-int4.litertlm /data/local/tmp/gemma-e2b-int4.litertlm
-
-# 2. Copy into app-private storage (debuggable app, no root)
+adb push gemma-4-E2B-it.litertlm /data/local/tmp/gemma-4-E2B-it.litertlm
 adb shell run-as app.chompass.debug mkdir -p files/models
-adb shell run-as app.chompass.debug cp /data/local/tmp/gemma-e2b-int4.litertlm files/models/
-adb shell rm /data/local/tmp/gemma-e2b-int4.litertlm
+adb shell run-as app.chompass.debug cp /data/local/tmp/gemma-4-E2B-it.litertlm files/models/
+adb shell rm /data/local/tmp/gemma-4-E2B-it.litertlm
 ```
 
 Verify:
@@ -124,7 +131,7 @@ adb shell run-as app.chompass.debug ls -la files/models/
 | `run_ondevice_llm_test` | boolean | - | Run the smoke test |
 | `ondevice_llm_backend` | string | `gpu` | `gpu` or `cpu` |
 | `ondevice_llm_mtp` | boolean | `false` | Enable multi-token prediction on GPU (longer cold init) |
-| `ondevice_llm_model` | string | `gemma-e2b-int4.litertlm` | Filename under `filesDir/models/` |
+| `ondevice_llm_model` | string | `gemma-4-E2B-it.litertlm` | Filename under `filesDir/models/` |
 | `ondevice_llm_tier` | string | `all` | `all`, `a`, **`b`**, `c`, or **`daily`** |
 | `ondevice_llm_prompt` | string | `full` | Tier A prompt: `full`, `compact`, `fewshot_units`, or `twopass` |
 | `ondevice_llm_repeat` | int | `1` | Tier A repeat count (1–5) for warm-cache latency comparison |
@@ -342,7 +349,7 @@ adb logcat -s FudOnDeviceLlm
 # Exp 3: FunctionGemma: SKIPPED (no suitable artifact for this app: see experiment log)
 
 # Exp 4: Gemma 4 E4B full run (optional quality comparison)
-adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_model gemma-e4b-int4.litertlm
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_ondevice_llm_test true --es ondevice_llm_model gemma-4-E4B-it.litertlm
 ```
 
 ### Log format

@@ -17,11 +17,15 @@ data class OnDeviceLlmDebugConfig(
 )
 
 object OnDeviceLlmDefaults {
-    /** Gemma 4 E2B-it int4 native/mobile build — primary on-device model for Chompass experiments. */
-    const val DEFAULT_MODEL_FILENAME = "gemma-e2b-int4.litertlm"
+    /**
+     * Filenames match [app.chompass.services.ondevice.ModelCatalog] so the file
+     * pushed via scripts/push_ondevice_model.sh (or the in-app download) serves
+     * both the smoke-test harness and production dispatch — one file, one name.
+     */
+    const val DEFAULT_MODEL_FILENAME = "gemma-4-E2B-it.litertlm"
 
     /** Gemma 4 E4B-it int4 native/mobile build (optional quality comparison; not run). */
-    const val E4B_MODEL_FILENAME = "gemma-e4b-int4.litertlm"
+    const val E4B_MODEL_FILENAME = "gemma-4-E4B-it.litertlm"
 
     /**
      * FunctionGemma HF artifacts — **not used for Chompass**. Tensor G5 file fails on OpenCL GPU;
