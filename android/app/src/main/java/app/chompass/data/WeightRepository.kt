@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
+import java.time.YearMonth
+import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.abs
 
@@ -43,7 +45,7 @@ class WeightRepository(
     suspend fun addEntry(entry: WeightEntry): WeightGoalReachedEvent? {
         val current = prefs.weightEntries.first()
         val previousLatest = current.maxByOrNull { it.date }
-        prefs.setWeightEntries(current + entry)
+        prefs.applyWeightBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
         sync?.touch(entry.id, "weight")
 
         syncProfileWeightToLatest()
@@ -67,8 +69,8 @@ class WeightRepository(
     }
 
     suspend fun deleteEntry(id: UUID) {
-        val current = prefs.weightEntries.first()
-        prefs.setWeightEntries(current.filter { it.id != id })
+        val existing = prefs.weightEntries.first().firstOrNull { it.id == id } ?: return
+        prefs.applyWeightBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "weight")
         syncProfileWeightToLatest()
         // Delete the HC record even when sync is off (iOS parity, best-effort) —
@@ -162,6 +164,8 @@ class WeightRepository(
             ?: "hc-weight:${time.toEpochMilli()}"
         return UUID.nameUUIDFromBytes(seed.toByteArray())
     }
+
+    private fun WeightEntry.month(): YearMonth = YearMonth.from(date.atZone(ZoneId.systemDefault()))
 
     /** Write gate — only push to Health Connect when the user granted weight WRITE. */
     private suspend fun shouldSyncHealth(): Boolean {

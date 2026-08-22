@@ -1,6 +1,5 @@
 package app.chompass.data
 
-import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.edit
 import app.chompass.models.FoodEntry
 import app.chompass.models.PendingFoodAnalysisDraft
@@ -19,52 +18,39 @@ import kotlinx.serialization.builtins.serializer
 
 // -- Food entries (bucketed by calendar month) -------------------------
     //
-    // Entries are stored one JSON blob per calendar month (key
-    // "foodEntries_2026-07") instead of one blob for all history, so adding/
-    // editing/deleting a single entry only decodes+encodes the entries in
-    // its own month, not every entry ever logged (which used to cost ~1s+
-    // per save and grow linearly forever — see PerfLog "save"/"dataStore").
-    // Legacy single-blob data (key "foodEntries") is migrated into buckets
-    // once via [migrateFoodEntriesToBucketsIfNeededImpl].
+    // Entries are stored one JSON file per calendar month under
+    // filesDir/chompass-buckets/food/<yyyy-MM>.json (JsonBucketStore) instead
+    // of one blob for all history, so adding/editing/deleting a single entry
+    // only decodes+encodes the entries in its own month, not every entry ever
+    // logged (which used to cost ~1s+ per save and grow linearly forever — see
+    // PerfLog "save"/"dataStore"). Before the file move, the same shape lived
+    // as DataStore keys "foodEntries_2026-07"; legacy single-blob data (key
+    // "foodEntries") is migrated via [migrateFoodEntriesToBucketsIfNeededImpl]
+    // then [migrateBucketsToFilesIfNeeded].
 
-private fun PreferencesStore.decodeEntryListImpl(raw: String?): List<FoodEntry> =
+internal fun PreferencesStore.decodeEntryListImpl(raw: String?): List<FoodEntry> =
         raw?.let { runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull() }
             ?: emptyList()
 
 private fun PreferencesStore.encodeEntryListImpl(entries: List<FoodEntry>): String =
         json.encodeToString(ListSerializer(FoodEntry.serializer()), entries)
 
-private fun PreferencesStore.foodEntriesForBucketRawImpl(month: YearMonth): Flow<List<FoodEntry>> = dataStore.data.map { prefs ->
-        decodeEntryListImpl(prefs[Keys.foodEntriesBucket(month)])
-    }
-
-    /** Full history, reconstructed by merging every foodEntries_* bucket. O(n) —
-     *  only meant for whole-history consumers (recent/frequent/favorites-migration/etc). */
-private val PreferencesStore.allFoodEntriesRawImpl: Flow<List<FoodEntry>> get() = dataStore.data.map { prefs ->
-        prefs.asMap().entries
-            .filter { it.key.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }
-            .flatMap { decodeEntryListImpl(it.value as? String) }
-    }
-
-    /** Whole food log across all months. Gated on the one-time bucket migration. */
+    /** Whole food log across all months. Gated on the one-time bucket-file migration. */
 internal val PreferencesStore.foodEntriesImpl: Flow<List<FoodEntry>> get() = flow {
-        migrateFoodEntriesToBucketsIfNeededImpl()
-        emitAll(allFoodEntriesRawImpl)
+        migrateBucketsToFilesIfNeeded()
+        emitAll(foodBucketStore.allFlow())
     }
 
     /** One calendar month's entries only, gated on migration — the fast path for date-scoped reads. */
 internal fun PreferencesStore.foodEntriesForMonthImpl(month: YearMonth): Flow<List<FoodEntry>> = flow {
-        migrateFoodEntriesToBucketsIfNeededImpl()
-        emitAll(foodEntriesForBucketRawImpl(month))
+        migrateBucketsToFilesIfNeeded()
+        emitAll(foodBucketStore.monthFlow(month))
     }
 
-    /** Decode only the named month buckets (missing keys → empty). One DataStore map. */
+    /** Decode only the named month buckets (missing months → empty). */
 internal fun PreferencesStore.foodEntriesForMonthsImpl(months: Collection<YearMonth>): Flow<List<FoodEntry>> = flow {
-        migrateFoodEntriesToBucketsIfNeededImpl()
-        val ordered = months.toList()
-        emitAll(dataStore.data.map { prefs ->
-            ordered.flatMap { month -> decodeEntryListImpl(prefs[Keys.foodEntriesBucket(month)]) }
-        })
+        migrateBucketsToFilesIfNeeded()
+        emitAll(foodBucketStore.monthsFlow(months))
     }
 
     /**
@@ -88,46 +74,33 @@ internal suspend fun PreferencesStore.applyFoodEntryBucketChangesImpl(
         clearDraft: Boolean = false,
     ) {
         if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty() && draft == null && !clearDraft) return
-        dataStore.edit { prefs ->
-            for (month in upsertsByMonth.keys + removalIdsByMonth.keys) {
-                mergeFoodEntryMonth(prefs, month, upsertsByMonth[month].orEmpty(), removalIdsByMonth[month].orEmpty())
-            }
-            if (draft != null) {
-                prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT] =
-                    json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
-            } else if (clearDraft) {
-                prefs.remove(Keys.PENDING_FOOD_ANALYSIS_DRAFT)
-            }
-        }
-    }
-
-    /** Merges one month's upserts/removals into an in-flight DataStore edit. */
-private fun PreferencesStore.mergeFoodEntryMonth(
-        prefs: MutablePreferences,
-        month: YearMonth,
-        upserts: List<FoodEntry>,
-        removals: Set<UUID>,
-    ) {
-        val key = Keys.foodEntriesBucket(month)
-        val existing = decodeEntryListImpl(prefs[key])
-        val kept = if (removals.isEmpty()) existing else existing.filterNot { it.id in removals }
-        val byId = kept.associateByTo(LinkedHashMap()) { it.id }
-        for (entry in upserts) byId[entry.id] = entry
-        val merged = byId.values.sortedBy { it.timestamp }
-        if (merged.isEmpty()) prefs.remove(key) else prefs[key] = encodeEntryListImpl(merged)
-    }
-
-    /** Full replace (reseed / clear-all) — wipes every existing bucket and regroups [entries] by month. */
-internal suspend fun PreferencesStore.replaceAllFoodEntriesImpl(entries: List<FoodEntry>) {
-        dataStore.edit { prefs ->
-            prefs.asMap().keys.filter { it.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }.forEach { prefs.remove(it) }
-            prefs.remove(Keys.FOOD_ENTRIES)
-            prefs[Keys.FOOD_ENTRIES_MIGRATED] = true
-            entries.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
-                .forEach { (month, monthEntries) ->
-                    prefs[Keys.foodEntriesBucket(month)] = encodeEntryListImpl(monthEntries.sortedBy { it.timestamp })
+        migrateBucketsToFilesIfNeeded()
+        // Month files are written first (upsert months before removal months, so
+        // a cross-month move interrupted by a crash leaves the row in BOTH
+        // months — visible, recoverable — rather than in neither). The draft
+        // commit is a separate DataStore edit: the two are no longer one atomic
+        // transaction (see docs/local/PLAN_FILE_BUCKETS.md). A crash between
+        // them leaves an entry without its re-edit snapshot — same UX as the
+        // post-commit clearDraft path — or a harmless orphan draft.
+        foodBucketStore.applyChanges(upsertsByMonth, removalIdsByMonth)
+        if (draft != null || clearDraft) {
+            dataStore.edit { prefs ->
+                if (draft != null) {
+                    prefs[Keys.PENDING_FOOD_ANALYSIS_DRAFT] =
+                        json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
+                } else {
+                    prefs.remove(Keys.PENDING_FOOD_ANALYSIS_DRAFT)
                 }
+            }
         }
+    }
+
+    /** Full replace (reseed / clear-all) — wipes every existing bucket file and regroups [entries] by month. */
+internal suspend fun PreferencesStore.replaceAllFoodEntriesImpl(entries: List<FoodEntry>) {
+        migrateBucketsToFilesIfNeeded()
+        foodBucketStore.replaceAll(
+            entries.groupBy { YearMonth.from(it.timestamp.atZone(ZoneId.systemDefault())) }
+        )
     }
 
     /**
@@ -137,7 +110,7 @@ internal suspend fun PreferencesStore.replaceAllFoodEntriesImpl(entries: List<Fo
      * file rename, so this can never leave a partially-migrated state on
      * disk, and it's safe to re-run from scratch if interrupted.
      */
-private suspend fun PreferencesStore.migrateFoodEntriesToBucketsIfNeededImpl() {
+internal suspend fun PreferencesStore.migrateFoodEntriesToBucketsIfNeededImpl() {
         if (dataStore.data.first()[Keys.FOOD_ENTRIES_MIGRATED] == true) return
         dataStore.edit { prefs ->
             if (prefs[Keys.FOOD_ENTRIES_MIGRATED] == true) return@edit
@@ -195,11 +168,9 @@ internal suspend fun PreferencesStore.setPendingFoodInputDraftImpl(draft: Pendin
  * failure returns null so cleanup never treats unreadable user data as empty.
  */
 internal suspend fun PreferencesStore.foodImageReferenceFilenamesImpl(): Set<String>? {
-    migrateFoodEntriesToBucketsIfNeededImpl()
+    migrateBucketsToFilesIfNeeded()
     val prefs = dataStore.data.first()
-    val foods = prefs.asMap().entries
-        .filter { it.key.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }
-        .flatMap { decodeEntryListImpl(it.value as? String) }
+    val foods = foodBucketStore.readAll()
     val favorites = prefs[Keys.FAVORITE_ENTRIES]?.let { raw ->
         runCatching {
             json.decodeFromString(ListSerializer(FoodEntry.serializer()), raw)

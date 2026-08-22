@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
+import java.time.YearMonth
+import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.abs
 
@@ -40,8 +42,7 @@ class BodyFatRepository(
     }
 
     suspend fun addEntry(entry: BodyFatEntry) {
-        val current = prefs.bodyFatEntries.first()
-        prefs.setBodyFatEntries(current + entry)
+        prefs.applyBodyFatBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
         sync?.touch(entry.id, "bodyfat")
         syncProfileBodyFatToLatest()
         if (shouldSyncHealth()) {
@@ -50,8 +51,8 @@ class BodyFatRepository(
     }
 
     suspend fun deleteEntry(id: UUID) {
-        val current = prefs.bodyFatEntries.first()
-        prefs.setBodyFatEntries(current.filter { it.id != id })
+        val existing = prefs.bodyFatEntries.first().firstOrNull { it.id == id } ?: return
+        prefs.applyBodyFatBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "bodyfat")
         syncProfileBodyFatToLatest()
         // Delete the HC record even when sync is off (iOS parity, best-effort) —
@@ -134,6 +135,8 @@ class BodyFatRepository(
             ?: "hc-bodyfat:${time.toEpochMilli()}"
         return UUID.nameUUIDFromBytes(seed.toByteArray())
     }
+
+    private fun BodyFatEntry.month(): YearMonth = YearMonth.from(date.atZone(ZoneId.systemDefault()))
 
     /** Keep UserProfile.bodyFatPercentage aligned with the latest reading so
      *  Katch-McArdle BMR + Settings → Body Fat row never drift apart. If the

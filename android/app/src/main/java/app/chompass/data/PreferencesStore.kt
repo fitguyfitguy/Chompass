@@ -21,6 +21,7 @@ import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import app.chompass.models.WidgetSnapshot
 import app.chompass.services.health.DebugActivityDay
+import java.io.File
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
@@ -38,6 +39,58 @@ val Context.fudaiDataStore by preferencesDataStore(name = "fudai_prefs")
 class PreferencesStore(private val appContext: Context) {
     internal val dataStore get() = appContext.fudaiDataStore
     internal val json = Json { ignoreUnknownKeys = true }
+
+    /**
+     * File-backed month buckets for the unbounded datasets. Keeping them out of
+     * the single DataStore proto means a one-row write (sip, relog, weight)
+     * rewrites a ~10-30 KB month file instead of the whole ~650 KB preferences
+     * file (see docs/local/PLAN_FILE_BUCKETS.md). Root: filesDir/chompass-buckets.
+     */
+    internal val waterBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/water"),
+            json = json,
+            serializer = WaterEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(WaterEntry::date),
+        )
+    }
+    internal val weightBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/weight"),
+            json = json,
+            serializer = WeightEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(WeightEntry::date),
+        )
+    }
+    internal val bodyFatBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/bodyfat"),
+            json = json,
+            serializer = BodyFatEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(BodyFatEntry::date),
+        )
+    }
+    internal val measurementBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/measure"),
+            json = json,
+            serializer = BodyMeasurement.serializer(),
+            idOf = { it.id },
+            order = compareBy(BodyMeasurement::date),
+        )
+    }
+    internal val foodBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/food"),
+            json = json,
+            serializer = FoodEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(FoodEntry::timestamp),
+        )
+    }
 
     val userProfile: Flow<UserProfile?> get() = userProfileImpl
     suspend fun setUserProfile(profile: UserProfile) = setUserProfileImpl(profile)
@@ -119,6 +172,11 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setWaterQuickPresetsMl(amountsMl: List<Int>) = setWaterQuickPresetsMlImpl(amountsMl)
     val waterEntries: Flow<List<WaterEntry>> get() = waterEntriesImpl
     suspend fun setWaterEntries(entries: List<WaterEntry>) = setWaterEntriesImpl(entries)
+    /** Month-scoped water write (one bucket file) — the sip path. */
+    suspend fun applyWaterBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<WaterEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyWaterBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val manualActiveEntries: Flow<List<ManualActiveEntry>> get() = manualActiveEntriesImpl
     suspend fun setManualActiveEntries(entries: List<ManualActiveEntry>) = setManualActiveEntriesImpl(entries)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
@@ -296,10 +354,25 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun foodImageReferenceFilenames(): Set<String>? = foodImageReferenceFilenamesImpl()
     val weightEntries: Flow<List<WeightEntry>> get() = weightEntriesImpl
     suspend fun setWeightEntries(entries: List<WeightEntry>) = setWeightEntriesImpl(entries)
+    /** Month-scoped weight write (one bucket file). */
+    suspend fun applyWeightBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<WeightEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyWeightBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val bodyFatEntries: Flow<List<BodyFatEntry>> get() = bodyFatEntriesImpl
     suspend fun setBodyFatEntries(entries: List<BodyFatEntry>) = setBodyFatEntriesImpl(entries)
+    /** Month-scoped body-fat write (one bucket file). */
+    suspend fun applyBodyFatBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<BodyFatEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyBodyFatBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val bodyMeasurements: Flow<List<BodyMeasurement>> get() = bodyMeasurementsImpl
     suspend fun setBodyMeasurements(entries: List<BodyMeasurement>) = setBodyMeasurementsImpl(entries)
+    /** Month-scoped measurement write (one bucket file). */
+    suspend fun applyMeasurementBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<BodyMeasurement>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyMeasurementBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val chatHistory: Flow<List<ChatMessage>> get() = chatHistoryImpl
     suspend fun setChatHistory(history: List<ChatMessage>) = setChatHistoryImpl(history)
     val widgetSnapshot: Flow<WidgetSnapshot?> get() = widgetSnapshotImpl
