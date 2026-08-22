@@ -62,6 +62,7 @@ internal data class SettingsPrefsHydration(
     val fixedLauncherIcon: Boolean,
     val foodLogSortOrderRaw: String,
     val weekStartsOnMonday: Boolean,
+    val weekStartDay: app.chompass.models.WeekStartDay,
     val progressDefaultRangeId: String,
     val progressMeasurementSites: Set<String>,
     val userContext: String,
@@ -143,6 +144,10 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         fixedLauncherIcon = this[Keys.FIXED_LAUNCHER_ICON] ?: false,
         foodLogSortOrderRaw = this[Keys.FOOD_LOG_SORT_ORDER] ?: "standard",
         weekStartsOnMonday = this[Keys.WEEK_STARTS_MONDAY] ?: true,
+        weekStartDay = app.chompass.models.WeekStartDay.fromStorage(
+            this[Keys.WEEK_START_DAY],
+            this[Keys.WEEK_STARTS_MONDAY],
+        ),
         progressDefaultRangeId = this[Keys.PROGRESS_DEFAULT_RANGE_ID] ?: "1W",
         progressMeasurementSites = this[Keys.PROGRESS_MEASUREMENT_SITES] ?: emptySet(),
         userContext = this[Keys.USER_CONTEXT].orEmpty(),

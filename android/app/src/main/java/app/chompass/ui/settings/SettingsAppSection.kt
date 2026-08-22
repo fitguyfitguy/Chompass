@@ -123,7 +123,7 @@ internal fun SettingsAppSection(
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_week_starts),
-                    if (ui.weekStartsOnMonday) stringResource(R.string.settings_week_monday) else stringResource(R.string.settings_week_sunday),
+                    stringResource(ui.weekStartDay.displayNameRes),
                     icon = Icons.Outlined.CalendarToday
                 ) { onOpenSheet(SettingsSheet.WEEK_START) }
                 HorizontalDivider()

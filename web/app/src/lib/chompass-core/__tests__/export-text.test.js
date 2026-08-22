@@ -113,4 +113,6 @@ test("meal schedule helpers", () => {
   assert.equal(monWeek[0], "2026-07-20"); // Monday
   const sunWeek = weekDates("2026-07-22", false);
   assert.equal(sunWeek[0], "2026-07-19"); // Sunday
+  const satWeek = weekDates("2026-07-22", "saturday");
+  assert.equal(satWeek[0], "2026-07-18"); // Saturday
 });

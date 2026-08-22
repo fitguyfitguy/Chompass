@@ -1703,6 +1703,8 @@ für dich ein</string>
 
     <string name="settings_week_sunday">Sonntag</string>
 
+    <string name="settings_week_saturday">Samstag</string>
+
     <string name="settings_progress_default_range">Standardbereich für den Fortschritt</string>
 
     <string name="settings_customize_progress">Fortschritt anpassen</string>

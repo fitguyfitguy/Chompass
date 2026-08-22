@@ -563,6 +563,7 @@
     <string name="settings_week_starts">Начало недели</string>
     <string name="settings_week_monday">Понедельник</string>
     <string name="settings_week_sunday">Воскресенье</string>
+    <string name="settings_week_saturday">Суббота</string>
     <string name="settings_notifications">Уведомления</string>
     <string name="settings_battery_opt">Оптимизация батареи</string>
     <string name="settings_battery_opt_value">Добавить Chompass в исключения</string>

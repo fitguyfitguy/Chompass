@@ -941,6 +941,7 @@
     <string name="settings_week_starts">Tydzień zaczyna się od</string>
     <string name="settings_week_monday">Poniedziałku</string>
     <string name="settings_week_sunday">Niedzieli</string>
+    <string name="settings_week_saturday">Soboty</string>
     <string name="settings_progress_default_range">Domyślny zakres postępu</string>
     <string name="settings_customize_progress">Dostosuj postęp</string>
     <string name="settings_customize_progress_summary">%1$s · %2$s</string>

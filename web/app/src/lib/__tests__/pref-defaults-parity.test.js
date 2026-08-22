@@ -49,6 +49,7 @@ describe("pref defaults (parity fixture)", () => {
   it("DEFAULT_PREFS schedule / gauge / week start match fixture", () => {
     assert.equal(DEFAULT_PREFS.calorieGaugeMode, fixture.calorieGaugeMode);
     assert.equal(DEFAULT_PREFS.weekStartsOnMonday, fixture.weekStartsOnMonday);
+    assert.equal(DEFAULT_PREFS.weekStartDay, fixture.weekStartDay);
     assert.equal(DEFAULT_PREFS.mealBreakfastStart, fixture.mealBreakfastStart);
     assert.equal(DEFAULT_PREFS.mealLunchStart, fixture.mealLunchStart);
     assert.equal(DEFAULT_PREFS.mealDinnerStart, fixture.mealDinnerStart);

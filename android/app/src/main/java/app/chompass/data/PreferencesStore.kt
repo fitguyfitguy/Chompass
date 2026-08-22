@@ -185,6 +185,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
     val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
     suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
+    val weekStartDay: Flow<app.chompass.models.WeekStartDay> get() = weekStartDayImpl
+    suspend fun setWeekStartDay(v: app.chompass.models.WeekStartDay) = setWeekStartDayImpl(v)
     val progressDefaultRangeId: Flow<String> get() = progressDefaultRangeIdImpl
     suspend fun setProgressDefaultRangeId(v: String) = setProgressDefaultRangeIdImpl(v)
     val progressLastRangeId: Flow<String?> get() = progressLastRangeIdImpl

@@ -481,6 +481,7 @@
     <string name="settings_week_starts">每周起始日</string>
     <string name="settings_week_monday">星期一</string>
     <string name="settings_week_sunday">星期日</string>
+    <string name="settings_week_saturday">星期六</string>
     <string name="settings_notifications">通知</string>
     <string name="settings_battery_opt">电池优化</string>
     <string name="settings_battery_opt_value">将 Chompass 加入白名单</string>

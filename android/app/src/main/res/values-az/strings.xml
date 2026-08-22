@@ -474,6 +474,7 @@ bilirsən?</string>
     <string name="settings_week_starts">Həftənin Başlanğıc Günü</string>
     <string name="settings_week_monday">Bazar ertəsi</string>
     <string name="settings_week_sunday">Bazar</string>
+    <string name="settings_week_saturday">Şənbə</string>
     <string name="settings_notifications">Bildirişlər</string>
     <string name="settings_battery_opt">Batareya Optimizasiyası</string>
     <string name="settings_battery_opt_value">Chompass-ı ağ siyahıya əlavə et</string>

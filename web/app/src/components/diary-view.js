@@ -105,8 +105,8 @@ function shiftDate(iso, days) {
   return localIsoDate(d);
 }
 
-function weekDates(selectedIso, weekStartsOnMonday = true) {
-  return weekDatesForPrefs(selectedIso, weekStartsOnMonday);
+function weekDates(selectedIso, weekStart = true) {
+  return weekDatesForPrefs(selectedIso, weekStart);
 }
 
 function clampDate(iso) {
@@ -471,11 +471,12 @@ export class DiaryView extends HTMLElement {
     const tubeKeys = normalizeHomeTopNutrients(appPrefs.homeTopNutrients, appPrefs.homeNutrientCardCount);
     const chipKeys = normalizeFoodLogChips(appPrefs.foodLogMacroChips);
     const optionalGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
-    const mondayStart = appPrefs.weekStartsOnMonday !== false;
+    const weekStart =
+      appPrefs.weekStartDay || (appPrefs.weekStartsOnMonday === false ? "sunday" : "monday");
     const today = todayIso();
-    const currentWeekStart = weekDates(today, mondayStart)[0];
+    const currentWeekStart = weekDates(today, weekStart)[0];
     const TOTAL_WEEKS = 53;
-    const selectedWeekStart = weekDates(this.date, mondayStart)[0];
+    const selectedWeekStart = weekDates(this.date, weekStart)[0];
     let selectedWeekIndex = Math.round(
       (new Date(`${selectedWeekStart}T00:00:00`).getTime() - new Date(`${currentWeekStart}T00:00:00`).getTime()) /
         (7 * 86400000)

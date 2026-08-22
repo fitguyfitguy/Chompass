@@ -472,6 +472,7 @@
     <string name="settings_week_starts">Săptămâna începe în</string>
     <string name="settings_week_monday">Luni</string>
     <string name="settings_week_sunday">Duminică</string>
+    <string name="settings_week_saturday">Sâmbătă</string>
     <string name="settings_notifications">Notificări</string>
     <string name="settings_battery_opt">Optimizare baterie</string>
     <string name="settings_battery_opt_value">Adaugă Chompass în lista albă</string>

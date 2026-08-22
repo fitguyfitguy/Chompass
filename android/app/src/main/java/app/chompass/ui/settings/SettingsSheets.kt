@@ -527,13 +527,10 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.WEEK_START -> ListSheet(
                     title = stringResource(R.string.sheet_week_starts),
-                    items = listOf(
-                        false to stringResource(R.string.settings_week_sunday),
-                        true to stringResource(R.string.settings_week_monday)
-                    ),
-                    label = { it.second },
-                    selected = { it.first == ui.weekStartsOnMonday },
-                    onSelect = { vm.setWeekStartsOnMonday(it.first); onDismiss() }
+                    items = app.chompass.models.WeekStartDay.entries.toList(),
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.weekStartDay },
+                    onSelect = { vm.setWeekStartDay(it); onDismiss() }
                 )
                 SettingsSheet.PROGRESS_DEFAULT_RANGE -> ListSheet(
                     title = stringResource(R.string.settings_progress_default_range),

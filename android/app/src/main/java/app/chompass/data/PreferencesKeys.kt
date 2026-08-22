@@ -105,6 +105,8 @@ internal object Keys {
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
         val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")
         val WEEK_STARTS_MONDAY = booleanPreferencesKey("weekStartsOnMonday")
+        /** monday | sunday | saturday. When unset, [WEEK_STARTS_MONDAY] is the fallback. */
+        val WEEK_START_DAY = stringPreferencesKey("weekStartDay")
         /** Factory / Settings default for Progress tab range chips (`1W`…`All`). */
         val PROGRESS_DEFAULT_RANGE_ID = stringPreferencesKey("progressDefaultRangeId")
         /** Last Progress range the user selected; null until first chip tap. */

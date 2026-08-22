@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.models.LocaleFormat
+import app.chompass.models.WeekStartDay
 import app.chompass.ui.theme.AppColors
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -82,11 +83,9 @@ fun WeekEnergyStrip(
     selectedDate: LocalDate,
     onSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
-    weekStartsOnMonday: Boolean = true
+    weekStartDay: WeekStartDay = WeekStartDay.MONDAY,
 ) {
-    val firstDow = remember(weekStartsOnMonday) {
-        if (weekStartsOnMonday) DayOfWeek.MONDAY else DayOfWeek.SUNDAY
-    }
+    val firstDow = remember(weekStartDay) { weekStartDay.javaDay }
     val today = remember { LocalDate.now() }
     val startOfCurrentWeek = remember(today, firstDow) {
         val daysBack = ((today.dayOfWeek.value - firstDow.value) + 7) % 7

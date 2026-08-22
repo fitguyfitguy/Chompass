@@ -480,6 +480,7 @@
     <string name="settings_week_starts">सप्ताह शुरू होता है</string>
     <string name="settings_week_monday">सोमवार</string>
     <string name="settings_week_sunday">रविवार</string>
+    <string name="settings_week_saturday">शनिवार</string>
     <string name="settings_notifications">सूचनाएँ</string>
     <string name="settings_battery_opt">बैटरी ऑप्टिमाइज़ेशन</string>
     <string name="settings_battery_opt_value">Chompass को व्हाइटलिस्ट करें</string>
