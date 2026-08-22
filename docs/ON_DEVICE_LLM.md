@@ -14,7 +14,7 @@ Runs **Gemma 4 E2B-it** locally via [Google AI Edge LiteRT-LM](https://developer
 |-------|------|
 | Provider enum | [`AIProvider.kt`](../android/app/src/main/java/app/chompass/models/AIProvider.kt): `ON_DEVICE` / `ApiFormat.ON_DEVICE` |
 | Model catalog | [`ModelCatalog.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelCatalog.kt): HF repo, filename, sha256, size |
-| Download | [`ModelDownloadManager.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelDownloadManager.kt) / [`ModelDownloadWorker.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelDownloadWorker.kt): WorkManager, streamed OkHttp download, SHA-256 verify, atomic rename into `filesDir/models/` |
+| Download | [`ModelDownloadManager.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelDownloadManager.kt) / [`ModelDownloadWorker.kt`](../android/app/src/main/java/app/chompass/services/ondevice/ModelDownloadWorker.kt): WorkManager `dataSync` foreground service, streamed OkHttp download with HTTP Range resume (never truncates `.part` on 200), SHA-256 verify, atomic rename into `filesDir/models/` |
 | Capability gate | [`OnDeviceCapability.kt`](../android/app/src/main/java/app/chompass/services/ondevice/OnDeviceCapability.kt): ABI + RAM floor |
 | Engine lifecycle | [`OnDeviceLlmGateway.kt`](../android/app/src/main/java/app/chompass/services/ondevice/OnDeviceLlmGateway.kt): process-scoped lazy singleton, explicit unload |
 | Dispatch | [`FoodAnalysisService.dispatch()`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt) via [`OnDeviceLlmDispatchClient.kt`](../android/app/src/main/java/app/chompass/services/ai/OnDeviceLlmDispatchClient.kt) |

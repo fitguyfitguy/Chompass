@@ -1023,6 +1023,9 @@
     <string name="on_device_model_delete">Delete downloaded model</string>
     <string name="on_device_model_retry">Retry download</string>
     <string name="on_device_model_sheet_title">On-device model</string>
+    <string name="notif_channel_model_download">On-device model</string>
+    <string name="notif_channel_model_download_desc">Progress while the on-device model file is downloading.</string>
+    <string name="notif_model_download_title">Downloading on-device model</string>
 
     <!-- Custom AI Instructions + Fallback Provider (v1.0.6) -->
     <string name="settings_section_custom_instructions">Custom AI Instructions</string>

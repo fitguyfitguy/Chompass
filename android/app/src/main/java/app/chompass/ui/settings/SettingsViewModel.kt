@@ -45,6 +45,7 @@ import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -757,7 +758,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     fun startOnDeviceModelDownload() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // Codeberg #20 phase 2: with the master AI switch off, don't even
             // schedule the model download (the worker skips it as a backstop).
             if (container.prefs.aiFeaturesEnabled.first() == false) return@launch

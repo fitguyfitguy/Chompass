@@ -1861,6 +1861,9 @@ für dich ein</string>
     <string name="on_device_model_retry">Download wiederholen</string>
 
     <string name="on_device_model_sheet_title">Geräte-Modell</string>
+    <string name="notif_channel_model_download">Modell-Download</string>
+    <string name="notif_channel_model_download_desc">Fortschritt, während die lokale Modelldatei geladen wird.</string>
+    <string name="notif_model_download_title">Lokales Modell wird geladen</string>
 
     <string name="settings_section_custom_instructions">Benutzerdefinierte KI-Anweisungen</string>
 

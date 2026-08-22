@@ -60,43 +60,15 @@ class ModelDownloadManager(private val context: Context) {
             ?.firstOrNull { it.startsWith("model:") }
             ?.removePrefix("model:")
         val workMatchesEntry = activeVersion == null || activeVersion == entry.version
-        // On-disk partial progress: survives worker restarts and backoff, so a
-        // resumed retry (Codeberg #51) continues the bar instead of flashing 0%.
-        val partProgress = partFileProgress(entry)
-        return when {
-            info == null -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
-            !workMatchesEntry -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
-            info.state == WorkInfo.State.RUNNING -> {
-                val percent = info.progress.getInt(ModelDownloadWorker.PROGRESS_PERCENT, 0)
-                val shown = if (percent >= 100) percent else maxOf(percent, partProgress)
-                if (shown >= 100) OnDeviceDownloadState.Verifying else OnDeviceDownloadState.Downloading(shown)
-            }
-            info.state == WorkInfo.State.ENQUEUED -> OnDeviceDownloadState.Downloading(partProgress)
-            info.state == WorkInfo.State.SUCCEEDED -> {
-                if (ModelCatalog.forVersion(activeVersion) == entry || isDownloaded(entry)) {
-                    OnDeviceDownloadState.Downloaded
-                } else {
-                    OnDeviceDownloadState.NotDownloaded
-                }
-            }
-            info.state == WorkInfo.State.FAILED -> {
-                val reason = info.outputData.getString(ModelDownloadWorker.FAILURE_REASON)
-                OnDeviceDownloadState.Failed(reason ?: context.getString(R.string.on_device_download_failed))
-            }
-            info.state == WorkInfo.State.CANCELLED -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
-            else -> if (isDownloaded(entry)) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
-        }
-    }
-
-    /**
-     * Percent implied by the on-disk `.part` file. Non-zero after an
-     * interrupted/resumed download, so the UI can show the true resume point
-     * even while WorkManager is in ENQUEUED backoff (between worker runs).
-     */
-    private fun partFileProgress(entry: OnDeviceModelEntry): Int {
-        val total = entry.sizeBytes
-        if (total <= 0) return 0
         val part = File(modelsDir(), "${entry.filename}.part")
-        return ((part.length() * 100) / total).toInt().coerceIn(0, 99)
+        return ModelDownloadPolicy.mapState(
+            workState = info?.state,
+            workMatchesEntry = workMatchesEntry,
+            workProgressPercent = info?.progress?.getInt(ModelDownloadWorker.PROGRESS_PERCENT, 0) ?: 0,
+            partProgress = ModelDownloadPolicy.partProgress(part.length(), entry.sizeBytes),
+            isDownloaded = isDownloaded(entry),
+            failureReason = info?.outputData?.getString(ModelDownloadWorker.FAILURE_REASON),
+            defaultFailure = context.getString(R.string.on_device_download_failed),
+        )
     }
 }
