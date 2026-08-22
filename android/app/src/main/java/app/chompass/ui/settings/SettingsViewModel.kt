@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 data class SettingsUiState(
     val selectedAI: AIProvider = AIProvider.GEMINI,
@@ -1438,57 +1439,70 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun recalculateGoals() {
         viewModelScope.launch {
             if (_ui.value.recalculatingGoals) return@launch
-            val current = container.profileRepository.current() ?: return@launch
             _ui.value = _ui.value.copy(recalculatingGoals = true)
-            val heightMetric = container.prefs.heightUnit.first() == "cm"
-            val weightMetric = container.prefs.weightUnit.first() == "kg"
-            // Empirical signal: recent logged intake + observed weight trend, so the AI can
-            // estimate true maintenance (hit-and-trial) instead of trusting the formula alone.
-            val forecast = WeightAnalysisService.compute(
-                weights = container.weightRepository.entries.first(),
-                foods = container.foodRepository.entries.first(),
-                profile = current
-            )
-            // Energy Burn toggle: anchor maintenance to the user's measured Health Connect burn.
-            val measuredTdee = container.measuredEnergyTdeeIfEnabled(current)
-            // AI-only — no formula fallback. If the AI provider is unavailable, leave the
-            // existing goals untouched and tell the user so they can fix their key and retry.
-            Log.d("Chompass", "recalculateGoals: calling calculateGoals")
-            val result = try {
-                container.foodAnalysis.calculateGoals(current, forecast, heightMetric, weightMetric, measuredTdee, container.bodyMeasurementRepository.latestSnapshot())
+            try {
+                // Everything from the DataStore reads through the model call and
+                // the save is guarded: a stalled read (observed 2026-08-22: the
+                // busy rings spun for minutes after the model had already
+                // answered) or any other failure must always clear the flag and
+                // tell the user, never leave Recalculate spinning forever.
+                val current = withTimeout(60_000) { container.profileRepository.current() }
+                if (current == null) {
+                    _ui.value = _ui.value.copy(recalculatingGoals = false)
+                    return@launch
+                }
+                val heightMetric = withTimeout(30_000) { container.prefs.heightUnit.first() == "cm" }
+                val weightMetric = withTimeout(30_000) { container.prefs.weightUnit.first() == "kg" }
+                // Empirical signal: recent logged intake + observed weight trend, so the AI can
+                // estimate true maintenance (hit-and-trial) instead of trusting the formula alone.
+                val forecast = withTimeout(60_000) {
+                    WeightAnalysisService.compute(
+                        weights = container.weightRepository.entries.first(),
+                        foods = container.foodRepository.entries.first(),
+                        profile = current
+                    )
+                }
+                // Energy Burn toggle: anchor maintenance to the user's measured Health Connect burn.
+                val measuredTdee = withTimeout(60_000) { container.measuredEnergyTdeeIfEnabled(current) }
+                val measurement = withTimeout(60_000) { container.bodyMeasurementRepository.latestSnapshot() }
+                // AI-only — no formula fallback. If the AI provider is unavailable, leave the
+                // existing goals untouched and tell the user so they can fix their key and retry.
+                Log.d("Chompass", "recalculateGoals: calling calculateGoals")
+                val result = container.foodAnalysis.calculateGoals(
+                    current, forecast, heightMetric, weightMetric, measuredTdee, measurement
+                )
+                Log.d("Chompass", "recalculateGoals: got ${result.calories} kcal")
+                // Write unlocked fields only. Locked calories/macros survive Recalculate.
+                val next = current.applyingAiGoals(
+                    calories = result.calories,
+                    protein = result.protein,
+                    carbs = result.carbs,
+                    fat = result.fat,
+                )
+                val message = container.appContext.getString(R.string.vm_goals_updated, result.calories) +
+                    (result.reason?.let { " $it" } ?: "")
+                container.profileRepository.save(next)
+                lastRecalcSignature = next.goalInputSignature
+                container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)
+                // Show the result now. Optional-nutrient AI is a second Gemini round-trip
+                // (can 503 / sit for minutes) and must not hold the spinner or the dialog.
+                _ui.value = _ui.value.copy(
+                    recalculatingGoals = false,
+                    profile = next,
+                    adaptiveGoalAlertTitle = container.appContext.getString(R.string.vm_goals_recalculated),
+                    adaptiveGoalAlertMessage = message,
+                    goalsNeedRecalc = false
+                )
+                // Optional-nutrient AI is a separate Gemini call. Do not run it here:
+                // it kept the screen feeling busy after Recalculate had already finished.
             } catch (e: Throwable) {
                 Log.e("Chompass", "recalculateGoals failed", e)
                 _ui.value = _ui.value.copy(
                     recalculatingGoals = false,
                     adaptiveGoalAlertTitle = "Couldn't Recalculate",
-                    adaptiveGoalAlertMessage = "Fud AI couldn't reach your AI provider, so your goals are unchanged. Check your AI provider and API key in Settings, then try again. (${e.localizedMessage ?: "no response"})"
+                    adaptiveGoalAlertMessage = "Fud AI couldn't complete the recalculation, so your goals are unchanged. Try again in a moment. (${e.localizedMessage ?: "no response"})"
                 )
-                return@launch
             }
-            Log.d("Chompass", "recalculateGoals: got ${result.calories} kcal")
-            // Write unlocked fields only. Locked calories/macros survive Recalculate.
-            val next = current.applyingAiGoals(
-                calories = result.calories,
-                protein = result.protein,
-                carbs = result.carbs,
-                fat = result.fat,
-            )
-            val message = container.appContext.getString(R.string.vm_goals_updated, result.calories) +
-                (result.reason?.let { " $it" } ?: "")
-            container.profileRepository.save(next)
-            lastRecalcSignature = next.goalInputSignature
-            container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)
-            // Show the result now. Optional-nutrient AI is a second Gemini round-trip
-            // (can 503 / sit for minutes) and must not hold the spinner or the dialog.
-            _ui.value = _ui.value.copy(
-                recalculatingGoals = false,
-                profile = next,
-                adaptiveGoalAlertTitle = container.appContext.getString(R.string.vm_goals_recalculated),
-                adaptiveGoalAlertMessage = message,
-                goalsNeedRecalc = false
-            )
-            // Optional-nutrient AI is a separate Gemini call. Do not run it here:
-            // it kept the screen feeling busy after Recalculate had already finished.
         }
     }
 
