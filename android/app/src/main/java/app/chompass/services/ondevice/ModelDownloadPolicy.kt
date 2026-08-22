@@ -80,32 +80,45 @@ internal object ModelDownloadPolicy {
         workMatchesEntry: Boolean,
         workProgressPercent: Int,
         partProgress: Int,
+        partComplete: Boolean,
         isDownloaded: Boolean,
         failureReason: String?,
         defaultFailure: String,
     ): OnDeviceDownloadState {
+        // The final file on disk always wins: a process kill after rename
+        // (or SUCCEEDED from a stale work record) must not hide a ready model.
+        if (isDownloaded) return OnDeviceDownloadState.Downloaded
         if (!workMatchesEntry) {
-            return if (isDownloaded) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+            return if (partComplete) OnDeviceDownloadState.Failed(defaultFailure)
+            else OnDeviceDownloadState.NotDownloaded
         }
         val shown = when {
             workProgressPercent >= 100 -> workProgressPercent
             else -> maxOf(workProgressPercent.coerceAtLeast(0), partProgress)
         }
         return when (workState) {
-            null -> if (isDownloaded) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+            null -> if (partComplete) OnDeviceDownloadState.Failed(defaultFailure)
+            else OnDeviceDownloadState.NotDownloaded
             WorkInfo.State.RUNNING -> {
-                if (shown >= 100) OnDeviceDownloadState.Verifying
+                if (shown >= 100 || partComplete) OnDeviceDownloadState.Verifying
                 else OnDeviceDownloadState.Downloading(shown.coerceIn(0, 99))
             }
             // BLOCKED (Wi-Fi-only + radio asleep) used to fall through to
             // NotDownloaded and flash 0% even with a gigabyte already on disk.
             WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED ->
-                OnDeviceDownloadState.Downloading(partProgress)
-            WorkInfo.State.SUCCEEDED -> OnDeviceDownloadState.Downloaded
+                if (partComplete) OnDeviceDownloadState.Verifying
+                else OnDeviceDownloadState.Downloading(partProgress)
+            // Success without a file: the worker bailed early (AI master
+            // switch off) or the file was deleted. Do not claim Downloaded.
+            WorkInfo.State.SUCCEEDED -> OnDeviceDownloadState.NotDownloaded
             WorkInfo.State.FAILED ->
                 OnDeviceDownloadState.Failed(failureReason ?: defaultFailure)
+            // A complete `.part` after cancel / process death still needs
+            // verify+rename. Surface Retry instead of pretending nothing
+            // was downloaded (that looked like the on-device option vanished).
             WorkInfo.State.CANCELLED ->
-                if (isDownloaded) OnDeviceDownloadState.Downloaded else OnDeviceDownloadState.NotDownloaded
+                if (partComplete) OnDeviceDownloadState.Failed(defaultFailure)
+                else OnDeviceDownloadState.NotDownloaded
         }
     }
 

@@ -174,7 +174,13 @@ data class SettingsSuggestion(
 )
 
 class SettingsViewModel(val container: AppContainer) : ViewModel() {
-    private val _ui = MutableStateFlow(SettingsUiState())
+    private val _ui = MutableStateFlow(
+        // Capability is cheap and sync. Defaulting this to false hid On-Device
+        // in the provider picker until the slow Settings hydration finished
+        // (Health Connect, weather, profile), which after a download crash
+        // looked like the option had vanished.
+        SettingsUiState(onDeviceAvailable = OnDeviceCapability.isSupported(container.appContext)),
+    )
     val ui: StateFlow<SettingsUiState> = _ui.asStateFlow()
 
     /** Cached inputs for the Suggestions engine (see refreshSuggestions). */
@@ -211,6 +217,29 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 ?.let { provider.supportedModelOrDefault(it) }
                 .orEmpty()
             val speech = snap.selectedSpeech
+            val onDeviceAvailable = snap.onDeviceFeatureVisible &&
+                OnDeviceCapability.isSupported(container.appContext)
+            val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
+                supportedOnDeviceModels()
+            } else {
+                emptyList()
+            }
+            val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) {
+                onDeviceModels.first()
+            } else {
+                model
+            }
+            // Paint AI selection before Health Connect / weather so a slow
+            // hydrate cannot flash Gemini and hide On-Device.
+            _ui.update {
+                it.copy(
+                    selectedAI = provider,
+                    selectedModel = effectiveModel,
+                    onDeviceAvailable = onDeviceAvailable,
+                    onDeviceModels = onDeviceModels,
+                    aiFeaturesEnabled = snap.aiFeaturesEnabled,
+                )
+            }
             val weather = container.weatherRepository.state.first()
             val hc = reconcileHealthConnectState()
             val profile = container.profileRepository.current()
@@ -223,19 +252,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 HealthSyncWorker.cancel(container.appContext)
                 backgroundSync = false
             }
-            val onDeviceAvailable = snap.onDeviceFeatureVisible &&
-                OnDeviceCapability.isSupported(container.appContext)
-            val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
-                // E4B is the OOM-risk model (GPU+GPU vision killed the process on
-                // Pixel 9a); 6 GB devices get E2B only. Static ON_DEVICE.models stays
-                // complete so supportedModelOrDefault still resolves a persisted E4B.
-                AIProvider.ON_DEVICE.models.filter { modelId ->
-                    OnDeviceCapability.isModelSupported(container.appContext, ModelCatalog.forModelId(modelId))
-                }
-            } else {
-                emptyList()
-            }
-            val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) onDeviceModels.first() else model
             val masked = maskKey(container.keyStore.apiKey(provider))
             val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
             val fbProvider = snap.fallbackProvider
@@ -736,15 +752,29 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun selectProvider(p: AIProvider) {
         viewModelScope.launch {
             container.prefs.setSelectedAIProvider(p)
-            container.prefs.setSelectedAIModel(p.defaultModel)
+            val onDeviceModels = if (p == AIProvider.ON_DEVICE) supportedOnDeviceModels() else emptyList()
+            val newModel = if (onDeviceModels.isNotEmpty()) onDeviceModels.first() else p.defaultModel
+            container.prefs.setSelectedAIModel(newModel)
             val masked = maskKey(container.keyStore.apiKey(p))
             val vision = container.prefs.visionModel(p).first()
                 ?.takeIf { it.isNotBlank() }
                 ?.let { p.supportedModelOrDefault(it) }
                 .orEmpty()
-            _ui.value = _ui.value.copy(selectedAI = p, selectedModel = p.defaultModel, apiKeyMasked = masked, visionModel = vision)
+            _ui.value = _ui.value.copy(
+                selectedAI = p,
+                selectedModel = newModel,
+                apiKeyMasked = masked,
+                visionModel = vision,
+                onDeviceModels = onDeviceModels,
+            )
         }
     }
+
+    /** E4B is the OOM-risk model; 6 GB devices get E2B only. */
+    private fun supportedOnDeviceModels(): List<String> =
+        AIProvider.ON_DEVICE.models.filter { modelId ->
+            OnDeviceCapability.isModelSupported(container.appContext, ModelCatalog.forModelId(modelId))
+        }
 
     /** Frees the resident on-device engine (~1-2GB) — Settings "Unload model" action. */
     fun unloadOnDeviceModel() {

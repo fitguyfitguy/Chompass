@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **On-device model download no longer crashes at 100%** (Android): finishing the Gemma download no longer re-reads the whole multi-GB file just to check it, which could close the app and then hide On-Device in Settings until things settled. If a download was interrupted after the file landed, Retry finishes the check instead of starting over.
+
 ## [3.22.0] - 2026-08-21
 
 ### Added
