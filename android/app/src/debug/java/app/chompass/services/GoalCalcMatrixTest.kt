@@ -8,15 +8,20 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
+import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
 import app.chompass.models.Gender
 import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
+import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
 import app.chompass.services.ai.GoalRecalcTier
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.ModelDownloadManager
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
@@ -341,6 +346,35 @@ class GoalCalcMatrixTest(
         val floor = CalorieSafety.floorKcal(bmr)
         val ceiling = CalorieSafety.ceilingKcal(tdee, floor)
         val f = s.forecast
+        // Raw series for the SMART tier: reconstruct weigh-ins (linear trend over the
+        // forecast's span) and per-day food entries (one per logged day) so the cloud
+        // prompt actually carries the RAW WEIGH-INS / RAW INTAKE sections.
+        val rawWeights = f?.let { fc ->
+            val n = fc.weightEntriesUsed.coerceAtLeast(2)
+            val totalChange = (fc.observedWeeklyChangeKg ?: 0.0) * fc.weightSpanDays / 7.0
+            (0 until n).map { i ->
+                val frac = i.toDouble() / (n - 1)
+                WeightEntry(
+                    date = Instant.now().minus(
+                        (fc.weightSpanDays.toLong() * (n - 1 - i) / (n - 1)).coerceAtLeast(0L),
+                        ChronoUnit.DAYS,
+                    ),
+                    weightKg = 76.0 + totalChange * frac,
+                )
+            }
+        } ?: emptyList()
+        val rawFoods = f?.let { fc ->
+            val zone = ZoneId.systemDefault()
+            val today = LocalDate.now(zone)
+            val dayKcal = fc.loggedDayAvgCalories.takeIf { it > 0 } ?: fc.avgDailyCalories
+            (0 until fc.daysOfFoodData).map { i ->
+                FoodEntry(
+                    name = "matrix", calories = dayKcal, protein = 100.0, carbs = 200.0, fat = 50.0,
+                    source = FoodSource.MANUAL,
+                    timestamp = today.minusDays(i.toLong() + 1).atStartOfDay(zone).toInstant(),
+                )
+            }
+        } ?: emptyList()
         val loggedAvg = f?.loggedDayAvgCalories?.takeIf { it > 0 } ?: f?.avgDailyCalories
         val implied = f?.observedWeeklyChangeKg?.let {
             (loggedAvg ?: 0) - NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(it)
@@ -371,6 +405,8 @@ class GoalCalcMatrixTest(
                     weightMetric = true,
                     measuredTdee = s.measuredTdee,
                     measurement = null,
+                    weights = rawWeights,
+                    foods = rawFoods,
                 )
             }
             val ms = System.currentTimeMillis() - startMs
