@@ -143,7 +143,9 @@ adb shell run-as app.chompass.debug ls -la files/models/
 | `goal_matrix_scenarios` | string | all | Comma-separated scenario filter for the goal matrix |
 | `goal_matrix_repeat` | int | `1` | Repeat count per scenario (1–5) for variance sampling |
 | `goal_matrix_tier` | string | `auto` | **`safe`** / **`smart`** / **`auto`** (per-dispatch: cloud → SMART, on-device → SAFE); forces the prompt tier regardless of provider |
-| `goal_matrix_provider` | string | `on_device` | **`on_device`** / **`gemini`** / **`anthropic`** / **`openai`** — provider forced for the run (cloud legs use the stored KeyStore key; keys are never logged and prefs/key are restored after) |
+| `goal_matrix_provider` | string | `on_device` | **`on_device`** / **`gemini`** / **`anthropic`** / **`openai`** / **`openrouter`** — provider forced for the run (cloud legs use the stored KeyStore key; keys are never logged and prefs/key are restored after) |
+| `goal_matrix_model` | string | provider default | Model id override (OpenRouter accepts any slug; e.g. `google/gemini-3.6-flash`) |
+| `set_openrouter_key` | string | - | Debug-only: store an OpenRouter API key in the encrypted KeyStore (imports the benchmark key; stripped after use, never logged) |
 
 If the app is already foreground, `adb shell am start` prints `Activity not started, intent has been delivered to currently running top-most instance`: **this is normal** (`singleTop`); the test still runs via `onNewIntent`.
 
@@ -158,10 +160,14 @@ adb logcat -c
 adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --ei goal_matrix_repeat 2
 # SMART tier on Gemini (raw weigh-in series + intake table; needs a Gemini key):
 adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_tier smart --es goal_matrix_provider gemini
+# SMART tier via OpenRouter (benchmark key; any slug):
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_tier smart --es goal_matrix_provider openrouter --es goal_matrix_model google/gemini-3.6-flash
 # Just the reported sparse-weigh-in cases, SMART tier:
 adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_tier smart --es goal_matrix_provider gemini --es goal_matrix_scenarios sparse_up,sparse_up_active,maintain_sparse_up
 adb logcat -s GoalMatrix
 ```
+
+**Measured 2026-08-22 (Pixel 9a):** SAFE tier on Gemma 4 E2B passed all 19 scenarios (formula anchors for thin/below-BMR/disagree, measured anchor 1950 exact, gain pace applied, keto/locked exact); SMART tier on `google/gemini-3.6-flash` (via OpenRouter) passed all 19 (no BMR anchoring, measured anchor honored). `gemini-3.5-flash-lite` with the SMART prompt FAILED 6/19 the same way the on-device model does (clamped to the BMR floor, ignored the measured anchor), which is why small cloud models (`flash-lite`/`nano`/`haiku`/`-mini`/`/free`) are now auto-classified to the SAFE tier — re-check with `--es goal_matrix_provider gemini --es goal_matrix_model gemini-3.5-flash-lite` (auto tier) and expect tier=SAFE with formula anchors.
 
 Warm-cache generations are ~5–7 s each, so a full 19-scenario run with repeat=2 takes under 5 minutes plus cold engine init (cloud legs add a round-trip each).
 
