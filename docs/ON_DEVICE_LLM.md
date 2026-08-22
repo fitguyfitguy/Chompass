@@ -139,8 +139,27 @@ adb shell run-as app.chompass.debug ls -la files/models/
 | `ondevice_llm_repeat` | int | `1` | Tier A repeat count (1–5) for warm-cache latency comparison |
 | `ondevice_llm_clear_cache` | boolean | `false` | Delete LiteRT compile cache before run (cold disk cache) |
 | `ondevice_llm_preset` | string | - | **`daily`** → `tier=daily`, `prompt=fewshot_units`, `mtp=true`, `backend=gpu` |
+| `run_goal_matrix_test` | boolean | - | Run the goal-calculation matrix (below) against the on-device model |
+| `goal_matrix_scenarios` | string | all | Comma-separated scenario filter for the goal matrix |
+| `goal_matrix_repeat` | int | `1` | Repeat count per scenario (1–5) for variance sampling |
 
 If the app is already foreground, `adb shell am start` prints `Activity not started, intent has been delivered to currently running top-most instance`: **this is normal** (`singleTop`); the test still runs via `onNewIntent`.
+
+### Goal calculation matrix (`run_goal_matrix_test`)
+
+Drives the **real production path** (`FoodAnalysisService.calculateGoals` → selected provider; the harness forces the on-device provider for the run and restores your settings afterwards) across a fixed scenario matrix: fresh user, sparse/medium/rich weigh-in data (blips up/down/flat), trends-disagree, implied maintenance below BMR, measured Health Connect TDEE, keto, locked calories, all three weight goals, body-fat BMR, and activity extremes. Results log under tag `GoalMatrix` with the formula/floor/implied anchors and the model's parsed answer per scenario, so you can see exactly when the model anchors on the empirical maintenance instead of the formula.
+
+```powershell
+adb shell am force-stop app.chompass.debug
+adb logcat -c
+# Full matrix, each scenario twice (variance sampling):
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --ei goal_matrix_repeat 2
+# Just the reported sparse-weigh-in cases:
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_scenarios sparse_up,sparse_up_active,maintain_sparse_up
+adb logcat -s GoalMatrix
+```
+
+Warm-cache generations are ~5–7 s each, so a full 19-scenario run with repeat=2 takes under 5 minutes plus cold engine init. The empirical-maintenance confidence gate and the deterministic enforcement are documented in `docs/CALCULATION_METHODS.md` § AI-RECALC; unit-tested in `GoalPromptGateTest`.
 
 ### GPU (default)
 

@@ -245,6 +245,33 @@ If currentCalories < safetyFloor, raise to the floor immediately (even without t
 
 **Locked calories:** if `caloriesLocked`, Adaptive skips the calorie write (including the sub-floor lift). Locked macros stay put when an unlocked calorie target is nudged (`applyCaloriesEdit`).
 
+### AI-RECALC: AI goal recalculation (empirical gate)
+
+`FoodAnalysisService.calculateGoals` asks the AI for a full plan. The AI may replace the formula TDEE with a **hit-and-trial** maintenance estimate (logged intake minus the observed weight trend) only when the logs are dense enough:
+
+```
+usable      = weigh-ins >= 4 AND span >= 14 days AND logged food days >= 4
+medium      = usable AND (weigh-ins < 6 OR span < 28 days OR food days < 10)
+belowFloor  = implied maintenance < max(round(BMR), 1,200)
+trustEmpir  = usable AND NOT belowFloor AND NOT trendsDisagree
+```
+
+- **Thin data** (not usable): the implied-maintenance number is withheld from the prompt and the model is told to anchor on the formula TDEE (or measured maintenance when Energy Burn is on).
+- **Medium confidence:** implied maintenance is shown with a rule that a >15% deviation from formula TDEE goes back to the formula.
+- **Below the CAL-SAFE floor:** the implied number is withheld entirely (it was dragging goals down to ~BMR).
+- **Disagreeing trends** (`|predicted − observed| > 0.3` kg/week): implied maintenance is not used.
+
+**Deterministic enforcement** (the AI prompt is advisory on small on-device models):
+
+```
+if NOT trustEmpir:  calories = measured maintenance + goal pace, else formula dailyCalories
+                    (macros reset to formula; reason rewritten)
+if trustEmpir AND |model − (implied + pace)| > 150 AND |model − implied| <= 150:
+                    calories = implied + goal pace   // model returned maintenance alone
+```
+
+Rationale: with sparse weigh-ins the model anchored the target at ~BMR (e.g. 1742 kcal vs formula TDEE ~2680), and CAL-SAFE passes it (it is ≥ BMR), so the guard is prompt-side plus this deterministic snap. Unit tests: `GoalPromptGateTest`; device matrix: `run_goal_matrix_test` debug extra (docs/ON_DEVICE_LLM.md).
+
 ### WATER-DYN-A: Dynamic gross water goal
 
 **Android-only** (opt-in, `waterDynamicEnabled`; PWA has no water UI, so no `chompass-core` mirror yet).
@@ -333,7 +360,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 | Adaptive ±150 kcal, 25 min step  | **Keep**                        | Prevents oscillation; conservative weekly nudge                           |
 | Safety floor max(BMR, 1200)      | **Keep / extend to all auto writes** | Formula `dailyCalories`, Recalculate, and Adaptive; never auto-set a VLCD (800). Manual pin still allowed with confirm. |
 | Linear regression on scale data  | **Replaced with Theil–Sen**     | Robust median-slope; resists outlier weigh-ins                            |
-| AI goal recalculation            | **Keep, segregated**            | Non-deterministic; audit deterministic layer separately                   |
+| AI goal recalculation            | **Keep, segregated**            | Non-deterministic; empirical (hit-and-trial) maintenance gated by log density (AI-RECALC below); thin/under-floor/disagreeing data falls back deterministically to formula or measured maintenance |
 | US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
 | Water base 35 ml/kg              | **Keep**                        | Midpoint of 30–40 ml/kg clinical range; between EFSA (2.0/2.5 L) and IOM (2.7/3.7 L) totals |
 | Temp factor +4 %/°C ≥ 25 °C, cap 1.6 | **Keep (heuristic)**         | AIs apply only to temperate climates; +0.5–1.0 L on hot days matches guidance |
@@ -366,6 +393,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 | P3       | Robust regression (Theil–Sen) for weight trend            | **Done:** `WeightForecastMath.theilSenSlopePerDay`                   |
 | P3       | Review moderate PAL 1.465 vs literature 1.55              | **Done:** kept 1.465; documented in strings + `GoalFormulaReference` |
 | P4       | AI prompt parity via shared formula reference             | **Done:** `GoalFormulaReference` + unit tests                        |
+| P1       | AI recalc empirical-maintenance gate                       | **Done:** `AI-RECALC` below: withhold implied maintenance on thin/under-floor/disagreeing data + deterministic snap; `GoalPromptGateTest` + Pixel 9a device matrix (`run_goal_matrix_test`) |
 
 ---
 
