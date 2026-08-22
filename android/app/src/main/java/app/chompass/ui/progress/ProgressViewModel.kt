@@ -15,8 +15,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import app.chompass.AppContainer
+import app.chompass.data.aggregateFoodEntriesByDay
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
@@ -134,10 +136,13 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 ProgressRangeInputs(base, weightUnit, selectedRange, showGoalReached)
             }.flatMapLatest { inputs ->
                 val (start, end) = inputs.selectedRange.dateRange()
-                container.foodRepository.entriesBetween(start, end).map { foods ->
+                // Daily aggregates (flippidity C.1): one small row per logged
+                // day from the aggregate cache instead of the year of FoodEntry
+                // rows — All-range compute never holds the full diary in memory.
+                container.foodRepository.dailyTotalsBetween(start, end).map { totals ->
                     ProgressSnapshot(
                         base = inputs.base,
-                        foods = foods,
+                        dailyTotals = totals,
                         weightUnit = inputs.weightUnit,
                         selectedRange = inputs.selectedRange,
                         showGoalReached = inputs.showGoalReached,
@@ -148,7 +153,7 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                     app.chompass.services.PerfLog.measure(
                         "progress",
                         "rangeChange",
-                        "range=${snapshot.selectedRange.storageId} foods=${snapshot.foods.size} weights=${snapshot.base.entries.size}",
+                        "range=${snapshot.selectedRange.storageId} foods=${snapshot.dailyTotals.size} weights=${snapshot.base.entries.size}",
                     ) { snapshot.toUiState() }
                 }
             }.onEach { _ui.value = it }.launchIn(viewModelScope)
@@ -217,13 +222,6 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     }
 }
 
-private data class DailyFoodAggregate(
-    var calories: Int = 0,
-    var protein: Double = 0.0,
-    var carbs: Double = 0.0,
-    var fat: Double = 0.0
-)
-
 private data class ProgressRangeInputs(
     val base: BaseProgressData,
     val weightUnit: String,
@@ -233,7 +231,8 @@ private data class ProgressRangeInputs(
 
 private data class ProgressSnapshot(
     val base: BaseProgressData,
-    val foods: List<FoodEntry>,
+    /** Per-day totals from the aggregates cache (flippidity C.1), range-filtered. */
+    val dailyTotals: List<DailyFoodTotals>,
     val weightUnit: String,
     val selectedRange: TimeRange,
     val showGoalReached: Boolean
@@ -257,11 +256,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         .filter { it.date in rangeStart..rangeEnd }
         .sortedBy { it.date }
         .toList()
-    val foodByDay = foods.groupByLocalDateInRange(
-        rangeStart = rangeStart,
-        rangeEnd = rangeEnd,
-        zone = zone
-    )
+    val foodByDay = dailyTotals.associate { it.date to it }
     val dailyCalories = foodByDay
         .toSortedMap()
         .mapNotNull { (day, aggregate) ->
@@ -311,24 +306,6 @@ private fun TimeRange.instantRange(zone: ZoneId, today: LocalDate = LocalDate.no
     return start to end
 }
 
-private fun List<FoodEntry>.groupByLocalDateInRange(
-    rangeStart: Instant,
-    rangeEnd: Instant,
-    zone: ZoneId
-): Map<LocalDate, DailyFoodAggregate> {
-    val perDay = mutableMapOf<LocalDate, DailyFoodAggregate>()
-    for (entry in this) {
-        if (entry.timestamp < rangeStart || entry.timestamp > rangeEnd) continue
-        val day = entry.timestamp.atZone(zone).toLocalDate()
-        val existing = perDay.getOrPut(day) { DailyFoodAggregate() }
-        existing.calories += entry.calories
-        existing.protein += entry.protein
-        existing.carbs += entry.carbs
-        existing.fat += entry.fat
-    }
-    return perDay
-}
-
 private fun List<WeightEntry>.toWeightStats(): WeightSummaryStats {
     if (isEmpty()) return WeightSummaryStats()
     val first = first()
@@ -363,6 +340,10 @@ internal fun buildProgressPreviewUiState(
     bodyMeasurements: List<BodyMeasurement> = emptyList(),
     measurementSites: Set<BodyMeasurement.Site> = emptySet(),
 ): ProgressUiState {
+    // Same range filter the old per-entry grouping applied inside toUiState:
+    // previews receive full-history lists and must not count days outside
+    // the selected range, so scope before aggregating.
+    val (rangeStart, rangeEnd) = timeRange.instantRange(ZoneId.systemDefault(), today = anchorDate)
     return ProgressSnapshot(
         base = BaseProgressData(
             profile = profile,
@@ -371,7 +352,9 @@ internal fun buildProgressPreviewUiState(
             bodyMeasurements = bodyMeasurements,
             measurementSites = measurementSites.map { it.storageId }.toSet(),
         ),
-        foods = foods,
+        dailyTotals = aggregateFoodEntriesByDay(
+            foods.filter { it.timestamp in rangeStart..rangeEnd }
+        ),
         weightUnit = weightUnit,
         selectedRange = timeRange,
         showGoalReached = false,

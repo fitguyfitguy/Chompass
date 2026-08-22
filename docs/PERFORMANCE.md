@@ -91,6 +91,10 @@ measurements) live in per-month JSON files under
 `filesDir/chompass-buckets/` (JsonBucketStore) instead of the single
 DataStore proto, so `save`/`waterSip` measure a ~10-30 KB month-file
 write; the remaining proto (settings) is ~40 KB seeded.
+Since 2026-08-22 Progress `rangeChange` `foods=` counts per-day aggregate
+rows from `filesDir/chompass-buckets/food-aggregates/` (one small row per
+logged day, flippidity C.1), not the diary's `FoodEntry` rows — All-range
+compute no longer decodes the year of entries into memory.
 A photo analysis can still fire a second `net` call (`op=inferServing`) when
 the main prompt returns empty `unit_options`.
 

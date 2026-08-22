@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Logging food, water, and weight entries is faster on long histories** (Android): saves no longer rewrite your whole history in one file each time. Adding one entry now touches only that calendar month, so the app stays as quick after a year of logging as it is on day one. Your existing data moves over automatically on update; exports, backups, and sync are unchanged.
+- **Progress stays smooth on a long diary** (Android): the Progress charts now read a compact daily summary of your meals instead of every logged entry, so switching to a longer range no longer loads your whole food history at once. Totals and averages are unchanged.
 
 ### Fixed
 

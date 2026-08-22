@@ -1,5 +1,6 @@
 package app.chompass.data
 
+import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.PendingFoodAnalysisDraft
@@ -32,6 +33,31 @@ internal fun yearMonthsOverlapping(start: LocalDate, end: LocalDate): List<YearM
         month = month.plusMonths(1)
     }
     return out
+}
+
+/**
+ * One [DailyFoodTotals] row per calendar day that has at least one entry,
+ * preserving entry order within a day so the sums are bit-identical to the
+ * old per-entry Progress grouping. Builds the aggregates cache (flippidity
+ * C.1) from food month content; also used by the Progress screenshot preview.
+ */
+internal fun aggregateFoodEntriesByDay(
+    entries: List<FoodEntry>,
+    zone: ZoneId = ZoneId.systemDefault(),
+): List<DailyFoodTotals> {
+    val byDay = LinkedHashMap<LocalDate, MutableList<FoodEntry>>()
+    for (entry in entries) {
+        byDay.getOrPut(entry.timestamp.atZone(zone).toLocalDate()) { ArrayList() }.add(entry)
+    }
+    return byDay.map { (day, dayEntries) ->
+        DailyFoodTotals(
+            date = day,
+            calories = dayEntries.sumOf { it.calories },
+            protein = dayEntries.sumOf { it.protein },
+            carbs = dayEntries.sumOf { it.carbs },
+            fat = dayEntries.sumOf { it.fat },
+        )
+    }
 }
 
 /** Months that can contain the 90-day frequent window ending at [now]. */
@@ -99,6 +125,19 @@ class FoodRepository(
                 val day = entry.timestamp.atZone(zone).toLocalDate()
                 !day.isBefore(start) && !day.isAfter(end)
             }
+        }
+    }
+
+    /**
+     * Per-day calorie/macro totals for the date window, from the daily
+     * aggregates cache (flippidity C.1) instead of the year of [FoodEntry]
+     * rows. Progress reads these, so All-range compute never holds the full
+     * diary in memory and re-emits only when a day's totals actually change.
+     * Same date window as [entriesBetween]; days with no entries are absent.
+     */
+    fun dailyTotalsBetween(start: LocalDate, end: LocalDate): Flow<List<DailyFoodTotals>> {
+        return prefs.dailyFoodTotalsForMonths(yearMonthsOverlapping(start, end)).map { totals ->
+            totals.filter { !it.date.isBefore(start) && !it.date.isAfter(end) }
         }
     }
 
