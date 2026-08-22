@@ -1106,6 +1106,8 @@
     <string name="nutrition_unlock_editing">Déverrouiller la modification de la nutrition</string>
     <string name="on_device_download_failed">Échec du téléchargement</string>
     <string name="on_device_model_delete">Supprimer le modèle téléchargé</string>
+    <string name="on_device_model_clear">Effacer de cet appareil</string>
+    <string name="on_device_model_clear_footer">Supprime %1$s de fichiers modèle et de téléchargements inachevés, et libère la mémoire.</string>
     <string name="on_device_model_download">Télécharger</string>
     <string name="on_device_model_downloading">Téléchargement… %1$d%%</string>
     <string name="on_device_model_e4b_notice">Plus grand et plus lent que E2B, mais peut donner de meilleures descriptions d\'aliments. L\'analyse photo répartit la charge entre CPU et GPU pour la stabilité, elle peut donc être nettement plus lente que le texte seul. Choisissez E2B dans Réglages → Modèle si vous préférez des réponses plus rapides.</string>

@@ -6,6 +6,9 @@ import androidx.work.WorkManager
 import app.chompass.R
 import java.io.File
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 
 sealed class OnDeviceDownloadState {
@@ -23,6 +26,10 @@ sealed class OnDeviceDownloadState {
  * WorkManager-facing handle used by Settings UI.
  */
 class ModelDownloadManager(private val context: Context) {
+    private val _storageEpoch = MutableStateFlow(0)
+    /** Bumps when files are deleted so Settings can refresh leftover size. */
+    val storageEpoch: StateFlow<Int> = _storageEpoch.asStateFlow()
+
     fun modelFile(entry: OnDeviceModelEntry = ModelCatalog.default): File =
         File(modelsDir(), entry.filename)
 
@@ -30,6 +37,9 @@ class ModelDownloadManager(private val context: Context) {
         modelFile(entry).exists()
 
     fun modelsDir(): File = File(context.filesDir, "models")
+
+    fun occupiedBytes(): Long =
+        ModelDownloadStorage.occupiedBytes(modelsDir(), context.cacheDir)
 
     fun startDownload(entry: OnDeviceModelEntry, overWifiOnly: Boolean) {
         ModelDownloadWorker.enqueue(context, entry, overWifiOnly)
@@ -45,7 +55,16 @@ class ModelDownloadManager(private val context: Context) {
         val partFile = File(modelsDir(), "${entry.filename}.part")
         partFile.delete()
         ModelDownloadHasher.deleteSidecar(partFile)
-        return !file.exists() || file.delete()
+        val gone = !file.exists() || file.delete()
+        _storageEpoch.value++
+        return gone
+    }
+
+    /** Wipes every model file, leftover `.part`, sidecar, and LiteRT cache. */
+    fun deleteAll() {
+        cancelDownload()
+        ModelDownloadStorage.deleteAll(modelsDir(), context.cacheDir)
+        _storageEpoch.value++
     }
 
     /** Live download state for [modelId], driven by [ModelDownloadWorker] + WorkManager. */

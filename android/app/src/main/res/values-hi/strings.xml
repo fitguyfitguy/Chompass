@@ -1055,6 +1055,8 @@
     <string name="nutrition_unlock_editing">पोषण संपादन अनलॉक करें</string>
     <string name="on_device_download_failed">डाउनलोड विफल</string>
     <string name="on_device_model_delete">डाउनलोड किया गया मॉडल हटाएं</string>
+    <string name="on_device_model_clear">इस डिवाइस से हटाएं</string>
+    <string name="on_device_model_clear_footer">%1$s मॉडल फ़ाइलें और अधूरा डाउनलोड हटाता है, और मेमोरी से भी हटाता है।</string>
     <string name="on_device_model_download">डाउनलोड करें</string>
     <string name="on_device_model_downloading">डाउनलोड हो रहा है… %1$d%%</string>
     <string name="on_device_model_e4b_notice">E2B से बड़ा और धीमा, लेकिन बेहतर खाद्य विवरण दे सकता है। स्थिरता के लिए फोटो विश्लेषण CPU/GPU विभाजन चलाता है, इसलिए यह टेक्स्ट-ओनली से काफी धीमा हो सकता है। तेज़ प्रतिक्रिया पसंद करते हैं तो सेटिंग्स → मॉडल में E2B चुनें।</string>

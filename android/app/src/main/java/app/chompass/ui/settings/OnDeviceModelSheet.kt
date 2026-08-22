@@ -37,9 +37,10 @@ private fun gb(bytes: Long): String = "${LocaleFormat.decimal(bytes / 1_073_741_
  * Model download/management sheet for [SettingsSheet.ON_DEVICE_MODEL]. Shows
  * the Hugging Face disclosure before the first download (not repeated once a
  * model is present), a storage pre-check, download progress, and
- * delete/unload actions. Interrupted downloads resume from the partial file
- * via HTTP Range (see [ModelDownloadWorker]); cancel stops the worker but
- * keeps the partial file so Download can continue.
+ * delete/unload/clear actions. Interrupted downloads resume from the partial
+ * file via HTTP Range (see [ModelDownloadWorker]); cancel stops the worker
+ * but keeps the partial file so Download can continue. Clear wipes the
+ * leftover `.part`, any finished model, and the LiteRT cache.
  */
 @Composable
 internal fun OnDeviceModelSheet(
@@ -55,8 +56,10 @@ internal fun OnDeviceModelSheet(
     val entry = remember(selectedModelId) { ModelCatalog.forModelId(selectedModelId) }
     val state by manager.state(selectedModelId).collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
     val overWifiOnly by container.prefs.onDeviceDownloadOverWifiOnly.collectAsState(initial = true)
+    val storageEpoch by manager.storageEpoch.collectAsState()
     val isLoaded = container.onDeviceLlmGateway.isLoaded
-    val freeBytes = remember(entry) {
+    val occupiedBytes = remember(entry, state, storageEpoch) { manager.occupiedBytes() }
+    val freeBytes = remember(entry, storageEpoch) {
         manager.modelsDir().mkdirs()
         StatFs(manager.modelsDir().path).availableBytes
     }
@@ -163,17 +166,6 @@ internal fun OnDeviceModelSheet(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
                 )
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider()
-                Spacer(Modifier.height(12.dp))
-                if (isLoaded) {
-                    TextButton(onClick = onUnload, modifier = Modifier.fillMaxWidth()) {
-                        Text(stringResource(R.string.on_device_model_unload))
-                    }
-                }
-                TextButton(onClick = onDelete, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.on_device_model_delete), color = MaterialTheme.colorScheme.error)
-                }
             }
             is OnDeviceDownloadState.Failed -> {
                 Text(
@@ -185,6 +177,30 @@ internal fun OnDeviceModelSheet(
                 GradientSaveButton(
                     text = stringResource(R.string.on_device_model_retry),
                     onClick = onStartDownload
+                )
+            }
+        }
+
+        if (isLoaded || occupiedBytes > 0L) {
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
+            if (isLoaded) {
+                TextButton(onClick = onUnload, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.on_device_model_unload))
+                }
+            }
+            if (occupiedBytes > 0L) {
+                TextButton(onClick = onDelete, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        stringResource(R.string.on_device_model_clear),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+                Text(
+                    stringResource(R.string.on_device_model_clear_footer, gb(occupiedBytes)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
         }

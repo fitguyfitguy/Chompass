@@ -1022,6 +1022,8 @@
     <string name="on_device_model_unload">Zwolnij model (wolna pamięć)</string>
     <string name="on_device_download_failed">Pobieranie nie powiodło się</string>
     <string name="on_device_model_delete">Usuń pobrany model</string>
+    <string name="on_device_model_clear">Usuń z tego urządzenia</string>
+    <string name="on_device_model_clear_footer">Usuwa %1$s plików modelu i niedokończonych pobrań oraz zwalnia pamięć.</string>
     <string name="on_device_model_retry">Ponów pobieranie</string>
     <string name="on_device_model_sheet_title">Model na urządzeniu</string>
 

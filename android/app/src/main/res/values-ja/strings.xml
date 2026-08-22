@@ -1054,6 +1054,8 @@
     <string name="nutrition_unlock_editing">栄養編集のロックを解除</string>
     <string name="on_device_download_failed">ダウンロードに失敗しました</string>
     <string name="on_device_model_delete">ダウンロード済みモデルを削除</string>
+    <string name="on_device_model_clear">この端末から削除</string>
+    <string name="on_device_model_clear_footer">%1$sのモデルファイルと未完了のダウンロードを削除し、メモリからも解放します。</string>
     <string name="on_device_model_download">ダウンロード</string>
     <string name="on_device_model_downloading">ダウンロード中… %1$d%%</string>
     <string name="on_device_model_e4b_notice">E2B より大きく遅いですが、より良い食品説明が得られる可能性があります。安定性のため写真分析は CPU/GPU 分割で動作し、テキストのみより顕著に遅くなる場合があります。より速い応答を希望する場合は設定 → モデルで E2B を選択してください。</string>

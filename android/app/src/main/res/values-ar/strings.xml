@@ -1055,6 +1055,8 @@
     <string name="nutrition_unlock_editing">فتح تحرير التغذية</string>
     <string name="on_device_download_failed">فشل التنزيل</string>
     <string name="on_device_model_delete">حذف النموذج الذي تم تنزيله</string>
+    <string name="on_device_model_clear">مسح من هذا الجهاز</string>
+    <string name="on_device_model_clear_footer">يحذف %1$s من ملفات النموذج والتنزيلات غير المكتملة، ويُخرجه من الذاكرة.</string>
     <string name="on_device_model_download">تنزيل</string>
     <string name="on_device_model_downloading">جارٍ التنزيل… %1$d%%</string>
     <string name="on_device_model_e4b_notice">أكبر وأبطأ من E2B، لكنه قد يعطي أوصافًا أفضل للطعام. يعمل تحليل الصور بتقسيم CPU/GPU من أجل الاستقرار، لذا قد يكون أبطأ بوضوح من النص فقط. اختر E2B في الإعدادات ← النموذج إذا كنت تفضل ردودًا أسرع.</string>
