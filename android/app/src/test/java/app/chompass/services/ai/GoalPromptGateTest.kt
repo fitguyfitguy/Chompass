@@ -27,6 +27,10 @@ import org.robolectric.annotation.Config
  * empirical minimums — sparse weigh-ins are water-weight noise and anchored
  * the on-device model at ~BMR (e.g. 1742 kcal vs formula TDEE ~2680).
  * See docs/CALCULATION_METHODS.md and docs/ON_DEVICE_LLM.md.
+ *
+ * The delegate seam only ever receives the SAFE prompt (calculateGoals passes
+ * `prompt` = safePrompt), so these tests are the forced-SAFE prompt contract;
+ * the SMART prompt + per-dispatch tier selection live in GoalTierSelectionTest.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
@@ -98,6 +102,31 @@ class GoalPromptGateTest {
             )
         }
         return WeightAnalysisService.compute(weights, foods, profile(), now = now, zone = zone)
+    }
+
+    @Test
+    fun delegatePath_alwaysReceivesSafePrompt_evenWithRawData() = runBlocking {
+        var prompt = ""
+        val service = capturingService { prompt = it }
+        val f = forecast(weighIns = 2, spanDays = 4, foodDays = 2)
+        service.calculateGoals(
+            profile(), f, heightMetric = true, weightMetric = true,
+            weights = listOf(
+                WeightEntry(date = Instant.parse("2026-08-01T12:00:00Z"), weightKg = 76.4),
+                WeightEntry(date = Instant.parse("2026-08-05T12:00:00Z"), weightKg = 76.2),
+            ),
+            foods = listOf(
+                FoodEntry(
+                    name = "test", calories = 2290, protein = 100.0, carbs = 200.0, fat = 50.0,
+                    source = app.chompass.models.FoodSource.MANUAL,
+                    timestamp = Instant.parse("2026-08-14T12:00:00Z"),
+                ),
+            ),
+        )
+
+        assertTrue("observed section missing", prompt.contains("OBSERVED DATA"))
+        assertFalse("the delegate must receive the SAFE prompt, never the raw series", prompt.contains("RAW WEIGH-INS"))
+        assertFalse("the delegate must receive the SAFE prompt, never the intake table", prompt.contains("RAW INTAKE"))
     }
 
     @Test
