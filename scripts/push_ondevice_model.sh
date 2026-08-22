@@ -104,17 +104,28 @@ push_model() {
     echo "Run without --push-only first (or delete the cache entry)." >&2
     return 1
   fi
+  # Skip when the device already has this exact file (sha256 match): no
+  # re-push, and no cache wipe (the on-device compile cache stays valid).
+  local ondev_sha
+  ondev_sha="$("${ADB_BIN}" shell run-as "${PACKAGE}" sha256sum "files/models/${FILENAME}" 2>/dev/null | tr -d '\r' | awk '{print $1}')"
+  if [ "${ondev_sha,,}" = "${SHA256}" ]; then
+    echo "  device already has ${FILENAME} (sha256 match) — nothing to do"
+    return 0
+  fi
   echo "Pushing ${DISPLAY} (${SIZE_GB} GB) into ${PACKAGE} files/models/ ..."
   "${ADB_BIN}" push "$file" "/data/local/tmp/${FILENAME}"
   "${ADB_BIN}" shell run-as "${PACKAGE}" mkdir -p files/models
   "${ADB_BIN}" shell run-as "${PACKAGE}" cp "/data/local/tmp/${FILENAME}" "files/models/"
   "${ADB_BIN}" shell rm -f "/data/local/tmp/${FILENAME}"
-  local ondev
-  ondev="$("${ADB_BIN}" shell run-as "${PACKAGE}" sha256sum "files/models/${FILENAME}" 2>/dev/null | tr -d '\r' | awk '{print $1}')"
-  if [ "${ondev,,}" = "${SHA256}" ]; then
+  # New model file → old LiteRT compile caches are invalid (stale cache makes
+  # every generation fail with llm_litert_compiled_model_executor INTERNAL);
+  # wipe them so the next engine load recompiles.
+  "${ADB_BIN}" shell run-as "${PACKAGE}" rm -rf cache/litert cache/litert-mtp
+  ondev_sha="$("${ADB_BIN}" shell run-as "${PACKAGE}" sha256sum "files/models/${FILENAME}" 2>/dev/null | tr -d '\r' | awk '{print $1}')"
+  if [ "${ondev_sha,,}" = "${SHA256}" ]; then
     echo "  verified on device (sha256 match)"
   else
-    echo "  WARNING: could not verify sha256 on device (got: '${ondev}')" >&2
+    echo "  WARNING: could not verify sha256 on device (got: '${ondev_sha}')" >&2
     echo "    check manually: ${ADB_BIN} shell run-as ${PACKAGE} ls -la files/models/" >&2
   fi
   echo "Done. Smoke test:"
