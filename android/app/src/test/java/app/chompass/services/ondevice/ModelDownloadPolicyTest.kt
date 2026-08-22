@@ -101,74 +101,95 @@ class ModelDownloadPolicyTest {
         )
     }
 
+    private fun map(
+        workState: WorkInfo.State?,
+        workProgressPercent: Int = 0,
+        partProgress: Int = 0,
+        partComplete: Boolean = false,
+        isDownloaded: Boolean = false,
+        workMatchesEntry: Boolean = true,
+        failureReason: String? = null,
+    ) = ModelDownloadPolicy.mapState(
+        workState = workState,
+        workMatchesEntry = workMatchesEntry,
+        workProgressPercent = workProgressPercent,
+        partProgress = partProgress,
+        partComplete = partComplete,
+        isDownloaded = isDownloaded,
+        failureReason = failureReason,
+        defaultFailure = "fail",
+    )
+
     @Test
     fun mapState_blockedShowsPartProgress_notZero() {
-        val state = ModelDownloadPolicy.mapState(
-            workState = WorkInfo.State.BLOCKED,
-            workMatchesEntry = true,
-            workProgressPercent = 0,
-            partProgress = 40,
-            isDownloaded = false,
-            failureReason = null,
-            defaultFailure = "fail",
+        assertEquals(
+            OnDeviceDownloadState.Downloading(40),
+            map(WorkInfo.State.BLOCKED, partProgress = 40),
         )
-        assertEquals(OnDeviceDownloadState.Downloading(40), state)
     }
 
     @Test
     fun mapState_enqueuedShowsPartProgress() {
-        val state = ModelDownloadPolicy.mapState(
-            workState = WorkInfo.State.ENQUEUED,
-            workMatchesEntry = true,
-            workProgressPercent = 0,
-            partProgress = 40,
-            isDownloaded = false,
-            failureReason = null,
-            defaultFailure = "fail",
+        assertEquals(
+            OnDeviceDownloadState.Downloading(40),
+            map(WorkInfo.State.ENQUEUED, partProgress = 40),
         )
-        assertEquals(OnDeviceDownloadState.Downloading(40), state)
     }
 
     @Test
     fun mapState_runningPrefersOnDiskWhenWorkerProgressReset() {
-        val state = ModelDownloadPolicy.mapState(
-            workState = WorkInfo.State.RUNNING,
-            workMatchesEntry = true,
-            workProgressPercent = 0,
-            partProgress = 40,
-            isDownloaded = false,
-            failureReason = null,
-            defaultFailure = "fail",
+        assertEquals(
+            OnDeviceDownloadState.Downloading(40),
+            map(WorkInfo.State.RUNNING, workProgressPercent = 0, partProgress = 40),
         )
-        assertEquals(OnDeviceDownloadState.Downloading(40), state)
     }
 
     @Test
     fun mapState_running100IsVerifying() {
-        val state = ModelDownloadPolicy.mapState(
-            workState = WorkInfo.State.RUNNING,
-            workMatchesEntry = true,
-            workProgressPercent = 100,
-            partProgress = 99,
-            isDownloaded = false,
-            failureReason = null,
-            defaultFailure = "fail",
+        assertEquals(
+            OnDeviceDownloadState.Verifying,
+            map(WorkInfo.State.RUNNING, workProgressPercent = 100, partProgress = 99),
         )
-        assertEquals(OnDeviceDownloadState.Verifying, state)
     }
 
     @Test
     fun mapState_cancelledWithoutFileIsNotDownloaded() {
-        val state = ModelDownloadPolicy.mapState(
-            workState = WorkInfo.State.CANCELLED,
-            workMatchesEntry = true,
-            workProgressPercent = 40,
-            partProgress = 40,
-            isDownloaded = false,
-            failureReason = null,
-            defaultFailure = "fail",
+        assertEquals(
+            OnDeviceDownloadState.NotDownloaded,
+            map(WorkInfo.State.CANCELLED, workProgressPercent = 40, partProgress = 40),
         )
-        assertEquals(OnDeviceDownloadState.NotDownloaded, state)
+    }
+
+    @Test
+    fun mapState_fileOnDiskWinsOverFailedWork() {
+        assertEquals(
+            OnDeviceDownloadState.Downloaded,
+            map(WorkInfo.State.FAILED, isDownloaded = true),
+        )
+    }
+
+    @Test
+    fun mapState_succeededWithoutFileIsNotDownloaded() {
+        assertEquals(
+            OnDeviceDownloadState.NotDownloaded,
+            map(WorkInfo.State.SUCCEEDED),
+        )
+    }
+
+    @Test
+    fun mapState_completePartWhileEnqueuedIsVerifying() {
+        assertEquals(
+            OnDeviceDownloadState.Verifying,
+            map(WorkInfo.State.ENQUEUED, partProgress = 99, partComplete = true),
+        )
+    }
+
+    @Test
+    fun mapState_completePartAfterCancelSurfacesRetry() {
+        assertEquals(
+            OnDeviceDownloadState.Failed("fail"),
+            map(WorkInfo.State.CANCELLED, partProgress = 99, partComplete = true),
+        )
     }
 
     @Test

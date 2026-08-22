@@ -36,15 +36,17 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 /**
- * Streams the catalog model file to `filesDir/models/<file>.part`, verifies
- * its SHA-256, then atomically renames it into place. Runs as a WorkManager
- * job promoted to a `dataSync` foreground service so a 2.6–3.6 GB fetch
- * survives screen-off and the 10-minute JobScheduler cap (Codeberg #51).
+ * Streams the catalog model file to `filesDir/models/<file>.part`, hashes
+ * bytes as they arrive, then atomically renames into place. Runs as a
+ * WorkManager job promoted to a `dataSync` foreground service so a
+ * 2.6-3.6 GB fetch survives screen-off and the 10-minute JobScheduler cap
+ * (Codeberg #51).
  *
  * Retries resume from the partial file via an HTTP Range request. The `.part`
  * file is never truncated on a 200, and an incomplete stream is retried
  * instead of SHA-deleted. Only integrity failure and a full disk surface
- * as permanent errors.
+ * as permanent errors. SHA-256 is computed during the write so 100% does
+ * not re-read the whole file (that second pass was a crash / LMK window).
  */
 class ModelDownloadWorker(
     context: Context,
@@ -154,6 +156,17 @@ class ModelDownloadWorker(
                 resumedBytes
             }
             val append = disposition != ModelDownloadPolicy.StreamDisposition.WRITE_FROM_START
+            val digest = MessageDigest.getInstance("SHA-256")
+            val ctx = currentCoroutineContext()
+            if (append && downloaded > 0L) {
+                Log.i(TAG, "op=download phase=hash_prefix bytes=$downloaded")
+                ModelDownloadHasher.updateFromFile(
+                    digest,
+                    dest,
+                    downloaded,
+                    isActive = { ctx.isActive },
+                )
+            }
             FileOutputStream(dest, append).use { out ->
                 body.byteStream().use { input ->
                     if (disposition == ModelDownloadPolicy.StreamDisposition.SKIP_PREFIX && resumedBytes > 0) {
@@ -166,6 +179,7 @@ class ModelDownloadWorker(
                         val read = input.read(buffer)
                         if (read == -1) break
                         out.write(buffer, 0, read)
+                        digest.update(buffer, 0, read)
                         downloaded += read
                         bytesSinceSync += read
                         if (bytesSinceSync >= SYNC_EVERY_BYTES) {
@@ -185,11 +199,11 @@ class ModelDownloadWorker(
                     out.fd.sync()
                 }
             }
-        }
-        return if (ModelDownloadPolicy.isComplete(dest.length(), entry.sizeBytes)) {
-            DownloadOutcome.STREAMED
-        } else {
-            DownloadOutcome.INCOMPLETE
+            if (ModelDownloadPolicy.isComplete(dest.length(), entry.sizeBytes)) {
+                ModelDownloadHasher.writeSidecar(dest, ModelDownloadHasher.hex(digest))
+                return DownloadOutcome.STREAMED
+            }
+            return DownloadOutcome.INCOMPLETE
         }
     }
 
@@ -199,31 +213,34 @@ class ModelDownloadWorker(
         target: File,
         container: AppContainer?,
     ): Result {
-        if (!verifySha256(partFile, entry.sha256)) {
+        val actual = ModelDownloadHasher.readSidecar(partFile) ?: verifySha256(partFile)
+        if (!actual.equals(entry.sha256, ignoreCase = true)) {
             partFile.delete()
+            ModelDownloadHasher.deleteSidecar(partFile)
             return failure("Downloaded file failed integrity check. Please retry.")
         }
         if (!partFile.renameTo(target)) {
             partFile.delete()
+            ModelDownloadHasher.deleteSidecar(partFile)
             return failure("Could not finalize the downloaded model file.")
         }
+        ModelDownloadHasher.deleteSidecar(partFile)
         container?.prefs?.setOnDeviceModelDownloadedVersion(entry.version)
         Log.i(TAG, "op=download phase=done version=${entry.version}")
         return Result.success()
     }
 
-    private fun verifySha256(file: File, expected: String): Boolean {
+    /** Full-file hash used only when a previous run died before writing the sidecar. */
+    private suspend fun verifySha256(file: File): String {
+        Log.i(TAG, "op=download phase=verify_read bytes=${file.length()}")
         val digest = MessageDigest.getInstance("SHA-256")
-        file.inputStream().use { input ->
-            val buffer = ByteArray(64 * 1024)
-            while (true) {
-                val read = input.read(buffer)
-                if (read == -1) break
-                digest.update(buffer, 0, read)
-            }
-        }
-        val actual = digest.digest().joinToString("") { "%02x".format(it) }
-        return actual.equals(expected, ignoreCase = true)
+        val ctx = currentCoroutineContext()
+        ModelDownloadHasher.updateFromFile(
+            digest,
+            file,
+            isActive = { ctx.isActive },
+        )
+        return ModelDownloadHasher.hex(digest)
     }
 
     /**

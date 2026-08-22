@@ -44,6 +44,7 @@ class ModelDownloadManager(private val context: Context) {
         val file = modelFile(entry)
         val partFile = File(modelsDir(), "${entry.filename}.part")
         partFile.delete()
+        ModelDownloadHasher.deleteSidecar(partFile)
         return !file.exists() || file.delete()
     }
 
@@ -61,11 +62,13 @@ class ModelDownloadManager(private val context: Context) {
             ?.removePrefix("model:")
         val workMatchesEntry = activeVersion == null || activeVersion == entry.version
         val part = File(modelsDir(), "${entry.filename}.part")
+        val partLength = part.length()
         return ModelDownloadPolicy.mapState(
             workState = info?.state,
             workMatchesEntry = workMatchesEntry,
             workProgressPercent = info?.progress?.getInt(ModelDownloadWorker.PROGRESS_PERCENT, 0) ?: 0,
-            partProgress = ModelDownloadPolicy.partProgress(part.length(), entry.sizeBytes),
+            partProgress = ModelDownloadPolicy.partProgress(partLength, entry.sizeBytes),
+            partComplete = ModelDownloadPolicy.isComplete(partLength, entry.sizeBytes),
             isDownloaded = isDownloaded(entry),
             failureReason = info?.outputData?.getString(ModelDownloadWorker.FAILURE_REASON),
             defaultFailure = context.getString(R.string.on_device_download_failed),
