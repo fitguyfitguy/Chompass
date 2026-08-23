@@ -619,6 +619,35 @@
     <string name="meal_photo_cd">Zdjęcie %1$d</string>
     <string name="action_remove">Usuń</string>
 
+    <string name="meal_photos_queue_later">Odłóż na później</string>
+    <string name="analysis_queue_title">Kolejka analiz</string>
+    <string name="analysis_queue_tile_label">Kolejka analiz</string>
+    <string name="analysis_queue_tile_label_count">Kolejka analiz · %1$d</string>
+    <string name="analysis_queue_tab_queue">Kolejka</string>
+    <string name="analysis_queue_tab_history">Historia</string>
+    <string name="analysis_queue_empty_queue">Nic nie czeka. Odłóż posiłek z ekranu zdjęć, aby przeanalizować go później.</string>
+    <string name="analysis_queue_empty_history">Brak wcześniejszych analiz. Nieudane analizy są tutaj zapisywane automatycznie.</string>
+    <string name="analysis_queue_run_all">Uruchom wszystko</string>
+    <string name="analysis_queue_run_now">Uruchom teraz</string>
+    <string name="analysis_queue_re_run">Uruchom ponownie</string>
+    <string name="analysis_queue_edit">Edytuj</string>
+    <string name="analysis_queue_edit_title">Edytuj analizę w kolejce</string>
+    <string name="analysis_queue_clear_history">Wyczyść historię</string>
+    <string name="analysis_queue_clear_history_confirm">Usunąć wszystkie zakończone analizy z historii? Ich zdjęcia również zostaną usunięte.</string>
+    <string name="analysis_queue_delete_confirm">Usunąć tę analizę i jej zdjęcia?</string>
+    <string name="analysis_queue_photo_only">Analiza zdjęcia</string>
+    <string name="analysis_queue_saved_note">Zapisano w kolejce analiz — możesz uruchomić ją później.</string>
+    <string name="analysis_queue_open">Otwórz kolejkę</string>
+    <string name="analysis_queue_target_day">Zapisz do dnia</string>
+    <string name="analysis_queue_day_back">Poprzedni dzień</string>
+    <string name="analysis_queue_day_forward">Następny dzień</string>
+    <string name="analysis_queue_failed">Nieudana</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Przed chwilą</string>
+    <string name="analysis_queue_minutes_ago">%1$d min temu</string>
+    <string name="analysis_queue_hours_ago">%1$d godz. temu</string>
+    <string name="analysis_queue_days_ago">%1$d dni temu</string>
+    <string name="analysis_queue_on_day">na dzień</string>
     <!-- Voice input sheet -->
     <string name="voice_listening">Słucham...</string>
     <string name="voice_tap_to_start">Stuknij mikrofon, aby rozpocząć</string>

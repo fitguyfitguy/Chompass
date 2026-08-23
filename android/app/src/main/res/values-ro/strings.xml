@@ -714,7 +714,36 @@
     <string name="action_logging">Înregistrez…</string>
     <string name="action_ok">OK</string>
     <string name="action_remove">Elimină</string>
-    <string name="action_retry">Reîncearcă</string>
+
+    <string name="meal_photos_queue_later">Pune în coadă pentru mai târziu</string>
+    <string name="analysis_queue_title">Coadă de analiză</string>
+    <string name="analysis_queue_tile_label">Coadă de analiză</string>
+    <string name="analysis_queue_tile_label_count">Coadă de analiză · %1$d</string>
+    <string name="analysis_queue_tab_queue">Coadă</string>
+    <string name="analysis_queue_tab_history">Istoric</string>
+    <string name="analysis_queue_empty_queue">Nimic în așteptare. Pune o masă în coadă din ecranul foto pentru a o analiza mai târziu.</string>
+    <string name="analysis_queue_empty_history">Nicio analiză anterioară. Analizele eșuate sunt salvate aici automat.</string>
+    <string name="analysis_queue_run_all">Rulează tot</string>
+    <string name="analysis_queue_run_now">Rulează acum</string>
+    <string name="analysis_queue_re_run">Rulează din nou</string>
+    <string name="analysis_queue_edit">Editează</string>
+    <string name="analysis_queue_edit_title">Editează analiza din coadă</string>
+    <string name="analysis_queue_clear_history">Șterge istoricul</string>
+    <string name="analysis_queue_clear_history_confirm">Elimini toate analizele finalizate din istoric? Fotografiile lor vor fi șterse și ele.</string>
+    <string name="analysis_queue_delete_confirm">Ștergi această analiză și fotografiile ei?</string>
+    <string name="analysis_queue_photo_only">Analiză foto</string>
+    <string name="analysis_queue_saved_note">Salvat în coada de analiză — o poți rula mai târziu.</string>
+    <string name="analysis_queue_open">Deschide coada</string>
+    <string name="analysis_queue_target_day">Jurnalizează pentru ziua</string>
+    <string name="analysis_queue_day_back">Ziua anterioară</string>
+    <string name="analysis_queue_day_forward">Ziua următoare</string>
+    <string name="analysis_queue_failed">Eșuată</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Chiar acum</string>
+    <string name="analysis_queue_minutes_ago">acum %1$d min</string>
+    <string name="analysis_queue_hours_ago">acum %1$d h</string>
+    <string name="analysis_queue_days_ago">acum %1$d zile</string>
+    <string name="analysis_queue_on_day">pentru</string>    <string name="action_retry">Reîncearcă</string>
     <string name="action_show">Arată</string>
     <string name="action_undo">Revocă</string>
     <string name="action_what_if">Ce-ar fi?</string>

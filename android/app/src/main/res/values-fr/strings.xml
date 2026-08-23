@@ -749,7 +749,36 @@
     <string name="action_logging">Enregistre…</string>
     <string name="action_ok">OK</string>
     <string name="action_remove">Retirer</string>
-    <string name="action_retry">Réessayer</string>
+
+    <string name="meal_photos_queue_later">Mettre en file pour plus tard</string>
+    <string name="analysis_queue_title">File d\'analyse</string>
+    <string name="analysis_queue_tile_label">File d\'analyse</string>
+    <string name="analysis_queue_tile_label_count">File d\'analyse · %1$d</string>
+    <string name="analysis_queue_tab_queue">File</string>
+    <string name="analysis_queue_tab_history">Historique</string>
+    <string name="analysis_queue_empty_queue">Rien en attente. Mettez un repas en file depuis la feuille photo pour l\'analyser plus tard.</string>
+    <string name="analysis_queue_empty_history">Aucune analyse passée pour l\'instant. Les analyses échouées sont enregistrées ici automatiquement.</string>
+    <string name="analysis_queue_run_all">Tout exécuter</string>
+    <string name="analysis_queue_run_now">Exécuter maintenant</string>
+    <string name="analysis_queue_re_run">Réexécuter</string>
+    <string name="analysis_queue_edit">Modifier</string>
+    <string name="analysis_queue_edit_title">Modifier l\'analyse en file</string>
+    <string name="analysis_queue_clear_history">Effacer l\'historique</string>
+    <string name="analysis_queue_clear_history_confirm">Supprimer toutes les analyses terminées de l\'historique ? Leurs photos seront aussi supprimées.</string>
+    <string name="analysis_queue_delete_confirm">Supprimer cette analyse en file et ses photos ?</string>
+    <string name="analysis_queue_photo_only">Analyse photo</string>
+    <string name="analysis_queue_saved_note">Enregistré dans la file d\'analyse — vous pourrez l\'exécuter plus tard.</string>
+    <string name="analysis_queue_open">Ouvrir la file</string>
+    <string name="analysis_queue_target_day">Journaliser pour le jour</string>
+    <string name="analysis_queue_day_back">Jour précédent</string>
+    <string name="analysis_queue_day_forward">Jour suivant</string>
+    <string name="analysis_queue_failed">Échec</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">À l\'instant</string>
+    <string name="analysis_queue_minutes_ago">il y a %1$d min</string>
+    <string name="analysis_queue_hours_ago">il y a %1$d h</string>
+    <string name="analysis_queue_days_ago">il y a %1$d j</string>
+    <string name="analysis_queue_on_day">pour</string>    <string name="action_retry">Réessayer</string>
     <string name="action_show">Afficher</string>
     <string name="action_undo">Défaire</string>
     <string name="action_what_if">Et si…?</string>

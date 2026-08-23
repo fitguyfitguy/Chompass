@@ -724,7 +724,36 @@
     <string name="action_info">信息</string>
     <string name="action_logging">记录中…</string>
     <string name="action_remove">移除</string>
-    <string name="action_retry">重试</string>
+
+    <string name="meal_photos_queue_later">稍后排队分析</string>
+    <string name="analysis_queue_title">分析队列</string>
+    <string name="analysis_queue_tile_label">分析队列</string>
+    <string name="analysis_queue_tile_label_count">分析队列 · %1$d</string>
+    <string name="analysis_queue_tab_queue">队列</string>
+    <string name="analysis_queue_tab_history">历史</string>
+    <string name="analysis_queue_empty_queue">队列为空。在照片页将餐食加入队列，之后即可运行分析。</string>
+    <string name="analysis_queue_empty_history">暂无历史分析。失败的分析会自动保存到这里。</string>
+    <string name="analysis_queue_run_all">全部运行</string>
+    <string name="analysis_queue_run_now">立即运行</string>
+    <string name="analysis_queue_re_run">重新运行</string>
+    <string name="analysis_queue_edit">编辑</string>
+    <string name="analysis_queue_edit_title">编辑队列中的分析</string>
+    <string name="analysis_queue_clear_history">清除历史</string>
+    <string name="analysis_queue_clear_history_confirm">从历史中移除所有已完成的分析？它们的照片也会被删除。</string>
+    <string name="analysis_queue_delete_confirm">删除此分析及其照片？</string>
+    <string name="analysis_queue_photo_only">照片分析</string>
+    <string name="analysis_queue_saved_note">已保存到分析队列 — 您可以稍后运行。</string>
+    <string name="analysis_queue_open">打开队列</string>
+    <string name="analysis_queue_target_day">记录到日期</string>
+    <string name="analysis_queue_day_back">前一天</string>
+    <string name="analysis_queue_day_forward">后一天</string>
+    <string name="analysis_queue_failed">失败</string>
+    <string name="analysis_queue_result">%1$s · %2$d 千卡</string>
+    <string name="analysis_queue_just_now">刚刚</string>
+    <string name="analysis_queue_minutes_ago">%1$d 分钟前</string>
+    <string name="analysis_queue_hours_ago">%1$d 小时前</string>
+    <string name="analysis_queue_days_ago">%1$d 天前</string>
+    <string name="analysis_queue_on_day">目标日</string>    <string name="action_retry">重试</string>
     <string name="action_show">显示</string>
     <string name="action_undo">撤销</string>
     <string name="action_what_if">会怎样？</string>
