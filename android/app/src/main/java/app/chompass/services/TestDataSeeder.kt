@@ -15,6 +15,8 @@ import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.MealType
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.QueuedAnalysis
+import app.chompass.models.QueueStatus
 import app.chompass.models.Recipe
 import app.chompass.models.UserProfile
 import app.chompass.models.WaterEntry
@@ -31,6 +33,7 @@ import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.util.UUID
 
 /**
  * Dev-only helper that swaps the user's real data for a year of synthetic food + weight
@@ -542,6 +545,85 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.setHealthConnectEnabled(backup.healthConnectEnabled)
         container.prefs.setOnboardingCompleted(backup.onboarded)
         container.prefs.clearTestSeedBackup()
+    }
+
+    /**
+     * Seeds the analysis queue + prompt history (Codeberg #53) with two pending
+     * photo items, one finished analysis, and one failed attempt:
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_analysis_queue true
+     */
+    suspend fun seedAnalysisQueue() {
+        val fixtures = SEED_PHOTO_ASSETS.mapNotNull { path ->
+            runCatching { container.appContext.assets.open(path).use { it.readBytes() } }.getOrNull()
+                ?.takeIf { it.isNotEmpty() }
+        }
+        val now = java.time.Instant.now()
+        val pending1 = UUID.randomUUID()
+        val pending2 = UUID.randomUUID()
+        val done = UUID.randomUUID()
+        val failed = UUID.randomUUID()
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = pending1,
+                createdAt = now.minusSeconds(45 * 60),
+                targetDate = LocalDate.now(),
+                imageFilenames = container.analysisQueue.storeImages(
+                    pending1, fixtures.take(1)
+                ),
+                note = "Oatmeal with banana and peanut butter",
+                confirmedPortionGrams = 320.0,
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = pending2,
+                createdAt = now.minusSeconds(3 * 3600),
+                targetDate = LocalDate.now(),
+                imageFilenames = container.analysisQueue.storeImages(
+                    pending2, fixtures.drop(1).take(1)
+                ),
+                note = "Pizza slices + salad",
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = done,
+                createdAt = now.minusSeconds(26 * 3600),
+                targetDate = LocalDate.now().minusDays(1),
+                imageFilenames = container.analysisQueue.storeImages(
+                    done, fixtures.drop(2).take(1)
+                ),
+                note = "Burger combo",
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.DONE,
+                result = app.chompass.services.ai.FoodAnalysis(
+                    name = "Cheeseburger with fries",
+                    calories = 780,
+                    protein = 32.0,
+                    carbs = 68.0,
+                    fat = 41.0,
+                    servingSizeGrams = 310.0,
+                    emoji = "🍔",
+                    customNote = "Burger combo",
+                ),
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = failed,
+                createdAt = now.minusSeconds(50 * 3600),
+                targetDate = LocalDate.now().minusDays(2),
+                note = "Greek yogurt bowl",
+                source = FoodSource.TEXT_INPUT,
+                status = QueueStatus.FAILED,
+                error = "Analysis failed",
+            )
+        )
     }
 
     private companion object {

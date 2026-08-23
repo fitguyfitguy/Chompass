@@ -514,6 +514,10 @@ open class MainActivity : ComponentActivity() {
                 if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
                 if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
             }
+            if (actions.seedAnalysisQueue) {
+                runCatching { container.testDataSeeder.seedAnalysisQueue() }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedAnalysisQueue failed", it) }
+            }
             if (actions.seedActiveCalories) {
                 runCatching { container.testDataSeeder.seedActiveCalories(actions.activeTodayOverride) }
                     .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedActiveCalories failed", it) }
