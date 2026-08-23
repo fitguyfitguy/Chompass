@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
@@ -90,6 +91,8 @@ fun AddFoodSheet(
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
     onSearch: () -> Unit = {},
+    onQueue: () -> Unit = {},
+    queuePendingCount: Int = 0,
     onDismiss: () -> Unit,
     aiFeaturesEnabled: Boolean = true,
     barcodeEnabled: Boolean = true,
@@ -115,6 +118,8 @@ fun AddFoodSheet(
             onManualActive = { onDismiss(); onManualActive() },
             onGrounded = { onDismiss(); onGrounded() },
             onSearch = { onDismiss(); onSearch() },
+            onQueue = { onDismiss(); onQueue() },
+            queuePendingCount = queuePendingCount,
             aiFeaturesEnabled = aiFeaturesEnabled,
             barcodeEnabled = barcodeEnabled,
             waterTrackingEnabled = waterTrackingEnabled,
@@ -143,6 +148,9 @@ internal fun AddFoodSheetContent(
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
     onSearch: () -> Unit = {},
+    /** Codeberg #53: open the analysis queue (pending badge in the label). */
+    onQueue: () -> Unit = {},
+    queuePendingCount: Int = 0,
     /** Codeberg #20 phase 2: false hides the AI logging tiles (photo/note/voice);
      *  barcode, search, manual, recents, copy-from-day and water all stay. */
     aiFeaturesEnabled: Boolean = true,
@@ -310,7 +318,21 @@ internal fun AddFoodSheetContent(
                         modifier = Modifier.weight(1f),
                         onClick = onManualActive,
                     )
-                    Spacer(Modifier.weight(1f))
+                    if (aiFeaturesEnabled) {
+                        AddFoodActionTile(
+                            label = if (queuePendingCount > 0) {
+                                stringResource(R.string.analysis_queue_tile_label_count, queuePendingCount)
+                            } else {
+                                stringResource(R.string.analysis_queue_tile_label)
+                            },
+                            icon = Icons.Filled.Schedule,
+                            size = AddFoodTileSize.Compact,
+                            modifier = Modifier.weight(1f),
+                            onClick = onQueue,
+                        )
+                    } else {
+                        Spacer(Modifier.weight(1f))
+                    }
                 }
             } else {
                 Row(
@@ -331,7 +353,21 @@ internal fun AddFoodSheetContent(
                         modifier = Modifier.weight(1f),
                         onClick = onManualActive,
                     )
-                    Spacer(Modifier.weight(1f))
+                    if (aiFeaturesEnabled) {
+                        AddFoodActionTile(
+                            label = if (queuePendingCount > 0) {
+                                stringResource(R.string.analysis_queue_tile_label_count, queuePendingCount)
+                            } else {
+                                stringResource(R.string.analysis_queue_tile_label)
+                            },
+                            icon = Icons.Filled.Schedule,
+                            size = AddFoodTileSize.Compact,
+                            modifier = Modifier.weight(1f),
+                            onClick = onQueue,
+                        )
+                    } else {
+                        Spacer(Modifier.weight(1f))
+                    }
                     Spacer(Modifier.weight(1f))
                 }
             }

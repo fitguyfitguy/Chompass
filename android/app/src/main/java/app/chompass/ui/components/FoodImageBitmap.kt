@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import app.chompass.services.FoodImageStore
 import app.chompass.services.decodeSampledBitmap
+import app.chompass.data.AnalysisQueueStore
 
 /**
  * Decodes in-memory image bytes off the composition thread. Keyed on the array
@@ -23,6 +24,24 @@ fun rememberDecodedBitmap(bytes: ByteArray?): Bitmap? {
             withContext(Dispatchers.Default) {
                 decodeSampledBitmap(bytes)
             }
+        }
+    }
+    return state.value
+}
+
+/** Loads an analysis-queue thumbnail off the composition thread (Codeberg #53). */
+@Composable
+fun rememberQueueThumbnail(
+    imageFilename: String?,
+    queueStore: AnalysisQueueStore?,
+): Bitmap? {
+    val state = produceState<Bitmap?>(initialValue = null, imageFilename, queueStore) {
+        val filename = imageFilename
+        val store = queueStore
+        value = if (filename == null || store == null) {
+            null
+        } else {
+            withContext(Dispatchers.IO) { store.thumbnail(filename) }
         }
     }
     return state.value

@@ -803,6 +803,11 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 addFoodFlowActive = true
                 showFoodSearch = true
             },
+            onQueue = {
+                addFoodFlowActive = false
+                vm.openQueue()
+            },
+            queuePendingCount = ui.queuePendingCount,
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
             onRelogRecent = { vm.relogMeal(it) },
@@ -1137,8 +1142,35 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                     vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain)
                 }
             },
+            onQueueForLater = { note, grams ->
+                // Codeberg #53: store time + photos + description WITHOUT an AI
+                // call; the queue sheet opens so it can be run later.
+                val images = photoSession.stagedImages.value
+                photoSession.clear()
+                addFoodFlowActive = false
+                vm.queueStaged(images, note, grams)
+            },
             onDismiss = {
                 photoSession.clear()
+                returnToAddFoodGrid()
+            },
+        )
+    }
+
+    if (ui.showAnalysisQueue) {
+        AnalysisQueueSheet(
+            container = container,
+            entries = ui.queueEntries,
+            runningId = ui.queueRunningId,
+            onRun = vm::runQueuedItem,
+            onRunAll = vm::runAllQueued,
+            onUpdate = vm::updateQueued,
+            onAddPhotos = vm::addQueuedPhotos,
+            onRemovePhoto = vm::removeQueuedPhoto,
+            onDelete = vm::deleteQueued,
+            onClearHistory = vm::clearQueueHistory,
+            onDismiss = {
+                vm.dismissQueue()
                 returnToAddFoodGrid()
             },
         )
@@ -1173,7 +1205,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     }
 
     ui.error?.let { err ->
-        val hasRetryableInput = ui.pendingInputImageBytes != null || ui.pendingInputDraftImageFilename != null
+        val hasRetryableInput = ui.pendingInputImageBytes != null ||
+            ui.pendingInputDraftImageFilenames.isNotEmpty()
+        val autoSavedToQueue = ui.pendingQueueEntryId != null
         FudGlassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
@@ -1190,6 +1224,23 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                     primaryText = stringResource(R.string.action_ok),
                     onPrimary = { vm.clearError() }
                 )
+            }
+            if (autoSavedToQueue) {
+                // Codeberg #53: the failed photos + description are already in
+                // the analysis queue — nothing is lost, and it can run later.
+                Text(
+                    stringResource(R.string.analysis_queue_saved_note),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+                TextButton(
+                    onClick = {
+                        vm.clearError()
+                        vm.openQueue()
+                    },
+                ) {
+                    Text(stringResource(R.string.analysis_queue_open))
+                }
             }
         }
     }

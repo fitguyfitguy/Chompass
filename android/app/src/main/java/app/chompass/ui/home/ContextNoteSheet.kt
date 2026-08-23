@@ -305,6 +305,8 @@ fun MultiPhotoCaptureSheet(
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
     onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean) -> Unit,
+    /** Codeberg #53: store photos + note WITHOUT an AI call, run later from the queue. */
+    onQueueForLater: (note: String?, confirmedPortionGrams: Double?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val state = rememberChompassSheetState()
@@ -559,6 +561,14 @@ fun MultiPhotoCaptureSheet(
                 primaryLabel = stringResource(R.string.action_analyze),
                 primaryEnabled = true,
                 onPrimary = { requestAnalyze() },
+                textActionLabel = stringResource(R.string.meal_photos_queue_later),
+                onTextAction = {
+                    val trimmed = note.trim()
+                    onQueueForLater(
+                        trimmed.takeIf { it.isNotEmpty() },
+                        parsePositiveGrams(weightText),
+                    )
+                },
             )
         }
     }
