@@ -723,7 +723,36 @@
     <string name="action_info">معلومات</string>
     <string name="action_logging">تسجيل…</string>
     <string name="action_remove">إزالة</string>
-    <string name="action_retry">أعد المحاولة</string>
+
+    <string name="meal_photos_queue_later">أجّلها لاحقًا</string>
+    <string name="analysis_queue_title">قائمة التحليل</string>
+    <string name="analysis_queue_tile_label">قائمة التحليل</string>
+    <string name="analysis_queue_tile_label_count">قائمة التحليل · %1$d</string>
+    <string name="analysis_queue_tab_queue">قائمة الانتظار</string>
+    <string name="analysis_queue_tab_history">السجل</string>
+    <string name="analysis_queue_empty_queue">لا يوجد شيء بانتظار. أجّل وجبة من شاشة الصور لتشغيلها لاحقًا.</string>
+    <string name="analysis_queue_empty_history">لا توجد تحليلات سابقة بعد. تُحفظ التحليلات الفاشلة هنا تلقائيًا.</string>
+    <string name="analysis_queue_run_all">تشغيل الكل</string>
+    <string name="analysis_queue_run_now">شغّل الآن</string>
+    <string name="analysis_queue_re_run">إعادة التشغيل</string>
+    <string name="analysis_queue_edit">تعديل</string>
+    <string name="analysis_queue_edit_title">تعديل التحليل المؤجل</string>
+    <string name="analysis_queue_clear_history">مسح السجل</string>
+    <string name="analysis_queue_clear_history_confirm">إزالة كل التحليلات المكتملة من السجل؟ سيتم حذف صورها أيضًا.</string>
+    <string name="analysis_queue_delete_confirm">حذف هذا التحليل المؤجل وصوره؟</string>
+    <string name="analysis_queue_photo_only">تحليل بالصور</string>
+    <string name="analysis_queue_saved_note">حُفظ في قائمة التحليل — يمكنك تشغيله لاحقًا.</string>
+    <string name="analysis_queue_open">فتح القائمة</string>
+    <string name="analysis_queue_target_day">تسجيل لليوم</string>
+    <string name="analysis_queue_day_back">اليوم السابق</string>
+    <string name="analysis_queue_day_forward">اليوم التالي</string>
+    <string name="analysis_queue_failed">فشل</string>
+    <string name="analysis_queue_result">%1$s · %2$d سعرة</string>
+    <string name="analysis_queue_just_now">الآن</string>
+    <string name="analysis_queue_minutes_ago">قبل %1$d د</string>
+    <string name="analysis_queue_hours_ago">قبل %1$d س</string>
+    <string name="analysis_queue_days_ago">قبل %1$d ي</string>
+    <string name="analysis_queue_on_day">لـ</string>    <string name="action_retry">أعد المحاولة</string>
     <string name="action_show">إظهار</string>
     <string name="action_undo">تراجع</string>
     <string name="action_what_if">ماذا لو؟</string>

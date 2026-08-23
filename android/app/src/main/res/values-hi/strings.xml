@@ -723,7 +723,36 @@
     <string name="action_info">जानकारी</string>
     <string name="action_logging">लॉग…</string>
     <string name="action_remove">हटाएं</string>
-    <string name="action_retry">पुनः प्रयास</string>
+
+    <string name="meal_photos_queue_later">बाद के लिए कतार में रखें</string>
+    <string name="analysis_queue_title">विश्लेषण कतार</string>
+    <string name="analysis_queue_tile_label">विश्लेषण कतार</string>
+    <string name="analysis_queue_tile_label_count">विश्लेषण कतार · %1$d</string>
+    <string name="analysis_queue_tab_queue">कतार</string>
+    <string name="analysis_queue_tab_history">इतिहास</string>
+    <string name="analysis_queue_empty_queue">कुछ भी प्रतीक्षा में नहीं है। फ़ोटो शीट से भोजन को कतार में रखें और बाद में चलाएँ।</string>
+    <string name="analysis_queue_empty_history">अभी कोई पिछला विश्लेषण नहीं। असफल विश्लेषण यहाँ अपने आप सहेजे जाते हैं।</string>
+    <string name="analysis_queue_run_all">सभी चलाएँ</string>
+    <string name="analysis_queue_run_now">अभी चलाएँ</string>
+    <string name="analysis_queue_re_run">फिर से चलाएँ</string>
+    <string name="analysis_queue_edit">संपादित करें</string>
+    <string name="analysis_queue_edit_title">कतारबद्ध विश्लेषण संपादित करें</string>
+    <string name="analysis_queue_clear_history">इतिहास साफ़ करें</string>
+    <string name="analysis_queue_clear_history_confirm">इतिहास से सभी पूर्ण विश्लेषण हटाएँ? उनकी तस्वीरें भी हट जाएँगी।</string>
+    <string name="analysis_queue_delete_confirm">इस कतारबद्ध विश्लेषण और इसकी तस्वीरों को हटाएँ?</string>
+    <string name="analysis_queue_photo_only">फ़ोटो विश्लेषण</string>
+    <string name="analysis_queue_saved_note">विश्लेषण कतार में सहेजा गया — आप इसे बाद में चला सकते हैं।</string>
+    <string name="analysis_queue_open">कतार खोलें</string>
+    <string name="analysis_queue_target_day">दिन के लिए लॉग करें</string>
+    <string name="analysis_queue_day_back">पिछला दिन</string>
+    <string name="analysis_queue_day_forward">अगला दिन</string>
+    <string name="analysis_queue_failed">असफल</string>
+    <string name="analysis_queue_result">%1$s · %2$d किलोकैलोरी</string>
+    <string name="analysis_queue_just_now">अभी-अभी</string>
+    <string name="analysis_queue_minutes_ago">%1$d मिनट पहले</string>
+    <string name="analysis_queue_hours_ago">%1$d घंटे पहले</string>
+    <string name="analysis_queue_days_ago">%1$d दिन पहले</string>
+    <string name="analysis_queue_on_day">के लिए</string>    <string name="action_retry">पुनः प्रयास</string>
     <string name="action_show">दिखाएं</string>
     <string name="action_undo">पूर्ववत</string>
     <string name="action_what_if">क्या होगा अगर?</string>

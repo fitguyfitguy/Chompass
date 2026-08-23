@@ -723,7 +723,36 @@
     <string name="action_logging">Запис…</string>
     <string name="action_ok">Гаразд</string>
     <string name="action_remove">Прибрати</string>
-    <string name="action_retry">Повторити</string>
+
+    <string name="meal_photos_queue_later">Відкласти на потім</string>
+    <string name="analysis_queue_title">Черга аналізу</string>
+    <string name="analysis_queue_tile_label">Черга аналізу</string>
+    <string name="analysis_queue_tile_label_count">Черга аналізу · %1$d</string>
+    <string name="analysis_queue_tab_queue">Черга</string>
+    <string name="analysis_queue_tab_history">Історія</string>
+    <string name="analysis_queue_empty_queue">Нічого в черзі. Відкладіть прийом їжі з екрана фото, щоб проаналізувати його пізніше.</string>
+    <string name="analysis_queue_empty_history">Минулих аналізів ще немає. Невдалі аналізи зберігаються тут автоматично.</string>
+    <string name="analysis_queue_run_all">Запустити все</string>
+    <string name="analysis_queue_run_now">Запустити зараз</string>
+    <string name="analysis_queue_re_run">Запустити знову</string>
+    <string name="analysis_queue_edit">Змінити</string>
+    <string name="analysis_queue_edit_title">Змінити аналіз у черзі</string>
+    <string name="analysis_queue_clear_history">Очистити історію</string>
+    <string name="analysis_queue_clear_history_confirm">Видалити всі завершені аналізи з історії? Їхні фото також буде видалено.</string>
+    <string name="analysis_queue_delete_confirm">Видалити цей аналіз і його фото?</string>
+    <string name="analysis_queue_photo_only">Аналіз фото</string>
+    <string name="analysis_queue_saved_note">Збережено в черзі аналізу — ви зможете запустити це пізніше.</string>
+    <string name="analysis_queue_open">Відкрити чергу</string>
+    <string name="analysis_queue_target_day">Записати на день</string>
+    <string name="analysis_queue_day_back">Попередній день</string>
+    <string name="analysis_queue_day_forward">Наступний день</string>
+    <string name="analysis_queue_failed">Не вдалося</string>
+    <string name="analysis_queue_result">%1$s · %2$d ккал</string>
+    <string name="analysis_queue_just_now">Щойно</string>
+    <string name="analysis_queue_minutes_ago">%1$d хв тому</string>
+    <string name="analysis_queue_hours_ago">%1$d год тому</string>
+    <string name="analysis_queue_days_ago">%1$d дн. тому</string>
+    <string name="analysis_queue_on_day">на</string>    <string name="action_retry">Повторити</string>
     <string name="action_show">Показати</string>
     <string name="action_undo">Скасувати</string>
     <string name="action_what_if">Що як?</string>

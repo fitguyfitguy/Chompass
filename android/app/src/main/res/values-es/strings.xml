@@ -757,7 +757,36 @@
     <string name="action_info">Información</string>
     <string name="action_logging">Registrando…</string>
     <string name="action_remove">Quitar</string>
-    <string name="action_retry">Reintentar</string>
+
+    <string name="meal_photos_queue_later">Poner en cola para más tarde</string>
+    <string name="analysis_queue_title">Cola de análisis</string>
+    <string name="analysis_queue_tile_label">Cola de análisis</string>
+    <string name="analysis_queue_tile_label_count">Cola de análisis · %1$d</string>
+    <string name="analysis_queue_tab_queue">Cola</string>
+    <string name="analysis_queue_tab_history">Historial</string>
+    <string name="analysis_queue_empty_queue">No hay nada en espera. Pon una comida en cola desde la hoja de fotos para analizarla más tarde.</string>
+    <string name="analysis_queue_empty_history">Aún no hay análisis anteriores. Los análisis fallidos se guardan aquí automáticamente.</string>
+    <string name="analysis_queue_run_all">Ejecutar todo</string>
+    <string name="analysis_queue_run_now">Ejecutar ahora</string>
+    <string name="analysis_queue_re_run">Volver a ejecutar</string>
+    <string name="analysis_queue_edit">Editar</string>
+    <string name="analysis_queue_edit_title">Editar análisis en cola</string>
+    <string name="analysis_queue_clear_history">Borrar historial</string>
+    <string name="analysis_queue_clear_history_confirm">¿Eliminar todos los análisis terminados del historial? También se borrarán sus fotos.</string>
+    <string name="analysis_queue_delete_confirm">¿Eliminar este análisis en cola y sus fotos?</string>
+    <string name="analysis_queue_photo_only">Análisis de foto</string>
+    <string name="analysis_queue_saved_note">Guardado en la cola de análisis: puedes ejecutarlo más tarde.</string>
+    <string name="analysis_queue_open">Abrir cola</string>
+    <string name="analysis_queue_target_day">Registrar para el día</string>
+    <string name="analysis_queue_day_back">Día anterior</string>
+    <string name="analysis_queue_day_forward">Día siguiente</string>
+    <string name="analysis_queue_failed">Fallido</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Ahora mismo</string>
+    <string name="analysis_queue_minutes_ago">hace %1$d min</string>
+    <string name="analysis_queue_hours_ago">hace %1$d h</string>
+    <string name="analysis_queue_days_ago">hace %1$d d</string>
+    <string name="analysis_queue_on_day">para</string>    <string name="action_retry">Reintentar</string>
     <string name="action_show">Mostrar</string>
     <string name="action_undo">Deshacer</string>
     <string name="action_what_if">¿Y si…?</string>

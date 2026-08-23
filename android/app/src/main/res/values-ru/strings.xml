@@ -1042,7 +1042,36 @@
     <string name="action_hide">Скрыть</string>
     <string name="action_logging">Запись...</string>
     <string name="action_remove">Удалить</string>
-    <string name="action_retry">Повторить</string>
+
+    <string name="meal_photos_queue_later">Отложить на потом</string>
+    <string name="analysis_queue_title">Очередь анализа</string>
+    <string name="analysis_queue_tile_label">Очередь анализа</string>
+    <string name="analysis_queue_tile_label_count">Очередь анализа · %1$d</string>
+    <string name="analysis_queue_tab_queue">Очередь</string>
+    <string name="analysis_queue_tab_history">История</string>
+    <string name="analysis_queue_empty_queue">Ничего в очереди. Отложите приём пищи с экрана фото, чтобы проанализировать его позже.</string>
+    <string name="analysis_queue_empty_history">Прошлых анализов пока нет. Неудачные анализы сохраняются здесь автоматически.</string>
+    <string name="analysis_queue_run_all">Запустить всё</string>
+    <string name="analysis_queue_run_now">Запустить сейчас</string>
+    <string name="analysis_queue_re_run">Запустить снова</string>
+    <string name="analysis_queue_edit">Изменить</string>
+    <string name="analysis_queue_edit_title">Изменить анализ в очереди</string>
+    <string name="analysis_queue_clear_history">Очистить историю</string>
+    <string name="analysis_queue_clear_history_confirm">Удалить все завершённые анализы из истории? Их фото тоже будут удалены.</string>
+    <string name="analysis_queue_delete_confirm">Удалить этот анализ и его фото?</string>
+    <string name="analysis_queue_photo_only">Анализ фото</string>
+    <string name="analysis_queue_saved_note">Сохранено в очереди анализа — вы сможете запустить это позже.</string>
+    <string name="analysis_queue_open">Открыть очередь</string>
+    <string name="analysis_queue_target_day">Записать на день</string>
+    <string name="analysis_queue_day_back">Предыдущий день</string>
+    <string name="analysis_queue_day_forward">Следующий день</string>
+    <string name="analysis_queue_failed">Не удалось</string>
+    <string name="analysis_queue_result">%1$s · %2$d ккал</string>
+    <string name="analysis_queue_just_now">Только что</string>
+    <string name="analysis_queue_minutes_ago">%1$d мин назад</string>
+    <string name="analysis_queue_hours_ago">%1$d ч назад</string>
+    <string name="analysis_queue_days_ago">%1$d дн. назад</string>
+    <string name="analysis_queue_on_day">на</string>    <string name="action_retry">Повторить</string>
     <string name="action_show">Показать</string>
     <string name="add_food_water_section">Вода</string>
     <string name="error_failed_input_missing">Сохранённый ввод не удалось восстановить. Сделай новое фото.</string>

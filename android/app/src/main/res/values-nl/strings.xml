@@ -693,7 +693,36 @@
     <string name="action_logging">Loggen…</string>
     <string name="action_ok">OK</string>
     <string name="action_remove">Verwijderen</string>
-    <string name="action_retry">Opnieuw</string>
+
+    <string name="meal_photos_queue_later">In wachtrij voor later</string>
+    <string name="analysis_queue_title">Analysewachtrij</string>
+    <string name="analysis_queue_tile_label">Analysewachtrij</string>
+    <string name="analysis_queue_tile_label_count">Analysewachtrij · %1$d</string>
+    <string name="analysis_queue_tab_queue">Wachtrij</string>
+    <string name="analysis_queue_tab_history">Geschiedenis</string>
+    <string name="analysis_queue_empty_queue">Niets in de wachtrij. Zet een maaltijd in de wachtrij via het fotoscherm om hem later te analyseren.</string>
+    <string name="analysis_queue_empty_history">Nog geen eerdere analyses. Mislukte analyses worden hier automatisch bewaard.</string>
+    <string name="analysis_queue_run_all">Alles uitvoeren</string>
+    <string name="analysis_queue_run_now">Nu uitvoeren</string>
+    <string name="analysis_queue_re_run">Opnieuw uitvoeren</string>
+    <string name="analysis_queue_edit">Bewerken</string>
+    <string name="analysis_queue_edit_title">Wachtrijanalyse bewerken</string>
+    <string name="analysis_queue_clear_history">Geschiedenis wissen</string>
+    <string name="analysis_queue_clear_history_confirm">Alle voltooide analyses uit de geschiedenis verwijderen? De foto\'s worden ook verwijderd.</string>
+    <string name="analysis_queue_delete_confirm">Deze wachtrijanalyse en de foto\'s verwijderen?</string>
+    <string name="analysis_queue_photo_only">Fotoanalyse</string>
+    <string name="analysis_queue_saved_note">Opgeslagen in de analysewachtrij — je kunt het later uitvoeren.</string>
+    <string name="analysis_queue_open">Wachtrij openen</string>
+    <string name="analysis_queue_target_day">Loggen voor dag</string>
+    <string name="analysis_queue_day_back">Vorige dag</string>
+    <string name="analysis_queue_day_forward">Volgende dag</string>
+    <string name="analysis_queue_failed">Mislukt</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Zojuist</string>
+    <string name="analysis_queue_minutes_ago">%1$d min geleden</string>
+    <string name="analysis_queue_hours_ago">%1$d u geleden</string>
+    <string name="analysis_queue_days_ago">%1$d d geleden</string>
+    <string name="analysis_queue_on_day">voor</string>    <string name="action_retry">Opnieuw</string>
     <string name="action_show">Toon</string>
     <string name="action_undo">Herstel</string>
     <string name="action_what_if">Wat als?</string>

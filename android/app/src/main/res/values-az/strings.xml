@@ -714,7 +714,36 @@ bilirsən?</string>
     <string name="action_logging">Qeyd…</string>
     <string name="action_ok">OK</string>
     <string name="action_remove">Sil</string>
-    <string name="action_retry">Yenidən</string>
+
+    <string name="meal_photos_queue_later">Sonraya saxla</string>
+    <string name="analysis_queue_title">Analiz növbəsi</string>
+    <string name="analysis_queue_tile_label">Analiz növbəsi</string>
+    <string name="analysis_queue_tile_label_count">Analiz növbəsi · %1$d</string>
+    <string name="analysis_queue_tab_queue">Növbə</string>
+    <string name="analysis_queue_tab_history">Tarixçə</string>
+    <string name="analysis_queue_empty_queue">Gözləyən heç nə yoxdur. Foto səhifəsindən yeməyi növbəyə salıb sonra işlədə bilərsiniz.</string>
+    <string name="analysis_queue_empty_history">Hələ keçmiş analiz yoxdur. Uğursuz analizlər burada avtomatik saxlanılır.</string>
+    <string name="analysis_queue_run_all">Hamısını işə sal</string>
+    <string name="analysis_queue_run_now">İndi işə sal</string>
+    <string name="analysis_queue_re_run">Yenidən işə sal</string>
+    <string name="analysis_queue_edit">Redaktə et</string>
+    <string name="analysis_queue_edit_title">Analizi redaktə et</string>
+    <string name="analysis_queue_clear_history">Tarixçəni təmizlə</string>
+    <string name="analysis_queue_clear_history_confirm">Bitmiş analizləri tarixçədən silmək istəyirsiniz? Fotoları da silinəcək.</string>
+    <string name="analysis_queue_delete_confirm">Bu analizi və fotolarını silmək istəyirsiniz?</string>
+    <string name="analysis_queue_photo_only">Foto analizi</string>
+    <string name="analysis_queue_saved_note">Analiz növbəsinə saxlanıldı — sonra işlədə bilərsiniz.</string>
+    <string name="analysis_queue_open">Növbəni aç</string>
+    <string name="analysis_queue_target_day">Günə yaz</string>
+    <string name="analysis_queue_day_back">Əvvəlki gün</string>
+    <string name="analysis_queue_day_forward">Növbəti gün</string>
+    <string name="analysis_queue_failed">Uğursuz</string>
+    <string name="analysis_queue_result">%1$s · %2$d kkal</string>
+    <string name="analysis_queue_just_now">İndicə</string>
+    <string name="analysis_queue_minutes_ago">%1$d dəq əvvəl</string>
+    <string name="analysis_queue_hours_ago">%1$d saat əvvəl</string>
+    <string name="analysis_queue_days_ago">%1$d gün əvvəl</string>
+    <string name="analysis_queue_on_day">üçün</string>    <string name="action_retry">Yenidən</string>
     <string name="action_show">Göstər</string>
     <string name="action_undo">Geri al</string>
     <string name="action_what_if">Nə olardı?</string>

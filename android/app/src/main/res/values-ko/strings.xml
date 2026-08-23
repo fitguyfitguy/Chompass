@@ -722,7 +722,36 @@
     <string name="action_info">정보</string>
     <string name="action_logging">기록 중…</string>
     <string name="action_remove">제거</string>
-    <string name="action_retry">다시 시도</string>
+
+    <string name="meal_photos_queue_later">나중에 실행하도록 대기열에 추가</string>
+    <string name="analysis_queue_title">분석 대기열</string>
+    <string name="analysis_queue_tile_label">분석 대기열</string>
+    <string name="analysis_queue_tile_label_count">분석 대기열 · %1$d</string>
+    <string name="analysis_queue_tab_queue">대기열</string>
+    <string name="analysis_queue_tab_history">기록</string>
+    <string name="analysis_queue_empty_queue">대기 중인 항목이 없습니다. 사진 시트에서 음식을 대기열에 추가하면 나중에 실행할 수 있습니다.</string>
+    <string name="analysis_queue_empty_history">아직 이전 분석이 없습니다. 실패한 분석은 여기에 자동으로 저장됩니다.</string>
+    <string name="analysis_queue_run_all">모두 실행</string>
+    <string name="analysis_queue_run_now">지금 실행</string>
+    <string name="analysis_queue_re_run">다시 실행</string>
+    <string name="analysis_queue_edit">편집</string>
+    <string name="analysis_queue_edit_title">대기열 분석 편집</string>
+    <string name="analysis_queue_clear_history">기록 지우기</string>
+    <string name="analysis_queue_clear_history_confirm">기록에서 완료된 분석을 모두 삭제할까요? 사진도 함께 삭제됩니다.</string>
+    <string name="analysis_queue_delete_confirm">이 분석과 사진을 삭제할까요?</string>
+    <string name="analysis_queue_photo_only">사진 분석</string>
+    <string name="analysis_queue_saved_note">분석 대기열에 저장되었습니다. 나중에 실행할 수 있습니다.</string>
+    <string name="analysis_queue_open">대기열 열기</string>
+    <string name="analysis_queue_target_day">기록할 날짜</string>
+    <string name="analysis_queue_day_back">이전 날</string>
+    <string name="analysis_queue_day_forward">다음 날</string>
+    <string name="analysis_queue_failed">실패</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">방금</string>
+    <string name="analysis_queue_minutes_ago">%1$d분 전</string>
+    <string name="analysis_queue_hours_ago">%1$d시간 전</string>
+    <string name="analysis_queue_days_ago">%1$d일 전</string>
+    <string name="analysis_queue_on_day">대상일</string>    <string name="action_retry">다시 시도</string>
     <string name="action_show">표시</string>
     <string name="action_undo">실행 취소</string>
     <string name="action_what_if">어떻게 될까?</string>

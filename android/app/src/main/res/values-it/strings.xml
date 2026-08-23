@@ -713,7 +713,36 @@
     <string name="action_logging">Registro…</string>
     <string name="action_ok">OK</string>
     <string name="action_remove">Rimuovi</string>
-    <string name="action_retry">Riprova</string>
+
+    <string name="meal_photos_queue_later">Metti in coda per dopo</string>
+    <string name="analysis_queue_title">Coda di analisi</string>
+    <string name="analysis_queue_tile_label">Coda di analisi</string>
+    <string name="analysis_queue_tile_label_count">Coda di analisi · %1$d</string>
+    <string name="analysis_queue_tab_queue">Coda</string>
+    <string name="analysis_queue_tab_history">Cronologia</string>
+    <string name="analysis_queue_empty_queue">Niente in attesa. Metti un pasto in coda dal foglio foto per analizzarlo più tardi.</string>
+    <string name="analysis_queue_empty_history">Ancora nessuna analisi passata. Le analisi non riuscite vengono salvate qui automaticamente.</string>
+    <string name="analysis_queue_run_all">Esegui tutto</string>
+    <string name="analysis_queue_run_now">Esegui ora</string>
+    <string name="analysis_queue_re_run">Riesegui</string>
+    <string name="analysis_queue_edit">Modifica</string>
+    <string name="analysis_queue_edit_title">Modifica analisi in coda</string>
+    <string name="analysis_queue_clear_history">Cancella cronologia</string>
+    <string name="analysis_queue_clear_history_confirm">Rimuovere tutte le analisi concluse dalla cronologia? Verranno eliminate anche le foto.</string>
+    <string name="analysis_queue_delete_confirm">Eliminare questa analisi in coda e le sue foto?</string>
+    <string name="analysis_queue_photo_only">Analisi foto</string>
+    <string name="analysis_queue_saved_note">Salvato nella coda di analisi: potrai eseguirlo più tardi.</string>
+    <string name="analysis_queue_open">Apri coda</string>
+    <string name="analysis_queue_target_day">Registra per il giorno</string>
+    <string name="analysis_queue_day_back">Giorno precedente</string>
+    <string name="analysis_queue_day_forward">Giorno successivo</string>
+    <string name="analysis_queue_failed">Non riuscita</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Adesso</string>
+    <string name="analysis_queue_minutes_ago">%1$d min fa</string>
+    <string name="analysis_queue_hours_ago">%1$d h fa</string>
+    <string name="analysis_queue_days_ago">%1$d g fa</string>
+    <string name="analysis_queue_on_day">per</string>    <string name="action_retry">Riprova</string>
     <string name="action_show">Mostra</string>
     <string name="action_undo">Ripristina</string>
     <string name="action_what_if">E se...?</string>

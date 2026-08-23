@@ -1102,6 +1102,35 @@ für dich ein</string>
 
     <string name="action_remove">Entfernen</string>
 
+    <string name="meal_photos_queue_later">Für später vormerken</string>
+    <string name="analysis_queue_title">Analyse-Warteschlange</string>
+    <string name="analysis_queue_tile_label">Analyse-Warteschlange</string>
+    <string name="analysis_queue_tile_label_count">Analyse-Warteschlange · %1$d</string>
+    <string name="analysis_queue_tab_queue">Warteschlange</string>
+    <string name="analysis_queue_tab_history">Verlauf</string>
+    <string name="analysis_queue_empty_queue">Nichts in der Warteschlange. Merke eine Mahlzeit im Foto-Sheet vor, um sie später zu analysieren.</string>
+    <string name="analysis_queue_empty_history">Noch keine früheren Analysen. Fehlgeschlagene Analysen werden hier automatisch gespeichert.</string>
+    <string name="analysis_queue_run_all">Alle ausführen</string>
+    <string name="analysis_queue_run_now">Jetzt ausführen</string>
+    <string name="analysis_queue_re_run">Erneut ausführen</string>
+    <string name="analysis_queue_edit">Bearbeiten</string>
+    <string name="analysis_queue_edit_title">Analyse bearbeiten</string>
+    <string name="analysis_queue_clear_history">Verlauf löschen</string>
+    <string name="analysis_queue_clear_history_confirm">Alle abgeschlossenen Analysen aus dem Verlauf entfernen? Die Fotos werden ebenfalls gelöscht.</string>
+    <string name="analysis_queue_delete_confirm">Diese Analyse und ihre Fotos löschen?</string>
+    <string name="analysis_queue_photo_only">Foto-Analyse</string>
+    <string name="analysis_queue_saved_note">In der Analyse-Warteschlange gespeichert – du kannst sie später ausführen.</string>
+    <string name="analysis_queue_open">Warteschlange öffnen</string>
+    <string name="analysis_queue_target_day">Protokollieren für</string>
+    <string name="analysis_queue_day_back">Vorheriger Tag</string>
+    <string name="analysis_queue_day_forward">Nächster Tag</string>
+    <string name="analysis_queue_failed">Fehlgeschlagen</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Gerade eben</string>
+    <string name="analysis_queue_minutes_ago">vor %1$d Min.</string>
+    <string name="analysis_queue_hours_ago">vor %1$d Std.</string>
+    <string name="analysis_queue_days_ago">vor %1$d Tagen</string>
+    <string name="analysis_queue_on_day">für</string>
     <string name="voice_listening">Wird zugehört...</string>
 
     <string name="voice_tap_to_start">Zum Starten auf das Mikrofon tippen</string>

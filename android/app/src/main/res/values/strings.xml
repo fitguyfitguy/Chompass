@@ -618,6 +618,37 @@
     <string name="settings_photo_note_prompt_footer">When on, photo entry highlights the note field before Analyze. You can still confirm and continue without a note.</string>
     <string name="meal_photo_cd">Photo %1$d</string>
     <string name="action_remove">Remove</string>
+    <string name="meal_photos_queue_later">Queue for later</string>
+
+    <!-- Analysis queue + prompt history (Codeberg #53) -->
+    <string name="analysis_queue_title">Analysis queue</string>
+    <string name="analysis_queue_tile_label">Analysis queue</string>
+    <string name="analysis_queue_tile_label_count">Analysis queue · %1$d</string>
+    <string name="analysis_queue_tab_queue">Queue</string>
+    <string name="analysis_queue_tab_history">History</string>
+    <string name="analysis_queue_empty_queue">Nothing waiting. Queue a meal from the photo sheet to run it later.</string>
+    <string name="analysis_queue_empty_history">No past analyses yet. Failed analyses are saved here automatically.</string>
+    <string name="analysis_queue_run_all">Run all</string>
+    <string name="analysis_queue_run_now">Run now</string>
+    <string name="analysis_queue_re_run">Run again</string>
+    <string name="analysis_queue_edit">Edit</string>
+    <string name="analysis_queue_edit_title">Edit queued analysis</string>
+    <string name="analysis_queue_clear_history">Clear history</string>
+    <string name="analysis_queue_clear_history_confirm">Remove all finished analyses from history? Their photos are deleted too.</string>
+    <string name="analysis_queue_delete_confirm">Delete this queued analysis and its photos?</string>
+    <string name="analysis_queue_photo_only">Photo analysis</string>
+    <string name="analysis_queue_saved_note">Saved to the analysis queue — you can run it later.</string>
+    <string name="analysis_queue_open">Open queue</string>
+    <string name="analysis_queue_target_day">Log to day</string>
+    <string name="analysis_queue_day_back">Previous day</string>
+    <string name="analysis_queue_day_forward">Next day</string>
+    <string name="analysis_queue_failed">Failed</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Just now</string>
+    <string name="analysis_queue_minutes_ago">%1$d min ago</string>
+    <string name="analysis_queue_hours_ago">%1$d h ago</string>
+    <string name="analysis_queue_days_ago">%1$d d ago</string>
+    <string name="analysis_queue_on_day">for</string>
 
     <!-- Voice input sheet -->
     <string name="voice_listening">Listening...</string>

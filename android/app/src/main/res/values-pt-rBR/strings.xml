@@ -711,7 +711,36 @@
     <string name="action_logging">Registrando…</string>
     <string name="action_ok">OK</string>
     <string name="action_remove">Remover</string>
-    <string name="action_retry">Repetir</string>
+
+    <string name="meal_photos_queue_later">Enfileirar para depois</string>
+    <string name="analysis_queue_title">Fila de análise</string>
+    <string name="analysis_queue_tile_label">Fila de análise</string>
+    <string name="analysis_queue_tile_label_count">Fila de análise · %1$d</string>
+    <string name="analysis_queue_tab_queue">Fila</string>
+    <string name="analysis_queue_tab_history">Histórico</string>
+    <string name="analysis_queue_empty_queue">Nada na fila. Coloque uma refeição na fila pela tela de fotos para analisá-la depois.</string>
+    <string name="analysis_queue_empty_history">Ainda não há análises anteriores. Análises com falha são salvas aqui automaticamente.</string>
+    <string name="analysis_queue_run_all">Executar tudo</string>
+    <string name="analysis_queue_run_now">Executar agora</string>
+    <string name="analysis_queue_re_run">Executar de novo</string>
+    <string name="analysis_queue_edit">Editar</string>
+    <string name="analysis_queue_edit_title">Editar análise na fila</string>
+    <string name="analysis_queue_clear_history">Limpar histórico</string>
+    <string name="analysis_queue_clear_history_confirm">Remover todas as análises concluídas do histórico? As fotos também serão excluídas.</string>
+    <string name="analysis_queue_delete_confirm">Excluir esta análise e suas fotos?</string>
+    <string name="analysis_queue_photo_only">Análise de foto</string>
+    <string name="analysis_queue_saved_note">Salvo na fila de análise — você pode executá-lo depois.</string>
+    <string name="analysis_queue_open">Abrir fila</string>
+    <string name="analysis_queue_target_day">Registrar para o dia</string>
+    <string name="analysis_queue_day_back">Dia anterior</string>
+    <string name="analysis_queue_day_forward">Dia seguinte</string>
+    <string name="analysis_queue_failed">Falhou</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Agora mesmo</string>
+    <string name="analysis_queue_minutes_ago">há %1$d min</string>
+    <string name="analysis_queue_hours_ago">há %1$d h</string>
+    <string name="analysis_queue_days_ago">há %1$d d</string>
+    <string name="analysis_queue_on_day">para</string>    <string name="action_retry">Repetir</string>
     <string name="action_show">Mostrar</string>
     <string name="action_undo">Desfazer</string>
     <string name="action_what_if">E se...?</string>

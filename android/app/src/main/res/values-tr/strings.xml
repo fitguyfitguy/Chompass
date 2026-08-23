@@ -619,6 +619,35 @@
     <string name="meal_photo_cd">Fotoğraf %1$d</string>
     <string name="action_remove">Kaldır</string>
 
+    <string name="meal_photos_queue_later">Sonra çalıştırmak için kuyruğa al</string>
+    <string name="analysis_queue_title">Analiz kuyruğu</string>
+    <string name="analysis_queue_tile_label">Analiz kuyruğu</string>
+    <string name="analysis_queue_tile_label_count">Analiz kuyruğu · %1$d</string>
+    <string name="analysis_queue_tab_queue">Kuyruk</string>
+    <string name="analysis_queue_tab_history">Geçmiş</string>
+    <string name="analysis_queue_empty_queue">Bekleyen bir şey yok. Fotoğraf ekranından bir öğünü kuyruğa alıp sonra analiz edebilirsiniz.</string>
+    <string name="analysis_queue_empty_history">Henüz geçmiş analiz yok. Başarısız analizler buraya otomatik kaydedilir.</string>
+    <string name="analysis_queue_run_all">Tümünü çalıştır</string>
+    <string name="analysis_queue_run_now">Şimdi çalıştır</string>
+    <string name="analysis_queue_re_run">Yeniden çalıştır</string>
+    <string name="analysis_queue_edit">Düzenle</string>
+    <string name="analysis_queue_edit_title">Kuyruktaki analizi düzenle</string>
+    <string name="analysis_queue_clear_history">Geçmişi temizle</string>
+    <string name="analysis_queue_clear_history_confirm">Geçmişteki tüm tamamlanmış analizler kaldırılsın mı? Fotoğrafları da silinir.</string>
+    <string name="analysis_queue_delete_confirm">Bu analiz ve fotoğrafları silinsin mi?</string>
+    <string name="analysis_queue_photo_only">Fotoğraf analizi</string>
+    <string name="analysis_queue_saved_note">Analiz kuyruğuna kaydedildi — daha sonra çalıştırabilirsiniz.</string>
+    <string name="analysis_queue_open">Kuyruğu aç</string>
+    <string name="analysis_queue_target_day">Gün için kaydet</string>
+    <string name="analysis_queue_day_back">Önceki gün</string>
+    <string name="analysis_queue_day_forward">Sonraki gün</string>
+    <string name="analysis_queue_failed">Başarısız</string>
+    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_just_now">Az önce</string>
+    <string name="analysis_queue_minutes_ago">%1$d dk önce</string>
+    <string name="analysis_queue_hours_ago">%1$d sa önce</string>
+    <string name="analysis_queue_days_ago">%1$d gün önce</string>
+    <string name="analysis_queue_on_day">için</string>
     <!-- Voice input sheet -->
     <string name="voice_listening">Dinleniyor...</string>
     <string name="voice_tap_to_start">Başlamak için mikrofon simgesine dokun</string>
