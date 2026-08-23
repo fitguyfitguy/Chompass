@@ -2,7 +2,7 @@
 
 ## Upstream
 
-Chompass is forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai) by Apoorv Darshan (MIT License).
+Chompass is forked from [Fud AI](https://github.com/aopv/fud-ai) by Apoorv Darshan (MIT License).
 
 ## Barcode nutrition
 

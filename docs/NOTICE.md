@@ -1,4 +1,4 @@
-Chompass is a fork of Fud AI (https://github.com/apoorvdarshan/fud-ai).
+Chompass is a fork of Fud AI (https://github.com/aopv/fud-ai).
 
 Copyright (c) 2026 Apoorv Darshan, MIT License (see LICENSE).
 

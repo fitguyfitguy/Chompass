@@ -1,6 +1,6 @@
 # Chompass Privacy Policy
 
-Chompass is an ad-free calorie tracker forked from [Fud AI](https://github.com/apoorvdarshan/fud-ai). Available as an Android app and a browser PWA.
+Chompass is an ad-free calorie tracker forked from [Fud AI](https://github.com/aopv/fud-ai). Available as an Android app and a browser PWA.
 
 ## Summary
 
