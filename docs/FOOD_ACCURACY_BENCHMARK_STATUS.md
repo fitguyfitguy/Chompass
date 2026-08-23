@@ -99,7 +99,7 @@ Vision pool as of this date (4): `google/gemma-4-26b-a4b-it:free`, `google/gemma
 
 ## Meal constituents gate (2026-07-31): PASS with client normalize
 
-**Status: PASS (WIP → ship).** Upstream [#154](https://github.com/apoorvdarshan/fud-ai/issues/154): optional `constituents[]` on composite text meals. Strong Gemini 3.6 Flash already cleared every check raw; cheap Gemini 3.5 Flash Lite clears after bounded client post-process (`reconcile_constituents.py`, `MAX_REL_ERROR=0.50`) that preserves top-level nutrition and scales or drops the optional breakdown. Prompt rule tightened to ±5% to match the scorer. Free Gemma still regresses WMAPE slightly and is **not** the production cheap gate model.
+**Status: PASS (WIP → ship).** Upstream [#154](https://github.com/aopv/fud-ai/issues/154): optional `constituents[]` on composite text meals. Strong Gemini 3.6 Flash already cleared every check raw; cheap Gemini 3.5 Flash Lite clears after bounded client post-process (`reconcile_constituents.py`, `MAX_REL_ERROR=0.50`) that preserves top-level nutrition and scales or drops the optional breakdown. Prompt rule tightened to ±5% to match the scorer. Free Gemma still regresses WMAPE slightly and is **not** the production cheap gate model.
 
 | Artifact | Path |
 |----------|------|

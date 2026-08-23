@@ -60,9 +60,9 @@ Optional local water log. Android app: reminders and home-screen calorie, protei
 
 ## Upstream credit
 
-Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by **Apoorv Darshan**. Huge thanks for the open, bring-your-own-key food logger. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
+Chompass is based on [Fud&nbsp;AI](https://github.com/aopv/fud-ai) by **Apoorv Darshan**. Huge thanks for the open, bring-your-own-key food logger. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/aopv/fud-ai).
 
-| Feature                     | [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                           | [Chompass&nbsp;PWA](https://chompass.app/app/) |
+| Feature                     | [Fud&nbsp;AI](https://github.com/aopv/fud-ai) | Chompass Android                           | [Chompass&nbsp;PWA](https://chompass.app/app/) |
 | --------------------------- | ------------------------------------------------------ | ------------------------------------------ | ---------------------------------------------- |
 | Banner ads                  | Brief AdMob; removed in 3.0.3                          | **Never shipped**                          | **Never shipped**                              |
 | On-device AI (Gemma&nbsp;4) | No                                                     | **Yes** (opt-in)                           | No (cloud, your key)                                |
@@ -81,4 +81,4 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by *
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect (Android app)
 - **PWA + Android:** installable PWA in any modern browser; Material 3 Android app; shared JSON contracts
 
-Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).
+Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/aopv/fud-ai/releases).

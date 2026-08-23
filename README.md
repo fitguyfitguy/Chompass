@@ -159,7 +159,7 @@ Typed entry with a stated portion: **5.7% WMAPE, 90% within ±20%** of true calo
 
 ## Migrate from Fud AI
 
-Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai). Diary JSON from Fud AI imports here.
+Chompass is based on [Fud AI](https://github.com/aopv/fud-ai). Diary JSON from Fud AI imports here.
 
 | Path                  | Steps                                                                                                  |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -168,7 +168,7 @@ Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai). Diary JS
 
 **Settings → Import Weight & Body Data** also accepts Chompass JSON/CSV, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and common weight CSVs. Body-circumference sites have no Health Connect record type, so use file transfer for those.
 
-| Feature                 | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                          | [Chompass PWA](https://chompass.app/app/) |
+| Feature                 | [Fud AI](https://github.com/aopv/fud-ai) | Chompass Android                          | [Chompass PWA](https://chompass.app/app/) |
 | ----------------------- | ------------------------------------------------- | ----------------------------------------- | ----------------------------------------- |
 | Banner ads              | Brief AdMob; removed in 3.0.3                     | **Never shipped**                         | **Never shipped**                         |
 | On-device AI (Gemma 4)  | No                                                | **Yes** (opt-in)                          | No (cloud, your key)                      |
@@ -181,7 +181,7 @@ Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai). Diary JS
 | Distribution            | Play-focused                                      | **F-Droid** / Obtainium / Codeberg        | **PWA**                                   |
 | Open diary / body JSON  | Upstream formats                                  | **Yes**                                   | **Same contracts as Android**             |
 
-Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Maintainer matrix: [`docs/PARITY.md`](docs/PARITY.md). Release notes: [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+Sources: [Fud AI releases](https://github.com/aopv/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Maintainer matrix: [`docs/PARITY.md`](docs/PARITY.md). Release notes: [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 ## Privacy
 
@@ -195,7 +195,7 @@ Chompass is free, ad-free, and open source. If you'd like to say thanks, you can
 
 ## Attribution & license
 
-Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Chompass is based on [Fud AI](https://github.com/aopv/fud-ai).
 
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License

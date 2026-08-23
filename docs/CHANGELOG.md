@@ -235,9 +235,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Home ring spans your whole expected day** (Android): with _Add Active_ on, the calorie ring now runs from zero to your projected daily burn, sedentary goal plus your usual active burn, instead of starting at the base goal in the morning. The goal line reads against that expected total, and the caption shows how much of your usual active burn you have covered so far, turning a different color once you burn more than usual. The calorie widget shows the same expected goal and remaining.
 
-- **Reasoning effort for OpenRouter models** (Android + PWA): a new _Reasoning effort_ option under Settings → AI & Speech controls the thinking budget of reasoning-capable models. Auto keeps the app default; Low to High trade speed and token cost for accuracy on hard photos or logs. Closes upstream [#194](https://github.com/apoorvdarshan/fud-ai/issues/194).
+- **Reasoning effort for OpenRouter models** (Android + PWA): a new _Reasoning effort_ option under Settings → AI & Speech controls the thinking budget of reasoning-capable models. Auto keeps the app default; Low to High trade speed and token cost for accuracy on hard photos or logs. Closes upstream [#194](https://github.com/aopv/fud-ai/issues/194).
 
-- **A separate model for photos** (Android + PWA): _Vision model_ under Settings → AI & Speech lets photos use a different model than text, per provider. Leave it on _same as Model_ for today's behavior, or set a vision-capable model when your main model is text-only. Closes upstream [#195](https://github.com/apoorvdarshan/fud-ai/issues/195).
+- **A separate model for photos** (Android + PWA): _Vision model_ under Settings → AI & Speech lets photos use a different model than text, per provider. Leave it on _same as Model_ for today's behavior, or set a vision-capable model when your main model is text-only. Closes upstream [#195](https://github.com/aopv/fud-ai/issues/195).
 
 - **Fixed launcher icon option** (Android): a new switch in Settings, next to Theme Color, keeps the launcher icon teal and stops it from following the theme color or wallpaper. Useful on launchers that briefly hide or close the app when the icon changes.
 
@@ -298,8 +298,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **Arithmetic quantity entry** (Android + PWA): serving-quantity fields accept small math: `50×2`, `200−30`, `100÷4` resolve as absolute expressions (`× ÷` bind tighter than `+ −`), while `+20`/`-10` stay relative edits on the current amount. The serving card gains a `+ − × ÷` calculator row with a live `= result` preview; expressions commit to their resolved number on blur/unit change/save (Android collapses deltas immediately, as before). Locale-aware: comma decimals and whitespace parse in both implementations. Closes upstream [#171](https://github.com/apoorvdarshan/fud-ai/issues/171).
-- **Custom optional-nutrient goals clamp + vitamin D hint** (Android + PWA): free-form goal values are capped per nutrient (sanity guard; the wheel stays the quick pick), and vitamin D shows a live `mcg ≈ IU` conversion (1 mcg = 40 IU) while entering a custom value, so a 250 mcg / 10,000 IU goal is legible. Closes upstream [#173](https://github.com/apoorvdarshan/fud-ai/issues/173).
+- **Arithmetic quantity entry** (Android + PWA): serving-quantity fields accept small math: `50×2`, `200−30`, `100÷4` resolve as absolute expressions (`× ÷` bind tighter than `+ −`), while `+20`/`-10` stay relative edits on the current amount. The serving card gains a `+ − × ÷` calculator row with a live `= result` preview; expressions commit to their resolved number on blur/unit change/save (Android collapses deltas immediately, as before). Locale-aware: comma decimals and whitespace parse in both implementations. Closes upstream [#171](https://github.com/aopv/fud-ai/issues/171).
+- **Custom optional-nutrient goals clamp + vitamin D hint** (Android + PWA): free-form goal values are capped per nutrient (sanity guard; the wheel stays the quick pick), and vitamin D shows a live `mcg ≈ IU` conversion (1 mcg = 40 IU) while entering a custom value, so a 250 mcg / 10,000 IU goal is legible. Closes upstream [#173](https://github.com/aopv/fud-ai/issues/173).
 - **Water log syncs to Health Connect** (Android): every logged drink is written out as a Health Connect `HydrationRecord` (tagged with the entry's UUID) when water tracking is enabled and the write permission is granted; deleting an entry deletes its record, and reconnecting backfills the whole log. After a reinstall or a new phone, the records Chompass itself wrote are read back (730-day window) and rebuilt into the local water log, recovering the original UUIDs so future deletes still match. The Progress wellness card keeps reading all hydration Health Connect holds: your own records included. Closes Codeberg [#9](https://codeberg.org/fitguy/Chompass/issues/9).
 - **Water reminders say how much to drink** (Android): the reminder planner now computes the next-drink amount (_remaining goal ÷ cup size ÷ remaining window_) and the notification tells you: "Drink 300 ml · next in ~90 min". The Home water ring and the water widget show the next planned drink ("Next 18:20 · 300 ml"), and the reminder interval preview in Settings shows the per-cup quantity ("≈ every 90 min · 5 cups · 300 ml each"). The quantity rule is documented in the water register ([`CALCULATION_METHODS.md`](CALCULATION_METHODS.md)).
 - **Ukrainian (uk) locale** (Android + PWA): complete 347-key catalog: Chompass's **16th language** (Android `values-uk` + PWA `uk.js`, both sides of the shared locale contract).
@@ -891,7 +891,7 @@ Major release: ships the **companion PWA** alongside Android, with shared export
 
 ## [1.0.0] - 2026-07-07
 
-Initial public release of Chompass - an ad-free, privacy-focused Android fork of [Fud AI](https://github.com/apoorvdarshan/fud-ai).
+Initial public release of Chompass - an ad-free, privacy-focused Android fork of [Fud AI](https://github.com/aopv/fud-ai).
 
 ### Added
 
