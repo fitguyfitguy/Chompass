@@ -31,6 +31,8 @@ internal data class DebugIntentActions(
     val seedBodyMetricsTwoYears: Boolean = false,
     val seedKetoSettings: Boolean = false,
     val seedActiveCalories: Boolean = false,
+    /** Debug-only: seed the analysis queue + prompt history (Codeberg #53). */
+    val seedAnalysisQueue: Boolean = false,
     /** Null = extra absent; Int = explicit today override (0 = measured-zero morning). */
     val activeTodayOverride: Int? = null,
     val setGaugeMode: String = "",
@@ -84,7 +86,7 @@ internal data class DebugIntentActions(
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
-            seedKetoSettings || seedActiveCalories
+            seedKetoSettings || seedActiveCalories || seedAnalysisQueue
     /** Seeders that write onboarded=true before the heavy diary replace. */
     val writesOnboarded: Boolean get() = hasSeedAction
 }
@@ -110,6 +112,7 @@ internal fun consumeDebugIntentExtras(
         seedBodyMetricsTwoYears = intent.getBooleanExtra("seed_body_metrics_2y", false),
         seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
         seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
+        seedAnalysisQueue = BuildConfig.DEBUG && intent.getBooleanExtra("seed_analysis_queue", false),
         activeTodayOverride = intent.getIntExtra("active_today_override", Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE },
         setGaugeMode = intent.getStringExtra("set_gauge_mode") ?: "",
@@ -170,6 +173,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.seedBodyMetrics) intent.removeExtra("seed_body_metrics")
     if (actions.seedBodyMetricsTwoYears) intent.removeExtra("seed_body_metrics_2y")
     if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")
+    if (actions.seedAnalysisQueue) intent.removeExtra("seed_analysis_queue")
     if (actions.seedActiveCalories) {
         intent.removeExtra("seed_active_calories")
         intent.removeExtra("active_today_override")

@@ -4,6 +4,13 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Analysis queue** (Android): Add Food now has an Analysis queue. Failed photo and text analyses are saved there automatically with their photos and description, so nothing is lost when the AI call fails. You can run any saved prompt again later, for example against a model on your home PC, and you can queue a meal from the photo sheet without analyzing it first. Each entry shows its note, photos, and target day, and you can edit them, run one item or all waiting items, and clear the finished history, which is kept for 7 days. Closes Codeberg [#53](https://codeberg.org/fitguy/Chompass/issues/53) by [@madarexxx](https://codeberg.org/madarexxx).
+- **Failed analyses keep your photos and description** (Android): when an AI analysis fails, the photos and note are no longer lost. The error dialog offers Retry for every photo case, including multiple photos, and an Open queue shortcut. Even after you dismiss it, the prompt stays in the queue and history.
+
 ## [3.23.0] - 2026-08-22
 
 ### Added
