@@ -1,6 +1,7 @@
 package app.chompass
 
 import android.app.Application
+import app.chompass.data.AnalysisQueueStore
 import app.chompass.data.BodyFatRepository
 import app.chompass.data.BodyMeasurementRepository
 import app.chompass.data.ChatRepository
@@ -174,6 +175,8 @@ class AppContainer(app: ChompassApp) {
     val prefs = PreferencesStore(app)
     val keyStore: KeyStore by lazy(LazyThreadSafetyMode.NONE) { KeyStore(app) }
     val imageStore = FoodImageStore(app)
+    /** Analysis queue + prompt history (Codeberg #53): run failed/staged prompts later. */
+    val analysisQueue = AnalysisQueueStore(app)
     val notifications = NotificationService(app)
     val health = HealthConnectManager(app)
     val homeActivityReader = HomeActivityReader(health, prefs)

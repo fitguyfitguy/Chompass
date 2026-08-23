@@ -26,6 +26,8 @@ import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
 import app.chompass.models.ProgressiveMealDraft
 import app.chompass.models.ProgressiveMealItem
+import app.chompass.models.QueuedAnalysis
+import app.chompass.models.QueueStatus
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.models.ActivityLevel
@@ -144,11 +146,27 @@ data class HomeUiState(
     val pendingInputNote: String? = null,
     val pendingInputConfirmedPortionGrams: Double? = null,
     /**
+     * Text of the in-flight text-only analysis (Codeberg #53): lets the
+     * failure auto-save see the prompt even though the sheet owns the field.
+     * Cleared on success / dismiss.
+     */
+    val pendingPromptText: String? = null,
+    /**
+     * Auto-saved analysis-queue entry for the current failed/retried input
+     * (Codeberg #53): retries update the same entry; a successful retry marks
+     * it DONE. Cleared on success / dismiss / fresh enqueue.
+     */
+    val pendingQueueEntryId: UUID? = null,
+    /**
      * True when the pending review already received exact grams on multi-photo /
      * context note — skip the portion-clarify row on [FoodResultSheet].
      */
     val pendingPortionPreConfirmed: Boolean = false,
-    val pendingInputDraftImageFilename: String? = null,
+    val pendingInputDraftImageFilenames: List<String> = emptyList(),
+    /** Analysis queue + prompt history (Codeberg #53), newest first. */
+    val queueEntries: List<QueuedAnalysis> = emptyList(),
+    val queueRunningId: UUID? = null,
+    val showAnalysisQueue: Boolean = false,
     /** Intermediate grounded-entry review (candidate / portion picks). */
     val pendingGroundedReview: PendingGroundedReview? = null,
     val analyzing: Boolean = false,
@@ -186,6 +204,8 @@ data class HomeUiState(
     val copiedEntries: List<FoodEntry> = emptyList(),
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
+    /** Pending (runnable) queue items — badge count for the Add Food hub row. */
+    val queuePendingCount: Int get() = queueEntries.count { it.status == QueueStatus.PENDING }
     /** Progressive Log sheet: analysis running or a completed review is waiting. */
     val showFoodResultSheet: Boolean get() = pendingAnalysis != null || isEntryAnalysisBusy
     /** Fields + Log unlocked only after the AI call (and unit inference) finish. */
@@ -342,8 +362,13 @@ data class HomeUiState(
             pendingReviewSource == other.pendingReviewSource &&
             pendingInputNote == other.pendingInputNote &&
             pendingInputConfirmedPortionGrams == other.pendingInputConfirmedPortionGrams &&
+            pendingPromptText == other.pendingPromptText &&
+            pendingQueueEntryId == other.pendingQueueEntryId &&
             pendingPortionPreConfirmed == other.pendingPortionPreConfirmed &&
-            pendingInputDraftImageFilename == other.pendingInputDraftImageFilename &&
+            pendingInputDraftImageFilenames == other.pendingInputDraftImageFilenames &&
+            queueEntries == other.queueEntries &&
+            queueRunningId == other.queueRunningId &&
+            showAnalysisQueue == other.showAnalysisQueue &&
             pendingGroundedReview == other.pendingGroundedReview &&
             analyzing == other.analyzing &&
             analysisPhase == other.analysisPhase &&
@@ -392,8 +417,13 @@ data class HomeUiState(
         result = 31 * result + (pendingReviewSource?.hashCode() ?: 0)
         result = 31 * result + (pendingInputNote?.hashCode() ?: 0)
         result = 31 * result + (pendingInputConfirmedPortionGrams?.hashCode() ?: 0)
+        result = 31 * result + (pendingPromptText?.hashCode() ?: 0)
+        result = 31 * result + (pendingQueueEntryId?.hashCode() ?: 0)
         result = 31 * result + pendingPortionPreConfirmed.hashCode()
-        result = 31 * result + (pendingInputDraftImageFilename?.hashCode() ?: 0)
+        result = 31 * result + pendingInputDraftImageFilenames.hashCode()
+        result = 31 * result + queueEntries.hashCode()
+        result = 31 * result + (queueRunningId?.hashCode() ?: 0)
+        result = 31 * result + showAnalysisQueue.hashCode()
         result = 31 * result + (pendingGroundedReview?.hashCode() ?: 0)
         result = 31 * result + analyzing.hashCode()
         result = 31 * result + (analysisPhase?.hashCode() ?: 0)
@@ -629,6 +659,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     private fun failAnalysis(gen: Int, message: String?) {
         if (gen != analysisGeneration) return
+        autoSaveFailedInput(message)
         _ui.update { it.copy(
             analyzing = false,
             analysisPhase = null,
@@ -637,6 +668,55 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             inferringUnits = false,
             error = message,
         ) }
+    }
+
+    /**
+     * Codeberg #53: a failed AI call must not discard the photos + description.
+     * Every failed prompt (photo or text) is persisted into the analysis queue
+     * (PENDING, runnable later — e.g. against a home-PC local HTTP model).
+     * Retries of the same input update the same entry (via
+     * [HomeUiState.pendingQueueEntryId]); a successful retry marks it DONE.
+     * Barcode/search failures carry no prompt input and are not recorded.
+     */
+    private fun autoSaveFailedInput(message: String?) {
+        val s = _ui.value
+        val images = s.pendingAnalysisImages.filter { it.isNotEmpty() }
+        val text = s.pendingPromptText?.trim().orEmpty()
+        val note = text.ifEmpty { s.pendingInputNote?.trim().orEmpty() }
+        if (images.isEmpty() && note.isEmpty()) return
+        viewModelScope.launch {
+            val store = container.analysisQueue
+            val existingId = s.pendingQueueEntryId
+            if (existingId != null && store.item(existingId) != null) {
+                // Same input failed again (retry / queued run): update in place.
+                store.markFailed(existingId, message)
+                return@launch
+            }
+            val id = UUID.randomUUID()
+            val filenames = store.storeImages(id, images)
+            store.upsert(
+                QueuedAnalysis(
+                    id = id,
+                    createdAt = Instant.now(),
+                    targetDate = _selectedDate.value,
+                    imageFilenames = filenames,
+                    note = note.ifEmpty { null },
+                    confirmedPortionGrams = s.pendingInputConfirmedPortionGrams,
+                    singleIngredient = s.progressiveMeal?.items?.isNotEmpty() == true,
+                    source = s.pendingFoodSource
+                        ?: if (images.isNotEmpty()) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
+                    status = QueueStatus.PENDING,
+                    error = message,
+                )
+            )
+            _ui.update { it.copy(pendingQueueEntryId = id) }
+            // Link the persisted input draft (if any) so a successful retry
+            // resolves this entry instead of leaving it PENDING forever.
+            val draft = container.prefs.pendingFoodInputDraft.first()
+            if (draft != null && draft.queueEntryId == null) {
+                container.prefs.setPendingFoodInputDraft(draft.copy(queueEntryId = id))
+            }
+        }
     }
 
     private fun endAnalysis(gen: Int) {
@@ -691,6 +771,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         observePerfBench()
+        // Analysis queue + prompt history (Codeberg #53): load once (with
+        // retention pruning) and mirror mutations into ui state for the badge
+        // and the queue sheet.
+        viewModelScope.launch {
+            runCatching { container.analysisQueue.ensureLoaded() }
+        }
+        viewModelScope.launch {
+            container.analysisQueue.entries.collect { entries ->
+                _ui.update { it.copy(queueEntries = entries) }
+            }
+        }
         viewModelScope.launch {
             // Hero ⓘ → recalc details: restore the latest goal-change explanation
             // (AI Recalculate or Adaptive) so the link can open the sheet on demand.
@@ -1030,6 +1121,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingAnalysisImages = emptyList(),
                 pendingFoodSource = FoodSource.TEXT_INPUT,
                 pendingDraftImageFilename = null,
+                pendingPromptText = description,
             )
         }) { start ->
             val analysis = container.foodAnalysis.analyzeText(description) { progress ->
@@ -1090,12 +1182,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingDraftImageFilename = null,
                 )
             }) { start ->
-                if ((!note.isNullOrBlank() || grams != null) && images.size == 1) {
+                if (images.isNotEmpty()) {
                     savePendingInputDraft(
-                        images.first(),
+                        images,
                         note.orEmpty(),
                         FoodSource.SNAP_FOOD,
                         confirmedPortionGrams = grams,
+                        queueEntryId = _ui.value.pendingQueueEntryId,
                     )
                 }
                 val analysis = container.foodAnalysis.analyzeFood(
@@ -1646,20 +1739,33 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun retryFailedInput() {
         viewModelScope.launch {
             val snapshot = _ui.value
-            val bytes = snapshot.pendingInputImageBytes ?: snapshot.pendingInputDraftImageFilename?.let { filename ->
-                runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
-            }
-            if (bytes == null) {
+            val draft = container.prefs.pendingFoodInputDraft.first()
+            // Multi-photo retries replay the persisted draft files (the real
+            // images); single-photo-without-draft falls back to the in-memory
+            // bytes captured at attempt start.
+            val bytes = draft?.resolvedImageFilenames
+                ?.mapNotNull { filename ->
+                    runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+                }
+                ?.takeIf { it.isNotEmpty() }
+                ?: snapshot.pendingInputImageBytes?.let { listOf(it) }
+                ?: emptyList()
+            if (bytes.isEmpty()) {
                 clearPendingInputDraft()
                 _ui.update { it.copy(
+                    pendingQueueEntryId = null,
                     error = container.appContext.getString(R.string.error_failed_input_missing)
                 ) }
                 return@launch
             }
-            analyzePhotoWithNote(
+            // Keep the auto-saved queue entry linked so this retry resolves it.
+            _ui.update {
+                it.copy(pendingQueueEntryId = draft?.queueEntryId ?: snapshot.pendingQueueEntryId)
+            }
+            analyzePhotos(
                 bytes,
                 snapshot.pendingInputNote.orEmpty(),
-                confirmedPortionGrams = snapshot.pendingInputConfirmedPortionGrams,
+                snapshot.pendingInputConfirmedPortionGrams,
             )
         }
     }
@@ -1667,12 +1773,182 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun dismissFailedInput() {
         viewModelScope.launch {
             clearPendingInputDraft()
-            _ui.update { it.copy(error = null) }
+            _ui.update { it.copy(error = null, pendingQueueEntryId = null, pendingPromptText = null) }
         }
     }
 
     fun clearError() {
-        _ui.update { it.copy(error = null) }
+        // No retryable input left: the failed prompt stays in the analysis
+        // queue (Codeberg #53), but the retry link is dropped so the next
+        // failure creates a fresh entry.
+        _ui.update { it.copy(error = null, pendingQueueEntryId = null, pendingPromptText = null) }
+    }
+
+    // -- Analysis queue (Codeberg #53) ------------------------------------
+
+    /**
+     * Manual enqueue from the photo staging sheet: store time + photos +
+     * description WITHOUT an AI call, runnable later from the queue sheet.
+     */
+    fun queueStaged(images: List<ByteArray>, note: String?, confirmedPortionGrams: Double?) {
+        viewModelScope.launch {
+            val filtered = images.filter { it.isNotEmpty() }
+            if (filtered.isEmpty()) return@launch
+            val id = UUID.randomUUID()
+            val filenames = container.analysisQueue.storeImages(id, filtered)
+            if (filenames.isEmpty()) return@launch
+            val trimmed = note?.trim().orEmpty()
+            container.analysisQueue.upsert(
+                QueuedAnalysis(
+                    id = id,
+                    createdAt = Instant.now(),
+                    targetDate = _selectedDate.value,
+                    imageFilenames = filenames,
+                    note = trimmed.takeIf { it.isNotEmpty() },
+                    confirmedPortionGrams = confirmedPortionGrams?.takeIf { it > 0 },
+                    source = FoodSource.SNAP_FOOD,
+                    status = QueueStatus.PENDING,
+                )
+            )
+            _ui.update { it.copy(pendingQueueEntryId = null, showAnalysisQueue = true) }
+        }
+    }
+
+    fun runQueuedItem(id: UUID) {
+        viewModelScope.launch { runQueuedItemInternal(id) }
+    }
+
+    /**
+     * Runs each PENDING item in order; stops at the first success (the review
+     * sheet opens). Failures stay PENDING with the error recorded and the next
+     * item is tried.
+     */
+    fun runAllQueued() {
+        viewModelScope.launch {
+            val pending = _ui.value.queueEntries.filter { it.status == QueueStatus.PENDING }
+            for (item in pending) {
+                if (runQueuedItemInternal(item.id)) break
+            }
+        }
+    }
+
+    /**
+     * Runs one queued item through the shared analysis envelope (provider
+     * dispatch + fallback, streaming partials, error mapping — identical to a
+     * live analysis). A run result opens the FoodResultSheet review, logging
+     * to the entry's target day. Returns true when the review is ready.
+     */
+    private suspend fun runQueuedItemInternal(id: UUID): Boolean {
+        val item = container.analysisQueue.item(id) ?: return false
+        if (item.status != QueueStatus.PENDING) return false
+        if (_ui.value.isEntryAnalysisBusy) return false
+        _ui.update { it.copy(queueRunningId = id, showAnalysisQueue = false) }
+        try {
+            _selectedDate.value = item.targetDate
+            val images = item.imageFilenames.mapNotNull { filename ->
+                runCatching { container.analysisQueue.loadImage(filename) }.getOrNull()
+            }
+            val note = item.note?.trim()?.takeIf { it.isNotEmpty() }
+            withFoodAnalysis(
+                phased = true,
+                configure = { state ->
+                    state.copy(
+                        pendingImageBytes = images.firstOrNull(),
+                        pendingAnalysisImages = images,
+                        pendingFoodSource = item.source,
+                        pendingDraftImageFilename = null,
+                        pendingPromptText = null,
+                        // Failure auto-save updates this same entry (no duplicates);
+                        // success resolves it via savePendingDraft.
+                        pendingQueueEntryId = id,
+                    )
+                },
+            ) { start ->
+                if (images.isEmpty() && note.isNullOrBlank()) {
+                    throw AiError.InvalidResponse
+                }
+                val analysis = container.foodAnalysis.analyzeFood(
+                    images,
+                    note,
+                    singleIngredient = item.singleIngredient,
+                    confirmedPortionGrams = item.confirmedPortionGrams,
+                ) { progress ->
+                    onFoodAnalysisProgress(start.generation, progress)
+                }.copy(customNote = note)
+                savePendingDraft(
+                    analysis,
+                    imageBytes = images.firstOrNull(),
+                    source = item.source,
+                    generation = start.generation,
+                )
+            }
+            return _ui.value.pendingAnalysis != null
+        } finally {
+            _ui.update { it.copy(queueRunningId = null) }
+        }
+    }
+
+    /** Edits note / confirmed grams / target day of a queued entry. */
+    fun updateQueued(
+        id: UUID,
+        note: String?,
+        confirmedPortionGrams: Double?,
+        targetDate: LocalDate,
+    ) {
+        viewModelScope.launch {
+            val item = container.analysisQueue.item(id) ?: return@launch
+            val trimmed = note?.trim().orEmpty()
+            container.analysisQueue.upsert(
+                item.copy(
+                    note = trimmed.takeIf { it.isNotEmpty() },
+                    confirmedPortionGrams = confirmedPortionGrams?.takeIf { it > 0 },
+                    targetDate = targetDate,
+                )
+            )
+        }
+    }
+
+    fun addQueuedPhotos(id: UUID, bytes: List<ByteArray>) {
+        viewModelScope.launch {
+            val item = container.analysisQueue.item(id) ?: return@launch
+            val filtered = bytes.filter { it.isNotEmpty() }
+            if (filtered.isEmpty()) return@launch
+            val newFiles = container.analysisQueue.storeImages(id, filtered)
+            if (newFiles.isEmpty()) return@launch
+            container.analysisQueue.upsert(
+                item.copy(
+                    imageFilenames = (item.imageFilenames + newFiles)
+                        .take(FoodPhotoSession.MAX_IMAGES),
+                )
+            )
+        }
+    }
+
+    fun removeQueuedPhoto(id: UUID, filename: String) {
+        viewModelScope.launch {
+            val item = container.analysisQueue.item(id) ?: return@launch
+            if (filename !in item.imageFilenames) return@launch
+            container.analysisQueue.upsert(
+                item.copy(imageFilenames = item.imageFilenames - filename)
+            )
+            container.analysisQueue.deleteImages(listOf(filename))
+        }
+    }
+
+    fun deleteQueued(id: UUID) {
+        viewModelScope.launch { container.analysisQueue.delete(id) }
+    }
+
+    fun clearQueueHistory() {
+        viewModelScope.launch { container.analysisQueue.clearHistory() }
+    }
+
+    fun openQueue() {
+        _ui.update { it.copy(showAnalysisQueue = true) }
+    }
+
+    fun dismissQueue() {
+        _ui.update { it.copy(showAnalysisQueue = false) }
     }
 
     /**
@@ -1878,6 +2154,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
         )
         if (generation != analysisGeneration) return
+        resolveQueueEntryOnSuccess(uniqueAnalysis, source)
         _ui.update { it.copy(
             analyzing = false,
             analysisPhase = null,
@@ -1892,9 +2169,47 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingInputImageBytes = null,
             pendingInputNote = null,
             pendingInputConfirmedPortionGrams = null,
+            pendingPromptText = null,
+            pendingQueueEntryId = null,
             pendingPortionPreConfirmed = portionPreConfirmed,
-            pendingInputDraftImageFilename = null
+            pendingInputDraftImageFilenames = emptyList()
         ) }
+    }
+
+    /**
+     * Codeberg #53 success path: a successful analysis resolves the auto-saved
+     * queue entry for this input (markDone), or — for a fresh prompt that never
+     * failed — records a DONE history row so the prompt history is complete
+     * and past prompts stay re-runnable. Barcode/search/grounded flows carry
+     * no prompt input and are not recorded.
+     */
+    private suspend fun resolveQueueEntryOnSuccess(analysis: FoodAnalysis, source: FoodSource) {
+        val s = _ui.value
+        val images = s.pendingAnalysisImages.filter { it.isNotEmpty() }
+        val text = s.pendingPromptText?.trim().orEmpty()
+        if (images.isEmpty() && text.isEmpty()) return
+        val store = container.analysisQueue
+        val linkedId = s.pendingQueueEntryId
+        if (linkedId != null) {
+            store.markDone(linkedId, analysis)
+        } else {
+            val id = UUID.randomUUID()
+            val filenames = store.storeImages(id, images)
+            store.upsert(
+                QueuedAnalysis(
+                    id = id,
+                    createdAt = Instant.now(),
+                    targetDate = _selectedDate.value,
+                    imageFilenames = filenames,
+                    note = text.ifEmpty { analysis.customNote?.trim()?.takeIf { it.isNotEmpty() } },
+                    confirmedPortionGrams = s.pendingInputConfirmedPortionGrams,
+                    singleIngredient = s.progressiveMeal?.items?.isNotEmpty() == true,
+                    source = source,
+                    status = QueueStatus.DONE,
+                    result = analysis,
+                )
+            )
+        }
     }
 
     private fun restorePendingDraft(draft: PendingFoodAnalysisDraft) {
@@ -1930,7 +2245,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingInputNote = null,
                 pendingInputConfirmedPortionGrams = null,
                 pendingPortionPreConfirmed = false,
-                pendingInputDraftImageFilename = null,
+                pendingInputDraftImageFilenames = emptyList(),
+                pendingQueueEntryId = null,
+                pendingPromptText = null,
                 error = null
             ) }
         }
@@ -1949,33 +2266,38 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private suspend fun savePendingInputDraft(
-        imageBytes: ByteArray,
+        imageBytesList: List<ByteArray>,
         note: String,
         source: FoodSource = FoodSource.SNAP_FOOD,
         confirmedPortionGrams: Double? = null,
+        queueEntryId: UUID? = null,
     ) {
-        val previousFilename = _ui.value.pendingInputDraftImageFilename
-            ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
-        val imageFilename = persistImage(imageBytes, UUID.randomUUID()) ?: return
-        if (previousFilename != null && previousFilename != imageFilename) {
-            container.imageStore.delete(previousFilename)
+        // Multi-photo since Codeberg #53: every staged photo survives a failed
+        // AI call, so the failure dialog's Retry covers all photo cases.
+        val previousFilenames = _ui.value.pendingInputDraftImageFilenames
+            .ifEmpty { container.prefs.pendingFoodInputDraft.first()?.resolvedImageFilenames.orEmpty() }
+        val filenames = imageBytesList.mapNotNull { persistImage(it, UUID.randomUUID()) }
+        if (filenames.isEmpty()) return
+        for (previous in previousFilenames) {
+            if (previous !in filenames) container.imageStore.delete(previous)
         }
         val grams = confirmedPortionGrams?.takeIf { it > 0 }
         container.prefs.setPendingFoodInputDraft(
             PendingFoodInputDraft(
-                imageFilename = imageFilename,
+                imageFilenames = filenames,
                 note = note,
                 confirmedPortionGrams = grams,
                 source = source,
                 // Same day-restore intent as [PendingFoodAnalysisDraft.targetDate].
-                targetDate = _selectedDate.value
+                targetDate = _selectedDate.value,
+                queueEntryId = queueEntryId,
             )
         )
         _ui.update { it.copy(
-            pendingInputImageBytes = imageBytes,
+            pendingInputImageBytes = imageBytesList.firstOrNull(),
             pendingInputNote = note,
             pendingInputConfirmedPortionGrams = grams,
-            pendingInputDraftImageFilename = imageFilename
+            pendingInputDraftImageFilenames = filenames
         ) }
     }
 
@@ -1983,8 +2305,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // Re-target the diary day the input sheet was opened for (same rationale
         // as [restorePendingDraft]): the resumed Log must land on that day.
         _selectedDate.value = draft.targetDate
-        val bytes = runCatching { container.imageStore.file(draft.imageFilename).readBytes() }.getOrNull()
-        if (bytes == null) {
+        val bytes = draft.resolvedImageFilenames.mapNotNull { filename ->
+            runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+        }
+        if (bytes.isEmpty()) {
             clearPendingInputDraft()
             _ui.update { it.copy(
                 error = container.appContext.getString(R.string.error_failed_input_missing)
@@ -1992,24 +2316,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             return
         }
         _ui.update { it.copy(
-            pendingInputImageBytes = bytes,
+            pendingInputImageBytes = bytes.firstOrNull(),
             pendingInputNote = draft.note,
             pendingInputConfirmedPortionGrams = draft.confirmedPortionGrams?.takeIf { it > 0 },
-            pendingInputDraftImageFilename = draft.imageFilename,
+            pendingInputDraftImageFilenames = draft.resolvedImageFilenames,
+            pendingQueueEntryId = draft.queueEntryId,
             error = null
         ) }
     }
 
     private suspend fun clearPendingInputDraft() {
-        val filename = _ui.value.pendingInputDraftImageFilename
-            ?: container.prefs.pendingFoodInputDraft.first()?.imageFilename
+        // Note: deliberately keeps [HomeUiState.pendingQueueEntryId] — the
+        // success path clears the input draft before savePendingDraft resolves
+        // the linked queue entry. Dismiss clears the link explicitly.
+        val filenames = _ui.value.pendingInputDraftImageFilenames
+            .ifEmpty { container.prefs.pendingFoodInputDraft.first()?.resolvedImageFilenames.orEmpty() }
         container.prefs.setPendingFoodInputDraft(null)
-        filename?.let { container.imageStore.delete(it) }
+        filenames.forEach { container.imageStore.delete(it) }
         _ui.update { it.copy(
             pendingInputImageBytes = null,
             pendingInputNote = null,
             pendingInputConfirmedPortionGrams = null,
-            pendingInputDraftImageFilename = null
+            pendingInputDraftImageFilenames = emptyList()
         ) }
     }
 
