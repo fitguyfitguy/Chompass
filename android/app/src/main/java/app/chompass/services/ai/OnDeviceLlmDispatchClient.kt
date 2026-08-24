@@ -14,17 +14,23 @@ object OnDeviceLlmDispatchClient {
     /** Tighter than [AiImageBytes.UPLOAD_MAX_DIMENSION] — shrinks vision-encoder memory pressure on-device. */
     private const val ON_DEVICE_VISION_MAX_DIMENSION = 1024
 
+    /**
+     * [modelId] is the model the dispatcher resolved for this leg (primary or
+     * fallback); passing it through is what lets an on-device fallback load a
+     * different model than the Settings-selected primary (Codeberg #54).
+     */
     suspend fun analyze(
         gateway: OnDeviceLlmGateway,
         prompt: String,
         imageBytesList: List<ByteArray>,
+        modelId: String? = null,
     ): String = if (imageBytesList.isEmpty()) {
-        gateway.generate(systemPrompt = "", userPrompt = prompt)
+        gateway.generate(systemPrompt = "", userPrompt = prompt, modelId = modelId)
     } else {
         val imageBytes = AiImageBytes.jpegForUpload(
             imageBytesList.first(),
             maxDimension = ON_DEVICE_VISION_MAX_DIMENSION,
         )
-        gateway.generateWithImage(userPrompt = prompt, imageBytes = imageBytes)
+        gateway.generateWithImage(userPrompt = prompt, imageBytes = imageBytes, modelId = modelId)
     }
 }

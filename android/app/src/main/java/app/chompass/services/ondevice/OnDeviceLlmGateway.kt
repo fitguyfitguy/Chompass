@@ -42,9 +42,15 @@ class OnDeviceLlmGateway(
         return ModelDownloadManager(context).isDownloaded(entry)
     }
 
-    /** Text-only Tier A call. Throws if the model isn't downloaded. */
-    suspend fun generate(systemPrompt: String, userPrompt: String): String {
-        val loaded = ensureEngine(vision = false)
+    /**
+     * Text-only Tier A call. Throws if the model isn't downloaded.
+     * [modelId] overrides the Settings-selected model (the fallback leg of
+     * FoodAnalysisService dispatch passes the fallback model id here, so a
+     * primary that cannot load falls back to a smaller model instead of
+     * re-attempting the same one — Codeberg #54).
+     */
+    suspend fun generate(systemPrompt: String, userPrompt: String, modelId: String? = null): String {
+        val loaded = ensureEngine(vision = false, modelId = modelId)
         return loaded.generate(systemPrompt, userPrompt)
     }
 
@@ -54,12 +60,17 @@ class OnDeviceLlmGateway(
      * is too low for a vision call on top of a loaded model (observed on E4B,
      * GPU+GPU vision; applies to any model on mid-tier RAM).
      */
-    suspend fun generateWithImage(userPrompt: String, imageBytes: ByteArray, systemPrompt: String = ""): String {
-        val entry = selectedEntry()
+    suspend fun generateWithImage(
+        userPrompt: String,
+        imageBytes: ByteArray,
+        systemPrompt: String = "",
+        modelId: String? = null,
+    ): String {
+        val entry = selectedEntry(modelId)
         if (!OnDeviceCapability.hasEnoughAvailableMemoryForVision(context, entry)) {
             throw AiError.OnDeviceLowMemory
         }
-        val loaded = ensureEngine(vision = true)
+        val loaded = ensureEngine(vision = true, modelId = modelId)
         return loaded.generateWithImage(userPrompt, imageBytes, systemPrompt)
     }
 
@@ -72,16 +83,20 @@ class OnDeviceLlmGateway(
         }
     }
 
-    private suspend fun selectedEntry(): OnDeviceModelEntry {
-        val modelId = prefs.selectedAIModel.first()
+    private suspend fun selectedEntry(requestedModelId: String? = null): OnDeviceModelEntry {
+        // requestedModelId = the model the dispatcher resolved for this leg
+        // (primary or fallback); without it the gateway would re-resolve the
+        // primary selection and an on-device fallback would never load a
+        // different model (Codeberg #54).
+        val modelId = requestedModelId ?: prefs.selectedAIModel.first()
         val entry = ModelCatalog.forModelId(AIProvider.ON_DEVICE.supportedModelOrDefault(modelId))
         // Defensive: a persisted E4B selection on a device below the E4B floor
         // (e.g. a 6 GB phone) resolves to the default E2B instead of OOM'ing.
         return if (OnDeviceCapability.isModelSupported(context, entry)) entry else ModelCatalog.default
     }
 
-    private suspend fun ensureEngine(vision: Boolean): OnDeviceLlmEngine {
-        val entry = selectedEntry()
+    private suspend fun ensureEngine(vision: Boolean, modelId: String? = null): OnDeviceLlmEngine {
+        val entry = selectedEntry(modelId)
         if (!ModelDownloadManager(context).isDownloaded(entry)) {
             throw AiError.OnDeviceModelNotDownloaded
         }

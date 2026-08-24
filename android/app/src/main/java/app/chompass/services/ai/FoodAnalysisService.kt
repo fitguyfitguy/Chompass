@@ -1448,7 +1448,10 @@ class FoodAnalysisService(
         }
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             val gateway = onDeviceGateway ?: throw AiError.OnDeviceModelNotDownloaded
-            return OnDeviceLlmDispatchClient.analyze(gateway, effectivePrompt, imageBytesList)
+            // Pass the resolved model (primary or fallback) — the gateway must
+            // not re-resolve from the primary selection, or an on-device
+            // fallback would re-attempt the same model (#54).
+            return OnDeviceLlmDispatchClient.analyze(gateway, effectivePrompt, imageBytesList, model)
         }
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         AiHttp.assertCleartextAllowed(baseUrl, prefs?.allowInsecureHttp?.first() ?: false)

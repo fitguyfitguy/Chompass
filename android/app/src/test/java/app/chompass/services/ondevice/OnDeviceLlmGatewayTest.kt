@@ -20,6 +20,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowBuild
 
 /**
  * #46 gateway behavior: GPU→CPU retry, no retry for vision, and the
@@ -36,6 +37,10 @@ class OnDeviceLlmGatewayTest {
 
     @Before
     fun setUp() {
+        // Robolectric reports armeabi-v7a; the app only supports arm64-v8a /
+        // x86_64, so the capability gate would reject every model. Override so
+        // the E4B-vs-E2B tests exercise real capability logic.
+        ShadowBuild.setSupportedAbis(arrayOf("arm64-v8a", "x86_64"))
         prefs = PreferencesStore(app)
         runBlocking {
             prefs.setSelectedAIProvider(AIProvider.ON_DEVICE)
@@ -191,6 +196,72 @@ class OnDeviceLlmGatewayTest {
         assertEquals("exactly one engine — for E2B", 1, engines.size)
         assertTrue("must load the E2B file, not E4B", paths.single().endsWith(ModelCatalog.E2B.filename))
         assertTrue(engines[0].loaded)
+    }
+
+    /** Codeberg #54: the dispatcher's leg passes an explicit model id (primary
+     *  or fallback) — the gateway must honor it instead of re-resolving the
+     *  Settings-selected primary, or an on-device fallback would re-attempt
+     *  the same model. */
+    @Test
+    fun explicitModelId_loadsThatModel_overridingPrefSelection() = runBlocking {
+        // prefs selected = E2B (setUp); an explicit E4B request must load E4B.
+        setMemoryInfo(totalMem = 8L * GB, availMem = ModelCatalog.E4B.sizeBytes + 1_000L * MB)
+        stubModel(ModelCatalog.E4B)
+        val engines = mutableListOf<FakeEngine>()
+        val paths = mutableListOf<String>()
+        val g = gateway(emptyList(), engines, mutableListOf(), paths)
+
+        g.generate("sys", "user", modelId = ModelCatalog.E4B.modelId)
+
+        assertEquals("exactly one engine — for E4B", 1, engines.size)
+        assertTrue("must load the E4B file, not the pref-selected E2B", paths.single().endsWith(ModelCatalog.E4B.filename))
+        assertTrue(engines[0].loaded)
+    }
+
+    /** #54 repro at gateway level: prefs primary = E4B, free memory fits E2B
+     *  vision but not E4B vision. The fallback leg passes the E2B model id, so
+     *  the call must succeed on E2B instead of re-failing the E4B preflight. */
+    @Test
+    fun visionWithExplicitFallbackModel_succeeds_whenPrimaryWouldOom() = runBlocking {
+        prefs.setSelectedAIModel(ModelCatalog.E4B.modelId)
+        setMemoryInfo(totalMem = 8L * GB, availMem = ModelCatalog.E2B.sizeBytes + 2_000L * MB)
+        stubModel(ModelCatalog.E4B)
+        stubModel(ModelCatalog.E2B)
+        val engines = mutableListOf<FakeEngine>()
+        val backends = mutableListOf<Backend>()
+        val paths = mutableListOf<String>()
+        val g = gateway(emptyList(), engines, backends, paths)
+
+        val out = g.generateWithImage("user", byteArrayOf(1, 2, 3), modelId = ModelCatalog.E2B.modelId)
+
+        assertEquals("""{"ok":true}""", out)
+        assertEquals("exactly one engine — the fallback E2B", 1, engines.size)
+        assertTrue("must load the E2B file, not E4B", paths.single().endsWith(ModelCatalog.E2B.filename))
+        assertTrue(engines[0].loaded)
+    }
+
+    /** The other half of #54: without a fallback model, the same memory state
+     *  must reject the E4B primary with the catchable low-memory error. */
+    @Test
+    fun visionPreflight_rejectsE4B_whenFreeMemoryTooLowForE4B() = runBlocking {
+        prefs.setSelectedAIModel(ModelCatalog.E4B.modelId)
+        setMemoryInfo(totalMem = 8L * GB, availMem = ModelCatalog.E2B.sizeBytes + 2_000L * MB)
+        stubModel(ModelCatalog.E4B)
+        val g = gateway(emptyList(), mutableListOf(), mutableListOf(), mutableListOf())
+
+        try {
+            g.generateWithImage("user", byteArrayOf(1, 2, 3))
+            fail("expected AiError.OnDeviceLowMemory")
+        } catch (e: AiError.OnDeviceLowMemory) {
+            // expected — the preflight blocks E4B vision on this memory state
+        }
+    }
+
+    private fun stubModel(entry: OnDeviceModelEntry) {
+        val file = File(app.filesDir, "models")
+        file.mkdirs()
+        val target = File(file, entry.filename)
+        if (!target.exists()) target.writeText("stub")
     }
 
     private companion object {
