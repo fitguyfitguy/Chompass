@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [3.24.0] - 2026-08-24
+
 ### Added
 
 - **Intermittent fasting timer** (Android + web): an optional, local-only fasting timer. Start or stop a fast from Home or the Add food sheet, and set your own fasting and eating windows freely, with quick picks for the common protocols (12:12, 14:10, 16:8, 18:6, 20:4, 23:1). The popular 16:8 is the default, so enabling the tracker gives you a working cycle. Off by default under Settings → Trackers & Reminders → Fasting.

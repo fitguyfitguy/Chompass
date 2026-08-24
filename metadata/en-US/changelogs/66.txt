@@ -1,0 +1,8 @@
+• Intermittent fasting timer: start or stop a fast from Home or the Add food sheet, with free-form or preset windows (12:12 to 23:1, 16:8 default). Auto fast windows runs the cycle for you from the fast start time you choose (default 20:00), and two reminders, both on by default, nudge you before the fast starts and before it reaches the goal
+• Optional nicotine tracker: log cigarettes, vapes, pouches and more with quick +1 chips, a daily limit you set, and a per-day history you can edit or delete
+• Caffeine tracking: coffee, tea, and energy drinks carry their caffeine, with an adjustable daily max (default 400 mg) in Goals & Nutrition. An optional tracker adds +1 chips and a per-day history, and Home shows today's caffeine against the max
+• Daily notes: a short free-text note per day on Home and the web app, synced through WebDAV and included in diary exports
+• Water history editing: tap the water card to change or delete individual glasses, for past days too
+• Analysis queue: failed photo and text analyses are saved automatically with their photos and description, so nothing is lost when the AI call fails. Prompt history in the note inputs reuses saved prompts with one tap
+• Settings reorganized: Display and Trackers & Reminders groups, a Units row in Personal Info, and a search box on the Settings hub
+• Fixed: fasting auto cycle starts on time for fresh users, on-device AI falls back to a smaller model, gradient buttons stay readable on light wallpapers, custom serving names save once, wheel pickers save the value you see, meal-type edits no longer reshuffle the food list, and web sync reads files from older versions
