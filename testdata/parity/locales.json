@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en). maxMissing raised to 35 on 2026-08-24 for the nicotine-tracker strings; raised to 40 on 2026-02-13 for settings Units row + Trackers group + search (EN fallback pending translation).",
+  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en). maxMissing raised to 35 on 2026-08-24 for the nicotine-tracker strings; raised to 40 on 2026-02-13 for settings Units row + Trackers group + search; raised to 85 on 2026-08-24 for caffeine tracker + daily-notes toggle + prompt-history strings (EN fallback pending translation).",
   "defaultLocale": "en",
   "fallbackLocale": "en",
   "pwaPrefKey": "uiLang",
@@ -28,7 +28,7 @@
       "speechCodes": [
         "ar"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "az",
@@ -40,7 +40,7 @@
       "speechCodes": [
         "az"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "de",
@@ -53,7 +53,7 @@
         "de",
         "de-DE"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "es",
@@ -66,7 +66,7 @@
         "es",
         "es-ES"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "fr",
@@ -79,7 +79,7 @@
         "fr",
         "fr-FR"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "hi",
@@ -92,7 +92,7 @@
         "hi",
         "hi-IN"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "it",
@@ -105,7 +105,7 @@
         "it",
         "it-IT"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "ja",
@@ -118,7 +118,7 @@
         "ja",
         "ja-JP"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "ko",
@@ -131,7 +131,7 @@
         "ko",
         "ko-KR"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "nl",
@@ -144,7 +144,7 @@
         "nl",
         "nl-NL"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "pl",
@@ -157,7 +157,7 @@
         "pl",
         "pl-PL"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "pt-BR",
@@ -170,7 +170,7 @@
         "pt",
         "pt-BR"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "ro",
@@ -183,7 +183,7 @@
         "ro",
         "ro-RO"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "ru",
@@ -196,7 +196,7 @@
         "ru",
         "ru-RU"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "tr",
@@ -209,7 +209,7 @@
         "tr",
         "tr-TR"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "uk",
@@ -222,7 +222,7 @@
         "uk",
         "uk-UA"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     },
     {
       "id": "zh-CN",
@@ -235,7 +235,7 @@
         "zh",
         "zh-CN"
       ],
-      "maxMissing": 40
+      "maxMissing": 85
     }
   ],
   "speechLocales": {
