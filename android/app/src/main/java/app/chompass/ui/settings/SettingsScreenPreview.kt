@@ -155,6 +155,8 @@ internal fun SettingsScreenPreviewContent(
                 color = MaterialTheme.colorScheme.onBackground,
             )
 
+            SettingsSearchField(query = "", onQueryChange = {})
+
             FudGlassSurface(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = AppRadii.Container,

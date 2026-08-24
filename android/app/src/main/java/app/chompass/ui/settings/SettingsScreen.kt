@@ -163,7 +163,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
 
 /** Glass search field: magnifier, inline clear button, no label. */
 @Composable
-private fun SettingsSearchField(
+internal fun SettingsSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
 ) {
