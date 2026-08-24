@@ -815,7 +815,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Dane osobowe</string>
     <string name="settings_section_goals">Cele i odżywianie</string>
-    <string name="settings_section_app">Ustawienia aplikacji</string>
     <string name="settings_section_ai">AI i mowa</string>
     <string name="settings_section_speech">Zamiana mowy na tekst</string>
     <string name="settings_section_health">Zdrowie i dane</string>
@@ -837,7 +836,6 @@
     <string name="settings_water_section_reminders">Przypomnienia</string>
     <string name="settings_water_reminders">Przypomnienia o piciu</string>
     <string name="settings_notifications_intro">Wybierz, które przypomnienia wysyła Chompass i kiedy się pojawiają.</string>
-    <string name="settings_section_notifications">Przypomnienia</string>
     <string name="settings_food_intro">Jak zachowują się wpisy: jednostki, pory posiłków, analiza zdjęć i wykrywanie wielkości porcji.</string>
     <string name="settings_food_section_logging">Dodawanie</string>
     <string name="settings_food_section_photo">Analiza zdjęć</string>

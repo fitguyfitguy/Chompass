@@ -815,7 +815,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Kişisel Bilgiler</string>
     <string name="settings_section_goals">Hedefler ve Beslenme</string>
-    <string name="settings_section_app">Uygulama Ayarları</string>
     <string name="settings_section_ai">AI ve Ses</string>
     <string name="settings_section_speech">Konuşmadan Metne</string>
     <string name="settings_section_health">Sağlık ve Veriler</string>
@@ -837,7 +836,6 @@
     <string name="settings_water_section_reminders">Hatırlatmalar</string>
     <string name="settings_water_reminders">İçme hatırlatmaları</string>
     <string name="settings_notifications_intro">Chompass\'ın hangi hatırlatmaları göndereceğini ve ne zaman görüneceğini seç.</string>
-    <string name="settings_section_notifications">Hatırlatmalar</string>
     <string name="settings_food_intro">Kayıtlar nasıl davranır: birimler, öğün saatleri, fotoğraf analizi ve porsiyon boyutu tespiti.</string>
     <string name="settings_food_section_logging">Kayıt</string>
     <string name="settings_food_section_photo">Fotoğraf analizi</string>

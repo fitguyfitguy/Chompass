@@ -92,6 +92,7 @@ internal enum class SettingsSheet {
     NICOTINE_LIMIT,
     WEATHER_SOURCE, WEATHER_OM_CITY,
     APPEARANCE, LANGUAGE, FOOD_LOG_SORT, WEEK_START, PROGRESS_DEFAULT_RANGE, MEAL_TIMES,
+    THEME_COLOR, UNITS,
 }
 
 internal enum class HealthConnectPermissionAction {

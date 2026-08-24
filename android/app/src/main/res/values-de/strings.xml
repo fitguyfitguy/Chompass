@@ -1416,7 +1416,6 @@ für dich ein</string>
 
     <string name="settings_section_goals">Ziele &amp; Ernährung</string>
 
-    <string name="settings_section_app">App-Einstellungen</string>
 
     <string name="settings_section_ai">KI &amp; Sprache</string>
 
@@ -1458,7 +1457,6 @@ für dich ein</string>
 
     <string name="settings_notifications_intro">Wähle aus, welche Erinnerungen Chompass sendet und wann sie angezeigt werden.</string>
 
-    <string name="settings_section_notifications">Erinnerungen</string>
 
     <string name="settings_food_intro">So funktionieren Einträge: Einheiten, Essenszeiten, Fotoanalyse und Erkennung der Portionsgröße.</string>
 

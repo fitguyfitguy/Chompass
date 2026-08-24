@@ -437,7 +437,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">المعلومات الشخصية</string>
     <string name="settings_section_goals">الأهداف والتغذية</string>
-    <string name="settings_section_app">إعدادات التطبيق</string>
     <string name="settings_section_ai">مزود الذكاء الاصطناعي</string>
     <string name="settings_section_speech">تحويل الكلام إلى نص</string>
     <string name="settings_section_health">الصحة والبيانات</string>
@@ -1388,7 +1387,6 @@
     <string name="settings_safety_title">السلامة</string>
     <string name="settings_safety_water">أهداف الترطيب وتذكيرات الشرب تقديرات وليست نصيحة طبية. لا تحل أبدًا محل العطش أو إرشادات طبيبك. اشرب ما يكفي حتى عندما لا يذكرك التطبيق.</string>
     <string name="settings_section_home_display">عرض الرئيسية</string>
-    <string name="settings_section_notifications">التذكيرات</string>
     <string name="settings_serving_unit_heuristics">قواعد حجم الحصة</string>
     <string name="settings_serving_unit_mode">اكتشاف حجم الحصة</string>
     <string name="settings_show_coach_tab">إظهار علامة تبويب المدرب</string>

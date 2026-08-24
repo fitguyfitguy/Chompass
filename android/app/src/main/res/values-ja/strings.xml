@@ -436,7 +436,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">個人情報</string>
     <string name="settings_section_goals">目標と栄養</string>
-    <string name="settings_section_app">アプリ設定</string>
     <string name="settings_section_ai">AIと音声</string>
     <string name="settings_section_speech">音声入力</string>
     <string name="settings_section_health">ヘルスとデータ</string>
@@ -1387,7 +1386,6 @@
     <string name="settings_safety_title">安全</string>
     <string name="settings_safety_water">水分補給の目標と飲水リマインダーは推定であり、医療アドバイスではありません。喉の渇きや医師の指導に代わるものではありません。アプリが通知しなくても、十分に飲んでください。</string>
     <string name="settings_section_home_display">ホーム表示</string>
-    <string name="settings_section_notifications">リマインダー</string>
     <string name="settings_serving_unit_heuristics">分量サイズのルール</string>
     <string name="settings_serving_unit_mode">分量サイズの検出</string>
     <string name="settings_show_coach_tab">コーチタブを表示</string>

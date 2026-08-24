@@ -429,7 +429,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Informazioni personali</string>
     <string name="settings_section_goals">Obiettivi e nutrizione</string>
-    <string name="settings_section_app">Impostazioni app</string>
     <string name="settings_section_ai">Fornitore IA</string>
     <string name="settings_section_speech">Da voce a testo</string>
     <string name="settings_section_health">Salute e dati</string>
@@ -1336,7 +1335,6 @@
     <string name="settings_safety_title">Sicurezza</string>
     <string name="settings_safety_water">Gli obiettivi di idratazione e i promemoria sono stime, non consigli medici. Non sostituiscono mai la sete o le indicazioni del tuo medico. Bevi abbastanza anche quando l\'app non te lo ricorda.</string>
     <string name="settings_section_home_display">Aspetto Home</string>
-    <string name="settings_section_notifications">Promemoria</string>
     <string name="settings_serving_unit_heuristics">Regole dimensione porzione</string>
     <string name="settings_serving_unit_mode">Rilevamento dimensione porzione</string>
     <string name="settings_show_coach_tab">Mostra la scheda Coach</string>

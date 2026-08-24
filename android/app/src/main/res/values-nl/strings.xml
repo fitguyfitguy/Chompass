@@ -412,7 +412,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Persoonlijke gegevens</string>
     <string name="settings_section_goals">Doelen &amp; voeding</string>
-    <string name="settings_section_app">App-instellingen</string>
     <string name="settings_section_ai">AI-provider</string>
     <string name="settings_section_speech">Spraak-naar-tekst</string>
     <string name="settings_section_health">Gezondheid &amp; gegevens</string>
@@ -1369,7 +1368,6 @@
     <string name="settings_safety_title">Veiligheid</string>
     <string name="settings_safety_water">Hydratatiedoelen en drinkherinneringen zijn schattingen, geen medisch advies. Ze vervangen nooit dorst of de richtlijnen van je arts. Drink genoeg, ook wanneer de app je er niet aan herinnert.</string>
     <string name="settings_section_home_display">Home-weergave</string>
-    <string name="settings_section_notifications">Herinneringen</string>
     <string name="settings_serving_unit_heuristics">Regels portiegrootte</string>
     <string name="settings_serving_unit_mode">Portiegrootte-detectie</string>
     <string name="settings_show_coach_tab">Coach-tabblad tonen</string>

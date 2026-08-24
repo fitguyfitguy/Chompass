@@ -437,7 +437,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">개인 정보</string>
     <string name="settings_section_goals">목표 및 영양</string>
-    <string name="settings_section_app">앱 설정</string>
     <string name="settings_section_ai">AI 및 음성</string>
     <string name="settings_section_speech">음성 텍스트 변환</string>
     <string name="settings_section_health">건강 및 데이터</string>
@@ -1387,7 +1386,6 @@
     <string name="settings_safety_title">안전</string>
     <string name="settings_safety_water">수분 목표와 음수 알림은 추정치이며 의학적 조언이 아니에요. 갈증이나 의사의 지침을 대체하지 않아요. 앱이 알리지 않아도 충분히 마시세요.</string>
     <string name="settings_section_home_display">홈 표시</string>
-    <string name="settings_section_notifications">알림</string>
     <string name="settings_serving_unit_heuristics">1인분 크기 규칙</string>
     <string name="settings_serving_unit_mode">1인분 크기 감지</string>
     <string name="settings_show_coach_tab">코치 탭 표시</string>

@@ -450,7 +450,6 @@
     <string name="progress_goal_reached_message">Цільової ваги досягнуто. Перейди в налаштування, щоб змінити ціль, і натисни «Перерахувати цілі» для оновлення цільових значень.</string>
     <string name="settings_section_personal">Особисті дані</string>
     <string name="settings_section_goals">Цілі та харчування</string>
-    <string name="settings_section_app">Налаштування застосунку</string>
     <string name="settings_section_ai">ШІ та мовлення</string>
     <string name="settings_section_speech">Мовлення в текст</string>
     <string name="settings_section_health">Здоров\'я та дані</string>
@@ -1335,7 +1334,6 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_safety_title">Безпека</string>
     <string name="settings_safety_water">Цілі гідратації та нагадування про пиття лише оцінки, а не медичні поради. Вони ніколи не замінюють спрагу чи рекомендації лікаря. Пий достатньо, навіть коли застосунок не нагадує.</string>
     <string name="settings_section_home_display">Оформлення головної</string>
-    <string name="settings_section_notifications">Нагадування</string>
     <string name="settings_serving_unit_heuristics">Правила розміру порції</string>
     <string name="settings_serving_unit_mode">Визначення розміру порції</string>
     <string name="settings_show_coach_tab">Показувати вкладку тренера</string>

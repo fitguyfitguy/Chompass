@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.Info
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -64,30 +62,6 @@ internal fun SettingsGoalsSection(
     onShowHealthEnergyGoalsInfo: () -> Unit,
     onThirdMacroLockBlocked: () -> Unit,
 ) {
-    SectionCard(title = stringResource(R.string.settings_goals_how_title)) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                stringResource(R.string.settings_goals_how_adaptive),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
-            )
-            Text(
-                stringResource(R.string.settings_goals_how_energy),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
-            )
-            Text(
-                stringResource(R.string.settings_goals_how_lock),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
-            )
-        }
-    }
     SectionCard(title = stringResource(R.string.settings_section_goals)) {
                 profile?.let { p ->
                     SettingRow(stringResource(R.string.settings_weight_goal), stringResource(p.goal.displayNameRes), icon = Icons.Outlined.Equalizer, inlineMenu = true) { onOpenSheet(SettingsSheet.GOAL) }
@@ -232,13 +206,6 @@ internal fun SettingsGoalsSection(
                         icon = Icons.Outlined.DataUsage
                     ) { nav.navigate(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) }
                     HorizontalDivider()
-                    // Cross-link (Rule A): the water goal is edited on the Water screen.
-                    SettingRow(
-                        stringResource(R.string.settings_water_goal),
-                        stringResource(R.string.settings_water_goal_summary, ui.waterDailyGoalMl),
-                        icon = Icons.Outlined.WaterDrop,
-                    ) { nav.navigate(ChompassRoutes.waterRoute("goals")) }
-                    HorizontalDivider()
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -282,13 +249,34 @@ internal fun SettingsGoalsSection(
                             icon = Icons.Outlined.Info
                         ) { vm.openRecalcSheet() }
                     }
-                    HorizontalDivider()
-                    SettingRow(
-                        stringResource(R.string.settings_calc_methods),
-                        "",
-                        icon = Icons.Outlined.Calculate
-                    ) { nav.navigate(ChompassRoutes.CALCULATION_METHODS) }
                 }
+    }
+
+    // Reference card moved below the goal rows so the editable targets come
+    // first; the Adaptive/Energy mechanisms each have their own info dialog.
+    SectionCard(title = stringResource(R.string.settings_goals_how_title)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                stringResource(R.string.settings_goals_how_adaptive),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+            Text(
+                stringResource(R.string.settings_goals_how_energy),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+            Text(
+                stringResource(R.string.settings_goals_how_lock),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            )
+        }
     }
 }
 
