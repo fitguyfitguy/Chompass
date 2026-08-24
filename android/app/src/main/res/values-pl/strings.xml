@@ -436,6 +436,11 @@
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
     <string name="home_water_next">Następny %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Następny %1$s · jutro %2$s</string>
+    <string name="home_note_empty">Dodaj notatkę na ten dzień</string>
+    <string name="note_edit_title">Notatka dnia</string>
+    <string name="note_placeholder">Myśli, postępy, obserwacje…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="home_food_removed">Usunięto jedzenie</string>
     <string name="action_undo">Cofnij</string>
     <string name="add_food_photo_source_title">Dodaj zdjęcie</string>

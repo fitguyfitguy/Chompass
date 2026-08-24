@@ -1,12 +1,13 @@
 // @ts-check
 /**
- * Serializer/validator for the sync-1.1 JSON document.
- * Compatible with android/.../export/SyncDocument.kt. Imports also accept 1.0.
+ * Serializer/validator for the sync-1.2 JSON document (1.2 adds the day-
+ * granular `daily_notes` array, Codeberg #58a). Compatible with
+ * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1.
  */
 
-export const SYNC_FORMAT_VERSION = "1.1";
+export const SYNC_FORMAT_VERSION = "1.2";
 export const SYNC_KIND = "sync";
-export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1"]);
+export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2"]);
 
 /** @param {import('./models.js').Grounding|null|undefined} g */
 function groundingToWire(g) {
@@ -265,6 +266,7 @@ export function foodEntryFromSyncWire(wire) {
  *   bodyFat?: import('./models.js').BodyFatEntry[],
  *   measurements?: import('./models.js').BodyMeasurement[],
  *   water?: import('./models.js').WaterEntry[],
+ *   dailyNotes?: import('./models.js').DailyNote[],
  *   recipes?: import('./models.js').Recipe[],
  *   profile?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
  *   prefs?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
@@ -355,6 +357,16 @@ export function exportSyncDocument(input) {
         amount_ml: Math.round(w.amountMl),
       };
     }),
+    daily_notes: (input.dailyNotes ?? []).map((n) => {
+      const meta = metaFor(n.id, `${n.date}T00:00:00Z`);
+      return {
+        id: n.id,
+        updated_at: meta.updated_at,
+        deleted_at: meta.deleted_at,
+        date: n.date,
+        text: n.text,
+      };
+    }),
     recipes: (input.recipes ?? []).map((r) => {
       const meta = metaFor(r.id, r.createdAt);
       return {
@@ -410,6 +422,7 @@ export function appendTombstones(doc, revisions) {
     bodyfat: "body_fat",
     measure: "measurements",
     water: "water",
+    daily_note: "daily_notes",
     recipe: "recipes",
   };
   for (const [id, rev] of Object.entries(revisions)) {
@@ -458,6 +471,7 @@ export function parseSyncDocument(doc) {
     "body_fat",
     "measurements",
     "water",
+    "daily_notes",
     "recipes",
   ]) {
     if (!Array.isArray(doc[key])) {
@@ -533,6 +547,20 @@ export function liveWaterFromSync(wires) {
       id: String(w.id),
       date: String(w.date).slice(0, 10),
       amountMl: Number(w.amount_ml) || 0,
+    }));
+}
+
+/**
+ * @param {any[]} wires
+ * @returns {import('./models.js').DailyNote[]}
+ */
+export function liveDailyNotesFromSync(wires) {
+  return wires
+    .filter((w) => w && w.id && !w.deleted_at)
+    .map((w) => ({
+      id: String(w.id),
+      date: String(w.date).slice(0, 10),
+      text: String(w.text ?? ""),
     }));
 }
 

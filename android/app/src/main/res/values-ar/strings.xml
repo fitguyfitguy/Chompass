@@ -996,6 +996,11 @@
     <string name="home_take_second_shot">التقط الصورة الثانية</string>
     <string name="home_water_next">التالي %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">التالي %1$s · غدًا %2$s</string>
+    <string name="home_note_empty">أضف ملاحظة لهذا اليوم</string>
+    <string name="note_edit_title">ملاحظة اليوم</string>
+    <string name="note_placeholder">أفكار، تقدم، ملاحظات…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">إضافة إلى السجل</string>
     <string name="import_add_to_log_many_format">إضافة %1$d إلى السجل · %2$d سعرة</string>
     <string name="import_body_metrics_empty">لا يحتوي هذا الملف على سجلات وزن أو بيانات جسم للاستيراد.</string>

@@ -1439,6 +1439,11 @@
     <string name="home_menu_grounded">Обоснованный</string>
     <string name="home_water_next">Далее %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Далее %1$s · завтра %2$s</string>
+    <string name="home_note_empty">Добавить заметку за этот день</string>
+    <string name="note_edit_title">Заметка дня</string>
+    <string name="note_placeholder">Мысли, прогресс, наблюдения…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_sync_failed">Ошибка импорта синхронизации: %1$s</string>
     <string name="import_sync_success">Документ синхронизации импортирован.</string>
     <string name="import_sync_title">Импорт синхронизации JSON</string>

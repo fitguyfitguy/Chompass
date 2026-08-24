@@ -1,5 +1,6 @@
 package app.chompass.export
 
+import app.chompass.models.DailyNote
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
@@ -13,6 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 
@@ -191,5 +193,96 @@ class SyncDocumentTest {
         assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
         val parsed = (result as SyncDocument.ParseResult.Success).parsed
         assertEquals(95.0, parsed.foodEntries.single().entry?.caffeine)
+    }
+
+    @Test
+    fun dailyNotesRoundTripAndTombstone() {
+        val note = DailyNote(
+            id = DailyNote.idFor(LocalDate.of(2026, 8, 3)),
+            date = LocalDate.of(2026, 8, 3),
+            text = "Solid day: energy held up.",
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            dailyNotes = listOf(note),
+            recipes = emptyList(),
+            revisions = mapOf(
+                note.id.toString() to SyncDocument.Revision(
+                    updatedAt = "2026-08-03T21:00:00Z",
+                    kind = "daily_note",
+                ),
+                // A tombstoned note from another day must ride along.
+                "00000000-0000-0000-0000-0000000050b2" to SyncDocument.Revision(
+                    updatedAt = "2026-07-24T21:00:00Z",
+                    deletedAt = "2026-07-24T22:00:00Z",
+                    kind = "daily_note",
+                ),
+            ),
+            zone = ZoneOffset.UTC,
+        )
+        val root = Json.parseToJsonElement(json).jsonObject
+        val notesWire = root["daily_notes"]!!.jsonArray
+        // Live note + tombstone, and the format stamped 1.2.
+        assertEquals(2, notesWire.size)
+        val export = root["export"]!!.jsonObject
+        assertEquals("1.2", export["format_version"]!!.jsonPrimitive.content)
+
+        val result = SyncDocument.parse(json, ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val parsed = (result as SyncDocument.ParseResult.Success).parsed
+        assertEquals(1, parsed.dailyNotes.count { it.entry != null })
+        assertEquals(1, parsed.dailyNotes.count { it.deletedAt != null })
+        val live = parsed.dailyNotes.first { it.entry != null }.entry!!
+        assertEquals(LocalDate.of(2026, 8, 3), live.date)
+        assertEquals(note.id, live.id)
+        assertEquals("Solid day: energy held up.", live.text)
+    }
+
+    @Test
+    fun dailyNotesMergeCollapsesSameDayLastWriteWins() {
+        val phone = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.2"},
+             "food_entries":[],"favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],
+             "daily_notes":[
+               {"id":"00000000-0000-0000-0000-0000000050b2","updated_at":"2026-07-24T18:00:00Z","deleted_at":null,"date":"2026-07-24","text":"phone draft"}
+             ],
+             "recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val desktop = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.2"},
+             "food_entries":[],"favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],
+             "daily_notes":[
+               {"id":"00000000-0000-0000-0000-0000000050b2","updated_at":"2026-07-24T19:00:00Z","deleted_at":null,"date":"2026-07-24","text":"desktop wins"}
+             ],
+             "recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val local = (SyncDocument.parse(phone, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val remote = (SyncDocument.parse(desktop, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val merged = SyncDocument.mergeRawDocuments(local, remote)
+        val notes = merged["daily_notes"]!!.jsonArray
+        assertEquals(1, notes.size)
+        assertEquals(
+            "desktop wins",
+            notes.single().jsonObject["text"]!!.jsonPrimitive.content,
+        )
+    }
+
+    @Test
+    fun importsStillAcceptSync11() {
+        // Old documents (no daily_notes key) keep parsing under 1.2 rules.
+        val legacy = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.1"},
+             "food_entries":[],"favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],
+             "recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val result = SyncDocument.parse(legacy, ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val parsed = (result as SyncDocument.ParseResult.Success).parsed
+        assertTrue(parsed.dailyNotes.isEmpty())
     }
 }

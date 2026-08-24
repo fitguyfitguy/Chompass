@@ -755,6 +755,11 @@ für dich ein</string>
     <string name="home_water_next">Nächste %1$s · %2$s</string>
 
     <string name="home_water_next_tomorrow">Nächste %1$s · morgen %2$s</string>
+    <string name="home_note_empty">Notiz für diesen Tag hinzufügen</string>
+    <string name="note_edit_title">Tagesnotiz</string>
+    <string name="note_placeholder">Gedanken, Fortschritt, Beobachtungen…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
 
     <string name="home_food_removed">Lebensmittel entfernt</string>
 
