@@ -113,18 +113,18 @@ fun <T> WheelPicker(
     val currentSelected by rememberUpdatedState(selected)
     val currentItems by rememberUpdatedState(items)
 
-    // Commit only after the snap settles. Mid-scroll firstVisibleItemIndex is
-    // the top visible row, not the capsule row — on a 3-item unit wheel the
-    // last row never becomes first-visible (Codeberg #42).
+    // Commit the centered row whenever it changes, settle or mid-scroll.
+    // centeredIndex() is the capsule row (unlike firstVisibleItemIndex, which
+    // is the top visible row — Codeberg #42), so mid-scroll commits are safe
+    // and keep the caller's state in sync with the visible highlight. Waiting
+    // for the snap to settle let a Save button fire while the wheel was still
+    // animating, persisting the pre-scroll value (fast-start time, water goal,
+    // reminder lead minutes). The external-follow effect below is guarded by
+    // isScrollInProgress, so these commits never fight the user's gesture.
     LaunchedEffect(listState) {
-        snapshotFlow {
-            val inProgress = listState.isScrollInProgress
-            val idx = listState.centeredIndex()
-            inProgress to idx
-        }
+        snapshotFlow { listState.centeredIndex() }
             .distinctUntilChanged()
-            .collect { (inProgress, idx) ->
-                if (inProgress) return@collect
+            .collect { idx ->
                 val snapped = currentItems.getOrNull(idx ?: return@collect) ?: return@collect
                 if (snapped != currentSelected) currentOnSelect(snapped)
             }
