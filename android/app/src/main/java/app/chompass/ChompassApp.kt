@@ -24,6 +24,7 @@ import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
 import app.chompass.services.AdaptiveGoalsService
 import app.chompass.services.FastingGoalPlanner
+import app.chompass.services.FastingReminderPlanner
 import app.chompass.services.FoodImageStore
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.LauncherShortcuts
@@ -154,6 +155,8 @@ class ChompassApp : Application() {
             // Fasting goal alarm: cheap idempotent re-arm from the same session
             // fields (reboots drop alarms; app start re-arms like the water chain).
             FastingGoalPlanner.rearm(container)
+            // Optional daily start-fast nudge (off by default) — same arm-or-cancel.
+            FastingReminderPlanner.rearmStartReminder(container)
             // Re-publish launcher shortcuts with the real fasting pref (the
             // onCreate publish ran before DataStore was readable).
             LauncherShortcuts.publish(this@ChompassApp, container.prefs.fastingEnabled.first())

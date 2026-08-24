@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">उपवास लक्ष्य पूरा होने पर एक बार का नोट।</string>
     <string name="notif_fasting_goal_title">उपवास लक्ष्य प्राप्त हुआ</string>
     <string name="notif_fasting_goal_text">आपका %1$d घंटे का उपवास पूरा हुआ — अब आप उपवास तोड़ सकते हैं।</string>
+    <string name="fasting_preset_detail">%1$d घंटे उपवास · %2$d घंटे खाने की विंडो</string>
+    <string name="fasting_window_opens_in">खाने की विंडो %1$s में खुलेगी</string>
+    <string name="settings_fasting_section_reminders">अनुस्मारक</string>
+    <string name="settings_fasting_start_reminder">शुरुआत अनुस्मारक</string>
+    <string name="settings_fasting_start_reminder_time">अनुस्मारक समय</string>
+    <string name="settings_fasting_start_reminder_help">अगला उपवास शुरू करने के लिए दैनिक अनुस्मारक। उपवास पहले से चल रहा हो तो छोड़ दिया जाता है।</string>
+    <string name="notif_fasting_start_title">अपना उपवास शुरू करें</string>
+    <string name="notif_fasting_start_text">अभी अपना उपवास शुरू करें।</string>
+    <string name="notif_fasting_start_text_goal">अभी अपना %1$d घंटे का उपवास शुरू करें।</string>
 </resources>

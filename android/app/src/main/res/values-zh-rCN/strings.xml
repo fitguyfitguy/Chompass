@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">达到禁食目标时的一次性提醒。</string>
     <string name="notif_fasting_goal_title">禁食目标达成</string>
     <string name="notif_fasting_goal_text">您的 %1$d 小时禁食已完成，现在可以进食了。</string>
+    <string name="fasting_preset_detail">禁食 %1$d 小时 · 进食 %2$d 小时</string>
+    <string name="fasting_window_opens_in">进食窗口将在 %1$s 后开启</string>
+    <string name="settings_fasting_section_reminders">提醒</string>
+    <string name="settings_fasting_start_reminder">开始提醒</string>
+    <string name="settings_fasting_start_reminder_time">提醒时间</string>
+    <string name="settings_fasting_start_reminder_help">每日提醒开始下一次禁食。已有进行中的禁食时会跳过。</string>
+    <string name="notif_fasting_start_title">开始禁食</string>
+    <string name="notif_fasting_start_text">现在开始禁食。</string>
+    <string name="notif_fasting_start_text_goal">现在开始 %1$d 小时禁食。</string>
 </resources>

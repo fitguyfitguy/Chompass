@@ -1770,4 +1770,13 @@
     <string name="notif_channel_fasting_desc">Oruç hedefine ulaşıldığında tek seferlik bildirim.</string>
     <string name="notif_fasting_goal_title">Oruç hedefine ulaşıldı</string>
     <string name="notif_fasting_goal_text">%1$d saatlik orucunuz tamamlandı — artık yemek yiyebilirsiniz.</string>
+    <string name="fasting_preset_detail">%1$d saat oruç · %2$d saat yemek penceresi</string>
+    <string name="fasting_window_opens_in">Yemek penceresi %1$s sonra açılır</string>
+    <string name="settings_fasting_section_reminders">Hatırlatıcılar</string>
+    <string name="settings_fasting_start_reminder">Başlangıç hatırlatıcısı</string>
+    <string name="settings_fasting_start_reminder_time">Hatırlatıcı saati</string>
+    <string name="settings_fasting_start_reminder_help">Sonraki oruca başlamak için günlük hatırlatıcı. Zaten aktif bir oruç varsa atlanır.</string>
+    <string name="notif_fasting_start_title">Orucunu başlat</string>
+    <string name="notif_fasting_start_text">Şimdi orucuna başla.</string>
+    <string name="notif_fasting_start_text_goal">Şimdi %1$d saatlik orucuna başla.</string>
 </resources>

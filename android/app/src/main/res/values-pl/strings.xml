@@ -1774,4 +1774,13 @@
     <string name="notif_channel_fasting_desc">Jednorazowa wiadomość po osiągnięciu celu postu.</string>
     <string name="notif_fasting_goal_title">Osiągnięto cel postu</string>
     <string name="notif_fasting_goal_text">Twój %1$d-godzinny post zakończony — możesz teraz przerwać post.</string>
+    <string name="fasting_preset_detail">%1$d h postu · %2$d h okna jedzenia</string>
+    <string name="fasting_window_opens_in">Okno jedzenia otwiera się za %1$s</string>
+    <string name="settings_fasting_section_reminders">Przypomnienia</string>
+    <string name="settings_fasting_start_reminder">Przypomnienie o rozpoczęciu</string>
+    <string name="settings_fasting_start_reminder_time">Godzina przypomnienia</string>
+    <string name="settings_fasting_start_reminder_help">Codzienne przypomnienie o rozpoczęciu następnego postu. Pomijane, gdy post już trwa.</string>
+    <string name="notif_fasting_start_title">Rozpocznij post</string>
+    <string name="notif_fasting_start_text">Rozpocznij post teraz.</string>
+    <string name="notif_fasting_start_text_goal">Rozpocznij teraz swój %1$d-godzinny post.</string>
 </resources>

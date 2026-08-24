@@ -90,6 +90,10 @@ internal object Keys {
         val FASTING_LAST_ENDED_AT = longPreferencesKey("fastingLastEndedAt")
         val FASTING_LAST_FAST_STARTED_AT = longPreferencesKey("fastingLastFastStartedAt")
         val FASTING_GOAL_REACHED_NOTIFIED = booleanPreferencesKey("fastingGoalReachedNotified")
+        /** Optional daily nudge to start the next fast (off by default, like every reminder). */
+        val FASTING_START_REMINDER_ENABLED = booleanPreferencesKey("fastingStartReminderEnabled")
+        val FASTING_START_REMINDER_HOUR = intPreferencesKey("fastingStartReminderHour")
+        val FASTING_START_REMINDER_MINUTE = intPreferencesKey("fastingStartReminderMinute")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
         val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")

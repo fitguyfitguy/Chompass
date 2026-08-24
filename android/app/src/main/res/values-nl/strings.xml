@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">Eenmalig bericht wanneer een vastendoel is bereikt.</string>
     <string name="notif_fasting_goal_title">Vastendoel bereikt</string>
     <string name="notif_fasting_goal_text">Je vasten van %1$d u is voltooid — je kunt nu eten.</string>
+    <string name="fasting_preset_detail">%1$d u vasten · %2$d u eetvenster</string>
+    <string name="fasting_window_opens_in">Eetvenster gaat open over %1$s</string>
+    <string name="settings_fasting_section_reminders">Herinneringen</string>
+    <string name="settings_fasting_start_reminder">Startherinnering</string>
+    <string name="settings_fasting_start_reminder_time">Herinneringstijd</string>
+    <string name="settings_fasting_start_reminder_help">Een dagelijkse herinnering om je volgende vasten te starten. Overgeslagen als er al wordt gevast.</string>
+    <string name="notif_fasting_start_title">Start je vasten</string>
+    <string name="notif_fasting_start_text">Start nu je vasten.</string>
+    <string name="notif_fasting_start_text_goal">Start nu je vasten van %1$d u.</string>
 </resources>

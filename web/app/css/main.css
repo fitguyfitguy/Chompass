@@ -961,6 +961,16 @@ main.view {
 .water-row__meta { font-size: 0.9rem; }
 .water-row__meta strong { color: var(--water); }
 
+/* Fasting row: primary accent + remaining-time hint under the bar. */
+.fasting-row .water-row__meta strong { color: var(--primary, #6750a4); }
+.fasting-row .water-bar > span { background: var(--primary, #6750a4); }
+.water-row__meta-sub { color: var(--muted); font-size: 0.8rem; }
+.water-row__hint { color: var(--muted); font-size: 0.75rem; margin-top: 0.25rem; }
+
+/* Fasting goal quick-pick chips in Settings. */
+.fasting-presets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+.fasting-presets .chip--active { background: var(--primary, #6750a4); color: #fff; }
+
 /* Optional nicotine tracker row: same shape as water, amber accent. */
 .nicotine-row .water-row__meta strong { color: var(--nicotine, #b08040); }
 .nicotine-row .water-bar > span { background: var(--nicotine, #b08040); }

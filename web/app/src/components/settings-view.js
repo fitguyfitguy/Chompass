@@ -769,6 +769,15 @@ export class SettingsView extends HTMLElement {
         <div class="field">
           <label for="fastingGoalHours">Fasting goal (hours, 0 = none)</label>
           <input id="fastingGoalHours" name="fastingGoalHours" type="number" min="0" max="48" value="${p.fastingGoalHours ?? 0}" />
+          <p class="nutrient-picker__hint">Quick picks:</p>
+          <div class="fasting-presets">
+            ${[12, 14, 16, 18, 20, 23]
+              .map(
+                (h) =>
+                  `<button type="button" class="chip${p.fastingGoalHours === h ? " chip--active" : ""}" data-fasting-preset="${h}">${h === 23 ? "23:1" : `${h}:${24 - h}`}</button>`,
+              )
+              .join("")}
+          </div>
         </div>
         <div class="field">
           <label for="calorieGaugeMode">Calorie gauge</label>
@@ -834,14 +843,24 @@ export class SettingsView extends HTMLElement {
         caffeineDailyLimitMg: Math.min(1000, Math.max(0, Number(fd.get("caffeineDailyLimitMg") ?? 400))),
         showNotes: fd.get("showNotes") === "true",
         showFasting: fd.get("showFasting") === "true",
-        fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
-        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
+        fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,
         homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),
         foodLogMacroChips: normalizeFoodLogChips(chipRaw),
       });
       location.hash = SETTINGS_PARENT.home;
+    });
+    // Popular-protocol quick picks set the goal input (saved with the form).
+    this.querySelectorAll("[data-fasting-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const hours = Number(btn.getAttribute("data-fasting-preset"));
+        const input = /** @type {HTMLInputElement|null} */ (this.querySelector("#fastingGoalHours"));
+        if (input) input.value = String(hours);
+        this.querySelectorAll("[data-fasting-preset]").forEach((b) =>
+          b.classList.toggle("chip--active", b === btn),
+        );
+      });
     });
     bindSubpageBack(this, SETTINGS_PARENT.home);
   }

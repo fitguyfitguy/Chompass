@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">Avviso una tantum quando un obiettivo di digiuno viene raggiunto.</string>
     <string name="notif_fasting_goal_title">Obiettivo digiuno raggiunto</string>
     <string name="notif_fasting_goal_text">Il tuo digiuno di %1$d h è completo: ora puoi mangiare.</string>
+    <string name="fasting_preset_detail">%1$d h di digiuno · %2$d h di finestra dei pasti</string>
+    <string name="fasting_window_opens_in">La finestra dei pasti si apre tra %1$s</string>
+    <string name="settings_fasting_section_reminders">Promemoria</string>
+    <string name="settings_fasting_start_reminder">Promemoria di inizio</string>
+    <string name="settings_fasting_start_reminder_time">Ora del promemoria</string>
+    <string name="settings_fasting_start_reminder_help">Un promemoria quotidiano per iniziare il prossimo digiuno. Saltato se un digiuno è già in corso.</string>
+    <string name="notif_fasting_start_title">Inizia il tuo digiuno</string>
+    <string name="notif_fasting_start_text">Inizia subito il tuo digiuno.</string>
+    <string name="notif_fasting_start_text_goal">Inizia subito il tuo digiuno di %1$d h.</string>
 </resources>

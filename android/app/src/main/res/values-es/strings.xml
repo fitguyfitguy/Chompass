@@ -1756,4 +1756,13 @@
     <string name="notif_channel_fasting_desc">Aviso único cuando se alcanza un objetivo de ayuno.</string>
     <string name="notif_fasting_goal_title">Objetivo de ayuno alcanzado</string>
     <string name="notif_fasting_goal_text">Tu ayuno de %1$d h ha terminado: ya puedes comer.</string>
+    <string name="fasting_preset_detail">%1$d h de ayuno · %2$d h de ventana de comida</string>
+    <string name="fasting_window_opens_in">La ventana de comida abre en %1$s</string>
+    <string name="settings_fasting_section_reminders">Recordatorios</string>
+    <string name="settings_fasting_start_reminder">Recordatorio de inicio</string>
+    <string name="settings_fasting_start_reminder_time">Hora del recordatorio</string>
+    <string name="settings_fasting_start_reminder_help">Un aviso diario para empezar tu próximo ayuno. Se omite si ya hay un ayuno activo.</string>
+    <string name="notif_fasting_start_title">Empieza tu ayuno</string>
+    <string name="notif_fasting_start_text">Empieza tu ayuno ahora.</string>
+    <string name="notif_fasting_start_text_goal">Empieza ahora tu ayuno de %1$d h.</string>
 </resources>

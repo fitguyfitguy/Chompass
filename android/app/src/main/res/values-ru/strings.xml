@@ -1825,4 +1825,13 @@
     <string name="notif_channel_fasting_desc">Одноразовое уведомление о достижении цели поста.</string>
     <string name="notif_fasting_goal_title">Цель поста достигнута</string>
     <string name="notif_fasting_goal_text">Ваш %1$d-часовой пост завершён — теперь можно прервать пост.</string>
+    <string name="fasting_preset_detail">%1$d ч поста · %2$d ч окна приёма пищи</string>
+    <string name="fasting_window_opens_in">Окно приёма пищи откроется через %1$s</string>
+    <string name="settings_fasting_section_reminders">Напоминания</string>
+    <string name="settings_fasting_start_reminder">Напоминание о начале</string>
+    <string name="settings_fasting_start_reminder_time">Время напоминания</string>
+    <string name="settings_fasting_start_reminder_help">Ежедневное напоминание о начале следующего поста. Пропускается, если пост уже идёт.</string>
+    <string name="notif_fasting_start_title">Начните пост</string>
+    <string name="notif_fasting_start_text">Начните пост прямо сейчас.</string>
+    <string name="notif_fasting_start_text_goal">Начните сейчас свой %1$d-часовой пост.</string>
 </resources>

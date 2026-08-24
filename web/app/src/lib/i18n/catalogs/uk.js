@@ -89,6 +89,7 @@ export const uk = Object.freeze({
   "diary.fasting_stop": "Завершити пост",
   "diary.fasting_goal_reached": "Мета досягнута",
   "diary.fasting_goal_hint": "{elapsed} · мета {goal} год",
+  "diary.fasting_window_opens_in": "Вікно прийому їжі відкриється через {remaining}",
   "diary.note_title": "Нотатка дня",
   "diary.note_empty": "Додати нотатку за цей день",
   "diary.note_save": "Зберегти",

@@ -59,3 +59,22 @@ internal suspend fun PreferencesStore.setFastingSessionFieldsImpl(
         prefs[Keys.FASTING_GOAL_REACHED_NOTIFIED] = goalReachedNotified
     }
 }
+
+/** Default start-reminder time: 20:00 (typical after-dinner fast start). */
+const val DEFAULT_FASTING_START_REMINDER_HOUR = 20
+const val DEFAULT_FASTING_START_REMINDER_MINUTE = 0
+
+internal val PreferencesStore.fastingStartReminderEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.FASTING_START_REMINDER_ENABLED, false)
+internal suspend fun PreferencesStore.setFastingStartReminderEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.FASTING_START_REMINDER_ENABLED, v)
+
+internal val PreferencesStore.fastingStartReminderHourImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_START_REMINDER_HOUR, DEFAULT_FASTING_START_REMINDER_HOUR)
+internal suspend fun PreferencesStore.setFastingStartReminderHourImpl(v: Int) =
+    setIntPref(Keys.FASTING_START_REMINDER_HOUR, v.coerceIn(0, 23))
+
+internal val PreferencesStore.fastingStartReminderMinuteImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_START_REMINDER_MINUTE, DEFAULT_FASTING_START_REMINDER_MINUTE)
+internal suspend fun PreferencesStore.setFastingStartReminderMinuteImpl(v: Int) =
+    setIntPref(Keys.FASTING_START_REMINDER_MINUTE, v.coerceIn(0, 59))
