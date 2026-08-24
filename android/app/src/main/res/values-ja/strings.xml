@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">食事時間まで %1$s</string>
     <string name="settings_fasting_section_reminders">リマインダー</string>
     <string name="settings_fasting_start_reminder">開始リマインダー</string>
-    <string name="settings_fasting_start_reminder_time">リマインダー時刻</string>
-    <string name="settings_fasting_start_reminder_help">次のファスティング開始を促す毎日の通知。すでに実行中ならスキップされます。</string>
     <string name="notif_fasting_start_title">ファスティングを開始</string>
     <string name="notif_fasting_start_text">今すぐファスティングを開始しましょう。</string>
-    <string name="notif_fasting_start_text_goal">今すぐ %1$d 時間のファスティングを開始しましょう。</string>
     <string name="fasting_fast_starts_in">ファスティングまで %1$s</string>
     <string name="fasting_eating_progress">食事 %2$d 時間のうち %1$s</string>
     <string name="settings_fasting_eat_window">食事時間</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">%1$d 分後に食事時間が終了します。ファスティングを始めましょう。</string>
     <string name="fasting_auto_tag">自動</string>
     <string name="settings_fasting_auto_windows">ファスティング時間を自動化</string>
-    <string name="settings_fasting_auto_windows_help">オンにすると、食事時間が終わると自動的にファスティングが始まり、目標に達すると終了します。手動で始めることもできます。自動開始のファスティングではホームにボタンは表示されません。</string>
+    <string name="settings_fasting_auto_windows_help">ファスティングは開始時刻になると自動的に始まり、目標に達すると終了します。ホームにボタンは表示されず、サイクルは自動で進みます。手動で開始または停止するには、アプリアイコンを長押しします。</string>
     <string name="fasting_fast_starts_at">ファスティング %1$s 開始 · 残り %2$s</string>
     <string name="fasting_next_fast_at">次回のファスティングは %1$s</string>
     <string name="settings_fasting_start_time">ファスティング開始時刻</string>

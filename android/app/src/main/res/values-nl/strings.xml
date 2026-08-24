@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">Eetvenster gaat open over %1$s</string>
     <string name="settings_fasting_section_reminders">Herinneringen</string>
     <string name="settings_fasting_start_reminder">Startherinnering</string>
-    <string name="settings_fasting_start_reminder_time">Herinneringstijd</string>
-    <string name="settings_fasting_start_reminder_help">Een dagelijkse herinnering om je volgende vasten te starten. Overgeslagen als er al wordt gevast.</string>
     <string name="notif_fasting_start_title">Start je vasten</string>
     <string name="notif_fasting_start_text">Start nu je vasten.</string>
-    <string name="notif_fasting_start_text_goal">Start nu je vasten van %1$d u.</string>
     <string name="fasting_fast_starts_in">Vasten start over %1$s</string>
     <string name="fasting_eating_progress">%1$s van %2$d u eten</string>
     <string name="settings_fasting_eat_window">Eetvenster</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">Je eetvenster sluit over %1$d min — start dan je vasten.</string>
     <string name="fasting_auto_tag">Automatisch</string>
     <string name="settings_fasting_auto_windows">Automatische vastenvensters</string>
-    <string name="settings_fasting_auto_windows_help">Wanneer aan, start je vasten automatisch zodra je eetvenster sluit en eindigt het bij het bereiken van het doel. Je kunt ook handmatig starten. Automatisch vasten toont geen knoppen op Home.</string>
+    <string name="settings_fasting_auto_windows_help">Je vasten start automatisch op de starttijd van het vasten en eindigt wanneer het doel is bereikt. Geen knoppen op Home, de cyclus loopt vanzelf. Gebruik het lang indrukken van het app-pictogram om handmatig te starten of te stoppen.</string>
     <string name="fasting_fast_starts_at">Vasten start om %1$s · over %2$s</string>
     <string name="fasting_next_fast_at">Volgend vasten om %1$s</string>
     <string name="settings_fasting_start_time">Starttijd van het vasten</string>

@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">Fereastra de mese se deschide în %1$s</string>
     <string name="settings_fasting_section_reminders">Memento-uri</string>
     <string name="settings_fasting_start_reminder">Memento de începere</string>
-    <string name="settings_fasting_start_reminder_time">Ora mementoului</string>
-    <string name="settings_fasting_start_reminder_help">Un memento zilnic pentru a începe următorul post. Omis dacă un post este deja activ.</string>
     <string name="notif_fasting_start_title">Începe postul</string>
     <string name="notif_fasting_start_text">Începe postul acum.</string>
-    <string name="notif_fasting_start_text_goal">Începe acum postul tău de %1$d h.</string>
     <string name="fasting_fast_starts_in">Postul începe în %1$s</string>
     <string name="fasting_eating_progress">%1$s din %2$d h de mese</string>
     <string name="settings_fasting_eat_window">Fereastra de mese</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">Fereastra ta de mese se închide în %1$d min — începe postul atunci.</string>
     <string name="fasting_auto_tag">Automat</string>
     <string name="settings_fasting_auto_windows">Ferestre de post automate</string>
-    <string name="settings_fasting_auto_windows_help">Când este activ, postul începe automat când fereastra de mese se închide și se termină la atingerea țintei. Poți începe și manual. Posturile automate nu afișează butoane pe ecranul principal.</string>
+    <string name="settings_fasting_auto_windows_help">Postul tău începe automat la ora începerii postului și se termină la atingerea țintei. Fără butoane pe ecranul principal, ciclul rulează singur. Folosește apăsarea lungă pe pictograma aplicației pentru a începe sau opri manual.</string>
     <string name="fasting_fast_starts_at">Postul începe la %1$s · în %2$s</string>
     <string name="fasting_next_fast_at">Următorul post la %1$s</string>
     <string name="settings_fasting_start_time">Ora începerii postului</string>

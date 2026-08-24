@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">进食窗口将在 %1$s 后开启</string>
     <string name="settings_fasting_section_reminders">提醒</string>
     <string name="settings_fasting_start_reminder">开始提醒</string>
-    <string name="settings_fasting_start_reminder_time">提醒时间</string>
-    <string name="settings_fasting_start_reminder_help">每日提醒开始下一次禁食。已有进行中的禁食时会跳过。</string>
     <string name="notif_fasting_start_title">开始禁食</string>
     <string name="notif_fasting_start_text">现在开始禁食。</string>
-    <string name="notif_fasting_start_text_goal">现在开始 %1$d 小时禁食。</string>
     <string name="fasting_fast_starts_in">禁食将在 %1$s 后开始</string>
     <string name="fasting_eating_progress">进食 %2$d 小时中的 %1$s</string>
     <string name="settings_fasting_eat_window">进食窗口</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">您的进食窗口将在 %1$d 分钟后关闭，届时请开始禁食。</string>
     <string name="fasting_auto_tag">自动</string>
     <string name="settings_fasting_auto_windows">自动禁食时段</string>
-    <string name="settings_fasting_auto_windows_help">开启后，进食窗口关闭时禁食自动开始，达到目标后自动结束。您也可以手动开始。自动开始的禁食在主界面不显示按钮。</string>
+    <string name="settings_fasting_auto_windows_help">禁食会在禁食开始时间自动开始，达到目标后结束。主界面没有按钮，循环自动运行。如需手动开始或停止，请长按应用图标。</string>
     <string name="fasting_fast_starts_at">禁食于 %1$s 开始 · %2$s 后</string>
     <string name="fasting_next_fast_at">下次禁食于 %1$s</string>
     <string name="settings_fasting_start_time">禁食开始时间</string>

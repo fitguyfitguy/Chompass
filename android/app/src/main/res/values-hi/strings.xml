@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">खाने की विंडो %1$s में खुलेगी</string>
     <string name="settings_fasting_section_reminders">अनुस्मारक</string>
     <string name="settings_fasting_start_reminder">शुरुआत अनुस्मारक</string>
-    <string name="settings_fasting_start_reminder_time">अनुस्मारक समय</string>
-    <string name="settings_fasting_start_reminder_help">अगला उपवास शुरू करने के लिए दैनिक अनुस्मारक। उपवास पहले से चल रहा हो तो छोड़ दिया जाता है।</string>
     <string name="notif_fasting_start_title">अपना उपवास शुरू करें</string>
     <string name="notif_fasting_start_text">अभी अपना उपवास शुरू करें।</string>
-    <string name="notif_fasting_start_text_goal">अभी अपना %1$d घंटे का उपवास शुरू करें।</string>
     <string name="fasting_fast_starts_in">उपवास %1$s में शुरू होगा</string>
     <string name="fasting_eating_progress">खाने के %2$d घंटों में से %1$s</string>
     <string name="settings_fasting_eat_window">खाने की विंडो</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">आपकी खाने की विंडो %1$d मिनट में बंद होगी — तब उपवास शुरू करें।</string>
     <string name="fasting_auto_tag">स्वचालित</string>
     <string name="settings_fasting_auto_windows">स्वचालित उपवास विंडो</string>
-    <string name="settings_fasting_auto_windows_help">चालू होने पर, खाने की विंडो बंद होते ही आपका उपवास अपने आप शुरू हो जाता है और लक्ष्य पूरा होने पर समाप्त हो जाता है। आप इसे मैन्युअल भी शुरू कर सकते हैं। स्वचालित उपवास में होम पर कोई बटन नहीं दिखते।</string>
+    <string name="settings_fasting_auto_windows_help">आपका उपवास उपवास शुरू होने के समय पर अपने आप शुरू होता है और लक्ष्य पूरा होने पर समाप्त होता है। होम पर कोई बटन नहीं होते, यह चक्र अपने आप चलता है। मैन्युअल रूप से शुरू या बंद करने के लिए ऐप आइकन को देर तक दबाएँ।</string>
     <string name="fasting_fast_starts_at">उपवास %1$s बजे शुरू होगा · %2$s में</string>
     <string name="fasting_next_fast_at">अगला उपवास %1$s बजे</string>
     <string name="settings_fasting_start_time">उपवास शुरू होने का समय</string>

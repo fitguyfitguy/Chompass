@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">A janela de refeições abre em %1$s</string>
     <string name="settings_fasting_section_reminders">Lembretes</string>
     <string name="settings_fasting_start_reminder">Lembrete de início</string>
-    <string name="settings_fasting_start_reminder_time">Hora do lembrete</string>
-    <string name="settings_fasting_start_reminder_help">Um lembrete diário para iniciar o próximo jejum. Ignorado quando já há um jejum ativo.</string>
     <string name="notif_fasting_start_title">Inicie seu jejum</string>
     <string name="notif_fasting_start_text">Inicie seu jejum agora.</string>
-    <string name="notif_fasting_start_text_goal">Inicie agora seu jejum de %1$d h.</string>
     <string name="fasting_fast_starts_in">O jejum começa em %1$s</string>
     <string name="fasting_eating_progress">%1$s de %2$d h de refeições</string>
     <string name="settings_fasting_eat_window">Janela de refeições</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">Sua janela de refeições fecha em %1$d min — comece seu jejum então.</string>
     <string name="fasting_auto_tag">Automático</string>
     <string name="settings_fasting_auto_windows">Janelas de jejum automáticas</string>
-    <string name="settings_fasting_auto_windows_help">Quando ativado, seu jejum começa sozinho quando a janela de refeições fecha e termina ao atingir a meta. Você também pode iniciar manualmente. Jejuns automáticos não mostram botões na tela inicial.</string>
+    <string name="settings_fasting_auto_windows_help">Seu jejum começa sozinho no horário de início do jejum e termina ao atingir a meta. Sem botões na tela inicial, o ciclo roda sozinho. Use o toque longo no ícone do aplicativo para iniciar ou parar manualmente.</string>
     <string name="fasting_fast_starts_at">O jejum começa às %1$s · em %2$s</string>
     <string name="fasting_next_fast_at">Próximo jejum às %1$s</string>
     <string name="settings_fasting_start_time">Horário de início do jejum</string>

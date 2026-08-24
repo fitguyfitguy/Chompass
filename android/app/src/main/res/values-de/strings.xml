@@ -3165,11 +3165,8 @@ für dich ein</string>
     <string name="fasting_window_opens_in">Essensfenster öffnet in %1$s</string>
     <string name="settings_fasting_section_reminders">Erinnerungen</string>
     <string name="settings_fasting_start_reminder">Start-Erinnerung</string>
-    <string name="settings_fasting_start_reminder_time">Erinnerungszeit</string>
-    <string name="settings_fasting_start_reminder_help">Eine tägliche Erinnerung, dein nächstes Fasten zu starten. Übersprungen, wenn bereits gefastet wird.</string>
     <string name="notif_fasting_start_title">Starte dein Fasten</string>
     <string name="notif_fasting_start_text">Starte jetzt dein Fasten.</string>
-    <string name="notif_fasting_start_text_goal">Starte jetzt dein %1$d-stündiges Fasten.</string>
     <string name="fasting_fast_starts_in">Fasten startet in %1$s</string>
     <string name="fasting_eating_progress">%1$s von %2$d h Essen</string>
     <string name="settings_fasting_eat_window">Essensfenster</string>
@@ -3187,7 +3184,7 @@ für dich ein</string>
     <string name="notif_fasting_start_soon_text">Dein Essensfenster schließt in %1$d Min — starte dann dein Fasten.</string>
     <string name="fasting_auto_tag">Automatisch</string>
     <string name="settings_fasting_auto_windows">Automatische Fastenfenster</string>
-    <string name="settings_fasting_auto_windows_help">Wenn aktiv, startet dein Fasten automatisch, sobald dein Essensfenster schließt, und endet beim Erreichen des Ziels. Du kannst weiterhin manuell starten. Automatisch gestartete Fasten zeigen auf Home keine Buttons.</string>
+    <string name="settings_fasting_auto_windows_help">Dein Fasten startet automatisch zur Fasten-Startzeit und endet, sobald das Ziel erreicht ist. Auf Home gibt es keine Buttons, der Zyklus läuft von selbst. Zum manuellen Starten oder Stoppen drücke lange auf das App-Symbol.</string>
     <string name="fasting_fast_starts_at">Fasten startet um %1$s · in %2$s</string>
     <string name="fasting_next_fast_at">Nächstes Fasten um %1$s</string>
     <string name="settings_fasting_start_time">Fasten-Startzeit</string>

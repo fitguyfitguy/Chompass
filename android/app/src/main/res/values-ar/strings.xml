@@ -1759,11 +1759,8 @@
     <string name="fasting_window_opens_in">تفتح نافذة الأكل خلال %1$s</string>
     <string name="settings_fasting_section_reminders">التذكيرات</string>
     <string name="settings_fasting_start_reminder">تذكير البدء</string>
-    <string name="settings_fasting_start_reminder_time">وقت التذكير</string>
-    <string name="settings_fasting_start_reminder_help">تذكير يومي لبدء الصيام التالي. يُتخطّى إذا كان صيام نشط بالفعل.</string>
     <string name="notif_fasting_start_title">ابدأ صيامك</string>
     <string name="notif_fasting_start_text">ابدأ صيامك الآن.</string>
-    <string name="notif_fasting_start_text_goal">ابدأ صيامك البالغ %1$d ساعة الآن.</string>
     <string name="fasting_fast_starts_in">يبدأ الصيام خلال %1$s</string>
     <string name="fasting_eating_progress">%1$s من %2$d ساعات أكل</string>
     <string name="settings_fasting_eat_window">نافذة الأكل</string>
@@ -1781,7 +1778,7 @@
     <string name="notif_fasting_start_soon_text">تُغلق نافذة الأكل خلال %1$d دقيقة — ابدأ صيامك حينها.</string>
     <string name="fasting_auto_tag">تلقائي</string>
     <string name="settings_fasting_auto_windows">نوافذ صيام تلقائية</string>
-    <string name="settings_fasting_auto_windows_help">عند التشغيل، يبدأ صيامك تلقائيًا لحظة إغلاق نافذة الأكل وينتهي عند بلوغ الهدف. يمكنك أيضًا البدء يدويًا. الصيام التلقائي لا يعرض أزرارًا في الشاشة الرئيسية.</string>
+    <string name="settings_fasting_auto_windows_help">يبدأ صيامك تلقائيًا في وقت بدء الصيام وينتهي عند بلوغ الهدف. لا توجد أزرار في الشاشة الرئيسية، فالدورة تعمل وحدها. اضغط مطولًا على أيقونة التطبيق للبدء أو الإيقاف يدويًا.</string>
     <string name="fasting_fast_starts_at">يبدأ الصيام في %1$s · خلال %2$s</string>
     <string name="fasting_next_fast_at">الصيام القادم في %1$s</string>
     <string name="settings_fasting_start_time">وقت بدء الصيام</string>
